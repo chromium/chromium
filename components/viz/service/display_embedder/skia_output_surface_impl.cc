@@ -916,11 +916,14 @@ void SkiaOutputSurfaceImpl::DidSwapBuffersComplete(
     DCHECK(damage_of_current_buffer_);
   }
 
-  if (!params.texture_in_use_responses.empty())
-    client_->DidReceiveTextureInUseResponses(params.texture_in_use_responses);
+  // texture_in_use_responses is used for GLRenderer only.
+  DCHECK(params.texture_in_use_responses.empty());
+
   if (!params.ca_layer_params.is_empty)
     client_->DidReceiveCALayerParams(params.ca_layer_params);
   client_->DidReceiveSwapBuffersAck(params.swap_response.timings);
+  if (!params.released_overlays.empty())
+    client_->DidReceiveReleasedOverlays(params.released_overlays);
   if (needs_swap_size_notifications_)
     client_->DidSwapWithSize(pixel_size);
 }

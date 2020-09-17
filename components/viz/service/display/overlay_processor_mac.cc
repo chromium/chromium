@@ -16,11 +16,9 @@
 
 namespace viz {
 OverlayProcessorMac::OverlayProcessorMac(bool could_overlay,
-                                         bool enable_ca_overlay,
-                                         bool enable_render_pass)
+                                         bool enable_ca_overlay)
     : could_overlay_(could_overlay),
       enable_ca_overlay_(enable_ca_overlay),
-      enable_render_pass_(enable_render_pass),
       ca_layer_overlay_processor_(std::make_unique<CALayerOverlayProcessor>()) {
 }
 
@@ -28,7 +26,6 @@ OverlayProcessorMac::OverlayProcessorMac(
     std::unique_ptr<CALayerOverlayProcessor> ca_layer_overlay_processor)
     : could_overlay_(true),
       enable_ca_overlay_(true),
-      enable_render_pass_(true),
       ca_layer_overlay_processor_(std::move(ca_layer_overlay_processor)) {}
 
 OverlayProcessorMac::~OverlayProcessorMac() = default;
@@ -81,15 +78,6 @@ void OverlayProcessorMac::ProcessForOverlays(
   // case we would still have the OutputSurfaceOverlayPlane.
   if (!enable_ca_overlay_)
     return;
-
-  // TODO(https://crbug.com/1100728): RenderPass overlays don't work when using
-  // SkiaRenderer yet.
-  if (!enable_render_pass_) {
-    for (auto* const quad : render_pass->quad_list) {
-      if (quad->material == DrawQuad::Material::kAggregatedRenderPass)
-        return;
-    }
-  }
 
   // If ca overlay system didn't succeed, we fall back to surfaceless.
   if (!ca_layer_overlay_processor_->ProcessForCALayerOverlays(

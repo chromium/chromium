@@ -27,11 +27,14 @@ class VIZ_SERVICE_EXPORT OutputPresenterFuchsia : public OutputPresenter {
   static std::unique_ptr<OutputPresenterFuchsia> Create(
       ui::PlatformWindowSurface* window_surface,
       SkiaOutputSurfaceDependency* deps,
-      gpu::MemoryTracker* memory_tracker);
+      gpu::SharedImageFactory* shared_image_factory,
+      gpu::SharedImageRepresentationFactory* representation_factory);
 
-  OutputPresenterFuchsia(fuchsia::images::ImagePipe2Ptr image_pipe,
-                         SkiaOutputSurfaceDependency* deps,
-                         gpu::MemoryTracker* memory_tracker);
+  OutputPresenterFuchsia(
+      fuchsia::images::ImagePipe2Ptr image_pipe,
+      SkiaOutputSurfaceDependency* deps,
+      gpu::SharedImageFactory* shared_image_factory,
+      gpu::SharedImageRepresentationFactory* representation_factory);
   ~OutputPresenterFuchsia() override;
 
   // OutputPresenter implementation:
@@ -56,8 +59,8 @@ class VIZ_SERVICE_EXPORT OutputPresenterFuchsia : public OutputPresenter {
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane& plane,
       Image* image,
       bool is_submitted) final;
-  std::vector<OverlayData> ScheduleOverlays(
-      SkiaOutputSurface::OverlayList overlays) final;
+  void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays,
+                        std::vector<ScopedOverlayAccess*> accesses) final;
 
  private:
   struct PendingFrame {
@@ -87,8 +90,9 @@ class VIZ_SERVICE_EXPORT OutputPresenterFuchsia : public OutputPresenter {
   fuchsia::sysmem::AllocatorPtr sysmem_allocator_;
   fuchsia::images::ImagePipe2Ptr image_pipe_;
   SkiaOutputSurfaceDependency* const dependency_;
-  gpu::SharedImageFactory shared_image_factory_;
-  gpu::SharedImageRepresentationFactory shared_image_representation_factory_;
+  gpu::SharedImageFactory* const shared_image_factory_;
+  gpu::SharedImageRepresentationFactory* const
+      shared_image_representation_factory_;
 
   gfx::Size frame_size_;
   gfx::BufferFormat buffer_format_ = gfx::BufferFormat::RGBA_8888;

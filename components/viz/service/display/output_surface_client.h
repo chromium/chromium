@@ -5,12 +5,15 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_OUTPUT_SURFACE_CLIENT_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_OUTPUT_SURFACE_CLIENT_H_
 
+#include <vector>
+
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/service/viz_service_export.h"
+#include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/texture_in_use_response.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/latency/latency_info.h"
@@ -33,7 +36,8 @@ class VIZ_SERVICE_EXPORT OutputSurfaceClient {
   // For surfaceless/ozone implementations to create damage for the next frame.
   virtual void SetNeedsRedrawRect(const gfx::Rect& damage_rect) = 0;
 
-  // For synchronizing IOSurface use with the macOS WindowServer.
+  // For synchronizing IOSurface use with the macOS WindowServer with
+  // GLRenderer.
   virtual void DidReceiveTextureInUseResponses(
       const gpu::TextureInUseResponses& responses) = 0;
 
@@ -47,7 +51,12 @@ class VIZ_SERVICE_EXPORT OutputSurfaceClient {
 
   // See |gfx::PresentationFeedback| for detail.
   virtual void DidReceivePresentationFeedback(
-      const gfx::PresentationFeedback& feedback) {}
+      const gfx::PresentationFeedback& feedback) = 0;
+
+  // For synchronizing IOSurface use with the macOS WindowServer with
+  // SkiaRenderer.
+  virtual void DidReceiveReleasedOverlays(
+      const std::vector<gpu::Mailbox>& released_overlays) = 0;
 
  protected:
   virtual ~OutputSurfaceClient() {}

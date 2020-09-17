@@ -386,6 +386,16 @@ viz_source_set("gpu_service_dependencies") {
       "gl/info_collection_gpu_service_impl.cc",
       "gl/info_collection_gpu_service_impl.h",
     ]
+
+    # SkiaOutputDeviceBufferQueue doesn't support Windows.
+    sources -= [
+      "display_embedder/output_presenter.cc",
+      "display_embedder/output_presenter.h",
+      "display_embedder/output_presenter_gl.cc",
+      "display_embedder/output_presenter_gl.h",
+      "display_embedder/skia_output_device_buffer_queue.cc",
+      "display_embedder/skia_output_device_buffer_queue.h",
+    ]
   }
 
   if (is_chromeos) {
@@ -567,6 +577,10 @@ viz_source_set("unit_tests") {
       "display_embedder/output_device_backing_unittest.cc",
       "display_embedder/software_output_device_win_unittest.cc",
     ]
+
+    # SkiaOutputDeviceBufferQueue doesn't support Windows.
+    sources -=
+        [ "display_embedder/skia_output_device_buffer_queue_unittest.cc" ]
   }
 
   if (is_android) {

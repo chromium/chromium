@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_SKIA_RENDERER_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_SKIA_RENDERER_H_
 
-#include <map>
 #include <memory>
 #include <tuple>
 #include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "cc/cc_export.h"
@@ -59,6 +60,8 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   void SwapBuffers(SwapFrameData swap_frame_data) override;
   void SwapBuffersSkipped() override;
   void SwapBuffersComplete() override;
+  void DidReceiveReleasedOverlays(
+      const std::vector<gpu::Mailbox>& released_overlays) override;
 
   void SetDisablePictureQuadImageFiltering(bool disable) {
     disable_picture_quad_image_filtering_ = disable;
@@ -338,10 +341,32 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   base::circular_deque<
       std::vector<DisplayResourceProvider::ScopedReadLockSharedImage>>
       pending_overlay_locks_;
+
   // Locks for overlays have been committed. |pending_overlay_locks_| will
   // be moved to |committed_overlay_locks_| after SwapBuffers() completed.
   std::vector<DisplayResourceProvider::ScopedReadLockSharedImage>
       committed_overlay_locks_;
+
+#if defined(OS_APPLE)
+  class ScopedReadLockComparator {
+   public:
+    using is_transparent = void;
+    bool operator()(
+        const DisplayResourceProvider::ScopedReadLockSharedImage& lhs,
+        const DisplayResourceProvider::ScopedReadLockSharedImage& rhs) const;
+    bool operator()(
+        const DisplayResourceProvider::ScopedReadLockSharedImage& lhs,
+        const gpu::Mailbox& rhs) const;
+    bool operator()(
+        const gpu::Mailbox& lhs,
+        const DisplayResourceProvider::ScopedReadLockSharedImage& rhs) const;
+  };
+  // a set for locks of overlays which are waiting for releasing.
+  // The set is using lock->mailbox() as the unique key.
+  base::flat_set<DisplayResourceProvider::ScopedReadLockSharedImage,
+                 ScopedReadLockComparator>
+      awaiting_release_overlay_locks_;
+#endif  // defined(OS_APPLE)
 
   // Specific for SkPRecord.
   std::unique_ptr<SkPictureRecorder> root_recorder_;
@@ -351,7 +376,8 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   ContextProvider* context_provider_ = nullptr;
   base::Optional<SyncQueryCollection> sync_queries_;
 
-  std::map<gfx::ColorSpace, std::map<gfx::ColorSpace, sk_sp<SkRuntimeEffect>>>
+  base::flat_map<gfx::ColorSpace,
+                 base::flat_map<gfx::ColorSpace, sk_sp<SkRuntimeEffect>>>
       color_filter_cache_;
 
   DISALLOW_COPY_AND_ASSIGN(SkiaRenderer);

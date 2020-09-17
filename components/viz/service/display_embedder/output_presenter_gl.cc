@@ -157,7 +157,8 @@ const uint32_t OutputPresenterGL::kDefaultSharedImageUsage =
 // static
 std::unique_ptr<OutputPresenterGL> OutputPresenterGL::Create(
     SkiaOutputSurfaceDependency* deps,
-    gpu::MemoryTracker* memory_tracker) {
+    gpu::SharedImageFactory* factory,
+    gpu::SharedImageRepresentationFactory* representation_factory) {
 #if defined(OS_ANDROID)
   if (deps->GetGpuFeatureInfo()
           .status_values[gpu::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] !=
@@ -185,31 +186,25 @@ std::unique_ptr<OutputPresenterGL> OutputPresenterGL::Create(
     return nullptr;
   }
 
-  return std::make_unique<OutputPresenterGL>(
-      std::move(gl_surface), deps, memory_tracker, kDefaultSharedImageUsage);
+  return std::make_unique<OutputPresenterGL>(std::move(gl_surface), deps,
+                                             factory, representation_factory,
+                                             kDefaultSharedImageUsage);
 #else
   return nullptr;
 #endif
 }
 
-OutputPresenterGL::OutputPresenterGL(scoped_refptr<gl::GLSurface> gl_surface,
-                                     SkiaOutputSurfaceDependency* deps,
-                                     gpu::MemoryTracker* memory_tracker,
-                                     uint32_t shared_image_usage)
+OutputPresenterGL::OutputPresenterGL(
+    scoped_refptr<gl::GLSurface> gl_surface,
+    SkiaOutputSurfaceDependency* deps,
+    gpu::SharedImageFactory* factory,
+    gpu::SharedImageRepresentationFactory* representation_factory,
+    uint32_t shared_image_usage)
     : gl_surface_(gl_surface),
       dependency_(deps),
       supports_async_swap_(gl_surface_->SupportsAsyncSwap()),
-      shared_image_factory_(deps->GetGpuPreferences(),
-                            deps->GetGpuDriverBugWorkarounds(),
-                            deps->GetGpuFeatureInfo(),
-                            deps->GetSharedContextState().get(),
-                            deps->GetMailboxManager(),
-                            deps->GetSharedImageManager(),
-                            deps->GetGpuImageFactory(),
-                            memory_tracker,
-                            true),
-      shared_image_representation_factory_(deps->GetSharedImageManager(),
-                                           memory_tracker),
+      shared_image_factory_(factory),
+      shared_image_representation_factory_(representation_factory),
       shared_image_usage_(shared_image_usage) {
   // GL is origin is at bottom left normally, all Surfaceless implementations
   // are flipped.
@@ -271,8 +266,8 @@ OutputPresenterGL::AllocateImages(gfx::ColorSpace color_space,
   std::vector<std::unique_ptr<Image>> images;
   for (size_t i = 0; i < num_images; ++i) {
     auto image = std::make_unique<PresenterImageGL>();
-    if (!image->Initialize(&shared_image_factory_,
-                           &shared_image_representation_factory_, image_size,
+    if (!image->Initialize(shared_image_factory_,
+                           shared_image_representation_factory_, image_size,
                            color_space, image_format_, dependency_,
                            shared_image_usage_)) {
       DLOG(ERROR) << "Failed to initialize image.";
@@ -343,42 +338,18 @@ void OutputPresenterGL::CommitOverlayPlanes(
   }
 }
 
-std::vector<OutputPresenter::OverlayData> OutputPresenterGL::ScheduleOverlays(
-    SkiaOutputSurface::OverlayList overlays) {
-  std::vector<OverlayData> pending_overlays;
+void OutputPresenterGL::ScheduleOverlays(
+    SkiaOutputSurface::OverlayList overlays,
+    std::vector<ScopedOverlayAccess*> accesses) {
+  DCHECK_EQ(overlays.size(), accesses.size());
 #if defined(OS_ANDROID) || defined(OS_APPLE) || defined(USE_OZONE)
   // Note while reading through this for-loop that |overlay| has different
   // types on different platforms. On Android and Ozone it is an
   // OverlayCandidate, on Windows it is a DCLayerOverlay, and on macOS it is
   // a CALayerOverlay.
-  for (auto& overlay : overlays) {
-    // Extract the shared image and GLImage for the overlay. Note that for
-    // solid color overlays, this will remain nullptr.
-    gl::GLImage* gl_image = nullptr;
-    if (overlay.mailbox.IsSharedImage()) {
-      auto shared_image =
-          shared_image_representation_factory_.ProduceOverlay(overlay.mailbox);
-      // When display is re-opened, the first few frames might not have video
-      // resource ready. Possible investigation crbug.com/1023971.
-      if (!shared_image) {
-        LOG(ERROR) << "Invalid mailbox.";
-        continue;
-      }
-
-      auto shared_image_access =
-          shared_image->BeginScopedReadAccess(true /* needs_gl_image */);
-      if (!shared_image_access) {
-        LOG(ERROR) << "Could not access SharedImage for read.";
-        continue;
-      }
-
-      gl_image = shared_image_access->gl_image();
-      DLOG_IF(ERROR, !gl_image) << "Cannot get GLImage.";
-
-      pending_overlays.emplace_back(std::move(shared_image),
-                                    std::move(shared_image_access));
-    }
-
+  for (size_t i = 0; i < overlays.size(); ++i) {
+    const auto& overlay = overlays[i];
+    auto* gl_image = accesses[i] ? accesses[i]->gl_image() : nullptr;
 #if defined(OS_ANDROID) || defined(USE_OZONE)
     if (gl_image) {
       DCHECK(!overlay.gpu_fence_id);
@@ -401,8 +372,6 @@ std::vector<OutputPresenter::OverlayData> OutputPresenterGL::ScheduleOverlays(
 #endif
   }
 #endif  //  defined(OS_ANDROID) || defined(OS_APPLE) || defined(USE_OZONE)
-
-  return pending_overlays;
 }
 
 }  // namespace viz

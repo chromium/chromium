@@ -985,6 +985,12 @@ void Display::DidReceivePresentationFeedback(
   pending_presentation_group_timings_.pop_front();
 }
 
+void Display::DidReceiveReleasedOverlays(
+    const std::vector<gpu::Mailbox>& released_overlays) {
+  if (renderer_)
+    renderer_->DidReceiveReleasedOverlays(released_overlays);
+}
+
 void Display::SetNeedsRedrawRect(const gfx::Rect& damage_rect) {
   aggregator_->SetFullDamageForSurface(current_surface_id_);
   damage_tracker_->SetRootSurfaceDamaged();

@@ -123,7 +123,8 @@ OutputPresenterFuchsia::PendingFrame::operator=(PendingFrame&&) = default;
 std::unique_ptr<OutputPresenterFuchsia> OutputPresenterFuchsia::Create(
     ui::PlatformWindowSurface* window_surface,
     SkiaOutputSurfaceDependency* deps,
-    gpu::MemoryTracker* memory_tracker) {
+    gpu::SharedImageFactory* shared_image_factory,
+    gpu::SharedImageRepresentationFactory* representation_factory) {
   auto* inspector = base::ComponentInspectorForProcess();
 
   if (!base::FeatureList::IsEnabled(
@@ -144,26 +145,19 @@ std::unique_ptr<OutputPresenterFuchsia> OutputPresenterFuchsia::Create(
     return {};
 
   return std::make_unique<OutputPresenterFuchsia>(std::move(image_pipe), deps,
-                                                  memory_tracker);
+                                                  shared_image_factory,
+                                                  representation_factory);
 }
 
 OutputPresenterFuchsia::OutputPresenterFuchsia(
     fuchsia::images::ImagePipe2Ptr image_pipe,
     SkiaOutputSurfaceDependency* deps,
-    gpu::MemoryTracker* memory_tracker)
+    gpu::SharedImageFactory* shared_image_factory,
+    gpu::SharedImageRepresentationFactory* representation_factory)
     : image_pipe_(std::move(image_pipe)),
       dependency_(deps),
-      shared_image_factory_(deps->GetGpuPreferences(),
-                            deps->GetGpuDriverBugWorkarounds(),
-                            deps->GetGpuFeatureInfo(),
-                            deps->GetSharedContextState().get(),
-                            deps->GetMailboxManager(),
-                            deps->GetSharedImageManager(),
-                            deps->GetGpuImageFactory(),
-                            memory_tracker,
-                            true),
-      shared_image_representation_factory_(deps->GetSharedImageManager(),
-                                           memory_tracker) {
+      shared_image_factory_(shared_image_factory),
+      shared_image_representation_factory_(representation_factory) {
   sysmem_allocator_ = base::ComponentContextForProcess()
                           ->svc()
                           ->Connect<fuchsia::sysmem::Allocator>();
@@ -336,7 +330,7 @@ OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
     gmb_handle.native_pixmap_handle.buffer_index = i;
 
     auto mailbox = gpu::Mailbox::GenerateForSharedImage();
-    if (!shared_image_factory_.CreateSharedImage(
+    if (!shared_image_factory_->CreateSharedImage(
             mailbox, gpu::kDisplayCompositorClientId, std::move(gmb_handle),
             buffer_format_, gpu::kNullSurfaceHandle, frame_size_, color_space,
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, image_usage)) {
@@ -344,8 +338,8 @@ OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
     }
 
     auto image = std::make_unique<PresenterImageFuchsia>(last_image_id_);
-    if (!image->Initialize(&shared_image_factory_,
-                           &shared_image_representation_factory_, mailbox,
+    if (!image->Initialize(shared_image_factory_,
+                           shared_image_representation_factory_, mailbox,
                            dependency_)) {
       return {};
     }
@@ -427,12 +421,11 @@ void OutputPresenterFuchsia::SchedulePrimaryPlane(
                          &(next_frame_->release_fences));
 }
 
-std::vector<OutputPresenter::OverlayData>
-OutputPresenterFuchsia::ScheduleOverlays(
-    SkiaOutputSurface::OverlayList overlays) {
+void OutputPresenterFuchsia::ScheduleOverlays(
+    SkiaOutputSurface::OverlayList overlays,
+    std::vector<ScopedOverlayAccess*> accesses) {
   // Overlays are not supported yet.
   NOTREACHED();
-  return {};
 }
 
 void OutputPresenterFuchsia::PresentNextFrame() {

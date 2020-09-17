@@ -270,12 +270,24 @@ scoped_refptr<gpu::SyncPointClientState> CreateSyncPointClientState(
       sequence_id);
 }
 
+std::unique_ptr<gpu::SharedImageFactory> CreateSharedImageFactory(
+    SkiaOutputSurfaceDependency* deps,
+    gpu::MemoryTracker* memory_tracker) {
+  return std::make_unique<gpu::SharedImageFactory>(
+      deps->GetGpuPreferences(), deps->GetGpuDriverBugWorkarounds(),
+      deps->GetGpuFeatureInfo(), deps->GetSharedContextState().get(),
+      deps->GetMailboxManager(), deps->GetSharedImageManager(),
+      deps->GetGpuImageFactory(), memory_tracker,
+      true /* enable_wrapped_sk_image */);
+}
+
 std::unique_ptr<gpu::SharedImageRepresentationFactory>
 CreateSharedImageRepresentationFactory(SkiaOutputSurfaceDependency* deps,
                                        gpu::MemoryTracker* memory_tracker) {
   return std::make_unique<gpu::SharedImageRepresentationFactory>(
       deps->GetSharedImageManager(), memory_tracker);
 }
+
 }  // namespace
 
 // Offscreen surfaces for render passes. It can only be accessed on GPU
@@ -363,6 +375,16 @@ std::unique_ptr<SkiaOutputSurfaceImplOnGpu> SkiaOutputSurfaceImplOnGpu::Create(
   if (!context_state)
     return nullptr;
 
+  // Even with Vulkan/Dawn compositing, the SharedImageFactory constructor
+  // always initializes a GL-backed SharedImage factory to fall back on.
+  // Creating the SharedImageBackingFactoryGLTexture invokes GL API calls, so
+  // we need to ensure there is a current GL context.
+  if (!context_state->MakeCurrent(nullptr, true /* need_gl */)) {
+    LOG(ERROR) << "Failed to make current during initialization.";
+    return nullptr;
+  }
+  context_state->set_need_context_state_reset(true);
+
   auto impl_on_gpu = std::make_unique<SkiaOutputSurfaceImplOnGpu>(
       util::PassKey<SkiaOutputSurfaceImplOnGpu>(), deps,
       context_state->feature_info(), renderer_settings, sequence_id,
@@ -390,6 +412,8 @@ SkiaOutputSurfaceImplOnGpu::SkiaOutputSurfaceImplOnGpu(
       sync_point_client_state_(
           CreateSyncPointClientState(dependency_, sequence_id)),
       memory_tracker_(dependency_->GetSharedContextState()->memory_tracker()),
+      shared_image_factory_(
+          CreateSharedImageFactory(dependency_, memory_tracker_)),
       shared_image_representation_factory_(
           CreateSharedImageRepresentationFactory(dependency_, memory_tracker_)),
       vulkan_context_provider_(dependency_->GetVulkanContextProvider()),
@@ -410,6 +434,10 @@ SkiaOutputSurfaceImplOnGpu::SkiaOutputSurfaceImplOnGpu(
 
 SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // |output_device_| may still need |shared_image_factory_|, so release it
+  // first.
+  output_device_.reset();
 
   // Since SharedImageFactory also has a reference to ImplOnGpu's member
   // SharedContextState, we need to explicitly invoke the factory's destructor
@@ -1096,23 +1124,6 @@ bool SkiaOutputSurfaceImplOnGpu::Initialize() {
       return false;
   }
 
-  // Even with Vulkan/Dawn compositing, the SharedImageFactory constructor
-  // always initializes a GL-backed SharedImage factory to fall back on.
-  // Creating the SharedImageBackingFactoryGLTexture invokes GL API calls, so
-  // we need to ensure there is a current GL context.
-  if (!context_state_->MakeCurrent(nullptr, true /* need_gl */)) {
-    LOG(ERROR) << "Failed to make current during initialization.";
-    return false;
-  }
-  context_state_->set_need_context_state_reset(true);
-  shared_image_factory_ = std::make_unique<gpu::SharedImageFactory>(
-      dependency_->GetGpuPreferences(),
-      dependency_->GetGpuDriverBugWorkarounds(),
-      dependency_->GetGpuFeatureInfo(),
-      dependency_->GetSharedContextState().get(),
-      dependency_->GetMailboxManager(), dependency_->GetSharedImageManager(),
-      dependency_->GetGpuImageFactory(), memory_tracker_,
-      true /* enable_wrapped_sk_image */),
   max_resource_cache_bytes_ =
       context_state_->gr_context()->getResourceCacheLimit();
   if (context_state_)
@@ -1146,11 +1157,16 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
 
     if (MakeCurrent(true /* need_fbo0 */)) {
       if (gl_surface_->IsSurfaceless()) {
+#if !defined(OS_WIN)
         output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
-            std::make_unique<OutputPresenterGL>(gl_surface_, dependency_,
-                                                memory_tracker_),
-            dependency_, memory_tracker_, GetDidSwapBuffersCompleteCallback());
-
+            std::make_unique<OutputPresenterGL>(
+                gl_surface_, dependency_, shared_image_factory_.get(),
+                shared_image_representation_factory_.get()),
+            dependency_, shared_image_representation_factory_.get(),
+            memory_tracker_, GetDidSwapBuffersCompleteCallback());
+#else
+        NOTIMPLEMENTED();
+#endif
       } else {
         if (dependency_->NeedsSupportForExternalStencil()) {
           output_device_ = std::make_unique<SkiaOutputDeviceWebView>(
@@ -1182,56 +1198,67 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
         context_state_, gfx::SurfaceOrigin::kBottomLeft,
         renderer_settings_.requires_alpha_channel, memory_tracker_,
         GetDidSwapBuffersCompleteCallback());
-  } else {
-#if defined(USE_X11)
-    if (!features::IsUsingOzonePlatform()) {
-      if (!gpu_preferences_.disable_vulkan_surface) {
-        output_device_ = SkiaOutputDeviceVulkan::Create(
-            vulkan_context_provider_, dependency_->GetSurfaceHandle(),
-            memory_tracker_, GetDidSwapBuffersCompleteCallback());
-      }
-      if (!output_device_) {
-        output_device_ = std::make_unique<SkiaOutputDeviceX11>(
-            context_state_, dependency_->GetSurfaceHandle(), memory_tracker_,
-            GetDidSwapBuffersCompleteCallback());
-      }
-    }
-#endif
-    if (!output_device_) {
-#if defined(OS_FUCHSIA)
-      auto output_presenter = OutputPresenterFuchsia::Create(
-          window_surface_.get(), dependency_, memory_tracker_);
-#else
-      auto output_presenter =
-          OutputPresenterGL::Create(dependency_, memory_tracker_);
-      if (output_presenter) {
-        // TODO(https://crbug.com/1012401): don't depend on GL.
-        gl_surface_ = output_presenter->gl_surface();
-      }
-#endif
-      if (output_presenter) {
-        output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
-            std::move(output_presenter), dependency_, memory_tracker_,
-            GetDidSwapBuffersCompleteCallback());
-      } else {
-        auto output_device = SkiaOutputDeviceVulkan::Create(
-            vulkan_context_provider_, dependency_->GetSurfaceHandle(),
-            memory_tracker_, GetDidSwapBuffersCompleteCallback());
-#if defined(OS_WIN)
-        gpu::SurfaceHandle child_surface =
-            output_device ? output_device->GetChildSurfaceHandle()
-                          : gpu::kNullSurfaceHandle;
-        if (child_surface != gpu::kNullSurfaceHandle) {
-          DidCreateAcceleratedSurfaceChildWindow(
-              dependency_->GetSurfaceHandle(), child_surface);
-        }
-#endif
-        output_device_ = std::move(output_device);
-      }
-    }
+    return true;
   }
-#endif
-  return !!output_device_;
+
+#if defined(USE_X11)
+  if (!features::IsUsingOzonePlatform()) {
+    if (!gpu_preferences_.disable_vulkan_surface) {
+      output_device_ = SkiaOutputDeviceVulkan::Create(
+          vulkan_context_provider_, dependency_->GetSurfaceHandle(),
+          memory_tracker_, GetDidSwapBuffersCompleteCallback());
+    }
+    if (!output_device_) {
+      output_device_ = std::make_unique<SkiaOutputDeviceX11>(
+          context_state_, dependency_->GetSurfaceHandle(), memory_tracker_,
+          GetDidSwapBuffersCompleteCallback());
+    }
+    if (output_device_)
+      return true;
+  }
+#endif  // defined(USE_X11)
+
+#if !defined(OS_WIN)
+#if defined(OS_FUCHSIA)
+  auto output_presenter = OutputPresenterFuchsia::Create(
+      window_surface_.get(), dependency_, shared_image_factory_.get(),
+      shared_image_representation_factory_.get());
+#else   // defined(OS_FUCHSIA)
+  auto output_presenter =
+      OutputPresenterGL::Create(dependency_, shared_image_factory_.get(),
+                                shared_image_representation_factory_.get());
+  if (output_presenter) {
+    // TODO(https://crbug.com/1012401): don't depend on GL.
+    gl_surface_ = output_presenter->gl_surface();
+  }
+#endif  // !defined(OS_FUCHSIA)
+  if (output_presenter) {
+    output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
+        std::move(output_presenter), dependency_,
+        shared_image_representation_factory_.get(), memory_tracker_,
+        GetDidSwapBuffersCompleteCallback());
+    return true;
+  }
+#endif  // !defined(OS_WIN)
+
+  auto output_device = SkiaOutputDeviceVulkan::Create(
+      vulkan_context_provider_, dependency_->GetSurfaceHandle(),
+      memory_tracker_, GetDidSwapBuffersCompleteCallback());
+  if (!output_device)
+    return false;
+
+#if defined(OS_WIN)
+  gpu::SurfaceHandle child_surface = output_device->GetChildSurfaceHandle();
+  if (child_surface != gpu::kNullSurfaceHandle) {
+    DidCreateAcceleratedSurfaceChildWindow(dependency_->GetSurfaceHandle(),
+                                           child_surface);
+  }
+#endif  // defined(OS_WIN)
+  output_device_ = std::move(output_device);
+  return true;
+#else   // BUILDFLAG(ENABLE_VULKAN)
+  return false;
+#endif  // !BUILDFLAG(ENABLE_VULKAN)
 }
 
 bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {

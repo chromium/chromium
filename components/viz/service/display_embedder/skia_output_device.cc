@@ -140,11 +140,13 @@ void SkiaOutputDevice::FinishSwapBuffers(
     gfx::SwapCompletionResult result,
     const gfx::Size& size,
     std::vector<ui::LatencyInfo> latency_info,
-    const base::Optional<gfx::Rect>& damage_area) {
+    const base::Optional<gfx::Rect>& damage_area,
+    std::vector<gpu::Mailbox> released_overlays) {
   DCHECK(!pending_swaps_.empty());
 
   const gpu::SwapBuffersCompleteParams& params =
-      pending_swaps_.front().Complete(std::move(result), damage_area);
+      pending_swaps_.front().Complete(std::move(result), damage_area,
+                                      std::move(released_overlays));
 
   did_swap_buffer_complete_callback_.Run(params, size);
 
@@ -182,12 +184,15 @@ SkiaOutputDevice::SwapInfo::~SwapInfo() = default;
 
 const gpu::SwapBuffersCompleteParams& SkiaOutputDevice::SwapInfo::Complete(
     gfx::SwapCompletionResult result,
-    const base::Optional<gfx::Rect>& damage_rect) {
+    const base::Optional<gfx::Rect>& damage_rect,
+    std::vector<gpu::Mailbox> released_overlays) {
   params_.swap_response.result = result.swap_result;
   params_.swap_response.timings.swap_end = base::TimeTicks::Now();
   params_.frame_buffer_damage_area = damage_rect;
   if (result.ca_layer_params)
     params_.ca_layer_params = *result.ca_layer_params;
+
+  params_.released_overlays = std::move(released_overlays);
   return params_;
 }
 

@@ -106,6 +106,10 @@ class GLOutputSurfaceBufferQueueTest : public ::testing::Test,
   void DidReceiveCALayerParams(
       const gfx::CALayerParams& ca_layer_params) override {}
   void DidSwapWithSize(const gfx::Size& pixel_size) override {}
+  void DidReceivePresentationFeedback(
+      const gfx::PresentationFeedback& feedback) override {}
+  void DidReceiveReleasedOverlays(
+      const std::vector<gpu::Mailbox>& released_overlays) override {}
 
  protected:
   std::unique_ptr<OutputSurface> surface_;

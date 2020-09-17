@@ -833,9 +833,35 @@ void SkiaRenderer::SwapBuffersSkipped() {
 }
 
 void SkiaRenderer::SwapBuffersComplete() {
+  // Right now, only macOS needs to return maliboxes of released overlays, so
+  // we should not release |committed_overlay_locks_| here. The resources in it
+  // will be released by DidReceiveReleasedOverlays() later.
+#if defined(OS_APPLE)
+  for (auto& lock : committed_overlay_locks_) {
+    awaiting_release_overlay_locks_.insert(std::move(lock));
+  }
+#endif  // defined(OS_APPLE)
+
   committed_overlay_locks_.clear();
   std::swap(committed_overlay_locks_, pending_overlay_locks_.front());
   pending_overlay_locks_.pop_front();
+}
+
+void SkiaRenderer::DidReceiveReleasedOverlays(
+    const std::vector<gpu::Mailbox>& released_overlays) {
+  // This method is only called on macOS right now.
+#if defined(OS_APPLE)
+  for (const auto& mailbox : released_overlays) {
+    auto it = awaiting_release_overlay_locks_.find(mailbox);
+    if (it == awaiting_release_overlay_locks_.end()) {
+      DLOG(ERROR) << "Got an unexpected mailbox";
+      continue;
+    }
+    awaiting_release_overlay_locks_.erase(it);
+  }
+#else
+  NOTREACHED();
+#endif  // !defined(OS_APPLE)
 }
 
 bool SkiaRenderer::FlippedFramebuffer() const {
@@ -2944,5 +2970,25 @@ bool SkiaRenderer::CreateDelegatedInkPointRenderer() {
       std::make_unique<DelegatedInkPointRendererSkia>();
   return true;
 }
+
+#if defined(OS_APPLE)
+bool SkiaRenderer::ScopedReadLockComparator::operator()(
+    const DisplayResourceProvider::ScopedReadLockSharedImage& lhs,
+    const DisplayResourceProvider::ScopedReadLockSharedImage& rhs) const {
+  return lhs.mailbox() < rhs.mailbox();
+}
+
+bool SkiaRenderer::ScopedReadLockComparator::operator()(
+    const DisplayResourceProvider::ScopedReadLockSharedImage& lhs,
+    const gpu::Mailbox& rhs) const {
+  return lhs.mailbox() < rhs;
+}
+
+bool SkiaRenderer::ScopedReadLockComparator::operator()(
+    const gpu::Mailbox& lhs,
+    const DisplayResourceProvider::ScopedReadLockSharedImage& rhs) const {
+  return lhs < rhs.mailbox();
+}
+#endif  // defined(OS_APPLE)
 
 }  // namespace viz

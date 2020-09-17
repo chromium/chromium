@@ -15,6 +15,7 @@
 #include "components/viz/service/display_embedder/output_presenter.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
 #include "components/viz/service/viz_service_export.h"
+#include "gpu/command_buffer/common/mailbox.h"
 
 namespace viz {
 
@@ -22,9 +23,12 @@ class SkiaOutputSurfaceDependency;
 
 class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
  public:
+  class OverlayData;
+
   SkiaOutputDeviceBufferQueue(
       std::unique_ptr<OutputPresenter> presenter,
       SkiaOutputSurfaceDependency* deps,
+      gpu::SharedImageRepresentationFactory* representation_factory,
       gpu::MemoryTracker* memory_tracker,
       const DidSwapBufferCompleteCallback& did_swap_buffer_complete_callback);
 
@@ -62,11 +66,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
  private:
   friend class SkiaOutputDeviceBufferQueueTest;
 
-  class OverlayDataComparator {
-   public:
-    bool operator()(const OutputPresenter::OverlayData& a,
-                    const OutputPresenter::OverlayData& b) const;
-  };
   using CancelableSwapCompletionCallback =
       base::CancelableOnceCallback<void(gfx::SwapCompletionResult)>;
 
@@ -78,12 +77,13 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   void DoFinishSwapBuffers(const gfx::Size& size,
                            std::vector<ui::LatencyInfo> latency_info,
                            const base::WeakPtr<OutputPresenter::Image>& image,
-                           std::vector<OutputPresenter::OverlayData> overlays,
+                           std::vector<gpu::Mailbox> overlay_mailboxes,
                            gfx::SwapCompletionResult result);
 
   std::unique_ptr<OutputPresenter> presenter_;
 
   SkiaOutputSurfaceDependency* const dependency_;
+  gpu::SharedImageRepresentationFactory* const representation_factory_;
   // Format of images
   gfx::ColorSpace color_space_;
   gfx::Size image_size_;
@@ -105,14 +105,22 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   // from being destructed outside SkiaOutputDeviceBufferQueue life span.
   base::circular_deque<std::unique_ptr<CancelableSwapCompletionCallback>>
       swap_completion_callbacks_;
-  // Scheduled overlays for the next SwapBuffers call.
-  std::vector<OutputPresenter::OverlayData> pending_overlays_;
-  // Committed overlays for the last SwapBuffers call.
-  std::vector<OutputPresenter::OverlayData> committed_overlays_;
-  // Overlays that have been returned via DoFinishSwapBuffers, but still are
-  // in use by the system's WindowServer. This is only ever non-empty on macOS.
-  base::flat_set<OutputPresenter::OverlayData, OverlayDataComparator>
-      in_use_by_window_server_overlays_;
+  // Mailboxes of scheduled overlays for the next SwapBuffers call.
+  std::vector<gpu::Mailbox> pending_overlay_mailboxes_;
+  // Mailboxes of committed overlays for the last SwapBuffers call.
+  std::vector<gpu::Mailbox> committed_overlay_mailboxes_;
+
+  class OverlayDataComparator {
+   public:
+    using is_transparent = void;
+    bool operator()(const OverlayData& lhs, const OverlayData& rhs) const;
+    bool operator()(const OverlayData& lhs, const gpu::Mailbox& rhs) const;
+    bool operator()(const gpu::Mailbox& lhs, const OverlayData& rhs) const;
+  };
+  // A set for all overlays. The set uses overlay_data->mailbox() as the unique
+  // key.
+  base::flat_set<OverlayData, OverlayDataComparator> overlays_;
+
   // Set to true if no image is to be used for the primary plane of this frame.
   bool current_frame_has_no_primary_plane_ = false;
 };

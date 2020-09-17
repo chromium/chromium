@@ -213,6 +213,16 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
   void SetUpOnGpu() override {
     gl_surface_ = base::MakeRefCounted<MockGLSurfaceAsync>();
     memory_tracker_ = std::make_unique<MemoryTrackerStub>();
+    shared_image_factory_ = std::make_unique<gpu::SharedImageFactory>(
+        dependency_->GetGpuPreferences(),
+        dependency_->GetGpuDriverBugWorkarounds(),
+        dependency_->GetGpuFeatureInfo(),
+        dependency_->GetSharedContextState().get(),
+        dependency_->GetMailboxManager(), dependency_->GetSharedImageManager(),
+        dependency_->GetGpuImageFactory(), memory_tracker_.get(), true),
+    shared_image_representation_factory_ =
+        std::make_unique<gpu::SharedImageRepresentationFactory>(
+            dependency_->GetSharedImageManager(), memory_tracker_.get());
 
     auto present_callback =
         base::DoNothing::Repeatedly<gpu::SwapBuffersCompleteParams,
@@ -222,12 +232,12 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
         gpu::SHARED_IMAGE_USAGE_DISPLAY |
         gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
 
-    std::unique_ptr<SkiaOutputDeviceBufferQueue> onscreen_device =
-        std::make_unique<SkiaOutputDeviceBufferQueue>(
-            std::make_unique<OutputPresenterGL>(gl_surface_, dependency_.get(),
-                                                memory_tracker_.get(),
-                                                shared_image_usage),
-            dependency_.get(), memory_tracker_.get(), present_callback);
+    auto onscreen_device = std::make_unique<SkiaOutputDeviceBufferQueue>(
+        std::make_unique<OutputPresenterGL>(
+            gl_surface_, dependency_.get(), shared_image_factory_.get(),
+            shared_image_representation_factory_.get(), shared_image_usage),
+        dependency_.get(), shared_image_representation_factory_.get(),
+        memory_tracker_.get(), present_callback);
 
     output_device_ = std::move(onscreen_device);
   }
@@ -329,6 +339,9 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
   std::unique_ptr<SkiaOutputSurfaceDependency> dependency_;
   scoped_refptr<MockGLSurfaceAsync> gl_surface_;
   std::unique_ptr<MemoryTrackerStub> memory_tracker_;
+  std::unique_ptr<gpu::SharedImageFactory> shared_image_factory_;
+  std::unique_ptr<gpu::SharedImageRepresentationFactory>
+      shared_image_representation_factory_;
   std::unique_ptr<SkiaOutputDeviceBufferQueue> output_device_;
 };
 

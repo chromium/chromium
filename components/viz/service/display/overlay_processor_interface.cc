@@ -83,19 +83,17 @@ OverlayProcessorInterface::CreateOverlayProcessor(
     const RendererSettings& renderer_settings,
     const DebugRendererSettings* debug_settings) {
 #if defined(OS_APPLE)
-  // TODO(https://crbug.com/1100728): Get RenderPass overlays working.
-  bool allow_render_pass_overlays = !renderer_settings.use_skia_renderer;
   bool could_overlay =
       output_surface->GetSurfaceHandle() != gpu::kNullSurfaceHandle;
   could_overlay &= output_surface->capabilities().supports_surfaceless;
   bool enable_ca_overlay = could_overlay && renderer_settings.allow_overlays;
 
-  return base::WrapUnique(new OverlayProcessorMac(
-      could_overlay, enable_ca_overlay, allow_render_pass_overlays));
+  return std::make_unique<OverlayProcessorMac>(could_overlay,
+                                               enable_ca_overlay);
 #elif defined(OS_WIN)
-  return base::WrapUnique(new OverlayProcessorWin(
+  return std::make_unique<OverlayProcessorWin>(
       output_surface,
-      std::make_unique<DCLayerOverlayProcessor>(debug_settings)));
+      std::make_unique<DCLayerOverlayProcessor>(debug_settings));
 #elif defined(USE_OZONE)
   if (!features::IsUsingOzonePlatform())
     return std::make_unique<OverlayProcessorStub>();

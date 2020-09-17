@@ -98,6 +98,8 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   virtual void SwapBuffersComplete() {}
   virtual void DidReceiveTextureInUseResponses(
       const gpu::TextureInUseResponses& responses) {}
+  virtual void DidReceiveReleasedOverlays(
+      const std::vector<gpu::Mailbox>& released_overlays) {}
 
   // Public for tests that poke at internals.
   struct VIZ_SERVICE_EXPORT DrawingFrame {

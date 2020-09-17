@@ -27,9 +27,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorMac
  public:
   using CandidateList = CALayerOverlayList;
 
-  OverlayProcessorMac(bool could_overlay,
-                      bool enable_ca_overlay,
-                      bool enable_render_pass);
+  OverlayProcessorMac(bool could_overlay, bool enable_ca_overlay);
   // For testing.
   explicit OverlayProcessorMac(
       std::unique_ptr<CALayerOverlayProcessor> ca_layer_overlay_processor);
@@ -70,7 +68,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorMac
  private:
   const bool could_overlay_;
   const bool enable_ca_overlay_;
-  const bool enable_render_pass_;
   gfx::Rect ca_overlay_damage_rect_;
   gfx::Rect previous_frame_full_bounding_rect_;
 
