@@ -645,6 +645,10 @@ TEST_F(NearbyShareContactManagerImplTest,
 TEST_F(NearbyShareContactManagerImplTest, DownloadContacts_Failure) {
   DownloadContacts(/*only_download_if_changed=*/false);
   FailDownload(/*expected_only_download_if_changed=*/false);
+
+  // Fail twice to ensure that the downloader is reset properly.
+  DownloadContacts(/*only_download_if_changed=*/false);
+  FailDownload(/*expected_only_download_if_changed=*/false);
 }
 
 TEST_F(NearbyShareContactManagerImplTest,

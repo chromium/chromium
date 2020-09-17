@@ -290,6 +290,10 @@ void NearbyShareContactManagerImpl::OnContactsDownloadSuccess(
 }
 
 void NearbyShareContactManagerImpl::OnContactsDownloadFailure() {
+  contact_downloader_.reset();
+
+  NS_LOG(WARNING) << __func__ << ": Nearby Share contacts download failed.";
+
   // Notify mojo remotes.
   for (auto& remote : observers_set_) {
     remote->OnContactsDownloadFailed();
