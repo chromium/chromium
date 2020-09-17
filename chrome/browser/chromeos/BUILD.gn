@@ -1371,6 +1371,8 @@ source_set("chromeos") {
     "input_method/emoji_suggester.h",
     "input_method/ime_service_connector.cc",
     "input_method/ime_service_connector.h",
+    "input_method/input_host_helper.cc",
+    "input_method/input_host_helper.h",
     "input_method/input_method_configuration.cc",
     "input_method/input_method_configuration.h",
     "input_method/input_method_delegate_impl.cc",

@@ -23,6 +23,11 @@ specific_include_rules = {
     "+ash/wm/window_util.h",
   ],
 
+  # Detect text input client host.
+  "input_host_helper\.cc": [
+    "+ash/wm/window_util.h",
+  ],
+
   # TODO(erikwright): Bring this list to zero.
   # Do not add to the list of temporarily-allowed dependencies below,
   # and please do not introduce more #includes of these files.
