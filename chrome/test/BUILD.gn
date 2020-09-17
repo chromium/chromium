@@ -1184,6 +1184,7 @@ if (!is_android) {
       "../browser/policy/cloud/device_management_service_browsertest.cc",
       "../browser/policy/component_updater_policy_browsertest.cc",
       "../browser/policy/content_settings_policy_browsertest.cc",
+      "../browser/policy/developer_tools_policy_browsertest.cc",
       "../browser/policy/hide_webstore_icon_policy_browsertest.cc",
       "../browser/policy/hsts_policy_browsertest.cc",
       "../browser/policy/media_stream_policy_browsertest.cc",
