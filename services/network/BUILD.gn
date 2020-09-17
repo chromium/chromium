@@ -67,8 +67,6 @@ component("network_service") {
     "network_qualities_pref_delegate.h",
     "network_quality_estimator_manager.cc",
     "network_quality_estimator_manager.h",
-    "network_sandbox_hook_linux.cc",
-    "network_sandbox_hook_linux.h",
     "network_service.cc",
     "network_service.h",
     "network_service_network_delegate.cc",
@@ -210,6 +208,13 @@ component("network_service") {
       "dhcp_pac_file_fetcher_mojo.h",
       "nss_temp_certs_cache_chromeos.cc",
       "nss_temp_certs_cache_chromeos.h",
+    ]
+  }
+
+  if (is_linux || is_chromeos) {
+    sources += [
+      "network_sandbox_hook_linux.cc",
+      "network_sandbox_hook_linux.h",
     ]
   }
 
