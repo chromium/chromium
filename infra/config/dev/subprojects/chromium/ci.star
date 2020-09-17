@@ -56,7 +56,7 @@ def ci_builder(*, name, **kwargs):
             bq_table = "luci-resultdb-dev.chromium.ci_test_results",
         )],
         isolated_server = "https://isolateserver-dev.appspot.com",
-        goma_backend = goma.backend.RBE_STAGING,
+        goma_backend = goma.backend.RBE_PROD,
         **kwargs
     )
 
