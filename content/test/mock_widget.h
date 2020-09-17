@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
+#include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 
 namespace content {
@@ -31,6 +32,14 @@ class MockWidget : public blink::mojom::Widget {
   void ClearScreenRects();
   void SetTouchActionFromMain(cc::TouchAction touch_action);
 
+  // Invoked when this widget is shown or hidden.
+  void SetShownHiddenCallback(base::RepeatingClosure callback) {
+    shown_hidden_callback_ = std::move(callback);
+  }
+
+  void ClearHidden() { is_hidden_ = base::nullopt; }
+  const base::Optional<bool>& IsHidden() const { return is_hidden_; }
+
   // blink::mojom::Widget overrides.
   void ForceRedraw(ForceRedrawCallback callback) override;
 
@@ -44,8 +53,15 @@ class MockWidget : public blink::mojom::Widget {
   void UpdateScreenRects(const gfx::Rect& widget_screen_rect,
                          const gfx::Rect& window_screen_rect,
                          UpdateScreenRectsCallback callback) override;
+  void WasHidden() override;
+  void WasShown(base::TimeTicks show_request_timestamp,
+                bool was_evicted,
+                blink::mojom::RecordContentToVisibleTimeRequestPtr
+                    record_tab_switch_time_request) override;
 
  private:
+  base::Optional<bool> is_hidden_;
+  base::RepeatingClosure shown_hidden_callback_;
   std::vector<blink::VisualProperties> visual_properties_;
   std::vector<std::pair<gfx::Rect, gfx::Rect>> screen_rects_;
   std::vector<UpdateScreenRectsCallback> screen_rects_callbacks_;

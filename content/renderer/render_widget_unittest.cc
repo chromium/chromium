@@ -152,7 +152,6 @@ class InteractiveRenderWidget : public RenderWidget {
   explicit InteractiveRenderWidget(CompositorDependencies* compositor_deps)
       : RenderWidget(++next_routing_id_,
                      compositor_deps,
-                     /*is_hidden=*/false,
                      /*never_composited=*/false) {}
 
   void Init(blink::WebWidget* widget, const blink::ScreenInfo& screen_info) {
@@ -591,11 +590,6 @@ class NotifySwapTimesRenderWidgetUnittest : public RenderWidgetUnittest {
     RenderWidgetUnittest::SetUp();
 
     viz::ParentLocalSurfaceIdAllocator allocator;
-    WidgetMsg_WasShown msg(widget()->routing_id(),
-                           /*show_request_timestamp=*/base::TimeTicks(),
-                           /*was_evicted=*/false,
-                           /*record_tab_switch_time_request=*/{});
-    widget()->OnMessageReceived(msg);
 
     // TODO(danakj): This usually happens through
     // RenderWidget::UpdateVisualProperties() and we are cutting past that for

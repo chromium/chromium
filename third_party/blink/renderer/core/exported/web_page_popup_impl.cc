@@ -259,7 +259,8 @@ WebPagePopupImpl::WebPagePopupImpl(
     : web_page_popup_client_(client),
       widget_base_(std::make_unique<WidgetBase>(this,
                                                 std::move(widget_host),
-                                                std::move(widget))) {
+                                                std::move(widget),
+                                                /*hidden=*/false)) {
   DCHECK(client);
 }
 
@@ -538,6 +539,10 @@ const gfx::Size& WebPagePopupImpl::VisibleViewportSize() {
 void WebPagePopupImpl::SetPendingWindowRect(
     const gfx::Rect* window_screen_rect) {
   widget_base_->SetPendingWindowRect(window_screen_rect);
+}
+
+bool WebPagePopupImpl::IsHidden() const {
+  return widget_base_->is_hidden();
 }
 
 void WebPagePopupImpl::SetCompositorVisible(bool visible) {

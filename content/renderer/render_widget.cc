@@ -228,29 +228,25 @@ std::unique_ptr<RenderWidget> RenderWidget::CreateForFrame(
     bool never_composited) {
   if (g_create_render_widget_for_frame) {
     return g_create_render_widget_for_frame(widget_routing_id, compositor_deps,
-                                            /*hidden=*/true, never_composited);
+                                            never_composited);
   }
 
   return std::make_unique<RenderWidget>(widget_routing_id, compositor_deps,
-                                        /*hidden=*/true, never_composited);
+                                        never_composited);
 }
 
 RenderWidget* RenderWidget::CreateForPopup(
     int32_t widget_routing_id,
     CompositorDependencies* compositor_deps,
-    bool hidden,
     bool never_composited) {
-  return new RenderWidget(widget_routing_id, compositor_deps, hidden,
-                          never_composited);
+  return new RenderWidget(widget_routing_id, compositor_deps, never_composited);
 }
 
 RenderWidget::RenderWidget(int32_t widget_routing_id,
                            CompositorDependencies* compositor_deps,
-                           bool hidden,
                            bool never_composited)
     : routing_id_(widget_routing_id),
       compositor_deps_(compositor_deps),
-      is_hidden_(hidden),
       never_composited_(never_composited) {
   DCHECK_NE(routing_id_, MSG_ROUTING_NONE);
   DCHECK(RenderThread::IsMainThread());
@@ -316,7 +312,7 @@ void RenderWidget::Initialize(ShowCallback show_callback,
 
   webwidget_ = web_widget;
   if (auto* scheduler_state = GetWebWidget()->RendererWidgetSchedulingState())
-    scheduler_state->SetHidden(is_hidden());
+    scheduler_state->SetHidden(web_widget->IsHidden());
 
   InitCompositing(screen_info);
 
@@ -325,7 +321,7 @@ void RenderWidget::Initialize(ShowCallback show_callback,
   // for a provisional frame, this importantly starts the compositor before
   // the frame is inserted into the frame tree, which impacts first paint
   // metrics.
-  if (!is_hidden_ && !never_composited_)
+  if (!web_widget->IsHidden() && !never_composited_)
     web_widget->SetCompositorVisible(true);
 }
 
@@ -340,8 +336,6 @@ bool RenderWidget::OnMessageReceived(const IPC::Message& message) {
   bool handled = false;
   IPC_BEGIN_MESSAGE_MAP(RenderWidget, message)
     IPC_MESSAGE_HANDLER(WidgetMsg_Close, OnClose)
-    IPC_MESSAGE_HANDLER(WidgetMsg_WasHidden, OnWasHidden)
-    IPC_MESSAGE_HANDLER(WidgetMsg_WasShown, OnWasShown)
     IPC_MESSAGE_HANDLER(WidgetMsg_SetBounds_ACK, OnRequestSetBoundsAck)
     IPC_MESSAGE_HANDLER(WidgetMsg_SetViewportIntersection,
                         OnSetViewportIntersection)
@@ -429,50 +423,6 @@ void RenderWidget::UpdateVisualProperties(
         SetSize(visual_properties.new_size);
       }
     }
-  }
-}
-
-void RenderWidget::OnWasHidden() {
-  // A provisional frame widget will never be hidden since that would require it
-  // to be shown first. A frame must be attached to the frame tree before
-  // changing visibility.
-  DCHECK(!IsForProvisionalFrame());
-
-  TRACE_EVENT0("renderer", "RenderWidget::OnWasHidden");
-
-  SetHidden(true);
-
-  tab_switch_time_recorder_.TabWasHidden();
-
-  for (auto& observer : render_frames_)
-    observer.WasHidden();
-}
-
-void RenderWidget::OnWasShown(
-    base::TimeTicks show_request_timestamp,
-    bool was_evicted,
-    const blink::mojom::RecordContentToVisibleTimeRequestPtr&
-        record_tab_switch_time_request) {
-  // The frame must be attached to the frame tree (which makes it no longer
-  // provisional) before changing visibility.
-  DCHECK(!IsForProvisionalFrame());
-
-  TRACE_EVENT_WITH_FLOW0("renderer", "RenderWidget::OnWasShown", routing_id(),
-                         TRACE_EVENT_FLAG_FLOW_IN);
-
-  SetHidden(false);
-  if (record_tab_switch_time_request) {
-    layer_tree_host_->RequestPresentationTimeForNextFrame(
-        tab_switch_time_recorder_.TabWasShown(
-            false /* has_saved_frames */,
-            record_tab_switch_time_request.Clone(), show_request_timestamp));
-  }
-
-  for (auto& observer : render_frames_)
-    observer.WasShown();
-  if (was_evicted) {
-    for (auto& observer : render_frame_proxies_)
-      observer.WasEvicted();
   }
 }
 
@@ -960,30 +910,6 @@ void RenderWidget::ConvertWindowToViewport(blink::WebFloatRect* rect) {
     rect->width *= device_scale_factor;
     rect->height *= device_scale_factor;
   }
-}
-
-void RenderWidget::SetHidden(bool hidden) {
-  // A provisional frame widget will never be shown or hidden, as the frame must
-  // be attached to the frame tree before changing visibility.
-  DCHECK(!IsForProvisionalFrame());
-
-  if (is_hidden_ == hidden)
-    return;
-
-  // The status has changed.  Tell the RenderThread about it and ensure
-  // throttled acks are released in case frame production ceases.
-  is_hidden_ = hidden;
-
-  if (auto* scheduler_state = GetWebWidget()->RendererWidgetSchedulingState())
-    scheduler_state->SetHidden(hidden);
-
-  // If the renderer was hidden, resolve any pending synthetic gestures so they
-  // aren't blocked waiting for a compositor frame to be generated.
-  if (is_hidden_)
-    webwidget_->FlushInputProcessedCallback();
-
-  if (!never_composited_)
-    webwidget_->SetCompositorVisible(!is_hidden_);
 }
 
 void RenderWidget::UpdateSelectionBounds() {

@@ -26,12 +26,14 @@ WebViewFrameWidget::WebViewFrameWidget(
         widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
         widget,
-    bool is_for_nested_main_frame)
+    bool is_for_nested_main_frame,
+    bool hidden)
     : WebFrameWidgetBase(client,
                          std::move(frame_widget_host),
                          std::move(frame_widget),
                          std::move(widget_host),
-                         std::move(widget)),
+                         std::move(widget),
+                         hidden),
       web_view_(&web_view),
       is_for_nested_main_frame_(is_for_nested_main_frame),
       self_keep_alive_(PERSISTENT_FROM_HERE, this) {

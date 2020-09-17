@@ -2,30 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_CONTENT_TO_VISIBLE_TIME_REPORTER_H_
-#define CONTENT_COMMON_CONTENT_TO_VISIBLE_TIME_REPORTER_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PAGE_CONTENT_TO_VISIBLE_TIME_REPORTER_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_PAGE_CONTENT_TO_VISIBLE_TIME_REPORTER_H_
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
-#include "content/common/content_export.h"
+#include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom.h"
 
 namespace gfx {
 struct PresentationFeedback;
 }
 
-namespace content {
+namespace blink {
 
-CONTENT_EXPORT blink::mojom::RecordContentToVisibleTimeRequest& operator+=(
-    blink::mojom::RecordContentToVisibleTimeRequest& a,
-    blink::mojom::RecordContentToVisibleTimeRequest const& b);
+// Merges the |from| request to the |to| request to include all the flags set
+// and minimum start time.
+BLINK_COMMON_EXPORT void UpdateRecordContentToVisibleTimeRequest(
+    mojom::RecordContentToVisibleTimeRequest const& from,
+    mojom::RecordContentToVisibleTimeRequest& to);
 
 // Generates UMA metric to track the duration of tab switching from when the
 // active tab is changed until the frame presentation time. The metric will be
 // separated into two whether the tab switch has saved frames or not.
-class CONTENT_EXPORT ContentToVisibleTimeReporter {
+class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
  public:
   // Matches the TabSwitchResult enum in enums.xml.
   enum class TabSwitchResult {
@@ -39,14 +41,26 @@ class CONTENT_EXPORT ContentToVisibleTimeReporter {
   };
 
   ContentToVisibleTimeReporter();
+  ContentToVisibleTimeReporter(const ContentToVisibleTimeReporter&) = delete;
+  ContentToVisibleTimeReporter& operator=(const ContentToVisibleTimeReporter&) =
+      delete;
   ~ContentToVisibleTimeReporter();
 
   // Invoked when the tab associated with this recorder is shown. Returns a
   // callback to invoke the next time a frame is presented for this tab.
   base::OnceCallback<void(const gfx::PresentationFeedback&)> TabWasShown(
       bool has_saved_frames,
-      blink::mojom::RecordContentToVisibleTimeRequestPtr start_state,
-      base::TimeTicks render_widget_visibility_request_timestamp);
+      mojom::RecordContentToVisibleTimeRequestPtr start_state,
+      base::TimeTicks widget_visibility_request_timestamp);
+
+  base::OnceCallback<void(const gfx::PresentationFeedback&)> TabWasShown(
+      bool has_saved_frames,
+      base::TimeTicks event_start_time,
+      bool destination_is_loaded,
+      bool show_reason_tab_switching,
+      bool show_reason_unoccluded,
+      bool show_reason_bfcache_restore,
+      base::TimeTicks widget_visibility_request_timestamp);
 
   // Indicates that the tab associated with this recorder was hidden. If no
   // frame was presented since the last tab switch, failure is reported to UMA.
@@ -66,17 +80,15 @@ class CONTENT_EXPORT ContentToVisibleTimeReporter {
 
   // The information about the last tab switch request, or nullptr if there is
   // no incomplete tab switch.
-  blink::mojom::RecordContentToVisibleTimeRequestPtr tab_switch_start_state_;
+  mojom::RecordContentToVisibleTimeRequestPtr tab_switch_start_state_;
 
-  // The render widget visibility request timestamp for the last tab switch, or
-  // null if there is no incomplete tab switch.
-  base::TimeTicks render_widget_visibility_request_timestamp_;
+  // The widget visibility request timestamp for the last tab switch, or null
+  // if there is no incomplete tab switch.
+  base::TimeTicks widget_visibility_request_timestamp_;
 
   base::WeakPtrFactory<ContentToVisibleTimeReporter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ContentToVisibleTimeReporter);
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_COMMON_CONTENT_TO_VISIBLE_TIME_REPORTER_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_PAGE_CONTENT_TO_VISIBLE_TIME_REPORTER_H_

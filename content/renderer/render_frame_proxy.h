@@ -197,10 +197,9 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   void PageScaleFactorChanged(float page_scale_factor,
                               bool is_pinch_gesture_active) override;
   viz::FrameSinkId GetFrameSinkId() override;
+  void WasEvicted() override;
 
   void DidStartLoading();
-
-  void WasEvicted();
 
   bool is_pinch_gesture_active_for_testing() {
     return pending_visual_properties_.is_pinch_gesture_active;

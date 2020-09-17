@@ -203,10 +203,7 @@ RenderWidgetFullscreenPepper::RenderWidgetFullscreenPepper(
     mojo::PendingAssociatedRemote<blink::mojom::WidgetHost> mojo_widget_host,
     mojo::PendingAssociatedReceiver<blink::mojom::Widget> mojo_widget,
     blink::WebURL main_frame_url)
-    : RenderWidget(routing_id,
-                   compositor_deps,
-                   /*hidden=*/false,
-                   /*never_composited=*/false),
+    : RenderWidget(routing_id, compositor_deps, /*never_composited=*/false),
       plugin_(plugin),
       mouse_lock_dispatcher_(
           std::make_unique<FullscreenMouseLockDispatcher>(this)),

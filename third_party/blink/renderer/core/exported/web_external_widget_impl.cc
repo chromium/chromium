@@ -35,7 +35,8 @@ WebExternalWidgetImpl::WebExternalWidgetImpl(
       debug_url_(debug_url),
       widget_base_(std::make_unique<WidgetBase>(this,
                                                 std::move(widget_host),
-                                                std::move(widget))) {
+                                                std::move(widget),
+                                                /*hidden=*/false)) {
   DCHECK(client_);
 }
 
@@ -228,6 +229,10 @@ const gfx::Size& WebExternalWidgetImpl::VisibleViewportSize() {
 void WebExternalWidgetImpl::SetPendingWindowRect(
     const gfx::Rect* window_screen_rect) {
   widget_base_->SetPendingWindowRect(window_screen_rect);
+}
+
+bool WebExternalWidgetImpl::IsHidden() const {
+  return widget_base_->is_hidden();
 }
 
 void WebExternalWidgetImpl::DidOverscrollForTesting(

@@ -80,7 +80,8 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase,
       CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
           widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
-          widget);
+          widget,
+      bool hidden);
   ~WebFrameWidgetImpl() override;
 
   // WebWidget functions:

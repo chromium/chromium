@@ -76,6 +76,10 @@ class FakeRenderWidgetHost : public blink::mojom::FrameWidgetHost,
     return widget_host_receiver_;
   }
 
+  mojo::AssociatedRemote<blink::mojom::Widget>& widget_remote_for_testing() {
+    return widget_remote_;
+  }
+
   blink::mojom::WidgetInputHandler* GetWidgetInputHandler();
   blink::mojom::FrameWidgetInputHandler* GetFrameWidgetInputHandler();
 

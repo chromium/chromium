@@ -82,8 +82,6 @@ source_set("common") {
     "content_paths.cc",
     "content_switches_internal.cc",
     "content_switches_internal.h",
-    "content_to_visible_time_reporter.cc",
-    "content_to_visible_time_reporter.h",
     "cursors/webcursor.cc",
     "cursors/webcursor.h",
     "cursors/webcursor_android.cc",

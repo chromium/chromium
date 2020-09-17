@@ -617,6 +617,9 @@ void RenderWidgetHostImpl::Init() {
 
   if (view_)
     view_->OnRenderWidgetInit();
+
+  if (pending_show_closure_)
+    std::move(pending_show_closure_).Run();
 }
 
 std::pair<mojo::PendingAssociatedRemote<blink::mojom::WidgetHost>,
@@ -694,6 +697,9 @@ void RenderWidgetHostImpl::InitForFrame() {
 
   if (view_)
     view_->OnRenderWidgetInit();
+
+  if (pending_show_closure_)
+    std::move(pending_show_closure_).Run();
 }
 
 bool RenderWidgetHostImpl::ShouldShowStaleContentOnEviction() {
@@ -760,9 +766,12 @@ void RenderWidgetHostImpl::WasHidden() {
   // Don't bother reporting hung state when we aren't active.
   StopInputEventAckTimeout();
 
-  // If we have a renderer, then inform it that we are being hidden so it can
-  // reduce its resource utilization.
-  Send(new WidgetMsg_WasHidden(routing_id_));
+  // If we have bound the blink widget interface, then inform it that we are
+  // being hidden so it can reduce its resource utilization.
+  if (blink_widget_)
+    blink_widget_->WasHidden();
+  else
+    pending_show_closure_.Reset();
 
   // Tell the RenderProcessHost we were hidden.
   GetProcess()->UpdateClientPriority(this);
@@ -792,11 +801,18 @@ void RenderWidgetHostImpl::WasShown(
   SendScreenRects();
   RestartInputEventAckTimeoutIfNecessary();
 
-  Send(new WidgetMsg_WasShown(
-      routing_id_,
-      record_tab_switch_time_request ? base::TimeTicks::Now()
-                                     : base::TimeTicks(),
-      view_->is_evicted(), std::move(record_tab_switch_time_request)));
+  auto show_request_timestamp = record_tab_switch_time_request
+                                    ? base::TimeTicks::Now()
+                                    : base::TimeTicks();
+  if (blink_widget_) {
+    blink_widget_->WasShown(show_request_timestamp, view_->is_evicted(),
+                            std::move(record_tab_switch_time_request));
+  } else {
+    pending_show_closure_ = base::BindOnce(
+        &RenderWidgetHostImpl::RunPendingWasShown, base::Unretained(this),
+        show_request_timestamp, view_->is_evicted(),
+        std::move(record_tab_switch_time_request));
+  }
   view_->reset_is_evicted();
 
   GetProcess()->UpdateClientPriority(this);
@@ -820,12 +836,22 @@ void RenderWidgetHostImpl::WasShown(
   // necessary. SynchronizeVisualProperties does nothing if the sizes are
   // already in sync.
   //
-  // TODO: ideally WidgetMsg_WasShown would take a size. This way, the renderer
-  // could handle both the restore and resize at once. This isn't that big a
-  // deal as RenderWidget::WasShown delays updating, so that the resize from
-  // SynchronizeVisualProperties is usually processed before the renderer is
-  // painted.
+  // TODO: ideally blink::mojom::Widget's WasShown would take a size. This way,
+  // the renderer could handle both the restore and resize at once. This isn't
+  // that big a deal as RenderWidget::WasShown delays updating, so that the
+  // resize from SynchronizeVisualProperties is usually processed before the
+  // renderer is painted.
   SynchronizeVisualProperties();
+}
+
+void RenderWidgetHostImpl::RunPendingWasShown(
+    base::TimeTicks show_request_timestamp,
+    bool is_evicted,
+    blink::mojom::RecordContentToVisibleTimeRequestPtr
+        record_tab_switch_time_request) {
+  DCHECK(blink_widget_.is_bound());
+  blink_widget_->WasShown(show_request_timestamp, is_evicted,
+                          std::move(record_tab_switch_time_request));
 }
 
 #if defined(OS_ANDROID)
@@ -2280,6 +2306,7 @@ void RenderWidgetHostImpl::Destroy(bool also_delete) {
   }
 
   render_process_blocked_state_changed_subscription_.reset();
+  pending_show_closure_.Reset();
   GetProcess()->RemovePriorityClient(this);
   GetProcess()->RemoveObserver(this);
   agent_scheduling_group_.RemoveRoute(routing_id_);

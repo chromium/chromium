@@ -554,7 +554,7 @@ PepperPluginInstanceImpl::PepperPluginInstanceImpl(
   if (render_frame_) {  // NULL in tests or if the frame has been destroyed.
     render_frame_->PepperInstanceCreated(this);
     view_data_.is_page_visible =
-        !render_frame_->GetLocalRootRenderWidget()->is_hidden();
+        !render_frame_->GetLocalRootRenderWidget()->GetWebWidget()->IsHidden();
 
     // Set the initial focus.
     SetContentAreaFocus(

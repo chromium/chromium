@@ -170,10 +170,12 @@ WebFrameWidgetBase::WebFrameWidgetBase(
     CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
         widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
-        widget)
+        widget,
+    bool hidden)
     : widget_base_(std::make_unique<WidgetBase>(this,
                                                 std::move(widget_host),
-                                                std::move(widget))),
+                                                std::move(widget),
+                                                hidden)),
       client_(&client) {
   frame_widget_host_.Bind(
       std::move(frame_widget_host),
@@ -1244,6 +1246,10 @@ void WebFrameWidgetBase::SetPendingWindowRect(
   widget_base_->SetPendingWindowRect(window_screen_rect);
 }
 
+bool WebFrameWidgetBase::IsHidden() const {
+  return widget_base_->is_hidden();
+}
+
 void WebFrameWidgetBase::AutoscrollStart(const gfx::PointF& position) {
   GetAssociatedFrameWidgetHost()->AutoscrollStart(std::move(position));
 }
@@ -2242,6 +2248,28 @@ const ScreenInfo& WebFrameWidgetBase::GetOriginalScreenInfo() {
 base::Optional<blink::mojom::ScreenOrientation>
 WebFrameWidgetBase::ScreenOrientationOverride() {
   return View()->ScreenOrientationOverride();
+}
+
+void WebFrameWidgetBase::WasHidden() {
+  ForEachLocalFrameControlledByWidget(
+      local_root_->GetFrame(),
+      WTF::BindRepeating([](WebLocalFrame* local_frame) {
+        local_frame->Client()->WasHidden();
+      }));
+}
+
+void WebFrameWidgetBase::WasShown(bool was_evicted) {
+  ForEachLocalFrameControlledByWidget(
+      local_root_->GetFrame(),
+      WTF::BindRepeating([](WebLocalFrame* local_frame) {
+        local_frame->Client()->WasShown();
+      }));
+  if (was_evicted) {
+    ForEachRemoteFrameControlledByWidget(
+        WTF::BindRepeating([](RemoteFrame* remote_frame) {
+          remote_frame->Client()->WasEvicted();
+        }));
+  }
 }
 
 }  // namespace blink

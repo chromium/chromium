@@ -306,10 +306,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // Virtual for web tests to inject their own behaviour into the WebLocalFrame.
   virtual void Initialize(blink::WebFrame* parent);
 
-  // Notifications from RenderWidget.
-  void WasHidden();
-  void WasShown();
-
   // Start/Stop loading notifications.
   // TODO(nasko): Those are page-level methods at this time and come from
   // WebViewClient. We should move them to be WebLocalFrameClient calls and put
@@ -770,6 +766,8 @@ class CONTENT_EXPORT RenderFrameImpl
       const std::string& output_device_id) override;
   void DidMeaningfulLayout(blink::WebMeaningfulLayout layout_type) override;
   void DidCommitAndDrawCompositorFrame() override;
+  void WasHidden() override;
+  void WasShown() override;
 
   // Binds to the fullscreen service in the browser.
   void BindFullscreen(

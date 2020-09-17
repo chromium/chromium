@@ -322,6 +322,8 @@ class WebWidget {
   virtual SynchronousCompositorRegistry* GetSynchronousCompositorRegistry() = 0;
 #endif
 
+  virtual bool IsHidden() const = 0;
+
  protected:
   ~WebWidget() = default;
 };

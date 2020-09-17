@@ -10,7 +10,9 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
+#include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
+#include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_text_input_info.h"
@@ -58,7 +60,8 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       WidgetBaseClient* client,
       CrossVariantMojoAssociatedRemote<mojom::WidgetHostInterfaceBase>
           widget_host,
-      CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget);
+      CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget,
+      bool hidden);
   ~WidgetBase() override;
 
   // Initialize the compositor. |settings| is typically null. When |settings| is
@@ -95,6 +98,11 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void UpdateScreenRects(const gfx::Rect& widget_screen_rect,
                          const gfx::Rect& window_screen_rect,
                          UpdateScreenRectsCallback callback) override;
+  void WasHidden() override;
+  void WasShown(base::TimeTicks show_request_timestamp,
+                bool was_evicted,
+                mojom::blink::RecordContentToVisibleTimeRequestPtr
+                    record_tab_switch_time_request) override;
 
   // LayerTreeDelegate overrides:
   // Applies viewport related properties during a commit from the compositor
@@ -202,7 +210,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void OnImeEventGuardStart(ImeEventGuard* guard);
   void OnImeEventGuardFinish(ImeEventGuard* guard);
 
-  bool is_hidden() { return false; }
+  bool is_hidden() const { return is_hidden_; }
   void set_is_pasting(bool value) { is_pasting_ = value; }
   bool is_pasting() const { return is_pasting_; }
   void set_handling_select_range(bool value) { handling_select_range_ = value; }
@@ -310,6 +318,11 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   bool ShouldUpdateCompositionInfo(const gfx::Range& range,
                                    const Vector<gfx::Rect>& bounds);
 
+  // Sets the "hidden" state of this widget.  All modification of is_hidden_
+  // should use this method so that we can properly inform the RenderThread of
+  // our state.
+  void SetHidden(bool hidden);
+
   std::unique_ptr<LayerTreeView> layer_tree_view_;
   scoped_refptr<WidgetInputHandlerManager> widget_input_handler_manager_;
   WidgetBaseClient* client_;
@@ -369,6 +382,9 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // Whether or not this RenderWidget is currently pasting.
   bool is_pasting_ = false;
 
+  // Object to record tab switch time into this RenderWidget
+  ContentToVisibleTimeReporter tab_switch_time_recorder_;
+
   // Properties of the screen hosting the WidgetBase. Rects in this structure
   // do not include any scaling by device scale factor, so are logical pixels
   // not physical device pixels.
@@ -390,6 +406,12 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   gfx::Size visible_viewport_size_;
 
   const bool use_zoom_for_dsf_;
+
+  // Indicates that we shouldn't bother generated paint events.
+  bool is_hidden_;
+
+  // Indicates that we are never visible, so never produce graphical output.
+  bool never_composited_ = false;
 
   base::WeakPtrFactory<WidgetBase> weak_ptr_factory_{this};
 };

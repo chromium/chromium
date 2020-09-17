@@ -1057,6 +1057,12 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void AddPendingUserActivation(const blink::WebInputEvent& event);
   void ClearPendingUserActivation();
 
+  // Calls the pending blink::mojom::Widget::WasShown.
+  void RunPendingWasShown(base::TimeTicks show_request_timestamp,
+                          bool is_evicted,
+                          blink::mojom::RecordContentToVisibleTimeRequestPtr
+                              record_tab_switch_time_request);
+
   // An expiry time for resetting the pending_user_activation_timer_.
   static const base::TimeDelta kActivationNotificationExpireTime;
 
@@ -1318,6 +1324,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   std::unique_ptr<PeakGpuMemoryTracker> scroll_peak_gpu_mem_tracker_;
 
   InputRouterImpl::RequestMouseLockCallback request_mouse_callback_;
+
+  base::OnceClosure pending_show_closure_;
 
   // If this is initialized with a frame this member will be valid and
   // can be used to send messages directly to blink.

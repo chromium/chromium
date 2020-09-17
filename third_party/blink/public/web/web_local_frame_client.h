@@ -701,6 +701,12 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Notification that the BeginMainFrame completed, was committed into the
   // compositor (thread) and submitted to the display compositor.
   virtual void DidCommitAndDrawCompositorFrame() {}
+
+  // Inform the widget that it was hidden.
+  virtual void WasHidden() {}
+
+  // Inform the widget that it was shown.
+  virtual void WasShown() {}
 };
 
 }  // namespace blink

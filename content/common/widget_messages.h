@@ -12,7 +12,6 @@
 #include "cc/input/touch_action.h"
 #include "content/common/common_param_traits_macros.h"
 #include "content/common/content_param_traits.h"
-#include "content/common/content_to_visible_time_reporter.h"
 #include "content/public/common/common_param_traits.h"
 #include "ipc/ipc_message_macros.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
@@ -42,17 +41,6 @@ IPC_STRUCT_TRAITS_END()
 // Tells the render widget to close.
 // Expects a Close_ACK message when finished.
 IPC_MESSAGE_ROUTED0(WidgetMsg_Close)
-
-// Sent to inform the widget that it was hidden.  This allows it to reduce its
-// resource utilization.
-IPC_MESSAGE_ROUTED0(WidgetMsg_WasHidden)
-
-// Tells the render view that it is no longer hidden (see WasHidden).
-IPC_MESSAGE_ROUTED3(WidgetMsg_WasShown,
-                    base::TimeTicks /* show_request_timestamp */,
-                    bool /* was_evicted */,
-                    blink::mojom::RecordContentToVisibleTimeRequestPtr
-                    /* record_tab_switch_time_request */)
 
 // Activate/deactivate the RenderWidget (i.e., set its controls' tint
 // accordingly, etc.).

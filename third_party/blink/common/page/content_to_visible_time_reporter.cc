@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/content_to_visible_time_reporter.h"
+#include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 
 #include <utility>
 
@@ -15,7 +15,7 @@
 #include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom.h"
 #include "ui/gfx/presentation_feedback.h"
 
-namespace content {
+namespace blink {
 
 namespace {
 
@@ -26,7 +26,7 @@ int g_num_trace_events_in_process = 0;
 
 const char* GetHistogramSuffix(
     bool has_saved_frames,
-    const blink::mojom::RecordContentToVisibleTimeRequest& start_state) {
+    const mojom::RecordContentToVisibleTimeRequest& start_state) {
   if (has_saved_frames)
     return "WithSavedFrames";
 
@@ -58,15 +58,14 @@ void RecordBackForwardCacheRestoreMetric(
 
 }  // namespace
 
-blink::mojom::RecordContentToVisibleTimeRequest& operator+=(
-    blink::mojom::RecordContentToVisibleTimeRequest& a,
-    const blink::mojom::RecordContentToVisibleTimeRequest& b) {
-  a.event_start_time = std::min(a.event_start_time, b.event_start_time);
-  a.destination_is_loaded |= b.destination_is_loaded;
-  a.show_reason_tab_switching |= b.show_reason_tab_switching;
-  a.show_reason_unoccluded |= b.show_reason_unoccluded;
-  a.show_reason_bfcache_restore |= b.show_reason_bfcache_restore;
-  return a;
+void UpdateRecordContentToVisibleTimeRequest(
+    mojom::RecordContentToVisibleTimeRequest const& from,
+    mojom::RecordContentToVisibleTimeRequest& to) {
+  to.event_start_time = std::min(to.event_start_time, from.event_start_time);
+  to.destination_is_loaded |= from.destination_is_loaded;
+  to.show_reason_tab_switching |= from.show_reason_tab_switching;
+  to.show_reason_unoccluded |= from.show_reason_unoccluded;
+  to.show_reason_bfcache_restore |= from.show_reason_bfcache_restore;
 }
 
 ContentToVisibleTimeReporter::ContentToVisibleTimeReporter() = default;
@@ -76,17 +75,16 @@ ContentToVisibleTimeReporter::~ContentToVisibleTimeReporter() = default;
 base::OnceCallback<void(const gfx::PresentationFeedback&)>
 ContentToVisibleTimeReporter::TabWasShown(
     bool has_saved_frames,
-    blink::mojom::RecordContentToVisibleTimeRequestPtr start_state,
-    base::TimeTicks render_widget_visibility_request_timestamp) {
+    mojom::RecordContentToVisibleTimeRequestPtr start_state,
+    base::TimeTicks widget_visibility_request_timestamp) {
   DCHECK(!start_state->event_start_time.is_null());
-  DCHECK(!render_widget_visibility_request_timestamp.is_null());
+  DCHECK(!widget_visibility_request_timestamp.is_null());
   DCHECK(!tab_switch_start_state_);
-  DCHECK(render_widget_visibility_request_timestamp_.is_null());
+  DCHECK(widget_visibility_request_timestamp_.is_null());
 
   has_saved_frames_ = has_saved_frames;
   tab_switch_start_state_ = std::move(start_state);
-  render_widget_visibility_request_timestamp_ =
-      render_widget_visibility_request_timestamp;
+  widget_visibility_request_timestamp_ = widget_visibility_request_timestamp;
 
   // |tab_switch_start_state_| is only reset by RecordHistogramsAndTraceEvents
   // once the metrics have been emitted.
@@ -96,6 +94,23 @@ ContentToVisibleTimeReporter::TabWasShown(
       tab_switch_start_state_->show_reason_tab_switching,
       tab_switch_start_state_->show_reason_unoccluded,
       tab_switch_start_state_->show_reason_bfcache_restore);
+}
+
+base::OnceCallback<void(const gfx::PresentationFeedback&)>
+ContentToVisibleTimeReporter::TabWasShown(
+    bool has_saved_frames,
+    base::TimeTicks event_start_time,
+    bool destination_is_loaded,
+    bool show_reason_tab_switching,
+    bool show_reason_unoccluded,
+    bool show_reason_bfcache_restore,
+    base::TimeTicks widget_visibility_request_timestamp) {
+  return TabWasShown(
+      has_saved_frames,
+      mojom::RecordContentToVisibleTimeRequest::New(
+          event_start_time, destination_is_loaded, show_reason_tab_switching,
+          show_reason_unoccluded, show_reason_bfcache_restore),
+      widget_visibility_request_timestamp);
 }
 
 void ContentToVisibleTimeReporter::TabWasHidden() {
@@ -116,7 +131,7 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
     bool show_reason_bfcache_restore,
     const gfx::PresentationFeedback& feedback) {
   DCHECK(tab_switch_start_state_);
-  DCHECK(!render_widget_visibility_request_timestamp_.is_null());
+  DCHECK(!widget_visibility_request_timestamp_.is_null());
   // If the DCHECK fail, make sure RenderWidgetHostImpl::WasShown was triggered
   // for recording the event.
   DCHECK(show_reason_bfcache_restore || show_reason_unoccluded ||
@@ -145,11 +160,11 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
       feedback.timestamp - tab_switch_start_state_->event_start_time;
 
   // Record trace events.
-  TRACE_EVENT_ASYNC_BEGIN_WITH_TIMESTAMP0(
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
       "latency", "TabSwitching::Latency",
       TRACE_ID_LOCAL(g_num_trace_events_in_process),
       tab_switch_start_state_->event_start_time);
-  TRACE_EVENT_ASYNC_END_WITH_TIMESTAMP2(
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP2(
       "latency", "TabSwitching::Latency",
       TRACE_ID_LOCAL(g_num_trace_events_in_process), feedback.timestamp,
       "result", tab_switch_result, "latency",
@@ -186,12 +201,12 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
   // Record legacy latency histogram.
   UMA_HISTOGRAM_TIMES(
       "MPArch.RWH_TabSwitchPaintDuration",
-      feedback.timestamp - render_widget_visibility_request_timestamp_);
+      feedback.timestamp - widget_visibility_request_timestamp_);
 
   // Reset tab switch information.
   has_saved_frames_ = false;
   tab_switch_start_state_.reset();
-  render_widget_visibility_request_timestamp_ = base::TimeTicks();
+  widget_visibility_request_timestamp_ = base::TimeTicks();
 }
 
-}  // namespace content
+}  // namespace blink

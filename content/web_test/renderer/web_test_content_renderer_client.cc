@@ -59,10 +59,8 @@ RenderViewImpl* CreateWebViewTestProxy(CompositorDependencies* compositor_deps,
 std::unique_ptr<RenderWidget> CreateWebWidgetTestProxy(
     int32_t routing_id,
     CompositorDependencies* compositor_deps,
-    bool hidden,
     bool never_composited) {
   return std::make_unique<WebWidgetTestProxy>(routing_id, compositor_deps,
-                                              /*hidden=*/true,
                                               never_composited);
 }
 

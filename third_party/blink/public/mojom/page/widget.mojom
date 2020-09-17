@@ -8,11 +8,13 @@ import "cc/mojom/touch_action.mojom";
 import "third_party/blink/public/mojom/input/touch_event.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/text_direction.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id_allocation.mojom";
 import "services/viz/public/mojom/hit_test/input_target_client.mojom";
 import "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom";
 import "third_party/blink/public/mojom/input/input_handler.mojom";
 import "third_party/blink/public/mojom/page/drag.mojom";
+import "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom";
 import "third_party/blink/public/mojom/widget/device_emulation_params.mojom";
 import "third_party/blink/public/mojom/widget/visual_properties.mojom";
 import "ui/base/mojom/ui_base_types.mojom";
@@ -177,6 +179,16 @@ interface Widget {
   // TODO(danakj): These should be part of UpdateVisualProperties.
   UpdateScreenRects(gfx.mojom.Rect widget_screen_rect,
                     gfx.mojom.Rect window_screen_rect) => ();
+
+
+  // Informs the widget that it was hidden. This allows it to reduce its
+  // resource utilization.
+  WasHidden();
+
+  // Tells the render view that it is no longer hidden (see WasHidden).
+  WasShown(mojo_base.mojom.TimeTicks show_request_timestamp,
+           bool was_evicted,
+           RecordContentToVisibleTimeRequest? record_tab_switch_time_request);
 };
 
 // Implemented in Browser, this interface defines widget-specific methods that

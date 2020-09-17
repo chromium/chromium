@@ -1549,7 +1549,8 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
       std::move(params->frame_widget), std::move(params->widget_host),
       std::move(params->widget),
       /*is_for_nested_main_frame=*/params->type !=
-          mojom::ViewWidgetType::kTopLevel);
+          mojom::ViewWidgetType::kTopLevel,
+      /*hidden=*/true);
 
   render_widget->InitForMainFrame(std::move(show_callback), web_frame_widget,
                                   params->visual_properties.screen_info,
@@ -1714,7 +1715,8 @@ void RenderFrameImpl::CreateFrame(
         std::move(widget_params->frame_widget_host),
         std::move(widget_params->frame_widget),
         std::move(widget_params->widget_host), std::move(widget_params->widget),
-        /*is_for_nested_main_frame=*/false);
+        /*is_for_nested_main_frame=*/false,
+        /*hidden=*/true);
 
     render_widget->InitForMainFrame(
         RenderWidget::ShowCallback(), web_frame_widget,
@@ -1763,8 +1765,8 @@ void RenderFrameImpl::CreateFrame(
         render_widget.get(), web_frame,
         std::move(widget_params->frame_widget_host),
         std::move(widget_params->frame_widget),
-        std::move(widget_params->widget_host),
-        std::move(widget_params->widget));
+        std::move(widget_params->widget_host), std::move(widget_params->widget),
+        /*hidden=*/true);
 
     // Adds a reference on RenderWidget, making it self-referencing. So it
     // will not be destroyed by scoped_refptr unless Close() has been called
@@ -5140,7 +5142,7 @@ bool RenderFrameImpl::IsMainFrame() {
 }
 
 bool RenderFrameImpl::IsHidden() {
-  return GetLocalRootRenderWidget()->is_hidden();
+  return GetLocalRootRenderWidget()->GetWebWidget()->IsHidden();
 }
 
 bool RenderFrameImpl::IsLocalRoot() const {

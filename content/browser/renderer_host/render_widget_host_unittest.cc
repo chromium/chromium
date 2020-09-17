@@ -1285,10 +1285,15 @@ TEST_F(RenderWidgetHostTest, Background) {
 TEST_F(RenderWidgetHostTest, HideShowMessages) {
   // Hide the widget, it should have sent out a message to the renderer.
   EXPECT_FALSE(host_->is_hidden_);
-  host_->WasHidden();
+  {
+    base::RunLoop run_loop;
+    widget_.SetShownHiddenCallback(run_loop.QuitClosure());
+    host_->WasHidden();
+    run_loop.Run();
+  }
   EXPECT_TRUE(host_->is_hidden_);
-  EXPECT_TRUE(
-      process_->sink().GetUniqueMessageMatching(WidgetMsg_WasHidden::ID));
+  ASSERT_TRUE(widget_.IsHidden().has_value());
+  EXPECT_TRUE(widget_.IsHidden().value());
 
   // Send it an update as from the renderer.
   process_->sink().ClearMessages();
@@ -1299,13 +1304,20 @@ TEST_F(RenderWidgetHostTest, HideShowMessages) {
       .OnLocalSurfaceIdChanged(metadata);
 
   // Now unhide.
-  process_->sink().ClearMessages();
-  host_->WasShown({} /* record_tab_switch_time_request */);
+  widget_.ClearHidden();
+  ASSERT_FALSE(widget_.IsHidden().has_value());
+  {
+    base::RunLoop run_loop;
+    widget_.SetShownHiddenCallback(run_loop.QuitClosure());
+
+    host_->WasShown({} /* record_tab_switch_time_request */);
+    run_loop.Run();
+  }
   EXPECT_FALSE(host_->is_hidden_);
 
-  // It should have sent out a restored message.
-  EXPECT_TRUE(
-      process_->sink().GetUniqueMessageMatching(WidgetMsg_WasShown::ID));
+  // It should have sent out a mojo message.
+  ASSERT_TRUE(widget_.IsHidden().has_value());
+  EXPECT_FALSE(widget_.IsHidden().value());
 }
 
 TEST_F(RenderWidgetHostTest, IgnoreKeyEventsHandledByRenderer) {

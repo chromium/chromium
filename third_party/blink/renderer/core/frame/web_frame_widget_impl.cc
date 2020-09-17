@@ -117,7 +117,8 @@ WebFrameWidget* WebFrameWidget::CreateForMainFrame(
         mojo_widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
         mojo_widget,
-    bool is_for_nested_main_frame) {
+    bool is_for_nested_main_frame,
+    bool hidden) {
   DCHECK(client) << "A valid WebWidgetClient must be supplied.";
   DCHECK(!main_frame->Parent());  // This is the main frame.
 
@@ -137,7 +138,7 @@ WebFrameWidget* WebFrameWidget::CreateForMainFrame(
       util::PassKey<WebFrameWidget>(), *client, web_view_impl,
       std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
       std::move(mojo_widget_host), std::move(mojo_widget),
-      is_for_nested_main_frame);
+      is_for_nested_main_frame, hidden);
   widget->BindLocalRoot(*main_frame);
   return widget;
 }
@@ -152,7 +153,8 @@ WebFrameWidget* WebFrameWidget::CreateForChildLocalRoot(
     CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
         mojo_widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
-        mojo_widget) {
+        mojo_widget,
+    bool hidden) {
   DCHECK(client) << "A valid WebWidgetClient must be supplied.";
   DCHECK(local_root->Parent());  // This is not the main frame.
   // Frames whose direct ancestor is a remote frame are local roots. Verify this
@@ -165,7 +167,7 @@ WebFrameWidget* WebFrameWidget::CreateForChildLocalRoot(
   auto* widget = MakeGarbageCollected<WebFrameWidgetImpl>(
       util::PassKey<WebFrameWidget>(), *client,
       std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
-      std::move(mojo_widget_host), std::move(mojo_widget));
+      std::move(mojo_widget_host), std::move(mojo_widget), hidden);
   widget->BindLocalRoot(*local_root);
   return widget;
 }
@@ -180,12 +182,14 @@ WebFrameWidgetImpl::WebFrameWidgetImpl(
     CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
         widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
-        widget)
+        widget,
+    bool hidden)
     : WebFrameWidgetBase(client,
                          std::move(frame_widget_host),
                          std::move(frame_widget),
                          std::move(widget_host),
-                         std::move(widget)),
+                         std::move(widget),
+                         hidden),
       self_keep_alive_(PERSISTENT_FROM_HERE, this) {}
 
 WebFrameWidgetImpl::~WebFrameWidgetImpl() = default;

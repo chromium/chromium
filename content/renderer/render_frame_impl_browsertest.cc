@@ -51,6 +51,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
+#include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -71,7 +72,6 @@ namespace {
 constexpr int32_t kSubframeRouteId = 20;
 constexpr int32_t kSubframeWidgetRouteId = 21;
 constexpr int32_t kFrameProxyRouteId = 22;
-constexpr int32_t kEmbeddedSubframeRouteId = 23;
 
 const char kParentFrameHTML[] = "Parent frame <iframe name='frame'></iframe>";
 
@@ -108,6 +108,19 @@ class RenderFrameImplTest : public RenderViewTest {
         mojom::CreateFrameWidgetParams::New();
     widget_params->routing_id = kSubframeWidgetRouteId;
     widget_params->visual_properties.new_size = gfx::Size(100, 100);
+
+    widget_remote_.reset();
+    mojo::PendingAssociatedReceiver<blink::mojom::Widget>
+        blink_widget_receiver =
+            widget_remote_.BindNewEndpointAndPassDedicatedReceiver();
+
+    mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
+    mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
+        blink_widget_host_receiver =
+            blink_widget_host.BindNewEndpointAndPassDedicatedReceiver();
+
+    widget_params->widget = std::move(blink_widget_receiver);
+    widget_params->widget_host = blink_widget_host.Unbind();
 
     FrameReplicationState frame_replication_state;
     frame_replication_state.name = "frame";
@@ -158,6 +171,10 @@ class RenderFrameImplTest : public RenderViewTest {
 
   content::RenderWidget* frame_widget() const { return frame_->render_widget_; }
 
+  mojo::AssociatedRemote<blink::mojom::Widget>& widget_remote() {
+    return widget_remote_;
+  }
+
   static url::Origin GetOriginForFrame(TestRenderFrame* frame) {
     return url::Origin(frame->GetWebFrame()->GetSecurityOrigin());
   }
@@ -169,6 +186,7 @@ class RenderFrameImplTest : public RenderViewTest {
  private:
   TestRenderFrame* frame_;
   FakeCompositorDependencies compositor_deps_;
+  mojo::AssociatedRemote<blink::mojom::Widget> widget_remote_;
 };
 
 class RenderFrameTestObserver : public RenderFrameObserver {
@@ -247,49 +265,12 @@ TEST_F(RenderFrameImplTest, FrameResize) {
 TEST_F(RenderFrameImplTest, FrameWasShown) {
   RenderFrameTestObserver observer(frame());
 
-  WidgetMsg_WasShown was_shown_message(0, base::TimeTicks(),
-                                       false /* was_evicted */,
-                                       {} /* tab_switch_start_state */);
-  frame_widget()->OnMessageReceived(was_shown_message);
+  widget_remote()->WasShown(
+      {} /* record_tab_switch_time_request */, false /* was_evicted=*/,
+      blink::mojom::RecordContentToVisibleTimeRequestPtr());
+  base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(frame_widget()->is_hidden());
-  EXPECT_TRUE(observer.visible());
-}
-
-// Verify that a local subframe of a frame with a RenderWidget processes a
-// WasShown message.
-TEST_F(RenderFrameImplTest, LocalChildFrameWasShown) {
-  mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-      stub_interface_provider;
-  ignore_result(stub_interface_provider.InitWithNewPipeAndPassReceiver());
-  mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
-      stub_browser_interface_broker;
-  ignore_result(stub_browser_interface_broker.InitWithNewPipeAndPassReceiver());
-
-  // Create and initialize a local child frame of the simulated OOPIF, which
-  // is a grandchild of the remote main frame.
-  RenderFrameImpl* grandchild =
-      RenderFrameImpl::Create(frame()->render_view(), kEmbeddedSubframeRouteId,
-                              std::move(stub_interface_provider),
-                              std::move(stub_browser_interface_broker),
-                              base::UnguessableToken::Create());
-  blink::WebLocalFrame* parent_web_frame = frame()->GetWebFrame();
-
-  parent_web_frame->CreateLocalChild(
-      blink::mojom::TreeScopeType::kDocument, grandchild,
-      grandchild->blink_interface_registry_.get(),
-      base::UnguessableToken::Create());
-  grandchild->in_frame_tree_ = true;
-  grandchild->Initialize(parent_web_frame);
-
-  RenderFrameTestObserver observer(grandchild);
-
-  WidgetMsg_WasShown was_shown_message(0, base::TimeTicks(),
-                                       false /* was_evicted */,
-                                       {} /* tab_switch_start_state */);
-  frame_widget()->OnMessageReceived(was_shown_message);
-
-  EXPECT_FALSE(frame_widget()->is_hidden());
+  EXPECT_FALSE(frame_widget()->GetWebWidget()->IsHidden());
   EXPECT_TRUE(observer.visible());
 }
 

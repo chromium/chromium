@@ -20,7 +20,6 @@
 #include "content/common/cursors/webcursor.h"
 #include "ipc/ipc_mojo_param_traits.h"
 #include "net/base/hash_value.h"
-#include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom-forward.h"
 #include "ui/accessibility/ax_mode.h"
 
 namespace blink {
@@ -142,17 +141,6 @@ struct CONTENT_EXPORT ParamTraits<viz::SurfaceInfo> {
 template <>
 struct CONTENT_EXPORT ParamTraits<net::SHA256HashValue> {
   typedef net::SHA256HashValue param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template <>
-struct CONTENT_EXPORT
-    ParamTraits<blink::mojom::RecordContentToVisibleTimeRequestPtr> {
-  using param_type = blink::mojom::RecordContentToVisibleTimeRequestPtr;
   static void Write(base::Pickle* m, const param_type& p);
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,

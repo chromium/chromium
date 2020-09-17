@@ -32,7 +32,6 @@
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
-#include "content/common/content_to_visible_time_reporter.h"
 #include "content/common/drag_event_source_info.h"
 #include "content/common/renderer.mojom-forward.h"
 #include "content/public/common/drop_data.h"
@@ -114,7 +113,6 @@ class CONTENT_EXPORT RenderWidget
  public:
   RenderWidget(int32_t widget_routing_id,
                CompositorDependencies* compositor_deps,
-               bool hidden,
                bool never_composited);
 
   ~RenderWidget() override;
@@ -135,7 +133,6 @@ class CONTENT_EXPORT RenderWidget
   using CreateRenderWidgetFunction =
       std::unique_ptr<RenderWidget> (*)(int32_t routing_id,
                                         CompositorDependencies*,
-                                        bool hidden,
                                         bool never_composited);
   // Overrides the implementation of CreateForFrame() function below. Used by
   // web tests to return a partial fake of RenderWidget.
@@ -157,7 +154,6 @@ class CONTENT_EXPORT RenderWidget
   // destruction via ClosePopupWidgetSoon().
   static RenderWidget* CreateForPopup(int32_t widget_routing_id,
                                       CompositorDependencies* compositor_deps,
-                                      bool hidden,
                                       bool never_composited);
 
   // Initialize a new RenderWidget for a popup. The |show_callback| is called
@@ -207,7 +203,6 @@ class CONTENT_EXPORT RenderWidget
   blink::WebInputMethodController* GetInputMethodController() const;
 
   const gfx::Size& size() const { return size_; }
-  bool is_hidden() const { return is_hidden_; }
 
   // A main frame RenderWidget is destroyed and recreated using the same routing
   // id. So messages en route to a destroyed RenderWidget may end up being
@@ -360,11 +355,6 @@ class CONTENT_EXPORT RenderWidget
   // RenderWidget IPC message handlers.
   void OnClose();
   void OnCreatingNewAck();
-  void OnWasHidden();
-  void OnWasShown(base::TimeTicks show_request_timestamp,
-                  bool was_evicted,
-                  const blink::mojom::RecordContentToVisibleTimeRequestPtr&
-                      record_tab_switch_time_request);
   void OnRequestSetBoundsAck();
 
   void OnSetViewportIntersection(
@@ -378,11 +368,6 @@ class CONTENT_EXPORT RenderWidget
   void OnDragSourceEnded(const gfx::PointF& client_point,
                          const gfx::PointF& screen_point,
                          blink::WebDragOperation drag_operation);
-
-  // Sets the "hidden" state of this widget.  All modification of is_hidden_
-  // should use this method so that we can properly inform the RenderThread of
-  // our state.
-  void SetHidden(bool hidden);
 
   // Set the pending window rect.
   // Because the real render_widget is hosted in another process, there is
@@ -452,9 +437,6 @@ class CONTENT_EXPORT RenderWidget
   // - Rounding issues with OOPIFs (??).
   gfx::Size size_;
 
-  // Indicates that we shouldn't bother generated paint events.
-  bool is_hidden_;
-
   // Indicates that we are never visible, so never produce graphical output.
   const bool never_composited_;
 
@@ -522,9 +504,6 @@ class CONTENT_EXPORT RenderWidget
   // being handled. If the current event results in starting a drag/drop
   // session, this info is sent to the browser along with other drag/drop info.
   DragEventSourceInfo possible_drag_event_info_;
-
-  // Object to record tab switch time into this RenderWidget
-  ContentToVisibleTimeReporter tab_switch_time_recorder_;
 
   // Browser controls params such as top and bottom controls heights, whether
   // controls shrink blink size etc.

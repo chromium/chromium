@@ -9,11 +9,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "content/common/content_to_visible_time_reporter.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 #include "ui/gfx/presentation_feedback.h"
 
-namespace content {
+namespace blink {
 
 constexpr char kDurationWithSavedFramesHistogram[] =
     "Browser.Tabs.TotalSwitchDuration.WithSavedFrames";
@@ -468,21 +468,15 @@ class RecordContentToVisibleTimeRequestTest : public testing::Test {
 TEST_F(RecordContentToVisibleTimeRequestTest, MergeEmpty) {
   // Merge two empty requests
   blink::mojom::RecordContentToVisibleTimeRequest request;
-  request += {};
+  UpdateRecordContentToVisibleTimeRequest({}, request);
   ExpectEqual(request, {}, std::string());
 }
 
 // Merge two requests. Tuple represents the parameters of the two requests.
 class RecordContentToVisibleTimeRequest_MergeRequestTest
     : public RecordContentToVisibleTimeRequestTest,
-      public testing::WithParamInterface<std::tuple<bool,
-                                                    bool,
-                                                    bool,
-                                                    bool,
-                                                    bool,
-                                                    bool,
-                                                    bool,
-                                                    bool>> {
+      public testing::WithParamInterface<
+          std::tuple<bool, bool, bool, bool, bool, bool, bool, bool>> {
  protected:
   blink::mojom::RecordContentToVisibleTimeRequestPtr GetRequest1() const {
     const base::TimeTicks timestamp = RandomRequestTimeTicks();
@@ -521,7 +515,7 @@ TEST_P(RecordContentToVisibleTimeRequest_MergeRequestTest, DoMerge) {
       << ",  merged request2->event_start_time = " << request2->event_start_time
       << ".";
 
-  *request1 += *request2;
+  UpdateRecordContentToVisibleTimeRequest(*request2, *request1);
 
   // We expect to get minimal timestamp and all the boolean flags set in any
   // request.
@@ -547,4 +541,4 @@ INSTANTIATE_TEST_SUITE_P(All,
                                           testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
-}  // namespace content
+}  // namespace blink

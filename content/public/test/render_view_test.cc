@@ -49,6 +49,7 @@
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
 #include "third_party/blink/public/mojom/leak_detector/leak_detector.mojom.h"
+#include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
@@ -234,6 +235,31 @@ class RendererBlinkPlatformImplTestOverrideImpl
   // Get rid of the dependency to the sandbox, which is not available in
   // RenderViewTest.
   blink::WebSandboxSupport* GetSandboxSupport() override { return nullptr; }
+};
+
+class RenderFrameWasShownWaiter : public RenderFrameObserver {
+ public:
+  explicit RenderFrameWasShownWaiter(RenderFrame* frame)
+      : RenderFrameObserver(frame) {}
+
+  void Wait() {
+    if (was_shown_)
+      return;
+
+    run_loop_.Run();
+  }
+
+ private:
+  // RenderFrameObserver implementation.
+  void WasShown() override {
+    was_shown_ = true;
+    if (run_loop_.running())
+      run_loop_.Quit();
+  }
+  void OnDestruct() override {}
+
+  bool was_shown_ = false;
+  base::RunLoop run_loop_;
 };
 
 RenderViewTest::RendererBlinkPlatformImplTestOverride::
@@ -477,14 +503,12 @@ void RenderViewTest::SetUp() {
   RenderViewImpl* view = RenderViewImpl::Create(
       compositor_deps_.get(), std::move(view_params),
       RenderWidget::ShowCallback(), base::ThreadTaskRunnerHandle::Get());
-  RenderWidget* render_widget =
-      view->GetMainRenderFrame()->GetLocalRootRenderWidget();
 
-  WidgetMsg_WasShown msg(render_widget->routing_id(),
-                         /* show_request_timestamp=*/base::TimeTicks(),
-                         /* was_evicted=*/false,
-                         /*record_tab_switch_time_request=*/{});
-  render_widget->OnMessageReceived(msg);
+  RenderFrameWasShownWaiter waiter(view->GetMainRenderFrame());
+  render_widget_host_->widget_remote_for_testing()->WasShown(
+      {} /* record_tab_switch_time_request */, false /* was_evicted=*/,
+      blink::mojom::RecordContentToVisibleTimeRequestPtr());
+  waiter.Wait();
 
   view_ = view;
 }

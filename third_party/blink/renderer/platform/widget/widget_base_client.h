@@ -203,6 +203,12 @@ class WidgetBaseClient {
 
   // Test-specific methods below this point.
   virtual void ScheduleAnimationForWebTests() {}
+
+  // Inform the widget that it was hidden.
+  virtual void WasHidden() {}
+
+  // Inform the widget that it was shown.
+  virtual void WasShown(bool was_evicted) {}
 };
 
 }  // namespace blink

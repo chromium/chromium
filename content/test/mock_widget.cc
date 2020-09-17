@@ -66,4 +66,19 @@ void MockWidget::UpdateScreenRects(const gfx::Rect& widget_screen_rect,
   screen_rects_callbacks_.push_back(std::move(callback));
 }
 
+void MockWidget::WasHidden() {
+  is_hidden_ = true;
+  if (shown_hidden_callback_)
+    std::move(shown_hidden_callback_).Run();
+}
+
+void MockWidget::WasShown(base::TimeTicks show_request_timestamp,
+                          bool was_evicted,
+                          blink::mojom::RecordContentToVisibleTimeRequestPtr
+                              record_tab_switch_time_request) {
+  is_hidden_ = false;
+  if (shown_hidden_callback_)
+    std::move(shown_hidden_callback_).Run();
+}
+
 }  // namespace content

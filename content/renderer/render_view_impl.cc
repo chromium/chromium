@@ -775,7 +775,6 @@ blink::WebPagePopup* RenderViewImpl::CreatePopup(
 
   RenderWidget* popup_widget = RenderWidget::CreateForPopup(
       widget_routing_id, opener_render_widget->compositor_deps(),
-      /*hidden=*/false,
       /*never_composited=*/false);
 
   // The returned WebPagePopup is self-referencing, so the pointer here is not

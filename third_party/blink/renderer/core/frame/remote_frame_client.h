@@ -68,6 +68,8 @@ class RemoteFrameClient : public FrameClient {
   virtual AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() = 0;
 
   virtual viz::FrameSinkId GetFrameSinkId() = 0;
+
+  virtual void WasEvicted() = 0;
 };
 
 }  // namespace blink

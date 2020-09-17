@@ -17,6 +17,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_context.mojom-blink.h"
+#include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/widget/visual_properties.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_render_widget_scheduling_state.h"
@@ -97,12 +98,14 @@ WidgetBase::WidgetBase(
     WidgetBaseClient* client,
     CrossVariantMojoAssociatedRemote<mojom::WidgetHostInterfaceBase>
         widget_host,
-    CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget)
+    CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget,
+    bool hidden)
     : client_(client),
       widget_host_(std::move(widget_host)),
       receiver_(this, std::move(widget)),
       next_previous_flags_(kInvalidNextPreviousFlagsValue),
-      use_zoom_for_dsf_(Platform::Current()->IsUseZoomForDSFEnabled()) {
+      use_zoom_for_dsf_(Platform::Current()->IsUseZoomForDSFEnabled()),
+      is_hidden_(hidden) {
   if (auto* main_thread_scheduler =
           scheduler::WebThreadScheduler::MainThreadScheduler()) {
     render_widget_scheduling_state_ =
@@ -160,13 +163,15 @@ void WidgetBase::InitializeCompositing(
         compositor_thread_scheduler->DefaultTaskRunner();
   }
 
+  never_composited_ = never_composited;
+
   // We only use an external input handler for frame widgets because only
   // frames use the compositor for input handling. Other kinds of widgets
   // (e.g.  popups, plugins) must forward their input directly through
   // WidgetBaseInputHandler.
   bool uses_input_handler = frame_widget;
   widget_input_handler_manager_ = WidgetInputHandlerManager::Create(
-      weak_ptr_factory_.GetWeakPtr(), never_composited,
+      weak_ptr_factory_.GetWeakPtr(), never_composited_,
       std::move(compositor_input_task_runner), main_thread_scheduler,
       uses_input_handler);
 
@@ -344,6 +349,49 @@ void WidgetBase::UpdateScreenRects(const gfx::Rect& widget_screen_rect,
   std::move(callback).Run();
 }
 
+void WidgetBase::WasHidden() {
+  // A provisional frame widget will never be hidden since that would require it
+  // to be shown first. A frame must be attached to the frame tree before
+  // changing visibility.
+  DCHECK(!IsForProvisionalFrame());
+
+  TRACE_EVENT0("renderer", "WidgetBase::WasHidden");
+
+  SetHidden(true);
+
+  tab_switch_time_recorder_.TabWasHidden();
+
+  client_->WasHidden();
+}
+
+void WidgetBase::WasShown(base::TimeTicks show_request_timestamp,
+                          bool was_evicted,
+                          mojom::blink::RecordContentToVisibleTimeRequestPtr
+                              record_tab_switch_time_request) {
+  // The frame must be attached to the frame tree (which makes it no longer
+  // provisional) before changing visibility.
+  DCHECK(!IsForProvisionalFrame());
+
+  TRACE_EVENT_WITH_FLOW0("renderer", "WidgetBase::WasShown", this,
+                         TRACE_EVENT_FLAG_FLOW_IN);
+
+  SetHidden(false);
+
+  if (record_tab_switch_time_request) {
+    LayerTreeHost()->RequestPresentationTimeForNextFrame(
+        tab_switch_time_recorder_.TabWasShown(
+            false /* has_saved_frames */,
+            record_tab_switch_time_request->event_start_time,
+            record_tab_switch_time_request->destination_is_loaded,
+            record_tab_switch_time_request->show_reason_tab_switching,
+            record_tab_switch_time_request->show_reason_unoccluded,
+            record_tab_switch_time_request->show_reason_bfcache_restore,
+            show_request_timestamp));
+  }
+
+  client_->WasShown(was_evicted);
+}
+
 void WidgetBase::ApplyViewportChanges(
     const cc::ApplyViewportChangesArgs& args) {
   client_->ApplyViewportChanges(args);
@@ -468,6 +516,9 @@ void WidgetBase::SubmitThroughputData(ukm::SourceId source_id,
 }
 
 void WidgetBase::SetCompositorVisible(bool visible) {
+  if (never_composited_)
+    return;
+
   if (visible)
     was_shown_time_ = base::TimeTicks::Now();
   else
@@ -795,6 +846,29 @@ bool WidgetBase::ShouldUpdateCompositionInfo(const gfx::Range& range,
       return true;
   }
   return false;
+}
+
+void WidgetBase::SetHidden(bool hidden) {
+  // A provisional frame widget will never be shown or hidden, as the frame must
+  // be attached to the frame tree before changing visibility.
+  DCHECK(!IsForProvisionalFrame());
+
+  if (is_hidden_ == hidden)
+    return;
+
+  // The status has changed.  Tell the RenderThread about it and ensure
+  // throttled acks are released in case frame production ceases.
+  is_hidden_ = hidden;
+
+  if (auto* scheduler_state = RendererWidgetSchedulingState())
+    scheduler_state->SetHidden(hidden);
+
+  // If the renderer was hidden, resolve any pending synthetic gestures so they
+  // aren't blocked waiting for a compositor frame to be generated.
+  if (is_hidden_)
+    FlushInputProcessedCallback();
+
+  SetCompositorVisible(!is_hidden_);
 }
 
 ui::TextInputType WidgetBase::GetTextInputType() {

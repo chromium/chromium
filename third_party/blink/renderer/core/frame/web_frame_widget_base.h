@@ -72,7 +72,8 @@ class CORE_EXPORT WebFrameWidgetBase
       CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
           widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
-          widget);
+          widget,
+      bool hidden);
   ~WebFrameWidgetBase() override;
 
   // Returns the WebFrame that this widget is attached to. It will be a local
@@ -325,6 +326,7 @@ class CORE_EXPORT WebFrameWidgetBase
   void SetVisibleViewportSize(const gfx::Size& visible_viewport_size) override;
   const gfx::Size& VisibleViewportSize() override;
   void SetPendingWindowRect(const gfx::Rect* window_screen_rect) override;
+  bool IsHidden() const override;
 
   // WidgetBaseClient methods.
   void RecordDispatchRafAlignedInputTime(
@@ -367,6 +369,8 @@ class CORE_EXPORT WebFrameWidgetBase
   const ScreenInfo& GetOriginalScreenInfo() override;
   base::Optional<blink::mojom::ScreenOrientation> ScreenOrientationOverride()
       override;
+  void WasHidden() override;
+  void WasShown(bool was_evicted) override;
 
   // mojom::blink::FrameWidget methods.
   void DragTargetDragOver(const gfx::PointF& point_in_viewport,

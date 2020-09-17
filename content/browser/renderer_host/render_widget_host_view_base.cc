@@ -736,7 +736,8 @@ void RenderWidgetHostViewBase::SetRecordContentToVisibleTimeRequest(
           show_reason_unoccluded, show_reason_bfcache_restore);
 
   if (last_record_tab_switch_time_request_) {
-    *last_record_tab_switch_time_request_ += *record_tab_switch_time_request;
+    blink::UpdateRecordContentToVisibleTimeRequest(
+        *record_tab_switch_time_request, *last_record_tab_switch_time_request_);
   } else {
     last_record_tab_switch_time_request_ =
         std::move(record_tab_switch_time_request);

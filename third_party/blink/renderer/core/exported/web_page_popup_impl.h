@@ -215,6 +215,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void SetVisibleViewportSize(const gfx::Size& visible_viewport_size) override;
   const gfx::Size& VisibleViewportSize() override;
   void SetPendingWindowRect(const gfx::Rect* window_screen_rect) override;
+  bool IsHidden() const override;
 
   // This may only be called if page_ is non-null.
   LocalFrame& MainFrame() const;

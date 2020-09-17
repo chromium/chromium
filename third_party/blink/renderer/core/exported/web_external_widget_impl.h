@@ -97,6 +97,7 @@ class WebExternalWidgetImpl : public WebExternalWidget,
   void SetVisibleViewportSize(const gfx::Size& visible_viewport_size) override;
   const gfx::Size& VisibleViewportSize() override;
   void SetPendingWindowRect(const gfx::Rect* window_screen_rect) override;
+  bool IsHidden() const override;
 
   // WebExternalWidget overrides:
   void SetRootLayer(scoped_refptr<cc::Layer>) override;
