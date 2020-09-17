@@ -106,6 +106,73 @@ base::Optional<GURL> GetUrlOverride() {
   return base::nullopt;
 }
 
+net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(bool is_app) {
+  if (is_app) {
+    return net::DefineNetworkTrafficAnnotation(
+        "safe_browsing_binary_upload_app", R"(
+        semantics {
+          sender: "Advanced Protection Program"
+          description:
+            "For users part of Google's Advanced Protection Program, when a "
+            "file is downloaded, Chrome will upload that file to Safe Browsing "
+            "for detailed scanning."
+          trigger:
+            "The browser will upload the file to Google when the user "
+            "downloads a file, and the browser is enrolled into the "
+            "Advanced Protection Program."
+          data:
+            "The downloaded file."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: YES
+          cookies_store: "Safe Browsing Cookie Store"
+          setting: "This is disabled by default an can only be enabled by "
+            "policy."
+          chrome_policy {
+            AdvancedProtectionAllowed {
+              AdvancedProtectionAllowed: false
+            }
+          }
+        }
+        )");
+  } else {
+    return net::DefineNetworkTrafficAnnotation(
+        "safe_browsing_binary_upload_connector", R"(
+        semantics {
+          sender: "Chrome Enterprise Connectors"
+          description:
+            "For users with content analysis Chrome Enterprise Connectors "
+            "enabled, Chrome will upload the data corresponding to the "
+            "Connector for scanning."
+          trigger:
+            "If the OnFileAttachedEnterpriseConnector, "
+            "OnFileDownloadedEnterpriseConnector or "
+            "OnBulkDataEntryEnterpriseConnector policy is set, a request is made to "
+            "scan a file attached to Chrome, a file downloaded by Chrome or "
+            "data pasted in Chrome respectively."
+          data:
+            "The uploaded or downloaded file, or pasted data."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: YES
+          cookies_store: "Safe Browsing Cookie Store"
+          setting: "This is disabled by default an can only be enabled by "
+            "policy."
+          chrome_policy {
+            OnFileAttachedEnterpriseConnector {
+            }
+            OnFileDownloadedEnterpriseConnector {
+            }
+            OnBulkDataEntryEnterpriseConnector {
+            }
+          }
+        }
+        )");
+  }
+}
+
 }  // namespace
 
 BinaryUploadService::BinaryUploadService(Profile* profile)
@@ -247,44 +314,6 @@ void BinaryUploadService::OnGetRequestData(Request* request,
     return;
   }
 
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("safe_browsing_binary_upload", R"(
-        semantics {
-          sender: "Safe Browsing Download Protection"
-          description:
-            "For users with the enterprise policy "
-            "SendFilesForMalwareCheck set, when a file is "
-            "downloaded, Chrome will upload that file to Safe Browsing for "
-            "detailed scanning."
-          trigger:
-            "The browser will upload the file to Google when "
-            "the user downloads a file, and the enterprise policy "
-            "SendFilesForMalwareCheck is set."
-          data:
-            "The downloaded file."
-          destination: GOOGLE_OWNED_SERVICE
-        }
-        policy {
-          cookies_allowed: YES
-          cookies_store: "Safe Browsing Cookie Store"
-          setting: "This is disabled by default an can only be enabled by "
-            "policy."
-          chrome_policy {
-            SendFilesForMalwareCheck {
-              SendFilesForMalwareCheck: 0
-            }
-          }
-          chrome_policy {
-            SendFilesForMalwareCheck {
-              SendFilesForMalwareCheck: 1
-            }
-          }
-        }
-        comments: "Setting SendFilesForMalwareCheck to 0 (Do not scan "
-          "downloads) or 1 (Forbid the scanning of downloads) will disable "
-          "this feature"
-        )");
-
   std::string metadata;
   request->SerializeToString(&metadata);
   base::Base64Encode(metadata, &metadata);
@@ -294,7 +323,7 @@ void BinaryUploadService::OnGetRequestData(Request* request,
     url = GetUploadUrl(IsAdvancedProtectionRequest(*request));
   auto upload_request = MultipartUploadRequest::Create(
       url_loader_factory_, std::move(url), metadata, data.contents,
-      traffic_annotation,
+      GetTrafficAnnotationTag(IsAdvancedProtectionRequest(*request)),
       base::BindOnce(&BinaryUploadService::OnUploadComplete,
                      weakptr_factory_.GetWeakPtr(), request));
 

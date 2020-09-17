@@ -278,7 +278,9 @@ Refer to README.md for content description and update process.
  <item id="resource_prefetch" added_in_milestone="62" hash_code="110815970" type="0" deprecated="2018-02-28" content_hash_code="39251261" file_path=""/>
  <item id="rlz_ping" added_in_milestone="63" hash_code="99279418" type="0" content_hash_code="102108802" os_list="windows" file_path="rlz/lib/financial_ping.cc"/>
  <item id="safe_browsing_backup_request" added_in_milestone="62" hash_code="106980485" type="0" deprecated="2018-08-14" content_hash_code="101760679" file_path=""/>
- <item id="safe_browsing_binary_upload" added_in_milestone="78" hash_code="71663319" type="0" content_hash_code="105913171" os_list="linux,windows" file_path="chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.cc"/>
+ <item id="safe_browsing_binary_upload" added_in_milestone="78" hash_code="71663319" type="0" deprecated="2020-09-16" content_hash_code="105913171" file_path=""/>
+ <item id="safe_browsing_binary_upload_app" added_in_milestone="87" hash_code="4306022" type="0" content_hash_code="64626873" os_list="linux,windows" file_path="chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.cc"/>
+ <item id="safe_browsing_binary_upload_connector" added_in_milestone="87" hash_code="59568147" type="0" content_hash_code="69870179" os_list="linux,windows" file_path="chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.cc"/>
  <item id="safe_browsing_cache_collector" added_in_milestone="62" hash_code="115907811" type="0" content_hash_code="62296373" os_list="linux,windows" file_path="components/safe_browsing/content/browser/threat_details_cache.cc"/>
  <item id="safe_browsing_certificate_error_reporting" added_in_milestone="62" hash_code="66590631" type="0" content_hash_code="26108454" os_list="linux,windows" file_path="chrome/browser/ssl/certificate_error_reporter.cc"/>
  <item id="safe_browsing_chunk_backup_request" added_in_milestone="62" hash_code="79957943" type="0" deprecated="2018-08-14" content_hash_code="133850277" file_path=""/>
