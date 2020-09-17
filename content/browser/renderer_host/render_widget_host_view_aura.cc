@@ -1857,13 +1857,13 @@ void RenderWidgetHostViewAura::OnCursorVisibilityChanged(bool is_visible) {
 
 void RenderWidgetHostViewAura::OnWindowFocused(aura::Window* gained_focus,
                                                aura::Window* lost_focus) {
-  // We need to honor input bypass if the associated tab is does not want
-  // input. This gives the current focused window a chance to be the text
-  // input client and handle events.
-  if (host()->IsIgnoringInputEvents())
-    return;
-
   if (window_ == gained_focus) {
+    // We need to honor input bypass if the associated tab does not want input.
+    // This gives the current focused window a chance to be the text input
+    // client and handle events.
+    if (host()->IsIgnoringInputEvents())
+      return;
+
     host()->GotFocus();
     host()->SetActive(true);
 
@@ -1886,10 +1886,15 @@ void RenderWidgetHostViewAura::OnWindowFocused(aura::Window* gained_focus,
     return;
   }
 
-  host()->SetActive(false);
-  host()->LostFocus();
+  // Only lose focus if the associated tab doesn't want input. This ensures
+  // focus losses from clicking on a page while it has a modal dialog won't
+  // break it's text cursor after the dialog goes away.
+  if (!host()->IsIgnoringInputEvents()) {
+    host()->SetActive(false);
+    host()->LostFocus();
 
-  DetachFromInputMethod(false);
+    DetachFromInputMethod(false);
+  }
 
   // TODO(wjmaclean): Do we need to let TouchSelectionControllerClientAura
   // handle this, just in case it stomps on a new highlight in another view

@@ -433,6 +433,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
                            DiscardDelegatedFramesWithMemoryPressure);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraInputMethodTest,
                            OnCaretBoundsChanged);
+  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraInputMethodFocusTest,
+                           OnFocusLost);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraKeyboardTest,
                            KeyboardObserverDestroyed);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraKeyboardTest,

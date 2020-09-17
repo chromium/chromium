@@ -81,4 +81,8 @@ FrameTree* MockRenderWidgetHostDelegate::GetFrameTree() {
   return frame_tree_;
 }
 
+bool MockRenderWidgetHostDelegate::ShouldIgnoreInputEvents() {
+  return should_ignore_input_events_;
+}
+
 }  // namespace content
