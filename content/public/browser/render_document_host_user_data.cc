@@ -4,7 +4,7 @@
 
 #include "content/public/browser/render_document_host_user_data.h"
 
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 
 namespace content {
 

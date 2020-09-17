@@ -4,7 +4,7 @@
 
 #include "content/public/browser/navigation_throttle.h"
 
-#include "content/browser/frame_host/navigation_request.h"
+#include "content/browser/renderer_host/navigation_request.h"
 
 namespace content {
 
