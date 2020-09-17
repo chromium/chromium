@@ -1227,8 +1227,18 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
 // triggers sending a Commit IPC to the renderer process, but before a DidCommit
 // IPC from the renderer process is handled.  See also
 // https://crbug.com/1056949#c75.
+//
+// TODO(lukasza): https://crbug.com/1129592: Flaky on Android.  No flakiness
+// observed whatsoever on Windows, Linux or CrOS.
+#if defined(OS_ANDROID)
+#define MAYBE_BetweenCommitNavigationAndDidCommit \
+  DISABLED_BetweenCommitNavigationAndDidCommit
+#else
+#define MAYBE_BetweenCommitNavigationAndDidCommit \
+  BetweenCommitNavigationAndDidCommit
+#endif
 IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
-                       BetweenCommitNavigationAndDidCommit) {
+                       MAYBE_BetweenCommitNavigationAndDidCommit) {
   if (IsInProcessNetworkService())
     return;
 
