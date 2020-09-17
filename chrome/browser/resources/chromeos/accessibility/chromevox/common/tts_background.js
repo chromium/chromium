@@ -737,7 +737,7 @@ TtsBackground = class extends ChromeTtsBase {
     }
 
     // Only pronounce phonetic hints when explicitly requested.
-    if (!properties['phoneticCharacters']) {
+    if (!properties[AbstractTts.PHONETIC_CHARACTERS]) {
       return;
     }
 

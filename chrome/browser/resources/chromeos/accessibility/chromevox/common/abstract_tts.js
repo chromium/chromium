@@ -557,3 +557,6 @@ AbstractTts.substitutionDictionaryRegexp_;
  */
 AbstractTts.repetitionRegexp_ =
     /([-\/\\|!@#$%^&*\(\)=_+\[\]\{\}.?;'":<>\u2022])\1{2,}/g;
+
+/** TTS phonetic-characters property. @type {string} */
+AbstractTts.PHONETIC_CHARACTERS = 'phoneticCharacters';
