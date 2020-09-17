@@ -28,9 +28,9 @@
       'linux-chrome-stable': 'official_goma',
       'linux-chromeos-chrome': 'official_goma_chromeos',
       'linux-chromeos-chrome-easwa': 'official_goma_chromeos',
-      'mac-chrome': 'official_goma',
-      'mac-chrome-beta': 'official_goma',
-      'mac-chrome-stable': 'official_goma',
+      'mac-chrome': 'official_goma_mac',
+      'mac-chrome-beta': 'official_goma_mac',
+      'mac-chrome-stable': 'official_goma_mac',
       'win-chrome': 'official_goma_x86',
       'win-chrome-beta': 'official_goma_x86',
       'win-chrome-stable': 'official_goma_x86',
@@ -819,9 +819,9 @@
       'linux-chrome-stable': 'official_goma',
       'linux-chromeos-chrome': 'official_goma_chromeos_include_unwind_tables',
       'linux-chromeos-chrome-easwa': 'official_goma_chromeos_include_unwind_tables',
-      'mac-chrome': 'official_goma',
-      'mac-chrome-beta': 'official_goma',
-      'mac-chrome-stable': 'official_goma',
+      'mac-chrome': 'official_goma_mac',
+      'mac-chrome-beta': 'official_goma_mac',
+      'mac-chrome-stable': 'official_goma_mac',
       'win-celab-try-rel': 'official_celab_release_bot',
       'win-chrome': 'official_goma_x86',
       'win-chrome-beta': 'official_goma_x86',
@@ -2158,6 +2158,10 @@
       'official', 'goma',
     ],
 
+    'official_goma_mac': [
+      'official', 'goma', 'no_widevine_cdm_host_verification',
+    ],
+
     'official_goma_perf': [
       'official', 'goma', 'minimal_symbols',
     ],
@@ -2167,7 +2171,7 @@
     ],
 
     'official_goma_mac_pgo': [
-      'official', 'goma', 'no_keystone_registration_framework', 'static', 'no_symbols', 'pgo_phase_1'
+      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'static', 'no_symbols', 'pgo_phase_1'
     ],
 
     'official_goma_linux_perf': [
@@ -2899,7 +2903,7 @@
     },
 
     'no_widevine_cdm_host_verification': {
-      'gn_args': 'enable_widevine_cdm_host_verification=false',
+      'gn_args': 'ignore_missing_widevine_signing_cert=true',
     },
 
     'official': {
