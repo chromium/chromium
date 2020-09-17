@@ -4,51 +4,64 @@
 
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_grit.gni")
 import("//tools/polymer/html_to_js.gni")
 import("../optimize_webui.gni")
 
 if (optimize_webui) {
-  bookmarks_pak_file = "bookmarks_resources.pak"
-  unpak_folder = "bookmarks_resources.unpak"
+  preprocess_folder = "preprocessed"
 
   optimize_webui("build") {
     host = "bookmarks"
-    input = rebase_path("$target_gen_dir/$unpak_folder", root_build_dir)
+    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
     js_out_files = [ "bookmarks.rollup.js" ]
     js_module_in_files = [ "bookmarks.js" ]
 
     deps = [
-      ":unpak",
+      ":preprocess",
+      ":preprocess_generated",
       "../../../../ui/webui/resources:preprocess",
     ]
     excludes = [ "chrome://resources/js/cr.m.js" ]
   }
 
-  unpak("unpak") {
-    pak_file = bookmarks_pak_file
-    out_folder = unpak_folder
-
-    deps = [ ":flattened_resources" ]
+  preprocess_grit("preprocess") {
+    in_folder = "./"
+    out_folder = "$target_gen_dir/$preprocess_folder"
+    in_files = [
+      "actions.js",
+      "api_listener.js",
+      "bookmarks.js",
+      "browser_proxy.js",
+      "constants.js",
+      "debouncer.js",
+      "dialog_focus_manager.js",
+      "dnd_manager.js",
+      "mouse_focus_behavior.js",
+      "reducers.js",
+      "store_client.js",
+      "store.js",
+      "types.js",
+      "util.js",
+    ]
   }
 
-  grit("flattened_resources") {
-    source = "bookmarks_resources.grd"
-
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-    ]
-
+  preprocess_grit("preprocess_generated") {
     deps = [ ":web_components" ]
-    defines = chrome_grit_defines
-    outputs = [
-      "grit/bookmarks_resources.h",
-      "grit/bookmarks_resources_map.cc",
-      "grit/bookmarks_resources_map.h",
-      bookmarks_pak_file,
+    in_folder = target_gen_dir
+    out_folder = "$target_gen_dir/$preprocess_folder"
+    in_files = [
+      "app.js",
+      "command_manager.js",
+      "edit_dialog.js",
+      "folder_node.js",
+      "item.js",
+      "list.js",
+      "router.js",
+      "shared_style.js",
+      "shared_vars.js",
+      "toolbar.js",
     ]
-    output_dir = "$root_gen_dir/chrome/browser/resources/bookmarks"
   }
 }
 
