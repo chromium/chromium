@@ -348,6 +348,11 @@ used when committed.
 *   [Memory Benchmarks](memory-infra/memory_benchmarks.md)
 *   [Heap Profiling](memory-infra/heap_profiler.md)
 
+### Metrics
+*   [Histograms](/tools/metrics/histograms/README.md)
+*   [User Actions](/tools/metrics/actions/README.md)
+*   [Code review guidelines](/tools/metrics/histograms/review_guidelines.md)
+
 ### Misc
 *   [Useful URLs](useful_urls.md) - A collection of links to various tools and
     dashboards
