@@ -21569,13 +21569,11 @@ Called by update_document_policy_enum.py.-->
   <int value="580" label="PasswordLeakDetectionEnabled"/>
   <int value="581" label="LockScreenMediaPlaybackEnabled"/>
   <int value="582" label="DnsOverHttpsMode"/>
-  <int value="583" label="SendFilesForMalwareCheck"/>
   <int value="584" label="PolicyAtomicGroupsEnabled"/>
   <int value="585" label="UnsafeEventsReportingEnabled"/>
   <int value="586" label="BlockLargeFileTransfer"/>
   <int value="587" label="DelayDeliveryUntilVerdict"/>
   <int value="588" label="AllowPasswordProtectedFiles"/>
-  <int value="589" label="CheckContentCompliance"/>
   <int value="590" label="URLsToCheckComplianceOfDownloadedContent"/>
   <int value="591" label="URLsToNotCheckComplianceOfUploadedContent"/>
   <int value="592" label="DictationEnabled"/>
