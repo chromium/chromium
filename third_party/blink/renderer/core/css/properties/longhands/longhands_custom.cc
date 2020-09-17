@@ -8216,10 +8216,7 @@ const CSSValue* Zoom::ParseSingleValue(CSSParserTokenRange& range,
   const CSSParserToken& token = range.Peek();
   CSSValue* zoom = nullptr;
   if (token.GetType() == kIdentToken) {
-    CSSIdentifierValue* ident = css_parsing_utils::ConsumeIdent<
-        CSSValueID::kNormal, CSSValueID::kInternalResetEffective>(range);
-    if (ident && isValueAllowedInMode(ident->GetValueID(), context.Mode()))
-      zoom = ident;
+    zoom = css_parsing_utils::ConsumeIdent<CSSValueID::kNormal>(range);
   } else {
     zoom = css_parsing_utils::ConsumePercent(range, context,
                                              kValueRangeNonNegative);
@@ -8257,14 +8254,6 @@ void Zoom::ApplyInherit(StyleResolverState& state) const {
 }
 
 void Zoom::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
-  // TODO(crbug.com/976224): Support zoom on foreignObject
-  if (const auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
-    if (ident->GetValueID() == CSSValueID::kInternalResetEffective) {
-      state.SetEffectiveZoom(ComputedStyleInitialValues::InitialZoom());
-      return;
-    }
-  }
-
   state.SetZoom(StyleBuilderConverter::ConvertZoom(state, value));
 }
 

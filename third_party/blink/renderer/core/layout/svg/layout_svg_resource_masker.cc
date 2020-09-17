@@ -46,16 +46,8 @@ void LayoutSVGResourceMasker::RemoveAllClientsFromCache() {
 }
 
 sk_sp<const PaintRecord> LayoutSVGResourceMasker::CreatePaintRecord(
-    AffineTransform& content_transformation,
-    const FloatRect& target_bounding_box,
+    const AffineTransform& content_transformation,
     GraphicsContext& context) {
-  if (MaskContentUnits() == SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
-    content_transformation.Translate(target_bounding_box.X(),
-                                     target_bounding_box.Y());
-    content_transformation.ScaleNonUniform(target_bounding_box.Width(),
-                                           target_bounding_box.Height());
-  }
-
   if (cached_paint_record_)
     return cached_paint_record_;
 
@@ -105,12 +97,19 @@ SVGUnitTypes::SVGUnitType LayoutSVGResourceMasker::MaskContentUnits() const {
 }
 
 FloatRect LayoutSVGResourceMasker::ResourceBoundingBox(
-    const FloatRect& reference_box) {
+    const FloatRect& reference_box,
+    float reference_box_zoom) {
   auto* mask_element = To<SVGMaskElement>(GetElement());
   DCHECK(mask_element);
 
+  SVGUnitTypes::SVGUnitType mask_units = MaskUnits();
   FloatRect mask_boundaries = SVGLengthContext::ResolveRectangle(
-      mask_element, MaskUnits(), reference_box);
+      mask_element, mask_units, reference_box);
+  // If the mask bounds were resolved relative to the current userspace we need
+  // to adjust/scale with the zoom to get to the same space as the reference
+  // box.
+  if (mask_units == SVGUnitTypes::kSvgUnitTypeUserspaceonuse)
+    mask_boundaries.Scale(reference_box_zoom);
 
   // Resource was not layouted yet. Give back clipping rect of the mask.
   if (SelfNeedsLayout())
@@ -125,6 +124,9 @@ FloatRect LayoutSVGResourceMasker::ResourceBoundingBox(
     transform.Translate(reference_box.X(), reference_box.Y());
     transform.ScaleNonUniform(reference_box.Width(), reference_box.Height());
     mask_rect = transform.MapRect(mask_rect);
+  } else {
+    // Scale the mask rect to the same space as the reference box.
+    mask_rect.Scale(reference_box_zoom);
   }
 
   mask_rect.Intersect(mask_boundaries);

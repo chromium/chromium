@@ -2540,30 +2540,10 @@ TEST_F(StyleCascadeTest, AnimatePendingSubstitutionValue) {
   EXPECT_EQ("15px", cascade.ComputedValue("margin-left"));
 }
 
-TEST_F(StyleCascadeTest, ForeignObjectZoomVsEffectiveZoom) {
-  GetDocument().body()->setInnerHTML(R"HTML(
-    <svg>
-      <foreignObject id='foreign'></foreignObject>
-    </svg>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  Element* foreign_object = GetDocument().getElementById("foreign");
-  ASSERT_TRUE(foreign_object);
-
-  TestCascade cascade(GetDocument(), foreign_object);
-  cascade.Add("zoom:-internal-reset-effective !important",
-              CascadeOrigin::kUserAgent);
-  cascade.Add("zoom:200%");
-  cascade.Apply();
-
-  EXPECT_EQ(1.0f, cascade.TakeStyle()->EffectiveZoom());
-}
-
 TEST_F(StyleCascadeTest, ZoomCascadeOrder) {
   TestCascade cascade(GetDocument());
   cascade.Add("zoom:200%", CascadeOrigin::kUserAgent);
-  cascade.Add("zoom:-internal-reset-effective", CascadeOrigin::kUserAgent);
+  cascade.Add("zoom:normal", CascadeOrigin::kUserAgent);
   cascade.Apply();
 
   EXPECT_EQ(1.0f, cascade.TakeStyle()->EffectiveZoom());
@@ -2578,23 +2558,9 @@ TEST_F(StyleCascadeTest, ZoomVsAll) {
   EXPECT_EQ(1.0f, cascade.TakeStyle()->EffectiveZoom());
 }
 
-TEST_F(StyleCascadeTest, InternalEffectiveZoomVsAll) {
-  TestCascade parent(GetDocument());
-  parent.Add("zoom", "200%");
-  parent.Apply();
-
-  TestCascade cascade(GetDocument());
-  cascade.InheritFrom(parent.TakeStyle());
-  cascade.Add("zoom:-internal-reset-effective", CascadeOrigin::kUserAgent);
-  cascade.Add("all:inherit");
-  cascade.Apply();
-
-  EXPECT_EQ(4.0f, cascade.TakeStyle()->EffectiveZoom());
-}
-
 TEST_F(StyleCascadeTest, ZoomReversedCascadeOrder) {
   TestCascade cascade(GetDocument());
-  cascade.Add("zoom:-internal-reset-effective", CascadeOrigin::kUserAgent);
+  cascade.Add("zoom:normal", CascadeOrigin::kUserAgent);
   cascade.Add("zoom:200%", CascadeOrigin::kUserAgent);
   cascade.Apply();
 
@@ -2604,7 +2570,7 @@ TEST_F(StyleCascadeTest, ZoomReversedCascadeOrder) {
 TEST_F(StyleCascadeTest, ZoomImportant) {
   TestCascade cascade(GetDocument());
   cascade.Add("zoom:200% !important", CascadeOrigin::kUserAgent);
-  cascade.Add("zoom:-internal-reset-effective", CascadeOrigin::kAuthor);
+  cascade.Add("zoom:normal", CascadeOrigin::kAuthor);
   cascade.Apply();
 
   EXPECT_EQ(2.0f, cascade.TakeStyle()->EffectiveZoom());

@@ -71,17 +71,6 @@ TEST_F(CSSPropertyTest, GetUnvisitedPropertyFromVisited) {
   }
 }
 
-TEST_F(CSSPropertyTest, InternalResetEffectiveNotWebExposed) {
-  const CSSPropertyValueSet* ua_set = css_test_helpers::ParseDeclarationBlock(
-      "zoom:-internal-reset-effective", kUASheetMode);
-  const CSSPropertyValueSet* author_set =
-      css_test_helpers::ParseDeclarationBlock("zoom:-internal-reset-effective",
-                                              kHTMLStandardMode);
-
-  EXPECT_TRUE(ua_set->HasProperty(CSSPropertyID::kZoom));
-  EXPECT_FALSE(author_set->HasProperty(CSSPropertyID::kZoom));
-}
-
 TEST_F(CSSPropertyTest, InternalFontSizeDeltaNotWebExposed) {
   ASSERT_FALSE(
       CSSProperty::Get(CSSPropertyID::kInternalFontSizeDelta).IsWebExposed());

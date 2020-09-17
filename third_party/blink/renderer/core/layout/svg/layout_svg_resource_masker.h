@@ -40,7 +40,8 @@ class LayoutSVGResourceMasker final : public LayoutSVGResourceContainer {
 
   void RemoveAllClientsFromCache() override;
 
-  FloatRect ResourceBoundingBox(const FloatRect& reference_box);
+  FloatRect ResourceBoundingBox(const FloatRect& reference_box,
+                                float reference_box_zoom);
 
   SVGUnitTypes::SVGUnitType MaskUnits() const;
   SVGUnitTypes::SVGUnitType MaskContentUnits() const;
@@ -48,8 +49,7 @@ class LayoutSVGResourceMasker final : public LayoutSVGResourceContainer {
   static const LayoutSVGResourceType kResourceType = kMaskerResourceType;
   LayoutSVGResourceType ResourceType() const override { return kResourceType; }
 
-  sk_sp<const PaintRecord> CreatePaintRecord(AffineTransform&,
-                                             const FloatRect&,
+  sk_sp<const PaintRecord> CreatePaintRecord(const AffineTransform&,
                                              GraphicsContext&);
 
  private:

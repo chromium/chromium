@@ -47,6 +47,12 @@ LayoutSVGResourceClipper* ResolveElementReference(
 
 }  // namespace
 
+// Is the reference box (as returned by LocalReferenceBox) for |clip_path_owner|
+// zoomed with EffectiveZoom()?
+static bool UsesZoomedReferenceBox(const LayoutObject& clip_path_owner) {
+  return !clip_path_owner.IsSVGChild() || clip_path_owner.IsSVGForeignObject();
+}
+
 FloatRect ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
   if (object.IsSVGChild())
     return SVGResources::ReferenceBoxForEffects(object);
@@ -81,7 +87,7 @@ base::Optional<FloatRect> ClipPathClipper::LocalClipPathBoundingBox(
     return base::nullopt;
 
   FloatRect bounding_box = clipper->ResourceBoundingBox(reference_box);
-  if (!object.IsSVGChild() &&
+  if (UsesZoomedReferenceBox(object) &&
       clipper->ClipPathUnits() == SVGUnitTypes::kSvgUnitTypeUserspaceonuse) {
     bounding_box.Scale(clipper->StyleRef().EffectiveZoom());
     // With kSvgUnitTypeUserspaceonuse, the clip path layout is relative to
@@ -117,12 +123,12 @@ static bool IsClipPathOperationValid(
 
 static AffineTransform MaskToContentTransform(
     const LayoutSVGResourceClipper& resource_clipper,
-    bool is_svg_child,
+    bool uses_zoomed_reference_box,
     const FloatRect& reference_box) {
   AffineTransform mask_to_content;
   if (resource_clipper.ClipPathUnits() ==
       SVGUnitTypes::kSvgUnitTypeUserspaceonuse) {
-    if (!is_svg_child) {
+    if (uses_zoomed_reference_box) {
       mask_to_content.Translate(reference_box.X(), reference_box.Y());
       mask_to_content.Scale(resource_clipper.StyleRef().EffectiveZoom());
     }
@@ -135,7 +141,7 @@ static AffineTransform MaskToContentTransform(
 
 static base::Optional<Path> PathBasedClipInternal(
     const LayoutObject& clip_path_owner,
-    bool is_svg_child,
+    bool uses_zoomed_reference_box,
     const FloatRect& reference_box) {
   const ClipPathOperation& clip_path = *clip_path_owner.StyleRef().ClipPath();
   LayoutSVGResourceClipper* resource_clipper = nullptr;
@@ -147,8 +153,8 @@ static base::Optional<Path> PathBasedClipInternal(
     base::Optional<Path> path = resource_clipper->AsPath();
     if (!path)
       return path;
-    path->Transform(
-        MaskToContentTransform(*resource_clipper, is_svg_child, reference_box));
+    path->Transform(MaskToContentTransform(
+        *resource_clipper, uses_zoomed_reference_box, reference_box));
     return path;
   }
 
@@ -183,7 +189,7 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
   context.Save();
   context.Translate(paint_offset.left, paint_offset.top);
 
-  bool is_svg_child = layout_object.IsSVGChild();
+  bool uses_zoomed_reference_box = UsesZoomedReferenceBox(layout_object);
   FloatRect reference_box = LocalReferenceBox(layout_object);
   bool is_first = true;
   bool rest_of_the_chain_already_appled = false;
@@ -209,13 +215,13 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
     if (resource_clipper->StyleRef().ClipPath()) {
       // Try to apply nested clip-path as path-based clip.
       if (const base::Optional<Path>& path = PathBasedClipInternal(
-              *resource_clipper, is_svg_child, reference_box)) {
+              *resource_clipper, uses_zoomed_reference_box, reference_box)) {
         context.ClipPath(path->GetSkPath(), kAntiAliased);
         rest_of_the_chain_already_appled = true;
       }
     }
-    context.ConcatCTM(
-        MaskToContentTransform(*resource_clipper, is_svg_child, reference_box));
+    context.ConcatCTM(MaskToContentTransform(
+        *resource_clipper, uses_zoomed_reference_box, reference_box));
     context.DrawRecord(resource_clipper->CreatePaintRecord());
 
     if (is_first)
@@ -243,7 +249,8 @@ bool ClipPathClipper::ShouldUseMaskBasedClip(const LayoutObject& object) {
 
 base::Optional<Path> ClipPathClipper::PathBasedClip(
     const LayoutObject& clip_path_owner) {
-  return PathBasedClipInternal(clip_path_owner, clip_path_owner.IsSVGChild(),
+  return PathBasedClipInternal(clip_path_owner,
+                               UsesZoomedReferenceBox(clip_path_owner),
                                LocalReferenceBox(clip_path_owner));
 }
 

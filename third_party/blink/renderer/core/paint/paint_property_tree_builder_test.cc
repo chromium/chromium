@@ -2970,14 +2970,14 @@ TEST_P(PaintPropertyTreeBuilderTest, SvgRootAndForeignObjectPixelSnapping) {
       foreign_object->FirstFragment().PaintProperties();
   EXPECT_EQ(nullptr, foreign_object_properties->PaintOffsetTranslation());
 
-  EXPECT_EQ(PhysicalOffset(4, 5),
-            foreign_object->FirstFragment().PaintOffset());
+  PhysicalOffset fo_translation(LayoutUnit(3.5f), LayoutUnit(5.4f));
+  EXPECT_EQ(fo_translation, foreign_object->FirstFragment().PaintOffset());
 
   const auto* div = GetLayoutObjectByElementId("div");
   // Paint offset of descendant of foreignObject accumulates on paint offset
   // of foreignObject.
-  EXPECT_EQ(PhysicalOffset(LayoutUnit(4 + 5.6), LayoutUnit(5 + 7.3)),
-            div->FirstFragment().PaintOffset());
+  PhysicalOffset div_offset(LayoutUnit(5.6f), LayoutUnit(7.3f));
+  EXPECT_EQ(fo_translation + div_offset, div->FirstFragment().PaintOffset());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, NoRenderingContextByDefault) {

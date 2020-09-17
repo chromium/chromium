@@ -56,10 +56,20 @@ SVGMaskPainter::~SVGMaskPainter() {
   SECURITY_DCHECK(!masker->NeedsLayout());
   masker->ClearInvalidationMask();
 
+  FloatRect reference_box =
+      SVGResources::ReferenceBoxForEffects(layout_object_);
   AffineTransform content_transformation;
-  sk_sp<const PaintRecord> record = masker->CreatePaintRecord(
-      content_transformation,
-      SVGResources::ReferenceBoxForEffects(layout_object_), context_);
+  if (masker->MaskContentUnits() ==
+      SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
+    content_transformation.Translate(reference_box.X(), reference_box.Y());
+    content_transformation.ScaleNonUniform(reference_box.Width(),
+                                           reference_box.Height());
+  } else if (layout_object_.IsSVGForeignObject()) {
+    content_transformation.Scale(layout_object_.StyleRef().EffectiveZoom());
+  }
+
+  sk_sp<const PaintRecord> record =
+      masker->CreatePaintRecord(content_transformation, context_);
 
   context_.Save();
   context_.ConcatCTM(content_transformation);

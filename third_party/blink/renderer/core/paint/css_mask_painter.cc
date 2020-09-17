@@ -25,7 +25,10 @@ base::Optional<IntRect> CSSMaskPainter::MaskBoundingBox(
     if (masker) {
       const FloatRect reference_box =
           SVGResources::ReferenceBoxForEffects(object);
-      return EnclosingIntRect(masker->ResourceBoundingBox(reference_box));
+      const float reference_box_zoom =
+          object.IsSVGForeignObject() ? object.StyleRef().EffectiveZoom() : 1;
+      return EnclosingIntRect(
+          masker->ResourceBoundingBox(reference_box, reference_box_zoom));
     }
   }
 

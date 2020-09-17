@@ -405,7 +405,7 @@ void SVGLayoutSupport::AdjustVisualRectWithResources(
     visual_rect.Intersect(clipper->ResourceBoundingBox(object_bounding_box));
 
   if (LayoutSVGResourceMasker* masker = resources->Masker())
-    visual_rect.Intersect(masker->ResourceBoundingBox(object_bounding_box));
+    visual_rect.Intersect(masker->ResourceBoundingBox(object_bounding_box, 1));
 }
 
 FloatRect SVGLayoutSupport::ExtendTextBBoxWithStroke(

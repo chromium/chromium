@@ -22,6 +22,7 @@
 #include <memory>
 #include <utility>
 
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_clipper.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_filter.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_marker.h"
@@ -62,10 +63,9 @@ FloatRect SVGResources::ReferenceBoxForEffects(
   // For SVG foreign objects, remove the position part of the bounding box. The
   // position is already baked into the transform, and we don't want to re-apply
   // the offset when, e.g., using "objectBoundingBox" for clipPathUnits.
-  if (layout_object.IsSVGForeignObject()) {
-    FloatRect rect = layout_object.ObjectBoundingBox();
-    return FloatRect(FloatPoint::Zero(), rect.Size());
-  }
+  // Use the frame size since it should have the proper zoom applied.
+  if (auto* foreign = DynamicTo<LayoutSVGForeignObject>(layout_object))
+    return FloatRect(FloatPoint::Zero(), FloatSize(foreign->Size()));
 
   // Text "sub-elements" (<tspan>, <textpath>, <a>) should use the entire
   // <text>s object bounding box rather then their own.

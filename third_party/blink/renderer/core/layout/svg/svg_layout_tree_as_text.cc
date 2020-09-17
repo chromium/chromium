@@ -724,7 +724,7 @@ void WriteResources(WTF::TextStream& ts,
                            tree_scope);
     ts << " ";
     WriteStandardPrefix(ts, *masker, 0);
-    ts << " " << masker->ResourceBoundingBox(reference_box) << "\n";
+    ts << " " << masker->ResourceBoundingBox(reference_box, 1) << "\n";
   }
   if (LayoutSVGResourceClipper* clipper = resources->Clipper()) {
     DCHECK(style.ClipPath());

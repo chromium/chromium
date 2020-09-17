@@ -48,44 +48,34 @@ void LayoutSVGForeignObject::Paint(const PaintInfo& paint_info) const {
   SVGForeignObjectPainter(*this).Paint(paint_info);
 }
 
-LayoutUnit LayoutSVGForeignObject::ElementX() const {
-  return LayoutUnit(
-      roundf(SVGLengthContext(GetElement())
-                 .ValueForLength(StyleRef().SvgStyle().X(), StyleRef(),
-                                 SVGLengthMode::kWidth)));
-}
-
-LayoutUnit LayoutSVGForeignObject::ElementY() const {
-  return LayoutUnit(
-      roundf(SVGLengthContext(GetElement())
-                 .ValueForLength(StyleRef().SvgStyle().Y(), StyleRef(),
-                                 SVGLengthMode::kHeight)));
-}
-
-LayoutUnit LayoutSVGForeignObject::ElementWidth() const {
-  return LayoutUnit(SVGLengthContext(GetElement())
-                        .ValueForLength(StyleRef().Width(), StyleRef(),
-                                        SVGLengthMode::kWidth));
-}
-
-LayoutUnit LayoutSVGForeignObject::ElementHeight() const {
-  return LayoutUnit(SVGLengthContext(GetElement())
-                        .ValueForLength(StyleRef().Height(), StyleRef(),
-                                        SVGLengthMode::kHeight));
-}
-
 void LayoutSVGForeignObject::UpdateLogicalWidth() {
-  SetLogicalWidth(StyleRef().IsHorizontalWritingMode() ? ElementWidth()
-                                                       : ElementHeight());
+  const ComputedStyle& style = StyleRef();
+  float logical_width =
+      style.IsHorizontalWritingMode() ? viewport_.Width() : viewport_.Height();
+  logical_width *= style.EffectiveZoom();
+  SetLogicalWidth(LayoutUnit(logical_width));
 }
 
 void LayoutSVGForeignObject::ComputeLogicalHeight(
     LayoutUnit,
     LayoutUnit logical_top,
     LogicalExtentComputedValues& computed_values) const {
-  computed_values.extent_ =
-      StyleRef().IsHorizontalWritingMode() ? ElementHeight() : ElementWidth();
+  const ComputedStyle& style = StyleRef();
+  float logical_height =
+      style.IsHorizontalWritingMode() ? viewport_.Height() : viewport_.Width();
+  logical_height *= style.EffectiveZoom();
+  computed_values.extent_ = LayoutUnit(logical_height);
   computed_values.position_ = logical_top;
+}
+
+AffineTransform LayoutSVGForeignObject::LocalToSVGParentTransform() const {
+  // Include a zoom inverse in the local-to-parent transform since descendants
+  // of the <foreignObject> will have regular zoom applied, and thus need to
+  // have that removed when moving into the <fO> ancestors chain (the SVG root
+  // will then reapply the zoom again if that boundary is crossed).
+  AffineTransform transform = local_transform_;
+  transform.Scale(1 / StyleRef().EffectiveZoom());
+  return transform;
 }
 
 void LayoutSVGForeignObject::UpdateLayout() {
@@ -96,28 +86,43 @@ void LayoutSVGForeignObject::UpdateLayout() {
   // Update our transform before layout, in case any of our descendants rely on
   // the transform being somewhat accurate.  The |needs_transform_update_| flag
   // will be cleared after layout has been performed.
-  // TODO(fs): Remove this. AFAICS in all cases where we ancestors compute some
+  // TODO(fs): Remove this. AFAICS in all cases where descendants compute some
   // form of CTM, they stop at their nearest ancestor LayoutSVGRoot, and thus
-  // will not care about this value.
+  // will not care about (reach) this value.
   if (needs_transform_update_) {
     local_transform_ =
         foreign->CalculateTransform(SVGElement::kIncludeMotionTransform);
   }
 
-  LayoutRect old_viewport = FrameRect();
+  LayoutRect old_frame_rect = FrameRect();
+
+  // Resolve the viewport in the local coordinate space - this does not include
+  // zoom.
+  SVGLengthContext length_context(foreign);
+  const ComputedStyle& style = StyleRef();
+  const SVGComputedStyle& svg_style = style.SvgStyle();
+  viewport_ = FloatRect(
+      length_context.ResolveLengthPair(svg_style.X(), svg_style.Y(), style),
+      ToFloatSize(length_context.ResolveLengthPair(style.Width(),
+                                                   style.Height(), style)));
+
+  // Use the zoomed version of the viewport as the location, because we will
+  // interpose a transform that "unzooms" the effective zoom to let the children
+  // of the foreign object exist with their specified zoom.
+  FloatPoint zoomed_location =
+      viewport_.Location().ScaledBy(style.EffectiveZoom());
 
   // Set box origin to the foreignObject x/y translation, so positioned objects
   // in XHTML content get correct positions. A regular LayoutBoxModelObject
   // would pull this information from ComputedStyle - in SVG those properties
   // are ignored for non <svg> elements, so we mimic what happens when
   // specifying them through CSS.
-  SetX(ElementX());
-  SetY(ElementY());
+  SetLocation(LayoutPoint(zoomed_location));
 
   const bool layout_changed = EverHadLayout() && SelfNeedsLayout();
   LayoutBlock::UpdateLayout();
   DCHECK(!NeedsLayout());
-  const bool bounds_changed = old_viewport != FrameRect();
+  const bool bounds_changed = old_frame_rect != FrameRect();
 
   bool update_parent_boundaries = bounds_changed;
   if (UpdateTransformAfterLayout(bounds_changed))
@@ -141,7 +146,7 @@ bool LayoutSVGForeignObject::NodeAtPointFromSVG(
     HitTestAction) {
   DCHECK_EQ(accumulated_offset, PhysicalOffset());
   TransformedHitTestLocation local_location(hit_test_location,
-                                            LocalSVGTransform());
+                                            LocalToSVGParentTransform());
   if (!local_location)
     return false;
 
