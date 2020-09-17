@@ -1213,7 +1213,7 @@ class ComputedStyle : public ComputedStyleBase,
                                    bool is_inherited_property) const;
 
   // Animations.
-  CSSAnimationData& AccessAnimations();
+  CORE_EXPORT CSSAnimationData& AccessAnimations();
   const CSSAnimationData* Animations() const {
     return AnimationsInternal().get();
   }
@@ -1222,7 +1222,7 @@ class ComputedStyle : public ComputedStyleBase,
   const CSSTransitionData* Transitions() const {
     return TransitionsInternal().get();
   }
-  CSSTransitionData& AccessTransitions();
+  CORE_EXPORT CSSTransitionData& AccessTransitions();
 
   // Callback selectors.
   void AddCallbackSelector(const String& selector);

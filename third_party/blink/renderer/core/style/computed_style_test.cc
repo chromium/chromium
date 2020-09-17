@@ -1058,4 +1058,42 @@ TEST(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
   EXPECT_TRUE(diff_underline_position.NeedsRecomputeVisualOverflow());
 }
 
+// Verify that cloned ComputedStyle is independent from source, i.e.
+// copy-on-write works as expected.
+TEST(ComputedStyleTest, ClonedStyleAnimationsAreIndependent) {
+  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+
+  auto& animations = style->AccessAnimations();
+  animations.DelayList().clear();
+  animations.DelayList().push_back(CSSAnimationData::InitialDelay());
+  EXPECT_EQ(1u, style->Animations()->DelayList().size());
+
+  scoped_refptr<ComputedStyle> cloned_style = ComputedStyle::Clone(*style);
+  auto& cloned_style_animations = cloned_style->AccessAnimations();
+  EXPECT_EQ(1u, cloned_style_animations.DelayList().size());
+  cloned_style_animations.DelayList().push_back(
+      CSSAnimationData::InitialDelay());
+
+  EXPECT_EQ(2u, cloned_style->Animations()->DelayList().size());
+  EXPECT_EQ(1u, style->Animations()->DelayList().size());
+}
+
+TEST(ComputedStyleTest, ClonedStyleTransitionsAreIndependent) {
+  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+
+  auto& transitions = style->AccessTransitions();
+  transitions.PropertyList().clear();
+  transitions.PropertyList().push_back(CSSTransitionData::InitialProperty());
+  EXPECT_EQ(1u, style->Transitions()->PropertyList().size());
+
+  scoped_refptr<ComputedStyle> cloned_style = ComputedStyle::Clone(*style);
+  auto& cloned_style_transitions = cloned_style->AccessTransitions();
+  EXPECT_EQ(1u, cloned_style_transitions.PropertyList().size());
+  cloned_style_transitions.PropertyList().push_back(
+      CSSTransitionData::InitialProperty());
+
+  EXPECT_EQ(2u, cloned_style->Transitions()->PropertyList().size());
+  EXPECT_EQ(1u, style->Transitions()->PropertyList().size());
+}
+
 }  // namespace blink

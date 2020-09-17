@@ -1658,15 +1658,18 @@ LineLogicalSide ComputedStyle::GetTextEmphasisLineLogicalSide() const {
 }
 
 CSSAnimationData& ComputedStyle::AccessAnimations() {
-  if (!AnimationsInternal())
-    SetAnimationsInternal(std::make_unique<CSSAnimationData>());
-  return *AnimationsInternal();
+  std::unique_ptr<CSSAnimationData>& animations = MutableAnimationsInternal();
+  if (!animations)
+    animations = std::make_unique<CSSAnimationData>();
+  return *animations;
 }
 
 CSSTransitionData& ComputedStyle::AccessTransitions() {
-  if (!TransitionsInternal())
-    SetTransitionsInternal(std::make_unique<CSSTransitionData>());
-  return *TransitionsInternal();
+  std::unique_ptr<CSSTransitionData>& transitions =
+      MutableTransitionsInternal();
+  if (!transitions)
+    transitions = std::make_unique<CSSTransitionData>();
+  return *transitions;
 }
 
 FontBaseline ComputedStyle::GetFontBaseline() const {
