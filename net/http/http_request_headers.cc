@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -107,10 +106,6 @@ void HttpRequestHeaders::Clear() {
 
 void HttpRequestHeaders::SetHeader(const base::StringPiece& key,
                                    const base::StringPiece& value) {
-  // TODO(crbug.com/1028189): Adding temporarily to debug crbug.com/1028189.
-  if (!HttpUtil::IsValidHeaderName(key)) {
-    base::debug::DumpWithoutCrashing();
-  }
   // Invalid header names or values could mean clients can attach
   // browser-internal headers.
   DCHECK(HttpUtil::IsValidHeaderName(key)) << key;
