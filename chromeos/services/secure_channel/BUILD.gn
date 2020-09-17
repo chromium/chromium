@@ -104,6 +104,8 @@ static_library("secure_channel") {
     "multiplexed_channel.h",
     "multiplexed_channel_impl.cc",
     "multiplexed_channel_impl.h",
+    "nearby_initiator_failure_type.cc",
+    "nearby_initiator_failure_type.h",
     "pending_ble_connection_request_base.h",
     "pending_ble_initiator_connection_request.cc",
     "pending_ble_initiator_connection_request.h",
