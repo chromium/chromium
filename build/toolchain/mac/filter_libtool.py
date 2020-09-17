@@ -12,21 +12,27 @@ import sys
 # This script executes libool and filters out logspam lines like:
 #    '/path/to/libtool: file: foo.o has no symbols'
 
-BLACKLIST_PATTERNS = [
+SUPPRESSED_PATTERNS = [
     re.compile(v) for v in [
         r'^.*libtool: (?:for architecture: \S* )?file: .* has no symbols$',
-        r'^.*libtool: warning for library: .* the table of contents is empty '
-        r'\(no object file members in the library define global symbols\)$',
-        r'^.*libtool: warning same member name \(\S*\) in output file used for '
-        r'input files: \S* and: \S* \(due to use of basename, truncation, '
-        r'blank padding or duplicate input files\)$',
+        # Xcode 11 spelling of the "empty archive" warning.
+        # TODO(thakis): Remove once we require Xcode 12.
+        r'^.*libtool: warning for library: .* the table of contents is empty ' \
+            r'\(no object file members in the library define global symbols\)$',
+        # Xcode 12 spelling of the "empty archive" warning.
+        r'^warning: .*libtool: archive library: .* ' \
+            r'the table of contents is empty ',
+            r'\(no object file members in the library define global symbols\)$',
+        r'^.*libtool: warning same member name \(\S*\) in output file used ' \
+            r'for input files: \S* and: \S* \(due to use of basename, ' \
+            r'truncation, blank padding or duplicate input files\)$',
     ]
 ]
 
 
-def IsBlacklistedLine(line):
+def ShouldSuppressLine(line):
   """Returns whether the line should be filtered out."""
-  for pattern in BLACKLIST_PATTERNS:
+  for pattern in SUPPRESSED_PATTERNS:
     if pattern.match(line):
       return True
   return False
@@ -37,7 +43,7 @@ def Main(cmd_list):
   libtoolout = subprocess.Popen(cmd_list, stderr=subprocess.PIPE, env=env)
   _, err = libtoolout.communicate()
   for line in err.decode('UTF-8').splitlines():
-    if not IsBlacklistedLine(line):
+    if not ShouldSuppressLine(line):
       print(line, file=sys.stderr)
   return libtoolout.returncode
 
