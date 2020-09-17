@@ -406,7 +406,8 @@ unsigned AudioBufferSourceHandler::ComputeOutput(
     const struct InterpolationInfo& interp_info,
     int frames_processed,
     unsigned write_index,
-    unsigned number_of_channels) const {
+    unsigned number_of_channels,
+    unsigned buffer_length) const {
   unsigned* read0 = interp_info.read0;
   unsigned* read1 = interp_info.read1;
   float* interp_factor = interp_info.interp_factor;
@@ -421,12 +422,21 @@ unsigned AudioBufferSourceHandler::ComputeOutput(
       if (read0[k] == read1[k] && read0[k] >= 1) {
         // We're at the end of the buffer, so just linearly extrapolate from
         // the last two samples.
+        DCHECK_LT(read0[k], buffer_length);
         float sample1 = source[read0[k] - 1];
         float sample2 = source[read0[k]];
         sample = sample2 + (sample2 - sample1) * interp_factor[k];
       } else {
+        DCHECK_LT(read0[k], buffer_length);
+        DCHECK_LT(read1[k], buffer_length);
+        // TODO(crbug.com/1116104).  If read1[k] is out-of-bounds, just return
+        // 0.  Remove this when the underlying problem is fixed.
+        if (read1[k] >= buffer_length) {
+          VLOG(1) << "k = " << k << "frames = " << frames_processed
+                  << "read1 = " << read1[k];
+        }
         float sample1 = source[read0[k]];
-        float sample2 = source[read1[k]];
+        float sample2 = read1[k] < buffer_length ? source[read1[k]] : 0;
         sample = sample1 + interp_factor[k] * (sample2 - sample1);
       }
       destination[write_index] = sample;
@@ -465,9 +475,13 @@ double AudioBufferSourceHandler::RenderFromBufferKernel(
       ComputeIndices(interp_info, indices_info, frames_to_process,
                      buffer_length, Loop());
 
-  write_index =
-      ComputeOutput(destination_channels, source_channels, interp_info,
-                    frames_processed, write_index, number_of_channels);
+  // TODO(crbug.com/1116104): Debugging possible error cases.  Remove this (or
+  // convert to DCHECK) when the underlying issue is fixed.
+  CHECK_LE(frames_processed,
+           static_cast<int>(audio_utilities::kRenderQuantumFrames));
+  write_index = ComputeOutput(destination_channels, source_channels,
+                              interp_info, frames_processed, write_index,
+                              number_of_channels, buffer_length);
 
   if (end_of_buffer_reached) {
     RenderSilenceAndFinishIfNotLooping(bus, write_index,

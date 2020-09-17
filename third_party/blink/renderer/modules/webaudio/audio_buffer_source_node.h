@@ -179,7 +179,8 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
                                 const struct InterpolationInfo& interp_info,
                                 int frames_processed,
                                 unsigned write_index,
-                                unsigned number_of_channels) const;
+                                unsigned number_of_channels,
+                                unsigned buffer_length) const;
 
   // Render silence starting from "index" frame in AudioBus.
   inline bool RenderSilenceAndFinishIfNotLooping(AudioBus*,
