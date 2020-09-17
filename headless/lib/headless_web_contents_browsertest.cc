@@ -1163,7 +1163,10 @@ const char* kPageWhichOpensAWindow = R"(
 <html>
 <body>
 <script>
-window.open('/page2.html');
+const win = window.open('/page2.html');
+if (!win)
+  console.error('ready');
+win.addEventListener('load', () => console.log('ready'));
 </script>
 </body>
 </html>
@@ -1178,18 +1181,18 @@ Page 2.
 )";
 }  // namespace
 
-class WebContentsOpenTest : public page::Observer,
+class WebContentsOpenTest : public runtime::Observer,
                             public HeadlessAsyncDevTooledBrowserTest {
  public:
   void RunDevTooledTest() override {
-    devtools_client_->GetPage()->AddObserver(this);
     interceptor_->InsertResponse("http://foo.com/index.html",
                                  {kPageWhichOpensAWindow, "text/html"});
     interceptor_->InsertResponse("http://foo.com/page2.html",
                                  {kPage2, "text/html"});
 
     base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-    devtools_client_->GetPage()->Enable(run_loop.QuitClosure());
+    devtools_client_->GetRuntime()->AddObserver(this);
+    devtools_client_->GetRuntime()->Enable(run_loop.QuitClosure());
     run_loop.Run();
 
     devtools_client_->GetPage()->Navigate("http://foo.com/index.html");
@@ -1203,7 +1206,8 @@ class DontBlockWebContentsOpenTest : public WebContentsOpenTest {
     builder.SetBlockNewWebContents(false);
   }
 
-  void OnLoadEventFired(const page::LoadEventFiredParams&) override {
+  void OnConsoleAPICalled(
+      const runtime::ConsoleAPICalledParams& params) override {
     EXPECT_THAT(
         interceptor_->urls_requested(),
         ElementsAre("http://foo.com/index.html", "http://foo.com/page2.html"));
@@ -1211,10 +1215,7 @@ class DontBlockWebContentsOpenTest : public WebContentsOpenTest {
   }
 };
 
-// TODO(crbug.com/1045980): Disabled due to flakiness.
-// TODO(crbug.com/1078405): Disabled due to flakiness.
-// TODO(crbug.com/1090936): Disabled due to flakiness.
-DISABLED_HEADLESS_ASYNC_DEVTOOLED_TEST_F(DontBlockWebContentsOpenTest);
+HEADLESS_ASYNC_DEVTOOLED_TEST_F(DontBlockWebContentsOpenTest);
 
 class BlockWebContentsOpenTest : public WebContentsOpenTest {
  public:
@@ -1223,18 +1224,14 @@ class BlockWebContentsOpenTest : public WebContentsOpenTest {
     builder.SetBlockNewWebContents(true);
   }
 
-  void OnLoadEventFired(const page::LoadEventFiredParams&) override {
+  void OnConsoleAPICalled(
+      const runtime::ConsoleAPICalledParams& params) override {
     EXPECT_THAT(interceptor_->urls_requested(),
                 ElementsAre("http://foo.com/index.html"));
     FinishAsynchronousTest();
   }
 };
 
-#if defined(OS_WIN)
-// TODO(crbug.com/1045980): Disabled due to flakiness.
-DISABLED_HEADLESS_ASYNC_DEVTOOLED_TEST_F(BlockWebContentsOpenTest);
-#else
 HEADLESS_ASYNC_DEVTOOLED_TEST_F(BlockWebContentsOpenTest);
-#endif
 
 }  // namespace headless
