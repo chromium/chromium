@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.screenshot.ScreenshotShareSheetViewProperties.NoArgOperation;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
@@ -18,14 +19,19 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * ScreenshotShareSheetMediator is in charge of calculating and setting values for
  * ScreenshotShareSheetViewProperties.
  */
 class ScreenshotShareSheetMediator {
+    private static final String sIsoDateFormat = "yyyy-MM-dd";
+
     private final PropertyModel mModel;
     private final Context mContext;
     private final Runnable mSaveRunnable;
@@ -89,8 +95,9 @@ class ScreenshotShareSheetMediator {
         Bitmap bitmap = mModel.get(ScreenshotShareSheetViewProperties.SCREENSHOT_BITMAP);
 
         WindowAndroid window = mTab.getWindowAndroid();
-        // TODO(1124799): Change title to screenshot title.
-        String title = mTab.getTitle();
+        String isoDate = new SimpleDateFormat(sIsoDateFormat, Locale.getDefault())
+                                 .format(new Date(System.currentTimeMillis()));
+        String title = mContext.getString(R.string.screenshot_title_for_share, isoDate);
         Callback<Uri> callback = (bitmapUri) -> {
             ShareParams params =
                     new ShareParams.Builder(window, title, /*url=*/"")

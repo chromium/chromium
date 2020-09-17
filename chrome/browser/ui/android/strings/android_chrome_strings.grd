@@ -3902,6 +3902,10 @@ Cookies and other data may be used across open Incognito tabs.
         Share
       </message>
 
+      <message name="IDS_SCREENSHOT_TITLE_FOR_SHARE" desc="The title shared with the screenshot.">
+        Screenshot <ph name="CURRENT_DATE_ISO">%1$s<ex>2020-09-16</ex></ph>
+      </message>
+
       <message name="IDS_SCREENSHOT_FILENAME_PREFIX" desc="File name prefix for downloaded screenshot that is followed by timestamp.">
         chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS">%1$s<ex>1582667748515</ex></ph>
       </message>
