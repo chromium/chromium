@@ -99,7 +99,9 @@ StringKeyframeVector ProcessKeyframesRule(
     const StyleRuleKeyframes* keyframes_rule,
     const Document& document,
     const ComputedStyle* parent_style,
-    TimingFunction* default_timing_function) {
+    TimingFunction* default_timing_function,
+    WritingMode writing_mode,
+    TextDirection text_direction) {
   StringKeyframeVector keyframes;
   const HeapVector<Member<StyleRuleKeyframe>>& style_keyframes =
       keyframes_rule->Keyframes();
@@ -130,7 +132,11 @@ StringKeyframeVector ProcessKeyframesRule(
         }
         keyframe->SetEasing(std::move(timing_function));
       } else if (!CSSAnimations::IsAnimationAffectingProperty(property)) {
-        keyframe->SetCSSPropertyValue(property,
+        // Map Logical to physical property name.
+        const CSSProperty& physical_property =
+            property.ResolveDirectionAwareProperty(text_direction,
+                                                   writing_mode);
+        keyframe->SetCSSPropertyValue(physical_property,
                                       properties.PropertyAt(j).Value());
       }
     }
@@ -239,7 +245,8 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
   //    the offset specified in the keyframe selector, and iterate over the
   //    result in reverse applying the following steps:
   keyframes = ProcessKeyframesRule(keyframes_rule, element.GetDocument(),
-                                   parent_style, default_timing_function);
+                                   parent_style, default_timing_function,
+                                   style->GetWritingMode(), style->Direction());
 
   double last_offset = 1;
   wtf_size_t merged_frame_count = 0;
@@ -306,8 +313,6 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
     //     * All property values are replaced with their computed values.
     // 5.5 Add each physical longhand property name that was added to keyframe
     //     to animated properties.
-
-    // TODO(crbug.com/1070627): Convert logical properties.
     StringKeyframe* keyframe = keyframes[target_index];
     for (const auto& property : rule_keyframe->Properties()) {
       const CSSProperty& css_property = property.GetCSSProperty();

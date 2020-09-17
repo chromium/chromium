@@ -4432,7 +4432,6 @@ crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/vertical-align-do-
 
 # [css-logical]
 crbug.com/865579 external/wpt/css/css-logical/animation-001.html [ Failure Pass ]
-crbug.com/865579 external/wpt/css/css-logical/animation-002.html [ Failure Pass ]
 
 # [css-animations]
 crbug.com/993365 external/wpt/css/css-transitions/Element-getAnimations.tentative.html [ Failure Pass ]
