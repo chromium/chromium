@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(is_chromeos, "Nearby Share is CrOS only")
+
 source_set("common") {
   sources = [
     "nearby_share_enums.h",

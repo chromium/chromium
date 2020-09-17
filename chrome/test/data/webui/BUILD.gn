@@ -426,10 +426,13 @@ group("modulize") {
     "./cr_components:modulize",
     "./cr_components/chromeos:modulize",
     "./cr_elements:modulize",
-    "./nearby_share/shared:modulize",
     "./resources:modulize",
     "./settings:modulize",
   ]
+
+  if (is_chromeos) {
+    deps += [ "./nearby_share/shared:modulize" ]
+  }
 }
 
 js_modulizer("modulize_local") {
@@ -452,8 +455,6 @@ group("closure_compile") {
     "cr_components:closure_compile",
     "cr_elements:closure_compile",
     "inline_login:closure_compile",
-    "nearby_share:closure_compile",
-    "nearby_share/shared:closure_compile",
     "new_tab_page:closure_compile",
     "print_preview:closure_compile",
     "settings:closure_compile",
@@ -466,6 +467,8 @@ group("closure_compile") {
     deps += [
       "chromeos/account_manager:closure_compile",
       "chromeos/gaia_action_buttons:closure_compile",
+      "nearby_share:closure_compile",
+      "nearby_share/shared:closure_compile",
     ]
   }
   if (enable_tab_search) {

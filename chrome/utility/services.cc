@@ -40,8 +40,6 @@
 
 #if !defined(OS_ANDROID)
 #include "chrome/common/importer/profile_import.mojom.h"
-#include "chrome/services/sharing/public/mojom/sharing.mojom.h"
-#include "chrome/services/sharing/sharing_impl.h"
 #include "chrome/services/speech/speech_recognition_service_impl.h"
 #include "chrome/utility/importer/profile_import_impl.h"
 #include "components/mirroring/service/mirroring_service.h"
@@ -84,6 +82,8 @@
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 
 #if defined(OS_CHROMEOS)
+#include "chrome/services/sharing/public/mojom/sharing.mojom.h"  // nogncheck
+#include "chrome/services/sharing/sharing_impl.h"
 #include "chromeos/assistant/buildflags.h"  // nogncheck
 #include "chromeos/services/ime/ime_service.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
@@ -162,10 +162,6 @@ auto RunMirroringService(
       std::move(receiver), content::UtilityThread::Get()->GetIOTaskRunner());
 }
 
-auto RunSharing(mojo::PendingReceiver<sharing::mojom::Sharing> receiver) {
-  return std::make_unique<sharing::SharingImpl>(std::move(receiver));
-}
-
 auto RunSpeechRecognitionService(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionService> receiver) {
   return std::make_unique<speech::SpeechRecognitionServiceImpl>(
@@ -234,6 +230,10 @@ auto RunImeService(
   return std::make_unique<chromeos::ime::ImeService>(std::move(receiver));
 }
 
+auto RunSharing(mojo::PendingReceiver<sharing::mojom::Sharing> receiver) {
+  return std::make_unique<sharing::SharingImpl>(std::move(receiver));
+}
+
 auto RunTtsService(
     mojo::PendingReceiver<chromeos::tts::mojom::TtsService> receiver) {
   return std::make_unique<chromeos::tts::TtsService>(std::move(receiver));
@@ -277,7 +277,6 @@ mojo::ServiceFactory* GetMainThreadServiceFactory() {
 #if !defined(OS_ANDROID)
     RunProfileImporter,
     RunMirroringService,
-    RunSharing,
     RunSpeechRecognitionService,
 #endif
 
@@ -319,6 +318,7 @@ mojo::ServiceFactory* GetMainThreadServiceFactory() {
 
 #if defined(OS_CHROMEOS)
     RunImeService,
+    RunSharing,
     RunTtsService,
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
     RunAssistantAudioDecoder,

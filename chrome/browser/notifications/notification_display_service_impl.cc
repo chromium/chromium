@@ -31,9 +31,12 @@
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
     defined(OS_WIN)
-#include "chrome/browser/nearby_sharing/nearby_notification_handler.h"
 #include "chrome/browser/send_tab_to_self/desktop_notification_handler.h"
 #include "chrome/browser/sharing/sharing_notification_handler.h"
+#endif
+
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/nearby_sharing/nearby_notification_handler.h"
 #endif
 
 namespace {
@@ -89,6 +92,9 @@ NotificationDisplayServiceImpl::NotificationDisplayServiceImpl(Profile* profile)
     AddNotificationHandler(NotificationHandler::Type::ANNOUNCEMENT,
                            std::make_unique<AnnouncementNotificationHandler>());
 
+#endif
+
+#if defined(OS_CHROMEOS)
     if (base::FeatureList::IsEnabled(features::kNearbySharing)) {
       AddNotificationHandler(NotificationHandler::Type::NEARBY_SHARE,
                              std::make_unique<NearbyNotificationHandler>());
