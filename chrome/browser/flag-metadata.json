@@ -4117,16 +4117,6 @@
     "expiry_milestone": 86
   },
   {
-    "name": "sharing-peer-connection-receiver",
-    "owners": [ "//chrome/browser/sharing/OWNERS" ],
-    "expiry_milestone": 88
-  },
-  {
-    "name": "sharing-peer-connection-sender",
-    "owners": [ "//chrome/browser/sharing/OWNERS" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "sharing-prefer-vapid",
     "owners": [ "//chrome/browser/sharing/OWNERS" ],
     "expiry_milestone": 87
