@@ -4176,7 +4176,10 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CrossOriginDownloadNavigatesIframe) {
   ASSERT_TRUE(origin_three.ShutdownAndWaitUntilComplete());
 }
 
-IN_PROC_BROWSER_TEST_F(DownloadWakeLockTest, WakeLockAcquireAndCancel) {
+// Test is flaky on multiple platforms.
+// https://crbug.com/1064435
+IN_PROC_BROWSER_TEST_F(DownloadWakeLockTest,
+                       DISABLED_WakeLockAcquireAndCancel) {
   Initialize();
   EXPECT_EQ(0, GetActiveWakeLocks(
                    device::mojom::WakeLockType::kPreventAppSuspension));
