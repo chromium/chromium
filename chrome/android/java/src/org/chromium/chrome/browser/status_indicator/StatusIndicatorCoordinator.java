@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.status_indicator;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import androidx.annotation.ColorInt;
@@ -21,6 +20,7 @@ import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.resources.ResourceManager;
+import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
 /**
  * The coordinator for a status indicator that is positioned below the status bar and is persistent.
@@ -43,10 +43,16 @@ public class StatusIndicatorCoordinator {
     }
 
     private StatusIndicatorMediator mMediator;
-    private PropertyModelChangeProcessor mMCP;
     private StatusIndicatorSceneLayer mSceneLayer;
     private boolean mIsShowing;
     private Runnable mRemoveOnLayoutChangeListener;
+    private int mResourceId;
+    private ViewResourceAdapter mResourceAdapter;
+    private ResourceManager mResourceManager;
+    private boolean mResourceRegistered;
+    private Activity mActivity;
+    private Callback<Runnable> mRequestRender;
+    private boolean mInitialized;
 
     /**
      * Constructs the status indicator.
@@ -67,71 +73,17 @@ public class StatusIndicatorCoordinator {
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<Integer> statusBarColorWithoutStatusIndicatorSupplier,
             Supplier<Boolean> canAnimateNativeBrowserControls, Callback<Runnable> requestRender) {
+        mActivity = activity;
+        mResourceManager = resourceManager;
+        mRequestRender = requestRender;
         mSceneLayer = new StatusIndicatorSceneLayer(browserControlsStateProvider);
-
-        // This will create the view before showing it.
-        Runnable inflateView = () -> {
-            ViewStub stub = activity.findViewById(R.id.status_indicator_stub);
-            ViewResourceFrameLayout root = (ViewResourceFrameLayout) stub.inflate();
-            resourceManager.getDynamicResourceLoader().registerResource(
-                    root.getId(), root.getResourceAdapter());
-            mSceneLayer.setResourceId(root.getId());
-            PropertyModel model =
-                    new PropertyModel.Builder(StatusIndicatorProperties.ALL_KEYS)
-                            .with(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY, View.GONE)
-                            .with(StatusIndicatorProperties.COMPOSITED_VIEW_VISIBLE, false)
-                            .build();
-            mMCP = PropertyModelChangeProcessor.create(model,
-                    new StatusIndicatorViewBinder.ViewHolder(root, mSceneLayer),
-                    StatusIndicatorViewBinder::bind);
-            mMediator.setModel(model);
-            root.addOnLayoutChangeListener(mMediator);
-            mRemoveOnLayoutChangeListener = () -> root.removeOnLayoutChangeListener(mMediator);
-        };
-
-        // This will run to destroy the view once it's hidden.
-        Runnable destroyView = () -> {
-            mRemoveOnLayoutChangeListener.run();
-            mRemoveOnLayoutChangeListener = null;
-            ViewResourceFrameLayout root = activity.findViewById(R.id.status_indicator);
-            mSceneLayer.setResourceId(0);
-            resourceManager.getDynamicResourceLoader().unregisterResource(root.getId());
-            mMediator.setModel(null);
-            mMCP.destroy();
-            mMCP = null;
-
-            // Remove the view and add a ViewStub in its place. This is basically returning the
-            // view tree to its initial condition and will make it possible to inflate the view
-            // easily the next time it's needed, i.e. next #show() call.
-            final ViewGroup parent = ((ViewGroup) root.getParent());
-            final int index = parent.indexOfChild(root);
-            parent.removeViewAt(index);
-            final ViewStub stub = new ViewStub(activity);
-            stub.setLayoutParams(new ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            stub.setId(R.id.status_indicator_stub);
-            stub.setInflatedId(R.id.status_indicator);
-            stub.setLayoutResource(R.layout.status_indicator_container);
-            parent.addView(stub, index);
-        };
-        Callback<Runnable> invalidateCompositorView = callback -> {
-            ViewResourceFrameLayout root = activity.findViewById(R.id.status_indicator);
-            root.getResourceAdapter().invalidate(null);
-            requestRender.onResult(callback);
-        };
-        Runnable requestLayout = () -> {
-            ViewResourceFrameLayout root = activity.findViewById(R.id.status_indicator);
-            root.requestLayout();
-        };
         mMediator = new StatusIndicatorMediator(browserControlsStateProvider,
-                statusBarColorWithoutStatusIndicatorSupplier, inflateView, destroyView,
-                canAnimateNativeBrowserControls, invalidateCompositorView, requestLayout);
+                statusBarColorWithoutStatusIndicatorSupplier, canAnimateNativeBrowserControls);
     }
 
     public void destroy() {
-        if (mRemoveOnLayoutChangeListener != null) {
-            mRemoveOnLayoutChangeListener.run();
-        }
+        if (mInitialized) mRemoveOnLayoutChangeListener.run();
+        if (mResourceRegistered) unregisterResource();
         mMediator.destroy();
     }
 
@@ -151,6 +103,8 @@ public class StatusIndicatorCoordinator {
         // caller, e.g. returning a boolean.
         if (mIsShowing) return;
         mIsShowing = true;
+
+        if (!mInitialized) initialize();
 
         mMediator.animateShow(statusText, statusIcon, backgroundColor, textColor, iconTint);
     }
@@ -199,5 +153,46 @@ public class StatusIndicatorCoordinator {
      */
     public StatusIndicatorSceneLayer getSceneLayer() {
         return mSceneLayer;
+    }
+
+    private void initialize() {
+        final ViewStub stub = mActivity.findViewById(R.id.status_indicator_stub);
+        final ViewResourceFrameLayout root = (ViewResourceFrameLayout) stub.inflate();
+        mResourceId = root.getId();
+        mSceneLayer.setResourceId(mResourceId);
+        mResourceAdapter = root.getResourceAdapter();
+        Callback<Runnable> invalidateCompositorView = callback -> {
+            mResourceAdapter.invalidate(null);
+            mRequestRender.onResult(callback);
+        };
+        PropertyModel model =
+                new PropertyModel.Builder(StatusIndicatorProperties.ALL_KEYS)
+                        .with(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY, View.GONE)
+                        .with(StatusIndicatorProperties.COMPOSITED_VIEW_VISIBLE, false)
+                        .build();
+        PropertyModelChangeProcessor.create(model,
+                new StatusIndicatorViewBinder.ViewHolder(root, mSceneLayer),
+                StatusIndicatorViewBinder::bind);
+        mMediator.initialize(model, this::registerResource, this::unregisterResource,
+                invalidateCompositorView, root::requestLayout);
+        root.addOnLayoutChangeListener(mMediator);
+        mRemoveOnLayoutChangeListener = () -> root.removeOnLayoutChangeListener(mMediator);
+
+        mInitialized = true;
+    }
+
+    private void registerResource() {
+        if (mResourceRegistered) return;
+
+        mResourceManager.getDynamicResourceLoader().registerResource(mResourceId, mResourceAdapter);
+        mResourceRegistered = true;
+    }
+
+    private void unregisterResource() {
+        if (!mResourceRegistered) return;
+
+        mResourceAdapter.dropCachedBitmap();
+        mResourceManager.getDynamicResourceLoader().unregisterResource(mResourceId);
+        mResourceRegistered = false;
     }
 }

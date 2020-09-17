@@ -37,8 +37,8 @@ class StatusIndicatorMediator
             new HashSet<>();
     private Supplier<Integer> mStatusBarWithoutIndicatorColorSupplier;
     private Runnable mOnShowAnimationEnd;
-    private Runnable mInflateView;
-    private Runnable mDestroyView;
+    private Runnable mRegisterResource;
+    private Runnable mUnregisterResource;
     private Supplier<Boolean> mCanAnimateNativeBrowserControls;
     private Callback<Runnable> mInvalidateCompositorView;
     private Runnable mRequestLayout;
@@ -59,24 +59,34 @@ class StatusIndicatorMediator
      * @param statusBarWithoutIndicatorColorSupplier A supplier that will get the status bar color
      *                                               without taking the status indicator into
      *                                               account.
-     * @param inflateView A {@link Runnable} to inflate the status indicator view before showing.
-     * @param destroyView A {@link Runnable} to destroy the status indicator view once hidden.
      * @param canAnimateNativeBrowserControls Will supply a boolean denoting whether the native
      *                                        browser controls can be animated. This will be false
      *                                        where we can't have a reliable cc::BCOM instance, e.g.
      *                                        tab switcher.
+     */
+    StatusIndicatorMediator(BrowserControlsStateProvider browserControlsStateProvider,
+            Supplier<Integer> statusBarWithoutIndicatorColorSupplier,
+            Supplier<Boolean> canAnimateNativeBrowserControls) {
+        mBrowserControlsStateProvider = browserControlsStateProvider;
+        mStatusBarWithoutIndicatorColorSupplier = statusBarWithoutIndicatorColorSupplier;
+        mCanAnimateNativeBrowserControls = canAnimateNativeBrowserControls;
+    }
+
+    /**
+     * Initialize the mediator before first #animateShow().
+     * @param model The {@link PropertyModel} for the status indicator.
+     * @param registerResource A {@link Runnable} to register the view resource for the compositor
+     *                         view.
+     * @param unregisterResource A {@link Runnable} to unregister the view resource for the
+     *                           compositor view.
      * @param invalidateCompositorView Callback to invalidate the compositor texture.
      * @param requestLayout Runnable to request layout for the view.
      */
-    StatusIndicatorMediator(BrowserControlsStateProvider browserControlsStateProvider,
-            Supplier<Integer> statusBarWithoutIndicatorColorSupplier, Runnable inflateView,
-            Runnable destroyView, Supplier<Boolean> canAnimateNativeBrowserControls,
+    void initialize(PropertyModel model, Runnable registerResource, Runnable unregisterResource,
             Callback<Runnable> invalidateCompositorView, Runnable requestLayout) {
-        mBrowserControlsStateProvider = browserControlsStateProvider;
-        mStatusBarWithoutIndicatorColorSupplier = statusBarWithoutIndicatorColorSupplier;
-        mInflateView = inflateView;
-        mDestroyView = destroyView;
-        mCanAnimateNativeBrowserControls = canAnimateNativeBrowserControls;
+        mModel = model;
+        mRegisterResource = registerResource;
+        mUnregisterResource = unregisterResource;
         mInvalidateCompositorView = invalidateCompositorView;
         mRequestLayout = requestLayout;
     }
@@ -103,6 +113,7 @@ class StatusIndicatorMediator
         if (mTextFadeInAnimation != null) mTextFadeInAnimation.cancel();
         if (mUpdateAnimatorSet != null)  mUpdateAnimatorSet.cancel();
         if (mHideAnimatorSet != null) mHideAnimatorSet.cancel();
+        mBrowserControlsStateProvider.removeObserver(this);
     }
 
     void addObserver(StatusIndicatorCoordinator.StatusIndicatorObserver observer) {
@@ -111,10 +122,6 @@ class StatusIndicatorMediator
 
     void removeObserver(StatusIndicatorCoordinator.StatusIndicatorObserver observer) {
         mObservers.remove(observer);
-    }
-
-    void setModel(PropertyModel model) {
-        mModel = model;
     }
 
     // Animations
@@ -144,7 +151,14 @@ class StatusIndicatorMediator
      */
     void animateShow(@NonNull String statusText, Drawable statusIcon, @ColorInt int backgroundColor,
             @ColorInt int textColor, @ColorInt int iconTint) {
-        mInflateView.run();
+        mRegisterResource.run();
+
+        // TODO(sinansahin): Look into returning back to the right state earlier, ideally in
+        // #onOffsetChanged after the view is hidden. It's currently challenging if the status
+        // indicator is shown while a tab modal dialog is showing because the compositor
+        // animation is blocked, and we don't get any signal to know if the indicator is hidden.
+        mIsHiding = false;
+        mJavaLayoutHeight = 0;
 
         Runnable initializeProperties = () -> {
             mModel.set(StatusIndicatorProperties.STATUS_TEXT, statusText);
@@ -407,10 +421,13 @@ class StatusIndicatorMediator
 
         final boolean doneHiding = !indicatorVisible && mIsHiding;
         if (doneHiding) {
+            // This block is currently never executed if the status indicator is shown and hidden
+            // while a modal dialog is visible. |mIsHiding| and |mJavaLayoutHeight| are also reset
+            // in #animateShow as a precaution in case this happens.
             mBrowserControlsStateProvider.removeObserver(this);
             mIsHiding = false;
             mJavaLayoutHeight = 0;
-            mDestroyView.run();
+            mUnregisterResource.run();
         }
     }
 
