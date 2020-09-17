@@ -115,6 +115,10 @@ fieldset + fieldset {
   margin-inline-start: 20px;
 }
 
+div.status-entry * {
+  white-space: pre-wrap
+}
+
 div.status-entry:not([hidden]) {
   display: flex;
   margin-bottom: .8em;
