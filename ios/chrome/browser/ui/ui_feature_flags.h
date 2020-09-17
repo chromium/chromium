@@ -73,4 +73,8 @@ extern const base::Feature kEnableAutofillPasswordReauthIOS;
 // users in the Settings.app to update the default browser.
 extern const base::Feature kDefaultBrowserFullscreenPromo;
 
+// Feature flag that enables the button in the settings to send the users in the
+// Settings.app to update the default browser.
+extern const base::Feature kDefaultBrowserSettings;
+
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

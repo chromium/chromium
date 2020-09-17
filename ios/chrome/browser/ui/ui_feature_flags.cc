@@ -65,3 +65,6 @@ const base::Feature kEnableAutofillPasswordReauthIOS{
 
 const base::Feature kDefaultBrowserFullscreenPromo{
     "DefaultBrowserFullscreenPromo", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kDefaultBrowserSettings{"DefaultBrowserSettings",
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
