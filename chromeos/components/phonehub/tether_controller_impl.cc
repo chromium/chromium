@@ -48,5 +48,17 @@ void TetherControllerImpl::AttemptConnection() {
   // TODO(khorimoto): Actually attempt a connection.
 }
 
+void TetherControllerImpl::Disconnect() {
+  if (status_ != Status::kConnecting && status_ != Status::kConnected) {
+    PA_LOG(WARNING) << "Received request to disconnect, but no connection or "
+                    << "connection attempt is in progress. Current status is "
+                    << status_;
+    return;
+  }
+
+  PA_LOG(INFO) << "Attempting disconnection; current status is " << status_;
+  // TODO(khorimoto): Actually attempt a connection.
+}
+
 }  // namespace phonehub
 }  // namespace chromeos

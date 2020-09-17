@@ -28,6 +28,7 @@ class TetherControllerImpl
   Status GetStatus() const override;
   void ScanForAvailableConnection() override;
   void AttemptConnection() override;
+  void Disconnect() override;
 
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
 

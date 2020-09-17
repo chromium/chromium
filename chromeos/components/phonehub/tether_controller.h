@@ -65,6 +65,11 @@ class TetherController {
   // state is not one of kConnectionUnavailable or kConnectionAvailable.
   virtual void AttemptConnection() = 0;
 
+  // Disconnects from an active Instant Tethering connection or connection
+  // attempt. This function is a no-op if the state is not one of kConnecting or
+  // kConnected.
+  virtual void Disconnect() = 0;
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

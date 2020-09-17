@@ -35,5 +35,10 @@ void FakeTetherController::AttemptConnection() {
   }
 }
 
+void FakeTetherController::Disconnect() {
+  if (status_ == Status::kConnecting || status_ == Status::kConnected)
+    SetStatus(Status::kConnecting);
+}
+
 }  // namespace phonehub
 }  // namespace chromeos
