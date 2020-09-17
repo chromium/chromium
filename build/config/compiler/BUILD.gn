@@ -505,7 +505,7 @@ config("compiler") {
       cflags += [
         # TODO(https://crbug.com/1127713): Investigate, remove.
         "-mllvm",
-        "-enable-dse-memoryssa=false",
+        "-enable-dse-memoryssa=true",
       ]
     }
   }
