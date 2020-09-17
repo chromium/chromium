@@ -2485,7 +2485,7 @@ TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget_PayloadSuccessful) {
 
   EXPECT_FALSE(
       fake_nearby_connections_manager_->connection_endpoint_info(kEndpointId));
-  EXPECT_TRUE(fake_nearby_connections_manager_->has_incoming_payloads());
+  EXPECT_FALSE(fake_nearby_connections_manager_->has_incoming_payloads());
 
   // TODO(crbug.com/1123022): This check is flaky, should be investigated.
   // EXPECT_TRUE(FileExists(file_path));

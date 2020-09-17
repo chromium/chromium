@@ -2898,16 +2898,19 @@ void NearbySharingServiceImpl::OnPayloadTransferUpdate(
       text.set_text_body(std::string());
   }
 
+  // Make sure to call this before calling Disconnect or we risk loosing some
+  // transfer updates in the receive case due to the Disconnect call cleaning up
+  // share targets.
+  ShareTargetInfo* info = GetShareTargetInfo(share_target);
+  if (info && info->transfer_update_callback())
+    info->transfer_update_callback()->OnTransferUpdate(share_target, metadata);
+
   if (TransferMetadata::IsFinalStatus(metadata.status())) {
     if (metadata.status() != TransferMetadata::Status::kComplete)
       OnPayloadsFailed(share_target);
 
     Disconnect(share_target, metadata);
   }
-
-  ShareTargetInfo* info = GetShareTargetInfo(share_target);
-  if (info && info->transfer_update_callback())
-    info->transfer_update_callback()->OnTransferUpdate(share_target, metadata);
 }
 
 bool NearbySharingServiceImpl::OnIncomingPayloadsComplete(
@@ -3023,13 +3026,21 @@ void NearbySharingServiceImpl::Disconnect(const ShareTarget& share_target,
   // Failed to send or receive. No point in continuing, so disconnect
   // immediately.
   if (metadata.status() != TransferMetadata::Status::kComplete) {
-    nearby_connections_manager_->Disconnect(*endpoint_id);
+    if (share_target_info->connection()) {
+      share_target_info->connection()->Close();
+    } else {
+      nearby_connections_manager_->Disconnect(*endpoint_id);
+    }
     return;
   }
 
   // Files received successfully. Receivers can immediately cancel.
   if (share_target.is_incoming) {
-    nearby_connections_manager_->Disconnect(*endpoint_id);
+    if (share_target_info->connection()) {
+      share_target_info->connection()->Close();
+    } else {
+      nearby_connections_manager_->Disconnect(*endpoint_id);
+    }
     return;
   }
 
