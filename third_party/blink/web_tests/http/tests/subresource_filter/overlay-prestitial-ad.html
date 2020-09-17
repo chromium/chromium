@@ -28,7 +28,7 @@ if (window.testRunner) {
   internals.DisableFrequencyCappingForOverlayPopupDetection();
 }
 
-async_test(async function(t) {
+promise_test(async function(t) {
   // Create the overlay pop-up ad.
   let ad_frame = appendAdFrameTo(document.body);
 
@@ -50,11 +50,7 @@ async_test(async function(t) {
 
   // Expect no kOverlayPopupAd UseCounter as the candidate is considered to
   // be 'prestitial' instead of 'pop-up'.
-  t.step(function () {
-    assert_false(internals.isUseCounted(document, kOverlayPopupAd));
-  });
-
-  t.done();
+  assert_false(internals.isUseCounted(document, kOverlayPopupAd));
 }, "Test overlay-prestitial-ad when the frame itself has a fixed position. In this case we expect no use counter for kOverlayPopupAd.");
 
 </script>

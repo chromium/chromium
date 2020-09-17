@@ -46,7 +46,7 @@ if (window.testRunner) {
   internals.DisableFrequencyCappingForOverlayPopupDetection();
 }
 
-async_test(async function(t) {
+promise_test(async function(t) {
   // After 1500ms, force a layout update so that the interstitial detector
   // would have been aware of the first meaningful paint (hadn't we skipped
   // the detection in fullscreen video scenario).
@@ -72,11 +72,7 @@ async_test(async function(t) {
   // Expect that the use counter kOverlayPopupAd is not recorded, as we
   // skipped all previous detection due to there was a fullscreen video
   // element.
-  t.step(function () {
-    assert_false(internals.isUseCounted(document, kOverlayPopupAd));
-  });
-
-  t.done();
+  assert_false(internals.isUseCounted(document, kOverlayPopupAd));
 }, "Test that we will skip the overlay-popup-ad detection if there's a dominant video element in the page.");
 
 </script>

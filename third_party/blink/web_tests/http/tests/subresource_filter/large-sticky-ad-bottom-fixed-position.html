@@ -31,7 +31,7 @@ p {
 <!-- To be positioned further down in the main page to make the page scrollable -->
 <div class="bottom"></div>
 <script>
-async_test(async function(t) {
+promise_test(async function(t) {
   // Create the large-sticky-ad.
   appendAdFrameTo(document.body);
 
@@ -40,9 +40,7 @@ async_test(async function(t) {
   await timeout(1500);
   await forceLayoutUpdate();
 
-  t.step(function () {
-    assert_false(internals.isUseCounted(document, kLargeStickyAd));
-  });
+  assert_false(internals.isUseCounted(document, kLargeStickyAd));
 
   // Scroll down to 1px.
   window.scrollTo(0, 1);
@@ -52,9 +50,7 @@ async_test(async function(t) {
   // candidate, so we expect no use counter for kLargeStickyAd.
   await timeout(1500);
   await forceLayoutUpdate();
-  t.step(function () {
-    assert_false(internals.isUseCounted(document, kLargeStickyAd));
-  });
+  assert_false(internals.isUseCounted(document, kLargeStickyAd));
 
   // Scroll down to 5000px.
   window.scrollTo(0, 5000);
@@ -64,10 +60,7 @@ async_test(async function(t) {
   // so the use counter kLargeStickyAd should be recorded.
   await timeout(1500);
   await forceLayoutUpdate();
-  t.step(function () {
-    assert_true(internals.isUseCounted(document, kLargeStickyAd));
-  });
-  t.done();
+  assert_true(internals.isUseCounted(document, kLargeStickyAd));
 }, "Test UseCounter for large-sticky-ad at the bottom when the frame itself has a fixed position.");
 </script>
 </body>

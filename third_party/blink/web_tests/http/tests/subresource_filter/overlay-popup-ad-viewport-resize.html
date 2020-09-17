@@ -42,7 +42,7 @@ if (window.testRunner) {
   internals.DisableFrequencyCappingForOverlayPopupDetection();
 }
 
-async_test(async function(t) {
+promise_test(async function(t) {
   // After 1500ms, force a layout update so that the interstitial detector
   // is aware of the first meaningful paint, and future overlay candidates
   // will be considered for pop-ups rather than for prestitials.
@@ -62,9 +62,7 @@ async_test(async function(t) {
 
   // Expect no OverlayPopupAd usage, as the ad frame is not in the center of
   // the viewport.
-  t.step(function () {
-    assert_false(internals.isUseCounted(document, kOverlayPopupAd));
-  });
+  assert_false(internals.isUseCounted(document, kOverlayPopupAd));
 
   // Resize the window to to make the overlay iframe centered and large
   // relative to the viewport.
@@ -78,18 +76,14 @@ async_test(async function(t) {
 
   // Expect no OverlayPopupAd usage, as the viewport has just been resized
   // so we have skipped this detection.
-  t.step(function () {
-    assert_false(internals.isUseCounted(document, kOverlayPopupAd));
-  });
+  assert_false(internals.isUseCounted(document, kOverlayPopupAd));
 
   // Force a layout update, to trigger another detection event.
   await forceLayoutUpdate();
 
   // Expect no OverlayPopupAd usage, as the overlay has been marked
   // unqualified.
-  t.step(function () {
-    assert_false(internals.isUseCounted(document, kOverlayPopupAd));
-  });
+  assert_false(internals.isUseCounted(document, kOverlayPopupAd));
 
   // Create another overlay pop-up ad.
   appendAdFrameTo(document.getElementsByTagName('div')[0]);
@@ -99,11 +93,7 @@ async_test(async function(t) {
   await forceLayoutUpdate();
 
   // Expect OverlayPopupAd usage due to the appearance of the new overlay.
-  t.step(function () {
-    assert_true(internals.isUseCounted(document, kOverlayPopupAd));
-  });
-
-  t.done();
+  assert_true(internals.isUseCounted(document, kOverlayPopupAd));
 }, "Test overlay-popup-ad when the ad appears before (no use counter) & after (use counter) resizing the viewport.");
 </script>
 </body>

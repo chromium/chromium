@@ -52,7 +52,7 @@ p {
 <div class="content2">some content</div>
 
 <script>
-async_test(async function(t) {
+promise_test(async function(t) {
   // Create the large-sticky-ad.
   appendAdFrameTo(document.body);
 
@@ -64,9 +64,7 @@ async_test(async function(t) {
   // detector is aware of the candidate.
   await timeout(1500);
   await forceLayoutUpdate();
-  t.step(function () {
-    assert_false(internals.isUseCounted(document, kLargeStickyAd));
-  });
+  assert_false(internals.isUseCounted(document, kLargeStickyAd));
 
   // Scroll further down to the position where the parallax-ad is covered by
   // "content2" and becomes invisible again.
@@ -78,11 +76,7 @@ async_test(async function(t) {
   await timeout(1500);
   await forceLayoutUpdate();
 
-  t.step(function () {
-    assert_false(internals.isUseCounted(document, kLargeStickyAd));
-  });
-
-  t.done();
+  assert_false(internals.isUseCounted(document, kLargeStickyAd));
 }, "Test parallax-ad while scrolling over the page. In this case, we expect no use counter for kLargeStickyAd.");
 
 </script>

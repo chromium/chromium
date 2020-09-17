@@ -31,16 +31,14 @@ p {
 <!-- To be positioned further down in the main page to make the page scrollable -->
 <div class="bottom"></div>
 <script>
-async_test(async function(t) {
+promise_test(async function(t) {
   // Create the large-sticky-ad.
   appendAdFrameTo(document.body);
 
   // After 1500ms, force a layout update.
   await timeout(1500);
   await forceLayoutUpdate();
-  t.step(function () {
-    assert_false(internals.isUseCounted(document, kLargeStickyAd));
-  });
+  assert_false(internals.isUseCounted(document, kLargeStickyAd));
 
   // Scroll down to 5000px.
   window.scrollTo(0, 5000);
@@ -50,11 +48,7 @@ async_test(async function(t) {
   // We expect no kLargeStickyAd use counter.
   await timeout(1500);
   await forceLayoutUpdate();
-  t.step(function () {
-    assert_false(internals.isUseCounted(document, kLargeStickyAd));
-  });
-
-  t.done();
+  assert_false(internals.isUseCounted(document, kLargeStickyAd));
 }, "Test a large-sticky-ad at the center. In this case, we expect no use counter for kLargeStickyAd.");
 </script>
 </body>

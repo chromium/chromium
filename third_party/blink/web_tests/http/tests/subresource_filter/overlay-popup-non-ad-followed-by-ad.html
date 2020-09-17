@@ -49,7 +49,7 @@ if (window.testRunner) {
   internals.DisableFrequencyCappingForOverlayPopupDetection();
 }
 
-async_test(async function(t) {
+promise_test(async function(t) {
   // After 1500ms, force a layout update so that the interstitial detector
   // is aware of the first meaningful paint, and future overlay candidates
   // will be considered for pop-ups rather than for prestitials.
@@ -72,14 +72,10 @@ async_test(async function(t) {
   await forceLayoutUpdate();
 
   // Expect use counter kOverlayPopup.
-  t.step(function () {
-    assert_true(internals.isUseCounted(document, kOverlayPopup));
-  });
+  assert_true(internals.isUseCounted(document, kOverlayPopup));
 
   // Expect use counter kOverlayPopupAd is NOT recorded.
-  t.step(function () {
-    assert_false(internals.isUseCounted(document, kOverlayPopupAd));
-  });
+  assert_false(internals.isUseCounted(document, kOverlayPopupAd));
 
   // Create the overlay pop-up ad.
   appendAdFrameTo(document.getElementsByTagName('div')[0]);
@@ -96,11 +92,7 @@ async_test(async function(t) {
   await forceLayoutUpdate();
 
   // Expect use counter kOverlayPopupAd.
-  t.step(function () {
-    assert_true(internals.isUseCounted(document, kOverlayPopupAd));
-  });
-
-  t.done();
+  assert_true(internals.isUseCounted(document, kOverlayPopupAd));
 }, "Test UseCounter for overlay-popup non-ad element followed by an ad element.");
 </script>
 </body>

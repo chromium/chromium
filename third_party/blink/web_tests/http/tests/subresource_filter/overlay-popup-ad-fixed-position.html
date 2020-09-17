@@ -45,7 +45,7 @@ if (window.testRunner) {
   internals.DisableFrequencyCappingForOverlayPopupDetection();
 }
 
-async_test(async function(t) {
+promise_test(async function(t) {
   // After 1500ms, force a layout update so that the interstitial detector
   // is aware of the first meaningful paint, and future overlay candidates
   // will be considered for pop-ups rather than for prestitials.
@@ -67,11 +67,7 @@ async_test(async function(t) {
   await forceLayoutUpdate();
 
   // Expect the OverlayPopupAd UseCounter.
-  t.step(function() {
-    assert_true(internals.isUseCounted(document, kOverlayPopupAd));
-  });
-
-  t.done();
+  assert_true(internals.isUseCounted(document, kOverlayPopupAd));
 }, "Test UseCounter for overlay-popup-ad when the frame itself has a fixed position.");
 
 </script>

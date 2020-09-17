@@ -31,7 +31,7 @@ p {
 <!-- To be positioned further down in the main page to make the page scrollable -->
 <div class="bottom"></div>
 <script>
-async_test(async function(t) {
+promise_test(async function(t) {
   // Create the large-sticky-ad.
   appendAdFrameTo(document.body);
 
@@ -42,9 +42,7 @@ async_test(async function(t) {
   // aware of the sticky ad candidate.
   await timeout(1500);
   await forceLayoutUpdate();
-  t.step(function () {
-    assert_false(internals.isUseCounted(document, kLargeStickyAd));
-  });
+  assert_false(internals.isUseCounted(document, kLargeStickyAd));
 
   // Scroll down to 5000px. Reset the frame's position w.r.t. the viewport
   // to its initial position.
@@ -56,11 +54,7 @@ async_test(async function(t) {
   // so the use counter kLargeStickyAd should be recorded.
   await timeout(1500);
   await forceLayoutUpdate();
-  t.step(function() {
-    assert_true(internals.isUseCounted(document, kLargeStickyAd));
-  });
-
-  t.done();
+  assert_true(internals.isUseCounted(document, kLargeStickyAd));
 }, "Test UseCounter for large-sticky-ad at the bottom when the frame itself has an absolute position, and along with scrolling the ad's position w.r.t. the browser viewport gets frequently reset to the initial postion.");
 </script>
 </body>
