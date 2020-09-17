@@ -80,6 +80,7 @@ copy("chrome_camera_app_images") {
     "src/images/camera_shutter_video_pause.svg",
     "src/images/settings_button_back.svg",
     "src/images/settings_button_expand.svg",
+    "src/images/settings_expert.svg",
     "src/images/settings_feedback.svg",
     "src/images/settings_grid_type.svg",
     "src/images/settings_help.svg",

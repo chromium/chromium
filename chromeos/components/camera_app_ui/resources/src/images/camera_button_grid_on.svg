@@ -1,19 +1,3 @@
-<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <defs>
-        <path d="M19.3,4 L5.7,4 C4.765,4 4,4.765 4,5.7 L4,19.3 C4,20.235 4.765,21 5.7,21 L19.3,21 C20.235,21 21,20.235 21,19.3 L21,5.7 C21,4.765 20.235,4 19.3,4 Z M9.1,19.3 L5.7,19.3 L5.7,15.9 L9.1,15.9 L9.1,19.3 Z M9.1,14.2 L5.7,14.2 L5.7,10.8 L9.1,10.8 L9.1,14.2 Z M9.1,9.1 L5.7,9.1 L5.7,5.7 L9.1,5.7 L9.1,9.1 Z M14.2,19.3 L10.8,19.3 L10.8,15.9 L14.2,15.9 L14.2,19.3 Z M14.2,14.2 L10.8,14.2 L10.8,10.8 L14.2,10.8 L14.2,14.2 Z M14.2,9.1 L10.8,9.1 L10.8,5.7 L14.2,5.7 L14.2,9.1 Z M19.3,19.3 L15.9,19.3 L15.9,15.9 L19.3,15.9 L19.3,19.3 Z M19.3,14.2 L15.9,14.2 L15.9,10.8 L19.3,10.8 L19.3,14.2 Z M19.3,9.1 L15.9,9.1 L15.9,5.7 L19.3,5.7 L19.3,9.1 Z" id="path-1"></path>
-        <filter x="-26.5%" y="-26.5%" width="152.9%" height="152.9%" filterUnits="objectBoundingBox" id="filter-3">
-            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
-            <feGaussianBlur stdDeviation="1.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
-            <feColorMatrix values="0 0 0 0 0.125490196   0 0 0 0 0.129411765   0 0 0 0 0.141176471  0 0 0 0.3 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
-        </filter>
-    </defs>
-    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <mask id="mask-2" fill="white">
-            <use xlink:href="#path-1"></use>
-        </mask>
-        <g id="ic_grid_on_24px" fill-rule="nonzero">
-            <use fill="black" fill-opacity="1" filter="url(#filter-3)" xlink:href="#path-1"></use>
-            <use fill="#FFFFFF" xlink:href="#path-1"></use>
-        </g>
-    </g>
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M16 2C17.1046 2 18 2.89543 18 4V16C18 17.1046 17.1046 18 16 18H4C2.89543 18 2 17.1046 2 16V4C2 2.89543 2.89543 2 4 2H16ZM7 13H4V16H7V13ZM16 13H13V16H16V13ZM12 13H8V16H12V13ZM7 8H4V12H7V8ZM16 8H13V12H16V8ZM12 8H8V12H12V8ZM7 4H4V7H7V4ZM16 4H13V7H16V4ZM12 4H8V7H12V4Z" fill="#E8EAED"/>
 </svg>

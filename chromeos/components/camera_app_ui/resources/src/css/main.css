@@ -1133,6 +1133,8 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
 
 .menu-header,
 .menu-item {
+  --toggled-color: rgb(140, 180, 245);
+
   align-items: center;
   color: rgb(241, 243, 244);
   display: flex;
@@ -1152,7 +1154,7 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
 .menu-header {
   color: white;
   font-size: 20px;
-  height: 88px;
+  height: 72px;
 }
 
 .menu-header .icon,
@@ -1207,14 +1209,18 @@ body._10sec .description span[i18n-content=label_timer_10s],
 
 .menu-item input:checked::before {
   background-clip: padding-box;
-  background-color: rgb(241, 243, 244);
+  background-color: var(--toggled-color);
   border: 4px solid transparent;
   bottom: 12px;
-  box-shadow: 0 0 0 1px rgb(241, 243, 244);
+  box-shadow: 0 0 0 1px var(--toggled-color);
   left: 12px;
   right: 12px;
   top: 12px;
   transition: border-width 100ms ease-in;
+}
+
+.menu-item input:checked + span {
+  color: var(--toggled-color);
 }
 
 body.tab-navigation button.menu-item:focus::after {
@@ -1243,8 +1249,7 @@ body.no-resolution-settings #settings-resolution {
 }
 
 #settings-expert .icon {
-  /* TODO(kaihsien): use correct icon */
-  background-image: url(../images/settings_resolution.svg);
+  background-image: url(../images/settings_expert.svg);
 }
 
 #settings-feedback .icon {
