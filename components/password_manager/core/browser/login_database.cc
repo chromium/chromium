@@ -1123,6 +1123,7 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
   const bool success = s.Run();
   if (success) {
     // If success, the row never existed so password was not changed.
+    FillFormInStore(&form_with_encrypted_password);
     list.emplace_back(PasswordStoreChange::ADD,
                       std::move(form_with_encrypted_password),
                       db_.GetLastInsertRowId(),
@@ -1141,8 +1142,11 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
       db_.GetCachedStatement(SQL_FROM_HERE, add_replace_statement_.c_str()));
   BindAddStatement(form_with_encrypted_password, &s);
   if (s.Run()) {
-    list.emplace_back(PasswordStoreChange::REMOVE, form,
+    PasswordForm removed_form = form;
+    FillFormInStore(&removed_form);
+    list.emplace_back(PasswordStoreChange::REMOVE, removed_form,
                       old_primary_key_password.primary_key);
+    FillFormInStore(&form_with_encrypted_password);
     list.emplace_back(PasswordStoreChange::ADD,
                       std::move(form_with_encrypted_password),
                       db_.GetLastInsertRowId(), password_changed);
@@ -1238,6 +1242,7 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
         form.password_value != old_primary_key_password.decrypted_password;
     PasswordForm form_with_encrypted_password = form;
     form_with_encrypted_password.encrypted_password = encrypted_password;
+    FillFormInStore(&form_with_encrypted_password);
     list.emplace_back(PasswordStoreChange::UPDATE,
                       std::move(form_with_encrypted_password),
                       old_primary_key_password.primary_key, password_changed);
@@ -1274,7 +1279,9 @@ bool LoginDatabase::RemoveLogin(const PasswordForm& form,
     return false;
   }
   if (changes) {
-    changes->emplace_back(PasswordStoreChange::REMOVE, form,
+    PasswordForm removed_form = form;
+    FillFormInStore(&removed_form);
+    changes->emplace_back(PasswordStoreChange::REMOVE, removed_form,
                           old_primary_key_password.primary_key,
                           /*password_changed=*/true);
   }
@@ -1311,6 +1318,7 @@ bool LoginDatabase::RemoveLoginByPrimaryKey(int primary_key,
     return false;
   }
   if (changes) {
+    FillFormInStore(&form);
     changes->emplace_back(PasswordStoreChange::REMOVE, std::move(form),
                           primary_key, /*password_changed=*/true);
   }
@@ -1963,9 +1971,8 @@ FormRetrievalResult LoginDatabase::StatementToForms(
   key_to_form_map->clear();
   while (statement->Step()) {
     auto new_form = std::make_unique<PasswordForm>();
-    new_form->in_store = is_account_store()
-                             ? PasswordForm::Store::kAccountStore
-                             : PasswordForm::Store::kProfileStore;
+    FillFormInStore(new_form.get());
+
     int primary_key = -1;
     EncryptionResult result = InitPasswordFormFromStatement(
         *statement, /*decrypt_and_fill_password_value=*/true, &primary_key,
@@ -2078,6 +2085,11 @@ void LoginDatabase::InitializeStatementStrings(const SQLTableBuilder& builder) {
   DCHECK(id_and_password_statement_.empty());
   id_and_password_statement_ = "SELECT id, password_value FROM logins WHERE " +
                                all_unique_key_column_names;
+}
+
+void LoginDatabase::FillFormInStore(PasswordForm* form) const {
+  form->in_store = is_account_store() ? PasswordForm::Store::kAccountStore
+                                      : PasswordForm::Store::kProfileStore;
 }
 
 }  // namespace password_manager

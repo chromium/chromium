@@ -329,6 +329,10 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // fragments based on |builder|.
   void InitializeStatementStrings(const SQLTableBuilder& builder);
 
+  // Sets the `in_store` member of `form` to either kProfileStore or
+  // kAccountStore depending on the value of `is_account_store_`.
+  void FillFormInStore(autofill::PasswordForm* form) const;
+
   const base::FilePath db_path_;
   const IsAccountStore is_account_store_;
 

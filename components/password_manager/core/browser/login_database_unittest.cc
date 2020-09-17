@@ -2607,4 +2607,34 @@ TEST_F(LoginDatabaseTest, GetLoginsEncryptedPassword) {
   ASSERT_FALSE(forms[0]->encrypted_password.empty());
 }
 
+class LoginDatabaseForAccountStoreTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    file_ = temp_dir_.GetPath().AppendASCII("TestMetadataStoreMacDatabase");
+    OSCryptMocker::SetUp();
+
+    db_ = std::make_unique<LoginDatabase>(file_, IsAccountStore(true));
+    ASSERT_TRUE(db_->Init());
+  }
+
+  void TearDown() override { OSCryptMocker::TearDown(); }
+
+  LoginDatabase& db() { return *db_; }
+
+  base::ScopedTempDir temp_dir_;
+  base::FilePath file_;
+  std::unique_ptr<LoginDatabase> db_;
+  base::test::TaskEnvironment task_environment_;
+};
+
+TEST_F(LoginDatabaseForAccountStoreTest, AddLogins) {
+  PasswordForm form;
+  GenerateExamplePasswordForm(&form);
+
+  PasswordStoreChangeList changes = db().AddLogin(form);
+  ASSERT_EQ(1U, changes.size());
+  EXPECT_EQ(PasswordForm::Store::kAccountStore, changes[0].form().in_store);
+}
+
 }  // namespace password_manager
