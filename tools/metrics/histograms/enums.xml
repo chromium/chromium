@@ -16241,6 +16241,9 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="41" label="Capture CSS Overview clicked"/>
   <int value="42" label="Virtual authenticator environment enabled"/>
   <int value="43" label="Source Order Overlay Activated"/>
+  <int value="44" label="User keyboard shortcut added"/>
+  <int value="45" label="Keyboard shortcut removed"/>
+  <int value="46" label="Keyboard shortcut modified"/>
 </enum>
 
 <enum name="DevToolsBackgroundService">
@@ -16304,6 +16307,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="32" label="dualScreenSupport"/>
   <int value="33" label="cssGridFeatures"/>
   <int value="34" label="movableTabs"/>
+  <int value="35" label="keyboardShortcutEditor"/>
 </enum>
 
 <enum name="DevToolsGridOverlayOpenedFrom">
