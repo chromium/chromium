@@ -36,6 +36,7 @@
 #include "third_party/blink/public/common/css/navigation_controls.h"
 #include "third_party/blink/public/common/css/preferred_color_scheme.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/v8_cache_options.mojom-forward.h"
 #include "third_party/blink/public/platform/pointer_properties.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
@@ -55,14 +56,6 @@ class WebSettings {
   enum class ImageAnimationPolicy { kAllowed, kAnimateOnce, kNoAnimation };
 
   enum class EditingBehavior { kMac, kWin, kUnix, kAndroid, kChromeOS };
-
-  enum class V8CacheOptions {
-    kDefault,
-    kNone,
-    kCode,
-    kCodeWithoutHeatCheck,
-    kFullCodeWithoutHeatCheck
-  };
 
   // Selection strategy defines how the selection granularity changes when the
   // selection extent is moved.
@@ -255,7 +248,7 @@ class WebSettings {
   virtual void SetUseLegacyBackgroundSizeShorthandBehavior(bool) = 0;
   virtual void SetViewportStyle(WebViewportStyle) = 0;
   virtual void SetUseWideViewport(bool) = 0;
-  virtual void SetV8CacheOptions(V8CacheOptions) = 0;
+  virtual void SetV8CacheOptions(mojom::V8CacheOptions) = 0;
   virtual void SetValidationMessageTimerMagnification(int) = 0;
   virtual void SetViewportEnabled(bool) = 0;
   virtual void SetViewportMetaEnabled(bool) = 0;

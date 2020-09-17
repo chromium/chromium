@@ -27,7 +27,7 @@ bool WorkletModulatorImpl::IsDynamicImportForbidden(String* reason) {
   return true;
 }
 
-V8CacheOptions WorkletModulatorImpl::GetV8CacheOptions() const {
+mojom::blink::V8CacheOptions WorkletModulatorImpl::GetV8CacheOptions() const {
   auto* scope = To<WorkletGlobalScope>(GetExecutionContext());
   return scope->GetV8CacheOptions();
 }

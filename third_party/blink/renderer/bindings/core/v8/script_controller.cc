@@ -36,6 +36,7 @@
 #include <utility>
 
 #include "base/bind_helpers.h"
+#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -99,7 +100,8 @@ v8::Local<v8::Value> ScriptController::ExecuteScriptAndReturnValue(
           GetFrame(), source.Url().GetString(), source.StartPosition()));
   v8::Local<v8::Value> result;
   {
-    V8CacheOptions v8_cache_options = kV8CacheOptionsDefault;
+    mojom::blink::V8CacheOptions v8_cache_options =
+        mojom::blink::V8CacheOptions::kDefault;
     if (const Settings* settings = GetFrame()->GetSettings())
       v8_cache_options = settings->GetV8CacheOptions();
 
@@ -113,7 +115,7 @@ v8::Local<v8::Value> ScriptController::ExecuteScriptAndReturnValue(
     if (!V8ScriptRunner::CompileAndRunScript(
              GetIsolate(), ScriptState::From(context), GetFrame()->DomWindow(),
              source, base_url, sanitize_script_errors, fetch_options,
-             v8_cache_options)
+             std::move(v8_cache_options))
              .ToLocal(&result)) {
       return result;
     }

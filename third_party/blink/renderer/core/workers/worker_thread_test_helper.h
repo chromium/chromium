@@ -12,8 +12,8 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_cache_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -150,7 +150,8 @@ class WorkerThreadForTest : public WorkerThread {
         network::mojom::IPAddressSpace::kLocal, nullptr,
         base::UnguessableToken::Create(),
         std::make_unique<WorkerSettings>(std::make_unique<Settings>().get()),
-        kV8CacheOptionsDefault, nullptr /* worklet_module_responses_map */);
+        mojom::blink::V8CacheOptions::kDefault,
+        nullptr /* worklet_module_responses_map */);
     // Create a dummy parent context.
     creation_params->parent_context_token = LocalFrameToken();
 

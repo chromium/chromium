@@ -218,7 +218,8 @@ void ModuleScriptLoaderTest::InitializeForWorklet() {
       nullptr /* worker_clients */, nullptr /* content_settings_client */,
       network::mojom::IPAddressSpace::kLocal, nullptr /* origin_trial_token */,
       base::UnguessableToken::Create(), nullptr /* worker_settings */,
-      kV8CacheOptionsDefault, MakeGarbageCollected<WorkletModuleResponsesMap>(),
+      mojom::blink::V8CacheOptions::kDefault,
+      MakeGarbageCollected<WorkletModuleResponsesMap>(),
       mojo::NullRemote() /* browser_interface_broker */,
       BeginFrameProviderParams(), nullptr /* parent_feature_policy */,
       base::UnguessableToken::Create() /* agent_cluster_id */);

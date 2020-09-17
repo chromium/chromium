@@ -113,7 +113,7 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
 
   virtual ScriptState* GetScriptState() = 0;
 
-  virtual V8CacheOptions GetV8CacheOptions() const = 0;
+  virtual mojom::blink::V8CacheOptions GetV8CacheOptions() const = 0;
 
   // https://html.spec.whatwg.org/C/#concept-bc-noscript
   // "scripting is disabled for settings's responsible browsing context"

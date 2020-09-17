@@ -6,6 +6,7 @@
 
 #include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
@@ -88,7 +89,7 @@ v8::ScriptCompiler::CachedData* V8CodeCache::CreateCachedData(
 std::tuple<v8::ScriptCompiler::CompileOptions,
            V8CodeCache::ProduceCacheOptions,
            v8::ScriptCompiler::NoCacheReason>
-V8CodeCache::GetCompileOptions(V8CacheOptions cache_options,
+V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions cache_options,
                                const ScriptSourceCode& source) {
   return GetCompileOptions(cache_options, source.CacheHandler(),
                            source.Source().length(),
@@ -98,7 +99,7 @@ V8CodeCache::GetCompileOptions(V8CacheOptions cache_options,
 std::tuple<v8::ScriptCompiler::CompileOptions,
            V8CodeCache::ProduceCacheOptions,
            v8::ScriptCompiler::NoCacheReason>
-V8CodeCache::GetCompileOptions(V8CacheOptions cache_options,
+V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions cache_options,
                                const SingleCachedMetadataHandler* cache_handler,
                                size_t source_text_length,
                                ScriptSourceLocationType source_location_type) {
@@ -129,7 +130,7 @@ V8CodeCache::GetCompileOptions(V8CacheOptions cache_options,
                            no_cache_reason);
   }
 
-  if (cache_options == kV8CacheOptionsNone) {
+  if (cache_options == mojom::blink::V8CacheOptions::kNone) {
     no_cache_reason = v8::ScriptCompiler::kNoCacheBecauseCachingDisabled;
     return std::make_tuple(v8::ScriptCompiler::kNoCompileOptions,
                            ProduceCacheOptions::kNoProduceCache,
@@ -152,11 +153,11 @@ V8CodeCache::GetCompileOptions(V8CacheOptions cache_options,
   // If the resource is served from CacheStorage, generate the V8 code cache in
   // the first load.
   if (cache_handler->IsServedFromCacheStorage())
-    cache_options = kV8CacheOptionsCodeWithoutHeatCheck;
+    cache_options = mojom::blink::V8CacheOptions::kCodeWithoutHeatCheck;
 
   switch (cache_options) {
-    case kV8CacheOptionsDefault:
-    case kV8CacheOptionsCode:
+    case mojom::blink::V8CacheOptions::kDefault:
+    case mojom::blink::V8CacheOptions::kCode:
       if (!IsResourceHotForCaching(cache_handler)) {
         return std::make_tuple(v8::ScriptCompiler::kNoCompileOptions,
                                ProduceCacheOptions::kSetTimeStamp,
@@ -166,17 +167,17 @@ V8CodeCache::GetCompileOptions(V8CacheOptions cache_options,
           v8::ScriptCompiler::kNoCompileOptions,
           ProduceCacheOptions::kProduceCodeCache,
           v8::ScriptCompiler::kNoCacheBecauseDeferredProduceCodeCache);
-    case kV8CacheOptionsCodeWithoutHeatCheck:
+    case mojom::blink::V8CacheOptions::kCodeWithoutHeatCheck:
       return std::make_tuple(
           v8::ScriptCompiler::kNoCompileOptions,
           ProduceCacheOptions::kProduceCodeCache,
           v8::ScriptCompiler::kNoCacheBecauseDeferredProduceCodeCache);
-    case kV8CacheOptionsFullCodeWithoutHeatCheck:
+    case mojom::blink::V8CacheOptions::kFullCodeWithoutHeatCheck:
       return std::make_tuple(
           v8::ScriptCompiler::kEagerCompile,
           ProduceCacheOptions::kProduceCodeCache,
           v8::ScriptCompiler::kNoCacheBecauseDeferredProduceCodeCache);
-    case kV8CacheOptionsNone:
+    case mojom::blink::V8CacheOptions::kNone:
       // Shouldn't happen, as this is handled above.
       // Case is here so that compiler can check all cases are handled.
       NOTREACHED();
@@ -364,14 +365,5 @@ scoped_refptr<CachedMetadata> V8CodeCache::GenerateFullCodeCache(
 
   return cached_metadata;
 }
-
-STATIC_ASSERT_ENUM(WebSettings::V8CacheOptions::kDefault,
-                   kV8CacheOptionsDefault);
-STATIC_ASSERT_ENUM(WebSettings::V8CacheOptions::kNone, kV8CacheOptionsNone);
-STATIC_ASSERT_ENUM(WebSettings::V8CacheOptions::kCode, kV8CacheOptionsCode);
-STATIC_ASSERT_ENUM(WebSettings::V8CacheOptions::kCodeWithoutHeatCheck,
-                   kV8CacheOptionsCodeWithoutHeatCheck);
-STATIC_ASSERT_ENUM(WebSettings::V8CacheOptions::kFullCodeWithoutHeatCheck,
-                   kV8CacheOptionsFullCodeWithoutHeatCheck);
 
 }  // namespace blink

@@ -109,7 +109,7 @@ class CORE_EXPORT ModuleRecord final {
       const ScriptFetchOptions&,
       const TextPosition&,
       ExceptionState&,
-      V8CacheOptions = kV8CacheOptionsDefault,
+      mojom::blink::V8CacheOptions = mojom::blink::V8CacheOptions::kDefault,
       SingleCachedMetadataHandler* = nullptr,
       ScriptSourceLocationType source_location_type =
           ScriptSourceLocationType::kInternal,

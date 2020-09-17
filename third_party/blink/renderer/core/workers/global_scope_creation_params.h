@@ -17,9 +17,9 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_cache_options.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
@@ -58,7 +58,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       const Vector<String>* origin_trial_tokens,
       const base::UnguessableToken& parent_devtools_token,
       std::unique_ptr<WorkerSettings>,
-      V8CacheOptions,
+      mojom::blink::V8CacheOptions,
       WorkletModuleResponsesMap*,
       mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>
           browser_interface_broker = mojo::NullRemote(),
@@ -147,7 +147,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
 
   std::unique_ptr<WorkerSettings> worker_settings;
 
-  V8CacheOptions v8_cache_options;
+  mojom::blink::V8CacheOptions v8_cache_options;
 
   CrossThreadPersistent<WorkletModuleResponsesMap> module_responses_map;
 

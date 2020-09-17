@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/v8_cache_options.mojom.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "ui/base/ui_base_switches_util.h"
 
@@ -40,17 +41,6 @@ STATIC_ASSERT_ENUM(EDITING_BEHAVIOR_ANDROID,
                    WebSettings::EditingBehavior::kAndroid);
 STATIC_ASSERT_ENUM(EDITING_BEHAVIOR_CHROMEOS,
                    WebSettings::EditingBehavior::kChromeOS);
-
-STATIC_ASSERT_ENUM(blink::mojom::V8CacheOptions::kDefault,
-                   WebSettings::V8CacheOptions::kDefault);
-STATIC_ASSERT_ENUM(blink::mojom::V8CacheOptions::kNone,
-                   WebSettings::V8CacheOptions::kNone);
-STATIC_ASSERT_ENUM(blink::mojom::V8CacheOptions::kCode,
-                   WebSettings::V8CacheOptions::kCode);
-STATIC_ASSERT_ENUM(blink::mojom::V8CacheOptions::kCodeWithoutHeatCheck,
-                   WebSettings::V8CacheOptions::kCodeWithoutHeatCheck);
-STATIC_ASSERT_ENUM(blink::mojom::V8CacheOptions::kFullCodeWithoutHeatCheck,
-                   WebSettings::V8CacheOptions::kFullCodeWithoutHeatCheck);
 
 STATIC_ASSERT_ENUM(IMAGE_ANIMATION_POLICY_ALLOWED,
                    WebSettings::ImageAnimationPolicy::kAllowed);

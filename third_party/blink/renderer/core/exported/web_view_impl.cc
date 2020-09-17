@@ -1996,8 +1996,7 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
 
   settings->SetSelectionIncludesAltImageText(true);
 
-  settings->SetV8CacheOptions(
-      static_cast<WebSettings::V8CacheOptions>(prefs.v8_cache_options));
+  settings->SetV8CacheOptions(prefs.v8_cache_options);
 
   settings->SetImageAnimationPolicy(
       static_cast<WebSettings::ImageAnimationPolicy>(prefs.animation_policy));

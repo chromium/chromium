@@ -69,7 +69,7 @@ class MainThreadWorkletTest : public PageTestBase {
         nullptr /* worker_clients */, nullptr /* content_settings_client */,
         window->AddressSpace(), OriginTrialContext::GetTokens(window).get(),
         base::UnguessableToken::Create(), nullptr /* worker_settings */,
-        kV8CacheOptionsDefault,
+        mojom::blink::V8CacheOptions::kDefault,
         MakeGarbageCollected<WorkletModuleResponsesMap>(),
         mojo::NullRemote() /* browser_interface_broker */,
         BeginFrameProviderParams(), nullptr /* parent_feature_policy */,
