@@ -153,7 +153,7 @@ bool LayoutNGFieldset::HitTestChildren(HitTestResult& result,
   if (!legend || legend->HasSelfPaintingLayer() || legend->IsColumnSpanAll())
     return false;
   if (legend->NodeAtPoint(result, hit_test_location,
-                          legend->PhysicalLocation(this),
+                          accumulated_offset + legend->PhysicalLocation(this),
                           hit_test_action == kHitTestChildBlockBackgrounds
                               ? kHitTestChildBlockBackground
                               : hit_test_action)) {
