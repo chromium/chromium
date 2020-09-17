@@ -322,9 +322,6 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Returns a SharedCorsOriginAccessList instance.
   virtual SharedCorsOriginAccessList* GetSharedCorsOriginAccessList();
 
-  // Returns true if OOR-CORS should be enabled.
-  virtual bool ShouldEnableOutOfBlinkCors();
-
   // Binds a NavigableContentsFactory interface receiver to this browser
   // context.
   virtual void BindNavigableContentsFactory(

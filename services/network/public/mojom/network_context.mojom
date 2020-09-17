@@ -441,13 +441,6 @@ struct NetworkContextParams {
   // policy.
   array<string> hsts_policy_bypass_list;
 
-  // Specifies the CORS mode.
-  //   kDefault - Decided by base::Feature
-  //   kEnable  - Enable CORS in Network Service (aka OOR-CORS)
-  //   kDisable - Don't enable CORS (Blink will take care of it)
-  enum CorsMode {kDefault, kDisable, kEnable};
-  CorsMode cors_mode = kDefault;
-
   // Points to a sqlite database containing persisted Reporting clients and NEL
   // policies. If Reporting and NEL persistence is disabled, then we'll ignore
   // this field. If this field is null then persistence will be disabled

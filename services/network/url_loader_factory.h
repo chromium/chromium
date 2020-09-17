@@ -38,9 +38,8 @@ class CorsURLLoaderFactory;
 // works on each frame.
 // A URLLoaderFactory can be created with null ResourceSchedulerClient, in which
 // case requests constructed by the factory will not be throttled.
-// The CORS related part is implemented in CorsURLLoader[Factory] until
-// kOutOfBlinkCors and kNetworkService is fully enabled. Note that
-// NetworkContext::CreateURLLoaderFactory returns a CorsURLLoaderFactory,
+// Note that the CORS related part is implemented in CorsURLLoader[Factory]
+// and NetworkContext::CreateURLLoaderFactory returns a CorsURLLoaderFactory,
 // instead of a URLLoaderFactory.
 class URLLoaderFactory : public mojom::URLLoaderFactory {
  public:
