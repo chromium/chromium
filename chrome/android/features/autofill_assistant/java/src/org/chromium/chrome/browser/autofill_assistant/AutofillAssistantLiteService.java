@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
-import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -17,16 +16,21 @@ import org.chromium.content_public.browser.WebContents;
 @JNINamespace("autofill_assistant")
 public class AutofillAssistantLiteService
         implements AutofillAssistantServiceInjector.NativeServiceProvider {
+    interface Delegate {
+        /** The lite script has finished with {@code state}. */
+        void onFinished(@LiteScriptFinishedState int state);
+        /** The UI was shown for the first time to the user. */
+        void onUiShown();
+    }
     private final WebContents mWebContents;
     private final String mTriggerScriptPath;
-    // Returns a state corresponding to {code LiteScriptFinishedState}.
-    private Callback<Integer> mNotifyFinishedCallback;
+    private Delegate mDelegate;
 
-    AutofillAssistantLiteService(WebContents webContents, String triggerScriptPath,
-            Callback<Integer> notifyFinishedCallback) {
+    AutofillAssistantLiteService(
+            WebContents webContents, String triggerScriptPath, Delegate delegate) {
         mWebContents = webContents;
         mTriggerScriptPath = triggerScriptPath;
-        mNotifyFinishedCallback = notifyFinishedCallback;
+        mDelegate = delegate;
     }
 
     @Override
@@ -39,10 +43,17 @@ public class AutofillAssistantLiteService
 
     @CalledByNative
     private void onFinished(@LiteScriptFinishedState int state) {
-        if (mNotifyFinishedCallback != null) {
-            mNotifyFinishedCallback.onResult(state);
+        if (mDelegate != null) {
+            mDelegate.onFinished(state);
             // Ignore subsequent notifications.
-            mNotifyFinishedCallback = null;
+            mDelegate = null;
+        }
+    }
+
+    @CalledByNative
+    private void onUiShown() {
+        if (mDelegate != null) {
+            mDelegate.onUiShown();
         }
     }
 

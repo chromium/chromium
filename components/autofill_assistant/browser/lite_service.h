@@ -24,11 +24,32 @@ namespace autofill_assistant {
 // other information.
 class LiteService : public Service {
  public:
-  explicit LiteService(
-      std::unique_ptr<Service> service_impl,
-      const std::string& trigger_script_path,
-      base::OnceCallback<void(Metrics::LiteScriptFinishedState)>
-          notify_finished_callback);
+  class Delegate {
+   public:
+    virtual ~Delegate() {}
+    // Called the first time the UI is shown to the user.
+    virtual void OnUiShown() const = 0;
+
+    // The lite script has finished with |state|.
+    //
+    // Note that this notification will be run BEFORE the controller shuts down.
+    // This is necessary to transition between old and new bottom sheet
+    // contents.
+    // Case 1: onboarding will be shown. The controller will terminate
+    // gracefully with an explicit stop action executed after the notification
+    // was run.
+    // Case 2: onboarding will not be shown. The controller must terminate
+    // immediately and make way for the main script controller. Since the
+    // notification is run while the old controller is still around, the caller
+    // can hot-swap controllers and smoothly transition bottom sheet contents.
+    // Case 3: the lite script failed (|state| != LITE_SCRIPT_SUCCESS). The
+    // controller will terminate gracefully with an explicit stop action.
+    virtual void OnFinished(Metrics::LiteScriptFinishedState state) const = 0;
+  };
+
+  explicit LiteService(std::unique_ptr<Service> service_impl,
+                       const std::string& trigger_script_path,
+                       std::unique_ptr<Delegate> delegate);
   // If the destructor is called before |GetNextActions|, the script was
   // terminated before finishing (user cancelled, closed the tab, etc.).
   ~LiteService() override;
@@ -80,20 +101,9 @@ class LiteService : public Service {
   std::unique_ptr<Service> service_impl_;
   // The script path to fetch actions from.
   std::string trigger_script_path_;
-  // Notifies the java bridge of the finished state.
-  //
-  // Note that this callback will be run BEFORE the controller shuts down. This
-  // is necessary to transition between old and new bottom sheet contents.
-  // Case 1: onboarding will be shown. The controller will terminate gracefully
-  // with an explicit stop action executed after the callback was run.
-  // Case 2: onboarding will not be shown. The controller must terminate
-  // immediately and make way for the main script controller. Since the callback
-  // is run while the old controller is still around, the caller can hot-swap
-  // controllers and smoothly transition bottom sheet contents.
-  // Case 3: the lite script failed (|state| != LITE_SCRIPT_SUCCESS). The
-  // controller will terminate gracefully with an explicit stop action.
-  base::OnceCallback<void(Metrics::LiteScriptFinishedState)>
-      notify_finished_callback_;
+  // The delegate to notify of changes.
+  std::unique_ptr<Delegate> delegate_;
+
   // The second part of the trigger script, i.e., the actions that should be run
   // after a successful prompt(browse) action in the first part of the script.
   std::unique_ptr<ActionsResponseProto> trigger_script_second_part_;

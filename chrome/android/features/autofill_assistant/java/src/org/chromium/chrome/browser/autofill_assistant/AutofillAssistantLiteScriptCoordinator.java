@@ -44,11 +44,22 @@ class AutofillAssistantLiteScriptCoordinator {
                 AutofillAssistantPreferencesUtil.isAutofillAssistantFirstTimeLiteScriptUser()
                 ? firstTimeUserScriptPath
                 : returningUserScriptPath;
-        AutofillAssistantLiteService liteService =
-                new AutofillAssistantLiteService(mWebContents, usedScriptPath,
-                        finishedState
-                        -> handleLiteScriptResult(finishedState, onFinishedCallback,
-                                firstTimeUserScriptPath, returningUserScriptPath));
+        AutofillAssistantLiteService liteService = new AutofillAssistantLiteService(
+                mWebContents, usedScriptPath, new AutofillAssistantLiteService.Delegate() {
+                    @Override
+                    public void onFinished(int state) {
+                        handleLiteScriptResult(state, onFinishedCallback, firstTimeUserScriptPath,
+                                returningUserScriptPath);
+                    }
+
+                    @Override
+                    public void onUiShown() {
+                        // The prompt was displayed on screen, hence we mark them as returning user
+                        // from now on.
+                        AutofillAssistantPreferencesUtil
+                                .setAutofillAssistantReturningLiteScriptUser();
+                    }
+                });
         AutofillAssistantServiceInjector.setServiceToInject(liteService);
         Map<String, String> parameters = new HashMap<>();
         parameters.put(PARAMETER_TRIGGER_SCRIPT_USED, usedScriptPath);
@@ -73,9 +84,6 @@ class AutofillAssistantLiteScriptCoordinator {
             case LiteScriptFinishedState.LITE_SCRIPT_PROMPT_FAILED_CONDITION_NO_LONGER_TRUE:
             case LiteScriptFinishedState.LITE_SCRIPT_PROMPT_FAILED_OTHER:
             case LiteScriptFinishedState.LITE_SCRIPT_PROMPT_SUCCEEDED:
-                // The prompt was displayed on screen, hence we mark them as returning user from now
-                // on.
-                AutofillAssistantPreferencesUtil.setAutofillAssistantReturningLiteScriptUser();
                 break;
         }
 
