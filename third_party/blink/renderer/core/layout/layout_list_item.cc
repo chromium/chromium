@@ -140,6 +140,10 @@ LayoutObject* GetParentOfFirstLineBox(LayoutBlockFlow* curr) {
     if (curr_child->IsOutsideListMarker())
       continue;
 
+    // Moving a legacy marker inside an NG object is not supported.
+    if (curr_child->IsLayoutNGObject())
+      continue;
+
     if (curr_child->IsInline() &&
         (!curr_child->IsLayoutInline() ||
          curr->GeneratesLineBoxesForInlineChild(curr_child)))
