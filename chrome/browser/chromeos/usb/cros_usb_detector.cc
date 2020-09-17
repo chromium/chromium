@@ -291,6 +291,10 @@ CrosUsbDeviceInfo::CrosUsbDeviceInfo() = default;
 CrosUsbDeviceInfo::CrosUsbDeviceInfo(const CrosUsbDeviceInfo&) = default;
 CrosUsbDeviceInfo::~CrosUsbDeviceInfo() = default;
 
+CrosUsbDeviceInfo::VmSharingInfo::VmSharingInfo() = default;
+CrosUsbDeviceInfo::VmSharingInfo::VmSharingInfo(const VmSharingInfo&) = default;
+CrosUsbDeviceInfo::VmSharingInfo::~VmSharingInfo() = default;
+
 std::string CrosUsbDetector::MakeNotificationId(const std::string& guid) {
   return "cros:" + guid;
 }
@@ -506,8 +510,10 @@ void CrosUsbDetector::OnDeviceRemoved(
 
   std::string guid = device_info->guid;
   for (const auto& device : usb_devices_) {
-    if (device.guid == guid && device.shared_vm_name) {
-      DetachUsbDeviceFromVm(*device.shared_vm_name, guid, base::DoNothing());
+    if (device.guid == guid) {
+      for (const auto& sharing_info_pair : device.vm_sharing_info) {
+        DetachUsbDeviceFromVm(sharing_info_pair.first, guid, base::DoNothing());
+      }
     }
   }
   const auto& start = std::remove_if(
@@ -530,11 +536,13 @@ void CrosUsbDetector::ConnectSharedDevicesOnVmStartup(
     const std::string& vm_name) {
   // Reattach shared devices when the VM becomes available.
   for (auto& device : usb_devices_) {
-    if (device.shared_vm_name == vm_name) {
-      VLOG(1) << "Connecting " << device.label << " to " << vm_name;
-      // Clear any older guest_port setting.
-      device.guest_port = base::nullopt;
-      AttachUsbDeviceToVm(vm_name, device.guid, base::DoNothing());
+    for (auto& sharing_pair : device.vm_sharing_info) {
+      if (sharing_pair.second.shared && sharing_pair.first == vm_name) {
+        VLOG(1) << "Connecting " << device.label << " to " << vm_name;
+        // Clear any older guest_port setting.
+        sharing_pair.second.guest_port = base::nullopt;
+        AttachUsbDeviceToVm(vm_name, device.guid, base::DoNothing());
+      }
     }
   }
 }
@@ -550,7 +558,7 @@ void CrosUsbDetector::AttachUsbDeviceToVm(
       // restart.
       // Setting this flag early also allows the UI not to flicker because of
       // the notification resulting from the default VM detach below.
-      device.shared_vm_name = vm_name;
+      device.vm_sharing_info[vm_name].shared = true;
       allowed_interfaces_mask = device.allowed_interfaces_mask;
       // The guest port will be set on completion.
       break;
@@ -593,9 +601,12 @@ void CrosUsbDetector::DetachUsbDeviceFromVm(
 
   base::Optional<uint8_t> guest_port;
   for (const auto& device : usb_devices_) {
-    if (device.guid == guid && device.shared_vm_name == vm_name) {
-      guest_port = device.guest_port;
-      break;
+    if (device.guid == guid) {
+      const auto it = device.vm_sharing_info.find(vm_name);
+      if (it != device.vm_sharing_info.end()) {
+        guest_port = it->second.guest_port;
+        break;
+      }
     }
   }
 
@@ -641,7 +652,8 @@ void CrosUsbDetector::OnAttachUsbDeviceOpened(
   }
   for (const auto& device : usb_devices_) {
     if (device.guid == device_info->guid) {
-      if (device.shared_vm_name == vm_name && device.guest_port) {
+      const auto it = device.vm_sharing_info.find(vm_name);
+      if (it != device.vm_sharing_info.end() && it->second.guest_port) {
         LOG(ERROR) << "Device " << device.label << " is already shared";
         // The device is already attached.
         std::move(callback).Run(/*success=*/true);
@@ -682,8 +694,9 @@ void CrosUsbDetector::OnUsbDeviceAttachFinished(
   if (success) {
     for (auto& device : usb_devices_) {
       if (device.guid == guid) {
-        device.shared_vm_name = vm_name;
-        device.guest_port = response->guest_port();
+        auto& vm_sharing_info = device.vm_sharing_info[vm_name];
+        vm_sharing_info.shared = true;
+        vm_sharing_info.guest_port = response->guest_port();
         break;
       }
     }
@@ -708,8 +721,7 @@ void CrosUsbDetector::OnUsbDeviceDetachFinished(
 
   for (auto& device : usb_devices_) {
     if (device.guid == guid) {
-      device.shared_vm_name = base::nullopt;
-      device.guest_port = base::nullopt;
+      device.vm_sharing_info.erase(vm_name);
       break;
     }
   }

@@ -288,12 +288,13 @@ namespace {
 base::ListValue UsbDevicesToListValue(
     const std::vector<CrosUsbDeviceInfo> shared_usbs) {
   base::ListValue usb_devices_list;
-  for (auto& device : shared_usbs) {
+  for (auto device : shared_usbs) {
     base::Value device_info(base::Value::Type::DICTIONARY);
-    device_info.SetStringKey("guid", device.guid);
-    device_info.SetStringKey("label", device.label);
-    device_info.SetBoolKey(
-        "shared", device.shared_vm_name == crostini::kCrostiniDefaultVmName);
+    device_info.SetKey("guid", base::Value(device.guid));
+    device_info.SetKey("label", base::Value(device.label));
+    const bool shared_in_crostini =
+        device.vm_sharing_info[crostini::kCrostiniDefaultVmName].shared;
+    device_info.SetKey("shared", base::Value(shared_in_crostini));
     usb_devices_list.Append(std::move(device_info));
   }
   return usb_devices_list;
