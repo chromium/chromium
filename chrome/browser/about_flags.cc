@@ -5045,6 +5045,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAppServiceAdaptiveIconDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAppServiceAdaptiveIcon)},
 
+    {"app-service-external-protocol",
+     flag_descriptions::kAppServiceExternalProtocolName,
+     flag_descriptions::kAppServiceExternalProtocolDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAppServiceExternalProtocol)},
+
     {"app-service-intent-handling",
      flag_descriptions::kAppServiceIntentHandlingName,
      flag_descriptions::kAppServiceIntentHandlingDescription, kOsCrOS,

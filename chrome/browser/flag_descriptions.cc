@@ -3580,6 +3580,10 @@ const char kAllowScrollSettingsDescription[] =
     "Shows settings to enable/disable scroll acceleration and to adjust the "
     "sensitivity for scrolling.";
 
+const char kAppServiceExternalProtocolName[] = "App Service External Protocol";
+const char kAppServiceExternalProtocolDescription[] =
+    "Use the App Service to provide data for external protocol dialog.";
+
 const char kAppServiceIntentHandlingName[] = "App Service Intent Handling";
 const char kAppServiceIntentHandlingDescription[] =
     "Use the App Service to provide data for intent handling.";

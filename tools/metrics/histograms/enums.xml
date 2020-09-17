@@ -42866,6 +42866,7 @@ from previous Chrome versions.
   <int value="278756320" label="disable-app-list-app-info"/>
   <int value="280644887" label="mash"/>
   <int value="280925459" label="LiveCaption:disabled"/>
+  <int value="281024089" label="AppServiceExternalProtocol:disabled"/>
   <int value="282582564" label="DisableCameraFrameRotationAtSource:enabled"/>
   <int value="282636212" label="VideoPlayerNativeControls:disabled"/>
   <int value="283182071" label="SecurityInterstitialsDarkMode:enabled"/>
@@ -44081,6 +44082,7 @@ from previous Chrome versions.
   <int value="1514119870" label="enable-file-manager-touch-mode"/>
   <int value="1515196403" label="fast-user-switching"/>
   <int value="1517863401" label="history-entry-requires-user-gesture"/>
+  <int value="1524178643" label="AppServiceExternalProtocol:enabled"/>
   <int value="1526718531"
       label="DarkenWebsitesCheckboxInThemesSetting:enabled"/>
   <int value="1527292264" label="DisplayChangeModal:enabled"/>

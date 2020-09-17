@@ -144,6 +144,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "app-service-external-protocol",
+    "owners": [ "chromeos-apps-foundation-team@google.com" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "app-service-intent-handling",
     "owners": [ "chromeos-apps-foundation-team@google.com" ],
     "expiry_milestone": 87
