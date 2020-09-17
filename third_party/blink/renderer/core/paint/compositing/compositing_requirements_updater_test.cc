@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/compositing/compositing_requirements_updater.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -232,6 +233,138 @@ TEST_F(CompositingRequirementsUpdaterTest,
             ToLayoutBoxModelObject(GetLayoutObjectByElementId("3d-descendant"))
                 ->Layer()
                 ->GetCompositingReasons());
+}
+
+TEST_F(CompositingRequirementsUpdaterTest,
+       FixedCausesOverlapWithOnlyCompositingAssignmentUpdateNoOpt) {
+  // TODO(chrishtr): Remove this test when the CompositingOptimizations feature
+  // ships.
+  ScopedCompositingOptimizationsForTest feature_scope(false);
+  LoadAhem();
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body {
+        height: 2000px;
+      }
+      #fixed {
+        position: fixed;
+        width: 50%;
+        height: 100px;
+      }
+      #target {
+        position: relative;
+        width: 25%;
+        height: 50px;
+      }
+      #changeme {
+        position: absolute;
+        top: 400px;
+      }
+    </style>
+    <div id=fixed></div>
+    <div id=target></div>
+    <div id=changeme>A</div>
+  )HTML");
+
+  // Scroll down so that relative isn't overlapping fixed unless fixed expanded
+  // bounds is considered.
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 200), mojom::blink::ScrollType::kProgrammatic);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(CompositingReason::kScrollDependentPosition,
+            ToLayoutBoxModelObject(GetLayoutObjectByElementId("fixed"))
+                ->Layer()
+                ->GetCompositingReasons());
+  EXPECT_EQ(CompositingReason::kOverlap,
+            ToLayoutBoxModelObject(GetLayoutObjectByElementId("target"))
+                    ->Layer()
+                    ->GetCompositingReasons() &
+                CompositingReason::kOverlap);
+
+  // Request a compositing update (assignment) without causing a compositing
+  // inputs update. This could be caused in a real webpage by a layout size
+  // change.
+  GetDocument()
+      .View()
+      ->GetLayoutView()
+      ->Compositor()
+      ->SetNeedsCompositingUpdate(
+          kCompositingUpdateAfterCompositingInputChange);
+  UpdateAllLifecyclePhasesForTest();
+
+  // 'target' should still be composited by overlapping with fixed.
+  EXPECT_EQ(CompositingReason::kOverlap,
+            ToLayoutBoxModelObject(GetLayoutObjectByElementId("target"))
+                    ->Layer()
+                    ->GetCompositingReasons() &
+                CompositingReason::kOverlap);
+}
+
+TEST_F(CompositingRequirementsUpdaterTest,
+       FixedCausesOverlapWithOnlyCompositingAssignmentUpdate) {
+  ScopedCompositingOptimizationsForTest feature_scope(true);
+  LoadAhem();
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body {
+        height: 2000px;
+      }
+      #fixed {
+        position: fixed;
+        width: 50%;
+        height: 100px;
+      }
+      #target {
+        position: relative;
+        width: 25%;
+        height: 50px;
+      }
+      #changeme {
+        position: absolute;
+        top: 400px;
+      }
+    </style>
+    <div id=fixed></div>
+    <div id=target></div>
+    <div id=changeme>A</div>
+  )HTML");
+
+  // Scroll down so that relative isn't overlapping fixed unless fixed expanded
+  // bounds is considered.
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 200), mojom::blink::ScrollType::kProgrammatic);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(CompositingReason::kScrollDependentPosition,
+            ToLayoutBoxModelObject(GetLayoutObjectByElementId("fixed"))
+                ->Layer()
+                ->GetCompositingReasons());
+  EXPECT_EQ(CompositingReason::kOverlap,
+            ToLayoutBoxModelObject(GetLayoutObjectByElementId("target"))
+                    ->Layer()
+                    ->GetCompositingReasons() &
+                CompositingReason::kOverlap);
+
+  // Request a compositing update (assignment) without causing a compositing
+  // inputs update. This could be caused in a real webpage by a layout size
+  // change.
+  GetDocument()
+      .View()
+      ->GetLayoutView()
+      ->Compositor()
+      ->SetNeedsCompositingUpdate(
+          kCompositingUpdateAfterCompositingInputChange);
+  UpdateAllLifecyclePhasesForTest();
+
+  // 'target' should still be composited by overlapping with fixed.
+  EXPECT_EQ(CompositingReason::kOverlap,
+            ToLayoutBoxModelObject(GetLayoutObjectByElementId("target"))
+                    ->Layer()
+                    ->GetCompositingReasons() &
+                CompositingReason::kOverlap);
 }
 
 }  // namespace blink
