@@ -1007,10 +1007,12 @@ ScriptPromise Cache::PutImpl(ScriptState* script_state,
     }
 
     if (buffer) {
+      ExecutionContext* context = ExecutionContext::From(script_state);
       // If the response has body, read the all data and create
       // the blob handle and dispatch the put batch asynchronously.
       FetchDataLoader* loader = FetchDataLoader::CreateLoaderAsBlobHandle(
-          responses[i]->InternalMIMEType());
+          responses[i]->InternalMIMEType(),
+          context->GetTaskRunner(TaskType::kNetworking));
       buffer->StartLoading(loader,
                            MakeGarbageCollected<BlobHandleCallbackForPut>(
                                i, barrier_callback, requests[i], responses[i]),

@@ -23,12 +23,14 @@
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob.h"
+#include "third_party/blink/renderer/platform/blob/testing/fake_blob_registry.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
 #include "third_party/blink/renderer/platform/loader/testing/replaying_bytes_consumer.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
+#include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -417,7 +419,30 @@ TEST_F(BodyStreamBufferTest, LoadBodyStreamBufferAsArrayBuffer) {
                             array_buffer->ByteLengthAsSizeT()));
 }
 
-TEST_F(BodyStreamBufferTest, LoadBodyStreamBufferAsBlob) {
+class BodyStreamBufferBlobTest : public BodyStreamBufferTest {
+ public:
+  BodyStreamBufferBlobTest()
+      : fake_task_runner_(base::MakeRefCounted<scheduler::FakeTaskRunner>()),
+        blob_registry_receiver_(
+            &fake_blob_registry_,
+            blob_registry_remote_.BindNewPipeAndPassReceiver()) {
+    BlobDataHandle::SetBlobRegistryForTesting(blob_registry_remote_.get());
+  }
+
+  ~BodyStreamBufferBlobTest() override {
+    BlobDataHandle::SetBlobRegistryForTesting(nullptr);
+  }
+
+ protected:
+  scoped_refptr<scheduler::FakeTaskRunner> fake_task_runner_;
+
+ private:
+  FakeBlobRegistry fake_blob_registry_;
+  mojo::Remote<mojom::blink::BlobRegistry> blob_registry_remote_;
+  mojo::Receiver<mojom::blink::BlobRegistry> blob_registry_receiver_;
+};
+
+TEST_F(BodyStreamBufferBlobTest, LoadBodyStreamBufferAsBlob) {
   V8TestingScope scope;
   Checkpoint checkpoint;
   auto* client = MakeGarbageCollected<MockFetchDataLoaderClient>();
@@ -439,7 +464,8 @@ TEST_F(BodyStreamBufferTest, LoadBodyStreamBufferAsBlob) {
       BodyStreamBuffer::Create(scope.GetScriptState(), src,
                                /* abort_signal = */ nullptr, side_data_blob);
   EXPECT_EQ(side_data_blob, buffer->GetSideDataBlobForTest());
-  buffer->StartLoading(FetchDataLoader::CreateLoaderAsBlobHandle("text/plain"),
+  buffer->StartLoading(FetchDataLoader::CreateLoaderAsBlobHandle(
+                           "text/plain", fake_task_runner_),
                        client, ASSERT_NO_EXCEPTION);
 
   EXPECT_EQ(nullptr, buffer->GetSideDataBlobForTest());
@@ -448,6 +474,7 @@ TEST_F(BodyStreamBufferTest, LoadBodyStreamBufferAsBlob) {
   EXPECT_TRUE(buffer->HasPendingActivity());
 
   checkpoint.Call(1);
+  fake_task_runner_->RunUntilIdle();
   test::RunPendingTasks();
   checkpoint.Call(2);
 

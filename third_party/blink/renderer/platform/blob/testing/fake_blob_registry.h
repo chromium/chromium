@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BLOB_TESTING_FAKE_BLOB_REGISTRY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BLOB_TESTING_FAKE_BLOB_REGISTRY_H_
 
+#include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 
 namespace blink {
@@ -14,6 +15,9 @@ namespace blink {
 // FakeBlob instance with the correct uuid.
 class FakeBlobRegistry : public mojom::blink::BlobRegistry {
  public:
+  FakeBlobRegistry();
+  ~FakeBlobRegistry() override;
+
   void Register(mojo::PendingReceiver<mojom::blink::Blob>,
                 const String& uuid,
                 const String& content_type,
@@ -49,6 +53,11 @@ class FakeBlobRegistry : public mojom::blink::BlobRegistry {
     String uuid;
   };
   Vector<OwnedReceiver> owned_receivers;
+
+  std::unique_ptr<mojo::DataPipeDrainer> drainer_;
+
+  class DataPipeDrainerClient;
+  std::unique_ptr<DataPipeDrainerClient> drainer_client_;
 };
 
 }  // namespace blink

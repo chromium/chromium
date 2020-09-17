@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_BYTES_CONSUMER_TEST_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_BYTES_CONSUMER_TEST_UTIL_H_
 
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/fetch/fetch_data_loader.h"
@@ -24,6 +25,7 @@ class BytesConsumerTestUtil {
     MOCK_METHOD1(EndRead, Result(size_t));
     MOCK_METHOD1(DrainAsBlobDataHandle,
                  scoped_refptr<BlobDataHandle>(BlobSizePolicy));
+    MOCK_METHOD0(DrainAsDataPipe, mojo::ScopedDataPipeConsumerHandle());
     MOCK_METHOD0(DrainAsFormData, scoped_refptr<EncodedFormData>());
     MOCK_METHOD1(SetClient, void(Client*));
     MOCK_METHOD0(ClearClient, void());

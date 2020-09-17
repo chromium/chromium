@@ -27,6 +27,8 @@ BytesConsumerTestUtil::MockBytesConsumer::MockBytesConsumer() {
   ON_CALL(*this, GetPublicState()).WillByDefault(Return(PublicState::kErrored));
   ON_CALL(*this, DrainAsBlobDataHandle(_))
       .WillByDefault(Return(ByMove(nullptr)));
+  ON_CALL(*this, DrainAsDataPipe())
+      .WillByDefault(Return(ByMove(mojo::ScopedDataPipeConsumerHandle())));
   ON_CALL(*this, DrainAsFormData()).WillByDefault(Return(ByMove(nullptr)));
 }
 

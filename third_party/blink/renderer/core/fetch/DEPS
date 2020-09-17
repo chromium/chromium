@@ -1,4 +1,5 @@
 include_rules = [
+    "+base/run_loop.h",
     "+gin/public",
     "+mojo/public/cpp/system/data_pipe.h",
     "+mojo/public/cpp/system/data_pipe_utils.h",

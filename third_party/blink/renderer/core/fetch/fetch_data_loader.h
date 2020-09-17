@@ -69,7 +69,11 @@ class CORE_EXPORT FetchDataLoader : public GarbageCollected<FetchDataLoader> {
     void Trace(Visitor* visitor) const override {}
   };
 
-  static FetchDataLoader* CreateLoaderAsBlobHandle(const String& mime_type);
+  // The task runner is used to post tasks necessary for creating a blob
+  // from certain kinds of consumers.
+  static FetchDataLoader* CreateLoaderAsBlobHandle(
+      const String& mime_type,
+      scoped_refptr<base::SingleThreadTaskRunner>);
   static FetchDataLoader* CreateLoaderAsArrayBuffer();
   static FetchDataLoader* CreateLoaderAsFailure();
   static FetchDataLoader* CreateLoaderAsFormData(
