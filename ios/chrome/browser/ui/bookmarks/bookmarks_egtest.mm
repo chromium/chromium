@@ -759,7 +759,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Reopen bookmarks.
   [BookmarkEarlGreyUI openBookmarks];
 
-  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
+  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
     // Ensure the root node is opened, by verifying that there isn't a Back
     // button in the navigation bar.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::
@@ -866,7 +866,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testRootEmptyState {
   [BookmarkEarlGreyUI openBookmarks];
 
-  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
+  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
     // When the user has no bookmarks, the root view should be an empty state.
     [BookmarkEarlGreyUI verifyEmptyState];
   } else {
@@ -894,7 +894,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                           BookmarksNavigationBarBackButton()]
       performAction:grey_tap()];
 
-  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
+  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
     // When the user has no bookmarks, the root view should be an empty state.
     [BookmarkEarlGreyUI verifyEmptyState];
   } else {

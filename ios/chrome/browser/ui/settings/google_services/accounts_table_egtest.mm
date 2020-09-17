@@ -226,17 +226,11 @@ id<GREYMatcher> NoBookmarksLabel() {
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Assert that there are no bookmarks.
-  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
-    // The empty background appears in the root directory if the leaf folders
-    // are empty.
-    [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
-  } else {
-    [BookmarkEarlGreyUI openMobileBookmarks];
-    [[EarlGrey selectElementWithMatcher:NoBookmarksLabel()]
-        assertWithMatcher:grey_notNil()];
-  }
+  [[EarlGrey selectElementWithMatcher:NoBookmarksLabel()]
+      assertWithMatcher:grey_notNil()];
 }
 
 // Tests that signing out from a managed user account clears the user's data.
@@ -255,17 +249,11 @@ id<GREYMatcher> NoBookmarksLabel() {
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Assert that there are no bookmarks.
-  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
-    // The empty background appears in the root directory if the leaf folders
-    // are empty.
-    [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
-  } else {
-    [BookmarkEarlGreyUI openMobileBookmarks];
-    [[EarlGrey selectElementWithMatcher:NoBookmarksLabel()]
-        assertWithMatcher:grey_notNil()];
-  }
+  [[EarlGrey selectElementWithMatcher:NoBookmarksLabel()]
+      assertWithMatcher:grey_notNil()];
 }
 
 // Tests that given two accounts A and B that are available on the device -
