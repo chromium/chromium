@@ -755,6 +755,9 @@
       <message name="IDS_IME_NAME_KEYBOARD_FAROESE" desc="The input method name shows in system tray menu, this shows [Faroese keyboard].">
         Faroese keyboard
       </message>
+      <message name="IDS_IME_NAME_KEYBOARD_FILIPINO" desc="The input method name shows in system tray menu and settings page.">
+        Filipino
+      </message>
       <message name="IDS_IME_NAME_KEYBOARD_FINNISH" desc="The input method name shows in system tray menu, this shows [Finnish keyboard].">
         Finnish keyboard
       </message>
@@ -788,6 +791,9 @@
       <message name="IDS_IME_NAME_KEYBOARD_ICELANDIC" desc="The input method name shows in system tray menu, this shows [Icelandic keyboard].">
         Icelandic keyboard
       </message>
+      <message name="IDS_IME_NAME_KEYBOARD_INDONESIAN" desc="The input method name shows in system tray menu and settings page.">
+        Indonesian
+      </message>
       <message name="IDS_IME_NAME_KEYBOARD_IRISH" desc="The input method name shows in system tray menu, this shows [Irish keyboard].">
         Irish keyboard
       </message>
@@ -811,6 +817,9 @@
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_MACEDONIAN" desc="The input method name shows in system tray menu, this shows [Macedonian keyboard].">
         Macedonian keyboard
+      </message>
+      <message name="IDS_IME_NAME_KEYBOARD_MALAY" desc="The input method name shows in system tray menu and settings page.">
+        Malay
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_MALTESE" desc="The input method name shows in system tray menu, this shows [Maltese keyboard].">
         Maltese keyboard

@@ -58,9 +58,10 @@
       "options_page": "hmm_options.html?code=xkb:us::eng"
     },
     {
-      "name": "__MSG_keyboard_us__",
+      "name": "__MSG_keyboard_indonesian__",
       "type": "ime",
       "id": "xkb:us::ind",
+      "indicator": "ID",
       "description": "",
       "language": [
         "id"
@@ -71,9 +72,10 @@
       "options_page": "hmm_options.html?code=xkb:us::ind"
     },
     {
-      "name": "__MSG_keyboard_us__",
+      "name": "__MSG_keyboard_filipino__",
       "type": "ime",
       "id": "xkb:us::fil",
+      "indicator": "FIL",
       "description": "",
       "language": [
         "fil"
@@ -84,9 +86,10 @@
       "options_page": "hmm_options.html?code=xkb:us::fil"
     },
     {
-      "name": "__MSG_keyboard_us__",
+      "name": "__MSG_keyboard_malay__",
       "type": "ime",
       "id": "xkb:us::msa",
+      "indicator": "MS",
       "description": "",
       "language": [
         "ms"
