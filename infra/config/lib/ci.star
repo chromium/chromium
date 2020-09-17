@@ -745,11 +745,13 @@ def gpu_fyi_linux_builder(
         name,
         execution_timeout = 6 * time.hour,
         goma_backend = builders.goma.backend.RBE_PROD,
+        pool = "luci.chromium.gpu.ci",
         **kwargs):
     return gpu_fyi_builder(
         name = name,
         execution_timeout = execution_timeout,
         goma_backend = goma_backend,
+        pool = pool,
         **kwargs
     )
 
@@ -777,6 +779,7 @@ def gpu_fyi_thin_tester(
         # Setting goma_backend for testers is a no-op, but better to be explicit
         # here and also leave the generated configs unchanged for these testers.
         goma_backend = None,
+        pool = "luci.chromium.ci",
         **kwargs
     )
 
@@ -790,7 +793,7 @@ def gpu_fyi_windows_builder(*, name, **kwargs):
         **kwargs
     )
 
-def gpu_builder(*, name, tree_closing = True, notifies = None, **kwargs):
+def gpu_builder(*, name, tree_closing = True, notifies = None, pool = "luci.chromium.gpu.ci", **kwargs):
     if tree_closing:
         notifies = (notifies or []) + ["gpu-tree-closer-email"]
     return ci.builder(
@@ -799,6 +802,7 @@ def gpu_builder(*, name, tree_closing = True, notifies = None, **kwargs):
         goma_backend = builders.goma.backend.RBE_PROD,
         tree_closing = tree_closing,
         notifies = notifies,
+        pool = pool,
         **kwargs
     )
 
@@ -810,6 +814,7 @@ def gpu_thin_tester(*, name, tree_closing = True, **kwargs):
         cores = 2,
         os = builders.os.LINUX_DEFAULT,
         tree_closing = tree_closing,
+        pool = "luci.chromium.ci",
         **kwargs
     )
 
@@ -914,6 +919,7 @@ def swangle_linux_builder(
         name = name,
         goma_backend = builders.goma.backend.RBE_PROD,
         os = builders.os.LINUX_DEFAULT,
+        pool = "luci.chromium.gpu.ci",
         **kwargs
     )
 

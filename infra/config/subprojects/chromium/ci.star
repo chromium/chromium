@@ -1557,6 +1557,7 @@ ci.dawn_builder(
         category = "ToT|Linux|Builder",
         short_name = "x64",
     ),
+    pool = "luci.chromium.gpu.ci",
 )
 
 ci.dawn_builder(
@@ -1568,6 +1569,7 @@ ci.dawn_builder(
     ),
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = main_console_if_on_branch(),
+    pool = "luci.chromium.gpu.ci",
 )
 
 ci.dawn_builder(
@@ -3038,6 +3040,7 @@ ci.gpu_builder(
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = main_console_if_on_branch(),
     os = os.MAC_ANY,
+    pool = "luci.chromium.ci",
 )
 
 ci.gpu_builder(
@@ -3047,6 +3050,7 @@ ci.gpu_builder(
     ),
     cores = None,
     os = os.MAC_ANY,
+    pool = "luci.chromium.ci",
     tree_closing = False,
 )
 
@@ -3060,7 +3064,6 @@ ci.gpu_builder(
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = main_console_if_on_branch(),
     os = os.WINDOWS_ANY,
-    pool = "luci.chromium.gpu.ci",
 )
 
 ci.gpu_builder(
@@ -3070,7 +3073,6 @@ ci.gpu_builder(
         category = "Windows",
     ),
     os = os.WINDOWS_ANY,
-    pool = "luci.chromium.gpu.ci",
     tree_closing = False,
 )
 
@@ -3170,13 +3172,12 @@ ci.gpu_fyi_linux_builder(
     ),
 )
 
-ci.gpu_fyi_linux_builder(
+ci.gpu_fyi_thin_tester(
     name = "Android FYI 64 Perf (Pixel 2)",
     console_view_entry = ci.console_view_entry(
         category = "Android|Perf|Q64",
         short_name = "P2",
     ),
-    cores = 2,
     triggered_by = ["GPU FYI Perf Android 64 Builder"],
 )
 
