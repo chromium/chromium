@@ -11,16 +11,87 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/bind_test_util.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/extensions/chrome_app_icon.h"
+#include "chrome/browser/installable/installable_manager.h"
+#include "chrome/browser/web_applications/components/app_icon_manager.h"
+#include "chrome/browser/web_applications/components/app_registry_controller.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
+#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/test/test_file_utils.h"
+#include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/grit/extensions_browser_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/layout.h"
+#include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/arc/icon_decode_request.h"
+#include "chrome/browser/ui/app_list/icon_standardizer.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #endif
+
+namespace {
+
+const int kSizeInDip = 64;
+
+void EnsureRepresentationsLoaded(gfx::ImageSkia& output_image_skia) {
+  for (auto scale_factor : ui::GetSupportedScaleFactors()) {
+    // Force the icon to be loaded.
+    output_image_skia.GetRepresentation(
+        ui::GetScaleForScaleFactor(scale_factor));
+  }
+}
+
+void LoadDefaultIcon(gfx::ImageSkia& output_image_skia) {
+  base::RunLoop run_loop;
+  apps::LoadIconFromResource(
+      apps::mojom::IconType::kUncompressed, kSizeInDip, IDR_APP_DEFAULT_ICON,
+      false /* is_placeholder_icon */, apps::IconEffects::kNone,
+      base::BindOnce(
+          [](gfx::ImageSkia* image, base::OnceClosure load_app_icon_callback,
+             apps::mojom::IconValuePtr icon) {
+            *image = icon->uncompressed;
+            std::move(load_app_icon_callback).Run();
+          },
+          &output_image_skia, run_loop.QuitClosure()));
+  run_loop.Run();
+  EnsureRepresentationsLoaded(output_image_skia);
+}
+
+void VerifyIcon(const gfx::ImageSkia& src, const gfx::ImageSkia& dst) {
+  ASSERT_FALSE(src.isNull());
+  ASSERT_FALSE(dst.isNull());
+
+  const std::vector<ui::ScaleFactor>& scale_factors =
+      ui::GetSupportedScaleFactors();
+  ASSERT_EQ(2U, scale_factors.size());
+
+  for (auto& scale_factor : scale_factors) {
+    const float scale = ui::GetScaleForScaleFactor(scale_factor);
+    ASSERT_TRUE(src.HasRepresentation(scale));
+    ASSERT_TRUE(dst.HasRepresentation(scale));
+    ASSERT_TRUE(
+        gfx::test::AreBitmapsEqual(src.GetRepresentation(scale).GetBitmap(),
+                                   dst.GetRepresentation(scale).GetBitmap()));
+  }
+}
+
+}  // namespace
 
 class AppIconFactoryTest : public testing::Test {
  public:
@@ -276,3 +347,362 @@ TEST_F(AppIconFactoryTest, ArcActivityIconsToImageSkias) {
   }
 }
 #endif
+
+class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
+ public:
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+
+    web_app_provider_ = web_app::WebAppProvider::Get(profile());
+    ASSERT_TRUE(web_app_provider_);
+
+    base::RunLoop run_loop;
+    web_app_provider_->registry_controller().AsWebAppSyncBridge()->Init(
+        run_loop.QuitClosure());
+    run_loop.Run();
+
+    icon_manager_ = static_cast<web_app::WebAppIconManager*>(
+        &(web_app_provider_->icon_manager()));
+    ASSERT_TRUE(icon_manager_);
+
+    sync_bridge_ =
+        web_app_provider_->registry_controller().AsWebAppSyncBridge();
+    ASSERT_TRUE(sync_bridge_);
+  }
+
+  std::unique_ptr<web_app::WebApp> CreateWebApp() {
+    const GURL app_url("https://example.com/path");
+    const std::string app_id = web_app::GenerateAppIdFromURL(app_url);
+
+    auto web_app = std::make_unique<web_app::WebApp>(app_id);
+    web_app->AddSource(web_app::Source::kSync);
+    web_app->SetDisplayMode(web_app::DisplayMode::kStandalone);
+    web_app->SetUserDisplayMode(web_app::DisplayMode::kStandalone);
+    web_app->SetName("Name");
+    web_app->SetStartUrl(app_url);
+
+    return web_app;
+  }
+
+  void RegisterApp(std::unique_ptr<web_app::WebApp> web_app) {
+    std::unique_ptr<web_app::WebAppRegistryUpdate> update =
+        sync_bridge().BeginUpdate();
+    update->CreateApp(std::move(web_app));
+    sync_bridge().CommitUpdate(std::move(update), base::DoNothing());
+  }
+
+  void WriteIcons(const std::string& app_id,
+                  const std::vector<IconPurpose>& purposes,
+                  const std::vector<int>& sizes_px,
+                  const std::vector<SkColor>& colors) {
+    ASSERT_EQ(sizes_px.size(), colors.size());
+    ASSERT_TRUE(!purposes.empty());
+
+    web_app::IconBitmaps icon_bitmaps;
+    for (size_t i = 0; i < sizes_px.size(); ++i) {
+      if (base::Contains(purposes, IconPurpose::ANY)) {
+        web_app::AddGeneratedIcon(&icon_bitmaps.any, sizes_px[i], colors[i]);
+      }
+      if (base::Contains(purposes, IconPurpose::MASKABLE)) {
+        web_app::AddGeneratedIcon(&icon_bitmaps.maskable, sizes_px[i],
+                                  colors[i]);
+      }
+    }
+
+    base::RunLoop run_loop;
+    icon_manager_->WriteData(app_id, std::move(icon_bitmaps),
+                             base::BindLambdaForTesting([&](bool success) {
+                               EXPECT_TRUE(success);
+                               run_loop.Quit();
+                             }));
+    run_loop.Run();
+  }
+
+  void GenerateWebAppIcon(const std::string& app_id,
+                          IconPurpose purpose,
+                          const std::vector<int>& sizes_px,
+                          apps::ScaleToSize scale_to_size_in_px,
+                          gfx::ImageSkia& output_image_skia) {
+    base::RunLoop run_loop;
+    icon_manager().ReadIcons(
+        app_id, purpose, sizes_px,
+        base::BindOnce(
+            [](gfx::ImageSkia* image_skia, int size_in_dip,
+               apps::ScaleToSize scale_to_size_in_px,
+               base::OnceClosure load_app_icon_callback,
+               std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
+              for (auto it : scale_to_size_in_px) {
+                int icon_size_in_px =
+                    gfx::ScaleToFlooredSize(gfx::Size(size_in_dip, size_in_dip),
+                                            it.first)
+                        .width();
+
+                SkBitmap bitmap = icon_bitmaps[it.second];
+                if (bitmap.width() != icon_size_in_px) {
+                  bitmap = skia::ImageOperations::Resize(
+                      bitmap, skia::ImageOperations::RESIZE_LANCZOS3,
+                      icon_size_in_px, icon_size_in_px);
+                }
+                image_skia->AddRepresentation(
+                    gfx::ImageSkiaRep(bitmap, it.first));
+              }
+              std::move(load_app_icon_callback).Run();
+            },
+            &output_image_skia, kSizeInDip, scale_to_size_in_px,
+            run_loop.QuitClosure()));
+    run_loop.Run();
+
+#if defined(OS_CHROMEOS)
+    if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
+      if (purpose == IconPurpose::ANY) {
+        output_image_skia =
+            app_list::CreateStandardIconImage(output_image_skia);
+      }
+      if (purpose == IconPurpose::MASKABLE) {
+        output_image_skia = apps::ApplyBackgroundAndMask(output_image_skia);
+      }
+    }
+#endif
+
+    extensions::ChromeAppIcon::ApplyEffects(
+        kSizeInDip, extensions::ChromeAppIcon::ResizeFunction(),
+        true /* app_launchable */, true /* from_bookmark */,
+        extensions::ChromeAppIcon::Badge::kNone, &output_image_skia);
+
+    EnsureRepresentationsLoaded(output_image_skia);
+  }
+
+  void LoadIconFromWebApp(const std::string& app_id,
+                          apps::IconEffects icon_effects,
+                          gfx::ImageSkia& output_image_skia) {
+    base::RunLoop run_loop;
+
+    auto icon_type = apps::mojom::IconType::kUncompressed;
+#if defined(OS_CHROMEOS)
+    if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
+      icon_type = apps::mojom::IconType::kStandard;
+    }
+#endif
+
+    apps::LoadIconFromWebApp(
+        profile(), icon_type, kSizeInDip, app_id, icon_effects,
+        base::BindOnce(
+            [](gfx::ImageSkia* image, base::OnceClosure load_app_icon_callback,
+               apps::mojom::IconValuePtr icon) {
+              *image = icon->uncompressed;
+              std::move(load_app_icon_callback).Run();
+            },
+            &output_image_skia, run_loop.QuitClosure()));
+    run_loop.Run();
+
+    EnsureRepresentationsLoaded(output_image_skia);
+  }
+
+  web_app::WebAppIconManager& icon_manager() { return *icon_manager_; }
+
+  web_app::WebAppProvider& web_app_provider() { return *web_app_provider_; }
+
+  web_app::WebAppSyncBridge& sync_bridge() { return *sync_bridge_; }
+
+ private:
+  web_app::WebAppProvider* web_app_provider_;
+  web_app::WebAppIconManager* icon_manager_;
+  web_app::WebAppSyncBridge* sync_bridge_;
+};
+
+TEST_F(WebAppIconFactoryTest, LoadNonMaskableIcon) {
+  auto web_app = CreateWebApp();
+  const std::string app_id = web_app->app_id();
+
+  const int kIconSize1 = 96;
+  const int kIconSize2 = 256;
+  const std::vector<int> sizes_px{kIconSize1, kIconSize2};
+  const std::vector<SkColor> colors{SK_ColorGREEN, SK_ColorYELLOW};
+  WriteIcons(app_id, {IconPurpose::ANY}, sizes_px, colors);
+
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
+  RegisterApp(std::move(web_app));
+
+  ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
+
+  gfx::ImageSkia src_image_skia;
+  GenerateWebAppIcon(app_id, IconPurpose::ANY, sizes_px,
+                     {{1.0, kIconSize1}, {2.0, kIconSize2}}, src_image_skia);
+
+  gfx::ImageSkia dst_image_skia;
+  LoadIconFromWebApp(
+      app_id,
+      apps::IconEffects::kRoundCorners | apps::IconEffects::kCrOsStandardIcon,
+      dst_image_skia);
+
+  VerifyIcon(src_image_skia, dst_image_skia);
+}
+
+TEST_F(WebAppIconFactoryTest, LoadMaskableIcon) {
+  auto web_app = CreateWebApp();
+  const std::string app_id = web_app->app_id();
+
+  const int kIconSize1 = 128;
+  const int kIconSize2 = 256;
+  const std::vector<int> sizes_px{kIconSize1, kIconSize2};
+  const std::vector<SkColor> colors{SK_ColorGREEN, SK_ColorYELLOW};
+  WriteIcons(app_id, {IconPurpose::ANY, IconPurpose::MASKABLE}, sizes_px,
+             colors);
+
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, {kIconSize1});
+  web_app->SetDownloadedIconSizes(IconPurpose::MASKABLE, {kIconSize2});
+
+  RegisterApp(std::move(web_app));
+
+#if defined(OS_CHROMEOS)
+  ASSERT_TRUE(
+      icon_manager().HasIcons(app_id, IconPurpose::MASKABLE, {kIconSize2}));
+
+  gfx::ImageSkia src_image_skia;
+  GenerateWebAppIcon(app_id, IconPurpose::MASKABLE, {kIconSize2},
+                     {{1.0, kIconSize2}, {2.0, kIconSize2}}, src_image_skia);
+
+  gfx::ImageSkia dst_image_skia;
+  LoadIconFromWebApp(app_id,
+                     apps::IconEffects::kRoundCorners |
+                         apps::IconEffects::kCrOsStandardBackground |
+                         apps::IconEffects::kCrOsStandardMask,
+                     dst_image_skia);
+#else
+  ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, {kIconSize1}));
+
+  gfx::ImageSkia src_image_skia;
+  GenerateWebAppIcon(app_id, IconPurpose::ANY, {kIconSize1},
+                     {{1.0, kIconSize1}, {2.0, kIconSize1}}, src_image_skia);
+
+  gfx::ImageSkia dst_image_skia;
+  LoadIconFromWebApp(app_id, apps::IconEffects::kRoundCorners, dst_image_skia);
+#endif
+
+  VerifyIcon(src_image_skia, dst_image_skia);
+}
+
+TEST_F(WebAppIconFactoryTest, LoadNonMaskableIconWithMaskableIcon) {
+  auto web_app = CreateWebApp();
+  const std::string app_id = web_app->app_id();
+
+  const int kIconSize1 = 96;
+  const int kIconSize2 = 128;
+  const std::vector<int> sizes_px{kIconSize1, kIconSize2};
+  const std::vector<SkColor> colors{SK_ColorGREEN, SK_ColorYELLOW};
+  WriteIcons(app_id, {IconPurpose::ANY, IconPurpose::MASKABLE}, sizes_px,
+             colors);
+
+  web_app->SetDownloadedIconSizes(IconPurpose::MASKABLE, {kIconSize1});
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, {kIconSize2});
+
+  RegisterApp(std::move(web_app));
+
+  ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, {kIconSize2}));
+
+  gfx::ImageSkia src_image_skia;
+  GenerateWebAppIcon(app_id, IconPurpose::ANY, {kIconSize2},
+                     {{1.0, kIconSize2}, {2.0, kIconSize2}}, src_image_skia);
+
+  gfx::ImageSkia dst_image_skia;
+  LoadIconFromWebApp(
+      app_id,
+      apps::IconEffects::kRoundCorners | apps::IconEffects::kCrOsStandardIcon,
+      dst_image_skia);
+
+  VerifyIcon(src_image_skia, dst_image_skia);
+}
+
+TEST_F(WebAppIconFactoryTest, LoadSmallMaskableIcon) {
+  auto web_app = CreateWebApp();
+  const std::string app_id = web_app->app_id();
+
+  const int kIconSize1 = 128;
+  const int kIconSize2 = 256;
+  const std::vector<int> sizes_px{kIconSize1, kIconSize2};
+  const std::vector<SkColor> colors{SK_ColorGREEN, SK_ColorYELLOW};
+  WriteIcons(app_id, {IconPurpose::ANY, IconPurpose::MASKABLE}, sizes_px,
+             colors);
+
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
+  web_app->SetDownloadedIconSizes(IconPurpose::MASKABLE, sizes_px);
+
+  RegisterApp(std::move(web_app));
+
+  ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::MASKABLE, sizes_px));
+
+  gfx::ImageSkia src_image_skia;
+  GenerateWebAppIcon(app_id, IconPurpose::MASKABLE, sizes_px,
+                     {{1.0, kIconSize1}, {2.0, kIconSize1}}, src_image_skia);
+
+  gfx::ImageSkia dst_image_skia;
+  LoadIconFromWebApp(app_id,
+                     apps::IconEffects::kRoundCorners |
+                         apps::IconEffects::kCrOsStandardBackground |
+                         apps::IconEffects::kCrOsStandardMask,
+                     dst_image_skia);
+
+  VerifyIcon(src_image_skia, dst_image_skia);
+}
+
+TEST_F(WebAppIconFactoryTest, LoadExactSizeIcon) {
+  auto web_app = CreateWebApp();
+  const std::string app_id = web_app->app_id();
+
+  const int kIconSize1 = 48;
+  const int kIconSize2 = 64;
+  const int kIconSize3 = 96;
+  const int kIconSize4 = 128;
+  const int kIconSize5 = 256;
+  const std::vector<int> sizes_px{kIconSize1, kIconSize2, kIconSize3,
+                                  kIconSize4, kIconSize5};
+  const std::vector<SkColor> colors{SK_ColorGREEN, SK_ColorYELLOW,
+                                    SK_ColorBLACK, SK_ColorRED, SK_ColorBLUE};
+  WriteIcons(app_id, {IconPurpose::ANY}, sizes_px, colors);
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
+
+  RegisterApp(std::move(web_app));
+
+  ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
+
+  gfx::ImageSkia src_image_skia;
+  GenerateWebAppIcon(app_id, IconPurpose::ANY, sizes_px,
+                     {{1.0, kIconSize2}, {2.0, kIconSize4}}, src_image_skia);
+
+  gfx::ImageSkia dst_image_skia;
+  LoadIconFromWebApp(
+      app_id,
+      apps::IconEffects::kRoundCorners | apps::IconEffects::kCrOsStandardIcon,
+      dst_image_skia);
+
+  VerifyIcon(src_image_skia, dst_image_skia);
+}
+
+TEST_F(WebAppIconFactoryTest, LoadIconFailed) {
+  auto web_app = CreateWebApp();
+  const std::string app_id = web_app->app_id();
+
+  const int kIconSize1 = 48;
+  const int kIconSize2 = 64;
+  const int kIconSize3 = 96;
+  const std::vector<int> sizes_px{kIconSize1, kIconSize2, kIconSize3};
+  const std::vector<SkColor> colors{SK_ColorGREEN, SK_ColorYELLOW,
+                                    SK_ColorBLACK};
+  WriteIcons(app_id, {IconPurpose::ANY}, sizes_px, colors);
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
+
+  RegisterApp(std::move(web_app));
+
+  ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
+
+  gfx::ImageSkia src_image_skia;
+  LoadDefaultIcon(src_image_skia);
+
+  gfx::ImageSkia dst_image_skia;
+  LoadIconFromWebApp(
+      app_id,
+      apps::IconEffects::kRoundCorners | apps::IconEffects::kCrOsStandardIcon,
+      dst_image_skia);
+
+  VerifyIcon(src_image_skia, dst_image_skia);
+}
