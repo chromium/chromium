@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -344,6 +345,7 @@ class SecurePaymentConfirmationCreationTest
 #endif
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
                        MAYBE_CreatePaymentCredential) {
+  base::HistogramTester histogram_tester;
   ReplaceFidoDiscoveryFactory();
   NavigateTo("a.com", "/payment_handler_status.html");
 
@@ -354,6 +356,10 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
                     kCreatePaymentCredential}),
       &result));
   EXPECT_EQ(result, "paymentCredential: OK");
+
+  // Verify that credential id size gets recorded.
+  histogram_tester.ExpectTotalCount(
+      "PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes", 1U);
 }
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,

@@ -131822,6 +131822,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes"
+    units="bytes" expires_after="M93">
+  <owner>danyao@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records the size of Credential ID for secure-payment-confirmation method in
+    bytes.
+  </summary>
+</histogram>
+
 <histogram name="PaymentRequest.SelectedPaymentMethod"
     enum="PaymentRequestPaymentMethods" expires_after="2017-08-15">
   <obsolete>

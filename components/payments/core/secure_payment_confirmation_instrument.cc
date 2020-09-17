@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
+
 namespace payments {
 
 SecurePaymentConfirmationInstrument::SecurePaymentConfirmationInstrument() =
@@ -19,7 +21,13 @@ SecurePaymentConfirmationInstrument::SecurePaymentConfirmationInstrument(
     : credential_id(std::move(credential_id)),
       relying_party_id(relying_party_id),
       label(label),
-      icon(std::move(icon)) {}
+      icon(std::move(icon)) {
+  // Record the size of credential_id to see whether or not hashing is needed
+  // before storing in DB. crbug.com/1122764
+  base::UmaHistogramCounts10000(
+      "PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes",
+      credential_id.size());
+}
 
 SecurePaymentConfirmationInstrument::~SecurePaymentConfirmationInstrument() =
     default;
