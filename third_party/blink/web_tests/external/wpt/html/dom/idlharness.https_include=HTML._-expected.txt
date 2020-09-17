@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 3737 tests; 3708 PASS, 29 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 3736 tests; 3707 PASS, 29 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -939,7 +939,6 @@ PASS HTMLIFrameElement interface: attribute name
 PASS HTMLIFrameElement interface: attribute sandbox
 PASS HTMLIFrameElement interface: attribute allow
 PASS HTMLIFrameElement interface: attribute allowFullscreen
-PASS HTMLIFrameElement interface: attribute allowPaymentRequest
 PASS HTMLIFrameElement interface: attribute width
 PASS HTMLIFrameElement interface: attribute height
 PASS HTMLIFrameElement interface: attribute referrerPolicy

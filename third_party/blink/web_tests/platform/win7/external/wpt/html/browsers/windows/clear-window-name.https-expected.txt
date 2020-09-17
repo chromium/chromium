@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS Window.name is not reset when there is an opener around
+PASS Window.name is not reset when there is an opener around (cross-origin)
+PASS Window.name is not reset at the first navigation away from initial about:blank with noopener
+FAIL Window.name is reset at the first cross-origin navigation with noopener assert_equals: expected "" but got "d46e5b2c-5c05-451c-935e-543decd7a9d5"
+PASS Window.name is not reset at the first navigation away from initial about:blank with window.opener set to null
+PASS Window.name is not reset at the same-origin navigation with window.opener set to null
+FAIL Window.name is reset at the first first cross-origin navigation with window.opener set to null assert_equals: expected "" but got "52bacf95-3f22-4c3b-b513-9cda8e285438"
+PASS Window.name is set by the window
+FAIL Window.name is reset at the first cross-origin navigation assert_equals: expected "" but got "d5b084b2-e6da-4200-a04c-de3d9c9ff296"
+Harness: the test ran to completion.
+
