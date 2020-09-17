@@ -47,6 +47,7 @@ js_library("multidevice_feature_item") {
     "..:route_origin_behavior",
     "../..:router",
     "../localized_link:localized_link",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr",
   ]
 }
@@ -183,6 +184,7 @@ js_library("multidevice_feature_item.m") {
     "../..:router.m",
     "../localized_link:localized_link.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
   ]
   extra_deps = [ ":multidevice_feature_item_module" ]
 }
@@ -300,7 +302,8 @@ polymer_modulizer("multidevice_feature_item") {
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
+  auto_imports = os_settings_auto_imports +
+                 [ "ui/webui/resources/html/assert.html|assert" ]
 }
 
 polymer_modulizer("multidevice_feature_toggle") {

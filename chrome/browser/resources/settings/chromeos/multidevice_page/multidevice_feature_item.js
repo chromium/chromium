@@ -42,6 +42,16 @@ Polymer({
     this.addFocusConfig_(this.subpageRoute, '#subpageButton');
   },
 
+  /** @override */
+  focus() {
+    const slot = this.$$('slot[name="feature-controller"]');
+    const elems = slot.assignedElements({flatten: true});
+    assert(elems.length > 0);
+    // Elems contains any elements that override the feature controller. If none
+    // exist, contains the default toggle elem.
+    elems[0].focus();
+  },
+
   /**
    * @return {boolean}
    * @private
