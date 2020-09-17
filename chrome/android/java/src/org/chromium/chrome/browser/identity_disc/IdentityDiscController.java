@@ -165,9 +165,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         }
 
         String email = CoreAccountInfo.getEmailFrom(getSyncAccountInfo());
-        boolean canShowIdentityDisc = email != null;
-
-        mState = !canShowIdentityDisc ? IdentityDiscState.NONE : IdentityDiscState.SMALL;
+        mState = email == null ? IdentityDiscState.NONE : IdentityDiscState.SMALL;
         ensureProfileDataCache(email, mState);
 
         if (mState != IdentityDiscState.NONE) {
