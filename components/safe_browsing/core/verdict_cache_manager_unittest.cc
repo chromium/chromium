@@ -327,6 +327,9 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdict) {
   ASSERT_EQ(2u, cache_manager_->GetStoredPhishGuardVerdictCount(
                     LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
 
+  // Prepare 2 verdicts for SAFE_BROWSING_URL_CHECK_DATA:
+  // (1) "www.example.com/" expired
+  // (2) "www.example.com/path" valid
   RTLookupResponse response;
   AddThreatInfoToResponse(response, RTLookupResponse::ThreatInfo::DANGEROUS,
                           RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 0,
@@ -389,6 +392,18 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdict) {
                 GURL("https://bar.com/xyz/index.jsp"),
                 LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
                 password_type, &actual_verdict));
+
+  RTLookupResponse::ThreatInfo actual_real_time_threat_info;
+  // No cached SAFE_BROWSING_URL_CHECK_DATA verdict for www.example.com/.
+  EXPECT_EQ(
+      RTLookupResponse::ThreatInfo::VERDICT_TYPE_UNSPECIFIED,
+      cache_manager_->GetCachedRealTimeUrlVerdict(
+          GURL("https://www.example.com/"), &actual_real_time_threat_info));
+  // Has cached SAFE_BROWSING_URL_CHECK_DATA verdict for www.example.com/path.
+  EXPECT_EQ(
+      RTLookupResponse::ThreatInfo::DANGEROUS,
+      cache_manager_->GetCachedRealTimeUrlVerdict(
+          GURL("https://www.example.com/path"), &actual_real_time_threat_info));
 }
 
 TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdictWithInvalidEntry) {
