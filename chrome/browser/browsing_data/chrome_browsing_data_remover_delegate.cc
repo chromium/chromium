@@ -814,9 +814,11 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
     BrowserContext::GetDefaultStoragePartition(profile_)
         ->GetNetworkContext()
-        ->ClearHttpAuthCache(delete_begin_,
-                             CreateTaskCompletionClosureForMojo(
-                                 TracingDataType::kHttpAuthCache));
+        ->ClearHttpAuthCache(
+            delete_begin_.is_null() ? base::Time::Min() : delete_begin_,
+            delete_end_.is_null() ? base::Time::Max() : delete_end_,
+            CreateTaskCompletionClosureForMojo(
+                TracingDataType::kHttpAuthCache));
 #if defined(OS_CHROMEOS)
     policy::SystemProxyManager* system_proxy_manager =
         g_browser_process->platform_part()

@@ -197,9 +197,10 @@ class NET_EXPORT HttpAuthCache {
               const NetworkIsolationKey& network_isolation_key,
               const AuthCredentials& credentials);
 
-  // Clears cache entries added since |begin_time| or all entries if
-  // |begin_time| is null.
-  void ClearEntriesAddedSince(base::Time begin_time);
+  // Clears cache entries added between |begin_time| inclusively and |end_time|
+  // exclusively. Clears all entries if |begin_time| and |end_time| are equal to
+  // base::Time::Min() and base::Time::Max() respectively.
+  void ClearEntriesAddedBetween(base::Time begin_time, base::Time end_time);
 
   // Clears all added entries.
   void ClearAllEntries();

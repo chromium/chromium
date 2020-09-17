@@ -765,12 +765,14 @@ void NetworkContext::ClearHostCache(mojom::ClearDataFilterPtr filter,
 }
 
 void NetworkContext::ClearHttpAuthCache(base::Time start_time,
+                                        base::Time end_time,
                                         ClearHttpAuthCacheCallback callback) {
   net::HttpNetworkSession* http_session =
       url_request_context_->http_transaction_factory()->GetSession();
   DCHECK(http_session);
 
-  http_session->http_auth_cache()->ClearEntriesAddedSince(start_time);
+  http_session->http_auth_cache()->ClearEntriesAddedBetween(start_time,
+                                                            end_time);
   // TODO(mmenke): Use another error code for this, as ERR_ABORTED has somewhat
   // magical handling with respect to navigations.
   http_session->CloseAllConnections(net::ERR_ABORTED, "Clearing auth cache");

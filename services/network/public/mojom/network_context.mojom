@@ -989,9 +989,10 @@ interface NetworkContext {
   // non-null, |filter.origins| must be empty.
   ClearHostCache(ClearDataFilter? filter) => ();
 
-  // Clears all entries from the HTTP Auth cache that were added since
-  // |start_time|. Supports unbounded delete using null Time value.
-  ClearHttpAuthCache(mojo_base.mojom.Time start_time) => ();
+  // Clears all entries from the HTTP Auth cache that were between |start_time|
+  // and |end_time|, with |start_time| being inclusive and |end_time| exclusive.
+  ClearHttpAuthCache(mojo_base.mojom.Time start_time,
+                     mojo_base.mojom.Time end_time) => ();
 
   // Clears all report entries from the reporting cache. Should not be called if
   // the ENABLE_REPORTING build flag is false.

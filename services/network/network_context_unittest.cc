@@ -1766,20 +1766,38 @@ TEST_F(NetworkContextTest, ClearHttpAuthCache) {
   ASSERT_NE(nullptr, cache->Lookup(origin, net::HttpAuth::AUTH_PROXY, "Realm2",
                                    net::HttpAuth::AUTH_SCHEME_BASIC,
                                    net::NetworkIsolationKey()));
+  {
+    base::RunLoop run_loop;
+    base::Time test_time;
+    ASSERT_TRUE(base::Time::FromString("30 May 2018 12:30:00", &test_time));
+    network_context->ClearHttpAuthCache(base::Time(), test_time,
+                                        run_loop.QuitClosure());
+    run_loop.Run();
 
-  base::RunLoop run_loop;
-  base::Time test_time;
-  ASSERT_TRUE(base::Time::FromString("30 May 2018 12:30:00", &test_time));
-  network_context->ClearHttpAuthCache(test_time, run_loop.QuitClosure());
-  run_loop.Run();
+    EXPECT_EQ(1u, cache->GetEntriesSizeForTesting());
+    EXPECT_EQ(nullptr, cache->Lookup(origin, net::HttpAuth::AUTH_SERVER,
+                                     "Realm1", net::HttpAuth::AUTH_SCHEME_BASIC,
+                                     net::NetworkIsolationKey()));
+    EXPECT_NE(nullptr, cache->Lookup(origin, net::HttpAuth::AUTH_PROXY,
+                                     "Realm2", net::HttpAuth::AUTH_SCHEME_BASIC,
+                                     net::NetworkIsolationKey()));
+  }
+  {
+    base::RunLoop run_loop;
+    base::Time test_time;
+    ASSERT_TRUE(base::Time::FromString("30 May 2018 12:30:00", &test_time));
+    network_context->ClearHttpAuthCache(test_time, base::Time::Max(),
+                                        run_loop.QuitClosure());
+    run_loop.Run();
 
-  EXPECT_EQ(1u, cache->GetEntriesSizeForTesting());
-  EXPECT_NE(nullptr, cache->Lookup(origin, net::HttpAuth::AUTH_SERVER, "Realm1",
-                                   net::HttpAuth::AUTH_SCHEME_BASIC,
-                                   net::NetworkIsolationKey()));
-  EXPECT_EQ(nullptr, cache->Lookup(origin, net::HttpAuth::AUTH_PROXY, "Realm2",
-                                   net::HttpAuth::AUTH_SCHEME_BASIC,
-                                   net::NetworkIsolationKey()));
+    EXPECT_EQ(0u, cache->GetEntriesSizeForTesting());
+    EXPECT_EQ(nullptr, cache->Lookup(origin, net::HttpAuth::AUTH_SERVER,
+                                     "Realm1", net::HttpAuth::AUTH_SCHEME_BASIC,
+                                     net::NetworkIsolationKey()));
+    EXPECT_EQ(nullptr, cache->Lookup(origin, net::HttpAuth::AUTH_PROXY,
+                                     "Realm2", net::HttpAuth::AUTH_SCHEME_BASIC,
+                                     net::NetworkIsolationKey()));
+  }
 }
 
 TEST_F(NetworkContextTest, ClearAllHttpAuthCache) {
@@ -1817,7 +1835,8 @@ TEST_F(NetworkContextTest, ClearAllHttpAuthCache) {
                                    net::NetworkIsolationKey()));
 
   base::RunLoop run_loop;
-  network_context->ClearHttpAuthCache(base::Time(), run_loop.QuitClosure());
+  network_context->ClearHttpAuthCache(base::Time(), base::Time::Max(),
+                                      run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_EQ(0u, cache->GetEntriesSizeForTesting());
@@ -1841,6 +1860,7 @@ TEST_F(NetworkContextTest, ClearEmptyHttpAuthCache) {
 
   base::RunLoop run_loop;
   network_context->ClearHttpAuthCache(base::Time::UnixEpoch(),
+                                      base::Time::Max(),
                                       base::BindOnce(run_loop.QuitClosure()));
   run_loop.Run();
 

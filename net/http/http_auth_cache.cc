@@ -300,15 +300,18 @@ bool HttpAuthCache::Remove(const GURL& origin,
   return false;
 }
 
-void HttpAuthCache::ClearEntriesAddedSince(base::Time begin_time) {
-  if (begin_time.is_null()) {
+void HttpAuthCache::ClearEntriesAddedBetween(base::Time begin_time,
+                                             base::Time end_time) {
+  if (begin_time.is_min() && end_time.is_max()) {
     ClearAllEntries();
-  } else {
-    base::EraseIf(entries_, [begin_time](EntryMap::value_type& entry_map_pair) {
-      Entry& entry = entry_map_pair.second;
-      return entry.creation_time_ >= begin_time;
-    });
+    return;
   }
+  base::EraseIf(entries_,
+                [begin_time, end_time](EntryMap::value_type& entry_map_pair) {
+                  Entry& entry = entry_map_pair.second;
+                  return entry.creation_time_ >= begin_time &&
+                         entry.creation_time_ < end_time;
+                });
 }
 
 void HttpAuthCache::ClearAllEntries() {
