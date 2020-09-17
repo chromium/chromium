@@ -14,8 +14,12 @@ namespace ash {
 
 // Structs and classes related to Ambient mode Settings.
 
-// TODO(wutao): Replace the internal code with this constant.
 ASH_PUBLIC_EXPORT extern const char kAmbientModeRecentHighlightsAlbumId[];
+ASH_PUBLIC_EXPORT extern const char kAmbientModeFeaturedPhotoAlbumId[];
+ASH_PUBLIC_EXPORT extern const char kAmbientModeFineArtAlbumId[];
+ASH_PUBLIC_EXPORT extern const char kAmbientModeEarthAndSpaceAlbumId[];
+ASH_PUBLIC_EXPORT extern const char kAmbientModeStreetArtAlbumId[];
+ASH_PUBLIC_EXPORT extern const char kAmbientModeCapturedOnPixelAlbumId[];
 
 // Enumeration of the topic source, i.e. where the photos come from.
 // Values need to stay in sync with the |topicSource_| in ambient_mode_page.js.
@@ -43,6 +47,10 @@ struct ASH_PUBLIC_EXPORT ArtSetting {
 
   // Whether the setting is enabled in the Art gallery topic source.
   bool enabled = false;
+
+  // Whether the setting is visible to the user. This is controlled by feature
+  // parameters to allow remotely disabling certain categories.
+  bool visible = false;
 
   // UTF-8 encoded.
   std::string title;

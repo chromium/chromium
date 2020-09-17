@@ -236,6 +236,9 @@ void AmbientModeHandler::HandleSetSelectedAlbums(const base::ListValue* args) {
             });
         const bool checked = it != albums->GetList().end();
         art_setting.enabled = checked;
+        // A setting must be visible to be enabled.
+        if (art_setting.enabled)
+          CHECK(art_setting.visible);
       }
       break;
   }
@@ -282,6 +285,8 @@ void AmbientModeHandler::SendAlbums(ash::AmbientModeTopicSource topic_source) {
       break;
     case ash::AmbientModeTopicSource::kArtGallery:
       for (const auto& setting : settings_->art_settings) {
+        if (!setting.visible)
+          continue;
         base::Value value(base::Value::Type::DICTIONARY);
         value.SetKey("albumId", base::Value(setting.album_id));
         value.SetKey("checked", base::Value(setting.enabled));

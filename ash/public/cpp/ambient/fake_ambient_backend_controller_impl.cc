@@ -33,13 +33,22 @@ AmbientSettings CreateFakeSettings() {
   art_setting0.album_id = "0";
   art_setting0.enabled = true;
   art_setting0.title = "art0";
+  art_setting0.visible = true;
   settings.art_settings.emplace_back(art_setting0);
 
   ArtSetting art_setting1;
   art_setting1.album_id = "1";
   art_setting1.enabled = false;
   art_setting1.title = "art1";
+  art_setting1.visible = true;
   settings.art_settings.emplace_back(art_setting1);
+
+  ArtSetting hidden_setting;
+  hidden_setting.album_id = "2";
+  hidden_setting.enabled = false;
+  hidden_setting.title = "hidden";
+  hidden_setting.visible = false;
+  settings.art_settings.emplace_back(hidden_setting);
 
   settings.selected_album_ids = {"1"};
   return settings;

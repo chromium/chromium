@@ -22,6 +22,7 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/assistant/internal/proto/google3/backdrop/backdrop.pb.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -153,6 +154,27 @@ ScreenUpdate ToScreenUpdate(
     screen_update.weather_info = weather_info;
   }
   return screen_update;
+}
+
+bool IsArtSettingVisible(const ArtSetting& art_setting) {
+  const auto& album_id = art_setting.album_id;
+
+  if (album_id == kAmbientModeStreetArtAlbumId)
+    return chromeos::features::kAmbientModeStreetArtAlbumEnabled.Get();
+
+  if (album_id == kAmbientModeCapturedOnPixelAlbumId)
+    return chromeos::features::kAmbientModeCapturedOnPixelAlbumEnabled.Get();
+
+  if (album_id == kAmbientModeEarthAndSpaceAlbumId)
+    return chromeos::features::kAmbientModeEarthAndSpaceAlbumEnabled.Get();
+
+  if (album_id == kAmbientModeFeaturedPhotoAlbumId)
+    return chromeos::features::kAmbientModeFeaturedPhotoAlbumEnabled.Get();
+
+  if (album_id == kAmbientModeFineArtAlbumId)
+    return chromeos::features::kAmbientModeFineArtAlbumEnabled.Get();
+
+  return false;
 }
 
 }  // namespace
@@ -368,10 +390,15 @@ void AmbientBackendControllerImpl::OnGetSettings(
 
   auto settings = BackdropClientConfig::ParseGetSettingsResponse(*response);
   // |art_settings| should not be empty if parsed successfully.
-  if (settings.art_settings.empty())
+  if (settings.art_settings.empty()) {
     std::move(callback).Run(base::nullopt);
-  else
+  } else {
+    for (auto& art_setting : settings.art_settings) {
+      art_setting.visible = IsArtSettingVisible(art_setting);
+      art_setting.enabled = art_setting.enabled && art_setting.visible;
+    }
     std::move(callback).Run(settings);
+  }
 }
 
 void AmbientBackendControllerImpl::StartToUpdateSettings(

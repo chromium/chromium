@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace chromeos {
 namespace features {
@@ -19,6 +20,16 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kAllowScrollSettings;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kAmbientModeFeature;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::FeatureParam<bool> kAmbientModeCapturedOnPixelAlbumEnabled;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::FeatureParam<bool> kAmbientModeFineArtAlbumEnabled;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::FeatureParam<bool> kAmbientModeFeaturedPhotoAlbumEnabled;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::FeatureParam<bool> kAmbientModeEarthAndSpaceAlbumEnabled;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::FeatureParam<bool> kAmbientModeStreetArtAlbumEnabled;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kAmbientModePhotoPreviewFeature;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)

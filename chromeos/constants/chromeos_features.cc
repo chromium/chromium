@@ -4,6 +4,7 @@
 
 #include "chromeos/constants/chromeos_features.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace chromeos {
 namespace features {
@@ -25,6 +26,21 @@ const base::Feature kAllowScrollSettings{"AllowScrollSettings",
 // Controls whether to enable Ambient mode feature.
 const base::Feature kAmbientModeFeature{"ChromeOSAmbientMode",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
+constexpr base::FeatureParam<bool> kAmbientModeCapturedOnPixelAlbumEnabled{
+    &kAmbientModeFeature, "CapturedOnPixelAlbumEnabled", false};
+
+constexpr base::FeatureParam<bool> kAmbientModeFineArtAlbumEnabled{
+    &kAmbientModeFeature, "FineArtAlbumEnabled", false};
+
+constexpr base::FeatureParam<bool> kAmbientModeFeaturedPhotoAlbumEnabled{
+    &kAmbientModeFeature, "FeaturedPhotoAlbumEnabled", false};
+
+constexpr base::FeatureParam<bool> kAmbientModeEarthAndSpaceAlbumEnabled{
+    &kAmbientModeFeature, "EarthAndSpaceAlbumEnabled", false};
+
+constexpr base::FeatureParam<bool> kAmbientModeStreetArtAlbumEnabled{
+    &kAmbientModeFeature, "StreetArtAlbumEnabled", false};
 
 // Controls whether to enable Ambient mode album selection with photo previews.
 const base::Feature kAmbientModePhotoPreviewFeature{

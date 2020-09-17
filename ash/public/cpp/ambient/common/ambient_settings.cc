@@ -7,6 +7,11 @@
 namespace ash {
 
 const char kAmbientModeRecentHighlightsAlbumId[] = "RecentHighlights";
+const char kAmbientModeFeaturedPhotoAlbumId[] = "FeaturedPhoto";
+const char kAmbientModeFineArtAlbumId[] = "FineArt";
+const char kAmbientModeEarthAndSpaceAlbumId[] = "EarthAndSpace";
+const char kAmbientModeStreetArtAlbumId[] = "StreetArt";
+const char kAmbientModeCapturedOnPixelAlbumId[] = "CapturedOnPixel";
 
 // ArtSetting ------------------------------------------------------------------
 
