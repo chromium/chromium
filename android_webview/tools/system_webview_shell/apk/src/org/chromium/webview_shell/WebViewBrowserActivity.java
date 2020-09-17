@@ -605,7 +605,9 @@ public class WebViewBrowserActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-        if (itemId == R.id.menu_reset_webview) {
+        if (itemId == R.id.menu_reload_webview) {
+            if (mWebView != null) mWebView.reload();
+        } else if (itemId == R.id.menu_reset_webview) {
             if (mWebView != null) {
                 ViewGroup container = getContainer();
                 container.removeView(mWebView);
