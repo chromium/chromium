@@ -100,6 +100,16 @@ TEST_F(LocalFileStreamWriterTest, WriteMiddle) {
   EXPECT_EQ("foxxxr", GetFileContent(path));
 }
 
+TEST_F(LocalFileStreamWriterTest, WriteNearEnd) {
+  base::FilePath path = CreateFileWithContent("file_a", "foobar");
+  std::unique_ptr<LocalFileStreamWriter> writer(CreateWriter(path, 5));
+  EXPECT_EQ(net::OK, WriteStringToWriter(writer.get(), "xxx"));
+  writer.reset();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(base::PathExists(path));
+  EXPECT_EQ("foobaxxx", GetFileContent(path));
+}
+
 TEST_F(LocalFileStreamWriterTest, WriteEnd) {
   base::FilePath path = CreateFileWithContent("file_a", "foobar");
   std::unique_ptr<LocalFileStreamWriter> writer(CreateWriter(path, 6));
@@ -108,6 +118,17 @@ TEST_F(LocalFileStreamWriterTest, WriteEnd) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(base::PathExists(path));
   EXPECT_EQ("foobarxxx", GetFileContent(path));
+}
+
+TEST_F(LocalFileStreamWriterTest, WriteAfterEnd) {
+  base::FilePath path = CreateFileWithContent("file_a", "foobar");
+  std::unique_ptr<LocalFileStreamWriter> writer(CreateWriter(path, 7));
+  EXPECT_EQ(net::ERR_REQUEST_RANGE_NOT_SATISFIABLE,
+            WriteStringToWriter(writer.get(), "xxx"));
+  writer.reset();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(base::PathExists(path));
+  EXPECT_EQ("foobar", GetFileContent(path));
 }
 
 TEST_F(LocalFileStreamWriterTest, WriteFailForNonexistingFile) {

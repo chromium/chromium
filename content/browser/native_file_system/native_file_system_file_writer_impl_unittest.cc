@@ -494,20 +494,17 @@ TEST_P(NativeFileSystemFileWriterImplWriteTest, WriteWithOffsetInFile) {
 }
 
 TEST_P(NativeFileSystemFileWriterImplWriteTest, WriteWithOffsetPastFile) {
-  // TODO(https://crbug.com/998913): Currently expectations here are different
-  // from what WPT tests are asserting. Figure out what the desired behavior is
-  // and make both tests match.
   uint64_t bytes_written;
   NativeFileSystemStatus result = WriteSync(4, "abc", &bytes_written);
-  EXPECT_EQ(result, NativeFileSystemStatus::kOk);
-  EXPECT_EQ(bytes_written, 3u);
+  EXPECT_EQ(result, NativeFileSystemStatus::kFileError);
+  EXPECT_EQ(bytes_written, 0u);
 
   result = CloseSync();
   EXPECT_EQ(result, NativeFileSystemStatus::kOk);
   EXPECT_TRUE(base::Contains(quarantine_.paths, test_file_url_.path()));
 
   using std::string_literals::operator""s;
-  EXPECT_EQ("\0\0\0\0abc"s, ReadFile(test_file_url_));
+  EXPECT_EQ(""s, ReadFile(test_file_url_));
 }
 
 TEST_F(NativeFileSystemFileWriterImplTest, TruncateShrink) {

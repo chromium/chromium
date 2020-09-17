@@ -139,16 +139,43 @@ void LocalFileStreamWriter::DidOpen(base::OnceClosure main_operation,
     return;
   }
 
-  InitiateSeek(std::move(main_operation));
+  auto file_info = std::make_unique<base::File::Info>();
+  base::File::Info* raw_file_info = file_info.get();
+  result = stream_impl_->GetFileInfo(
+      raw_file_info,
+      base::BindOnce(&LocalFileStreamWriter::InitiateSeek,
+                     weak_factory_.GetWeakPtr(), std::move(main_operation),
+                     std::move(file_info)));
+  DCHECK_NE(result, net::OK);
+  if (result != net::ERR_IO_PENDING) {
+    has_pending_operation_ = false;
+    std::move(write_callback_).Run(result);
+  }
 }
 
-void LocalFileStreamWriter::InitiateSeek(base::OnceClosure main_operation) {
+void LocalFileStreamWriter::InitiateSeek(
+    base::OnceClosure main_operation,
+    std::unique_ptr<base::File::Info> file_info,
+    int file_info_result) {
   DCHECK(has_pending_operation_);
   DCHECK(stream_impl_.get());
+
+  if (file_info_result != net::OK) {
+    has_pending_operation_ = false;
+    std::move(write_callback_).Run(file_info_result);
+    return;
+  }
 
   if (initial_offset_ == 0) {
     // No need to seek.
     std::move(main_operation).Run();
+    return;
+  }
+
+  if (initial_offset_ > file_info->size) {
+    // We should not be writing past the end of the file.
+    has_pending_operation_ = false;
+    std::move(write_callback_).Run(net::ERR_REQUEST_RANGE_NOT_SATISFIABLE);
     return;
   }
 
