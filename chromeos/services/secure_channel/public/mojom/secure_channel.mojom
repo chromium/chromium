@@ -21,6 +21,10 @@ enum ConnectionAttemptFailureReason {
   // relating to GATT services being unavailable.
   GATT_CONNECTION_ERROR,
 
+  // A Nearby Connection was attempted, but it failed. Potential causes include
+  // internal API errors and flaky Bluetooth/WebRTC connections.
+  NEARBY_CONNECTION_ERROR,
+
   // The provided local device does not have a public key set.
   LOCAL_DEVICE_INVALID_PUBLIC_KEY,
 
