@@ -1,0 +1,151 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "content/browser/font_access/font_enumeration_cache_mac.h"
+
+#import <AppKit/AppKit.h>
+#import <CoreText/CoreText.h>
+
+#include "base/feature_list.h"
+#include "base/mac/foundation_util.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
+#include "base/strings/sys_string_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
+#include "third_party/blink/public/common/features.h"
+
+namespace content {
+
+namespace {
+
+base::ScopedCFTypeRef<CFStringRef> GetLocalizedString(CTFontDescriptorRef fd,
+                                                      CFStringRef attribute) {
+  return base::ScopedCFTypeRef<CFStringRef>(base::mac::CFCast<CFStringRef>(
+      CTFontDescriptorCopyLocalizedAttribute(fd, attribute, nullptr)));
+}
+
+base::ScopedCFTypeRef<CFStringRef> GetString(CTFontDescriptorRef fd,
+                                             CFStringRef attribute) {
+  return base::ScopedCFTypeRef<CFStringRef>(base::mac::CFCast<CFStringRef>(
+      CTFontDescriptorCopyAttribute(fd, attribute)));
+}
+
+}  // namespace
+
+FontEnumerationCacheMac::FontEnumerationCacheMac() = default;
+FontEnumerationCacheMac::~FontEnumerationCacheMac() = default;
+
+// static
+FontEnumerationCache* FontEnumerationCache::GetInstance() {
+  static base::NoDestructor<FontEnumerationCacheMac> instance;
+  return instance.get();
+}
+
+void FontEnumerationCacheMac::QueueShareMemoryRegionWhenReady(
+    scoped_refptr<base::TaskRunner> task_runner,
+    blink::mojom::FontAccessManager::EnumerateLocalFontsCallback callback) {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));
+
+  callbacks_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &FontEnumerationCacheMac::RunPendingCallback,
+          // Safe because this is an initialized singleton.
+          base::Unretained(this),
+          CallbackOnTaskRunner(std::move(task_runner), std::move(callback))));
+
+  if (!enumeration_cache_build_started_.IsSet()) {
+    enumeration_cache_build_started_.Set();
+
+    SchedulePrepareFontEnumerationCache();
+  }
+}
+
+bool FontEnumerationCacheMac::IsFontEnumerationCacheReady() {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));
+
+  return enumeration_cache_built_.IsSet() && IsFontEnumerationCacheValid();
+}
+
+void FontEnumerationCacheMac::SchedulePrepareFontEnumerationCache() {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));
+
+  scoped_refptr<base::SequencedTaskRunner> results_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+
+  results_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FontEnumerationCacheMac::PrepareFontEnumerationCache,
+                     // Safe because this is an initialized singleton.
+                     base::Unretained(this)));
+}
+
+void FontEnumerationCacheMac::PrepareFontEnumerationCache() {
+  DCHECK(!enumeration_cache_built_.IsSet());
+
+  @autoreleasepool {
+    // Metrics.
+    const base::ElapsedTimer start_timer;
+    auto font_enumeration_table =
+        std::make_unique<blink::FontEnumerationTable>();
+
+    CFTypeRef values[1] = {kCFBooleanTrue};
+    base::ScopedCFTypeRef<CFDictionaryRef> options(CFDictionaryCreate(
+        kCFAllocatorDefault,
+        (const void**)kCTFontCollectionRemoveDuplicatesOption,
+        (const void**)&values,
+        /*numValues=*/1, &kCFTypeDictionaryKeyCallBacks,
+        &kCFTypeDictionaryValueCallBacks));
+    base::ScopedCFTypeRef<CTFontCollectionRef> collection(
+        CTFontCollectionCreateFromAvailableFonts(options));
+
+    base::ScopedCFTypeRef<CFArrayRef> font_descs(
+        CTFontCollectionCreateMatchingFontDescriptors(collection));
+
+    for (CFIndex i = 0; i < CFArrayGetCount(font_descs); ++i) {
+      CTFontDescriptorRef fd = base::mac::CFCast<CTFontDescriptorRef>(
+          CFArrayGetValueAtIndex(font_descs, i));
+      base::ScopedCFTypeRef<CFStringRef> cf_postscript_name =
+          GetString(fd, kCTFontNameAttribute);
+      base::ScopedCFTypeRef<CFStringRef> cf_full_name =
+          GetLocalizedString(fd, kCTFontDisplayNameAttribute);
+      base::ScopedCFTypeRef<CFStringRef> cf_family =
+          GetLocalizedString(fd, kCTFontFamilyNameAttribute);
+
+      blink::FontEnumerationTable_FontMetadata metadata;
+      metadata.set_postscript_name(
+          base::SysCFStringRefToUTF8(cf_postscript_name.get()).c_str());
+      metadata.set_full_name(
+          base::SysCFStringRefToUTF8(cf_full_name.get()).c_str());
+      metadata.set_family(base::SysCFStringRefToUTF8(cf_family.get()).c_str());
+
+      blink::FontEnumerationTable_FontMetadata* added_font_meta =
+          font_enumeration_table->add_fonts();
+      *added_font_meta = metadata;
+    }
+
+    enumeration_cache_memory_ = base::ReadOnlySharedMemoryRegion::Create(
+        font_enumeration_table->ByteSizeLong());
+
+    if (!IsFontEnumerationCacheValid() ||
+        !font_enumeration_table->SerializeToArray(
+            enumeration_cache_memory_.mapping.memory(),
+            enumeration_cache_memory_.mapping.size())) {
+      enumeration_cache_memory_ = base::MappedReadOnlyRegion();
+    }
+
+    enumeration_cache_built_.Set();
+
+    UMA_HISTOGRAM_MEDIUM_TIMES("Fonts.AccessAPI.EnumerationTime",
+                               start_timer.Elapsed());
+    // Respond to pending and future requests.
+    StartCallbacksTaskQueue();
+  }
+}
+
+}  // namespace content

@@ -79,10 +79,8 @@ class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
   }
 
   void SetUp() override {
-#if !defined(OS_MAC)
     FontEnumerationCache* instance = FontEnumerationCache::GetInstance();
     instance->ResetStateForTesting();
-#endif
 
     RenderViewHostImplTestHarness::SetUp();
     NavigateAndCommit(kTestUrl);
@@ -235,7 +233,8 @@ TEST_F(FontAccessManagerImplTest, PreviouslyDeniedPermissionNoActivation) {
 }
 #endif
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
+    defined(OS_MAC)
 namespace {
 
 void ValidateFontEnumerationBasic(FontEnumerationStatus status,

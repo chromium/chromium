@@ -896,6 +896,8 @@ source_set("browser") {
     "font_access/font_access_manager_impl.h",
     "font_access/font_enumeration_cache.cc",
     "font_access/font_enumeration_cache.h",
+    "font_access/font_enumeration_cache_mac.h",
+    "font_access/font_enumeration_cache_mac.mm",
     "font_access/font_enumeration_cache_win.cc",
     "font_access/font_enumeration_cache_win.h",
     "font_list_async.cc",
