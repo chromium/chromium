@@ -851,3 +851,30 @@ TEST_F(CrosUsbDetectorTest, DeviceAllowedInterfacesMaskSetCorrectly) {
 
   EXPECT_EQ(0x00000006U, device_info.allowed_interfaces_mask);
 }
+
+TEST_F(CrosUsbDetectorTest, DetachBeforeAttach) {
+  ConnectToDeviceManager();
+  base::RunLoop().RunUntilIdle();
+
+  auto device_1 = base::MakeRefCounted<device::FakeUsbDeviceInfo>(
+      0, 1, kManufacturerName, kProductName_1, "002");
+  device_manager_.AddDevice(device_1);
+  base::RunLoop().RunUntilIdle();
+
+  auto device_info = GetSingleDeviceInfo();
+  EXPECT_FALSE(device_info.shared_vm_name.has_value());
+
+  AttachDeviceToVm("VM1", device_info.guid);
+  base::RunLoop().RunUntilIdle();
+  device_info = GetSingleDeviceInfo();
+  EXPECT_TRUE(device_info.shared_vm_name.has_value());
+  EXPECT_EQ("VM1", *device_info.shared_vm_name);
+  EXPECT_FALSE(fake_concierge_client_->detach_usb_device_called());
+
+  AttachDeviceToVm("VM2", device_info.guid);
+  base::RunLoop().RunUntilIdle();
+  device_info = GetSingleDeviceInfo();
+  EXPECT_TRUE(device_info.shared_vm_name.has_value());
+  EXPECT_EQ("VM2", *device_info.shared_vm_name);
+  EXPECT_TRUE(fake_concierge_client_->detach_usb_device_called());
+}

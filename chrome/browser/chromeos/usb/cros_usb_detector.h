@@ -172,6 +172,12 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
       base::OnceCallback<void(bool success)> callback,
       base::Optional<vm_tools::concierge::DetachUsbDeviceResponse> response);
 
+  // Devices will be auto-detached if they are attached to another VM.
+  void AttachAfterDetach(const std::string& vm_name,
+                         const std::string& guid,
+                         base::OnceCallback<void(bool success)> callback,
+                         bool success);
+
   // Returns true when a device should show a notification when attached.
   bool ShouldShowNotification(const device::mojom::UsbDeviceInfo& device_info,
                               uint32_t allowed_interfaces_mask);

@@ -546,6 +546,16 @@ void CrosUsbDetector::AttachUsbDeviceToVm(
   uint32_t allowed_interfaces_mask = 0;
   for (auto& device : usb_devices_) {
     if (device.guid == guid) {
+      // Detach first if device is attached elsewhere
+      if (device.shared_vm_name && device.shared_vm_name != vm_name) {
+        DetachUsbDeviceFromVm(
+            *device.shared_vm_name, guid,
+            base::BindOnce(&CrosUsbDetector::AttachAfterDetach,
+                           weak_ptr_factory_.GetWeakPtr(), vm_name, guid,
+                           std::move(callback)));
+        return;
+      }
+
       // Mark the USB device shared so that we know to reattach it on VM
       // restart.
       // Setting this flag early also allows the UI not to flicker because of
@@ -558,6 +568,8 @@ void CrosUsbDetector::AttachUsbDeviceToVm(
   }
   auto it = available_device_info_.find(guid);
   if (it == available_device_info_.end()) {
+    LOG(ERROR) << "No device info for " << guid;
+    std::move(callback).Run(false);
     return;
   }
 
@@ -587,6 +599,7 @@ void CrosUsbDetector::DetachUsbDeviceFromVm(
   if (it == available_device_info_.end()) {
     // If there wasn't an existing attachment, then removal is a no-op and
     // always succeeds
+    LOG(ERROR) << "No device found to detach " << guid;
     std::move(callback).Run(/*success=*/true);
     return;
   }
@@ -600,6 +613,7 @@ void CrosUsbDetector::DetachUsbDeviceFromVm(
   }
 
   if (!guest_port) {
+    LOG(ERROR) << "No port found to detach " << guid;
     std::move(callback).Run(/*success=*/true);
     return;
   }
@@ -717,4 +731,16 @@ void CrosUsbDetector::OnUsbDeviceDetachFinished(
   std::move(callback).Run(success);
 }
 
+void CrosUsbDetector::AttachAfterDetach(
+    const std::string& vm_name,
+    const std::string& guid,
+    base::OnceCallback<void(bool success)> callback,
+    bool success) {
+  if (!success) {
+    LOG(ERROR) << "Failed to detatch before attach";
+    std::move(callback).Run(false);
+    return;
+  }
+  AttachUsbDeviceToVm(vm_name, guid, std::move(callback));
+}
 }  // namespace chromeos
