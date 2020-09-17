@@ -761,6 +761,7 @@
           'lollipop',
         ],
         'additional_compile_targets': [
+          'android_lint_test',
           'cronet_test_instrumentation_apk',
           'errorprone_plugin_tests',
           'monochrome_static_initializers',
