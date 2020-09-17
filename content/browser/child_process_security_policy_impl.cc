@@ -2109,7 +2109,7 @@ bool ChildProcessSecurityPolicyImpl::HasOriginEverRequestedOptInIsolation(
 void ChildProcessSecurityPolicyImpl::AddNonIsolatedOriginIfNeeded(
     const IsolationContext& isolation_context,
     const url::Origin& origin,
-    bool is_global_walk) {
+    bool is_global_walk_or_frame_removal) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Origin Policy only exists for HTTPS, and header-based opt-in requests are
   // also HTTPS-only, so nothing we isolate will be HTTP.
@@ -2122,23 +2122,27 @@ void ChildProcessSecurityPolicyImpl::AddNonIsolatedOriginIfNeeded(
 
   base::AutoLock origins_isolation_opt_in_lock(origins_isolation_opt_in_lock_);
 
-  if (!is_global_walk) {
-    // Commits of origins that have ever requested isolation are tracked in
-    // every BrowsingInstance, to avoid having to do multiple global walks. If
-    // the origin isn't in the list of such origins (i.e., the common case),
-    // return early to avoid unnecessary work, since this is called on every
-    // commit.
-    if (!base::Contains(origin_isolation_opt_ins_, origin))
-      return;
+  // Commits of origins that have ever requested isolation are tracked in
+  // every BrowsingInstance, to avoid having to do multiple global walks. If
+  // the origin isn't in the list of such origins (i.e., the common case),
+  // return early to avoid unnecessary work, since this is called on every
+  // commit. Skip this during global walks and frame removals, since we do want
+  // to track the non-isolated origin in those cases.
+  if (!is_global_walk_or_frame_removal &&
+      !base::Contains(origin_isolation_opt_ins_, origin)) {
+    return;
+  }
 
-    // If |origin| is already in the opt-in list, then we don't want to add it
-    // to the opt-out list.
-    auto it_opt_in =
-        origin_isolation_by_browsing_instance_.find(browsing_instance_id);
-    if (it_opt_in != origin_isolation_by_browsing_instance_.end() &&
-        base::Contains(it_opt_in->second, origin)) {
-      return;
-    }
+  // If |origin| is already in the opt-in list, then we don't want to add it
+  // to the opt-out list. Technically this check is unnecessary during global
+  // walks (when the origin won't be in this list yet), but it matters during
+  // frame removal (when we don't want to add an opted-in origin to the
+  // non-isolated list when its frame is removed).
+  auto it_opt_in =
+      origin_isolation_by_browsing_instance_.find(browsing_instance_id);
+  if (it_opt_in != origin_isolation_by_browsing_instance_.end() &&
+      base::Contains(it_opt_in->second, origin)) {
+    return;
   }
 
   auto it = origin_isolation_non_isolated_by_browsing_instance_.find(

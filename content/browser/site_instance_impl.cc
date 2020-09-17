@@ -968,9 +968,9 @@ bool SiteInstanceImpl::DoesSiteInfoForURLMatch(const GURL& url) {
 void SiteInstanceImpl::PreventOptInOriginIsolation(
     const url::Origin& previously_visited_origin) {
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  policy->AddNonIsolatedOriginIfNeeded(GetIsolationContext(),
-                                       previously_visited_origin,
-                                       true /* is_global_walk */);
+  policy->AddNonIsolatedOriginIfNeeded(
+      GetIsolationContext(), previously_visited_origin,
+      true /* is_global_walk_or_frame_removal */);
 }
 
 // static

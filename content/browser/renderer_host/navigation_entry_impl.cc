@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/url_formatter/url_formatter.h"
+#include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/web_package/web_bundle_navigation_info.h"
 #include "content/common/content_constants_internal.h"
@@ -967,6 +968,20 @@ void NavigationEntryImpl::RemoveEntryForFrame(FrameTreeNode* frame_tree_node,
   // FrameNavigationEntries and the FrameTree.
   if (!only_if_different_position ||
       !InSameTreePosition(frame_tree_node, node)) {
+    auto* frame_entry = node->frame_entry.get();
+    if (frame_entry && frame_entry->committed_origin()) {
+      // Normally non-isolated origins are tracked through their presence in
+      // session history, which is consulted whenever an origin newly requests
+      // isolation. If we remove a frame_entry, its origin won't be available
+      // to any future global walk if the same origin later wants to opt-in. So
+      // we add it to the non-opt-in list here to be spec compliant (unless it's
+      // currently opted-in, in which case this call will do nothing).
+      ChildProcessSecurityPolicyImpl::GetInstance()
+          ->AddNonIsolatedOriginIfNeeded(
+              frame_entry->site_instance()->GetIsolationContext(),
+              frame_entry->committed_origin().value(),
+              true /* global_ walk_or_frame_removal */);
+    }
     NavigationEntryImpl::TreeNode* parent_node = node->parent;
     auto it = std::find_if(
         parent_node->children.begin(), parent_node->children.end(),

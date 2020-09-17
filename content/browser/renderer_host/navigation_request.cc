@@ -2389,7 +2389,7 @@ void NavigationRequest::OnResponseStarted(
     // possible to compute the right origin here.
     ChildProcessSecurityPolicyImpl::GetInstance()->AddNonIsolatedOriginIfNeeded(
         isolation_context, url::Origin::Create(common_params().url),
-        false /* is_global_walk */);
+        false /* is_global_walk_or_frame_removal */);
 
     // Replace the SiteInstance of the previously committed entry if it's for a
     // url that doesn't require a site assignment, since this new commit is

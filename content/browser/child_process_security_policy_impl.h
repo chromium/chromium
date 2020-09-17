@@ -599,13 +599,16 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   bool HasOriginEverRequestedOptInIsolation(const url::Origin& origin);
 
   // Adds |origin| to the non-isolated list for the BrowsingInstance specified
-  // by |isolation_context|, if it's not already in the list. |is_global_walk|
-  // should only be set to true during the global walk that is triggered when
-  // |origin| first requests opt-in isolation, so that the function can skip
-  // safety checks that will be unnecessary during the global walk.
+  // by |isolation_context|, if we need to track it and it's not already in the
+  // list. |is_global_walk_or_frame_removal| should be set to true during the
+  // global walk that is triggered when |origin| first requests opt-in
+  // isolation, so that the function can skip safety checks that will be
+  // unnecessary during the global walk. It is also set to true if this function
+  // is called when removing a FrameNavigationEntry, since that entry won't be
+  // available to any subsequent global walks.
   void AddNonIsolatedOriginIfNeeded(const IsolationContext& isolation_context,
                                     const url::Origin& origin,
-                                    bool is_global_walk);
+                                    bool is_global_walk_or_frame_removal);
 
  private:
   friend class ChildProcessSecurityPolicyInProcessBrowserTest;
