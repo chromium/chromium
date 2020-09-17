@@ -168539,7 +168539,7 @@
     },
     "resources": {
      "cookie-helper.sub.js": [
-      "1a163332e3c1821e690e1659842cd30202440f06",
+      "50dcdfc5ecbb6dd023eef9ce64beab5e277db406",
       []
      ],
      "drop.py": [
@@ -168635,6 +168635,14 @@
       ],
       "puppet.html": [
        "6d36132d3a89abea2f707e520e83a41590dac67a",
+       []
+      ]
+     }
+    },
+    "schemeful-same-site": {
+     "resources": {
+      "navigateToInsecurePostToParent.html": [
+       "b81b722bf602035188e819de903fa3b3b1ac109a",
        []
       ]
      }
@@ -197276,6 +197284,10 @@
        ],
        "list-style-type-expected.txt": [
         "59617c5d72914839cb9b0d5200a38219f64167bc",
+        []
+       ],
+       "logical-expected.txt": [
+        "0f32b2d70c3d07b5f03bef59d58114fe1b4b865a",
         []
        ],
        "margin-expected.txt": [
@@ -275116,6 +275128,40 @@
       ]
      ]
     },
+    "schemeful-same-site": {
+     "schemeful-iframe-subresource.tentative.html": [
+      "13397d241ade942ec2376ac99c6d4f75f11df7f3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "schemeful-navigation.tentative.html": [
+      "5ead2a54c7f989353a1b496eea2ab5b1ff4b3b05",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "schemeful-subresource.tentative.html": [
+      "4ba9286c259f9892020a688bb3c8ca1cecf29508",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "schemeful-websockets.sub.tentative.html": [
+      "8e7c073c997ad4a60b7f6f551328d879c887a2b8",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "secure": {
      "set-from-dom.https.sub.html": [
       "46997db18ac738b5c3041e0010c0562db3813616",
@@ -296052,7 +296098,7 @@
         ]
        ],
        "logical.html": [
-        "e8085b02787a17c3ccd17d7c0dc8c94d9156b426",
+        "c068edf751cc36a3bd6de38587bdbfa1660430a5",
         [
          null,
          {}
@@ -367570,7 +367616,7 @@
      ]
     ],
     "GUM-empty-option-param.https.html": [
-     "c7904cb4c7d7b810874c93ff23dcda228c57a369",
+     "9f79a6dca6d04aa7e293129ade88573dd32eab7c",
      [
       null,
       {}
@@ -367604,6 +367650,13 @@
       {}
      ]
     ],
+    "GUM-required-constraint-with-ideal-value.https.html": [
+     "705836f1e3cf726bae7f5bdd9e37ae4e8ca83c15",
+     [
+      null,
+      {}
+     ]
+    ],
     "GUM-trivial-constraint.https.html": [
      "ad3776589e5b6ed5ffc37e2b0fee282b4d2643a3",
      [
@@ -367612,7 +367665,7 @@
      ]
     ],
     "GUM-unknownkey-option-param.https.html": [
-     "b27927222012bf79c31f78a28c4df86ea500ca83",
+     "965145a2b1905dc3f21740913be460c4970ce5a8",
      [
       null,
       {}
