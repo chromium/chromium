@@ -6,6 +6,7 @@
 // #import 'chrome://os-settings/strings.m.js';
 // #import 'chrome://resources/cr_components/chromeos/cellular_setup/psim_flow_ui.m.js';
 
+// #import {PSimUIState} from 'chrome://resources/cr_components/chromeos/cellular_setup/psim_flow_ui.m.js';
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertTrue} from '../../../chai_assert.js';
 // clang-format on
@@ -21,5 +22,14 @@ suite('CrComponentsPsimFlowUiTest', function() {
   test('Base test', function() {
     const ironPage = pSimPage.$$('iron-pages');
     assertTrue(!!ironPage);
+  });
+
+  test('forward navigation test', function() {
+    pSimPage.state_ = cellularSetup.PSimUIState.WAITING_FOR_PORTAL_TO_LOAD;
+    Polymer.dom.flush();
+    pSimPage.navigateForward();
+    assertTrue(
+        pSimPage.state_ ===
+        cellularSetup.PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH);
   });
 });

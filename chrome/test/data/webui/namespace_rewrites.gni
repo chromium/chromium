@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 test_namespace_rewrites = [
+  "cellularSetup.PSimUIState|PSimUIState",
   "global.traceAssertionsForTesting|window.traceAssertionsForTesting",
   "MockInteractions.blur|blur",
   "MockInteractions.downAndUp|downAndUp",

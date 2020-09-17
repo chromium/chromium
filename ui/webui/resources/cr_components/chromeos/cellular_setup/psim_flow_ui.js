@@ -4,14 +4,14 @@
 
 cr.define('cellularSetup', function() {
   /** @enum{string} */
-  const PSimPageName = {
+  /* #export */ const PSimPageName = {
     SIM_DETECT: 'sim-detect-page',
     PROVISIONING: 'provisioning-page',
     FINAL: 'final-page',
   };
 
   /** @enum{string} */
-  const PSimUIState = {
+  /* #export */ const PSimUIState = {
     IDLE: 'idle',
     STARTING_ACTIVATION: 'starting-activation',
     WAITING_FOR_ACTIVATION_TO_START: 'waiting-for-activation-to-start',
@@ -182,6 +182,21 @@ cr.define('cellularSetup', function() {
     initSubflow() {
       this.state_ = PSimUIState.STARTING_ACTIVATION;
       this.updateButtonBarState_();
+    },
+
+    navigateForward() {
+      // Navigate forward is only called by clicking next button
+      // from the provisioning page.
+      assert(this.selectedPSimPageName_ === PSimPageName.PROVISIONING);
+      this.state_ = PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH;
+    },
+
+    /**
+     * @returns {boolean} true if backward navigation was handled
+     */
+    attemptBackwardNavigation() {
+      // Back navigation for pSIM flow always goes back to selection page
+      return false;
     },
 
     /** @private */
