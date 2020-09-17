@@ -34,6 +34,7 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyObservable;
 
@@ -106,7 +107,9 @@ public class DisclosureNotification
         NotificationMetadata metadata = new NotificationMetadata(umaType, scope, notificationId);
 
         String title = mResources.getString(R.string.twa_running_in_chrome);
-        String text = mResources.getString(R.string.twa_running_in_chrome_v2, scope);
+        String scopeForDisplay =
+                UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(scope);
+        String text = mResources.getString(R.string.twa_running_in_chrome_v2, scopeForDisplay);
 
         // We're using setStyle, which can't be handled by compat mode.
         boolean preferCompat = false;

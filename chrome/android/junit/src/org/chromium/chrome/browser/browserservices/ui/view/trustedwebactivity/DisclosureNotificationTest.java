@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.browserservices.ui.view.trustedwebactivity;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityModel.DISCLOSURE_EVENTS_CALLBACK;
 import static org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityModel.DISCLOSURE_FIRST_TIME;
@@ -21,6 +23,7 @@ import static org.chromium.chrome.browser.notifications.channels.ChromeChannelDe
 import android.content.Context;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -30,10 +33,13 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityModel;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
+import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.components.url_formatter.UrlFormatterJni;
 
 /**
  * Tests for {@link DisclosureNotification}.
@@ -44,6 +50,10 @@ public class DisclosureNotificationTest {
     private static final String SCOPE = "https://www.example.com";
     private static final String PACKAGE = "com.example.twa";
 
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
+    @Mock
+    private UrlFormatter.Natives mUrlFormatterJniMock;
     @Mock
     public ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock
@@ -66,6 +76,10 @@ public class DisclosureNotificationTest {
         Context context = RuntimeEnvironment.application;
         mNotification = new DisclosureNotification(context, context.getResources(),
                 mNotificationManager, mModel, mLifecycleDispatcher);
+
+        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
+        when(mUrlFormatterJniMock.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(anyString()))
+                .then(inv -> "formatted " + inv.getArgument(0));
     }
 
     @Test
