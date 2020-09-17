@@ -501,11 +501,11 @@ config("compiler") {
       "-instcombine-lower-dbg-declare=0",
     ]
 
-    if (llvm_force_head_revision) {
+    if (!llvm_force_head_revision) {
       cflags += [
         # TODO(https://crbug.com/1127713): Investigate, remove.
         "-mllvm",
-        "-enable-dse-memoryssa=true",
+        "-enable-dse-memoryssa=false",
       ]
     }
   }
