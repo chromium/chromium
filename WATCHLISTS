@@ -1082,6 +1082,11 @@
     'headless': {
       'filepath': 'headless/'
     },
+    'holding_space': {
+      'filepath': 'ash/public/cpp/holding_space|'\
+                  'ash/system/holding_space|'\
+                  'chrome/browser/ui/ash/holding_space'
+    },
     'i18n': {
       'filepath': 'base/i18n/|base/string|l10n|icu|'\
                   'locale_settings|encoding',
@@ -2496,6 +2501,7 @@
                    'wjmaclean@chromium.org'],
     'hats': ['cros-telemetry+hats@google.com'],
     'headless': ['headless-reviews@chromium.org'],
+    'holding_space': ['tote-eng+reviews@google.com'],
     'i18n': ['jshin+watch@chromium.org'],
     'image_editor': ['tgupta+watch@chromium.org',
                      'jeffreycohen+watch@chromium.org',
