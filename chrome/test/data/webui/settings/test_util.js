@@ -208,6 +208,10 @@ export function createOriginInfo(origin, override) {
  */
 export function getContentSettingsTypeFromChooserType(chooserType) {
   switch (chooserType) {
+    case ChooserType.HID_DEVICES:
+      return ContentSettingsTypes.HID_DEVICES;
+    case ChooserType.SERIAL_PORTS:
+      return ContentSettingsTypes.SERIAL_PORTS;
     case ChooserType.USB_DEVICES:
       return ContentSettingsTypes.USB_DEVICES;
     default:

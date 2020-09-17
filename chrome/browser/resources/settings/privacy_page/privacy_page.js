@@ -14,6 +14,7 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../controls/settings_toggle_button.m.js';
 import '../prefs/prefs.m.js';
+import '../site_settings/settings_category_default_radio_group.js';
 import '../settings_page/settings_animated_pages.m.js';
 import '../settings_page/settings_subpage.m.js';
 import '../settings_shared_css.m.js';
@@ -106,6 +107,14 @@ Polymer({
       type: Object,
       value() {
         return /** @type {BlockAutoplayStatus} */ ({});
+      }
+    },
+
+    /** @private */
+    enableContentSettingsRedesign_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('enableContentSettingsRedesign');
       }
     },
 

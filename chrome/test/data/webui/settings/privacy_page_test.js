@@ -7,7 +7,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ClearBrowsingDataBrowserProxyImpl, CookieControlsMode, SafeBrowsingSetting, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Router, routes, SecureDnsMode, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Route, Router, routes, SecureDnsMode, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {flushTasks} from '../test_util.m.js';
@@ -21,6 +21,49 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.m.js';
 
 // clang-format on
 
+/** @type {!Array<!Route>} */
+const redesignedPages = [
+  routes.SITE_SETTINGS_ADS,
+  routes.SITE_SETTINGS_AR,
+  routes.SITE_SETTINGS_AUTOMATIC_DOWNLOADS,
+  routes.SITE_SETTINGS_BACKGROUND_SYNC,
+  routes.SITE_SETTINGS_CAMERA,
+  routes.SITE_SETTINGS_CLIPBOARD,
+  routes.SITE_SETTINGS_FLASH,
+  routes.SITE_SETTINGS_IMAGES,
+  routes.SITE_SETTINGS_JAVASCRIPT,
+  routes.SITE_SETTINGS_LOCATION,
+  routes.SITE_SETTINGS_MICROPHONE,
+  routes.SITE_SETTINGS_MIDI_DEVICES,
+  routes.SITE_SETTINGS_POPUPS,
+  routes.SITE_SETTINGS_SENSORS,
+  routes.SITE_SETTINGS_SERIAL_PORTS,
+  routes.SITE_SETTINGS_SOUND,
+  routes.SITE_SETTINGS_UNSANDBOXED_PLUGINS,
+  routes.SITE_SETTINGS_USB_DEVICES,
+  routes.SITE_SETTINGS_VR,
+
+  // TODO(crbug.com/1128902) After restructure add coverage for elements on
+  // routes which depend on flags being enabled.
+  // routes.SITE_SETTINGS_FILE_SYSTEM_WRITE,
+  // routes.SITE_SETTINGS_PAYMENT_HANDLER,
+
+  // Doesn't contain toggle or radio buttons
+  // routes.SITE_SETTINGS_ZOOM_LEVELS,
+];
+
+/** @type {!Array<!Route>} */
+const notRedesignedPages = [
+  routes.SITE_SETTINGS_NOTIFICATIONS,
+  routes.SITE_SETTINGS_HID_DEVICES,
+
+  // Content settings that depend on flags being enabled.
+  // routes.SITE_SETTINGS_BLUETOOTH_SCANNING,
+  // routes.SITE_SETTINGS_BLUETOOTH_DEVICES,
+  // routes.SITE_SETTINGS_WINDOW_PLACEMENT,
+  // routes.SITE_SETTINGS_FONT_ACCESS,
+];
+
 suite('PrivacyPage', function() {
   /** @type {!SettingsPrivacyPageElement} */
   let page;
@@ -33,6 +76,12 @@ suite('PrivacyPage', function() {
 
   /** @type {!Array<string>} */
   const testLabels = ['test label 1', 'test label 2'];
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableContentSettingsRedesign: false,
+    });
+  });
 
   setup(async function() {
     testClearBrowsingDataBrowserProxy = new TestClearBrowsingDataBrowserProxy();
@@ -88,6 +137,61 @@ suite('PrivacyPage', function() {
 
     webUIListenerCallback('cookieSettingDescriptionChanged', testLabels[1]);
     assertEquals(page.$$('#cookiesLinkRow').subLabel, testLabels[1]);
+  });
+
+  test('ContentSettingsRedesignVisibility', async function() {
+    // Ensure pages are visited so that HTML components are stamped.
+    redesignedPages.forEach(route => Router.getInstance().navigateTo(route));
+    notRedesignedPages.forEach(route => Router.getInstance().navigateTo(route));
+
+    assertFalse(loadTimeData.getBoolean('enableContentSettingsRedesign'));
+    assertEquals(
+        page.root.querySelectorAll('category-default-setting').length,
+        redesignedPages.length + notRedesignedPages.length);
+    assertEquals(
+        page.root.querySelectorAll('settings-category-default-radio-group')
+            .length,
+        0);
+  });
+});
+
+
+suite('ContentSettingsRedesign', function() {
+  /** @type {!SettingsPrivacyPageElement} */
+  let page;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableContentSettingsRedesign: true,
+    });
+  });
+
+  setup(async function() {
+    document.body.innerHTML = '';
+    page = /** @type {!SettingsPrivacyPageElement} */
+        (document.createElement('settings-privacy-page'));
+    document.body.appendChild(page);
+    flush();
+  });
+
+  teardown(function() {
+    page.remove();
+    Router.getInstance().navigateTo(routes.BASIC);
+  });
+
+  test('ContentSettingsRedesignVisibility', async function() {
+    // Ensure pages are visited so that HTML components are stamped.
+    redesignedPages.forEach(route => Router.getInstance().navigateTo(route));
+    notRedesignedPages.forEach(route => Router.getInstance().navigateTo(route));
+
+    assertTrue(loadTimeData.getBoolean('enableContentSettingsRedesign'));
+    assertEquals(
+        page.root.querySelectorAll('category-default-setting').length,
+        notRedesignedPages.length);
+    assertEquals(
+        page.root.querySelectorAll('settings-category-default-radio-group')
+            .length,
+        redesignedPages.length);
   });
 });
 
