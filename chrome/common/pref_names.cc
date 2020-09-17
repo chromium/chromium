@@ -1629,13 +1629,6 @@ const char kProfileInfoCache[] = "profile.info_cache";
 // not happen if the browser crashes, so we remove the profile on next start.
 const char kProfilesDeleted[] = "profiles.profiles_deleted";
 
-// Deprecated preference for metric / crash reporting on Android. Use
-// kMetricsReportingEnabled instead.
-#if defined(OS_ANDROID)
-const char kCrashReportingEnabled[] =
-    "user_experience_metrics_crash.reporting_enabled";
-#endif  // defined(OS_ANDROID)
-
 // This is the location of a list of dictionaries of plugin stability stats.
 const char kStabilityPluginStats[] =
     "user_experience_metrics.stability.plugin_stats2";

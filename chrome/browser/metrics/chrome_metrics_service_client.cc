@@ -574,13 +574,6 @@ ChromeMetricsServiceClient::GetMetricsReportingDefaultState() {
 void ChromeMetricsServiceClient::Initialize() {
   PrefService* local_state = g_browser_process->local_state();
 
-  // Clear deprecated metrics preference for Android.
-  // TODO(gayane): Cleanup this code after M60 when the pref would be cleared
-  // from clients.
-#if defined(OS_ANDROID)
-  local_state->ClearPref(prefs::kCrashReportingEnabled);
-#endif
-
   metrics_service_ = std::make_unique<metrics::MetricsService>(
       metrics_state_manager_, this, local_state);
 

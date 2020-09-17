@@ -512,12 +512,6 @@ extern const char kHasSeenWelcomePage[];
 extern const char kNaviOnboardGroup[];
 #endif  // defined(OS_WIN)
 
-// Deprecated preference for metric / crash reporting on Android. Use
-// kMetricsReportingEnabled instead.
-#if defined(OS_ANDROID)
-extern const char kCrashReportingEnabled[];
-#endif  // defined(OS_ANDROID)
-
 extern const char kQuietNotificationPermissionShouldShowPromo[];
 extern const char kQuietNotificationPermissionPromoWasShown[];
 extern const char kNotificationPermissionActions[];
