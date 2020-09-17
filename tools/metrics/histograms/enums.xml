@@ -8598,6 +8598,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="Opera"/>
   <int value="4" label="Safari"/>
   <int value="5" label="Chrome"/>
+  <int value="6" label="Edge"/>
 </enum>
 
 <enum name="BrowsingDataRemoverTasks">

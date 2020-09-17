@@ -21,7 +21,8 @@ namespace browser_switcher {
 
 class BrowserSwitcherPrefs;
 
-// Used for UMA metrics.
+// Used for UMA metrics, so do NOT change the order and the numbers. If you want
+// to add a new type, only append/increment.
 enum class BrowserType {
   kUnknown = 0,
   kIE = 1,
@@ -29,7 +30,8 @@ enum class BrowserType {
   kOpera = 3,
   kSafari = 4,
   kChrome = 5,
-  kMaxValue = kChrome,
+  kEdge = 6,
+  kMaxValue = kEdge,
 };
 
 // Interface for a helper class that does I/O operations for an

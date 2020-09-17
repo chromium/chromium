@@ -31,6 +31,9 @@ using LaunchCallback = AlternativeBrowserDriver::LaunchCallback;
 
 const char kUrlVarName[] = "${url}";
 
+// TODO(crbug.com/1124758): add ${edge} on macOS/Linux once it's released on
+// those platforms.
+
 #if defined(OS_MAC)
 const char kChromeExecutableName[] = "Google Chrome";
 const char kFirefoxExecutableName[] = "Firefox";
