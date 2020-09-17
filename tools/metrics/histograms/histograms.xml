@@ -68045,6 +68045,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="GPU.RenderableFormat.{FORMAT_TYPE}" enum="Boolean"
+    expires_after="2021-09-15">
+  <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Whether or not a {FORMAT_TYPE} fbo is complete and renderable.
+  </summary>
+  <token key="FORMAT_TYPE">
+    <variant name="R11F_G11F_B10F.FLOAT" summary="R11F_G11F_B10F/FLOAT"/>
+    <variant name="R16F.FLOAT" summary="R16F/FLOAT"/>
+    <variant name="R32F.FLOAT" summary="R32F/FLOAT"/>
+    <variant name="RG16F.FLOAT" summary="RG16F/FLOAT"/>
+    <variant name="RG32F.FLOAT" summary="RG32F/FLOAT"/>
+    <variant name="RGB32F.FLOAT" summary="RGB32F/FLOAT"/>
+    <variant name="RGBA16F.FLOAT" summary="RGBA16F/FLOAT"/>
+    <variant name="RGBA16F.HALF_FLOAT" summary="RGBA16F/HALF_FLOAT"/>
+    <variant name="RGBA32F.FLOAT" summary="RGBA32F/FLOAT"/>
+  </token>
+</histogram>
+
 <histogram name="GPU.Sandbox.InitializedSuccessfully" enum="BooleanSuccess"
     expires_after="2020-08-30">
   <owner>vmiura@chromium.org</owner>

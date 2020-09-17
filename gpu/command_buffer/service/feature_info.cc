@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -1856,23 +1857,37 @@ void FeatureInfo::InitializeFloatAndHalfFloatFeatures(
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, width, 0, GL_RGB, GL_FLOAT,
                  nullptr);
     GLenum status_rgb = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER);
+    base::UmaHistogramBoolean("GPU.RenderableFormat.RGBA32F.FLOAT",
+                              status_rgba == GL_FRAMEBUFFER_COMPLETE);
+    base::UmaHistogramBoolean("GPU.RenderableFormat.RGB32F.FLOAT",
+                              status_rgb == GL_FRAMEBUFFER_COMPLETE);
 
     // For desktop systems, check to see if we support rendering to the full
     // range of formats supported by EXT_color_buffer_float
     if (status_rgba == GL_FRAMEBUFFER_COMPLETE && enable_es3) {
       bool full_float_support = true;
-      GLenum internal_formats[] = {
+      const GLenum kInternalFormats[] = {
           GL_R16F, GL_RG16F, GL_RGBA16F, GL_R32F, GL_RG32F, GL_R11F_G11F_B10F,
       };
-      GLenum formats[] = {
+      const GLenum kFormats[] = {
           GL_RED, GL_RG, GL_RGBA, GL_RED, GL_RG, GL_RGB,
       };
-      DCHECK_EQ(base::size(internal_formats), base::size(formats));
-      for (size_t i = 0; i < base::size(formats); ++i) {
-        glTexImage2D(GL_TEXTURE_2D, 0, internal_formats[i], width, width, 0,
-                     formats[i], GL_FLOAT, nullptr);
-        full_float_support &= glCheckFramebufferStatusEXT(GL_FRAMEBUFFER) ==
-                              GL_FRAMEBUFFER_COMPLETE;
+      const char* kInternalFormatHistogramNames[] = {
+          "GPU.RenderableFormat.R16F.FLOAT",
+          "GPU.RenderableFormat.RG16F.FLOAT",
+          "GPU.RenderableFormat.RGBA16F.FLOAT",
+          "GPU.RenderableFormat.R32F.FLOAT",
+          "GPU.RenderableFormat.RG32F.FLOAT",
+          "GPU.RenderableFormat.R11F_G11F_B10F.FLOAT",
+      };
+      DCHECK_EQ(base::size(kInternalFormats), base::size(kFormats));
+      for (size_t i = 0; i < base::size(kFormats); ++i) {
+        glTexImage2D(GL_TEXTURE_2D, 0, kInternalFormats[i], width, width, 0,
+                     kFormats[i], GL_FLOAT, nullptr);
+        bool supported = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER) ==
+                         GL_FRAMEBUFFER_COMPLETE;
+        base::UmaHistogramBoolean(kInternalFormatHistogramNames[i], supported);
+        full_float_support &= supported;
       }
       enable_ext_color_buffer_float = full_float_support;
     }
@@ -1890,9 +1905,11 @@ void FeatureInfo::InitializeFloatAndHalfFloatFeatures(
       GLenum data_type = GL_HALF_FLOAT;
       glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, width, 0, format,
                    data_type, nullptr);
-      enable_ext_color_buffer_half_float =
-          (glCheckFramebufferStatusEXT(GL_FRAMEBUFFER) ==
-           GL_FRAMEBUFFER_COMPLETE);
+      bool supported = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER) ==
+                       GL_FRAMEBUFFER_COMPLETE;
+      base::UmaHistogramBoolean("GPU.RenderableFormat.RGBA16F.HALF_FLOAT",
+                                supported);
+      enable_ext_color_buffer_half_float = supported;
     }
 
     glDeleteFramebuffersEXT(1, &fb_id);
