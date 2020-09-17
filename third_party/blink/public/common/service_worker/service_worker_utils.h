@@ -38,8 +38,6 @@ BLINK_COMMON_EXPORT extern const char kServiceWorkerEagerCodeCacheStrategy[];
 
 class ServiceWorkerUtils {
  public:
-  static bool BLINK_COMMON_EXPORT IsImportedScriptUpdateCheckEnabled();
-
   static EagerCodeCacheStrategy BLINK_COMMON_EXPORT GetEagerCodeCacheStrategy();
 };
 

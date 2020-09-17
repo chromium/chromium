@@ -31,7 +31,6 @@
 #include "net/cert/cert_status_flags.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
-#include "third_party/blink/public/common/service_worker/service_worker_utils.h"
 
 namespace content {
 
@@ -172,7 +171,6 @@ ServiceWorkerUpdatedScriptLoader::CreateAndStart(
     const network::ResourceRequest& original_request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     scoped_refptr<ServiceWorkerVersion> version) {
-  DCHECK(blink::ServiceWorkerUtils::IsImportedScriptUpdateCheckEnabled());
   return base::WrapUnique(new ServiceWorkerUpdatedScriptLoader(
       options, original_request, std::move(client), version));
 }

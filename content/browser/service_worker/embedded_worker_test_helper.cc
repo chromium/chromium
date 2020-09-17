@@ -17,7 +17,6 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/test/fake_network_url_loader_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/blink/public/common/service_worker/service_worker_utils.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
 namespace content {
@@ -48,11 +47,8 @@ EmbeddedWorkerTestHelper::EmbeddedWorkerTestHelper(
       user_data_directory, std::move(database_task_runner),
       /*quota_manager_proxy=*/nullptr, special_storage_policy, nullptr,
       url_loader_factory_getter_.get(),
-      blink::ServiceWorkerUtils::IsImportedScriptUpdateCheckEnabled()
-          ? wrapper_
-                ->CreateNonNetworkPendingURLLoaderFactoryBundleForUpdateCheck(
-                    browser_context_.get())
-          : nullptr);
+      wrapper_->CreateNonNetworkPendingURLLoaderFactoryBundleForUpdateCheck(
+          browser_context_.get()));
   wrapper_->process_manager()->SetProcessIdForTest(mock_render_process_id());
   wrapper_->process_manager()->SetNewProcessIdForTest(new_render_process_id());
   if (!ServiceWorkerContext::IsServiceWorkerOnUIEnabled())

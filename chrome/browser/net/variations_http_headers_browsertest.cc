@@ -53,7 +53,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/service_worker/service_worker_utils.h"
 #include "url/gurl.h"
 
 namespace {
@@ -599,13 +598,11 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, ServiceWorkerScript) {
   EXPECT_TRUE(
       HasReceivedHeader(GetGoogleUrlWithPath(worker_path), "X-Client-Data"));
 
-  if (blink::ServiceWorkerUtils::IsImportedScriptUpdateCheckEnabled()) {
-    // And on import script requests to Google.
-    EXPECT_TRUE(HasReceivedHeader(
-        GetGoogleUrlWithPath("/service_worker/empty.js"), "X-Client-Data"));
-    // But not on requests not to Google.
-    EXPECT_FALSE(HasReceivedHeader(absolute_import, "X-Client-Data"));
-  }
+  // And on import script requests to Google.
+  EXPECT_TRUE(HasReceivedHeader(
+      GetGoogleUrlWithPath("/service_worker/empty.js"), "X-Client-Data"));
+  // But not on requests not to Google.
+  EXPECT_FALSE(HasReceivedHeader(absolute_import, "X-Client-Data"));
 }
 
 // Verify in an integration test that the variations header (X-Client-Data) is
