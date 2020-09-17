@@ -5,10 +5,13 @@
 #include "chrome/browser/chromeos/login/quick_unlock/fingerprint_storage.h"
 
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_utils.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/dbus/biod/biod_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/device_service.h"
 
 namespace chromeos {
 namespace quick_unlock {
@@ -18,7 +21,19 @@ void FingerprintStorage::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kQuickUnlockFingerprintRecord, 0);
 }
 
-FingerprintStorage::FingerprintStorage(Profile* profile) : profile_(profile) {}
+FingerprintStorage::FingerprintStorage(Profile* profile) : profile_(profile) {
+  if (!chromeos::BiodClient::Get())
+    return;
+
+  content::GetDeviceService().BindFingerprint(
+      fp_service_.BindNewPipeAndPassReceiver());
+  const std::string user_id =
+      ProfileHelper::Get()->GetUserIdHashFromProfile(profile);
+  // Get actual records to update cached prefs::kQuickUnlockFingerprintRecord.
+  fp_service_->GetRecordsForUser(
+      user_id, base::BindOnce(&FingerprintStorage::OnGetRecords,
+                              weak_factory_.GetWeakPtr()));
+}
 
 FingerprintStorage::~FingerprintStorage() {}
 
@@ -42,6 +57,12 @@ void FingerprintStorage::ResetUnlockAttemptCount() {
 
 bool FingerprintStorage::ExceededUnlockAttempts() const {
   return unlock_attempt_count() >= kMaximumUnlockAttempts;
+}
+
+void FingerprintStorage::OnGetRecords(
+    const base::flat_map<std::string, std::string>& fingerprints_list_mapping) {
+  profile_->GetPrefs()->SetInteger(prefs::kQuickUnlockFingerprintRecord,
+                                   fingerprints_list_mapping.size());
 }
 
 }  // namespace quick_unlock
