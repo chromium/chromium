@@ -279,6 +279,19 @@ static_library("cablev2_registration") {
   ]
 }
 
+static_library("cablev2_authenticator") {
+  sources = [
+    "cable/v2_authenticator.cc",
+    "cable/v2_authenticator.h",
+  ]
+  deps = [
+    ":fido",
+    "//components/cbor",
+    "//components/device_event_log",
+    "//services/network/public/mojom",
+  ]
+}
+
 if (is_chromeos) {
   proto_library("u2f_proto") {
     sources = [ "//third_party/cros_system_api/dbus/u2f/u2f_interface.proto" ]

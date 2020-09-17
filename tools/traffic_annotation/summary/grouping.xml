@@ -413,6 +413,7 @@ hidden="true" so that these annotations don't show up in the document.
     </sender>
     <sender name="Phone as a Security Key">
       <traffic_annotation unique_id="cablev2_websocket_from_client"/>
+      <traffic_annotation unique_id="cablev2_websocket_from_authenticator"/>
     </sender>
   </group>
 </groups>
