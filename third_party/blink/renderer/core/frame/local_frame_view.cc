@@ -1094,8 +1094,9 @@ void LocalFrameView::RunIntersectionObserverSteps() {
 #if DCHECK_IS_ON()
   bool was_dirty = NeedsLayout();
 #endif
-  if (ShouldThrottleRendering() || Lifecycle().LifecyclePostponed() ||
-      !frame_->GetDocument()->IsActive()) {
+  if ((intersection_observation_state_ < kRequired &&
+       ShouldThrottleRendering()) ||
+      Lifecycle().LifecyclePostponed() || !frame_->GetDocument()->IsActive()) {
     return;
   }
 
@@ -4308,6 +4309,16 @@ void LocalFrameView::SetIntersectionObservationState(
   if (intersection_observation_state_ >= state)
     return;
   intersection_observation_state_ = state;
+
+  // If an intersection observation is required, force all ancestors to update.
+  // Otherwise, an update could stop at a throttled frame before reaching this.
+  if (state == kRequired) {
+    Frame* parent_frame = frame_->Tree().Parent();
+    if (auto* parent_local_frame = DynamicTo<LocalFrame>(parent_frame)) {
+      if (parent_local_frame->View())
+        parent_local_frame->View()->SetIntersectionObservationState(kRequired);
+    }
+  }
 }
 
 void LocalFrameView::SetPaintArtifactCompositorNeedsUpdate() {

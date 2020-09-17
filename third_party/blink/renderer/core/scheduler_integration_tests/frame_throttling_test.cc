@@ -231,6 +231,97 @@ TEST_P(FrameThrottlingTest, IntersectionObservationOverridesThrottling) {
   EXPECT_TRUE(inner_view->Layer()->SelfNeedsRepaint());
 }
 
+TEST_P(FrameThrottlingTest, NestedIntersectionObservationStateUpdated) {
+  // Create two nested frames which are throttled.
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest frame_resource("https://example.com/iframe.html", "text/html");
+  SimRequest child_frame_resource("https://example.com/child-iframe.html",
+                                  "text/html");
+
+  LoadURL("https://example.com/");
+  main_resource.Complete("<iframe id=frame sandbox src=iframe.html></iframe>");
+  frame_resource.Complete(
+      "<iframe id=child-frame sandbox src=child-iframe.html></iframe>");
+  child_frame_resource.Complete("");
+
+  DocumentLifecycle::AllowThrottlingScope throttling_scope(
+      GetDocument().Lifecycle());
+
+  // Move both frames offscreen to make them throttled.
+  auto* frame_element =
+      To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
+  auto* child_frame_element = To<HTMLIFrameElement>(
+      frame_element->contentDocument()->getElementById("child-frame"));
+  frame_element->setAttribute(kStyleAttr, "transform: translateY(480px)");
+
+  CompositeFrame();
+
+  auto* root_view = LocalFrameRoot().GetFrame()->View();
+  ASSERT_FALSE(root_view->ShouldThrottleRendering());
+  auto* frame_view = frame_element->contentDocument()->View();
+  ASSERT_TRUE(frame_view->ShouldThrottleRendering());
+  auto* child_view = child_frame_element->contentDocument()->View();
+  ASSERT_TRUE(child_view->ShouldThrottleRendering());
+
+  // Force |child_view| to do an intersection observation.
+  child_view->SetIntersectionObservationState(LocalFrameView::kRequired);
+
+  // Ensure all frames need a layout.
+  root_view->SetNeedsLayout();
+  frame_view->SetNeedsLayout();
+  child_view->SetNeedsLayout();
+
+  // Though |frame_view| is throttled, the descendant (|child_view|) should
+  // still be updated which resets the intersection observation state.
+  CompositeFrame();
+  EXPECT_EQ(LocalFrameView::kNotNeeded,
+            root_view->GetIntersectionObservationStateForTesting());
+  EXPECT_EQ(LocalFrameView::kNotNeeded,
+            frame_view->GetIntersectionObservationStateForTesting());
+  EXPECT_EQ(LocalFrameView::kNotNeeded,
+            child_view->GetIntersectionObservationStateForTesting());
+}
+
+// This test creates a throttled local root (simulating a throttled OOPIF) and
+// ensures the intersection observation state of descendants can still be
+// updated.
+TEST_P(FrameThrottlingTest,
+       IntersectionObservationStateUpdatedWithThrottledLocalRoot) {
+  SimRequest local_root_resource("https://example.com/", "text/html");
+  SimRequest child_resource("https://example.com/iframe.html", "text/html");
+
+  LoadURL("https://example.com/");
+  local_root_resource.Complete(
+      "<iframe id=frame sandbox src=iframe.html></iframe>");
+  child_resource.Complete("");
+  CompositeFrame();
+
+  auto* root_frame = LocalFrameRoot().GetFrame();
+  DocumentLifecycle::AllowThrottlingScope throttling_scope(
+      root_frame->GetDocument()->Lifecycle());
+  auto* root_frame_view = root_frame->View();
+  root_frame_view->SetNeedsLayout();
+  root_frame_view->ScheduleAnimation();
+  root_frame_view->SetLifecycleUpdatesThrottledForTesting(true);
+  ASSERT_TRUE(root_frame->IsLocalRoot());
+  ASSERT_TRUE(root_frame_view->ShouldThrottleRendering());
+
+  auto* child_frame_document =
+      To<HTMLIFrameElement>(root_frame->GetDocument()->getElementById("frame"))
+          ->contentDocument();
+  auto* child_frame_view = child_frame_document->View();
+  // Force |child_frame_view| to do an intersection observation.
+  child_frame_view->SetIntersectionObservationState(LocalFrameView::kRequired);
+
+  // Though |root_frame_view| is throttled, the descendant (|child_frame_view|)
+  // should still be updated which resets the intersection observation state.
+  CompositeFrame();
+  EXPECT_EQ(LocalFrameView::kNotNeeded,
+            root_frame_view->GetIntersectionObservationStateForTesting());
+  EXPECT_EQ(LocalFrameView::kNotNeeded,
+            child_frame_view->GetIntersectionObservationStateForTesting());
+}
+
 TEST_P(FrameThrottlingTest,
        ThrottlingOverrideOnlyAppliesDuringLifecycleUpdate) {
   // Create a document with a hidden cross-origin subframe.

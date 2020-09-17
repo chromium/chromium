@@ -213,6 +213,10 @@ class CORE_EXPORT LocalFrameView final
   // Sets the internal IntersectionObservationState to the max of the
   // current value and the provided one.
   void SetIntersectionObservationState(IntersectionObservationState);
+  IntersectionObservationState GetIntersectionObservationStateForTesting()
+      const {
+    return intersection_observation_state_;
+  }
 
   // Get the InstersectionObservation::ComputeFlags for target elements in this
   // view.
