@@ -10,8 +10,7 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-large_variation_key_size_enabled =
-    is_chromecast
+large_variation_key_size_enabled = is_chromecast
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
@@ -22,9 +21,6 @@ static_library("variations") {
   sources = [
     "active_field_trials.cc",
     "active_field_trials.h",
-    "android/variations_associated_data_android.cc",
-    "android/variations_seed_bridge.cc",
-    "android/variations_seed_bridge.h",
     "child_process_field_trial_syncer.cc",
     "child_process_field_trial_syncer.h",
     "client_filterable_state.cc",
@@ -79,6 +75,14 @@ static_library("variations") {
     sources += [
       "variations_request_scheduler_mobile.cc",
       "variations_request_scheduler_mobile.h",
+    ]
+  }
+
+  if (is_android) {
+    sources += [
+      "android/variations_associated_data_android.cc",
+      "android/variations_seed_bridge.cc",
+      "android/variations_seed_bridge.h",
     ]
   }
 
