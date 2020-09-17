@@ -22,9 +22,21 @@ namespace content_settings {
 // This class stores the properties related to a website setting.
 class WebsiteSettingsInfo {
  public:
-  enum SyncStatus { SYNCABLE, UNSYNCABLE };
+  enum SyncStatus {
+    // The setting will be synced.
+    SYNCABLE,
+    // The setting is stored locally.
+    UNSYNCABLE
+  };
 
-  enum LossyStatus { LOSSY, NOT_LOSSY };
+  enum LossyStatus {
+    // This marks the setting as "lossy". There is no strict time guarantee on
+    // when a lossy setting will be persisted to permanent storage when it is
+    // modified.
+    LOSSY,
+    // Changes to the setting will be persisted immediately.
+    NOT_LOSSY
+  };
 
   enum ScopingType {
     // Settings scoped to the domain of the requesting frame by default.

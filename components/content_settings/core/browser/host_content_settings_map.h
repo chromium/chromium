@@ -151,8 +151,9 @@ class HostContentSettingsMap : public content_settings::Observer,
   // |settings| must be a non-NULL outparam. |session_model| can be
   // specified to limit the type of setting results returned. Any entries in
   // |settings| are guaranteed to be unexpired at the time they are retrieved
-  // from their respective providers. If |settings| are not used immediately the
-  // validity of each entry should be checked using IsExpired().
+  // from their respective providers and incognito inheritance behavior is
+  // applied. If |settings| are not used immediately the validity of each entry
+  // should be checked using IsExpired().
   //
   // This may be called on any thread.
   void GetSettingsForOneType(ContentSettingsType content_type,
@@ -161,6 +162,9 @@ class HostContentSettingsMap : public content_settings::Observer,
                              base::Optional<content_settings::SessionModel>
                                  session_model = base::nullopt) const;
 
+  // Returns settings that are not applied.
+  // Example: Pattern for flash that are still set through enterprise policy but
+  // won't have any effect because they are deprecated.
   void GetDiscardedSettingsForOneType(
       ContentSettingsType content_type,
       const std::string& resource_identifier,
@@ -288,7 +292,8 @@ class HostContentSettingsMap : public content_settings::Observer,
 
   // If |pattern_predicate| is null, this method is equivalent to the above.
   // Otherwise, it only deletes exceptions matched by |pattern_predicate| that
-  // were modified at or after |begin_time| and before |end_time|.
+  // were modified at or after |begin_time| and before |end_time|. To delete
+  // an individual setting, use SetWebsiteSetting/SetContentSetting methods.
   void ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType content_type,
       base::Time begin_time,
