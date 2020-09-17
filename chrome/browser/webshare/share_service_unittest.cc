@@ -79,7 +79,7 @@ TEST_F(ShareServiceUnitTest, TotalBytes) {
                                    kMaxSharedFileBytes / kMaxSharedFileCount,
                                    kMaxSharedFileCount));
   EXPECT_EQ(
-      ShareError::PERMISSION_DENIED,
+      ShareError::CANCELED,
       ShareGeneratedFileData(".txt", "text/plain",
                              (kMaxSharedFileBytes / kMaxSharedFileCount) + 1,
                              kMaxSharedFileCount));
@@ -89,7 +89,7 @@ TEST_F(ShareServiceUnitTest, FileBytes) {
   EXPECT_EQ(ShareError::CANCELED,
             ShareGeneratedFileData(".txt", "text/plain", kMaxSharedFileBytes));
   EXPECT_EQ(
-      ShareError::PERMISSION_DENIED,
+      ShareError::CANCELED,
       ShareGeneratedFileData(".txt", "text/plain", kMaxSharedFileBytes + 1));
 }
 

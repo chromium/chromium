@@ -133,7 +133,6 @@ void ShareServiceImpl::Share(const std::string& title,
     return;
   }
 
-  uint64_t total_bytes = 0;
   for (auto& file : files) {
     if (!file || !file->blob) {
       mojo::ReportBadMessage("Invalid file to share()");
@@ -146,12 +145,11 @@ void ShareServiceImpl::Share(const std::string& title,
       return;
     }
 
-    total_bytes += file->blob->size;
-  }
-
-  if (total_bytes > kMaxSharedFileBytes) {
-    std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);
-    return;
+    // In the case where the original blob handle was to a native file (of
+    // unknown size), the serialized data does not contain an accurate file
+    // size. To handle this, the comparison against kMaxSharedFileBytes should
+    // be done by the platform-specific implementations as part of processing
+    // the blobs.
   }
 
   // TODO(crbug.com/1035527): Add implementation for OS_WIN
