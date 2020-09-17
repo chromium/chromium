@@ -17,6 +17,19 @@ buildflag_header("buildflags") {
   flags = [ "LARGE_VARIATION_KEY_SIZE=$large_variation_key_size_enabled" ]
 }
 
+component("variations_features") {
+  output_name = "variations_features"
+
+  defines = [ "IS_VARIATIONS_FEATURES_IMPL" ]
+
+  sources = [
+    "variations_features.cc",
+    "variations_features.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
 static_library("variations") {
   sources = [
     "active_field_trials.cc",
@@ -85,6 +98,8 @@ static_library("variations") {
       "android/variations_seed_bridge.h",
     ]
   }
+
+  public_deps = [ ":variations_features" ]
 
   deps = [
     ":buildflags",

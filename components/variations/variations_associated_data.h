@@ -45,14 +45,6 @@
 
 namespace variations {
 
-namespace internal {
-// A feature that supports more finely-grained control over the transmission of
-// VariationIDs to Google web properties by allowing some VariationIDs to not be
-// transmitted in all contexts. See IsFirstPartyContext() in
-// variations_http_headers.cc for more details.
-extern const base::Feature kRestrictGoogleWebVisibility;
-}  // namespace internal
-
 typedef int VariationID;
 
 const VariationID EMPTY_ID = 0;

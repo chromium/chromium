@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "components/variations/proto/client_variations.pb.h"
 #include "components/variations/variations_client.h"
+#include "components/variations/variations_features.h"
 
 namespace variations {
 

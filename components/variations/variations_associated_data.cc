@@ -17,13 +17,6 @@
 
 namespace variations {
 
-namespace internal {
-
-const base::Feature kRestrictGoogleWebVisibility{
-    "RestrictGoogleWebVisibility", base::FEATURE_DISABLED_BY_DEFAULT};
-
-}  // namespace internal
-
 namespace {
 
 // The internal singleton accessor for the map, used to keep it thread-safe.
