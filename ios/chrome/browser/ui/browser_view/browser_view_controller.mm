@@ -493,6 +493,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // Whether BVC prefers to hide the status bar. This value is used to determine
 // the response from the |prefersStatusBarHidden| method.
 @property(nonatomic, assign) BOOL hideStatusBar;
+// Whether the BVC is positioned at the bottom of the window, for example after
+// switching from thumb strip to tab grid.
+@property(nonatomic, assign) BOOL bottomPosition;
 // Coordinator for displaying a modal overlay with activity indicator to prevent
 // the user from interacting with the browser view.
 @property(nonatomic, strong)
@@ -1648,6 +1651,16 @@ NSString* const kBrowserViewControllerSnackbarCategory =
           [strongSelf.tabStripCoordinator tabStripSizeDidChange];
         }
       }];
+
+  if (IsThumbStripEnabled()) {
+    CGFloat baseViewHeight = size.height;
+    self.thumbStripPanHandler.baseViewHeight = baseViewHeight;
+    // On rotation, reposition the BVC container if positioned at the bottom.
+    if (self.bottomPosition) {
+      self.view.superview.transform = CGAffineTransformMakeTranslation(
+          0, self.thumbStripPanHandler.revealedHeight);
+    }
+  }
 }
 
 - (void)dismissViewControllerAnimated:(BOOL)flag
@@ -2778,6 +2791,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
   self.tabStripView.hidden = (viewRevealState != ViewRevealState::Hidden);
   [self.tabStripSnapshot removeFromSuperview];
+  self.bottomPosition = (viewRevealState == ViewRevealState::Revealed);
 }
 
 #pragma mark - BubblePresenterDelegate

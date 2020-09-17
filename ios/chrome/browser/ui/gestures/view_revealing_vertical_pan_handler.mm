@@ -36,8 +36,6 @@ const CGFloat kAnimationDuration = 0.25f;
 // Total distance between the Peeked state and Revealed state. Equal to
 // |revealedHeight| - |peekedHeight|.
 @property(nonatomic, assign, readonly) CGFloat remainingHeight;
-// Height of the base view.
-@property(nonatomic, assign, readonly) CGFloat baseViewHeight;
 // Height of the cover view (the view in front of the view that will be
 // revealed) that will still be visible after the remaining reveal transition.
 @property(nonatomic, assign, readonly) CGFloat revealedCoverHeight;
@@ -79,6 +77,12 @@ const CGFloat kAnimationDuration = 0.25f;
 
 - (void)addAnimatee:(id<ViewRevealingAnimatee>)animatee {
   [self.animatees addObject:animatee];
+}
+
+- (void)setBaseViewHeight:(CGFloat)baseViewHeight {
+  _baseViewHeight = baseViewHeight;
+  _revealedHeight = baseViewHeight - _revealedCoverHeight;
+  _remainingHeight = _revealedHeight - _peekedHeight;
 }
 
 #pragma mark - Private Methods: Animating

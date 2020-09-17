@@ -14,8 +14,6 @@
 // TODO(crbug.com/1123512): Add support for going straight from a Hidden state
 // to a revealed state (and vice-versa) if the gesture's translation and
 // velocity are enough to trigger such transition.
-// TODO(crbug.com/1123729): Change base view size when the user rotates the
-// screen.
 @interface ViewRevealingVerticalPanHandler : NSObject
 
 // |peekedHeight| is the height of the view when peeked (partially revealed).
@@ -41,6 +39,8 @@
 @property(nonatomic, assign, readonly) CGFloat peekedHeight;
 // Height of the revealed view after the transition to Revealed state.
 @property(nonatomic, assign, readonly) CGFloat revealedHeight;
+// Height of the base view. It changes when the user rotates the screen.
+@property(nonatomic, assign) CGFloat baseViewHeight;
 
 @end
 
