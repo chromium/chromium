@@ -700,11 +700,14 @@ class ArcVmClientAdapter : public ArcClientAdapter,
         "CHROMEOS_USER=" +
         cryptohome::CreateAccountIdentifierFromIdentification(cryptohome_id_)
             .account_id()};
+    std::vector<std::string> environment_for_arcvm_mount_myfiles = {
+        "CHROMEOS_USER_ID_HASH=" + user_id_hash_};
     std::deque<JobDesc> jobs{
         JobDesc{kArcVmServerProxyJobName, UpstartOperation::JOB_START, {}},
         JobDesc{kArcCreateDataJobName, UpstartOperation::JOB_START,
                 std::move(environment_for_create_data)},
-        JobDesc{kArcVmMountMyFilesJobName, UpstartOperation::JOB_START, {}},
+        JobDesc{kArcVmMountMyFilesJobName, UpstartOperation::JOB_START,
+                std::move(environment_for_arcvm_mount_myfiles)},
         JobDesc{
             kArcVmMountRemovableMediaJobName, UpstartOperation::JOB_START, {}},
     };
