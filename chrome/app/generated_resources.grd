@@ -5913,12 +5913,22 @@ the Bookmarks menu.">
       <message name="IDS_TAB_GROUPS_NEW_GROUP_PROMO" desc="Text shown on promotional UI encouraging users to create a tab group in their tab strip">
         To group tabs together, right-click a tab
       </message>
-      <message name="IDS_PROMO_DISMISS_BUTTON" desc="Text shown on the button to dismiss a promotional UI">
-        Dismiss
-      </message>
-      <message name="IDS_PROMO_SNOOZE_BUTTON" desc="Text shown on the button to snooze a promotional UI, which indicates that users want to see this promotion at a later time">
-        Remind me later
-      </message>
+      <if expr="use_titlecase">
+        <message name="IDS_PROMO_DISMISS_BUTTON" desc="Text shown on the button for the user to acknowledge that they understand the message">
+          Got It
+        </message>
+        <message name="IDS_PROMO_SNOOZE_BUTTON" desc="Text shown on the button to snooze a promotional UI, which indicates that users want to see this promotion at a later time">
+          Remind Me Later
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_PROMO_DISMISS_BUTTON" desc="Text shown on the button for the user to acknowledge that they understand the message">
+          Got it
+        </message>
+        <message name="IDS_PROMO_SNOOZE_BUTTON" desc="Text shown on the button to snooze a promotional UI, which indicates that users want to see this promotion at a later time">
+          Remind me later
+        </message>
+      </if>
 
       <!-- Browser Hung Plugin Detector -->
       <if expr="is_win">

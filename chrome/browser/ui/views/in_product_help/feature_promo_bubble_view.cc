@@ -31,6 +31,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -46,8 +47,7 @@ constexpr base::TimeDelta kDelayShort = base::TimeDelta::FromSeconds(3);
 // The insets from the bubble border to the text inside.
 constexpr gfx::Insets kBubbleContentsInsets(12, 16);
 
-constexpr gfx::Insets kBubbleButtonPadding(10, 10);
-
+constexpr gfx::Insets kBubbleButtonPadding(8, 10);
 }  // namespace
 
 namespace views {
@@ -189,23 +189,30 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
     button_layout->set_main_axis_alignment(
         views::BoxLayout::MainAxisAlignment::kEnd);
 
-    const base::string16 skip_text =
+    const base::string16 snooze_text =
+        l10n_util::GetStringUTF16(IDS_PROMO_SNOOZE_BUTTON);
+    const base::string16 dismiss_text =
         l10n_util::GetStringUTF16(IDS_PROMO_DISMISS_BUTTON);
+    bool dismiss_is_leading = views::PlatformStyle::kIsOkButtonLeading;
 
-    dismiss_button_ = button_container->AddChildView(
-        std::make_unique<views::MdIPHBubbleButton>(this, skip_text, false));
-    dismiss_button_->SetCustomPadding(kBubbleButtonPadding);
-    dismiss_button_->SetProperty(
+    snooze_button_ = button_container->AddChildView(
+        std::make_unique<views::MdIPHBubbleButton>(this, snooze_text, false));
+    dismiss_button_ = button_container->AddChildViewAt(
+        std::make_unique<views::MdIPHBubbleButton>(this, dismiss_text, true),
+        dismiss_is_leading ? 0 : 1);
+
+    auto* leading_button =
+        dismiss_is_leading ? dismiss_button_ : snooze_button_;
+    leading_button->SetProperty(
         views::kMarginsKey,
         gfx::Insets(0, layout_provider->GetDistanceMetric(
                            views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
 
-    const base::string16 snooze_text =
-        l10n_util::GetStringUTF16(IDS_PROMO_SNOOZE_BUTTON);
-
-    snooze_button_ = button_container->AddChildView(
-        std::make_unique<views::MdIPHBubbleButton>(this, snooze_text, true));
+    // The text in dismiss button will be shorter than the default min size.
+    // Set min size to 0 so that the custom padding is effective.
+    dismiss_button_->SetMinSize(gfx::Size(0, 0));
     snooze_button_->SetCustomPadding(kBubbleButtonPadding);
+    dismiss_button_->SetCustomPadding(kBubbleButtonPadding);
   }
 
   if (params.activation_action ==
