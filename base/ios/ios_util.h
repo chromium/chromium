@@ -14,12 +14,15 @@ namespace base {
 namespace ios {
 
 // Returns whether the operating system is iOS 12 or later.
+// TODO(crbug.com/1129482): Remove once minimum supported version is at least 12
 BASE_EXPORT bool IsRunningOnIOS12OrLater();
 
 // Returns whether the operating system is iOS 13 or later.
+// TODO(crbug.com/1129483): Remove once minimum supported version is at least 13
 BASE_EXPORT bool IsRunningOnIOS13OrLater();
 
 // Returns whether the operating system is iOS 14 or later.
+// TODO(crbug.com/1129484): Remove once minimum supported version is at least 14
 BASE_EXPORT bool IsRunningOnIOS14OrLater();
 
 // Returns whether the operating system is at the given version or later.
