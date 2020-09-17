@@ -2630,6 +2630,8 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-19
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-205.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
+crbug.com/1129420 external/wpt/html/browsers/windows/clear-window-name.https.html [ Failure ]
+
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Mac ] external/wpt/web-locks/query-ordering.tentative.https.html [ Pass Failure ]
 crbug.com/626703 external/wpt/fetch/connection-pool/network-partition-key.html [ Timeout ]
