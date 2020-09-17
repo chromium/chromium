@@ -82,10 +82,6 @@ public class SignInPreference
         mProfileDataCache = new ProfileDataCache(context, imageSize);
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
 
-        setOnPreferenceClickListener(preference
-                -> SigninUtils.startSigninActivityIfAllowed(
-                        getContext(), SigninAccessPoint.SETTINGS));
-
         // State will be updated in registerForUpdates.
         mState = State.SIGNED_IN;
     }
@@ -218,6 +214,10 @@ public class SignInPreference
         setIcon(ManagedPreferencesUtils.getManagedByEnterpriseIconId());
         setWidgetLayoutResource(0);
         setViewEnabled(false);
+        setOnPreferenceClickListener(pref -> {
+            ManagedPreferencesUtils.showManagedByAdministratorToast(getContext());
+            return true;
+        });
         mSigninPromoController = null;
         mWasGenericSigninPromoDisplayed = false;
     }
@@ -231,6 +231,7 @@ public class SignInPreference
         setIcon(null);
         setWidgetLayoutResource(0);
         setViewEnabled(true);
+        setOnPreferenceClickListener(null);
 
         if (mSigninPromoController == null) {
             mSigninPromoController = new SigninPromoController(SigninAccessPoint.SETTINGS);
@@ -251,6 +252,9 @@ public class SignInPreference
         setIcon(AppCompatResources.getDrawable(getContext(), R.drawable.logo_avatar_anonymous));
         setWidgetLayoutResource(0);
         setViewEnabled(true);
+        setOnPreferenceClickListener(pref
+                -> SigninUtils.startSigninActivityIfAllowed(
+                        getContext(), SigninAccessPoint.SETTINGS));
         mSigninPromoController = null;
 
         if (!mWasGenericSigninPromoDisplayed) {
@@ -272,6 +276,7 @@ public class SignInPreference
         setIcon(profileData.getImage());
         setWidgetLayoutResource(0);
         setViewEnabled(true);
+        setOnPreferenceClickListener(null);
 
         mSigninPromoController = null;
         mWasGenericSigninPromoDisplayed = false;

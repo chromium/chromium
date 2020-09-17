@@ -162,7 +162,11 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
         mSignedInAccountName = CoreAccountInfo.getEmailFrom(
                 IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.SYNC));
+                        .getPrimaryAccountInfo(
+                                ChromeFeatureList.isEnabled(
+                                        ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
+                                        ? ConsentLevel.NOT_REQUIRED
+                                        : ConsentLevel.SYNC));
         if (mSignedInAccountName == null) {
             // The AccountManagementFragment can only be shown when the user is signed in. If the
             // user is signed out, exit the fragment.
