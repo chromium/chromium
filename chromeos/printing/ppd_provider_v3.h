@@ -25,6 +25,13 @@ CHROMEOS_EXPORT scoped_refptr<PpdProvider> CreateV3Provider(
     std::unique_ptr<PpdMetadataManager> metadata_manager,
     std::unique_ptr<PrinterConfigCache> config_cache);
 
+// TODO(crbug.com/888189): make this free function a static method
+//
+// Used to "dereference" the PPD previously named by the cache key from
+// Printer::PpdReference::effective_make_and_model.
+CHROMEOS_EXPORT std::string PpdBasenameToCacheKey(
+    base::StringPiece ppd_basename);
+
 }  // namespace chromeos
 
 #endif  // CHROMEOS_PRINTING_PPD_PROVIDER_V3_H_

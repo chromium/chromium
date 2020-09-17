@@ -8,11 +8,15 @@
 #include <vector>
 
 #include "base/containers/queue.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "chromeos/printing/epson_driver_matching.h"
 #include "chromeos/printing/ppd_cache.h"
@@ -20,7 +24,9 @@
 #include "chromeos/printing/ppd_provider_v3.h"
 #include "chromeos/printing/printer_config_cache.h"
 #include "chromeos/printing/printer_configuration.h"
+#include "chromeos/printing/printing_constants.h"
 #include "net/base/backoff_entry.h"
+#include "net/base/filename_util.h"
 
 namespace chromeos {
 namespace {
@@ -56,6 +62,38 @@ constexpr base::TimeDelta kMaxDataAge = base::TimeDelta::FromMinutes(30LL);
 // Effective-make-and-model string that describes a printer capable of
 // using the generic Epson PPD.
 const char kEpsonGenericEmm[] = "epson generic escpr printer";
+
+bool PpdReferenceIsWellFormed(const Printer::PpdReference& reference) {
+  int filled_fields = 0;
+  if (!reference.user_supplied_ppd_url.empty()) {
+    ++filled_fields;
+    GURL tmp_url(reference.user_supplied_ppd_url);
+    if (!tmp_url.is_valid() || !tmp_url.SchemeIs("file")) {
+      LOG(ERROR) << "Invalid url for a user-supplied ppd: "
+                 << reference.user_supplied_ppd_url
+                 << " (must be a file:// URL)";
+      return false;
+    }
+  }
+  if (!reference.effective_make_and_model.empty()) {
+    ++filled_fields;
+  }
+
+  // All effective-make-and-model strings should be lowercased, since v2.
+  // Since make-and-model strings could include non-Latin chars, only checking
+  // that it excludes all upper-case chars A-Z.
+  if (!std::all_of(reference.effective_make_and_model.begin(),
+                   reference.effective_make_and_model.end(),
+                   [](char c) -> bool { return !base::IsAsciiUpper(c); })) {
+    return false;
+  }
+  // Should have exactly one non-empty field.
+  return filled_fields == 1;
+}
+
+std::string PpdPathInServingRoot(base::StringPiece ppd_basename) {
+  return base::StrCat({"ppds_for_metadata_v3/", ppd_basename});
+}
 
 // Helper struct for PpdProviderImpl. Allows PpdProviderImpl to defer
 // its public method calls, which PpdProviderImpl will do when the
@@ -134,7 +172,7 @@ class PpdProviderImpl : public PpdProvider {
                   std::unique_ptr<PrinterConfigCache> config_cache)
       : browser_locale_(std::string(browser_locale)),
         version_(current_version),
-        cache_(cache),
+        ppd_cache_(cache),
         deferral_context_(std::make_unique<MethodDeferralContext>()),
         metadata_manager_(std::move(metadata_manager)),
         config_cache_(std::move(config_cache)),
@@ -234,8 +272,14 @@ class PpdProviderImpl : public PpdProvider {
     TryToResolvePpdReferenceFromUsbIndices(std::move(context));
   }
 
-  // This method depends on a successful prior call to
-  // ResolvePpdReference().
+  // This method invokes |cb| with the contents of a successfully
+  // retrieved PPD appropriate for |reference|.
+  //
+  // As a side effect, this method may attempt
+  // *  to read a PPD from the user's files (if the PPD is
+  //    user-supplied) or
+  // *  to download a PPD from the serving root (if the PPD is not
+  //    user-supplied).
   void ResolvePpd(const Printer::PpdReference& reference,
                   ResolvePpdCallback cb) override {
     // In v3 metadata, effective-make-and-model strings are only
@@ -243,7 +287,27 @@ class PpdProviderImpl : public PpdProvider {
     Printer::PpdReference lowercased_reference(reference);
     lowercased_reference.effective_make_and_model =
         base::ToLowerASCII(lowercased_reference.effective_make_and_model);
-    // TODO(crbug.com/888189): implement this.
+
+    if (!PpdReferenceIsWellFormed(lowercased_reference)) {
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(cb),
+                                    CallbackResultCode::INTERNAL_ERROR, ""));
+      return;
+    }
+
+    if (!lowercased_reference.user_supplied_ppd_url.empty()) {
+      ResolveUserSuppliedPpd(lowercased_reference, std::move(cb));
+      return;
+    }
+
+    std::vector<std::string> target_emm = {
+        lowercased_reference.effective_make_and_model};
+    auto callback =
+        base::BindOnce(&PpdProviderImpl::OnPpdBasenameSoughtFromForwardIndex,
+                       weak_factory_.GetWeakPtr(),
+                       std::move(lowercased_reference), std::move(cb));
+    metadata_manager_->FindAllEmmsAvailableInIndex(target_emm, kMaxDataAge,
+                                                   std::move(callback));
   }
 
   void ReverseLookup(const std::string& effective_make_and_model,
@@ -318,6 +382,39 @@ class PpdProviderImpl : public PpdProvider {
     PrinterSearchData search_data;
     ResolvePpdReferenceCallback cb;
   };
+
+  // Used internally in ResolvePpd(). Describes the physical, bitwise
+  // origin of a PPD.
+  //
+  // Example: a PPD previously downloaded from the serving root is saved
+  // into the local PpdCache. A subsequent call to ResolvePpd() searches
+  // the local PpdCache and returns this PPD. Internally, the methods
+  // that comprise ResolvePpd() treat this as kFromPpdCache.
+  enum class ResolvedPpdOrigin {
+    kFromServingRoot,
+    kFromUserSuppliedUrl,
+    kFromPpdCache,
+  };
+
+  // Returns an empty string on failure.
+  static std::string FetchFile(const GURL& ppd_url) {
+    DCHECK(ppd_url.is_valid());
+    DCHECK(ppd_url.SchemeIs("file"));
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::MAY_BLOCK);
+
+    base::FilePath path;
+    if (!net::FileURLToFilePath(ppd_url, &path)) {
+      LOG(ERROR) << "Not a valid file URL.";
+      return "";
+    }
+
+    std::string file_contents;
+    if (!base::ReadFileToString(path, &file_contents)) {
+      return "";
+    }
+    return file_contents;
+  }
 
   // Readies |metadata_manager_| to call methods which require a
   // successful callback from PpdMetadataManager::GetLocale().
@@ -596,6 +693,247 @@ class PpdProviderImpl : public PpdProvider {
     TryToResolvePpdReferenceFromUsbIndices(std::move(context));
   }
 
+  // Continues a prior call to ResolvePpd().
+  //
+  // Stores a PPD with |ppd_contents| in the PPD Cache.
+  // Caller must provide nonempty |ppd_basename| when |ppd_origin|
+  // identifies the PPD as coming from the the serving root.
+  void StorePpdWithContents(const std::string& ppd_contents,
+                            base::Optional<std::string> ppd_basename,
+                            ResolvedPpdOrigin ppd_origin,
+                            Printer::PpdReference reference) {
+    switch (ppd_origin) {
+      case ResolvedPpdOrigin::kFromPpdCache:
+        // This very PPD was retrieved from the local PpdCache; there's no
+        // point in storing it again.
+        return;
+
+      case ResolvedPpdOrigin::kFromServingRoot:
+        // To service the two-step "dereference" of resolving a PPD from
+        // the serving root, we need to Store() the basename of this PPD
+        // in the local PpdCache.
+        DCHECK(ppd_basename.has_value());
+        DCHECK(!ppd_basename->empty());
+        DCHECK(!reference.effective_make_and_model.empty());
+
+        ppd_cache_->Store(PpdBasenameToCacheKey(ppd_basename.value()),
+                          ppd_contents);
+        ppd_cache_->Store(PpdReferenceToCacheKey(reference),
+                          ppd_basename.value());
+        break;
+
+      case ResolvedPpdOrigin::kFromUserSuppliedUrl:
+        // No special considerations for a user-supplied PPD; we can
+        // Store() it directly by mapping the user-supplied URI to the
+        // PPD contents.
+        DCHECK(!reference.user_supplied_ppd_url.empty());
+
+        ppd_cache_->Store(PpdReferenceToCacheKey(reference), ppd_contents);
+        break;
+    }
+  }
+
+  // Continues a prior call to ResolvePpd().
+  //
+  // Called when we have the contents of the PPD being resolved; we are
+  // on the cusp of being able to invoke the |cb|.
+  void ResolvePpdWithContents(ResolvedPpdOrigin ppd_origin,
+                              base::Optional<std::string> ppd_basename,
+                              std::string ppd_contents,
+                              Printer::PpdReference reference,
+                              ResolvePpdCallback cb) {
+    DCHECK(!ppd_contents.empty());
+
+    if (ppd_contents.size() > kMaxPpdSizeBytes) {
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(cb), CallbackResultCode::PPD_TOO_LARGE, ""));
+      return;
+    }
+
+    StorePpdWithContents(ppd_contents, std::move(ppd_basename), ppd_origin,
+                         std::move(reference));
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(cb), CallbackResultCode::SUCCESS,
+                                  std::move(ppd_contents)));
+  }
+
+  // Continues a prior call to ResolvePpd().
+  //
+  // Called back by PrinterConfigCache::Fetch() when we've fetched
+  // a PPD from the serving root.
+  void OnPpdFetchedFromServingRoot(
+      Printer::PpdReference reference,
+      ResolvePpdCallback cb,
+      const PrinterConfigCache::FetchResult& result) {
+    if (!result.succeeded || result.contents.empty()) {
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(cb), CallbackResultCode::SERVER_ERROR, ""));
+      return;
+    }
+
+    ResolvePpdWithContents(ResolvedPpdOrigin::kFromServingRoot,
+                           /*ppd_basename=*/result.key,
+                           /*ppd_contents=*/result.contents,
+                           std::move(reference), std::move(cb));
+  }
+
+  // Continues a prior call to ResolvePpd().
+  //
+  // Called when we seek a mapping from an effective-make-and-model
+  // string to a PPD basename by querying the local PpdCache.
+  void OnPpdBasenameSoughtInPpdCache(Printer::PpdReference reference,
+                                     ResolvePpdCallback cb,
+                                     const PpdCache::FindResult& result) {
+    if (!result.success || result.contents.empty()) {
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(cb), CallbackResultCode::NOT_FOUND, ""));
+      return;
+    }
+
+    std::string cache_key = PpdBasenameToCacheKey(result.contents);
+    ppd_cache_->Find(
+        cache_key,
+        base::BindOnce(&PpdProviderImpl::OnPpdFromServingRootSoughtInPpdCache,
+                       weak_factory_.GetWeakPtr(),
+                       /*ppd_basename=*/result.contents, std::move(reference),
+                       std::move(cb)));
+  }
+
+  // Continues a prior call to ResolvePpd().
+  //
+  // Called when we have a PPD basename already and seek its contents
+  // in the local PpdCache.
+  void OnPpdFromServingRootSoughtInPpdCache(
+      const std::string& ppd_basename,
+      Printer::PpdReference reference,
+      ResolvePpdCallback cb,
+      const PpdCache::FindResult& result) {
+    if (!result.success || result.contents.empty()) {
+      // We have the PPD basename, but not the contents of the PPD
+      // itself in our local PpdCache. We must seek out the contents
+      // from the serving root.
+      auto callback = base::BindOnce(
+          &PpdProviderImpl::OnPpdFetchedFromServingRoot,
+          weak_factory_.GetWeakPtr(), std::move(reference), std::move(cb));
+      config_cache_->Fetch(PpdPathInServingRoot(ppd_basename), kMaxDataAge,
+                           std::move(callback));
+      return;
+    }
+
+    ResolvePpdWithContents(ResolvedPpdOrigin::kFromPpdCache, ppd_basename,
+                           result.contents, std::move(reference),
+                           std::move(cb));
+  }
+
+  // Continues a prior call to ResolvePpd().
+  //
+  // Called back by PpdMetadataManager::FindAllEmmsAvailableInIndex().
+  //
+  // 1. Maps |reference|::effective_make_and_model to a PPD basename.
+  //    a.  Attempts to do so with fresh forward index metadata if
+  //        possible, searching |forward_index_subset| for the best
+  //        available PPD.
+  //    b.  Falls back to directly querying the local PpdCache instance,
+  //        e.g. if the network is unreachable.
+  // 2. Uses basename derived in previous step to retrieve the
+  //    appropriate PPD from the local PpdCache instance.
+  void OnPpdBasenameSoughtFromForwardIndex(
+      Printer::PpdReference reference,
+      ResolvePpdCallback cb,
+      const base::flat_map<std::string, ParsedIndexValues>&
+          forward_index_subset) {
+    const ParsedIndexLeaf* const leaf = FirstAllowableParsedIndexLeaf(
+        reference.effective_make_and_model, forward_index_subset);
+    if (!leaf || leaf->ppd_basename.empty()) {
+      // The forward index doesn't advise what the best fit PPD is for
+      // |reference|::effective_make_and_model. We can look toward the
+      // local PpdCache to see if we saved it previously.
+      std::string cache_key = PpdReferenceToCacheKey(reference);
+      ppd_cache_->Find(
+          cache_key,
+          base::BindOnce(&PpdProviderImpl::OnPpdBasenameSoughtInPpdCache,
+                         weak_factory_.GetWeakPtr(), std::move(reference),
+                         std::move(cb)));
+      return;
+    }
+
+    // The forward index does advertise a best-fit PPD basename. We
+    // check the local PpdCache to see if we already have it.
+    ppd_cache_->Find(
+        PpdBasenameToCacheKey(leaf->ppd_basename),
+        base::BindOnce(&PpdProviderImpl::OnPpdFromServingRootSoughtInPpdCache,
+                       weak_factory_.GetWeakPtr(), leaf->ppd_basename,
+                       std::move(reference), std::move(cb)));
+  }
+
+  // Continues a prior call to ResolvePpd().
+  //
+  // Called when we finish searching the PpdCache for a user-supplied
+  // PPD. This contrasts with the slightly more involved two-step
+  // "dereference" process in searching the PpdCache for a PPD retrieved
+  // from the serving root.
+  void OnUserSuppliedPpdSoughtInPpdCache(Printer::PpdReference reference,
+                                         ResolvePpdCallback cb,
+                                         const PpdCache::FindResult& result) {
+    if (!result.success) {
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(cb), CallbackResultCode::NOT_FOUND, ""));
+      return;
+    }
+
+    ResolvePpdWithContents(ResolvedPpdOrigin::kFromPpdCache,
+                           /*ppd_basename=*/base::nullopt, result.contents,
+                           std::move(reference), std::move(cb));
+  }
+
+  // Continues a prior call to ResolvePpd().
+  //
+  // Called when we finish fetching a PPD file from device-local storage
+  // (e.g. from the user's home directory, not from the PpdCache).
+  void OnUserSuppliedPpdFetched(Printer::PpdReference reference,
+                                ResolvePpdCallback cb,
+                                const std::string& result) {
+    if (result.empty()) {
+      // We didn't find a nonempty PPD at the location specified by the
+      // user. The next step is to try searching the PpdCache.
+      std::string cache_key = PpdReferenceToCacheKey(reference);
+      ppd_cache_->Find(
+          cache_key,
+          base::BindOnce(&PpdProviderImpl::OnUserSuppliedPpdSoughtInPpdCache,
+                         weak_factory_.GetWeakPtr(), std::move(reference),
+                         std::move(cb)));
+      return;
+    }
+
+    ResolvePpdWithContents(ResolvedPpdOrigin::kFromUserSuppliedUrl,
+                           /*ppd_basename=*/base::nullopt, result,
+                           std::move(reference), std::move(cb));
+  }
+
+  // Continues a prior call to ResolvePpd().
+  //
+  // 1. Attempts to invoke |cb| with the file named by
+  //    |reference|::user_suplied_ppd_url - i.e. a live fetch from
+  //    wherever the user saved the PPD.
+  // 2. Attempts to search the local PpdCache instance for the file
+  //    whose cache key was built from
+  //    |reference|::user_supplied_ppd_url.
+  void ResolveUserSuppliedPpd(Printer::PpdReference reference,
+                              ResolvePpdCallback cb) {
+    DCHECK(!reference.user_supplied_ppd_url.empty());
+    GURL url(reference.user_supplied_ppd_url);
+
+    file_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&FetchFile, url),
+        base::BindOnce(&PpdProviderImpl::OnUserSuppliedPpdFetched,
+                       weak_factory_.GetWeakPtr(), std::move(reference),
+                       std::move(cb)));
+  }
+
   // Continues a prior call to ResolvePpdLicense().
   // This callback is fed to
   // PpdMetadataManager::FindAllEmmsAvailableInIndexCallback().
@@ -632,7 +970,7 @@ class PpdProviderImpl : public PpdProvider {
   const base::Version version_;
 
   // Provides PPD storage on-device.
-  scoped_refptr<PpdCache> cache_;
+  scoped_refptr<PpdCache> ppd_cache_;
 
   // Used to
   // 1. to determine if |this| should defer locale-sensitive public
@@ -655,54 +993,33 @@ class PpdProviderImpl : public PpdProvider {
   base::WeakPtrFactory<PpdProviderImpl> weak_factory_{this};
 };
 
-// Copied directly from v2 PpdProvider
-// TODO(crbug.com/888189): figure out where this fits in the big picture
-bool PpdReferenceIsWellFormed(const Printer::PpdReference& reference) {
-  int filled_fields = 0;
-  if (!reference.user_supplied_ppd_url.empty()) {
-    ++filled_fields;
-    GURL tmp_url(reference.user_supplied_ppd_url);
-    if (!tmp_url.is_valid() || !tmp_url.SchemeIs("file")) {
-      LOG(ERROR) << "Invalid url for a user-supplied ppd: "
-                 << reference.user_supplied_ppd_url
-                 << " (must be a file:// URL)";
-      return false;
-    }
-  }
-  if (!reference.effective_make_and_model.empty()) {
-    ++filled_fields;
-  }
-
-  // All effective-make-and-model strings should be lowercased, since v2.
-  // Since make-and-model strings could include non-Latin chars, only checking
-  // that it excludes all upper-case chars A-Z.
-  if (!std::all_of(reference.effective_make_and_model.begin(),
-                   reference.effective_make_and_model.end(),
-                   [](char c) -> bool { return !base::IsAsciiUpper(c); })) {
-    return false;
-  }
-  // Should have exactly one non-empty field.
-  return filled_fields == 1;
-}
-
 }  // namespace
 
 PrinterSearchData::PrinterSearchData() = default;
 PrinterSearchData::PrinterSearchData(const PrinterSearchData& other) = default;
 PrinterSearchData::~PrinterSearchData() = default;
 
-// static; copied directly from v2 PpdProvider
-// TODO(crbug.com/888189): figure out where this fits in the big picture
+// static
+//
+// Used in production but also exposed for testing.
 std::string PpdProvider::PpdReferenceToCacheKey(
     const Printer::PpdReference& reference) {
   DCHECK(PpdReferenceIsWellFormed(reference));
   // The key prefixes here are arbitrary, but ensure we can't have an (unhashed)
   // collision between keys generated from different PpdReference fields.
   if (!reference.effective_make_and_model.empty()) {
-    return std::string("em:") + reference.effective_make_and_model;
+    return base::StrCat(
+        {"emm_for_metadata_v3:", reference.effective_make_and_model});
   } else {
-    return std::string("up:") + reference.user_supplied_ppd_url;
+    // Retains the legacy salt from the v2 PpdProvider. This is done
+    // to minimize user breakage when we roll out the v3 PpdProvider.
+    return base::StrCat({"up:", reference.user_supplied_ppd_url});
   }
+}
+
+// Used in production but also exposed for testing.
+std::string PpdBasenameToCacheKey(base::StringPiece ppd_basename) {
+  return base::StrCat({"ppd_basename_for_metadata_v3:", ppd_basename});
 }
 
 // static

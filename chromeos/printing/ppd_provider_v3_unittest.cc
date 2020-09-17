@@ -808,7 +808,7 @@ TEST_F(PpdProviderTest, ResolvePrintersNoServer) {
 TEST_F(PpdProviderTest, ResolveServerKeyPpd) {
   auto provider =
       CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
-                      PropagateLocaleToMetadataManager::kDoNotPropagate});
+                      PropagateLocaleToMetadataManager::kDoPropagate});
   StartFakePpdServer();
   Printer::PpdReference ref;
   ref.effective_make_and_model = "printer_b_ref";
@@ -820,10 +820,19 @@ TEST_F(PpdProviderTest, ResolveServerKeyPpd) {
   task_environment_.RunUntilIdle();
 
   ASSERT_EQ(2UL, captured_resolve_ppd_.size());
-  EXPECT_EQ(PpdProvider::SUCCESS, captured_resolve_ppd_[0].code);
-  EXPECT_EQ(kCupsFilter2PpdContents, captured_resolve_ppd_[0].ppd_contents);
-  EXPECT_EQ(PpdProvider::SUCCESS, captured_resolve_ppd_[1].code);
-  EXPECT_EQ("c", captured_resolve_ppd_[1].ppd_contents);
+
+  // ResolvePpd() works in several asynchronous steps, so order of
+  // return is not guaranteed.
+  EXPECT_THAT(
+      captured_resolve_ppd_,
+      UnorderedElementsAre(
+          AllOf(Field(&CapturedResolvePpdResults::code,
+                      PpdProvider::CallbackResultCode::SUCCESS),
+                Field(&CapturedResolvePpdResults::ppd_contents,
+                      StrEq(kCupsFilter2PpdContents))),
+          AllOf(Field(&CapturedResolvePpdResults::code,
+                      PpdProvider::CallbackResultCode::SUCCESS),
+                Field(&CapturedResolvePpdResults::ppd_contents, StrEq("c")))));
 }
 
 // Test that we *don't* resolve a ppd URL over non-file schemes.  It's not clear
@@ -833,12 +842,13 @@ TEST_F(PpdProviderTest, ResolveServerKeyPpd) {
 TEST_F(PpdProviderTest, ResolveUserSuppliedUrlPpdFromNetworkFails) {
   auto provider =
       CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
-                      PropagateLocaleToMetadataManager::kDoNotPropagate});
+                      PropagateLocaleToMetadataManager::kDoPropagate});
   StartFakePpdServer();
 
   Printer::PpdReference ref;
-  // TODO(crbug.com/888189): give |ref| a nonempty
-  // |user_supplied_ppd_url|.
+  // PpdProvider::ResolvePpd() shall fail if a user-supplied PPD URL
+  // does not begin with the "file://" scheme.
+  ref.user_supplied_ppd_url = "nonfilescheme://unused";
   provider->ResolvePpd(ref, base::BindOnce(&PpdProviderTest::CaptureResolvePpd,
                                            base::Unretained(this)));
   task_environment_.RunUntilIdle();
@@ -854,7 +864,7 @@ TEST_F(PpdProviderTest, ResolveUserSuppliedUrlPpdFromNetworkFails) {
 TEST_F(PpdProviderTest, ResolveUserSuppliedUrlPpdFromFile) {
   auto provider =
       CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
-                      PropagateLocaleToMetadataManager::kDoNotPropagate});
+                      PropagateLocaleToMetadataManager::kDoPropagate});
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath filename = temp_dir.GetPath().Append("my_spiffy.ppd");
@@ -880,7 +890,7 @@ TEST_F(PpdProviderTest, ResolveUserSuppliedUrlPpdFromFile) {
 TEST_F(PpdProviderTest, ResolvedPpdsGetCached) {
   auto provider =
       CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
-                      PropagateLocaleToMetadataManager::kDoNotPropagate});
+                      PropagateLocaleToMetadataManager::kDoPropagate});
   std::string user_ppd_contents = "Woohoo";
   Printer::PpdReference ref;
   {
@@ -909,9 +919,8 @@ TEST_F(PpdProviderTest, ResolvedPpdsGetCached) {
 
   // Recreate the provider to make sure we don't have any memory caches which
   // would mask problems with disk persistence.
-  provider =
-      CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
-                      PropagateLocaleToMetadataManager::kDoNotPropagate});
+  provider = CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
+                             PropagateLocaleToMetadataManager::kDoPropagate});
 
   // Re-resolve.
   provider->ResolvePpd(ref, base::BindOnce(&PpdProviderTest::CaptureResolvePpd,
@@ -1028,21 +1037,31 @@ TEST_F(PpdProviderTest, ReverseLookup) {
   EXPECT_EQ(PpdProvider::NOT_FOUND, failed_capture.code);
 }
 
-// If we have a fresh entry in the cache, we shouldn't need to go out to the
-// network at all to successfully resolve a ppd.
-TEST_F(PpdProviderTest, FreshCacheHitNoNetworkTraffic) {
+// Verifies that we never attempt to re-download a PPD that we
+// previously retrieved from the serving root. The Chrome OS Printing
+// Team plans to keep PPDs immutable inside the serving root, so
+// PpdProvider should always prefer to retrieve a PPD from the PpdCache
+// when it's possible to do so.
+TEST_F(PpdProviderTest, PreferToResolvePpdFromPpdCacheOverServingRoot) {
   // Explicitly *not* starting a fake server.
   std::string cached_ppd_contents =
       "These cached contents are different from what's being served";
   auto provider =
       CreateProvider({"en", PpdCacheRunLocation::kOnTestThread,
-                      PropagateLocaleToMetadataManager::kDoNotPropagate});
+                      PropagateLocaleToMetadataManager::kDoPropagate});
   Printer::PpdReference ref;
   ref.effective_make_and_model = "printer_a_ref";
   std::string cache_key = PpdProvider::PpdReferenceToCacheKey(ref);
+
   // Cache exists, and is just created, so should be fresh.
-  ppd_cache_->StoreForTesting(PpdProvider::PpdReferenceToCacheKey(ref),
+  //
+  // PPD basename is taken from value specified in forward index shard
+  // defined in server_contents().
+  const std::string ppd_basename = "printer_a.ppd";
+  ppd_cache_->StoreForTesting(PpdBasenameToCacheKey(ppd_basename),
                               cached_ppd_contents, base::TimeDelta());
+  ppd_cache_->StoreForTesting(PpdProvider::PpdReferenceToCacheKey(ref),
+                              ppd_basename, base::TimeDelta());
   task_environment_.RunUntilIdle();
   provider->ResolvePpd(ref, base::BindOnce(&PpdProviderTest::CaptureResolvePpd,
                                            base::Unretained(this)));
@@ -1055,94 +1074,6 @@ TEST_F(PpdProviderTest, FreshCacheHitNoNetworkTraffic) {
   EXPECT_EQ(cached_ppd_contents, captured_resolve_ppd_[0].ppd_contents);
 }
 
-// If we have a stale cache entry and a good network connection, does the cache
-// get refreshed during a resolution?
-TEST_F(PpdProviderTest, StaleCacheGetsRefreshed) {
-  std::string cached_ppd_contents =
-      "These cached contents are different from what's being served";
-  auto provider =
-      CreateProvider({"en", PpdCacheRunLocation::kOnTestThread,
-                      PropagateLocaleToMetadataManager::kDoNotPropagate});
-  StartFakePpdServer();
-  // printer_ref_a resolves to kCupsFilterPpdContents on the server.
-  std::string expected_ppd = kCupsFilterPpdContents;
-  Printer::PpdReference ref;
-  ref.effective_make_and_model = "printer_a_ref";
-  std::string cache_key = PpdProvider::PpdReferenceToCacheKey(ref);
-  // Cache exists, and is 6 months old, so really stale.
-  ppd_cache_->StoreForTesting(PpdProvider::PpdReferenceToCacheKey(ref),
-                              cached_ppd_contents,
-                              base::TimeDelta::FromDays(180));
-  task_environment_.RunUntilIdle();
-  provider->ResolvePpd(ref, base::BindOnce(&PpdProviderTest::CaptureResolvePpd,
-                                           base::Unretained(this)));
-  task_environment_.RunUntilIdle();
-  ASSERT_EQ(1UL, captured_resolve_ppd_.size());
-
-  // Should get the served results back, not the stale cached ones.
-  EXPECT_EQ(PpdProvider::SUCCESS, captured_resolve_ppd_[0].code);
-  EXPECT_EQ(captured_resolve_ppd_[0].ppd_contents, expected_ppd);
-
-  // Check that the cache was also updated.
-  PpdCache::FindResult captured_find_result;
-  // This is just a complicated syntax around the idea "use the Find callback to
-  // save the result in captured_find_result.
-  ppd_cache_->Find(PpdProvider::PpdReferenceToCacheKey(ref),
-                   base::BindOnce(
-                       [](PpdCache::FindResult* captured_find_result,
-                          const PpdCache::FindResult& find_result) {
-                         *captured_find_result = find_result;
-                       },
-                       &captured_find_result));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(captured_find_result.success, true);
-  EXPECT_EQ(captured_find_result.contents, expected_ppd);
-  EXPECT_LT(captured_find_result.age, base::TimeDelta::FromDays(1));
-}
-
-// Test that, if we have an old entry in the cache that needs to be refreshed,
-// and we fail to contact the server, we still use the cached version.
-TEST_F(PpdProviderTest, StaleCacheGetsUsedIfNetworkFails) {
-  // Note that we're explicitly *not* starting the Fake ppd server in this test.
-  std::string cached_ppd_contents =
-      "These cached contents are different from what's being served";
-  auto provider =
-      CreateProvider({"en", PpdCacheRunLocation::kOnTestThread,
-                      PropagateLocaleToMetadataManager::kDoNotPropagate});
-  Printer::PpdReference ref;
-  ref.effective_make_and_model = "printer_a_ref";
-  std::string cache_key = PpdProvider::PpdReferenceToCacheKey(ref);
-  // Cache exists, and is 6 months old, so really stale.
-  ppd_cache_->StoreForTesting(PpdProvider::PpdReferenceToCacheKey(ref),
-                              cached_ppd_contents,
-                              base::TimeDelta::FromDays(180));
-  task_environment_.RunUntilIdle();
-  provider->ResolvePpd(ref, base::BindOnce(&PpdProviderTest::CaptureResolvePpd,
-                                           base::Unretained(this)));
-  task_environment_.RunUntilIdle();
-  ASSERT_EQ(1UL, captured_resolve_ppd_.size());
-
-  // Should successfully resolve from the cache, even though it's stale.
-  EXPECT_EQ(PpdProvider::SUCCESS, captured_resolve_ppd_[0].code);
-  EXPECT_EQ(cached_ppd_contents, captured_resolve_ppd_[0].ppd_contents);
-
-  // Check that the cache is *not* updated; it should remain stale.
-  PpdCache::FindResult captured_find_result;
-  // This is just a complicated syntax around the idea "use the Find callback to
-  // save the result in captured_find_result.
-  ppd_cache_->Find(PpdProvider::PpdReferenceToCacheKey(ref),
-                   base::BindOnce(
-                       [](PpdCache::FindResult* captured_find_result,
-                          const PpdCache::FindResult& find_result) {
-                         *captured_find_result = find_result;
-                       },
-                       &captured_find_result));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(captured_find_result.success, true);
-  EXPECT_EQ(captured_find_result.contents, cached_ppd_contents);
-  EXPECT_GT(captured_find_result.age, base::TimeDelta::FromDays(179));
-}
-
 // For user-provided ppds, we should always use the latest version on
 // disk if it still exists there.
 TEST_F(PpdProviderTest, UserPpdAlwaysRefreshedIfAvailable) {
@@ -1151,7 +1082,7 @@ TEST_F(PpdProviderTest, UserPpdAlwaysRefreshedIfAvailable) {
   std::string disk_ppd_contents = "Updated Ppd Contents";
   auto provider =
       CreateProvider({"en", PpdCacheRunLocation::kOnTestThread,
-                      PropagateLocaleToMetadataManager::kDoNotPropagate});
+                      PropagateLocaleToMetadataManager::kDoPropagate});
   StartFakePpdServer();
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath filename = temp_dir.GetPath().Append("my_spiffy.ppd");
