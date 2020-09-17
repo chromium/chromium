@@ -1104,6 +1104,15 @@ void DriveIntegrationService::GetMetadata(
           std::move(callback), drive::FILE_ERROR_SERVICE_UNAVAILABLE, nullptr));
 }
 
+void DriveIntegrationService::LocateFilesByItemIds(
+    const std::vector<std::string>& item_ids,
+    drivefs::mojom::DriveFs::LocateFilesByItemIdsCallback callback) {
+  if (!IsMounted() || !GetDriveFsInterface()) {
+    std::move(callback).Run({});
+  }
+  GetDriveFsInterface()->LocateFilesByItemIds(item_ids, std::move(callback));
+}
+
 void DriveIntegrationService::RestartDrive() {
   MaybeRemountFileSystem(base::TimeDelta(), false);
 }

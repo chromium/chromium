@@ -96,6 +96,7 @@ struct FakeDriveFs::FileMetadata {
   std::string original_name;
   mojom::Capabilities capabilities;
   mojom::FolderFeature folder_feature;
+  std::string doc_id;
 };
 
 class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
@@ -272,13 +273,15 @@ void FakeDriveFs::SetMetadata(const base::FilePath& path,
                               bool pinned,
                               bool shared,
                               const mojom::Capabilities& capabilities,
-                              const mojom::FolderFeature& folder_feature) {
+                              const mojom::FolderFeature& folder_feature,
+                              const std::string& doc_id) {
   auto& stored_metadata = metadata_[path];
   stored_metadata.mime_type = mime_type;
   stored_metadata.original_name = original_name;
   stored_metadata.hosted = (original_name != path.BaseName().value());
   stored_metadata.capabilities = capabilities;
   stored_metadata.folder_feature = folder_feature;
+  stored_metadata.doc_id = doc_id;
   if (pinned) {
     stored_metadata.pinned = true;
   }
@@ -450,5 +453,40 @@ void FakeDriveFs::CreateNativeHostSession(
     drivefs::mojom::ExtensionConnectionParamsPtr params,
     mojo::PendingReceiver<drivefs::mojom::NativeMessagingHost> session,
     mojo::PendingRemote<drivefs::mojom::NativeMessagingPort> port) {}
+
+void FakeDriveFs::LocateFilesByItemIds(
+    const std::vector<std::string>& item_ids,
+    drivefs::mojom::DriveFs::LocateFilesByItemIdsCallback callback) {
+  base::flat_map<std::string, base::FilePath> results;
+  {
+    base::ScopedAllowBlockingForTesting allow_io;
+    base::FileEnumerator enumerator(
+        mount_path_, true,
+        base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
+    base::FilePath path = enumerator.Next();
+    while (!path.empty()) {
+      base::FilePath relative_path;
+      CHECK(mount_path_.AppendRelativePath(path, &relative_path));
+      const auto& stored_metadata =
+          metadata_[base::FilePath("/").Append(relative_path)];
+      if (!stored_metadata.doc_id.empty() &&
+          base::Contains(item_ids, stored_metadata.doc_id)) {
+        results[stored_metadata.doc_id] = relative_path;
+      }
+      path = enumerator.Next();
+    }
+  }
+  std::vector<drivefs::mojom::FilePathOrErrorPtr> response;
+  for (const auto& id : item_ids) {
+    auto it = results.find(id);
+    if (it == results.end()) {
+      response.push_back(drivefs::mojom::FilePathOrError::NewError(
+          drive::FileError::FILE_ERROR_NOT_FOUND));
+    } else {
+      response.push_back(drivefs::mojom::FilePathOrError::NewPath(it->second));
+    }
+  }
+  std::move(callback).Run(std::move(response));
+}
 
 }  // namespace drivefs

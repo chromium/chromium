@@ -1136,7 +1136,8 @@ class DriveFsTestVolume : public TestVolume {
          entry.capabilities.can_add_children},
         {entry.folder_feature.is_machine_root,
          entry.folder_feature.is_arbitrary_sync_folder,
-         entry.folder_feature.is_external_media});
+         entry.folder_feature.is_external_media},
+        "");
 
     ASSERT_TRUE(UpdateModifiedTime(entry));
   }

@@ -21,6 +21,7 @@
 namespace drive {
 
 class DriveIntegrationServiceBrowserTest : public InProcessBrowserTest {
+ public:
   bool SetUpUserDataDirectory() override {
     return drive::SetUpUserDataDirectoryForDriveFsTest();
   }
@@ -32,6 +33,10 @@ class DriveIntegrationServiceBrowserTest : public InProcessBrowserTest {
     service_factory_for_test_ = std::make_unique<
         drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>(
         &create_drive_integration_service_);
+  }
+
+  drivefs::FakeDriveFs* GetFakeDriveFsForProfile(Profile* profile) {
+    return &fake_drivefs_helpers_[profile]->fake_drivefs();
   }
 
  private:
@@ -164,6 +169,47 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest, GetMetadata) {
         base::BindLambdaForTesting(
             [=](FileError error, drivefs::mojom::FileMetadataPtr metadata_ptr) {
               EXPECT_EQ(FILE_ERROR_OK, error);
+              quit_closure.Run();
+            }));
+    run_loop.Run();
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
+                       LocateFilesByItemIds) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  auto* drive_service =
+      DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
+  drivefs::FakeDriveFs* fake = GetFakeDriveFsForProfile(browser()->profile());
+
+  base::FilePath mount_path = drive_service->GetMountPointPath();
+  base::FilePath path;
+  base::CreateTemporaryFileInDir(mount_path, &path);
+  base::FilePath some_file("/");
+  CHECK(mount_path.AppendRelativePath(path, &some_file));
+  base::FilePath dir_path;
+  base::CreateTemporaryDirInDir(mount_path, "tmp-", &dir_path);
+  base::CreateTemporaryFileInDir(dir_path, &path);
+  base::FilePath some_other_file("/");
+  CHECK(mount_path.AppendRelativePath(path, &some_other_file));
+
+  fake->SetMetadata(some_file, "text/plain", some_file.BaseName().value(),
+                    false, false, {}, {}, "abc123");
+  fake->SetMetadata(some_other_file, "text/plain", some_file.BaseName().value(),
+                    false, false, {}, {}, "qwertyqwerty");
+
+  {
+    base::RunLoop run_loop;
+    auto quit_closure = run_loop.QuitClosure();
+    drive_service->LocateFilesByItemIds(
+        {"qwertyqwerty", "foobar"},
+        base::BindLambdaForTesting(
+            [=](base::Optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>>
+                    result) {
+              ASSERT_EQ(2u, result->size());
+              EXPECT_EQ(some_other_file,
+                        base::FilePath("/").Append(result->at(0)->get_path()));
+              EXPECT_EQ(FILE_ERROR_NOT_FOUND, result->at(1)->get_error());
               quit_closure.Run();
             }));
     run_loop.Run();

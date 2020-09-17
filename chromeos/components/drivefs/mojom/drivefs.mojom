@@ -100,6 +100,11 @@ interface DriveFs {
   CreateNativeHostSession(ExtensionConnectionParams params,
       pending_receiver<NativeMessagingHost> session,
       pending_remote<NativeMessagingPort> port);
+
+  // Find the files corresponding to Drive's item IDs provided.
+  // Paths returned are relative to the mount point.
+  LocateFilesByItemIds(array<string> item_ids) => (
+      array<FilePathOrError>? response);
 };
 
 // Implemented by Chrome, used from DriveFS.
@@ -462,4 +467,10 @@ interface NativeMessagingHost {
 // Configuration of the connection between extension and DriveFS.
 struct ExtensionConnectionParams {
   string extension_id;
+};
+
+// A single file path resolution result.
+union FilePathOrError {
+  FileError error;
+  mojo_base.mojom.FilePath path;
 };

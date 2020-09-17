@@ -166,6 +166,12 @@ class DriveIntegrationService : public KeyedService,
   void GetMetadata(const base::FilePath& local_path,
                    drivefs::mojom::DriveFs::GetMetadataCallback callback);
 
+  // Locates files or dirs by their server-side ID. Paths are relative to the
+  // mount point.
+  void LocateFilesByItemIds(
+      const std::vector<std::string>& item_ids,
+      drivefs::mojom::DriveFs::LocateFilesByItemIdsCallback callback);
+
   void RestartDrive();
 
   // Sets the arguments to be parsed by DriveFS on startup. Should only be
