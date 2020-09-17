@@ -593,6 +593,14 @@ class ShellUtil {
       const scoped_refptr<SharedCancellationFlag>& cancel,
       std::vector<std::pair<base::FilePath, base::string16>>* shortcuts);
 
+  // Resets file attributes on shortcuts to a known good default value.
+  // Ensures that Chrome shortcuts are not hidden from the user.
+  // Returns true if all updates to matching shortcuts are successful or if no
+  // matching shortcuts were found.
+  static bool ResetShortcutFileAttributes(ShortcutLocation location,
+                                          ShellChange level,
+                                          const base::FilePath& chrome_exe);
+
   // Sets |suffix| to the base 32 encoding of the md5 hash of this user's sid
   // preceded by a dot.
   // This is guaranteed to be unique on the machine and 27 characters long

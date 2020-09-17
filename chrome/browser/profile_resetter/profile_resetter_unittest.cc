@@ -237,6 +237,8 @@ class ShortcutHandler {
                                       const base::string16& args);
   void CheckShortcutHasArguments(const base::string16& desired_args) const;
   void Delete();
+  void HideFile();
+  bool IsFileHidden() const;
 
  private:
 #if defined(OS_WIN)
@@ -293,6 +295,20 @@ void ShortcutHandler::Delete() {
   EXPECT_TRUE(base::DeleteFile(shortcut_path_));
   shortcut_path_.clear();
 }
+
+void ShortcutHandler::HideFile() {
+  DWORD attributes = ::GetFileAttributes(shortcut_path_.value().c_str());
+  ASSERT_NE(attributes, INVALID_FILE_ATTRIBUTES);
+  ASSERT_TRUE(::SetFileAttributes(shortcut_path_.value().c_str(),
+                                  attributes | FILE_ATTRIBUTE_HIDDEN));
+}
+
+bool ShortcutHandler::IsFileHidden() const {
+  DWORD attributes = ::GetFileAttributes(shortcut_path_.value().c_str());
+  EXPECT_NE(attributes, INVALID_FILE_ATTRIBUTES);
+  return attributes & FILE_ATTRIBUTE_HIDDEN;
+}
+
 #else
 ShortcutHandler::ShortcutHandler() {}
 
@@ -314,6 +330,12 @@ void ShortcutHandler::CheckShortcutHasArguments(
 }
 
 void ShortcutHandler::Delete() {
+}
+
+void ShortcutHandler::HideFile() {}
+
+bool ShortcutHandler::IsFileHidden() const {
+  return false;
 }
 #endif  // defined(OS_WIN)
 
@@ -729,13 +751,18 @@ TEST_F(ProfileResetterTest, ResetShortcuts) {
   ShortcutCommand command_line = shortcut.CreateWithArguments(
       base::ASCIIToUTF16("chrome.lnk"),
       base::ASCIIToUTF16("--profile-directory=Default foo.com"));
+  shortcut.HideFile();
   shortcut.CheckShortcutHasArguments(base::ASCIIToUTF16(
       "--profile-directory=Default foo.com"));
+#if defined(OS_WIN)
+  ASSERT_TRUE(shortcut.IsFileHidden());
+#endif
 
   ResetAndWait(ProfileResetter::SHORTCUTS);
 
   shortcut.CheckShortcutHasArguments(base::ASCIIToUTF16(
       "--profile-directory=Default"));
+  EXPECT_FALSE(shortcut.IsFileHidden());
 }
 
 TEST_F(ProfileResetterTest, ResetFewFlags) {

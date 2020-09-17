@@ -12,6 +12,7 @@
 #include <objbase.h>
 #include <shlobj.h>
 #include <shobjidl.h>
+#include <windows.h>
 #include <wrl/client.h>
 
 #include <algorithm>
@@ -1405,6 +1406,18 @@ bool ShortcutOpListOrRemoveUnknownArgs(
       shortcut_path, updated_properties, base::win::SHORTCUT_UPDATE_EXISTING);
 }
 
+bool ShortcutOpResetAttributes(const base::FilePath& file_path) {
+  const DWORD kAllowedAttributes =
+      FILE_ATTRIBUTE_ARCHIVE | FILE_ATTRIBUTE_REPARSE_POINT;
+  DWORD attributes = ::GetFileAttributes(file_path.value().c_str());
+  if (attributes == INVALID_FILE_ATTRIBUTES)
+    return false;
+  if ((attributes & (~kAllowedAttributes)) == 0)
+    return true;
+  return ::SetFileAttributes(file_path.value().c_str(),
+                             attributes & kAllowedAttributes);
+}
+
 // {|location|, |level|} determine |shortcut_folder|.
 // For each shortcut in |shortcut_folder| that match |shortcut_filter|, apply
 // |shortcut_operation|. Returns true if all operations are successful.
@@ -2363,6 +2376,19 @@ bool ShellUtil::ShortcutListMaybeRemoveUnknownArgs(
       &ShortcutOpListOrRemoveUnknownArgs, do_removal, shortcuts);
   return BatchShortcutAction(shortcut_filter.AsShortcutFilterCallback(),
                              shortcut_operation, location, level, cancel);
+}
+
+// static
+bool ShellUtil::ResetShortcutFileAttributes(ShortcutLocation location,
+                                            ShellChange level,
+                                            const base::FilePath& chrome_exe) {
+  if (!ShortcutLocationIsSupported(location))
+    return false;
+  FilterTargetEq shortcut_filter(chrome_exe, /*require_args=*/false);
+  ShortcutOperationCallback shortcut_operation =
+      base::BindRepeating(&ShortcutOpResetAttributes);
+  return BatchShortcutAction(shortcut_filter.AsShortcutFilterCallback(),
+                             shortcut_operation, location, level, nullptr);
 }
 
 bool ShellUtil::GetUserSpecificRegistrySuffix(base::string16* suffix) {

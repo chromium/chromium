@@ -706,6 +706,40 @@ TEST_F(ShellUtilShortcutTest, ClearShortcutArguments) {
                          expected_properties4);
 }
 
+TEST_F(ShellUtilShortcutTest, ShortcutsAreNotHidden) {
+  // Shortcut 1: targets "chrome.exe"; not hidden.
+  test_properties_.set_shortcut_name(L"Chrome Visible");
+  ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_,
+      ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS));
+  base::FilePath visible_shortcut = GetExpectedShortcutPath(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_);
+  ASSERT_TRUE(base::PathExists(visible_shortcut));
+
+  // Shortcut 2: targets "chrome.exe"; hidden.
+  test_properties_.set_shortcut_name(L"Chrome Hidden");
+  ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_,
+      ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS));
+  base::FilePath hidden_shortcut = GetExpectedShortcutPath(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_);
+  ASSERT_TRUE(base::PathExists(hidden_shortcut));
+  DWORD shortcut_attributes =
+      ::GetFileAttributes(hidden_shortcut.value().c_str());
+  ASSERT_NE(shortcut_attributes, INVALID_FILE_ATTRIBUTES);
+  ASSERT_TRUE(::SetFileAttributes(hidden_shortcut.value().c_str(),
+                                  shortcut_attributes | FILE_ATTRIBUTE_HIDDEN));
+
+  EXPECT_TRUE(ShellUtil::ResetShortcutFileAttributes(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, ShellUtil::CURRENT_USER,
+      chrome_exe_));
+
+  shortcut_attributes = ::GetFileAttributes(visible_shortcut.value().c_str());
+  EXPECT_EQ(shortcut_attributes & FILE_ATTRIBUTE_HIDDEN, 0UL);
+  shortcut_attributes = ::GetFileAttributes(hidden_shortcut.value().c_str());
+  EXPECT_EQ(shortcut_attributes & FILE_ATTRIBUTE_HIDDEN, 0UL);
+}
+
 TEST_F(ShellUtilShortcutTest, CreateMultipleStartMenuShortcutsAndRemoveFolder) {
   ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
       ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED,
