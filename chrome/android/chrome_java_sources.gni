@@ -1695,5 +1695,4 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/webauth/Fido2Helper.java",
   "java/src/org/chromium/chrome/browser/webauth/HandlerResponseCallback.java",
   "java/src/org/chromium/chrome/browser/webshare/ShareServiceImplementationFactory.java",
-  "java/src/org/chromium/chrome/browser/widget/DateDividedAdapter.java",
 ]

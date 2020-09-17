@@ -8,7 +8,7 @@ import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.widget.DateDividedAdapter.TimedItem;
+import org.chromium.components.browser_ui.widget.DateDividedAdapter.TimedItem;
 
 import java.util.Arrays;
 

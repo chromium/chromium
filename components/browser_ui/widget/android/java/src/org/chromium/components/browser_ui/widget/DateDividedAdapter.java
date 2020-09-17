@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.widget;
+package org.chromium.components.browser_ui.widget;
 
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import org.chromium.base.Log;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
-import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.util.date.StringUtils;
 
 import java.lang.annotation.Retention;
@@ -456,8 +455,8 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
      * @see #onCreateViewHolder(ViewGroup, int)
      */
     protected DateViewHolder createDateViewHolder(ViewGroup parent) {
-        return new DateViewHolder(LayoutInflater.from(parent.getContext()).inflate(
-                getTimedItemViewResId(), parent, false));
+        return new DateViewHolder(LayoutInflater.from(parent.getContext())
+                                          .inflate(getTimedItemViewResId(), parent, false));
     }
 
     /**

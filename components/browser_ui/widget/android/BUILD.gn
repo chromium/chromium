@@ -12,6 +12,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/widget/CompositeTouchDelegate.java",
     "java/src/org/chromium/components/browser_ui/widget/ContextMenuDialog.java",
     "java/src/org/chromium/components/browser_ui/widget/CoordinatorLayoutForPointer.java",
+    "java/src/org/chromium/components/browser_ui/widget/DateDividedAdapter.java",
     "java/src/org/chromium/components/browser_ui/widget/DualControlLayout.java",
     "java/src/org/chromium/components/browser_ui/widget/FadingEdgeScrollView.java",
     "java/src/org/chromium/components/browser_ui/widget/FadingShadow.java",
@@ -100,6 +101,7 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//components/browser_ui/util/android:java",
     "//components/embedder_support/android:util_java",
     "//third_party/android_deps:android_support_v4_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
@@ -167,6 +169,7 @@ android_resources("java_resources") {
     "java/res/drawable/search_toolbar_modern_bg.xml",
     "java/res/layout/app_menu_divider.xml",
     "java/res/layout/app_menu_layout.xml",
+    "java/res/layout/date_divided_adapter_header_view_holder.xml",
     "java/res/layout/dialog_control_description.xml",
     "java/res/layout/divider_preference.xml",
     "java/res/layout/expand_arrow_with_separator.xml",

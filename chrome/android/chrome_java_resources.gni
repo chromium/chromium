@@ -840,7 +840,6 @@ chrome_java_resources = [
   "java/res/layout/data_usage_breakdown.xml",
   "java/res/layout/data_usage_breakdown_row.xml",
   "java/res/layout/data_usage_chart.xml",
-  "java/res/layout/date_divided_adapter_header_view_holder.xml",
   "java/res/layout/date_view.xml",
   "java/res/layout/default_search_engine_first_run_fragment.xml",
   "java/res/layout/device_item_list.xml",
