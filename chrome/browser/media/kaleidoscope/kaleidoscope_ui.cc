@@ -311,6 +311,11 @@ content::WebUIDataSource* KaleidoscopeUI::CreateUntrustedWebUIDataSource() {
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ConnectSrc, "connect-src *;");
 
+  // Allow YouTube videos to be embedded.
+  untrusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ChildSrc,
+      "child-src https://www.youtube.com;");
+
   // Add the URL to the backend.
   untrusted_source->AddString("googleApiUrl", backend_url.spec());
 
