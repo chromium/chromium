@@ -83,12 +83,6 @@ Polymer({
     },
 
     /** @private */
-    hasReleaseNotes_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private */
     showCrostini: Boolean,
 
     /** @private */
@@ -219,10 +213,6 @@ Polymer({
     this.aboutBrowserProxy_.getEndOfLifeInfo().then(result => {
       this.hasEndOfLife_ = !!result.hasEndOfLife;
       this.eolMessageWithMonthAndYear_ = result.aboutPageEndOfLifeMessage || '';
-    });
-
-    this.aboutBrowserProxy_.getEnabledReleaseNotes().then(result => {
-      this.hasReleaseNotes_ = result;
     });
 
     this.aboutBrowserProxy_.checkInternetConnection().then(result => {
@@ -368,22 +358,6 @@ Polymer({
    */
   shouldShowLearnMoreLink_() {
     return this.currentUpdateStatusEvent_.status == UpdateStatus.FAILED;
-  },
-
-  /**
-   * @return {boolean}
-   * @private
-   */
-  showReleaseNotesOnline_() {
-    return this.hasReleaseNotes_ && this.hasInternetConnection_;
-  },
-
-  /**
-   * @return {boolean}
-   * @private
-   */
-  showReleaseNotesOffline_() {
-    return this.hasReleaseNotes_ && !this.hasInternetConnection_;
   },
 
 

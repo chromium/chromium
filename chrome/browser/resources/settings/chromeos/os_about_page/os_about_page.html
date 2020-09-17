@@ -156,21 +156,19 @@
               </a>
             </div>
           </cr-link-row>
-          <template is="dom-if" if="[[showReleaseNotesOnline_(hasReleaseNotes_,
-              hasInternetConnection_)]]">
+          <template is="dom-if" if="[[hasInternetConnection_]]">
             <cr-link-row class="hr" id="releaseNotesOnline"
                 on-click="onReleaseNotesTap_"
                 label="$i18n{aboutShowReleaseNotes}" external
                 deep-link-focus-id$="[[Setting.kSeeWhatsNew]]">
             </cr-link-row>
           </template>
-          <template is="dom-if" if="[[showReleaseNotesOffline_(hasReleaseNotes_,
-              hasInternetConnection_)]]">
+          <template is="dom-if" if="[[!hasInternetConnection_]]">
             <cr-link-row class="hr" id="releaseNotesOffline"
                 on-click="onReleaseNotesTap_"
                 label="$i18n{aboutShowReleaseNotes}"
                 title="$i18n{aboutReleaseNotesOffline}" external
-                deep-link-focus-id$="[[Setting.kSeeWhatsNew]]"> 
+                deep-link-focus-id$="[[Setting.kSeeWhatsNew]]">
             </cr-link-row>
           </template>
           <cr-link-row class="hr" id="help" on-click="onHelpClick_"

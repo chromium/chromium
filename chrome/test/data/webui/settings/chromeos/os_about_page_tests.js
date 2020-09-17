@@ -71,7 +71,6 @@ cr.define('settings_about_page', function() {
         aboutBrowserProxy.whenCalled('getChannelInfo'),
         aboutBrowserProxy.whenCalled('refreshUpdateStatus'),
         aboutBrowserProxy.whenCalled('refreshTPMFirmwareUpdateStatus'),
-        aboutBrowserProxy.whenCalled('getEnabledReleaseNotes'),
         aboutBrowserProxy.whenCalled('checkInternetConnection'),
       ]);
     }
@@ -297,10 +296,8 @@ cr.define('settings_about_page', function() {
        * Checks the visibility of the "release notes" section when online.
        * @param {boolean} isShowing Whether the section is expected to be
        *     visible.
-       * @return {!Promise}
        */
-      async function checkReleaseNotesOnline(isShowing) {
-        await aboutBrowserProxy.whenCalled('getEnabledReleaseNotes');
+      function checkReleaseNotesOnline(isShowing) {
         const releaseNotesOnlineEl = page.$$('#releaseNotesOnline');
         assertEquals(isShowing, !!releaseNotesOnlineEl);
       }
@@ -309,47 +306,29 @@ cr.define('settings_about_page', function() {
        * Checks the visibility of the "release notes" for offline mode.
        * @param {boolean} isShowing Whether the section is expected to be
        *     visible.
-       * @return {!Promise}
        */
-      async function checkReleaseNotesOffline(isShowing) {
-        await aboutBrowserProxy.whenCalled('getEnabledReleaseNotes');
+      function checkReleaseNotesOffline(isShowing) {
         const releaseNotesOfflineEl = page.$$('#releaseNotesOffline');
-        assertEquals(isShowing, !!releaseNotesOfflineEl);
+        // According to
+        // https://polymer-library.polymer-project.org/1.0/api/elements/dom-if
+        // the element will not be removed from the dom if already rendered.
+        // Can be just hidden instead for better performance.
+        assertEquals(
+            isShowing,
+            !!releaseNotesOfflineEl &&
+                window.getComputedStyle(releaseNotesOfflineEl).display !==
+                    'none');
       }
 
-      /**
-       * Checks the visibility of the "release notes" section when disabled.
-       * @return {!Promise}
-       */
-      async function checkReleaseNotesDisabled() {
-        await aboutBrowserProxy.whenCalled('getEnabledReleaseNotes');
-        const releaseNotesOnlineEl = page.$$('#releaseNotesOnline');
-        assertFalse(!!releaseNotesOnlineEl);
-        const releaseNotesOfflineEl = page.$$('#releaseNotesOffline');
-        assertFalse(!!releaseNotesOfflineEl);
-      }
-
-      aboutBrowserProxy.setReleaseNotes(false);
       aboutBrowserProxy.setInternetConnection(false);
       await initNewPage();
-      await checkReleaseNotesDisabled();
+      checkReleaseNotesOnline(false);
+      checkReleaseNotesOffline(true);
 
-      aboutBrowserProxy.setReleaseNotes(false);
       aboutBrowserProxy.setInternetConnection(true);
       await initNewPage();
-      await checkReleaseNotesDisabled();
-
-      aboutBrowserProxy.setReleaseNotes(true);
-      aboutBrowserProxy.setInternetConnection(false);
-      await initNewPage();
-      await checkReleaseNotesOnline(false);
-      await checkReleaseNotesOffline(true);
-
-      aboutBrowserProxy.setReleaseNotes(true);
-      aboutBrowserProxy.setInternetConnection(true);
-      await initNewPage();
-      await checkReleaseNotesOnline(true);
-      await checkReleaseNotesOffline(false);
+      checkReleaseNotesOnline(true);
+      checkReleaseNotesOffline(false);
 
       page.$$('#releaseNotesOnline').click();
       return aboutBrowserProxy.whenCalled('launchReleaseNotes');
@@ -359,7 +338,6 @@ cr.define('settings_about_page', function() {
       loadTimeData.overrideValues({
         isDeepLinkingEnabled: true,
       });
-      aboutBrowserProxy.setReleaseNotes(true);
       aboutBrowserProxy.setInternetConnection(false);
       await initNewPage();
 

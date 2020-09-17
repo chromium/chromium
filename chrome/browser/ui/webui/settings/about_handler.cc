@@ -314,10 +314,6 @@ void AboutHandler::RegisterMessages() {
       base::BindRepeating(&AboutHandler::HandleGetEndOfLifeInfo,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getEnabledReleaseNotes",
-      base::BindRepeating(&AboutHandler::HandleGetEnabledReleaseNotes,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "launchReleaseNotes",
       base::BindRepeating(&AboutHandler::HandleLaunchReleaseNotes,
                           base::Unretained(this)));
@@ -423,15 +419,6 @@ void AboutHandler::HandleOpenHelpPage(const base::ListValue* args) {
 }
 
 #if defined(OS_CHROMEOS)
-void AboutHandler::HandleGetEnabledReleaseNotes(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(base::FeatureList::IsEnabled(
-                                chromeos::features::kReleaseNotes)));
-}
-
 void AboutHandler::HandleCheckInternetConnection(const base::ListValue* args) {
   CHECK_EQ(1U, args->GetSize());
   std::string callback_id;

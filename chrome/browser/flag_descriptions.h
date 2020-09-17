@@ -2484,9 +2484,6 @@ extern const char kPrintServerUiDescription[];
 extern const char kReduceDisplayNotificationsName[];
 extern const char kReduceDisplayNotificationsDescription[];
 
-extern const char kReleaseNotesName[];
-extern const char kReleaseNotesDescription[];
-
 extern const char kReleaseNotesNotificationName[];
 extern const char kReleaseNotesNotificationDescription[];
 

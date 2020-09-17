@@ -2314,8 +2314,6 @@ void UserSessionManager::MaybeShowU2FNotification() {
 }
 
 void UserSessionManager::MaybeShowReleaseNotesNotification(Profile* profile) {
-  if (!base::FeatureList::IsEnabled(features::kReleaseNotes))
-    return;
   if (!ProfileHelper::IsPrimaryProfile(profile))
     return;
   if (!release_notes_notification_) {

@@ -3916,11 +3916,6 @@
     "expiry_milestone": 85
   },
   {
-    "name": "release-notes",
-    "owners": [ "yulunwu" ],
-    "expiry_milestone": 79
-  },
-  {
     "name": "release-notes-notification",
     "owners": [ "//chromeos/components/help_app_ui/OWNERS" ],
     "expiry_milestone": 90

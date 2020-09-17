@@ -4273,11 +4273,6 @@ const char kReduceDisplayNotificationsDescription[] =
     "If enabled, notifications for display rotation, display removed, display "
     "mirroring, and display extending will be suppressed.";
 
-const char kReleaseNotesName[] = "CrOS Release Notes.";
-const char kReleaseNotesDescription[] =
-    "Creates release notes app in settings menu that shows a webview "
-    "describing new OS features.";
-
 const char kReleaseNotesNotificationName[] = "Release Notes Notification";
 const char kReleaseNotesNotificationDescription[] =
     "Enables the release notes notification and suggestion chip";

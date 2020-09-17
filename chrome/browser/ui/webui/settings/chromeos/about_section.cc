@@ -78,12 +78,6 @@ const std::vector<SearchConcept>& GetAboutSearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kGetHelpWithChromeOs}},
-  });
-  return *tags;
-}
-
-const std::vector<SearchConcept>& GetAboutReleaseNotesSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_ABOUT_RELEASE_NOTES,
        mojom::kAboutChromeOsDetailsSubpagePath,
        mojom::SearchResultIcon::kChrome,
@@ -165,9 +159,6 @@ AboutSection::AboutSection(Profile* profile,
     : OsSettingsSection(profile, search_tag_registry) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetAboutSearchConcepts());
-
-  if (base::FeatureList::IsEnabled(features::kReleaseNotes))
-    updater.AddSearchTags(GetAboutReleaseNotesSearchConcepts());
 }
 
 AboutSection::~AboutSection() = default;

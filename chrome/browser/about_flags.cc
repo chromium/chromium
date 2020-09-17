@@ -5399,12 +5399,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kAudioWorkletRealtimeThread)},
 
 #if defined(OS_CHROMEOS)
-    {"release-notes", flag_descriptions::kReleaseNotesName,
-     flag_descriptions::kReleaseNotesDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kReleaseNotes)},
-#endif  // defined(OS_CHROMEOS)
-
-#if defined(OS_CHROMEOS)
     {"maintain-shelf-state-overview",
      flag_descriptions::kMaintainShelfStateWhenEnteringOverviewName,
      flag_descriptions::kMaintainShelfStateWhenEnteringOverviewDescription,
