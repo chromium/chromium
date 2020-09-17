@@ -749,6 +749,14 @@
       'io_timeout': 900,
     },
   },
+  'vr_instrumentation_test': {
+     '$mixin_append': {
+       'args': [
+          '--remove-system-package=com.google.vr.vrcore',
+          '--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk',
+       ],
+     },
+  },
   'walleye': {
     # Pixel 2
     'swarming': {

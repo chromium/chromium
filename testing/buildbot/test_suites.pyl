@@ -27,7 +27,9 @@
       'chrome_public_test_vr_apk-ddready-cardboard': {
         'args': [
           '--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_cardboard_skipdon_setupcomplete.json',
-          '--replace-system-package=com.google.vr.vrcore,//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk',
+        ],
+        'mixins': [
+          'vr_instrumentation_test',
         ],
         'swarming': {
           'shards': 2,
@@ -37,12 +39,12 @@
       'chrome_public_test_vr_apk-ddready-ddview': {
         'args': [
           '--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_ddview_skipdon_setupcomplete.json',
-          '--replace-system-package=com.google.vr.vrcore,//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk',
           '--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_keyboard/vr_keyboard_current.apk',
         ],
         'mixins': [
           'chrome-gold-service-account',
           'skia_gold_test',
+          'vr_instrumentation_test',
         ],
         'swarming': {
           'shards': 4,
@@ -52,10 +54,12 @@
       'chrome_public_test_vr_apk-ddready-don-enabled': {
         'args': [
           '--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_ddview_don_setupcomplete.json',
-          '--replace-system-package=com.google.vr.vrcore,//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk',
           '--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_keyboard/vr_keyboard_current.apk',
           '--annotation=Restriction=VR_DON_Enabled',
           '--vr-don-enabled',
+        ],
+        'mixins': [
+          'vr_instrumentation_test',
         ],
         'test': 'chrome_public_test_vr_apk',
       },

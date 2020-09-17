@@ -193,6 +193,21 @@ class LocalDeviceInstrumentationTestRun(
 
         steps.append(replace_package)
 
+      if self._test_instance.system_packages_to_remove:
+
+        @trace_event.traced
+        def remove_packages(dev):
+          logging.info('Attempting to remove system packages %s',
+                       self._test_instance.system_packages_to_remove)
+          system_app.RemoveSystemApps(
+              dev, self._test_instance.system_packages_to_remove)
+          logging.info('Done removing system packages')
+
+        # This should be at the front in case we're removing the package to make
+        # room for another APK installation later on. Since we disallow
+        # concurrent adb with this option specified, this should be safe.
+        steps.insert(0, remove_packages)
+
       if self._test_instance.use_webview_provider:
         @trace_event.traced
         def use_webview_provider(dev):

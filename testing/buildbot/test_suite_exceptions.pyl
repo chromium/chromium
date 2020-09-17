@@ -790,11 +790,14 @@
       'android-code-coverage-native', # https://crbug.com/1018780
     ],
     'modifications': {
-      # Use "--replace-system-package" according to crbug.com/931947#c1
+      # Use "--remove-system-package" according to crbug.com/931947#c1
       'android-nougat-arm64-rel': {
         'args': [
-          '--replace-system-package=com.google.vr.vrcore,//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk'
-        ]
+          # Applying a mixin via an exception doesn't work, so manually apply
+          # the same arguments as the 'vr_instrumentation_test' mixin.
+          '--remove-system-package=com.google.vr.vrcore',
+          '--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk',
+        ],
       }
     },
   },
@@ -1669,7 +1672,8 @@
       },
       'android-10-arm64-rel': {
         'args': [
-          '--replace-system-package=com.google.ar.core,//third_party/arcore-android-sdk/test-apks/arcore/arcore_current.apk'
+          '--remove-system-package=com.google.ar.core',
+          '--additional-apk=//third_party/arcore-android-sdk/test-apks/arcore/arcore_current.apk',
         ]
       },
       'android-nougat-arm64-rel': {
@@ -1681,7 +1685,8 @@
       },
       'android-pie-arm64-dbg': {
         'args': [
-          '--replace-system-package=com.google.ar.core,//third_party/arcore-android-sdk/test-apks/arcore/arcore_current.apk'
+          '--remove-system-package=com.google.ar.core',
+          '--additional-apk=//third_party/arcore-android-sdk/test-apks/arcore/arcore_current.apk',
         ]
       }
     },

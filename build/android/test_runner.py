@@ -496,6 +496,15 @@ def AddInstrumentationTestOptions(parser):
            'the first element being the package and the second the path to the '
            'replacement APK. Only supports replacing one package. Example: '
            '--replace-system-package com.example.app,path/to/some.apk')
+  parser.add_argument(
+      '--remove-system-package',
+      default=[],
+      action='append',
+      dest='system_packages_to_remove',
+      help='Specifies a system package to remove before testing if it exists '
+      'on the system. WARNING: THIS WILL PERMANENTLY REMOVE THE SYSTEM APP. '
+      'Unlike --replace-system-package, the app will not be restored after '
+      'tests are finished.')
 
   parser.add_argument(
       '--use-webview-provider',
@@ -1061,13 +1070,18 @@ def main():
     else:
       parser.error('unrecognized arguments: %s' % ' '.join(unknown_args))
 
-  # --replace-system-package has the potential to cause issues if
-  # --enable-concurrent-adb is set, so disallow that combination
-  if (hasattr(args, 'replace_system_package') and
-      hasattr(args, 'enable_concurrent_adb') and args.replace_system_package and
-      args.enable_concurrent_adb):
-    parser.error('--replace-system-package and --enable-concurrent-adb cannot '
-                 'be used together')
+  # --replace-system-package/--remove-system-package has the potential to cause
+  # issues if --enable-concurrent-adb is set, so disallow that combination.
+  concurrent_adb_enabled = (hasattr(args, 'enable_concurrent_adb')
+                            and args.enable_concurrent_adb)
+  replacing_system_packages = (hasattr(args, 'replace_system_package')
+                               and args.replace_system_package)
+  removing_system_packages = (hasattr(args, 'system_packages_to_remove')
+                              and args.system_packages_to_remove)
+  if (concurrent_adb_enabled
+      and (replacing_system_packages or removing_system_packages)):
+    parser.error('--enable-concurrent-adb cannot be used with either '
+                 '--replace-system-package or --remove-system-package')
 
   # --use-webview-provider has the potential to cause issues if
   # --enable-concurrent-adb is set, so disallow that combination

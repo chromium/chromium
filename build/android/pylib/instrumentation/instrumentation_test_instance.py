@@ -556,6 +556,9 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._replace_system_package = None
     self._initializeReplaceSystemPackageAttributes(args)
 
+    self._system_packages_to_remove = None
+    self._initializeSystemPackagesToRemoveAttributes(args)
+
     self._use_webview_provider = None
     self._initializeUseWebviewProviderAttributes(args)
 
@@ -767,6 +770,12 @@ class InstrumentationTestInstance(test_instance.TestInstance):
       return
     self._replace_system_package = args.replace_system_package
 
+  def _initializeSystemPackagesToRemoveAttributes(self, args):
+    if (not hasattr(args, 'system_packages_to_remove')
+        or not args.system_packages_to_remove):
+      return
+    self._system_packages_to_remove = args.system_packages_to_remove
+
   def _initializeUseWebviewProviderAttributes(self, args):
     if (not hasattr(args, 'use_webview_provider')
         or not args.use_webview_provider):
@@ -871,6 +880,10 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   @property
   def symbolizer(self):
     return self._symbolizer
+
+  @property
+  def system_packages_to_remove(self):
+    return self._system_packages_to_remove
 
   @property
   def test_apk(self):
