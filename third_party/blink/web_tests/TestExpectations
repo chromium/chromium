@@ -6716,3 +6716,6 @@ crbug.com/1123002 [ Mac11.0 ] external/wpt/html/dom/elements/global-attributes/d
 # Sheriff 2020-09-09
 crbug.com/1126709 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-null-1.https.html [ Pass Failure ]
 crbug.com/1126709 [ Win ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-null-1.https.html [ Pass Failure ]
+
+# Sheriff 2020-09-17
+crbug.com/1129347 [ Mac10.13 Debug ] http/tests/devtools/persistence/persistence-external-change-breakpoints.js [ Pass Failure ]
