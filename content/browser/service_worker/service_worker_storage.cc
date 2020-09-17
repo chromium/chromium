@@ -124,7 +124,8 @@ void ServiceWorkerStorage::GetRegisteredOrigins(
     case STORAGE_STATE_DISABLED:
       std::move(callback).Run(/*origins=*/std::vector<url::Origin>());
       return;
-    case STORAGE_STATE_INITIALIZING:  // Fall-through.
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(&ServiceWorkerStorage::GetRegisteredOrigins,
                                     weak_factory_.GetWeakPtr(),
@@ -150,7 +151,8 @@ void ServiceWorkerStorage::FindRegistrationForClientUrl(
           /*data=*/nullptr, /*resources=*/nullptr,
           ServiceWorkerDatabase::Status::kErrorDisabled);
       return;
-    case STORAGE_STATE_INITIALIZING:  // Fall-through.
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(
           &ServiceWorkerStorage::FindRegistrationForClientUrl,
@@ -188,7 +190,8 @@ void ServiceWorkerStorage::FindRegistrationForScope(
                              /*data=*/nullptr, /*resources=*/nullptr,
                              ServiceWorkerDatabase::Status::kErrorDisabled));
       return;
-    case STORAGE_STATE_INITIALIZING:  // Fall-through.
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(
           &ServiceWorkerStorage::FindRegistrationForScope,
@@ -223,7 +226,8 @@ void ServiceWorkerStorage::FindRegistrationForId(
           /*data=*/nullptr, /*resources=*/nullptr,
           ServiceWorkerDatabase::Status::kErrorDisabled);
       return;
-    case STORAGE_STATE_INITIALIZING:  // Fall-through.
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(
           base::BindOnce(&ServiceWorkerStorage::FindRegistrationForId,
@@ -257,7 +261,8 @@ void ServiceWorkerStorage::FindRegistrationForIdOnly(
           /*data=*/nullptr, /*resources=*/nullptr,
           ServiceWorkerDatabase::Status::kErrorDisabled);
       return;
-    case STORAGE_STATE_INITIALIZING:  // Fall-through.
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(
           &ServiceWorkerStorage::FindRegistrationForIdOnly,
@@ -284,7 +289,8 @@ void ServiceWorkerStorage::GetRegistrationsForOrigin(
                              /*registrations=*/nullptr,
                              /*resource_lists=*/nullptr));
       return;
-    case STORAGE_STATE_INITIALIZING:  // Fall-through.
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(
           &ServiceWorkerStorage::GetRegistrationsForOrigin,
@@ -319,7 +325,8 @@ void ServiceWorkerStorage::GetUsageForOrigin(
                              ServiceWorkerDatabase::Status::kErrorDisabled,
                              /*usage=*/0));
       return;
-    case STORAGE_STATE_INITIALIZING:  // Fall-through.
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(&ServiceWorkerStorage::GetUsageForOrigin,
                                     weak_factory_.GetWeakPtr(), origin,
@@ -345,7 +352,8 @@ void ServiceWorkerStorage::GetAllRegistrations(
                              ServiceWorkerDatabase::Status::kErrorDisabled,
                              /*registrations=*/nullptr));
       return;
-    case STORAGE_STATE_INITIALIZING:  // Fall-through.
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(&ServiceWorkerStorage::GetAllRegistrations,
                                     weak_factory_.GetWeakPtr(),
@@ -378,7 +386,8 @@ void ServiceWorkerStorage::StoreRegistrationData(
           /*deleted_version=*/blink::mojom::kInvalidServiceWorkerVersionId,
           /*newly_purgeable_resources=*/{});
       return;
-    case STORAGE_STATE_INITIALIZING:  // Fall-through.
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(
           &ServiceWorkerStorage::StoreRegistrationData,
@@ -409,14 +418,19 @@ void ServiceWorkerStorage::UpdateToActiveState(
     int64_t registration_id,
     const GURL& origin,
     DatabaseStatusCallback callback) {
-  DCHECK(state_ == STORAGE_STATE_INITIALIZED ||
-         state_ == STORAGE_STATE_DISABLED)
-      << state_;
-  if (IsDisabled()) {
-    RunSoon(FROM_HERE,
-            base::BindOnce(std::move(callback),
-                           ServiceWorkerDatabase::Status::kErrorDisabled));
-    return;
+  switch (state_) {
+    case STORAGE_STATE_DISABLED:
+      std::move(callback).Run(ServiceWorkerDatabase::Status::kErrorDisabled);
+      return;
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
+    case STORAGE_STATE_UNINITIALIZED:
+      LazyInitialize(base::BindOnce(&ServiceWorkerStorage::UpdateToActiveState,
+                                    weak_factory_.GetWeakPtr(), registration_id,
+                                    origin, std::move(callback)));
+      return;
+    case STORAGE_STATE_INITIALIZED:
+      break;
   }
 
   base::PostTaskAndReplyWithResult(
@@ -433,14 +447,20 @@ void ServiceWorkerStorage::UpdateLastUpdateCheckTime(
     const GURL& origin,
     base::Time last_update_check_time,
     DatabaseStatusCallback callback) {
-  DCHECK(state_ == STORAGE_STATE_INITIALIZED ||
-         state_ == STORAGE_STATE_DISABLED)
-      << state_;
-  if (IsDisabled()) {
-    RunSoon(FROM_HERE,
-            base::BindOnce(std::move(callback),
-                           ServiceWorkerDatabase::Status::kErrorDisabled));
-    return;
+  switch (state_) {
+    case STORAGE_STATE_DISABLED:
+      std::move(callback).Run(ServiceWorkerDatabase::Status::kErrorDisabled);
+      return;
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
+    case STORAGE_STATE_UNINITIALIZED:
+      LazyInitialize(
+          base::BindOnce(&ServiceWorkerStorage::UpdateLastUpdateCheckTime,
+                         weak_factory_.GetWeakPtr(), registration_id, origin,
+                         last_update_check_time, std::move(callback)));
+      return;
+    case STORAGE_STATE_INITIALIZED:
+      break;
   }
 
   base::PostTaskAndReplyWithResult(
@@ -456,12 +476,20 @@ void ServiceWorkerStorage::UpdateNavigationPreloadEnabled(
     const GURL& origin,
     bool enable,
     DatabaseStatusCallback callback) {
-  DCHECK(state_ == STORAGE_STATE_INITIALIZED ||
-         state_ == STORAGE_STATE_DISABLED)
-      << state_;
-  if (IsDisabled()) {
-    std::move(callback).Run(ServiceWorkerDatabase::Status::kErrorDisabled);
-    return;
+  switch (state_) {
+    case STORAGE_STATE_DISABLED:
+      std::move(callback).Run(ServiceWorkerDatabase::Status::kErrorDisabled);
+      return;
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
+    case STORAGE_STATE_UNINITIALIZED:
+      LazyInitialize(
+          base::BindOnce(&ServiceWorkerStorage::UpdateNavigationPreloadEnabled,
+                         weak_factory_.GetWeakPtr(), registration_id, origin,
+                         enable, std::move(callback)));
+      return;
+    case STORAGE_STATE_INITIALIZED:
+      break;
   }
 
   base::PostTaskAndReplyWithResult(
@@ -477,12 +505,20 @@ void ServiceWorkerStorage::UpdateNavigationPreloadHeader(
     const GURL& origin,
     const std::string& value,
     DatabaseStatusCallback callback) {
-  DCHECK(state_ == STORAGE_STATE_INITIALIZED ||
-         state_ == STORAGE_STATE_DISABLED)
-      << state_;
-  if (IsDisabled()) {
-    std::move(callback).Run(ServiceWorkerDatabase::Status::kErrorDisabled);
-    return;
+  switch (state_) {
+    case STORAGE_STATE_DISABLED:
+      std::move(callback).Run(ServiceWorkerDatabase::Status::kErrorDisabled);
+      return;
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
+    case STORAGE_STATE_UNINITIALIZED:
+      LazyInitialize(
+          base::BindOnce(&ServiceWorkerStorage::UpdateNavigationPreloadHeader,
+                         weak_factory_.GetWeakPtr(), registration_id, origin,
+                         value, std::move(callback)));
+      return;
+    case STORAGE_STATE_INITIALIZED:
+      break;
   }
 
   base::PostTaskAndReplyWithResult(
@@ -497,7 +533,24 @@ void ServiceWorkerStorage::DeleteRegistration(
     int64_t registration_id,
     const GURL& origin,
     DeleteRegistrationCallback callback) {
-  DCHECK_EQ(state_, STORAGE_STATE_INITIALIZED);
+  switch (state_) {
+    case STORAGE_STATE_DISABLED:
+      std::move(callback).Run(
+          ServiceWorkerDatabase::Status::kErrorDisabled,
+          storage::mojom::ServiceWorkerStorageOriginState::kKeep,
+          /*deleted_version_id=*/blink::mojom::kInvalidServiceWorkerVersionId,
+          /*newly_purgeable_resources=*/std::vector<int64_t>());
+      return;
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
+    case STORAGE_STATE_UNINITIALIZED:
+      LazyInitialize(base::BindOnce(&ServiceWorkerStorage::DeleteRegistration,
+                                    weak_factory_.GetWeakPtr(), registration_id,
+                                    origin, std::move(callback)));
+      return;
+    case STORAGE_STATE_INITIALIZED:
+      break;
+  }
 
   if (!has_checked_for_stale_resources_)
     DeleteStaleResources();
@@ -515,12 +568,19 @@ void ServiceWorkerStorage::DeleteRegistration(
 }
 
 void ServiceWorkerStorage::PerformStorageCleanup(base::OnceClosure callback) {
-  DCHECK(state_ == STORAGE_STATE_INITIALIZED ||
-         state_ == STORAGE_STATE_DISABLED)
-      << state_;
-  if (IsDisabled()) {
-    RunSoon(FROM_HERE, std::move(callback));
-    return;
+  switch (state_) {
+    case STORAGE_STATE_DISABLED:
+      std::move(callback).Run();
+      return;
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
+    case STORAGE_STATE_UNINITIALIZED:
+      LazyInitialize(
+          base::BindOnce(&ServiceWorkerStorage::PerformStorageCleanup,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
+      return;
+    case STORAGE_STATE_INITIALIZED:
+      break;
   }
 
   if (!has_checked_for_stale_resources_)
@@ -554,14 +614,20 @@ void ServiceWorkerStorage::StoreUncommittedResourceId(
     const GURL& origin,
     DatabaseStatusCallback callback) {
   DCHECK_NE(blink::mojom::kInvalidServiceWorkerResourceId, resource_id);
-  DCHECK(STORAGE_STATE_INITIALIZED == state_ ||
-         STORAGE_STATE_DISABLED == state_)
-      << state_;
-  if (IsDisabled()) {
-    RunSoon(FROM_HERE,
-            base::BindOnce(std::move(callback),
-                           ServiceWorkerDatabase::Status::kErrorDisabled));
-    return;
+  switch (state_) {
+    case STORAGE_STATE_DISABLED:
+      std::move(callback).Run(ServiceWorkerDatabase::Status::kErrorDisabled);
+      return;
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
+    case STORAGE_STATE_UNINITIALIZED:
+      LazyInitialize(
+          base::BindOnce(&ServiceWorkerStorage::StoreUncommittedResourceId,
+                         weak_factory_.GetWeakPtr(), resource_id, origin,
+                         std::move(callback)));
+      return;
+    case STORAGE_STATE_INITIALIZED:
+      break;
   }
 
   if (!has_checked_for_stale_resources_)
@@ -579,11 +645,20 @@ void ServiceWorkerStorage::StoreUncommittedResourceId(
 void ServiceWorkerStorage::DoomUncommittedResources(
     const std::vector<int64_t>& resource_ids,
     DatabaseStatusCallback callback) {
-  DCHECK(STORAGE_STATE_INITIALIZED == state_ ||
-         STORAGE_STATE_DISABLED == state_)
-      << state_;
-  if (IsDisabled())
-    return;
+  switch (state_) {
+    case STORAGE_STATE_DISABLED:
+      std::move(callback).Run(ServiceWorkerDatabase::Status::kErrorDisabled);
+      return;
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
+    case STORAGE_STATE_UNINITIALIZED:
+      LazyInitialize(base::BindOnce(
+          &ServiceWorkerStorage::DoomUncommittedResources,
+          weak_factory_.GetWeakPtr(), resource_ids, std::move(callback)));
+      return;
+    case STORAGE_STATE_INITIALIZED:
+      break;
+  }
 
   base::PostTaskAndReplyWithResult(
       database_task_runner_.get(), FROM_HERE,
@@ -605,7 +680,8 @@ void ServiceWorkerStorage::StoreUserData(
               base::BindOnce(std::move(callback),
                              ServiceWorkerDatabase::Status::kErrorDisabled));
       return;
-    case STORAGE_STATE_INITIALIZING:  // Fall-through.
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(
           &ServiceWorkerStorage::StoreUserData, weak_factory_.GetWeakPtr(),
@@ -639,7 +715,8 @@ void ServiceWorkerStorage::GetUserData(int64_t registration_id,
                              ServiceWorkerDatabase::Status::kErrorDisabled,
                              std::vector<std::string>()));
       return;
-    case STORAGE_STATE_INITIALIZING:  // Fall-through.
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(&ServiceWorkerStorage::GetUserData,
                                     weak_factory_.GetWeakPtr(), registration_id,
@@ -672,7 +749,8 @@ void ServiceWorkerStorage::GetUserDataByKeyPrefix(
                              ServiceWorkerDatabase::Status::kErrorDisabled,
                              std::vector<std::string>()));
       return;
-    case STORAGE_STATE_INITIALIZING:  // Fall-through.
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(
           base::BindOnce(&ServiceWorkerStorage::GetUserDataByKeyPrefix,
@@ -706,7 +784,8 @@ void ServiceWorkerStorage::GetUserKeysAndDataByKeyPrefix(
                              ServiceWorkerDatabase::Status::kErrorDisabled,
                              base::flat_map<std::string, std::string>()));
       return;
-    case STORAGE_STATE_INITIALIZING:  // Fall-through.
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(
           base::BindOnce(&ServiceWorkerStorage::GetUserKeysAndDataByKeyPrefix,
@@ -738,7 +817,8 @@ void ServiceWorkerStorage::ClearUserData(int64_t registration_id,
               base::BindOnce(std::move(callback),
                              ServiceWorkerDatabase::Status::kErrorDisabled));
       return;
-    case STORAGE_STATE_INITIALIZING:  // Fall-through.
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(&ServiceWorkerStorage::ClearUserData,
                                     weak_factory_.GetWeakPtr(), registration_id,
@@ -770,7 +850,8 @@ void ServiceWorkerStorage::ClearUserDataByKeyPrefixes(
               base::BindOnce(std::move(callback),
                              ServiceWorkerDatabase::Status::kErrorDisabled));
       return;
-    case STORAGE_STATE_INITIALIZING:  // Fall-through.
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(
           base::BindOnce(&ServiceWorkerStorage::ClearUserDataByKeyPrefixes,
@@ -805,7 +886,8 @@ void ServiceWorkerStorage::GetUserDataForAllRegistrations(
                   ServiceWorkerDatabase::Status::kErrorDisabled,
                   std::vector<storage::mojom::ServiceWorkerUserDataPtr>()));
       return;
-    case STORAGE_STATE_INITIALIZING:  // Fall-through.
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(
           base::BindOnce(&ServiceWorkerStorage::GetUserDataForAllRegistrations,
@@ -837,7 +919,8 @@ void ServiceWorkerStorage::GetUserDataForAllRegistrationsByKeyPrefix(
                   ServiceWorkerDatabase::Status::kErrorDisabled,
                   std::vector<storage::mojom::ServiceWorkerUserDataPtr>()));
       return;
-    case STORAGE_STATE_INITIALIZING:  // Fall-through.
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(
           &ServiceWorkerStorage::GetUserDataForAllRegistrationsByKeyPrefix,
@@ -868,7 +951,8 @@ void ServiceWorkerStorage::ClearUserDataForAllRegistrationsByKeyPrefix(
               base::BindOnce(std::move(callback),
                              ServiceWorkerDatabase::Status::kErrorDisabled));
       return;
-    case STORAGE_STATE_INITIALIZING:  // Fall-through.
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(
           &ServiceWorkerStorage::ClearUserDataForAllRegistrationsByKeyPrefix,
@@ -922,7 +1006,8 @@ void ServiceWorkerStorage::GetNewRegistrationId(
       std::move(callback).Run(
           blink::mojom::kInvalidServiceWorkerRegistrationId);
       return;
-    case STORAGE_STATE_INITIALIZING:  // Fall-through.
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(&ServiceWorkerStorage::GetNewRegistrationId,
                                     weak_factory_.GetWeakPtr(),
@@ -942,7 +1027,8 @@ void ServiceWorkerStorage::GetNewVersionId(
     case STORAGE_STATE_DISABLED:
       std::move(callback).Run(blink::mojom::kInvalidServiceWorkerVersionId);
       return;
-    case STORAGE_STATE_INITIALIZING:  // Fall-through.
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(&ServiceWorkerStorage::GetNewVersionId,
                                     weak_factory_.GetWeakPtr(),
@@ -962,7 +1048,8 @@ void ServiceWorkerStorage::GetNewResourceId(
     case STORAGE_STATE_DISABLED:
       std::move(callback).Run(blink::mojom::kInvalidServiceWorkerResourceId);
       return;
-    case STORAGE_STATE_INITIALIZING:  // Fall-through.
+    case STORAGE_STATE_INITIALIZING:
+      // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(&ServiceWorkerStorage::GetNewResourceId,
                                     weak_factory_.GetWeakPtr(),
