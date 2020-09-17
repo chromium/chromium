@@ -28,6 +28,15 @@
       next();
     },
 
+    async function testContextSelector(next) {
+      const selector = Console.ConsoleView.instance()._consoleContextSelector;
+      TestRunner.assertEquals(selector._items.length, 2);
+      const executionContext = selector._items.at(1);
+      TestRunner.assertEquals(selector.titleFor(executionContext), 'append-predecessor.html');
+      TestRunner.assertEquals(selector._depthFor(executionContext), 1);
+      next();
+    },
+
     async function testPortalConsole(next) {
       await setContextLabel(targets[1], 'portal');
       ConsoleTestRunner.changeExecutionContext('portal');
