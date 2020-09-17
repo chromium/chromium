@@ -704,10 +704,6 @@ OmniboxFieldTrial::GetEmphasizeTitlesConditionForInput(
   return static_cast<EmphasizeTitlesCondition>(value);
 }
 
-bool OmniboxFieldTrial::IsReverseAnswersEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxReverseAnswers);
-}
-
 bool OmniboxFieldTrial::IsShortBookmarkSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(
              omnibox::kOmniboxShortBookmarkSuggestions) ||

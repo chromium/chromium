@@ -3391,10 +3391,6 @@ const char kOmniboxKeywordSearchButtonDescription[] =
     "on specific sites from the omnibox. This flag has no effect unless "
     "\"Omnibox suggestion button row\" is also enabled.";
 
-const char kOmniboxReverseAnswersName[] = "Omnibox reverse answers";
-const char kOmniboxReverseAnswersDescription[] =
-    "Display answers with rows reversed (swapped); except definitions.";
-
 const char kOmniboxShortBookmarkSuggestionsName[] =
     "Omnibox short bookmark suggestions";
 const char kOmniboxShortBookmarkSuggestionsDescription[] =

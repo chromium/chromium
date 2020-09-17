@@ -64,10 +64,6 @@ const base::Feature kHideFileUrlScheme{
     // need to show the file scheme.
     enabled_by_default_desktop_only};
 
-// Feature used to enable swapping the rows on answers.
-const base::Feature kOmniboxReverseAnswers{"OmniboxReverseAnswers",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Feature used to enable matching short words to bookmarks for suggestions.
 const base::Feature kOmniboxShortBookmarkSuggestions{
     "OmniboxShortBookmarkSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};

@@ -1936,9 +1936,6 @@ extern const char kOmniboxPedalSuggestionsDescription[];
 extern const char kOmniboxKeywordSearchButtonName[];
 extern const char kOmniboxKeywordSearchButtonDescription[];
 
-extern const char kOmniboxReverseAnswersName[];
-extern const char kOmniboxReverseAnswersDescription[];
-
 extern const char kPasswordsWeaknessCheckName[];
 extern const char kPasswordsWeaknessCheckDescription[];
 
