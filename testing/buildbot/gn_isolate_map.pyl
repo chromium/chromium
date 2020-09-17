@@ -543,6 +543,18 @@
     "type": "script",
     "script": "//testing/scripts/run_wpt_tests.py",
   },
+  "chrome/browser/media/router": {
+    "label": "//chrome/browser/media/router:router",
+    "type": "additional_compile_target",
+  },
+  "chrome/browser/media/router:openscreen_unittests": {
+    "label": "//chrome/browser/media/router:openscreen_unittests",
+    "type": "additional_compile_target",
+  },
+  "chrome/browser/media/router:unittests": {
+    "label": "//chrome/browser/media/router:unittests",
+    "type": "additional_compile_target",
+  },
   "chrome/installer/linux": {
     "label": "//chrome/installer/linux:linux",
     "type": "additional_compile_target",
@@ -586,6 +598,42 @@
     "label": "//gpu:command_buffer_perftests",
     "script": "//testing/scripts/run_performance_tests.py",
     "type": "script",
+  },
+  "components/cast_certificate": {
+    "label": "//components/cast_certificate:cast_certificate",
+    "type": "additional_compile_target",
+  },
+  "components/cast_certificate:unit_tests": {
+    "label": "//components/cast_certificate:unit_tests",
+    "type": "additional_compile_target",
+  },
+  "components/cast_channel": {
+    "label": "//components/cast_channel:cast_channel",
+    "type": "additional_compile_target",
+  },
+  "components/cast_channel:unit_tests": {
+    "label": "//components/cast_channel:unit_tests",
+    "type": "additional_compile_target",
+  },
+  "components/mirroring/browser": {
+    "label": "//components/mirroring/browser:browser",
+    "type": "additional_compile_target",
+  },
+  "components/mirroring/service:mirroring_service": {
+    "label": "//components/mirroring/service:mirrroring_service",
+    "type": "additional_compile_target",
+  },
+  "components/mirroring:mirroring_tests": {
+    "label": "//components/mirroring:mirroring_tests",
+    "type": "additional_compile_target",
+  },
+  "components/mirroring:mirroring_unittests": {
+    "label": "//components/mirroring:mirroring_unittests",
+    "type": "additional_compile_target",
+  },
+  "components/openscreen_platform": {
+    "label": "//components/openscreen_platform:openscreen_platform",
+    "type": "additional_compile_target",
   },
   "components_browsertests": {
     "label": "//components:components_browsertests",
