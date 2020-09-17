@@ -2308,34 +2308,28 @@ MainThreadSchedulerImpl::NonWakingTaskRunner() {
   return non_waking_task_runner_;
 }
 
-AgentGroupSchedulerImpl* MainThreadSchedulerImpl::CreateAgentGroupScheduler() {
-  std::unique_ptr<AgentGroupSchedulerImpl> agent_group_scheduler =
-      std::make_unique<AgentGroupSchedulerImpl>(this);
-  AddAgentGroupScheduler(agent_group_scheduler.get());
-  AgentGroupSchedulerImpl* agent_group_scheduler_ptr =
-      agent_group_scheduler.get();
-  // Currently, MainThreadSchedulerImpl has the ownership of
+AgentGroupSchedulerImpl* MainThreadSchedulerImpl::EnsureAgentGroupScheduler() {
+  // TODO(crbug/1113102): Currently, MainThreadSchedulerImpl owns
   // AgentGroupSchedulerImpl
-  agent_group_scheduler_set_.insert(std::move(agent_group_scheduler));
-  return agent_group_scheduler_ptr;
+  if (!agent_group_scheduler_) {
+    agent_group_scheduler_ = std::make_unique<AgentGroupSchedulerImpl>(this);
+    AddAgentGroupScheduler(agent_group_scheduler_.get());
+  }
+  return agent_group_scheduler_.get();
 }
 
 void MainThreadSchedulerImpl::RemoveAgentGroupScheduler(
     AgentGroupSchedulerImpl* agent_group_scheduler) {
   DCHECK(agent_group_schedulers_.Contains(agent_group_scheduler));
   agent_group_schedulers_.erase(agent_group_scheduler);
-
-  DCHECK(agent_group_scheduler_set_.Contains(agent_group_scheduler));
-  agent_group_scheduler_set_.erase(agent_group_scheduler);
 }
 
 std::unique_ptr<PageScheduler> MainThreadSchedulerImpl::CreatePageScheduler(
     PageScheduler::Delegate* delegate) {
-  // TODO(crbug/1113102): tentatively, we create AgentGroupSchedulerImpl per
-  // page.
-  AgentGroupSchedulerImpl* agent_group_scheduler = CreateAgentGroupScheduler();
-  auto page_scheduler =
-      std::make_unique<PageSchedulerImpl>(delegate, agent_group_scheduler);
+  // TODO(crbug/1113102): we'll use the singleton AgentGroupScheduler instance
+  // tentatively.
+  auto page_scheduler = std::make_unique<PageSchedulerImpl>(
+      delegate, EnsureAgentGroupScheduler() /* tentative */);
   AddPageScheduler(page_scheduler.get());
   return page_scheduler;
 }
@@ -2408,9 +2402,6 @@ void MainThreadSchedulerImpl::RemovePageScheduler(
       IsAnyMainFrameWaitingForFirstContentfulPaint();
   any_thread().waiting_for_any_main_frame_meaningful_paint =
       IsAnyMainFrameWaitingForFirstMeaningfulPaint();
-  // TODO(crbug/1113102): tentatively, we delete AgentGroupScheduler from
-  // here.
-  RemoveAgentGroupScheduler(page_scheduler->GetAgentGroupScheduler());
   UpdatePolicyLocked(UpdateType::kMayEarlyOutIfPolicyUnchanged);
 }
 

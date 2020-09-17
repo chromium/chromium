@@ -28,5 +28,11 @@ AgentGroupSchedulerImpl::AgentGroupSchedulerImpl(
     MainThreadSchedulerImpl* main_thread_scheduler)
     : main_thread_scheduler_(main_thread_scheduler) {}
 
+AgentGroupSchedulerImpl::~AgentGroupSchedulerImpl() {
+  if (main_thread_scheduler_) {
+    main_thread_scheduler_->RemoveAgentGroupScheduler(this);
+  }
+}
+
 }  // namespace scheduler
 }  // namespace blink

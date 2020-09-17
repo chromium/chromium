@@ -219,7 +219,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
                            Thread::IdleTask) override;
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
-  AgentGroupSchedulerImpl* CreateAgentGroupScheduler();
+  // TODO(crbug/1113102): rename to CreateAgentGroupScheduler when integrate
+  // with AgentSchedulingGroup
+  AgentGroupSchedulerImpl* EnsureAgentGroupScheduler();
   std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) override;
   std::unique_ptr<ThreadScheduler::RendererPauseHandle> PauseScheduler()
@@ -873,7 +875,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     base::TimeTicks background_status_changed_at;
     HashSet<PageSchedulerImpl*> page_schedulers;  // Not owned.
     base::ObserverList<RAILModeObserver>::Unchecked
-        rail_mode_observers;                // Not owned.
+        rail_mode_observers;  // Not owned.
     MainThreadMetricsHelper metrics_helper;
     TraceableState<WebRendererProcessType, TracingCategoryName::kTopLevel>
         process_type;
@@ -1013,8 +1015,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   PollableThreadSafeFlag notify_agent_strategy_task_posted_;
   WTF::HashSet<AgentGroupSchedulerImpl*> agent_group_schedulers_;
   // TODO(crbug/1113102): tentatively, we hold AgentGroupSchedulerImpl here.
-  WTF::HashSet<std::unique_ptr<AgentGroupSchedulerImpl>>
-      agent_group_scheduler_set_;
+  std::unique_ptr<AgentGroupSchedulerImpl> agent_group_scheduler_;
 
   base::WeakPtrFactory<MainThreadSchedulerImpl> weak_factory_{this};
 

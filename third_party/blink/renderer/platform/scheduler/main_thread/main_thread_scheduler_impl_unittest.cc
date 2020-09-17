@@ -444,7 +444,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
     v8_task_runner_ = scheduler_->V8TaskQueue()->task_runner();
 
     page_scheduler_ = std::make_unique<NiceMock<MockPageSchedulerImpl>>(
-        scheduler_->CreateAgentGroupScheduler());
+        scheduler_->EnsureAgentGroupScheduler());
     main_frame_scheduler_ =
         CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
                              FrameScheduler::FrameType::kMainFrame);

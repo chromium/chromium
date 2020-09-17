@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 #include <memory>
 
@@ -22,13 +21,11 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl
  public:
   static AgentGroupSchedulerImpl* GetCurrent();
   static void SetCurrent(AgentGroupSchedulerImpl*);
-
   explicit AgentGroupSchedulerImpl(
       MainThreadSchedulerImpl* main_thread_scheduler);
   AgentGroupSchedulerImpl(const AgentGroupSchedulerImpl&) = delete;
   AgentGroupSchedulerImpl& operator=(const AgentGroupSchedulerImpl&) = delete;
-  ~AgentGroupSchedulerImpl() override = default;
-
+  ~AgentGroupSchedulerImpl() override;
   MainThreadSchedulerImpl* GetMainThreadScheduler() {
     return main_thread_scheduler_;
   }
@@ -36,6 +33,7 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl
  private:
   MainThreadSchedulerImpl* main_thread_scheduler_;  // Not owned.
 };
+
 }  // namespace scheduler
 }  // namespace blink
 
