@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -42,6 +43,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
 // Another part of crbug.com/528026 and related.
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
                        TestRendererInitializationWithThemesTab) {
+  // Don't create "Cached Theme.pak" in the extension directory, so as not to
+  // modify the source tree.
+  ThemeService::DisableThemePackForTesting();
+
   const Extension* extension = LoadExtensionWithFlags(
       test_data_dir_.AppendASCII("theme"), kFlagAllowOldManifestVersions);
   ASSERT_TRUE(extension);

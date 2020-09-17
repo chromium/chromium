@@ -148,6 +148,9 @@ class ThemeService : public KeyedService,
 
   const ThemeHelper& theme_helper_for_testing() const { return theme_helper_; }
 
+  // Don't create "Cached Theme.pak" in the extension directory, for testing.
+  static void DisableThemePackForTesting();
+
  protected:
   // Set a custom default theme instead of the normal default theme.
   virtual void SetCustomDefaultTheme(
