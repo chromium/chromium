@@ -5,6 +5,7 @@
 module device.mojom;
 
 import "device/gamepad/public/mojom/gamepad.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "gpu/ipc/common/mailbox_holder.mojom";
 import "gpu/ipc/common/sync_token.mojom";
@@ -62,6 +63,7 @@ enum XRSessionFeature {
   ANCHORS = 9,
   CAMERA_ACCESS = 10, // Experimental feature.
   PLANE_DETECTION = 11, // Experimental feature.
+  DEPTH = 12, // Experimental feature.
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -535,6 +537,24 @@ struct XRLightEstimationData {
   XRReflectionProbe? reflection_probe;
 };
 
+struct XRDepthData {
+  // Timestamp of the returned data, in unspecified base. In case the data is
+  // equal to the one returned on a previous frame (for example because the
+  // latest depth data is unavailable), the pixel_data member will be null and
+  // the timestamp will match the timestamp of the previously returned depth
+  // data.
+  mojo_base.mojom.TimeDelta time_delta;
+  // Array of 16-bit numbers representing depth in millimeters from the camera
+  // plane.
+  mojo_base.mojom.BigBuffer? pixel_data;
+  // Transform that needs to be applied when indexing into pixel_data when using
+  // normalized view coordinates (with origin at bottom left corner of the
+  // screen).
+  gfx.mojom.Transform? norm_texture_from_norm_view;
+  // Size of the pixel array. Valid iff pixel_data is not null.
+  gfx.mojom.Size size;
+};
+
 // The data needed for each animation frame of an XRSession.
 struct XRFrameData {
   // General XRSession value
@@ -547,9 +567,16 @@ struct XRFrameData {
   // The buffer_holder is used for sending imagery data back and forth across
   // the process boundary.
   gpu.mojom.MailboxHolder? buffer_holder;
+
   // The camera_image_buffer_holder is used to send a copy of the camera image
-  // across the process boundary for immersive-ar sessions.
+  // across the process boundary for immersive-ar sessions. This assumes that
+  // there exists a single camera.
   gpu.mojom.MailboxHolder? camera_image_buffer_holder;
+
+  // Depth data (if the device supports it and the environment integration is
+  // enabled). This assumes that depth information is provided from a single
+  // sensor.
+  XRDepthData? depth_data;
 
   // Indicates that there has been a significant discontinuity in the mojo space
   // coordinate system, and that poses from this point forward with the same

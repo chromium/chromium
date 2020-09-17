@@ -69,6 +69,11 @@ void inline ScopedGenericArObject<ArPlane*>::Free(ArPlane* ar_plane) {
 }
 
 template <>
+void inline ScopedGenericArObject<ArImage*>::Free(ArImage* ar_image) {
+  ArImage_release(ar_image);
+}
+
+template <>
 void inline ScopedGenericArObject<ArAnchor*>::Free(ArAnchor* ar_anchor) {
   ArAnchor_release(ar_anchor);
 }

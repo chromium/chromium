@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_ARCORE_GL_H_
 
 #include <memory>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -183,10 +184,10 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
 
   bool IsFeatureEnabled(mojom::XRSessionFeature feature);
 
-  // List of features enabled on this session. Required to correctly configure
+  // Set of features enabled on this session. Required to correctly configure
   // the session and only send out necessary data related to reference spaces to
   // blink. Valid after the call to |Initialize()| method.
-  std::vector<device::mojom::XRSessionFeature> enabled_features_;
+  std::unordered_set<device::mojom::XRSessionFeature> enabled_features_;
 
   base::OnceClosure session_shutdown_callback_;
 

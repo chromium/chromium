@@ -9,4 +9,5 @@ include_rules = [
     "+services/metrics/public/cpp/ukm_builders.h",
     "+ui/display/display.h",
     "+ui/gfx/geometry",
+    "+ui/gfx/transform.h",
 ]

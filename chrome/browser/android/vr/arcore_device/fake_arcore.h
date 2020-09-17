@@ -23,7 +23,9 @@ class FakeArCore : public ArCore {
 
   // ArCore implementation.
   bool Initialize(
-      base::android::ScopedJavaLocalRef<jobject> application_context) override;
+      base::android::ScopedJavaLocalRef<jobject> application_context,
+      const std::unordered_set<device::mojom::XRSessionFeature>&
+          enabled_features) override;
   void SetCameraTexture(uint32_t texture) override;
   void SetDisplayGeometry(const gfx::Size& frame_size,
                           display::Display::Rotation display_rotation) override;
@@ -58,6 +60,7 @@ class FakeArCore : public ArCore {
   mojom::XRPlaneDetectionDataPtr GetDetectedPlanesData() override;
   mojom::XRAnchorsDataPtr GetAnchorsData() override;
   mojom::XRLightEstimationDataPtr GetLightEstimationData() override;
+  mojom::XRDepthDataPtr GetDepthData() override;
 
   void CreateAnchor(
       const mojom::XRNativeOriginInformation& native_origin_information,

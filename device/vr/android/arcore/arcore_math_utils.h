@@ -8,6 +8,7 @@
 #include <array>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "ui/gfx/transform.h"
 
 namespace device {
@@ -17,7 +18,7 @@ namespace device {
 // There's a function to transform UV vectors individually, which can't be used
 // from a shader, so we run that on selected well-known vectors
 // (kDisplayCoordinatesForTransform) and recreate the matrix from the result.
-gfx::Transform MatrixFromTransformedPoints(const std::vector<float>& uvs);
+gfx::Transform MatrixFromTransformedPoints(const base::span<const float> uvs);
 
 // Input coordinates used when computing UV transform.
 // |MatrixFromTransformedPoints(uvs)| function above assumes that the |uvs| are

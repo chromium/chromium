@@ -69,9 +69,9 @@ class VR_EXPORT VRBrowserRendererThreadWin {
     bool indicators_visible_ = false;
   };
 
-  void OnPose(int request_id, device::mojom::XRFrameDataPtr data);
+  void OnPose(int request_id, device::mojom::XRRenderInfoPtr data);
   void SubmitResult(bool success);
-  void SubmitFrame(device::mojom::XRFrameDataPtr data);
+  void SubmitFrame(int16_t frame_id);
   void StartOverlay();
   void StopOverlay();
   void OnWebXRSubmitted();

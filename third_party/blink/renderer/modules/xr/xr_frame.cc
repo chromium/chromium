@@ -24,6 +24,9 @@ namespace {
 const char kInactiveFrame[] =
     "XRFrame access outside the callback that produced it is invalid.";
 
+const char kInvalidView[] =
+    "XRView passed in to the method did not originate from current XRFrame.";
+
 const char kNonAnimationFrame[] =
     "getViewerPose can only be called on XRFrame objects passed to "
     "XRSession.requestAnimationFrame callbacks.";
@@ -128,8 +131,24 @@ XRLightEstimate* XRFrame::getLightEstimate(
   return light_probe->getLightEstimate();
 }
 
-XRDepthInformation* XRFrame::getDepthInformation(XRView* view) const {
-  return nullptr;
+XRDepthInformation* XRFrame::getDepthInformation(
+    XRView* view,
+    ExceptionState& exception_state) const {
+  DVLOG(2) << __func__;
+
+  if (!is_active_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kInactiveFrame);
+    return nullptr;
+  }
+
+  if (this != view->frame()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kInvalidView);
+    return nullptr;
+  }
+
+  return session_->GetDepthInformation();
 }
 
 // Return an XRPose that has a transform of basespace_from_space, while

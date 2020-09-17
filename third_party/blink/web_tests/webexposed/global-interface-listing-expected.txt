@@ -11392,6 +11392,7 @@ interface XRDepthInformation
     attribute @@toStringTag
     getter data
     getter height
+    getter normTextureFromNormView
     getter width
     method constructor
     method getDepth

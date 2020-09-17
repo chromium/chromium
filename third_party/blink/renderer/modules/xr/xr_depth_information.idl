@@ -12,5 +12,8 @@
   readonly attribute unsigned long width;
   readonly attribute unsigned long height;
 
+  [SameObject] readonly attribute XRRigidTransform normTextureFromNormView;
+
+  [RaisesException]
   float getDepth(unsigned long column, unsigned long row);
 };

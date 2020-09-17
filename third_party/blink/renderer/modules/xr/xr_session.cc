@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_anchor_set.h"
 #include "third_party/blink/renderer/modules/xr/xr_bounded_reference_space.h"
 #include "third_party/blink/renderer/modules/xr/xr_canvas_input_provider.h"
+#include "third_party/blink/renderer/modules/xr/xr_depth_information.h"
 #include "third_party/blink/renderer/modules/xr/xr_dom_overlay_state.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame_provider.h"
@@ -292,6 +293,7 @@ void XRSession::MetricsReporter::ReportFeatureUsed(
     case XRSessionFeature::ANCHORS:
     case XRSessionFeature::CAMERA_ACCESS:
     case XRSessionFeature::PLANE_DETECTION:
+    case XRSessionFeature::DEPTH:
       // Not recording metrics for these features currently.
       break;
   }
@@ -1148,6 +1150,32 @@ void XRSession::ProcessHitTestData(
   }
 }
 
+void XRSession::ProcessDepthData(
+    device::mojom::blink::XRDepthDataPtr depth_data) {
+  DVLOG(3) << __func__ << ": depth_data valid? " << !!depth_data;
+
+  if (depth_data && depth_data->pixel_data) {
+    // Just store the current depth data as a member - we will need to construct
+    // instances of XRDepthInformation once the app requests them anyway.
+    depth_data_ = std::move(depth_data);
+  } else {
+    // Device did not return new pixel data - stale depth buffer is still the
+    // most recent information we have. Current API shape is not well-suited to
+    // return data pertaining to older frames, so just discard what we have.
+    depth_data_ = nullptr;
+  }
+}
+
+XRDepthInformation* XRSession::GetDepthInformation() const {
+  DVLOG(2) << __func__;
+
+  if (!depth_data_) {
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<XRDepthInformation>(*depth_data_);
+}
+
 ScriptPromise XRSession::requestLightProbe(ScriptState* script_state,
                                            ExceptionState& exception_state) {
   if (ended_) {
@@ -1549,6 +1577,7 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
         frame_data->detected_planes_data.get(), timestamp);
     ProcessAnchorsData(frame_data->anchors_data.get(), timestamp);
     ProcessHitTestData(frame_data->hit_test_subscription_results.get());
+    ProcessDepthData(std::move(frame_data->depth_data));
 
     const device::mojom::blink::XRLightEstimationData* light_data =
         frame_data->light_estimation_data.get();
@@ -1559,6 +1588,7 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
     world_information_->ProcessPlaneInformation(nullptr, timestamp);
     ProcessAnchorsData(nullptr, timestamp);
     ProcessHitTestData(nullptr);
+    ProcessDepthData(nullptr);
 
     if (world_light_probe_) {
       world_light_probe_->ProcessLightEstimationData(nullptr, timestamp);

@@ -353,9 +353,14 @@ void VRBrowserRendererThreadWin::OnWebXRSubmitted() {
   StopWebXrTimeout();
 }
 
-device::mojom::XRFrameDataPtr ValidateFrameData(
-    device::mojom::XRFrameDataPtr& data) {
-  device::mojom::XRFrameDataPtr ret = device::mojom::XRFrameData::New();
+// Ensures that relevant XRRendererInfo entries are valid and returns patched up
+// XRRendererInfo to ensure that we always use normalized orientation
+// quaternion, and that we do not use position with out-of-range values.
+// In case the received data does not contain position and/or orientation, they
+// will be set to default values.
+device::mojom::XRRenderInfoPtr ValidateFrameData(
+    device::mojom::XRRenderInfoPtr data) {
+  device::mojom::XRRenderInfoPtr ret = device::mojom::XRRenderInfo::New();
   ret->pose = device::mojom::VRPose::New();
 
   if (data->pose) {
@@ -391,13 +396,11 @@ device::mojom::XRFrameDataPtr ValidateFrameData(
 
   ret->frame_id = data->frame_id;
 
-  // Frame data has several other fields that we are ignoring.  If they are
-  // used, validate them before use.
   return ret;
 }
 
 void VRBrowserRendererThreadWin::OnPose(int request_id,
-                                        device::mojom::XRFrameDataPtr data) {
+                                        device::mojom::XRRenderInfoPtr data) {
   if (request_id != current_request_id_) {
     // Old request. Do nothing.
     return;
@@ -415,7 +418,7 @@ void VRBrowserRendererThreadWin::OnPose(int request_id,
   if (!graphics_->PreRender())
     return;
 
-  data = ValidateFrameData(data);
+  data = ValidateFrameData(std::move(data));
 
   // Deliver pose to input and scheduler.
   DCHECK(data);
@@ -442,17 +445,16 @@ void VRBrowserRendererThreadWin::OnPose(int request_id,
   // base::Unretained is safe because scheduler_ will be destroyed without
   // calling the callback if we are destroyed.
   scheduler_->OnPose(base::BindOnce(&VRBrowserRendererThreadWin::SubmitFrame,
-                                    base::Unretained(this), std::move(data)),
+                                    base::Unretained(this), data->frame_id),
                      head_from_world, draw_state_.ShouldDrawWebXR(),
                      draw_state_.ShouldDrawUI());
 }
 
-void VRBrowserRendererThreadWin::SubmitFrame(
-    device::mojom::XRFrameDataPtr data) {
+void VRBrowserRendererThreadWin::SubmitFrame(int16_t frame_id) {
   graphics_->PostRender();
 
   overlay_->SubmitOverlayTexture(
-      data->frame_id, graphics_->GetTexture(), graphics_->GetLeft(),
+      frame_id, graphics_->GetTexture(), graphics_->GetLeft(),
       graphics_->GetRight(),
       base::BindOnce(&VRBrowserRendererThreadWin::SubmitResult,
                      base::Unretained(this)));

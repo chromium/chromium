@@ -6,10 +6,13 @@
 
 #include "base/android/jni_android.h"
 #include "base/bind.h"
+#include "base/containers/span.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/math_constants.h"
 #include "base/optional.h"
 #include "base/trace_event/trace_event.h"
 #include "base/util/type_safety/pass_key.h"
+#include "device/vr/android/arcore/arcore_math_utils.h"
 #include "device/vr/android/arcore/arcore_plane_manager.h"
 #include "device/vr/android/arcore/type_converters.h"
 #include "device/vr/public/mojom/pose.h"
@@ -92,55 +95,88 @@ void ReleaseArCoreCubemap(ArImageCubemap* cube_map) {
   memset(cube_map, 0, sizeof(*cube_map));
 }
 
-void CopyArCoreImage_RGBA16F(const ArSession* session,
-                             const ArImage* image,
-                             int32_t plane_index,
-                             std::vector<device::RgbaTupleF16>* out_pixels,
-                             uint32_t* out_width,
-                             uint32_t* out_height) {
-  // Get source image information
-  int32_t width = 0, height = 0, src_row_stride = 0, src_pixel_stride = 0;
-  ArImage_getWidth(session, image, &width);
-  ArImage_getHeight(session, image, &height);
+// Helper, copies ARCore image to the passed in buffer, assuming that the caller
+// allocated the buffer to fit all the data.
+template <typename T>
+void CopyArCoreImage(const ArSession* session,
+                     const ArImage* image,
+                     int32_t plane_index,
+                     base::span<T> out_pixels,
+                     uint32_t width,
+                     uint32_t height) {
+  DVLOG(3) << __func__ << ": width=" << width << ", height=" << height
+           << ", out_pixels.size()=" << out_pixels.size();
+
+  DCHECK_GE(out_pixels.size(), width * height);
+
+  int32_t src_row_stride = 0, src_pixel_stride = 0;
   ArImage_getPlaneRowStride(session, image, plane_index, &src_row_stride);
   ArImage_getPlanePixelStride(session, image, plane_index, &src_pixel_stride);
 
+  // Naked pointer since ArImage_getPlaneData does not transfer ownership to us.
   uint8_t const* src_buffer = nullptr;
   int32_t src_buffer_length = 0;
   ArImage_getPlaneData(session, image, plane_index, &src_buffer,
                        &src_buffer_length);
 
-  // Create destination
-  *out_width = width;
-  *out_height = height;
-  out_pixels->resize(width * height);
-
   // Fast path: Source and destination have the same layout
-  bool const fast_path = static_cast<size_t>(src_row_stride) ==
-                         width * sizeof(device::RgbaTupleF16);
-  TRACE_EVENT1("xr", "CopyArCoreImage_RGBA16F: memcpy", "fastPath", fast_path);
+  bool const fast_path =
+      static_cast<size_t>(src_row_stride) == width * sizeof(T);
+  TRACE_EVENT1("xr", "CopyArCoreImage: memcpy", "fastPath", fast_path);
+
+  DVLOG(3) << __func__ << ": plane_index=" << plane_index
+           << ", src_buffer_length=" << src_buffer_length
+           << ", src_row_stride=" << src_row_stride
+           << ", src_pixel_stride=" << src_pixel_stride
+           << ", fast_path=" << fast_path << ", sizeof(T)=" << sizeof(T);
 
   // If they have the same layout, we can copy the entire buffer at once
   if (fast_path) {
-    DCHECK_EQ(out_pixels->size() * sizeof(device::RgbaTupleF16),
-              static_cast<size_t>(src_buffer_length));
-    memcpy(out_pixels->data(), src_buffer, src_buffer_length);
+    CHECK_EQ(out_pixels.size() * sizeof(T),
+             static_cast<size_t>(src_buffer_length));
+    memcpy(out_pixels.data(), src_buffer, src_buffer_length);
     return;
   }
 
+  CHECK_EQ(sizeof(T), static_cast<size_t>(src_pixel_stride));
+
   // Slow path: copy pixel by pixel, row by row
-  for (int32_t row = 0; row < height; ++row) {
+  for (uint32_t row = 0; row < height; ++row) {
     auto* src = src_buffer + src_row_stride * row;
-    auto* dest = out_pixels->data() + width * row;
+    auto* dest = out_pixels.data() + width * row;
 
     // For each pixel
-    for (int32_t x = 0; x < width; ++x) {
-      memcpy(dest, src, sizeof(device::RgbaTupleF16));
+    for (uint32_t x = 0; x < width; ++x) {
+      memcpy(dest, src, sizeof(T));
 
       src += src_pixel_stride;
       dest += 1;
     }
   }
+}
+
+// Helper, copies ARCore image to the passed in vector, discovering the buffer
+// size and resizing the vector first.
+template <typename T>
+void CopyArCoreImage(const ArSession* session,
+                     const ArImage* image,
+                     int32_t plane_index,
+                     std::vector<T>* out_pixels,
+                     uint32_t* out_width,
+                     uint32_t* out_height) {
+  // Get source image information
+  int32_t width = 0, height = 0;
+  ArImage_getWidth(session, image, &width);
+  ArImage_getHeight(session, image, &height);
+
+  *out_width = width;
+  *out_height = height;
+
+  // Allocate memory for the output.
+  out_pixels->resize(width * height);
+
+  CopyArCoreImage(session, image, plane_index, base::span<T>(*out_pixels),
+                  width, height);
 }
 
 device::mojom::XRLightProbePtr GetLightProbe(
@@ -230,8 +266,8 @@ device::mojom::XRReflectionProbePtr GetReflectionProbe(
 
     // Copy the cubemap
     uint32_t face_width = 0, face_height = 0;
-    CopyArCoreImage_RGBA16F(arcore_session, arcore_cube_map_face, 0,
-                            cube_map_face, &face_width, &face_height);
+    CopyArCoreImage(arcore_session, arcore_cube_map_face, 0, cube_map_face,
+                    &face_width, &face_height);
 
     // Make sure the cube map is square
     if (face_width != face_height) {
@@ -303,7 +339,9 @@ ArCoreImpl::~ArCoreImpl() {
 }
 
 bool ArCoreImpl::Initialize(
-    base::android::ScopedJavaLocalRef<jobject> context) {
+    base::android::ScopedJavaLocalRef<jobject> context,
+    const std::unordered_set<device::mojom::XRSessionFeature>&
+        enabled_features) {
   DCHECK(IsOnGlThread());
   DCHECK(!arcore_session_.is_valid());
 
@@ -345,6 +383,12 @@ bool ArCoreImpl::Initialize(
   // Enable lighting estimation with spherical harmonics
   ArConfig_setLightEstimationMode(session.get(), arcore_config.get(),
                                   AR_LIGHT_ESTIMATION_MODE_ENVIRONMENTAL_HDR);
+
+  if (base::Contains(enabled_features,
+                     device::mojom::XRSessionFeature::DEPTH)) {
+    ArConfig_setDepthMode(session.get(), arcore_config.get(),
+                          AR_DEPTH_MODE_AUTOMATIC);
+  }
 
   status = ArSession_configure(session.get(), arcore_config.get());
   if (status != AR_SUCCESS) {
@@ -1416,6 +1460,92 @@ void ArCoreImpl::ProcessAnchorCreationRequestsHelper(
 
 void ArCoreImpl::DetachAnchor(uint64_t anchor_id) {
   anchor_manager_->DetachAnchor(AnchorId(anchor_id));
+}
+
+mojom::XRDepthDataPtr ArCoreImpl::GetDepthData() {
+  DVLOG(3) << __func__;
+
+  internal::ScopedArCoreObject<ArImage*> ar_image;
+  ArStatus status = ArFrame_acquireDepthImage(
+      arcore_session_.get(), arcore_frame_.get(),
+      internal::ScopedArCoreObject<ArImage*>::Receiver(ar_image).get());
+
+  if (status != AR_SUCCESS) {
+    DVLOG(2) << __func__
+             << ": ArFrame_acquireDepthImage failed, status=" << status;
+    return nullptr;
+  }
+
+  int64_t timestamp_ns;
+  ArImage_getTimestamp(arcore_session_.get(), ar_image.get(), &timestamp_ns);
+  base::TimeDelta time_delta = base::TimeDelta::FromNanoseconds(timestamp_ns);
+  DVLOG(3) << __func__ << ": depth image time_delta=" << time_delta;
+
+  // The image returned from ArFrame_acquireDepthImage() is documented to have
+  // a single 16-bit plane at index 0. The ArImage format is documented to be
+  // AR_IMAGE_FORMAT_DEPTH16 (equivalent to ImageFormat.DEPTH16). There should
+  // be no need to validate this in non-debug builds.
+  // https://developers.google.com/ar/reference/c/group/ar-frame#arframe_acquiredepthimage
+  // https://developer.android.com/reference/android/graphics/ImageFormat#DEPTH16
+
+  ArImageFormat image_format;
+  ArImage_getFormat(arcore_session_.get(), ar_image.get(), &image_format);
+
+  CHECK_EQ(image_format, AR_IMAGE_FORMAT_DEPTH16)
+      << "Depth image format must be AR_IMAGE_FORMAT_DEPTH16, found: "
+      << image_format;
+
+  int32_t num_planes;
+  ArImage_getNumberOfPlanes(arcore_session_.get(), ar_image.get(), &num_planes);
+
+  CHECK_EQ(num_planes, 1) << "Depth image must have 1 plane, found: "
+                          << num_planes;
+
+  mojom::XRDepthDataPtr result = mojom::XRDepthData::New();
+
+  result->time_delta = time_delta;
+
+  if (time_delta > previous_depth_data_time_) {
+    int32_t width = 0, height = 0;
+    ArImage_getWidth(arcore_session_.get(), ar_image.get(), &width);
+    ArImage_getHeight(arcore_session_.get(), ar_image.get(), &height);
+
+    DVLOG(3) << __func__ << ": depth image dimensions=" << width << "x"
+             << height;
+
+    // Depth image is defined as a width by height array of 2-byte elements:
+    auto checked_buffer_size = base::CheckMul<size_t>(2, width, height);
+
+    size_t buffer_size;
+    if (!checked_buffer_size.AssignIfValid(&buffer_size)) {
+      DVLOG(2) << __func__
+               << ": overflow in 2 * width * height expression, returning null "
+                  "depth data";
+      return nullptr;
+    }
+
+    mojo_base::BigBuffer pixels(buffer_size);
+
+    // Interpret BigBuffer's data as a width by height array of uint16_t's and
+    // copy image data into it:
+    CopyArCoreImage(
+        arcore_session_.get(), ar_image.get(), 0,
+        base::span<uint16_t>(reinterpret_cast<uint16_t*>(pixels.data()),
+                             pixels.size() / 2),
+        width, height);
+
+    result->pixel_data = std::move(pixels);
+    // Transform needed to consume the data:
+    result->norm_texture_from_norm_view = GetCameraUvFromScreenUvTransform();
+    result->size = gfx::Size(width, height);
+
+    DVLOG(3) << __func__ << ": norm_texture_from_norm_view=\n"
+             << result->norm_texture_from_norm_view->ToString();
+
+    previous_depth_data_time_ = time_delta;
+  }
+
+  return result;
 }
 
 bool ArCoreImpl::IsOnGlThread() const {

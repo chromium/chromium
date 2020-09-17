@@ -149,7 +149,9 @@ class XRCompositorCommon : public base::Thread,
     bool overlay_submitted_ = false;
     bool waiting_for_webxr_ = false;
     bool waiting_for_overlay_ = false;
+
     mojom::XRFrameDataPtr frame_data_;
+    mojom::XRRenderInfoPtr render_info_;
 
     base::TimeTicks sent_frame_data_time_;
     base::TimeTicks submit_frame_time_;

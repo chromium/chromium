@@ -28,7 +28,9 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
   // Initializes the runtime and returns whether it was successful.
   // If successful, the runtime must be paused when this method returns.
   virtual bool Initialize(
-      base::android::ScopedJavaLocalRef<jobject> application_context) = 0;
+      base::android::ScopedJavaLocalRef<jobject> application_context,
+      const std::unordered_set<device::mojom::XRSessionFeature>&
+          enabled_features) = 0;
 
   virtual void SetDisplayGeometry(
       const gfx::Size& frame_size,
@@ -61,6 +63,8 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
 
   // Returns information about lighting estimation.
   virtual mojom::XRLightEstimationDataPtr GetLightEstimationData() = 0;
+
+  virtual mojom::XRDepthDataPtr GetDepthData() = 0;
 
   virtual bool RequestHitTest(
       const mojom::XRRayPtr& ray,

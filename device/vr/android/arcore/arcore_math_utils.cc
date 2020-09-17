@@ -9,7 +9,7 @@
 
 namespace device {
 
-gfx::Transform MatrixFromTransformedPoints(const std::vector<float>& uvs) {
+gfx::Transform MatrixFromTransformedPoints(const base::span<const float> uvs) {
   DCHECK_GE(uvs.size(), 6u);
 
   //

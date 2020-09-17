@@ -21,7 +21,9 @@ FakeArCore::FakeArCore()
 FakeArCore::~FakeArCore() = default;
 
 bool FakeArCore::Initialize(
-    base::android::ScopedJavaLocalRef<jobject> application_context) {
+    base::android::ScopedJavaLocalRef<jobject> application_context,
+    const std::unordered_set<device::mojom::XRSessionFeature>&
+        enabled_features) {
   DCHECK(IsOnGlThread());
   return true;
 }
@@ -304,6 +306,10 @@ mojom::XRLightEstimationDataPtr FakeArCore::GetLightEstimationData() {
   result->reflection_probe->cube_map->negative_z.resize(16 * 16);
 
   return result;
+}
+
+mojom::XRDepthDataPtr FakeArCore::GetDepthData() {
+  return nullptr;
 }
 
 void FakeArCore::CreatePlaneAttachedAnchor(

@@ -49,7 +49,9 @@ class XRFrame final : public ScriptWrappable {
   XRWorldInformation* worldInformation() const { return world_information_; }
   XRAnchorSet* trackedAnchors() const;
   XRLightEstimate* getLightEstimate(XRLightProbe*, ExceptionState&) const;
-  XRDepthInformation* getDepthInformation(XRView* view) const;
+  XRDepthInformation* getDepthInformation(
+      XRView* view,
+      ExceptionState& exception_state) const;
 
   void Trace(Visitor*) const override;
 

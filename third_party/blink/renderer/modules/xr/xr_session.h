@@ -41,6 +41,7 @@ class V8XRFrameRequestCallback;
 class XRAnchor;
 class XRAnchorSet;
 class XRCanvasInputProvider;
+class XRDepthInformation;
 class XRDOMOverlayState;
 class XRHitTestOptionsInit;
 class XRHitTestSource;
@@ -328,6 +329,8 @@ class XRSession final
   base::Optional<TransformationMatrix> GetMojoFrom(
       device::mojom::blink::XRReferenceSpaceType space_type) const;
 
+  XRDepthInformation* GetDepthInformation() const;
+
   // Creates presentation frame based on current state of the session.
   // State currently used in XRFrame creation is mojo_from_viewer_ and
   // world_information_. The created XRFrame also stores a reference to this
@@ -423,6 +426,8 @@ class XRSession final
   void ProcessHitTestData(
       const device::mojom::blink::XRHitTestSubscriptionResultsData*
           hit_test_data);
+
+  void ProcessDepthData(device::mojom::blink::XRDepthDataPtr depth_data);
 
   void HandleShutdown();
 
@@ -546,6 +551,9 @@ class XRSession final
   Member<XRFrameRequestCallbackCollection> callback_collection_;
   // Viewer pose in mojo space.
   std::unique_ptr<TransformationMatrix> mojo_from_viewer_;
+
+  // Current depth data buffer.
+  device::mojom::blink::XRDepthDataPtr depth_data_;
 
   bool pending_frame_ = false;
   bool resolving_frame_ = false;

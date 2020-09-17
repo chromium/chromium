@@ -30,6 +30,6 @@
   [RuntimeEnabled=WebXRLightEstimation, RaisesException]
   XRLightEstimate? getLightEstimate(XRLightProbe lightProbe);
 
-  [RuntimeEnabled=WebXRDepth]
+  [RuntimeEnabled=WebXRDepth, RaisesException]
   XRDepthInformation getDepthInformation(XRView view);
 };
