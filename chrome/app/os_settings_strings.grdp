@@ -1203,7 +1203,7 @@
     Remove
   </message>
   <message name="IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_LABEL" desc="Label for managing shared USB devices.">
-    USB preferences
+    Manage USB devices
   </message>
   <message name="IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_DESCRIPTION" desc="Description for managing shared USB devices.">
     Give Linux apps permission to access USB devices. Linux won't remember a USB device after it's removed.
@@ -3082,7 +3082,7 @@
     Shared folders will appear here
   </message>
   <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_LABEL" desc="Label for managing shared USB devices.">
-    USB preferences
+    Manage USB devices
   </message>
   <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_DESCRIPTION" desc="Description for managing shared USB devices. Do not translate 'Parallels Desktop'.">
     Give Parallels Desktop permission to access USB devices. Parallels Desktop won't remember a USB device after it's removed.

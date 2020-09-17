@@ -9911,8 +9911,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION" desc="Content for notification shown to the user when a USB device gets plugged in.">
           Open Settings to connect <ph name="USB_DEVICE_NAME">$1<ex>Nexus 5</ex></ph> to <ph name="USB_VM_NAME">$2<ex>Linux</ex></ph>
       </message>
-      <message name="IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION_MULTI_VM" desc="Content for notification shown to the user when a USB device gets plugged in.">
-          Open Settings to connect <ph name="USB_DEVICE_NAME">$1<ex>Nexus 5</ex></ph>
+      <message name="IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION_LINUX_PLUGIN_VM" desc="Content for notification shown to the user when a USB device gets plugged in and both Parallels and Linux are enabled. Do not translate 'Parallels Desktop' or 'Linux'.">
+          Open Settings to connect <ph name="USB_DEVICE_NAME">$1<ex>Nexus 5</ex></ph> to Parallels Desktop or Linux
       </message>
       <message name="IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION_TITLE" desc="Title for notification shown to the user when a USB device gets plugged in.">
         USB device detected

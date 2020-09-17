@@ -39,6 +39,7 @@ namespace chromeos {
 namespace {
 
 constexpr uint32_t kAllInterfacesMask = ~0U;
+const char kParallelsShortName[] = "Parallels";
 
 // Not owned locally.
 static CrosUsbDetector* g_cros_usb_detector = nullptr;
@@ -247,7 +248,7 @@ void ShowNotificationForDevice(device::mojom::UsbDeviceInfoPtr device_info) {
         chromeos::settings::mojom::kCrostiniUsbPreferencesSubpagePath;
   }
   if (plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile())) {
-    vm_name = l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME);
+    vm_name = base::ASCIIToUTF16(kParallelsShortName);
     rich_notification_data.buttons.emplace_back(
         message_center::ButtonInfo(l10n_util::GetStringFUTF16(
             IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_VM, vm_name)));
@@ -262,8 +263,9 @@ void ShowNotificationForDevice(device::mojom::UsbDeviceInfoPtr device_info) {
         IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION,
         ProductLabelFromDevice(device_info), vm_name);
   } else {
+    // Note: we assume right now that multi-VM is Linux and Plugin VM.
     message = l10n_util::GetStringFUTF16(
-        IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION_MULTI_VM,
+        IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION_LINUX_PLUGIN_VM,
         ProductLabelFromDevice(device_info));
     settings_sub_page = std::string();
   }
