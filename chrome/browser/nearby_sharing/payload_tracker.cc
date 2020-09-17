@@ -55,10 +55,12 @@ void PayloadTracker::OnStatusUpdate(PayloadTransferUpdatePtr update) {
     return;
 
   it->second.amount_downloaded = update->bytes_transferred;
-  it->second.status = update->status;
+  if (it->second.status != update->status) {
+    it->second.status = update->status;
 
-  NS_LOG(VERBOSE) << __func__ << ": Payload id " << update->payload_id
-                  << " has status " << update->status;
+    NS_LOG(VERBOSE) << __func__ << ": Payload id " << update->payload_id
+                    << " had status change: " << update->status;
+  }
   OnTransferUpdate();
 }
 

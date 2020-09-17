@@ -21,9 +21,11 @@ void NearbyReceiveManager::OnTransferUpdate(
     const ShareTarget& share_target,
     const TransferMetadata& transfer_metadata) {
   TransferMetadata::Status status = transfer_metadata.status();
-  // TODO(vecore): Add string conversion for status to make debugging easier.
-  NS_LOG(VERBOSE) << "OnTransferUpdate: " << share_target.id << " status: "
-                  << static_cast<int>(transfer_metadata.status());
+  NS_LOG(VERBOSE) << __func__ << ": Nearby receive manager: "
+                  << "Transfer update for share target with ID "
+                  << share_target.id << ": "
+                  << TransferMetadata::StatusToString(
+                         transfer_metadata.status());
 
   if (TransferMetadata::Status::kAwaitingLocalConfirmation == status) {
     share_targets_map_.insert_or_assign(share_target.id, share_target);

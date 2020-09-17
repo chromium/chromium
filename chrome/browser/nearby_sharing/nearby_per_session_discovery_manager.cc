@@ -54,6 +54,12 @@ void NearbyPerSessionDiscoveryManager::OnTransferUpdate(
     const ShareTarget& share_target,
     const TransferMetadata& transfer_metadata) {
   DCHECK(transfer_update_listener_.is_bound());
+  NS_LOG(VERBOSE) << __func__ << ": Nearby per-session discovery manager: "
+                  << "Transfer update for share target with ID "
+                  << share_target.id << ": "
+                  << TransferMetadata::StatusToString(
+                         transfer_metadata.status());
+
   base::Optional<nearby_share::mojom::TransferStatus> status =
       GetTransferStatus(transfer_metadata);
   if (!status)

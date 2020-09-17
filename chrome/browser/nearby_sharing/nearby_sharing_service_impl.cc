@@ -64,6 +64,18 @@ std::string ReceiveSurfaceStateToString(
   }
 }
 
+std::string SendSurfaceStateToString(
+    NearbySharingService::SendSurfaceState state) {
+  switch (state) {
+    case NearbySharingService::SendSurfaceState::kForeground:
+      return "FOREGROUND";
+    case NearbySharingService::SendSurfaceState::kBackground:
+      return "BACKGROUND";
+    case NearbySharingService::SendSurfaceState::kUnknown:
+      return "UNKNOWN";
+  }
+}
+
 std::string PowerLevelToString(PowerLevel level) {
   switch (level) {
     case PowerLevel::kLowPower:
@@ -178,7 +190,9 @@ class TransferUpdateDecorator : public TransferUpdateCallback {
 
   void OnTransferUpdate(const ShareTarget& share_target,
                         const TransferMetadata& transfer_metadata) override {
-    NS_LOG(VERBOSE) << __func__ << share_target.id << " status: "
+    NS_LOG(VERBOSE) << __func__ << ": Transfer update decorator: "
+                    << "Transfer update for share target with ID "
+                    << share_target.id << ": "
                     << TransferMetadata::StatusToString(
                            transfer_metadata.status());
     if (got_final_status_) {
@@ -361,8 +375,6 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::RegisterSendSurface(
     background_send_discovery_callbacks_.AddObserver(discovery_callback);
   }
 
-  NS_LOG(VERBOSE) << __func__ << ": RegisterSendSurface";
-
   if (is_receiving_files_) {
     UnregisterSendSurface(transfer_callback, discovery_callback);
     NS_LOG(VERBOSE)
@@ -389,7 +401,9 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::RegisterSendSurface(
     discovery_callback->OnShareTargetDiscovered(item.second);
   }
 
-  NS_LOG(VERBOSE) << __func__ << ": A SendSurface has been registered.";
+  NS_LOG(VERBOSE) << __func__
+                  << ": A SendSurface has been registered for state: "
+                  << SendSurfaceStateToString(state);
   InvalidateSendSurfaceState();
   if (state == SendSurfaceState::kForeground)
     StartFastInitiationAdvertising();
@@ -420,12 +434,15 @@ NearbySharingServiceImpl::UnregisterSendSurface(
     last_outgoing_metadata_.reset();
   }
 
+  SendSurfaceState state = SendSurfaceState::kUnknown;
   if (foreground_send_transfer_callbacks_.HasObserver(transfer_callback)) {
     foreground_send_transfer_callbacks_.RemoveObserver(transfer_callback);
     foreground_send_discovery_callbacks_.RemoveObserver(discovery_callback);
+    state = SendSurfaceState::kForeground;
   } else {
     background_send_transfer_callbacks_.RemoveObserver(transfer_callback);
     background_send_discovery_callbacks_.RemoveObserver(discovery_callback);
+    state = SendSurfaceState::kBackground;
   }
 
   // Displays the most recent payload status processed by foreground surfaces on
@@ -439,7 +456,8 @@ NearbySharingServiceImpl::UnregisterSendSurface(
     }
   }
 
-  NS_LOG(VERBOSE) << __func__ << ": A SendSurface has been unregistered";
+  NS_LOG(VERBOSE) << __func__ << ": A SendSurface has been unregistered: "
+                  << SendSurfaceStateToString(state);
   InvalidateSurfaceState();
   StopFastInitiationAdvertising();
   return StatusCodes::kOk;
@@ -2076,6 +2094,10 @@ void NearbySharingServiceImpl::OnIncomingAdvertisementDecoded(
 void NearbySharingServiceImpl::OnIncomingTransferUpdate(
     const ShareTarget& share_target,
     const TransferMetadata& metadata) {
+  NS_LOG(VERBOSE) << __func__ << ": Nearby Share service: "
+                  << "Incoming transfer update for share target with ID "
+                  << share_target.id << ": "
+                  << TransferMetadata::StatusToString(metadata.status());
   if (metadata.status() != TransferMetadata::Status::kCancelled &&
       metadata.status() != TransferMetadata::Status::kRejected) {
     last_incoming_metadata_ =
@@ -2106,6 +2128,11 @@ void NearbySharingServiceImpl::OnIncomingTransferUpdate(
 void NearbySharingServiceImpl::OnOutgoingTransferUpdate(
     const ShareTarget& share_target,
     const TransferMetadata& metadata) {
+  NS_LOG(VERBOSE) << __func__ << ": Nearby Share service: "
+                  << "Outgoing transfer update for share target with ID "
+                  << share_target.id << ": "
+                  << TransferMetadata::StatusToString(metadata.status());
+
   if (metadata.is_final_status()) {
     is_connecting_ = false;
     OnTransferComplete();
@@ -2851,6 +2878,11 @@ base::Optional<ShareTarget> NearbySharingServiceImpl::CreateShareTarget(
 void NearbySharingServiceImpl::OnPayloadTransferUpdate(
     ShareTarget share_target,
     TransferMetadata metadata) {
+  NS_LOG(VERBOSE) << __func__ << ": Nearby Share service: "
+                  << "Payload transfer update for share target with ID "
+                  << share_target.id << ": "
+                  << TransferMetadata::StatusToString(metadata.status());
+
   if (metadata.status() == TransferMetadata::Status::kComplete &&
       share_target.is_incoming && !OnIncomingPayloadsComplete(share_target)) {
     metadata = TransferMetadataBuilder()
