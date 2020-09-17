@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -20,7 +21,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -262,11 +263,15 @@ void PrivacyInfoView::InitText() {
   style.override_color = gfx::kGoogleGrey900;
   text_view_->AddStyleRange(gfx::Range(0, offset), style);
 
-  // TODO(crbug.com/1114628): Remove the custom view once RangeStyleInfo
-  // supports selected links.
+  // Create a custom view for the link portion of the text. This allows an
+  // underline font style to be applied when the link is focused. This is done
+  // manually because default focus handling remains on the search box.
+  // TODO(crbug.com/1112714): Make ChromeVox recognise text_view as a link.
   views::StyledLabel::RangeStyleInfo link_style;
   link_style.disable_line_wrapping = true;
-  auto custom_view = std::make_unique<views::Label>(link);
+  auto custom_view = std::make_unique<views::Link>(link);
+  custom_view->set_callback(base::BindRepeating(&PrivacyInfoView::LinkClicked,
+                                                base::Unretained(this)));
   custom_view->SetEnabledColor(gfx::kGoogleBlue700);
   link_style.custom_view = custom_view.get();
   link_view_ = custom_view.get();
@@ -309,12 +314,8 @@ void PrivacyInfoView::InitCloseButton() {
 }
 
 void PrivacyInfoView::UpdateLinkStyle() {
-  if (selected_action_ == Action::kTextLink) {
-    link_view_->SetFontList(
-        text_view_->GetFontList().DeriveWithStyle(gfx::Font::UNDERLINE));
-  } else {
-    link_view_->SetFontList(text_view_->GetFontList());
-  }
+  bool link_selected = selected_action_ == Action::kTextLink;
+  link_view_->SetForceUnderline(link_selected);
 }
 
 }  // namespace ash

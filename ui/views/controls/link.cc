@@ -51,6 +51,14 @@ SkColor Link::GetColor() const {
                : ui::NativeTheme::kColorId_LinkEnabled);
 }
 
+void Link::SetForceUnderline(bool force_underline) {
+  if (force_underline_ == force_underline)
+    return;
+
+  force_underline_ = force_underline;
+  RecalculateFont();
+}
+
 gfx::NativeCursor Link::GetCursor(const ui::MouseEvent& event) {
   if (!GetEnabled())
     return gfx::kNullCursor;
@@ -190,7 +198,7 @@ void Link::OnClick(const ui::Event& event) {
 
 void Link::RecalculateFont() {
   const int style = font_list().GetFontStyle();
-  const int intended_style = (GetEnabled() && HasFocus())
+  const int intended_style = ((GetEnabled() && HasFocus()) || force_underline_)
                                  ? (style | gfx::Font::UNDERLINE)
                                  : (style & ~gfx::Font::UNDERLINE);
 

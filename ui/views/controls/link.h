@@ -55,6 +55,8 @@ class VIEWS_EXPORT Link : public Label {
 
   SkColor GetColor() const;
 
+  void SetForceUnderline(bool force_underline);
+
   // Label:
   gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
   bool CanProcessEventsWithinSubtree() const override;
@@ -92,6 +94,10 @@ class VIEWS_EXPORT Link : public Label {
   base::Optional<SkColor> requested_enabled_color_;
 
   PropertyChangedSubscription enabled_changed_subscription_;
+
+  // Whether the link text should use underline style regardless of enabled or
+  // focused state.
+  bool force_underline_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(Link);
 };

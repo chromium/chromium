@@ -13,7 +13,7 @@ namespace views {
 class Button;
 class ImageButton;
 class ImageView;
-class Label;
+class Link;
 class StyledLabel;
 }  // namespace views
 
@@ -65,8 +65,7 @@ class PrivacyInfoView : public SearchResultBaseView {
 
   const int info_string_id_;
   const int link_string_id_;
-  gfx::Range link_range_;
-  views::Label* link_view_;  // Not owned.
+  views::Link* link_view_;  // Not owned.
 
   // Indicates which of the privacy notice's actions is selected for keyboard
   // navigation.
