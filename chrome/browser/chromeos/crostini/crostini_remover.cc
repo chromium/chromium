@@ -41,16 +41,19 @@ void CrostiniRemover::RemoveCrostini() {
 void CrostiniRemover::StopVmFinished(CrostiniResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (result != CrostiniResult::SUCCESS) {
+    LOG(ERROR) << "Failed to stop VM";
     std::move(callback_).Run(result);
     return;
   }
 
+  VLOG(1) << "Clearing application list";
   guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_)
       ->ClearApplicationList(guest_os::GuestOsRegistryService::VmType::
                                  ApplicationList_VmType_TERMINA,
                              vm_name_, "");
   CrostiniMimeTypesServiceFactory::GetForProfile(profile_)->ClearMimeTypes(
       vm_name_, "");
+  VLOG(1) << "Destroying disk image";
   CrostiniManager::GetForProfile(profile_)->DestroyDiskImage(
       base::FilePath(vm_name_),
       base::BindOnce(&CrostiniRemover::DestroyDiskImageFinished, this));
@@ -59,16 +62,19 @@ void CrostiniRemover::StopVmFinished(CrostiniResult result) {
 void CrostiniRemover::DestroyDiskImageFinished(bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!success) {
+    LOG(ERROR) << "Failed to destroy disk image";
     std::move(callback_).Run(CrostiniResult::DESTROY_DISK_IMAGE_FAILED);
     return;
   }
 
+  VLOG(1) << "Uninstalling Termina";
   CrostiniManager::GetForProfile(profile_)->UninstallTermina(
       base::BindOnce(&CrostiniRemover::UninstallTerminaFinished, this));
 }
 
 void CrostiniRemover::UninstallTerminaFinished(bool success) {
   if (!success) {
+    LOG(ERROR) << "Failed to uninstall Termina";
     std::move(callback_).Run(CrostiniResult::UNKNOWN_ERROR);
     return;
   }

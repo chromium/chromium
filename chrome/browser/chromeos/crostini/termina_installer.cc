@@ -214,6 +214,7 @@ void TerminaInstaller::Uninstall(base::OnceCallback<void(bool)> callback) {
 void TerminaInstaller::RemoveComponentIfPresent(
     base::OnceCallback<void()> callback,
     UninstallResult* result) {
+  VLOG(1) << "Removing component";
   scoped_refptr<component_updater::CrOSComponentManager> component_manager =
       g_browser_process->platform_part()->cros_component_manager();
 
@@ -233,12 +234,14 @@ void TerminaInstaller::RemoveComponentIfPresent(
                 component_manager = g_browser_process->platform_part()
                                         ->cros_component_manager();
             if (is_present) {
+              VLOG(1) << "Component present, unloading";
               *result =
                   component_manager->Unload(imageloader::kTerminaComponentName);
               if (!*result) {
                 LOG(ERROR) << "Failed to remove cros-termina component";
               }
             } else {
+              VLOG(1) << "No component present, skipping";
               *result = true;
             }
             std::move(callback).Run();
@@ -264,10 +267,12 @@ void TerminaInstaller::RemoveDlcIfPresent(base::OnceCallback<void()> callback,
         }
         for (const auto& dlc : dlcs_with_content.dlc_infos()) {
           if (dlc.id() == kCrostiniDlcName) {
+            VLOG(1) << "DLC present, removing";
             weak_this->RemoveDlc(std::move(callback), result);
             return;
           }
         }
+        VLOG(1) << "No DLC present, skipping";
         *result = true;
         std::move(callback).Run();
       },
@@ -282,6 +287,7 @@ void TerminaInstaller::RemoveDlc(base::OnceCallback<void()> callback,
           [](base::OnceCallback<void()> callback, UninstallResult* result,
              const std::string& err) {
             if (err == dlcservice::kErrorNone) {
+              VLOG(1) << "Removed DLC";
               *result = true;
             } else {
               LOG(ERROR) << "Failed to remove termina-dlc: " << err;
