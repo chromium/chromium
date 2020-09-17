@@ -77,8 +77,9 @@ class CORE_EXPORT NGGridBlockTrackCollection
     wtf_size_t track_count;
     wtf_size_t repeater_index;
     wtf_size_t repeater_offset;
-    bool is_collapsed;
-    bool is_implicit_range;
+
+    bool is_implicit_range : 1;
+    bool is_collapsed : 1;
   };
 
   // Sets the specified, implicit tracks, along with a given auto repeat value.
@@ -208,7 +209,10 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
     wtf_size_t track_count;
     wtf_size_t starting_set_index;
     wtf_size_t set_count;
-    bool is_collapsed;
+
+    bool is_spanning_intrinsic_track : 1;
+    bool is_spanning_flex_track : 1;
+    bool is_collapsed : 1;
   };
 
   class CORE_EXPORT SetIterator {
@@ -241,6 +245,11 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
   // Returns an iterator for all the sets contained within the |range_index|-th
   // range of the collection. Note that this iterator can alter any set's data.
   SetIterator IteratorForRange(wtf_size_t range_index);
+
+  // Returns true if the range contains a set with an intrinsic sizing function.
+  bool IsRangeSpanningIntrinsicTrack(wtf_size_t range_index) const;
+  // Returns true if the range contains a set with a flexible sizing function.
+  bool IsRangeSpanningFlexTrack(wtf_size_t range_index) const;
 
  protected:
   // NGGridTrackCollectionBase overrides.

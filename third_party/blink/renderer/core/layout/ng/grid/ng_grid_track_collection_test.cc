@@ -558,6 +558,100 @@ TEST_F(NGGridTrackCollectionTest,
   EXPECT_FALSE(range_iterator.MoveToNextRange());
 }
 
+TEST_F(NGGridTrackCollectionTest,
+       TestNGGridLayoutAlgorithmTrackCollectionIntrinsicAndFlexTracks) {
+  // Test that the ranges of a |NGGridLayoutAlgorithmTrackCollection| correctly
+  // cache if they contain intrinsic or flexible tracks.
+  NGGridTrackList explicit_tracks, implicit_tracks;
+
+  // repeat(2, min-content 1fr 2px 3px)
+  Vector<GridTrackSize> track_sizes = {
+      GridTrackSize(Length::MinContent()), GridTrackSize(GridLength(1.0)),
+      GridTrackSize(Length::Fixed(2)), GridTrackSize(Length::Fixed(3))};
+  ASSERT_TRUE(explicit_tracks.AddRepeater(track_sizes, 2));
+  ASSERT_EQ(1u, explicit_tracks.RepeaterCount());
+
+  NGGridBlockTrackCollection block_collection;
+  block_collection.SetSpecifiedTracks(&explicit_tracks, &implicit_tracks,
+                                      /* auto_repeat_count */ 0);
+  block_collection.EnsureTrackCoverage(1, 2);
+  block_collection.EnsureTrackCoverage(7, 4);
+  block_collection.FinalizeRanges();
+
+  NGGridLayoutAlgorithmTrackCollection algorithm_collection(
+      block_collection, /* is_content_box_size_defined */ false);
+  NGGridTrackCollectionBase::RangeRepeatIterator range_iterator =
+      algorithm_collection.RangeIterator();
+
+  EXPECT_RANGE(0u, 1u, range_iterator);
+  NGGridLayoutAlgorithmTrackCollection::SetIterator set_iterator =
+      algorithm_collection.IteratorForRange(range_iterator.RangeIndex());
+  EXPECT_SET(GridTrackSize(Length::MinContent()), 1u, set_iterator);
+  EXPECT_FALSE(set_iterator.MoveToNextSet());
+  wtf_size_t current_range_index = range_iterator.RangeIndex();
+  EXPECT_TRUE(
+      algorithm_collection.IsRangeSpanningIntrinsicTrack(current_range_index));
+  EXPECT_FALSE(
+      algorithm_collection.IsRangeSpanningFlexTrack(current_range_index));
+  EXPECT_TRUE(range_iterator.MoveToNextRange());
+
+  EXPECT_RANGE(1u, 2u, range_iterator);
+  set_iterator =
+      algorithm_collection.IteratorForRange(range_iterator.RangeIndex());
+  EXPECT_SET(GridTrackSize(GridLength(1.0)), 1u, set_iterator);
+  EXPECT_TRUE(set_iterator.MoveToNextSet());
+  EXPECT_SET(GridTrackSize(Length::Fixed(2)), 1u, set_iterator);
+  EXPECT_FALSE(set_iterator.MoveToNextSet());
+  current_range_index = range_iterator.RangeIndex();
+  EXPECT_TRUE(
+      algorithm_collection.IsRangeSpanningIntrinsicTrack(current_range_index));
+  EXPECT_TRUE(
+      algorithm_collection.IsRangeSpanningFlexTrack(current_range_index));
+  EXPECT_TRUE(range_iterator.MoveToNextRange());
+
+  EXPECT_RANGE(3u, 4u, range_iterator);
+  set_iterator =
+      algorithm_collection.IteratorForRange(range_iterator.RangeIndex());
+  EXPECT_SET(GridTrackSize(Length::Fixed(3)), 1u, set_iterator);
+  EXPECT_TRUE(set_iterator.MoveToNextSet());
+  EXPECT_SET(GridTrackSize(Length::MinContent()), 1u, set_iterator);
+  EXPECT_TRUE(set_iterator.MoveToNextSet());
+  EXPECT_SET(GridTrackSize(GridLength(1.0)), 1u, set_iterator);
+  EXPECT_TRUE(set_iterator.MoveToNextSet());
+  EXPECT_SET(GridTrackSize(Length::Fixed(2)), 1u, set_iterator);
+  EXPECT_FALSE(set_iterator.MoveToNextSet());
+  current_range_index = range_iterator.RangeIndex();
+  EXPECT_TRUE(
+      algorithm_collection.IsRangeSpanningIntrinsicTrack(current_range_index));
+  EXPECT_TRUE(
+      algorithm_collection.IsRangeSpanningFlexTrack(current_range_index));
+  EXPECT_TRUE(range_iterator.MoveToNextRange());
+
+  EXPECT_RANGE(7u, 1u, range_iterator);
+  set_iterator =
+      algorithm_collection.IteratorForRange(range_iterator.RangeIndex());
+  EXPECT_SET(GridTrackSize(Length::Fixed(3)), 1u, set_iterator);
+  EXPECT_FALSE(set_iterator.MoveToNextSet());
+  current_range_index = range_iterator.RangeIndex();
+  EXPECT_FALSE(
+      algorithm_collection.IsRangeSpanningIntrinsicTrack(current_range_index));
+  EXPECT_FALSE(
+      algorithm_collection.IsRangeSpanningFlexTrack(current_range_index));
+  EXPECT_TRUE(range_iterator.MoveToNextRange());
+
+  EXPECT_RANGE(8u, 3u, range_iterator);
+  set_iterator =
+      algorithm_collection.IteratorForRange(range_iterator.RangeIndex());
+  EXPECT_SET(GridTrackSize(Length::Auto()), 3u, set_iterator);
+  EXPECT_FALSE(set_iterator.MoveToNextSet());
+  current_range_index = range_iterator.RangeIndex();
+  EXPECT_TRUE(
+      algorithm_collection.IsRangeSpanningIntrinsicTrack(current_range_index));
+  EXPECT_FALSE(
+      algorithm_collection.IsRangeSpanningFlexTrack(current_range_index));
+  EXPECT_FALSE(range_iterator.MoveToNextRange());
+}
+
 }  // namespace
 
 }  // namespace blink

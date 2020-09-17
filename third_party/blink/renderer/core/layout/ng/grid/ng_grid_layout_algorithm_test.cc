@@ -37,7 +37,7 @@ class NGGridLayoutAlgorithmTest
 
   // Helper methods to access private data on NGGridLayoutAlgorithm. This class
   // is a friend of NGGridLayoutAlgorithm but the individual tests are not.
-  size_t GridItemCount(const NGGridLayoutAlgorithm& algorithm) {
+  wtf_size_t GridItemCount(const NGGridLayoutAlgorithm& algorithm) {
     return algorithm.items_.size();
   }
 
@@ -64,6 +64,32 @@ class NGGridLayoutAlgorithmTest
     Vector<MinMaxSizes> results;
     for (const auto& item : algorithm.items_) {
       results.push_back(item.min_max_sizes);
+    }
+    return results;
+  }
+
+  void DetermineGridItemsSpanningIntrinsicOrFlexTracks(
+      NGGridLayoutAlgorithm& algorithm,
+      GridTrackSizingDirection track_direction) {
+    algorithm.DetermineGridItemsSpanningIntrinsicOrFlexTracks(track_direction);
+  }
+
+  Vector<wtf_size_t> GridItemsSpanningIntrinsicTrack(
+      const NGGridLayoutAlgorithm& algorithm) {
+    Vector<wtf_size_t> results;
+    for (wtf_size_t i = 0; i < algorithm.items_.size(); ++i) {
+      if (algorithm.items_[i].is_spanning_intrinsic_track)
+        results.push_back(i);
+    }
+    return results;
+  }
+
+  Vector<wtf_size_t> GridItemsSpanningFlexTrack(
+      const NGGridLayoutAlgorithm& algorithm) {
+    Vector<wtf_size_t> results;
+    for (wtf_size_t i = 0; i < algorithm.items_.size(); ++i) {
+      if (algorithm.items_[i].is_spanning_flex_track)
+        results.push_back(i);
     }
     return results;
   }
@@ -270,7 +296,6 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmMeasuring) {
 
   NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(algorithm), 0U);
-  SetAutoTrackRepeat(algorithm, 5, 5);
   algorithm.Layout();
   EXPECT_EQ(GridItemCount(algorithm), 9U);
 
@@ -346,7 +371,6 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRanges) {
 
   NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(algorithm), 0U);
-  SetAutoTrackRepeat(algorithm, 5, 5);
   algorithm.Layout();
   EXPECT_EQ(GridItemCount(algorithm), 4U);
 
@@ -471,7 +495,6 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicit) {
 
   NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(algorithm), 0U);
-  SetAutoTrackRepeat(algorithm, 0, 0);
   algorithm.Layout();
   EXPECT_EQ(GridItemCount(algorithm), 4U);
 
@@ -536,7 +559,6 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmGridPositions) {
 
   NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(algorithm), 0U);
-  SetAutoTrackRepeat(algorithm, 0, 0);
   algorithm.Layout();
   EXPECT_EQ(GridItemCount(algorithm), 3U);
 
@@ -582,7 +604,6 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmResolveFixedTrackSizes) {
       CalculateInitialFragmentGeometry(space, node);
 
   NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
-  SetAutoTrackRepeat(algorithm, 1, 1);
   algorithm.Layout();
 
   Vector<LayoutUnit> expected_column_base_sizes = {
@@ -614,6 +635,84 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmResolveFixedTrackSizes) {
   EXPECT_EQ(expected_row_growth_limits.size(), growth_limits.size());
   for (wtf_size_t i = 0; i < growth_limits.size(); ++i)
     EXPECT_EQ(expected_row_growth_limits[i], growth_limits[i]);
+}
+
+TEST_F(NGGridLayoutAlgorithmTest,
+       NGGridLayoutAlgorithmDetermineGridItemsSpanningIntrinsicOrFlexTracks) {
+  if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
+    return;
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(2, min-content 1fr 2px 3px);
+      grid-template-rows: max-content 1fr 50px fit-content(100px);
+    }
+    #item0 {
+      grid-column: 4 / 6;
+      grid-row: -3 / -2;
+    }
+    #item1 {
+      grid-column: 6 / 8;
+      grid-row: -2 / -1;
+    }
+    #item2 {
+      grid-column: 3 / 5;
+      grid-row: -4 / -3;
+    }
+    #item3 {
+      grid-column: 8 / 11;
+      grid-row: -5 / -4;
+    }
+    </style>
+    <div id="grid">
+      <div id="item0"></div>
+      <div id="item1"></div>
+      <div id="item2"></div>
+      <div id="item3"></div>
+    </div>
+  )HTML");
+
+  NGBlockNode node(ToLayoutBox(GetLayoutObjectByElementId("grid")));
+  NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      LogicalSize(LayoutUnit(100), kIndefiniteSize), false, true);
+  NGFragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node);
+
+  NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  algorithm.Layout();
+
+  DetermineGridItemsSpanningIntrinsicOrFlexTracks(algorithm, kForColumns);
+  Vector<wtf_size_t> expected_items_spanning_intrinsic_track = {0, 1, 3};
+  Vector<wtf_size_t> expected_items_spanning_flex_track = {1};
+
+  Vector<wtf_size_t> actual_items = GridItemsSpanningIntrinsicTrack(algorithm);
+  EXPECT_EQ(expected_items_spanning_intrinsic_track.size(),
+            actual_items.size());
+  for (wtf_size_t i = 0; i < actual_items.size(); ++i)
+    EXPECT_EQ(expected_items_spanning_intrinsic_track[i], actual_items[i]);
+
+  actual_items = GridItemsSpanningFlexTrack(algorithm);
+  EXPECT_EQ(expected_items_spanning_flex_track.size(), actual_items.size());
+  for (wtf_size_t i = 0; i < actual_items.size(); ++i)
+    EXPECT_EQ(expected_items_spanning_flex_track[i], actual_items[i]);
+
+  DetermineGridItemsSpanningIntrinsicOrFlexTracks(algorithm, kForRows);
+  expected_items_spanning_intrinsic_track = {1, 2, 3};
+  expected_items_spanning_flex_track = {2};
+
+  actual_items = GridItemsSpanningIntrinsicTrack(algorithm);
+  EXPECT_EQ(expected_items_spanning_intrinsic_track.size(),
+            actual_items.size());
+  for (wtf_size_t i = 0; i < actual_items.size(); ++i)
+    EXPECT_EQ(expected_items_spanning_intrinsic_track[i], actual_items[i]);
+
+  actual_items = GridItemsSpanningFlexTrack(algorithm);
+  EXPECT_EQ(expected_items_spanning_flex_track.size(), actual_items.size());
+  for (wtf_size_t i = 0; i < actual_items.size(); ++i)
+    EXPECT_EQ(expected_items_spanning_flex_track[i], actual_items[i]);
 }
 
 TEST_F(NGGridLayoutAlgorithmTest, FixedSizePositioning) {

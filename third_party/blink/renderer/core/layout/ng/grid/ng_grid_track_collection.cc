@@ -115,8 +115,8 @@ wtf_size_t NGGridTrackCollectionBase::RangeRepeatIterator::RangeTrackEnd()
 }
 
 bool NGGridTrackCollectionBase::RangeRepeatIterator::IsRangeCollapsed() const {
-  DCHECK(range_index_ != kInvalidRangeIndex);
   DCHECK(collection_);
+  DCHECK_NE(range_index_, kInvalidRangeIndex);
   return collection_->IsRangeCollapsed(range_index_);
 }
 
@@ -547,6 +547,22 @@ void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
                          is_content_box_size_indefinite);
     }
   }
+
+  // Cache if this range contains an intrinsic or flexible track.
+  new_range.is_spanning_flex_track = false;
+  new_range.is_spanning_intrinsic_track = false;
+  for (wtf_size_t i = 0; i < new_range.set_count; ++i) {
+    const NGGridSet& set = sets_[new_range.starting_set_index + i];
+
+    // From https://drafts.csswg.org/css-grid-1/#algo-terms, a <flex> minimum
+    // sizing function shouldn't happen as it would be normalized to 'auto'.
+    DCHECK(!set.TrackSize().HasFlexMinTrackBreadth());
+    new_range.is_spanning_flex_track |=
+        set.TrackSize().HasFlexMaxTrackBreadth();
+    new_range.is_spanning_intrinsic_track |=
+        set.TrackSize().HasIntrinsicMinTrackBreadth() ||
+        set.TrackSize().HasIntrinsicMaxTrackBreadth();
+  }
   ranges_.push_back(new_range);
 }
 
@@ -568,6 +584,18 @@ NGGridLayoutAlgorithmTrackCollection::IteratorForRange(wtf_size_t range_index) {
   DCHECK_LE(range.starting_set_index + range.set_count, SetCount());
   return SetIterator(this, range.starting_set_index,
                      range.starting_set_index + range.set_count);
+}
+
+bool NGGridLayoutAlgorithmTrackCollection::IsRangeSpanningIntrinsicTrack(
+    wtf_size_t range_index) const {
+  DCHECK_LT(range_index, RangeCount());
+  return ranges_[range_index].is_spanning_intrinsic_track;
+}
+
+bool NGGridLayoutAlgorithmTrackCollection::IsRangeSpanningFlexTrack(
+    wtf_size_t range_index) const {
+  DCHECK_LT(range_index, RangeCount());
+  return ranges_[range_index].is_spanning_flex_track;
 }
 
 wtf_size_t NGGridLayoutAlgorithmTrackCollection::RangeTrackNumber(
