@@ -111,9 +111,9 @@ class WebContentsLoadStopObserver : content::WebContentsObserver {
   DISALLOW_COPY_AND_ASSIGN(WebContentsLoadStopObserver);
 };
 
-// A known extension ID for tests that specify the key in their
-// manifests.
-constexpr char kTestExtensionId[] = "knldjmfmopnpolahpmmgbagdohdnhkik";
+// Extension ID for tests that use
+// "worker_based_background/test_extension.pem" key.
+constexpr char kTestExtensionId[] = "ogdbpbegnmindpdjfafpmpicikegejdj";
 
 }  // namespace
 
@@ -2143,8 +2143,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, WorkerRefCount) {
   EXPECT_EQ(0u, GetWorkerRefCount(extension_origin));
 }
 
-const char* kEventsToStoppedExtensionId = "ogdbpbegnmindpdjfafpmpicikegejdj";
-
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                        PRE_EventsAfterRestart) {
   ExtensionTestMessageListener event_added_listener("ready", false);
@@ -2154,7 +2152,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   base::FilePath pem_path = test_data_dir_.AppendASCII("service_worker")
                                 .AppendASCII("worker_based_background")
-                                .AppendASCII("events_to_stopped_extension.pem");
+                                .AppendASCII("test_extension.pem");
   // Note: Extension is packed to avoid reloading while loading.
   base::FilePath extension_path = PackExtensionWithOptions(
       test_data_dir_.AppendASCII("service_worker/worker_based_background/"
@@ -2164,7 +2162,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   const Extension* extension =
       LoadExtensionWithFlags(extension_path, kFlagNone);
   ASSERT_TRUE(extension);
-  EXPECT_EQ(kEventsToStoppedExtensionId, extension->id());
+  EXPECT_EQ(kTestExtensionId, extension->id());
   ProcessManager* pm = ProcessManager::Get(browser()->profile());
   // TODO(crbug.com/969884): This will break once keep alive counts
   // for service workers are tracked by the Process Manager.
@@ -2179,7 +2177,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
 // tabs.onMoved before browser restarted in PRE_EventsAfterRestart.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, EventsAfterRestart) {
   // Verify there is no RenderProcessHost for the extension.
-  EXPECT_FALSE(ExtensionHasRenderProcessHost(kEventsToStoppedExtensionId));
+  EXPECT_FALSE(ExtensionHasRenderProcessHost(kTestExtensionId));
 
   ExtensionTestMessageListener moved_tab_listener("moved-tab", false);
   // Add a tab, then move it.
@@ -2198,13 +2196,39 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsOnCreated) {
       << message_;
 }
 
-// Disabled due to flakiness: https://crbug.com/1003244.
+// Disabled on win due to flakiness: https://crbug.com/1127126.
+#if defined(OS_WIN)
+#define MAYBE_PRE_FilteredEventsAfterRestart \
+  DISABLED_PRE_FilteredEventsAfterRestart
+#define MAYBE_FilteredEventsAfterRestart DISABLED_FilteredEventsAfterRestart
+#else
+#define MAYBE_PRE_FilteredEventsAfterRestart PRE_FilteredEventsAfterRestart
+#define MAYBE_FilteredEventsAfterRestart FilteredEventsAfterRestart
+#endif
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
-                       DISABLED_PRE_FilteredEventsAfterRestart) {
+                       MAYBE_PRE_FilteredEventsAfterRestart) {
+  content::StoragePartition* storage_partition =
+      content::BrowserContext::GetDefaultStoragePartition(browser()->profile());
+  content::ServiceWorkerContext* context =
+      storage_partition->GetServiceWorkerContext();
+
+  // Set up an observer to wait for the registration to be stored.
+  service_worker_test_utils::TestRegistrationObserver observer(context);
+
   ExtensionTestMessageListener listener_added("ready", false);
+  base::FilePath test_dir =
+      test_data_dir_.AppendASCII("service_worker/worker_based_background");
+  base::FilePath pem_path = test_dir.AppendASCII("test_extension.pem");
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+
   const Extension* extension = LoadExtensionWithFlags(
-      test_data_dir_.AppendASCII("service_worker/worker_based_background/"
-                                 "filtered_events_after_restart"),
+      PackExtensionWithOptions(
+          test_dir.AppendASCII("filtered_events_after_restart"),
+          scoped_temp_dir.GetPath().AppendASCII("test_extension.crx"), pem_path,
+          base::FilePath()),
       kFlagNone);
   ASSERT_TRUE(extension);
   EXPECT_EQ(kTestExtensionId, extension->id());
@@ -2214,6 +2238,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   EXPECT_LT(pm->GetLazyKeepaliveCount(extension), 1);
   EXPECT_TRUE(pm->GetLazyKeepaliveActivities(extension).empty());
   EXPECT_TRUE(listener_added.WaitUntilSatisfied());
+
+  observer.WaitForRegistrationStored();
 }
 
 // After browser restarts, this test step ensures that opening a tab fires
@@ -2221,16 +2247,11 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
 // extension. This is because the extension registered a listener for
 // tabs.onMoved before browser restarted in PRE_EventsAfterRestart.
 //
-// Disabled due to flakiness: https://crbug.com/1003244.
+// Disabled on win due to flakiness: https://crbug.com/1127126.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
-                       DISABLED_FilteredEventsAfterRestart) {
+                       MAYBE_FilteredEventsAfterRestart) {
   // Verify there is no RenderProcessHost for the extension.
-  // TODO(crbug.com/971309): This is currently broken because the test
-  // infrastructure opens a tab, which dispatches an event to our
-  // extension, even though the filter doesn't include that URL. The
-  // referenced bug is about moving filtering into the EventRouter so they
-  // get filtered before being dispatched.
-  EXPECT_TRUE(ExtensionHasRenderProcessHost(kTestExtensionId));
+  EXPECT_FALSE(ExtensionHasRenderProcessHost(kTestExtensionId));
 
   // Create a tab to a.html, expect it to navigate to b.html. The service worker
   // will see two webNavigation.onCommitted events.
