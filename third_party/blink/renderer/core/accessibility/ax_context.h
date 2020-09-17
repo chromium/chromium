@@ -30,6 +30,10 @@ class CORE_EXPORT AXContext {
   // The caller should check this.
   AXObjectCache& GetAXObjectCache();
 
+  // Returns true if the |document| associated to this |AXContext| is active
+  // (i.e. document has been initialized and hasn't been detached yet).
+  bool HasActiveDocument();
+
  protected:
   WeakPersistent<Document> document_;
 };

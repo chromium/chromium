@@ -18,6 +18,12 @@ WebAXContext::WebAXContext(WebDocument root_document)
 WebAXContext::~WebAXContext() {}
 
 WebAXObject WebAXContext::Root() const {
+  // It is an error to call AXContext::GetAXObjectCache() if the underlying
+  // document is no longer active, so early return in that case to prevent
+  // crashes that might otherwise happen in some cases (see crbug.com/1094576).
+  if (!private_->HasActiveDocument())
+    return WebAXObject();
+
   return WebAXObject(
       static_cast<AXObjectCacheImpl*>(&private_->GetAXObjectCache())->Root());
 }
