@@ -212,7 +212,8 @@
   },
   {
     "prefix": "schemeful-same-site",
-    "bases": ["http/tests/inspector-protocol/network/same-site-issue-warn-cookie-strict-subresource-context-downgrade.js",
+    "bases": ["external/wpt/cookies",
+              "http/tests/inspector-protocol/network/same-site-issue-warn-cookie-strict-subresource-context-downgrade.js",
               "http/tests/inspector-protocol/network/same-site-issue-warn-cookie-lax-subresource-context-downgrade.js",
               "http/tests/inspector-protocol/network/same-site-issue-warn-cookie-navigation-context-downgrade.js"],
     "args": ["--enable-features=SchemefulSameSite"]
