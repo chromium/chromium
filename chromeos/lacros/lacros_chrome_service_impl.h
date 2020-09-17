@@ -66,6 +66,12 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   void BindReceiver(
       mojo::PendingReceiver<crosapi::mojom::LacrosChromeService> receiver);
 
+  // --------------------------------------------------------------------------
+  // mojo::Remote is sequence affine. The following methods are convenient
+  // helpers that expose pre-established Remotes that can only be used from the
+  // affine sequence (main thread).
+  // --------------------------------------------------------------------------
+
   // This must be called on the affine sequence.
   mojo::Remote<crosapi::mojom::MessageCenter>& message_center_remote() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
@@ -92,6 +98,13 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
     DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
     return hid_manager_remote_;
   }
+
+  // --------------------------------------------------------------------------
+  // Some clients will want to use mojo::Remotes on arbitrary sequences (e.g.
+  // background threads). The following methods allow the client to construct a
+  // mojo::Remote bound to an arbitrary sequence, and pass the other endpoint of
+  // the Remote (mojo::PendingReceiver) to ash to set up the interface.
+  // --------------------------------------------------------------------------
 
   // This may be called on any thread.
   void BindScreenManagerReceiver(
