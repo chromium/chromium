@@ -54,7 +54,6 @@
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
-#import "ios/chrome/browser/passwords/ios_chrome_update_password_infobar_delegate.h"
 #import "ios/chrome/browser/passwords/ios_password_infobar_controller.h"
 #import "ios/chrome/browser/passwords/notify_auto_signin_view_controller.h"
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
@@ -380,8 +379,6 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 }
 
 - (void)removeInfoBarOfType:(PasswordInfoBarType)type manual:(BOOL)manual {
-  if (!IsInfobarUIRebootEnabled())
-    return;
 
   InfoBarIOS* infobar = nil;
   switch (type) {
@@ -423,7 +420,6 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
           isSyncUser, /*password_update*/ false, std::move(form));
       delegate->set_handler(self.applicationCommandsHandler);
 
-      if (IsInfobarUIRebootEnabled()) {
         // Count only new infobar showings, not replacements.
         if (![self findInfobarOfType:InfobarType::kInfobarTypePasswordSave
                               manual:manual]) {
@@ -449,17 +445,9 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
         }
         infoBarManager->AddInfoBar(std::move(infobar),
                                    /*replace_existing=*/true);
-      } else if (!manual) {
-        IOSPasswordInfoBarController* controller =
-            [[IOSPasswordInfoBarController alloc]
-                initWithInfoBarDelegate:delegate.get()];
-        infoBarManager->AddInfoBar(
-            std::make_unique<InfoBarIOS>(controller, std::move(delegate)));
-      }
       break;
     }
     case PasswordInfoBarType::UPDATE: {
-      if (IsInfobarUIRebootEnabled()) {
         // Count only new infobar showings, not replacements.
         if (![self findInfobarOfType:InfobarType::kInfobarTypePasswordUpdate
                               manual:manual]) {
@@ -479,11 +467,6 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
             coordinator, std::move(delegate), /*skip_banner=*/manual);
         infoBarManager->AddInfoBar(std::move(infobar),
                                    /*replace_existing=*/true);
-      } else if (!manual) {
-        IOSChromeUpdatePasswordInfoBarDelegate::Create(
-            isSyncUser, infoBarManager, std::move(form),
-            self.baseViewController, self.applicationCommandsHandler);
-      }
       break;
     }
   }

@@ -18,8 +18,7 @@ class PasswordFormManagerForUI;
 }
 
 // Base class for password manager infobar delegates, e.g.
-// IOSChromeSavePasswordInfoBarDelegate and
-// IOSChromeUpdatePasswordInfoBarDelegate.
+// IOSChromeSavePasswordInfoBarDelegate.
 class IOSChromePasswordManagerInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   ~IOSChromePasswordManagerInfoBarDelegate() override;
