@@ -39,9 +39,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_samples.h"
-#include "base/metrics/statistics_recorder.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -1422,48 +1419,6 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, WaitForInitialUserActivitySatisfied) {
 }
 
 #endif  // defined(OS_CHROMEOS)
-
-
-// Similar to PolicyTest but sets a couple of policies before the browser is
-// started.
-class PolicyStatisticsCollectorTest : public PolicyTest {
- public:
-  PolicyStatisticsCollectorTest() {}
-  ~PolicyStatisticsCollectorTest() override {}
-
-  void SetUpInProcessBrowserTestFixture() override {
-    PolicyTest::SetUpInProcessBrowserTestFixture();
-    PolicyMap policies;
-    policies.Set(key::kShowHomeButton, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
-                 nullptr);
-    policies.Set(key::kBookmarkBarEnabled, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
-                 nullptr);
-    policies.Set(key::kHomepageLocation, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-                 base::Value("http://chromium.org"), nullptr);
-    provider_.UpdateChromePolicy(policies);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(PolicyStatisticsCollectorTest, Startup) {
-  // Verifies that policy usage histograms are collected at startup.
-
-  // BrowserPolicyConnector::Init() has already been called. Make sure the
-  // CompleteInitialization() task has executed as well.
-  content::RunAllPendingInMessageLoop();
-
-  base::HistogramBase* histogram =
-      base::StatisticsRecorder::FindHistogram("Enterprise.Policies");
-  std::unique_ptr<base::HistogramSamples> samples(histogram->SnapshotSamples());
-  // HomepageLocation has policy ID 1.
-  EXPECT_GT(samples->GetCount(1), 0);
-  // ShowHomeButton has policy ID 35.
-  EXPECT_GT(samples->GetCount(35), 0);
-  // BookmarkBarEnabled has policy ID 82.
-  EXPECT_GT(samples->GetCount(82), 0);
-}
 
 // Test that when SSL error overriding is allowed by policy (default), the
 // proceed link appears on SSL blocking pages.
