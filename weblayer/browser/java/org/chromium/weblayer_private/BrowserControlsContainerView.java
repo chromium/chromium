@@ -130,12 +130,18 @@ class BrowserControlsContainerView extends FrameLayout {
     // Used to delay processing fullscreen requests.
     private Runnable mSystemUiFullscreenResizeRunnable;
 
-    // Used to  delay updating the image for the layer.
+    // Used to delay updating the image for the layer.
     private final Runnable mRefreshResourceIdRunnable = () -> {
         if (mView == null || mViewResourceAdapter == null) return;
         BrowserControlsContainerViewJni.get().updateControlsResource(
                 mNativeBrowserControlsContainerView);
     };
+
+    // Used to delay hiding the controls.
+    private final Runnable mHideControlsRunnable = this::hideControlsNow;
+
+    // Used to delay showing the controls.
+    private final Runnable mShowControlsRunnable = this::showControlsNow;
 
     public interface Delegate {
         /**
@@ -268,10 +274,13 @@ class BrowserControlsContainerView extends FrameLayout {
         addView(view,
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT,
                         FrameLayout.LayoutParams.UNSPECIFIED_GRAVITY));
-        // We always want to hide the real controls so they don't flash for a frame before we've
-        // figured out where to position them.
-        removeCallbacks(this::showControls);
-        hideControls();
+        // The controls will be positioned in onLayout, which will result in showControls or
+        // hideControls being called. hideControls may delay the hide by a frame, resulting in the
+        // View flashing during the current frame. To work around this, we hide the controls here.
+        // showControls will also delay the showing by a frame, but that doesn't cause a flash
+        // because the bitmap will be visible until the setVisibility call completes.
+        hideControlsNow();
+        mContentViewRenderView.removeCallbacks(mShowControlsRunnable);
         mDelegate.setAnimationConstraint(BrowserControlsState.BOTH);
     }
 
@@ -350,24 +359,29 @@ class BrowserControlsContainerView extends FrameLayout {
         mLastHeight = height;
         if (mLastWidth > 0 && mLastHeight > 0 && mViewResourceAdapter == null) {
             createAdapterAndLayer();
-            if (prevHeight == 0) {
-                assert heightChanged;
+            if (prevHeight == 0 && mSavedState != null) {
                 // If there wasn't a View before and we have non-empty saved state from a previous
                 // BrowserControlsContainerView instance, apply those saved offsets now. We can't
                 // rely on BrowserControlsOffsetManager to notify us of the correct location as we
                 // usually do because it only notifies us when offsets change, but it likely didn't
                 // get destroyed when the BrowserFragment got recreated, so it won't notify us
                 // because it thinks we already have the correct offsets.
-                if (mSavedState != null) {
-                    onOffsetsChanged(mSavedState.mControlsOffset, mSavedState.mContentOffset);
-                } else {
-                    // If there wasn't a View before (or it had 0 height) and there's no state from
-                    // a previous instance of this class, move the new View off the screen until
-                    // BrowserControlsOffsetManager tells us where to position it.
-                    moveControlsOffScreen();
-                }
-                mSavedState = null;
+                onOffsetsChanged(mSavedState.mControlsOffset, mSavedState.mContentOffset);
+            } else {
+                // Position the new controls so the same amount of them is visible as with the
+                // previous controls (which will be 0 if there weren't controls or they were
+                // hidden). Ideally we'd hide the controls and wait for BrowserControlsOffsetManager
+                // to tell us where it wants them, but it communicates with us via frame metadata
+                // that is generated when the renderer's compositor submits a frame to viz, which is
+                // paused during page loads. Because of this, we might not get positioning
+                // information from the renderer for several seconds during page loads, so we need
+                // to attempt to position the controls ourselves here. This could in theory cause a
+                // flicker if we decide on a different position than the renderer does, but this
+                // hasn't been an issue in practice.
+                int delta = mIsTop ? height - prevHeight : prevHeight - height;
+                onOffsetsChanged(mControlsOffset - delta, mContentOffset);
             }
+            mSavedState = null;
         } else if (mViewResourceAdapter != null) {
             BrowserControlsContainerViewJni.get().setControlsSize(
                     mNativeBrowserControlsContainerView, mLastWidth, mLastHeight);
@@ -466,29 +480,41 @@ class BrowserControlsContainerView extends FrameLayout {
 
     private void prepareForScroll() {
         mInScroll = true;
-        if (BrowserControlsContainerViewJni.get().shouldDelayVisibilityChange()) {
-            mContentViewRenderView.postOnAnimation(this::hideControls);
-        } else {
-            hideControls();
-        }
+        hideControls();
     }
 
     private void finishScroll() {
         mInScroll = false;
-        if (BrowserControlsContainerViewJni.get().shouldDelayVisibilityChange()) {
-            mContentViewRenderView.postOnAnimation(this::showControls);
-        } else {
-            showControls();
-        }
+        showControls();
     }
 
     private void hideControls() {
-        if (mView != null) mView.setVisibility(View.INVISIBLE);
+        if (BrowserControlsContainerViewJni.get().shouldDelayVisibilityChange()) {
+            mContentViewRenderView.postOnAnimation(mHideControlsRunnable);
+        } else {
+            hideControlsNow();
+        }
+    }
+
+    private void hideControlsNow() {
+        if (mView != null) {
+            mView.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void showControls() {
+        if (BrowserControlsContainerViewJni.get().shouldDelayVisibilityChange()) {
+            mContentViewRenderView.postOnAnimation(mShowControlsRunnable);
+        } else {
+            showControlsNow();
+        }
+    }
+
+    private void showControlsNow() {
         if (mView != null) {
-            if (mIsTop) mView.setTranslationY(mControlsOffset);
+            if (mIsTop) {
+                mView.setTranslationY(mControlsOffset);
+            }
             mView.setVisibility(View.VISIBLE);
         }
     }
