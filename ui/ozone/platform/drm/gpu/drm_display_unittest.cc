@@ -63,6 +63,7 @@ class MockHardwareDisplayPlaneManager : public HardwareDisplayPlaneManager {
     return false;
   }
   bool Commit(HardwareDisplayPlaneList* plane_list,
+              bool should_modeset,
               scoped_refptr<PageFlipRequest> page_flip_request,
               std::unique_ptr<gfx::GpuFence>* out_fence) override {
     return false;

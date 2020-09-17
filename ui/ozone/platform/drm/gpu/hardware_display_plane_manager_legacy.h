@@ -26,6 +26,7 @@ class HardwareDisplayPlaneManagerLegacy : public HardwareDisplayPlaneManager {
                const HardwareDisplayPlaneList& plane_list) override;
   bool DisableModeset(uint32_t crtc_id, uint32_t connector) override;
   bool Commit(HardwareDisplayPlaneList* plane_list,
+              bool should_modeset,
               scoped_refptr<PageFlipRequest> page_flip_request,
               std::unique_ptr<gfx::GpuFence>* out_fence) override;
   bool DisableOverlayPlanes(HardwareDisplayPlaneList* plane_list) override;

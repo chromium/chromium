@@ -76,8 +76,11 @@ bool CrtcController::Disable() {
 }
 
 bool CrtcController::AssignOverlayPlanes(HardwareDisplayPlaneList* plane_list,
-                                         const DrmOverlayPlaneList& overlays) {
-  DCHECK(!is_disabled_);
+                                         const DrmOverlayPlaneList& overlays,
+                                         bool is_modesetting) {
+  // If we're in the process of modesetting, the CRTC is still disabled.
+  // Once the modeset is done, we expect it to be enabled.
+  DCHECK(is_modesetting || !is_disabled_);
 
   const DrmOverlayPlane* primary = DrmOverlayPlane::GetPrimaryPlane(overlays);
   if (primary && !drm_->plane_manager()->ValidatePrimarySize(*primary, mode_)) {

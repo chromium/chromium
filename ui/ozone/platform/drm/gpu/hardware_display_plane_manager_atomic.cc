@@ -66,9 +66,32 @@ bool HardwareDisplayPlaneManagerAtomic::Modeset(
     uint32_t framebuffer_id,
     uint32_t connector_id,
     const drmModeModeInfo& mode,
-    const HardwareDisplayPlaneList&) {
-  return drm_->SetCrtc(crtc_id, framebuffer_id,
-                       std::vector<uint32_t>(1, connector_id), mode);
+    const HardwareDisplayPlaneList& plane_list) {
+  const int connector_idx = LookupConnectorIndex(connector_id);
+  DCHECK_GE(connector_idx, 0);
+  connectors_props_[connector_idx].crtc_id.value = crtc_id;
+  bool res =
+      AddPropertyIfValid(plane_list.atomic_property_set.get(), connector_id,
+                         connectors_props_[connector_idx].crtc_id);
+
+  const int crtc_idx = LookupCrtcIndex(crtc_id);
+  DCHECK_GE(crtc_idx, 0);
+  crtc_state_[crtc_idx].properties.active.value = 1UL;
+  ScopedDrmPropertyBlob mode_blob =
+      drm_->CreatePropertyBlob(&mode, sizeof(mode));
+  crtc_state_[crtc_idx].properties.mode_id.value =
+      mode_blob ? mode_blob->id() : 0;
+
+  res &= AddPropertyIfValid(plane_list.atomic_property_set.get(), crtc_id,
+                            crtc_state_[crtc_idx].properties.active);
+  res &= AddPropertyIfValid(plane_list.atomic_property_set.get(), crtc_id,
+                            crtc_state_[crtc_idx].properties.mode_id);
+
+  DCHECK(res);
+  return Commit(const_cast<HardwareDisplayPlaneList*>(&plane_list),
+                /*should_modeset=*/true,
+                /*page_flip_request=*/nullptr,
+                /*out_fence=*/nullptr);
 }
 
 bool HardwareDisplayPlaneManagerAtomic::DisableModeset(uint32_t crtc_id,
@@ -97,12 +120,19 @@ bool HardwareDisplayPlaneManagerAtomic::DisableModeset(uint32_t crtc_id,
 
 bool HardwareDisplayPlaneManagerAtomic::Commit(
     HardwareDisplayPlaneList* plane_list,
+    bool should_modeset,
     scoped_refptr<PageFlipRequest> page_flip_request,
     std::unique_ptr<gfx::GpuFence>* out_fence) {
-  bool test_only = !page_flip_request;
+  bool test_only = !should_modeset && !page_flip_request;
+
   for (HardwareDisplayPlane* plane : plane_list->old_plane_list) {
     if (!base::Contains(plane_list->plane_list, plane)) {
-      // This plane is being released, so we need to zero it.
+      // |plane| is shared state between |old_plane_list| and |plane_list|.
+      // When we call BeginFrame(), we reset in_use since we need to be able to
+      // allocate the planes as needed. The current frame might not need to use
+      // |plane|, thus |plane->in_use()| would be false even though the previous
+      // frame used it. It's existence in |old_plane_list| is sufficient to
+      // signal that |plane| was in use previously.
       plane->set_in_use(false);
       HardwareDisplayPlaneAtomic* atomic_plane =
           static_cast<HardwareDisplayPlaneAtomic*>(plane);
@@ -146,13 +176,6 @@ bool HardwareDisplayPlaneManagerAtomic::Commit(
     plane_list->plane_list.swap(plane_list->old_plane_list);
   }
 
-  uint32_t flags = 0;
-  if (test_only) {
-    flags = DRM_MODE_ATOMIC_TEST_ONLY;
-  } else {
-    flags = DRM_MODE_ATOMIC_NONBLOCK;
-  }
-
   // After we perform the atomic commit, and if the caller has requested an
   // out-fence, the out_fence_fds vector will contain any provided out-fence
   // fds for the crtcs, therefore the scope of out_fence_fds needs to outlive
@@ -171,6 +194,12 @@ bool HardwareDisplayPlaneManagerAtomic::Commit(
         return false;
       }
     }
+
+    uint32_t flags = 0;
+    if (should_modeset)
+      flags = DRM_MODE_ATOMIC_ALLOW_MODESET;
+    else
+      flags = test_only ? DRM_MODE_ATOMIC_TEST_ONLY : DRM_MODE_ATOMIC_NONBLOCK;
 
     if (!drm_->CommitProperties(plane_list->atomic_property_set.get(), flags,
                                 crtcs.size(), page_flip_request)) {

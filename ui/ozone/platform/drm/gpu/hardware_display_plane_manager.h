@@ -97,7 +97,7 @@ class HardwareDisplayPlaneManager {
                                    uint32_t crtc_id);
 
   // Commit the plane states in |plane_list|.
-  //
+  // if |should_modeset| is set, it only modesets without page flipping.
   // If |page_flip_request| is null, this tests the plane configuration without
   // submitting it.
   // The fence returned in |out_fence| will signal when the currently scanned
@@ -105,6 +105,7 @@ class HardwareDisplayPlaneManager {
   // |page_flip_request|. Note that the returned fence may be a nullptr
   // if the system doesn't support out fences.
   virtual bool Commit(HardwareDisplayPlaneList* plane_list,
+                      bool should_modeset,
                       scoped_refptr<PageFlipRequest> page_flip_request,
                       std::unique_ptr<gfx::GpuFence>* out_fence) = 0;
 

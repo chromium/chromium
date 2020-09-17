@@ -90,10 +90,20 @@ bool HardwareDisplayController::ModesetCrtc(const DrmOverlayPlane& primary,
                                             const drmModeModeInfo& mode) {
   DCHECK(primary.buffer.get());
   bool status = true;
-  for (const auto& controller : crtc_controllers_)
+
+  GetDrmDevice()->plane_manager()->BeginFrame(&owned_hardware_planes_);
+  DrmOverlayPlaneList plane_list;
+  plane_list.push_back(primary.Clone());
+
+  for (const auto& controller : crtc_controllers_) {
+    status &=
+        controller->AssignOverlayPlanes(&owned_hardware_planes_, plane_list,
+                                        /*is_modesetting=*/true);
+
     status &= controller->Modeset(
         primary, use_current_crtc_mode ? controller->mode() : mode,
         owned_hardware_planes_);
+  }
 
   is_disabled_ = false;
   ResetCursor();
@@ -176,12 +186,13 @@ bool HardwareDisplayController::ScheduleOrTestPageFlip(
 
   bool status = true;
   for (const auto& controller : crtc_controllers_) {
-    status &= controller->AssignOverlayPlanes(&owned_hardware_planes_,
-                                              pending_planes);
+    status &= controller->AssignOverlayPlanes(
+        &owned_hardware_planes_, pending_planes, /*is_modesetting=*/false);
   }
 
   status &= GetDrmDevice()->plane_manager()->Commit(
-      &owned_hardware_planes_, page_flip_request, out_fence);
+      &owned_hardware_planes_, /*should_modeset=*/false, page_flip_request,
+      out_fence);
 
   return status;
 }
@@ -357,6 +368,7 @@ void HardwareDisplayController::OnModesetComplete(
   // pending planes to the same values so that the callback keeps the correct
   // state.
   page_flip_request_ = nullptr;
+  owned_hardware_planes_.legacy_page_flips.clear();
   current_planes_.clear();
   current_planes_.push_back(primary.Clone());
   time_of_last_flip_ = base::TimeTicks::Now();

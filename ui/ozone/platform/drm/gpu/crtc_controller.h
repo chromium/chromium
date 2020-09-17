@@ -51,7 +51,8 @@ class CrtcController {
   bool Disable();
 
   bool AssignOverlayPlanes(HardwareDisplayPlaneList* plane_list,
-                           const DrmOverlayPlaneList& planes);
+                           const DrmOverlayPlaneList& planes,
+                           bool is_modesetting);
 
   // Returns a vector of format modifiers for the given fourcc format
   // on this CRTCs primary plane. A format modifier describes the
