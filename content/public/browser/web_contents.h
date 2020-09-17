@@ -250,6 +250,8 @@ class WebContents : public PageNavigator,
   // render view host's delegate isn't a WebContents.
   CONTENT_EXPORT static WebContents* FromRenderViewHost(RenderViewHost* rvh);
 
+  // Returns the WebContents for the RenderFrameHost. It is unsafe to call this
+  // function with an invalid (e.g. destructed) `rfh`.
   CONTENT_EXPORT static WebContents* FromRenderFrameHost(RenderFrameHost* rfh);
 
   // Returns the WebContents associated with the |frame_tree_node_id|. This may
