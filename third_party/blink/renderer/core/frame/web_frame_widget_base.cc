@@ -1713,8 +1713,26 @@ void WebFrameWidgetBase::InjectGestureScrollEvent(
     ui::ScrollGranularity granularity,
     cc::ElementId scrollable_area_element_id,
     blink::WebInputEvent::Type injected_type) {
-  widget_base_->input_handler().InjectGestureScrollEvent(
-      device, delta, granularity, scrollable_area_element_id, injected_type);
+  if (RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
+    // create a GestureScroll Event and post it to the compositor thread
+    // TODO(crbug.com/1126098) use original input event's timestamp.
+    // TODO(crbug.com/1082590) ensure continuity in scroll metrics collection
+    base::TimeTicks now = base::TimeTicks::Now();
+    std::unique_ptr<WebGestureEvent> gesture_event =
+        WebGestureEvent::GenerateInjectedScrollGesture(
+            injected_type, now, device, gfx::PointF(0, 0), delta, granularity);
+    if (injected_type == WebInputEvent::Type::kGestureScrollBegin) {
+      gesture_event->data.scroll_begin.scrollable_area_element_id =
+          scrollable_area_element_id.GetStableId();
+      gesture_event->data.scroll_begin.main_thread_hit_tested = true;
+    }
+
+    widget_base_->widget_input_handler_manager()
+        ->DispatchScrollGestureToCompositor(std::move(gesture_event));
+  } else {
+    widget_base_->input_handler().InjectGestureScrollEvent(
+        device, delta, granularity, scrollable_area_element_id, injected_type);
+  }
 }
 
 void WebFrameWidgetBase::DidChangeCursor(const ui::Cursor& cursor) {

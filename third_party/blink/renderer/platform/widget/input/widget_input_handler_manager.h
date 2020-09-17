@@ -98,6 +98,8 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       const WebGestureEvent& gesture_event,
       const cc::InputHandlerScrollResult& scroll_result);
 
+  void DispatchScrollGestureToCompositor(
+      std::unique_ptr<WebGestureEvent> event);
   void DispatchEvent(
       std::unique_ptr<blink::WebCoalescedInputEvent> event,
       mojom::blink::WidgetInputHandler::DispatchEventCallback callback);
@@ -224,6 +226,9 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   void ObserveGestureEventOnInputHandlingThread(
       const WebGestureEvent& gesture_event,
       const cc::InputHandlerScrollResult& scroll_result);
+
+  void HandleInputEventWithLatencyInfoOnCompositor(
+      std::unique_ptr<WebCoalescedInputEvent>);
 
   // Returns the task runner for the thread that receives input. i.e. the
   // "Mojo-bound" thread.

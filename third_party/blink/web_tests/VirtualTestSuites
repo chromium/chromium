@@ -743,5 +743,11 @@
     "args": ["--enable-threaded-compositing",
              "--enable-features=CompositeCrossOriginIframes",
              "--disable-auto-wpt-origin-isolation"]
+  },
+  {
+    "prefix": "scroll-unification",
+    "bases": ["fast/scrolling/scrollbars"],
+    "args": ["--enable-features=ScrollUnification",
+             "--enable-threaded-compositing"]
   }
 ]

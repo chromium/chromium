@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "cc/base/features.h"
@@ -389,6 +390,27 @@ void WidgetInputHandlerManager::LogInputTimingUMA() {
   }
 }
 
+void WidgetInputHandlerManager::DispatchScrollGestureToCompositor(
+    std::unique_ptr<WebGestureEvent> event) {
+  DCHECK(base::FeatureList::IsEnabled(features::kScrollUnification));
+  std::unique_ptr<WebCoalescedInputEvent> web_scoped_gesture_event =
+      std::make_unique<WebCoalescedInputEvent>(std::move(event),
+                                               ui::LatencyInfo());
+  DCHECK(compositor_task_runner_);
+  compositor_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&WidgetInputHandlerManager::
+                                    HandleInputEventWithLatencyInfoOnCompositor,
+                                this, std::move(web_scoped_gesture_event)));
+}
+
+void WidgetInputHandlerManager::HandleInputEventWithLatencyInfoOnCompositor(
+    std::unique_ptr<WebCoalescedInputEvent> event) {
+  DCHECK(base::FeatureList::IsEnabled(features::kScrollUnification));
+  DCHECK(input_handler_proxy_);
+  input_handler_proxy_->HandleInputEventWithLatencyInfo(std::move(event),
+                                                        base::DoNothing());
+}
+
 void WidgetInputHandlerManager::DispatchEvent(
     std::unique_ptr<WebCoalescedInputEvent> event,
     mojom::blink::WidgetInputHandler::DispatchEventCallback callback) {
@@ -398,7 +420,7 @@ void WidgetInputHandlerManager::DispatchEvent(
   if (!event_is_move)
     LogInputTimingUMA();
 
-  // Drop input if we are deferring a rendring pipeline phase, unless it's a
+  // Drop input if we are deferring a rendering pipeline phase, unless it's a
   // move event.
   // We don't want users interacting with stuff they can't see, so we drop it.
   // We allow moves because we need to keep the current pointer location up
@@ -436,7 +458,7 @@ void WidgetInputHandlerManager::DispatchEvent(
       return;
     }
 
-    // The InputHandlerProxy will be the first to try handing the event on the
+    // The InputHandlerProxy will be the first to try handling the event on the
     // compositor thread. It will respond to this class by calling
     // DidHandleInputEventSentToCompositor with the result of its attempt. Based
     // on the resulting disposition, DidHandleInputEventSentToCompositor will
