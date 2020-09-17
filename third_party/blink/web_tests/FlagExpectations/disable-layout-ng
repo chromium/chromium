@@ -558,11 +558,9 @@ crbug.com/591099 paint/invalidation/compositing/composited-float-under-composite
 crbug.com/591099 paint/invalidation/compositing/float-under-composited-inline.html [ Failure ]
 crbug.com/591099 paint/invalidation/compositing/stacked-float-under-composited-inline.html [ Failure ]
 
-# No H.254 decoder support in bot
-crbug.com/591099 external/wpt/webrtc/protocol/video-codecs.https.html [ Failure ]
-crbug.com/591099 external/wpt/webrtc/simulcast/h264.https.html [ Failure ]
-crbug.com/591099 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/protocol/video-codecs.https.html [ Failure ]
-crbug.com/591099 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/simulcast/h264.https.html [ Failure ]
+# No H.264 decoder support in bot - just skip all webrtc tests.
+crbug.com/840659 external/wpt/webrtc/* [ Skip ]
+crbug.com/840659 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/* [ Skip ]
 
 # MathML depends on LayoutNG.
 crbug.com/6606 external/wpt/mathml/* [ Skip ]
