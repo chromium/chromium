@@ -17,10 +17,63 @@ namespace ui {
 class DialogModel;
 class DialogModelButton;
 class DialogModelBodyText;
+class DialogModelCheckbox;
 class DialogModelCombobox;
 class DialogModelHost;
 class DialogModelTextfield;
 class Event;
+
+// TODO(pbos): Move this to separate header.
+// DialogModelLabel is an exception to below classes. This is not a
+// DialogModelField but rather represents a text label and styling. This is used
+// with DialogModelBodyText and DialogModelCheckbox for instance and has support
+// for showing a link.
+class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
+ public:
+  struct COMPONENT_EXPORT(UI_BASE) Link {
+    // TODO(pbos): Move this definition (maybe as a ui::LinkCallback) so it can
+    // be reused with views::Link.
+    using Callback = base::RepeatingCallback<void(const Event& event)>;
+
+    Link(int message_id, Callback callback);
+    Link(int message_id, base::RepeatingClosure closure);
+    Link(const Link&);
+    ~Link();
+
+    const int message_id;
+    const Callback callback;
+  };
+
+  explicit DialogModelLabel(int message_id);
+  DialogModelLabel(const DialogModelLabel&);
+  DialogModelLabel& operator=(const DialogModelLabel&) = delete;
+  ~DialogModelLabel();
+
+  static DialogModelLabel CreateWithLink(int message_id, Link link);
+
+  static DialogModelLabel CreateWithLinks(int message_id,
+                                          std::vector<Link> links);
+
+  DialogModelLabel& set_is_secondary() {
+    is_secondary_ = true;
+    return *this;
+  }
+
+  int message_id(util::PassKey<DialogModelHost>) const { return message_id_; }
+  const std::vector<Link> links(util::PassKey<DialogModelHost>) const {
+    return links_;
+  }
+  bool is_secondary(util::PassKey<DialogModelHost>) const {
+    return is_secondary_;
+  }
+
+ private:
+  explicit DialogModelLabel(int message_id, std::vector<Link> links);
+
+  const int message_id_;
+  const std::vector<Link> links_;
+  bool is_secondary_ = false;
+};
 
 // These "field" classes represent entries in a DialogModel. They are owned
 // by the model and either created through the model or DialogModel::Builder.
@@ -32,7 +85,7 @@ class Event;
 // stays in sync with the visible dialog (through DialogModelHosts).
 class COMPONENT_EXPORT(UI_BASE) DialogModelField {
  public:
-  enum Type { kButton, kBodyText, kCombobox, kTextfield };
+  enum Type { kButton, kBodyText, kCheckbox, kCombobox, kTextfield };
 
   DialogModelField(const DialogModelField&) = delete;
   DialogModelField& operator=(const DialogModelField&) = delete;
@@ -47,6 +100,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
   }
   DialogModelButton* AsButton(util::PassKey<DialogModelHost>);
   DialogModelBodyText* AsBodyText(util::PassKey<DialogModelHost>);
+  DialogModelCheckbox* AsCheckbox(util::PassKey<DialogModelHost>);
   DialogModelCombobox* AsCombobox(util::PassKey<DialogModelHost>);
   DialogModelTextfield* AsTextfield(util::PassKey<DialogModelHost>);
 
@@ -61,6 +115,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
 
   DialogModelButton* AsButton();
   DialogModelBodyText* AsBodyText();
+  DialogModelCheckbox* AsCheckbox();
   DialogModelCombobox* AsCombobox();
   DialogModelTextfield* AsTextfield();
 
@@ -124,45 +179,49 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
   base::RepeatingCallback<void(const Event&)> callback_;
 };
 
-// Field class representing body text
+// Field class representing body text.
 class COMPONENT_EXPORT(UI_BASE) DialogModelBodyText : public DialogModelField {
  public:
-  class COMPONENT_EXPORT(UI_BASE) Params {
-   public:
-    Params() = default;
-    Params(const Params&) = delete;
-    Params& operator=(const Params&) = delete;
-
-    // The body text is "secondary", often adding detail and context to other,
-    // more prominent text.
-    Params& SetIsSecondary();
-
-   private:
-    friend class DialogModelBodyText;
-
-    bool is_secondary_ = false;
-  };
-
   // Note that this is constructed through a DialogModel which adds it to model
   // fields.
   DialogModelBodyText(util::PassKey<DialogModel> pass_key,
                       DialogModel* model,
-                      base::string16 text,
-                      const Params& params);
+                      const DialogModelLabel& label);
   DialogModelBodyText(const DialogModelBodyText&) = delete;
   DialogModelBodyText& operator=(const DialogModelBodyText&) = delete;
   ~DialogModelBodyText() override;
 
-  const base::string16& text(util::PassKey<DialogModelHost>) const {
-    return text_;
-  }
-  bool is_secondary(util::PassKey<DialogModelHost>) const {
-    return is_secondary_;
+  const DialogModelLabel& label(util::PassKey<DialogModelHost>) const {
+    return label_;
   }
 
  private:
-  const base::string16 text_;
-  const bool is_secondary_;
+  const DialogModelLabel label_;
+};
+
+// Field class representing a checkbox with descriptive text.
+class COMPONENT_EXPORT(UI_BASE) DialogModelCheckbox : public DialogModelField {
+ public:
+  // Note that this is constructed through a DialogModel which adds it to model
+  // fields.
+  DialogModelCheckbox(util::PassKey<DialogModel> pass_key,
+                      DialogModel* model,
+                      int unique_id,
+                      const DialogModelLabel& label);
+  DialogModelCheckbox(const DialogModelCheckbox&) = delete;
+  DialogModelCheckbox& operator=(const DialogModelCheckbox&) = delete;
+  ~DialogModelCheckbox() override;
+
+  bool is_checked() const { return is_checked_; }
+
+  void OnChecked(util::PassKey<DialogModelHost>, bool is_checked);
+  const DialogModelLabel& label(util::PassKey<DialogModelHost>) const {
+    return label_;
+  }
+
+ private:
+  const DialogModelLabel label_;
+  bool is_checked_ = false;
 };
 
 // Field class representing a combobox and corresponding label to describe the

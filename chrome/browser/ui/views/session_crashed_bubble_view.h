@@ -11,18 +11,12 @@
 #include "chrome/browser/ui/session_crashed_bubble.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
-namespace views {
-class Checkbox;
-class Widget;
-}
-
 class Browser;
 
 // SessionCrashedBubbleView shows a bubble allowing the user to restore the
 // previous session. If metrics reporting is not enabled a checkbox is presented
 // allowing the user to turn it on.
-class SessionCrashedBubbleView : public SessionCrashedBubble,
-                                 public views::BubbleDialogDelegateView {
+class SessionCrashedBubbleView : public SessionCrashedBubble {
  public:
   // A helper class that listens to browser removal event.
   class BrowserRemovalObserver;
@@ -33,58 +27,14 @@ class SessionCrashedBubbleView : public SessionCrashedBubble,
   static void Show(std::unique_ptr<BrowserRemovalObserver> browser_observer,
                    bool uma_opted_in_already);
 
-  SessionCrashedBubbleView(views::View* anchor_view,
-                           Browser* browser,
-                           bool offer_uma_optin);
-  ~SessionCrashedBubbleView() override;
-
- protected:
-  // views::BubbleDialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
-  ax::mojom::Role GetAccessibleWindowRole() override;
-
  private:
   friend class SessionCrashedBubbleViewTest;
 
-  // WidgetDelegateView methods.
-  void OnWidgetDestroying(views::Widget* widget) override;
-
-  // views::BubbleDialogDelegateView methods.
-  void Init() override;
-
-  // Creates a view allowing the user to opt-in to reporting information to UMA.
-  // Returns nullptr if offer is unavailable.
-  std::unique_ptr<views::View> CreateUmaOptInView();
-
-  // Called when the user clicks the "statistics" link to get more information.
-  void ExplainStatisticsLinkClicked(const ui::Event& event);
-
-  // Restore previous session after user selects so.
-  void RestorePreviousSession();
-
-  // Open startup pages after user selects so.
-  void OpenStartupPages();
-
-  // Enable UMA if the user accepted the offer.
-  void MaybeEnableUma();
-
-  // Close and destroy the bubble.
-  void CloseBubble();
-
-  // Used for opening the question mark link as well as access the tab strip.
-  Browser* const browser_;
-
-  // Checkbox for the user to opt-in to UMA reporting.
-  views::Checkbox* uma_option_;
-
-  // Whether or not the UMA opt-in option should be shown.
-  bool offer_uma_optin_;
-
-  // Whether or not the user ignored the bubble. It is used to collect bubble
-  // usage stats.
-  bool ignored_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionCrashedBubbleView);
+  // Internal show method also used by SessionCrashedBubbleViewTest.
+  // TODO(pbos): Mock conditions in test instead.
+  static views::BubbleDialogDelegateView* ShowBubble(Browser* browser,
+                                                     bool uma_opted_in_already,
+                                                     bool offer_uma_optin);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SESSION_CRASHED_BUBBLE_VIEW_H_

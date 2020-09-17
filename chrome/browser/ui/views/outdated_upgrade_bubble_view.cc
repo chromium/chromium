@@ -150,8 +150,8 @@ void OutdatedUpgradeBubbleView::ShowBubble(views::View* anchor_view,
               l10n_util::GetStringUTF16(auto_update_enabled
                                             ? IDS_REINSTALL_APP
                                             : IDS_REENABLE_UPDATES))
-          .AddBodyText(l10n_util::GetStringUTF16(IDS_UPGRADE_BUBBLE_TEXT),
-                       ui::DialogModelBodyText::Params().SetIsSecondary())
+          .AddBodyText(
+              ui::DialogModelLabel(IDS_UPGRADE_BUBBLE_TEXT).set_is_secondary())
           .SetWindowClosingCallback(
               base::BindOnce(&OutdatedUpgradeBubbleDelegate::OnWindowClosing,
                              base::Unretained(g_upgrade_bubble)))

@@ -30,7 +30,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelHost {
 
   // This PassKey is used to make sure that some methods on DialogModel
   // are only called as part of the host integration.
-  util::PassKey<DialogModelHost> GetPassKey() {
+  static util::PassKey<DialogModelHost> GetPassKey() {
     return util::PassKey<DialogModelHost>();
   }
 

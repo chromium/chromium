@@ -14,9 +14,7 @@
 #include "ui/views/controls/button/button.h"
 
 namespace views {
-class Combobox;
 class GridLayout;
-class Label;
 class Textfield;
 
 // BubbleDialogModelHost is a views implementation of ui::DialogModelHost which
@@ -57,12 +55,16 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
   void ConfigureGridLayout();
 
   void AddInitialFields();
-  Label* AddOrUpdateBodyText(ui::DialogModelBodyText* field);
-  Combobox* AddOrUpdateCombobox(ui::DialogModelCombobox* field);
-  Textfield* AddOrUpdateTextfield(ui::DialogModelTextfield* field);
+  View* AddOrUpdateBodyText(ui::DialogModelBodyText* field);
+  View* AddOrUpdateCheckbox(ui::DialogModelCheckbox* field);
+  View* AddOrUpdateCombobox(ui::DialogModelCombobox* field);
+  View* AddOrUpdateTextfield(ui::DialogModelTextfield* field);
   void AddLabelAndField(const base::string16& label_text,
                         std::unique_ptr<views::View> field,
                         const gfx::FontList& field_font);
+
+  std::unique_ptr<View> CreateViewForLabel(
+      const ui::DialogModelLabel& dialog_label);
 
   void OnViewCreatedForField(View* view, ui::DialogModelField* field);
 

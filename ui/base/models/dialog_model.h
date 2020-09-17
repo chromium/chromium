@@ -93,6 +93,13 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     Builder& SetShowCloseButton(bool show_close_button);
     Builder& SetTitle(base::string16 title);
 
+    // Make screen readers announce the contents of the dialog as it appears.
+    // See |ax::mojom::Role::kAlertDialog|.
+    Builder& SetIsAlertDialog();
+
+    // Disables the default behavior that the dialog closes when deactivated.
+    Builder& DisableCloseOnDeactivate();
+
     // Called when the dialog is explicitly closed (Esc, close-x). Not called
     // during accept/cancel.
     Builder& SetCloseCallback(base::OnceClosure callback);
@@ -124,21 +131,25 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     Builder& AddDialogExtraButton(
         base::RepeatingCallback<void(const Event&)> callback,
         base::string16 label,
-        const DialogModelButton::Params& params);
+        const DialogModelButton::Params& params = DialogModelButton::Params());
 
-    // Adds a textfield. See DialogModel::AddTextfield().
-    Builder& AddTextfield(base::string16 label,
-                          base::string16 text,
-                          const ui::DialogModelTextfield::Params& params);
+    // Adds body text. See DialogModel::AddBodyText().
+    Builder& AddBodyText(const DialogModelLabel& label);
+
+    // Adds a checkbox. See DialogModel::AddCheckbox().
+    Builder& AddCheckbox(int unique_id, const DialogModelLabel& label);
 
     // Adds a combobox. See DialogModel::AddCombobox().
     Builder& AddCombobox(base::string16 label,
                          std::unique_ptr<ui::ComboboxModel> combobox_model,
-                         const DialogModelCombobox::Params& params);
+                         const DialogModelCombobox::Params& params =
+                             DialogModelCombobox::Params());
 
-    // Adds body text. See DialogModel::AddBodyText().
-    Builder& AddBodyText(base::string16 label,
-                         const DialogModelBodyText::Params& params);
+    // Adds a textfield. See DialogModel::AddTextfield().
+    Builder& AddTextfield(base::string16 label,
+                          base::string16 text,
+                          const DialogModelTextfield::Params& params =
+                              DialogModelTextfield::Params());
 
     // Sets which field should be initially focused in the dialog model. Must be
     // called after that field has been added. Can only be called once.
@@ -157,22 +168,34 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   DialogModelHost* host() { return host_; }
 
   // Adds body text at the end of the dialog model.
-  void AddBodyText(base::string16 label,
-                   const DialogModelBodyText::Params& params);
+  void AddBodyText(const DialogModelLabel& label);
+
+  // Adds a checkbox ([checkbox] label) at the end of the dialog model.
+  void AddCheckbox(int unique_id, const DialogModelLabel& label);
 
   // Adds a labeled combobox (label: [model]) at the end of the dialog model.
   void AddCombobox(base::string16 label,
                    std::unique_ptr<ui::ComboboxModel> combobox_model,
-                   const DialogModelCombobox::Params& params);
+                   const DialogModelCombobox::Params& params =
+                       DialogModelCombobox::Params());
 
   // Adds a labeled textfield (label: [text]) at the end of the dialog model.
   void AddTextfield(base::string16 label,
                     base::string16 text,
-                    const ui::DialogModelTextfield::Params& params);
+                    const DialogModelTextfield::Params& params =
+                        DialogModelTextfield::Params());
+
+  // Check for the existence of a field. Should not be used if the code path
+  // expects the |unique_id| to always be present, as GetFieldByUniqueId() and
+  // friends will NOTREACHED() if |unique_id| is not present, detecting the bug.
+  bool HasField(int unique_id) const;
 
   // Gets DialogModelFields from their unique identifier. |unique_id| is
-  // supplied to the ::Params class during construction.
+  // supplied to the ::Params class during construction. Supplying a |unique_id|
+  // not present in the model is a bug, and the methods will NOTREACHED(). If
+  // you have unique fields that are conditionally present, see HasField().
   DialogModelField* GetFieldByUniqueId(int unique_id);
+  DialogModelCheckbox* GetCheckboxByUniqueId(int unique_id);
   DialogModelCombobox* GetComboboxByUniqueId(int unique_id);
   DialogModelTextfield* GetTextfieldByUniqueId(int unique_id);
 
@@ -201,6 +224,10 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     return initially_focused_field_;
   }
 
+  bool is_alert_dialog(util::PassKey<DialogModelHost>) const {
+    return is_alert_dialog_;
+  }
+
   DialogModelButton* ok_button(util::PassKey<DialogModelHost>) {
     return ok_button_.has_value() ? &ok_button_.value() : nullptr;
   }
@@ -211,6 +238,10 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
 
   DialogModelButton* extra_button(util::PassKey<DialogModelHost>) {
     return extra_button_.has_value() ? &extra_button_.value() : nullptr;
+  }
+
+  bool close_on_deactivate(util::PassKey<DialogModelHost>) const {
+    return close_on_deactivate_;
   }
 
   // Accessor for ordered fields in the model. This includes DialogButtons even
@@ -232,11 +263,13 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   DialogModelHost* host_ = nullptr;
 
   bool show_close_button_ = false;
+  bool close_on_deactivate_ = true;
   base::string16 title_;
 
   static constexpr int kExtraButtonId = DIALOG_BUTTON_LAST + 1;
   std::vector<std::unique_ptr<DialogModelField>> fields_;
   base::Optional<int> initially_focused_field_;
+  bool is_alert_dialog_ = false;
 
   base::Optional<DialogModelButton> ok_button_;
   base::Optional<DialogModelButton> cancel_button_;

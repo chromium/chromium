@@ -25,16 +25,13 @@ class SessionCrashedBubbleViewTest : public DialogBrowserTest {
   ~SessionCrashedBubbleViewTest() override {}
 
   void ShowUi(const std::string& name) override {
-    views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(browser())
-                                   ->toolbar_button_provider()
-                                   ->GetAppMenuButton();
-    crash_bubble_ = new SessionCrashedBubbleView(
-        anchor_view, browser(), name == "SessionCrashedBubbleOfferUma");
-    views::BubbleDialogDelegateView::CreateBubble(crash_bubble_)->Show();
+    // TODO(pbos): Set up UMA opt-in conditions instead of providing this bool.
+    crash_bubble_ = SessionCrashedBubbleView::ShowBubble(
+        browser(), false, name == "SessionCrashedBubbleOfferUma");
   }
 
  protected:
-  SessionCrashedBubbleView* crash_bubble_;
+  views::BubbleDialogDelegateView* crash_bubble_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SessionCrashedBubbleViewTest);
@@ -92,4 +89,10 @@ IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest, AlertAccessibleEvent) {
   ShowUi("SessionCrashedBubble");
   // TODO(crbug.com/1082217): This should only produce one event
   EXPECT_LT(0, counter.GetCount(ax::mojom::Event::kAlert));
+}
+
+// Regression test for https://crbug.com/1081393.
+IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest, HasCloseButton) {
+  ShowUi("SessionCrashedBubble");
+  EXPECT_TRUE(crash_bubble_->ShouldShowCloseButton());
 }

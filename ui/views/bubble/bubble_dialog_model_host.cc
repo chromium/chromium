@@ -6,13 +6,17 @@
 
 #include <utility>
 
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/combobox_model.h"
+#include "ui/views/controls/button/checkbox.h"
+#include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
 
@@ -30,6 +34,8 @@ DialogContentType FieldTypeToContentType(ui::DialogModelField::Type type) {
       return DialogContentType::CONTROL;
     case ui::DialogModelField::kBodyText:
       return DialogContentType::TEXT;
+    case ui::DialogModelField::kCheckbox:
+      return DialogContentType::CONTROL;
     case ui::DialogModelField::kTextfield:
       return DialogContentType::CONTROL;
     case ui::DialogModelField::kCombobox:
@@ -37,6 +43,32 @@ DialogContentType FieldTypeToContentType(ui::DialogModelField::Type type) {
   }
   NOTREACHED();
   return DialogContentType::CONTROL;
+}
+
+std::unique_ptr<View> CreateCheckboxControl(std::unique_ptr<Checkbox> checkbox,
+                                            std::unique_ptr<View> label) {
+  auto container = std::make_unique<views::View>();
+
+  // Move the checkbox border up to |container| so that it surrounds both
+  // |checkbox| and |label|. This done so that |container| looks like a single
+  // Checkbox control that has |label| as its internal label. This method is
+  // necessary as Checkbox has no internal support for a StyledLabel, which is
+  // required for link support in the checkbox label.
+  container->SetBorder(checkbox->CreateDefaultBorder());
+  checkbox->SetBorder(nullptr);
+
+  auto* layout = container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+      LayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+
+  checkbox->SetAssociatedLabel(label.get());
+
+  container->AddChildView(std::move(checkbox));
+  container->AddChildView(std::move(label));
+  return container;
 }
 
 }  // namespace
@@ -99,8 +131,12 @@ BubbleDialogModelHost::BubbleDialogModelHost(
 
   SetButtons(button_mask);
 
-  WidgetDelegate::SetTitle(model_->title(GetPassKey()));
-  WidgetDelegate::SetShowCloseButton(model_->show_close_button(GetPassKey()));
+  SetTitle(model_->title(GetPassKey()));
+  SetShowCloseButton(model_->show_close_button(GetPassKey()));
+  if (model_->is_alert_dialog(GetPassKey()))
+    SetAccessibleRole(ax::mojom::Role::kAlertDialog);
+
+  set_close_on_deactivate(model_->close_on_deactivate(GetPassKey()));
 
   AddInitialFields();
 }
@@ -180,10 +216,20 @@ void BubbleDialogModelHost::AddInitialFields() {
   for (const auto& field : fields) {
     // TODO(pbos): This needs to take previous field type + next field type into
     // account to do this properly.
+    const DialogContentType field_content_type =
+        FieldTypeToContentType(field->type(GetPassKey()));
+
     if (!first_row) {
-      // TODO(pbos): Move DISTANCE_CONTROL_LIST_VERTICAL to
-      // views::LayoutProvider and replace "12" here.
-      GetGridLayout()->AddPaddingRow(GridLayout::kFixedSize, 12);
+      int padding_margin = LayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_UNRELATED_CONTROL_VERTICAL);
+      if (last_field_content_type == DialogContentType::CONTROL &&
+          field_content_type == DialogContentType::CONTROL) {
+        // TODO(pbos): Move DISTANCE_CONTROL_LIST_VERTICAL to
+        // views::LayoutProvider and replace "12" here.
+        padding_margin = 12;
+      }
+      DCHECK_NE(padding_margin, -1);
+      GetGridLayout()->AddPaddingRow(GridLayout::kFixedSize, padding_margin);
     }
 
     View* last_view = nullptr;
@@ -193,6 +239,9 @@ void BubbleDialogModelHost::AddInitialFields() {
         continue;
       case ui::DialogModelField::kBodyText:
         last_view = AddOrUpdateBodyText(field->AsBodyText(GetPassKey()));
+        break;
+      case ui::DialogModelField::kCheckbox:
+        last_view = AddOrUpdateCheckbox(field->AsCheckbox(GetPassKey()));
         break;
       case ui::DialogModelField::kCombobox:
         last_view = AddOrUpdateCombobox(field->AsCombobox(GetPassKey()));
@@ -204,7 +253,7 @@ void BubbleDialogModelHost::AddInitialFields() {
 
     DCHECK(last_view);
     OnViewCreatedForField(last_view, field.get());
-    last_field_content_type = FieldTypeToContentType(field->type(GetPassKey()));
+    last_field_content_type = field_content_type;
 
     // TODO(pbos): Update logic here when mixing types.
     first_row = false;
@@ -229,65 +278,61 @@ GridLayout* BubbleDialogModelHost::GetGridLayout() {
 void BubbleDialogModelHost::ConfigureGridLayout() {
   SetLayoutManager(std::make_unique<GridLayout>());
   LayoutProvider* const provider = LayoutProvider::Get();
-  const int between_padding =
-      provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL);
 
+  // Set up kTextfieldColumnSetId.
   ColumnSet* const textfield_column_set =
       GetGridLayout()->AddColumnSet(kTextfieldColumnSetId);
   textfield_column_set->AddColumn(GridLayout::LEADING, GridLayout::CENTER,
                                   GridLayout::kFixedSize,
                                   GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  textfield_column_set->AddPaddingColumn(GridLayout::kFixedSize,
-                                         between_padding);
-
+  textfield_column_set->AddPaddingColumn(
+      GridLayout::kFixedSize,
+      provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL));
   textfield_column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, 1.0,
                                   GridLayout::ColumnSize::kFixed, 0, 0);
 
+  // Set up kSingleColumnSetId.
   GetGridLayout()
       ->AddColumnSet(kSingleColumnSetId)
       ->AddColumn(GridLayout::FILL, GridLayout::FILL, 1.0,
                   GridLayout::ColumnSize::kUsePreferred, 0, 0);
 }
 
-Textfield* BubbleDialogModelHost::AddOrUpdateTextfield(
-    ui::DialogModelTextfield* model) {
-  // TODO(pbos): Support updates to the existing model.
-
-  auto textfield = std::make_unique<Textfield>();
-  textfield->SetAccessibleName(model->accessible_name(GetPassKey()).empty()
-                                   ? model->label(GetPassKey())
-                                   : model->accessible_name(GetPassKey()));
-  textfield->SetText(model->text());
-
-  property_changed_subscriptions_.push_back(textfield->AddTextChangedCallback(
-      base::BindRepeating(&BubbleDialogModelHost::NotifyTextfieldTextChanged,
-                          base::Unretained(this), textfield.get())));
-
-  auto* textfield_ptr = textfield.get();
-  AddLabelAndField(model->label(GetPassKey()), std::move(textfield),
-                   textfield_ptr->GetFontList());
-
-  return textfield_ptr;
-}
-
-Label* BubbleDialogModelHost::AddOrUpdateBodyText(
+View* BubbleDialogModelHost::AddOrUpdateBodyText(
     ui::DialogModelBodyText* field) {
   // TODO(pbos): Handle updating existing field.
-
-  auto text_label = std::make_unique<Label>(
-      field->text(GetPassKey()), style::CONTEXT_DIALOG_BODY_TEXT,
-      field->is_secondary(GetPassKey()) ? style::STYLE_SECONDARY
-                                        : style::STYLE_PRIMARY);
-  text_label->SetMultiLine(true);
-  text_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   auto* layout = GetGridLayout();
   layout->StartRow(1.0, kSingleColumnSetId);
 
-  return layout->AddView(std::move(text_label));
+  return layout->AddView(CreateViewForLabel(field->label(GetPassKey())));
 }
 
-Combobox* BubbleDialogModelHost::AddOrUpdateCombobox(
+View* BubbleDialogModelHost::AddOrUpdateCheckbox(
+    ui::DialogModelCheckbox* field) {
+  // TODO(pbos): Handle updating existing field.
+
+  auto* layout = GetGridLayout();
+  layout->StartRow(1.0, kSingleColumnSetId);
+
+  auto checkbox = std::make_unique<Checkbox>();
+  auto* checkbox_ptr = checkbox.get();
+
+  checkbox->set_callback(base::BindRepeating(
+      [](ui::DialogModelCheckbox* model,
+         util::PassKey<DialogModelHost> pass_key, Checkbox* checkbox,
+         const ui::Event& event) {
+        model->OnChecked(pass_key, checkbox->GetChecked());
+      },
+      field, GetPassKey(), checkbox.get()));
+
+  layout->AddView(CreateCheckboxControl(
+      std::move(checkbox), CreateViewForLabel(field->label(GetPassKey()))));
+
+  return checkbox_ptr;
+}
+
+View* BubbleDialogModelHost::AddOrUpdateCombobox(
     ui::DialogModelCombobox* model) {
   // TODO(pbos): Handle updating existing field.
 
@@ -312,6 +357,27 @@ Combobox* BubbleDialogModelHost::AddOrUpdateCombobox(
   AddLabelAndField(model->label(GetPassKey()), std::move(combobox),
                    combobox_ptr->GetFontList());
   return combobox_ptr;
+}
+
+View* BubbleDialogModelHost::AddOrUpdateTextfield(
+    ui::DialogModelTextfield* model) {
+  // TODO(pbos): Support updates to the existing model.
+
+  auto textfield = std::make_unique<Textfield>();
+  textfield->SetAccessibleName(model->accessible_name(GetPassKey()).empty()
+                                   ? model->label(GetPassKey())
+                                   : model->accessible_name(GetPassKey()));
+  textfield->SetText(model->text());
+
+  property_changed_subscriptions_.push_back(textfield->AddTextChangedCallback(
+      base::BindRepeating(&BubbleDialogModelHost::NotifyTextfieldTextChanged,
+                          base::Unretained(this), textfield.get())));
+
+  auto* textfield_ptr = textfield.get();
+  AddLabelAndField(model->label(GetPassKey()), std::move(textfield),
+                   textfield_ptr->GetFontList());
+
+  return textfield_ptr;
 }
 
 void BubbleDialogModelHost::AddLabelAndField(const base::string16& label_text,
@@ -358,6 +424,44 @@ View* BubbleDialogModelHost::FieldToView(ui::DialogModelField* field) {
 
   NOTREACHED();
   return nullptr;
+}
+
+std::unique_ptr<View> BubbleDialogModelHost::CreateViewForLabel(
+    const ui::DialogModelLabel& dialog_label) {
+  if (!dialog_label.links(GetPassKey()).empty()) {
+    // Label contains links so it needs a styled label.
+
+    // TODO(pbos): Make sure this works for >1 link, it uses .front() now.
+    DCHECK_EQ(dialog_label.links(GetPassKey()).size(), 1u);
+
+    size_t offset;
+    const base::string16 link_text = l10n_util::GetStringUTF16(
+        dialog_label.links(GetPassKey()).front().message_id);
+    const base::string16 text = l10n_util::GetStringFUTF16(
+        dialog_label.message_id(GetPassKey()), link_text, &offset);
+
+    auto styled_label = std::make_unique<StyledLabel>();
+    styled_label->SetText(text);
+    styled_label->AddStyleRange(
+        gfx::Range(offset, offset + link_text.length()),
+        StyledLabel::RangeStyleInfo::CreateForLink(
+            dialog_label.links(GetPassKey()).front().callback));
+
+    styled_label->SetDefaultTextStyle(dialog_label.is_secondary(GetPassKey())
+                                          ? style::STYLE_SECONDARY
+                                          : style::STYLE_PRIMARY);
+
+    return styled_label;
+  }
+
+  auto text_label = std::make_unique<Label>(
+      l10n_util::GetStringUTF16(dialog_label.message_id(GetPassKey())),
+      style::CONTEXT_DIALOG_BODY_TEXT,
+      dialog_label.is_secondary(GetPassKey()) ? style::STYLE_SECONDARY
+                                              : style::STYLE_PRIMARY);
+  text_label->SetMultiLine(true);
+  text_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  return text_label;
 }
 
 }  // namespace views

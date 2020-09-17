@@ -3,9 +3,37 @@
 // found in the LICENSE file.
 
 #include "ui/base/models/dialog_model_field.h"
+#include "base/bind.h"
 #include "ui/base/models/dialog_model.h"
 
 namespace ui {
+
+DialogModelLabel::Link::Link(int message_id, Callback callback)
+    : message_id(message_id), callback(std::move(callback)) {}
+DialogModelLabel::Link::Link(int message_id, base::RepeatingClosure closure)
+    : Link(message_id,
+           base::BindRepeating([](base::RepeatingClosure closure,
+                                  const Event& event) { closure.Run(); },
+                               std::move(closure))) {}
+DialogModelLabel::Link::Link(const Link&) = default;
+DialogModelLabel::Link::~Link() = default;
+
+DialogModelLabel::DialogModelLabel(int message_id) : message_id_(message_id) {}
+DialogModelLabel::DialogModelLabel(int message_id, std::vector<Link> links)
+    : message_id_(message_id), links_(std::move(links)) {}
+
+DialogModelLabel::DialogModelLabel(const DialogModelLabel&) = default;
+
+DialogModelLabel::~DialogModelLabel() = default;
+
+DialogModelLabel DialogModelLabel::CreateWithLink(int message_id, Link link) {
+  return CreateWithLinks(message_id, {link});
+}
+
+DialogModelLabel DialogModelLabel::CreateWithLinks(int message_id,
+                                                   std::vector<Link> links) {
+  return DialogModelLabel(message_id, std::move(links));
+}
 
 DialogModelField::DialogModelField(util::PassKey<DialogModel>,
                                    DialogModel* model,
@@ -30,6 +58,11 @@ DialogModelBodyText* DialogModelField::AsBodyText(
   return AsBodyText();
 }
 
+DialogModelCheckbox* DialogModelField::AsCheckbox(
+    util::PassKey<DialogModelHost>) {
+  return AsCheckbox();
+}
+
 DialogModelCombobox* DialogModelField::AsCombobox(
     util::PassKey<DialogModelHost>) {
   return AsCombobox();
@@ -48,6 +81,11 @@ DialogModelButton* DialogModelField::AsButton() {
 DialogModelBodyText* DialogModelField::AsBodyText() {
   DCHECK_EQ(type_, kBodyText);
   return static_cast<DialogModelBodyText*>(this);
+}
+
+DialogModelCheckbox* DialogModelField::AsCheckbox() {
+  DCHECK_EQ(type_, kCheckbox);
+  return static_cast<DialogModelCheckbox*>(this);
 }
 
 DialogModelCombobox* DialogModelField::AsCombobox() {
@@ -99,25 +137,35 @@ void DialogModelButton::OnPressed(util::PassKey<DialogModelHost>,
   callback_.Run(event);
 }
 
-DialogModelBodyText::Params& DialogModelBodyText::Params::SetIsSecondary() {
-  is_secondary_ = true;
-  return *this;
-}
-
-DialogModelBodyText::DialogModelBodyText(
-    util::PassKey<DialogModel> pass_key,
-    DialogModel* model,
-    base::string16 text,
-    const DialogModelBodyText::Params& params)
+DialogModelBodyText::DialogModelBodyText(util::PassKey<DialogModel> pass_key,
+                                         DialogModel* model,
+                                         const DialogModelLabel& label)
     : DialogModelField(pass_key,
                        model,
                        kBodyText,
                        -1,
                        base::flat_set<Accelerator>()),
-      text_(std::move(text)),
-      is_secondary_(params.is_secondary_) {}
+      label_(label) {}
 
 DialogModelBodyText::~DialogModelBodyText() = default;
+
+DialogModelCheckbox::DialogModelCheckbox(util::PassKey<DialogModel> pass_key,
+                                         DialogModel* model,
+                                         int unique_id,
+                                         const DialogModelLabel& label)
+    : DialogModelField(pass_key,
+                       model,
+                       kCheckbox,
+                       unique_id,
+                       base::flat_set<Accelerator>()),
+      label_(label) {}
+
+DialogModelCheckbox::~DialogModelCheckbox() = default;
+
+void DialogModelCheckbox::OnChecked(util::PassKey<DialogModelHost>,
+                                    bool is_checked) {
+  is_checked_ = is_checked;
+}
 
 DialogModelCombobox::Params::Params() = default;
 DialogModelCombobox::Params::~Params() = default;
