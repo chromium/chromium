@@ -251,6 +251,8 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD1(SetInfoBox, void(const InfoBox& info_box));
   MOCK_METHOD0(ClearInfoBox, void());
   MOCK_METHOD1(SetProgress, void(int progress));
+  MOCK_METHOD1(SetProgressActiveStepIdentifier,
+               bool(const std::string& active_step_identifier));
   MOCK_METHOD1(SetProgressActiveStep, void(int active_step));
   MOCK_METHOD1(SetProgressVisible, void(bool visible));
   MOCK_METHOD1(SetProgressBarErrorState, void(bool error));

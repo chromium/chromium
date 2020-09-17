@@ -233,6 +233,8 @@ class ScriptExecutor : public ActionDelegate,
   void ClearInfoBox() override;
   void SetInfoBox(const InfoBox& info_box) override;
   void SetProgress(int progress) override;
+  bool SetProgressActiveStepIdentifier(
+      const std::string& active_step_identifier) override;
   void SetProgressActiveStep(int active_step) override;
   void SetProgressVisible(bool visible) override;
   void SetProgressBarErrorState(bool error) override;

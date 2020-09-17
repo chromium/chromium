@@ -103,6 +103,11 @@ void FakeScriptExecutorDelegate::ClearInfoBox() {
 
 void FakeScriptExecutorDelegate::SetProgress(int progress) {}
 
+bool FakeScriptExecutorDelegate::SetProgressActiveStepIdentifier(
+    const std::string& active_step_identifier) {
+  return true;
+}
+
 void FakeScriptExecutorDelegate::SetProgressActiveStep(int active_step) {}
 
 void FakeScriptExecutorDelegate::SetProgressVisible(bool visible) {}

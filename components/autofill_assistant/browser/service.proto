@@ -1186,9 +1186,17 @@ message ShowProgressBarProto {
     // |step_icons|) indicating the current step the flow is in, marking
     // all previous steps as complete. The active step will not be marked as
     // complete but instead be marked as active with a pulsating animation.
-    // Setting the value to |N| will mark all steps as complete with no step
-    // being active anymore.
+    // Setting the value to |N| or -1 will mark all steps as complete with no
+    // step being active anymore.
     int32 active_step = 8;
+
+    // The string reference of an icon defined in the
+    // |StepProgressBarConfiguration|. This sets the |active_step| to that icon
+    // with the same logic as |active_step| itself.
+    string active_step_identifier = 11;
+
+    // Completes the progress in whichever progress bar is active.
+    bool complete_progress = 12;
   }
 
   // Whether the step progress bar should go into an error state.
@@ -1199,6 +1207,13 @@ message ShowProgressBarProto {
 
   // Hide the progress bar in the UI.
   optional bool hide = 7;
+
+  message StepProgressBarIcon {
+    optional DrawableProto icon = 1;
+
+    // The reference identifier of this step.
+    optional string identifier = 2;
+  }
 
   // The configuration of the step progress bar. Only has an impact if the new
   // progress bar is being used. This configuration should only be sent once in
@@ -1213,7 +1228,9 @@ message ShowProgressBarProto {
     // Set the icons for the new progress bar. The size of the |step_icons|
     // gives the length of the progress bar. As such an empty list is not
     // supported. The list needs to be at least 2 items long.
-    repeated DrawableProto step_icons = 2;
+    repeated StepProgressBarIcon annotated_step_icons = 3;
+
+    reserved 2;
   }
   optional StepProgressBarConfiguration step_progress_bar_configuration = 9;
 

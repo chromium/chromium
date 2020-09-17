@@ -85,7 +85,7 @@ TEST_F(ShowProgressBarActionTest, ShowsProgressBar) {
 TEST_F(ShowProgressBarActionTest, FewerThanTwoStepsProgressBarFailsAction) {
   auto* config = proto_.mutable_step_progress_bar_configuration();
   config->set_use_step_progress_bar(true);
-  config->add_step_icons()->set_icon(
+  config->add_annotated_step_icons()->mutable_icon()->set_icon(
       DrawableProto::PROGRESSBAR_DEFAULT_INITIAL_STEP);
 
   EXPECT_CALL(mock_action_delegate_, SetStepProgressBarConfiguration(_))
@@ -99,9 +99,9 @@ TEST_F(ShowProgressBarActionTest, FewerThanTwoStepsProgressBarFailsAction) {
 TEST_F(ShowProgressBarActionTest, UpdateStepProgressBarConfiguration) {
   auto* config = proto_.mutable_step_progress_bar_configuration();
   config->set_use_step_progress_bar(true);
-  config->add_step_icons()->set_icon(
+  config->add_annotated_step_icons()->mutable_icon()->set_icon(
       DrawableProto::PROGRESSBAR_DEFAULT_INITIAL_STEP);
-  config->add_step_icons()->set_icon(
+  config->add_annotated_step_icons()->mutable_icon()->set_icon(
       DrawableProto::PROGRESSBAR_DEFAULT_FINAL_STEP);
 
   EXPECT_CALL(mock_action_delegate_, SetStepProgressBarConfiguration(_));
@@ -152,25 +152,47 @@ TEST_F(ShowProgressBarActionTest, SetActiveStep) {
   Run();
 }
 
-TEST_F(ShowProgressBarActionTest, SetActiveStepWithError) {
-  proto_.set_active_step(2);
-  proto_.set_error_state(true);
+TEST_F(ShowProgressBarActionTest, SetActiveStepFromIdentifier) {
+  proto_.set_active_step_identifier("id");
 
-  EXPECT_CALL(mock_action_delegate_, SetProgressActiveStep(2));
-  EXPECT_CALL(mock_action_delegate_, SetProgressBarErrorState(2));
+  EXPECT_CALL(mock_action_delegate_, SetProgressActiveStepIdentifier("id"))
+      .WillOnce(Return(true));
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
   Run();
 }
 
-TEST_F(ShowProgressBarActionTest, OutOfBoundsActiveStepFailsAction) {
-  proto_.set_active_step(-1);
+TEST_F(ShowProgressBarActionTest, SetActiveStepFromUnknownIdentifier) {
+  proto_.set_active_step_identifier("unknown id");
 
-  EXPECT_CALL(mock_action_delegate_, SetProgressActiveStep(_)).Times(0);
+  EXPECT_CALL(mock_action_delegate_,
+              SetProgressActiveStepIdentifier("unknown id"))
+      .WillOnce(Return(false));
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, INVALID_ACTION))));
+  Run();
+}
+
+TEST_F(ShowProgressBarActionTest, SetProgressToComplete) {
+  proto_.set_complete_progress(true);
+
+  EXPECT_CALL(mock_action_delegate_, SetProgress(100));
+  EXPECT_CALL(mock_action_delegate_, SetProgressActiveStep(-1));
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  Run();
+}
+
+TEST_F(ShowProgressBarActionTest, SetErrorState) {
+  proto_.set_error_state(true);
+
+  EXPECT_CALL(mock_action_delegate_, SetProgressBarErrorState(true));
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
   Run();
 }
 

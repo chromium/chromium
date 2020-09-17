@@ -496,14 +496,15 @@ void UiControllerAndroid::OnStepProgressBarConfigurationChanged(
   auto jmodel = GetHeaderModel();
   Java_AssistantHeaderModel_setUseStepProgressBar(
       env, jmodel, configuration.use_step_progress_bar());
-  if (!configuration.step_icons().empty()) {
+  if (!configuration.annotated_step_icons().empty()) {
     auto jcontext =
         Java_AutofillAssistantUiController_getContext(env, java_object_);
     auto jlist = Java_AssistantHeaderModel_createIconList(env);
-    for (const auto& icon : configuration.step_icons()) {
+    for (const auto& icon : configuration.annotated_step_icons()) {
       Java_AssistantHeaderModel_addStepProgressBarIcon(
           env, jlist,
-          ui_controller_android_utils::CreateJavaDrawable(env, jcontext, icon));
+          ui_controller_android_utils::CreateJavaDrawable(env, jcontext,
+                                                          icon.icon()));
     }
     Java_AssistantHeaderModel_setStepProgressBarIcons(env, jmodel, jlist);
   }

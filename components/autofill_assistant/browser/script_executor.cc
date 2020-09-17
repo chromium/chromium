@@ -552,6 +552,11 @@ void ScriptExecutor::SetProgress(int progress) {
   delegate_->SetProgress(progress);
 }
 
+bool ScriptExecutor::SetProgressActiveStepIdentifier(
+    const std::string& active_step_identifier) {
+  return delegate_->SetProgressActiveStepIdentifier(active_step_identifier);
+}
+
 void ScriptExecutor::SetProgressActiveStep(int active_step) {
   delegate_->SetProgressActiveStep(active_step);
 }

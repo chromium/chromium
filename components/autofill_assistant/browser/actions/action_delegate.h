@@ -336,10 +336,15 @@ class ActionDelegate {
   // Sets or updates info box.
   virtual void SetInfoBox(const InfoBox& infoBox) = 0;
 
-  // Show the progress bar and set it at |progress|%.
+  // Set the progress bar at |progress|%.
   virtual void SetProgress(int progress) = 0;
 
-  // Show the progress bar and set the |active_step| to active.
+  // Set the progress bar at the |active_step| linked to the given
+  // |active_step_identifier|.
+  virtual bool SetProgressActiveStepIdentifier(
+      const std::string& active_step_identifier) = 0;
+
+  // Set the progress bar at the |active_step|.
   virtual void SetProgressActiveStep(int active_step) = 0;
 
   // Shows the progress bar when |visible| is true. Hides it when false.

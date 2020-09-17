@@ -273,15 +273,53 @@ void Controller::SetProgress(int progress) {
   }
 }
 
+bool Controller::SetProgressActiveStepIdentifier(
+    const std::string& active_step_identifier) {
+  if (!step_progress_bar_configuration_.has_value()) {
+    return false;
+  }
+
+  auto it = std::find_if(
+      step_progress_bar_configuration_->annotated_step_icons().cbegin(),
+      step_progress_bar_configuration_->annotated_step_icons().cend(),
+      [&](const ShowProgressBarProto::StepProgressBarIcon& icon) {
+        return icon.identifier() == active_step_identifier;
+      });
+  if (it == step_progress_bar_configuration_->annotated_step_icons().cend()) {
+    return false;
+  }
+
+  SetProgressActiveStep(
+      std::distance(
+          step_progress_bar_configuration_->annotated_step_icons().cbegin(),
+          it) +
+      1);
+  return true;
+}
+
 void Controller::SetProgressActiveStep(int active_step) {
-  // Step can only increase.
-  if (progress_active_step_ >= active_step) {
+  if (!step_progress_bar_configuration_.has_value()) {
     return;
   }
 
-  progress_active_step_ = active_step;
+  // Default step progress bar has 2 steps.
+  int max_step = std::max(
+      2, step_progress_bar_configuration_->annotated_step_icons().size());
+
+  int new_active_step = active_step;
+  if (active_step < 0 || active_step > max_step) {
+    new_active_step = max_step;
+  }
+
+  // Step can only increase.
+  if (progress_active_step_.has_value() &&
+      *progress_active_step_ >= new_active_step) {
+    return;
+  }
+
+  progress_active_step_ = new_active_step;
   for (ControllerObserver& observer : observers_) {
-    observer.OnProgressActiveStepChanged(active_step);
+    observer.OnProgressActiveStepChanged(new_active_step);
   }
 }
 
@@ -302,10 +340,10 @@ bool Controller::GetProgressVisible() const {
 void Controller::SetStepProgressBarConfiguration(
     const ShowProgressBarProto::StepProgressBarConfiguration& configuration) {
   step_progress_bar_configuration_ = configuration;
-  if (!configuration.step_icons().empty() &&
+  if (!configuration.annotated_step_icons().empty() &&
       progress_active_step_.has_value() &&
-      configuration.step_icons().size() < *progress_active_step_) {
-    progress_active_step_ = configuration.step_icons().size();
+      configuration.annotated_step_icons().size() < *progress_active_step_) {
+    progress_active_step_ = configuration.annotated_step_icons().size();
   }
   for (ControllerObserver& observer : observers_) {
     observer.OnStepProgressBarConfigurationChanged(configuration);
