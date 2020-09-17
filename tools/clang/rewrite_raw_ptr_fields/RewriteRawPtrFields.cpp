@@ -1063,6 +1063,12 @@ int main(int argc, const char* argv[]) {
                                               "global-destructor");
   match_finder.addMatcher(global_destructor_matcher, &global_destructor_writer);
 
+  // Matches fields in unions - see the testcases in tests/gen-unions-test.cc.
+  auto union_field_decl_matcher = fieldDecl(
+      allOf(field_decl_matcher, hasParent(decl(recordDecl(isUnion())))));
+  FilteredExprWriter union_field_decl_writer(&output_helper, "union");
+  match_finder.addMatcher(union_field_decl_matcher, &union_field_decl_writer);
+
   // Prepare and run the tool.
   std::unique_ptr<clang::tooling::FrontendActionFactory> factory =
       clang::tooling::newFrontendActionFactory(&match_finder, &output_helper);
