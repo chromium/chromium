@@ -7,12 +7,13 @@ module crosapi.mojom;
 import "chromeos/crosapi/mojom/bitmap.mojom";
 
 // A unique identifier and title for a window.
+[Stable]
 struct WindowDetails {
   // Guaranteed to be unique and never reused.
-  uint64 id;
+  uint64 id@0;
 
   // The title of the window in UTF-8 encoding.
-  string title;
+  string title@1;
 };
 
 // This interface is implemented by ash-chrome. It allows lacros-chrome to query
@@ -26,6 +27,7 @@ struct WindowDetails {
 // TODO(https://crbug.com/1094460): This is a very simple interface. We will
 // likely want to replace it with a more feature-complete and performant
 // interface in the future.
+[Stable]
 interface ScreenManager {
   // TODO(https://crbug.com/1094460): We will need to add more methods for
   // querying screens, windows, etc. Details still TBD.

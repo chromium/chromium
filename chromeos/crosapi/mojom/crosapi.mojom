@@ -15,6 +15,7 @@ import "services/device/public/mojom/hid.mojom";
 
 // AshChromeService defines the APIs that live in ash-chrome and are
 // accessed from lacros-chrome.
+[Stable]
 interface AshChromeService {
   // Binds the KeystoreService interface for challenging keys.
   BindKeystoreService@2(pending_receiver<KeystoreService> receiver);
@@ -35,12 +36,14 @@ interface AshChromeService {
 
 // LacrosInitParams is a set of parameters for initialization of lacros-chrome,
 // which is passed from ash-chrome.
+[Stable]
 struct LacrosInitParams {
   // This is placeholder, so now it is empty.
 };
 
 // LacrosChromeService defines the APIs that live in lacros-chrome and
 // are accessed from ash-chrome.
+[Stable]
 interface LacrosChromeService {
   // Ash-chrome can pass initialize parameters via this method.
   // The parameters are available on lacros-chrome startup.
