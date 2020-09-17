@@ -118,6 +118,18 @@ class KeyPermissionsManager {
   virtual bool CanUserGrantPermissionFor(
       const std::string& public_key_spki_der,
       const std::vector<platform_keys::TokenId>& key_locations) const = 0;
+
+  // Returns true if the key identified by |public_key_spki_der| that is
+  // located on |key_locations| is marked for corporate usage.
+  virtual bool IsCorporateKey(
+      const std::string& public_key_spki_der,
+      const std::vector<platform_keys::TokenId>& key_locations) const = 0;
+
+  // Marks the key identified by |public_key_spki_der| as corporate usage.
+  // Accepts a single key location because this is intended for usage after key
+  // generation / import, when exactly one location is relevant.
+  virtual void SetCorporateKey(const std::string& public_key_spki_der,
+                               platform_keys::TokenId key_location) const = 0;
 };
 
 }  // namespace platform_keys
