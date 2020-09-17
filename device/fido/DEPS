@@ -6,6 +6,7 @@ include_rules = [
   "+dbus",
   "+net/base",
   "+net/cert",
+  "+net/cookies",
   "+net/traffic_annotation",
   "+services/network",
   "+third_party/boringssl/src/include",

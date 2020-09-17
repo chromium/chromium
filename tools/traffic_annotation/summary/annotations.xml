@@ -30,7 +30,8 @@ Refer to README.md for content description and update process.
  <item id="bluetooth_socket" added_in_milestone="65" hash_code="94099818" type="0" content_hash_code="30932349" os_list="linux,windows" file_path="device/bluetooth/bluetooth_socket_net.cc"/>
  <item id="brandcode_config" added_in_milestone="62" hash_code="109679553" type="0" content_hash_code="128843792" os_list="linux,windows" file_path="chrome/browser/profile_resetter/brandcode_config_fetcher.cc"/>
  <item id="browser_switcher_ieem_sitelist" added_in_milestone="72" hash_code="97159948" type="0" content_hash_code="129062966" os_list="linux,windows" file_path="chrome/browser/browser_switcher/browser_switcher_service.cc"/>
- <item id="cablev2_websocket_from_client" added_in_milestone="86" hash_code="3464399" type="0" content_hash_code="46324469" os_list="windows,linux" file_path="device/fido/cable/fido_tunnel_device.cc"/>
+ <item id="cablev2_websocket_from_authenticator" added_in_milestone="87" hash_code="28613769" type="0" content_hash_code="119863612" os_list="linux,windows" file_path="device/fido/cable/v2_authenticator.cc"/>
+ <item id="cablev2_websocket_from_client" added_in_milestone="86" hash_code="3464399" type="0" content_hash_code="116618103" os_list="windows,linux" file_path="device/fido/cable/fido_tunnel_device.cc"/>
  <item id="captive_portal_service" added_in_milestone="62" hash_code="88754904" type="0" content_hash_code="70737580" os_list="linux,windows" file_path="components/captive_portal/content/captive_portal_service.cc"/>
  <item id="cast_channel_send" added_in_milestone="66" hash_code="103172229" type="0" deprecated="2018-08-23" content_hash_code="33946302" file_path=""/>
  <item id="cast_keep_alive_delegate" added_in_milestone="66" hash_code="134755844" type="0" deprecated="2018-08-23" content_hash_code="66118796" file_path=""/>
