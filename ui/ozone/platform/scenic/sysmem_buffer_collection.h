@@ -39,18 +39,18 @@ class SysmemBufferCollection
   SysmemBufferCollection();
   explicit SysmemBufferCollection(gfx::SysmemBufferCollectionId id);
 
+  // Initializes the buffer collection and registers it with Vulkan using the
+  // specified |vk_device|. If |token_handle| is null then a new collection
+  // collection is created. |size| may be empty. In that case |token_handle|
+  // must not be null and the image size is determined by the other sysmem
+  // participants.
   bool Initialize(fuchsia::sysmem::Allocator_Sync* allocator,
+                  zx::channel token_handle,
                   gfx::Size size,
                   gfx::BufferFormat format,
                   gfx::BufferUsage usage,
                   VkDevice vk_device,
-                  size_t num_buffers);
-
-  bool Initialize(fuchsia::sysmem::Allocator_Sync* allocator,
-                  VkDevice vk_device,
-                  zx::channel token,
-                  gfx::BufferFormat format,
-                  gfx::BufferUsage usage,
+                  size_t min_buffer_count,
                   bool force_protected);
 
   // Must not be called more than once.

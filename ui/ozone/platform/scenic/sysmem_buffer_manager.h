@@ -47,8 +47,10 @@ class SysmemBufferManager {
       VkDevice vk_device,
       gfx::SysmemBufferCollectionId id,
       zx::channel token,
+      gfx::Size size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
+      size_t min_buffer_count,
       bool force_protected);
 
   scoped_refptr<SysmemBufferCollection> GetCollectionById(

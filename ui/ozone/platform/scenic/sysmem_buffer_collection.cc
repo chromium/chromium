@@ -129,11 +129,13 @@ SysmemBufferCollection::SysmemBufferCollection(gfx::SysmemBufferCollectionId id)
 
 bool SysmemBufferCollection::Initialize(
     fuchsia::sysmem::Allocator_Sync* allocator,
+    zx::channel token_handle,
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     VkDevice vk_device,
-    size_t num_buffers) {
+    size_t min_buffer_count,
+    bool force_protected) {
   DCHECK(IsNativePixmapConfigSupported(format, usage));
   DCHECK(!collection_);
   DCHECK(!vk_buffer_collection_);
@@ -143,51 +145,41 @@ bool SysmemBufferCollection::Initialize(
   if (vk_device == VK_NULL_HANDLE)
     return false;
 
-  min_size_ = size;
+  if (size.IsEmpty()) {
+    // Buffer collection that doesn't have explicit size is expected to be
+    // shared with other participants, who will determine the actual image size.
+    DCHECK(token_handle);
+
+    // Set nominal size of 1x1, which will be used only for
+    // vkSetBufferCollectionConstraintsFUCHSIA(). The actual size of the
+    // allocated buffers is determined by constraints set by other sysmem
+    // clients for the same collection. Size of the Vulkan image is determined
+    // by the values passed to CreateVkImage().
+    min_size_ = gfx::Size(1, 1);
+  } else {
+    min_size_ = size;
+  }
+
   format_ = format;
   usage_ = usage;
   vk_device_ = vk_device;
+  is_protected_ = force_protected;
 
   fuchsia::sysmem::BufferCollectionTokenSyncPtr collection_token;
-  zx_status_t status =
-      allocator->AllocateSharedCollection(collection_token.NewRequest());
-  if (status != ZX_OK) {
-    ZX_DLOG(ERROR, status)
-        << "fuchsia.sysmem.Allocator.AllocateSharedCollection()";
-    return false;
+  if (token_handle) {
+    collection_token.Bind(std::move(token_handle));
+  } else {
+    zx_status_t status =
+        allocator->AllocateSharedCollection(collection_token.NewRequest());
+    if (status != ZX_OK) {
+      ZX_DLOG(ERROR, status)
+          << "fuchsia.sysmem.Allocator.AllocateSharedCollection()";
+      return false;
+    }
   }
 
   return InitializeInternal(allocator, std::move(collection_token),
-                            num_buffers);
-}
-
-bool SysmemBufferCollection::Initialize(
-    fuchsia::sysmem::Allocator_Sync* allocator,
-    VkDevice vk_device,
-    zx::channel token_handle,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    bool force_protected) {
-  DCHECK(!collection_);
-  DCHECK(!vk_buffer_collection_);
-
-  // Set nominal size of 1x1, which will be used only for
-  // vkSetBufferCollectionConstraintsFUCHSIA(). The actual size of the allocated
-  // buffers is determined by constraints set by other sysmem clients for the
-  // same collection. Size of the Vulkan image is determined by the valus passed
-  // to CreateVkImage().
-  min_size_ = gfx::Size(1, 1);
-
-  vk_device_ = vk_device;
-  format_ = format;
-  usage_ = usage;
-  is_protected_ = force_protected;
-
-  fuchsia::sysmem::BufferCollectionTokenSyncPtr token;
-  token.Bind(std::move(token_handle));
-
-  return InitializeInternal(allocator, std::move(token),
-                            /*buffers_for_camping=*/0);
+                            min_buffer_count);
 }
 
 scoped_refptr<gfx::NativePixmap> SysmemBufferCollection::CreateNativePixmap(
