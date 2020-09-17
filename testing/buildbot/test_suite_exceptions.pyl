@@ -685,7 +685,6 @@
       'android-asan',  # https://crbug.com/964562
       'android-code-coverage-native', # https://crbug.com/1018780
       'android-lollipop-arm-rel', # https://crbug.com/1060245
-      'android-pie-x86-rel', # crbug.com/1126536
     ],
     'modifications': {
       'Android CFI': {
@@ -1932,7 +1931,6 @@
       'Marshmallow Tablet Tester',
       'android-code-coverage-native', # https://crbug.com/1018780
       'android-marshmallow-x86-rel', # crbug.com/1098111
-      'android-pie-x86-rel', # crbug.com/1126536
     ],
     'modifications': {
       'Android CFI': {
