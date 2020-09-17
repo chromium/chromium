@@ -31,6 +31,8 @@
 #include "components/tracing/common/tracing_switches.h"
 #include "content/app/content_main_runner_impl.h"
 #include "content/common/mojo_core_library_support.h"
+#include "content/common/set_process_title.h"
+#include "content/common/shared_file_util.h"
 #include "content/public/app/content_main_delegate.h"
 #include "content/public/common/content_switches.h"
 #include "mojo/core/embedder/configuration.h"
@@ -40,8 +42,6 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/dynamic_library_support.h"
 #include "sandbox/policy/sandbox_type.h"
-#include "services/service_manager/embedder/set_process_title.h"
-#include "services/service_manager/embedder/shared_file_util.h"
 #include "services/service_manager/embedder/switches.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/base/ui_base_switches.h"
@@ -117,7 +117,7 @@ void PopulateFDsFromCommandLine() {
     return;
 
   base::Optional<std::map<int, std::string>> shared_file_descriptors =
-      service_manager::ParseSharedFileSwitchValue(shared_file_param);
+      ParseSharedFileSwitchValue(shared_file_param);
   if (!shared_file_descriptors)
     return;
 
@@ -270,7 +270,7 @@ int RunContentProcess(const ContentMainParams& params,
 
     base::EnableTerminationOnHeapCorruption();
 
-    service_manager::SetProcessTitleFromCommandLine(argv);
+    SetProcessTitleFromCommandLine(argv);
 #endif  // !defined(OS_ANDROID)
 
 // On Android setlocale() is not supported, and we don't override the signal

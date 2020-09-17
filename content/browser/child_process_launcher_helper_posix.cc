@@ -11,12 +11,12 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "content/browser/posix_file_descriptor_info_impl.h"
+#include "content/common/shared_file_util.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
-#include "services/service_manager/embedder/shared_file_util.h"
 #include "services/service_manager/embedder/switches.h"
 
 namespace content {
@@ -75,7 +75,7 @@ std::unique_ptr<PosixFileDescriptorInfo> CreateDefaultPosixFilesToMap(
 
   // Also include the files specified explicitly by |files_to_preload|.
   base::GlobalDescriptors::Key key = kContentDynamicDescriptorStart;
-  service_manager::SharedFileSwitchValueBuilder file_switch_value_builder;
+  SharedFileSwitchValueBuilder file_switch_value_builder;
   for (const auto& key_path_iter : files_to_preload) {
     base::MemoryMappedFile::Region region;
     base::PlatformFile file =

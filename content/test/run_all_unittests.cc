@@ -10,7 +10,7 @@
 #include "content/test/content_test_suite.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#include "services/service_manager/embedder/set_process_title_linux.h"
+#include "content/common/set_process_title_linux.h"
 #endif
 
 int main(int argc, char** argv) {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_SERVICE_MANAGER_EMBEDDER_SET_PROCESS_TITLE_LINUX_H_
-#define SERVICES_SERVICE_MANAGER_EMBEDDER_SET_PROCESS_TITLE_LINUX_H_
+#ifndef CONTENT_COMMON_SET_PROCESS_TITLE_LINUX_H_
+#define CONTENT_COMMON_SET_PROCESS_TITLE_LINUX_H_
 
 // Set the process title that will show in "ps" and similar tools. Takes
 // printf-style format string and arguments. After calling setproctitle()
@@ -19,4 +19,4 @@ void setproctitle(const char* fmt, ...);
 // from main() to setproctitle_init() before calling setproctitle().
 void setproctitle_init(const char** main_argv);
 
-#endif  // SERVICES_SERVICE_MANAGER_EMBEDDER_SET_PROCESS_TITLE_LINUX_H_
+#endif  // CONTENT_COMMON_SET_PROCESS_TITLE_LINUX_H_

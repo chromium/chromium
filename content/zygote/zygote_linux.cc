@@ -32,6 +32,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "content/common/set_process_title.h"
 #include "content/common/zygote/zygote_commands_linux.h"
 #include "content/public/common/zygote/send_zygote_child_ping_linux.h"
 #include "content/public/common/zygote/zygote_fork_delegate_linux.h"
@@ -42,7 +43,6 @@
 #include "sandbox/policy/sandbox.h"
 #include "services/service_manager/embedder/descriptors.h"
 #include "services/service_manager/embedder/result_codes.h"
-#include "services/service_manager/embedder/set_process_title.h"
 #include "services/service_manager/embedder/switches.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
@@ -610,7 +610,7 @@ base::ProcessId Zygote::ReadArgsAndFork(base::PickleIterator iter,
     // Update the process title. The argv was already cached by the call to
     // SetProcessTitleFromCommandLine in ChromeMain, so we can pass NULL here
     // (we don't have the original argv at this point).
-    service_manager::SetProcessTitleFromCommandLine(nullptr);
+    SetProcessTitleFromCommandLine(nullptr);
   } else if (child_pid < 0) {
     LOG(ERROR) << "Zygote could not fork: process_type " << process_type
                << " numfds " << numfds << " child_pid " << child_pid;

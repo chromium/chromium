@@ -15,13 +15,13 @@
 #include "base/unguessable_token.h"
 #include "content/child/child_thread_impl.h"
 #include "content/common/android/surface_wrapper.h"
+#include "content/common/shared_file_util.h"
 #include "content/public/android/content_jni_headers/ContentChildProcessServiceDelegate_jni.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_switches.h"
 #include "gpu/command_buffer/service/texture_owner.h"
 #include "gpu/ipc/common/android/scoped_surface_request_conduit.h"
 #include "gpu/ipc/common/gpu_surface_lookup.h"
-#include "services/service_manager/embedder/shared_file_util.h"
 #include "services/service_manager/embedder/switches.h"
 #include "ui/gl/android/scoped_java_surface.h"
 #include "ui/gl/android/surface_texture.h"
@@ -163,7 +163,7 @@ void JNI_ContentChildProcessServiceDelegate_RetrieveFileDescriptorsIdsToKeys(
   std::vector<std::string> keys;
   if (!file_switch_value.empty()) {
     base::Optional<std::map<int, std::string>> ids_to_keys_from_command_line =
-        service_manager::ParseSharedFileSwitchValue(file_switch_value);
+        ParseSharedFileSwitchValue(file_switch_value);
     if (ids_to_keys_from_command_line) {
       for (auto iter : *ids_to_keys_from_command_line) {
         ids.push_back(iter.first);

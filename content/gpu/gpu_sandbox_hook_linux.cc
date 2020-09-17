@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "content/common/set_process_title.h"
 #include "content/public/common/content_switches.h"
 #include "media/gpu/buildflags.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
@@ -31,7 +32,6 @@
 #include "sandbox/policy/linux/bpf_cros_arm_gpu_policy_linux.h"
 #include "sandbox/policy/linux/bpf_gpu_policy_linux.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
-#include "services/service_manager/embedder/set_process_title.h"
 
 using sandbox::bpf_dsl::Policy;
 using sandbox::syscall_broker::BrokerFilePermission;
@@ -459,7 +459,7 @@ bool BrokerProcessPreSandboxHook(
   // Oddly enough, we call back into gpu to invoke this service manager
   // method, since it is part of the embedder component, and the service
   // mananger's sandbox component is a lower layer that can't depend on it.
-  service_manager::SetProcessTitleFromCommandLine(nullptr);
+  SetProcessTitleFromCommandLine(nullptr);
   return true;
 }
 

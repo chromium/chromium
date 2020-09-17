@@ -10,7 +10,7 @@
 #define _GNU_SOURCE
 #endif
 
-#include "services/service_manager/embedder/set_process_title.h"
+#include "content/common/set_process_title.h"
 
 #include <stddef.h>
 
@@ -36,10 +36,10 @@
 #include "base/strings/string_util.h"
 #include "base/threading/platform_thread.h"
 // Linux/glibc doesn't natively have setproctitle().
-#include "services/service_manager/embedder/set_process_title_linux.h"
+#include "content/common/set_process_title_linux.h"
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
-namespace service_manager {
+namespace content {
 
 // TODO(jrg): Find out if setproctitle or equivalent is available on Android.
 #if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_SOLARIS) && \
@@ -106,4 +106,4 @@ void SetProcessTitleFromCommandLine(const char** /* main_argv */) {}
 
 #endif
 
-}  // namespace service_manager
+}  // namespace content

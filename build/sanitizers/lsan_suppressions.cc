@@ -56,7 +56,7 @@ char kLSanDefaultSuppressions[] =
     // test target with pre-existing leaks.
 
     // http://crbug.com/356306
-    "leak:service_manager::SetProcessTitleFromCommandLine\n"
+    "leak:content::SetProcessTitleFromCommandLine\n"
 
     // https://crbug.com/755670
     "leak:third_party/yasm/\n"

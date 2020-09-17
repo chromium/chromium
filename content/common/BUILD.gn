@@ -174,6 +174,10 @@ source_set("common") {
     "service_worker/service_worker_loader_helpers.h",
     "service_worker/service_worker_utils.cc",
     "service_worker/service_worker_utils.h",
+    "set_process_title.cc",
+    "set_process_title.h",
+    "shared_file_util.cc",
+    "shared_file_util.h",
     "skia_utils.cc",
     "skia_utils.h",
     "state_transitions.h",
@@ -349,7 +353,10 @@ source_set("common") {
       "zygote/zygote_communication_linux.cc",
       "zygote/zygote_communication_linux.h",
     ]
-    deps += [ "//third_party/fontconfig" ]
+    deps += [
+      ":set_process_title_linux",
+      "//third_party/fontconfig",
+    ]
   }
 
   if (use_zygote_handle) {
@@ -402,6 +409,14 @@ source_set("common") {
 
   if (use_clang_profiling_inside_sandbox) {
     sources += [ "profiling_utils.cc" ]
+  }
+}
+
+if (is_linux || is_chromeos) {
+  source_set("set_process_title_linux") {
+    public = [ "set_process_title_linux.h" ]
+    sources = [ "set_process_title_linux.cc" ]
+    deps = [ "//base" ]
   }
 }
 

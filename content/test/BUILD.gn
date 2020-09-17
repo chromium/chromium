@@ -1612,7 +1612,7 @@ static_library("run_all_unittests") {
     "//base/test:test_support",
   ]
   if (is_linux || is_chromeos) {
-    deps += [ "//services/service_manager/embedder:set_process_title_linux" ]
+    deps += [ "//content/common:set_process_title_linux" ]
   }
 }
 
@@ -2434,8 +2434,8 @@ test("content_unittests") {
   }
 
   if (is_linux || is_chromeos) {
-    sources += [ "../../services/service_manager/embedder/set_process_title_linux_unittest.cc" ]
-    deps += [ "//services/service_manager/embedder:set_process_title_linux" ]
+    sources += [ "../common/set_process_title_linux_unittest.cc" ]
+    deps += [ "//content/common:set_process_title_linux" ]
   }
 
   if (enable_vr) {

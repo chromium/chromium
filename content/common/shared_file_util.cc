@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/service_manager/embedder/shared_file_util.h"
+#include "content/common/shared_file_util.h"
 
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 
-namespace service_manager {
+namespace content {
 
 void SharedFileSwitchValueBuilder::AddEntry(const std::string& key_str,
                                             int key_id) {
@@ -47,4 +47,4 @@ base::Optional<std::map<int, std::string>> ParseSharedFileSwitchValue(
   return base::make_optional(std::move(values));
 }
 
-}  // namespace service_manager
+}  // namespace content

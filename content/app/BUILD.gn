@@ -23,7 +23,6 @@ content_app_deps = [
   "//crypto",
   "//mojo/core/embedder",
   "//ppapi/buildflags",
-  "//services/service_manager/embedder",
   "//services/service_manager/public/mojom",
   "//services/tracing/public/cpp",
   "//ui/base",
@@ -103,7 +102,6 @@ source_set("app") {
   deps = content_app_deps + [
            ":content_main_runner_app",
            "//ipc",
-           "//services/service_manager/embedder",
          ]
 
   # Only the public target should depend on this. All other targets (even

@@ -135,7 +135,6 @@ static_library("test_support") {
     "//pdf:pdf_ppapi",
     "//ppapi/buildflags",
     "//printing/buildflags",
-    "//services/service_manager/embedder",
     "//services/tracing/public/cpp",
     "//ui/base",
     "//v8:v8_headers",

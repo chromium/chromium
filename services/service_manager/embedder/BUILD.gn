@@ -4,54 +4,6 @@
 
 import("//testing/test.gni")
 
-if (!is_ios) {
-  # iOS embeds the Service Manager but does not use anything in this library.
-  # This avoids having an empty component library target, which can otherwise be
-  # problematic.
-  component("embedder") {
-    public = [
-      "set_process_title.h",
-      "shared_file_util.h",
-    ]
-
-    sources = [
-      "set_process_title.cc",
-      "shared_file_util.cc",
-    ]
-
-    deps = [
-      "//base:base_static",
-      "//base:i18n",
-      "//base/allocator:buildflags",
-      "//components/tracing:startup_tracing",
-    ]
-
-    public_deps = [
-      ":embedder_result_codes",
-      ":embedder_switches",
-      "//base",
-      "//mojo/core/embedder",
-      "//services/service_manager",
-      "//services/service_manager/public/cpp",
-      "//services/service_manager/public/cpp/service_executable:support",
-      "//services/service_manager/public/cpp/service_executable:switches",
-      "//services/service_manager/public/mojom",
-    ]
-
-    if (!is_nacl) {
-      # NaCl stuff should not depend on skia as it would require platform and
-      # cpu properties set.
-      deps += [ "//ui/base" ]
-    }
-
-    if (is_linux || is_chromeos) {
-      deps += [ ":set_process_title_linux" ]
-    }
-
-    defines = [ "IS_SERVICE_MANAGER_EMBEDDER_IMPL" ]
-  }
-}
-
 component("embedder_switches") {
   sources = [
     "switches.cc",
@@ -63,12 +15,4 @@ component("embedder_switches") {
 
 source_set("embedder_result_codes") {
   sources = [ "result_codes.h" ]
-}
-
-if (is_linux || is_chromeos) {
-  source_set("set_process_title_linux") {
-    public = [ "set_process_title_linux.h" ]
-    sources = [ "set_process_title_linux.cc" ]
-    deps = [ "//base" ]
-  }
 }

@@ -9,7 +9,7 @@
 // environment variables to processes. First, there are two char* arrays stored
 // one after another: argv and environ. A pointer to argv is passed to main(),
 // while glibc sets the global variable |environ| to point at the latter. Both
-// of these arrays are terminated by a NULL pointer; the environment array is
+// of these arrays are terminated by a null pointer; the environment array is
 // also followed by some empty space to allow additional variables to be added.
 //
 // These arrays contain pointers to a second location in memory, where the
@@ -37,7 +37,7 @@
 // this position within the glibc project, leaving applications caught in the
 // middle. (Also, only a very few applications need or want this anyway.)
 
-#include "services/service_manager/embedder/set_process_title_linux.h"
+#include "content/common/set_process_title_linux.h"
 
 #include <stdarg.h>
 #include <stddef.h>
@@ -70,7 +70,7 @@ void setproctitle(const char* fmt, ...) {
   va_list ap;
 
   // Sanity check before we try and set the process title.
-  // The BSD version allows fmt == NULL to restore the original title.
+  // The BSD version allows a null fmt to restore the original title.
   if (!g_orig_argv0 || !fmt)
     return;
 

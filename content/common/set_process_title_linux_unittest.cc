@@ -8,7 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_util.h"
-#include "services/service_manager/embedder/set_process_title_linux.h"
+#include "content/common/set_process_title_linux.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

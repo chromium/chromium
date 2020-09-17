@@ -235,7 +235,6 @@ if (!is_android && !is_mac) {
 
         # For headless mode.
         "//headless:headless_shell_lib",
-        "//services/service_manager/embedder",
       ]
 
       public_deps = [
@@ -332,7 +331,6 @@ if (is_win) {
       "//headless:headless_shell_browser_lib",
       "//net:net_resources",
       "//ppapi/buildflags",
-      "//services/service_manager/embedder",
       "//third_party/cld_3/src/src:cld_3",
       "//third_party/wtl",
       "//ui/views",
@@ -942,7 +940,6 @@ if (is_win) {
       "//content/public/app",
       "//content/public/common:service_names",
       "//headless:headless_shell_lib",
-      "//services/service_manager/embedder",
       "//third_party/cld_3/src/src:cld_3",
     ]
 
@@ -1508,7 +1505,6 @@ if (is_android) {
       "//components/services/heap_profiling",
       "//content/public/app",
       "//content/public/common:service_names",
-      "//services/service_manager/embedder",
     ]
 
     # Explicit dependency required for JNI registration to be able to

@@ -41,7 +41,6 @@ public_app_shared_deps = [
   "//content:export",
   "//content/public/common:common_sources",
   "//services/service_manager",
-  "//services/service_manager/embedder",
   "//services/service_manager/public/cpp",
 ]
 

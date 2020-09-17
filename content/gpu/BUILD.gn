@@ -73,7 +73,6 @@ target(link_target_type, "gpu_sources") {
     "//media/gpu/ipc/service",
     "//media/mojo/clients:clients",
     "//sandbox/policy:chromecast_sandbox_allowlist_buildflags",
-    "//services/service_manager/embedder",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
     "//services/shape_detection:lib",
