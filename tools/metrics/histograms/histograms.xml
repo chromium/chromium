@@ -127857,7 +127857,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccessPasswordInSettings"
-    enum="AccessPasswordInSettingsEvent" expires_after="M87">
+    enum="AccessPasswordInSettingsEvent" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -128602,7 +128602,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="PasswordManager.BlacklistedSitesHiRes"
-    units="sites" expires_after="M87">
+    units="sites" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -129083,7 +129083,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.FieldInfoTableRows" units="rows"
-    expires_after="M87">
+    expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -129445,7 +129445,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.JavaScriptOnlyValueInSubmittedForm"
-    enum="JavaScriptOnlyValueInPasswordForm" expires_after="M87">
+    enum="JavaScriptOnlyValueInPasswordForm" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -129520,7 +129520,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.AccessTokenFetchStatus"
-    enum="GoogleServiceAuthError" expires_after="M87">
+    enum="GoogleServiceAuthError" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -129530,7 +129530,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.AccessTokenNetErrorCode"
-    enum="NetErrorCodes" expires_after="M87">
+    enum="NetErrorCodes" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -129540,21 +129540,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.AnalyzeSingleLeakResponseResult"
-    enum="PasswordAnalyzeLeakResponseResult" expires_after="M87">
+    enum="PasswordAnalyzeLeakResponseResult" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>Result of analyzing a single leak response.</summary>
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.AnalyzeSingleLeakResponseTime"
-    units="ms" expires_after="M87">
+    units="ms" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>The time it took to analyze a single leak lookup response.</summary>
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.DialogDismissalReason"
-    enum="PasswordLeakDetectionDialogDismissalReason" expires_after="M87">
+    enum="PasswordLeakDetectionDialogDismissalReason" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -129564,7 +129564,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.Enabled" enum="BooleanEnabled"
-    expires_after="M87">
+    expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -129574,7 +129574,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.Error"
-    enum="PasswordLeakDetectionError" expires_after="M87">
+    enum="PasswordLeakDetectionError" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -129583,7 +129583,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.HttpResponseCode"
-    enum="HttpResponseCode" expires_after="M87">
+    enum="HttpResponseCode" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -129593,7 +129593,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.IsPasswordReused" enum="Boolean"
-    expires_after="M87">
+    expires_after="M92">
   <owner>vasilii@chromium.org</owner>
   <owner>jdoerrie@chromium.org</owner>
   <summary>
@@ -129603,7 +129603,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.IsPasswordSaved" enum="Boolean"
-    expires_after="M87">
+    expires_after="M92">
   <owner>vasilii@chromium.org</owner>
   <owner>jdoerrie@chromium.org</owner>
   <summary>
@@ -129612,7 +129612,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.IsSyncing" enum="Boolean"
-    expires_after="M87">
+    expires_after="M92">
   <owner>vasilii@chromium.org</owner>
   <owner>jdoerrie@chromium.org</owner>
   <summary>
@@ -129622,7 +129622,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.LookupSingleLeakResponseResult"
-    enum="PasswordLeakLookupResponseResult" expires_after="M87">
+    enum="PasswordLeakLookupResponseResult" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -129632,7 +129632,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.NetErrorCode"
-    enum="NetErrorCodes" expires_after="M87">
+    enum="NetErrorCodes" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -129642,7 +129642,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.NotifyIsLeakedTime" units="ms"
-    expires_after="M87">
+    expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -129652,7 +129652,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.ObtainAccessTokenTime"
-    units="ms" expires_after="M87">
+    units="ms" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -129662,7 +129662,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.PrepareSingleLeakRequestTime"
-    units="ms" expires_after="M87">
+    units="ms" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -129671,7 +129671,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.ReceiveSingleLeakResponseTime"
-    units="ms" expires_after="M87">
+    units="ms" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -129681,7 +129681,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.SingleLeakResponsePrefixes"
-    units="prefixes" expires_after="M87">
+    units="prefixes" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -129691,7 +129691,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.SingleLeakResponseSize"
-    units="bytes" expires_after="M87">
+    units="bytes" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -129782,7 +129782,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.ManagePasswordsReferrer"
-    enum="ManagePasswordsReferrer" expires_after="M87">
+    enum="ManagePasswordsReferrer" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -129804,7 +129804,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.MediationOptional"
-    enum="CredentialManagerGetResult" expires_after="M87">
+    enum="CredentialManagerGetResult" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -129814,7 +129814,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.MediationRequired"
-    enum="CredentialManagerGetResult" expires_after="M87">
+    enum="CredentialManagerGetResult" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -129825,7 +129825,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.MediationSilent"
-    enum="CredentialManagerGetResult" expires_after="M87">
+    enum="CredentialManagerGetResult" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -131037,7 +131037,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.TouchToFill.CredentialIndex" units="index"
-    expires_after="2020-09-30">
+    expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -131057,14 +131057,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.TouchToFill.NumCredentialsShown"
-    units="credentials" expires_after="2020-09-30">
+    units="credentials" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>The number of credentials shown in the Touch To Fill sheet.</summary>
 </histogram>
 
 <histogram name="PasswordManager.TouchToFill.UserAction"
-    enum="TouchToFill.UserAction" expires_after="2020-09-30">
+    enum="TouchToFill.UserAction" expires_after="M92">
   <owner>jdoerrie@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
