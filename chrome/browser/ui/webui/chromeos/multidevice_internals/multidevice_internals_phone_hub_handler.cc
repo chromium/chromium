@@ -181,12 +181,13 @@ void MultidevicePhoneHubHandler::EnableRealPhoneHubManager() {
     return;
 
   PA_LOG(VERBOSE) << "Setting real Phone Hub Manager";
-  RemoveObservers();
-  fake_phone_hub_manager_.reset();
   Profile* profile = Profile::FromWebUI(web_ui());
   chromeos::phonehub::PhoneHubManager* phone_hub_manager =
       chromeos::phonehub::PhoneHubManagerFactory::GetForProfile(profile);
   ash::SystemTray::Get()->SetPhoneHubManager(phone_hub_manager);
+
+  RemoveObservers();
+  fake_phone_hub_manager_.reset();
 }
 
 void MultidevicePhoneHubHandler::EnableFakePhoneHubManager() {
