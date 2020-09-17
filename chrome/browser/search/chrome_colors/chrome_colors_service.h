@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SEARCH_CHROME_COLORS_CHROME_COLORS_SERVICE_H_
 
 #include "base/callback.h"
-#include "chrome/browser/search/search_provider_observer.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/web_contents.h"
@@ -57,9 +56,6 @@ class ChromeColorsService : public KeyedService {
   // Reverts to the previous theme state unconditionally.
   void RevertThemeChangesInternal();
 
-  // Callback for search provider change.
-  void OnSearchProviderChanged();
-
   // Saves the necessary state(revert callback and the current tab) for
   // performing theme change revert. Saves the state only if it is not set.
   void SaveThemeRevertState(content::WebContents* tab);
@@ -74,9 +70,6 @@ class ChromeColorsService : public KeyedService {
 
   // Used for reverting back to the previously installed theme.
   std::unique_ptr<ThemeService::ThemeReinstaller> prev_theme_reinstaller_;
-
-  // Keeps track of any changes in search engine provider. May be null.
-  std::unique_ptr<SearchProviderObserver> search_provider_observer_;
 
   base::WeakPtrFactory<ChromeColorsService> weak_ptr_factory_{this};
 

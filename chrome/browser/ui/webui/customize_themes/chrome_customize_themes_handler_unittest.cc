@@ -16,7 +16,6 @@
 #include "base/values.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/common/chrome_paths.h"
@@ -129,18 +128,13 @@ MATCHER(MatchesColorInfo, "") {
 class ChromeCustomizeThemesHandlerTest : public testing::Test {
  public:
   ChromeCustomizeThemesHandlerTest()
-      : web_contents_(factory_.CreateWebContents(profile())) {}
-
-  void SetUp() override {
-    TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(),
-        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
-    handler_ = std::make_unique<ChromeCustomizeThemesHandler>(
-        mock_client_.BindAndGetRemote(),
-        mojo::PendingReceiver<
-            customize_themes::mojom::CustomizeThemesHandler>(),
-        web_contents_, profile());
-  }
+      : web_contents_(factory_.CreateWebContents(profile())),
+        handler_(std::make_unique<ChromeCustomizeThemesHandler>(
+            mock_client_.BindAndGetRemote(),
+            mojo::PendingReceiver<
+                customize_themes::mojom::CustomizeThemesHandler>(),
+            web_contents_,
+            profile())) {}
 
   void TearDown() override {
     if (handler_) {
