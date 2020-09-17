@@ -67,10 +67,6 @@ WaylandEventSource::WaylandEventSource(wl_display* display,
 
 WaylandEventSource::~WaylandEventSource() = default;
 
-void WaylandEventSource::SetShutdownCb(base::OnceCallback<void()> shutdown_cb) {
-  event_watcher_->SetShutdownCb(std::move(shutdown_cb));
-}
-
 bool WaylandEventSource::StartProcessingEvents() {
   return event_watcher_->StartProcessingEvents();
 }

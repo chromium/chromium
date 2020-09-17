@@ -56,10 +56,6 @@ class WaylandConnection {
   // Schedules a flush of the Wayland connection.
   void ScheduleFlush();
 
-  // Sets a callback that that shutdowns the browser in case of unrecoverable
-  // error. Called by WaylandEventWatcher.
-  void SetShutdownCb(base::OnceCallback<void()> shutdown_cb);
-
   wl_display* display() const { return display_.get(); }
   wl_compositor* compositor() const { return compositor_.get(); }
   uint32_t compositor_version() const { return compositor_version_; }

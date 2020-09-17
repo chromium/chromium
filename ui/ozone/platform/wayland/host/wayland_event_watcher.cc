@@ -21,12 +21,6 @@ WaylandEventWatcher::~WaylandEventWatcher() {
   StopProcessingEvents();
 }
 
-void WaylandEventWatcher::SetShutdownCb(
-    base::OnceCallback<void()> shutdown_cb) {
-  DCHECK(shutdown_cb_.is_null());
-  shutdown_cb_ = std::move(shutdown_cb);
-}
-
 bool WaylandEventWatcher::StartProcessingEvents() {
   DCHECK(display_);
   if (watching_)
@@ -48,11 +42,6 @@ bool WaylandEventWatcher::StopProcessingEvents() {
 }
 
 void WaylandEventWatcher::OnFileCanReadWithoutBlocking(int fd) {
-  if (!CheckForErrors()) {
-    StopProcessingEvents();
-    return;
-  }
-
   if (prepared_) {
     prepared_ = false;
     if (wl_display_read_events(display_) == -1)
@@ -111,17 +100,6 @@ void WaylandEventWatcher::MaybePrepareReadQueue() {
   }
   // Nothing to read, send events to the queue.
   wl_display_dispatch_pending(display_);
-}
-
-bool WaylandEventWatcher::CheckForErrors() {
-  int err = wl_display_get_error(display_);
-  if (err == EPROTO) {
-    // This can be null in tests.
-    if (!shutdown_cb_.is_null())
-      std::move(shutdown_cb_).Run();
-    return false;
-  }
-  return true;
 }
 
 }  // namespace ui

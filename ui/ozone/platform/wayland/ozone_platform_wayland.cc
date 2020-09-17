@@ -258,12 +258,6 @@ class OzonePlatformWayland : public OzonePlatform {
     buffer_manager_->AddBindingWaylandBufferManagerGpu(std::move(receiver));
   }
 
-  void PostMainMessageLoopStart(
-      base::OnceCallback<void()> shutdown_cb) override {
-    DCHECK(connection_);
-    connection_->SetShutdownCb(std::move(shutdown_cb));
-  }
-
  private:
 #if BUILDFLAG(USE_XKBCOMMON)
   XkbEvdevCodes xkb_evdev_code_converter_;

@@ -131,10 +131,6 @@ void WaylandConnection::ScheduleFlush() {
   }
 }
 
-void WaylandConnection::SetShutdownCb(base::OnceCallback<void()> shutdown_cb) {
-  event_source()->SetShutdownCb(std::move(shutdown_cb));
-}
-
 void WaylandConnection::SetCursorBitmap(const std::vector<SkBitmap>& bitmaps,
                                         const gfx::Point& location) {
   if (!cursor_)
