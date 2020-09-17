@@ -67,7 +67,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "triggered by significant user action."
           policy_exception_justification:
             "No policy provided because the operation is triggered by "
-            " significant user action. No background activity occurs."
+            " significant user action."
         })");
 
 FidoTunnelDevice::FidoTunnelDevice(
