@@ -57,7 +57,15 @@ public class TabModelSelectorProfileSupplier
 
     @Override
     public void onTabStateInitialized() {
-        set(mSelector.getCurrentModel().getProfile());
+        Profile profile = mSelector.getCurrentModel().getProfile();
+        if (profile == null) {
+            // Since only IncognitoTabModelImpl provides null profile, the current model should be
+            // off-the-record.
+            assert mSelector.getCurrentModel().isIncognito();
+            // TODO(https://crbug.com/1060940): Update to cover all OTR profiles.
+            profile = Profile.getLastUsedRegularProfile().getPrimaryOTRProfile();
+        }
+        set(profile);
     }
 
     public void destroy() {
