@@ -80,22 +80,22 @@ const base::Feature kAssistPersonalInfo{"AssistPersonalInfo",
 // Controls whether to suggest addresses in assistive personal information. This
 // is only effective when AssistPersonalInfo flag is enabled.
 const base::Feature kAssistPersonalInfoAddress{
-    "AssistPersonalInfoAddress", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AssistPersonalInfoAddress", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to suggest emails in assistive personal information. This is
 // only effective when AssistPersonalInfo flag is enabled.
 const base::Feature kAssistPersonalInfoEmail{"AssistPersonalInfoEmail",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to suggest names in assistive personal information. This is
 // only effective when AssistPersonalInfo flag is enabled.
 const base::Feature kAssistPersonalInfoName{"AssistPersonalInfoName",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to suggest phone numbers in assistive personal information.
 // This is only effective when AssistPersonalInfo flag is enabled.
 const base::Feature kAssistPersonalInfoPhoneNumber{
-    "AssistPersonalInfoPhoneNumber", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AssistPersonalInfoPhoneNumber", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Displays the avatar toolbar button and the profile menu.
 // https://crbug.com/1041472
