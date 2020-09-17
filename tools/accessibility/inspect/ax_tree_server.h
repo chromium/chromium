@@ -22,7 +22,7 @@ class AXTreeServer final {
   AXTreeServer(gfx::AcceleratedWidget widget,
                const base::FilePath& filters_path,
                bool use_json);
-  AXTreeServer(const base::StringPiece& pattern,
+  AXTreeServer(const AccessibilityTreeFormatter::TreeSelector& selector,
                const base::FilePath& filters_path,
                bool use_json);
 

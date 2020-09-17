@@ -222,8 +222,8 @@ AccessibilityTreeFormatterBlink::BuildAccessibilityTreeForWindow(
 }
 
 std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterBlink::BuildAccessibilityTreeForPattern(
-    const base::StringPiece& pattern) {
+AccessibilityTreeFormatterBlink::BuildAccessibilityTreeForSelector(
+    const TreeSelector& selector) {
   NOTREACHED();
   return nullptr;
 }

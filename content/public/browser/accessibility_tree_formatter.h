@@ -97,6 +97,25 @@ class CONTENT_EXPORT AccessibilityTreeFormatter
         : property(property), pattern(pattern) {}
   };
 
+  // Tree selector used to identify an accessible tree to traverse, it can be
+  // built by a pre-defined tree type like Chromium to indicate that Chromium
+  // browser tree should be traversed and/or by a string pattern which matches
+  // an accessible name of a root of some accessible subtree.
+  struct TreeSelector {
+    enum Type {
+      None,
+      Chrome,
+      Chromium,
+      Firefox,
+      Safari,
+    };
+    Type type;
+    std::string pattern;
+
+    TreeSelector(Type type, const std::string& pattern)
+        : type(type), pattern(pattern) {}
+  };
+
   // Create the appropriate native subclass of AccessibilityTreeFormatter.
   static std::unique_ptr<AccessibilityTreeFormatter> Create();
 
@@ -133,7 +152,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatter
   // Build an accessibility tree for an application with a name matching the
   // given pattern.
   virtual std::unique_ptr<base::DictionaryValue>
-  BuildAccessibilityTreeForPattern(const base::StringPiece& pattern) = 0;
+  BuildAccessibilityTreeForSelector(const TreeSelector&) = 0;
 
   // Returns a filtered accesibility tree using the current property and node
   // filters.

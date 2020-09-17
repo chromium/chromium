@@ -33,6 +33,12 @@ where `pid` is process id of an application to dump accessible tree for.
 Alternatively, you can indicate an application by its title:
 `ax_dump_tree --pattern=title`
 
+Also these pre-defined application selectors are available:
+`--chrome` for Chrome browser
+`--chromium` for Chrome browser
+`--firefox` for Firefox browser
+`--safari` for Safari browser
+
 Notes:
 * To use a hex window handle prefix it with `0x`.
 * For json output, use the `--json` option

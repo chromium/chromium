@@ -443,10 +443,10 @@ AccessibilityTreeFormatterUia::BuildAccessibilityTreeForWindow(
 }
 
 std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterUia::BuildAccessibilityTreeForPattern(
-    const base::StringPiece& pattern) {
+AccessibilityTreeFormatterUia::BuildAccessibilityTreeForSelector(
+    const TreeSelector& selector) {
   LOG(ERROR) << "Windows does not yet support building accessibility trees for "
-                "patterns";
+                "tree selectors";
   return nullptr;
 }
 

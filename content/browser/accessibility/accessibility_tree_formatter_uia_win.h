@@ -37,8 +37,8 @@ class AccessibilityTreeFormatterUia : public AccessibilityTreeFormatterBase {
       BrowserAccessibility* start) override;
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForWindow(
       gfx::AcceleratedWidget hwnd) override;
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForPattern(
-      const base::StringPiece& pattern) override;
+  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForSelector(
+      const TreeSelector& selector) override;
 
  private:
   static const long properties_[];

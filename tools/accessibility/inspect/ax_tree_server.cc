@@ -26,10 +26,10 @@ constexpr char kAllowOptEmptyStr[] = "@ALLOW-EMPTY:";
 constexpr char kAllowOptStr[] = "@ALLOW:";
 constexpr char kDenyOptStr[] = "@DENY:";
 
-std::unique_ptr<base::DictionaryValue> BuildTreeForPattern(
-    const base::StringPiece& pattern,
+std::unique_ptr<base::DictionaryValue> BuildTreeForSelector(
+    const AccessibilityTreeFormatter::TreeSelector& selector,
     AccessibilityTreeFormatter* formatter) {
-  return formatter->BuildAccessibilityTreeForPattern(pattern);
+  return formatter->BuildAccessibilityTreeForSelector(selector);
 }
 
 std::unique_ptr<base::DictionaryValue> BuildTreeForWindow(
@@ -38,10 +38,11 @@ std::unique_ptr<base::DictionaryValue> BuildTreeForWindow(
   return formatter->BuildAccessibilityTreeForWindow(widget);
 }
 
-AXTreeServer::AXTreeServer(const base::StringPiece& pattern,
-                           const base::FilePath& filters_path,
-                           bool use_json) {
-  Run(base::BindOnce(&BuildTreeForPattern, pattern), filters_path, use_json);
+AXTreeServer::AXTreeServer(
+    const AccessibilityTreeFormatter::TreeSelector& selector,
+    const base::FilePath& filters_path,
+    bool use_json) {
+  Run(base::BindOnce(&BuildTreeForSelector, selector), filters_path, use_json);
 }
 
 AXTreeServer::AXTreeServer(gfx::AcceleratedWidget widget,

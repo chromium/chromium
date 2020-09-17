@@ -25,8 +25,8 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForWindow(
       gfx::AcceleratedWidget widget) override;
 
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForPattern(
-      const base::StringPiece& pattern) override;
+  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForSelector(
+      const TreeSelector& selector) override;
 
   void AddDefaultFilters(
       std::vector<PropertyFilter>* property_filters) override;

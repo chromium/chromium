@@ -12,6 +12,8 @@
 #include "build/build_config.h"
 #include "tools/accessibility/inspect/ax_tree_server.h"
 
+using TreeSelector = content::AccessibilityTreeFormatter::TreeSelector;
+
 char kIdSwitch[] =
 #if defined(WINDOWS)
     "window";
@@ -22,6 +24,11 @@ char kPatternSwitch[] = "pattern";
 char kFiltersSwitch[] = "filters";
 char kJsonSwitch[] = "json";
 char kHelpSwitch[] = "help";
+
+char kChromeSwitch[] = "chrome";
+char kChromiumSwitch[] = "chromium";
+char kFirefoxSwitch[] = "firefox";
+char kSafariSwitch[] = "safari";
 
 // Convert from string to int, whether in 0x hex format or decimal format.
 bool StringToInt(std::string str, unsigned* result) {
@@ -63,6 +70,11 @@ void PrintHelp() {
       "  --pid\t\tprocess id of an application to dump accessible tree for\n");
 #endif
   printf("  --pattern\ttitle of an application to dump accessible tree for\n");
+  printf("  pre-defined application selectors to dump accessible tree for:\n");
+  printf("    --chrome\tChrome browser\n");
+  printf("    --chromium\tChromium browser\n");
+  printf("    --firefox\tFirefox browser\n");
+  printf("    --safari\tSafari browser\n");
   printf(
       "  --filters\tfile containing property filters used to filter out\n"
       "  \t\taccessible tree, see example-tree-filters.txt as an example\n");
@@ -102,10 +114,21 @@ int main(int argc, char** argv) {
     return 0;
   }
 
+  TreeSelector::Type selector_type = TreeSelector::None;
+  if (command_line->HasSwitch(kChromeSwitch)) {
+    selector_type = TreeSelector::Chrome;
+  } else if (command_line->HasSwitch(kChromiumSwitch)) {
+    selector_type = TreeSelector::Chromium;
+  } else if (command_line->HasSwitch(kFirefoxSwitch)) {
+    selector_type = TreeSelector::Firefox;
+  } else if (command_line->HasSwitch(kSafariSwitch)) {
+    selector_type = TreeSelector::Safari;
+  }
+
   std::string pattern_str = command_line->GetSwitchValueASCII(kPatternSwitch);
-  if (!pattern_str.empty()) {
-    std::unique_ptr<content::AXTreeServer> server(
-        new content::AXTreeServer(pattern_str, filters_path, use_json));
+  if (selector_type != TreeSelector::None || !pattern_str.empty()) {
+    std::unique_ptr<content::AXTreeServer> server(new content::AXTreeServer(
+        TreeSelector(selector_type, pattern_str), filters_path, use_json));
     return 0;
   }
 

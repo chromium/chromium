@@ -53,8 +53,8 @@ class AccessibilityTreeFormatterAuraLinux
       BrowserAccessibility* root) override;
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForWindow(
       gfx::AcceleratedWidget hwnd) override;
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForPattern(
-      const base::StringPiece& pattern) override;
+  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForSelector(
+      const TreeSelector& selector) override;
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeWithNode(
       AtspiAccessible* node);
 
@@ -94,8 +94,8 @@ AccessibilityTreeFormatterAuraLinux::AccessibilityTreeFormatterAuraLinux() {}
 AccessibilityTreeFormatterAuraLinux::~AccessibilityTreeFormatterAuraLinux() {}
 
 std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterAuraLinux::BuildAccessibilityTreeForPattern(
-    const base::StringPiece& pattern) {
+AccessibilityTreeFormatterAuraLinux::BuildAccessibilityTreeForSelector(
+    const TreeSelector& selector) {
   // AT-SPI2 always expects the first parameter to this call to be zero.
   AtspiAccessible* desktop = atspi_get_desktop(0);
   CHECK(desktop);
@@ -111,8 +111,8 @@ AccessibilityTreeFormatterAuraLinux::BuildAccessibilityTreeForPattern(
     CHECK_ATSPI_ERROR(error)
 
     char* name = atspi_accessible_get_name(child, &error);
-    if (!error && name && base::MatchPattern(name, pattern)) {
-      matched_children.push_back(std::make_pair(name, child));
+    if (!error && name && base::MatchPattern(name, selector.pattern)) {
+      matched_children.emplace_back(name, child);
     }
 
     free(name);

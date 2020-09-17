@@ -52,6 +52,11 @@ const char kConstValuePrefix[] = "_const_";
 const char kNULLValue[] = "_const_NULL";
 const char kFailedToParseArgsError[] = "_const_ERROR:FAILED_TO_PARSE_ARGS";
 
+const char kChromeTitle[] = "Google Chrome";
+const char kChromiumTitle[] = "Chromium";
+const char kFirefoxTitle[] = "Firefox";
+const char kSafariTitle[] = "Safari";
+
 }  // namespace
 
 class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBase {
@@ -66,8 +71,8 @@ class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBase {
       BrowserAccessibility* root) override;
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForWindow(
       gfx::AcceleratedWidget widget) override;
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForPattern(
-      const base::StringPiece& pattern) override;
+  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForSelector(
+      const TreeSelector& selector) override;
 
  private:
   void RecursiveBuildAccessibilityTree(const id node,
@@ -168,16 +173,34 @@ AccessibilityTreeFormatterMac::BuildAccessibilityTreeForWindow(
 }
 
 std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterMac::BuildAccessibilityTreeForPattern(
-    const base::StringPiece& pattern) {
+AccessibilityTreeFormatterMac::BuildAccessibilityTreeForSelector(
+    const TreeSelector& selector) {
   NSArray* windows = (NSArray*)CGWindowListCopyWindowInfo(
       kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements,
       kCGNullWindowID);
 
+  std::string title = selector.pattern;
+  switch (selector.type) {
+    case TreeSelector::Chrome:
+      title = kChromeTitle;
+      break;
+    case TreeSelector::Chromium:
+      title = kChromiumTitle;
+      break;
+    case TreeSelector::Firefox:
+      title = kFirefoxTitle;
+      break;
+    case TreeSelector::Safari:
+      title = kSafariTitle;
+      break;
+    default:
+      break;
+  }
+
   for (NSDictionary* window_info in windows) {
     NSString* window_name =
         (NSString*)[window_info objectForKey:@"kCGWindowOwnerName"];
-    if (SysNSStringToUTF8(window_name) == pattern) {
+    if (SysNSStringToUTF8(window_name) == title) {
       NSNumber* pid =
           (NSNumber*)[window_info objectForKey:@"kCGWindowOwnerPID"];
       return BuildAccessibilityTreeForWindow([pid intValue]);
