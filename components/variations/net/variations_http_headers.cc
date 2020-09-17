@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "components/google/core/common/google_util.h"
 #include "components/variations/net/omnibox_http_headers.h"
+#include "components/variations/proto/study.pb.h"
 #include "components/variations/variations_ids_provider.h"
 #include "net/base/isolation_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -234,9 +235,12 @@ class VariationsHeaderHelper {
   }
 
  private:
+  // TODO(crbug/1094303): Update the signature to accept a
+  // Study_GoogleWebVisibility and pass the given value to
+  // GetClientDataHeader().
   static std::string CreateVariationsHeader(SignedIn signed_in) {
     return VariationsIdsProvider::GetInstance()->GetClientDataHeader(
-        signed_in == SignedIn::kYes);
+        signed_in == SignedIn::kYes, Study_GoogleWebVisibility_ANY);
   }
 
   network::ResourceRequest* resource_request_;

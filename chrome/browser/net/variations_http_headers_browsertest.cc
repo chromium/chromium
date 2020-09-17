@@ -35,6 +35,7 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "components/variations/proto/study.pb.h"
 #include "components/variations/variations_ids_provider.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -381,10 +382,19 @@ void CreateGoogleSignedInFieldTrial() {
   scoped_refptr<base::FieldTrial> trial_1(CreateTrialAndAssociateId(
       "t1", default_name, variations::GOOGLE_WEB_PROPERTIES_SIGNED_IN, 123));
 
-  auto* variations_ids_provider =
-      variations::VariationsIdsProvider::GetInstance();
-  EXPECT_NE(variations_ids_provider->GetClientDataHeader(true),
-            variations_ids_provider->GetClientDataHeader(false));
+  auto* provider = variations::VariationsIdsProvider::GetInstance();
+
+  EXPECT_NE(
+      provider->GetClientDataHeader(
+          /*is_signed_in=*/true, variations::Study_GoogleWebVisibility_ANY),
+      provider->GetClientDataHeader(
+          /*is_signed_in=*/false, variations::Study_GoogleWebVisibility_ANY));
+  EXPECT_NE(provider->GetClientDataHeader(
+                /*is_signed_in=*/true,
+                variations::Study_GoogleWebVisibility_FIRST_PARTY),
+            provider->GetClientDataHeader(
+                /*is_signed_in=*/false,
+                variations::Study_GoogleWebVisibility_FIRST_PARTY));
 }
 
 }  // namespace
@@ -439,8 +449,10 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, UserSignedIn) {
   base::Optional<std::string> header =
       GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
   ASSERT_TRUE(header);
-  EXPECT_EQ(*header, variations::VariationsIdsProvider::GetInstance()
-                         ->GetClientDataHeader(true));
+  EXPECT_EQ(
+      *header,
+      variations::VariationsIdsProvider::GetInstance()->GetClientDataHeader(
+          /*is_signed_in=*/true, variations::Study_GoogleWebVisibility_ANY));
 }
 
 IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, UserNotSignedIn) {
@@ -454,8 +466,10 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, UserNotSignedIn) {
   base::Optional<std::string> header =
       GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
   ASSERT_TRUE(header);
-  EXPECT_EQ(*header, variations::VariationsIdsProvider::GetInstance()
-                         ->GetClientDataHeader(false));
+  EXPECT_EQ(
+      *header,
+      variations::VariationsIdsProvider::GetInstance()->GetClientDataHeader(
+          /*is_signed_in=*/false, variations::Study_GoogleWebVisibility_ANY));
 }
 
 IN_PROC_BROWSER_TEST_F(

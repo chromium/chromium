@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VARIATIONS_VARIATIONS_IDS_PROVIDER_H_
 #define COMPONENTS_VARIATIONS_VARIATIONS_IDS_PROVIDER_H_
 
+#include <map>
 #include <set>
 #include <string>
 #include <utility>
@@ -15,6 +16,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
+#include "components/variations/proto/study.pb.h"
 #include "components/variations/synthetic_trials.h"
 #include "components/variations/variations_associated_data.h"
 
@@ -25,6 +27,21 @@ struct DefaultSingletonTraits;
 
 namespace variations {
 class VariationsClient;
+
+// The key for a VariationsIdsProvider's |variations_headers_map_|. A
+// VariationsHeaderKey provides more details about the VariationsIDs included in
+// a particular header. For example, the header associated with a key with true
+// for |is_signed_in| and Study_GoogleWebVisibility_ANY for |web_visibility| has
+// (i) VariationsIDs associated with external experiments, which can be sent
+// only for signed-in users and (ii) VariationsIDs that can be sent in first-
+// and third-party contexts.
+struct VariationsHeaderKey {
+  bool is_signed_in;
+  Study_GoogleWebVisibility web_visibility;
+
+  // This allows the struct to be used as a key in a map.
+  bool operator<(const VariationsHeaderKey& other) const;
+};
 
 // A helper class for maintaining client experiments and metrics state
 // transmitted in custom HTTP request headers.
@@ -43,11 +60,15 @@ class VariationsIdsProvider : public base::FieldTrialList::Observer,
 
   static VariationsIdsProvider* GetInstance();
 
-  // Returns the value of the client data header, computing and caching it if
-  // necessary. If |is_signed_in| is false, variation ids that should only be
-  // sent for signed in users (i.e. GOOGLE_WEB_PROPERTIES_SIGNED_IN entries)
-  // will not be included.
-  std::string GetClientDataHeader(bool is_signed_in);
+  // Returns the value of the X-Client-Data header corresponding to
+  // |is_signed_in| and |web_visibility|, computing and caching the header if
+  // necessary. If |is_signed_in| is false, VariationIDs that should be sent for
+  // only signed in users (i.e. GOOGLE_WEB_PROPERTIES_SIGNED_IN entries) are not
+  // included. Considering |web_visibility| allows fewer VariationIDs to be sent
+  // in third-party contexts. See IsFirstPartyContext() in
+  // variations_http_headers.cc for more details.
+  std::string GetClientDataHeader(bool is_signed_in,
+                                  Study_GoogleWebVisibility web_visibility);
 
   // Returns a space-separated string containing the list of current active
   // variations (as would be reported in the |variation_id| repeated field of
@@ -160,9 +181,10 @@ class VariationsIdsProvider : public base::FieldTrialList::Observer,
   // held.
   void UpdateVariationIDsHeaderValue();
 
-  // Generates a base64-encoded proto to be used as a header value for the given
-  // |is_signed_in| state.
-  std::string GenerateBase64EncodedProto(bool is_signed_in);
+  // Generates a base64-encoded ClientVariations proto to be used as a header
+  // value for the given |is_signed_in| and |is_first_party_context| states.
+  std::string GenerateBase64EncodedProto(bool is_signed_in,
+                                         bool is_first_party_context);
 
   // Adds variation ids and trigger variation ids to |target_set|.
   static bool AddVariationIdsToSet(
@@ -203,8 +225,14 @@ class VariationsIdsProvider : public base::FieldTrialList::Observer,
   // Provides the google experiment ids that are force-disabled by command line.
   std::set<VariationIDEntry> force_disabled_ids_set_;
 
-  std::string cached_variation_ids_header_;
-  std::string cached_variation_ids_header_signed_in_;
+  // A collection of variations headers. Each header is a base64-encoded
+  // ClientVariations proto containing VariationIDs that may be sent to Google
+  // web properties. For more details about when this may be sent, see
+  // AppendHeaderIfNeeded() in variations_http_headers.cc.
+  //
+  // The key for each header describes the VariationIDs included in its
+  // associated header. See VariationsHeaderKey's comments for more information.
+  std::map<VariationsHeaderKey, std::string> variations_headers_map_;
 
   // List of observers to notify on variation ids header update.
   // NOTE this should really check observers are unregistered but due to

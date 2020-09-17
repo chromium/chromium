@@ -4,8 +4,6 @@
 
 #include "components/variations/variations_ids_provider.h"
 
-#include <stddef.h>
-
 #include <algorithm>
 
 #include "base/base64.h"
@@ -18,6 +16,12 @@
 #include "components/variations/variations_client.h"
 
 namespace variations {
+
+bool VariationsHeaderKey::operator<(const VariationsHeaderKey& other) const {
+  if (is_signed_in != other.is_signed_in)
+    return is_signed_in < other.is_signed_in;
+  return web_visibility < other.web_visibility;
+}
 
 // Adding/removing headers is implemented by request consumers, and how it is
 // implemented depends on the request type.
@@ -37,17 +41,20 @@ VariationsIdsProvider* VariationsIdsProvider::GetInstance() {
   return base::Singleton<VariationsIdsProvider>::get();
 }
 
-std::string VariationsIdsProvider::GetClientDataHeader(bool is_signed_in) {
+std::string VariationsIdsProvider::GetClientDataHeader(
+    bool is_signed_in,
+    Study_GoogleWebVisibility web_visibility) {
   // Lazily initialize the header, if not already done, before attempting to
   // transmit it.
   InitVariationIDsCacheIfNeeded();
 
   std::string variation_ids_header_copy;
   {
-    base::AutoLock scoped_lock(lock_);
-    variation_ids_header_copy = is_signed_in
-                                    ? cached_variation_ids_header_signed_in_
-                                    : cached_variation_ids_header_;
+    auto it = variations_headers_map_.find(
+        VariationsHeaderKey{is_signed_in, web_visibility});
+    if (it == variations_headers_map_.end())
+      return "";
+    variation_ids_header_copy = it->second;
   }
   return variation_ids_header_copy;
 }
@@ -149,8 +156,7 @@ void VariationsIdsProvider::ResetForTesting() {
   default_variation_ids_set_.clear();
   synthetic_variation_ids_set_.clear();
   force_disabled_ids_set_.clear();
-  cached_variation_ids_header_.clear();
-  cached_variation_ids_header_signed_in_.clear();
+  variations_headers_map_.clear();
 }
 
 VariationsIdsProvider::VariationsIdsProvider()
@@ -228,17 +234,30 @@ void VariationsIdsProvider::CacheVariationsId(const std::string& trial_name,
 void VariationsIdsProvider::UpdateVariationIDsHeaderValue() {
   lock_.AssertAcquired();
 
-  // The header value is a serialized protobuffer of Variation IDs which is
-  // base64 encoded before transmitting as a string.
-  cached_variation_ids_header_.clear();
-  cached_variation_ids_header_signed_in_.clear();
+  variations_headers_map_.clear();
 
-  // If successful, swap the header value with the new one.
   // Note that the list of IDs and the header could be temporarily out of sync
   // if IDs are added as the header is recreated. The receiving servers are OK
   // with such discrepancies.
-  cached_variation_ids_header_ = GenerateBase64EncodedProto(false);
-  cached_variation_ids_header_signed_in_ = GenerateBase64EncodedProto(true);
+  variations_headers_map_[VariationsHeaderKey{/*is_signed_in=*/false,
+                                              Study_GoogleWebVisibility_ANY}] =
+      GenerateBase64EncodedProto(/*is_signed_in=*/false,
+                                 /*is_first_party_context=*/false);
+
+  variations_headers_map_[VariationsHeaderKey{
+      /*is_signed_in=*/false, Study_GoogleWebVisibility_FIRST_PARTY}] =
+      GenerateBase64EncodedProto(/*is_signed_in=*/false,
+                                 /*is_first_party_context=*/true);
+
+  variations_headers_map_[VariationsHeaderKey{/*is_signed_in=*/true,
+                                              Study_GoogleWebVisibility_ANY}] =
+      GenerateBase64EncodedProto(/*is_signed_in=*/true,
+                                 /*is_first_party_context=*/false);
+
+  variations_headers_map_[VariationsHeaderKey{
+      /*is_signed_in=*/true, Study_GoogleWebVisibility_FIRST_PARTY}] =
+      GenerateBase64EncodedProto(/*is_signed_in=*/true,
+                                 /*is_first_party_context=*/true);
 
   for (auto& observer : observer_list_) {
     observer.VariationIdsHeaderUpdated();
@@ -246,7 +265,8 @@ void VariationsIdsProvider::UpdateVariationIDsHeaderValue() {
 }
 
 std::string VariationsIdsProvider::GenerateBase64EncodedProto(
-    bool is_signed_in) {
+    bool is_signed_in,
+    bool is_first_party_context) {
   std::set<VariationIDEntry> all_variation_ids_set = GetAllVariationIds();
 
   ClientVariations proto;
@@ -262,15 +282,14 @@ std::string VariationsIdsProvider::GenerateBase64EncodedProto(
       case GOOGLE_WEB_PROPERTIES_FIRST_PARTY:
         if (base::FeatureList::IsEnabled(
                 internal::kRestrictGoogleWebVisibility)) {
-          // TODO(crbug/1094303): Send fewer VariationIDs in third-party
-          // contexts by excluding IDs associated with
-          // GOOGLE_WEB_PROPERTIES_FIRST_PARTY.
-          break;
+          if (is_first_party_context)
+            proto.add_variation_id(entry.first);
+        } else {
+          // When the feature is not enabled, treat VariationIDs associated with
+          // GOOGLE_WEB_PROPERTIES_FIRST_PARTY in the same way as those
+          // associated with GOOGLE_WEB_PROPERTIES_ANY_CONTEXT.
+          proto.add_variation_id(entry.first);
         }
-        // When the feature is not enabled, treat VariationIDs associated with
-        // GOOGLE_WEB_PROPERTIES_FIRST_PARTY in the same way as those
-        // associated with GOOGLE_WEB_PROPERTIES_ANY_CONTEXT.
-        proto.add_variation_id(entry.first);
         break;
       case GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT:
         proto.add_trigger_variation_id(entry.first);
@@ -278,15 +297,14 @@ std::string VariationsIdsProvider::GenerateBase64EncodedProto(
       case GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY:
         if (base::FeatureList::IsEnabled(
                 internal::kRestrictGoogleWebVisibility)) {
-          // TODO(crbug/1094303): Send fewer VariationIDs in third-party
-          // contexts by excluding IDs associated with
-          // GOOGLE_WEB_PROPERTIES_FIRST_PARTY.
-          break;
+          if (is_first_party_context)
+            proto.add_trigger_variation_id(entry.first);
+        } else {
+          // When the feature is not enabled, treat VariationIDs associated with
+          // GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY in the same way as those
+          // associated with GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT.
+          proto.add_trigger_variation_id(entry.first);
         }
-        // When the feature is not enabled, treat VariationIDs associated with
-        // GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY in the same way as those
-        // associated with GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT.
-        proto.add_trigger_variation_id(entry.first);
         break;
       case GOOGLE_APP:
         // These IDs should not be added into Google Web headers.

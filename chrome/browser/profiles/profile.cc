@@ -29,6 +29,7 @@
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service.h"
+#include "components/variations/proto/study.pb.h"
 #include "components/variations/variations_client.h"
 #include "components/variations/variations_ids_provider.h"
 #include "content/public/browser/notification_service.h"
@@ -92,9 +93,13 @@ class ChromeVariationsClient : public variations::VariationsClient {
     return browser_context_->IsOffTheRecord();
   }
 
+  // TODO(crbug/1094303): Update the signature to accept a
+  // variations::Study_GoogleWebVisibility and pass the given value to
+  // GetClientDataHeader().
   std::string GetVariationsHeader() const override {
     return variations::VariationsIdsProvider::GetInstance()
-        ->GetClientDataHeader(IsSignedIn());
+        ->GetClientDataHeader(IsSignedIn(),
+                              variations::Study_GoogleWebVisibility_ANY);
   }
 
  private:

@@ -117,6 +117,8 @@ void FieldTrialSynchronizer::UpdateRendererVariationsHeader(
       renderer_variations_configuration;
   channel->GetRemoteAssociatedInterface(&renderer_variations_configuration);
 
+  // TODO(crbug/1094303): Consider both variations::Study_GoogleWebVisibility
+  // values.
   renderer_variations_configuration->SetVariationsHeader(
       client->GetVariationsHeader());
 }

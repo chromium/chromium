@@ -25,6 +25,7 @@
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/user_prefs/user_prefs.h"
+#include "components/variations/proto/study.pb.h"
 #include "components/variations/variations_client.h"
 #include "components/variations/variations_ids_provider.h"
 #include "content/public/browser/device_service.h"
@@ -295,9 +296,13 @@ class BrowserContextImpl::WebLayerVariationsClient
     return browser_context_->IsOffTheRecord();
   }
 
+  // TODO(crbug/1094303): Update the signature to accept a
+  // variations::Study_GoogleWebVisibility and pass the given value to
+  // GetClientDataHeader().
   std::string GetVariationsHeader() const override {
     return variations::VariationsIdsProvider::GetInstance()
-        ->GetClientDataHeader(IsSignedIn());
+        ->GetClientDataHeader(IsSignedIn(),
+                              variations::Study_GoogleWebVisibility_ANY);
   }
 
  private:

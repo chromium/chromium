@@ -429,6 +429,7 @@ source_set("weblayer_lib_base") {
     "//components/user_prefs",
     "//components/variations",
     "//components/variations/net",
+    "//components/variations/proto",
     "//components/variations/service",
     "//components/version_info",
     "//components/viz/common",

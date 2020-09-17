@@ -20,6 +20,8 @@ class VariationsClient {
   virtual bool IsOffTheRecord() const = 0;
 
   // Returns the variations header that should be appended for google requests.
+  // TODO(crbug/1094303): Update the signature to take a
+  // variations::Study_GoogleWebVisibility.
   virtual std::string GetVariationsHeader() const = 0;
 };
 

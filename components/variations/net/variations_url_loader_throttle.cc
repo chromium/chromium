@@ -47,6 +47,8 @@ void VariationsURLLoaderThrottle::AppendThrottleIfNeeded(
   if (!variations_client || variations_client->IsOffTheRecord())
     return;
 
+  // TODO(crbug/1094303): Consider both variations::Study_GoogleWebVisibility
+  // values.
   throttles->push_back(std::make_unique<VariationsURLLoaderThrottle>(
       variations_client->GetVariationsHeader()));
 }
