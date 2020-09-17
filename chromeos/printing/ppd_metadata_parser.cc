@@ -240,7 +240,7 @@ base::Optional<ParsedIndex> ParseForwardIndex(
   // Firstly, we unnest the dictionary keyed by "ppdIndex."
   base::Optional<base::Value> ppd_index = ParseJsonAndUnnestKey(
       forward_index_json, "ppdIndex", base::Value::Type::DICTIONARY);
-  if (!ppd_index || ppd_index->DictSize() == 0) {
+  if (!ppd_index.has_value()) {
     return base::nullopt;
   }
 
@@ -264,7 +264,7 @@ base::Optional<ParsedIndex> ParseForwardIndex(
 base::Optional<ParsedUsbIndex> ParseUsbIndex(base::StringPiece usb_index_json) {
   base::Optional<base::Value> usb_index = ParseJsonAndUnnestKey(
       usb_index_json, "usbIndex", base::Value::Type::DICTIONARY);
-  if (!usb_index || usb_index->DictSize() == 0) {
+  if (!usb_index.has_value()) {
     return base::nullopt;
   }
 
@@ -293,7 +293,7 @@ base::Optional<ParsedUsbVendorIdMap> ParseUsbVendorIdMap(
     base::StringPiece usb_vendor_id_map_json) {
   base::Optional<base::Value> as_value = ParseJsonAndUnnestKey(
       usb_vendor_id_map_json, "entries", base::Value::Type::LIST);
-  if (!as_value.has_value() || as_value->GetList().empty()) {
+  if (!as_value.has_value()) {
     return base::nullopt;
   }
 
@@ -348,7 +348,7 @@ base::Optional<ParsedReverseIndex> ParseReverseIndex(
     base::StringPiece reverse_index_json) {
   const base::Optional<base::Value> makes_and_models = ParseJsonAndUnnestKey(
       reverse_index_json, "reverseIndex", base::Value::Type::DICTIONARY);
-  if (!makes_and_models.has_value() || makes_and_models->DictSize() == 0) {
+  if (!makes_and_models.has_value()) {
     return base::nullopt;
   }
 
