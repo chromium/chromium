@@ -18,6 +18,7 @@
 #include "third_party/blink/public/mojom/input/touch_event.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_render_widget_scheduling_state.h"
+#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
@@ -62,6 +63,8 @@
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 #if defined(OS_MAC)
 #include "third_party/blink/renderer/core/editing/substring_util.h"
@@ -475,12 +478,22 @@ void WebFrameWidgetBase::CancelDrag() {
   doing_drag_and_drop_ = false;
 }
 
-void WebFrameWidgetBase::StartDragging(const WebDragData& data,
-                                       WebDragOperationsMask mask,
+void WebFrameWidgetBase::StartDragging(const WebDragData& drag_data,
+                                       WebDragOperationsMask operations_allowed,
                                        const SkBitmap& drag_image,
                                        const gfx::Point& drag_image_offset) {
   doing_drag_and_drop_ = true;
-  Client()->StartDragging(data, mask, drag_image, drag_image_offset);
+  if (Client()->InterceptStartDragging(drag_data, operations_allowed,
+                                       drag_image, drag_image_offset)) {
+    return;
+  }
+
+  WebRect offset_in_window(drag_image_offset.x(), drag_image_offset.y(), 0, 0);
+  Client()->ConvertViewportToWindow(&offset_in_window);
+  GetAssociatedFrameWidgetHost()->StartDragging(
+      drag_data, operations_allowed, drag_image,
+      gfx::Vector2d(offset_in_window.x, offset_in_window.y),
+      possible_drag_event_info_.Clone());
 }
 
 WebDragOperation WebFrameWidgetBase::DragTargetDragEnterOrOver(
@@ -1044,10 +1057,16 @@ void WebFrameWidgetBase::RecordDispatchRafAlignedInputTime(
 }
 
 bool WebFrameWidgetBase::WillHandleGestureEvent(const WebGestureEvent& event) {
+  possible_drag_event_info_.source = ui::mojom::blink::DragEventSource::kTouch;
+  possible_drag_event_info_.location =
+      gfx::ToFlooredPoint(event.PositionInScreen());
   return Client()->WillHandleGestureEvent(event);
 }
 
 bool WebFrameWidgetBase::WillHandleMouseEvent(const WebMouseEvent& event) {
+  possible_drag_event_info_.source = ui::mojom::blink::DragEventSource::kMouse;
+  possible_drag_event_info_.location =
+      gfx::Point(event.PositionInScreen().x(), event.PositionInScreen().y());
   return Client()->WillHandleMouseEvent(event);
 }
 

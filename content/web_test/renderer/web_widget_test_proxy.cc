@@ -122,15 +122,17 @@ bool WebWidgetTestProxy::IsPointerLocked() {
   return event_sender_.IsPointerLocked();
 }
 
-void WebWidgetTestProxy::StartDragging(const blink::WebDragData& data,
-                                       blink::WebDragOperationsMask mask,
-                                       const SkBitmap& drag_image,
-                                       const gfx::Point& image_offset) {
+bool WebWidgetTestProxy::InterceptStartDragging(
+    const blink::WebDragData& data,
+    blink::WebDragOperationsMask mask,
+    const SkBitmap& drag_image,
+    const gfx::Point& image_offset) {
   GetTestRunner()->SetDragImage(drag_image);
 
   // When running a test, we need to fake a drag drop operation otherwise
   // Windows waits for real mouse events to know when the drag is over.
   event_sender_.DoDragDrop(data, mask);
+  return true;
 }
 
 WebViewTestProxy* WebWidgetTestProxy::GetWebViewTestProxy() {

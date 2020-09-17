@@ -62,7 +62,6 @@
 #include "content/public/renderer/render_view_observer.h"
 #include "content/public/renderer/render_view_visitor.h"
 #include "content/public/renderer/window_features_converter.h"
-#include "content/renderer/drop_data_builder.h"
 #include "content/renderer/history_serialization.h"
 #include "content/renderer/internal_document_state_data.h"
 #include "content/renderer/loader/request_extra_data.h"

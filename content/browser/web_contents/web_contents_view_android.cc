@@ -307,7 +307,7 @@ void WebContentsViewAndroid::StartDragging(
     blink::WebDragOperationsMask allowed_ops,
     const gfx::ImageSkia& image,
     const gfx::Vector2d& image_offset,
-    const DragEventSourceInfo& event_info,
+    const blink::mojom::DragEventSourceInfo& event_info,
     RenderWidgetHostImpl* source_rwh) {
   if (!drop_data.text) {
     // Need to clear drag and drop state in blink.

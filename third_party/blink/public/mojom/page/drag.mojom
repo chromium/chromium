@@ -7,6 +7,8 @@ module blink.mojom;
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
+import "ui/base/dragdrop/mojom/drag_drop_types.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 import "third_party/blink/public/mojom/native_file_system/native_file_system_drag_drop_token.mojom";
 
@@ -93,4 +95,10 @@ struct DragData {
   // Used for DragItemString when string_type == "downloadurl".
   network.mojom.ReferrerPolicy referrer_policy =
       network.mojom.ReferrerPolicy.kDefault;
+};
+
+// Information about the event that started a drag session.
+struct DragEventSourceInfo {
+  gfx.mojom.Point location;
+  ui.mojom.DragEventSource source;
 };

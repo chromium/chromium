@@ -11,10 +11,10 @@
 #include "build/build_config.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
-#include "content/common/drag_event_source_info.h"
 #include "third_party/blink/public/common/page/web_drag_operation.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
+#include "third_party/blink/public/mojom/page/drag.mojom-forward.h"
 
 namespace blink {
 class WebGestureEvent;
@@ -52,12 +52,13 @@ class CONTENT_EXPORT RenderViewHostDelegateView {
   // by DropData. If the delegate's view cannot start the drag for /any/
   // reason, it must inform the renderer that the drag has ended; otherwise,
   // this results in bugs like http://crbug.com/157134.
-  virtual void StartDragging(const DropData& drop_data,
-                             blink::WebDragOperationsMask allowed_ops,
-                             const gfx::ImageSkia& image,
-                             const gfx::Vector2d& image_offset,
-                             const DragEventSourceInfo& event_info,
-                             RenderWidgetHostImpl* source_rwh) {}
+  virtual void StartDragging(
+      const DropData& drop_data,
+      blink::WebDragOperationsMask allowed_ops,
+      const gfx::ImageSkia& image,
+      const gfx::Vector2d& image_offset,
+      const blink::mojom::DragEventSourceInfo& event_info,
+      RenderWidgetHostImpl* source_rwh) {}
 
   // The page wants to update the mouse cursor during a drag & drop operation.
   // |operation| describes the current operation (none, move, copy, link.)

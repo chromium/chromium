@@ -29,6 +29,7 @@
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/display_feature.h"
+#include "content/browser/renderer_host/drop_data_util.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/input/mock_input_router.h"
 #include "content/browser/renderer_host/input/touch_emulator.h"
@@ -36,6 +37,7 @@
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/input_messages.h"
 #include "content/common/render_frame_metadata.mojom.h"
@@ -43,6 +45,7 @@
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/drop_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -60,6 +63,7 @@
 #include "third_party/blink/public/common/widget/visual_properties.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
+#include "third_party/blink/public/mojom/page/drag.mojom.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/blink_features.h"
@@ -257,7 +261,7 @@ class MockRenderViewHostDelegateView : public RenderViewHostDelegateView {
                      blink::WebDragOperationsMask allowed_ops,
                      const gfx::ImageSkia& image,
                      const gfx::Vector2d& image_offset,
-                     const DragEventSourceInfo& event_info,
+                     const blink::mojom::DragEventSourceInfo& event_info,
                      RenderWidgetHostImpl* source_rwh) override {
     ++start_dragging_count_;
   }
@@ -2005,17 +2009,23 @@ TEST_F(RenderWidgetHostTest, RendererExitedNoDrag) {
   DropData drop_data;
   drop_data.url = http_url;
   drop_data.html_base_url = http_url;
+  NativeFileSystemManagerImpl* file_system_manager =
+      static_cast<StoragePartitionImpl*>(process_->GetStoragePartition())
+          ->GetNativeFileSystemManager();
   blink::WebDragOperationsMask drag_operation = blink::kWebDragOperationEvery;
-  DragEventSourceInfo event_info;
-  host_->OnStartDragging(drop_data, drag_operation, SkBitmap(), gfx::Vector2d(),
-                         event_info);
+  host_->StartDragging(
+      DropDataToDragData(drop_data, file_system_manager, process_->GetID()),
+      drag_operation, SkBitmap(), gfx::Vector2d(),
+      blink::mojom::DragEventSourceInfo::New());
   EXPECT_EQ(delegate_->mock_delegate_view()->start_dragging_count(), 1);
 
   // Simulate that renderer exited due navigation to the next page.
   host_->RendererExited();
   EXPECT_FALSE(host_->GetView());
-  host_->OnStartDragging(drop_data, drag_operation, SkBitmap(), gfx::Vector2d(),
-                         event_info);
+  host_->StartDragging(
+      DropDataToDragData(drop_data, file_system_manager, process_->GetID()),
+      drag_operation, SkBitmap(), gfx::Vector2d(),
+      blink::mojom::DragEventSourceInfo::New());
   EXPECT_EQ(delegate_->mock_delegate_view()->start_dragging_count(), 1);
 }
 

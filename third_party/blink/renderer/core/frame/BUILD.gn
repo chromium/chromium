@@ -236,6 +236,7 @@ blink_core_sources("frame") {
     "//ui/accessibility:ax_base",
     "//ui/base/cursor:cursor_base",
     "//ui/base/cursor/mojom:cursor_type_blink",
+    "//ui/base/dragdrop/mojom:mojom_blink",
     "//ui/gfx:geometry_skia",
     "//ui/gfx/geometry",
   ]

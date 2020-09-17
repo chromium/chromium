@@ -78,6 +78,7 @@ include_rules = [
 
     "+ui/base/cursor/mojom/cursor.mojom-blink.h",
     "+ui/base/cursor/mojom/cursor_type.mojom-blink.h",
+    "+ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h",
     "+ui/events/keycodes/dom",
     "+v8",
 ]

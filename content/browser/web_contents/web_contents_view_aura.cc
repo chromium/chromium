@@ -54,6 +54,7 @@
 #include "content/public/common/content_features.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/mojom/page/drag.mojom.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_delegate.h"
@@ -1021,7 +1022,7 @@ void WebContentsViewAura::StartDragging(
     blink::WebDragOperationsMask operations,
     const gfx::ImageSkia& image,
     const gfx::Vector2d& image_offset,
-    const DragEventSourceInfo& event_info,
+    const blink::mojom::DragEventSourceInfo& event_info,
     RenderWidgetHostImpl* source_rwh) {
   aura::Window* root_window = GetNativeView()->GetRootWindow();
   if (!aura::client::GetDragDropClient(root_window)) {
@@ -1062,11 +1063,11 @@ void WebContentsViewAura::StartDragging(
   {
     gfx::NativeView content_native_view = GetContentNativeView();
     base::CurrentThread::ScopedNestableTaskAllower allow;
-    result_op = aura::client::GetDragDropClient(root_window)
-                    ->StartDragAndDrop(
-                        std::move(data), root_window, content_native_view,
-                        event_info.event_location, ConvertFromWeb(operations),
-                        event_info.event_source);
+    result_op =
+        aura::client::GetDragDropClient(root_window)
+            ->StartDragAndDrop(std::move(data), root_window,
+                               content_native_view, event_info.location,
+                               ConvertFromWeb(operations), event_info.source);
   }
 
   // Bail out immediately if the contents view window is gone. Note that it is

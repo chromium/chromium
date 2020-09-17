@@ -67,8 +67,6 @@ target(link_target_type, "renderer") {
     "discardable_memory_utils.h",
     "dom_automation_controller.cc",
     "dom_automation_controller.h",
-    "drop_data_builder.cc",
-    "drop_data_builder.h",
     "effective_connection_type_helper.cc",
     "effective_connection_type_helper.h",
     "frame_blame_context.cc",

@@ -171,11 +171,14 @@ class WebWidgetClient {
     return point;
   }
 
-  // Called when a drag-and-drop operation should begin.
-  virtual void StartDragging(const WebDragData&,
-                             WebDragOperationsMask,
-                             const SkBitmap& drag_image,
-                             const gfx::Point& drag_image_offset) {}
+  // Called when a drag-and-drop operation should begin. Returns whether the
+  // call has been handled.
+  virtual bool InterceptStartDragging(const WebDragData&,
+                                      WebDragOperationsMask,
+                                      const SkBitmap& drag_image,
+                                      const gfx::Point& drag_image_offset) {
+    return false;
+  }
 
   // Requests an image decode and will have the |callback| run asynchronously
   // when it completes. Forces a new main frame to occur that will trigger

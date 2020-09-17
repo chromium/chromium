@@ -275,6 +275,9 @@ _CONFIG = [
             'gfx::Vector2d',
             'gfx::Vector2dF',
 
+            # Chromium geometry operations.
+            'gfx::ToFlooredPoint',
+
             # Range type.
             'gfx::Range',
 

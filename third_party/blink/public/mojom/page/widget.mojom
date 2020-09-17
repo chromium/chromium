@@ -11,6 +11,7 @@ import "mojo/public/mojom/base/text_direction.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id_allocation.mojom";
 import "services/viz/public/mojom/hit_test/input_target_client.mojom";
+import "skia/public/mojom/bitmap.mojom";
 import "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom";
 import "third_party/blink/public/mojom/input/input_handler.mojom";
 import "third_party/blink/public/mojom/page/drag.mojom";
@@ -154,6 +155,16 @@ interface FrameWidgetHost {
   // Sent once a paint happens after the first non empty layout. In other words,
   // after the frame widget has painted something.
   DidFirstVisuallyNonEmptyPaint();
+
+  // Used to tell the browser the user started dragging in the content area.
+  // |drag_data| contains contextual information about the pieces of the page
+  // the user dragged. The browser uses this notification to initiate a drag
+  // session at the OS level.
+  StartDragging(DragData drag_data,
+                AllowedDragOperations operations_allowed,
+                skia.mojom.Bitmap? image,
+                gfx.mojom.Vector2d bitmap_offset_in_dip,
+                DragEventSourceInfo event_info);
 };
 
 // Implemented in Blink, this interface defines widget-specific methods that

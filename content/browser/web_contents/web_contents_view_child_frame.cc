@@ -169,7 +169,7 @@ void WebContentsViewChildFrame::StartDragging(
     WebDragOperationsMask ops,
     const gfx::ImageSkia& image,
     const gfx::Vector2d& image_offset,
-    const DragEventSourceInfo& event_info,
+    const blink::mojom::DragEventSourceInfo& event_info,
     RenderWidgetHostImpl* source_rwh) {
   if (auto* view = GetOuterDelegateView()) {
     view->StartDragging(

@@ -45,7 +45,6 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
-#include "content/common/drag_event_source_info.h"
 #include "content/common/render_frame_metadata.mojom.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_widget_host.h"
@@ -911,11 +910,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void OnClose();
   void OnUpdateScreenRectsAck();
   void OnRequestSetBounds(const gfx::Rect& bounds);
-  void OnStartDragging(const DropData& drop_data,
-                       blink::WebDragOperationsMask operations_allowed,
-                       const SkBitmap& bitmap,
-                       const gfx::Vector2d& bitmap_offset_in_dip,
-                       const DragEventSourceInfo& event_info);
   void OnUpdateDragCursor(blink::WebDragOperation current_op);
 
   // blink::mojom::FrameWidgetHost overrides.
@@ -930,6 +924,11 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void AutoscrollFling(const gfx::Vector2dF& velocity) override;
   void AutoscrollEnd() override;
   void DidFirstVisuallyNonEmptyPaint() override;
+  void StartDragging(blink::mojom::DragDataPtr drag_data,
+                     blink::WebDragOperationsMask drag_operations_mask,
+                     const SkBitmap& bitmap,
+                     const gfx::Vector2d& bitmap_offset_in_dip,
+                     blink::mojom::DragEventSourceInfoPtr event_info) override;
 
   // When the RenderWidget is destroyed and recreated, this resets states in the
   // browser to match the clean start for the renderer side.

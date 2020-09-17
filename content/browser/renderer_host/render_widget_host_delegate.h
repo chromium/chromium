@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "components/viz/common/vertical_scroll_direction.h"
 #include "content/common/content_export.h"
-#include "content/common/drag_event_source_info.h"
 #include "content/public/common/drop_data.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/input/web_input_event.h"

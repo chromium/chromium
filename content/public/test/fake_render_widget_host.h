@@ -45,6 +45,11 @@ class FakeRenderWidgetHost : public blink::mojom::FrameWidgetHost,
   void AutoscrollFling(const gfx::Vector2dF& position) override;
   void AutoscrollEnd() override;
   void DidFirstVisuallyNonEmptyPaint() override;
+  void StartDragging(blink::mojom::DragDataPtr drag_data,
+                     blink::WebDragOperationsMask operations_allowed,
+                     const SkBitmap& bitmap,
+                     const gfx::Vector2d& bitmap_offset_in_dip,
+                     blink::mojom::DragEventSourceInfoPtr event_info) override;
 
   // blink::mojom::WidgetHost overrides.
   void SetCursor(const ui::Cursor& cursor) override;

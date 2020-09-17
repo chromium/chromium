@@ -36,7 +36,6 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/switches.h"
 #include "content/common/content_switches_internal.h"
-#include "content/common/drag_event_source_info.h"
 #include "content/common/drag_messages.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/common/widget_messages.h"
@@ -49,7 +48,6 @@
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/renderer/drop_data_builder.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_frame_proxy.h"
@@ -86,7 +84,6 @@
 #include "third_party/blink/public/web/web_widget.h"
 #include "third_party/skia/include/core/SkShader.h"
 #include "ui/base/clipboard/clipboard_constants.h"
-#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/base_event_utils.h"
@@ -534,21 +531,9 @@ void RenderWidget::UpdateTextInputState() {
   GetWebWidget()->UpdateTextInputState();
 }
 
-bool RenderWidget::WillHandleGestureEvent(const blink::WebGestureEvent& event) {
-  possible_drag_event_info_.event_source = ui::mojom::DragEventSource::kTouch;
-  possible_drag_event_info_.event_location =
-      gfx::ToFlooredPoint(event.PositionInScreen());
-
-  return false;
-}
-
 bool RenderWidget::WillHandleMouseEvent(const blink::WebMouseEvent& event) {
   for (auto& observer : render_frames_)
     observer.RenderWidgetWillHandleMouseEvent();
-
-  possible_drag_event_info_.event_source = ui::mojom::DragEventSource::kMouse;
-  possible_drag_event_info_.event_location =
-      gfx::Point(event.PositionInScreen().x(), event.PositionInScreen().y());
 
   return mouse_lock_dispatcher()->WillHandleMouseEvent(event);
 }
@@ -980,19 +965,6 @@ void RenderWidget::RequestPointerUnlock() {
 bool RenderWidget::IsPointerLocked() {
   return mouse_lock_dispatcher_->IsMouseLockedTo(
       webwidget_mouse_lock_target_.get());
-}
-
-void RenderWidget::StartDragging(const WebDragData& data,
-                                 WebDragOperationsMask mask,
-                                 const SkBitmap& drag_image,
-                                 const gfx::Point& web_image_offset) {
-  blink::WebRect offset_in_window(web_image_offset.x(), web_image_offset.y(), 0,
-                                  0);
-  ConvertViewportToWindow(&offset_in_window);
-  DropData drop_data(DropDataBuilder::Build(data));
-  gfx::Vector2d image_offset(offset_in_window.x, offset_in_window.y);
-  Send(new DragHostMsg_StartDragging(routing_id(), drop_data, mask, drag_image,
-                                     image_offset, possible_drag_event_info_));
 }
 
 void RenderWidget::DidNavigate(ukm::SourceId source_id, const GURL& url) {

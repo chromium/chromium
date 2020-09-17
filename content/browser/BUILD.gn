@@ -1349,6 +1349,8 @@ source_set("browser") {
     "renderer_host/display_feature.h",
     "renderer_host/display_util.cc",
     "renderer_host/display_util.h",
+    "renderer_host/drop_data_util.cc",
+    "renderer_host/drop_data_util.h",
     "renderer_host/dwrite_font_file_util_win.cc",
     "renderer_host/dwrite_font_file_util_win.h",
     "renderer_host/dwrite_font_lookup_table_builder_win.cc",

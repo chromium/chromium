@@ -15,9 +15,11 @@
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
+#include "content/browser/renderer_host/drop_data_util.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/common/frame_messages.h"
 #include "content/common/view_messages.h"
 #include "content/public/browser/browser_context.h"
@@ -25,6 +27,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/drop_data.h"
 #include "content/public/common/page_state.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
@@ -32,6 +35,7 @@
 #include "media/base/video_frame.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/page/drag.mojom.h"
 #include "ui/aura/env.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer_type.h"
@@ -321,12 +325,15 @@ bool TestRenderViewHost::IsTestRenderViewHost() const {
   return true;
 }
 
-void TestRenderViewHost::TestOnStartDragging(
-    const DropData& drop_data) {
-  blink::WebDragOperationsMask drag_operation = blink::kWebDragOperationEvery;
-  DragEventSourceInfo event_info;
-  GetWidget()->OnStartDragging(drop_data, drag_operation, SkBitmap(),
-                               gfx::Vector2d(), event_info);
+void TestRenderViewHost::TestStartDragging(const DropData& drop_data) {
+  StoragePartitionImpl* storage_partition =
+      static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition());
+  GetWidget()->StartDragging(
+      DropDataToDragData(drop_data,
+                         storage_partition->GetNativeFileSystemManager(),
+                         GetProcess()->GetID()),
+      blink::kWebDragOperationEvery, SkBitmap(), gfx::Vector2d(),
+      blink::mojom::DragEventSourceInfo::New());
 }
 
 void TestRenderViewHost::TestOnUpdateStateWithFile(

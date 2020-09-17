@@ -18,7 +18,6 @@
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/common/content_export.h"
-#include "content/common/drag_event_source_info.h"
 #include "content/common/web_contents_ns_view_bridge.mojom.h"
 #include "content/public/browser/visibility.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -91,7 +90,7 @@ class WebContentsViewMac : public WebContentsView,
                      blink::WebDragOperationsMask allowed_operations,
                      const gfx::ImageSkia& image,
                      const gfx::Vector2d& image_offset,
-                     const DragEventSourceInfo& event_info,
+                     const blink::mojom::DragEventSourceInfo& event_info,
                      RenderWidgetHostImpl* source_rwh) override;
   void UpdateDragCursor(blink::WebDragOperation operation) override;
   void GotFocus(RenderWidgetHostImpl* render_widget_host) override;

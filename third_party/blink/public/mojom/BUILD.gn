@@ -225,6 +225,7 @@ mojom("mojom_platform") {
     "//third_party/blink/public/mojom/tokens",
     "//third_party/blink/public/mojom/usb",
     "//ui/base/cursor/mojom",
+    "//ui/base/dragdrop/mojom",
     "//ui/base/ime/mojom",
     "//ui/base/mojom/",
     "//ui/display/mojom",

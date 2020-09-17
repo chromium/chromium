@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
+#include "third_party/blink/public/mojom/page/drag.mojom.h"
 
 namespace content {
 
@@ -93,6 +94,13 @@ void FakeRenderWidgetHost::AutoscrollFling(const gfx::Vector2dF& position) {}
 void FakeRenderWidgetHost::AutoscrollEnd() {}
 
 void FakeRenderWidgetHost::DidFirstVisuallyNonEmptyPaint() {}
+
+void FakeRenderWidgetHost::StartDragging(
+    blink::mojom::DragDataPtr drag_data,
+    blink::WebDragOperationsMask operations_allowed,
+    const SkBitmap& bitmap,
+    const gfx::Vector2d& bitmap_offset_in_dip,
+    blink::mojom::DragEventSourceInfoPtr event_info) {}
 
 blink::mojom::WidgetInputHandler*
 FakeRenderWidgetHost::GetWidgetInputHandler() {

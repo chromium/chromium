@@ -311,12 +311,13 @@ void WebViewPlugin::WebViewHelper::SetToolTipText(
   }
 }
 
-void WebViewPlugin::WebViewHelper::StartDragging(const WebDragData&,
-                                                 WebDragOperationsMask,
-                                                 const SkBitmap&,
-                                                 const gfx::Point&) {
+bool WebViewPlugin::WebViewHelper::InterceptStartDragging(const WebDragData&,
+                                                          WebDragOperationsMask,
+                                                          const SkBitmap&,
+                                                          const gfx::Point&) {
   // Immediately stop dragging.
   frame_->FrameWidget()->DragSourceSystemDragEnded();
+  return true;
 }
 
 void WebViewPlugin::WebViewHelper::DidInvalidateRect(const WebRect& rect) {

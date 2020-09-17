@@ -11,12 +11,14 @@
 #include <tuple>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/hash/hash.h"
 #include "base/i18n/rtl.h"
 #include "base/lazy_instance.h"
@@ -53,6 +55,7 @@
 #include "content/browser/renderer_host/dip_util.h"
 #include "content/browser/renderer_host/display_feature.h"
 #include "content/browser/renderer_host/display_util.h"
+#include "content/browser/renderer_host/drop_data_util.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/input/fling_scheduler.h"
 #include "content/browser/renderer_host/input/input_router_config_helper.h"
@@ -93,6 +96,7 @@
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/drop_data.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -249,69 +253,6 @@ std::vector<DropData::Metadata> DropDataToMetaData(const DropData& drop_data) {
   }
 
   return metadata;
-}
-
-blink::mojom::DragDataPtr DropDataToDragData(
-    const DropData& drop_data,
-    NativeFileSystemManagerImpl* native_file_system_manager,
-    int child_id) {
-  // These fields are currently unused when dragging into Blink.
-  DCHECK(drop_data.download_metadata.empty());
-  DCHECK(drop_data.file_contents.empty());
-  DCHECK(drop_data.file_contents_content_disposition.empty());
-
-  std::vector<blink::mojom::DragItemPtr> items;
-  if (drop_data.text) {
-    blink::mojom::DragItemStringPtr item = blink::mojom::DragItemString::New();
-    item->string_type = ui::kMimeTypeText;
-    item->string_data = *drop_data.text;
-    items.push_back(blink::mojom::DragItem::NewString(std::move(item)));
-  }
-  if (!drop_data.url.is_empty()) {
-    blink::mojom::DragItemStringPtr item = blink::mojom::DragItemString::New();
-    item->string_type = ui::kMimeTypeURIList;
-    item->string_data = base::UTF8ToUTF16(drop_data.url.spec());
-    item->title = drop_data.url_title;
-    items.push_back(blink::mojom::DragItem::NewString(std::move(item)));
-  }
-  if (drop_data.html) {
-    blink::mojom::DragItemStringPtr item = blink::mojom::DragItemString::New();
-    item->string_type = ui::kMimeTypeHTML;
-    item->string_data = *drop_data.html;
-    item->base_url = drop_data.html_base_url;
-    items.push_back(blink::mojom::DragItem::NewString(std::move(item)));
-  }
-  for (const ui::FileInfo& file : drop_data.filenames) {
-    blink::mojom::DragItemFilePtr item = blink::mojom::DragItemFile::New();
-    item->path = file.path;
-    item->display_name = file.display_name;
-    mojo::PendingRemote<blink::mojom::NativeFileSystemDragDropToken>
-        pending_token;
-    native_file_system_manager->CreateNativeFileSystemDragDropToken(
-        file.path, child_id, pending_token.InitWithNewPipeAndPassReceiver());
-    item->native_file_system_token = std::move(pending_token);
-    items.push_back(blink::mojom::DragItem::NewFile(std::move(item)));
-  }
-  for (const content::DropData::FileSystemFileInfo& file_system_file :
-       drop_data.file_system_files) {
-    blink::mojom::DragItemFileSystemFilePtr item =
-        blink::mojom::DragItemFileSystemFile::New();
-    item->url = file_system_file.url;
-    item->size = file_system_file.size;
-    item->file_system_id = file_system_file.filesystem_id;
-    items.push_back(blink::mojom::DragItem::NewFileSystemFile(std::move(item)));
-  }
-  for (const std::pair<base::string16, base::string16> data :
-       drop_data.custom_data) {
-    blink::mojom::DragItemStringPtr item = blink::mojom::DragItemString::New();
-    item->string_type = base::UTF16ToUTF8(data.first);
-    item->string_data = data.second;
-    items.push_back(blink::mojom::DragItem::NewString(std::move(item)));
-  }
-
-  return blink::mojom::DragData::New(std::move(items),
-                                     base::UTF16ToUTF8(drop_data.filesystem_id),
-                                     drop_data.referrer_policy);
 }
 
 class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
@@ -731,7 +672,6 @@ bool RenderWidgetHostImpl::OnMessageReceived(const IPC::Message &msg) {
   IPC_BEGIN_MESSAGE_MAP(RenderWidgetHostImpl, msg)
     IPC_MESSAGE_HANDLER(WidgetHostMsg_Close, OnClose)
     IPC_MESSAGE_HANDLER(WidgetHostMsg_RequestSetBounds, OnRequestSetBounds)
-    IPC_MESSAGE_HANDLER(DragHostMsg_StartDragging, OnStartDragging)
     IPC_MESSAGE_HANDLER(DragHostMsg_UpdateDragCursor, OnUpdateDragCursor)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
@@ -2040,58 +1980,6 @@ void RenderWidgetHostImpl::SelectionBoundsChanged(
                                   focus_dir, is_anchor_first);
 }
 
-void RenderWidgetHostImpl::OnStartDragging(
-    const DropData& drop_data,
-    blink::WebDragOperationsMask drag_operations_mask,
-    const SkBitmap& bitmap,
-    const gfx::Vector2d& bitmap_offset_in_dip,
-    const DragEventSourceInfo& event_info) {
-  RenderViewHostDelegateView* view = delegate_->GetDelegateView();
-  if (!view || !GetView()) {
-    // Need to clear drag and drop state in blink.
-    DragSourceSystemDragEnded();
-    return;
-  }
-
-  DropData filtered_data(drop_data);
-  RenderProcessHost* process = GetProcess();
-  ChildProcessSecurityPolicyImpl* policy =
-      ChildProcessSecurityPolicyImpl::GetInstance();
-
-  // Allow drag of Javascript URLs to enable bookmarklet drag to bookmark bar.
-  if (!filtered_data.url.SchemeIs(url::kJavaScriptScheme))
-    process->FilterURL(true, &filtered_data.url);
-  process->FilterURL(false, &filtered_data.html_base_url);
-  // Filter out any paths that the renderer didn't have access to. This prevents
-  // the following attack on a malicious renderer:
-  // 1. StartDragging IPC sent with renderer-specified filesystem paths that it
-  //    doesn't have read permissions for.
-  // 2. We initiate a native DnD operation.
-  // 3. DnD operation immediately ends since mouse is not held down. DnD events
-  //    still fire though, which causes read permissions to be granted to the
-  //    renderer for any file paths in the drop.
-  filtered_data.filenames.clear();
-  for (const auto& file_info : drop_data.filenames) {
-    if (policy->CanReadFile(GetProcess()->GetID(), file_info.path))
-      filtered_data.filenames.push_back(file_info);
-  }
-
-  storage::FileSystemContext* file_system_context =
-      GetProcess()->GetStoragePartition()->GetFileSystemContext();
-  filtered_data.file_system_files.clear();
-  for (const auto& file_system_file : drop_data.file_system_files) {
-    storage::FileSystemURL file_system_url =
-        file_system_context->CrackURL(file_system_file.url);
-    if (policy->CanReadFileSystemFile(GetProcess()->GetID(), file_system_url))
-      filtered_data.file_system_files.push_back(file_system_file);
-  }
-
-  float scale = GetScaleFactorForView(GetView());
-  gfx::ImageSkia image(gfx::ImageSkiaRep(bitmap, scale));
-  view->StartDragging(filtered_data, drag_operations_mask, image,
-                      bitmap_offset_in_dip, event_info, this);
-}
-
 void RenderWidgetHostImpl::OnUpdateDragCursor(WebDragOperation current_op) {
   if (delegate_->OnUpdateDragCursor())
     return;
@@ -2645,6 +2533,59 @@ void RenderWidgetHostImpl::AutoscrollEnd() {
 void RenderWidgetHostImpl::DidFirstVisuallyNonEmptyPaint() {
   if (owner_delegate_)
     owner_delegate_->RenderWidgetDidFirstVisuallyNonEmptyPaint();
+}
+
+void RenderWidgetHostImpl::StartDragging(
+    blink::mojom::DragDataPtr drag_data,
+    blink::WebDragOperationsMask drag_operations_mask,
+    const SkBitmap& bitmap,
+    const gfx::Vector2d& bitmap_offset_in_dip,
+    blink::mojom::DragEventSourceInfoPtr event_info) {
+  RenderViewHostDelegateView* view = delegate_->GetDelegateView();
+  if (!view || !GetView()) {
+    // Need to clear drag and drop state in blink.
+    DragSourceSystemDragEnded();
+    return;
+  }
+
+  DropData drop_data = DragDataToDropData(*drag_data);
+  DropData filtered_data(drop_data);
+  RenderProcessHost* process = GetProcess();
+  ChildProcessSecurityPolicyImpl* policy =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+
+  // Allow drag of Javascript URLs to enable bookmarklet drag to bookmark bar.
+  if (!filtered_data.url.SchemeIs(url::kJavaScriptScheme))
+    process->FilterURL(true, &filtered_data.url);
+  process->FilterURL(false, &filtered_data.html_base_url);
+  // Filter out any paths that the renderer didn't have access to. This prevents
+  // the following attack on a malicious renderer:
+  // 1. StartDragging IPC sent with renderer-specified filesystem paths that it
+  //    doesn't have read permissions for.
+  // 2. We initiate a native DnD operation.
+  // 3. DnD operation immediately ends since mouse is not held down. DnD events
+  //    still fire though, which causes read permissions to be granted to the
+  //    renderer for any file paths in the drop.
+  filtered_data.filenames.clear();
+  for (const auto& file_info : drop_data.filenames) {
+    if (policy->CanReadFile(GetProcess()->GetID(), file_info.path))
+      filtered_data.filenames.push_back(file_info);
+  }
+
+  storage::FileSystemContext* file_system_context =
+      GetProcess()->GetStoragePartition()->GetFileSystemContext();
+  filtered_data.file_system_files.clear();
+  for (const auto& file_system_file : drop_data.file_system_files) {
+    storage::FileSystemURL file_system_url =
+        file_system_context->CrackURL(file_system_file.url);
+    if (policy->CanReadFileSystemFile(GetProcess()->GetID(), file_system_url))
+      filtered_data.file_system_files.push_back(file_system_file);
+  }
+
+  float scale = GetScaleFactorForView(GetView());
+  gfx::ImageSkia image(gfx::ImageSkiaRep(bitmap, scale));
+  view->StartDragging(filtered_data, drag_operations_mask, image,
+                      bitmap_offset_in_dip, *event_info, this);
 }
 
 bool RenderWidgetHostImpl::IsAutoscrollInProgress() {

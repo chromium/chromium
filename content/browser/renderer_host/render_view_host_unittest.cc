@@ -99,7 +99,7 @@ class MockDraggingRenderViewHostDelegateView
                      blink::WebDragOperationsMask allowed_ops,
                      const gfx::ImageSkia& image,
                      const gfx::Vector2d& image_offset,
-                     const DragEventSourceInfo& event_info,
+                     const blink::mojom::DragEventSourceInfo& event_info,
                      RenderWidgetHostImpl* source_rwh) override {
     drag_url_ = drop_data.url;
     html_base_url_ = drop_data.html_base_url;
@@ -124,32 +124,36 @@ TEST_F(RenderViewHostTest, StartDragging) {
   web_contents->set_delegate_view(&delegate_view);
 
   DropData drop_data;
+  // If `html` is not populated, `html_base_url` won't be populated when
+  // converting to `DragData` with `DropDataToDragData`.
+  drop_data.html = base::string16();
+
   GURL blocked_url = GURL(kBlockedURL);
   GURL file_url = GURL("file:///home/user/secrets.txt");
   drop_data.url = file_url;
   drop_data.html_base_url = file_url;
-  test_rvh()->TestOnStartDragging(drop_data);
+  test_rvh()->TestStartDragging(drop_data);
   EXPECT_EQ(blocked_url, delegate_view.drag_url());
   EXPECT_EQ(blocked_url, delegate_view.html_base_url());
 
   GURL http_url = GURL("http://www.domain.com/index.html");
   drop_data.url = http_url;
   drop_data.html_base_url = http_url;
-  test_rvh()->TestOnStartDragging(drop_data);
+  test_rvh()->TestStartDragging(drop_data);
   EXPECT_EQ(http_url, delegate_view.drag_url());
   EXPECT_EQ(http_url, delegate_view.html_base_url());
 
   GURL https_url = GURL("https://www.domain.com/index.html");
   drop_data.url = https_url;
   drop_data.html_base_url = https_url;
-  test_rvh()->TestOnStartDragging(drop_data);
+  test_rvh()->TestStartDragging(drop_data);
   EXPECT_EQ(https_url, delegate_view.drag_url());
   EXPECT_EQ(https_url, delegate_view.html_base_url());
 
   GURL javascript_url = GURL("javascript:alert('I am a bookmarklet')");
   drop_data.url = javascript_url;
   drop_data.html_base_url = http_url;
-  test_rvh()->TestOnStartDragging(drop_data);
+  test_rvh()->TestStartDragging(drop_data);
   EXPECT_EQ(javascript_url, delegate_view.drag_url());
   EXPECT_EQ(http_url, delegate_view.html_base_url());
 }
