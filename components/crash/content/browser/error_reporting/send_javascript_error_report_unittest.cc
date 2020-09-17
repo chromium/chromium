@@ -18,6 +18,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+// TODO(crbug.com/1129544) The SendJavaScriptErrorReport function is currently
+// disabled due to Windows DLL thunking issues. Fix & re-enable.
+#if !defined(OS_WIN)
+
 using ::testing::AllOf;
 using ::testing::HasSubstr;
 
@@ -222,3 +226,5 @@ TEST_F(SendJavaScriptErrorReportTest, NonGoogleChrome) {
       endpoint_->last_report();
   EXPECT_FALSE(actual_report);
 }
+
+#endif  // !defined(OS_WIN)

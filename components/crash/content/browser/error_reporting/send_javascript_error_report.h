@@ -10,11 +10,16 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "build/build_config.h"
 
 namespace content {
 class BrowserContext;
 }
 struct JavaScriptErrorReport;
+
+// TODO(crbug.com/1129544) This is currently disabled due to Windows DLL
+// thunking issues. Fix & re-enable.
+#if !defined(OS_WIN)
 
 // Sends a report of an error in JavaScript (such as an unhandled exception) to
 // Google's error collection service. This should be called on the UI thread;
@@ -23,6 +28,8 @@ struct JavaScriptErrorReport;
 void SendJavaScriptErrorReport(JavaScriptErrorReport error_report,
                                base::OnceClosure completion_callback,
                                content::BrowserContext* browser_context);
+
+#endif  // !defined(OS_WIN)
 
 // Override the URL we send the crashes to.
 void SetCrashEndpointForTesting(const std::string& endpoint);

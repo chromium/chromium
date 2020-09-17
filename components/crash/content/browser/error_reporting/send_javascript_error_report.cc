@@ -21,7 +21,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "build/build_config.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/core/app/client_upload_info.h"
 #include "components/feedback/redaction_tool.h"
@@ -39,8 +38,6 @@ constexpr char kCrashEndpointUrl[] = "https://clients2.google.com/cr/report";
 #else
 constexpr char kCrashEndpointUrl[] = "";
 #endif
-
-constexpr int kCrashEndpointResponseMaxSizeInBytes = 1024;
 
 std::string& GetCrashEndpoint() {
   static base::NoDestructor<std::string> crash_endpoint(kCrashEndpointUrl);
@@ -63,6 +60,10 @@ base::Optional<OsVersionOverride>& GetOsVersionOverrides() {
   static base::NoDestructor<base::Optional<OsVersionOverride>> testing_override;
   return *testing_override;
 }
+
+// TODO(crbug.com/1129544) This is currently disabled due to Windows DLL
+// thunking issues. Fix & re-enable.
+#if !defined(OS_WIN)
 
 void OnRequestComplete(std::unique_ptr<network::SimpleURLLoader> url_loader,
                        base::ScopedClosureRunner callback_runner,
@@ -222,6 +223,7 @@ void SendReport(const GURL& url,
     url_loader->AttachStringForUpload(body, "text/plain");
   }
 
+  constexpr int kCrashEndpointResponseMaxSizeInBytes = 1024;
   network::SimpleURLLoader* loader = url_loader.get();
   loader->DownloadToString(
       loader_factory,
@@ -286,7 +288,13 @@ void OnConsentCheckCompleted(
   SendReport(url, body, std::move(callback_runner), loader_factory.get());
 }
 
+#endif  // !defined(OS_WIN)
+
 }  // namespace
+
+// TODO(crbug.com/1129544) This is currently disabled due to Windows DLL
+// thunking issues. Fix & re-enable.
+#if !defined(OS_WIN)
 
 void SendJavaScriptErrorReport(JavaScriptErrorReport error_report,
                                base::OnceClosure completion_callback,
@@ -308,6 +316,8 @@ void SendJavaScriptErrorReport(JavaScriptErrorReport error_report,
       base::BindOnce(&OnConsentCheckCompleted, std::move(callback_runner),
                      std::move(loader_factory)));
 }
+
+#endif  // !defined(OS_WIN)
 
 void SetCrashEndpointForTesting(const std::string& endpoint) {
   GetCrashEndpoint() = endpoint;
