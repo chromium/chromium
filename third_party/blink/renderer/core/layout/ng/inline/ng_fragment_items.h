@@ -19,7 +19,6 @@ class NGFragmentItemsBuilder;
 // transformed to a flat list of |NGFragmentItem| and stored in this class.
 class CORE_EXPORT NGFragmentItems {
  public:
-  NGFragmentItems(const NGFragmentItems& other);
   explicit NGFragmentItems(NGFragmentItemsBuilder* builder);
   ~NGFragmentItems();
 

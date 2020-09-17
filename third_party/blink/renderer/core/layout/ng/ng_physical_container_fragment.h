@@ -155,9 +155,6 @@ class CORE_EXPORT NGPhysicalContainerFragment : public NGPhysicalFragment {
                               NGFragmentType,
                               unsigned sub_type);
 
-  NGPhysicalContainerFragment(const NGPhysicalContainerFragment& other,
-                              NGLink* buffer);
-
   void AddScrollableOverflowForInlineChild(
       const NGPhysicalBoxFragment& container,
       const ComputedStyle& container_style,

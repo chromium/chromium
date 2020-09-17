@@ -27,10 +27,6 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   static scoped_refptr<const NGPhysicalBoxFragment> Create(
       NGBoxFragmentBuilder* builder,
       WritingMode block_or_line_writing_mode);
-  // Creates a copy of |other| but uses the "post-layout" fragments to ensure
-  // fragment-tree consistency.
-  static scoped_refptr<const NGPhysicalBoxFragment>
-  CloneWithPostLayoutFragments(const NGPhysicalBoxFragment& other);
 
   using PassKey = util::PassKey<NGPhysicalBoxFragment>;
   NGPhysicalBoxFragment(PassKey,
@@ -39,8 +35,6 @@ class CORE_EXPORT NGPhysicalBoxFragment final
                         const NGPhysicalBoxStrut& padding,
                         bool has_rare_data,
                         WritingMode block_or_line_writing_mode);
-
-  NGPhysicalBoxFragment(PassKey, const NGPhysicalBoxFragment& other);
 
   scoped_refptr<const NGLayoutResult> CloneAsHiddenForPaint() const;
 
@@ -230,19 +224,12 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   }
 
  private:
-  static size_t ByteSize(wtf_size_t num_fragment_items,
-                         wtf_size_t num_children,
-                         bool has_borders,
-                         bool has_padding,
-                         bool has_rare_data);
-
   struct RareData {
-    RareData(const RareData&);
     RareData(NGBoxFragmentBuilder*, PhysicalSize size);
 
     Vector<NGPhysicalOutOfFlowPositionedNode>
         oof_positioned_fragmentainer_descendants;
-    const std::unique_ptr<const NGMathMLPaintInfo> mathml_paint_info;
+    const std::unique_ptr<NGMathMLPaintInfo> mathml_paint_info;
 
     // TablesNG rare data.
     PhysicalRect table_grid_rect;

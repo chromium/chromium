@@ -303,46 +303,6 @@ NGPhysicalFragment::NGPhysicalFragment(LayoutObject* layout_object,
   CHECK(layout_object);
 }
 
-// Even though the other constructors don't initialize many of these fields
-// (instead set by their super-classes), the copy constructor does.
-NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other)
-    : has_floating_descendants_for_paint_(
-          other.has_floating_descendants_for_paint_),
-      has_adjoining_object_descendants_(
-          other.has_adjoining_object_descendants_),
-      depends_on_percentage_block_size_(
-          other.depends_on_percentage_block_size_),
-      has_propagated_descendants_(other.has_propagated_descendants_),
-      has_hanging_(other.has_hanging_),
-      is_inline_formatting_context_(other.is_inline_formatting_context_),
-      has_fragment_items_(other.has_fragment_items_),
-      include_border_top_(other.include_border_top_),
-      include_border_right_(other.include_border_right_),
-      include_border_bottom_(other.include_border_bottom_),
-      include_border_left_(other.include_border_left_),
-      has_borders_(other.has_borders_),
-      has_padding_(other.has_padding_),
-      is_first_for_node_(other.is_first_for_node_),
-      has_rare_data_(other.has_rare_data_),
-      layout_object_(other.layout_object_),
-      size_(other.size_),
-      type_(other.type_),
-      sub_type_(other.sub_type_),
-      style_variant_(other.style_variant_),
-      is_hidden_for_paint_(other.is_hidden_for_paint_),
-      is_math_fraction_(other.is_math_fraction_),
-      base_or_resolved_direction_(other.base_or_resolved_direction_),
-      may_have_descendant_above_block_start_(
-          other.may_have_descendant_above_block_start_),
-      is_fieldset_container_(other.is_fieldset_container_),
-      is_legacy_layout_root_(other.is_legacy_layout_root_),
-      is_painted_atomically_(other.is_painted_atomically_),
-      has_baseline_(other.has_baseline_),
-      has_last_baseline_(other.has_last_baseline_),
-      ink_overflow_computed_(other.ink_overflow_computed_) {
-  CHECK(layout_object_);
-}
-
 // Keep the implementation of the destructor here, to avoid dependencies on
 // ComputedStyle in the header file.
 NGPhysicalFragment::~NGPhysicalFragment() = default;

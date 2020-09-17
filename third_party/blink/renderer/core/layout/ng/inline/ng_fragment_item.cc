@@ -134,7 +134,7 @@ NGFragmentItem::NGFragmentItem(const NGPhysicalLineBoxFragment& line)
 NGFragmentItem::NGFragmentItem(const NGPhysicalBoxFragment& box,
                                TextDirection resolved_direction)
     : layout_object_(box.GetLayoutObject()),
-      box_(&box, /* descendants_count */ 1),
+      box_({&box, /* descendants_count */ 1}),
       rect_({PhysicalOffset(), box.Size()}),
       type_(kBox),
       style_variant_(static_cast<unsigned>(box.StyleVariant())),
@@ -214,7 +214,10 @@ NGFragmentItem::NGFragmentItem(const NGFragmentItem& source)
       break;
   }
 
-  if (source.IsInkOverflowComputed()) {
+  // Copy |ink_overflow_| only for text items, because ink overflow for other
+  // items may be chnaged even in simplified layout or when reusing lines, and
+  // that they need to be re-computed anyway.
+  if (IsText() && source.IsInkOverflowComputed()) {
     ink_overflow_type_ = source.InkOverflowType();
     new (&ink_overflow_)
         NGInkOverflow(source.InkOverflowType(), source.ink_overflow_);
@@ -331,16 +334,6 @@ bool NGFragmentItem::HasSelfPaintingLayer() const {
     return fragment->HasSelfPaintingLayer();
   return false;
 }
-
-NGFragmentItem::BoxItem::BoxItem(const BoxItem& other)
-    : box_fragment(other.box_fragment->PostLayout()),
-      descendants_count(other.descendants_count) {}
-
-NGFragmentItem::BoxItem::BoxItem(
-    scoped_refptr<const NGPhysicalBoxFragment> box_fragment,
-    wtf_size_t descendants_count)
-    : box_fragment(std::move(box_fragment)),
-      descendants_count(descendants_count) {}
 
 const NGPhysicalBoxFragment* NGFragmentItem::BoxItem::PostLayout() const {
   if (box_fragment)

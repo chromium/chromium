@@ -47,11 +47,6 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     // large enough to store.
   };
 
-  // Creates a copy of |other| but uses the "post-layout" fragments to ensure
-  // fragment-tree consistency.
-  static scoped_refptr<const NGLayoutResult> CloneWithPostLayoutFragments(
-      const NGLayoutResult& other);
-
   // Create a copy of NGLayoutResult with |BfcBlockOffset| replaced by the given
   // parameter. Note, when |bfc_block_offset| is |nullopt|, |BfcBlockOffset| is
   // still replaced with |nullopt|.
@@ -344,11 +339,6 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
 
  private:
   friend class MutableForOutOfFlow;
-
-  // Creates a copy of NGLayoutResult with a new (but "identical") fragment.
-  NGLayoutResult(
-      const NGLayoutResult& other,
-      scoped_refptr<const NGPhysicalContainerFragment> physical_fragment);
 
   // We don't need the copy constructor, move constructor, copy
   // assigmnment-operator, or move assignment-operator today.
