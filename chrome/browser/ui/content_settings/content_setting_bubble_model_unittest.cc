@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
@@ -28,6 +29,8 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_browser_process_platform_part.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/blocked_content/popup_blocker.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
@@ -46,8 +49,32 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if defined(OS_MAC)
+#include "chrome/browser/geolocation/geolocation_system_permission_mac.h"
+#endif
+
 using content::WebContentsTester;
 using content_settings::PageSpecificContentSettings;
+
+namespace {
+
+#if defined(OS_MAC)
+class FakeSystemGeolocationPermissionsManager
+    : public GeolocationSystemPermissionManager {
+ public:
+  FakeSystemGeolocationPermissionsManager() = default;
+
+  ~FakeSystemGeolocationPermissionsManager() override = default;
+
+  SystemPermissionStatus GetSystemPermission() override { return status_; }
+  void set_status(SystemPermissionStatus status) { status_ = status; }
+
+ private:
+  SystemPermissionStatus status_ = SystemPermissionStatus::kDenied;
+};
+#endif  // defined(OS_MAC)
+
+}  // namespace
 
 class ContentSettingBubbleModelTest : public ChromeRenderViewHostTestHarness {
  protected:
@@ -778,6 +805,20 @@ TEST_F(ContentSettingBubbleModelTest, PepperBroker) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, Geolocation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kMacCoreLocationImplementation);
+
+#if defined(OS_MAC)
+  auto fake_geolocation_permission_manager =
+      std::make_unique<FakeSystemGeolocationPermissionsManager>();
+  FakeSystemGeolocationPermissionsManager* geolocation_permission_manager =
+      fake_geolocation_permission_manager.get();
+  TestingBrowserProcess::GetGlobal()
+      ->GetTestPlatformPart()
+      ->SetLocationPermissionManager(
+          std::move(fake_geolocation_permission_manager));
+#endif  // defined(OS_MAC)
+
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   PageSpecificContentSettings* content_settings =
@@ -785,11 +826,55 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
 
+  // Set geolocation to allow.
+  settings_map->SetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
+                                         CONTENT_SETTING_ALLOW);
+  content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
+
+#if defined(OS_MAC)
+  // System-level geolocation permission is blocked.
+  {
+    auto content_setting_bubble_model =
+        std::make_unique<ContentSettingGeolocationBubbleModel>(nullptr,
+                                                               web_contents());
+    std::unique_ptr<FakeOwner> owner =
+        FakeOwner::Create(*content_setting_bubble_model, 0);
+    const auto& bubble_content = content_setting_bubble_model->bubble_content();
+
+    EXPECT_EQ(bubble_content.title,
+              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_MACOS));
+    EXPECT_TRUE(bubble_content.message.empty());
+    EXPECT_EQ(bubble_content.radio_group.radio_items.size(), 0U);
+
+    // This should be a no-op.
+    content_setting_bubble_model->CommitChanges();
+  }
+
+  // System-level geolocation permission is blocked, but allowed while the
+  // bubble is visible. The displayed message should not change.
+  {
+    auto content_setting_bubble_model =
+        std::make_unique<ContentSettingGeolocationBubbleModel>(nullptr,
+                                                               web_contents());
+    std::unique_ptr<FakeOwner> owner =
+        FakeOwner::Create(*content_setting_bubble_model, 0);
+    const auto& bubble_content = content_setting_bubble_model->bubble_content();
+
+    geolocation_permission_manager->set_status(
+        SystemPermissionStatus::kAllowed);
+
+    EXPECT_EQ(bubble_content.title,
+              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_MACOS));
+    EXPECT_TRUE(bubble_content.message.empty());
+    EXPECT_EQ(bubble_content.radio_group.radio_items.size(), 0U);
+
+    // This should be a no-op.
+    content_setting_bubble_model->CommitChanges();
+  }
+#endif  // defined(OS_MAC)
+
   // Go from allow by default to block by default to allow by default.
   {
-    settings_map->SetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
-                                           CONTENT_SETTING_ALLOW);
-    content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
     std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
         std::make_unique<ContentSettingGeolocationBubbleModel>(nullptr,
                                                                web_contents()));
