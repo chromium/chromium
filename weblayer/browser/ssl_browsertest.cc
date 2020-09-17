@@ -12,8 +12,10 @@
 #include "build/build_config.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/security_interstitials/content/insecure_form_blocking_page.h"
+#include "components/security_interstitials/content/ssl_error_assistant.h"
 #include "components/security_interstitials/content/ssl_error_handler.h"
 #include "components/security_interstitials/core/features.h"
+#include "net/ssl/ssl_info.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/weblayer_security_blocking_page_factory.h"
@@ -377,6 +379,26 @@ IN_PROC_BROWSER_TEST_F(SSLBrowserTest, BadClockInterstitial) {
   // Now navigating to a page with an expired cert should cause the bad clock
   // interstitial to appear.
   NavigateToPageWithExpiredCertExpectBadClockInterstitial();
+}
+
+// This test verifies that a certificate in the list of known captive portal
+// certificates in ssl_error_assistant.asciipb is detected as such. This serves
+// to verify that the ssl_error_assistant proto was correctly loaded.
+IN_PROC_BROWSER_TEST_F(SSLBrowserTest,
+                       CertificateInKnownCaptivePortalsListDetected) {
+  net::SSLInfo ssl_info_with_known_captive_portal_cert;
+  net::HashValue captive_portal_public_key;
+
+  // Set up the SSSLInfo with the certificate of captive-portal.badssl.com
+  // (taken from ssl_error_assistant.asciipb).
+  ASSERT_TRUE(captive_portal_public_key.FromString(
+      "sha256/fjZPHewEHTrMDX3I1ecEIeoy3WFxHyGplOLv28kIbtI="));
+  net::HashValueVector public_keys;
+  public_keys.push_back(captive_portal_public_key);
+  ssl_info_with_known_captive_portal_cert.public_key_hashes = public_keys;
+
+  EXPECT_TRUE(SSLErrorAssistant().IsKnownCaptivePortalCertificate(
+      ssl_info_with_known_captive_portal_cert));
 }
 
 // Verifies an error page is not requested for an ssl error.
