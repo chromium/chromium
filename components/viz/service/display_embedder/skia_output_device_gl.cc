@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind_helpers.h"
+#include "base/debug/alias.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_lost_reason.h"
 #include "components/viz/service/display/dc_layer_overlay.h"
@@ -32,6 +33,21 @@
 #include "ui/gl/gl_version_info.h"
 
 namespace viz {
+
+namespace {
+base::TimeTicks g_last_reshape_failure = base::TimeTicks();
+
+NOINLINE void CheckForLoopFailures() {
+  const auto threshold = base::TimeDelta::FromSeconds(1);
+  auto now = base::TimeTicks::Now();
+  if (!g_last_reshape_failure.is_null() &&
+      now - g_last_reshape_failure > threshold) {
+    CHECK(false);
+  }
+  g_last_reshape_failure = now;
+}
+
+}  // namespace
 
 SkiaOutputDeviceGL::SkiaOutputDeviceGL(
     gpu::MailboxManager* mailbox_manager,
@@ -138,7 +154,9 @@ bool SkiaOutputDeviceGL::Reshape(const gfx::Size& size,
 
   if (!gl_surface_->Resize(size, device_scale_factor, color_space,
                            gfx::AlphaBitsForBufferFormat(buffer_format))) {
-    DLOG(ERROR) << "Failed to resize.";
+    CheckForLoopFailures();
+    // To prevent tail call, so we can see the stack.
+    base::debug::Alias(nullptr);
     return false;
   }
   SkSurfaceProps surface_props =
@@ -183,6 +201,9 @@ bool SkiaOutputDeviceGL::Reshape(const gfx::Size& size,
                << " " << framebuffer_info.fFBOID << " "
                << framebuffer_info.fFormat << " " << color_space.ToString()
                << " " << size.ToString();
+    CheckForLoopFailures();
+    // To prevent tail call, so we can see the stack.
+    base::debug::Alias(nullptr);
   }
 
   memory_type_tracker_->TrackMemFree(backbuffer_estimated_size_);
