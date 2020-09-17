@@ -3,5 +3,7 @@ PASS A transceiver added and stopped before the initial offer generation should 
 PASS During renegotiation, adding and stopping a transceiver should not trigger a renegotiated offer m-section generation
 FAIL A stopped sendonly transceiver should generate a sendonly m-section in the offer assert_true: The audio m-section should be sendonly expected true got false
 PASS A stopped inactive transceiver should generate an inactive m-section in the offer
+PASS If a track is stopped locally, setting a locally generated answer should still work
+PASS If a track is stopped remotely, setting a locally generated answer should still work
 Harness: the test ran to completion.
 
