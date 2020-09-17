@@ -108,3 +108,24 @@ crbug.com/1079393 [ win10 intel-0x5912 ] VideoPathTraceTest_DirectComposition_Vi
 
 # Fuchsia Flakes.
 crbug.com/1058255 [ fuchsia ] TraceTest_WebGLGreenTriangle_AA_Alpha [ Skip ]
+
+# Software compositing is not supported on Android/ChromeOS/Fuchsia: we skip the
+# tests that disable GPU compositing (--disable-gpu-compositing).
+[ android ] TraceTest_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
+[ android ] TraceTest_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
+[ android ] TraceTest_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
+[ android ] DeviceTraceTest_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
+[ android ] DeviceTraceTest_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
+[ android ] DeviceTraceTest_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
+[ chromeos ] TraceTest_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
+[ chromeos ] TraceTest_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
+[ chromeos ] TraceTest_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
+[ chromeos ] DeviceTraceTest_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
+[ chromeos ] DeviceTraceTest_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
+[ chromeos ] DeviceTraceTest_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
+[ fuchsia ] TraceTest_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
+[ fuchsia ] TraceTest_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
+[ fuchsia ] TraceTest_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
+[ fuchsia ] DeviceTraceTest_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
+[ fuchsia ] DeviceTraceTest_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
+[ fuchsia ] DeviceTraceTest_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]

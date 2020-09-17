@@ -93,13 +93,8 @@ class _TraceTestArguments(object):
   """Struct-like object for passing trace test arguments instead of dicts."""
 
   def __init__(  # pylint: disable=too-many-arguments
-      self,
-      browser_args,
-      category,
-      test_harness_script,
-      finish_js_condition,
-      success_eval_func,
-      other_args=None):
+      self, browser_args, category, test_harness_script, finish_js_condition,
+      success_eval_func, other_args):
     self.browser_args = browser_args
     self.category = category
     self.test_harness_script = test_harness_script
@@ -126,19 +121,21 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     for p in namespace.DefaultPages('TraceTest'):
       yield (p.name, gpu_relative_path + p.url,
              _TraceTestArguments(
-                 browser_args=[],
+                 browser_args=p.browser_args,
                  category=cls._DisabledByDefaultTraceCategory('gpu.service'),
                  test_harness_script=webgl_test_harness_script,
                  finish_js_condition='domAutomationController._finished',
-                 success_eval_func='CheckGLCategory'))
+                 success_eval_func='CheckGLCategory',
+                 other_args=p.other_args))
     for p in namespace.DefaultPages('DeviceTraceTest'):
       yield (p.name, gpu_relative_path + p.url,
              _TraceTestArguments(
-                 browser_args=[],
+                 browser_args=p.browser_args,
                  category=cls._DisabledByDefaultTraceCategory('gpu.device'),
                  test_harness_script=webgl_test_harness_script,
                  finish_js_condition='domAutomationController._finished',
-                 success_eval_func='CheckGLCategory'))
+                 success_eval_func='CheckGLCategory',
+                 other_args=p.other_args))
     for p in namespace.DirectCompositionPages('VideoPathTraceTest'):
       yield (p.name, gpu_relative_path + p.url,
              _TraceTestArguments(
