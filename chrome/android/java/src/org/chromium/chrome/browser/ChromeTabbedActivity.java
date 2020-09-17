@@ -651,9 +651,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 return false;
             };
 
-            getToolbarManager().initializeWithNative(mTabModelSelectorImpl, mLayoutManager,
-                    tabSwitcherClickHandler, newTabClickHandler, bookmarkClickHandler, null,
-                    showStartSurfaceSupplier);
+            getToolbarManager().initializeWithNative(mLayoutManager, tabSwitcherClickHandler,
+                    newTabClickHandler, bookmarkClickHandler, null, showStartSurfaceSupplier);
 
             if (!TabUiFeatureUtilities.supportInstantStart(isTablet())) {
                 assert !(mOverviewModeController != null
@@ -1438,7 +1437,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         return new TabbedRootUiCoordinator(this, this::onOmniboxFocusChanged,
                 mIntentWithEffectSupplier, getShareDelegateSupplier(), getActivityTabProvider(),
                 mEphemeralTabCoordinatorSupplier, mTabModelProfileSupplier, mBookmarkBridgeSupplier,
-                getOverviewModeBehaviorSupplier(), this::getContextualSearchManager);
+                getOverviewModeBehaviorSupplier(), this::getContextualSearchManager,
+                mTabModelSelectorSupplier);
     }
 
     @Override

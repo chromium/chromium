@@ -81,6 +81,7 @@ public class TopToolbarCoordinator implements Toolbar {
     private MenuButtonCoordinator mMenuButtonCoordinator;
     private ObservableSupplier<AppMenuButtonHelper> mAppMenuButtonHelperSupplier;
     private CallbackController mCallbackController = new CallbackController();
+    private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
     private HomepageManager.HomepageStateListener mHomepageStateListener =
             new HomepageManager.HomepageStateListener() {
@@ -102,6 +103,7 @@ public class TopToolbarCoordinator implements Toolbar {
      *                                     profile.
      * @param normalThemeColorProvider The {@link ThemeColorProvider} for normal mode.
      * @param overviewThemeColorProvider The {@link ThemeColorProvider} for overview mode.
+     * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
      */
     public TopToolbarCoordinator(ToolbarControlContainer controlContainer,
             ToolbarLayout toolbarLayout, IdentityDiscController identityDiscController,
@@ -112,7 +114,8 @@ public class TopToolbarCoordinator implements Toolbar {
             ThemeColorProvider overviewThemeColorProvider,
             MenuButtonCoordinator browsingModeMenuButtonCoordinator,
             MenuButtonCoordinator startSurfaceMenuButtonCoordinator,
-            ObservableSupplier<AppMenuButtonHelper> appMenuButtonHelperSupplier, Context context) {
+            ObservableSupplier<AppMenuButtonHelper> appMenuButtonHelperSupplier, Context context,
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mToolbarLayout = toolbarLayout;
         mIdentityDiscController = identityDiscController;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
@@ -121,6 +124,8 @@ public class TopToolbarCoordinator implements Toolbar {
 
         overviewModeBehaviorSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::setOverviewModeBehavior));
+
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
 
         if (mToolbarLayout instanceof ToolbarPhone) {
             if (StartSurfaceConfiguration.isStartSurfaceEnabled()) {
@@ -162,7 +167,6 @@ public class TopToolbarCoordinator implements Toolbar {
      * <p>
      * Calling this must occur after the native library have completely loaded.
      *
-     * @param tabModelSelector The selector that handles tab management.
      * @param layoutManager A {@link LayoutManager} instance used to watch for scene changes.
      * @param tabSwitcherClickHandler The click handler for the tab switcher button.
      * @param tabSwitcherLongClickHandler The long click handler for the tab switcher button.
@@ -170,24 +174,25 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param bookmarkClickHandler The click handler for the bookmarks button.
      * @param customTabsBackClickHandler The click handler for the custom tabs back button.
      */
-    public void initializeWithNative(TabModelSelector tabModelSelector, LayoutManager layoutManager,
+    public void initializeWithNative(LayoutManager layoutManager,
             OnClickListener tabSwitcherClickHandler,
             OnLongClickListener tabSwitcherLongClickHandler, OnClickListener newTabClickHandler,
             OnClickListener bookmarkClickHandler, OnClickListener customTabsBackClickHandler) {
+        assert mTabModelSelectorSupplier.get() != null;
         if (mTabSwitcherModeCoordinatorPhone != null) {
             mTabSwitcherModeCoordinatorPhone.setOnTabSwitcherClickHandler(tabSwitcherClickHandler);
             mTabSwitcherModeCoordinatorPhone.setOnNewTabClickHandler(newTabClickHandler);
-            mTabSwitcherModeCoordinatorPhone.setTabModelSelector(tabModelSelector);
+            mTabSwitcherModeCoordinatorPhone.setTabModelSelector(mTabModelSelectorSupplier.get());
         } else if (mStartSurfaceToolbarCoordinator != null) {
             mStartSurfaceToolbarCoordinator.setOnNewTabClickHandler(newTabClickHandler);
-            mStartSurfaceToolbarCoordinator.setTabModelSelector(tabModelSelector);
+            mStartSurfaceToolbarCoordinator.setTabModelSelector(mTabModelSelectorSupplier.get());
             mStartSurfaceToolbarCoordinator.setTabSwitcherListener(tabSwitcherClickHandler);
             mStartSurfaceToolbarCoordinator.setOnTabSwitcherLongClickHandler(
                     tabSwitcherLongClickHandler);
             mStartSurfaceToolbarCoordinator.onNativeLibraryReady();
         }
 
-        mToolbarLayout.setTabModelSelector(tabModelSelector);
+        mToolbarLayout.setTabModelSelector(mTabModelSelectorSupplier.get());
         getLocationBar().updateVisualsForState();
         getLocationBar().setUrlToPageUrl();
         mToolbarLayout.setOnTabSwitcherClickHandler(tabSwitcherClickHandler);
@@ -249,6 +254,9 @@ public class TopToolbarCoordinator implements Toolbar {
 
         if (mAppMenuButtonHelperSupplier != null) {
             mAppMenuButtonHelperSupplier = null;
+        }
+        if (mTabModelSelectorSupplier != null) {
+            mTabModelSelectorSupplier = null;
         }
     }
 

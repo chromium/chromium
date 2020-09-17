@@ -124,6 +124,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private BottomControlsCoordinator mBottomControlsCoordinator;
     private TabModelSelector mTabModelSelector;
     private TabModelSelectorObserver mTabModelSelectorObserver;
+    private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private ActivityTabProvider.ActivityTabTabObserver mActivityTabTabObserver;
     private final ActivityTabProvider mActivityTabProvider;
     private final LocationBarModel mLocationBarModel;
@@ -209,6 +210,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * TODO(https://crbug.com/1084528): Use OneShotSupplier once it is ready.
      * @param overviewModeBehaviorSupplier Supplier of the overview mode manager for the current
      *                                     profile.
+     * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
      */
     public ToolbarManager(ChromeActivity activity, BrowserControlsSizer controlsSizer,
             FullscreenManager fullscreenManager, ToolbarControlContainer controlContainer,
@@ -223,7 +225,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             @Nullable Supplier<Boolean> canAnimateNativeBrowserControls,
             OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
-            boolean shouldShowUpdateBadge) {
+            boolean shouldShowUpdateBadge,
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
         mBrowserControlsSizer = controlsSizer;
@@ -232,6 +235,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mShareDelegateSupplier = shareDelegateSupplier;
         mCanAnimateNativeBrowserControls = canAnimateNativeBrowserControls;
         mScrimCoordinator = scrimCoordinator;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
 
         mLocationBarModel = new LocationBarModel(activity);
         mControlContainer = controlContainer;
@@ -311,8 +315,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 new UserEducationHelper(mActivity, mHandler), buttonDataProviders,
                 mOverviewModeBehaviorSupplier, browsingModeThemeColorProvider,
                 mAppThemeColorProvider, mMenuButtonCoordinator, startSurfaceMenuButtonCoordinator,
-                mMenuButtonCoordinator.getMenuButtonHelperSupplier(), mActivity);
-
+                mMenuButtonCoordinator.getMenuButtonHelperSupplier(), mActivity,
+                mTabModelSelectorSupplier);
         mActionModeController =
                 new ActionModeController(mActivity, mActionBarDelegate, toolbarActionModeCallback);
 
@@ -665,26 +669,31 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * <p>
      * Calling this must occur after the native library have completely loaded.
      *
-     * @param tabModelSelector           The selector that handles tab management.
-     * @param layoutManager              A {@link LayoutManager} instance used to watch for scene
-     *                                   changes.
+     * @param layoutManager A {@link LayoutManager} instance used to watch for scene
+     *                      changes.
+     * @param tabSwitcherClickHandler The {@link OnClickListener} for the tab switcher button.
+     * @param newTabClickHandler The {@link OnClickListener} for the new tab button.
+     * @param bookmarkClickHandler The {@link OnClickListener} for the bookmark button.
+     * @param customTabsBackClickHandler The {@link OnClickListener} for the custom tabs back
+     *         button.
+     * @param showStartSurfaceSupplier Supplies if we should show the start surface.
      */
-    public void initializeWithNative(TabModelSelector tabModelSelector, LayoutManager layoutManager,
+    public void initializeWithNative(LayoutManager layoutManager,
             OnClickListener tabSwitcherClickHandler, OnClickListener newTabClickHandler,
             OnClickListener bookmarkClickHandler, OnClickListener customTabsBackClickHandler,
             Supplier<Boolean> showStartSurfaceSupplier) {
         TraceEvent.begin("ToolbarManager.initializeWithNative");
         assert !mInitializedWithNative;
+        assert mTabModelSelectorSupplier.get() != null;
 
-        mTabModelSelector = tabModelSelector;
-
+        mTabModelSelector = mTabModelSelectorSupplier.get();
         mShowStartSurfaceSupplier = showStartSurfaceSupplier;
 
         OnLongClickListener tabSwitcherLongClickHandler =
                 TabSwitcherActionMenuCoordinator.createOnLongClickListener(
                         (id) -> mActivity.onOptionsItemSelected(id, null));
 
-        mToolbar.initializeWithNative(tabModelSelector, layoutManager, tabSwitcherClickHandler,
+        mToolbar.initializeWithNative(layoutManager, tabSwitcherClickHandler,
                 tabSwitcherLongClickHandler, newTabClickHandler, bookmarkClickHandler,
                 customTabsBackClickHandler);
 
@@ -702,7 +711,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         });
 
         mLocationBarModel.initializeWithNative();
-
 
         if (layoutManager != null) {
             mLayoutManager = layoutManager;
@@ -742,7 +750,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         }
 
         // Allow bitmap capturing once everything has been initialized.
-        Tab currentTab = tabModelSelector.getCurrentTab();
+        Tab currentTab = mTabModelSelector.getCurrentTab();
         if (currentTab != null && currentTab.getWebContents() != null
                 && !TextUtils.isEmpty(currentTab.getUrlString())) {
             mControlContainer.setReadyForBitmapCapture(true);
@@ -804,6 +812,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     public void destroy() {
         if (mInitializedWithNative) {
             mFindToolbarManager.removeObserver(mFindToolbarObserver);
+        }
+        if (mTabModelSelectorSupplier != null) {
+            mTabModelSelectorSupplier = null;
         }
         if (mTabModelSelector != null) {
             mTabModelSelector.removeObserver(mTabModelSelectorObserver);
