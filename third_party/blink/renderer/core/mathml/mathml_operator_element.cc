@@ -61,16 +61,6 @@ static const MathMLOperatorDictionaryProperties
         {0, 3, kOperatorPropertyFlagsNone},           // Category M
 };
 
-MathMLOperatorElement::OperatorContent ParseOperatorContent(
-    const String& string) {
-  MathMLOperatorElement::OperatorContent operator_content;
-  operator_content.characters = string;
-  operator_content.characters.Ensure16Bit();
-  operator_content.is_vertical = Character::IsVerticalMathCharacter(
-      OperatorCodepoint(operator_content.characters));
-  return operator_content;
-}
-
 static const QualifiedName& OperatorPropertyFlagToAttributeName(
     MathMLOperatorElement::OperatorPropertyFlag flag) {
   switch (flag) {
@@ -95,6 +85,27 @@ MathMLOperatorElement::MathMLOperatorElement(Document& doc)
   properties_.dictionary_category =
       MathMLOperatorDictionaryCategory::kUndefined;
   properties_.dirty_flags = kOperatorPropertyFlagsAll;
+}
+
+MathMLOperatorElement::OperatorContent
+MathMLOperatorElement::ParseOperatorContent() {
+  MathMLOperatorElement::OperatorContent operator_content;
+  if (HasOneTextChild()) {
+    operator_content.characters = textContent();
+    operator_content.characters.Ensure16Bit();
+    operator_content.is_vertical = Character::IsVerticalMathCharacter(
+        OperatorCodepoint(operator_content.characters));
+  }
+  return operator_content;
+}
+
+void MathMLOperatorElement::ChildrenChanged(
+    const ChildrenChange& children_change) {
+  operator_content_ = base::nullopt;
+  properties_.dictionary_category =
+      MathMLOperatorDictionaryCategory::kUndefined;
+  properties_.dirty_flags = kOperatorPropertyFlagsAll;
+  MathMLElement::ChildrenChanged(children_change);
 }
 
 void MathMLOperatorElement::SetOperatorPropertyDirtyFlagIfNeeded(
@@ -141,6 +152,11 @@ void MathMLOperatorElement::ComputeDictionaryCategory() {
   if (properties_.dictionary_category !=
       MathMLOperatorDictionaryCategory::kUndefined)
     return;
+  if (GetOperatorContent().characters.IsEmpty()) {
+    properties_.dictionary_category = MathMLOperatorDictionaryCategory::kNone;
+    return;
+  }
+
   // We first determine the form attribute and use the default spacing and
   // properties.
   // https://mathml-refresh.github.io/mathml-core/#dfn-form
@@ -226,7 +242,7 @@ void MathMLOperatorElement::ComputeOperatorProperty(OperatorPropertyFlag flag) {
 const MathMLOperatorElement::OperatorContent&
 MathMLOperatorElement::GetOperatorContent() {
   if (!operator_content_)
-    operator_content_ = ParseOperatorContent(textContent());
+    operator_content_ = ParseOperatorContent();
   return operator_content_.value();
 }
 

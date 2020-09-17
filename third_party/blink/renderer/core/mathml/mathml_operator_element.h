@@ -61,6 +61,8 @@ class CORE_EXPORT MathMLOperatorElement final : public MathMLElement {
   void SetOperatorPropertyDirtyFlagIfNeeded(const AttributeModificationParams&,
                                             const OperatorPropertyFlag&,
                                             bool& needs_layout);
+  OperatorContent ParseOperatorContent();
+  void ChildrenChanged(const ChildrenChange&) final;
 };
 
 }  // namespace blink
