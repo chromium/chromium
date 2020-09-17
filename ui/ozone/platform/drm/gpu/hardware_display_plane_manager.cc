@@ -47,12 +47,14 @@ HardwareDisplayPlaneManager::HardwareDisplayPlaneManager(DrmDevice* drm)
 HardwareDisplayPlaneManager::~HardwareDisplayPlaneManager() = default;
 
 bool HardwareDisplayPlaneManager::Initialize() {
-// Try to get all of the planes if possible, so we don't have to try to
-// discover hidden primary planes.
-#if defined(DRM_CLIENT_CAP_UNIVERSAL_PLANES)
+  // Try to get all of the planes if possible, so we don't have to try to
+  // discover hidden primary planes.
   has_universal_planes_ =
       drm_->SetCapability(DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
-#endif
+
+  // This is to test whether or not it is safe to remove non-universal planes
+  // supporting code in a following CL. See crbug.com/1129546 for more details.
+  CHECK(has_universal_planes_);
 
   if (!InitializeCrtcState())
     return false;
