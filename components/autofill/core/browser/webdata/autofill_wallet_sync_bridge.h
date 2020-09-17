@@ -127,13 +127,6 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
       const std::vector<std::unique_ptr<Item>>& old_data,
       const std::vector<Item>& new_data);
 
-  // A simpler version of ComputeAutofillWalletDiff that only returns true if
-  // there is any difference.
-  template <class Item>
-  bool ShouldResetAutofillWalletData(
-      const std::vector<std::unique_ptr<Item>>& old_data,
-      const std::vector<Item>& new_data);
-
   // Returns the table associated with the |web_data_backend_|.
   AutofillTable* GetAutofillTable();
 

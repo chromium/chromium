@@ -62,6 +62,10 @@ void SetAutofillOfferSpecificsFromOfferData(
     const AutofillOfferData& offer_data,
     sync_pb::AutofillOfferSpecifics* offer_specifics);
 
+// Creates an AutofillOfferData from the specified |offer_specifics|.
+AutofillOfferData AutofillOfferDataFromOfferSpecifics(
+    const sync_pb::AutofillOfferSpecifics& offer_specifics);
+
 // Creates an AutofillProfile from the specified |address| specifics.
 AutofillProfile ProfileFromSpecifics(
     const sync_pb::WalletPostalAddress& address);
@@ -85,6 +89,13 @@ void PopulateWalletTypesFromSyncData(
     std::vector<AutofillProfile>* wallet_addresses,
     std::vector<PaymentsCustomerData>* customer_data,
     std::vector<CreditCardCloudTokenData>* cloud_token_data);
+
+// A helper function to compare two sets of data. Returns true if there is
+// any difference. It uses the Compare() of the Item class instead of comparison
+// operators and does not care about the order of items in the dataset.
+template <class Item>
+bool AreAnyItemsDifferent(const std::vector<std::unique_ptr<Item>>& old_data,
+                          const std::vector<Item>& new_data);
 
 }  // namespace autofill
 

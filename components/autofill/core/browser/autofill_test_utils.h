@@ -184,7 +184,11 @@ CreditCardCloudTokenData GetCreditCardCloudTokenData1();
 CreditCardCloudTokenData GetCreditCardCloudTokenData2();
 
 // Returns an autofill card linked offer data full of dummy info.
-AutofillOfferData GetCardLinkedOfferData();
+AutofillOfferData GetCardLinkedOfferData1();
+
+// Returns an autofill card linked offer data full of dummy info, different from
+// the one above.
+AutofillOfferData GetCardLinkedOfferData2();
 
 // A unit testing utility that is common to a number of the Autofill unit
 // tests.  |SetProfileInfo| provides a quick way to populate a profile with

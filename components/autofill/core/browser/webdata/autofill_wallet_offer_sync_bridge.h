@@ -35,7 +35,7 @@ class AutofillWalletOfferSyncBridge : public base::SupportsUserData::Data,
   static syncer::ModelTypeSyncBridge* FromWebDataService(
       AutofillWebDataService* web_data_service);
 
-  explicit AutofillWalletOfferSyncBridge(
+  AutofillWalletOfferSyncBridge(
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
       AutofillWebDataBackend* web_data_backend);
   ~AutofillWalletOfferSyncBridge() override;
@@ -62,6 +62,12 @@ class AutofillWalletOfferSyncBridge : public base::SupportsUserData::Data,
                                 delete_metadata_change_list) override;
 
  private:
+  // Helper function to send all offer data to the callback.
+  void GetAllDataImpl(DataCallback callback);
+
+  // Merges synced remote offer data.
+  void MergeRemoteData(const syncer::EntityChangeList& entity_data);
+
   // Returns the table associated with the |web_data_backend_|.
   AutofillTable* GetAutofillTable();
 

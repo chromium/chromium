@@ -311,6 +311,31 @@ void SetAutofillOfferSpecificsFromOfferData(
   }
 }
 
+AutofillOfferData AutofillOfferDataFromOfferSpecifics(
+    const sync_pb::AutofillOfferSpecifics& offer_specifics) {
+  AutofillOfferData offer_data;
+  offer_data.offer_id = offer_specifics.id();
+  if (offer_specifics.has_percentage_reward()) {
+    offer_data.offer_reward_amount =
+        offer_specifics.percentage_reward().percentage();
+  } else {
+    offer_data.offer_reward_amount =
+        offer_specifics.fixed_amount_reward().amount();
+  }
+  offer_data.expiry =
+      base::Time::UnixEpoch() +
+      base::TimeDelta::FromSeconds(offer_specifics.offer_expiry_date());
+  offer_data.offer_details_url = GURL(offer_specifics.offer_details_url());
+  for (const std::string& domain : offer_specifics.merchant_domain()) {
+    offer_data.merchant_domain.emplace_back(domain);
+  }
+  for (int64_t instrument_id :
+       offer_specifics.card_linked_offer_data().instrument_id()) {
+    offer_data.eligible_instrument_id.push_back(instrument_id);
+  }
+  return offer_data;
+}
+
 AutofillProfile ProfileFromSpecifics(
     const sync_pb::WalletPostalAddress& address) {
   AutofillProfile profile(AutofillProfile::SERVER_PROFILE, std::string());
@@ -430,5 +455,42 @@ void PopulateWalletTypesFromSyncData(
       card.set_billing_address_id(it->second);
   }
 }
+
+template <class Item>
+bool AreAnyItemsDifferent(const std::vector<std::unique_ptr<Item>>& old_data,
+                          const std::vector<Item>& new_data) {
+  if (old_data.size() != new_data.size())
+    return true;
+
+  std::vector<const Item*> old_ptrs;
+  old_ptrs.reserve(old_data.size());
+  for (const std::unique_ptr<Item>& old_item : old_data)
+    old_ptrs.push_back(old_item.get());
+  std::vector<const Item*> new_ptrs;
+  new_ptrs.reserve(new_data.size());
+  for (const Item& new_item : new_data)
+    new_ptrs.push_back(&new_item);
+
+  // Sort our vectors.
+  auto compare_less = [](const Item* lhs, const Item* rhs) {
+    return lhs->Compare(*rhs) < 0;
+  };
+  std::sort(old_ptrs.begin(), old_ptrs.end(), compare_less);
+  std::sort(new_ptrs.begin(), new_ptrs.end(), compare_less);
+
+  auto compare_equal = [](const Item* lhs, const Item* rhs) {
+    return lhs->Compare(*rhs) == 0;
+  };
+  return !std::equal(old_ptrs.begin(), old_ptrs.end(), new_ptrs.begin(),
+                     compare_equal);
+}
+
+template bool AreAnyItemsDifferent<>(
+    const std::vector<std::unique_ptr<AutofillOfferData>>&,
+    const std::vector<AutofillOfferData>&);
+
+template bool AreAnyItemsDifferent<>(
+    const std::vector<std::unique_ptr<CreditCardCloudTokenData>>&,
+    const std::vector<CreditCardCloudTokenData>&);
 
 }  // namespace autofill

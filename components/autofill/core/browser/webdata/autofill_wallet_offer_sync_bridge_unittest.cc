@@ -10,7 +10,9 @@
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -26,6 +28,7 @@
 #include "components/sync/model/mock_model_type_change_processor.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/model_impl/client_tag_based_model_type_processor.h"
+#include "components/sync/model_impl/in_memory_metadata_change_list.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/webdata/common/web_database.h"
@@ -45,6 +48,57 @@ using testing::Return;
 
 const char kLocaleString[] = "en-US";
 const char kDefaultCacheGuid[] = "CacheGuid";
+
+void ExtractAutofillOfferSpecificsFromDataBatch(
+    std::unique_ptr<syncer::DataBatch> batch,
+    std::vector<AutofillOfferSpecifics>* output) {
+  while (batch->HasNext()) {
+    const syncer::KeyAndData& data_pair = batch->Next();
+    output->push_back(data_pair.second->specifics.autofill_offer());
+  }
+}
+
+std::string AutofillOfferSpecificsAsDebugString(
+    const AutofillOfferSpecifics& specifics) {
+  std::ostringstream output;
+
+  std::string offer_reward_amount_string =
+      specifics.has_percentage_reward()
+          ? specifics.percentage_reward().percentage()
+          : specifics.fixed_amount_reward().amount();
+
+  std::string domain_string;
+  for (std::string merchant_domain : specifics.merchant_domain()) {
+    base::StrAppend(&domain_string, {merchant_domain, ", "});
+  }
+
+  std::string instrument_id_string;
+  for (int64_t eligible_instrument_id :
+       specifics.card_linked_offer_data().instrument_id()) {
+    base::StrAppend(&instrument_id_string,
+                    {base::NumberToString(eligible_instrument_id), ", "});
+  }
+
+  output << "[id: " << specifics.id()
+         << ", offer_reward_amount: " << offer_reward_amount_string
+         << ", offer_expiry_date: " << specifics.offer_expiry_date()
+         << ", offer_details_url: " << specifics.offer_details_url()
+         << ", merchant_domain: " << domain_string
+         << ", eligible_instrument_id: " << instrument_id_string << "]";
+  return output.str();
+}
+
+MATCHER_P(EqualsSpecifics, expected, "") {
+  if (arg.SerializeAsString() != expected.SerializeAsString()) {
+    *result_listener << "entry\n"
+                     << AutofillOfferSpecificsAsDebugString(arg) << "\n"
+                     << "did not match expected\n"
+                     << AutofillOfferSpecificsAsDebugString(expected);
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 class AutofillWalletOfferSyncBridgeTest : public testing::Test {
@@ -88,6 +142,53 @@ class AutofillWalletOfferSyncBridgeTest : public testing::Test {
         mock_processor_.CreateForwardingProcessor(), &backend_);
   }
 
+  void StartSyncing(
+      const std::vector<AutofillOfferSpecifics>& remote_data = {}) {
+    base::RunLoop loop;
+    syncer::DataTypeActivationRequest request;
+    request.error_handler = base::DoNothing();
+    request.cache_guid = kDefaultCacheGuid;
+    real_processor_->OnSyncStarting(
+        request,
+        base::BindLambdaForTesting(
+            [&loop](std::unique_ptr<syncer::DataTypeActivationResponse>) {
+              loop.Quit();
+            }));
+    loop.Run();
+
+    // Initialize the processor with initial_sync_done.
+    sync_pb::ModelTypeState state;
+    state.set_initial_sync_done(true);
+    state.mutable_progress_marker()
+        ->mutable_gc_directive()
+        ->set_version_watermark(1);
+    syncer::UpdateResponseDataList initial_updates;
+    for (const AutofillOfferSpecifics& specifics : remote_data) {
+      initial_updates.push_back(SpecificsToUpdateResponse(specifics));
+    }
+    real_processor_->OnUpdateReceived(state, std::move(initial_updates));
+  }
+
+  std::vector<AutofillOfferSpecifics> GetAllLocalData() {
+    std::vector<AutofillOfferSpecifics> data;
+    // Perform an async call synchronously for testing.
+    base::RunLoop loop;
+    bridge()->GetAllDataForDebugging(base::BindLambdaForTesting(
+        [&loop, &data](std::unique_ptr<syncer::DataBatch> batch) {
+          ExtractAutofillOfferSpecificsFromDataBatch(std::move(batch), &data);
+          loop.Quit();
+        }));
+    loop.Run();
+    return data;
+  }
+
+  syncer::UpdateResponseData SpecificsToUpdateResponse(
+      const AutofillOfferSpecifics& specifics) {
+    syncer::UpdateResponseData data;
+    data.entity = SpecificsToEntity(specifics);
+    return data;
+  }
+
   EntityData SpecificsToEntity(const AutofillOfferSpecifics& specifics) {
     EntityData data;
     *data.specifics.mutable_autofill_offer() = specifics;
@@ -99,6 +200,8 @@ class AutofillWalletOfferSyncBridgeTest : public testing::Test {
   AutofillTable* table() { return &table_; }
 
   AutofillWalletOfferSyncBridge* bridge() { return bridge_.get(); }
+
+  MockAutofillWebDataBackend* backend() { return &backend_; }
 
  private:
   ScopedTempDir temp_dir_;
@@ -113,7 +216,7 @@ class AutofillWalletOfferSyncBridgeTest : public testing::Test {
 
 TEST_F(AutofillWalletOfferSyncBridgeTest, VerifyGetClientTag) {
   AutofillOfferSpecifics specifics;
-  AutofillOfferData data = test::GetCardLinkedOfferData();
+  AutofillOfferData data = test::GetCardLinkedOfferData1();
   SetAutofillOfferSpecificsFromOfferData(data, &specifics);
   EXPECT_EQ(bridge()->GetClientTag(SpecificsToEntity(specifics)),
             base::NumberToString(data.offer_id));
@@ -121,10 +224,78 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, VerifyGetClientTag) {
 
 TEST_F(AutofillWalletOfferSyncBridgeTest, VerifyGetStorageKey) {
   AutofillOfferSpecifics specifics;
-  AutofillOfferData data = test::GetCardLinkedOfferData();
+  AutofillOfferData data = test::GetCardLinkedOfferData1();
   SetAutofillOfferSpecificsFromOfferData(data, &specifics);
   EXPECT_EQ(bridge()->GetStorageKey(SpecificsToEntity(specifics)),
             base::NumberToString(data.offer_id));
+}
+
+// Tests that when a new offer data is sent by the server, the client only keeps
+// the new data.
+TEST_F(AutofillWalletOfferSyncBridgeTest, MergeSyncData_NewData) {
+  // Create one offer data in the client table.
+  AutofillOfferData old_data = test::GetCardLinkedOfferData1();
+  table()->SetCreditCardOffers({old_data});
+
+  // Create a different one on the server.
+  AutofillOfferSpecifics offer_specifics;
+  SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData2(),
+                                         &offer_specifics);
+
+  EXPECT_CALL(*backend(), CommitChanges());
+  StartSyncing({offer_specifics});
+
+  // Only the server offer should be present on the client.
+  EXPECT_THAT(GetAllLocalData(),
+              testing::UnorderedElementsAre(EqualsSpecifics(offer_specifics)));
+}
+
+// Tests that when no data is sent by the server, all local data should be
+// deleted.
+TEST_F(AutofillWalletOfferSyncBridgeTest, MergeSyncData_NoData) {
+  // Create one offer data in the client table.
+  AutofillOfferData client_data = test::GetCardLinkedOfferData1();
+  table()->SetCreditCardOffers({client_data});
+
+  EXPECT_CALL(*backend(), CommitChanges());
+  StartSyncing({});
+
+  EXPECT_TRUE(GetAllLocalData().empty());
+}
+
+// Tests that when sync is stopped and the data type is disabled, client should
+// remove all client data.
+TEST_F(AutofillWalletOfferSyncBridgeTest, ApplyStopSyncChanges_ClearAllData) {
+  // Create one offer data in the client table.
+  AutofillOfferData client_data = test::GetCardLinkedOfferData1();
+  table()->SetCreditCardOffers({client_data});
+
+  EXPECT_CALL(*backend(), CommitChanges());
+
+  // Passing in a non-null metadata change list indicates to the bridge that
+  // sync is stopping but the data type is not disabled.
+  bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/
+                                 std::make_unique<
+                                     syncer::InMemoryMetadataChangeList>());
+
+  EXPECT_TRUE(GetAllLocalData().empty());
+}
+
+// Tests that when sync is stopped but the data type is not disabled, client
+// should keep all the data.
+TEST_F(AutofillWalletOfferSyncBridgeTest, ApplyStopSyncChanges_KeepAllData) {
+  // Create one offer data in the client table.
+  AutofillOfferData client_data = test::GetCardLinkedOfferData1();
+  table()->SetCreditCardOffers({client_data});
+
+  // We do not write to DB at all, so we should not commit any changes.
+  EXPECT_CALL(*backend(), CommitChanges()).Times(0);
+
+  // Passing in a null metadata change list indicates to the bridge that
+  // sync is stopping and the data type is disabled.
+  bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/nullptr);
+
+  EXPECT_FALSE(GetAllLocalData().empty());
 }
 
 }  // namespace autofill

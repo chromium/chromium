@@ -9,9 +9,11 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model_impl/client_tag_based_model_type_processor.h"
 #include "components/sync/model_impl/sync_metadata_store_change_list.h"
 
@@ -80,7 +82,17 @@ AutofillWalletOfferSyncBridge::CreateMetadataChangeList() {
 base::Optional<syncer::ModelError> AutofillWalletOfferSyncBridge::MergeSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  NOTIMPLEMENTED();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // All metadata changes have been already written, return early for an error.
+  base::Optional<syncer::ModelError> error =
+      static_cast<syncer::SyncMetadataStoreChangeList*>(
+          metadata_change_list.get())
+          ->TakeError();
+  if (error) {
+    return error;
+  }
+
+  MergeRemoteData(std::move(entity_data));
   return base::nullopt;
 }
 
@@ -88,18 +100,18 @@ base::Optional<syncer::ModelError>
 AutofillWalletOfferSyncBridge::ApplySyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  NOTIMPLEMENTED();
+  // This bridge does not support incremental updates, so whenever this is
+  // called, the change list should be empty.
+  DCHECK(entity_data.empty()) << "Received an unsupported incremental update.";
   return base::nullopt;
 }
 
 void AutofillWalletOfferSyncBridge::GetData(StorageKeyList storage_keys,
-                                            DataCallback callback) {
-  NOTIMPLEMENTED();
-}
+                                            DataCallback callback) {}
 
 void AutofillWalletOfferSyncBridge::GetAllDataForDebugging(
     DataCallback callback) {
-  NOTIMPLEMENTED();
+  GetAllDataImpl(std::move(callback));
 }
 
 std::string AutofillWalletOfferSyncBridge::GetClientTag(
@@ -122,7 +134,66 @@ bool AutofillWalletOfferSyncBridge::SupportsIncrementalUpdates() const {
 
 void AutofillWalletOfferSyncBridge::ApplyStopSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
-  NOTIMPLEMENTED();
+  // If a metadata change list gets passed in, that means sync is actually
+  // disabled, so we want to delete the payments data.
+  if (delete_metadata_change_list) {
+    MergeRemoteData(syncer::EntityChangeList());
+  }
+}
+
+void AutofillWalletOfferSyncBridge::GetAllDataImpl(DataCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::vector<std::unique_ptr<AutofillOfferData>> offers;
+  if (!GetAutofillTable()->GetCreditCardOffers(&offers)) {
+    change_processor()->ReportError(
+        {FROM_HERE, "Failed to load offer data from table."});
+    return;
+  }
+
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+  for (const std::unique_ptr<AutofillOfferData>& offer : offers) {
+    auto entity_data = std::make_unique<syncer::EntityData>();
+    sync_pb::AutofillOfferSpecifics* offer_specifics =
+        entity_data->specifics.mutable_autofill_offer();
+    SetAutofillOfferSpecificsFromOfferData(*offer, offer_specifics);
+
+    entity_data->name =
+        "Offer " +
+        GetBase64EncodedId(GetClientTagFromSpecifics(*offer_specifics));
+
+    batch->Put(GetStorageKeyFromSpecifics(*offer_specifics),
+               std::move(entity_data));
+  }
+  std::move(callback).Run(std::move(batch));
+}
+
+void AutofillWalletOfferSyncBridge::MergeRemoteData(
+    const syncer::EntityChangeList& entity_data) {
+  std::vector<AutofillOfferData> offer_data;
+  for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
+    DCHECK(change->data().specifics.has_autofill_offer());
+    // TODO(crbug.com/1112095): Add offer data validation.
+    offer_data.push_back(AutofillOfferDataFromOfferSpecifics(
+        change->data().specifics.autofill_offer()));
+  }
+
+  AutofillTable* table = GetAutofillTable();
+
+  // Only do a write operation if there is any difference between server data
+  // and local data.
+  std::vector<std::unique_ptr<AutofillOfferData>> existing_offers;
+  table->GetCreditCardOffers(&existing_offers);
+
+  if (AreAnyItemsDifferent(existing_offers, offer_data))
+    table->SetCreditCardOffers(offer_data);
+
+  // Commit the transaction to make sure the data and the metadata with the
+  // new progress marker is written down (especially on Android where we
+  // cannot rely on committing transactions on shutdown). We need to commit
+  // even if the wallet data has not changed because the model type state incl.
+  // the progress marker always changes.
+  web_data_backend_->CommitChanges();
 }
 
 AutofillTable* AutofillWalletOfferSyncBridge::GetAutofillTable() {

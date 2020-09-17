@@ -243,7 +243,7 @@ TEST_F(AutofillSyncBridgeUtilTest,
 // AutofillOfferSpecifics.
 TEST_F(AutofillSyncBridgeUtilTest, OfferSpecificsFromOfferData) {
   sync_pb::AutofillOfferSpecifics offer_specifics;
-  AutofillOfferData offer_data = test::GetCardLinkedOfferData();
+  AutofillOfferData offer_data = test::GetCardLinkedOfferData1();
   SetAutofillOfferSpecificsFromOfferData(offer_data, &offer_specifics);
 
   EXPECT_EQ(offer_specifics.id(), offer_data.offer_id);
@@ -268,6 +268,40 @@ TEST_F(AutofillSyncBridgeUtilTest, OfferSpecificsFromOfferData) {
     EXPECT_EQ(offer_specifics.card_linked_offer_data().instrument_id(i),
               offer_data.eligible_instrument_id[i]);
   }
+}
+
+// Ensures that the ShouldResetAutofillWalletData function works correctly, if
+// the two given data sets have the same size.
+TEST_F(AutofillSyncBridgeUtilTest,
+       ShouldResetAutofillWalletData_SameDataSetSize) {
+  std::vector<std::unique_ptr<AutofillOfferData>> old_offer_data;
+  std::vector<AutofillOfferData> new_offer_data;
+
+  AutofillOfferData data1 = test::GetCardLinkedOfferData1();
+  AutofillOfferData data2 = test::GetCardLinkedOfferData2();
+  old_offer_data.push_back(std::make_unique<AutofillOfferData>(data1));
+  new_offer_data.push_back(data2);
+  old_offer_data.push_back(std::make_unique<AutofillOfferData>(data2));
+  new_offer_data.push_back(data1);
+  EXPECT_FALSE(AreAnyItemsDifferent(old_offer_data, new_offer_data));
+
+  new_offer_data.at(0).offer_id += 456;
+  EXPECT_TRUE(AreAnyItemsDifferent(old_offer_data, new_offer_data));
+}
+
+// Ensures that the ShouldResetAutofillWalletData function works correctly, if
+// the two given data sets have different size.
+TEST_F(AutofillSyncBridgeUtilTest,
+       ShouldResetAutofillWalletData_DifferentDataSetSize) {
+  std::vector<std::unique_ptr<AutofillOfferData>> old_offer_data;
+  std::vector<AutofillOfferData> new_offer_data;
+
+  AutofillOfferData data1 = test::GetCardLinkedOfferData1();
+  AutofillOfferData data2 = test::GetCardLinkedOfferData2();
+  old_offer_data.push_back(std::make_unique<AutofillOfferData>(data1));
+  new_offer_data.push_back(data2);
+  new_offer_data.push_back(data1);
+  EXPECT_TRUE(AreAnyItemsDifferent(old_offer_data, new_offer_data));
 }
 
 }  // namespace

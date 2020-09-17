@@ -22,6 +22,13 @@ struct AutofillOfferData {
   ~AutofillOfferData();
   AutofillOfferData(const AutofillOfferData&);
   AutofillOfferData& operator=(const AutofillOfferData&);
+  bool operator==(const AutofillOfferData& other_offer_data) const;
+  bool operator!=(const AutofillOfferData& other_offer_data) const;
+
+  // Compares two AutofillOfferData based on their member fields. Returns 0 if
+  // the two offer data are exactly same. Otherwise returns the comparison
+  // result of first found difference.
+  int Compare(const AutofillOfferData& other_offer_data) const;
 
   // The unique server ID for this offer data.
   int64_t offer_id;
