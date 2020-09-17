@@ -94,7 +94,9 @@ public class PaintPreviewHelper {
         if (!player.maybeShow(onShown, () -> {
                 onDismissed.run();
                 PageLoadMetrics.removeObserver(observer);
-            }, sActivityCreationTimeMs, UmaUtils::hasComeToBackground)) {
+            }, sActivityCreationTimeMs, () -> {
+                return UmaUtils.hasComeToForeground() && !UmaUtils.hasComeToBackground();
+            })) {
             return false;
         }
 

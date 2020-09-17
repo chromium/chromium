@@ -58,11 +58,11 @@ public class TabbedPaintPreviewMetricsHelper {
         mShownTime = System.currentTimeMillis();
     }
 
-    void onFirstPaint(long activityOnCreateTimestamp, Callable<Boolean> wasBackgrounded) {
+    void onFirstPaint(long activityOnCreateTimestamp, Callable<Boolean> recordFirstPaint) {
         mFirstPaintHappened = true;
         boolean shouldRecordHistogram = false;
         try {
-            shouldRecordHistogram = !wasBackgrounded.call();
+            shouldRecordHistogram = recordFirstPaint.call();
         } catch (Exception e) {
             // no-op just proceed.
         }

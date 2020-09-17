@@ -140,13 +140,13 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
      * @param onShown The callback for when the Paint Preview is shown.
      * @param onDismissed The callback for when the Paint Preview is dismissed.
      * @param activityCreationTimestampMs The hosting activity's creation time in ms from
-     * @param wasBackgrounded Callable to determine if the activity was backgrounded.
+     * @param recordFirstPaint Callable to determine if first paint should be recorded.
      * {@link SystemClock#elapsedRealtime}.
      * @return Whether the Paint Preview started to initialize or is already initializating.
      * Note that if the Paint Preview is already showing, this will return false.
      */
     public boolean maybeShow(@Nullable Runnable onShown, @Nullable Runnable onDismissed,
-            long activityCreationTimestampMs, Callable<Boolean> wasBackgrounded) {
+            long activityCreationTimestampMs, Callable<Boolean> recordFirstPaint) {
         if (mInitializing != null) return mInitializing;
 
         // Check if a capture exists. This is a quick check using a cache.
@@ -170,7 +170,11 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
                     onShown.run();
                     mMetricsHelper.onShown();
                 },
-                () -> mMetricsHelper.onFirstPaint(activityCreationTimestampMs, wasBackgrounded),
+                () -> {
+                    if (!isShowingAndNeedsBadge()) return;
+
+                    mMetricsHelper.onFirstPaint(activityCreationTimestampMs, recordFirstPaint);
+                },
                 () -> mHasUserInteraction = true,
                 ChromeColors.getPrimaryBackgroundColor(mTab.getContext().getResources(), false),
                 (status) -> {
