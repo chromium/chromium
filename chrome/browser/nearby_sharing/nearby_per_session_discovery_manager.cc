@@ -85,12 +85,13 @@ void NearbyPerSessionDiscoveryManager::OnShareTargetLost(
 void NearbyPerSessionDiscoveryManager::StartDiscovery(
     mojo::PendingRemote<nearby_share::mojom::ShareTargetListener> listener,
     StartDiscoveryCallback callback) {
+  // Starting discovery again closes any previous discovery session.
+  share_target_listener_.reset();
   share_target_listener_.Bind(std::move(listener));
-  // |share_target_listener_| owns the callbacks and is guaranteed to be
-  // destroyed before |this|, therefore making base::Unretained() safe to use.
-  share_target_listener_.set_disconnect_handler(
-      base::BindOnce(&NearbyPerSessionDiscoveryManager::UnregisterSendSurface,
-                     base::Unretained(this)));
+  // NOTE: Previously we set a disconnect handler here that called
+  // UnregisterSendSurface, but this causes transfer updates to stop flowing to
+  // to the UI. Instead, we rely on the destructor's call to
+  // UnregisterSendSurface which will trigger when the share sheet goes away.
 
   if (nearby_sharing_service_->RegisterSendSurface(
           this, this, NearbySharingService::SendSurfaceState::kForeground) !=
@@ -100,7 +101,10 @@ void NearbyPerSessionDiscoveryManager::StartDiscovery(
     std::move(callback).Run(/*success=*/false);
     return;
   }
-
+  // Once this object is registered as send surface, we stay registered until
+  // UnregisterSendSurface is called so that the transfer update listeners can
+  // get updates even if Discovery is stopped.
+  registered_as_send_surface_ = true;
   std::move(callback).Run(/*success=*/true);
 }
 
@@ -193,13 +197,13 @@ void NearbyPerSessionDiscoveryManager::GetSendPreview(
 }
 
 void NearbyPerSessionDiscoveryManager::UnregisterSendSurface() {
-  if (!share_target_listener_.is_bound())
-    return;
+  if (registered_as_send_surface_) {
+    if (nearby_sharing_service_->UnregisterSendSurface(this, this) !=
+        NearbySharingService::StatusCodes::kOk) {
+      NS_LOG(WARNING) << "Failed to unregister send surface";
+    }
+    registered_as_send_surface_ = false;
+  }
 
   share_target_listener_.reset();
-
-  if (nearby_sharing_service_->UnregisterSendSurface(this, this) !=
-      NearbySharingService::StatusCodes::kOk) {
-    NS_LOG(WARNING) << "Failed to unregister send surface";
-  }
 }

@@ -52,6 +52,7 @@ class NearbyPerSessionDiscoveryManager
   // Unregisters this class from the NearbySharingService.
   void UnregisterSendSurface();
 
+  bool registered_as_send_surface_ = false;
   NearbySharingService* nearby_sharing_service_;
   std::vector<std::unique_ptr<Attachment>> attachments_;
   mojo::Remote<nearby_share::mojom::ShareTargetListener> share_target_listener_;
