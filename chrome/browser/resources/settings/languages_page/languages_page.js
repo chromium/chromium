@@ -155,6 +155,14 @@ Polymer({
         return loadTimeData.getBoolean('isGuest');
       },
     },
+
+    /** @private */
+    isChromeOSLanguagesSettingsUpdate_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isChromeOSLanguagesSettingsUpdate');
+      },
+    },
     // </if>
   },
 
@@ -165,6 +173,14 @@ Polymer({
   /** @override */
   created() {
     this.languagesMetricsProxy_ = LanguagesMetricsProxyImpl.getInstance();
+  },
+
+  /** @private */
+  onOpenChromeOSLanguagesSettingsClick_() {
+    const chromeOSLanguagesSettingsPath =
+        loadTimeData.getString('chromeOSLanguagesSettingsPath');
+    window.location.href =
+        `chrome://os-settings/${chromeOSLanguagesSettingsPath}`;
   },
   // </if>
 
@@ -213,7 +229,7 @@ Polymer({
   /** @private */
   onAddLanguagesDialogClose_() {
     this.showAddLanguagesDialog_ = false;
-    focusWithoutInk(assert(this.$.addLanguages));
+    focusWithoutInk(assert(this.$$('#addLanguages')));
   },
 
   /**
@@ -536,7 +552,7 @@ Polymer({
    * @private
    */
   onMoveToTopTap_() {
-    /** @type {!CrActionMenuElement} */ (this.$.menu.get()).close();
+    /** @type {!CrActionMenuElement} */ (this.$$('#menu').get()).close();
     this.languageHelper.moveLanguageToFront(this.detailLanguage_.language.code);
   },
 
@@ -545,7 +561,7 @@ Polymer({
    * @private
    */
   onMoveUpTap_() {
-    /** @type {!CrActionMenuElement} */ (this.$.menu.get()).close();
+    /** @type {!CrActionMenuElement} */ (this.$$('#menu').get()).close();
     this.languageHelper.moveLanguage(
         this.detailLanguage_.language.code, true /* upDirection */);
   },
@@ -555,7 +571,7 @@ Polymer({
    * @private
    */
   onMoveDownTap_() {
-    /** @type {!CrActionMenuElement} */ (this.$.menu.get()).close();
+    /** @type {!CrActionMenuElement} */ (this.$$('#menu').get()).close();
     this.languageHelper.moveLanguage(
         this.detailLanguage_.language.code, false /* upDirection */);
   },
@@ -565,7 +581,7 @@ Polymer({
    * @private
    */
   onRemoveLanguageTap_() {
-    /** @type {!CrActionMenuElement} */ (this.$.menu.get()).close();
+    /** @type {!CrActionMenuElement} */ (this.$$('#menu').get()).close();
     this.languageHelper.disableLanguage(this.detailLanguage_.language.code);
   },
 
@@ -769,9 +785,9 @@ Polymer({
 
     // Ensure the template has been stamped.
     let menu =
-        /** @type {?CrActionMenuElement} */ (this.$.menu.getIfExists());
+        /** @type {?CrActionMenuElement} */ (this.$$('#menu').getIfExists());
     if (!menu) {
-      menu = /** @type {!CrActionMenuElement} */ (this.$.menu.get());
+      menu = /** @type {!CrActionMenuElement} */ (this.$$('#menu').get());
       // <if expr="chromeos">
       this.tweakMenuForCrOS_(menu);
       // </if>
@@ -799,7 +815,7 @@ Polymer({
    * @private
    */
   closeMenuSoon_() {
-    const menu = /** @type {!CrActionMenuElement} */ (this.$.menu.get());
+    const menu = /** @type {!CrActionMenuElement} */ (this.$$('#menu').get());
     setTimeout(function() {
       if (menu.open) {
         menu.close();

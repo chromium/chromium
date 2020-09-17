@@ -100,6 +100,15 @@ TEST_F('CrSettingsLanguagesPageV3Test', 'SpellcheckOfficialBuild', function() {
 });
 GEN('#endif');
 
+GEN('#if defined(OS_CHROMEOS)');
+TEST_F(
+    'CrSettingsLanguagesPageV3Test', 'ChromeOSLanguagesSettingsUpdate',
+    function() {
+      mocha.grep(languages_page_tests.TestNames.ChromeOSLanguagesSettingsUpdate)
+          .run();
+    });
+GEN('#endif');
+
 // eslint-disable-next-line no-var
 var CrSettingsClearBrowsingDataV3Test = class extends CrSettingsV3BrowserTest {
   /** @override */

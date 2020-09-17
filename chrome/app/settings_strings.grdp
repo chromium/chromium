@@ -1032,6 +1032,9 @@
     <message name="IDS_SETTINGS_LANGUAGES_BROWSER_LANGUAGES_LIST_ORDERING_INSTRUCTIONS" desc="Explanatory message about ordering the list of languages.">
       Add languages or reorder list.
     </message>
+  <message name="IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open languages settings in Chrome OS.">
+    Manage languages in Chrome OS settings
+  </message>
   </if>
   <if expr="not chromeos">
     <message name="IDS_SETTINGS_LANGUAGES_BROWSER_LANGUAGES_LIST_ORDERING_INSTRUCTIONS" desc="Explanatory message about ordering the list of languages.">

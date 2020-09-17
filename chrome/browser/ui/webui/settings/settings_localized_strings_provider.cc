@@ -97,6 +97,7 @@
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos.h"
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_manager.h"
@@ -720,6 +721,18 @@ void AddLanguagesStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "isSecondaryUser",
       user && user->GetAccountId() != primary_user->GetAccountId());
+
+  html_source->AddString(
+      "openChromeOSLanguagesSettingsLabel",
+      l10n_util::GetStringUTF16(
+          IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL));
+  html_source->AddString(
+      "chromeOSLanguagesSettingsPath",
+      chromeos::settings::mojom::kLanguagesAndInputSectionPath);
+  html_source->AddBoolean("isChromeOSLanguagesSettingsUpdate",
+                          base::FeatureList::IsEnabled(
+                              chromeos::features::kLanguageSettingsUpdate));
+
 #endif  // defined(OS_CHROMEOS)
 }
 
