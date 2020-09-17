@@ -5,6 +5,7 @@
 package org.chromium.weblayer_private;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
@@ -622,7 +623,6 @@ public class ContentViewRenderView extends RelativeLayout {
         mSurfaceParent = new SurfaceParent(context);
         addView(mSurfaceParent,
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        setBackgroundColor(Color.WHITE);
 
         mInsetObserverView = InsetObserverView.create(context);
         addView(mInsetObserverView);
@@ -651,6 +651,7 @@ public class ContentViewRenderView extends RelativeLayout {
         assert mNativeContentViewRenderView != 0;
         mWindowAndroid = rootWindow;
         requestMode(mode, (Boolean result) -> {});
+        updateBackgroundColor();
     }
 
     public void requestMode(@Mode int mode, ValueCallback<Boolean> callback) {
@@ -723,6 +724,12 @@ public class ContentViewRenderView extends RelativeLayout {
         }
     }
 
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        updateBackgroundColor();
+    }
+
     /**
      * Sets the background color of the surface / texture view.  This method is necessary because
      * the background color of ContentViewRenderView itself is covered by the background of
@@ -739,6 +746,7 @@ public class ContentViewRenderView extends RelativeLayout {
         if (mCurrent != null) {
             mCurrent.setBackgroundColor(color);
         }
+        ContentViewRenderViewJni.get().updateBackgroundColor(mNativeContentViewRenderView);
     }
 
     public InsetObserverView getInsetObserverView() {
@@ -818,6 +826,18 @@ public class ContentViewRenderView extends RelativeLayout {
         return mNativeContentViewRenderView;
     }
 
+    private void updateBackgroundColor() {
+        int uiMode = getContext().getResources().getConfiguration().uiMode;
+        boolean darkThemeEnabled =
+                (uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+        setBackgroundColor(darkThemeEnabled ? Color.BLACK : Color.WHITE);
+    }
+
+    @CalledByNative
+    private int getBackgroundColor() {
+        return mBackgroundColor;
+    }
+
     private boolean shouldAvoidSurfaceResizeForSoftKeyboard() {
         // TextureView is more common with embedding use cases that should lead to resize.
         boolean usingSurfaceView = mCurrent != null && mCurrent.getMode() == MODE_SURFACE_VIEW;
@@ -845,5 +865,6 @@ public class ContentViewRenderView extends RelativeLayout {
         void setNeedsRedraw(long nativeContentViewRenderView);
         void evictCachedSurface(long nativeContentViewRenderView);
         ResourceManager getResourceManager(long nativeContentViewRenderView);
+        void updateBackgroundColor(long nativeContentViewRenderView);
     }
 }

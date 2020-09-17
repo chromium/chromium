@@ -61,6 +61,7 @@ class ContentViewRenderView : public content::CompositorClient {
   void SetNeedsRedraw(JNIEnv* env);
   void EvictCachedSurface(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetResourceManager(JNIEnv* env);
+  void UpdateBackgroundColor(JNIEnv* env);
 
   // CompositorClient implementation
   void UpdateLayerTreeHost() override;
