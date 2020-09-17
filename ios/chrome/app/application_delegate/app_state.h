@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/main/scene_state_observer.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_manager.h"
 
 @class AppState;
@@ -39,7 +40,7 @@
 
 // Represents the application state and responds to application state changes
 // and system events.
-@interface AppState : NSObject <UIBlockerManager>
+@interface AppState : NSObject <UIBlockerManager, SceneStateObserver>
 
 - (instancetype)init NS_UNAVAILABLE;
 

@@ -51,7 +51,6 @@
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/scene_delegate.h"
-#import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/util/multi_window_support.h"
@@ -88,7 +87,7 @@ NSString* const kStartupAttemptReset = @"StartupAttempReset";
 
 #pragma mark - AppState
 
-@interface AppState ()<SafeModeCoordinatorDelegate> {
+@interface AppState () <SafeModeCoordinatorDelegate> {
   // Container for startup information.
   __weak id<StartupInformation> _startupInformation;
   // Browser launcher to launch browser in different states.
@@ -170,17 +169,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
     _browserLauncher = browserLauncher;
     _mainApplicationDelegate = applicationDelegate;
     _appCommandDispatcher = [[CommandDispatcher alloc] init];
-
-    if (@available(iOS 13, *)) {
-      if (IsSceneStartupSupported()) {
-        // Subscribe for scene activation notifications.
-        [[NSNotificationCenter defaultCenter]
-            addObserver:self
-               selector:@selector(sceneDidActivate:)
-                   name:UISceneDidActivateNotification
-                 object:nil];
-      }
-    }
   }
   return self;
 }
@@ -204,6 +192,11 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
         (uiBlockerTarget != nil) && (scene != uiBlockerTarget);
     scene.presentingModalOverlay = shouldPresentOverlay;
   }
+}
+
+- (void)setMainSceneState:(SceneState*)mainSceneState {
+  DCHECK(!_mainSceneState);
+  _mainSceneState = mainSceneState;
 }
 
 #pragma mark - Public methods.
@@ -664,22 +657,13 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   return self.uiBlockerTarget;
 }
 
-#pragma mark - Scene notifications
-
-// Handler for UISceneDidActivateNotification.
-- (void)sceneDidActivate:(NSNotification*)notification {
-  DCHECK(IsSceneStartupSupported());
-  if (@available(iOS 13, *)) {
-    UIWindowScene* scene =
-        base::mac::ObjCCastStrict<UIWindowScene>(notification.object);
-    SceneDelegate* sceneDelegate =
-        base::mac::ObjCCastStrict<SceneDelegate>(scene.delegate);
-
+- (void)sceneState:(SceneState*)sceneState
+    transitionedToActivationLevel:(SceneActivationLevel)level {
+  if (level >= SceneActivationLevelForegroundActive) {
     if (!self.firstSceneHasActivated) {
       self.firstSceneHasActivated = YES;
 
-      [self.observers appState:self
-           firstSceneActivated:sceneDelegate.sceneState];
+      [self.observers appState:self firstSceneActivated:sceneState];
 
       if (self.isInSafeMode) {
         // Safe mode can only be started when there's a window, so the actual
@@ -687,9 +671,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
         [self startSafeMode];
       }
     }
-    sceneDelegate.sceneState.presentingModalOverlay =
-        (self.uiBlockerTarget != nil) &&
-        (self.uiBlockerTarget != sceneDelegate.sceneState);
+    sceneState.presentingModalOverlay =
+        (self.uiBlockerTarget != nil) && (self.uiBlockerTarget != sceneState);
   }
 }
 

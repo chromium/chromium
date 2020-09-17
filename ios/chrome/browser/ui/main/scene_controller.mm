@@ -220,6 +220,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   if (self) {
     _sceneState = sceneState;
     [_sceneState addObserver:self];
+    [_sceneState.appState addObserver:self];
+
     // The window is necessary very early in the app/scene lifecycle, so it
     // should be created right away.
     // When multiwindow is supported, the window is created by SceneDelegate,
@@ -518,25 +520,17 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       transitionedToActivationLevel:self.sceneState.activationLevel];
 }
 
-#pragma mark - SceneControllerGuts
+#pragma mark - private
+
 - (void)initializeUI {
   if (self.hasInitializedUI) {
     return;
   }
 
   DCHECK(self.mainController);
-  if (IsSceneStartupSupported()) {
-    // TODO(crbug.com/1012697): This should probably be the only code path for
-    // UIScene and non-UIScene cases.
-    [self startUpChromeUI];
-  }
-
-  [self.sceneState.appState addObserver:self];
-
+  [self startUpChromeUI];
   self.hasInitializedUI = YES;
 }
-
-#pragma mark - private
 
 // Starts up a single chrome window and its UI.
 - (void)startUpChromeUI {

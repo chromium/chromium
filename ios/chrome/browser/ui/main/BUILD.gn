@@ -10,15 +10,9 @@ source_set("scene_testing") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("scene_guts") {
-  sources = [ "scene_controller_guts.h" ]
-  deps = [
-    "//ios/chrome/app/application_delegate:tab_opening",
-    "//ios/chrome/browser:utils",
-    "//ios/chrome/browser/ui/tab_grid",
-    "//ios/chrome/browser/url_loading",
-    "//ios/chrome/browser/web_state_list",
-  ]
+source_set("scene_state_observer") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "scene_state_observer.h" ]
 
   frameworks = [ "UIKit.framework" ]
 }
@@ -30,6 +24,7 @@ source_set("scene_state_header") {
     "scene_state_browser_agent.h",
   ]
   public_deps = [
+    ":scene_state_observer",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/scoped_ui_blocker",
     "//ios/chrome/browser/window_activities",
@@ -68,7 +63,6 @@ source_set("scene") {
   deps = [
     ":incognito_blocker_scene_agent",
     ":main",
-    ":scene_guts",
     ":scene_testing",
     "//base",
     "//components/signin/public/identity_manager",
@@ -122,7 +116,10 @@ source_set("scene") {
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/user_feedback",
   ]
-  public_deps = [ ":scene_state_header" ]
+  public_deps = [
+    ":scene_state_header",
+    ":scene_state_observer",
+  ]
   allow_circular_includes_from = [
     ":main",
 

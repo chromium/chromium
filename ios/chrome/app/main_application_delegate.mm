@@ -130,7 +130,9 @@
       [_appState requiresHandlingAfterLaunchWithOptions:launchOptions
                                         stateBackground:inBackground];
   if (!IsSceneStartupSupported()) {
-    self.sceneState.activationLevel = SceneActivationLevelForegroundInactive;
+    self.sceneState.activationLevel =
+        inBackground ? SceneActivationLevelBackground
+                     : SceneActivationLevelForegroundInactive;
   }
 
   if (@available(iOS 13, *)) {
@@ -169,9 +171,11 @@
   if ([_appState isInSafeMode])
     return;
 
-  [_appState resumeSessionWithTabOpener:_tabOpener
-                            tabSwitcher:_tabSwitcherProtocol
-                  connectionInformation:self.sceneController];
+  if (!IsSceneStartupSupported()) {
+    [_appState resumeSessionWithTabOpener:_tabOpener
+                              tabSwitcher:_tabSwitcherProtocol
+                    connectionInformation:self.sceneController];
+  }
 }
 
 - (void)applicationWillResignActive:(UIApplication*)application {

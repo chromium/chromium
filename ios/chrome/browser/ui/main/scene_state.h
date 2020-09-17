@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/main/scene_state_observer.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_target.h"
 #import "ios/chrome/browser/window_activities/window_activity_helpers.h"
 
@@ -39,31 +40,6 @@ typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
 // Sets the associated scene state. Called once and only once. Consider using
 // this method to add the agent as an observer.
 - (void)setSceneState:(SceneState*)scene;
-
-@end
-
-@protocol SceneStateObserver <NSObject>
-
-@optional
-
-// Called whenever the scene state transitions between different activity
-// states.
-- (void)sceneState:(SceneState*)sceneState
-    transitionedToActivationLevel:(SceneActivationLevel)level;
-
-// Notifies when presentingModalOverlay is being set to true.
-- (void)sceneStateWillShowModalOverlay:(SceneState*)sceneState;
-// Notifies when presentingModalOverlay is being set to false.
-- (void)sceneStateWillHideModalOverlay:(SceneState*)sceneState;
-// Notifies when presentingModalOverlay has been set to false.
-- (void)sceneStateDidHideModalOverlay:(SceneState*)sceneState;
-// Notifies when URLContexts have been added to |URLContextsToOpen|.
-- (void)sceneState:(SceneState*)sceneState
-    hasPendingURLs:(NSSet<UIOpenURLContext*>*)URLContexts
-    API_AVAILABLE(ios(13));
-// Notifies that a new activity request has been received.
-- (void)sceneState:(SceneState*)sceneState
-    receivedUserActivity:(NSUserActivity*)userActivity;
 
 @end
 

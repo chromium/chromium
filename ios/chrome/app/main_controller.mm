@@ -89,7 +89,6 @@
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
-#import "ios/chrome/browser/ui/main/scene_controller_guts.h"
 #import "ios/chrome/browser/ui/main/scene_delegate.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -571,18 +570,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   self.appState.sessionRestorationRequired =
       [self startUpBeforeFirstWindowCreatedAndPrepareForRestorationPostCrash:
                 self.appState.postCrashLaunch];
-
-  if (@available(iOS 13, *)) {
-    if (IsSceneStartupSupported()) {
-      // The rest of the startup sequence is handled by the Scenes and in
-      // response to notifications.
-      return;
-    }
-  }
-
-  SceneState* sceneState = self.appState.connectedScenes.firstObject;
-  [sceneState.controller startUpChromeUI];
-  [self startUpAfterFirstWindowCreated];
 }
 
 - (void)initializeBrowserState:(ChromeBrowserState*)browserState {

@@ -138,7 +138,10 @@ source_set("metric_kit_subscriber") {
 source_set("app_state_header") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "app_state.h" ]
-  public_deps = [ "//ios/chrome/browser/ui/scoped_ui_blocker" ]
+  public_deps = [
+    "//ios/chrome/browser/ui/main:scene_state_observer",
+    "//ios/chrome/browser/ui/scoped_ui_blocker",
+  ]
 }
 
 source_set("application_delegate_internal") {

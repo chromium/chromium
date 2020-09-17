@@ -45,6 +45,11 @@
     _observers = [SceneStateObserverList
         observersWithProtocol:@protocol(SceneStateObserver)];
     _agents = [[NSMutableArray alloc] init];
+
+    // AppState might be nil in tests.
+    if (appState) {
+      [self addObserver:appState];
+    }
   }
   return self;
 }
