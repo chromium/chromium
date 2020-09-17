@@ -14,8 +14,7 @@
     <includes>
       <include name="IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_JS"
           file="${root_gen_dir}/chrome/browser/resources/new_tab_page/new_tab_page.rollup.js"
-          use_base_dir="false" type="BINDATA"
-          preprocess="true" />
+          use_base_dir="false" type="BINDATA" />
       <part file="new_tab_page_resources_common.grdp" />
     </includes>
   </release>

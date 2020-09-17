@@ -18,7 +18,6 @@
       <include name="IDR_EXTENSIONS_EXTENSIONS_ROLLUP_JS"
                file="${root_gen_dir}\chrome\browser\resources\extensions\extensions.rollup.js"
                use_base_dir="false"
-               preprocess="true"
                type="BINDATA" />
       <include name="IDR_EXTENSIONS_CHECKUP_IMAGE"
                file="checkup_image.svg"

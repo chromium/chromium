@@ -85,19 +85,16 @@
       <include name="IDR_OS_SETTINGS_OS_SETTINGS_ROLLUP_JS"
                file="${root_gen_dir}\chrome\browser\resources\settings\chromeos\os_settings.rollup.js"
                use_base_dir="false"
-               preprocess="true"
                type="BINDATA" />
       <include name="IDR_OS_SETTINGS_OS_SETTINGS_V3_HTML"
                file="chromeos/os_settings_v3.html"
                type="BINDATA" />
       <include name="IDR_OS_SETTINGS_LAZY_LOAD_ROLLUP_JS"
                file="${root_gen_dir}\chrome\browser\resources\settings\chromeos\lazy_load.rollup.js"
-               preprocess="true"
                type="BINDATA"
                use_base_dir="false" />
       <include name="IDR_OS_SETTINGS_SHARED_ROLLUP_JS"
                file="${root_gen_dir}\chrome\browser\resources\settings\chromeos\shared.rollup.js"
-               preprocess="true"
                type="BINDATA"
                use_base_dir="false" />
     </includes>

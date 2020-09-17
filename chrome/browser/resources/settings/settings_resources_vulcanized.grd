@@ -55,16 +55,13 @@
       <include name="IDR_SETTINGS_SETTINGS_ROLLUP_JS"
                file="${root_gen_dir}\chrome\browser\resources\settings\settings.rollup.js"
                use_base_dir="false"
-               preprocess="true"
                type="BINDATA" />
       <include name="IDR_SETTINGS_LAZY_LOAD_ROLLUP_JS"
                file="${root_gen_dir}\chrome\browser\resources\settings\lazy_load.rollup.js"
-               preprocess="true"
                type="BINDATA"
                use_base_dir="false" />
       <include name="IDR_SETTINGS_SHARED_ROLLUP_JS"
                file="${root_gen_dir}\chrome\browser\resources\settings\shared.rollup.js"
-               preprocess="true"
                type="BINDATA"
                use_base_dir="false" />
     </includes>

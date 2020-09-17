@@ -18,7 +18,6 @@
       <include name="IDR_BOOKMARKS_BOOKMARKS_ROLLUP_JS"
                file="${root_gen_dir}\chrome\browser\resources\bookmarks\bookmarks.rollup.js"
                use_base_dir="false"
-               preprocess="true"
                type="chrome_html" />
     </includes>
   </release>

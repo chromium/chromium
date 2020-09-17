@@ -19,7 +19,6 @@
       <include name="IDR_PRINT_PREVIEW_PRINT_PREVIEW_ROLLUP_JS"
                file="${root_gen_dir}\chrome\browser\resources\print_preview\print_preview.rollup.js"
                use_base_dir="false"
-               preprocess="true"
                type="BINDATA" />
     </includes>
   </release>

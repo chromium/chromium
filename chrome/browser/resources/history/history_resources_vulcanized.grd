@@ -24,17 +24,14 @@
                type="BINDATA" />
       <include name="IDR_HISTORY_HISTORY_ROLLUP_JS"
                file="${root_gen_dir}\chrome\browser\resources\history\history.rollup.js"
-               preprocess="true"
                type="BINDATA"
                use_base_dir="false" />
       <include name="IDR_HISTORY_LAZY_LOAD_ROLLUP_JS"
                file="${root_gen_dir}\chrome\browser\resources\history\lazy_load.rollup.js"
-               preprocess="true"
                type="BINDATA"
                use_base_dir="false" />
       <include name="IDR_HISTORY_SHARED_ROLLUP_JS"
                file="${root_gen_dir}\chrome\browser\resources\history\shared.rollup.js"
-               preprocess="true"
                type="BINDATA"
                use_base_dir="false" />
     </includes>

@@ -457,6 +457,7 @@
   <include name="IDR_SETTINGS_PEOPLE_PAGE_SYNC_CONTROLS_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/people_page/sync_controls.m.js"
            use_base_dir="false"
+           preprocess="true"
            compress="false" type="BINDATA" />
   <include name="IDR_SETTINGS_PEOPLE_PAGE_SYNC_PAGE_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/people_page/sync_page.m.js"
@@ -466,6 +467,7 @@
   <include name="IDR_SETTINGS_PREFS_PREFS_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/prefs/prefs.m.js"
            use_base_dir="false"
+           preprocess="true"
            compress="false" type="BINDATA" />
   <include name="IDR_SETTINGS_PREFS_PREFS_BEHAVIOR_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/prefs/prefs_behavior.m.js"
@@ -665,6 +667,7 @@
   <include name="IDR_SETTINGS_SETTINGS_PAGE_SETTINGS_ANIMATED_PAGES_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/settings_page/settings_animated_pages.m.js"
            use_base_dir="false"
+           preprocess="true"
            compress="false" type="BINDATA" />
   <include name="IDR_SETTINGS_SETTINGS_PAGE_SETTINGS_SECTION_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/settings_page/settings_section.m.js"
