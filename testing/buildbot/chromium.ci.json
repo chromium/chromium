@@ -13038,64 +13038,6 @@
         "test": "webview_instrumentation_test_apk",
         "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
       }
-    ],
-    "isolated_scripts": [
-      {
-        "isolate_name": "chrome_public_wpt",
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "chrome_public_wpt",
-        "results_handler": "layout tests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_os_type": "userdebug",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
-          "expiration": 18000,
-          "hard_timeout": 14400,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 15
-        },
-        "test_id_prefix": "ninja://chrome/android:chrome_public_wpt/"
-      },
-      {
-        "isolate_name": "system_webview_wpt",
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "system_webview_wpt",
-        "results_handler": "layout tests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_os_type": "userdebug",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
-          "expiration": 18000,
-          "hard_timeout": 14400,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 15
-        },
-        "test_id_prefix": "ninja://android_webview/test:system_webview_wpt/"
-      }
     ]
   },
   "Android arm Builder (dbg)": {
@@ -193428,6 +193370,62 @@
   },
   "android-pie-arm64-wpt-rel-non-cq": {
     "isolated_scripts": [
+      {
+        "isolate_name": "chrome_public_wpt",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "chrome_public_wpt",
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "expiration": 18000,
+          "hard_timeout": 14400,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 15
+        },
+        "test_id_prefix": "ninja://chrome/android:chrome_public_wpt/"
+      },
+      {
+        "isolate_name": "system_webview_wpt",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "system_webview_wpt",
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "expiration": 18000,
+          "hard_timeout": 14400,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 15
+        },
+        "test_id_prefix": "ninja://android_webview/test:system_webview_wpt/"
+      },
       {
         "isolate_name": "weblayer_shell_wpt",
         "merge": {

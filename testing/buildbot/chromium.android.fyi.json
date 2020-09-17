@@ -53,7 +53,9 @@
         "test": "webview_instrumentation_test_apk",
         "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
       }
-    ],
+    ]
+  },
+  "android-pie-arm64-wpt-rel-non-cq": {
     "isolated_scripts": [
       {
         "isolate_name": "chrome_public_wpt",
@@ -110,11 +112,7 @@
           "shards": 15
         },
         "test_id_prefix": "ninja://android_webview/test:system_webview_wpt/"
-      }
-    ]
-  },
-  "android-pie-arm64-wpt-rel-non-cq": {
-    "isolated_scripts": [
+      },
       {
         "isolate_name": "weblayer_shell_wpt",
         "merge": {

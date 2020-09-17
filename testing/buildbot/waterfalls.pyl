@@ -884,7 +884,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'webview_bot_instrumentation_test_apk_gtest',
-          'isolated_scripts': 'android_wpt_scripts',
         },
         'use_swarming': True,
         'os_type': 'android',
@@ -895,7 +894,7 @@
           'walleye',
         ],
         'test_suites': {
-          'isolated_scripts': 'weblayer_shell_wpt',
+          'isolated_scripts': 'android_wpt_scripts',
         },
         'use_swarming': True,
         'os_type': 'android',

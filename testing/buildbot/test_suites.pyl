@@ -4675,6 +4675,7 @@
     'android_wpt_scripts': [
       'chrome_public_wpt',
       'system_webview_wpt',
+      'weblayer_shell_wpt',
     ],
 
     'bfcache_android_gtests': [
