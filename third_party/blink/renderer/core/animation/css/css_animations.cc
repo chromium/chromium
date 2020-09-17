@@ -609,6 +609,13 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
   }
 #endif
 
+  // Rebuild the keyframe model for a CSS animation if it may have been
+  // invalidated by a change to the text direction or writing mode.
+  const ComputedStyle* old_style = animating_element->GetComputedStyle();
+  bool logical_property_mapping_change =
+      old_style && (old_style->Direction() != style.Direction() ||
+                    old_style->GetWritingMode() != style.GetWritingMode());
+
   const CSSAnimationData* animation_data = style.Animations();
   const CSSAnimations* css_animations =
       element_animations ? &element_animations->CssAnimations() : nullptr;
@@ -696,7 +703,7 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
             keyframes_rule->Version() !=
                 existing_animation->style_rule_version ||
             existing_animation->specified_timing != specified_timing ||
-            is_paused != was_paused) {
+            is_paused != was_paused || logical_property_mapping_change) {
           DCHECK(!is_animation_style_change);
           update.UpdateAnimation(
               existing_animation_index, animation,
