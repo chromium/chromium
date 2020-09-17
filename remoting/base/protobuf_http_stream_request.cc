@@ -58,7 +58,8 @@ void ProtobufHttpStreamRequest::OnStreamClosed(
 }
 
 void ProtobufHttpStreamRequest::OnAuthFailed(const ProtobufHttpStatus& status) {
-  OnStreamClosed(status);
+  // Can't call OnStreamClosed here since it invokes the |invalidator_|.
+  std::move(stream_closed_callback_).Run(status);
 }
 
 void ProtobufHttpStreamRequest::StartRequestInternal(

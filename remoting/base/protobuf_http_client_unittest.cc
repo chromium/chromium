@@ -433,6 +433,31 @@ TEST_F(ProtobufHttpClientTest, DeletesRequestHolderAfterResponseIsReceived) {
 
 // Stream request tests.
 
+TEST_F(ProtobufHttpClientTest,
+       StreamRequestFailedToFetchAuthToken_RejectsWithUnauthorizedError) {
+  base::MockOnceClosure stream_ready_callback;
+  MockEchoMessageCallback message_callback;
+  MockStreamClosedCallback stream_closed_callback;
+
+  base::RunLoop run_loop;
+
+  ExpectCallWithToken(/* success= */ false);
+
+  MockEchoResponseCallback response_callback;
+  EXPECT_CALL(stream_closed_callback,
+              Run(HasErrorCode(ProtobufHttpStatus::Code::UNAUTHENTICATED)))
+      .WillOnce([&]() { run_loop.Quit(); });
+
+  auto request = CreateDefaultTestStreamRequest();
+  request->SetStreamReadyCallback(stream_ready_callback.Get());
+  request->SetMessageCallback(message_callback.Get());
+  request->SetStreamClosedCallback(stream_closed_callback.Get());
+  client_.ExecuteRequest(std::move(request));
+
+  run_loop.Run();
+  ASSERT_FALSE(client_.HasPendingRequests());
+}
+
 TEST_F(ProtobufHttpClientTest, StartStreamRequestAndDecodeMessages) {
   base::MockOnceClosure stream_ready_callback;
   MockEchoMessageCallback message_callback;
