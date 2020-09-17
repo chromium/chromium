@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
+import android.widget.CheckBox;
 
 import androidx.annotation.IntDef;
 import androidx.test.filters.SmallTest;
@@ -86,6 +87,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     private View mTosText;
     private View mAcceptButton;
     private View mLargeSpinner;
+    private CheckBox mUmaCheckBox;
 
     @Before
     public void setUp() {
@@ -95,6 +97,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
                 CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE));
 
         FirstRunAppRestrictionInfo.setInitializedInstanceForTest(mMockAppRestrictionInfo);
+        ToSAndUMAFirstRunFragment.setShowUmaCheckBoxForTesting(true);
         PolicyServiceFactory.setPolicyServiceForTest(mPolicyService);
         FirstRunUtilsJni.TEST_HOOKS.setInstanceForTesting(mFirstRunUtils);
         EnterpriseInfo.setInstanceForTest(mMockEnterpriseInfo);
@@ -132,6 +135,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     @After
     public void tearDown() {
         FirstRunAppRestrictionInfo.setInitializedInstanceForTest(null);
+        ToSAndUMAFirstRunFragment.setShowUmaCheckBoxForTesting(false);
         PolicyServiceFactory.setPolicyServiceForTest(null);
         FirstRunUtilsJni.TEST_HOOKS.setInstanceForTesting(mFirstRunUtils);
         EnterpriseInfo.setInstanceForTest(null);
@@ -329,6 +333,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         waitUntilNativeLoaded();
 
         mTosText = mActivity.findViewById(R.id.tos_and_privacy);
+        mUmaCheckBox = mActivity.findViewById(R.id.send_report_checkbox);
         mAcceptButton = mActivity.findViewById(R.id.tos_and_privacy);
         mLargeSpinner = mActivity.findViewById(R.id.progress_spinner_large);
     }
@@ -345,8 +350,12 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
 
         Assert.assertEquals("Visibility of ToS text is different than the test setting.",
                 tosVisibility, mTosText.getVisibility());
+        Assert.assertEquals("Visibility of Uma Check Box is different than the test setting.",
+                tosVisibility, mUmaCheckBox.getVisibility());
         Assert.assertEquals("Visibility of accept button is different than the test setting.",
                 tosVisibility, mAcceptButton.getVisibility());
+
+        Assert.assertTrue("Uma Check Box should be checked.", mUmaCheckBox.isChecked());
 
         int expectedExitCount = fragmentState == FragmentState.HAS_POLICY ? 1 : 0;
         Assert.assertEquals(expectedExitCount, mExitCount);
