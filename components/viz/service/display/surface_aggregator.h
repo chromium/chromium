@@ -330,11 +330,18 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // Resets member variables that were used during Aggregate().
   void ResetAfterAggregate();
 
-  SurfaceManager* manager_;
-  DisplayResourceProvider* provider_;
+  SurfaceManager* const manager_;
+  DisplayResourceProvider* const provider_;
 
   const bool aggregate_only_damaged_;
-  bool output_is_secure_;
+
+  // Occluding damage rect will be calculated for qualified candidates
+  const bool needs_surface_occluding_damage_rect_;
+
+  // Whether de-jelly may be active.
+  const bool de_jelly_enabled_;
+
+  bool output_is_secure_ = false;
 
   // The color space for the root render pass. If this is different from its
   // blending color space (e.g. for HDR), then a final render pass to convert
@@ -405,9 +412,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   gfx::ContentColorUsage root_content_color_usage_ =
       gfx::ContentColorUsage::kSRGB;
 
-  // Occluding damage rect will be calculated for qualified candidates
-  const bool needs_surface_occluding_damage_rect_;
-
   // This is the union of the damage rects of all surface on top
   // of the current surface.
   gfx::Rect damage_rects_union_of_surfaces_on_top_;
@@ -436,8 +440,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   base::flat_set<SurfaceId> undrawn_surfaces_;
 
   // Variables used for de-jelly:
-  // Whether de-jelly may be active.
-  bool de_jelly_enabled_ = false;
   // The set of surfacees being drawn for the first time. Used to determine if
   // de-jelly skew should be applied to a surface.
   base::flat_set<SurfaceId> new_surfaces_;
