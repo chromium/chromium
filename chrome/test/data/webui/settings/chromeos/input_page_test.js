@@ -90,11 +90,13 @@ suite('input page', () => {
           items[0].querySelector('.display-name').textContent.trim());
       assertTrue(!!items[0].querySelector('.internal-wrapper'));
       assertFalse(!!items[0].querySelector('.external-wrapper'));
+      assertFalse(!!items[0].querySelector('.icon-clear').disabled);
       assertEquals(
           'US Dvorak keyboard',
           items[1].querySelector('.display-name').textContent.trim());
       assertTrue(!!items[1].querySelector('.external-wrapper'));
       assertFalse(!!items[1].querySelector('.internal-wrapper'));
+      assertFalse(!!items[1].querySelector('.icon-clear').disabled);
     });
 
     test('navigates to input method options page', () => {
@@ -142,6 +144,28 @@ suite('input page', () => {
       assertTrue(
           items[0].querySelector('.display-name').textContent.trim() !==
           inputMethodName);
+    });
+
+    test('disables remove input method option', async () => {
+      // Add US Swahili keyboard, a third party IME
+      languageHelper.addInputMethod(
+          'ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:us:sw');
+      // Remove US Dvorak keyboard, so there is only 1 component IME left.
+      languageHelper.removeInputMethod(
+          '_comp_ime_fgoepimhcoialccpbmpnnblemnepkkaoxkb:us:dvorak:eng');
+      Polymer.dom.flush();
+
+      const inputMethodsList = inputPage.$.inputMethodsList;
+      const items = inputMethodsList.querySelectorAll('.list-item');
+      assertEquals(3, items.length);
+      assertEquals(
+          'US keyboard',
+          items[0].querySelector('.display-name').textContent.trim());
+      assertTrue(!!items[0].querySelector('.icon-clear').disabled);
+      assertEquals(
+          'US Swahili keyboard',
+          items[1].querySelector('.display-name').textContent.trim());
+      assertFalse(!!items[1].querySelector('.icon-clear').disabled);
     });
   });
 
@@ -237,7 +261,7 @@ suite('input page', () => {
       assertTrue(languageHelper.isInputMethodEnabled(
           '_comp_ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:sw:sw'));
       assertFalse(languageHelper.isInputMethodEnabled(
-          '_comp_ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:us:sw'));
+          'ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:us:sw'));
       assertTrue(languageHelper.isInputMethodEnabled(
           '_comp_ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:vi:vi'));
     });

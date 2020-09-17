@@ -162,7 +162,7 @@ cr.define('settings', function() {
           enabled: false,
         },
         {
-          id: '_comp_ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:us:sw',
+          id: 'ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:us:sw',
           displayName: 'US Swahili keyboard',
           languageCodes: ['en', 'en-US', 'sw'],
           tags: [

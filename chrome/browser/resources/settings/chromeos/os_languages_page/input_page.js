@@ -245,6 +245,23 @@ Polymer({
   },
 
   /**
+   * @param {!chrome.languageSettingsPrivate.InputMethod} targetInputMethod
+   * @private
+   */
+  disableRemoveInputMethod_(targetInputMethod) {
+    // Third-party IMEs can always be removed.
+    if (!this.languageHelper.isComponentIme(targetInputMethod)) {
+      return false;
+    }
+
+    // Disable remove if there is no other component IME (pre-installed
+    // system IMES) enabled.
+    return !this.languages.inputMethods.enabled.some(
+        inputMethod => inputMethod.id != targetInputMethod.id &&
+            this.languageHelper.isComponentIme(inputMethod));
+  },
+
+  /**
    * @param {!chrome.languageSettingsPrivate.InputMethod} inputMethod
    * @private
    */

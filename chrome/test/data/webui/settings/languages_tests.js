@@ -152,7 +152,7 @@ suite('settings-languages', function() {
 
       // Add input methods for Swahili.
       const sw = '_comp_ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:sw:sw';
-      const swUS = '_comp_ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:us:sw';
+      const swUS = 'ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:us:sw';
       languageHelper.addInputMethod(sw);
       languageHelper.addInputMethod(swUS);
       assertEquals(3, languageHelper.languages.inputMethods.enabled.length);

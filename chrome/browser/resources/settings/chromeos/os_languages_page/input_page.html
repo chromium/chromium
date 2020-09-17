@@ -149,6 +149,8 @@
               </template>
               <div class="separator"></div>
               <cr-icon-button class="icon-clear"
+                  disabled$="[[disableRemoveInputMethod_(item,
+                      languages.inputMethods.enabled.*)]]"
                   on-click="onRemoveInputMethodClick_"
                   title="[[getRemoveInputMethodTooltip_(item)]]">
               </cr-icon-button>
