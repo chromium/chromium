@@ -1335,3 +1335,27 @@ TEST_F('ChromeVoxOutputE2ETest', 'DelayHintVariants', function() {
             o.speechOutputForTest);
       });
 });
+
+TEST_F('ChromeVoxOutputE2ETest', 'WithoutFocusRing', function() {
+  const site = `<button></button>`;
+  this.runWithLoadedTree(site, function(root) {
+    let called = false;
+    ChromeVoxState.instance.setFocusBounds = this.newCallback(() => {
+      called = true;
+    });
+
+    const button = root.find({role: RoleType.BUTTON});
+
+    // Triggers drawing of the focus ring.
+    new Output().withSpeech(cursors.Range.fromNode(button)).go();
+    assertTrue(called);
+    called = false;
+
+    // Does not trigger drawing of the focus ring.
+    new Output()
+        .withSpeech(cursors.Range.fromNode(button))
+        .withoutFocusRing()
+        .go();
+    assertFalse(called);
+  });
+});

@@ -3094,3 +3094,19 @@ TEST_F('ChromeVoxBackgroundTest', 'ImageAnnotations', function() {
             .replay();
       });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'VolumeChanges', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(``, function() {
+    const bounds = ChromeVoxState.instance.getFocusBounds();
+    mockFeedback.call(press(KeyCode.VOLUME_UP))
+        .expectSpeech('Volume', 'Slider', /\d+%/)
+        .call(() => {
+          // The bounds should not have changed.
+          assertEquals(
+              JSON.stringify(bounds),
+              JSON.stringify(ChromeVoxState.instance.getFocusBounds()));
+        })
+        .replay();
+  });
+});

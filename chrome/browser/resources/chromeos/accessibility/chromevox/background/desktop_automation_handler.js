@@ -428,6 +428,7 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
       this.lastValueChanged_ = new Date();
 
       const output = new Output();
+      output.withoutFocusRing();
 
       if (fromDesktop &&
           (!this.lastValueTarget_ || this.lastValueTarget_ !== t)) {

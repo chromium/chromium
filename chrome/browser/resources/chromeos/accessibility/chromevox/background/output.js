@@ -117,6 +117,9 @@ Output = class {
 
     /** @private {!Object} */
     this.initialSpeechProps_ = {};
+
+    /** @private {boolean} */
+    this.drawFocusRing_ = true;
   }
 
   /**
@@ -365,6 +368,15 @@ Output = class {
   }
 
   /**
+   * Don't draw a focus ring based on this output.
+   * @return {!Output}
+   */
+  withoutFocusRing() {
+    this.drawFocusRing_ = false;
+    return this;
+  }
+
+  /**
    * Supply initial speech properties that will be applied to all output.
    * @param {!Object} speechProps
    * @return {!Output}
@@ -561,7 +573,7 @@ Output = class {
     }
 
     // Display.
-    if (this.speechCategory_ != TtsCategory.LIVE) {
+    if (this.speechCategory_ != TtsCategory.LIVE && this.drawFocusRing_) {
       ChromeVoxState.instance.setFocusBounds(this.locations_);
     }
   }
