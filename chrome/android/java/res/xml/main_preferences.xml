@@ -35,7 +35,6 @@
         android:key="manage_sync"
         android:order="5"
         android:title="@string/sync_category_title"
-        android:fragment="org.chromium.chrome.browser.sync.settings.ManageSyncSettings"
         app:isPreferenceVisible="false"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="google_services"

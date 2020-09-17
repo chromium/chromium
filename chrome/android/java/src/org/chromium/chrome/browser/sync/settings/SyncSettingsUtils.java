@@ -202,19 +202,23 @@ public class SyncSettingsUtils {
      * Return a short summary of the current sync status.
      */
     public static String getSyncStatusSummary(Context context) {
+        Resources res = context.getResources();
+
         if (!IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .hasPrimaryAccount()) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
+                // There is no account with sync consent available.
+                return res.getString(R.string.sync_is_disabled);
+            }
             return "";
         }
-
-        ProfileSyncService profileSyncService = ProfileSyncService.get();
-        Resources res = context.getResources();
 
         if (!AndroidSyncSettings.get().doesMasterSyncSettingAllowChromeSync()) {
             return res.getString(R.string.sync_android_system_sync_disabled);
         }
 
+        ProfileSyncService profileSyncService = ProfileSyncService.get();
         if (profileSyncService == null) {
             return res.getString(R.string.sync_is_disabled);
         }
@@ -265,14 +269,16 @@ public class SyncSettingsUtils {
      * Returns an icon that represents the current sync state.
      */
     public static @Nullable Drawable getSyncStatusIcon(Context context) {
+        boolean useNewIcon =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY);
+
         if (!IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .hasPrimaryAccount()) {
-            return null;
+            return useNewIcon ? AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp)
+                              : null;
         }
 
-        boolean useNewIcon =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY);
         ProfileSyncService profileSyncService = ProfileSyncService.get();
         if (profileSyncService == null || !AndroidSyncSettings.get().isSyncEnabled()) {
             return useNewIcon
