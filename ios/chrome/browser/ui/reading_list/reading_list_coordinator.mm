@@ -137,7 +137,11 @@
   // Present RecentTabsNavigationController.
   self.navigationController = [[TableViewNavigationController alloc]
       initWithTable:self.tableViewController];
-  self.navigationController.toolbarHidden = NO;
+
+  // The initial call to |readingListHasItems:| may have been received before
+  // all UI elements were initialized. Call the callback directly to set up
+  // everything correctly.
+  [self readingListHasItems:self.mediator.hasElements];
 
   BOOL useCustomPresentation = YES;
   if (IsCollectionsCardPresentationStyleEnabled()) {
