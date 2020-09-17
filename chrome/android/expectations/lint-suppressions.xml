@@ -176,12 +176,8 @@ Still reading?
     <ignore regexp="Static interface  method requires API level 24"/>
     <!-- 1: TaskInfo is refactored at API 29. -->
     <ignore regexp="Field requires API level .*`android.app.TaskInfo"/>
-    <!-- 1: TODO(crbug.com/1082222): Fix -->
-    <ignore regexp="chrome/android/java/src/org/chromium/chrome/browser/omnibox/suggestions/header/HeaderView.java"/>
     <!-- 1: TODO(crbug.com/1085410): Fix -->
     <ignore regexp="components/content_capture/android/java/src/org/chromium/components/content_capture"/>
-    <!-- 1: TODO(wnwen): File bugs to fix -->
-    <ignore regexp="android_webview/support_library/boundary_interfaces/src/org/chromium/support_lib_boundary/util/BoundaryInterfaceReflectionUtil.java"/>
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <!-- This warning just adds a lot of false positives. -->
