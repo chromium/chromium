@@ -87,13 +87,10 @@ class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
   static constexpr float kAppListOpacity = 0.95;
 
   // The opacity of the app list background with blur.
-  static constexpr float kAppListOpacityWithBlur = 0.74;
+  static constexpr float kAppListOpacityWithBlur = 0.8;
 
   // The preferred blend alpha with wallpaper color for background.
   static constexpr int kAppListColorDarkenAlpha = 178;
-
-  // The defualt color of the app list background.
-  static constexpr SkColor kDefaultBackgroundColor = gfx::kGoogleGrey900;
 
   // The duration the AppListView ignores scroll events which could transition
   // its state.

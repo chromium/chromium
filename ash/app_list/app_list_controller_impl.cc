@@ -190,11 +190,11 @@ GetTransitionFromMetricsAnimationInfo(
 
 AppListControllerImpl::AppListControllerImpl()
     : model_(std::make_unique<AppListModel>()),
+      color_provider_(AppListColorProviderImpl()),
       presenter_(std::make_unique<AppListPresenterDelegateImpl>(this)),
       is_notification_indicator_enabled_(
           ::features::IsNotificationIndicatorEnabled()) {
   model_->AddObserver(this);
-
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
   session_controller->AddObserver(this);
@@ -1508,6 +1508,10 @@ int AppListControllerImpl::GetShelfSize() {
 
 bool AppListControllerImpl::IsInTabletMode() {
   return Shell::Get()->tablet_mode_controller()->InTabletMode();
+}
+
+AppListColorProviderImpl* AppListControllerImpl::GetColorProvider() {
+  return &color_provider_;
 }
 
 void AppListControllerImpl::RecordAppLaunched(

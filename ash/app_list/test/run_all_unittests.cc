@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/app_list/test/test_app_list_color_provider.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -43,11 +44,14 @@ class AppListTestSuite : public base::TestSuite {
 
     base::DiscardableMemoryAllocator::SetInstance(
         &discardable_memory_allocator_);
+    app_list_color_provider_ =
+        std::make_unique<ash::TestAppListColorProvider>();
     env_ = aura::Env::CreateInstance();
   }
 
   void Shutdown() override {
     env_.reset();
+    app_list_color_provider_.reset();
     ui::ResourceBundle::CleanupSharedInstance();
     base::TestSuite::Shutdown();
   }
@@ -55,6 +59,7 @@ class AppListTestSuite : public base::TestSuite {
  private:
   std::unique_ptr<aura::Env> env_;
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
+  std::unique_ptr<ash::TestAppListColorProvider> app_list_color_provider_;
 
   DISALLOW_COPY_AND_ASSIGN(AppListTestSuite);
 };

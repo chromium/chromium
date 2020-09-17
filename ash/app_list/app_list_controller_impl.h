@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/app_list/app_list_color_provider_impl.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/app_list_view_delegate.h"
@@ -224,6 +225,7 @@ class ASH_EXPORT AppListControllerImpl
   gfx::Rect SnapBoundsToDisplayEdge(const gfx::Rect& bounds) override;
   int GetShelfSize() override;
   bool IsInTabletMode() override;
+  AppListColorProviderImpl* GetColorProvider();
 
   // Notifies observers of AppList visibility changes.
   void OnVisibilityChanged(bool visible, int64_t display_id);
@@ -413,6 +415,10 @@ class ASH_EXPORT AppListControllerImpl
 
   std::unique_ptr<AppListModel> model_;
   SearchModel search_model_;
+
+  // Used to fetch colors from AshColorProvider. Should be destructed after
+  // |presenter_| and UI.
+  AppListColorProviderImpl color_provider_;
 
   // |presenter_| should be put below |client_| and |model_| to prevent a crash
   // in destruction.

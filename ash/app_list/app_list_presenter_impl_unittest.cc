@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/app_list/test/app_list_test_view_delegate.h"
+#include "ash/app_list/test/test_app_list_color_provider.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
@@ -103,6 +104,7 @@ class AppListPresenterImplTest : public aura::test::AuraTestBase {
   std::unique_ptr<AppListPresenterImpl> presenter_;
   AppListPresenterDelegateTest* presenter_delegate_ = nullptr;
   std::unique_ptr<aura::Window> container_;
+  std::unique_ptr<TestAppListColorProvider> app_list_color_provider_;
 
   DISALLOW_COPY_AND_ASSIGN(AppListPresenterImplTest);
 };
@@ -120,10 +122,12 @@ void AppListPresenterImplTest::SetUp() {
   presenter_delegate_ = presenter_delegate.get();
   presenter_ =
       std::make_unique<AppListPresenterImpl>(std::move(presenter_delegate));
+  app_list_color_provider_ = std::make_unique<TestAppListColorProvider>();
 }
 
 void AppListPresenterImplTest::TearDown() {
   container_.reset();
+  app_list_color_provider_.reset();
   AuraTestBase::TearDown();
 }
 

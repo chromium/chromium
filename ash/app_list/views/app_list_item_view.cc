@@ -14,6 +14,7 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/views/app_list_menu_model_adapter.h"
 #include "ash/app_list/views/apps_grid_view.h"
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -68,9 +69,6 @@ constexpr float kCardifyIconScale = 0.84f;
 
 // The drag and drop icon scaling up or down animation transition duration.
 constexpr int kDragDropAppIconScaleTransitionInMs = 200;
-
-// The color of the title for the tiles within folder.
-constexpr SkColor kFolderGridTitleColor = SK_ColorBLACK;
 
 // The color of the focus ring within a folder.
 constexpr SkColor kFolderGridFocusRingColor = gfx::kGoogleBlue600;
@@ -335,9 +333,9 @@ AppListItemView::AppListItemView(AppsGridView* apps_grid_view,
   title->SetHandlesTooltips(false);
   title->SetFontList(GetAppListConfig().app_title_font());
   title->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  title->SetEnabledColor(apps_grid_view_->is_in_folder()
-                             ? kFolderGridTitleColor
-                             : GetAppListConfig().grid_title_color());
+  title->SetEnabledColor(
+      AppListColorProvider::Get()->GetAppListItemTextColor());
+
   if (!is_in_folder) {
     gfx::ShadowValues title_shadow = gfx::ShadowValues(
         1,

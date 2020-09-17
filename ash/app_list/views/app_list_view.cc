@@ -19,6 +19,7 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -168,25 +169,8 @@ class SearchBoxFocusHost : public views::View {
 SkColor GetBackgroundShieldColor(const std::vector<SkColor>& colors,
                                  float color_opacity) {
   const U8CPU sk_opacity_value = static_cast<U8CPU>(255 * color_opacity);
-
-  const SkColor default_color =
-      SkColorSetA(AppListView::kDefaultBackgroundColor, sk_opacity_value);
-
-  if (colors.empty())
-    return default_color;
-
-  DCHECK_EQ(static_cast<size_t>(ColorProfileType::NUM_OF_COLOR_PROFILES),
-            colors.size());
-  const SkColor dark_muted =
-      colors[static_cast<int>(ColorProfileType::DARK_MUTED)];
-  if (SK_ColorTRANSPARENT == dark_muted)
-    return default_color;
-
-  return SkColorSetA(
-      color_utils::GetResultingPaintColor(
-          SkColorSetA(SK_ColorBLACK, AppListView::kAppListColorDarkenAlpha),
-          dark_muted),
-      sk_opacity_value);
+  return SkColorSetA(AppListColorProvider::Get()->GetAppListBackgroundColor(),
+                     sk_opacity_value);
 }
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kExcludeWindowFromEventHandling, false)
@@ -447,7 +431,7 @@ class BoundsAnimationObserver : public ui::ImplicitAnimationObserver {
 class AppListBackgroundShieldView : public views::View {
  public:
   explicit AppListBackgroundShieldView(int shelf_background_corner_radius)
-      : color_(AppListView::kDefaultBackgroundColor),
+      : color_(AppListColorProvider::Get()->GetAppListBackgroundColor()),
         shelf_background_corner_radius_(shelf_background_corner_radius) {
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     layer()->SetFillsBoundsOpaquely(false);

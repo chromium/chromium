@@ -21,6 +21,7 @@
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
@@ -372,7 +373,7 @@ int SearchBoxView::GetSearchBoxBorderCornerRadiusForState(
 SkColor SearchBoxView::GetBackgroundColorForState(AppListState state) const {
   if (state == AppListState::kStateSearchResults)
     return AppListConfig::instance().card_background_color();
-  return search_box::kSearchBoxBackgroundDefault;
+  return AppListColorProvider::Get()->GetSearchBoxBackgroundColor();
 }
 
 void SearchBoxView::ShowZeroStateSuggestions() {
@@ -392,8 +393,11 @@ void SearchBoxView::OnWallpaperColorsChanged() {
 
   SetSearchBoxColor(colors[static_cast<int>(ColorProfileType::DARK_MUTED)]);
   UpdateSearchIcon();
-  search_box()->set_placeholder_text_color(search_box_color());
-  UpdateBackgroundColor(search_box::kSearchBoxBackgroundDefault);
+  AppListColorProvider* app_list_color_provider = AppListColorProvider::Get();
+  search_box()->set_placeholder_text_color(
+      app_list_color_provider->GetSearchBoxPlaceholderTextColor());
+  search_box()->SetTextColor(app_list_color_provider->GetSearchBoxTextColor());
+  UpdateBackgroundColor(app_list_color_provider->GetSearchBoxBackgroundColor());
   SchedulePaint();
 }
 

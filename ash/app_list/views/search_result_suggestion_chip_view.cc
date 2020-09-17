@@ -10,6 +10,7 @@
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_result.h"
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
@@ -32,8 +33,6 @@ namespace ash {
 
 namespace {
 
-constexpr SkColor kBackgroundColor = SkColorSetA(gfx::kGoogleGrey100, 0x14);
-constexpr SkColor kTextColor = gfx::kGoogleGrey100;
 constexpr SkColor kRippleColor = SkColorSetA(gfx::kGoogleGrey100, 0x0F);
 constexpr SkColor kFocusRingColor = gfx::kGoogleBlue300;
 constexpr int kMaxTextWidth = 192;
@@ -133,7 +132,8 @@ void SearchResultSuggestionChipView::OnPaintBackground(gfx::Canvas* canvas) {
   gfx::Rect bounds = GetContentsBounds();
 
   // Background.
-  flags.setColor(kBackgroundColor);
+  flags.setColor(
+      AppListColorProvider::Get()->GetSuggestionChipBackgroundColor());
   canvas->DrawRoundRect(bounds, height() / 2, flags);
 
   // Focus Ring should only be visible when keyboard traversal is occurring.
@@ -240,10 +240,11 @@ void SearchResultSuggestionChipView::InitLayout() {
 
   // Text.
   text_view_->SetAutoColorReadabilityEnabled(false);
-  text_view_->SetEnabledColor(kTextColor);
   text_view_->SetSubpixelRenderingEnabled(false);
   text_view_->SetFontList(AppListConfig::instance().app_title_font());
   SetText(base::string16());
+  text_view_->SetEnabledColor(
+      AppListColorProvider::Get()->GetSuggestionChipTextColor());
   AddChildView(text_view_);
 }
 

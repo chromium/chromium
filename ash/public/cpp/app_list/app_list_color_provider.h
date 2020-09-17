@@ -1,0 +1,36 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_PUBLIC_CPP_APP_LIST_APP_LIST_COLOR_PROVIDER_H_
+#define ASH_PUBLIC_CPP_APP_LIST_APP_LIST_COLOR_PROVIDER_H_
+
+#include "ash/public/cpp/ash_public_export.h"
+#include "third_party/skia/include/core/SkColor.h"
+
+namespace ash {
+
+class ASH_PUBLIC_EXPORT AppListColorProvider {
+ public:
+  // Returns the singleton instance.
+  static AppListColorProvider* Get();
+
+  virtual SkColor GetExpandArrowInkDropBaseColor() const = 0;
+  virtual SkColor GetExpandArrowIconBaseColor() const = 0;
+  virtual SkColor GetExpandArrowIconBackgroundColor() const = 0;
+  virtual SkColor GetAppListBackgroundColor() const = 0;
+  virtual SkColor GetSearchBoxBackgroundColor() const = 0;
+  virtual SkColor GetSearchBoxPlaceholderTextColor() const = 0;
+  virtual SkColor GetSearchBoxTextColor() const = 0;
+  virtual SkColor GetSuggestionChipBackgroundColor() const = 0;
+  virtual SkColor GetSuggestionChipTextColor() const = 0;
+  virtual SkColor GetAppListItemTextColor() const = 0;
+
+ protected:
+  AppListColorProvider();
+  virtual ~AppListColorProvider();
+};
+
+}  // namespace ash
+
+#endif  // ASH_PUBLIC_CPP_APP_LIST_APP_LIST_COLOR_PROVIDER_H_
