@@ -21,7 +21,11 @@ VP9VaapiVideoDecoderDelegate::VP9VaapiVideoDecoderDelegate(
     scoped_refptr<VaapiWrapper> vaapi_wrapper)
     : VaapiVideoDecoderDelegate(vaapi_dec, std::move(vaapi_wrapper)) {}
 
-VP9VaapiVideoDecoderDelegate::~VP9VaapiVideoDecoderDelegate() = default;
+VP9VaapiVideoDecoderDelegate::~VP9VaapiVideoDecoderDelegate() {
+  DCHECK(!picture_params_);
+  DCHECK(!slice_params_);
+  DCHECK(!encoded_data_);
+}
 
 scoped_refptr<VP9Picture> VP9VaapiVideoDecoderDelegate::CreateVP9Picture() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -43,11 +47,32 @@ bool VP9VaapiVideoDecoderDelegate::SubmitDecode(
   // |done_cb| should be null as we return false from IsFrameContextRequired().
   DCHECK(!done_cb);
 
-  VADecPictureParameterBufferVP9 pic_param;
-  memset(&pic_param, 0, sizeof(pic_param));
-
   const Vp9FrameHeader* frame_hdr = pic->frame_hdr.get();
   DCHECK(frame_hdr);
+
+  VADecPictureParameterBufferVP9 pic_param{};
+  VASliceParameterBufferVP9 slice_param{};
+
+  if (!picture_params_) {
+    picture_params_ = vaapi_wrapper_->CreateVABuffer(
+        VAPictureParameterBufferType, sizeof(pic_param));
+    if (!picture_params_)
+      return false;
+  }
+  if (!slice_params_) {
+    slice_params_ = vaapi_wrapper_->CreateVABuffer(VASliceParameterBufferType,
+                                                   sizeof(slice_param));
+    if (!slice_params_)
+      return false;
+  }
+  // |encoded_data_| has to match perfectly |frame_hdr->frame_size| or decoding
+  // will have horrific artifacts.
+  if (!encoded_data_ || encoded_data_->size() != frame_hdr->frame_size) {
+    encoded_data_ = vaapi_wrapper_->CreateVABuffer(VASliceDataBufferType,
+                                                   frame_hdr->frame_size);
+    if (!encoded_data_)
+      return false;
+  }
 
   pic_param.frame_width = base::checked_cast<uint16_t>(frame_hdr->frame_width);
   pic_param.frame_height =
@@ -108,8 +133,6 @@ bool VP9VaapiVideoDecoderDelegate::SubmitDecode(
   DCHECK((pic_param.profile == 0 && pic_param.bit_depth == 8) ||
          (pic_param.profile == 2 && pic_param.bit_depth == 10));
 
-  VASliceParameterBufferVP9 slice_param;
-  memset(&slice_param, 0, sizeof(slice_param));
   slice_param.slice_data_size = frame_hdr->frame_size;
   slice_param.slice_data_offset = 0;
   slice_param.slice_data_flag = VA_SLICE_DATA_FLAG_ALL;
@@ -138,15 +161,14 @@ bool VP9VaapiVideoDecoderDelegate::SubmitDecode(
     seg_param.chroma_ac_quant_scale = seg.uv_dequant[i][1];
   }
 
-  if (!vaapi_wrapper_->SubmitBuffers(
-          {{VAPictureParameterBufferType, sizeof(pic_param), &pic_param},
-           {VASliceParameterBufferType, sizeof(slice_param), &slice_param},
-           {VASliceDataBufferType, frame_hdr->frame_size, frame_hdr->data}})) {
-    return false;
-  }
-
-  return vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
-      pic->AsVaapiVP9Picture()->va_surface()->id());
+  return vaapi_wrapper_->MapAndCopyAndExecute(
+      pic->AsVaapiVP9Picture()->va_surface()->id(),
+      {{picture_params_->id(),
+        {picture_params_->type(), picture_params_->size(), &pic_param}},
+       {slice_params_->id(),
+        {slice_params_->type(), slice_params_->size(), &slice_param}},
+       {encoded_data_->id(),
+        {encoded_data_->type(), frame_hdr->frame_size, frame_hdr->data}}});
 }
 
 bool VP9VaapiVideoDecoderDelegate::OutputPicture(
@@ -170,6 +192,14 @@ bool VP9VaapiVideoDecoderDelegate::GetFrameContext(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTIMPLEMENTED() << "Frame context update not supported";
   return false;
+}
+
+void VP9VaapiVideoDecoderDelegate::OnVAContextDestructionSoon() {
+  // Destroy the member ScopedVABuffers below since they refer to a VAContextID
+  // that will be destroyed soon.
+  picture_params_.reset();
+  slice_params_.reset();
+  encoded_data_.reset();
 }
 
 }  // namespace media

@@ -1860,9 +1860,32 @@ void VaapiWrapper::DestroyPendingBuffers_Locked() {
 
 bool VaapiWrapper::ExecuteAndDestroyPendingBuffers(VASurfaceID va_surface_id) {
   base::AutoLock auto_lock(*va_lock_);
-  bool result = Execute_Locked(va_surface_id);
+  bool result = Execute_Locked(va_surface_id, pending_va_buffers_);
   DestroyPendingBuffers_Locked();
   return result;
+}
+
+bool VaapiWrapper::MapAndCopyAndExecute(
+    VASurfaceID va_surface_id,
+    const std::vector<std::pair<VABufferID, VABufferDescriptor>>& va_buffers) {
+  DCHECK_NE(va_surface_id, VA_INVALID_SURFACE);
+
+  TRACE_EVENT0("media,gpu", "VaapiWrapper::MapAndCopyAndExecute");
+  base::AutoLock auto_lock(*va_lock_);
+  std::vector<VABufferID> va_buffer_ids;
+
+  for (const auto& va_buffer : va_buffers) {
+    const VABufferID va_buffer_id = va_buffer.first;
+    const VABufferDescriptor& descriptor = va_buffer.second;
+    DCHECK_NE(va_buffer_id, VA_INVALID_ID);
+
+    if (!MapAndCopy_Locked(va_buffer_id, descriptor))
+      return false;
+
+    va_buffer_ids.push_back(va_buffer_id);
+  }
+
+  return Execute_Locked(va_surface_id, va_buffer_ids);
 }
 
 #if defined(USE_X11)
@@ -2434,13 +2457,8 @@ void VaapiWrapper::DestroySurface(VASurfaceID va_surface_id) {
   VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVADestroySurfaces);
 }
 
-bool VaapiWrapper::Execute(VASurfaceID va_surface_id) {
-  TRACE_EVENT0("media,gpu", "VaapiWrapper::Execute");
-  base::AutoLock auto_lock(*va_lock_);
-  return Execute_Locked(va_surface_id);
-}
-
-bool VaapiWrapper::Execute_Locked(VASurfaceID va_surface_id) {
+bool VaapiWrapper::Execute_Locked(VASurfaceID va_surface_id,
+                                  const std::vector<VABufferID>& va_buffers) {
   TRACE_EVENT0("media,gpu", "VaapiWrapper::Execute_Locked");
   va_lock_->AssertAcquired();
 
@@ -2452,11 +2470,11 @@ bool VaapiWrapper::Execute_Locked(VASurfaceID va_surface_id) {
   VAStatus va_res = vaBeginPicture(va_display_, va_context_id_, va_surface_id);
   VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVABeginPicture, false);
 
-  if (pending_va_buffers_.size() > 0) {
-    // Commit parameter and slice buffers.
-    va_res =
-        vaRenderPicture(va_display_, va_context_id_, &pending_va_buffers_[0],
-                        pending_va_buffers_.size());
+  if (!va_buffers.empty()) {
+    // vaRenderPicture() needs a non-const pointer, possibly unnecessarily.
+    VABufferID* va_buffers_data = const_cast<VABufferID*>(va_buffers.data());
+    va_res = vaRenderPicture(va_display_, va_context_id_, va_buffers_data,
+                             base::checked_cast<int>(va_buffers.size()));
     VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVARenderPicture_VABuffers,
                          false);
   }
@@ -2496,16 +2514,28 @@ bool VaapiWrapper::SubmitBuffer_Locked(const VABufferDescriptor& va_buffer) {
     VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateBuffer, false);
   }
 
+  if (!MapAndCopy_Locked(buffer_id, va_buffer))
+    return false;
+
+  pending_va_buffers_.push_back(buffer_id);
+  return true;
+}
+
+bool VaapiWrapper::MapAndCopy_Locked(VABufferID va_buffer_id,
+                                     const VABufferDescriptor& va_buffer) {
+  va_lock_->AssertAcquired();
+
+  DCHECK_NE(va_buffer_id, VA_INVALID_ID);
+  DCHECK_LT(va_buffer.type, VABufferTypeMax);
+  DCHECK(va_buffer.data);
+
   ScopedVABufferMapping mapping(
-      va_lock_, va_display_, buffer_id,
+      va_lock_, va_display_, va_buffer_id,
       base::BindOnce(base::IgnoreResult(&vaDestroyBuffer), va_display_));
   if (!mapping.IsValid())
     return false;
 
-  memcpy(mapping.data(), va_buffer.data, va_buffer.size);
-
-  pending_va_buffers_.push_back(buffer_id);
-  return true;
+  return memcpy(mapping.data(), va_buffer.data, va_buffer.size);
 }
 
 }  // namespace media

@@ -30,4 +30,6 @@ void VaapiVideoDecoderDelegate::set_vaapi_wrapper(
   vaapi_wrapper_ = std::move(vaapi_wrapper);
 }
 
+void VaapiVideoDecoderDelegate::OnVAContextDestructionSoon() {}
+
 }  // namespace media

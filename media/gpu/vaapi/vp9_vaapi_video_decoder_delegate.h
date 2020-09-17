@@ -13,6 +13,7 @@
 
 namespace media {
 
+class ScopedVABuffer;
 class VP9Picture;
 
 class VP9VaapiVideoDecoderDelegate : public VP9Decoder::VP9Accelerator,
@@ -34,6 +35,14 @@ class VP9VaapiVideoDecoderDelegate : public VP9Decoder::VP9Accelerator,
   bool IsFrameContextRequired() const override;
   bool GetFrameContext(scoped_refptr<VP9Picture> pic,
                        Vp9FrameContext* frame_ctx) override;
+
+  // VaapiVideoDecoderDelegate impl.
+  void OnVAContextDestructionSoon() override;
+
+ private:
+  std::unique_ptr<ScopedVABuffer> picture_params_;
+  std::unique_ptr<ScopedVABuffer> slice_params_;
+  std::unique_ptr<ScopedVABuffer> encoded_data_;
 
   DISALLOW_COPY_AND_ASSIGN(VP9VaapiVideoDecoderDelegate);
 };

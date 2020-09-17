@@ -491,6 +491,11 @@ void VaapiVideoDecodeAccelerator::DecodeTask() {
           required_num_of_pictures =
               std::max(kMinNumOfPics, required_num_of_pictures);
         }
+
+        // Notify |decoder_delegate_| of an imminent VAContextID destruction, so
+        // it can destroy any internal structures making use of it.
+        decoder_delegate_->OnVAContextDestructionSoon();
+
         task_runner_->PostTask(
             FROM_HERE,
             base::BindOnce(
@@ -605,9 +610,8 @@ void VaapiVideoDecodeAccelerator::TryFinishSurfaceSetChange() {
   // All surfaces released, destroy them and dismiss all PictureBuffers.
   awaiting_va_surfaces_recycle_ = false;
 
-  VideoCodecProfile new_profile = decoder_->GetProfile();
+  const VideoCodecProfile new_profile = decoder_->GetProfile();
   if (profile_ != new_profile) {
-    DCHECK(decoder_delegate_);
     profile_ = new_profile;
     auto new_vaapi_wrapper = VaapiWrapper::CreateForVideoCodec(
         VaapiWrapper::kDecode, profile_,
@@ -1060,6 +1064,10 @@ void VaapiVideoDecodeAccelerator::Cleanup() {
   if (buffer_allocation_mode_ != BufferAllocationMode::kNone)
     available_va_surfaces_.clear();
 
+  // Notify |decoder_delegate_| of an imminent VAContextID destruction, so it
+  // can destroy any internal structures making use of it. At this point
+  // |decoder_thread_| is stopped so we can access these from |task_runner_|.
+  decoder_delegate_->OnVAContextDestructionSoon();
   vaapi_wrapper_->DestroyContext();
 
   if (vpp_vaapi_wrapper_)

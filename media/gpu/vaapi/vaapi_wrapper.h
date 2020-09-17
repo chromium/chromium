@@ -331,13 +331,19 @@ class MEDIA_GPU_EXPORT VaapiWrapper
                                   size_t size,
                                   const void* buffer);
 
-  // Cancel and destroy all buffers queued to the HW codec via SubmitBuffer().
-  // Useful when a pending job is to be cancelled (on reset or error).
+  // Destroys all |pending_va_buffers_| sent via SubmitBuffer*(). Useful when a
+  // pending job is to be cancelled (on reset or error).
   void DestroyPendingBuffers();
 
   // Executes job in hardware on target |va_surface_id| and destroys pending
   // buffers. Returns false if Execute() fails.
   virtual bool ExecuteAndDestroyPendingBuffers(VASurfaceID va_surface_id);
+
+  // Maps each |va_buffers| ID and copies the data described by the associated
+  // VABufferDescriptor into it; then calls Execute_Locked() on |va_surface_id|.
+  bool MapAndCopyAndExecute(
+      VASurfaceID va_surface_id,
+      const std::vector<std::pair<VABufferID, VABufferDescriptor>>& va_buffers);
 
 #if defined(USE_X11)
   // Put data from |va_surface_id| into |x_pixmap| of size
@@ -437,18 +443,23 @@ class MEDIA_GPU_EXPORT VaapiWrapper
                       size_t num_surfaces,
                       std::vector<VASurfaceID>* va_surfaces);
 
-  // Execute pending job in hardware and destroy pending buffers. Return false
-  // if vaapi driver refuses to accept parameter or slice buffers submitted
-  // by client, or if execution fails in hardware.
-  bool Execute(VASurfaceID va_surface_id);
-  bool Execute_Locked(VASurfaceID va_surface_id)
+  // Carries out the vaBeginPicture()-vaRenderPicture()-vaEndPicture() on target
+  // |va_surface_id|. Returns false if any of these calls fails.
+  bool Execute_Locked(VASurfaceID va_surface_id,
+                      const std::vector<VABufferID>& va_buffers)
       EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
 
   void DestroyPendingBuffers_Locked() EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
 
-  // Requests libva to allocate a new VABufferID of type |va_buffer.type|, maps
-  // it and copies |va_buffer.size| contents of |va_buffer.data| to it.
+  // Requests libva to allocate a new VABufferID of type |va_buffer.type|, then
+  // maps-and-copies |va_buffer.size| contents of |va_buffer.data| to it.
   bool SubmitBuffer_Locked(const VABufferDescriptor& va_buffer)
+      EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
+
+  // Maps |va_buffer_id| and, if successful, copies the contents of |va_buffer|
+  // into it.
+  bool MapAndCopy_Locked(VABufferID va_buffer_id,
+                         const VABufferDescriptor& va_buffer)
       EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
 
   const CodecMode mode_;

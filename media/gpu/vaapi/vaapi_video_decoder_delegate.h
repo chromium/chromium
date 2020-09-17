@@ -25,6 +25,7 @@ class VaapiVideoDecoderDelegate {
   virtual ~VaapiVideoDecoderDelegate();
 
   void set_vaapi_wrapper(scoped_refptr<VaapiWrapper> vaapi_wrapper);
+  virtual void OnVAContextDestructionSoon();
 
   VaapiVideoDecoderDelegate(const VaapiVideoDecoderDelegate&) = delete;
   VaapiVideoDecoderDelegate& operator=(const VaapiVideoDecoderDelegate&) =

@@ -100,6 +100,11 @@ VaapiVideoDecoder::~VaapiVideoDecoder() {
 
   weak_this_factory_.InvalidateWeakPtrs();
 
+  // Notify |decoder_delegate_| of an imminent VAContextID destruction, so it
+  // can destroy any internal structures making use of it.
+  if (decoder_delegate_)
+    decoder_delegate_->OnVAContextDestructionSoon();
+
   // Destroy explicitly to DCHECK() that |vaapi_wrapper_| references are held
   // inside the accelerator in |decoder_|, by the |allocated_va_surfaces_| and
   // of course by this class. To clear |allocated_va_surfaces_| we have to first
@@ -138,6 +143,10 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
   if (state_ != State::kUninitialized) {
     DVLOGF(3) << "Reinitializing decoder";
 
+    // Notify |decoder_delegate_| of an imminent VAContextID destruction, so it
+    // can destroy any internal structures making use of it.
+    decoder_delegate_->OnVAContextDestructionSoon();
+
     decoder_ = nullptr;
     DCHECK(vaapi_wrapper_);
     // To clear |allocated_va_surfaces_| we have to first DestroyContext().
@@ -151,7 +160,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
   }
 
   // Initialize VAAPI wrapper.
-  VideoCodecProfile profile = config.profile();
+  const VideoCodecProfile profile = config.profile();
   vaapi_wrapper_ = VaapiWrapper::CreateForVideoCodec(
       VaapiWrapper::kDecode, profile,
       base::Bind(&ReportVaapiErrorToUMA, "Media.VaapiVideoDecoder.VAAPIError"));
@@ -452,6 +461,10 @@ void VaapiVideoDecoder::ApplyResolutionChange() {
     return;
   }
 
+  // Notify |decoder_delegate_| of an imminent VAContextID destruction, so it
+  // can destroy any internal structures making use of it.
+  decoder_delegate_->OnVAContextDestructionSoon();
+
   // All pending decode operations will be completed before triggering a
   // resolution change, so we can safely DestroyContext() here; that, in turn,
   // allows for clearing the |allocated_va_surfaces_|.
@@ -554,8 +567,12 @@ void VaapiVideoDecoder::Reset(base::OnceClosure reset_cb) {
   }
 
   if (state_ == State::kChangingResolution) {
-    // If we reset during resolution change, re-create AVD. Then the new AVD
-    // will trigger resolution change again after reset.
+    // Recreate |decoder_| and |decoder_delegate_| if we are Reset() in the
+    // interim between calling |client_|s PrepareChangeResolution() and being
+    // called back on ApplyResolutionChange(), so the latter will find a fresh
+    // |decoder_|. Also give a chance to |decoder_delegate_| to release its
+    // internal data structures.
+    decoder_delegate_->OnVAContextDestructionSoon();
     if (!CreateAcceleratedVideoDecoder().is_ok()) {
       SetState(State::kError);
       std::move(reset_cb).Run();
