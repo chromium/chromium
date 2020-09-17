@@ -852,7 +852,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, BeforeUnloadVsBeforeReload) {
 class BrowserTestWithTabGroupsEnabled : public BrowserTest {
  public:
   BrowserTestWithTabGroupsEnabled() {
-    feature_list_.InitAndEnableFeature(features::kTabGroups);
+    feature_list_.InitWithFeatures(
+        {features::kTabGroups, features::kTabGroupsAutoCreate}, {});
   }
 
  private:
@@ -860,7 +861,7 @@ class BrowserTestWithTabGroupsEnabled : public BrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsEnabled,
-                       NewTabFromLinkOpensInGroup) {
+                       NewTabFromLinkInGroupedTabOpensInGroup) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Add a grouped tab.
@@ -879,7 +880,59 @@ IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsEnabled,
                     ui::PAGE_TRANSITION_TYPED, false));
 
   // It should have inherited the tab group from the first tab.
-  EXPECT_EQ(group_id, browser()->tab_strip_model()->GetTabGroupForTab(1));
+  EXPECT_EQ(group_id, model->GetTabGroupForTab(1));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsEnabled,
+                       NewTabFromLinkWithSameDomainCreatesGroup) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Open a tab not in a group.
+  TabStripModel* const model = browser()->tab_strip_model();
+  GURL url1("http://www.example.com/empty.html");
+  ui_test_utils::NavigateToURL(browser(), url1);
+  ASSERT_FALSE(model->GetTabGroupForTab(0).has_value());
+
+  // Open a new background tab with the same domain as the active tab.
+  WebContents* const contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url2("http://www.example.com/");
+  OpenURLFromTab(
+      contents,
+      OpenURLParams(url2, Referrer(), WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                    ui::PAGE_TRANSITION_TYPED, false));
+
+  // The new tab which has the same domain as the tab it originated from should
+  // be grouped with its parent tab.
+  EXPECT_TRUE(model->GetTabGroupForTab(0).has_value());
+  EXPECT_TRUE(model->GetTabGroupForTab(1).has_value());
+  EXPECT_EQ(model->GetTabGroupForTab(0).value(),
+            model->GetTabGroupForTab(1).value());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsEnabled,
+                       NewTabFromLinkWithDifferentDomainDoesNotCreateGroup) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Open a tab not in a group.
+  TabStripModel* const model = browser()->tab_strip_model();
+  ui_test_utils::NavigateToURL(browser(),
+                               embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_FALSE(model->GetTabGroupForTab(0).has_value());
+
+  // Open a new background tab with a different domain from the active tab.
+  WebContents* const contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url2("http://www.example.com/");
+  OpenURLFromTab(
+      contents,
+      OpenURLParams(url2, Referrer(), WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                    ui::PAGE_TRANSITION_TYPED, false));
+
+  // The new tab which has a different domain as the tab it originated from will
+  // open without creating a group.
+  EXPECT_FALSE(model->GetTabGroupForTab(0).has_value());
+  EXPECT_FALSE(model->GetTabGroupForTab(1).has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsEnabled,
