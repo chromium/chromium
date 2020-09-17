@@ -224,7 +224,7 @@ chromeos.test_support = {};
     }
 
     /**
-     * Requests NVME wear level routine to be run.
+     * Requests NVMe wear level routine to be run.
      * @param { !number } wearLevelThreshold
      * @return { !Promise<!Object> }
      * @public
