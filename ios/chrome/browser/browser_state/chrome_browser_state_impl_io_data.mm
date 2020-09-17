@@ -246,6 +246,7 @@ void ChromeBrowserStateImplIOData::ClearNetworkingHistorySinceOnIOThread(
              },
              std::move(completion)));
 
-  transport_security_state()->DeleteAllDynamicDataSince(time, barrier);
+  transport_security_state()->DeleteAllDynamicDataBetween(
+      time, base::Time::Max(), barrier);
   http_server_properties()->Clear(barrier);
 }

@@ -488,8 +488,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(
         BrowsingDataFilterBuilder::Mode::kPreserve) {
       // When clearing cache, wipe accumulated network related data
       // (TransportSecurityState and HttpServerPropertiesManager data).
-      network_context->ClearNetworkingHistorySince(
-          delete_begin,
+      network_context->ClearNetworkingHistoryBetween(
+          delete_begin, delete_end,
           CreateTaskCompletionClosureForMojo(TracingDataType::kNetworkHistory));
     }
 

@@ -712,13 +712,14 @@ void NetworkContext::ClearTrustTokenData(mojom::ClearDataFilterPtr filter,
       std::move(filter), std::move(done)));
 }
 
-void NetworkContext::ClearNetworkingHistorySince(
-    base::Time time,
+void NetworkContext::ClearNetworkingHistoryBetween(
+    base::Time start_time,
+    base::Time end_time,
     base::OnceClosure completion_callback) {
   auto barrier = base::BarrierClosure(2, std::move(completion_callback));
 
-  url_request_context_->transport_security_state()->DeleteAllDynamicDataSince(
-      time, barrier);
+  url_request_context_->transport_security_state()->DeleteAllDynamicDataBetween(
+      start_time, end_time, barrier);
 
   // TODO(mmenke): Neither of these methods waits until the changes have been
   // commited to disk. They probably should, as most similar methods net/

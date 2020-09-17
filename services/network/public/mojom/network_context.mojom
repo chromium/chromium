@@ -939,13 +939,14 @@ interface NetworkContext {
   ClearTrustTokenData(ClearDataFilter? filter) => ();
 
   // Clears network objects with implicit URL history information. Data related
-  // to events that happened prior to |start_time| may be retained. Only applies
-  // to network objects without more specific methods (Cookies,
-  // and the cache have, or will have, their own clearing APIs). This currently
-  // only covers server properties and transport security state.
+  // to events that happened prior to |start_time| and after |end_time| may be
+  // retained. Only applies to network objects without more specific methods
+  // (Cookies, and the cache have, or will have, their own clearing APIs). This
+  // currently only covers server properties and transport security state.
   //
   // The callback will be invoked once the data has been deleted.
-  ClearNetworkingHistorySince(mojo_base.mojom.Time start_time) => ();
+  ClearNetworkingHistoryBetween(mojo_base.mojom.Time start_time,
+                                mojo_base.mojom.Time end_time) => ();
 
   // Clears content from the HTTP cache. A specific range of time can be
   // specified with |start_time| and |end_time|. This supports unbounded deletes

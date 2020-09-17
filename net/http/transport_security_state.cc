@@ -888,15 +888,17 @@ void TransportSecurityState::ClearDynamicData() {
   enabled_expect_ct_hosts_.clear();
 }
 
-void TransportSecurityState::DeleteAllDynamicDataSince(
-    const base::Time& time,
+void TransportSecurityState::DeleteAllDynamicDataBetween(
+    base::Time start_time,
+    base::Time end_time,
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   bool dirtied = false;
   auto sts_iterator = enabled_sts_hosts_.begin();
   while (sts_iterator != enabled_sts_hosts_.end()) {
-    if (sts_iterator->second.last_observed >= time) {
+    if (sts_iterator->second.last_observed >= start_time &&
+        sts_iterator->second.last_observed < end_time) {
       dirtied = true;
       enabled_sts_hosts_.erase(sts_iterator++);
       continue;
@@ -907,7 +909,8 @@ void TransportSecurityState::DeleteAllDynamicDataSince(
 
   auto pkp_iterator = enabled_pkp_hosts_.begin();
   while (pkp_iterator != enabled_pkp_hosts_.end()) {
-    if (pkp_iterator->second.last_observed >= time) {
+    if (pkp_iterator->second.last_observed >= start_time &&
+        pkp_iterator->second.last_observed < end_time) {
       dirtied = true;
       enabled_pkp_hosts_.erase(pkp_iterator++);
       continue;
@@ -918,7 +921,9 @@ void TransportSecurityState::DeleteAllDynamicDataSince(
 
   auto expect_ct_iterator = enabled_expect_ct_hosts_.begin();
   while (expect_ct_iterator != enabled_expect_ct_hosts_.end()) {
-    if (expect_ct_iterator->second.last_observed >= time) {
+    if (expect_ct_iterator->second.last_observed >= start_time &&
+
+        expect_ct_iterator->second.last_observed < end_time) {
       dirtied = true;
       enabled_expect_ct_hosts_.erase(expect_ct_iterator++);
       continue;

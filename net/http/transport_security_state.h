@@ -459,13 +459,14 @@ class NET_EXPORT TransportSecurityState {
       const NetworkIsolationKey& network_isolation_key,
       const ExpectCTState& state);
 
-  // Deletes all dynamic data (e.g. HSTS or HPKP data) created since a given
-  // time.
+  // Deletes all dynamic data (e.g. HSTS or HPKP data) created between a time
+  // period  [|start_time|, |end_time|).
   //
   // If any entries are deleted, the new state will be persisted through
   // the Delegate (if any). Calls |callback| when data is persisted to disk.
-  void DeleteAllDynamicDataSince(const base::Time& time,
-                                 base::OnceClosure callback);
+  void DeleteAllDynamicDataBetween(base::Time start_time,
+                                   base::Time end_time,
+                                   base::OnceClosure callback);
 
   // Deletes any dynamic data stored for |host| (e.g. HSTS or HPKP data).
   // If |host| doesn't have an exact entry then no action is taken. Does

@@ -983,10 +983,10 @@ TEST_F(NetworkContextTest, HttpServerPropertiesToDisk) {
           ->http_server_properties()
           ->GetSupportsSpdy(kSchemeHostPort, net::NetworkIsolationKey()));
 
-  // Now check that ClearNetworkingHistorySince clears the data.
+  // Now check that ClearNetworkingHistoryBetween clears the data.
   base::RunLoop run_loop2;
-  network_context->ClearNetworkingHistorySince(
-      base::Time::Now() - base::TimeDelta::FromHours(1),
+  network_context->ClearNetworkingHistoryBetween(
+      base::Time::Now() - base::TimeDelta::FromHours(1), base::Time::Max(),
       run_loop2.QuitClosure());
   run_loop2.Run();
   EXPECT_FALSE(
@@ -1001,7 +1001,7 @@ TEST_F(NetworkContextTest, HttpServerPropertiesToDisk) {
   ASSERT_TRUE(temp_dir.Delete());
 }
 
-// Checks that ClearNetworkingHistorySince() clears in-memory pref stores and
+// Checks that ClearNetworkingHistoryBetween() clears in-memory pref stores and
 // invokes the closure passed to it.
 TEST_F(NetworkContextTest, ClearHttpServerPropertiesInMemory) {
   const url::SchemeHostPort kSchemeHostPort("https", "foo", 443);
@@ -1022,8 +1022,8 @@ TEST_F(NetworkContextTest, ClearHttpServerPropertiesInMemory) {
           ->GetSupportsSpdy(kSchemeHostPort, net::NetworkIsolationKey()));
 
   base::RunLoop run_loop;
-  network_context->ClearNetworkingHistorySince(
-      base::Time::Now() - base::TimeDelta::FromHours(1),
+  network_context->ClearNetworkingHistoryBetween(
+      base::Time::Now() - base::TimeDelta::FromHours(1), base::Time::Max(),
       run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_FALSE(
@@ -1032,7 +1032,7 @@ TEST_F(NetworkContextTest, ClearHttpServerPropertiesInMemory) {
           ->GetSupportsSpdy(kSchemeHostPort, net::NetworkIsolationKey()));
 }
 
-// Checks that ClearNetworkingHistorySince() clears network quality prefs.
+// Checks that ClearNetworkingHistoryBetween() clears network quality prefs.
 TEST_F(NetworkContextTest, ClearingNetworkingHistoryClearNetworkQualityPrefs) {
   const url::SchemeHostPort kSchemeHostPort("https", "foo", 443);
   net::TestNetworkQualityEstimator estimator;
@@ -1058,8 +1058,8 @@ TEST_F(NetworkContextTest, ClearingNetworkingHistoryClearNetworkQualityPrefs) {
   // Clear the networking history.
   base::RunLoop run_loop;
   base::HistogramTester histogram_tester;
-  network_context->ClearNetworkingHistorySince(
-      base::Time::Now() - base::TimeDelta::FromHours(1),
+  network_context->ClearNetworkingHistoryBetween(
+      base::Time::Now() - base::TimeDelta::FromHours(1), base::Time::Max(),
       run_loop.QuitClosure());
   run_loop.Run();
 

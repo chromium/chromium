@@ -765,7 +765,7 @@ TEST_F(TransportSecurityStateTest, NewPinsOverride) {
   EXPECT_EQ(pkp_state.spki_hashes[0], hash3);
 }
 
-TEST_F(TransportSecurityStateTest, DeleteAllDynamicDataSince) {
+TEST_F(TransportSecurityStateTest, DeleteAllDynamicDataBetween) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       TransportSecurityState::kDynamicExpectCTFeature);
@@ -786,12 +786,25 @@ TEST_F(TransportSecurityStateTest, DeleteAllDynamicDataSince) {
                 GetSampleSPKIHashes(), GURL());
   state.AddExpectCT("example.com", expiry, true, GURL(), NetworkIsolationKey());
 
-  state.DeleteAllDynamicDataSince(expiry, base::DoNothing());
+  state.DeleteAllDynamicDataBetween(expiry, base::Time::Max(),
+                                    base::DoNothing());
   EXPECT_TRUE(state.ShouldUpgradeToSSL("example.com"));
   EXPECT_TRUE(state.HasPublicKeyPins("example.com"));
   EXPECT_TRUE(state.GetDynamicExpectCTState(
       "example.com", NetworkIsolationKey(), &expect_ct_state));
-  state.DeleteAllDynamicDataSince(older, base::DoNothing());
+  state.DeleteAllDynamicDataBetween(older, current_time, base::DoNothing());
+  EXPECT_TRUE(state.ShouldUpgradeToSSL("example.com"));
+  EXPECT_TRUE(state.HasPublicKeyPins("example.com"));
+  EXPECT_TRUE(state.GetDynamicExpectCTState(
+      "example.com", NetworkIsolationKey(), &expect_ct_state));
+  state.DeleteAllDynamicDataBetween(base::Time(), current_time,
+                                    base::DoNothing());
+  EXPECT_TRUE(state.ShouldUpgradeToSSL("example.com"));
+  EXPECT_TRUE(state.HasPublicKeyPins("example.com"));
+  EXPECT_TRUE(state.GetDynamicExpectCTState(
+      "example.com", NetworkIsolationKey(), &expect_ct_state));
+  state.DeleteAllDynamicDataBetween(older, base::Time::Max(),
+                                    base::DoNothing());
   EXPECT_FALSE(state.ShouldUpgradeToSSL("example.com"));
   EXPECT_FALSE(state.HasPublicKeyPins("example.com"));
   EXPECT_FALSE(state.GetDynamicExpectCTState(
