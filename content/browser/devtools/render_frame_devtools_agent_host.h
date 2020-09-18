@@ -61,6 +61,11 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   static scoped_refptr<DevToolsAgentHost> GetOrCreateFor(
       FrameTreeNode* frame_tree_node);
 
+  // Whether the RFH passed may have associated DevTools agent host
+  // (i.e. the specified RFH is a local root). This does not indicate
+  // whether DevToolsAgentHost has actually been created.
+  static bool ShouldCreateDevToolsForHost(RenderFrameHost* rfh);
+
   // This method is called when new frame is created during cross process
   // navigation.
   static scoped_refptr<DevToolsAgentHost> CreateForCrossProcessNavigation(
