@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -62,6 +63,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+@DisableFeatures({ChromeFeatureList.INTEREST_FEED_V2})
 public class FeedAppLifecycleTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -152,7 +154,6 @@ public class FeedAppLifecycleTest {
     @Test
     @SmallTest
     @Feature({"Feed"})
-    @EnableFeatures({ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS})
     public void testNtpOpeningTriggersInitializeOnlyOnce() {
         // We open to about:blank initially so we shouldn't have called initialize() yet.
         verify(mAppLifecycleListener, times(0)).initialize();

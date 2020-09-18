@@ -260,6 +260,7 @@ public class HomepagePromoTest {
 
     @Test
     @SmallTest
+    @Features.DisableFeatures({ChromeFeatureList.INTEREST_FEED_V2})
     public void testToggleFeed_WithSignIn() {
         // Test to toggle stream when HomepagePromo is hide. Toggle feed should hide promo still.
         launchNewTabPage();

@@ -58,7 +58,8 @@ import java.util.List;
         "disable-features=IPH_FeedHeaderMenu"})
 @Features.EnableFeatures({ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS,
     ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO})
-@Features.DisableFeatures({ChromeFeatureList.REPORT_FEED_USER_ACTIONS, ChromeFeatureList.QUERY_TILES})
+@Features.DisableFeatures({ChromeFeatureList.REPORT_FEED_USER_ACTIONS,
+    ChromeFeatureList.QUERY_TILES, ChromeFeatureList.INTEREST_FEED_V2})
 public class FeedNewTabPageCardRenderTest {
     // clang-format on
     private static final String TEST_FEED_DATA_BASE_PATH = "/chrome/test/data/android/feed/";

@@ -3857,6 +3857,21 @@
             ]
         }
     ],
+    "InterestFeedV2": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InterestFeedV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "IsolatePasswordSites": [
         {
             "platforms": [

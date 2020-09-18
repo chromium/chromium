@@ -18,9 +18,11 @@ import org.chromium.chrome.browser.feed.library.api.host.storage.CommitResult;
 import org.chromium.chrome.browser.feed.library.api.host.storage.JournalMutation;
 import org.chromium.chrome.browser.feed.library.common.Result;
 import org.chromium.chrome.browser.feed.library.testing.conformance.storage.JournalStorageConformanceTest;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.List;
@@ -34,6 +36,7 @@ import java.util.List;
 // build/android/test_runner.py.
 @SmallTest
 @RunWith(ChromeJUnit4ClassRunner.class)
+@DisableFeatures({ChromeFeatureList.INTEREST_FEED_V2})
 public final class FeedJournalStorageConformanceTest extends JournalStorageConformanceTest {
     private static final long TIMEOUT = scaleTimeout(3000);
 

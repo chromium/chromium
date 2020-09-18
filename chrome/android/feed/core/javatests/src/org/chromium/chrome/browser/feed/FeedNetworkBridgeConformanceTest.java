@@ -22,9 +22,11 @@ import org.chromium.base.Log;
 import org.chromium.chrome.browser.feed.library.api.host.network.HttpRequest;
 import org.chromium.chrome.browser.feed.library.api.host.network.HttpResponse;
 import org.chromium.chrome.browser.feed.library.testing.conformance.network.NetworkClientConformanceTest;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -40,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 // the inherited @Test methods to run using build/android/test_runner.py
 @SmallTest
 @RunWith(ChromeJUnit4ClassRunner.class)
+@DisableFeatures({ChromeFeatureList.INTEREST_FEED_V2})
 public final class FeedNetworkBridgeConformanceTest extends NetworkClientConformanceTest {
     private static final String TAG = "FeedConformanceTest";
     private static final long TIMEOUT = scaleTimeout(3000);

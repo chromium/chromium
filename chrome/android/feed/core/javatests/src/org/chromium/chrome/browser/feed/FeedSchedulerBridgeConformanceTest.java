@@ -18,9 +18,11 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.chrome.browser.feed.library.api.client.requestmanager.RequestManager;
 import org.chromium.chrome.browser.feed.library.testing.conformance.scheduler.SchedulerConformanceTest;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Arrays;
@@ -36,6 +38,7 @@ import java.util.List;
 @SmallTest
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@DisableFeatures({ChromeFeatureList.INTEREST_FEED_V2})
 public final class FeedSchedulerBridgeConformanceTest extends SchedulerConformanceTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =

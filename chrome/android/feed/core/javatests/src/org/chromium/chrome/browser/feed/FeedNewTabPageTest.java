@@ -192,6 +192,7 @@ public class FeedNewTabPageTest {
     @Test
     @MediumTest
     @Feature({"FeedNewTabPage"})
+    @Features.DisableFeatures(ChromeFeatureList.INTEREST_FEED_V2)
     public void testSignInPromo() {
         openNewTabPage();
         SignInPromo.SigninObserver signinObserver = mNtp.getCoordinatorForTesting()
@@ -302,6 +303,7 @@ public class FeedNewTabPageTest {
     @Test
     @MediumTest
     @Features.EnableFeatures(ChromeFeatureList.REPORT_FEED_USER_ACTIONS)
+    @Features.DisableFeatures(ChromeFeatureList.INTEREST_FEED_V2)
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @ParameterAnnotations.UseMethodParameter(SigninPromoParams.class)
     public void testArticleSectionHeaderWithMenu(boolean disableSigninPromoCard) throws Exception {
