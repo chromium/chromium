@@ -295,14 +295,14 @@
   <message name="IDS_OS_SETTINGS_LANGUAGES_REMOVE_INPUT_METHOD_LABEL" translateable="false" desc="Title of the dialog that lets the user remove a given keyboard layout or input method editor.">
     Remove <ph name="INPUT_METHOD_NAME">$1<ex>US keyboard</ex></ph>?
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_SUGGESTED_INPUT_METHODS_LABEL" translateable="false" desc="Title of the list of keyboard layouts or input method editors suggested to users.">
+  <message name="IDS_OS_SETTINGS_LANGUAGES_SUGGESTED_INPUT_METHODS_LABEL" desc="Title of the list of keyboard layouts or input method editors suggested to users.">
     Suggested
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_ALL_INPUT_METHODS_LABEL" translateable="false" desc="Title of the list of all keyboard layouts or input method editors.">
+  <message name="IDS_OS_SETTINGS_LANGUAGES_ALL_INPUT_METHODS_LABEL" desc="Title of the list of all keyboard layouts or input method editors.">
     All input methods
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_SEARCH_INPUT_METHODS_LABEL" translateable="false" desc="Placeholder in the input field to search keyboard layouts or input method editors.">
-    Search input methods
+  <message name="IDS_OS_SETTINGS_LANGUAGES_SEARCH_INPUT_METHODS_LABEL" desc="Placeholder in the input field to search keyboard layouts or input method editors.">
+    Search by languages or input names
   </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_INPUT_METHOD_NOT_ALLOWED" translateable="false" desc="Tooltip for policy icon when an keyboard layout or input method editor is not allowed.">
     Your administrator doesn't allow this input method

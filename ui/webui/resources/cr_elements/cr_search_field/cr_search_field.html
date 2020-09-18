@@ -38,7 +38,7 @@
         color: var(--cr-primary-text-color);
         display: block;
         font-size: 92.3076923%;  /* To 12px from 13px. */
-        width: 160px;  /* Special width for search input. */
+        width: var(--cr-search-field-search-input-width, 160px);
       }
 
       :host([has-search-text]) #searchInput {
