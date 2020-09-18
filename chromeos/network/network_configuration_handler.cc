@@ -17,6 +17,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -63,9 +64,8 @@ void SetNetworkProfileErrorCallback(
       std::move(error_callback), dbus_error_name, dbus_error_message);
 }
 
-void ManagerSetPropertiesErrorCallback(
-    const std::string& dbus_error_name,
-    const std::string& dbus_error_message) {
+void ManagerSetPropertiesErrorCallback(const std::string& dbus_error_name,
+                                       const std::string& dbus_error_message) {
   network_handler::ShillErrorCallbackFunction(
       "ShillManagerClient.SetProperties Failed", std::string(),
       base::NullCallback(), dbus_error_name, dbus_error_message);
@@ -104,11 +104,13 @@ class NetworkConfigurationHandler::ProfileEntryDeleter {
   ProfileEntryDeleter(NetworkConfigurationHandler* handler,
                       const std::string& service_path,
                       const std::string& guid,
+                      base::Optional<RemoveConfirmer> remove_confirmer,
                       base::OnceClosure callback,
                       network_handler::ErrorCallback error_callback)
       : owner_(handler),
         service_path_(service_path),
         guid_(guid),
+        remove_confirmer_(std::move(remove_confirmer)),
         callback_(std::move(callback)),
         error_callback_(std::move(error_callback)) {}
 
@@ -157,6 +159,11 @@ class NetworkConfigurationHandler::ProfileEntryDeleter {
         NET_LOG(DEBUG) << "Skip deleting Profile Entry: " << profile_path
                        << ": " << entry_path << " - removal is restricted to "
                        << restrict_to_profile_path_ << " profile";
+        continue;
+      }
+
+      if (remove_confirmer_.has_value() &&
+          !remove_confirmer_->Run(guid_, profile_path)) {
         continue;
       }
 
@@ -221,6 +228,7 @@ class NetworkConfigurationHandler::ProfileEntryDeleter {
   // value is the profile path of the profile in question.
   std::string restrict_to_profile_path_;
   std::string guid_;
+  base::Optional<RemoveConfirmer> remove_confirmer_;
   base::OnceClosure callback_;
   network_handler::ErrorCallback error_callback_;
 
@@ -381,9 +389,11 @@ void NetworkConfigurationHandler::CreateShillConfiguration(
 
 void NetworkConfigurationHandler::RemoveConfiguration(
     const std::string& service_path,
+    base::Optional<RemoveConfirmer> remove_confirmer,
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {
-  RemoveConfigurationFromProfile(service_path, "", std::move(callback),
+  RemoveConfigurationFromProfile(service_path, "", std::move(remove_confirmer),
+                                 std::move(callback),
                                  std::move(error_callback));
 }
 
@@ -400,6 +410,7 @@ void NetworkConfigurationHandler::RemoveConfigurationFromCurrentProfile(
     return;
   }
   RemoveConfigurationFromProfile(service_path, network_state->profile_path(),
+                                 /*remove_confirmer=*/base::nullopt,
                                  std::move(callback),
                                  std::move(error_callback));
 }
@@ -407,6 +418,7 @@ void NetworkConfigurationHandler::RemoveConfigurationFromCurrentProfile(
 void NetworkConfigurationHandler::RemoveConfigurationFromProfile(
     const std::string& service_path,
     const std::string& profile_path,
+    base::Optional<RemoveConfirmer> remove_confirmer,
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {
   // Service.Remove is not reliable. Instead, request the profile entries
@@ -428,7 +440,8 @@ void NetworkConfigurationHandler::RemoveConfigurationFromProfile(
   for (auto& observer : observers_)
     observer.OnBeforeConfigurationRemoved(service_path, guid);
   ProfileEntryDeleter* deleter = new ProfileEntryDeleter(
-      this, service_path, guid, std::move(callback), std::move(error_callback));
+      this, service_path, guid, std::move(remove_confirmer),
+      std::move(callback), std::move(error_callback));
   if (!profile_path.empty())
     deleter->RestrictToProfilePath(profile_path);
   profile_entry_deleters_[service_path] = base::WrapUnique(deleter);

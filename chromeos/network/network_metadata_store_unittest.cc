@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/bind_helpers.h"
+#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "chromeos/dbus/shill/shill_clients.h"
@@ -331,7 +332,8 @@ TEST_F(NetworkMetadataStoreTest, ConfigurationRemoved) {
   ASSERT_TRUE(metadata_store()->GetIsConfiguredBySync(kGuid));
 
   network_configuration_handler()->RemoveConfiguration(
-      service_path, base::DoNothing(), base::DoNothing());
+      service_path, /*remove_confirmer=*/base::nullopt, base::DoNothing(),
+      base::DoNothing());
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(metadata_store()->GetLastConnectedTimestamp(kGuid).is_zero());

@@ -56,11 +56,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
                     const base::ListValue& network_configs_onc,
                     const base::DictionaryValue& global_network_config));
   MOCK_CONST_METHOD0(IsAnyPolicyApplicationRunning, bool());
-  MOCK_CONST_METHOD3(FindPolicyByGUID,
-                     const base::DictionaryValue*(
-                         const std::string userhash,
-                         const std::string& guid,
-                         ::onc::ONCSource* onc_source));
+  MOCK_CONST_METHOD3(
+      FindPolicyByGUID,
+      const base::DictionaryValue*(const std::string userhash,
+                                   const std::string& guid,
+                                   ::onc::ONCSource* onc_source));
   MOCK_CONST_METHOD1(GetNetworkConfigsFromPolicy,
                      const GuidToPolicyMap*(const std::string& userhash));
   MOCK_CONST_METHOD1(GetGlobalConfigFromPolicy,
@@ -70,6 +70,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
       const base::DictionaryValue*(const std::string& guid,
                                    const std::string& profile_path,
                                    ::onc::ONCSource* onc_source));
+  MOCK_CONST_METHOD2(IsNetworkConfiguredByPolicy,
+                     bool(const std::string& guid,
+                          const std::string& profile_path));
+  MOCK_CONST_METHOD2(CanRemoveNetworkConfig,
+                     bool(const std::string& guid,
+                          const std::string& profile_path));
   MOCK_CONST_METHOD0(AllowOnlyPolicyNetworksToConnect, bool());
   MOCK_CONST_METHOD0(AllowOnlyPolicyNetworksToConnectIfAvailable, bool());
   MOCK_CONST_METHOD0(AllowOnlyPolicyNetworksToAutoconnect, bool());

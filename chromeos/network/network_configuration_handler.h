@@ -98,8 +98,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
                                 network_handler::ServiceResultCallback callback,
                                 network_handler::ErrorCallback error_callback);
 
-  // Removes the network |service_path| from any profiles that include it.
+  using RemoveConfirmer =
+      base::RepeatingCallback<bool(const std::string& guid,
+                                   const std::string& profile_path)>;
+  // Removes the network |service_path| from any profiles that include it. If
+  // |remove_confirmer| is provided, it will be used to confirm the remove
+  // operation and only entries that evaluate to true by applying the confirmer
+  // will be removed.
   void RemoveConfiguration(const std::string& service_path,
+                           base::Optional<RemoveConfirmer> remove_confirmer,
                            base::OnceClosure callback,
                            network_handler::ErrorCallback error_callback);
 
@@ -197,10 +204,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
 
   // Removes network configuration for |service_path| from the profile specified
   // by |profile_path|. If |profile_path| is not set, the network is removed
-  // from all the profiles that include it.
+  // from all the profiles that include it. If |remove_confirmer| is provided,
+  // it will be used to confirm the remove operation and only entries that
+  // evaluate to true by applying the confirmer will be removed.
   void RemoveConfigurationFromProfile(
       const std::string& service_path,
       const std::string& profile_path,
+      base::Optional<RemoveConfirmer> remove_confirmer,
       base::OnceClosure callback,
       network_handler::ErrorCallback error_callback);
 

@@ -95,6 +95,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
       const std::string& profile_path,
       ::onc::ONCSource* onc_source) const override;
 
+  bool IsNetworkConfiguredByPolicy(
+      const std::string& guid,
+      const std::string& profile_path) const override;
+
+  bool CanRemoveNetworkConfig(const std::string& guid,
+                              const std::string& profile_path) const override;
+
   bool AllowOnlyPolicyNetworksToConnect() const override;
   bool AllowOnlyPolicyNetworksToConnectIfAvailable() const override;
   bool AllowOnlyPolicyNetworksToAutoconnect() const override;

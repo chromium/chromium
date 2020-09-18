@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -185,8 +186,8 @@ class VpnProviderApiTest : public extensions::ExtensionApiTest {
 
   void TriggerInternalRemove() {
     NetworkHandler::Get()->network_configuration_handler()->RemoveConfiguration(
-        GetSingleServicePath(), base::DoNothing(),
-        base::Bind(DoNothingFailureCallback));
+        GetSingleServicePath(), /*remove_confirmer=*/base::nullopt,
+        base::DoNothing(), base::Bind(DoNothingFailureCallback));
   }
 
  protected:

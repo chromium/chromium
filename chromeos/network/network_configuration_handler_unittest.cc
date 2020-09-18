@@ -520,7 +520,7 @@ TEST_F(NetworkConfigurationHandlerTest, RemoveConfiguration) {
 
   TestCallback test_callback;
   network_configuration_handler_->RemoveConfiguration(
-      "/service/2",
+      "/service/2", /*remove_confirmer=*/base::nullopt,
       base::BindOnce(&TestCallback::Run, base::Unretained(&test_callback)),
       base::BindOnce(&ErrorCallback));
 
@@ -561,6 +561,47 @@ TEST_F(NetworkConfigurationHandlerTest, RemoveConfigurationFromCurrentProfile) {
   GetShillProfileClient()->GetProfilePathsContainingService("/service/2",
                                                             &profiles);
   EXPECT_EQ(1u, profiles.size());
+}
+
+TEST_F(NetworkConfigurationHandlerTest, RemoveConfigurationWithPredicate) {
+  ASSERT_NO_FATAL_FAILURE(SetUpRemovableConfiguration());
+
+  // Don't remove profile 1 entries.
+  NetworkConfigurationHandler::RemoveConfirmer remove_confirmer =
+      base::BindRepeating(
+          [](const std::string& guid, const std::string& profile_path) {
+            return profile_path != "profile1";
+          });
+
+  TestCallback test_callback1;
+  network_configuration_handler_->RemoveConfiguration(
+      "/service/1", remove_confirmer,
+      base::BindOnce(&TestCallback::Run, base::Unretained(&test_callback1)),
+      base::BindOnce(&ErrorCallback));
+
+  TestCallback test_callback2;
+  network_configuration_handler_->RemoveConfiguration(
+      "/service/2", remove_confirmer,
+      base::BindOnce(&TestCallback::Run, base::Unretained(&test_callback2)),
+      base::BindOnce(&ErrorCallback));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, test_callback1.run_count());
+  EXPECT_EQ(1, test_callback2.run_count());
+
+  std::vector<std::string> profilesForService1, profilesForService2;
+  GetShillProfileClient()->GetProfilePathsContainingService(
+      "/service/1", &profilesForService1);
+  GetShillProfileClient()->GetProfilePathsContainingService(
+      "/service/2", &profilesForService2);
+
+  EXPECT_EQ(1u, profilesForService1.size());
+  EXPECT_EQ("profile1", profilesForService1[0]);
+  profilesForService1.clear();
+
+  EXPECT_EQ(1u, profilesForService2.size());
+  EXPECT_EQ("profile1", profilesForService2[0]);
+  profilesForService2.clear();
 }
 
 TEST_F(NetworkConfigurationHandlerTest,
@@ -712,7 +753,8 @@ TEST_F(NetworkConfigurationHandlerTest, NetworkConfigurationObserver_Removed) {
           service_path));
 
   network_configuration_handler_->RemoveConfiguration(
-      service_path, base::DoNothing(), base::BindOnce(&ErrorCallback));
+      service_path, /*remove_confirmer=*/base::nullopt, base::DoNothing(),
+      base::BindOnce(&ErrorCallback));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(

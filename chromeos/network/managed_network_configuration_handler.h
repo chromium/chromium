@@ -159,6 +159,18 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
       const std::string& profile_path,
       ::onc::ONCSource* onc_source) const = 0;
 
+  // Returns true if the network with |guid| is configured by device or user
+  // policy for profile |profile_path|.
+  virtual bool IsNetworkConfiguredByPolicy(
+      const std::string& guid,
+      const std::string& profile_path) const = 0;
+
+  // Returns true if the configuration of the network with |guid| is not
+  // managed by policy for profile with |profile_path| and thus can be removed.
+  virtual bool CanRemoveNetworkConfig(
+      const std::string& guid,
+      const std::string& profile_path) const = 0;
+
   // Return true if the AllowOnlyPolicyNetworksToConnect policy is enabled.
   virtual bool AllowOnlyPolicyNetworksToConnect() const = 0;
 
