@@ -321,7 +321,7 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
     DCHECK_EQ(STATE_NONE, state_);
 
     const GURL& url = urls_[next_index_].url;
-    if (url_checker_delegate_->IsUrlWhitelisted(url)) {
+    if (url_checker_delegate_->IsUrlAllowlisted(url)) {
       if (!RunNextCallback(true, false))
         return;
 

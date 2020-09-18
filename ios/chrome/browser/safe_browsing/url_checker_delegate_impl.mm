@@ -115,7 +115,7 @@ void UrlCheckerDelegateImpl::
         const security_interstitials::UnsafeResource& resource,
         bool is_main_frame) {}
 
-bool UrlCheckerDelegateImpl::IsUrlWhitelisted(const GURL& url) {
+bool UrlCheckerDelegateImpl::IsUrlAllowlisted(const GURL& url) {
   return false;
 }
 

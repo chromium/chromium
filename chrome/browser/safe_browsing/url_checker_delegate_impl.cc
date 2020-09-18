@@ -126,7 +126,7 @@ void UrlCheckerDelegateImpl::
                                 is_main_frame, ui_manager_));
 }
 
-bool UrlCheckerDelegateImpl::IsUrlWhitelisted(const GURL& url) {
+bool UrlCheckerDelegateImpl::IsUrlAllowlisted(const GURL& url) {
   return false;
 }
 

@@ -96,7 +96,7 @@ void AwUrlCheckerDelegateImpl::
   NOTREACHED() << "Delayed warnings not implemented for WebView";
 }
 
-bool AwUrlCheckerDelegateImpl::IsUrlWhitelisted(const GURL& url) {
+bool AwUrlCheckerDelegateImpl::IsUrlAllowlisted(const GURL& url) {
   return allowlist_manager_->IsUrlAllowed(url);
 }
 

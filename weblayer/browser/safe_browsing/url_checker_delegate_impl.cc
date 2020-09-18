@@ -85,8 +85,8 @@ void UrlCheckerDelegateImpl::StartDisplayingDefaultBlockingPage(
                                 false /* showed_interstitial */));
 }
 
-bool UrlCheckerDelegateImpl::IsUrlWhitelisted(const GURL& url) {
-  // TODO(timvolodine): false for now, we may want whitelisting support later.
+bool UrlCheckerDelegateImpl::IsUrlAllowlisted(const GURL& url) {
+  // TODO(timvolodine): false for now, we may want allowlisting support later.
   return false;
 }
 

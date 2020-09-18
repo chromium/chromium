@@ -56,9 +56,9 @@ class UrlCheckerDelegate
       const security_interstitials::UnsafeResource& resource,
       bool is_main_frame) = 0;
 
-  // A whitelisted URL is considered safe and therefore won't be checked with
+  // An allowlisted URL is considered safe and therefore won't be checked with
   // the SafeBrowsing database.
-  virtual bool IsUrlWhitelisted(const GURL& url) = 0;
+  virtual bool IsUrlAllowlisted(const GURL& url) = 0;
 
   // If the method returns true, the entire request won't be checked, including
   // the original URL and redirects.
