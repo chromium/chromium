@@ -493,7 +493,7 @@ void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
 
   gfx::GpuMemoryBufferHandle gmb_handle;
   gmb_handle.type = gfx::NATIVE_PIXMAP;
-  DCHECK(!secure_mode_.has_value());
+  DCHECK(secure_mode_.has_value());
   if (*secure_mode_) {
     // Get protected output buffer associated with |handle_fd|.
     // Duplicating handle here is needed as ownership of passed fd is
