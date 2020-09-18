@@ -257,56 +257,6 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_PlaceholderPseudo) {
   ASSERT_EQ(2u, rules->size());
 }
 
-TEST(RuleSetTest, findBestRuleSetAndAdd_PseudoIs) {
-  css_test_helpers::TestStyleSheet sheet;
-
-  sheet.AddCSSRules(".a :is(.b+.c, .d>:is(.e, .f)) { }");
-  RuleSet& rule_set = sheet.GetRuleSet();
-  {
-    AtomicString str("c");
-    const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules(str);
-    ASSERT_EQ(1u, rules->size());
-    ASSERT_EQ(str, rules->at(0)->Selector().Value());
-  }
-  {
-    AtomicString str("e");
-    const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules(str);
-    ASSERT_EQ(1u, rules->size());
-    ASSERT_EQ(str, rules->at(0)->Selector().Value());
-  }
-  {
-    AtomicString str("f");
-    const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules(str);
-    ASSERT_EQ(1u, rules->size());
-    ASSERT_EQ(str, rules->at(0)->Selector().Value());
-  }
-}
-
-TEST(RuleSetTest, findBestRuleSetAndAdd_PseudoWhere) {
-  css_test_helpers::TestStyleSheet sheet;
-
-  sheet.AddCSSRules(".a :where(.b+.c, .d>:where(.e, .f)) { }");
-  RuleSet& rule_set = sheet.GetRuleSet();
-  {
-    AtomicString str("c");
-    const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules(str);
-    ASSERT_EQ(1u, rules->size());
-    ASSERT_EQ(str, rules->at(0)->Selector().Value());
-  }
-  {
-    AtomicString str("e");
-    const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules(str);
-    ASSERT_EQ(1u, rules->size());
-    ASSERT_EQ(str, rules->at(0)->Selector().Value());
-  }
-  {
-    AtomicString str("f");
-    const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules(str);
-    ASSERT_EQ(1u, rules->size());
-    ASSERT_EQ(str, rules->at(0)->Selector().Value());
-  }
-}
-
 TEST(RuleSetTest, findBestRuleSetAndAdd_PartPseudoElements) {
   css_test_helpers::TestStyleSheet sheet;
 
@@ -314,39 +264,6 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_PartPseudoElements) {
   RuleSet& rule_set = sheet.GetRuleSet();
   const HeapVector<Member<const RuleData>>* rules = rule_set.PartPseudoRules();
   ASSERT_EQ(2u, rules->size());
-}
-
-TEST(RuleSetTest, findBestRuleSetAndAdd_PseudoIsTooLarge) {
-  // RuleData cannot support selectors at index 8192 or beyond so the expansion
-  // is limited to this size
-  css_test_helpers::TestStyleSheet sheet;
-
-  sheet.AddCSSRules(
-      ":is(.a#a, .b#b, .c#c, .d#d) + "
-      ":is(.e#e, .f#f, .g#g, .h#h) + "
-      ":is(.i#i, .j#j, .k#k, .l#l) + "
-      ":is(.m#m, .n#n, .o#o, .p#p) + "
-      ":is(.q#q, .r#r, .s#s, .t#t) + "
-      ":is(.u#u, .v#v, .w#w, .x#x) { }",
-      true);
-
-  RuleSet& rule_set = sheet.GetRuleSet();
-  ASSERT_EQ(0u, rule_set.RuleCount());
-}
-
-TEST(RuleSetTest, findBestRuleSetAndAdd_PseudoWhereTooLarge) {
-  // RuleData cannot support selectors at index 8192 or beyond so the expansion
-  // is limited to this size
-  css_test_helpers::TestStyleSheet sheet;
-
-  sheet.AddCSSRules(
-      ":where(.a#a, .b#b, .c#c, .d#d) + :where(.e#e, .f#f, .g#g, .h#h) + "
-      ":where(.i#i, .j#j, .k#k, .l#l) + :where(.m#m, .n#n, .o#o, .p#p) + "
-      ":where(.q#q, .r#r, .s#s, .t#t) + :where(.u#u, .v#v, .w#w, .x#x) { }",
-      true);
-
-  RuleSet& rule_set = sheet.GetRuleSet();
-  ASSERT_EQ(0u, rule_set.RuleCount());
 }
 
 TEST(RuleSetTest, SelectorIndexLimit) {

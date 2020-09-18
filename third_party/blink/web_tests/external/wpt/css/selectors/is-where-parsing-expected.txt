@@ -2,8 +2,8 @@ This is a testharness.js-based test.
 PASS Multiple selectors with combinators
 PASS Nested :is
 PASS Nested :where
-FAIL Nested inside :host, without combinators assert_equals: Nested inside :host, without combinators: :host(:is(div)) expected ":host(:is(div))" but got "random-selector"
-PASS Nested inside :host, with combinators
+PASS Nested inside :host, without combinators
+FAIL Nested inside :host, with combinators assert_not_equals: Nested inside :host, with combinators: :host(:is(div .foo)) got disallowed value ":host(:is(div .foo))"
 PASS Pseudo-classes inside
 PASS Pseudo-classes after
 PASS Pseudo-elements after

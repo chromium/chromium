@@ -50,6 +50,25 @@
 
 namespace blink {
 
+namespace {
+
+unsigned MaximumSpecificity(const CSSSelectorList* list) {
+  if (!list)
+    return 0;
+
+  unsigned result = 0;
+  const CSSSelector* selector;
+  for (selector = list->First(); selector;
+       selector = CSSSelectorList::Next(*selector)) {
+    unsigned specificity = selector->Specificity();
+    if (result < specificity)
+      result = specificity;
+  }
+  return result;
+}
+
+}  // namespace
+
 struct SameSizeAsCSSSelector {
   unsigned bitfields;
   void* pointers[1];
@@ -103,13 +122,13 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
   // FIXME: Pseudo-elements and pseudo-classes do not have the same specificity.
   // This function isn't quite correct.
   // http://www.w3.org/TR/selectors/#specificity
-  if (ignore_specificity_)
-    return 0;
   switch (match_) {
     case kId:
       return kIdSpecificity;
     case kPseudoClass:
       switch (GetPseudoType()) {
+        case kPseudoWhere:
+          return 0;
         case kPseudoHost:
         case kPseudoHostContext:
           // We dynamically compute the specificity of :host and :host-context
@@ -118,10 +137,11 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
         case kPseudoNot:
           DCHECK(SelectorList());
           return SelectorList()->First()->Specificity();
+        case kPseudoIs:
+          return MaximumSpecificity(SelectorList());
         // FIXME: PseudoAny should base the specificity on the sub-selectors.
         // See http://lists.w3.org/Archives/Public/www-style/2010Sep/0530.html
         case kPseudoAny:
-        case kPseudoIs:
         default:
           break;
       }
@@ -1171,22 +1191,6 @@ bool CSSSelector::NeedsUpdatedDistribution() const {
                selector.GetPseudoType() == CSSSelector::kPseudoHostContext;
       },
       *this);
-}
-
-bool CSSSelector::HasPseudoIs() const {
-  for (const CSSSelector* s = this; s; s = s->TagHistory()) {
-    if (s->GetPseudoType() == CSSSelector::kPseudoIs)
-      return true;
-  }
-  return false;
-}
-
-bool CSSSelector::HasPseudoWhere() const {
-  for (const CSSSelector* s = this; s; s = s->TagHistory()) {
-    if (s->GetPseudoType() == CSSSelector::kPseudoWhere)
-      return true;
-  }
-  return false;
 }
 
 CSSSelector::RareData::RareData(const AtomicString& value)

@@ -3,11 +3,28 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
+#include <iostream>
+
 namespace blink {
+
+namespace {
+
+unsigned Specificity(const String& selector_text) {
+  CSSSelectorList selector_list = CSSParser::ParseSelector(
+      StrictCSSParserContext(SecureContextMode::kInsecureContext), nullptr,
+      selector_text);
+
+  const CSSSelector* selector = selector_list.First();
+  return selector->Specificity();
+}
+
+}  // namespace
 
 TEST(CSSSelector, Representations) {
   css_test_helpers::TestStyleSheet sheet;
@@ -74,6 +91,33 @@ TEST(CSSSelector, OverflowRareDataMatchNth) {
   // Note: This test can only fail when using ubsan.
   selector.SetNth(min_int, 10);
   EXPECT_FALSE(selector.MatchNth(2));
+}
+
+TEST(CSSSelector, Specificity_Is) {
+  EXPECT_EQ(Specificity(".a :is(.b, div.c)"), Specificity(".a div.c"));
+  EXPECT_EQ(Specificity(".a :is(.c#d, .e)"), Specificity(".a .c#d"));
+  EXPECT_EQ(Specificity(":is(.e+.f, .g>.b, .h)"), Specificity(".e+.f"));
+  EXPECT_EQ(Specificity(".a :is(.e+.f, .g>.b, .h#i)"), Specificity(".a .h#i"));
+  EXPECT_EQ(Specificity(".a+:is(.b+span.f, :is(.c>.e, .g))"),
+            Specificity(".a+.b+span.f"));
+  EXPECT_EQ(Specificity("div > :is(div:where(span:where(.b ~ .c)))"),
+            Specificity("div > div"));
+  EXPECT_EQ(Specificity(":is(.c + .c + .c, .b + .c:not(span), .b + .c + .e)"),
+            Specificity(".c + .c + .c"));
+}
+
+TEST(CSSSelector, Specificity_Where) {
+  EXPECT_EQ(Specificity(".a :where(.b, div.c)"), Specificity(".a"));
+  EXPECT_EQ(Specificity(".a :where(.c#d, .e)"), Specificity(".a"));
+  EXPECT_EQ(Specificity(":where(.e+.f, .g>.b, .h)"), Specificity("*"));
+  EXPECT_EQ(Specificity(".a :where(.e+.f, .g>.b, .h#i)"), Specificity(".a"));
+  EXPECT_EQ(Specificity("div > :where(.b+span.f, :where(.c>.e, .g))"),
+            Specificity("div"));
+  EXPECT_EQ(Specificity("div > :where(div:is(span:is(.b ~ .c)))"),
+            Specificity("div"));
+  EXPECT_EQ(
+      Specificity(":where(.c + .c + .c, .b + .c:not(span), .b + .c + .e)"),
+      Specificity("*"));
 }
 
 }  // namespace blink

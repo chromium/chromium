@@ -1256,23 +1256,6 @@ TEST_F(RuleFeatureSetTest, pseudoIsNested) {
   ExpectNoInvalidation(invalidation_lists.siblings);
 }
 
-TEST_F(RuleFeatureSetTest, pseudoIsTooLarge) {
-  // RuleData cannot support selectors at index 8192 or beyond so the expansion
-  // is limited to this size
-  EXPECT_EQ(RuleFeatureSet::kSelectorNeverMatches,
-            CollectFeatures(":is(.a#a, .b#b, .c#c, .d#d) + "
-                            ":is(.e#e, .f#f, .g#g, .h#h) + "
-                            ":is(.i#i, .j#j, .k#k, .l#l) + "
-                            ":is(.m#m, .n#n, .o#o, .p#p) + "
-                            ":is(.q#q, .r#r, .s#s, .t#t) + "
-                            ":is(.u#u, .v#v, .w#w, .x#x)"));
-
-  InvalidationLists invalidation_lists;
-  CollectInvalidationSetsForClass(invalidation_lists, "a");
-  ExpectNoInvalidation(invalidation_lists.descendants);
-  ExpectNoInvalidation(invalidation_lists.siblings);
-}
-
 TEST_F(RuleFeatureSetTest, pseudoWhere) {
   EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
             CollectFeatures(":where(.w, .x)"));
@@ -1369,23 +1352,6 @@ TEST_F(RuleFeatureSetTest, pseudoWhereNested) {
   CollectInvalidationSetsForClass(invalidation_lists, "a");
   ExpectClassInvalidation("b", "c", invalidation_lists.descendants);
   ExpectIdInvalidation("d", invalidation_lists.descendants);
-  ExpectNoInvalidation(invalidation_lists.siblings);
-}
-
-TEST_F(RuleFeatureSetTest, pseudoWhereTooLarge) {
-  // RuleData cannot support selectors at index 8192 or beyond so the expansion
-  // is limited to this size
-  EXPECT_EQ(RuleFeatureSet::kSelectorNeverMatches,
-            CollectFeatures(":where(.a#a, .b#b, .c#c, .d#d) + "
-                            ":where(.e#e, .f#f, .g#g, .h#h) + "
-                            ":where(.i#i, .j#j, .k#k, .l#l) + "
-                            ":where(.m#m, .n#n, .o#o, .p#p) + "
-                            ":where(.q#q, .r#r, .s#s, .t#t) + "
-                            ":where(.u#u, .v#v, .w#w, .x#x)"));
-
-  InvalidationLists invalidation_lists;
-  CollectInvalidationSetsForClass(invalidation_lists, "a");
-  ExpectNoInvalidation(invalidation_lists.descendants);
   ExpectNoInvalidation(invalidation_lists.siblings);
 }
 

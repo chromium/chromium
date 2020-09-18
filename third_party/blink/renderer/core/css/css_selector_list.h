@@ -71,16 +71,6 @@ class CORE_EXPORT CSSSelectorList {
     o.selector_array_ = nullptr;
   }
 
-  static CSSSelectorList ConcatenateListExpansion(
-      const CSSSelectorList& expanded,
-      const CSSSelectorList& original);
-
-  CSSSelectorList ExpandedFirstPseudoClass() const;
-  CSSSelectorList TransformForListExpansion();
-  bool HasPseudoIs() const;
-  bool HasPseudoWhere() const;
-  bool RequiresExpansion() const;
-
   CSSSelectorList& operator=(CSSSelectorList&& o) {
     DCHECK(this != &o);
     DeleteSelectorsIfNeeded();

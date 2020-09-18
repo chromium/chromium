@@ -176,6 +176,9 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
       return true;
     case CSSSelector::kPseudoIs:
     case CSSSelector::kPseudoWhere:
+      // TODO(crbug.com/1127347): Implement invalidation for :where and :is.
+      NOTIMPLEMENTED();
+      return true;
     case CSSSelector::kPseudoUnknown:
     case CSSSelector::kPseudoLeftPage:
     case CSSSelector::kPseudoRightPage:
@@ -196,8 +199,10 @@ bool SupportsInvalidationWithSelectorList(CSSSelector::PseudoType pseudo) {
          pseudo == CSSSelector::kPseudoCue ||
          pseudo == CSSSelector::kPseudoHost ||
          pseudo == CSSSelector::kPseudoHostContext ||
+         pseudo == CSSSelector::kPseudoIs ||
          pseudo == CSSSelector::kPseudoNot ||
-         pseudo == CSSSelector::kPseudoSlotted;
+         pseudo == CSSSelector::kPseudoSlotted ||
+         pseudo == CSSSelector::kPseudoWhere;
 }
 
 bool RequiresSubtreeInvalidation(const CSSSelector& selector) {
