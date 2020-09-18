@@ -31,8 +31,12 @@
 #include "third_party/pdfium/public/fpdf_catalog.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/range/range.h"
 
 using printing::ConvertUnitDouble;
@@ -60,8 +64,7 @@ bool IsValidLink(const std::string& url) {
   return pp::Var(url).is_string();
 }
 
-pp::FloatRect FloatPageRectToPixelRect(FPDF_PAGE page,
-                                       const pp::FloatRect& input) {
+gfx::RectF FloatPageRectToPixelRect(FPDF_PAGE page, const gfx::RectF& input) {
   int output_width = FPDF_GetPageWidthF(page);
   int output_height = FPDF_GetPageHeightF(page);
 
@@ -81,7 +84,7 @@ pp::FloatRect FloatPageRectToPixelRect(FPDF_PAGE page,
   if (max_y < min_y)
     std::swap(min_y, max_y);
 
-  pp::FloatRect output_rect(
+  gfx::RectF output_rect(
       ConvertUnitDouble(min_x, kPointsPerInch, kPixelsPerInch),
       ConvertUnitDouble(min_y, kPointsPerInch, kPixelsPerInch),
       ConvertUnitDouble(max_x - min_x, kPointsPerInch, kPixelsPerInch),
@@ -89,21 +92,21 @@ pp::FloatRect FloatPageRectToPixelRect(FPDF_PAGE page,
   return output_rect;
 }
 
-pp::FloatRect GetFloatCharRectInPixels(FPDF_PAGE page,
-                                       FPDF_TEXTPAGE text_page,
-                                       int index) {
+gfx::RectF GetFloatCharRectInPixels(FPDF_PAGE page,
+                                    FPDF_TEXTPAGE text_page,
+                                    int index) {
   double left;
   double right;
   double bottom;
   double top;
   if (!FPDFText_GetCharBox(text_page, index, &left, &right, &bottom, &top))
-    return pp::FloatRect();
+    return gfx::RectF();
 
   if (right < left)
     std::swap(left, right);
   if (bottom < top)
     std::swap(top, bottom);
-  pp::FloatRect page_coords(left, top, right - left, bottom - top);
+  gfx::RectF page_coords(left, top, right - left, bottom - top);
   return FloatPageRectToPixelRect(page, page_coords);
 }
 
@@ -147,14 +150,8 @@ PP_PrivateDirection GetDirectionFromAngle(float angle) {
   return PP_PRIVATEDIRECTION_BTT;
 }
 
-float GetDistanceBetweenPoints(const pp::FloatPoint& p1,
-                               const pp::FloatPoint& p2) {
-  pp::FloatPoint dist_vector = p1 - p2;
-  return sqrtf(powf(dist_vector.x(), 2) + powf(dist_vector.y(), 2));
-}
-
-void AddCharSizeToAverageCharSize(pp::FloatSize new_size,
-                                  pp::FloatSize* avg_size,
+void AddCharSizeToAverageCharSize(gfx::SizeF new_size,
+                                  gfx::SizeF* avg_size,
                                   int* count) {
   // Some characters sometimes have a bogus empty bounding box. We don't want
   // them to impact the average.
@@ -167,11 +164,11 @@ void AddCharSizeToAverageCharSize(pp::FloatSize new_size,
   }
 }
 
-float GetRotatedCharWidth(float angle, const pp::FloatSize& size) {
+float GetRotatedCharWidth(float angle, const gfx::SizeF& size) {
   return fabsf(cosf(angle) * size.width()) + fabsf(sinf(angle) * size.height());
 }
 
-float GetAngleOfVector(const pp::FloatPoint& v) {
+float GetAngleOfVector(const gfx::Vector2dF& v) {
   float angle = atan2f(v.y(), v.x());
   if (angle < 0)
     angle += k360DegreesInRadians;
@@ -471,10 +468,10 @@ PDFiumPage::GetTextRunInfo(int start_char_index) {
   // If the first character in a text run is a space, we need to start
   // |text_run_bounds| from the space character instead of the first
   // non-space unicode character.
-  pp::FloatRect text_run_bounds =
+  gfx::RectF text_run_bounds =
       actual_start_char_index > start_char_index
           ? GetFloatCharRectInPixels(page, text_page, start_char_index)
-          : pp::FloatRect();
+          : gfx::RectF();
 
   // Pdfium trims more than 1 consecutive spaces to 1 space.
   DCHECK_LE(actual_start_char_index - start_char_index, 1);
@@ -485,7 +482,7 @@ PDFiumPage::GetTextRunInfo(int start_char_index) {
   pp::PDF::PrivateAccessibilityTextRunInfo info;
   CalculateTextRunStyleInfo(char_index, &info.style);
 
-  pp::FloatRect start_char_rect =
+  gfx::RectF start_char_rect =
       GetFloatCharRectInPixels(page, text_page, char_index);
   float text_run_font_size = info.style.font_size;
 
@@ -495,20 +492,19 @@ PDFiumPage::GetTextRunInfo(int start_char_index) {
   // lead to a break in the text run after only one space. Ex: ". Hello World"
   // would be split in two runs: "." and "Hello World".
   double font_size_minimum = FPDFText_GetFontSize(text_page, char_index) / 3.0;
-  pp::FloatSize avg_char_size =
-      pp::FloatSize(font_size_minimum, font_size_minimum);
+  gfx::SizeF avg_char_size(font_size_minimum, font_size_minimum);
   int non_whitespace_chars_count = 1;
-  AddCharSizeToAverageCharSize(start_char_rect.Floatsize(), &avg_char_size,
+  AddCharSizeToAverageCharSize(start_char_rect.size(), &avg_char_size,
                                &non_whitespace_chars_count);
 
   // Add first non-space char to text run.
-  text_run_bounds = text_run_bounds.Union(start_char_rect);
+  text_run_bounds.Union(start_char_rect);
   PP_PrivateDirection char_direction =
       GetDirectionFromAngle(FPDFText_GetCharAngle(text_page, char_index));
   if (char_index < chars_count)
     char_index++;
 
-  pp::FloatRect prev_char_rect = start_char_rect;
+  gfx::RectF prev_char_rect = start_char_rect;
   float estimated_font_size =
       std::max(start_char_rect.width(), start_char_rect.height());
 
@@ -532,7 +528,7 @@ PDFiumPage::GetTextRunInfo(int start_char_index) {
       break;
 
     unsigned int character = FPDFText_GetUnicode(text_page, char_index);
-    pp::FloatRect char_rect =
+    gfx::RectF char_rect =
         GetFloatCharRectInPixels(page, text_page, char_index);
 
     if (!base::IsUnicodeWhitespace(character)) {
@@ -563,21 +559,20 @@ PDFiumPage::GetTextRunInfo(int start_char_index) {
 
       // Heuristic: End the text run if the center-point distance to the
       // previous character is less than 2.5x the average character size.
-      AddCharSizeToAverageCharSize(char_rect.Floatsize(), &avg_char_size,
+      AddCharSizeToAverageCharSize(char_rect.size(), &avg_char_size,
                                    &non_whitespace_chars_count);
 
       float avg_char_width = GetRotatedCharWidth(current_angle, avg_char_size);
 
       float distance =
-          GetDistanceBetweenPoints(char_rect.CenterPoint(),
-                                   prev_char_rect.CenterPoint()) -
-          GetRotatedCharWidth(current_angle, char_rect.Floatsize()) / 2 -
-          GetRotatedCharWidth(current_angle, prev_char_rect.Floatsize()) / 2;
+          (char_rect.CenterPoint() - prev_char_rect.CenterPoint()).Length() -
+          GetRotatedCharWidth(current_angle, char_rect.size()) / 2 -
+          GetRotatedCharWidth(current_angle, prev_char_rect.size()) / 2;
 
       if (distance > 2.5f * avg_char_width)
         break;
 
-      text_run_bounds = text_run_bounds.Union(char_rect);
+      text_run_bounds.Union(char_rect);
       prev_char_rect = char_rect;
     }
 
@@ -600,7 +595,7 @@ PDFiumPage::GetTextRunInfo(int start_char_index) {
 
   info.len = char_index - start_char_index;
   info.style.font_size = text_run_font_size;
-  info.bounds = text_run_bounds;
+  info.bounds = PPFloatRectFromRectF(text_run_bounds);
   // Infer text direction from first and last character of the text run. We
   // can't base our decision on the character direction, since a character of a
   // RTL language will have an angle of 0 when not rotated, just like a
@@ -616,7 +611,7 @@ uint32_t PDFiumPage::GetCharUnicode(int char_index) {
   return FPDFText_GetUnicode(text_page, char_index);
 }
 
-pp::FloatRect PDFiumPage::GetCharBounds(int char_index) {
+gfx::RectF PDFiumPage::GetCharBounds(int char_index) {
   FPDF_PAGE page = GetPage();
   FPDF_TEXTPAGE text_page = GetTextPage();
   return GetFloatCharRectInPixels(page, text_page, char_index);
@@ -639,8 +634,8 @@ std::vector<PDFEngine::AccessibilityLinkInfo> PDFiumPage::GetLinkInfo() {
     gfx::Rect link_rect;
     for (const auto& rect : link.bounding_rects)
       link_rect.Union(rect);
-    cur_info.bounds = pp::FloatRect(link_rect.x(), link_rect.y(),
-                                    link_rect.width(), link_rect.height());
+    cur_info.bounds = gfx::RectF(link_rect.x(), link_rect.y(),
+                                 link_rect.width(), link_rect.height());
 
     link_info.push_back(std::move(cur_info));
   }
@@ -658,9 +653,9 @@ std::vector<PDFEngine::AccessibilityImageInfo> PDFiumPage::GetImageInfo() {
   for (const Image& image : images_) {
     PDFEngine::AccessibilityImageInfo cur_info;
     cur_info.alt_text = image.alt_text;
-    cur_info.bounds = pp::FloatRect(
-        image.bounding_rect.x(), image.bounding_rect.y(),
-        image.bounding_rect.width(), image.bounding_rect.height());
+    cur_info.bounds =
+        gfx::RectF(image.bounding_rect.x(), image.bounding_rect.y(),
+                   image.bounding_rect.width(), image.bounding_rect.height());
     image_info.push_back(std::move(cur_info));
   }
   return image_info;
@@ -679,7 +674,7 @@ PDFiumPage::GetHighlightInfo() {
     PDFEngine::AccessibilityHighlightInfo cur_info;
     cur_info.start_char_index = highlight.start_char_index;
     cur_info.char_count = highlight.char_count;
-    cur_info.bounds = pp::FloatRect(
+    cur_info.bounds = gfx::RectF(
         highlight.bounding_rect.x(), highlight.bounding_rect.y(),
         highlight.bounding_rect.width(), highlight.bounding_rect.height());
     cur_info.color = highlight.color;
@@ -705,7 +700,7 @@ PDFiumPage::GetTextFieldInfo() {
     cur_info.is_read_only = !!(text_field.flags & FPDF_FORMFLAG_READONLY);
     cur_info.is_required = !!(text_field.flags & FPDF_FORMFLAG_REQUIRED);
     cur_info.is_password = !!(text_field.flags & FPDF_FORMFLAG_TEXT_PASSWORD);
-    cur_info.bounds = pp::FloatRect(
+    cur_info.bounds = gfx::RectF(
         text_field.bounding_rect.x(), text_field.bounding_rect.y(),
         text_field.bounding_rect.width(), text_field.bounding_rect.height());
     text_field_info.push_back(std::move(cur_info));
@@ -901,8 +896,8 @@ gfx::PointF PDFiumPage::TransformPageToScreenXY(const gfx::PointF& xy) {
   if (!available_)
     return gfx::PointF();
 
-  pp::FloatRect page_rect(xy.x(), xy.y(), 0, 0);
-  pp::FloatRect pixel_rect(FloatPageRectToPixelRect(GetPage(), page_rect));
+  gfx::RectF page_rect(xy.x(), xy.y(), 0, 0);
+  gfx::RectF pixel_rect(FloatPageRectToPixelRect(GetPage(), page_rect));
   return gfx::PointF(pixel_rect.x(), pixel_rect.y());
 }
 
@@ -1064,9 +1059,9 @@ void PDFiumPage::PopulateAnnotationLinks() {
 
     // Calculate underlying text range of link.
     GetUnderlyingTextRangeForRect(
-        pp::FloatRect(link_rect.left, link_rect.bottom,
-                      std::abs(link_rect.right - link_rect.left),
-                      std::abs(link_rect.bottom - link_rect.top)),
+        gfx::RectF(link_rect.left, link_rect.bottom,
+                   std::abs(link_rect.right - link_rect.left),
+                   std::abs(link_rect.bottom - link_rect.top)),
         &link.start_char_index, &link.char_count);
     links_.emplace_back(link);
   }
@@ -1210,8 +1205,8 @@ void PDFiumPage::PopulateHighlight(FPDF_ANNOTATION annot) {
       PageToScreen(gfx::Point(), 1.0, rect.left, rect.top, rect.right,
                    rect.bottom, PageOrientation::kOriginal);
   GetUnderlyingTextRangeForRect(
-      pp::FloatRect(rect.left, rect.bottom, std::abs(rect.right - rect.left),
-                    std::abs(rect.bottom - rect.top)),
+      gfx::RectF(rect.left, rect.bottom, std::abs(rect.right - rect.left),
+                 std::abs(rect.bottom - rect.top)),
       &highlight.start_char_index, &highlight.char_count);
 
   // Retrieve the color of the highlight.
@@ -1357,7 +1352,7 @@ bool PDFiumPage::PopulateFormFieldProperties(FPDF_ANNOTATION annot,
   return true;
 }
 
-bool PDFiumPage::GetUnderlyingTextRangeForRect(const pp::FloatRect& rect,
+bool PDFiumPage::GetUnderlyingTextRangeForRect(const gfx::RectF& rect,
                                                int* start_index,
                                                int* char_len) {
   if (!available_)

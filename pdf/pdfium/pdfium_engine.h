@@ -143,7 +143,7 @@ class PDFiumEngine : public PDFEngine,
   int GetVerticalScrollbarYPosition() override;
   void SetGrayscale(bool grayscale) override;
   int GetCharCount(int page_index) override;
-  pp::FloatRect GetCharBounds(int page_index, int char_index) override;
+  gfx::RectF GetCharBounds(int page_index, int char_index) override;
   uint32_t GetCharUnicode(int page_index, int char_index) override;
   base::Optional<pp::PDF::PrivateAccessibilityTextRunInfo> GetTextRunInfo(
       int page_index,

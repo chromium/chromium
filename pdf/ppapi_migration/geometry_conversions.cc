@@ -10,6 +10,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -34,6 +35,16 @@ gfx::Rect RectFromPPRect(const PP_Rect& pp_rect) {
 
 PP_Rect PPRectFromRect(const gfx::Rect& rect) {
   return PP_MakeRectFromXYWH(rect.x(), rect.y(), rect.width(), rect.height());
+}
+
+gfx::RectF RectFFromPPFloatRect(const PP_FloatRect& pp_rect) {
+  return gfx::RectF(pp_rect.point.x, pp_rect.point.y, pp_rect.size.width,
+                    pp_rect.size.height);
+}
+
+PP_FloatRect PPFloatRectFromRectF(const gfx::RectF& rect) {
+  return PP_MakeFloatRectFromXYWH(rect.x(), rect.y(), rect.width(),
+                                  rect.height());
 }
 
 gfx::Size SizeFromPPSize(const PP_Size& pp_size) {

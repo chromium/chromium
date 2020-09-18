@@ -14,6 +14,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -65,6 +66,32 @@ TEST(GeometryConversionsTest, PPRectFromRect) {
   EXPECT_EQ(pp_c_rect.point.y, -1);
   EXPECT_EQ(pp_c_rect.size.width, 4);
   EXPECT_EQ(pp_c_rect.size.height, 3);
+}
+
+TEST(GeometryConversionsTest, RectFFromPPFloatRect) {
+  gfx::RectF rect =
+      RectFFromPPFloatRect(pp::FloatRect(-1.0f, 2.1f, 3.2f, 4.3f));
+  EXPECT_EQ(rect, gfx::RectF(-1.0f, 2.1f, 3.2f, 4.3f));
+
+  rect =
+      RectFFromPPFloatRect(PP_MakeFloatRectFromXYWH(2.9f, -1.8f, 4.7f, 3.6f));
+  EXPECT_EQ(rect, gfx::RectF(2.9f, -1.8f, 4.7f, 3.6f));
+}
+
+TEST(GeometryConversionsTest, PPFloatRectFromRectF) {
+  pp::FloatRect pp_cpp_rect =
+      PPFloatRectFromRectF(gfx::RectF(-1.1f, 2.3f, 3.5f, 4.7f));
+  EXPECT_EQ(pp_cpp_rect.x(), -1.1f);
+  EXPECT_EQ(pp_cpp_rect.y(), 2.3f);
+  EXPECT_EQ(pp_cpp_rect.width(), 3.5f);
+  EXPECT_EQ(pp_cpp_rect.height(), 4.7f);
+
+  PP_FloatRect pp_c_rect =
+      PPFloatRectFromRectF(gfx::RectF(2.2f, -1.4f, 4.6f, 3.8f));
+  EXPECT_EQ(pp_c_rect.point.x, 2.2f);
+  EXPECT_EQ(pp_c_rect.point.y, -1.4f);
+  EXPECT_EQ(pp_c_rect.size.width, 4.6f);
+  EXPECT_EQ(pp_c_rect.size.height, 3.8f);
 }
 
 TEST(GeometryConversionsTest, SizeFromPPSize) {

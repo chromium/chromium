@@ -10,6 +10,7 @@
 #include "pdf/test/test_utils.h"
 #include "ppapi/c/private/ppp_pdf.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 
 namespace chrome_pdf {
@@ -157,7 +158,7 @@ TEST_F(AccessibilityTest, GetUnderlyingTextRangeForRect) {
   int start_index = -1;
   int char_count = 0;
   EXPECT_TRUE(page.GetUnderlyingTextRangeForRect(
-      pp::FloatRect(20.0f, 50.0f, 26.0f, 8.0f), &start_index, &char_count));
+      gfx::RectF(20.0f, 50.0f, 26.0f, 8.0f), &start_index, &char_count));
   EXPECT_EQ(start_index, 0);
   EXPECT_EQ(char_count, 5);
 
@@ -167,7 +168,7 @@ TEST_F(AccessibilityTest, GetUnderlyingTextRangeForRect) {
   start_index = -1;
   char_count = 0;
   EXPECT_TRUE(page.GetUnderlyingTextRangeForRect(
-      pp::FloatRect(20.0f, 0.0f, 26.0f, 58.0f), &start_index, &char_count));
+      gfx::RectF(20.0f, 0.0f, 26.0f, 58.0f), &start_index, &char_count));
   EXPECT_EQ(start_index, 0);
   EXPECT_EQ(char_count, 5);
 
@@ -176,7 +177,7 @@ TEST_F(AccessibilityTest, GetUnderlyingTextRangeForRect) {
   start_index = -9;
   char_count = -10;
   EXPECT_FALSE(page.GetUnderlyingTextRangeForRect(
-      pp::FloatRect(10.0f, 10.0f, 0.0f, 0.0f), &start_index, &char_count));
+      gfx::RectF(10.0f, 10.0f, 0.0f, 0.0f), &start_index, &char_count));
   EXPECT_EQ(start_index, -9);
   EXPECT_EQ(char_count, -10);
 }

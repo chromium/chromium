@@ -18,6 +18,7 @@
 #include "cc/test/pixel_test_utils.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"
+#include "pdf/ppapi_migration/geometry_conversions.h"
 #include "pdf/test/test_client.h"
 #include "pdf/test/test_utils.h"
 #include "pdf/thumbnail.h"
@@ -26,6 +27,7 @@
 #include "third_party/pdfium/public/fpdf_formfill.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/range/range.h"
 
 namespace chrome_pdf {
@@ -277,7 +279,7 @@ TEST_F(PDFiumPageTextTest, TestTextRunBounds) {
 
   EXPECT_TRUE(base::IsUnicodeWhitespace(
       engine->GetCharUnicode(kPageIndex, kFirstRunStartIndex)));
-  pp::FloatRect text_run_bounds = actual_text_run_1.bounds;
+  gfx::RectF text_run_bounds = RectFFromPPFloatRect(actual_text_run_1.bounds);
   EXPECT_TRUE(text_run_bounds.Contains(
       engine->GetCharBounds(kPageIndex, kFirstRunStartIndex)));
 
@@ -295,7 +297,7 @@ TEST_F(PDFiumPageTextTest, TestTextRunBounds) {
 
   EXPECT_TRUE(base::IsUnicodeWhitespace(
       engine->GetCharUnicode(kPageIndex, kFirstRunEndIndex)));
-  pp::FloatRect end_char_rect =
+  gfx::RectF end_char_rect =
       engine->GetCharBounds(kPageIndex, kFirstRunEndIndex);
   EXPECT_FALSE(text_run_bounds.Contains(end_char_rect));
   // Equals to the length of the previous text run.
@@ -313,7 +315,7 @@ TEST_F(PDFiumPageTextTest, TestTextRunBounds) {
 
   EXPECT_FALSE(base::IsUnicodeWhitespace(
       engine->GetCharUnicode(kPageIndex, kSecondRunStartIndex)));
-  text_run_bounds = actual_text_run_2.bounds;
+  text_run_bounds = RectFFromPPFloatRect(actual_text_run_2.bounds);
   EXPECT_TRUE(text_run_bounds.Contains(
       engine->GetCharBounds(kPageIndex, kSecondRunStartIndex)));
 

@@ -28,6 +28,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -283,7 +284,7 @@ class PDFEngine {
     std::string url;
     int start_char_index;
     int char_count;
-    pp::FloatRect bounds;
+    gfx::RectF bounds;
   };
 
   struct AccessibilityImageInfo {
@@ -292,7 +293,7 @@ class PDFEngine {
     ~AccessibilityImageInfo();
 
     std::string alt_text;
-    pp::FloatRect bounds;
+    gfx::RectF bounds;
   };
 
   struct AccessibilityHighlightInfo {
@@ -302,7 +303,7 @@ class PDFEngine {
 
     int start_char_index = -1;
     int char_count;
-    pp::FloatRect bounds;
+    gfx::RectF bounds;
     uint32_t color;
     std::string note_text;
   };
@@ -317,7 +318,7 @@ class PDFEngine {
     bool is_read_only;
     bool is_required;
     bool is_password;
-    pp::FloatRect bounds;
+    gfx::RectF bounds;
   };
 
   virtual ~PDFEngine() {}
@@ -419,7 +420,7 @@ class PDFEngine {
   // Get the number of characters on a given page.
   virtual int GetCharCount(int page_index) = 0;
   // Get the bounds in page pixels of a character on a given page.
-  virtual pp::FloatRect GetCharBounds(int page_index, int char_index) = 0;
+  virtual gfx::RectF GetCharBounds(int page_index, int char_index) = 0;
   // Get a given unicode character on a given page.
   virtual uint32_t GetCharUnicode(int page_index, int char_index) = 0;
   // Given a start char index, find the longest continuous run of text that's

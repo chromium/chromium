@@ -25,6 +25,7 @@
 
 namespace gfx {
 class Point;
+class RectF;
 }  // namespace gfx
 
 namespace chrome_pdf {
@@ -60,7 +61,7 @@ class PDFiumPage {
   // Get a unicode character from the page.
   uint32_t GetCharUnicode(int char_index);
   // Get the bounds of a character in page pixels.
-  pp::FloatRect GetCharBounds(int char_index);
+  gfx::RectF GetCharBounds(int char_index);
   // For all the links on the page, get their urls, underlying text ranges and
   // bounding boxes.
   std::vector<PDFEngine::AccessibilityLinkInfo> GetLinkInfo();
@@ -145,7 +146,7 @@ class PDFiumPage {
   // Given a rectangle in page coordinates, computes the range of continuous
   // characters which lie inside that rectangle. Returns false without
   // modifying the out parameters if no character lies inside the rectangle.
-  bool GetUnderlyingTextRangeForRect(const pp::FloatRect& rect,
+  bool GetUnderlyingTextRangeForRect(const gfx::RectF& rect,
                                      int* start_index,
                                      int* char_len);
 
