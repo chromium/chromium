@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/payments/internal_authenticator.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/payer_data.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "crypto/sha2.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -79,6 +80,7 @@ std::vector<uint8_t> GetSecurePaymentConfirmationChallenge(
 }  // namespace
 
 SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
+    content::WebContents* web_contents_to_observe,
     const std::string& effective_relying_party_identity,
     std::unique_ptr<SkBitmap> icon,
     const base::string16& label,
@@ -88,6 +90,9 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
     mojom::SecurePaymentConfirmationRequestPtr request,
     std::unique_ptr<autofill::InternalAuthenticator> authenticator)
     : PaymentApp(/*icon_resource_id=*/0, PaymentApp::Type::INTERNAL),
+      content::WebContentsObserver(web_contents_to_observe),
+      authenticator_render_frame_host_pointer_do_not_dereference_(
+          authenticator->GetRenderFrameHost()),
       effective_relying_party_identity_(effective_relying_party_identity),
       icon_(std::move(icon)),
       label_(label),
@@ -97,6 +102,8 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
       total_(total.Clone()),
       request_(std::move(request)),
       authenticator_(std::move(authenticator)) {
+  DCHECK_EQ(web_contents_to_observe->GetMainFrame(),
+            authenticator_render_frame_host_pointer_do_not_dereference_);
   DCHECK(!credential_id_.empty());
 
   app_method_names_.insert(methods::kSecurePaymentConfirmation);
@@ -105,6 +112,9 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
 SecurePaymentConfirmationApp::~SecurePaymentConfirmationApp() = default;
 
 void SecurePaymentConfirmationApp::InvokePaymentApp(Delegate* delegate) {
+  if (!authenticator_)
+    return;
+
   auto options = blink::mojom::PublicKeyCredentialRequestOptions::New();
   options->relying_party_id = effective_relying_party_identity_;
   options->timeout = request_->timeout.has_value()
@@ -239,6 +249,15 @@ void SecurePaymentConfirmationApp::OnPaymentDetailsNotUpdated() {
 void SecurePaymentConfirmationApp::AbortPaymentApp(
     base::OnceCallback<void(bool)> abort_callback) {
   std::move(abort_callback).Run(/*abort_success=*/false);
+}
+
+void SecurePaymentConfirmationApp::RenderFrameDeleted(
+    content::RenderFrameHost* render_frame_host) {
+  if (authenticator_render_frame_host_pointer_do_not_dereference_ ==
+      render_frame_host) {
+    // The authenticator requires to be deleted before the render frame.
+    authenticator_.reset();
+  }
 }
 
 void SecurePaymentConfirmationApp::OnGetAssertion(

@@ -107,6 +107,10 @@ void InternalAuthenticatorAndroid::Cancel() {
   Java_AuthenticatorImpl_cancel(env, obj);
 }
 
+content::RenderFrameHost* InternalAuthenticatorAndroid::GetRenderFrameHost() {
+  return render_frame_host_;
+}
+
 void InternalAuthenticatorAndroid::InvokeMakeCredentialResponse(
     JNIEnv* env,
     jint status,

@@ -24,6 +24,8 @@
 #include "components/payments/core/secure_payment_confirmation_instrument.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_base.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
@@ -140,15 +142,17 @@ void SecurePaymentConfirmationAppFactory::Create(
   delegate->OnDoneCreatingPaymentApps();
 }
 
-struct SecurePaymentConfirmationAppFactory::Request {
+struct SecurePaymentConfirmationAppFactory::Request
+    : public content::WebContentsObserver {
   Request(base::WeakPtr<PaymentAppFactory::Delegate> delegate,
           mojom::SecurePaymentConfirmationRequestPtr mojo_request,
           std::unique_ptr<autofill::InternalAuthenticator> authenticator)
-      : delegate(delegate),
+      : content::WebContentsObserver(delegate->GetWebContents()),
+        delegate(delegate),
         mojo_request(std::move(mojo_request)),
         authenticator(std::move(authenticator)) {}
 
-  ~Request() = default;
+  ~Request() override = default;
 
   Request(const Request& other) = delete;
   Request& operator=(const Request& other) = delete;
@@ -168,7 +172,7 @@ void SecurePaymentConfirmationAppFactory::OnWebDataServiceRequestDone(
   std::unique_ptr<Request> request = std::move(iterator->second);
   requests_.erase(iterator);
   DCHECK(request.get());
-  if (!request->delegate)
+  if (!request->delegate || !request->web_contents())
     return;
 
   if (!result || result->GetType() != SECURE_PAYMENT_CONFIRMATION) {
@@ -206,12 +210,22 @@ void SecurePaymentConfirmationAppFactory::OnAppIconDecoded(
     std::unique_ptr<SecurePaymentConfirmationInstrument> instrument,
     std::unique_ptr<Request> request,
     const SkBitmap& decoded_icon) {
+  if (!request->delegate || !request->web_contents())
+    return;
+
+  if (request->authenticator->GetRenderFrameHost() !=
+      request->web_contents()->GetMainFrame()) {
+    request->delegate->OnDoneCreatingPaymentApps();
+    return;
+  }
+
   DCHECK(!decoded_icon.drawsNothing());
   auto icon = std::make_unique<SkBitmap>(decoded_icon);
 
   request->delegate->OnPaymentAppCreated(
       std::make_unique<SecurePaymentConfirmationApp>(
-          instrument->relying_party_id, std::move(icon), instrument->label,
+          request->web_contents(), instrument->relying_party_id,
+          std::move(icon), instrument->label,
           std::move(instrument->credential_id),
           url::Origin::Create(request->delegate->GetTopOrigin()),
           request->delegate->GetSpec()->details().total->amount,

@@ -8,6 +8,10 @@
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/origin.h"
 
+namespace content {
+class RenderFrameHost;
+}  // namespace content
+
 namespace autofill {
 
 // Interface similar to blink::mojom::Authenticator meant only for internal
@@ -47,6 +51,10 @@ class InternalAuthenticator {
   // Only one MakeCredential or GetAssertion call at a time is allowed,
   // any future calls are cancelled.
   virtual void Cancel() = 0;
+
+  // Returns the non-owned render frame host associated with this authenticator.
+  // Can be used for observing the host's deletion.
+  virtual content::RenderFrameHost* GetRenderFrameHost() = 0;
 };
 
 }  // namespace autofill

@@ -50,6 +50,7 @@ class InternalAuthenticatorImpl : public autofill::InternalAuthenticator,
           IsUserVerifyingPlatformAuthenticatorAvailableCallback callback)
       override;
   void Cancel() override;
+  content::RenderFrameHost* GetRenderFrameHost() override;
 
   // WebContentsObserver:
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;

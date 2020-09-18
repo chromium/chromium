@@ -67,6 +67,10 @@ void InternalAuthenticatorImpl::Cancel() {
   authenticator_common_->Cancel();
 }
 
+content::RenderFrameHost* InternalAuthenticatorImpl::GetRenderFrameHost() {
+  return render_frame_host_;
+}
+
 void InternalAuthenticatorImpl::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
   // If the RenderFrameHost itself is navigated then this function will cause
