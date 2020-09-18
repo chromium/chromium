@@ -137,7 +137,6 @@ void HoldingSpaceTray::ShowBubble(bool show_by_click) {
   init_params.delegate = this;
   init_params.parent_window = GetBubbleWindowContainer();
   init_params.anchor_view = GetBubbleAnchor();
-  init_params.insets = GetTrayBubbleInsets();
   init_params.shelf_alignment = shelf()->alignment();
   init_params.preferred_width = kHoldingSpaceWidth;
   init_params.close_on_deactivate = true;
@@ -147,6 +146,7 @@ void HoldingSpaceTray::ShowBubble(bool show_by_click) {
   // Create and customize bubble view.
   TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
   bubble_view->set_anchor_view_insets(GetBubbleAnchorInsets());
+  bubble_view->set_margins(GetSecondaryBubbleInsets());
 
   // Add pinned files container.
   pinned_files_container_ =
