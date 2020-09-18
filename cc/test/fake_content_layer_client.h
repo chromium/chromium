@@ -60,6 +60,8 @@ class FakeContentLayerClient : public ContentLayerClient {
     has_non_aa_paint_ = has_non_aa_paint;
   }
 
+  void set_has_draw_text_op() { has_draw_text_op_ = true; }
+
   void add_draw_rect(const gfx::Rect& rect, const PaintFlags& flags) {
     draw_rects_.push_back(std::make_pair(gfx::RectF(rect), flags));
   }
@@ -121,6 +123,7 @@ class FakeContentLayerClient : public ContentLayerClient {
   bool bounds_set_ = false;
   bool contains_slow_paths_ = false;
   bool has_non_aa_paint_ = false;
+  bool has_draw_text_op_ = false;
 };
 
 }  // namespace cc

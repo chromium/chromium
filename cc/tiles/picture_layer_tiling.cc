@@ -336,6 +336,14 @@ bool PictureLayerTiling::ShouldCreateTileAt(
   if (!TilingMatchesTileIndices(active_twin))
     return true;
 
+  // If our settings don't match the active twin, it means that the active
+  // tiles will all be removed when we activate. So we need all the tiles on the
+  // pending tree to be created. See
+  // PictureLayerTilingSet::CopyTilingsAndPropertiesFromPendingTwin.
+  if (can_use_lcd_text() != active_twin->can_use_lcd_text() ||
+      raster_transform() != active_twin->raster_transform())
+    return true;
+
   // If the active tree can't create a tile, because of its raster source, then
   // the pending tree should create one.
   if (!active_twin->raster_source()->CoversRect(info.enclosing_layer_rect,

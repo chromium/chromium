@@ -5,7 +5,9 @@
 #ifndef CC_TEST_FAKE_RECORDING_SOURCE_H_
 #define CC_TEST_FAKE_RECORDING_SOURCE_H_
 
-#include <stddef.h>
+#include <cstddef>
+#include <memory>
+#include <utility>
 
 #include "cc/base/region.h"
 #include "cc/layers/recording_source.h"
@@ -71,6 +73,8 @@ class FakeRecordingSource : public RecordingSource {
   void set_has_slow_paths(bool slow_paths) {
     client_.set_contains_slow_paths(slow_paths);
   }
+
+  void set_has_draw_text_op() { client_.set_has_draw_text_op(); }
 
   void Rerecord() {
     SetNeedsDisplayRect(recorded_viewport_);

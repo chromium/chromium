@@ -4,7 +4,8 @@
 
 #include "cc/test/fake_content_layer_client.h"
 
-#include <stddef.h>
+#include <algorithm>
+#include <cstddef>
 
 #include "cc/paint/paint_op_buffer.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -107,6 +108,13 @@ FakeContentLayerClient::PaintContentsToDisplayList(
     flags.setAntiAlias(false);
     display_list->StartPaint();
     display_list->push<DrawRectOp>(SkRect::MakeWH(10, 10), flags);
+    display_list->EndPaintOfUnpaired(PaintableRegion());
+  }
+
+  if (has_draw_text_op_) {
+    display_list->StartPaint();
+    display_list->push<DrawTextBlobOp>(
+        SkTextBlob::MakeFromString("any", SkFont()), 0, 0, PaintFlags());
     display_list->EndPaintOfUnpaired(PaintableRegion());
   }
 

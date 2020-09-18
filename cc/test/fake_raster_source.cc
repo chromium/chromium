@@ -67,6 +67,15 @@ scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilledWithImages(
   return base::WrapRefCounted(new FakeRasterSource(recording_source.get()));
 }
 
+scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilledWithText(
+    const gfx::Size& size) {
+  auto recording_source =
+      FakeRecordingSource::CreateFilledRecordingSource(size);
+  recording_source->set_has_draw_text_op();
+  recording_source->Rerecord();
+  return base::WrapRefCounted(new FakeRasterSource(recording_source.get()));
+}
+
 scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilledWithPaintWorklet(
     const gfx::Size& size) {
   auto recording_source =
