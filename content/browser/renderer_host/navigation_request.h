@@ -1004,6 +1004,20 @@ class CONTENT_EXPORT NavigationRequest
   //          NavigationThrottle.
   bool NeedsUrlLoader();
 
+  // Returns whether the ready-to-commit navigation will yield a secure context.
+  //
+  // Helper for UpdateClientSecurityState().
+  //
+  // Implements the following algorithm:
+  // https://w3c.github.io/webappsec-secure-contexts/#is-settings-object-contextually-secure
+  bool IsWebSecureContext() const;
+
+  // Updates |client_security_state_| during ReadyToCommitNavigation().
+  //
+  // Must not be called for same-document navigation requests nor for requests
+  // served from the back-forward cache.
+  void UpdateClientSecurityState();
+
   // Called when the navigation is ready to be committed. This will update the
   // |state_| and inform the delegate.
   void ReadyToCommitNavigation(bool is_error);

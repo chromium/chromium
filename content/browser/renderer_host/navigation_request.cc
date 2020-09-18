@@ -4181,6 +4181,64 @@ bool NavigationRequest::NeedsUrlLoader() {
          !IsForMhtmlSubframe();
 }
 
+bool NavigationRequest::IsWebSecureContext() const {
+  // Parent document, if it exists, must also be a secure context.
+  RenderFrameHostImpl* parent = frame_tree_node_->parent();
+  if (parent) {
+    const auto& parent_state = parent->last_committed_client_security_state();
+
+    // The parent frame might not have committed a navigation yet, in which case
+    // its client security state is null. In that case, we act as if there is no
+    // parent.
+    //
+    // TODO(crbug.com/1124346): Determine if this is correct, fix it if not.
+    if (parent_state && !parent_state->is_web_secure_context) {
+      return false;
+    }
+  }
+
+  // For both regular and origin-sandboxed documents, the origin to use is the
+  // origin of the URL to-be-committed. The spec makes a distinction between the
+  // two only because it works backwards from a committed document.
+  return network::IsOriginPotentiallyTrustworthy(
+      url::Origin::Create(common_params_->url));
+}
+
+void NavigationRequest::UpdateClientSecurityState() {
+  // It is useless to update this state for same-document navigations as well
+  // as pages served from the back-forward cache.
+  DCHECK(!IsSameDocument());
+  DCHECK(!IsServedFromBackForwardCache());
+
+  // See: https://wicg.github.io/cors-rfc1918/#address-space
+  const std::vector<network::mojom::ContentSecurityPolicyPtr> empty_csp;
+  client_security_state_->ip_address_space = CalculateIPAddressSpace(
+      GetSocketAddress().address(),
+      response_head_ ? response_head_->parsed_headers->content_security_policy
+                     : empty_csp);
+
+  client_security_state_->is_web_secure_context = IsWebSecureContext();
+
+  if (!base::FeatureList::IsEnabled(
+          features::kBlockInsecurePrivateNetworkRequests)) {
+    // No need to ask the content browser client, the feature is entirely off.
+    return;
+  }
+
+  ContentBrowserClient* client = GetContentClient()->browser();
+  BrowserContext* context =
+      frame_tree_node_->navigator().GetController()->GetBrowserContext();
+
+  if (client->ShouldAllowInsecurePrivateNetworkRequests(context,
+                                                        common_params_->url)) {
+    // The content browser client decided to make an exception for this URL.
+    return;
+  }
+
+  client_security_state_->private_network_request_policy = network::mojom::
+      PrivateNetworkRequestPolicy::kBlockFromInsecureToMorePrivate;
+}
+
 void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   EnterChildTraceEvent("ReadyToCommitNavigation", this);
 
@@ -4188,36 +4246,9 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   ready_to_commit_time_ = base::TimeTicks::Now();
   RestartCommitTimeout();
 
-  if (!IsSameDocument()) {
-    // https://wicg.github.io/cors-rfc1918/#address-space
-    const std::vector<network::mojom::ContentSecurityPolicyPtr> empty_csp;
-    network::mojom::IPAddressSpace ip_address_space = CalculateIPAddressSpace(
-        GetSocketAddress().address(),
-        response_head_ ? response_head_->parsed_headers->content_security_policy
-                       : empty_csp);
-    commit_params_->ip_address_space = ip_address_space;
-    client_security_state_->ip_address_space = ip_address_space;
-
-    // TODO(crbug.com/986744): Check whether this is the correct way of
-    // detecting a secure context, amend if not. The current origin being
-    // trustworthy is a necessary condition for secure contexts, but it might
-    // not be sufficient.
-    client_security_state_->is_web_secure_context =
-        network::IsOriginPotentiallyTrustworthy(
-            url::Origin::Create(common_params_->url));
-
-    if (base::FeatureList::IsEnabled(
-            features::kBlockInsecurePrivateNetworkRequests)) {
-      ContentBrowserClient* client = GetContentClient()->browser();
-      BrowserContext* context =
-          frame_tree_node_->navigator().GetController()->GetBrowserContext();
-
-      if (!client->ShouldAllowInsecurePrivateNetworkRequests(
-              context, common_params_->url)) {
-        client_security_state_->private_network_request_policy = network::
-            mojom::PrivateNetworkRequestPolicy::kBlockFromInsecureToMorePrivate;
-      }
-    }
+  if (!IsSameDocument() && !IsServedFromBackForwardCache()) {
+    UpdateClientSecurityState();
+    commit_params_->ip_address_space = client_security_state_->ip_address_space;
   }
 
   if (appcache_handle_) {

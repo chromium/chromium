@@ -4213,8 +4213,6 @@ IN_PROC_BROWSER_TEST_F(
 //  - embedded in an insecure page served from a local IP address
 //  - to local IP addresses
 //  are blocked.
-//
-// TODO(crbug.com/1126856): Expect blocked once logic is fixed.
 IN_PROC_BROWSER_TEST_F(
     RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
     FromSecurePublicEmbeddedInInsecureLocalToLocalIsBlocked) {
@@ -4248,7 +4246,64 @@ IN_PROC_BROWSER_TEST_F(
   security_state = child_frame->last_committed_client_security_state().get();
   ASSERT_THAT(security_state, NotNull());
 
-  // TODO(crbug.com/1126856): Expect false once logic is fixed.
+  // Even though the iframe document was loaded from a secure connection, the
+  // context is deemed insecure because it was embedded by an insecure context.
+  EXPECT_FALSE(security_state->is_web_secure_context);
+
+  // The address space of the document, however, is not influenced by the
+  // parent's address space.
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+
+  // Check that the iframe cannot load a local resource.
+  EXPECT_EQ(false, EvalJs(child_frame, FetchSubresourceScript("image.jpg")));
+}
+
+// This test verifies that when the right feature is enabled, requests:
+//  - from a secure page with the "treat-as-public-address" CSP directive
+//  - embedded in a frame with no committed navigation
+//  - to local IP addresses
+//  are blocked.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    FromSecurePublicEmbeddedInNotCommittedFrameToLocalIsBlocked) {
+  // Start a navigation. This forces the RenderFrameHost to initialize its
+  // RenderFrame (1). The navigation is then cancelled by a HTTP 204 code (2).
+  //
+  // (1) Allows Javascript to be executed in the frame, otherwise ExecJs()
+  // fails.
+  // (2) Thus the RenderFrameHost does not commit a client security state.
+  EXPECT_TRUE(NavigateToURLAndExpectNoCommit(
+      shell(), embedded_test_server()->GetURL("/nocontent")));
+
+  // This results in the frame not having a security state.
+  EXPECT_TRUE(
+      root_frame_host()->last_committed_client_security_state().is_null());
+
+  // Then embed a secure public iframe.
+  auto iframe_url = embedded_test_server()->GetURL(
+      "/set-header?Content-Security-Policy: treat-as-public-address");
+  std::string script = base::ReplaceStringPlaceholders(
+      R"(
+        const iframe = document.createElement("iframe");
+        iframe.src = "$1";
+        document.body.appendChild(iframe);
+      )",
+      {iframe_url.spec()}, nullptr);
+  EXPECT_TRUE(ExecJs(root_frame_host(), script));
+  EXPECT_FALSE(WaitForLoadStop(web_contents()));
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  auto* child_frame = root_frame_host()->child_at(0)->current_frame_host();
+
+  const auto& security_state =
+      child_frame->last_committed_client_security_state();
+  ASSERT_FALSE(security_state.is_null());
+
+  // The context is deemed secure because the parent frame had no client
+  // security state, and the child frame loaded a secure page.
+  //
+  // TODO(crbug.com/1124346): Determine if this is correct, fix it if not.
   EXPECT_TRUE(security_state->is_web_secure_context);
 
   // The address space of the document, however, is not influenced by the
@@ -4256,7 +4311,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
             security_state->ip_address_space);
 
-  // TODO(crbug.com/1126856): Expect false once logic is fixed.
+  // Check that the iframe can load a local resource.
+  //
+  // TODO(crbug.com/1124346): Determine if this is correct, fix it if not.
   EXPECT_EQ(true, EvalJs(child_frame, FetchSubresourceScript("image.jpg")));
 }
 
