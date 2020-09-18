@@ -45,7 +45,16 @@ export const DestinationState = {
 };
 
 /** @type {number} Number of recent destinations to save. */
-const NUM_PERSISTED_DESTINATIONS = 3;
+export let NUM_PERSISTED_DESTINATIONS = 5;
+// <if expr="chromeos">
+NUM_PERSISTED_DESTINATIONS = 10;
+// </if>
+
+/**
+ * @type {number} Number of unpinned recent destinations to display.
+ * Pinned destinations include "Save as PDF" and "Save to Google Drive".
+ */
+const NUM_UNPINNED_DESTINATIONS = 3;
 
 Polymer({
   is: 'print-preview-destination-settings',
@@ -227,14 +236,22 @@ Polymer({
     this.destinationStore_.startLoadCookieDestination(
         Destination.GooglePromotedId.DOCS);
     this.updateDriveDestination_();
-    const recentDestinations = this.getSettingValue('recentDestinations');
-    recentDestinations.forEach(destination => {
+    const recentDestinations = /** @type {!Array<!RecentDestination>} */ (
+        this.getSettingValue('recentDestinations'));
+    let numDestinationsChecked = 0;
+    for (const destination of recentDestinations) {
+      if (!this.destinationIsDriveOrPdf_(destination)) {
+        numDestinationsChecked++;
+      }
       if (destination.origin === DestinationOrigin.COOKIES &&
           (destination.account === this.activeUser_ ||
            destination.account === '')) {
         this.destinationStore_.startLoadCookieDestination(destination.id);
       }
-    });
+      if (numDestinationsChecked === NUM_UNPINNED_DESTINATIONS) {
+        break;
+      }
+    }
 
     // Re-filter the dropdown destinations for the new account.
     if (!this.isDialogOpen_) {
@@ -303,11 +320,40 @@ Polymer({
     }
     this.pdfPrinterDisabled_ = pdfPrinterDisabled;
     this.$.userManager.initUserAccounts(userAccounts, syncAvailable);
+    let recentDestinations =
+        /** @type {!Array<!RecentDestination>} */ (
+            this.getSettingValue('recentDestinations'));
+    recentDestinations = recentDestinations.slice(
+        0, this.getRecentDestinationsDisplayCount_(recentDestinations));
     this.destinationStore_.init(
         this.pdfPrinterDisabled_, defaultPrinter,
-        serializedDefaultDestinationRulesStr,
-        /** @type {!Array<RecentDestination>} */
-        (this.getSettingValue('recentDestinations')));
+        serializedDefaultDestinationRulesStr, recentDestinations);
+  },
+
+  /**
+   * @param {!Array<!RecentDestination>} recentDestinations recent destinations.
+   * @return {number} Number of recent destinations to display.
+   * @private
+   */
+  getRecentDestinationsDisplayCount_(recentDestinations) {
+    let numDestinationsToDisplay = NUM_UNPINNED_DESTINATIONS;
+    for (let i = 0; i < recentDestinations.length; i++) {
+      // Once all NUM_UNPINNED_DESTINATIONS unpinned destinations have been
+      // found plus an extra unpinned destination, return the total number of
+      // destinations found excluding the last extra unpinned destination.
+      //
+      // The extra unpinned destination ensures that pinned destinations
+      // located directly after the last unpinned destination are included
+      // in the display count.
+      if (i > numDestinationsToDisplay) {
+        return numDestinationsToDisplay;
+      }
+      // If a destination is pinned, increment numDestinationsToDisplay.
+      if (this.destinationIsDriveOrPdf_(recentDestinations[i])) {
+        numDestinationsToDisplay++;
+      }
+    }
+    return Math.min(recentDestinations.length, numDestinationsToDisplay);
   },
 
   /** @private */
@@ -401,16 +447,31 @@ Polymer({
     }
 
     // Determine if this destination is already in the recent destinations,
-    // and where in the array it is located.
+    // where in the array it is located, and whether or not it is visible.
     const newDestination = makeRecentDestination(assert(this.destination));
     const recentDestinations =
         /** @type {!Array<!RecentDestination>} */ (
             this.getSettingValue('recentDestinations'));
-    let indexFound = recentDestinations.findIndex(function(recent) {
-      return (
-          newDestination.id === recent.id &&
-          newDestination.origin === recent.origin);
-    });
+    let indexFound = -1;
+    // Note: isVisible should be only be used if the destination is unpinned.
+    // Although pinned destinations are always visible, isVisible may not
+    // necessarily be set to true in this case.
+    let isVisible = false;
+    let numUnpinnedChecked = 0;
+    for (let index = 0; index < recentDestinations.length; index++) {
+      const recent = recentDestinations[index];
+      if (recent.id === newDestination.id &&
+          recent.origin === newDestination.origin) {
+        indexFound = index;
+        // If we haven't seen the maximum unpinned destinations already, this
+        // destination is visible in the dropdown.
+        isVisible = numUnpinnedChecked < NUM_UNPINNED_DESTINATIONS;
+        break;
+      }
+      if (!this.destinationIsDriveOrPdf_(recent)) {
+        numUnpinnedChecked++;
+      }
+    }
 
     // No change
     if (indexFound === 0 &&
@@ -424,13 +485,18 @@ Polymer({
     if (isNew && recentDestinations.length === NUM_PERSISTED_DESTINATIONS) {
       indexFound = NUM_PERSISTED_DESTINATIONS - 1;
     }
+
     if (indexFound !== -1) {
       this.setSettingSplice('recentDestinations', indexFound, 1, null);
     }
 
     // Add the most recent destination
     this.setSettingSplice('recentDestinations', 0, 0, newDestination);
-    if (!this.destinationIsDriveOrPdf_(newDestination) && isNew) {
+
+    // The dropdown needs to be updated if a new printer or one not currently
+    // visible in the dropdown has been added.
+    if (!this.destinationIsDriveOrPdf_(newDestination) &&
+        (isNew || !isVisible)) {
       this.updateDropdownDestinations_();
     }
   },
@@ -439,16 +505,23 @@ Polymer({
   updateDropdownDestinations_() {
     const recentDestinations = /** @type {!Array<!RecentDestination>} */ (
         this.getSettingValue('recentDestinations'));
-
     const updatedDestinations = [];
-    recentDestinations.forEach(recent => {
+    let numDestinationsChecked = 0;
+    for (const recent of recentDestinations) {
+      if (this.destinationIsDriveOrPdf_(recent)) {
+        continue;
+      }
+      numDestinationsChecked++;
       const key = createRecentDestinationKey(recent);
       const destination = this.destinationStore_.getDestinationByKey(key);
-      if (destination && !this.destinationIsDriveOrPdf_(recent) &&
+      if (destination &&
           (!destination.account || destination.account === this.activeUser_)) {
         updatedDestinations.push(destination);
       }
-    });
+      if (numDestinationsChecked === NUM_UNPINNED_DESTINATIONS) {
+        break;
+      }
+    }
 
     this.displayedDestinations_ = updatedDestinations;
     this.updateDriveDestination_();

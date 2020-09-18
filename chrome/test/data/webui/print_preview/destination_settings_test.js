@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterface, CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationErrorType, DestinationOrigin, DestinationState, DestinationStore, DestinationType, Error, LocalDestinationInfo, makeRecentDestination, NativeLayer, NativeLayerImpl, RecentDestination, State} from 'chrome://print/print_preview.js';
+import {CloudPrintInterface, CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationErrorType, DestinationOrigin, DestinationState, DestinationStore, DestinationType, Error, LocalDestinationInfo, makeRecentDestination, NativeLayer, NativeLayerImpl, NUM_PERSISTED_DESTINATIONS, RecentDestination, State} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -57,6 +57,9 @@ suite(destination_settings_test.suiteName, function() {
   /** @type {!Array<!Destination>} */
   let destinations = [];
 
+  /** @type {!Array<!Destination>} */
+  const extraDestinations = [];
+
   /** @type {!Array<string>} */
   let initialAccounts = [];
 
@@ -80,6 +83,15 @@ suite(destination_settings_test.suiteName, function() {
     NativeLayerImpl.instance_ = nativeLayer;
     localDestinations = [];
     destinations = getDestinations(localDestinations);
+    // Add some extra destinations.
+    for (let i = 0; i < NUM_PERSISTED_DESTINATIONS; i++) {
+      const id = `e${i}`;
+      const name = `n${i}`;
+      localDestinations.push({deviceName: id, printerName: name});
+      extraDestinations.push(new Destination(
+          id, DestinationType.LOCAL, getLocalOrigin(), name,
+          DestinationConnectionStatus.ONLINE));
+    }
     nativeLayer.setLocalDestinations(localDestinations);
     cloudPrintInterface = new CloudPrintInterfaceStub();
     CloudPrintInterfaceImpl.instance_ = cloudPrintInterface;
@@ -256,11 +268,11 @@ suite(destination_settings_test.suiteName, function() {
       });
 
   // Tests that the dropdown contains the appropriate destinations when there
-  // are 3 recent destinations.
+  // are 5 recent destinations.
   test(
       assert(destination_settings_test.TestNames.RecentDestinations),
       function() {
-        recentDestinations = destinations.slice(0, 3).map(
+        recentDestinations = destinations.slice(0, 5).map(
             destination => makeRecentDestination(destination));
 
         const whenCapabilitiesDone = nativeLayer.waitForMultipleCapabilities(3);
@@ -303,7 +315,7 @@ suite(destination_settings_test.suiteName, function() {
   test(
       assert(destination_settings_test.TestNames.RecentDestinationsMissing),
       function() {
-        recentDestinations = destinations.slice(0, 3).map(
+        recentDestinations = destinations.slice(0, 5).map(
             destination => makeRecentDestination(destination));
         const missing = localDestinations.splice(1, 1)[0];
         nativeLayer.setLocalDestinations(localDestinations);
@@ -350,11 +362,11 @@ suite(destination_settings_test.suiteName, function() {
   // Tests that the dropdown contains the appropriate destinations when Save
   // as PDF is one of the recent destinations.
   test(assert(destination_settings_test.TestNames.SaveAsPdfRecent), function() {
-    recentDestinations = destinations.slice(0, 3).map(
+    recentDestinations = destinations.slice(0, 5).map(
         destination => makeRecentDestination(destination));
     recentDestinations.splice(
         1, 1, makeRecentDestination(getSaveAsPdfDestination()));
-    const whenCapabilitiesDone = nativeLayer.waitForMultipleCapabilities(2);
+    const whenCapabilitiesDone = nativeLayer.waitForMultipleCapabilities(3);
     initialize();
 
     return whenCapabilitiesDone
@@ -369,6 +381,7 @@ suite(destination_settings_test.suiteName, function() {
           assertDropdownItems([
             makeLocalDestinationKey('ID1'),
             makeLocalDestinationKey('ID3'),
+            makeLocalDestinationKey('ID4'),
             'Save as PDF/local/',
           ]);
 
@@ -379,6 +392,7 @@ suite(destination_settings_test.suiteName, function() {
           assertDropdownItems([
             makeLocalDestinationKey('ID1'),
             makeLocalDestinationKey('ID3'),
+            makeLocalDestinationKey('ID4'),
             'Save as PDF/local/',
             '__google__docs/cookies/foo@chromium.org',
           ]);
@@ -390,12 +404,12 @@ suite(destination_settings_test.suiteName, function() {
   test(
       assert(destination_settings_test.TestNames.GoogleDriveRecent),
       function() {
-        recentDestinations = destinations.slice(0, 3).map(
+        recentDestinations = destinations.slice(0, 5).map(
             destination => makeRecentDestination(destination));
         recentDestinations.splice(
             1, 1,
             makeRecentDestination(getGoogleDriveDestination(defaultUser)));
-        const whenCapabilitiesDone = nativeLayer.waitForMultipleCapabilities(2);
+        const whenCapabilitiesDone = nativeLayer.waitForMultipleCapabilities(3);
         initialize();
 
         return whenCapabilitiesDone
@@ -414,6 +428,7 @@ suite(destination_settings_test.suiteName, function() {
               assertDropdownItems([
                 makeLocalDestinationKey('ID1'),
                 makeLocalDestinationKey('ID3'),
+                makeLocalDestinationKey('ID4'),
                 'Save as PDF/local/',
               ]);
 
@@ -424,6 +439,7 @@ suite(destination_settings_test.suiteName, function() {
               assertDropdownItems([
                 makeLocalDestinationKey('ID1'),
                 makeLocalDestinationKey('ID3'),
+                makeLocalDestinationKey('ID4'),
                 'Save as PDF/local/',
                 '__google__docs/cookies/foo@chromium.org',
               ]);
@@ -436,7 +452,7 @@ suite(destination_settings_test.suiteName, function() {
   test(
       assert(destination_settings_test.TestNames.GoogleDriveAutoselect),
       function() {
-        recentDestinations = destinations.slice(0, 3).map(
+        recentDestinations = destinations.slice(0, 5).map(
             destination => makeRecentDestination(destination));
         recentDestinations.splice(
             0, 1,
@@ -463,6 +479,7 @@ suite(destination_settings_test.suiteName, function() {
               assertDropdownItems([
                 makeLocalDestinationKey('ID2'),
                 makeLocalDestinationKey('ID3'),
+                makeLocalDestinationKey('ID4'),
                 'Save as PDF/local/',
                 '__google__docs/cookies/foo@chromium.org',
               ]);
@@ -473,11 +490,11 @@ suite(destination_settings_test.suiteName, function() {
   // DESTINATION_SELECT event firing, with Save as PDF set as the current
   // destination.
   test(assert(destination_settings_test.TestNames.SelectSaveAsPdf), function() {
-    recentDestinations = destinations.slice(0, 3).map(
+    recentDestinations = destinations.slice(0, 5).map(
         destination => makeRecentDestination(destination));
     recentDestinations.splice(
         1, 1, makeRecentDestination(getSaveAsPdfDestination()));
-    const whenCapabilitiesDone = nativeLayer.waitForMultipleCapabilities(2);
+    const whenCapabilitiesDone = nativeLayer.waitForMultipleCapabilities(3);
     initialize();
 
     const dropdown = destinationSettings.$$('#destinationSelect');
@@ -494,6 +511,7 @@ suite(destination_settings_test.suiteName, function() {
           assertDropdownItems([
             makeLocalDestinationKey('ID1'),
             makeLocalDestinationKey('ID3'),
+            makeLocalDestinationKey('ID4'),
             'Save as PDF/local/',
           ]);
           // Most recent destination is selected by default.
@@ -521,12 +539,12 @@ suite(destination_settings_test.suiteName, function() {
   test(
       assert(destination_settings_test.TestNames.SelectGoogleDrive),
       function() {
-        recentDestinations = destinations.slice(0, 3).map(
+        recentDestinations = destinations.slice(0, 5).map(
             destination => makeRecentDestination(destination));
         recentDestinations.splice(
             1, 1,
             makeRecentDestination(getGoogleDriveDestination(defaultUser)));
-        const whenCapabilitiesDone = nativeLayer.waitForMultipleCapabilities(2);
+        const whenCapabilitiesDone = nativeLayer.waitForMultipleCapabilities(3);
         initialize();
         const dropdown = destinationSettings.$$('#destinationSelect');
 
@@ -541,6 +559,7 @@ suite(destination_settings_test.suiteName, function() {
               assertDropdownItems([
                 makeLocalDestinationKey('ID1'),
                 makeLocalDestinationKey('ID3'),
+                makeLocalDestinationKey('ID4'),
                 'Save as PDF/local/',
               ]);
               assertFalse(dropdown.disabled);
@@ -552,6 +571,7 @@ suite(destination_settings_test.suiteName, function() {
               assertDropdownItems([
                 makeLocalDestinationKey('ID1'),
                 makeLocalDestinationKey('ID3'),
+                makeLocalDestinationKey('ID4'),
                 'Save as PDF/local/',
                 '__google__docs/cookies/foo@chromium.org',
               ]);
@@ -581,7 +601,7 @@ suite(destination_settings_test.suiteName, function() {
   test(
       assert(destination_settings_test.TestNames.SelectRecentDestination),
       function() {
-        recentDestinations = destinations.slice(0, 3).map(
+        recentDestinations = destinations.slice(0, 5).map(
             destination => makeRecentDestination(destination));
         const whenCapabilitiesDone = nativeLayer.waitForMultipleCapabilities(3);
         initialize();
@@ -618,7 +638,7 @@ suite(destination_settings_test.suiteName, function() {
 
   // Tests that selecting the 'see more' option opens the dialog.
   test(assert(destination_settings_test.TestNames.OpenDialog), function() {
-    recentDestinations = destinations.slice(0, 3).map(
+    recentDestinations = destinations.slice(0, 5).map(
         destination => makeRecentDestination(destination));
     const whenCapabilitiesDone = nativeLayer.waitForMultipleCapabilities(3);
     initialize();
@@ -791,7 +811,7 @@ suite(destination_settings_test.suiteName, function() {
               assertEquals(
                   0, nativeLayer.getCallCount('getPrinterCapabilities'));
 
-              // Select a third destination
+              // Select a third destination.
               selectDestination(destinations[1]);
               return nativeLayer.whenCalled('getPrinterCapabilities');
             })
@@ -799,16 +819,24 @@ suite(destination_settings_test.suiteName, function() {
               assertRecentDestinations(['ID2', 'Save as PDF', 'ID1']);
               assertEquals(
                   1, nativeLayer.getCallCount('getPrinterCapabilities'));
-
-              // Select a fourth destination. List does not grow.
               nativeLayer.resetResolver('getPrinterCapabilities');
-              selectDestination(destinations[2]);
-              return nativeLayer.whenCalled('getPrinterCapabilities');
+              // Fill recent destinations up to the cap, then add a couple
+              // more destinations. Make sure the length of the list does not
+              // exceed NUM_PERSISTED_DESTINATIONS.
+              const whenCapabilitiesDone =
+                  nativeLayer.waitForMultipleCapabilities(
+                      NUM_PERSISTED_DESTINATIONS);
+              for (const destination of extraDestinations) {
+                selectDestination(destination);
+              }
+              return whenCapabilitiesDone;
             })
             .then(() => {
-              assertRecentDestinations(['ID3', 'ID2', 'Save as PDF']);
+              assertRecentDestinations(
+                  extraDestinations.map(dest => dest.id).reverse());
               assertEquals(
-                  1, nativeLayer.getCallCount('getPrinterCapabilities'));
+                  NUM_PERSISTED_DESTINATIONS,
+                  nativeLayer.getCallCount('getPrinterCapabilities'));
             });
       });
 
@@ -817,9 +845,9 @@ suite(destination_settings_test.suiteName, function() {
   test(
       assert(destination_settings_test.TestNames.ResetDestinationOnSignOut),
       function() {
-        recentDestinations = destinations.slice(0, 3).map(
+        recentDestinations = destinations.slice(0, 5).map(
             destination => makeRecentDestination(destination));
-        const whenCapabilitiesDone = nativeLayer.waitForMultipleCapabilities(2);
+        const whenCapabilitiesDone = nativeLayer.waitForMultipleCapabilities(3);
         const driveDestination = getGoogleDriveDestination(defaultUser);
         recentDestinations.splice(
             0, 1, makeRecentDestination(driveDestination));
@@ -840,6 +868,7 @@ suite(destination_settings_test.suiteName, function() {
               assertDropdownItems([
                 makeLocalDestinationKey('ID2'),
                 makeLocalDestinationKey('ID3'),
+                makeLocalDestinationKey('ID4'),
                 'Save as PDF/local/',
                 '__google__docs/cookies/foo@chromium.org',
               ]);
@@ -854,6 +883,7 @@ suite(destination_settings_test.suiteName, function() {
               assertDropdownItems([
                 makeLocalDestinationKey('ID2'),
                 makeLocalDestinationKey('ID3'),
+                makeLocalDestinationKey('ID4'),
                 'Save as PDF/local/',
               ]);
 

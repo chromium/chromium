@@ -30,7 +30,7 @@ export {Error, State} from './data/state.js';
 export {BackgroundGraphicsModeRestriction, CapabilitiesResponse, LocalDestinationInfo, NativeInitialSettings, NativeLayer, NativeLayerImpl, PrinterSetupResponse, ProvisionalDestinationInfo} from './native_layer.js';
 export {getSelectDropdownBackground} from './print_preview_utils.js';
 export {DEFAULT_MAX_COPIES} from './ui/copies_settings.js';
-export {DestinationState} from './ui/destination_settings.js';
+export {DestinationState, NUM_PERSISTED_DESTINATIONS} from './ui/destination_settings.js';
 export {PDFPlugin, PluginProxy, PluginProxyImpl} from './ui/plugin_proxy.js';
 export {PreviewAreaState} from './ui/preview_area.js';
 export {SelectBehavior} from './ui/select_behavior.js';
