@@ -13,19 +13,16 @@
 
 namespace blink {
 
-const AtomicString& TrackDefault::AudioKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, audio, ("audio"));
-  return audio;
+AtomicString TrackDefault::AudioKeyword() {
+  return "audio";
 }
 
-const AtomicString& TrackDefault::VideoKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, video, ("video"));
-  return video;
+AtomicString TrackDefault::VideoKeyword() {
+  return "video";
 }
 
-const AtomicString& TrackDefault::TextKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, text, ("text"));
-  return text;
+AtomicString TrackDefault::TextKeyword() {
+  return "text";
 }
 
 ScriptValue TrackDefault::kinds(ScriptState* script_state) const {

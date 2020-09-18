@@ -62,8 +62,8 @@ class SourceBuffer final : public EventTargetWithInlineData,
   USING_PRE_FINALIZER(SourceBuffer, Dispose);
 
  public:
-  static const AtomicString& SegmentsKeyword();
-  static const AtomicString& SequenceKeyword();
+  static AtomicString SegmentsKeyword();
+  static AtomicString SequenceKeyword();
 
   SourceBuffer(std::unique_ptr<WebSourceBuffer>, MediaSource*, EventQueue*);
   ~SourceBuffer() override;

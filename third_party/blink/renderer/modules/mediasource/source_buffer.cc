@@ -146,14 +146,12 @@ void SourceBuffer::Dispose() {
   web_source_buffer_.reset();
 }
 
-const AtomicString& SourceBuffer::SegmentsKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, segments, ("segments"));
-  return segments;
+AtomicString SourceBuffer::SegmentsKeyword() {
+  return "segments";
 }
 
-const AtomicString& SourceBuffer::SequenceKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, sequence, ("sequence"));
-  return sequence;
+AtomicString SourceBuffer::SequenceKeyword() {
+  return "sequence";
 }
 
 void SourceBuffer::setMode(const AtomicString& new_mode,

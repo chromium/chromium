@@ -54,6 +54,23 @@ enum class MseExecutionContext {
 };
 }  // namespace
 
+static AtomicString ReadyStateToString(MediaSource::ReadyState state) {
+  AtomicString result;
+  switch (state) {
+    case MediaSource::ReadyState::kOpen:
+      result = "open";
+      break;
+    case MediaSource::ReadyState::kClosed:
+      result = "closed";
+      break;
+    case MediaSource::ReadyState::kEnded:
+      result = "ended";
+      break;
+  }
+
+  return result;
+}
+
 static bool ThrowExceptionIfClosed(bool is_open,
                                    ExceptionState& exception_state) {
   if (!is_open) {
@@ -83,28 +100,13 @@ static bool ThrowExceptionIfClosedOrUpdating(bool is_open,
   return false;
 }
 
-const AtomicString& MediaSource::OpenKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, open, ("open"));
-  return open;
-}
-
-const AtomicString& MediaSource::ClosedKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, closed, ("closed"));
-  return closed;
-}
-
-const AtomicString& MediaSource::EndedKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, ended, ("ended"));
-  return ended;
-}
-
 MediaSource* MediaSource::Create(ExecutionContext* context) {
   return MakeGarbageCollected<MediaSource>(context);
 }
 
 MediaSource::MediaSource(ExecutionContext* context)
     : ExecutionContextLifecycleObserver(context),
-      ready_state_(ClosedKeyword()),
+      ready_state_(ReadyState::kClosed),
       async_event_queue_(
           MakeGarbageCollected<EventQueue>(context,
                                            TaskType::kMediaElementEvent)),
@@ -271,14 +273,14 @@ void MediaSource::removeSourceBuffer(SourceBuffer* buffer,
   //     SourceBuffer::removedFromMediaSource (steps 2-8) above.
 }
 
-void MediaSource::OnReadyStateChange(const AtomicString& old_state,
-                                     const AtomicString& new_state) {
+void MediaSource::OnReadyStateChange(const ReadyState old_state,
+                                     const ReadyState new_state) {
   if (IsOpen()) {
     ScheduleEvent(event_type_names::kSourceopen);
     return;
   }
 
-  if (old_state == OpenKeyword() && new_state == EndedKeyword()) {
+  if (old_state == ReadyState::kOpen && new_state == ReadyState::kEnded) {
     ScheduleEvent(event_type_names::kSourceended);
     return;
   }
@@ -408,7 +410,7 @@ void MediaSource::CompleteAttachingToMediaElement(
   DCHECK(attachment_tracer_);
 
   web_media_source_ = std::move(web_media_source);
-  SetReadyState(OpenKeyword());
+  SetReadyState(ReadyState::kOpen);
 }
 
 double MediaSource::duration() const {
@@ -449,7 +451,7 @@ WebTimeRanges MediaSource::BufferedInternal() const {
 
   // 5. For each SourceBuffer object in activeSourceBuffers run the following
   //    steps:
-  bool ended = readyState() == EndedKeyword();
+  bool ended = ready_state_ == ReadyState::kEnded;
   // 5.1 Let source ranges equal the ranges returned by the buffered attribute
   //     on the current SourceBuffer.
   for (WebTimeRanges& source_ranges : ranges) {
@@ -649,15 +651,16 @@ void MediaSource::DurationChangeAlgorithm(double new_duration,
                                                   new_duration);
 }
 
-void MediaSource::SetReadyState(const AtomicString& state) {
-  DCHECK(state == OpenKeyword() || state == ClosedKeyword() ||
-         state == EndedKeyword());
+void MediaSource::SetReadyState(const ReadyState state) {
+  DCHECK(state == ReadyState::kOpen || state == ReadyState::kClosed ||
+         state == ReadyState::kEnded);
 
-  AtomicString old_state = readyState();
-  DVLOG(3) << __func__ << " this=" << this << " : " << old_state << " -> "
-           << state;
+  ReadyState old_state = ready_state_;
+  DVLOG(3) << __func__ << " this=" << this << " : "
+           << ReadyStateToString(old_state) << " -> "
+           << ReadyStateToString(state);
 
-  if (state == ClosedKeyword()) {
+  if (state == ReadyState::kClosed) {
     web_media_source_.reset();
   }
 
@@ -669,11 +672,12 @@ void MediaSource::SetReadyState(const AtomicString& state) {
   OnReadyStateChange(old_state, state);
 }
 
+AtomicString MediaSource::readyState() const {
+  return ReadyStateToString(ready_state_);
+}
+
 void MediaSource::endOfStream(const AtomicString& error,
                               ExceptionState& exception_state) {
-  DEFINE_STATIC_LOCAL(const AtomicString, network, ("network"));
-  DEFINE_STATIC_LOCAL(const AtomicString, decode, ("decode"));
-
   DVLOG(3) << __func__ << " this=" << this << " : error=" << error;
 
   // https://www.w3.org/TR/media-source/#dom-mediasource-endofstream
@@ -686,9 +690,9 @@ void MediaSource::endOfStream(const AtomicString& error,
     return;
 
   // 3. Run the end of stream algorithm with the error parameter set to error.
-  if (error == network)
+  if (error == "network")
     EndOfStreamAlgorithm(WebMediaSource::kEndOfStreamStatusNetworkError);
-  else if (error == decode)
+  else if (error == "decode")
     EndOfStreamAlgorithm(WebMediaSource::kEndOfStreamStatusDecodeError);
   else  // "" is allowed internally but not by IDL bindings.
     EndOfStreamAlgorithm(WebMediaSource::kEndOfStreamStatusNoError);
@@ -753,7 +757,7 @@ void MediaSource::clearLiveSeekableRange(ExceptionState& exception_state) {
 }
 
 bool MediaSource::IsOpen() const {
-  return readyState() == OpenKeyword();
+  return ready_state_ == ReadyState::kOpen;
 }
 
 void MediaSource::SetSourceBufferActive(SourceBuffer* source_buffer,
@@ -803,7 +807,7 @@ void MediaSource::EndOfStreamAlgorithm(
   // 1. Change the readyState attribute value to "ended".
   // 2. Queue a task to fire a simple event named sourceended at the
   //    MediaSource.
-  SetReadyState(EndedKeyword());
+  SetReadyState(ReadyState::kEnded);
 
   // 3. Do various steps based on |eos_status|.
   web_media_source_->MarkEndOfStream(eos_status);
@@ -833,11 +837,11 @@ void MediaSource::EndOfStreamAlgorithm(
 }
 
 bool MediaSource::IsClosed() const {
-  return readyState() == ClosedKeyword();
+  return ready_state_ == ReadyState::kClosed;
 }
 
 void MediaSource::Close() {
-  SetReadyState(ClosedKeyword());
+  SetReadyState(ReadyState::kClosed);
 }
 
 MediaSourceTracer* MediaSource::StartAttachingToMediaElement(
@@ -864,10 +868,10 @@ MediaSourceTracer* MediaSource::StartAttachingToMediaElement(
 }
 
 void MediaSource::OpenIfInEndedState() {
-  if (ready_state_ != EndedKeyword())
+  if (ready_state_ != ReadyState::kEnded)
     return;
 
-  SetReadyState(OpenKeyword());
+  SetReadyState(ReadyState::kOpen);
   web_media_source_->UnmarkEndOfStream();
 }
 
@@ -887,7 +891,7 @@ void MediaSource::ContextDestroyed() {
   if (media_source_attachment_)
     media_source_attachment_->OnMediaSourceContextDestroyed();
   if (!IsClosed())
-    SetReadyState(ClosedKeyword());
+    SetReadyState(ReadyState::kClosed);
   web_media_source_.reset();
 }
 

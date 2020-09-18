@@ -46,9 +46,7 @@ class MediaSource final : public EventTargetWithInlineData,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const AtomicString& OpenKeyword();
-  static const AtomicString& ClosedKeyword();
-  static const AtomicString& EndedKeyword();
+  enum class ReadyState { kOpen, kClosed, kEnded };
 
   static MediaSource* Create(ExecutionContext*);
 
@@ -73,7 +71,7 @@ class MediaSource final : public EventTargetWithInlineData,
   DEFINE_ATTRIBUTE_EVENT_LISTENER(sourceended, kSourceended)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(sourceclose, kSourceclose)
 
-  const AtomicString& readyState() const { return ready_state_; }
+  AtomicString readyState() const;
   void endOfStream(const AtomicString& error, ExceptionState&);
   void endOfStream(ExceptionState&);
   void setLiveSeekableRange(double start, double end, ExceptionState&);
@@ -117,8 +115,9 @@ class MediaSource final : public EventTargetWithInlineData,
   void Trace(Visitor*) const override;
 
  private:
-  void SetReadyState(const AtomicString&);
-  void OnReadyStateChange(const AtomicString&, const AtomicString&);
+  void SetReadyState(const ReadyState state);
+  void OnReadyStateChange(const ReadyState old_state,
+                          const ReadyState new_state);
 
   bool IsUpdating() const;
 
@@ -135,7 +134,7 @@ class MediaSource final : public EventTargetWithInlineData,
   void DurationChangeAlgorithm(double new_duration, ExceptionState&);
 
   std::unique_ptr<WebMediaSource> web_media_source_;
-  AtomicString ready_state_;
+  ReadyState ready_state_;
   Member<EventQueue> async_event_queue_;
 
   // Keep the attached element (via attachment_tracer_), |source_buffers_|,
