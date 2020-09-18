@@ -109,8 +109,8 @@ std::vector<v8::Local<v8::Value>> ConvertBitmapToV8(
   args.push_back(v8::Number::New(isolate, bitmap.info().width()));
   args.push_back(v8::Number::New(isolate, bitmap.info().height()));
   if (bitmap.isNull()) {
-    // Empty value for the bitmap.
-    args.emplace_back();
+    // The 3rd argument will be undefined (an empty argument is not valid and
+    // would crash).
     return args;
   }
 
