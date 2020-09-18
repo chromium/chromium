@@ -171,7 +171,6 @@ source_set("headers") {
     "service_worker/service_worker_status_code.h",
     "service_worker/service_worker_type_converters.h",
     "service_worker/service_worker_types.h",
-    "service_worker/service_worker_utils.h",
     "sms/sms_receiver_destroyed_reason.h",
     "sms/sms_receiver_outcome.h",
     "switches.h",

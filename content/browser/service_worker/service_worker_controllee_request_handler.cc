@@ -31,7 +31,6 @@
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
-#include "third_party/blink/public/common/service_worker/service_worker_utils.h"
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
 #include "components/offline_pages/core/request_header/offline_page_header.h"

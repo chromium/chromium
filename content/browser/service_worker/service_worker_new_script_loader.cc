@@ -25,7 +25,6 @@
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_info.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/common/service_worker/service_worker_utils.h"
 
 namespace content {
 
