@@ -481,11 +481,14 @@ void InternalSettings::setImageAnimationPolicy(
     ExceptionState& exception_state) {
   InternalSettingsGuardForSettings();
   if (EqualIgnoringASCIICase(policy, "allowed")) {
-    GetSettings()->SetImageAnimationPolicy(kImageAnimationPolicyAllowed);
+    GetSettings()->SetImageAnimationPolicy(
+        web_pref::kImageAnimationPolicyAllowed);
   } else if (EqualIgnoringASCIICase(policy, "once")) {
-    GetSettings()->SetImageAnimationPolicy(kImageAnimationPolicyAnimateOnce);
+    GetSettings()->SetImageAnimationPolicy(
+        web_pref::kImageAnimationPolicyAnimateOnce);
   } else if (EqualIgnoringASCIICase(policy, "none")) {
-    GetSettings()->SetImageAnimationPolicy(kImageAnimationPolicyNoAnimation);
+    GetSettings()->SetImageAnimationPolicy(
+        web_pref::kImageAnimationPolicyNoAnimation);
   } else {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,

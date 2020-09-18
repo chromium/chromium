@@ -939,7 +939,8 @@ void ImageLoader::DispatchPendingErrorEvent(
   count->ClearAndCheckLoadEvent();
 }
 
-bool ImageLoader::GetImageAnimationPolicy(ImageAnimationPolicy& policy) {
+bool ImageLoader::GetImageAnimationPolicy(
+    web_pref::ImageAnimationPolicy& policy) {
   if (!GetElement()->GetDocument().GetSettings())
     return false;
 

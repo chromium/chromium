@@ -137,7 +137,8 @@ class SMILTimeContainerAnimationPolicyOnceTest : public PageTestBase {
 
  private:
   static void OverrideSettings(Settings& settings) {
-    settings.SetImageAnimationPolicy(kImageAnimationPolicyAnimateOnce);
+    settings.SetImageAnimationPolicy(
+        web_pref::kImageAnimationPolicyAnimateOnce);
   }
 
   base::TimeTicks current_time_;

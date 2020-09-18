@@ -1998,8 +1998,7 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
 
   settings->SetV8CacheOptions(prefs.v8_cache_options);
 
-  settings->SetImageAnimationPolicy(
-      static_cast<WebSettings::ImageAnimationPolicy>(prefs.animation_policy));
+  settings->SetImageAnimationPolicy(prefs.animation_policy);
 
   settings->SetPresentationRequiresUserGesture(
       prefs.user_gesture_required_for_presentation);

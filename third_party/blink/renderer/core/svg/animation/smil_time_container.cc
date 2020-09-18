@@ -330,7 +330,7 @@ void SMILTimeContainer::SetPresentationTime(SMILTime new_presentation_time) {
   // yield the same value.
   max_presentation_time_ = SMILTime::Latest() - SMILTime::Epsilon();
   presentation_time_ = ClampPresentationTime(new_presentation_time);
-  if (AnimationPolicy() != kImageAnimationPolicyAnimateOnce)
+  if (AnimationPolicy() != web_pref::kImageAnimationPolicyAnimateOnce)
     return;
   const SMILTime kAnimationPolicyOnceDuration = SMILTime::FromSecondsD(3);
   max_presentation_time_ =
@@ -410,15 +410,15 @@ void SMILTimeContainer::WakeupTimerFired(TimerBase*) {
   }
 }
 
-ImageAnimationPolicy SMILTimeContainer::AnimationPolicy() const {
+web_pref::ImageAnimationPolicy SMILTimeContainer::AnimationPolicy() const {
   const Settings* settings = GetDocument().GetSettings();
   return settings ? settings->GetImageAnimationPolicy()
-                  : kImageAnimationPolicyAllowed;
+                  : web_pref::kImageAnimationPolicyAllowed;
 }
 
 bool SMILTimeContainer::AnimationsDisabled() const {
   return !GetDocument().IsActive() ||
-         AnimationPolicy() == kImageAnimationPolicyNoAnimation;
+         AnimationPolicy() == web_pref::kImageAnimationPolicyNoAnimation;
 }
 
 void SMILTimeContainer::UpdateDocumentOrderIndexes() {

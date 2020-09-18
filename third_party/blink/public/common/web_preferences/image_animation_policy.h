@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_ANIMATION_POLICY_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_ANIMATION_POLICY_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_WEB_PREFERENCES_IMAGE_ANIMATION_POLICY_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_WEB_PREFERENCES_IMAGE_ANIMATION_POLICY_H_
 
 namespace blink {
+namespace web_pref {
 
 // ImageAnimationPolicy is used for controlling image animation
 // when image frame is rendered for animation
-
 enum ImageAnimationPolicy {
   // Animate the image (the default).
   kImageAnimationPolicyAllowed,
@@ -19,6 +19,7 @@ enum ImageAnimationPolicy {
   kImageAnimationPolicyNoAnimation
 };
 
+}  // namespace web_pref
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_ANIMATION_POLICY_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_WEB_PREFERENCES_IMAGE_ANIMATION_POLICY_H_

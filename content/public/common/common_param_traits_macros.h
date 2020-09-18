@@ -66,10 +66,9 @@ IPC_ENUM_TRAITS_MIN_MAX_VALUE(ui::PointerType,
 IPC_ENUM_TRAITS_MIN_MAX_VALUE(ui::HoverType,
                               ui::HOVER_TYPE_FIRST,
                               ui::HOVER_TYPE_LAST)
-IPC_ENUM_TRAITS_MIN_MAX_VALUE(
-    blink::web_pref::ImageAnimationPolicy,
-    blink::web_pref::IMAGE_ANIMATION_POLICY_ALLOWED,
-    blink::web_pref::IMAGE_ANIMATION_POLICY_NO_ANIMATION)
+IPC_ENUM_TRAITS_MIN_MAX_VALUE(blink::web_pref::ImageAnimationPolicy,
+                              blink::web_pref::kImageAnimationPolicyAllowed,
+                              blink::web_pref::kImageAnimationPolicyNoAnimation)
 IPC_ENUM_TRAITS_MIN_MAX_VALUE(blink::web_pref::ViewportStyle,
                               blink::web_pref::ViewportStyle::DEFAULT,
                               blink::web_pref::ViewportStyle::LAST)

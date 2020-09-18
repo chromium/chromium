@@ -3822,7 +3822,8 @@ bool LayoutObject::WillRenderImage() {
   return GetDocument().View()->IsVisible();
 }
 
-bool LayoutObject::GetImageAnimationPolicy(ImageAnimationPolicy& policy) {
+bool LayoutObject::GetImageAnimationPolicy(
+    web_pref::ImageAnimationPolicy& policy) {
   if (!GetDocument().GetSettings())
     return false;
   policy = GetDocument().GetSettings()->GetImageAnimationPolicy();

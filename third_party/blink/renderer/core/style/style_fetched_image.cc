@@ -187,7 +187,8 @@ void StyleFetchedImage::LoadDeferredImage(const Document& document) {
   image_->LoadDeferredImage(document_->Fetcher());
 }
 
-bool StyleFetchedImage::GetImageAnimationPolicy(ImageAnimationPolicy& policy) {
+bool StyleFetchedImage::GetImageAnimationPolicy(
+    web_pref::ImageAnimationPolicy& policy) {
   if (!document_ || !document_->GetSettings()) {
     return false;
   }

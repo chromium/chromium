@@ -15,6 +15,7 @@
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/css/preferred_color_scheme.h"
+#include "third_party/blink/public/common/web_preferences/image_animation_policy.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-forward.h"
 #include "ui/base/pointer/pointer_device.h"
 #include "url/gurl.h"
@@ -36,16 +37,6 @@ enum EditingBehavior {
   EDITING_BEHAVIOR_ANDROID,
   EDITING_BEHAVIOR_CHROMEOS,
   EDITING_BEHAVIOR_LAST = EDITING_BEHAVIOR_CHROMEOS
-};
-
-// ImageAnimationPolicy is used for controlling image animation
-// when image frame is rendered for animation.
-// See third_party/WebKit/Source/platform/graphics/ImageAnimationPolicy.h
-// for information on the options.
-enum ImageAnimationPolicy {
-  IMAGE_ANIMATION_POLICY_ALLOWED,
-  IMAGE_ANIMATION_POLICY_ANIMATION_ONCE,
-  IMAGE_ANIMATION_POLICY_NO_ANIMATION
 };
 
 enum class ViewportStyle { DEFAULT, MOBILE, TELEVISION, LAST = TELEVISION };

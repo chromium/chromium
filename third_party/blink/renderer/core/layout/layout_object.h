@@ -2111,7 +2111,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   void ImageNotifyFinished(ImageResourceContent*) override;
   void NotifyImageFullyRemoved(ImageResourceContent*) override;
   bool WillRenderImage() final;
-  bool GetImageAnimationPolicy(ImageAnimationPolicy&) final;
+  bool GetImageAnimationPolicy(web_pref::ImageAnimationPolicy&) final;
 
   void Remove() {
     if (Parent())

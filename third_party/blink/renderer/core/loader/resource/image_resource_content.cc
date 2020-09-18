@@ -542,7 +542,8 @@ void ImageResourceContent::UpdateImageAnimationPolicy() {
   if (!image_)
     return;
 
-  ImageAnimationPolicy new_policy = kImageAnimationPolicyAllowed;
+  web_pref::ImageAnimationPolicy new_policy =
+      web_pref::kImageAnimationPolicyAllowed;
   {
     ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(
         this);

@@ -988,7 +988,6 @@ component("platform") {
     "graphics/identifiability_paint_op_digest.h",
     "graphics/image.cc",
     "graphics/image.h",
-    "graphics/image_animation_policy.h",
     "graphics/image_data_buffer.cc",
     "graphics/image_data_buffer.h",
     "graphics/image_decoder_wrapper.cc",

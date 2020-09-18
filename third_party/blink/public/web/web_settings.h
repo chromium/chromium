@@ -53,8 +53,6 @@ class WebString;
 // WebCore/page/Settings.h.
 class WebSettings {
  public:
-  enum class ImageAnimationPolicy { kAllowed, kAnimateOnce, kNoAnimation };
-
   enum class EditingBehavior { kMac, kWin, kUnix, kAndroid, kChromeOS };
 
   // Selection strategy defines how the selection granularity changes when the
@@ -157,7 +155,7 @@ class WebSettings {
   virtual void SetHighlightAds(bool) = 0;
   virtual void SetHyperlinkAuditingEnabled(bool) = 0;
   virtual void SetIgnoreMainFrameOverflowHiddenQuirk(bool) = 0;
-  virtual void SetImageAnimationPolicy(ImageAnimationPolicy) = 0;
+  virtual void SetImageAnimationPolicy(web_pref::ImageAnimationPolicy) = 0;
   virtual void SetImagesEnabled(bool) = 0;
   virtual void SetInlineTextBoxAccessibilityEnabled(bool) = 0;
   virtual void SetJavaScriptCanAccessClipboard(bool) = 0;

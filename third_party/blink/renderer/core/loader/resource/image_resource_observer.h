@@ -23,9 +23,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_OBSERVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_OBSERVER_H_
 
+#include "third_party/blink/public/common/web_preferences/image_animation_policy.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
-#include "third_party/blink/renderer/platform/graphics/image_animation_policy.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_priority.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -74,7 +74,9 @@ class CORE_EXPORT ImageResourceObserver {
 
   // Called to get imageAnimation policy from settings. An implementation of
   // this method is not allowed to add or remove ImageResource observers.
-  virtual bool GetImageAnimationPolicy(ImageAnimationPolicy&) { return false; }
+  virtual bool GetImageAnimationPolicy(web_pref::ImageAnimationPolicy&) {
+    return false;
+  }
 
   // Return the observer's requested resource priority. An implementation of
   // this method is not allowed to add or remove ImageResource observers.

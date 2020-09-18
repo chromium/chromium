@@ -501,8 +501,8 @@
     },
     {
       name: "imageAnimationPolicy",
-      initial: "kImageAnimationPolicyAllowed",
-      type: "ImageAnimationPolicy",
+      initial: "web_pref::kImageAnimationPolicyAllowed",
+      type: "web_pref::ImageAnimationPolicy",
     },
 
     // Html preload scanning is a fast, early scan of HTML documents to find loadable

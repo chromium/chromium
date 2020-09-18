@@ -353,7 +353,7 @@
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/switches.h"
-#include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/common/web_preferences/image_animation_policy.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 #include "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom.h"
@@ -3304,15 +3304,15 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::string image_animation_policy =
       prefs->GetString(prefs::kAnimationPolicy);
-  if (image_animation_policy == kAnimationPolicyOnce)
+  if (image_animation_policy == kAnimationPolicyOnce) {
     web_prefs->animation_policy =
-        blink::web_pref::IMAGE_ANIMATION_POLICY_ANIMATION_ONCE;
-  else if (image_animation_policy == kAnimationPolicyNone)
+        blink::web_pref::kImageAnimationPolicyAnimateOnce;
+  } else if (image_animation_policy == kAnimationPolicyNone) {
     web_prefs->animation_policy =
-        blink::web_pref::IMAGE_ANIMATION_POLICY_NO_ANIMATION;
-  else
-    web_prefs->animation_policy =
-        blink::web_pref::IMAGE_ANIMATION_POLICY_ALLOWED;
+        blink::web_pref::kImageAnimationPolicyNoAnimation;
+  } else {
+    web_prefs->animation_policy = blink::web_pref::kImageAnimationPolicyAllowed;
+  }
 #endif
 
   // Make sure we will set the default_encoding with canonical encoding name.

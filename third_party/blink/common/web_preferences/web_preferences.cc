@@ -42,13 +42,6 @@ STATIC_ASSERT_ENUM(EDITING_BEHAVIOR_ANDROID,
 STATIC_ASSERT_ENUM(EDITING_BEHAVIOR_CHROMEOS,
                    WebSettings::EditingBehavior::kChromeOS);
 
-STATIC_ASSERT_ENUM(IMAGE_ANIMATION_POLICY_ALLOWED,
-                   WebSettings::ImageAnimationPolicy::kAllowed);
-STATIC_ASSERT_ENUM(IMAGE_ANIMATION_POLICY_ANIMATION_ONCE,
-                   WebSettings::ImageAnimationPolicy::kAnimateOnce);
-STATIC_ASSERT_ENUM(IMAGE_ANIMATION_POLICY_NO_ANIMATION,
-                   WebSettings::ImageAnimationPolicy::kNoAnimation);
-
 STATIC_ASSERT_ENUM(ui::POINTER_TYPE_NONE, blink::kPointerTypeNone);
 STATIC_ASSERT_ENUM(ui::POINTER_TYPE_COARSE, blink::kPointerTypeCoarse);
 STATIC_ASSERT_ENUM(ui::POINTER_TYPE_FINE, blink::kPointerTypeFine);
@@ -175,7 +168,7 @@ WebPreferences::WebPreferences()
       record_whole_document(false),
       cookie_enabled(true),
       accelerated_video_decode_enabled(false),
-      animation_policy(IMAGE_ANIMATION_POLICY_ALLOWED),
+      animation_policy(kImageAnimationPolicyAllowed),
       user_gesture_required_for_presentation(true),
       text_tracks_enabled(false),
       text_track_margin_percentage(0.0f),

@@ -234,9 +234,9 @@ void WebSettingsImpl::SetLoadsImagesAutomatically(
   settings_->SetLoadsImagesAutomatically(loads_images_automatically);
 }
 
-void WebSettingsImpl::SetImageAnimationPolicy(ImageAnimationPolicy policy) {
-  settings_->SetImageAnimationPolicy(
-      static_cast<blink::ImageAnimationPolicy>(policy));
+void WebSettingsImpl::SetImageAnimationPolicy(
+    web_pref::ImageAnimationPolicy policy) {
+  settings_->SetImageAnimationPolicy(policy);
 }
 
 void WebSettingsImpl::SetImagesEnabled(bool enabled) {
@@ -795,12 +795,5 @@ void WebSettingsImpl::SetSelectionClipboardBufferAvailable(bool available) {
 void WebSettingsImpl::SetAccessibilityIncludeSvgGElement(bool include) {
   settings_->SetAccessibilityIncludeSvgGElement(include);
 }
-
-STATIC_ASSERT_ENUM(WebSettings::ImageAnimationPolicy::kAllowed,
-                   kImageAnimationPolicyAllowed);
-STATIC_ASSERT_ENUM(WebSettings::ImageAnimationPolicy::kAnimateOnce,
-                   kImageAnimationPolicyAnimateOnce);
-STATIC_ASSERT_ENUM(WebSettings::ImageAnimationPolicy::kNoAnimation,
-                   kImageAnimationPolicyNoAnimation);
 
 }  // namespace blink

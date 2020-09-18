@@ -50,15 +50,16 @@
 
 namespace blink {
 
-int GetRepetitionCountWithPolicyOverride(int actual_count,
-                                         ImageAnimationPolicy policy) {
+int GetRepetitionCountWithPolicyOverride(
+    int actual_count,
+    web_pref::ImageAnimationPolicy policy) {
   if (actual_count == kAnimationNone ||
-      policy == kImageAnimationPolicyNoAnimation) {
+      policy == web_pref::kImageAnimationPolicyNoAnimation) {
     return kAnimationNone;
   }
 
   if (actual_count == kAnimationLoopOnce ||
-      policy == kImageAnimationPolicyAnimateOnce) {
+      policy == web_pref::kImageAnimationPolicyAnimateOnce) {
     return kAnimationLoopOnce;
   }
 
@@ -67,7 +68,7 @@ int GetRepetitionCountWithPolicyOverride(int actual_count,
 
 BitmapImage::BitmapImage(ImageObserver* observer, bool is_multipart)
     : Image(observer, is_multipart),
-      animation_policy_(kImageAnimationPolicyAllowed),
+      animation_policy_(web_pref::kImageAnimationPolicyAllowed),
       all_data_received_(false),
       have_size_(false),
       size_available_(false),
@@ -434,7 +435,7 @@ bool BitmapImage::MaybeAnimated() {
   return decoder_ && decoder_->RepetitionCount() != kAnimationNone;
 }
 
-void BitmapImage::SetAnimationPolicy(ImageAnimationPolicy policy) {
+void BitmapImage::SetAnimationPolicy(web_pref::ImageAnimationPolicy policy) {
   if (animation_policy_ == policy)
     return;
 

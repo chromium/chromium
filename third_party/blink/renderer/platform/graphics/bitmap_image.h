@@ -31,11 +31,11 @@
 #include <memory>
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "third_party/blink/public/common/web_preferences/image_animation_policy.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
-#include "third_party/blink/renderer/platform/graphics/image_animation_policy.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_animation.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -80,8 +80,10 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   void ResetAnimation() override;
   bool MaybeAnimated() override;
 
-  void SetAnimationPolicy(ImageAnimationPolicy) override;
-  ImageAnimationPolicy AnimationPolicy() override { return animation_policy_; }
+  void SetAnimationPolicy(web_pref::ImageAnimationPolicy) override;
+  web_pref::ImageAnimationPolicy AnimationPolicy() override {
+    return animation_policy_;
+  }
 
   scoped_refptr<Image> ImageForDefaultFrame() override;
 
@@ -159,7 +161,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   // data is updated in DataChanged.
   PaintImage cached_frame_;
 
-  ImageAnimationPolicy
+  web_pref::ImageAnimationPolicy
       animation_policy_;  // Whether or not we can play animation.
 
   bool all_data_received_ : 1;  // Whether we've received all our data.
