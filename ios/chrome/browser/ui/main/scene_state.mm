@@ -110,6 +110,9 @@
 }
 
 - (void)setPresentingModalOverlay:(BOOL)presentingModalOverlay {
+  if (_presentingModalOverlay == presentingModalOverlay) {
+    return;
+  }
   if (presentingModalOverlay) {
     [self.observers sceneStateWillShowModalOverlay:self];
   } else {
