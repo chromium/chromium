@@ -395,6 +395,7 @@ source_set("base") {
       "CoreVideo.framework",
       "CoreFoundation.framework",
       "CoreGraphics.framework",
+      "IOSurface.framework",
     ]
   } else if (is_win) {
     sources += [ "user_input_monitor_win.cc" ]

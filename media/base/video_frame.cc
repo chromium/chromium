@@ -647,6 +647,77 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalDmabufs(
 
 #if defined(OS_MAC)
 // static
+scoped_refptr<VideoFrame> VideoFrame::WrapIOSurface(
+    gfx::GpuMemoryBufferHandle handle,
+    const gfx::Rect& visible_rect,
+    base::TimeDelta timestamp) {
+  if (handle.type != gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER) {
+    DLOG(ERROR) << "Non-IOSurface handle.";
+    return nullptr;
+  }
+  if (!handle.mach_port) {
+    DLOG(ERROR) << "Invalid mach port.";
+    return nullptr;
+  }
+  base::ScopedCFTypeRef<IOSurfaceRef> io_surface(
+      IOSurfaceLookupFromMachPort(handle.mach_port));
+  if (!io_surface) {
+    DLOG(ERROR) << "Unable to lookup IOSurface.";
+    return nullptr;
+  }
+
+  // Only support NV12 IOSurfaces.
+  const OSType cv_pixel_format = IOSurfaceGetPixelFormat(io_surface);
+  if (cv_pixel_format != kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange) {
+    DLOG(ERROR) << "Invalid (non-NV12) pixel format.";
+    return nullptr;
+  }
+  const VideoPixelFormat pixel_format = PIXEL_FORMAT_NV12;
+
+  // Retrieve the layout parameters for |io_surface_|.
+  const size_t num_planes = IOSurfaceGetPlaneCount(io_surface);
+  const gfx::Size size(IOSurfaceGetWidth(io_surface),
+                       IOSurfaceGetHeight(io_surface));
+  std::vector<int32_t> strides;
+  for (size_t i = 0; i < num_planes; ++i)
+    strides.push_back(IOSurfaceGetBytesPerRowOfPlane(io_surface, i));
+  base::Optional<VideoFrameLayout> layout =
+      media::VideoFrameLayout::CreateWithStrides(pixel_format, size, strides);
+  if (!layout) {
+    DLOG(ERROR) << "Invalid layout.";
+    return nullptr;
+  }
+
+  const StorageType storage_type = STORAGE_UNOWNED_MEMORY;
+  if (!IsValidConfig(pixel_format, storage_type, size, visible_rect, size)) {
+    DLOG(ERROR) << "Invalid config.";
+    return nullptr;
+  }
+
+  // Lock the IOSurface for CPU read access. After the VideoFrame is created,
+  // add a destruction callback to unlock the IOSurface.
+  kern_return_t lock_result =
+      IOSurfaceLock(io_surface, kIOSurfaceLockReadOnly, nullptr);
+  if (lock_result != kIOReturnSuccess) {
+    DLOG(ERROR) << "Failed to lock IOSurface.";
+    return nullptr;
+  }
+  auto unlock_lambda = [](base::ScopedCFTypeRef<IOSurfaceRef> io_surface) {
+    IOSurfaceUnlock(io_surface, kIOSurfaceLockReadOnly, nullptr);
+  };
+
+  scoped_refptr<VideoFrame> frame =
+      new VideoFrame(*layout, storage_type, visible_rect, size, timestamp);
+  for (size_t i = 0; i < num_planes; ++i) {
+    frame->data_[i] = reinterpret_cast<uint8_t*>(
+        IOSurfaceGetBaseAddressOfPlane(io_surface, i));
+  }
+  frame->AddDestructionObserver(
+      base::BindOnce(unlock_lambda, std::move(io_surface)));
+  return frame;
+}
+
+// static
 scoped_refptr<VideoFrame> VideoFrame::WrapCVPixelBuffer(
     CVPixelBufferRef cv_pixel_buffer,
     base::TimeDelta timestamp) {

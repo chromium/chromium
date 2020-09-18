@@ -47,6 +47,7 @@
 
 namespace gfx {
 class GpuMemoryBuffer;
+struct GpuMemoryBufferHandle;
 }
 
 namespace media {
@@ -276,6 +277,13 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // http://crbug.com/401308
   static scoped_refptr<VideoFrame> WrapCVPixelBuffer(
       CVPixelBufferRef cv_pixel_buffer,
+      base::TimeDelta timestamp);
+
+  // Wraps a provided IOSurface with a VideoFrame. The IOSurface is retained
+  // and locked for the lifetime of the VideoFrame.
+  static scoped_refptr<VideoFrame> WrapIOSurface(
+      gfx::GpuMemoryBufferHandle handle,
+      const gfx::Rect& visible_rect,
       base::TimeDelta timestamp);
 #endif
 
