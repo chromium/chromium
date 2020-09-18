@@ -1177,11 +1177,12 @@ bool NearbySharingServiceImpl::HasAvailableConnectionMediums() {
   // have bluetooth, so wifi LAN is a platform-agnostic check.
   net::NetworkChangeNotifier::ConnectionType connection_type =
       net::NetworkChangeNotifier::GetConnectionType();
-  return IsBluetoothPowered() ||
-         (connection_type ==
-              net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI ||
-          connection_type ==
-              net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
+  bool hasNetworkConnection =
+      connection_type ==
+          net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI ||
+      connection_type ==
+          net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET;
+  return IsBluetoothPowered() || (kIsWifiLanSupported && hasNetworkConnection);
 }
 
 void NearbySharingServiceImpl::InvalidateSurfaceState() {

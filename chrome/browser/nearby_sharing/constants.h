@@ -43,4 +43,9 @@ constexpr base::TimeDelta kMinProgressUpdateFrequency =
 // be disabled even if it would be allowed by the user.
 constexpr int64_t kOnlineFileSizeLimitBytes = 25 * 1024 * 1024;  // 25MB
 
+// TODO(crbug.com/1129069): Set this to true when WiFi LAN is supported to
+// enable logic that checks for an internet connection for managing surfaces and
+// the utility process lifecycle.
+constexpr bool kIsWifiLanSupported = false;
+
 #endif  // CHROME_BROWSER_NEARBY_SHARING_CONSTANTS_H_

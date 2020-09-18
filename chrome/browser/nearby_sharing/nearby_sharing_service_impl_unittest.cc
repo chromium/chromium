@@ -911,11 +911,7 @@ struct ValidSendSurfaceTestData {
     // Ethernet available
     {true, net::NetworkChangeNotifier::CONNECTION_ETHERNET},
     // 3G available
-    {true, net::NetworkChangeNotifier::CONNECTION_3G},
-    // Wifi available and no bluetooth
-    {false, net::NetworkChangeNotifier::CONNECTION_WIFI},
-    // Ethernet available and no bluetooth
-    {false, net::NetworkChangeNotifier::CONNECTION_ETHERNET}};
+    {true, net::NetworkChangeNotifier::CONNECTION_3G}};
 
 class NearbySharingServiceImplValidSendTest
     : public NearbySharingServiceImplTest,
@@ -935,7 +931,12 @@ struct InvalidSendSurfaceTestData {
      net::NetworkChangeNotifier::CONNECTION_NONE},
     // 3G available and no bluetooth
     {/*screen_locked=*/false, false, net::NetworkChangeNotifier::CONNECTION_3G},
-};
+    // Wifi available and no bluetooth (invalid until WiFi LAN is supported)
+    {/*screen_locked=*/false, false,
+     net::NetworkChangeNotifier::CONNECTION_WIFI},
+    // Ethernet available and no bluetooth (invalid until WiFi LAN is supported)
+    {/*screen_locked=*/false, false,
+     net::NetworkChangeNotifier::CONNECTION_ETHERNET}};
 
 class NearbySharingServiceImplInvalidSendTest
     : public NearbySharingServiceImplTest,
@@ -1751,7 +1752,10 @@ TEST_F(NearbySharingServiceImplTest,
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
       &callback, NearbySharingService::ReceiveSurfaceState::kForeground);
   EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
-  EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
+
+  // TODO(crbug.com/1129069): When WiFi LAN is supported we will expect this to
+  // be true.
+  EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
 }
 
 TEST_F(NearbySharingServiceImplTest,
@@ -1762,7 +1766,10 @@ TEST_F(NearbySharingServiceImplTest,
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
       &callback, NearbySharingService::ReceiveSurfaceState::kForeground);
   EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
-  EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
+
+  // TODO(crbug.com/1129069): When WiFi LAN is supported we will expect this to
+  // be true.
+  EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
 }
 
 TEST_F(NearbySharingServiceImplTest,

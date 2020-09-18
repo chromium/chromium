@@ -463,10 +463,11 @@ TEST_P(NearbyConnectionsManagerImplTestConnectionMediums,
       (data_usage != DataUsage::kWifiOnly ||
        !net::NetworkChangeNotifier::IsConnectionCellular(connection_type));
 
+  // TODO(crbug.com/1129069): Update when WiFi LAN is supported.
   auto expected_mediums = MediumSelection::New(
       /*bluetooth=*/true,
       /*web_rtc=*/should_use_web_rtc,
-      /*wifi_lan=*/true);
+      /*wifi_lan=*/false);
 
   // StartDiscovery will succeed.
   mojo::Remote<EndpointDiscoveryListener> discovery_listener_remote;
@@ -1231,10 +1232,12 @@ TEST_P(NearbyConnectionsManagerImplTestMediums,
        !net::NetworkChangeNotifier::IsConnectionCellular(connection_type));
 
   bool is_high_power = power_level == PowerLevel::kHighPower;
+
+  // TODO(crbug.com/1129069): Update when WiFi LAN is supported.
   auto expected_mediums = MediumSelection::New(
       /*bluetooth=*/is_high_power,
       /*web_rtc=*/should_use_web_rtc,
-      /*wifi_lan=*/is_high_power);
+      /*wifi_lan=*/false);
 
   const std::vector<uint8_t> local_endpoint_info(std::begin(kEndpointInfo),
                                                  std::end(kEndpointInfo));

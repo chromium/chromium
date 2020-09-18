@@ -84,7 +84,7 @@ void NearbyConnectionsManagerImpl::StartAdvertising(
   bool is_high_power = power_level == PowerLevel::kHighPower;
   auto allowed_mediums = MediumSelection::New(
       /*bluetooth=*/is_high_power, ShouldEnableWebRtc(data_usage, power_level),
-      /*wifi_lan=*/is_high_power);
+      /*wifi_lan=*/is_high_power && kIsWifiLanSupported);
 
   mojo::PendingRemote<ConnectionLifecycleListener> lifecycle_listener;
   connection_lifecycle_listeners_.Add(
@@ -170,7 +170,7 @@ void NearbyConnectionsManagerImpl::Connect(
   auto allowed_mediums = MediumSelection::New(
       /*bluetooth=*/true,
       ShouldEnableWebRtc(data_usage, PowerLevel::kHighPower),
-      /*wifi_lan=*/true);
+      /*wifi_lan=*/kIsWifiLanSupported);
 
   mojo::PendingRemote<ConnectionLifecycleListener> lifecycle_listener;
   connection_lifecycle_listeners_.Add(
