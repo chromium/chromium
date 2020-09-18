@@ -23,7 +23,6 @@ import {Base, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polym
 
 import {CloudOrigins, Destination, DestinationOrigin, PDF_DESTINATION_KEY, RecentDestination, SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
 import {ERROR_STRING_KEY_MAP, getStatusReasonFromPrinterStatus, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity} from '../data/printer_status_cros.js';
-import {NativeLayer, NativeLayerImpl} from '../native_layer.js';
 import {getSelectDropdownBackground} from '../print_preview_utils.js';
 
 import {SelectBehavior} from './select_behavior.js';
@@ -57,9 +56,6 @@ Polymer({
     noDestinations: Boolean,
 
     pdfPrinterDisabled: Boolean,
-
-    /** @type {!Map<string, string>} */
-    statusRequestedMap: Object,
 
     /** @type {!Array<!Destination>} */
     recentDestinationList: {
@@ -239,56 +235,38 @@ Polymer({
     }
 
     for (const destination of this.recentDestinationList) {
-      if (destination.origin !== DestinationOrigin.CROS ||
-          this.statusRequestedMap.has(destination.id)) {
+      if (!destination || destination.origin !== DestinationOrigin.CROS) {
         continue;
       }
 
-      NativeLayerImpl.getInstance()
-          .requestPrinterStatusUpdate(destination.id)
-          .then(status => this.onPrinterStatusReceived_(status));
-      this.statusRequestedMap.set(destination.id, destination.key);
+      destination.requestPrinterStatus().then(
+          destinationKey => this.onPrinterStatusReceived_(destinationKey));
     }
   },
 
   /**
-   * Check if the printer in |printerStatus| is currently in the dropdown.
-   * Update its status icon if it's present.
-   * @param {!PrinterStatus} printerStatus
+   * Check if the printer is currently in the dropdown then update its status
+   *    icon if it's present.
+   * @param {string} destinationKey
    * @private
    */
-  onPrinterStatusReceived_(printerStatus) {
+  onPrinterStatusReceived_(destinationKey) {
     assert(this.printerStatusFlagEnabled_);
-    if (!printerStatus.printerId) {
-      return;
-    }
-
-    const destinationKey = this.statusRequestedMap.get(printerStatus.printerId);
-    if (!destinationKey) {
-      return;
-    }
 
     const indexFound = this.recentDestinationList.findIndex(destination => {
-      return destination.id === printerStatus.printerId &&
-          destination.origin === DestinationOrigin.CROS;
+      return destination.key === destinationKey;
     });
     if (indexFound === -1) {
       return;
     }
 
-    const statusReason = getStatusReasonFromPrinterStatus(printerStatus);
-    if (!statusReason) {
-      return;
-    }
-
-    this.recentDestinationList[indexFound].printerStatusReason = statusReason;
-    // Set the new printer status reason then use notifyPath to trigger the
-    // dropdown printer status icons to recalculate their badge color.
+    // Use notifyPath to trigger the matching printer located in the dropdown to
+    // recalculate its status icon.
     this.notifyPath(`recentDestinationList.${indexFound}.printerStatusReason`);
 
-    // If |printerStatus| is for the currently selected printer, use notifyPath
-    // to trigger the destination printer status icon to recalculate its badge
-    // color and the destination error status text.
+    // If |destinationKey| matches the currently selected printer, use
+    // notifyPath to trigger the destination to recalculate its status icon and
+    // error status text.
     if (this.destination && this.destination.key === destinationKey) {
       this.notifyPath(`destination.printerStatusReason`);
     }

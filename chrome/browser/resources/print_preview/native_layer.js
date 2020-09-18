@@ -283,7 +283,7 @@ export class NativeLayer {
   /**
    * Records the histogram to capture the printer status of the current
    * destination and whether the user chose to print or cancel.
-   * @param {!PrinterStatusReason} statusReason Current destination printer
+   * @param {?PrinterStatusReason} statusReason Current destination printer
    * status
    * @param {boolean} didUserAttemptPrint True if user printed, false if user
    * canceled.
@@ -400,6 +400,10 @@ export class NativeLayerImpl {
 
   /** @override */
   recordPrinterStatusHistogram(statusReason, didUserAttemptPrint) {
+    if (!statusReason) {
+      return;
+    }
+
     let histogram;
     switch (statusReason) {
       case (PrinterStatusReason.NO_ERROR):

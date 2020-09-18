@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, PrinterState, PrinterStatusReason, PrinterStatusSeverity} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, NativeLayer, NativeLayerImpl, PrinterState, PrinterStatusReason, PrinterStatusSeverity} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {keyDownOn, move} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -10,6 +10,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {eventToPromise} from '../test_util.m.js';
 
+import {NativeLayerStub} from './native_layer_stub.js';
 import {getGoogleDriveDestination, getSaveAsPdfDestination} from './print_preview_test_utils.js';
 
 window.destination_dropdown_cros_test = {};
@@ -34,6 +35,9 @@ destination_dropdown_cros_test.TestNames = {
 suite(destination_dropdown_cros_test.suiteName, function() {
   /** @type {!PrintPreviewDestinationDropdownCrosElement} */
   let dropdown;
+
+  /** @type {?NativeLayerStub} */
+  let nativeLayer = null;
 
   /** @param {!Array<!Destination>} items */
   function setItemList(items) {
@@ -94,9 +98,41 @@ suite(destination_dropdown_cros_test.suiteName, function() {
         DestinationConnectionStatus.ONLINE);
   }
 
+  function setNativeLayerPrinterStatusMap() {
+    [{
+      printerId: 'One',
+      statusReasons: [{
+        reason: PrinterStatusReason.NO_ERROR,
+        severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
+      }],
+    },
+     {
+       printerId: 'Two',
+       statusReasons: [{
+         reason: PrinterStatusReason.OUT_OF_INK,
+         severity: PrinterStatusSeverity.ERROR
+       }],
+     },
+     {
+       printerId: 'Three',
+       statusReasons: [{
+         reason: PrinterStatusReason.UNKNOWN_REASON,
+         severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
+       }],
+     }]
+        .forEach(
+            status =>
+                nativeLayer.addPrinterStatusToMap(status.printerId, status));
+  }
+
   /** @override */
   setup(function() {
     document.body.innerHTML = '';
+
+    // Stub out native layer.
+    nativeLayer = new NativeLayerStub();
+    NativeLayerImpl.instance_ = nativeLayer;
+    setNativeLayerPrinterStatusMap();
 
     dropdown =
         /** @type {!PrintPreviewDestinationDropdownCrosElement} */
@@ -268,19 +304,17 @@ suite(destination_dropdown_cros_test.suiteName, function() {
                  .NewStatusUpdatesDestinationIcon),
       function() {
         const destinationBadge = dropdown.$$('#destination-badge');
-        dropdown.value = createDestination('One', DestinationOrigin.CROS);
-
-        dropdown.value.printerStatusReason = PrinterStatusReason.NO_ERROR;
-        dropdown.notifyPath(`value.printerStatusReason`);
-        assertEquals(PrinterState.GOOD, destinationBadge.printerState);
-
-        dropdown.value.printerStatusReason = PrinterStatusReason.OUT_OF_INK;
-        dropdown.notifyPath(`value.printerStatusReason`);
-        assertEquals(PrinterState.ERROR, destinationBadge.printerState);
-
-        dropdown.value.printerStatusReason = PrinterStatusReason.UNKNOWN_REASON;
-        dropdown.notifyPath(`value.printerStatusReason`);
+        dropdown.value = createDestination('Two', DestinationOrigin.CROS);
         assertEquals(PrinterState.UNKNOWN, destinationBadge.printerState);
+
+        return dropdown.value.requestPrinterStatus().then(() => {
+          // After printer stauts is updated the state will still be UNKNOWN.
+          assertEquals(PrinterState.UNKNOWN, destinationBadge.printerState);
+
+          // Only after the path is notified will the state update to ERROR.
+          dropdown.notifyPath(`value.printerStatusReason`);
+          assertEquals(PrinterState.ERROR, destinationBadge.printerState);
+        });
       });
 
   test(
@@ -289,24 +323,27 @@ suite(destination_dropdown_cros_test.suiteName, function() {
       function() {
         const goodDestination =
             createDestination('One', DestinationOrigin.CROS);
-        goodDestination.printerStatusReason = PrinterStatusReason.NO_ERROR;
         const errorDestination =
             createDestination('Two', DestinationOrigin.CROS);
-        errorDestination.printerStatusReason = PrinterStatusReason.OUT_OF_INK;
         const unknownDestination =
             createDestination('Three', DestinationOrigin.CROS);
-        unknownDestination.printerStatusReason =
-            PrinterStatusReason.UNKNOWN_REASON;
         const destinationBadge = dropdown.$$('#destination-badge');
 
-        dropdown.value = goodDestination;
-        assertEquals(PrinterState.GOOD, destinationBadge.printerState);
-
-        dropdown.value = errorDestination;
-        assertEquals(PrinterState.ERROR, destinationBadge.printerState);
-
-        dropdown.value = unknownDestination;
-        assertEquals(PrinterState.UNKNOWN, destinationBadge.printerState);
+        return goodDestination.requestPrinterStatus()
+            .then(() => {
+              dropdown.value = goodDestination;
+              assertEquals(PrinterState.GOOD, destinationBadge.printerState);
+              return errorDestination.requestPrinterStatus();
+            })
+            .then(() => {
+              dropdown.value = errorDestination;
+              assertEquals(PrinterState.ERROR, destinationBadge.printerState);
+              return unknownDestination.requestPrinterStatus();
+            })
+            .then(() => {
+              dropdown.value = unknownDestination;
+              assertEquals(PrinterState.UNKNOWN, destinationBadge.printerState);
+            });
       });
 
   test(

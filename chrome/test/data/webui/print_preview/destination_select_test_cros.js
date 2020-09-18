@@ -176,61 +176,71 @@ suite(printer_status_test_cros.suiteName, function() {
         const destination7 =
             createDestination('ID7', 'Seven', DestinationOrigin.CROS);
 
-        return waitBeforeNextRender(destinationSelect).then(() => {
-          const whenStatusRequestsDone =
-              nativeLayer.waitForMultiplePrinterStatusRequests(7);
+        return waitBeforeNextRender(destinationSelect)
+            .then(() => {
+              const whenStatusRequestsDone =
+                  nativeLayer.waitForMultiplePrinterStatusRequests(7);
 
-          destinationSelect.recentDestinationList = [
-            destination1,
-            destination2,
-            destination3,
-            destination4,
-            destination5,
-            destination6,
-            destination7,
-          ];
+              destinationSelect.recentDestinationList = [
+                destination1,
+                destination2,
+                destination3,
+                destination4,
+                destination5,
+                destination6,
+                destination7,
+              ];
 
-          const dropdown = destinationSelect.$$('#dropdown');
-          return whenStatusRequestsDone.then(() => {
-            assertEquals(
-                PrinterState.GOOD,
-                dropdown.$$(`#${escapeForwardSlahes(destination1.key)}`)
-                    .firstChild.printerState);
-            assertEquals(
-                PrinterState.GOOD,
-                dropdown.$$(`#${escapeForwardSlahes(destination2.key)}`)
-                    .firstChild.printerState);
-            assertEquals(
-                PrinterState.GOOD,
-                dropdown.$$(`#${escapeForwardSlahes(destination3.key)}`)
-                    .firstChild.printerState);
-            assertEquals(
-                PrinterState.ERROR,
-                dropdown.$$(`#${escapeForwardSlahes(destination4.key)}`)
-                    .firstChild.printerState);
-            assertEquals(
-                PrinterState.ERROR,
-                dropdown.$$(`#${escapeForwardSlahes(destination5.key)}`)
-                    .firstChild.printerState);
-            assertEquals(
-                PrinterState.ERROR,
-                dropdown.$$(`#${escapeForwardSlahes(destination6.key)}`)
-                    .firstChild.printerState);
-            assertEquals(
-                PrinterState.UNKNOWN,
-                dropdown.$$(`#${escapeForwardSlahes(destination7.key)}`)
-                    .firstChild.printerState);
-          });
+              return whenStatusRequestsDone;
+            })
+            .then(() => {
+              return waitBeforeNextRender(destinationSelect);
+            })
+            .then(() => {
+              const dropdown = destinationSelect.$$('#dropdown');
+              assertEquals(
+                  PrinterState.GOOD,
+                  dropdown.$$(`#${escapeForwardSlahes(destination1.key)}`)
+                      .firstChild.printerState);
+              assertEquals(
+                  PrinterState.GOOD,
+                  dropdown.$$(`#${escapeForwardSlahes(destination2.key)}`)
+                      .firstChild.printerState);
+              assertEquals(
+                  PrinterState.GOOD,
+                  dropdown.$$(`#${escapeForwardSlahes(destination3.key)}`)
+                      .firstChild.printerState);
+              assertEquals(
+                  PrinterState.ERROR,
+                  dropdown.$$(`#${escapeForwardSlahes(destination4.key)}`)
+                      .firstChild.printerState);
+              assertEquals(
+                  PrinterState.ERROR,
+                  dropdown.$$(`#${escapeForwardSlahes(destination5.key)}`)
+                      .firstChild.printerState);
+              assertEquals(
+                  PrinterState.ERROR,
+                  dropdown.$$(`#${escapeForwardSlahes(destination6.key)}`)
+                      .firstChild.printerState);
+              assertEquals(
+                  PrinterState.UNKNOWN,
+                  dropdown.$$(`#${escapeForwardSlahes(destination7.key)}`)
+                      .firstChild.printerState);
+            });
         });
-      });
 
   test(
       assert(printer_status_test_cros.TestNames.SendStatusRequestOnce),
       function() {
         return waitBeforeNextRender(destinationSelect).then(() => {
+          const destination1 =
+              createDestination('ID1', 'One', DestinationOrigin.CROS);
+          const destination2 =
+              createDestination('ID2', 'Two', DestinationOrigin.CROS);
+
           destinationSelect.recentDestinationList = [
-            createDestination('ID1', 'One', DestinationOrigin.CROS),
-            createDestination('ID2', 'Two', DestinationOrigin.CROS),
+            destination1,
+            destination2,
             createDestination('ID3', 'Three', DestinationOrigin.PRIVET),
             createDestination('ID4', 'Four', DestinationOrigin.EXTENSION),
           ];
@@ -241,8 +251,8 @@ suite(printer_status_test_cros.suiteName, function() {
           // Make sure the requestPrinterStatusUpdate only gets called for the
           // new destination.
           destinationSelect.recentDestinationList = [
-            createDestination('ID1', 'One', DestinationOrigin.CROS),
-            createDestination('ID2', 'Two', DestinationOrigin.CROS),
+            destination1,
+            destination2,
             createDestination('ID5', 'Five', DestinationOrigin.CROS),
           ];
           assertEquals(
@@ -251,44 +261,50 @@ suite(printer_status_test_cros.suiteName, function() {
       });
 
   test(assert(printer_status_test_cros.TestNames.HiddenStatusText), function() {
-    return waitBeforeNextRender(destinationSelect).then(() => {
-      const destinationWithoutErrorStatus =
-          createDestination('ID1', 'One', DestinationOrigin.CROS);
-      // Destination with ID4 will return an error printer status that will
-      // trigger the error text being populated.
-      const destinationWithErrorStatus =
-          createDestination('ID4', 'Four', DestinationOrigin.CROS);
-      const cloudPrintDestination = new Destination(
-          'ID2', DestinationType.GOOGLE, DestinationOrigin.COOKIES, 'Two',
-          DestinationConnectionStatus.OFFLINE, {account: account});
+    const destinationStatus =
+        destinationSelect.$$('.destination-additional-info');
+    return waitBeforeNextRender(destinationSelect)
+        .then(() => {
+          const destinationWithoutErrorStatus =
+              createDestination('ID1', 'One', DestinationOrigin.CROS);
+          // Destination with ID4 will return an error printer status that will
+          // trigger the error text being populated.
+          const destinationWithErrorStatus =
+              createDestination('ID4', 'Four', DestinationOrigin.CROS);
+          const cloudPrintDestination = new Destination(
+              'ID2', DestinationType.GOOGLE, DestinationOrigin.COOKIES, 'Two',
+              DestinationConnectionStatus.OFFLINE, {account: account});
 
-      destinationSelect.recentDestinationList = [
-        destinationWithoutErrorStatus,
-        destinationWithErrorStatus,
-        cloudPrintDestination,
-      ];
+          destinationSelect.recentDestinationList = [
+            destinationWithoutErrorStatus,
+            destinationWithErrorStatus,
+            cloudPrintDestination,
+          ];
 
-      const destinationStatus =
-          destinationSelect.$$('.destination-additional-info');
-      const destinationEulaWrapper =
-          destinationSelect.$$('#destinationEulaWrapper');
+          const destinationEulaWrapper =
+              destinationSelect.$$('#destinationEulaWrapper');
 
-      destinationSelect.destination = cloudPrintDestination;
-      assertFalse(destinationStatus.hidden);
-      assertTrue(destinationEulaWrapper.hidden);
+          destinationSelect.destination = cloudPrintDestination;
+          assertFalse(destinationStatus.hidden);
+          assertTrue(destinationEulaWrapper.hidden);
 
-      destinationSelect.destination = destinationWithoutErrorStatus;
-      assertTrue(destinationStatus.hidden);
-      assertTrue(destinationEulaWrapper.hidden);
+          destinationSelect.destination = destinationWithoutErrorStatus;
+          assertTrue(destinationStatus.hidden);
+          assertTrue(destinationEulaWrapper.hidden);
 
-      destinationSelect.set('destination.eulaUrl', 'chrome://os-credits/eula');
-      assertFalse(destinationEulaWrapper.hidden);
+          destinationSelect.set(
+              'destination.eulaUrl', 'chrome://os-credits/eula');
+          assertFalse(destinationEulaWrapper.hidden);
 
-      destinationSelect.destination = destinationWithErrorStatus;
-      return nativeLayer.whenCalled('requestPrinterStatusUpdate').then(() => {
-        assertFalse(destinationStatus.hidden);
-      });
-    });
+          destinationSelect.destination = destinationWithErrorStatus;
+          return nativeLayer.whenCalled('requestPrinterStatusUpdate');
+        })
+        .then(() => {
+          return waitBeforeNextRender(destinationSelect);
+        })
+        .then(() => {
+          assertFalse(destinationStatus.hidden);
+        });
   });
 
   test(assert(printer_status_test_cros.TestNames.ChangeIcon), function() {

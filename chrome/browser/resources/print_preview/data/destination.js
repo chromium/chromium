@@ -9,8 +9,10 @@ import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 // <if expr="chromeos">
+import {NativeLayerImpl} from '../native_layer.js';
+
 import {ColorModeRestriction, DestinationPolicies, DuplexModeRestriction, PinModeRestriction} from './destination_policies.js';
-import {PrinterStatusReason} from '../data/printer_status_cros.js';
+import {getStatusReasonFromPrinterStatus, PrinterStatusReason} from './printer_status_cros.js';
 // </if>
 
 /**
@@ -424,9 +426,15 @@ export class Destination {
 
     /**
      * Stores the printer status reason for a local Chrome OS printer.
-     * @private {!PrinterStatusReason}
+     * @private {?PrinterStatusReason}
      */
-    this.printerStatusReason_ = PrinterStatusReason.UNKNOWN_REASON;
+    this.printerStatusReason_ = null;
+
+    /**
+     * Promise returns |key_| when the printer status request is completed.
+     * @private {?Promise<string>}
+     */
+    this.printerStatusRequestedPromise_ = null;
     // </if>
 
     assert(
@@ -616,7 +624,7 @@ export class Destination {
   }
 
   /**
-   * @return {!PrinterStatusReason} The printer status reason for a local
+   * @return {?PrinterStatusReason} The printer status reason for a local
    *    Chrome OS printer.
    */
   get printerStatusReason() {
@@ -624,11 +632,35 @@ export class Destination {
   }
 
   /**
-   * @param {!PrinterStatusReason} printerStatusReason The printer status reason
-   *    to be set.
+   * Requests a printer status for the destination.
+   * @return {!Promise<string>} Promise with destination key.
    */
-  set printerStatusReason(printerStatusReason) {
-    this.printerStatusReason_ = printerStatusReason;
+  requestPrinterStatus() {
+    // Requesting printer status only allowed for local CrOS printers.
+    if (this.origin_ !== DestinationOrigin.CROS) {
+      return Promise.reject();
+    }
+
+    // Immediately resolve promise if |printerStatusReason_| is already
+    // available.
+    if (this.printerStatusReason_) {
+      return Promise.resolve(this.key);
+    }
+
+    // Return existing promise if the printer status has already been requested.
+    if (this.printerStatusRequestedPromise_) {
+      return this.printerStatusRequestedPromise_;
+    }
+
+    // Request printer status then set and return the promise.
+    this.printerStatusRequestedPromise_ =
+        NativeLayerImpl.getInstance().requestPrinterStatusUpdate(this.id_).then(
+            status => {
+              this.printerStatusReason_ =
+                  getStatusReasonFromPrinterStatus(status);
+              return Promise.resolve(this.key);
+            });
+    return this.printerStatusRequestedPromise_;
   }
   // </if>
 

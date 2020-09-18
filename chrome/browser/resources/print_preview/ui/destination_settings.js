@@ -164,15 +164,6 @@ Polymer({
       },
       readOnly: true,
     },
-
-    /**
-     * The key for this map is a destination.id and the value is a
-     * destination.key. This map is needed to track which destinations have had
-     * statuses requested while also giving quick look up of destination id to
-     * the corresponding destination key.
-     * @private {!Map<string, string>}
-     */
-    statusRequestedMap_: Object,
     // </if>
   },
 
@@ -212,10 +203,6 @@ Polymer({
         this.destinationStore_,
         DestinationStore.EventType.DESTINATION_EULA_READY,
         this.updateDestinationEulaUrl_.bind(this));
-
-    if (this.printerStatusFlagEnabled_) {
-      this.statusRequestedMap_ = new Map();
-    }
     // </if>
   },
 
