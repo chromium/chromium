@@ -122,10 +122,13 @@ struct ExternalInstallOptions {
   // Only affects Chrome OS.
   std::vector<std::string> additional_search_terms;
 
-  // A factory callback that returns a unique_ptr<WebApplicationInfo>. If this
-  // is present, the generated WebApplicationInfo is used to install the app
-  // instead of loading the url, retrieving the manifest, and installing from
-  // that.
+  // Determines whether |app_info_factory| is used as a fallback or the primary
+  // source of app metadata. If true the |install_url| and
+  // |service_worker_registration_url| will not be loaded.
+  bool only_use_app_info_factory = false;
+
+  // A factory callback that returns a unique_ptr<WebApplicationInfo> to be used
+  // as the app's installation metadata.
   WebApplicationInfoFactory app_info_factory;
 };
 

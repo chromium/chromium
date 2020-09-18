@@ -36,8 +36,19 @@ static_assert(OsHookType::kShortcuts == 0,
               "OsHookType enum should be zero based");
 
 bool IsSuccess(InstallResultCode code) {
-  return code == InstallResultCode::kSuccessNewInstall ||
-         code == InstallResultCode::kSuccessAlreadyInstalled;
+  switch (code) {
+    case InstallResultCode::kSuccessNewInstall:
+    case InstallResultCode::kSuccessAlreadyInstalled:
+    case InstallResultCode::kSuccessOfflineOnlyInstall:
+    case InstallResultCode::kSuccessOfflineFallbackInstall:
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool IsNewInstall(InstallResultCode code) {
+  return IsSuccess(code) && code != InstallResultCode::kSuccessAlreadyInstalled;
 }
 
 DisplayMode ResolveEffectiveDisplayMode(

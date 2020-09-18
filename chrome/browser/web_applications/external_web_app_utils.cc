@@ -93,6 +93,15 @@ constexpr char kServiceWorkerRegistrationUrl[] =
 // app.
 constexpr char kUninstallAndReplace[] = "uninstall_and_replace";
 
+// kOnlyUseOfflineManifest is an optional bool.
+// If set to true then no network install will be attempted and the app will be
+// installed using |kOfflineManifest| data. |kOfflineManifest| must be specified
+// in this case.
+// If set to false and |kOfflineManifest| is set then it will be used as a
+// fallback manifest if the network install fails.
+// Defaults to false.
+constexpr char kOnlyUseOfflineManifest[] = "only_use_offline_manifest";
+
 // kOfflineManifest is a dictionary of manifest field values to use as an
 // install to avoid the expense of fetching the install URL to download the
 // app's true manifest. Next time the user visits the app it will undergo a
@@ -302,11 +311,27 @@ base::Optional<ExternalInstallOptions> ParseConfig(
       return base::nullopt;
   }
 
+  // only_use_offline_manifest
+  value = app_config.FindKey(kOnlyUseOfflineManifest);
+  if (value) {
+    if (!value->is_bool()) {
+      LOG(ERROR) << file << " had an invalid " << kOnlyUseOfflineManifest;
+      return base::nullopt;
+    }
+    result.only_use_app_info_factory = value->GetBool();
+  }
+
   // offline_manifest
   value = app_config.FindDictKey(kOfflineManifest);
   if (value) {
     result.app_info_factory =
         ParseOfflineManifest(file_utils, dir, file, *value);
+  }
+
+  if (result.only_use_app_info_factory && !result.app_info_factory) {
+    LOG(ERROR) << file << kOnlyUseOfflineManifest << " set with no "
+               << kOfflineManifest << " available";
+    return base::nullopt;
   }
 
   return result;

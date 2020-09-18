@@ -61,6 +61,7 @@ enum class InstallResultCode {
   // Success category:
   kSuccessNewInstall = 0,
   kSuccessAlreadyInstalled = 1,
+
   // Failure category:
   // An inter-process request to blink renderer failed.
   kGetWebApplicationInfoFailed = 3,
@@ -104,11 +105,18 @@ enum class InstallResultCode {
   // closed.
   kWebAppProviderNotReady = 22,
 
-  kMaxValue = kWebAppProviderNotReady
+  // Success category for background installs:
+  kSuccessOfflineOnlyInstall = 23,
+  kSuccessOfflineFallbackInstall = 24,
+
+  kMaxValue = kSuccessOfflineFallbackInstall
 };
 
 // Checks if InstallResultCode is not a failure.
 bool IsSuccess(InstallResultCode code);
+
+// Checks if InstallResultCode indicates a new app was installed.
+bool IsNewInstall(InstallResultCode code);
 
 // PendingAppManager: Where an app was installed from. This affects what flags
 // will be used when installing the app.

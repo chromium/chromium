@@ -43,7 +43,7 @@ bool ExternalInstallOptions::operator==(
                   reinstall_placeholder,
                   load_and_await_service_worker_registration,
                   service_worker_registration_url, uninstall_and_replace,
-                  additional_search_terms) ==
+                  additional_search_terms, only_use_app_info_factory) ==
          std::tie(other.install_url, other.user_display_mode,
                   other.install_source, other.add_to_applications_menu,
                   other.add_to_desktop, other.add_to_quick_launch_bar,
@@ -54,7 +54,8 @@ bool ExternalInstallOptions::operator==(
                   other.install_placeholder, other.reinstall_placeholder,
                   other.load_and_await_service_worker_registration,
                   other.service_worker_registration_url,
-                  other.uninstall_and_replace, other.additional_search_terms);
+                  other.uninstall_and_replace, other.additional_search_terms,
+                  other.only_use_app_info_factory);
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -90,6 +91,8 @@ std::ostream& operator<<(std::ostream& out,
              << install_options.service_worker_registration_url.value_or(GURL())
              << "\n uninstall_and_replace:\n  "
              << base::JoinString(install_options.uninstall_and_replace, "\n  ")
+             << "\n only_use_app_info_factory:\n "
+             << install_options.only_use_app_info_factory
              << "\n additional_search_terms:\n "
              << base::JoinString(install_options.additional_search_terms,
                                  "\n ");

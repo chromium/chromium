@@ -218,7 +218,8 @@ void PendingAppManagerImpl::StartInstallationTask(
   }
   current_install_ = std::move(task);
 
-  if (current_install_->task->install_options().app_info_factory) {
+  if (current_install_->task->install_options().only_use_app_info_factory) {
+    DCHECK(current_install_->task->install_options().app_info_factory);
     current_install_->task->InstallFromInfo(base::BindOnce(
         &PendingAppManagerImpl::OnInstalled, weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -278,7 +279,7 @@ void PendingAppManagerImpl::OnInstalled(PendingAppInstallTask::Result result) {
 void PendingAppManagerImpl::CurrentInstallationFinished(
     const base::Optional<AppId>& app_id,
     InstallResultCode code) {
-  if (app_id && code == InstallResultCode::kSuccessNewInstall) {
+  if (app_id && IsSuccess(code)) {
     MaybeEnqueueServiceWorkerRegistration(
         current_install_->task->install_options());
   }
@@ -300,6 +301,9 @@ void PendingAppManagerImpl::MaybeEnqueueServiceWorkerRegistration(
           features::kDesktopPWAsCacheDuringDefaultInstall)) {
     return;
   }
+
+  if (install_options.only_use_app_info_factory)
+    return;
 
   if (!install_options.load_and_await_service_worker_registration)
     return;

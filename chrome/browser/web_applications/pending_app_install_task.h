@@ -92,9 +92,12 @@ class PendingAppInstallTask {
   void ContinueWebAppInstall(content::WebContents* web_contents,
                              ResultCallback result_callback);
   void OnWebAppInstalled(bool is_placeholder,
+                         bool offline_install,
                          ResultCallback result_callback,
                          const AppId& app_id,
                          InstallResultCode code);
+  void TryAppInfoFactoryOnFailure(ResultCallback result_callback,
+                                  Result result);
 
   Profile* const profile_;
   AppRegistrar* const registrar_;

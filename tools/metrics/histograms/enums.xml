@@ -74107,6 +74107,8 @@ Full version information for the fingerprint enum values:
   <int value="20" label="ApkWebInstallFailed"/>
   <int value="21" label="CancelledOnWebAppProviderShuttingDown"/>
   <int value="22" label="WebAppProviderNotReady"/>
+  <int value="23" label="SuccessOfflineOnlyInstall"/>
+  <int value="24" label="SuccessOfflineFallbackInstall"/>
 </enum>
 
 <enum name="WebAppInstallSource">

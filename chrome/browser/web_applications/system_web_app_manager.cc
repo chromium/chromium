@@ -237,6 +237,7 @@ ExternalInstallOptions CreateInstallOptionsForSystemApp(
   ExternalInstallOptions install_options(
       info.install_url, DisplayMode::kStandalone,
       ExternalInstallSource::kSystemInstalled);
+  install_options.only_use_app_info_factory = !!info.app_info_factory;
   install_options.app_info_factory = info.app_info_factory;
   install_options.add_to_applications_menu = info.show_in_launcher;
   install_options.add_to_desktop = false;
