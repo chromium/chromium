@@ -69,6 +69,16 @@ Inline layout is performed in the following phases:
 3. **[Line box construction]** orders and positions items on a line.
 4. **[Generate fragments]** generates physical fragments.
 
+| Phase | Input | Output |
+|---|---|---|
+| Pre-layout | LayoutObject | [NGInlineItem] |
+| Line Breaking | [NGInlineItem] | [NGInlineItemResult] |
+| Line box construction | [NGInlineItemResult] | [NGLogicalLineItem] |
+| Generate fragments | [NGLogicalLineItem] | [NGPhysicalFragment] / [NGFragmentItem] |
+
+Note: There is [an idea](https://docs.google.com/document/d/1dxzIHl1dwBtgeKgWd2cKcog8AyydN5rduQvXthMOMD0/edit?usp=sharing)
+to merge [NGInlineItemResult] and [NGLogicalLineItem], but this hasn't been happened yet.
+
 This is similar to [CSS Text Processing Order of Operations],
 but not exactly the same,
 because the spec prioritizes the simple description than being accurate.
@@ -176,9 +186,6 @@ This phase consists of following sub-phases:
 5. Applies the CSS [text-align] property.
 6. Moves the baseline to the correct position
    based on the height of the line box.
-
-Note: There is [a discussion](https://docs.google.com/document/d/1dxzIHl1dwBtgeKgWd2cKcog8AyydN5rduQvXthMOMD0/edit?usp=sharing)
-to merge [NGInlineItemResult] and [NGLogicalLineItem], but this hasn't been done yet.
 
 [ellipsizing]: https://drafts.csswg.org/css-ui-3/#overflow-ellipsis
 [line-left]: https://drafts.csswg.org/css-writing-modes-3/#line-left
