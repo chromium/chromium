@@ -145,6 +145,35 @@ class DesktopMediaPickerViewsTest : public testing::Test {
   std::unique_ptr<views::test::WidgetDestroyedWaiter> widget_destroyed_waiter_;
 };
 
+class DesktopMediaPickerDoubleClickTest
+    : public DesktopMediaPickerViewsTest,
+      public testing::WithParamInterface<DesktopMediaID::Type> {
+ public:
+  DesktopMediaPickerDoubleClickTest() = default;
+};
+
+// Regression test for https://crbug.com/1102153 and https://crbug.com/1127496
+TEST_P(DesktopMediaPickerDoubleClickTest, DoneCallbackNotCalledOnDoubleClick) {
+  DesktopMediaID::Type media_type = GetParam();
+  const DesktopMediaID kFakeId(media_type, 222);
+
+  media_lists_[media_type]->AddSourceByFullMediaID(kFakeId);
+  test_api_.SelectTabForSourceType(media_type);
+  test_api_.PressMouseOnSourceAtIndex(0, true);
+
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                run_loop_.QuitClosure());
+  run_loop_.Run();
+
+  EXPECT_FALSE(picked_id().has_value());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DesktopMediaPickerDoubleClickTest,
+                         testing::Values(DesktopMediaID::TYPE_WINDOW,
+                                         DesktopMediaID::TYPE_SCREEN,
+                                         DesktopMediaID::TYPE_WEB_CONTENTS));
+
 TEST_F(DesktopMediaPickerViewsTest, DoneCallbackCalledWhenWindowClosed) {
   GetPickerDialogView()->GetWidget()->Close();
   EXPECT_EQ(content::DesktopMediaID(), WaitForPickerDone());
@@ -190,24 +219,6 @@ TEST_F(DesktopMediaPickerViewsTest, SelectMediaSourceViewOnSingleClick) {
     ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
     EXPECT_EQ(20, test_api_.GetSelectedSourceId().value());
   }
-}
-
-// Regression test for https://crbug.com/1102153
-TEST_F(DesktopMediaPickerViewsTest, DoneCallbackNotCalledOnDoubleClick) {
-  constexpr DesktopMediaID kFakeId(DesktopMediaID::TYPE_WEB_CONTENTS, 222);
-
-  media_lists_[DesktopMediaID::TYPE_WEB_CONTENTS]->AddSourceByFullMediaID(
-      kFakeId);
-  test_api_.SelectTabForSourceType(DesktopMediaID::TYPE_WEB_CONTENTS);
-  test_api_.GetAudioShareCheckbox()->SetChecked(false);
-
-  test_api_.PressMouseOnSourceAtIndex(0, true);
-
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop_.QuitClosure());
-  run_loop_.Run();
-
-  EXPECT_FALSE(picked_id().has_value());
 }
 
 // Regression test for https://crbug.com/1102153
