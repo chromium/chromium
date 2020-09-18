@@ -2162,32 +2162,14 @@
   <message name="IDS_EULA_TPM_DESCRIPTION" desc="Dialog box text">
     Your computer contains a Trusted Platform Module (TPM) security device, which is used to implement many critical security features in Chrome OS. Visit the Chromebook Help Center to learn more: https://support.google.com/chromebook/?p=tpm
   </message>
-  <message name="IDS_EULA_TPM_KEY_DESCRIPTION" desc="Dialog box text">
-    Below is the randomly generated TPM password that has been assigned to your computer:
-  </message>
-  <message name="IDS_EULA_TPM_KEY_DESCRIPTION_POWERWASH" desc="Dialog box text in case TPM is already in owned state">
-    The randomly generated TPM password is not available. This is normal after a Powerwash.
-  </message>
   <message name="IDS_EULA_RLZ_DESCRIPTION" desc="Dialog box text">
     Your computer also comes with <ph name="SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph>'s RLZ library built in. RLZ assigns a non-unique, non-personally identifiable tag to measure the searches and <ph name="SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph> usage driven by a particular promotional campaign. These labels sometimes appear in Google Search queries in <ph name="PRODUCT_NAME">$2<ex>Google Chrome</ex></ph>.
   </message>
   <message name="IDS_EULA_RLZ_ENABLE" desc="Check box text for enabling RLZ tracking on TPM/RLZ info dialog.">
     Enable RLZ tracking on <ph name="SHORT_PRODUCT_OS_NAME">$1<ex>Chrome OS</ex></ph>.
   </message>
-  <message name="IDS_EULA_TPM_BUSY" desc="Message bubble text">
-    TPM is being prepared, please wait (this may take a few minutes)...
-  </message>
   <message name="IDS_EULA_SECURE_MODULE_DESCRIPTION" desc="Description of what a secure module does in the eula page.">
     Your computer contains a secure module, which is used to implement many critical security features in Chrome OS. Visit the Chromebook Help Center to learn more: https://support.google.com/chromebook/?p=sm
-  </message>
-  <message name="IDS_EULA_SECURE_MODULE_KEY_DESCRIPTION" desc="Description of the generated secure module password in the eula page.">
-    Below is the randomly generated secure module password that has been assigned to your computer:
-  </message>
-  <message name="IDS_EULA_SECURE_MODULE_KEY_DESCRIPTION_POWERWASH" desc="Notifies users that a secure module password is unavailabe after a powerwash.">
-    The randomly generated secure module password is not available. This is normal after a Powerwash.
-  </message>
-  <message name="IDS_EULA_SECURE_MODULE_BUSY" desc="Message that is shown to users on the eula page while the secure module is being prepared.">
-    Secure module is being prepared, please wait (this may take a few minutes)...
   </message>
   <message name="IDS_ENABLE_DEBUGGING_SCREEN_TITLE" desc="Title of the enable debugging features screen">
     Enable debugging features

@@ -234,7 +234,6 @@ Polymer({
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 
   EXTERNAL_API: [
-    'setTpmPassword',
     'setUsageStats',
     'showAdditionalTosDialog',
     'showSecuritySettingsDialog',
@@ -263,14 +262,6 @@ Polymer({
     usageStatsChecked: {
       type: Boolean,
       value: false,
-    },
-
-    /**
-     * The TPM password shown on the security settings page.
-     */
-    password: {
-      type: String,
-      value: null,
     },
   },
 
@@ -488,32 +479,6 @@ Polymer({
    */
   onEulaBackButtonPressed_() {
     this.userActed('back-button');
-  },
-
-  /**
-   * Returns true if the TPM password hasn't been received.
-   *
-   * @private
-   */
-  isWaitingForPassword_(password) {
-    return password == null;
-  },
-
-  /**
-   * Returns true if the TPM password has been received but it's empty.
-   *
-   * @private
-   */
-  isPasswordEmpty_(password) {
-    return password != null && password.length == 0;
-  },
-
-  /**
-   * Sets TPM password.
-   * @param {string} password TPM password to be shown.
-   */
-  setTpmPassword(password) {
-    this.password = password;
   },
 
   /**

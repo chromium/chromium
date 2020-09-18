@@ -54,15 +54,11 @@ namespace {
 
 const test::UIPath kEulaWebview = {"oobe-eula-md", "crosEulaFrame"};
 const test::UIPath kAcceptEulaButton = {"oobe-eula-md", "acceptButton"};
-const test::UIPath kEulaTPMPassword = {"oobe-eula-md", "eula-password"};
 const test::UIPath kUsageStats = {"oobe-eula-md", "usageStats"};
 const test::UIPath kAdditionalTermsLink = {"oobe-eula-md", "additionalTerms"};
 const test::UIPath kAdditionalTermsDialog = {"oobe-eula-md", "additionalToS"};
 const test::UIPath kAdditionalTermsClose = {"oobe-eula-md",
                                             "close-additional-tos"};
-const test::UIPath kSecuritySettingsLink = {"oobe-eula-md", "securitySettings"};
-const test::UIPath kSecuritySettingsDialog = {"oobe-eula-md",
-                                              "securitySettingsDialog"};
 const test::UIPath kLearnMoreLink = {"oobe-eula-md", "learnMore"};
 
 // Helper class to wait until the WebCotnents finishes loading.
@@ -241,27 +237,6 @@ IN_PROC_BROWSER_TEST_F(EulaTest, LoadOnline) {
   const std::string webview_contents = test::GetWebViewContents(kEulaWebview);
   EXPECT_TRUE(webview_contents.find(FakeEulaMixin::kFakeOnlineEula) !=
               std::string::npos);
-}
-
-// Tests that clicking on "System security settings" button opens a dialog
-// showing the TPM password.
-IN_PROC_BROWSER_TEST_F(EulaTest, DisplaysTpmPassword) {
-  base::HistogramTester histogram_tester;
-  ShowEulaScreen();
-
-  test::OobeJS().TapLinkOnPath(kSecuritySettingsLink);
-  test::OobeJS().CreateVisibilityWaiter(true, kSecuritySettingsDialog)->Wait();
-
-  test::OobeJS()
-      .CreateWaiter(
-          "$('oobe-eula-md').$$('#eula-password').textContent.trim() !== ''")
-      ->Wait();
-  test::OobeJS().ExpectElementText(FakeCryptohomeClient::kStubTpmPassword,
-                                   kEulaTPMPassword);
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("OOBE.EulaScreen.UserActions"),
-      ElementsAre(base::Bucket(
-          static_cast<int>(EulaScreen::UserAction::kShowSecuritySettings), 1)));
 }
 
 // Verifies statistic collection accepted flow.

@@ -81,30 +81,9 @@
       <hd-iron-icon slot="oobe-icon"
           icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
       </hd-iron-icon>
-      <!-- TODO(antrim): find out why do we have everything in subtitle -->
       <div slot="subtitle" id="settingsSubtitle">
         <div>
           [[i18nDynamic(locale, 'eulaTpmDesc')]]
-        </div>
-        <div class='tpm-password'>
-          <div hidden="[[isPasswordEmpty_(password)]]">
-            [[i18nDynamic(locale, 'eulaTpmKeyDesc')]]
-          </div>
-          <div hidden="[[!isPasswordEmpty_(password)]]">
-            [[i18nDynamic(locale, 'eulaTpmDescPowerwash')]]
-          </div>
-          <div class="layout horizontal"
-              hidden="[[!isWaitingForPassword_(password)]]">
-            <div class="security-settings-spinner throbber"></div>
-            <div>
-              [[i18nDynamic(locale, 'eulaTpmBusy')]]
-            </div>
-          </div>
-          <div class='password-row layout horizontal'>
-            <div class="flex"></div>
-            <div id="eula-password">{{password}}</div>
-            <div class="flex"></div>
-          </div>
         </div>
       </div>
       <div slot="bottom-buttons" class="flex layout horizontal">

@@ -92,10 +92,6 @@ void EulaScreenHandler::DeclareLocalizedValues(
   builder->Add("eulaSystemSecuritySettings", IDS_EULA_SYSTEM_SECURITY_SETTING);
 
   builder->Add("eulaTpmDesc", IDS_EULA_SECURE_MODULE_DESCRIPTION);
-  builder->Add("eulaTpmKeyDesc", IDS_EULA_SECURE_MODULE_KEY_DESCRIPTION);
-  builder->Add("eulaTpmDescPowerwash",
-               IDS_EULA_SECURE_MODULE_KEY_DESCRIPTION_POWERWASH);
-  builder->Add("eulaTpmBusy", IDS_EULA_SECURE_MODULE_BUSY);
   ::login::GetSecureModuleUsed(base::BindOnce(
       &EulaScreenHandler::UpdateLocalizedValues, weak_factory_.GetWeakPtr()));
 
@@ -144,7 +140,6 @@ void EulaScreenHandler::Initialize() {
 }
 
 void EulaScreenHandler::OnPasswordFetched(const std::string& tpm_password) {
-  CallJS("login.EulaScreen.setTpmPassword", tpm_password);
   CallJS("login.EulaScreen.showSecuritySettingsDialog");
 }
 
@@ -166,10 +161,6 @@ void EulaScreenHandler::UpdateLocalizedValues(
       &updated_secure_module_strings);
   if (secure_module_used == ::login::SecureModuleUsed::TPM) {
     builder->Add("eulaTpmDesc", IDS_EULA_TPM_DESCRIPTION);
-    builder->Add("eulaTpmKeyDesc", IDS_EULA_TPM_KEY_DESCRIPTION);
-    builder->Add("eulaTpmDescPowerwash",
-                 IDS_EULA_TPM_KEY_DESCRIPTION_POWERWASH);
-    builder->Add("eulaTpmBusy", IDS_EULA_TPM_BUSY);
     core_oobe_view_->ReloadEulaContent(updated_secure_module_strings);
   }
 }

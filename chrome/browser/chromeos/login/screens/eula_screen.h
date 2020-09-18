@@ -20,6 +20,9 @@ class EulaView;
 
 // Representation independent class that controls OOBE screen showing EULA
 // to users.
+//
+// TODO(b/168852740): Clean up the password-related logic with the removal of
+// |TpmGetPassword| D-Bus method.
 class EulaScreen : public BaseScreen, public TpmPasswordFetcherDelegate {
  public:
   enum class Result {

@@ -54,17 +54,3 @@ cr-checkbox {
   padding-inline-end: 18px;
 }
 
-.tpm-password > div {
-  margin-top: 18px;
-}
-
-.password-row div {
-  color: rgb(66, 133, 244);
-  font-size: 24px;
-  margin-top: 82px;
-  user-select: text;
-}
-
-.security-settings-spinner {
-  margin-inline-end: 5px;
-}
