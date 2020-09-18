@@ -24,7 +24,8 @@ class LayoutNGMathMLBlockFlow final : public LayoutNGBlockFlow {
   }
   bool CreatesNewFormattingContext() const final { return true; }
 
-  PaginationBreakability GetPaginationBreakability() const final {
+  PaginationBreakability GetPaginationBreakability(
+      FragmentationEngine) const final {
     return kForbidBreaks;
   }
 };

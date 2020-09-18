@@ -1356,7 +1356,24 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     kAvoidBreaks  // Preferably avoid breaks. If not possible, examine children
                   // to find possible break points.
   };
-  virtual PaginationBreakability GetPaginationBreakability() const;
+  enum FragmentationEngine {
+    kLegacyFragmentationEngine,
+    kNGFragmentationEngine,
+    kUnknownFragmentationEngine
+  };
+  // |is_ng_fragmentation| must be true if we're in an NG block fragmentation
+  // context. We need to specify which engine we're using for fragmentation,
+  // since anything being laid out by the other engine will need to be treated
+  // as monolithic (kForbidBreaks), since the two engines cannot cooperate on
+  // block fragmentation.
+  virtual PaginationBreakability GetPaginationBreakability(
+      FragmentationEngine) const;
+  PaginationBreakability GetLegacyPaginationBreakability() const {
+    return GetPaginationBreakability(kLegacyFragmentationEngine);
+  }
+  PaginationBreakability GetNGPaginationBreakability() const {
+    return GetPaginationBreakability(kNGFragmentationEngine);
+  }
 
   LayoutRect LocalCaretRect(
       const InlineBox*,

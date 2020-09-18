@@ -794,10 +794,10 @@ void PrePaintTreeWalk::WalkChildren(const LayoutObject* object,
   // block-fragmenting, or that this is monolithic content. We may re-enter
   // LayoutNG fragment traversal if we get to a descendant that supports that.
   if (object && !object->CanTraversePhysicalFragments()) {
-    DCHECK(
-        !object->FlowThreadContainingBlock() ||
-        (object->IsBox() && ToLayoutBox(object)->GetPaginationBreakability() ==
-                                LayoutBox::kForbidBreaks));
+    DCHECK(!object->FlowThreadContainingBlock() ||
+           (object->IsBox() &&
+            ToLayoutBox(object)->GetNGPaginationBreakability() ==
+                LayoutBox::kForbidBreaks));
     WalkLegacyChildren(*object);
     return;
   }

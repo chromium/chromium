@@ -23,7 +23,8 @@ class LayoutNGMathMLBlock : public LayoutNGMixin<LayoutBlock> {
   bool CanHaveChildren() const final;
   void StyleDidChange(StyleDifference, const ComputedStyle*) final;
 
-  PaginationBreakability GetPaginationBreakability() const final {
+  PaginationBreakability GetPaginationBreakability(
+      FragmentationEngine) const final {
     return kForbidBreaks;
   }
 };

@@ -173,7 +173,7 @@ class CORE_EXPORT NGLayoutInputNode {
     // Lines are always monolithic. We cannot block-fragment inside them.
     if (IsInline())
       return true;
-    return box_->GetPaginationBreakability() == LayoutBox::kForbidBreaks;
+    return box_->GetNGPaginationBreakability() == LayoutBox::kForbidBreaks;
   }
 
   bool CreatesNewFormattingContext() const {

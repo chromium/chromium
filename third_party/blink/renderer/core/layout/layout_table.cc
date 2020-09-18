@@ -741,7 +741,7 @@ void LayoutTable::UpdateLayout() {
     // if we can repeat it in each page/column.
     LayoutTableSection* footer = Footer();
     if (footer) {
-      if (footer->GetPaginationBreakability() != kAllowAnyBreaks) {
+      if (footer->GetLegacyPaginationBreakability() != kAllowAnyBreaks) {
         footer->LayoutIfNeeded();
         int footer_logical_height = footer->CalcRowLogicalHeight();
         footer->SetLogicalHeight(LayoutUnit(footer_logical_height));

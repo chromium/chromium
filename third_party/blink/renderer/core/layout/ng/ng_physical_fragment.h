@@ -297,7 +297,7 @@ class CORE_EXPORT NGPhysicalFragment
     const LayoutObject* layout_object = GetLayoutObject();
     if (!layout_object || !IsBox() || !layout_object->IsBox())
       return false;
-    return ToLayoutBox(layout_object)->GetPaginationBreakability() ==
+    return ToLayoutBox(layout_object)->GetNGPaginationBreakability() ==
            LayoutBox::kForbidBreaks;
   }
 

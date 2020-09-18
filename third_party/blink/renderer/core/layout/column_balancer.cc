@@ -121,9 +121,10 @@ void ColumnBalancer::TraverseChildren(const LayoutObject& object) {
                             previous_break_after_value);
     // Unless the child is unsplittable, or if the child establishes an inner
     // multicol container, we descend into its subtree for further examination.
-    auto* chlid_block_flow = DynamicTo<LayoutBlockFlow>(child_box);
-    if (child_box.GetPaginationBreakability() != LayoutBox::kForbidBreaks &&
-        (!chlid_block_flow || !chlid_block_flow->MultiColumnFlowThread())) {
+    auto* child_block_flow = DynamicTo<LayoutBlockFlow>(child_box);
+    if (child_box.GetLegacyPaginationBreakability() !=
+            LayoutBox::kForbidBreaks &&
+        (!child_block_flow || !child_block_flow->MultiColumnFlowThread())) {
       // We need to get to the border edge before processing content inside
       // this child. If the child is floated, we're currently at the margin
       // edge.
@@ -204,7 +205,7 @@ void InitialColumnHeightFinder::ExamineBoxAfterEntering(
     }
   }
 
-  if (box.GetPaginationBreakability() != LayoutBox::kAllowAnyBreaks) {
+  if (box.GetLegacyPaginationBreakability() != LayoutBox::kAllowAnyBreaks) {
     tallest_unbreakable_logical_height_ =
         std::max(tallest_unbreakable_logical_height_, child_logical_height);
     return;
@@ -385,7 +386,7 @@ void MinimumSpaceShortageFinder::ExamineBoxAfterEntering(
     LayoutUnit child_logical_height,
     EBreakBetween previous_break_after_value) {
   LayoutBox::PaginationBreakability breakability =
-      box.GetPaginationBreakability();
+      box.GetLegacyPaginationBreakability();
 
   // Look for breaks before the child box.
   if (IsLogicalTopWithinBounds(FlowThreadOffset() - box.PaginationStrut())) {
@@ -460,7 +461,7 @@ void MinimumSpaceShortageFinder::ExamineBoxBeforeLeaving(
     const LayoutBox& box,
     LayoutUnit child_logical_height) {
   if (pending_strut_ == LayoutUnit::Min() ||
-      box.GetPaginationBreakability() != LayoutBox::kForbidBreaks)
+      box.GetLegacyPaginationBreakability() != LayoutBox::kForbidBreaks)
     return;
 
   // The previous break was before a breakable block. Here's the first piece of

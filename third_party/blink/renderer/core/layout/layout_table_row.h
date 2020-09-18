@@ -107,7 +107,8 @@ class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent,
                    const PhysicalOffset& accumulated_offset,
                    HitTestAction) override;
 
-  PaginationBreakability GetPaginationBreakability() const final;
+  PaginationBreakability GetPaginationBreakability(
+      FragmentationEngine) const final;
 
   void ComputeLayoutOverflow();
 

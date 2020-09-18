@@ -1111,7 +1111,8 @@ LayoutUnit LayoutBlockFlow::AdjustBlockChildForPagination(
     // there instead. See https://drafts.csswg.org/css-break/#possible-breaks
     bool can_break =
         !layout_info.IsAtFirstInFlowChild() || !at_before_side_of_block;
-    if (!can_break && child.GetPaginationBreakability() == kForbidBreaks &&
+    if (!can_break &&
+        child.GetLegacyPaginationBreakability() == kForbidBreaks &&
         !AllowsPaginationStrut()) {
       // The child is monolithic content, e.g. an image. It is truly
       // unsplittable. Breaking inside it would be bad. Since this block doesn't
@@ -1358,7 +1359,7 @@ void LayoutBlockFlow::AdjustLinePositionForPagination(RootInlineBox& line_box,
 LayoutUnit LayoutBlockFlow::AdjustForUnsplittableChild(
     LayoutBox& child,
     LayoutUnit logical_offset) const {
-  if (child.GetPaginationBreakability() == kAllowAnyBreaks)
+  if (child.GetLegacyPaginationBreakability() == kAllowAnyBreaks)
     return logical_offset;
   LayoutUnit child_logical_height = LogicalHeightForChild(child);
   // Floats' margins do not collapse with page or column boundaries.

@@ -6546,13 +6546,21 @@ bool LayoutBox::HasUnsplittableScrollingOverflow() const {
            PercentageLogicalHeightIsResolvable()));
 }
 
-LayoutBox::PaginationBreakability LayoutBox::GetPaginationBreakability() const {
+LayoutBox::PaginationBreakability LayoutBox::GetPaginationBreakability(
+    FragmentationEngine engine) const {
   if (ShouldBeConsideredAsReplaced() || HasUnsplittableScrollingOverflow() ||
       (Parent() && IsWritingModeRoot()) ||
       (IsOutOfFlowPositioned() &&
        StyleRef().GetPosition() == EPosition::kFixed) ||
       ShouldApplySizeContainment() || IsFrameSet())
     return kForbidBreaks;
+
+  if (engine != kUnknownFragmentationEngine) {
+    // If the object isn't using the same engine as the fragmentation context,
+    // it must be treated as monolithic.
+    if (IsLayoutNGObject() != (engine == kNGFragmentationEngine))
+      return kForbidBreaks;
+  }
 
   EBreakInside break_value = BreakInside();
   if (break_value == EBreakInside::kAvoid ||

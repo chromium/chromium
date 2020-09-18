@@ -1336,7 +1336,7 @@ int LayoutTableSection::PaginationStrutForRow(LayoutTableRow* row,
   bool make_room_for_repeating_footer =
       footer && footer->IsRepeatingFooterGroup() && row->RowIndex();
   if (!make_room_for_repeating_footer &&
-      row->GetPaginationBreakability() == kAllowAnyBreaks)
+      row->GetLegacyPaginationBreakability() == kAllowAnyBreaks)
     return 0;
   if (!IsPageLogicalHeightKnown())
     return 0;
@@ -2071,7 +2071,7 @@ void LayoutTableSection::AdjustRowForPagination(LayoutTableRow& row_object,
 
 bool LayoutTableSection::GroupShouldRepeat() const {
   DCHECK(Table()->Header() == this || Table()->Footer() == this);
-  if (GetPaginationBreakability() == kAllowAnyBreaks)
+  if (GetLegacyPaginationBreakability() == kAllowAnyBreaks)
     return false;
 
   // If we don't know the page height yet, just assume we fit.

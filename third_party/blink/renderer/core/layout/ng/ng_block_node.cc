@@ -1442,7 +1442,7 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::RunLegacyLayout(
   // NG block fragmentation context. LayoutNG and legacy block fragmentation
   // cannot cooperate within the same fragmentation context.
   DCHECK(!constraint_space.HasBlockFragmentation() ||
-         box_->GetPaginationBreakability() == LayoutBox::kForbidBreaks);
+         box_->GetNGPaginationBreakability() == LayoutBox::kForbidBreaks);
 
   scoped_refptr<const NGLayoutResult> layout_result =
       box_->GetCachedLayoutResult();

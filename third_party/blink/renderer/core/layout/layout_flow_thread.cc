@@ -45,6 +45,7 @@ LayoutFlowThread* LayoutFlowThread::LocateFlowThreadContainingBlockOf(
     AncestorSearchConstraint constraint) {
   DCHECK(descendant.IsInsideFlowThread());
   LayoutObject* curr = const_cast<LayoutObject*>(&descendant);
+  bool inner_is_ng_object = curr->IsLayoutNGObject();
   while (curr) {
     if (curr->IsSVGChild())
       return nullptr;
@@ -67,10 +68,17 @@ LayoutFlowThread* LayoutFlowThread::LocateFlowThreadContainingBlockOf(
     // unbreakable in any outer fragmentation context. As such, what goes on
     // inside any fragmentation context on the inside of this is completely
     // opaque to ancestor fragmentation contexts.
-    if (constraint == kIsolateUnbreakableContainers && container &&
-        container->IsBox() &&
-        ToLayoutBox(container)->GetPaginationBreakability() == kForbidBreaks)
-      return nullptr;
+    if (constraint == kIsolateUnbreakableContainers && container) {
+      if (const LayoutBox* box = ToLayoutBoxOrNull(container)) {
+        // We're walking up the tree without knowing which fragmentation engine
+        // is being used, so we have to detect any engine mismatch ourselves.
+        if (box->IsLayoutNGObject() != inner_is_ng_object)
+          return nullptr;
+        if (box->GetPaginationBreakability(kUnknownFragmentationEngine) ==
+            kForbidBreaks)
+          return nullptr;
+      }
+    }
     curr = curr->Parent();
     while (curr != container) {
       if (curr->IsLayoutFlowThread()) {

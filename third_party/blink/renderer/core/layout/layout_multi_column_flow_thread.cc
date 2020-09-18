@@ -102,14 +102,15 @@ static inline bool IsMultiColumnContainer(const LayoutObject& object) {
 // for everything inside it, which conflicts with a spanners's need to have the
 // multicol container as its direct containing block. We may also not put
 // spanners inside objects that don't support fragmentation.
-static inline bool CanContainSpannerInParentFragmentationContext(
-    const LayoutObject& object) {
+bool LayoutMultiColumnFlowThread::CanContainSpannerInParentFragmentationContext(
+    const LayoutObject& object) const {
   const auto* block_flow = DynamicTo<LayoutBlockFlow>(object);
   if (!block_flow)
     return false;
   return !block_flow->CreatesNewFormattingContext() &&
          !block_flow->CanContainFixedPositionObjects() &&
-         block_flow->GetPaginationBreakability() != LayoutBox::kForbidBreaks &&
+         block_flow->GetPaginationBreakability(fragmentation_engine_) !=
+             LayoutBox::kForbidBreaks &&
          !IsMultiColumnContainer(*block_flow);
 }
 
@@ -639,7 +640,8 @@ LayoutMultiColumnFlowThread::EnclosingFragmentationContext(
   // fragmentation context. As such, what kind of fragmentation that goes on
   // inside this multicol container is completely opaque to the ancestors.
   if (constraint == kIsolateUnbreakableContainers &&
-      MultiColumnBlockFlow()->GetPaginationBreakability() == kForbidBreaks)
+      MultiColumnBlockFlow()->GetPaginationBreakability(
+          fragmentation_engine_) == kForbidBreaks)
     return nullptr;
   if (auto* enclosing_flow_thread = EnclosingFlowThread(constraint))
     return enclosing_flow_thread;
@@ -929,6 +931,14 @@ void LayoutMultiColumnFlowThread::AddColumnSetToThread(
   } else {
     multi_column_set_list_.insert(column_set);
   }
+}
+
+void LayoutMultiColumnFlowThread::InsertedIntoTree() {
+  LayoutFlowThread::InsertedIntoTree();
+  if (MultiColumnBlockFlow()->IsLayoutNGObject())
+    fragmentation_engine_ = kNGFragmentationEngine;
+  else
+    fragmentation_engine_ = kLegacyFragmentationEngine;
 }
 
 void LayoutMultiColumnFlowThread::WillBeRemovedFromTree() {
