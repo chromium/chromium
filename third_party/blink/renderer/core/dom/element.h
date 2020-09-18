@@ -931,6 +931,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // been determined to be from an ad. Returns false by default.
   virtual bool IsAdRelated() const { return false; }
 
+  void NotifyInlineStyleMutation();
+
  protected:
   const ElementData* GetElementData() const { return element_data_.Get(); }
   UniqueElementData& EnsureUniqueElementData();

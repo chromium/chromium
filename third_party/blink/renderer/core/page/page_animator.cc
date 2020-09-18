@@ -121,14 +121,17 @@ void PageAnimator::PostAnimate() {
     Clock().SetAllowedToDynamicallyUpdateTime(true);
 }
 
-void PageAnimator::SetHasCanvasInvalidation(bool has_canvas_invalidation) {
-  has_canvas_invalidation_ = has_canvas_invalidation;
+void PageAnimator::SetHasCanvasInvalidation() {
+  has_canvas_invalidation_ = true;
 }
 
 void PageAnimator::ReportFrameAnimations(cc::AnimationHost* animation_host) {
-  if (animation_host)
+  if (animation_host) {
     animation_host->SetHasCanvasInvalidation(has_canvas_invalidation_);
+    animation_host->SetHasInlineStyleMutation(has_inline_style_mutation_);
+  }
   has_canvas_invalidation_ = false;
+  has_inline_style_mutation_ = false;
 }
 
 void PageAnimator::SetSuppressFrameRequestsWorkaroundFor704763Only(
@@ -138,6 +141,10 @@ void PageAnimator::SetSuppressFrameRequestsWorkaroundFor704763Only(
   DCHECK(!suppress_frame_requests_workaround_for704763_only_ ||
          !suppress_frame_requests);
   suppress_frame_requests_workaround_for704763_only_ = suppress_frame_requests;
+}
+
+void PageAnimator::SetHasInlineStyleMutation() {
+  has_inline_style_mutation_ = true;
 }
 
 DISABLE_CFI_PERF

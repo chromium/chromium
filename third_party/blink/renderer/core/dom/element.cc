@@ -5917,6 +5917,13 @@ void Element::ClearMutableInlineStyleIfEmpty() {
   }
 }
 
+void Element::NotifyInlineStyleMutation() {
+  if (GetLayoutObject() && GetLayoutObject()->PreviousVisibilityVisible() &&
+      GetDocument().GetPage()) {
+    GetDocument().GetPage()->Animator().SetHasInlineStyleMutation();
+  }
+}
+
 inline void Element::SetInlineStyleFromString(
     const AtomicString& new_style_string) {
   DCHECK(IsStyledElement());

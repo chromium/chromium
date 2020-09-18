@@ -33,6 +33,7 @@ const CSSValue* InlineStylePropertyMap::GetCustomProperty(
 void InlineStylePropertyMap::SetProperty(CSSPropertyID property_id,
                                          const CSSValue& value) {
   owner_element_->SetInlineStyleProperty(property_id, value);
+  owner_element_->NotifyInlineStyleMutation();
 }
 
 bool InlineStylePropertyMap::SetShorthandProperty(
@@ -55,6 +56,7 @@ void InlineStylePropertyMap::SetCustomProperty(
       CSSPropertyID::kVariable,
       *MakeGarbageCollected<CSSCustomPropertyDeclaration>(property_name,
                                                           variable_data));
+  owner_element_->NotifyInlineStyleMutation();
 }
 
 void InlineStylePropertyMap::RemoveProperty(CSSPropertyID property_id) {

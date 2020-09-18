@@ -473,7 +473,7 @@ void HTMLCanvasElement::DidDraw(const FloatRect& rect) {
     return;
   if (GetLayoutObject() && GetLayoutObject()->PreviousVisibilityVisible() &&
       GetDocument().GetPage())
-    GetDocument().GetPage()->Animator().SetHasCanvasInvalidation(true);
+    GetDocument().GetPage()->Animator().SetHasCanvasInvalidation();
   canvas_is_clear_ = false;
   if (GetLayoutObject() && !LowLatencyEnabled())
     GetLayoutObject()->SetShouldCheckForPaintInvalidation();

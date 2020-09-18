@@ -40,6 +40,7 @@ void InlineCSSStyleDeclaration::DidMutate(MutationType type) {
   if (!parent_element_)
     return;
 
+  parent_element_->NotifyInlineStyleMutation();
   parent_element_->ClearMutableInlineStyleIfEmpty();
   parent_element_->InvalidateStyleAttribute();
   StyleAttributeMutationScope(this).DidInvalidateStyleAttr();

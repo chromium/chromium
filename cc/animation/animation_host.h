@@ -222,6 +222,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
                           bool next_frame_has_pending_raf);
 
   void SetHasCanvasInvalidation(bool has_canvas_invalidation);
+  void SetHasInlineStyleMutation(bool has_inline_style_mutation);
 
  private:
   explicit AnimationHost(ThreadInstance thread_instance);
@@ -275,6 +276,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   bool current_frame_had_raf_ = false;
   bool next_frame_has_pending_raf_ = false;
   bool has_canvas_invalidation_ = false;
+  bool has_inline_style_mutation_ = false;
 
   PendingThroughputTrackerInfos pending_throughput_tracker_infos_;
 

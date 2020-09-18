@@ -49,9 +49,13 @@ class CORE_EXPORT PageAnimator final : public GarbageCollected<PageAnimator> {
                                     DocumentUpdateReason reason);
   AnimationClock& Clock() { return animation_clock_; }
   HeapVector<Member<Animation>> GetAnimations(const TreeScope&);
-  void SetHasCanvasInvalidation(bool has_canvas_invalidation);
+  void SetHasCanvasInvalidation();
   bool has_canvas_invalidation_for_test() const {
     return has_canvas_invalidation_;
+  }
+  void SetHasInlineStyleMutation();
+  bool has_inline_style_mutation_for_test() const {
+    return has_inline_style_mutation_;
   }
   void ReportFrameAnimations(cc::AnimationHost* animation_host);
 
@@ -61,6 +65,9 @@ class CORE_EXPORT PageAnimator final : public GarbageCollected<PageAnimator> {
   bool updating_layout_and_style_for_painting_;
   bool suppress_frame_requests_workaround_for704763_only_ = false;
   AnimationClock animation_clock_;
+
+  // True if there is inline style mutation in the current frame.
+  bool has_inline_style_mutation_ = false;
   // True if the current main frame has canvas invalidation.
   bool has_canvas_invalidation_ = false;
 };

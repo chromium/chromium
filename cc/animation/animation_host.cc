@@ -133,6 +133,12 @@ void AnimationHost::SetHasCanvasInvalidation(bool has_canvas_invalidation) {
   has_canvas_invalidation_ = has_canvas_invalidation;
 }
 
+void AnimationHost::SetHasInlineStyleMutation(bool has_inline_style_mutation) {
+  // TODO(crbug.com/1111392): send this value to LayerTreeHostImpl for
+  // constructing a tracker.
+  has_inline_style_mutation_ = has_inline_style_mutation;
+}
+
 void AnimationHost::UpdateRegisteredElementIds(ElementListType changed_list) {
   for (auto map_entry : element_to_animations_map_) {
     if (mutator_host_client()->IsElementInPropertyTrees(map_entry.first,
