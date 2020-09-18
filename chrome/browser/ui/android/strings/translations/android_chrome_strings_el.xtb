@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
-<translation id="1013149566889033026">Θα ανοίξει μια νέα καρτέλα ανώνυμης περιήγησης.</translation>
 <translation id="1028699632127661925">Αποστολή στη συσκευή <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Διαγραφή δεδομένων ιστοτόπων και εφαρμογών;</translation>
 <translation id="1036348656032585052">Απενεργοποίηση</translation>
@@ -166,6 +165,7 @@
 <translation id="2321086116217818302">Προετοιμασία κωδικών πρόσβασης…</translation>
 <translation id="2321958826496381788">Σύρετε το ρυθμιστικό έως ότου να διαβάσετε αυτό το μήνυμα άνετα. Το κείμενο θα πρέπει να είναι τουλάχιστον τόσο μεγάλο αφού πατήσετε δύο φορές σε μια παράγραφο.</translation>
 <translation id="2323763861024343754">Αποθηκ. χώρος ιστοσελίδας</translation>
+<translation id="2326606747676847821">Ανώνυμη περιήγηση</translation>
 <translation id="2328985652426384049">Δεν είναι δυνατή η σύνδεση</translation>
 <translation id="234265804618409743">Δεν είναι δυνατό το άνοιγμα της κάμερας. Παρουσιάστηκε ένα πρόβλημα.</translation>
 <translation id="2345671828921229300">Για αναζήτηση, αγγίξτε παρατεταμένα μια λέξη</translation>
@@ -346,7 +346,6 @@
 <translation id="3775705724665058594">Αποστολή στις συσκευές σας</translation>
 <translation id="3778956594442850293">Προστέθηκε στην αρχική οθόνη</translation>
 <translation id="3789841737615482174">Εγκατάσταση</translation>
-<translation id="3800748312755064483">Προσωρινή σύνδεση</translation>
 <translation id="3810838688059735925">Βίντεο</translation>
 <translation id="3810973564298564668">Διαχείριση</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> λήψεις διαγράφηκαν</translation>
@@ -387,7 +386,6 @@
 <translation id="4135200667068010335">Η λίστα συσκευών στις οποίες θα κοινοποιηθεί μια καρτέλα είναι κλειστή.</translation>
 <translation id="4149994727733219643">Απλοποιημένη προβολή για ιστοσελίδες</translation>
 <translation id="4170011742729630528">Η υπηρεσία δεν είναι διαθέσιμη. Δοκιμάστε ξανά αργότερα.</translation>
-<translation id="4175173967354304331">Θα συνδεθείτε σε αυτόν τον ιστότοπο, στο Chrome και σε εφαρμογές Google</translation>
 <translation id="4179980317383591987">Χρησιμοποιήθηκαν <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Γλώσσες</translation>
 <translation id="4183868528246477015">Αναζήτηση με Google Lens <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>

@@ -2632,7 +2632,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4095507791297118304">Primary display</translation>
 <translation id="409579654357498729">Add to Cloud Print</translation>
 <translation id="4096508467498758490">Disable developer mode extensions</translation>
-<translation id="4096824249111507322">Secure module is being prepared, please wait (this may take a few minutes)...</translation>
 <translation id="4097406557126260163">Apps and extensions</translation>
 <translation id="4097560579602855702">Search Google</translation>
 <translation id="4098667039111970300">Stylus tools in toolbar</translation>
@@ -3362,7 +3361,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">Spellcheck isn’t supported for the languages that you have selected</translation>
 <translation id="5052499409147950210">Edit site</translation>
-<translation id="5053604404986157245">The randomly generated TPM password is not available. This is normal after a Powerwash.</translation>
 <translation id="5057110919553308744">When you click the extension</translation>
 <translation id="5057403786441168405">Manage your signed-in accounts. Websites, apps and extensions in Chrome and Google Play may use these accounts to customise your experience, depending on permissions. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Restrict sign-in</translation>
@@ -3953,7 +3951,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5774295353725270860">Open Files app</translation>
 <translation id="577624874850706961">Search cookies</translation>
 <translation id="5777468213129569553">Open Chrome</translation>
-<translation id="5778747455497889540">Below is the randomly generated secure module password that has been assigned to your computer:</translation>
 <translation id="5780011244986845107">The folder that you selected contains sensitive files. Are you sure that you want to grant '<ph name="APP_NAME" />' permanent read access to this folder?</translation>
 <translation id="5780973441651030252">Process priority</translation>
 <translation id="5781092003150880845">Sync as <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4662,7 +4659,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6635956300022133031">Select and customise text-to-speech voices</translation>
 <translation id="6636588250634969791">Insert SIM before proceeding</translation>
 <translation id="6639554308659482635">SQLite memory</translation>
-<translation id="6641138807883536517">The randomly generated secure module password is not available. This is normal after a Powerwash.</translation>
 <translation id="6642720633335369752">To see all open app windows, swipe up from the bottom and hold.</translation>
 <translation id="664290675870910564">Network select</translation>
 <translation id="6643016212128521049">Clear</translation>
@@ -4990,7 +4986,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7029307918966275733">Crostini is not installed. Please install Crostini to view credits.</translation>
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Serial port connected</translation>
-<translation id="7031962166228839643">TPM is being prepared, please wait (this may take a few minutes)...</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> of space is recommended for Linux. To increase free space, delete files from your device.</translation>
 <translation id="7037509989619051237">Text to preview</translation>
 <translation id="7038632520572155338">Switch access</translation>
@@ -5980,7 +5975,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8226222018808695353">Forbidden</translation>
 <translation id="8226619461731305576">Queue</translation>
 <translation id="8226628635270268143">Choose your favourite photos and albums</translation>
-<translation id="8226742006292257240">Below is the randomly generated TPM password that has been assigned to your computer:</translation>
 <translation id="8227119283605456246">Attach file</translation>
 <translation id="8230134520748321204">Save password for <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Failed to ping the default network gateway</translation>

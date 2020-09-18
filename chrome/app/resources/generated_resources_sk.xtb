@@ -2631,7 +2631,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4095507791297118304">Primárna obrazovka</translation>
 <translation id="409579654357498729">Pridať do služby Cloud Print</translation>
 <translation id="4096508467498758490">Zakázanie rozšírení spustených v režime vývojára</translation>
-<translation id="4096824249111507322">Bezpečný modul sa pripravuje, čakajte (môže to trvať niekoľko minút)...</translation>
 <translation id="4097406557126260163">Aplikácie a rozšírenia</translation>
 <translation id="4097560579602855702">Vyhľadať na Googli</translation>
 <translation id="4098667039111970300">Nástroje dotykového pera v paneli s nástrojmi</translation>
@@ -3361,7 +3360,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5050330054928994520">Prevod textu na reč</translation>
 <translation id="5051836348807686060">Kontrola pravopisu nie je v prípade vybraných jazykov podporovaná</translation>
 <translation id="5052499409147950210">Úprava webu</translation>
-<translation id="5053604404986157245">Náhodne generované heslo modulu TPM nie je k dispozícii. Po použití funkcie Powerwash je to normálne.</translation>
 <translation id="5057110919553308744">Keď kliknete na rozšírenie</translation>
 <translation id="5057403786441168405">Spravujte účty, do ktorých ste sa prihlásili. Prostredníctvom týchto účtov môžu weby, aplikácie a rozšírenia v Chrome a na Google Play prispôsobovať vaše prostredie (v závislosti od povolení). <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Obmedziť prihlásenie</translation>
@@ -3952,7 +3950,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5774295353725270860">Otvoriť aplikáciu Súbory</translation>
 <translation id="577624874850706961">Hľadať súbory cookie</translation>
 <translation id="5777468213129569553">Otvoriť Chrome</translation>
-<translation id="5778747455497889540">Nižšie je uvedené náhodne vygenerované heslo bezpečného modulu, ktoré bolo priradené k vášmu počítaču:</translation>
 <translation id="5780011244986845107">Vybraný priečinok obsahuje citlivé súbory. Naozaj chcete aplikácii <ph name="APP_NAME" /> povoliť trvalý prístup na čítanie pre tento priečinok?</translation>
 <translation id="5780973441651030252">Priorita procesov</translation>
 <translation id="5781092003150880845">Synchronizovať ako <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4661,7 +4658,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6635956300022133031">Vybrať a prispôsobiť hlasy prevodu textu na reč</translation>
 <translation id="6636588250634969791">Pokračovať po vložení SIM karty</translation>
 <translation id="6639554308659482635">Pamäť nástroja SQLite</translation>
-<translation id="6641138807883536517">Náhodne generované heslo bezpečnostného modulu nie je k dispozícii. Po použití funkcie Powerwash je to normálne.</translation>
 <translation id="6642720633335369752">Všetky otvorené okná aplikácie zobrazíte potiahnutím zdola nahor a pridržaním.</translation>
 <translation id="664290675870910564">Výber siete</translation>
 <translation id="6643016212128521049">Vymazať</translation>
@@ -4989,7 +4985,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="7029307918966275733">Systém Crostini nie je nainštalovaný. Ak si chcete zobraziť poďakovania, nainštalujte si Crostini.</translation>
 <translation id="7029809446516969842">Heslá</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – sériový port je pripojený</translation>
-<translation id="7031962166228839643">Model TPM sa pripravuje, čakajte (môže to trvať niekoľko minút)...</translation>
 <translation id="7036706669646341689">Na používanie systému Linux sa vyžaduje <ph name="DISK_SIZE" /> voľného priestoru. Uvoľníte ho odstránením súborov zo zariadenia.</translation>
 <translation id="7037509989619051237">Ukážka textu</translation>
 <translation id="7038632520572155338">Ovládanie prepínačmi</translation>
@@ -5978,7 +5973,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8226222018808695353">Zakázané</translation>
 <translation id="8226619461731305576">Poradie</translation>
 <translation id="8226628635270268143">Vyberte svoje obľúbené fotky a albumy</translation>
-<translation id="8226742006292257240">Nižšie je uvedené náhodne vygenerované heslo modulu TPM, ktoré bolo priradené k vášmu počítaču:</translation>
 <translation id="8227119283605456246">Pripojiť súbor</translation>
 <translation id="8230134520748321204">Chcete uložiť heslo pre web <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Predvolenú bránu siete sa nepodarilo otestovať</translation>

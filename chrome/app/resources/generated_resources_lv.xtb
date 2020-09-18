@@ -374,6 +374,7 @@
 <translation id="143027896309062157">Lasīt un mainīt visus jūsu datus jūsu datorā un jūsu apmeklētajās vietnēs</translation>
 <translation id="1430915738399379752">Drukāt</translation>
 <translation id="1431188203598586230">Pēdējais programmatūras atjauninājums</translation>
+<translation id="1431402976894535801">Nerādīt vietnēm informāciju, kad jūs esat aktīvs</translation>
 <translation id="1431432486300429272">Google var izmantot jūsu pārlūkošanas vēsturi, lai personalizētu Meklēšanu un citus Google pakalpojumus. Jūs vai jūsu vecāki varat to mainīt jebkurā brīdī vietnē myaccount.google.com/activitycontrols/search.</translation>
 <translation id="1432581352905426595">Pārvaldīt meklējumprogrammas</translation>
 <translation id="1433811987160647649">Jautāt pirms piekļūšanas</translation>
@@ -570,6 +571,7 @@
 <translation id="1651008383952180276">Jums divreiz jāievada viena un tā pati ieejas frāze.</translation>
 <translation id="1652326691684645429">Iespējot funkciju Kopīgošana tuvumā</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Pievienojiet printeri pakalpojumam Google mākoņdruka, lai varētu drukāt, atrodoties jebkurā vietā.}zero{Pievienojiet # printerus pakalpojumam Google mākoņdruka, lai varētu drukāt, atrodoties jebkurā vietā.}one{Pievienojiet # printeri pakalpojumam Google mākoņdruka, lai varētu drukāt, atrodoties jebkurā vietā.}other{Pievienojiet # printerus pakalpojumam Google mākoņdruka, lai varētu drukāt, atrodoties jebkurā vietā.}}</translation>
+<translation id="1653575510930452864">Kopēt saiti uz tekstu</translation>
 <translation id="1656528038316521561">Fona necaurredzamība</translation>
 <translation id="1657406563541664238">Palīdziet uzlabot programmu <ph name="PRODUCT_NAME" />, automātiski nosūtot lietošanas statistiku un avārijas pārskatus uzņēmumam Google</translation>
 <translation id="1657937299377480641">Lai vēlreiz pierakstītos un varētu piekļūt izglītojošiem resursiem, lūdziet vienam no vecākiem piešķirt jums atļauju.</translation>
@@ -1003,6 +1005,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2178614541317717477">CA drošības politikas apdraudējums</translation>
 <translation id="2182058453334755893">Kopēts jūsu starpliktuvē</translation>
 <translation id="2184515124301515068">Atļaut pārlūkam Chrome izvēlēties, kad vietnēs var atskaņot skaņu (ieteicams)</translation>
+<translation id="2187243482123994665">Lietotāja aktivitāte</translation>
 <translation id="2187675480456493911">Tīkls ir sinhronizēts ar citām ierīcēm jūsu kontā. Iestatījumi, kurus ir mainījuši citi lietotāji, netiks sinhronizēti. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="2187895286714876935">Servera sertifikāta importēšanas kļūda</translation>
 <translation id="2187906491731510095">Paplašinājumi ir atjaunināti</translation>
@@ -1830,6 +1833,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3163201441334626963">Nezināms produkts (ID: <ph name="PRODUCT_ID" />), ko piedāvā <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Tālāk norādītie pakalpojumi tiek izmantoti jūsu datu aizsardzībai. Varat jebkurā laikā izslēgt šīs funkcijas.</translation>
 <translation id="3164329792803560526">Šī cilne tiek kopīgota lietotnē <ph name="APP_NAME" /></translation>
+<translation id="3165371858310906303">Vaicāt, ja vietne pieprasa informāciju, kad jūs esat aktīvs</translation>
 <translation id="3165390001037658081">Daļa mobilo sakaru operatoru var bloķēt šo funkciju.</translation>
 <translation id="316652501498554287">G Suite for Education konti</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2628,7 +2632,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4095507791297118304">Galvenais displejs</translation>
 <translation id="409579654357498729">Pievienot mākoņdrukai</translation>
 <translation id="4096508467498758490">Izstrādātāja režīma paplašinājumu atspējošana</translation>
-<translation id="4096824249111507322">Notiek drošības moduļa sagatavošana. Lūdzu, uzgaidiet (tas var ilgt dažas minūtes)...</translation>
 <translation id="4097406557126260163">Lietotnes un paplašinājumi</translation>
 <translation id="4097560579602855702">Meklēt Google tīklā</translation>
 <translation id="4098667039111970300">Skārienekrāna pildspalvas rīki rīkjoslā</translation>
@@ -2947,6 +2950,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4527186207340858212">Vai vēlaties izveidot jaunu profilu darbam?</translation>
 <translation id="452750746583162491">Pārskatīt sinhronizētos datus</translation>
 <translation id="4530494379350999373">Avots</translation>
+<translation id="4531924570968473143">Kuru lietotāju vēlaties pievienot šai <ph name="DEVICE_TYPE" /> ierīcei?</translation>
 <translation id="4532646538815530781">Šajā vietnē tiek izmantoti kustību sensori.</translation>
 <translation id="4533846798469727141">Tagad izrunājiet “Hey Google”</translation>
 <translation id="4533985347672295764">Centrālā procesora laiks</translation>
@@ -3357,7 +3361,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5050330054928994520">Teksta pārvēršana runā</translation>
 <translation id="5051836348807686060">Pareizrakstības pārbaude netiek atbalstīta atlasītajās valodās</translation>
 <translation id="5052499409147950210">Vietnes rediģēšana</translation>
-<translation id="5053604404986157245">Pēc nejaušības principa ģenerētā TPM parole nav pieejama. Tā nereti notiek pēc funkcijas Powerwash izmantošanas.</translation>
 <translation id="5057110919553308744">Kad noklikšķināt uz paplašinājuma</translation>
 <translation id="5057403786441168405">Pārvaldiet savus kontus, kuros esat pierakstījies. Atkarībā no atļaujām Chrome un Google Play vietnes, lietotnes un paplašinājumi var izmantot šos kontus, lai pielāgotu jūsu pieredzi. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="5059241099014281248">Pierakstīšanās ierobežojumu iestatīšana</translation>
@@ -3948,7 +3951,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5774295353725270860">Atvērt lietotni Files</translation>
 <translation id="577624874850706961">Meklēt sīkfailus</translation>
 <translation id="5777468213129569553">Atvērt Chrome</translation>
-<translation id="5778747455497889540">Tālāk ir redzama pēc nejaušības principa ģenerēta drošības moduļa parole, kas piešķirta jūsu datoram.</translation>
 <translation id="5780011244986845107">Atlasītajā mapē ir iekļauti sensitīvi faili. Vai tiešām vēlaties piešķirt lietotnei <ph name="APP_NAME" /> pastāvīgu lasīšanas piekļuvi šai mapei?</translation>
 <translation id="5780973441651030252">Procesa prioritāte</translation>
 <translation id="5781092003150880845">Sinhronizēt kā: <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -3978,6 +3980,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5804241973901381774">Atļaujas</translation>
 <translation id="5805697420284793859">Logu pārvaldnieks</translation>
 <translation id="5806773519584576205">0° (noklusējums)</translation>
+<translation id="5808664694611589238">{0,plural, =1{Aizvērt viesa logu}zero{Aizvērt viesu logus}one{Aizvērt viesu logus}other{Aizvērt viesu logus}}</translation>
 <translation id="5810809306422959727">Šis konts nav piemērots vecāku kontrolei</translation>
 <translation id="5812674658566766066">Izvērst visu</translation>
 <translation id="5814126672212206791">Savienojuma veids</translation>
@@ -4435,6 +4438,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6344170822609224263">Piekļūt tīkla savienojumu sarakstam</translation>
 <translation id="6344576354370880196">Saglabātie printeri</translation>
 <translation id="6345418402353744910">Jums jānorāda savs lietotājvārds un parole starpniekserverim <ph name="PROXY" />, lai administrators varētu konfigurēt jūsu tīklu</translation>
+<translation id="6345878117466430440">Atzīmēt kā izlasītu</translation>
 <translation id="6349101878882523185">Instalēt <ph name="APP_NAME" /> lietotni</translation>
 <translation id="6349170655202535379">Sinhronizācija nedarbojas. Izrakstieties un atkārtoti pierakstieties.</translation>
 <translation id="6351063337294363751">Šajā izvēlnē varat notīrīt pārlūkošanas datus.</translation>
@@ -4655,7 +4659,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6635956300022133031">Atlasiet un pielāgojiet balsis teksta pārvēršanai runā</translation>
 <translation id="6636588250634969791">Pirms turpināšanas ievietojiet SIM karti.</translation>
 <translation id="6639554308659482635">SQLite atmiņa</translation>
-<translation id="6641138807883536517">Pēc nejaušības principa ģenerētā drošības moduļa parole nav pieejama. Tā nereti notiek pēc funkcijas Powerwash izmantošanas.</translation>
 <translation id="6642720633335369752">Lai skatītu visus atvērto lietotņu logus, velciet augšup no ekrāna apakšdaļas un turiet.</translation>
 <translation id="664290675870910564">Tīkla atlase</translation>
 <translation id="6643016212128521049">Notīrīt</translation>
@@ -4983,7 +4986,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="7029307918966275733">Rīks Crostini nav instalēts. Lai skatītu izstrādātāju informāciju, instalējiet Crostini.</translation>
 <translation id="7029809446516969842">Paroles</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> — Seriālais ports pievienots</translation>
-<translation id="7031962166228839643">Notiek TPM sagatavošana. Lūdzu, uzgaidiet (tas var aizņemt dažas minūtes)...</translation>
 <translation id="7036706669646341689">Sistēmai Linux ir nepieciešams <ph name="DISK_SIZE" /> vietas krātuvē. Lai atbrīvotu vietu, dzēsiet failus no ierīces.</translation>
 <translation id="7037509989619051237">Teksta priekšskatījums</translation>
 <translation id="7038632520572155338">Slēdžu piekļuve</translation>
@@ -5177,6 +5179,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="7280649757394340890">Balss iestatījumi teksta pārvēršanai runā</translation>
 <translation id="7280877790564589615">Atļaujas pieprasījums</translation>
 <translation id="7282992757463864530">Informācijas josla</translation>
+<translation id="7284411326658527427">Katra persona var personalizēt savu kontu, un katras personas dati ir konfidenciāli.</translation>
 <translation id="7287143125007575591">Piekļuve liegta.</translation>
 <translation id="7287411021188441799">Atjaunot noklusējuma fonu</translation>
 <translation id="7288013116963835700">Noņemt Linux ierīcē <ph name="DEVICE_TYPE" /></translation>
@@ -5752,6 +5755,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="7963826112438303517">Jūsu Asistents izmanto šos ierakstus un jūsu izrunātos pieprasījumus, lai izveidotu un atjauninātu jūsu balss modeli, kas tiek glabāts tikai ierīcēs, kurās esat ieslēdzis funkciju Voice Match. Skatiet vai pārveidojiet balss darbību Asistenta iestatījumos.</translation>
 <translation id="7966241909927244760">Kopēt attēla adresi</translation>
 <translation id="7968072247663421402">Pakalpojumu sniedzēju opcijas</translation>
+<translation id="7968198493605442410">Kopēt saiti uz tekstu</translation>
 <translation id="7968742106503422125">Lasīt un modificēt datus, kurus jūs kopējat un ielīmējat</translation>
 <translation id="7968833647796919681">Iespējot veiktspējas datu apkopošanu</translation>
 <translation id="7968982339740310781">Skatīt detalizētu informāciju</translation>
@@ -5970,7 +5974,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8226222018808695353">Aizliegts</translation>
 <translation id="8226619461731305576">Rinda</translation>
 <translation id="8226628635270268143">Izvēlieties savus iecienītākos fotoattēlus un albumus.</translation>
-<translation id="8226742006292257240">Tālāk redzama nejauši izveidota TPM parole, kas piešķirta jūsu datoram:</translation>
 <translation id="8227119283605456246">Pievienot failu</translation>
 <translation id="8230134520748321204">Vai saglabāt paroli vietnei <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Neizdevās ehotestēt noklusējuma tīkla vārteju</translation>

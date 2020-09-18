@@ -1811,7 +1811,6 @@ Bu politika False (Yanlış) değerine ayarlanırsa <ph name="PRODUCT_NAME" /> y
 <translation id="3631099945620529777">False (yanlış) değerine ayarlanırsa Görev Yöneticisi'nde "İşlemi sonlandır" düğmesi devre dışı bırakılır.
 
       True (doğru) değerine ayarlanır veya yapılandırılmazsa kullanıcı, Görev Yöneticisi'ndeki işlemleri sona erdirebilir.</translation>
-<translation id="3639444551396586995">Chrome'un güvenli olmayan etkinlikleri Google'a bildirmesine olanak verir</translation>
 <translation id="3643284063603988867">"Şifreyi hatırla" özelliğini etkinleştir</translation>
 <translation id="3646859102161347133">Ekran büyüteci türünü ayarla</translation>
 <translation id="3647212518036289905">Politikanın ayarlanması, HTTP kimlik doğrulaması için hangi GSSAPI kitaplığının kullanılacağını belirtir. Politikayı bir kitaplık adı veya tam yol olarak ayarlayın.
@@ -2033,9 +2032,6 @@ Bu politika yanlış seçeneğine ayarlanırsa kiosk oturum bilgileri rapor edil
 <translation id="3942041691320538491">Politika 0 (varsayılan) değerine ayarlanırsa geliştirici araçlarına ve JavaScript konsoluna erişebilirsiniz. Ancak kurumsal politikaya göre yüklenen uzantıların bağlamında bu erişimi sağlayamazsınız. Politika 1 değerine ayarlanırsa kurumsal politikaya göre yüklenen uzantıların bağlamı dahil tüm bağlamlarda geliştirici araçlarına ve JavaScript konsoluna erişebilirsiniz. Politika 2 değerine ayarlanırsa geliştirici araçlarına erişemezsiniz ve web sitesi öğelerini inceleyemezsiniz.
 
       Bu ayar, geliştirici araçlarını veya JavaScript konsolunu açmak için klavye kısayollarını ve menü veya içerik menüsü girişlerini de kapatır.</translation>
-<translation id="3942080695743860553">Bu politika, URL'leri alternatif tarayıcıda açmak için hangi komutun kullanılacağını kontrol eder. Bu politika; <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" /> veya bir dosya yoluna ayarlanabilir. Bu politika bir dosya yoluna ayarlanırsa buradaki dosya yürütülebilir dosya olarak kullanılır. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> yalnızca <ph name="MS_WIN_NAME" /> üzerinde kullanılabilir. <ph name="SAFARI_VALUE_PLACEHOLDER" /> ise yalnızca <ph name="MS_WIN_NAME" /> ve <ph name="MAC_OS_NAME" /> üzerinde kullanılabilir.
-
-      Bu politika ayarlanmadan bırakılırsa platforma özgü bir varsayılan kullanılır: <ph name="MS_WIN_NAME" /> için <ph name="IE_PRODUCT_NAME" /> veya <ph name="MAC_OS_NAME" /> için <ph name="SAFARI_PRODUCT_NAME" />. <ph name="LINUX_OS_NAME" /> üzerinde alternatif tarayıcı açılamaz.</translation>
 <translation id="3950110092991281616">Ambiyans kimlik doğrulamasını yalnızca normal oturumlarda etkinleştir.</translation>
 <translation id="3950239119790560549">Güncelleme Zamanı Kısıtlamaları</translation>
 <translation id="3956686688560604829">Eski Tarayıcı Desteği için Internet Explorer'ın SiteList politikasını kullanma.</translation>
@@ -2603,10 +2599,6 @@ politikayı geçersiz kılamaz.
 <translation id="4874982543810021567">Bu sitelerde WebUSB'yi engelle</translation>
 <translation id="4876805738539874299">Etkinleştirilen maksimum SSL sürümü</translation>
 <translation id="4887274746092315609">SAML kullanıcılarına yönelik oturum içi şifre değişimi için bir sayfayı etkinleştir</translation>
-<translation id="4887863670424903990">Bu politika etkin olarak ayarlandığında <ph name="PRODUCT_NAME" />; şifre yeniden kullanımı, kötü amaçlı yazılım indirmeleri, geçiş reklamları, hassas verileri koruma kuralı ihlalleri gibi güvenli olmayan etkinlikleri analiz için Google'a bildirir.  Hassas verileri koruma kuralı ihlalleri gibi bazı güvenli olmayan etkinlikler, bu tür denetimleri etkinleştiren diğer politikalara bağlıdır.
-
-      Bu politika hiç ayarlanmazsa veya devre dışı olarak ayarlanırsa <ph name="PRODUCT_NAME" /> güvenli olmayan etkinlikleri bildirmeyecektir.
-      </translation>
 <translation id="4894290482695457375"><ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> politikası Devre dışı değerine ayarlanmadığı sürece, <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> politikası Etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yalnızca RFC1918/RFC4193 özel adreslerinde değil tüm IP adreslerinde yayın cihazlarına bağlanır.
 
       Politika Devre dışı değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yalnızca RFC1918/RFC4193 adreslerinde yayın cihazlarına bağlanır.
@@ -3836,7 +3828,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Bu politikanın, EnabledPlugins ve DisabledPluginsExceptions politikaları tarafından geçersiz kılınabileceğini unutmayın.
 
       Bu politika ayarlanmadan bırakılırsa kullanıcı, sabit kodlu, uyumsuz, eski veya tehlikeli eklentiler hariç sistemde yüklü herhangi bir eklentiyi kullanabilir.</translation>
-<translation id="6571871508154591774">Devre dışı bırakılacak kamera, tarayıcı ayarları ve OS ayarları özellikleri</translation>
 <translation id="6573305661369899995">URL kısıtlamaları için harici kaynak ayarla</translation>
 <translation id="6575944031719151455">Politikanın ayarlanması, cihaz yerel hesapları listesinin oturum açma ekranında görüntüleneceğini belirtir. Tanımlayıcılar, farklı cihaz yerel hesaplarını ayırt eder.
 
@@ -4946,11 +4937,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       <ph name="PRODUCT_OS_NAME" /> için bu politika her zaman geçerlidir.</translation>
 <translation id="8050080920415773384">Yerel Yazdırma</translation>
 <translation id="8053580360728293758">Varsayılan renkli yazdırma modunu geçersiz kılar. Mod mevcut değilse bu politika yoksayılır.</translation>
-<translation id="8057841287222359526">Devre dışı bırakılacak <ph name="PRODUCT_OS_NAME" /> özelliklerini belirlemenize izin verir.
-
-      Bu özelliklerin herhangi birisini iptal etmek, kullanıcının arayüzde ilgili özelliğe erişemeyeceği ve bunu "yönetici tarafından engellendi" olarak göreceği anlamına gelir.
-
-      Politika ayarlanmadan bırakılırsa tüm <ph name="PRODUCT_OS_NAME" /> özellikleri varsayılan olarak kalır ve kullanıcı bu özelliklerden herhangi birini kullanabilir.</translation>
 <translation id="8059164285174960932">Uzaktan erişim istemcilerinin kimlik doğrulama jetonunu edinmesi gerektiği URL</translation>
 <translation id="8077245272412229388">Önceden doldurulmuş Kerberos hesaplarını ekler. Kerberos kimlik bilgileri oturum açma kimlik bilgileriyle eşleşirse bir hesap, sırasıyla ana hesap ve şifre için "<ph name="LOGIN_EMAIL_PLACEHOLDER" />" ve "<ph name="PASSWORD_PLACEHOLDER" />" bilgilerini belirterek oturum açma kimlik bilgilerini tekrar kullanmak üzere yapılandırılabilir. Böylece, iki faktörlü kimlik doğrulama yapılandırılmadıkça Kerberos bileti otomatik olarak getirilebilir. Kullanıcılar, bu politika aracılığıyla eklenen hesapları değiştiremezler.
 

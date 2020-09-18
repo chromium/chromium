@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">নিৰপত্তাজনিত কাৰণত ফাইলটো এক্সেছ কৰিব পৰা নগ'ল।</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" />টা বস্তু জিপ কৰি থকা হৈছে...</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> টা বস্তুৰ প্ৰতিলিপি কৰা হ'ল।</translation>
 <translation id="174173592514158117">Playৰ সকলো ফ’ল্ডাৰ দেখুৱাওক</translation>
 <translation id="174937106936716857">ফাইলৰ মুঠ সংখ্যা</translation>
 <translation id="1775381402323441512">ভিডিঅ’ সম্পৰ্কীয় তথ্য</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">অমান্য বৰ্ণ: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">ভিয়েটনামীজ কীব’ৰ্ড (TCVN)</translation>
 <translation id="2168214441502403371">পার্চীয়ান কীব’র্ড</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> স্থানান্তৰ কৰা হ'ল।</translation>
 <translation id="2198315389084035571">সৰলীকৰণ কৰা চীনা</translation>
 <translation id="2208158072373999562">জিপ আৰ্কাইভ</translation>
 <translation id="2225536596944493418">আপুনি <ph name="NUMBER_OF_ITEMS" />টা বস্তু মচি পেলাবলৈ নিশ্চিতনে?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ফল্ডাৰ সৃষ্টি কৰিব পৰা নগ’ল। <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">স্থানান্তৰ কৰা হ'ল।</translation>
 <translation id="2278988676849463018">কানাডা কীব’র্ড (উচ্চাৰণগত)</translation>
 <translation id="2288278176040912387">ৰেকৰ্ড প্লেয়াৰ</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" />টা ফাইল খুলি থকা হৈছে</translation>
@@ -234,6 +237,7 @@
 <translation id="3620292326130836921">সকলো বেক আপ সম্পূর্ণ হৈ আছে!</translation>
 <translation id="3626281679859535460">উজ্জ্বলতা</translation>
 <translation id="3644896802912593514">প্ৰস্থ</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> টা বস্তু স্থানান্তৰ কৰা হ'ল।</translation>
 <translation id="3645531960514756307">ফ’ল্ডাৰ আনপিন কৰক</translation>
 <translation id="3678559383040232393">মাল্টিজ কীব’ৰ্ড</translation>
 <translation id="3685122418104378273">ডিফ’ল্ট অনুসৰি ম’বাইল ডেটা ব্যৱহাৰ কৰাৰ সময়ত Google Drive ছিংক অক্ষম কৰা হৈছে।</translation>
@@ -392,6 +396,7 @@
     আপোনাৰ ডিভাইচৰ যিয়েই নহওক কিয়, আপোনাৰ ফাইলসমূহ Google Driveত সুৰক্ষিতভাৱে ষ্ট'ৰ হৈ থাকে।<ph name="MARKUP_6" />
     একেটা ঠাইতে অন্য লোকৰ সৈতে ফাইল <ph name="MARKUP_7" />শ্বেয়াৰ কৰক, সৃষ্টি কৰক আৰু সহযোগিতা কৰক<ph name="MARKUP_8" />।
     <ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">প্ৰতিলিপি কৰা হ'ল।</translation>
 <translation id="5275973617553375938">Google Driveৰ পৰা পুনৰুদ্ধাৰ কৰা ফাইল</translation>
 <translation id="5317780077021120954">ছেভ কৰক</translation>
 <translation id="5318819489018851358">Linuxৰ জৰিয়তে শ্বেয়াৰ কৰক</translation>
@@ -742,6 +747,7 @@
 <translation id="943972244133411984">সংশোধন কৰোঁতা</translation>
 <translation id="945522503751344254">মতামত পঠিয়াওক</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />ৰ পৰা <ph name="TO_ENTRY_NAME" />লৈ পৰিসৰৰ বাছনি কৰা <ph name="ENTRY_COUNT" />টা প্ৰবিষ্টি</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" />ৰ প্ৰতিলিপি কৰা হ'ল।</translation>
 <translation id="981121421437150478">অফলাইন</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" নামৰ এটা ফাইল ইতিমধ্যে আছেই। আপুনি এইটো সলনি কৰিব বিচাৰে নেকি?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> এম. বি.</translation>

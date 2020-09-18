@@ -136,7 +136,7 @@
 <translation id="5197729504361054390">I contatti che selezioni verranno condivisi con <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5301954838959518834">OK</translation>
-<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra</translation>
+<translation id="5308418739111119514">Autorizzazioni: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra/e</translation>
 <translation id="5313967007315987356">Aggiungi sito</translation>
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5335288049665977812">Consenti l'esecuzione di JavaScript nei siti (opzione consigliata)</translation>
@@ -148,7 +148,7 @@
 <translation id="5403592356182871684">Nomi</translation>
 <translation id="5489227211564503167">Tempo trascorso: <ph name="ELAPSED_TIME" /> di <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blocca gli annunci su siti che mostrano annunci invasivi o fuorvianti</translation>
-<translation id="5502860503640766021"><ph name="PERMISSION_1" /> consentita, <ph name="PERMISSION_2" /> bloccata</translation>
+<translation id="5502860503640766021">Autorizzazione <ph name="PERMISSION_1" /> consentita, autorizzazione <ph name="PERMISSION_2" /> bloccata</translation>
 <translation id="5505264765875738116">I siti non possono chiedere di inviare notifiche</translation>
 <translation id="5516455585884385570">Apri le impostazioni di notifica</translation>
 <translation id="5527111080432883924">Chiedi conferma prima di consentire ai siti di leggere testo e immagini negli appunti (opzione consigliata)</translation>
@@ -160,10 +160,10 @@
 <translation id="5690795753582697420">La fotocamera è disattivata nelle impostazioni di Android</translation>
 <translation id="5710871682236653961">Chiedi prima di consentire ai siti di inviare e ricevere informazioni quando tocchi i dispositivi NFC (opzione consigliata)</translation>
 <translation id="5719847187258001597">Verranno cancellati tutti i dati e i cookie memorizzati dal sito <ph name="ORIGIN" /> o dalla relativa app nella schermata Home.</translation>
-<translation id="5771720122942595109"><ph name="PERMISSION_1" /> bloccata</translation>
+<translation id="5771720122942595109">Autorizzazione <ph name="PERMISSION_1" /> bloccata</translation>
 <translation id="5804241973901381774">Autorizzazioni</translation>
 <translation id="5860033963881614850">OFF</translation>
-<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra consentita</translation>
+<translation id="5863245810240683687">Autorizzazioni consentite: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra/e</translation>
 <translation id="5876056640971328065">Metti in pausa il video</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5922853908706496913">Condivisione dello schermo</translation>
@@ -180,7 +180,7 @@
 <translation id="6196640612572343990">Blocca cookie di terze parti</translation>
 <translation id="6206551242102657620">La connessione è sicura. Informazioni sul sito</translation>
 <translation id="6216432067784365534">Opzioni <ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="6262279340360821358"><ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> bloccate</translation>
+<translation id="6262279340360821358">Autorizzazioni <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> bloccate</translation>
 <translation id="6270391203985052864">I siti possono chiedere di inviare notifiche</translation>
 <translation id="6295158916970320988">Tutti i siti</translation>
 <translation id="6320088164292336938">Vibrazione</translation>
@@ -203,7 +203,7 @@
 <translation id="6790428901817661496">Play</translation>
 <translation id="6818926723028410516">Seleziona elementi</translation>
 <translation id="6864395892908308021">Questo dispositivo non può leggere la tecnologia NFC</translation>
-<translation id="6879016579615558281"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="NUM_MORE" /> bloccate</translation>
+<translation id="6879016579615558281">Bloccate: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra/e</translation>
 <translation id="6910211073230771657">Eliminato</translation>
 <translation id="6912998170423641340">Impedisci ai siti di leggere testo e immagini negli appunti</translation>
 <translation id="6945221475159498467">Seleziona</translation>
@@ -221,7 +221,7 @@
 <translation id="723171743924126238">Seleziona immagini</translation>
 <translation id="7243308994586599757">Opzioni disponibili nella parte inferiore dello schermo</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> elementi selezionati</translation>
-<translation id="7260727271532453612"><ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> consentite</translation>
+<translation id="7260727271532453612">Autorizzazioni <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> consentite</translation>
 <translation id="7302486331832100261">Di solito blocchi le notifiche. Per consentirle, tocca Dettagli.</translation>
 <translation id="7423098979219808738">Chiedi prima</translation>
 <translation id="7423538860840206698">Lettura degli appunti non consentita</translation>
@@ -253,7 +253,7 @@
 <translation id="8087000398470557479">Questi contenuti derivano da <ph name="DOMAIN_NAME" /> e sono offerti da Google.</translation>
 <translation id="8116925261070264013">Con audio disattivato</translation>
 <translation id="8131740175452115882">Conferma</translation>
-<translation id="8197286292360124385"><ph name="PERMISSION_1" /> consentita</translation>
+<translation id="8197286292360124385">Autorizzazione <ph name="PERMISSION_1" /> consentita</translation>
 <translation id="8200772114523450471">Riprendi</translation>
 <translation id="8206354486702514201">Questa impostazione è stata applicata dall'amministratore.</translation>
 <translation id="8249310407154411074">Sposta in alto</translation>

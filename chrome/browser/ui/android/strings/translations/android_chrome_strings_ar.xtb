@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
-<translation id="1013149566889033026">سيتم فتح علامة تبويب جديدة في وضع التصفّح المتخفي.</translation>
 <translation id="1028699632127661925">جارٍ الإرسال إلى <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">محو البيانات هنا أيضًا؟</translation>
 <translation id="1036348656032585052">إيقاف</translation>
@@ -166,6 +165,7 @@
 <translation id="2321086116217818302">جارٍ تحضير كلمات المرور…</translation>
 <translation id="2321958826496381788">اسحب شريط التمرير إلى أن تتمكّن من قراءة هذا النص بسهولة. يجب أن يظهر النص بهذا الحجم على الأقل بعد النقر مرّتين على أي فقرة.</translation>
 <translation id="2323763861024343754">مساحة تخزين الموقع</translation>
+<translation id="2326606747676847821">الانتقال إلى وضع التصفُّح المتخفّي</translation>
 <translation id="2328985652426384049">تعذر تسجيل الدخول</translation>
 <translation id="234265804618409743">تعذّر فتح الكاميرا. حدث خطأ ما.</translation>
 <translation id="2345671828921229300">للبحث، انقر مع الاستمرار على كلمة معيّنة.</translation>
@@ -346,7 +346,6 @@
 <translation id="3775705724665058594">إرسال إلى أجهزتك</translation>
 <translation id="3778956594442850293">تمت الإضافة إلى الشاشة الرئيسية</translation>
 <translation id="3789841737615482174">تثبيت</translation>
-<translation id="3800748312755064483">تسجيل الدخول مؤقتًا</translation>
 <translation id="3810838688059735925">الفيديوهات</translation>
 <translation id="3810973564298564668">إدارة محرّكات البحث</translation>
 <translation id="3819178904835489326">تم إلغاء <ph name="NUMBER_OF_DOWNLOADS" /> من عمليات التنزيل</translation>
@@ -677,6 +676,7 @@
 <translation id="6341580099087024258">السؤال عن مكان حفظ الملفات</translation>
 <translation id="6342069812937806050">الآن</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 وعنوان إضافي واحد (<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />)}zero{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> عنوان إضافي}two{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 وعنوانان إضافيان (<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />)}few{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> عناوين إضافية}many{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> عنوانًا إضافيًا}other{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> عنوان إضافي}}</translation>
+<translation id="6345878117466430440">وضع علامة "مقروءة"</translation>
 <translation id="6364438453358674297">هل تريد إزالة اقتراح من السجل؟</translation>
 <translation id="6366047038980456022">تتوفّر في <ph name="APP_NAME" /> الميزات الذكية والسرعة التي تحتاجها للتنفيذ والإبداع والاستكشاف بأمان على الإنترنت.</translation>
 <translation id="6378173571450987352">التفاصيل: تم الترتيب حسب مقدار البيانات المُستخدَمة</translation>
@@ -992,6 +992,7 @@
 <translation id="8655129584991699539">‏يمكنك محو البيانات في إعدادات Chrome.</translation>
 <translation id="8662811608048051533">يخرجك من معظم المواقع الإلكترونية.</translation>
 <translation id="8664979001105139458">اسم الملف موجود</translation>
+<translation id="8683039184091909753">صورة</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{مستوى قوة الإشارة: شريط واحد (#)}zero{مستوى قوة الإشارة: # شريط}two{مستوى قوة الإشارة: شريطان (#)}few{مستوى قوة الإشارة: # أشرطة}many{مستوى قوة الإشارة: # شريطًا}other{مستوى قوة الإشارة: # شريط}}</translation>
 <translation id="869891660844655955">تاريخ انتهاء الصلاحية</translation>
 <translation id="8712637175834984815">تم</translation>

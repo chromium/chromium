@@ -374,6 +374,7 @@
 <translation id="143027896309062157">A számítógépén és az Ön által felkeresett webhelyeken lévő adatainak olvasása és módosítása</translation>
 <translation id="1430915738399379752">Nyomtatás</translation>
 <translation id="1431188203598586230">Utolsó szoftverfrissítés</translation>
+<translation id="1431402976894535801">A webhelyek nem kaphatnak információt arról, hogy Ön mikor van jelen</translation>
 <translation id="1431432486300429272">A Google felhasználhatja a böngészési előzményeket a Kereső és más Google-szolgáltatások személyre szabására. Ezt bármikor módosíthatod vagy a szülőd is módosíthatja a myaccount.google.com/activitycontrols/search címen.</translation>
 <translation id="1432581352905426595">Keresőmotorok beállítása</translation>
 <translation id="1433811987160647649">Kérdezzen rá hozzáférés előtt</translation>
@@ -570,6 +571,7 @@
 <translation id="1651008383952180276">Mindkét alkalommal ugyanazt az összetett jelszót kell megadnia</translation>
 <translation id="1652326691684645429">Közeli megosztás bekapcsolása</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Adja hozzá a nyomtatót a Google Cloud Print szolgáltatáshoz, hogy bárhonnan nyomtathasson.}other{Adjon hozzá # nyomtatót a Google Cloud Print szolgáltatáshoz, hogy bárhonnan nyomtathasson.}}</translation>
+<translation id="1653575510930452864">Szövegre mutató link másolása</translation>
 <translation id="1656528038316521561">Háttér átlátszatlansága</translation>
 <translation id="1657406563541664238">Segítsen a <ph name="PRODUCT_NAME" /> fejlesztésében azáltal, hogy automatikusan elküldi a használati statisztikákat és hibajelentéseket a Google részére</translation>
 <translation id="1657937299377480641">Ha újra be szeretnél jelentkezni, hogy hozzáférj az oktatási forrásokhoz, kérd meg egyik szülődet, hogy adjon neked jogosultságot</translation>
@@ -1003,6 +1005,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2178614541317717477">A tanúsítványkibocsátó veszélyeztetve</translation>
 <translation id="2182058453334755893">Vágólapra másolva</translation>
 <translation id="2184515124301515068">A Chrome dönthet arról, hogy a webhelyek lejátszhatnak-e hangot (ajánlott)</translation>
+<translation id="2187243482123994665">Felhasználói jelenlét</translation>
 <translation id="2187675480456493911">Szinkronizálva van a fiókjában lévő egyéb eszközökkel. A más felhasználók által módosított beállításokat a rendszer nem szinkronizálja majd. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="2187895286714876935">Hiba a szervertanúsítvány importálásánál</translation>
 <translation id="2187906491731510095">Bővítmények frissítve</translation>
@@ -1830,6 +1833,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3163201441334626963">Ismeretlen termék (<ph name="PRODUCT_ID" />) a következő forgalmazótól: <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">A következő szolgáltatások segítenek adatai biztonságának megőrzésében. Az ilyen szolgáltatásokat bármikor ki lehet kapcsolni.</translation>
 <translation id="3164329792803560526">Lap megosztása a következővel: <ph name="APP_NAME" /></translation>
+<translation id="3165371858310906303">Kérdezzen rá, amikor egy webhely tudni szeretné, hogy Ön mikor van jelen</translation>
 <translation id="3165390001037658081">Egyes szolgáltatók letilthatják ezt a funkciót.</translation>
 <translation id="316652501498554287">G Suite for Education-fiókok</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2627,7 +2631,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4095507791297118304">Elsődleges kijelző</translation>
 <translation id="409579654357498729">Hozzáadás a Cloud Printhez</translation>
 <translation id="4096508467498758490">A fejlesztői módban futó bővítmények kikapcsolása</translation>
-<translation id="4096824249111507322">A biztonsági modul előkészítése folyamatban van (és néhány percig is eltarthat) – kérjük, várjon…</translation>
 <translation id="4097406557126260163">Alkalmazások és bővítmények</translation>
 <translation id="4097560579602855702">Keresés a Google-on</translation>
 <translation id="4098667039111970300">Érintőceruza eszközei az eszköztáron</translation>
@@ -2946,6 +2949,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4527186207340858212">Szeretne új profilt létrehozni a munkához?</translation>
 <translation id="452750746583162491">A szinkronizált adatok áttekintése</translation>
 <translation id="4530494379350999373">Eredet</translation>
+<translation id="4531924570968473143">Kit szeretne hozzáadni ehhez az eszközhöz (<ph name="DEVICE_TYPE" />)?</translation>
 <translation id="4532646538815530781">Ez a webhely mozgásérzékelőket használ.</translation>
 <translation id="4533846798469727141">Most mondja azt, hogy „Ok Google”</translation>
 <translation id="4533985347672295764">Processzoridő</translation>
@@ -3356,7 +3360,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">A helyesírás-ellenőrzés nem támogatott a kiválasztott nyelveken</translation>
 <translation id="5052499409147950210">Webhely szerkesztése</translation>
-<translation id="5053604404986157245">Nem áll rendelkezésre véletlenszerűen generált TPM jelszó. Powerwash után ez normális.</translation>
 <translation id="5057110919553308744">Amikor a bővítményre kattint</translation>
 <translation id="5057403786441168405">Kezelheti a bejelentkezett fiókjait. A webhelyek, az alkalmazások, a Chrome-bővítmények és a Google Play – az engedélyektől függően – ezeket a fiókokat használhatják az élmény személyre szabására. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="5059241099014281248">Korlátozott bejelentkezés</translation>
@@ -3949,7 +3952,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5774295353725270860">Fájlok alkalmazás megnyitása</translation>
 <translation id="577624874850706961">Cookie-k keresése</translation>
 <translation id="5777468213129569553">A Chrome megnyitása</translation>
-<translation id="5778747455497889540">Alább látható a véletlenszerűen generált biztonságimodul-jelszó, amelyet számítógépéhez rendeltünk:</translation>
 <translation id="5780011244986845107">A kiválasztott mappa bizalmas fájlokat tartalmaz. Biztosan állandó olvasási hozzáférést szeretne adni a(z) „<ph name="APP_NAME" />” alkalmazásnak a mappához?</translation>
 <translation id="5780973441651030252">Folyamatprioritás</translation>
 <translation id="5781092003150880845">Szinkronizálás mint <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -3979,6 +3981,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5804241973901381774">Engedélyek</translation>
 <translation id="5805697420284793859">Ablakkezelő</translation>
 <translation id="5806773519584576205">0° (alapértelmezett)</translation>
+<translation id="5808664694611589238">{0,plural, =1{Vendég munkamenet bezárása}other{Vendég munkamenet bezárása}}</translation>
 <translation id="5810809306422959727">Ez a fiók nem jogosult arra, hogy szülői felügyeletet állítson be hozzá</translation>
 <translation id="5812674658566766066">Az összes kibontása</translation>
 <translation id="5814126672212206791">Csatlakozás típusa</translation>
@@ -4436,6 +4439,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6344170822609224263">A hálózati kapcsolatok hozzáférési listája</translation>
 <translation id="6344576354370880196">Mentett nyomtatók</translation>
 <translation id="6345418402353744910">Szükség van a(z) <ph name="PROXY" /> proxyhoz tartozó felhasználónevének és jelszavának megadására, hogy a rendszergazda be tudja állítani a hálózatot.</translation>
+<translation id="6345878117466430440">Megjelölés olvasottként</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> telepítése</translation>
 <translation id="6349170655202535379">A szinkronizálás nem működik. Próbáljon meg kijelentkezni, majd újra bejelentkezni.</translation>
 <translation id="6351063337294363751">Ebből a menüből törölheti böngészési adatait</translation>
@@ -4656,7 +4660,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6635956300022133031">A szövegfelolvasó hangjainak kiválasztása és testreszabása</translation>
 <translation id="6636588250634969791">Helyezzen be SIM-kártyát a folytatáshoz</translation>
 <translation id="6639554308659482635">SQLite memória</translation>
-<translation id="6641138807883536517">A véletlenszerűen generált biztonságimodul-jelszó nem áll rendelkezésre. Powerwash művelet után ez normális.</translation>
 <translation id="6642720633335369752">Az összes megnyitott alkalmazásablak megtekintéséhez csúsztassa fel ujját a képernyő aljától, majd tartsa lenyomva.</translation>
 <translation id="664290675870910564">Hálózat kiválasztása</translation>
 <translation id="6643016212128521049">Törlés</translation>
@@ -4984,7 +4987,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7029307918966275733">A Crostini nincs telepítve. Telepítse a Crostinit a fájl megtekintéséhez.</translation>
 <translation id="7029809446516969842">Jelszavak</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – soros port csatlakoztatva</translation>
-<translation id="7031962166228839643">TPM előkészítése folyamatban, kérjük, várjon (ez eltarthat pár percig)...</translation>
 <translation id="7036706669646341689">Ajánlott legalább <ph name="DISK_SIZE" /> méretű területet szánni a Linuxra. Tárhely felszabadításához töröljön fájlokat az eszközről.</translation>
 <translation id="7037509989619051237">Szövegfelolvasó előnézete</translation>
 <translation id="7038632520572155338">Kapcsolóalapú hozzáférés</translation>
@@ -5178,6 +5180,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7280649757394340890">A szövegfelolvasó hangbeállításai</translation>
 <translation id="7280877790564589615">Engedély kérelmezve</translation>
 <translation id="7282992757463864530">Információs sáv</translation>
+<translation id="7284411326658527427">Bárki személyre szabhatja a saját fiókját, és gondoskodhat adatainak biztonságáról.</translation>
 <translation id="7287143125007575591">Hozzáférés megtagadva.</translation>
 <translation id="7287411021188441799">Alapértelmezett háttér visszaállítása</translation>
 <translation id="7288013116963835700">Linux eltávolítása a következőről: <ph name="DEVICE_TYPE" /></translation>
@@ -5754,6 +5757,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7963826112438303517">Segédje ezeket a felvételeket és az Ön kimondott kéréseit használja a hangminta létrehozására és frissítésére. A hangmintát csak azokon az eszközökön tárolja a rendszer, amelyeken Ön bekapcsolta a Voice Match funkciót. Hangtevékenységeit a Segéd beállításai között tekintheti meg vagy taníthatja be újra.</translation>
 <translation id="7966241909927244760">Képcím más&amp;olása</translation>
 <translation id="7968072247663421402">Lehetséges szolgáltatók</translation>
+<translation id="7968198493605442410">Szövegre mutató link másolása</translation>
 <translation id="7968742106503422125">Az Ön által másolt és beillesztett adatok olvasása és módosítása</translation>
 <translation id="7968833647796919681">Teljesítménybeli adatok gyűjtésének engedélyezése</translation>
 <translation id="7968982339740310781">Részletek megjelenítése</translation>
@@ -5972,7 +5976,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8226222018808695353">Tiltott</translation>
 <translation id="8226619461731305576">Nyomtatólista</translation>
 <translation id="8226628635270268143">Kedvenc fotók és albumok kiválasztása</translation>
-<translation id="8226742006292257240">Alább látható a véletlenszerűen generált TPM-jelszó, amelyet a számítógépéhez rendeltünk:</translation>
 <translation id="8227119283605456246">Fájl csatolása</translation>
 <translation id="8230134520748321204">Szeretné elmenteni a(z) <ph name="ORIGIN" /> jelszavát?</translation>
 <translation id="8230672074305416752">Nem sikerült az alapértelmezett hálózati átjáró pingelése</translation>

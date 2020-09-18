@@ -2629,7 +2629,6 @@
 <translation id="4095507791297118304">ዋና ማሳያ</translation>
 <translation id="409579654357498729">ወደ የደመና ህትመት ያክሉ</translation>
 <translation id="4096508467498758490">የገንቢ ሁኔታ ቅጥያዎችን ያሰናክሉ</translation>
-<translation id="4096824249111507322">ደህንነቱ የተጠበቀ ሞዱል እየተዘጋጀ ነው፣ እባክዎ ይጠብቁ (ይሄ ጥቂት ደቂቃዎችን ሊወስድ ይችላል)...</translation>
 <translation id="4097406557126260163">መተግበሪያዎች እና ቅጥያዎች</translation>
 <translation id="4097560579602855702">Google+ን ይፈልጉ</translation>
 <translation id="4098667039111970300">የስታይለስ መሣሪያዎች በመሣሪያ አሞሌ ውስጥ</translation>
@@ -3359,7 +3358,6 @@
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">ፊደል ማረሚያ ለመረጧቸው ቋንቋዎች አይደገፍም</translation>
 <translation id="5052499409147950210">ጣቢያን አርትዕ ያድርጉ</translation>
-<translation id="5053604404986157245">በዘፈቀደ የመነጨው የTPM ይለፍ ቃል አይገኝም። ይሄ ከአንድ Powerwash በኋላ የሚከሰት የተለመደ ነገር ነው።</translation>
 <translation id="5057110919553308744">ቅጥያውን ጠቅ ሲያደርጉ</translation>
 <translation id="5057403786441168405">የተገባባቸው መለያዎችዎን ያቀናብሩ በChrome እና በGoogle Play ውስጥ ያሉ ድር ጣቢያዎች፣ መተግበሪያዎች እና ቅጥያዎች በፈቃዶች ላይ የሚወሰን ሆኖ የእርስዎን ተሞክሮ ለማበጀት እነዚህን መለያዎች ሊጠቀሙባቸው ይችላሉ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">በመለያ መግባትን ገድብ</translation>
@@ -3950,7 +3948,6 @@
 <translation id="5774295353725270860">የፋይሎች መተግበሪያን ክፈት</translation>
 <translation id="577624874850706961">ኩኪዎችን ፈልግ</translation>
 <translation id="5777468213129569553">Chromeን ክፈት</translation>
-<translation id="5778747455497889540">ከዚህ በታች ለእርስዎ ኮምፒውተር የተመደበ በዘፈቀደ የተመረጠ ደህንነቱ የተጠበቀ የይለፍ ቃል አለ።</translation>
 <translation id="5780011244986845107">እርስዎ የመረጡት አቃፊ ሚስጥራዊነት ያላቸው ፋይሎችን ይዟል። እርግጠኛ ነዎት ዘላቂ የዚህ አቃፊ የማንበብ መዳረሻ ለ«<ph name="APP_NAME" />» መስጠት ይፈልጋሉ?</translation>
 <translation id="5780973441651030252">የሂደት ቅድሚያ</translation>
 <translation id="5781092003150880845">እንደ <ph name="ACCOUNT_FULL_NAME" /> ሆነው ያስምሩ</translation>
@@ -4659,7 +4656,6 @@
 <translation id="6635956300022133031">የጽሑፍ-ወደ-ንግግር ድምጾችን ይምረጡና ያብጁ</translation>
 <translation id="6636588250634969791">ከመቀጠልዎ በፊት ሲም ያስገቡ</translation>
 <translation id="6639554308659482635">ኤስኪውላይት ማህደረ ትውስታ</translation>
-<translation id="6641138807883536517">በዘፈቀደ የመነጨው ደህንነቱ የተጠበቀ ሞዱል ይለፍ ቃል አይገኝም። ይሄ ከአንድ Powerwash በኋላ የሚከሰት የተለመደ ነገር ነው።</translation>
 <translation id="6642720633335369752">ሁሉንም የመተግበሪያ መስኮቶች ለማየት ከታች ወደ ላይ ጠርገው ይያዙ።</translation>
 <translation id="664290675870910564">የአውታረ መረብ ምርጫ</translation>
 <translation id="6643016212128521049">አጽዳ</translation>
@@ -4987,7 +4983,6 @@
 <translation id="7029307918966275733">Crostini አልተጫነም። ምስጋናዎችን ለመመልከት እባክዎ Crostiniን ይጫኑ።</translation>
 <translation id="7029809446516969842">የይለፍ ቃላት</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - ተከታታይ ወደብ ተገናኝቷል</translation>
-<translation id="7031962166228839643">TPM እየተዘጋጀ ነው፣ እባክዎ ይጠብቁ (ይሄ ጥቂት ደቂቃዎች ሊወስድ ይችላል)...</translation>
 <translation id="7036706669646341689">ለLinux <ph name="DISK_SIZE" /> ቦታ ይመከራል። ባዶ ቦታን ለመጨመር ከመሣሪያዎ ፋይሎችን ይሰርዙ።</translation>
 <translation id="7037509989619051237">ቅድሚያ የሚታይ ጽሑፍ</translation>
 <translation id="7038632520572155338">የመዳረሻ መቀየሪያ</translation>
@@ -5981,7 +5976,6 @@ nil</translation>
 <translation id="8226222018808695353">የተከለከለ</translation>
 <translation id="8226619461731305576">ወረፋ</translation>
 <translation id="8226628635270268143">የእርስዎን ተወዳጅ ፎቶዎች እና አልበሞች ይምረጡ</translation>
-<translation id="8226742006292257240">ከታች በዘፈቀደ የመነጨ ለኮምፒውተርዎ የተመደበ የቲ ፒ ኤም ይለፍ ቃል ነው፦</translation>
 <translation id="8227119283605456246">ፋይል አያይዝ</translation>
 <translation id="8230134520748321204">ለ<ph name="ORIGIN" /> የይለፍ ቃል ይቀመጥ?</translation>
 <translation id="8230672074305416752">ነባሪ የሆነውን የአውታረ መረብ አግባቢ ፍኖት ፒንግ ማድረግ አልተሳካም</translation>

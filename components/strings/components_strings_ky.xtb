@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Wi-Fi'га кайра туташып көрүңүз</translation>
 <translation id="1165039591588034296">Ката</translation>
 <translation id="1165174597379888365">Баракка баш багылды</translation>
+<translation id="1174723505405632867"><ph name="EMBEDDED_URL" /> сайтына cookie файлдарын жана сайттын маалыматын <ph name="TOP_LEVEL_URL" /> доменинде колдонууга уруксат бересизби?
+
+Уруксат бербесеңиз, ал купуялык жөндөөлөрүңүзгө ылайык бөгөттөлөт. Ушуну менен сизге керектүү мазмун туура иштейт, бирок <ph name="EMBEDDED_URL" /> аракеттериңизге көз салышы мүмкүн.</translation>
 <translation id="1175364870820465910">&amp;Басып чыгаруу…</translation>
 <translation id="1175875016430184367">Оң жагын үч жолу илмек менен бекитүү</translation>
 <translation id="1178581264944972037">Бир азга токтотуу</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Саясаттар</translation>
 <translation id="2183608646556468874">Телефон номери</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 дарек}other{# дарек}}</translation>
+<translation id="2187243482123994665">Колдонуучунун сайтта же сайтта эместиги</translation>
 <translation id="2187317261103489799">Аныктоо (демейки)</translation>
 <translation id="2188375229972301266">Төмөнкү жагын бир нече жолу тешүү</translation>
 <translation id="2202020181578195191">Мөөнөтү аяктоочу жылды туура киргизиңиз</translation>
@@ -533,6 +537,7 @@
       текшерип же тармактык администраторуңузга кайрылыңыз. Прокси
       серверин колдонгум келбейт десеңиз
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> сайтка киргениңизди билип тургусу келет</translation>
 <translation id="3188393374551744535">Аккаунттун балансы</translation>
 <translation id="3194737229810486521"><ph name="URL" /> түзмөгүңүзгө дайындарды биротоло сактаганы жатат</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> сервериндеги <ph name="PRINTER_NAME" /></translation>
@@ -1024,6 +1029,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Шайман</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> тилинде эмеспи? Бул ката тууралуу кабарлаңыз</translation>
+<translation id="5179740473595559246">Сайтка кирип турганыңызды билүү</translation>
 <translation id="5190835502935405962">Кыстармалар тилкеси</translation>
 <translation id="519422657042045905">Аннотация жеткиликсиз</translation>
 <translation id="5201306358585911203">Бул веб баракчада кыстарылган барак мындай дейт:</translation>
@@ -1246,6 +1252,7 @@
 <translation id="6049488691372270142">Баракты жеткирүү</translation>
 <translation id="6051221802930200923">Вебсайт тастыктама бекиткичин колдонуп жаткандыктан азыр <ph name="SITE" /> сайтына өтө албайсыз. Адатта тармактагы каталар жана чабуулдар убактылуу көрүнүш болгондуктан, бул баракча кийинчерээк иштеп калышы мүмкүн.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Сайтта же сайтта эместигиңиз бөлүшүлсүнбү?</translation>
 <translation id="6058977677006700226">Карталарыңыз бардык түзмөктөрүңүздө колдонулсунбу?</translation>
 <translation id="6059925163896151826">USB түзмөктөрү</translation>
 <translation id="6060009363608157444">DnsOverHttps режими жараксыз.</translation>
@@ -1375,6 +1382,7 @@
 <translation id="6631202559048444592">Бул саясат үчүн мааниси бирдей болгон бир нече булак көрсөтүлдү.</translation>
 <translation id="663260587451432563">JIS B4 (257mm x 364mm)</translation>
 <translation id="6643016212128521049">Тазалоо</translation>
+<translation id="6645291930348198241">Cookie файлдарына жана сайттын маалыматына кирүү мүмкүнчүлүгүн алуу.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Бирөө да жок}=1{1 сайттан (Google аккаунтуңуздан чыгарылбайсыз)}other{# сайттан (Google аккаунтуңуздан чыгарылбайсыз)}}</translation>
 <translation id="6648459603387803038">Администраторуңуз серепчини алыстан жөндөй алат. Бул түзмөктө аткарылган аракеттер Chrome'дон тышкары да башкарылышы мүмкүн.</translation>
 <translation id="6652101503459149953">Windows Hello функциясын колдонуу</translation>

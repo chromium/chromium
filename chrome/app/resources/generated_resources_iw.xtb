@@ -2630,7 +2630,6 @@
 <translation id="4095507791297118304">צג ראשי</translation>
 <translation id="409579654357498729">‏הוסף ל-Google Cloud Print</translation>
 <translation id="4096508467498758490">השבתת תוספים של מצב מפתח</translation>
-<translation id="4096824249111507322">המערכת מכינה את המודול המאובטח (פעולה זו עשויה להימשך מספר דקות), אנא המתן...</translation>
 <translation id="4097406557126260163">אפליקציות ותוספים</translation>
 <translation id="4097560579602855702">‏חיפוש ב-Google</translation>
 <translation id="4098667039111970300">כלי סטיילוס בסרגל הכלים</translation>
@@ -3360,7 +3359,6 @@
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">בשפות שבחרת אין תמיכה בבדיקת איות</translation>
 <translation id="5052499409147950210">עריכת אתר</translation>
-<translation id="5053604404986157245">‏סיסמת ה-TPM הנוצרת באופן אקראי אינה זמינה. המצב הזה נורמלי לאחר Powerwash.</translation>
 <translation id="5057110919553308744">בלחיצה על התוסף</translation>
 <translation id="5057403786441168405">‏ניהול החשבונות שנכנסת אליהם. אתרים, אפליקציות ותוספים ב-Chrome וב-Google Play עשויים להשתמש בחשבונות האלה כדי להתאים אישית את החוויה שלך, בהתאם להרשאות. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">הגבלת הכניסה</translation>
@@ -3951,7 +3949,6 @@
 <translation id="5774295353725270860">פתח את יישום הקבצים</translation>
 <translation id="577624874850706961">‏חפש קובצי Cookie</translation>
 <translation id="5777468213129569553">‏פתח את Chrome</translation>
-<translation id="5778747455497889540">סיסמת המודול המאובטח שנוצרה באופן אקראי והוקצתה למחשב שלך:</translation>
 <translation id="5780011244986845107">התיקייה שבחרת מכילה קבצים רגישים. האפליקציה <ph name="APP_NAME" /> תקבל הרשאת קריאה קבועה לתיקייה הזו. להמשיך?</translation>
 <translation id="5780973441651030252">עדיפות תהליך</translation>
 <translation id="5781092003150880845">סינכרון בשם <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4660,7 +4657,6 @@
 <translation id="6635956300022133031">בחירה והתאמה אישית של קולות בהמרת טקסט לדיבור</translation>
 <translation id="6636588250634969791">‏יש להכניס כרטיס SIM כדי להמשיך</translation>
 <translation id="6639554308659482635">‏זיכרון SQLite </translation>
-<translation id="6641138807883536517">‏סיסמת המודול המאובטח הנוצרת באופן אקראי אינה זמינה. זהו מצב רגיל לאחר ביצוע Powerwash.</translation>
 <translation id="6642720633335369752">כדי להציג את כל החלונות הפתוחים של האפליקציות, מחליקים כלפי מעלה מתחתית המסך ולוחצים לחיצה ארוכה.</translation>
 <translation id="664290675870910564">בחירת רשת</translation>
 <translation id="6643016212128521049">ניקוי</translation>
@@ -4988,7 +4984,6 @@
 <translation id="7029307918966275733">‏Crostini לא מותקן. יש להתקין את Crostini כדי להציג קרדיטים.</translation>
 <translation id="7029809446516969842">סיסמאות</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - מחובר ליציאה טורית</translation>
-<translation id="7031962166228839643">‏המערכת מכינה את TPM, אנא המתן (פעולה זו עשויה להימשך מספר דקות)...</translation>
 <translation id="7036706669646341689">‏מומלץ לפנות שטח אחסון של <ph name="DISK_SIZE" /> להתקנת Linux. כדי לפנות שטח אחסון, יש למחוק קבצים מהמכשיר.</translation>
 <translation id="7037509989619051237">טקסט לתצוגה מקדימה</translation>
 <translation id="7038632520572155338">גישה באמצעות מתג</translation>
@@ -5979,7 +5974,6 @@
 <translation id="8226222018808695353">אסור</translation>
 <translation id="8226619461731305576">תור</translation>
 <translation id="8226628635270268143">בחירת התמונות והאלבומים האהובים עליך</translation>
-<translation id="8226742006292257240">‏סיסמת TPM שנוצרה באקראי והוקצתה למחשב שלך:</translation>
 <translation id="8227119283605456246">צירוף קובץ</translation>
 <translation id="8230134520748321204">האם לשמור את הסיסמה של <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">לא ניתן היה לבצע פינג לשער הרשת המוגדרת כברירת מחדל</translation>

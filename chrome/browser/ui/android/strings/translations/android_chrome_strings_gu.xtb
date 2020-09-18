@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
-<translation id="1013149566889033026">એક નવી છૂપી ટૅબ ખુલશે</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> પર મોકલી રહ્યાં છીએ...</translation>
 <translation id="103269572468856066">આ સાઇટ અને ઍપમાંથી પણ ડેટા સાફ કરીએ?</translation>
 <translation id="1036348656032585052">બંધ કરો</translation>
@@ -166,6 +165,7 @@
 <translation id="2321086116217818302">પાસવર્ડ તૈયાર કરી રહ્યાં છીએ…</translation>
 <translation id="2321958826496381788">જ્યાં સુધી તમે આ અનુકૂળ રીતે વાંચી ન શકો ત્યાં સુધી સ્લાઇડર ખેંચો. ફકરા પર ડબલ-ટેપિંગ પછી ટેક્સ્ટ ઓછામાં ઓછી આટલી મોટી દેખાવી જોઈએ.</translation>
 <translation id="2323763861024343754">સાઇટ સ્ટોરેજ</translation>
+<translation id="2326606747676847821">છુપામાં જાઓ</translation>
 <translation id="2328985652426384049">સાઇન ઇન કરી શકાતું નથી</translation>
 <translation id="234265804618409743">તમારો કૅમેરા ખોલી શકતાં નથી. કંઈક ખોટું થયું.</translation>
 <translation id="2345671828921229300">કોઈ શબ્દને શોધવા માટે, તેને સ્પર્શ કરી રાખો</translation>
@@ -346,7 +346,6 @@
 <translation id="3775705724665058594">તમારા ડિવાઇસ પર મોકલો</translation>
 <translation id="3778956594442850293">હોમ સ્ક્રીન પર ઉમેર્યું</translation>
 <translation id="3789841737615482174">ઇન્સ્ટોલ કરો</translation>
-<translation id="3800748312755064483">હંગામી રૂપે સાઇન ઇન કરો</translation>
 <translation id="3810838688059735925">વીડિયો</translation>
 <translation id="3810973564298564668">મેનેજ કરો</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> ડાઉનલોડ કાઢી નાખ્યાં</translation>
@@ -677,6 +676,7 @@
 <translation id="6341580099087024258">ફાઇલો ક્યાં સાચવવી તે પૂછો</translation>
 <translation id="6342069812937806050">હમણાં જ</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
+<translation id="6345878117466430440">વાંચેલાં તરીકે માર્ક કરો</translation>
 <translation id="6364438453358674297">ઇતિહાસમાંથી સૂચનને દૂર કરીએ?</translation>
 <translation id="6366047038980456022">તમને સલામત રીતે ઑનલાઇન કાર્ય કરવા, બનાવવા અને શોધખોળ કરવા માટે જરૂરી સ્માર્ટનેસ અને ઝડપ <ph name="APP_NAME" /> ધરાવે છે.</translation>
 <translation id="6378173571450987352">વિગતો: વપરાયેલ ડેટાની માત્રા દ્વારા સૉર્ટ કરાયેલ</translation>
@@ -992,6 +992,7 @@
 <translation id="8655129584991699539">Chrome સેટિંગમાં તમે ડેટા સાફ કરી શકો છો</translation>
 <translation id="8662811608048051533">તમને મોટાભાગની સાઇટોમાંથી સાઇન આઉટ કરે છે.</translation>
 <translation id="8664979001105139458">ફાઇલનું નામ પહેલેથી અસ્તિત્વમાં છે</translation>
+<translation id="8683039184091909753">છબી</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{સિગ્નલની ક્ષમતાનું સ્તર: # બાર}one{સિગ્નલની ક્ષમતાનું સ્તર: # બાર}other{સિગ્નલની ક્ષમતાનું સ્તર: # બાર}}</translation>
 <translation id="869891660844655955">સમાપ્તિ તારીખ</translation>
 <translation id="8712637175834984815">સમજાઈ ગયું</translation>

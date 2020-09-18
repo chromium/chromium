@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
-<translation id="1013149566889033026">ရုပ်ဖျက်တဘ်အသစ် ဖွင့်ပါမည်</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> သို့ ပို့နေသည်...</translation>
 <translation id="103269572468856066">ဒေတာများ ရှင်းထုတ်မလား။</translation>
 <translation id="1036348656032585052">ပိတ်ရန်</translation>
@@ -166,6 +165,7 @@
 <translation id="2321086116217818302">စကားဝှက်များကို ပြင်ဆင်နေသည်…</translation>
 <translation id="2321958826496381788">သင်က ယင်းကို ဖတ်ရအဆင်ပြေသည့် အထိ ဆွဲတန်းကို ဆွဲယူပါ။ စာသားတွင် စာပိုဒ် တစ်ခုကို နှစ်ကြိမ် ပုတ်လိုက်သည့် နောက်မှာ ဤမျှလောက် ကြီးလျက် မြင်ရသင့်သည်။</translation>
 <translation id="2323763861024343754">ဆိုက် သိုလှောင်ခန်း</translation>
+<translation id="2326606747676847821">ရုပ်ဖျက် ဝင်ရန်</translation>
 <translation id="2328985652426384049">လက်မှတ်ထိုးဝင်၍ မရပါ</translation>
 <translation id="234265804618409743">သင့်ကင်မရာကို ဖွင့်၍မရပါ။ တစ်ခုခုမှားသွားသည်။</translation>
 <translation id="2345671828921229300">ရှာဖွေရန် စကားလုံးကို တို့ထိ၍ဖိထားပါ</translation>
@@ -346,7 +346,6 @@
 <translation id="3775705724665058594">သင့်ကိရိယာများသို့ ပို့ပါ</translation>
 <translation id="3778956594442850293">ပင်မစာမျက်နှာသို့ ထည့်ပြီးပါပြီ</translation>
 <translation id="3789841737615482174">တပ်ဆင်ရန်</translation>
-<translation id="3800748312755064483">ယာယီ လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="3810838688059735925">ဗီဒီယို</translation>
 <translation id="3810973564298564668">စီမံရန်</translation>
 <translation id="3819178904835489326">ဒေါင်းလုဒ် <ph name="NUMBER_OF_DOWNLOADS" /> ခုကို ဖျက်လိုက်သည်</translation>
@@ -387,7 +386,6 @@
 <translation id="4135200667068010335">တဘ်မျှဝေရန် စက်ပစ္စည်းစာရင်းကို ပိတ်ထားသည်။</translation>
 <translation id="4149994727733219643">ဝဘ်စာမျက်နှာများအတွက် ရိုးရှင်းသည့်မြင်ကွင်း</translation>
 <translation id="4170011742729630528">ဝန်ဆောင်မှု မရနိုင်ပါ; နောက်မှထပ်မံကြိုးစားပါ။</translation>
-<translation id="4175173967354304331">ဤဝဘ်ဆိုက်၊ Chrome နှင့် Google အက်ပ်များသို့ လက်မှတ်ထိုးဝင်သွားပါမည်</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> ကို အသုံးပြုထားသည်</translation>
 <translation id="4181841719683918333">ဘာသာစကားများ</translation>
 <translation id="4183868528246477015">Google Lens <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /> ဖြင့်ရှာခြင်း</translation>

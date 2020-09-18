@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Turvalisuse tagamiseks on juurdepääs failile keelatud.</translation>
 <translation id="169515659049020177">Tõstuklahv</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> üksuse pakkimine …</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> üksust on kopeeritud.</translation>
 <translation id="174173592514158117">Kuva kõik Play kaustad</translation>
 <translation id="174937106936716857">Faile kokku</translation>
 <translation id="1775381402323441512">Video teave</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Sobimatu tähemärk: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Vietnami klaviatuur (TCVN)</translation>
 <translation id="2168214441502403371">Pärsia klaviatuur</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> on teisaldatud.</translation>
 <translation id="2198315389084035571">hiina (lihtsustatud)</translation>
 <translation id="2208158072373999562">Zip-arhiiv</translation>
 <translation id="2225536596944493418">Kas soovite <ph name="NUMBER_OF_ITEMS" /> üksust kindlasti kustutada?</translation>
 <translation id="2230062665678605299">Kausta „<ph name="FOLDER_NAME" />” ei saa luua. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Teisaldatud.</translation>
 <translation id="2278988676849463018">Kannada klaviatuur (foneetiline)</translation>
 <translation id="2288278176040912387">Grammofon</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> faili avamine.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Kõik on varundatud.</translation>
 <translation id="3626281679859535460">Eredus</translation>
 <translation id="3644896802912593514">Laius</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> üksust on teisaldatud.</translation>
 <translation id="3645531960514756307">Vabasta kaust</translation>
 <translation id="3678559383040232393">Malta klaviatuur</translation>
 <translation id="3685122418104378273">Google Drive'i sünkroonimine on mobiilse andmeside kasutamisel vaikimisi keelatud.</translation>
@@ -395,6 +399,7 @@
     Teie failid on Google Drive'is turvaliselt talletatud sellest olenemata, mis teie seadmega juhtub.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Jagage ja looge faile ning tehke teistega koostööd<ph name="MARKUP_8" />
     ühes kohas.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Kopeeritud.</translation>
 <translation id="5275973617553375938">Google Drive'ist taastatud failid</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Salvesta</translation>
@@ -751,6 +756,7 @@
 <translation id="943972244133411984">Muutja:</translation>
 <translation id="945522503751344254">Tagasiside saatmine</translation>
 <translation id="947144732524271678">Valiti <ph name="ENTRY_COUNT" /> kirjet vahemikus <ph name="FROM_ENTRY_NAME" /> kuni <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> on kopeeritud.</translation>
 <translation id="981121421437150478">Võrguühenduseta</translation>
 <translation id="988685240266037636">Fail nimega „<ph name="FILE_NAME" />” on juba olemas. Kas soovite selle asendada?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

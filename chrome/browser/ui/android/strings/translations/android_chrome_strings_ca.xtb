@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
-<translation id="1013149566889033026">S'obrirà una pestanya d'incògnit nova</translation>
 <translation id="1028699632127661925">S'està enviant a <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Vols esborrar també les dades d'aquests llocs web i aplicacions?</translation>
 <translation id="1036348656032585052">Desactiva</translation>
@@ -166,6 +165,7 @@ Toca qualsevol paraula per cercar. Per definir millor la cerca, mantén premut e
 <translation id="2321086116217818302">S'estan preparant les contrasenyes…</translation>
 <translation id="2321958826496381788">Arrossega el control lliscant fins que puguis llegir aquest text còmodament. El text ha de ser almenys així de gran després de tocar dos cops un paràgraf.</translation>
 <translation id="2323763861024343754">Emmagatzematge del lloc web</translation>
+<translation id="2326606747676847821">Passa al mode d'incògnit</translation>
 <translation id="2328985652426384049">No es pot iniciar la sessió</translation>
 <translation id="234265804618409743">No es pot obrir la càmera. S'ha produït un error.</translation>
 <translation id="2345671828921229300">Per fer una cerca, mantén premuda una paraula</translation>
@@ -346,7 +346,6 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3775705724665058594">Envia als teus dispositius</translation>
 <translation id="3778956594442850293">S'ha afegit a la pantalla d'inici</translation>
 <translation id="3789841737615482174">Instal·la</translation>
-<translation id="3800748312755064483">Inicia la sessió temporalment</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3810973564298564668">Gestiona</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> baixades suprimides</translation>
@@ -387,7 +386,6 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="4135200667068010335">La llista de dispositius amb què es compartirà una pestanya està tancada.</translation>
 <translation id="4149994727733219643">Visualització simplificada de pàgines web</translation>
 <translation id="4170011742729630528">El servei no està disponible. Torneu-ho a provar més tard.</translation>
-<translation id="4175173967354304331">S'iniciarà la sessió en aquest lloc web i a les aplicacions Chrome i Google</translation>
 <translation id="4179980317383591987">Dades utilitzades: <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Idiomes</translation>
 <translation id="4183868528246477015">Cerca amb Google Lens <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>

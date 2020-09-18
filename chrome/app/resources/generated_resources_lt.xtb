@@ -2632,7 +2632,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4095507791297118304">Pagrindinis vaizdas</translation>
 <translation id="409579654357498729">Pridėti prie Spausdinimo iš debesies</translation>
 <translation id="4096508467498758490">Išjunkite kūrėjo režimu veikiančius plėtinius</translation>
-<translation id="4096824249111507322">Ruošiamas saugus modulis; palaukite (tai gali užtrukti kelias minutes)...</translation>
 <translation id="4097406557126260163">Programos ir plėtiniai</translation>
 <translation id="4097560579602855702">Ieškoti „Google“</translation>
 <translation id="4098667039111970300">Rašiklio įrankiai įrankių juostoje</translation>
@@ -3362,7 +3361,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5050330054928994520">TĮK</translation>
 <translation id="5051836348807686060">Jūsų pasirinktų kalbų rašybos tikrinimas nepalaikomas</translation>
 <translation id="5052499409147950210">Svetainės redagavimas</translation>
-<translation id="5053604404986157245">Šis atsitiktiniu būdu sugeneruotas TPM slaptažodis negalimas. Tai įprasta po „Powerwash“ vykdymo.</translation>
 <translation id="5057110919553308744">Spustelėjus plėtinį</translation>
 <translation id="5057403786441168405">Tvarkykite paskyras, prie kurių esate prisijungę. Svetainės, programos ir plėtiniai naršyklėje „Chrome“ ir „Google Play“ gali naudoti šias paskyras jums teikiamoms funkcijoms tinkinti pagal jūsų leidimus. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Prisijungimo apribojimas</translation>
@@ -3954,7 +3952,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5774295353725270860">Atidaryti failų programą</translation>
 <translation id="577624874850706961">Ieškoti slapukų</translation>
 <translation id="5777468213129569553">Atidaryti „Chrome“</translation>
-<translation id="5778747455497889540">Toliau pateikiamas kompiuteriui priskirtas atsitiktinai sugeneruotas saugaus modulio slaptažodis:</translation>
 <translation id="5780011244986845107">Pasirinktame aplanke yra neskelbtinų failų. Ar tikrai norite „<ph name="APP_NAME" />“ suteikti nuolatinę šio aplanko skaitymo prieigą?</translation>
 <translation id="5780973441651030252">Apdorojimo pirmumas</translation>
 <translation id="5781092003150880845">Sinchronizuoti kaip <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4663,7 +4660,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6635956300022133031">Pasirinkite ir tinkinkite teksto į kalbą balsus</translation>
 <translation id="6636588250634969791">Prieš tęsdami įdėkite SIM kortelę</translation>
 <translation id="6639554308659482635">„SQLite“ atmintis</translation>
-<translation id="6641138807883536517">Šis atsitiktinai sugeneruotas saugaus modulio slaptažodis nepasiekiamas. Tai įprasta po „Powerwash“ vykdymo.</translation>
 <translation id="6642720633335369752">Norėdami pamatyti visus atidarytus programų langus, perbraukite aukštyn iš apačios ir palaikykite.</translation>
 <translation id="664290675870910564">Tinklo pasirinkimas</translation>
 <translation id="6643016212128521049">Išvalyti</translation>
@@ -4991,7 +4987,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7029307918966275733">„Crostini“ neįdiegta. Jei norite peržiūrėti titrus, įdiekite „Crostini“.</translation>
 <translation id="7029809446516969842">Slaptažodžiai</translation>
 <translation id="7031608529463141342">„<ph name="WINDOW_TITLE" />“ – nuoseklusis prievadas prijungtas</translation>
-<translation id="7031962166228839643">Ruošiamas TPM; palaukite (tai gali užtrukti kelias minutes)...</translation>
 <translation id="7036706669646341689">„Linux“ rekomenduojama turėti <ph name="DISK_SIZE" /> vietos. Kad padidintumėte nemokamos saugyklos vietos, ištrinkite failus iš įrenginio.</translation>
 <translation id="7037509989619051237">Tekstas, kurį galima išklausyti</translation>
 <translation id="7038632520572155338">Prieiga jungikliu</translation>
@@ -5981,7 +5976,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8226222018808695353">Uždrausta</translation>
 <translation id="8226619461731305576">Eilė</translation>
 <translation id="8226628635270268143">Pasirinkite mėgstamiausias nuotraukas ir albumus</translation>
-<translation id="8226742006292257240">Toliau pateikiamas kompiuteriui priskirtas atsitiktinai sugeneruotas TPM slaptažodis:</translation>
 <translation id="8227119283605456246">Pridėtas failas</translation>
 <translation id="8230134520748321204">Išsaugoti <ph name="ORIGIN" /> slaptažodį?</translation>
 <translation id="8230672074305416752">Nepavyko patikrinti ryšio su numatytuoju tinklų sietuvu</translation>

@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Ponovno povezivanje na WiFi mrežu</translation>
 <translation id="1165039591588034296">Greška</translation>
 <translation id="1165174597379888365">Stranica je posjećena</translation>
+<translation id="1174723505405632867">Želite li dozvoliti web lokaciji <ph name="EMBEDDED_URL" /> da koristi kolačiće i podatke web lokacije na <ph name="TOP_LEVEL_URL" />?
+
+To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će omogućiti sadržaju s kojim ste stupili u interakciju da ispravno funkcionira, ali može dozvoliti web lokaciji <ph name="EMBEDDED_URL" /> da prati vašu aktivnost.</translation>
 <translation id="1175364870820465910">Štam&amp;panje...</translation>
 <translation id="1175875016430184367">Trostruko spajanje na desnoj strani</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Pravila</translation>
 <translation id="2183608646556468874">Broj telefona</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresa}one{# adresa}few{# adrese}other{# adresa}}</translation>
+<translation id="2187243482123994665">Prisutnost korisnika</translation>
 <translation id="2187317261103489799">Otkrij (zadano)</translation>
 <translation id="2188375229972301266">Višestruko bušenje na donjoj strani</translation>
 <translation id="2202020181578195191">Unesite važeću godinu isteka</translation>
@@ -533,6 +537,7 @@
       biste provjerili je li proxy poslužitelj u funkciji. Ako mislite da ne
       biste trebali upotrebljavati proxy poslužitelj:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> želi znati kada ste prisutni</translation>
 <translation id="3188393374551744535">Stanje računa</translation>
 <translation id="3194737229810486521"><ph name="URL" /> želi trajno pohraniti podatke na vaš uređaj</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> <ph name="SERVER_NAME" /></translation>
@@ -1025,6 +1030,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Mašina</translation>
 <translation id="5179510805599951267">Jezik nije <ph name="ORIGINAL_LANGUAGE" />? Prijavite ovu grešku</translation>
+<translation id="5179740473595559246">Znati kada ste prisutni</translation>
 <translation id="5190835502935405962">Traka oznaka</translation>
 <translation id="519422657042045905">Bilješke nisu dostupne</translation>
 <translation id="5201306358585911203">Stranica ugrađena u ovu stranicu kaže</translation>
@@ -1247,6 +1253,7 @@
 <translation id="6049488691372270142">Izlaz stranica</translation>
 <translation id="6051221802930200923">Trenutno ne možete posjetiti web lokaciju <ph name="SITE" />, jer web lokacija koristi kačenje potvrde. Greške i napadi na mreži su obično privremenog karaktera, tako da će ova stranica vjerovatno raditi kasnije.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Podijeliti prisutnost?</translation>
 <translation id="6058977677006700226">Želite li plaćati svojim karticama na svim svojim uređajima?</translation>
 <translation id="6059925163896151826">USB uređaji</translation>
 <translation id="6060009363608157444">Nevažeći DnsOverHttps način.</translation>
@@ -1376,6 +1383,7 @@
 <translation id="6631202559048444592">Za ovo pravilo postoji više izvora, ali su vrijednosti iste.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Obriši</translation>
+<translation id="6645291930348198241">Pristupiti kolačićima i podacima web lokacije.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Ništa}=1{S jedne web lokacije (nećete se odjaviti sa svog Google računa)}one{S # web lokacije (nećete se odjaviti sa svog Google računa)}few{S # web lokacije (nećete se odjaviti sa svog Google računa)}other{S # web lokacija (nećete se odjaviti sa svog Google računa)}}</translation>
 <translation id="6648459603387803038">Vaš administrator može promijeniti postavke preglednika daljinskim putem. Aktivnostima na ovom uređaju se može upravljati i van Chromea.</translation>
 <translation id="6652101503459149953">Koristi Windows Hello</translation>

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
-<translation id="1013149566889033026">系統會開啟新的無痕分頁</translation>
 <translation id="1028699632127661925">正在傳送到「<ph name="DEVICE_NAME" />」...</translation>
 <translation id="103269572468856066">要一併清除這些網站和應用程式中的資料嗎？</translation>
 <translation id="1036348656032585052">關閉</translation>
@@ -166,6 +165,7 @@
 <translation id="2321086116217818302">正在準備匯出密碼…</translation>
 <translation id="2321958826496381788">拖曳滑桿，將文字調整到適當的字體大小。當你輕觸兩下文字段落時，瀏覽器至少應呈現這樣的字體大小。</translation>
 <translation id="2323763861024343754">網站儲存資料量</translation>
+<translation id="2326606747676847821">進入無痕模式</translation>
 <translation id="2328985652426384049">無法登入</translation>
 <translation id="234265804618409743">無法開啟攝影機，發生錯誤。</translation>
 <translation id="2345671828921229300">如要進行搜尋，請按住要查詢的字詞</translation>
@@ -346,7 +346,6 @@
 <translation id="3775705724665058594">傳送至你的裝置</translation>
 <translation id="3778956594442850293">已新增至主畫面</translation>
 <translation id="3789841737615482174">安裝</translation>
-<translation id="3800748312755064483">暫時登入</translation>
 <translation id="3810838688059735925">影片</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="3819178904835489326">已刪除 <ph name="NUMBER_OF_DOWNLOADS" /> 個下載項目</translation>
@@ -677,6 +676,7 @@
 <translation id="6341580099087024258">詢問檔案儲存位置</translation>
 <translation id="6342069812937806050">剛剛</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}}</translation>
+<translation id="6345878117466430440">標示為已讀取</translation>
 <translation id="6364438453358674297">從歷史記錄中移除建議項目？</translation>
 <translation id="6366047038980456022"><ph name="APP_NAME" /> 的智慧功能和執行速度可讓你放心地在網路上進行操作、創作和探索，無須擔心安全性問題</translation>
 <translation id="6378173571450987352">詳細資料：依使用資料量排序</translation>
@@ -992,6 +992,7 @@
 <translation id="8655129584991699539">你可以在 Chrome 設定中清除資料</translation>
 <translation id="8662811608048051533">大多數網站都會將你登出。</translation>
 <translation id="8664979001105139458">檔案名稱已存在</translation>
+<translation id="8683039184091909753">圖片</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{訊號強度等級：# 格}other{訊號強度等級：# 格}}</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8712637175834984815">我瞭解了</translation>

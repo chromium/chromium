@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
-<translation id="1013149566889033026">Bus atidarytas naujas inkognito skirtukas</translation>
 <translation id="1028699632127661925">Siunčiama į „<ph name="DEVICE_NAME" />“...</translation>
 <translation id="103269572468856066">Taip pat išvalyti duomenis iš šių svetainių ir programų?</translation>
 <translation id="1036348656032585052">Išjungti</translation>
@@ -166,6 +165,7 @@ Norėdami ieškoti, palieskite bet kurį žodį. Jei norite patikslinti paiešk�
 <translation id="2321086116217818302">Ruošiami slaptažodžiai…</translation>
 <translation id="2321958826496381788">Vilkite šliaužiklį, kol bus patogu skaityti šį tekstą. Du kartus palietus pastraipą, tekstas turėtų būti mažiausiai tokio dydžio.</translation>
 <translation id="2323763861024343754">Svetainės saugykla</translation>
+<translation id="2326606747676847821">Įjungti inkognito režimą</translation>
 <translation id="2328985652426384049">Nepavyksta prisijungti</translation>
 <translation id="234265804618409743">Kameros atidaryti nepavyko. Įvyko klaida.</translation>
 <translation id="2345671828921229300">Jei norite ieškoti, palieskite ir palaikykite žodį</translation>
@@ -346,7 +346,6 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="3775705724665058594">Išsiųsta į jūsų įrenginius</translation>
 <translation id="3778956594442850293">Pridėta prie pagrindinio ekrano</translation>
 <translation id="3789841737615482174">Įdiegti</translation>
-<translation id="3800748312755064483">Prisijungti laikinai</translation>
 <translation id="3810838688059735925">Vaizdo</translation>
 <translation id="3810973564298564668">Valdyti</translation>
 <translation id="3819178904835489326">Ištrinta atsisiuntimų: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
@@ -387,7 +386,6 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="4135200667068010335">Įrenginių, su kuriais reikia bendrinti skirtuką, sąrašas uždarytas.</translation>
 <translation id="4149994727733219643">Supaprastinta tinklalapių peržiūra</translation>
 <translation id="4170011742729630528">Paslauga nepasiekiama; vėliau bandykite dar kartą.</translation>
-<translation id="4175173967354304331">Būsite prijungti prie šios svetainės, „Chrome“ ir „Google“ programų</translation>
 <translation id="4179980317383591987">Naudojama <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Kalbos</translation>
 <translation id="4183868528246477015">Ieškoti su „Google Lens“ <ph name="BEGIN_NEW" />Nauja<ph name="END_NEW" /></translation>

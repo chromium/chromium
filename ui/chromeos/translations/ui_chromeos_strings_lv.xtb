@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Failam nevar piekļūt drošības apsvērumu dēļ.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">Notiek <ph name="NUMBER_OF_ITEMS" /> vienumu tilpsaspiešana...</translation>
+<translation id="1731889557567069540">Nokopēti vienumi: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="174173592514158117">Rādīt visas Play mapes</translation>
 <translation id="174937106936716857">Failu kopskaits</translation>
 <translation id="1775381402323441512">Video informācija</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Nederīga rakstzīme: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Vjetnamiešu valodas tastatūra (TCVN)</translation>
 <translation id="2168214441502403371">Persiešu valodas tastatūra</translation>
+<translation id="2197363559908958454">Pārvietots vienums: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">Ķīniešu (vienkāršotā)</translation>
 <translation id="2208158072373999562">Zip arhīvs</translation>
 <translation id="2225536596944493418">Vai tiešām vēlaties dzēst <ph name="NUMBER_OF_ITEMS" /> vienumus?</translation>
 <translation id="2230062665678605299">Mapi “<ph name="FOLDER_NAME" />” nevar izveidot. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Pārvietots.</translation>
 <translation id="2278988676849463018">Kannadu valodas tastatūra (fonētiskā)</translation>
 <translation id="2288278176040912387">Ierakstu atskaņotājs</translation>
 <translation id="2291538123825441971">Notiek <ph name="NUMBER_OF_FILES" /> failu atvēršana.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Visi faili ir dublēti.</translation>
 <translation id="3626281679859535460">Spilgtums</translation>
 <translation id="3644896802912593514">Platums</translation>
+<translation id="3645233063072417428">Pārvietoti vienumi: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="3645531960514756307">Atspraust mapi</translation>
 <translation id="3678559383040232393">Maltiešu tastatūra</translation>
 <translation id="3685122418104378273">Izmantojot mobilos datus, Google diska sinhronizācija pēc noklusējuma ir atspējota.</translation>
@@ -395,6 +399,7 @@
     Neatkarīgi no tā, kas notiek ar jūsu ierīci, jūsu faili tiek droši glabāti Google diskā.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Koplietojiet un veidojiet failus vienuviet, kā arī sadarbojieties,<ph name="MARKUP_8" />
     izmantojot failus kopā ar citiem lietotājiem.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Nokopēts.</translation>
 <translation id="5275973617553375938">No Google diska atkoptie faili</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Saglabāt</translation>
@@ -751,6 +756,7 @@
 <translation id="943972244133411984">Pārveidoja</translation>
 <translation id="945522503751344254">Sūtīt atsauksmes</translation>
 <translation id="947144732524271678">Atlasīts diapazons (<ph name="ENTRY_COUNT" /> vienumi) no “<ph name="FROM_ENTRY_NAME" />” līdz “<ph name="TO_ENTRY_NAME" />”.</translation>
+<translation id="949308258121608615">Nokopēts vienums: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="981121421437150478">Bezsaistē</translation>
 <translation id="988685240266037636">Fails ar nosaukumu “<ph name="FILE_NAME" />” jau pastāv. Vai vēlaties to aizstāt?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

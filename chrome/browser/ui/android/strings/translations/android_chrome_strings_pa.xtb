@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
-<translation id="1013149566889033026">ਇੱਕ ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਖੁੱਲ੍ਹੇਗੀ</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> ਨੂੰ ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="103269572468856066">ਇਹਨਾਂ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਤੋਂ ਵੀ ਡਾਟਾ ਕਲੀਅਰ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1036348656032585052">ਬੰਦ ਕਰੋ</translation>
@@ -166,6 +165,7 @@
 <translation id="2321086116217818302">ਪਾਸਵਰਡ ਤਿਆਰ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ…</translation>
 <translation id="2321958826496381788">ਸਲਾਈਡਰ ਨੂੰ ਡ੍ਰੈਗ ਕਰੋ ਜਦੋਂ ਤੱਕ ਤੁਸੀਂ ਇਸਨੂੰ ਆਸਾਨੀ ਨਾਲ ਪੜ੍ਹ ਨਾ ਲਓ। ਲਿਖਤ ਇੱਕ ਪੈਰਾਗ੍ਰਾਫ 'ਤੇ ਡਬਲ-ਟੈਪ ਕਰਨ ਤੋਂ ਬਾਅਦ ਘੱਟੋ-ਘੱਟ ਇੰਨਾ ਵੱਡਾ ਦਿਖਾਈ ਦੇਣਾ ਚਾਹੀਦਾ ਹੈ।</translation>
 <translation id="2323763861024343754">ਸਾਈਟ ਸਟੋਰੇਜ</translation>
+<translation id="2326606747676847821">ਗੁਮਨਾਮ ਜਾਓ</translation>
 <translation id="2328985652426384049">ਸਾਈਨ-ਇਨ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="234265804618409743">ਤੁਹਾਡੇ ਕੈਮਰੇ ਨੂੰ ਖੋਲ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ। ਕੋਈ ਗੜਬੜ ਹੋਈ।</translation>
 <translation id="2345671828921229300">ਖੋਜਣ ਲਈ, ਕਿਸੇ ਸ਼ਬਦ ਨੂੰ ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖੋ</translation>
@@ -346,7 +346,6 @@
 <translation id="3775705724665058594">ਆਪਣੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਭੇਜੋ</translation>
 <translation id="3778956594442850293">ਹੋਮ ਸਕ੍ਰੀਨ 'ਤੇ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3789841737615482174">ਸਥਾਪਤ ਕਰੋ</translation>
-<translation id="3800748312755064483">ਅਸਥਾਈ ਤੌਰ 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="3810838688059735925">ਵੀਡਿਓ</translation>
 <translation id="3810973564298564668">ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> ਡਾਊਨਲੋਡ ਮਿਟਾਏ ਗਏ</translation>
@@ -677,6 +676,7 @@
 <translation id="6341580099087024258">ਪੁੱਛੋ ਕਿ ਫ਼ਾਈਲਾਂ ਨੂੰ ਕਿੱਥੇ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ</translation>
 <translation id="6342069812937806050">ਬਿਲਕੁਲ ਹੁਣੇ</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ਹੋਰ}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ਹੋਰ}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ਹੋਰ}}</translation>
+<translation id="6345878117466430440">ਪੜ੍ਹੇ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹੀ ਕਰੋ</translation>
 <translation id="6364438453358674297">ਕੀ ਇਤਿਹਾਸ ਵਿੱਚੋਂ ਸੁਝਾਅ ਹਟਾਉਣਾ ਹੈ?</translation>
 <translation id="6366047038980456022"><ph name="APP_NAME" /> ਵਿੱਚ ਸਮਾਰਟ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਤੇ ਤੇਜ਼ੀ ਨਾਲ ਕੰਮ ਕਰਨ ਦੀ ਸਮਰੱਥਾ ਹੈ ਜਿਸ ਨਾਲ ਤੁਸੀਂ ਆਨਲਾਈਨ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਕੰਮ ਕਰ ਸਕਦੇ ਹੋ, ਕੁਝ ਬਣਾ ਸਕਦੇ ਹੋ ਅਤੇ ਪੜਚੋਲ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="6378173571450987352">ਵੇਰਵੇ: ਵਰਤੇ ਗਏ ਡਾਟੇ ਦੀ ਮਾਤਰਾ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕੀਤਾ ਗਿਆ</translation>
@@ -992,6 +992,7 @@
 <translation id="8655129584991699539">ਤੁਸੀਂ ਡਾਟੇ ਨੂੰ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਕਲੀਅਰ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="8662811608048051533">ਜ਼ਿਆਦਾਤਰ ਸਾਈਟਾਂ ਤੋਂ ਤੁਹਾਨੂੰ ਸਾਈਨ-ਆਊਟ ਕਰਦਾ ਹੈ।</translation>
 <translation id="8664979001105139458">ਫ਼ਾਈਲ ਨਾਮ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
+<translation id="8683039184091909753">ਚਿੱਤਰ</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{ਸਿਗਨਲ ਮਜ਼ਬੂਤੀ ਦਾ ਪੱਧਰ: # ਡੰਡੀ}one{ਸਿਗਨਲ ਮਜ਼ਬੂਤੀ ਦਾ ਪੱਧਰ: # ਡੰਡੀ}other{ਸਿਗਨਲ ਮਜ਼ਬੂਤੀ ਦਾ ਪੱਧਰ: # ਡੰਡੀਆਂ}}</translation>
 <translation id="869891660844655955">ਮਿਆਦ ਪੁੱਗਣ ਦੀ ਤਾਰੀਖ</translation>
 <translation id="8712637175834984815">ਸਮਝ ਲਿਆ</translation>

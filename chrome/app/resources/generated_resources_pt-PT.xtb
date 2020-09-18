@@ -2632,7 +2632,6 @@ Pretende pará-lo?</translation>
 <translation id="4095507791297118304">Ecrã principal</translation>
 <translation id="409579654357498729">Adicionar ao Google Cloud Print</translation>
 <translation id="4096508467498758490">Desativar extensões de modo de programador</translation>
-<translation id="4096824249111507322">O módulo seguro está a ser preparado. Aguarde (esta operação pode demorar alguns minutos)...</translation>
 <translation id="4097406557126260163">Apps e extensões</translation>
 <translation id="4097560579602855702">Pesquisar no Google</translation>
 <translation id="4098667039111970300">Ferramentas da caneta stylus na barra de ferramentas</translation>
@@ -3362,7 +3361,6 @@ Pretende pará-lo?</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">A verificação ortográfica não é suportada para os idiomas selecionados</translation>
 <translation id="5052499409147950210">Editar site</translation>
-<translation id="5053604404986157245">A palavra-passe TPM, gerada aleatoriamente, não está disponível. Esta situação é normal após uma Powerwash.</translation>
 <translation id="5057110919553308744">Quando clica na extensão</translation>
 <translation id="5057403786441168405">Faça a gestão das suas contas com sessão iniciada. Os Websites, as apps e as extensões no Chrome e Google Play podem utilizar estas contas para personalizar a sua experiência, consoante as autorizações. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Restringir início de sessão</translation>
@@ -3954,7 +3952,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5774295353725270860">Aplicação Abrir Ficheiros</translation>
 <translation id="577624874850706961">Pesquisar cookies</translation>
 <translation id="5777468213129569553">Abrir o Chrome</translation>
-<translation id="5778747455497889540">Abaixo, encontra a palavra-passe do módulo seguro, gerada aleatoriamente, que foi atribuída ao seu computador:</translation>
 <translation id="5780011244986845107">A pasta que selecionou contém ficheiros confidenciais. Tem a certeza de que pretende conceder à aplicação "<ph name="APP_NAME" />" acesso de leitura permanente a esta pasta?</translation>
 <translation id="5780973441651030252">Prioridade do processo</translation>
 <translation id="5781092003150880845">Sincronizar como <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4663,7 +4660,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6635956300022133031">Selecionar e personalizar as vozes para a síntese de voz.</translation>
 <translation id="6636588250634969791">Insira o SIM antes de continuar.</translation>
 <translation id="6639554308659482635">Memória SQLite</translation>
-<translation id="6641138807883536517">A palavra-passe do módulo seguro, gerada aleatoriamente, não está disponível. Esta situação é normal após um Powerwash.</translation>
 <translation id="6642720633335369752">Para ver todas as janelas de apps abertas, deslize rapidamente para cima a partir da parte inferior e mantenha premido.</translation>
 <translation id="664290675870910564">Seleção de rede</translation>
 <translation id="6643016212128521049">Limpar</translation>
@@ -4991,7 +4987,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7029307918966275733">O Crostini não está instalado. Instale o Crostini para ver os créditos.</translation>
 <translation id="7029809446516969842">Palavras-passe</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - porta de série associada</translation>
-<translation id="7031962166228839643">O TPM está a ser preparado, aguarde (pode demorar alguns minutos)...</translation>
 <translation id="7036706669646341689">Recomenda-se <ph name="DISK_SIZE" /> de espaço para o Linux. Para aumentar o espaço livre, elimine ficheiros do dispositivo.</translation>
 <translation id="7037509989619051237">Texto para pré-visualização</translation>
 <translation id="7038632520572155338">Acesso por comutador</translation>
@@ -5980,7 +5975,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8226222018808695353">Proibido</translation>
 <translation id="8226619461731305576">Fila</translation>
 <translation id="8226628635270268143">Escolha os seus álbuns ou fotos favoritos.</translation>
-<translation id="8226742006292257240">A palavra-passe TPM abaixo foi gerada aleatoriamente e atribuída ao seu computador:</translation>
 <translation id="8227119283605456246">Anexar ficheiro</translation>
 <translation id="8230134520748321204">Pretende guardar a palavra-passe para <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Falha ao enviar ping ao gateway da rede predefinida.</translation>

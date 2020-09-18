@@ -16,6 +16,7 @@
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> 사이트 추가됨</translation>
 <translation id="1383876407941801731">검색</translation>
 <translation id="1384959399684842514">다운로드 일시중지됨</translation>
+<translation id="1431402976894535801">사이트에서 사용자 접속 상태를 알 수 없도록 차단</translation>
 <translation id="1446450296470737166">MIDI 기기의 전체 제어 허용</translation>
 <translation id="1509960214886564027">다수의 사이트에서 기능이 작동하지 않을 수 있음</translation>
 <translation id="1620510694547887537">카메라</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">인스턴트 앱 열기</translation>
 <translation id="2148716181193084225">오늘</translation>
 <translation id="2182457891543959921">사이트에서 주변 환경의 3D 지도를 생성하거나 카메라 위치를 추적하도록 허용하기 전에 확인(권장)</translation>
+<translation id="2187243482123994665">사용자 접속 상태</translation>
 <translation id="2212565012507486665">쿠키 허용</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" />에서 카메라에 액세스하도록 허용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 카메라를 사용 설정하세요.</translation>
 <translation id="2289270750774289114">사이트가 주변 블루투스 기기를 조회하려고 할 때 확인(권장)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">동영상 플레이어</translation>
 <translation id="3115898365077584848">정보 표시</translation>
 <translation id="3123473560110926937">일부 사이트에서 차단됨</translation>
+<translation id="3165371858310906303">사이트에서 사용자 접속 상태를 알려고 할 때 확인</translation>
 <translation id="3198916472715691905">저장 데이터 <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507"><ph name="APP_NAME" />에서 알림을 전송하도록 허용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 알림을 사용 설정하세요.</translation>
 <translation id="3227137524299004712">마이크</translation>
@@ -133,6 +136,7 @@
 <translation id="5197729504361054390">선택한 연락처가 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />과(와) 공유됩니다.</translation>
 <translation id="5300589172476337783">표시</translation>
 <translation id="5301954838959518834">확인</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개</translation>
 <translation id="5313967007315987356">사이트 추가</translation>
 <translation id="5317780077021120954">저장</translation>
 <translation id="5335288049665977812">사이트에서 자바스크립트를 실행하도록 허용(권장)</translation>
@@ -144,6 +148,7 @@
 <translation id="5403592356182871684">이름</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> 중 <ph name="ELAPSED_TIME" /> 경과</translation>
 <translation id="5494752089476963479">방해가 되거나 사용자를 현혹하는 광고를 표시하는 사이트의 광고 차단</translation>
+<translation id="5502860503640766021"><ph name="PERMISSION_1" /> 허용됨, <ph name="PERMISSION_2" /> 차단됨</translation>
 <translation id="5505264765875738116">사이트에서 알림 전송 허용을 요청할 수 없음</translation>
 <translation id="5516455585884385570">알림 설정 열기</translation>
 <translation id="5527111080432883924">사이트에서 클립보드의 텍스트 및 이미지에 액세스하도록 허용하기 전에 확인(권장)</translation>
@@ -155,12 +160,15 @@
 <translation id="5690795753582697420">Android 설정에서 카메라가 사용 중지됩니다.</translation>
 <translation id="5710871682236653961">NFC 기기를 탭하면 사이트가 정보를 주고받도록 허용할지 확인(권장)</translation>
 <translation id="5719847187258001597">이렇게 하면 <ph name="ORIGIN" /> 또는 홈 화면의 앱에 저장한 데이터 및 쿠키가 모두 삭제됩니다.</translation>
+<translation id="5771720122942595109"><ph name="PERMISSION_1" /> 차단됨</translation>
 <translation id="5804241973901381774">권한</translation>
 <translation id="5860033963881614850">사용 안함</translation>
+<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개 이상 허용됨</translation>
 <translation id="5876056640971328065">동영상 일시중지</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5922853908706496913">화면 공유</translation>
 <translation id="5939518447894949180">초기화</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">기기에 대한 이 사이트의 액세스를 제어합니다.</translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6042308850641462728">자세히</translation>
@@ -172,6 +180,7 @@
 <translation id="6196640612572343990">타사 쿠키 차단</translation>
 <translation id="6206551242102657620">이 사이트와의 연결은 안전합니다. 사이트 정보</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> 옵션</translation>
+<translation id="6262279340360821358"><ph name="PERMISSION_1" /> 및 <ph name="PERMISSION_2" /> 차단됨</translation>
 <translation id="6270391203985052864">사이트에서 알림 전송 허용을 요청할 수 있음</translation>
 <translation id="6295158916970320988">모든 사이트</translation>
 <translation id="6320088164292336938">진동</translation>
@@ -194,6 +203,7 @@
 <translation id="6790428901817661496">재생</translation>
 <translation id="6818926723028410516">항목 선택</translation>
 <translation id="6864395892908308021">기기에서 NFC를 읽을 수 없음</translation>
+<translation id="6879016579615558281"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개 차단됨</translation>
 <translation id="6910211073230771657">삭제됨</translation>
 <translation id="6912998170423641340">사이트에서 클립보드의 텍스트 및 이미지에 액세스하지 못하도록 차단</translation>
 <translation id="6945221475159498467">선택</translation>
@@ -211,6 +221,7 @@
 <translation id="723171743924126238">이미지 선택</translation>
 <translation id="7243308994586599757">화면 하단에서 옵션 선택 가능</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />개 선택됨</translation>
+<translation id="7260727271532453612"><ph name="PERMISSION_1" /> 및 <ph name="PERMISSION_2" /> 허용됨</translation>
 <translation id="7302486331832100261">기본적으로 알림을 차단하는 중입니다. 허용하려면 '세부정보'를 탭하세요.</translation>
 <translation id="7423098979219808738">우선 확인</translation>
 <translation id="7423538860840206698">클립보드 액세스가 차단됨</translation>
@@ -242,6 +253,7 @@
 <translation id="8087000398470557479">이 콘텐츠의 출처는 Google에서 제공하는 <ph name="DOMAIN_NAME" />입니다.</translation>
 <translation id="8116925261070264013">음소거됨</translation>
 <translation id="8131740175452115882">확인</translation>
+<translation id="8197286292360124385"><ph name="PERMISSION_1" /> 허용됨</translation>
 <translation id="8200772114523450471">다시 시작</translation>
 <translation id="8206354486702514201">이 설정은 관리자가 강제로 설정해 놓았습니다.</translation>
 <translation id="8249310407154411074">맨 위로 이동</translation>

@@ -1811,7 +1811,6 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 <translation id="3631099945620529777">Se la norma è impostata su false, il pulsante "Termina processo" in Task Manager viene disattivato.
 
       Se la norma è impostata su true o non è configurata, l'utente può terminare i processi in Task Manager.</translation>
-<translation id="3639444551396586995">Consenti a Chrome di segnalare eventi non sicuri a Google</translation>
 <translation id="3643284063603988867">Attiva la funzionalità "Ricorda password"</translation>
 <translation id="3646859102161347133">Impostazione tipo di ingrandimento dello schermo</translation>
 <translation id="3647212518036289905">La configurazione del criterio consente di specificare quale libreria GSSAPI utilizzare per l'autenticazione HTTP. Imposta il criterio sul nome di una libreria o su un percorso completo.
@@ -2033,9 +2032,6 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 <translation id="3942041691320538491">Se il criterio è impostato su 0 (valore predefinito), è possibile accedere agli strumenti per sviluppatori e alla console JavaScript, ma non se ci sono estensioni installate in base alle norme aziendali. Se il criterio è impostato su 1, è possibile accedere agli strumenti per sviluppatori e alla console JavaScript in ogni caso, anche se ci sono estensioni installate in base alle norme aziendali. Se il criterio è impostato su 2, non è possibile accedere agli strumenti per sviluppatori, né esaminare gli elementi del sito web.
 
       Questa impostazione disattiva anche le scorciatoie da tastiera e le voci dei menu o dei menu contestuali per aprire gli strumenti per sviluppatori o la console JavaScript.</translation>
-<translation id="3942080695743860553">Questo criterio consente di stabilire il comando da usare per aprire gli URL in un browser alternativo. Per il criterio è possibile impostare i valori <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" /> oppure un percorso file. Se per questo criterio viene impostato un percorso file, tale file viene usato come eseguibile. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> è disponibile soltanto su <ph name="MS_WIN_NAME" />, mentre <ph name="SAFARI_VALUE_PLACEHOLDER" /> è disponibile soltanto su <ph name="MS_WIN_NAME" /> e <ph name="MAC_OS_NAME" />.
-
-      Se il criterio non viene impostato, viene usato un valore predefinito specifico della piattaforma: <ph name="IE_PRODUCT_NAME" /> per <ph name="MS_WIN_NAME" /> o <ph name="SAFARI_PRODUCT_NAME" /> per <ph name="MAC_OS_NAME" />. Su <ph name="LINUX_OS_NAME" /> non sarà possibile aprire un browser alternativo.</translation>
 <translation id="3950110092991281616">Attiva l'autenticazione ambientale solo nelle sessioni standard.</translation>
 <translation id="3950239119790560549">Limitazioni relative alla data/ora di aggiornamento</translation>
 <translation id="3956686688560604829">Utilizza la norma SiteList di Internet Explorer per il Supporto dei browser precedenti.</translation>
@@ -2596,10 +2592,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="4874982543810021567">Blocca WebUSB su questi siti</translation>
 <translation id="4876805738539874299">Versione SSL massima abilitata</translation>
 <translation id="4887274746092315609">Attiva una pagina per la modifica della password all'interno della sessione per gli utenti SAML</translation>
-<translation id="4887863670424903990">Se questo criterio viene attivato, <ph name="PRODUCT_NAME" /> segnala a Google eventi non sicuri da analizzare, come il riutilizzo di password, il download di malware, la presenza di interstitial, eventuali violazioni delle regole relative alla protezione dei dati sensibili ecc.  Alcuni eventi non sicuri, come eventuali violazioni delle regole relative alla protezione dei dati sensibili, dipendono da altri criteri che attivano tali controlli.
-
-      Se questo criterio viene disattivato o non viene impostato, <ph name="PRODUCT_NAME" /> non segnalerà alcun evento non sicuro.
-      </translation>
 <translation id="4894290482695457375">A meno che <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> non sia impostato su Disattivato, l'impostazione di <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> su Attivato connetterà <ph name="PRODUCT_NAME" /> ai dispositivi di trasmissione su tutti gli indirizzi IP e non solo su indirizzi privati RFC1918/RFC4193.
 
       Se il criterio viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> si connetterà ai dispositivi di trasmissione solo su indirizzi RFC1918/RFC4193.
@@ -3598,7 +3590,7 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 <translation id="6230442621691161858">Questa funzionalità consente di attivare suggerimenti relativi a nuovi contenuti da esplorare. Sono incluse app, pagine web e altro.
       Se questo criterio viene impostato su True, i suggerimenti relativi a nuovi contenuti da esplorare vengono attivati.
       Se questo criterio viene impostato su False, i suggerimenti relativi a nuovi contenuti da esplorare vengono disattivati.
-      Se questo criterio non viene configurato, saranno disattivati per gli utenti gestiti i suggerimenti per i nuovi contenuti da esplorare e attivati per altri utenti.
+      Se questo criterio non viene configurato, i suggerimenti per i nuovi contenuti da esplorare saranno disattivati per gli utenti gestiti e attivati per altri utenti.
       </translation>
 <translation id="6233173491898450179">Imposta directory di download</translation>
 <translation id="6234177445959386333">Configura l'elenco di URL di accesso aziendale in cui il servizio di protezione tramite password deve acquisire gli hash con salt delle password.</translation>
@@ -3829,7 +3821,6 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
       Tieni presente che questo criterio può essere sostituito da EnabledPlugins e da DisabledPluginsExceptions.
 
       Se il criterio non viene impostato, l'utente potrà usare qualsiasi plug-in installato sul sistema ad eccezione di quelli hardcoded incompatibili, obsoleti o pericolosi.</translation>
-<translation id="6571871508154591774">Configura la videocamera, le impostazioni del browser e le funzionalità delle impostazioni del sistema operativo in modo che siano disattivate</translation>
 <translation id="6573305661369899995">Imposta una fonte esterna di limitazioni relative agli URL</translation>
 <translation id="6575944031719151455">La configurazione del criterio consente di specificare l'elenco di account locali del dispositivo da visualizzare nella schermata di accesso. Gli identificatori fanno distinzione tra i diversi account locali del dispositivo.
 
@@ -4930,11 +4921,6 @@ Se attivi questa impostazione o non imposti un valore, la funzione Compilazione 
       Questo criterio viene sempre applicato per <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8050080920415773384">Stampa nativa</translation>
 <translation id="8053580360728293758">Consente di eseguire l'override della modalità di stampa a colori predefinita. Se la modalità non è disponibile, questa norma viene ignorata.</translation>
-<translation id="8057841287222359526">Consente di impostare un elenco di funzionalità di <ph name="PRODUCT_OS_NAME" /> da disattivare.
-
-      La disattivazione di una qualsiasi di queste funzionalità fa sì che l'utente non possa accedervi dall'interfaccia utente e che la vedrà contrassegnata come "disattivata dall'amministratore".
-
-      Se il criterio non viene impostato, tutte le funzionalità di <ph name="PRODUCT_OS_NAME" /> verranno attivate per impostazione predefinita e l'utente le potrà utilizzare.</translation>
 <translation id="8059164285174960932">URL su cui i client di accesso remoto dovrebbero ottenere il token di autenticazione</translation>
 <translation id="8077245272412229388">Aggiunge account Kerberos compilati automaticamente. Se le credenziali di Kerberos corrispondono alle credenziali di accesso, un account può essere configurato in modo da riutilizzare le credenziali di accesso specificando "<ph name="LOGIN_EMAIL_PLACEHOLDER" />" e "<ph name="PASSWORD_PLACEHOLDER" />" rispettivamente per l'account principale e la password, in modo che le richieste di Kerberos possano essere recuperate automaticamente, a meno che non sia configurata l'autenticazione a due fattori. Gli utenti non possono modificare gli account aggiunti tramite questo criterio.
 

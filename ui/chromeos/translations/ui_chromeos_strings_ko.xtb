@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">보안 상의 이유로 파일에 액세스하지 못했습니다.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">항목 <ph name="NUMBER_OF_ITEMS" />개 압축 중...</translation>
+<translation id="1731889557567069540">항목 <ph name="NUMBER_OF_ITEMS" />개를 복사했습니다.</translation>
 <translation id="174173592514158117">모든 Play 폴더 표시</translation>
 <translation id="174937106936716857">전체 파일 수</translation>
 <translation id="1775381402323441512">동영상 정보</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">잘못된 문자: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">베트남어 키보드(TCVN)</translation>
 <translation id="2168214441502403371">페르시아어 키보드</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" />개를 이동했습니다.</translation>
 <translation id="2198315389084035571">중국어(간체)</translation>
 <translation id="2208158072373999562">Zip 아카이브</translation>
 <translation id="2225536596944493418">선택한 <ph name="NUMBER_OF_ITEMS" />개의 항목을 삭제하시겠습니까?</translation>
 <translation id="2230062665678605299">'<ph name="FOLDER_NAME" />' 폴더를 생성할 수 없습니다. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">이동했습니다.</translation>
 <translation id="2278988676849463018">칸나다어 키보드(음역)</translation>
 <translation id="2288278176040912387">레코드 플레이어</translation>
 <translation id="2291538123825441971">파일 <ph name="NUMBER_OF_FILES" />개를 열고 있습니다.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">백업되지 않은 파일이 없습니다.</translation>
 <translation id="3626281679859535460">밝기</translation>
 <translation id="3644896802912593514">너비</translation>
+<translation id="3645233063072417428">항목 <ph name="NUMBER_OF_ITEMS" />개를 이동했습니다.</translation>
 <translation id="3645531960514756307">폴더 고정 해제</translation>
 <translation id="3678559383040232393">몰타어 키보드</translation>
 <translation id="3685122418104378273">모바일 데이터를 사용할 때는 Google 드라이브 동기화가 기본적으로 사용 중지됩니다.</translation>
@@ -395,6 +399,7 @@
     기기에 어떤 일이 일어나더라도 파일은 Google 드라이브에 안전하게 저장됩니다.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />다른 사용자와 한 곳에서 파일을<ph name="MARKUP_8" />
     공유하고 만들고 공동작업하세요.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">복사했습니다.</translation>
 <translation id="5275973617553375938">Google 드라이브에서 복구된 파일</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">저장</translation>
@@ -751,6 +756,7 @@
 <translation id="943972244133411984">수정한 사용자</translation>
 <translation id="945522503751344254">의견 보내기</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />부터 <ph name="TO_ENTRY_NAME" />까지 <ph name="ENTRY_COUNT" />개를 선택했습니다.</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" />개를 복사했습니다.</translation>
 <translation id="981121421437150478">오프라인</translation>
 <translation id="988685240266037636">이름이 '<ph name="FILE_NAME" />'인 파일이 이미 존재합니다. 덮어쓰시겠습니까?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" />MB</translation>

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
-<translation id="1013149566889033026">Отвориће се нова картица без архивирања</translation>
 <translation id="1028699632127661925">Шаље се на уређај <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Желите да обришете податке и за њих?</translation>
 <translation id="1036348656032585052">Искључи</translation>
@@ -166,6 +165,7 @@
 <translation id="2321086116217818302">Припремају се лозинке...</translation>
 <translation id="2321958826496381788">Превлачите клизач док ово не будете могли лако да прочитате. Када двапут додирнете пасус, текст треба да буде бар оволики.</translation>
 <translation id="2323763861024343754">Меморијски простор за сајт</translation>
+<translation id="2326606747676847821">Пређи у режим без архивирања</translation>
 <translation id="2328985652426384049">Не могу да се пријавим</translation>
 <translation id="234265804618409743">Не можемо да отворимо камеру. Нешто није у реду.</translation>
 <translation id="2345671828921229300">Да бисте претраживали, додирните и задржите реч</translation>
@@ -346,7 +346,6 @@
 <translation id="3775705724665058594">Пошаљите на своје уређаје</translation>
 <translation id="3778956594442850293">Додато је на почетни екран</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
-<translation id="3800748312755064483">Пријавите се привремено</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3810973564298564668">Промени</translation>
 <translation id="3819178904835489326">Избрисана преузимања: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
@@ -387,7 +386,6 @@
 <translation id="4135200667068010335">Листа уређаја са којима се дели картица је затворена.</translation>
 <translation id="4149994727733219643">Поједностављен приказ веб-страница</translation>
 <translation id="4170011742729630528">Услуга није доступна. Пробајте поново касније.</translation>
-<translation id="4175173967354304331">Бићете пријављени на овај сајт, у Chrome и у Google апликације</translation>
 <translation id="4179980317383591987">Искористили сте <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Језици</translation>
 <translation id="4183868528246477015">Тражи уз Google објектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>

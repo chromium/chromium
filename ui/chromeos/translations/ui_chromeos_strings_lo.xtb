@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">ບໍ່ສາມາດເຂົ້າຫາໄຟລ໌ໄດ້ ເພື່ອເຫດຜົນດ້ານຄວາມປອດໄພ</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">ກຳລັງຊິບ <ph name="NUMBER_OF_ITEMS" /> ລາຍການ...</translation>
+<translation id="1731889557567069540">ສຳເນົາ <ph name="NUMBER_OF_ITEMS" /> ລາຍການແລ້ວ.</translation>
 <translation id="174173592514158117">ສະແດງໂຟນເດີ Play ທັງໝົດ</translation>
 <translation id="174937106936716857">ຈຳນວນໄຟລ໌ທັງໝົດ</translation>
 <translation id="1775381402323441512">ຂໍ້ມູນວິດີໂອ</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">ຕົວອັກສອນໃຊ້ບໍ່ໄດ້: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">ຄີບອດພາສາ​ຫວຽດ​ນາມ (TCVN​)</translation>
 <translation id="2168214441502403371">ຄີບອດພາສາເປີ​ເຊຍ</translation>
+<translation id="2197363559908958454">ຍ້າຍ <ph name="NUMBER_OF_ITEMS" /> ແລ້ວ.</translation>
 <translation id="2198315389084035571">ພາສາຈີນຕົວຫຍໍ້</translation>
 <translation id="2208158072373999562">ຄັງເກັບໄຟລ໌ຊິບ</translation>
 <translation id="2225536596944493418">ທ່ານ​ແນ່​ໃຈບໍ່ວ່​າ ​ທ່ານ​ຕ້ອງ​ການ​ລຶບ <ph name="NUMBER_OF_ITEMS" /> ລາຍ​ການ​?</translation>
 <translation id="2230062665678605299">ບໍ່​ສາ​ມາດ​​ສ້າງ​ໂຟລເດີ "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /> ໄດ້</translation>
+<translation id="2275059641601412272">ຍ້າຍແລ້ວ.</translation>
 <translation id="2278988676849463018">ຄີບອດພາສາກັນນາດາ (ການອອກສຽງ)</translation>
 <translation id="2288278176040912387">ເຄື່ອງຫຼິ້ນ​ບັນ​ທຶກ</translation>
 <translation id="2291538123825441971">ກຳລັງເປີດ <ph name="NUMBER_OF_FILES" /> ໄຟລ໌.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">ສຳ​ຮອງ​ທັງ​ໝົດ​ແລ້ວ!</translation>
 <translation id="3626281679859535460">ຄວາມແຈ້ງ</translation>
 <translation id="3644896802912593514">ຄວາມກວ້າງ</translation>
+<translation id="3645233063072417428">ຍ້າຍ <ph name="NUMBER_OF_ITEMS" /> ລາຍການແລ້ວ.</translation>
 <translation id="3645531960514756307">ຖອດປັກໝຸດໂຟນເດີ</translation>
 <translation id="3678559383040232393">ຄີ​ບອດ​ພາ​ສາມອ​ລ​ຕີ​ສ</translation>
 <translation id="3685122418104378273">ການ​ຊິງ​ຄ໌ Google Drive ປິດ​ໃຊ້​ງານ​ໂດຍ​ມາດ​ຕະ​ຖານ​ແລ້ວ, ເມື່ອ​ກຳ​ລັງ​ໃຊ້​ຂໍ້​ມູນ​ມື​ຖື.</translation>
@@ -395,6 +399,7 @@
     ບໍ່ວ່າຈະເກີດຫຍັງຂຶ້ນກັບອຸປະກອນຂອງທ່ານ, ໄຟລ໌ຂອງທ່ານຖືກເກັບໄວ້ຢ່າງປອດໄພໃນ Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />ແບ່ງປັນ, ສ້າງ ແລະ ເຮັດວຽກຮ່ວມກັນ<ph name="MARKUP_8" />
     ໃນໄຟລ໌ຕ່າງໆກັບຄົນອື່ນທັງໝົດຢູ່ບ່ອນດຽວ.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">ສຳເນົາແລ້ວ.</translation>
 <translation id="5275973617553375938">ໄຟລ໌ທີ່ກູ້ຄືນຈາກ Google Drive</translation>
 <translation id="5317780077021120954">ບັນທຶກ</translation>
 <translation id="5318819489018851358">ແບ່ງປັນກັບ Linux</translation>
@@ -750,6 +755,7 @@
 <translation id="943972244133411984">ແກ້ໄຂໂດຍ</translation>
 <translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>
 <translation id="947144732524271678">ເລືອກລາຍການທັງໝົດ <ph name="ENTRY_COUNT" /> ລາຍການ ຕັ້ງແຕ່ <ph name="FROM_ENTRY_NAME" /> ຈົນເຖິງ <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="949308258121608615">ສຳເນົາ <ph name="NUMBER_OF_ITEMS" /> ແລ້ວ.</translation>
 <translation id="981121421437150478">ອອຟລາຍນ໌</translation>
 <translation id="988685240266037636">ມີໄຟລ໌ຊື່ "<ph name="FILE_NAME" />" ຢູ່ແລ້ວ. ທ່ານຕ້ອງການປ່ຽນແທນມັນບໍ?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

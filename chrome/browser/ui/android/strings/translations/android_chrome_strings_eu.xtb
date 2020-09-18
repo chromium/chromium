@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
-<translation id="1013149566889033026">Ezkutuko moduko beste fitxa bat irekiko da</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> gailura bidaltzen…</translation>
 <translation id="103269572468856066">Webgune eta aplikazio hauetako datuak ere garbitu nahi dituzu?</translation>
 <translation id="1036348656032585052">Desaktibatu</translation>
@@ -166,6 +165,7 @@ Sakatu bilatu nahi duzun hitza. Bilaketa mugatzeko, eduki testua sakatuta eta ha
 <translation id="2321086116217818302">Pasahitzak prestatzen…</translation>
 <translation id="2321958826496381788">Arrastatu graduatzailea testu hau erraz irakurri ahal izan arte. Testuak gutxienez hau bezain handia izan beharko du paragrafoan klik bikoitza egin ondoren.</translation>
 <translation id="2323763861024343754">Webguneen datuak</translation>
+<translation id="2326606747676847821">Aktibatu ezkutuko modua</translation>
 <translation id="2328985652426384049">Ezin da hasi saioa</translation>
 <translation id="234265804618409743">Ezin da ireki kamera. Arazoren bat izan da.</translation>
 <translation id="2345671828921229300">Bilatzeko, eduki hitz bat sakatuta</translation>
@@ -346,7 +346,6 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3775705724665058594">Bidali zure gailuetara</translation>
 <translation id="3778956594442850293">Gehitu da hasierako pantailan</translation>
 <translation id="3789841737615482174">Instalatu</translation>
-<translation id="3800748312755064483">Hasi saioa aldi baterako</translation>
 <translation id="3810838688059735925">Bideoa</translation>
 <translation id="3810973564298564668">Kudeatu</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> deskarga ezabatu dira</translation>
@@ -677,6 +676,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6341580099087024258">Galdetu fitxategiak non gorde behar diren</translation>
 <translation id="6342069812937806050">Oraintxe</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
+<translation id="6345878117466430440">Markatu irakurritako gisa</translation>
 <translation id="6364438453358674297">Iradokizuna historiatik ezabatu nahi duzu?</translation>
 <translation id="6366047038980456022">Sarean segurtasunez gauzak egiteko, sortzeko eta arakatzeko eginbide aurreratuak eta abiadura dauzka <ph name="APP_NAME" /> aplikazioak</translation>
 <translation id="6378173571450987352">Xehetasunak: erabilitako datu kopuruaren arabera ordenatuta</translation>
@@ -992,6 +992,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8655129584991699539">Chrome ezarpenetan garbi ditzakezu datuak</translation>
 <translation id="8662811608048051533">Webgune gehienetako saioa amaitzen du.</translation>
 <translation id="8664979001105139458">Badago izen hori duen fitxategi bat</translation>
+<translation id="8683039184091909753">irudia</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Seinalearen indarra: # barra}other{Seinalearen indarra: # barra}}</translation>
 <translation id="869891660844655955">Iraungitze-data</translation>
 <translation id="8712637175834984815">Ados</translation>

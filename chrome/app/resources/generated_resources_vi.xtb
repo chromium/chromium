@@ -374,6 +374,7 @@
 <translation id="143027896309062157">Đọc và thay đổi tất cả dữ liệu trên máy tính của bạn và các trang web bạn truy cập</translation>
 <translation id="1430915738399379752">In</translation>
 <translation id="1431188203598586230">Bản cập nhật phần mềm cuối cùng</translation>
+<translation id="1431402976894535801">Chặn không cho các trang web biết trạng thái hoạt động của bạn</translation>
 <translation id="1431432486300429272">Google có thể sử dụng lịch sử duyệt web của bạn để điều chỉnh tính năng Tìm kiếm và các dịch vụ khác của Google cho phù hợp với bạn. Bạn hoặc cha mẹ của bạn có thể truy cập vào trang myaccount.google.com/activitycontrols/search để thay đổi tùy chọn này bất cứ lúc nào</translation>
 <translation id="1432581352905426595">Quản lý công cụ tìm kiếm</translation>
 <translation id="1433811987160647649">Hỏi trước khi truy cập</translation>
@@ -570,6 +571,7 @@
 <translation id="1651008383952180276">Bạn phải nhập cùng một cụm mật khẩu hai lần</translation>
 <translation id="1652326691684645429">Bật tính năng Chia sẻ lân cận</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Thêm máy in vào Google Cloud Print để bạn có thể in từ bất cứ đâu.}other{Thêm # máy in vào Google Cloud Print để bạn có thể in từ bất cứ đâu.}}</translation>
+<translation id="1653575510930452864">Sao chép đường liên kết vào văn bản</translation>
 <translation id="1656528038316521561">Độ mờ của nền</translation>
 <translation id="1657406563541664238">Trợ giúp cải thiện <ph name="PRODUCT_NAME" /> bằng cách tự động gửi cho Google thống kê sử dụng và báo cáo sự cố</translation>
 <translation id="1657937299377480641">Nếu bạn muốn đăng nhập lại để truy cập vào các tài nguyên giáo dục, hãy xin phép cha mẹ của bạn</translation>
@@ -1003,6 +1005,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2178614541317717477">Lộ CA</translation>
 <translation id="2182058453334755893">Đã sao chép vào khay nhớ tạm</translation>
 <translation id="2184515124301515068">Cho phép Chrome chọn thời điểm trang web có thể phát âm thanh (khuyên dùng)</translation>
+<translation id="2187243482123994665">Hoạt động của người dùng</translation>
 <translation id="2187675480456493911">Đã đồng bộ hóa với các thiết bị khác trên tài khoản của bạn. Các tùy chọn cài đặt do những người dùng khác sửa đổi sẽ không được đồng bộ hóa. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Lỗi nhập chứng chỉ máy chủ</translation>
 <translation id="2187906491731510095">Đã cập nhật tiện ích</translation>
@@ -1830,6 +1833,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3163201441334626963">Sản phẩm không xác định <ph name="PRODUCT_ID" /> từ nhà cung cấp <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Các dịch vụ sau đây giúp đảm bảo cho dữ liệu của bạn được an toàn và bảo mật. Bạn có thể tắt các tính năng này bất kỳ lúc nào.</translation>
 <translation id="3164329792803560526">Đang chia sẻ thẻ này với <ph name="APP_NAME" /></translation>
+<translation id="3165371858310906303">Hỏi khi có một trang web muốn biết trạng thái hoạt động của bạn</translation>
 <translation id="3165390001037658081">Một số nhà cung cấp dịch vụ có thể chặn tính năng này.</translation>
 <translation id="316652501498554287">Tài khoản G Suite cho Giáo dục</translation>
 <translation id="3169472444629675720">Khám phá</translation>
@@ -2628,7 +2632,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4095507791297118304">Màn hình chính</translation>
 <translation id="409579654357498729">Thêm vào Cloud Print</translation>
 <translation id="4096508467498758490">Vô hiệu hóa tiện ích chế độ nhà phát triển</translation>
-<translation id="4096824249111507322">Đang chuẩn bị mô-đun an toàn, vui lòng đợi (việc này có thể mất vài phút)...</translation>
 <translation id="4097406557126260163">Ứng dụng và tiện ích</translation>
 <translation id="4097560579602855702">Tìm kiếm trên Google</translation>
 <translation id="4098667039111970300">Công cụ bút cảm ứng trên thanh công cụ</translation>
@@ -2947,6 +2950,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4527186207340858212">Tạo một hồ sơ công việc mới?</translation>
 <translation id="452750746583162491">Xem lại các dữ liệu đã đồng bộ hóa của bạn</translation>
 <translation id="4530494379350999373">Nguồn gốc</translation>
+<translation id="4531924570968473143">Bạn muốn thêm ai vào <ph name="DEVICE_TYPE" /> này?</translation>
 <translation id="4532646538815530781">Trang web này đang sử dụng cảm biến chuyển động.</translation>
 <translation id="4533846798469727141">Bây giờ hãy nói "Ok Google"</translation>
 <translation id="4533985347672295764">Thời gian của CPU</translation>
@@ -3357,7 +3361,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5050330054928994520">Chuyển văn bản sang lời nói (TTS)</translation>
 <translation id="5051836348807686060">Các ngôn ngữ bạn đã chọn không hỗ trợ tính năng kiểm tra chính tả</translation>
 <translation id="5052499409147950210">Chỉnh sửa trang web</translation>
-<translation id="5053604404986157245">Mật khẩu TPM được tạo ngẫu nhiên hiện không khả dụng. Đây là hiện tượng bình thường sau khi tiến hành Powerwash.</translation>
 <translation id="5057110919553308744">Khi bạn nhấp vào tiện ích</translation>
 <translation id="5057403786441168405">Quản lý các tài khoản bạn đã đăng nhập. Các trang web, ứng dụng và tiện ích trong Chrome cũng như Google Play có thể dùng những tài khoản này để mang lại trải nghiệm phù hợp cho bạn, tùy theo sự cho phép. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Hạn chế khả năng đăng nhập</translation>
@@ -3948,7 +3951,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5774295353725270860">Mở ứng dụng tệp</translation>
 <translation id="577624874850706961">Tìm kiếm cookie</translation>
 <translation id="5777468213129569553">Mở Chrome</translation>
-<translation id="5778747455497889540">Dưới đây là mật khẩu mô-đun an toàn được tạo ngẫu nhiên đã gán cho máy tính của bạn:</translation>
 <translation id="5780011244986845107">Thư mục bạn đã chọn chứa các tệp nhạy cảm. Bạn có chắc chắn muốn cấp cho "<ph name="APP_NAME" />" quyền đọc thư mục này vĩnh viễn không?</translation>
 <translation id="5780973441651030252">Mức độ ưu tiên quá trình</translation>
 <translation id="5781092003150880845">Đồng bộ hóa dưới tên là <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -3978,6 +3980,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="5805697420284793859">Trình quản lý cửa sổ</translation>
 <translation id="5806773519584576205">0° (Mặc định)</translation>
+<translation id="5808664694611589238">{0,plural, =1{Đóng cửa sổ khách}other{Đóng cửa sổ khách}}</translation>
 <translation id="5810809306422959727">Tài khoản này không đủ điều kiện để thêm các quyền kiểm soát của cha mẹ</translation>
 <translation id="5812674658566766066">Mở rộng tất cả</translation>
 <translation id="5814126672212206791">Loại kết nối</translation>
@@ -4435,6 +4438,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6344170822609224263">Truy cập danh sách kết nối mạng</translation>
 <translation id="6344576354370880196">Máy in đã lưu</translation>
 <translation id="6345418402353744910">Bạn cần phải cung cấp tên người dùng và mật khẩu cho proxy <ph name="PROXY" /> thì quản trị viên mới có thể định cấu hình mạng của bạn</translation>
+<translation id="6345878117466430440">Đánh dấu là đã đọc</translation>
 <translation id="6349101878882523185">Cài đặt <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Đồng bộ hóa không hoạt động. Thử đăng xuất và đăng nhập lại.</translation>
 <translation id="6351063337294363751">Bạn có thể xóa dữ liệu duyệt web khỏi menu này</translation>
@@ -4655,7 +4659,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6635956300022133031">Chọn và tùy chỉnh giọng nói của tính năng chuyển văn bản sang lời nói</translation>
 <translation id="6636588250634969791">Lắp SIM trước khi tiếp tục</translation>
 <translation id="6639554308659482635">Bộ nhớ SQLite</translation>
-<translation id="6641138807883536517">Không có mật khẩu mô-đun an toàn được tạo ngẫu nhiên. Đây là hiện tượng bình thường sau khi tiến hành Powerwash.</translation>
 <translation id="6642720633335369752">Để xem tất cả các cửa sổ ứng dụng đang mở, hãy vuốt từ cuối màn hình lên rồi giữ.</translation>
 <translation id="664290675870910564">Chọn mạng</translation>
 <translation id="6643016212128521049">Xóa</translation>
@@ -4983,7 +4986,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7029307918966275733">Chưa cài đặt Crostini. Vui lòng cài đặt Crostini để xem thông tin về người đóng góp.</translation>
 <translation id="7029809446516969842">Mật khẩu</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Đã kết nối với cổng nối tiếp</translation>
-<translation id="7031962166228839643">TPM đang được chuẩn bị, vui lòng đợi (việc này có thể mất vài phút)...</translation>
 <translation id="7036706669646341689">Linux nên có dung lượng là <ph name="DISK_SIZE" />. Để tăng dung lượng trống, hãy xóa bớt tệp khỏi thiết bị.</translation>
 <translation id="7037509989619051237">Văn bản để xem trước</translation>
 <translation id="7038632520572155338">Tiếp cận bằng công tắc</translation>
@@ -5177,6 +5179,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7280649757394340890">Cài đặt giọng nói của tính năng chuyển văn bản sang lời nói</translation>
 <translation id="7280877790564589615">Đã yêu cầu quyền</translation>
 <translation id="7282992757463864530">Thanh thông tin</translation>
+<translation id="7284411326658527427">Mỗi người đều có thể điều chỉnh tài khoản theo cách riêng và bảo mật dữ liệu.</translation>
 <translation id="7287143125007575591">Truy cập bị từ chối.</translation>
 <translation id="7287411021188441799">Khôi phục nền mặc định</translation>
 <translation id="7288013116963835700">Xóa Linux khỏi <ph name="DEVICE_TYPE" /></translation>
@@ -5753,6 +5756,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7963826112438303517">Trợ lý sử dụng những bản ghi âm này cũng như các lệnh thoại để tạo và cập nhật mẫu giọng nói của bạn. Mẫu này chỉ được lưu trữ trên các thiết bị đã bật tính năng Voice Match. Bạn có thể xem hoặc đào tạo lại hoạt động bằng giọng nói trong mục Cài đặt Trợ lý.</translation>
 <translation id="7966241909927244760">S&amp;ao chép địa chỉ hình ảnh</translation>
 <translation id="7968072247663421402">Các tùy chọn nhà cung cấp</translation>
+<translation id="7968198493605442410">Sao chép đường liên kết vào văn bản</translation>
 <translation id="7968742106503422125">Đọc và sửa đổi dữ liệu bạn sao chép và dán</translation>
 <translation id="7968833647796919681">Bật tính năng thu thập dữ liệu hoạt động</translation>
 <translation id="7968982339740310781">Xem chi tiết</translation>
@@ -5971,7 +5975,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8226222018808695353">Bị cấm</translation>
 <translation id="8226619461731305576">Hàng đợi</translation>
 <translation id="8226628635270268143">Chọn ảnh và album bạn yêu thích</translation>
-<translation id="8226742006292257240">Dưới đây là mật khẩu TPM được tạo ngẫu nhiên đã được gán cho máy tính của bạn:</translation>
 <translation id="8227119283605456246">Đính kèm tệp</translation>
 <translation id="8230134520748321204">Bạn có muốn lưu mật khẩu cho <ph name="ORIGIN" /> không?</translation>
 <translation id="8230672074305416752">Không ping được cổng của mạng mặc định</translation>

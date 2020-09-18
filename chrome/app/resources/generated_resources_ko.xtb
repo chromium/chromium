@@ -374,6 +374,7 @@
 <translation id="143027896309062157">컴퓨터 및 방문하는 웹사이트의 전체 데이터 조회 및 변경</translation>
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1431188203598586230">마지막 소프트웨어 업데이트</translation>
+<translation id="1431402976894535801">사이트에서 사용자 접속 상태를 알 수 없도록 차단</translation>
 <translation id="1431432486300429272">Google에서 Google 검색 등의 Google 서비스를 맞춤설정하기 위해 내 방문 기록을 사용할 수 있습니다. 나 또는 부모님이 myaccount.google.com/activitycontrols/search에서 언제든지 이 설정을 변경할 수 있습니다.</translation>
 <translation id="1432581352905426595">검색엔진 관리</translation>
 <translation id="1433811987160647649">액세스하기 전에 확인</translation>
@@ -570,6 +571,7 @@
 <translation id="1651008383952180276">동일한 암호를 두 번 입력해야 합니다.</translation>
 <translation id="1652326691684645429">Nearby Share 사용</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Google 클라우드 프린트에 프린터를 추가하여 어디서나 인쇄하세요.}other{Google 클라우드 프린트에 프린터 #개를 추가하여 어디서나 인쇄하세요.}}</translation>
+<translation id="1653575510930452864">링크를 텍스트로 복사</translation>
 <translation id="1656528038316521561">배경 불투명도</translation>
 <translation id="1657406563541664238">사용 통계 및 비정상 종료 보고서가 Google로 자동 전송되게 하여 <ph name="PRODUCT_NAME" /> 개선에 도움 주기</translation>
 <translation id="1657937299377480641">교육 자료에 액세스하기 위해 다시 로그인하려면 부모님에게 권한을 부여해 달라고 요청하세요.</translation>
@@ -1003,6 +1005,7 @@
 <translation id="2178614541317717477">CA 손상</translation>
 <translation id="2182058453334755893">클립보드에 복사됨</translation>
 <translation id="2184515124301515068">사이트의 소리 재생 여부를 Chrome이 결정(권장)</translation>
+<translation id="2187243482123994665">사용자 접속 상태</translation>
 <translation id="2187675480456493911">계정에 연결된 다른 기기와 동기화되어 있습니다. 다른 사용자가 수정한 설정은 동기화되지 않습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">서버 인증서 가져오기 오류</translation>
 <translation id="2187906491731510095">확장 프로그램 업데이트됨</translation>
@@ -1830,6 +1833,7 @@
 <translation id="3163201441334626963">공급업체 <ph name="VENDOR_ID" />의 알 수 없는 제품 <ph name="PRODUCT_ID" /></translation>
 <translation id="3163254451837720982">다음 서비스는 데이터를 안전하게 보관하는 데 도움이 됩니다. 이러한 기능은 언제든지 사용 중지할 수 있습니다.</translation>
 <translation id="3164329792803560526">이 탭을 <ph name="APP_NAME" /> 앱과 공유하는 중</translation>
+<translation id="3165371858310906303">사이트에서 사용자 접속 상태를 알려고 할 때 확인</translation>
 <translation id="3165390001037658081">일부 이동통신사는 이 기능을 차단할 수도 있습니다.</translation>
 <translation id="316652501498554287">G Suite for Education 계정</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2626,7 +2630,6 @@
 <translation id="4095507791297118304">기본 디스플레이</translation>
 <translation id="409579654357498729">클라우드 프린트에 추가</translation>
 <translation id="4096508467498758490">개발자 모드 확장 프로그램 사용 중지</translation>
-<translation id="4096824249111507322">보안 모듈을 준비 중입니다. 잠시 기다려 주세요. 몇 분 정도 걸릴 수 있습니다...</translation>
 <translation id="4097406557126260163">앱 및 확장 프로그램</translation>
 <translation id="4097560579602855702">Google 검색</translation>
 <translation id="4098667039111970300">툴바에 스타일러스 도구 표시</translation>
@@ -2945,6 +2948,7 @@
 <translation id="4527186207340858212">직장 프로필을 새로 만드시겠습니까?</translation>
 <translation id="452750746583162491">동기화된 데이터 검토</translation>
 <translation id="4530494379350999373">출처</translation>
+<translation id="4531924570968473143"><ph name="DEVICE_TYPE" />에 어떤 사용자를 추가할까요?</translation>
 <translation id="4532646538815530781">사이트에서 움직임 감지 센서를 사용하고 있습니다.</translation>
 <translation id="4533846798469727141">이제 "Hey Google"이라고 말하세요.</translation>
 <translation id="4533985347672295764">CPU 시간</translation>
@@ -3355,7 +3359,6 @@
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">선택한 언어의 맞춤법 검사가 지원되지 않습니다.</translation>
 <translation id="5052499409147950210">사이트 수정</translation>
-<translation id="5053604404986157245">임의로 생성된 TPM 비밀번호는 사용할 수 없습니다. Powerwash 이후에는 정상입니다.</translation>
 <translation id="5057110919553308744">확장 프로그램을 클릭할 경우</translation>
 <translation id="5057403786441168405">로그인된 계정을 관리하세요. 웹사이트, 앱, Chrome 확장 프로그램 및 Google Play에서 권한에 따라 이 계정을 사용하여 사용 환경을 맞춤설정할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">로그인 제한</translation>
@@ -3946,7 +3949,6 @@
 <translation id="5774295353725270860">파일 앱 열기</translation>
 <translation id="577624874850706961">쿠키 검색</translation>
 <translation id="5777468213129569553">Chrome 열기</translation>
-<translation id="5778747455497889540">다음은 임의로 생성된 후 내 컴퓨터에 할당된 보안 모듈 비밀번호입니다.</translation>
 <translation id="5780011244986845107">선택한 폴더에 민감한 파일이 포함되어 있습니다. 이 폴더에 '<ph name="APP_NAME" />' 영구 읽기 액세스 권한을 부여하시겠습니까?</translation>
 <translation id="5780973441651030252">프로세스 우선순위</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" />님의 계정에 동기화</translation>
@@ -3976,6 +3978,7 @@
 <translation id="5804241973901381774">권한</translation>
 <translation id="5805697420284793859">창 관리자</translation>
 <translation id="5806773519584576205">0°(기본값)</translation>
+<translation id="5808664694611589238">{0,plural, =1{게스트 창 닫기}other{게스트 창 닫기}}</translation>
 <translation id="5810809306422959727">자녀 보호 기능을 사용할 수 없는 계정</translation>
 <translation id="5812674658566766066">모두 펼치기</translation>
 <translation id="5814126672212206791">연결 유형</translation>
@@ -4433,6 +4436,7 @@
 <translation id="6344170822609224263">네트워크 연결 목록에 액세스</translation>
 <translation id="6344576354370880196">저장한 프린터</translation>
 <translation id="6345418402353744910">관리자가 네트워크를 구성할 수 있도록 <ph name="PROXY" /> 프록시의 사용자 이름과 비밀번호를 입력해야 합니다.</translation>
+<translation id="6345878117466430440">읽음으로 표시</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> 설치</translation>
 <translation id="6349170655202535379">동기화가 작동하지 않습니다. 로그아웃한 후 다시 로그인하세요.</translation>
 <translation id="6351063337294363751">이 메뉴에서 인터넷 사용 기록을 삭제할 수 있습니다.</translation>
@@ -4653,7 +4657,6 @@
 <translation id="6635956300022133031">텍스트 음성 변환 기능의 음성을 선택하고 맞춤설정합니다.</translation>
 <translation id="6636588250634969791">계속하기 전에 SIM을 삽입하세요.</translation>
 <translation id="6639554308659482635">SQLite 메모리</translation>
-<translation id="6641138807883536517">임의로 생성된 보안 모듈 비밀번호는 사용할 수 없습니다. 이는 파워워시 후에는 정상적으로 나타나는 현상입니다.</translation>
 <translation id="6642720633335369752">열려 있는 모든 앱 창을 보려면 하단에서 위로 스와이프한 다음 길게 누르세요.</translation>
 <translation id="664290675870910564">네트워크 선택</translation>
 <translation id="6643016212128521049">삭제</translation>
@@ -4981,7 +4984,6 @@
 <translation id="7029307918966275733">Crostini가 설치되지 않았습니다. 크레딧을 확인하려면 Crostini를 설치하세요.</translation>
 <translation id="7029809446516969842">비밀번호</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - 직렬 포트 연결됨</translation>
-<translation id="7031962166228839643">TPM을 준비 중입니다. 잠시 기다려 주세요(몇 분이 걸릴 수 있음)...</translation>
 <translation id="7036706669646341689">Linux를 사용하려면 <ph name="DISK_SIZE" />의 여유 공간이 권장됩니다. 여유 공간을 늘리려면 기기에서 파일을 삭제하세요.</translation>
 <translation id="7037509989619051237">텍스트 미리보기</translation>
 <translation id="7038632520572155338">스위치 제어</translation>
@@ -5175,6 +5177,7 @@
 <translation id="7280649757394340890">TTS 음성 설정</translation>
 <translation id="7280877790564589615">권한 요청됨</translation>
 <translation id="7282992757463864530">정보 표시줄</translation>
+<translation id="7284411326658527427">모든 사용자는 자신의 계정을 맞춤설정하고 데이터를 비공개로 유지할 수 있습니다.</translation>
 <translation id="7287143125007575591">액세스가 거부되었습니다.</translation>
 <translation id="7287411021188441799">기본 배경 복원</translation>
 <translation id="7288013116963835700"><ph name="DEVICE_TYPE" />용 Linux 삭제</translation>
@@ -5751,6 +5754,7 @@
 <translation id="7963826112438303517">어시스턴트는 녹음된 음성 및 요청을 사용하여 음성 모델을 만들고 업데이트하며, 이 음성 모델은 Voice Match가 사용 설정된 기기에만 저장됩니다. 어시스턴트 설정에서 음성 활동을 확인하거나 다시 학습시키세요.</translation>
 <translation id="7966241909927244760">이미지 주소 복사(&amp;O)</translation>
 <translation id="7968072247663421402">제공업체 옵션</translation>
+<translation id="7968198493605442410">링크를 텍스트로 복사</translation>
 <translation id="7968742106503422125">복사하고 붙여넣는 데이터를 읽고 수정</translation>
 <translation id="7968833647796919681">성능 데이터 수집 사용</translation>
 <translation id="7968982339740310781">세부정보 보기</translation>
@@ -5969,7 +5973,6 @@
 <translation id="8226222018808695353">금지됨</translation>
 <translation id="8226619461731305576">대기열</translation>
 <translation id="8226628635270268143">좋아하는 사진 및 앨범을 선택합니다.</translation>
-<translation id="8226742006292257240">다음은 컴퓨터에 임의로 생성 및 할당된 TPM 비밀번호입니다.</translation>
 <translation id="8227119283605456246">파일 첨부</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" />의 비밀번호를 저장하시겠습니까?</translation>
 <translation id="8230672074305416752">기본 네트워크 게이트웨이를 핑할 수 없습니다.</translation>

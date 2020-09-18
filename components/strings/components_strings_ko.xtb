@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Wi-Fi에 다시 연결</translation>
 <translation id="1165039591588034296">오류</translation>
 <translation id="1165174597379888365">페이지를 방문함</translation>
+<translation id="1174723505405632867"><ph name="EMBEDDED_URL" />에서 <ph name="TOP_LEVEL_URL" />의 쿠키와 사이트 데이터를 사용하도록 허용할까요?
+
+쿠키와 사이트 데이터 사용은 현재 개인정보 보호 설정에 따라 차단되어 있습니다. 사용을 허용하면 이전에 상호작용했던 콘텐츠를 정상적으로 이용할 수 있지만, <ph name="EMBEDDED_URL" />에서 내 활동을 추적하게 될 수도 있습니다.</translation>
 <translation id="1175364870820465910">인쇄(&amp;P)</translation>
 <translation id="1175875016430184367">오른쪽 트리플 스테이플</translation>
 <translation id="1178581264944972037">일시중지</translation>
@@ -305,6 +308,7 @@
 <translation id="2181821976797666341">정책</translation>
 <translation id="2183608646556468874">전화번호</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{주소 1개}other{주소 #개}}</translation>
+<translation id="2187243482123994665">사용자 접속 상태</translation>
 <translation id="2187317261103489799">감지(기본값)</translation>
 <translation id="2188375229972301266">하단 다공 펀칭</translation>
 <translation id="2202020181578195191">올바른 만료 연도를 입력하세요.</translation>
@@ -527,6 +531,7 @@
       프록시 서버가 작동하는지 확인하세요. 프록시 서버를 사용하지 않으려면
       다음 단계를 따르세요.
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" />에서 사용자 접속 상태를 알고 싶어 합니다.</translation>
 <translation id="3188393374551744535">계정 잔액</translation>
 <translation id="3194737229810486521"><ph name="URL" />에서 내 기기에 데이터를 영구 저장하려고 합니다</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" />의 <ph name="PRINTER_NAME" /></translation>
@@ -1014,6 +1019,7 @@
 <translation id="5171689220826475070">Fanfold-유럽</translation>
 <translation id="5172758083709347301">컴퓨터</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />가 아닙니까? 오류 신고</translation>
+<translation id="5179740473595559246">사용자 접속 상태 확인</translation>
 <translation id="5190835502935405962">북마크바</translation>
 <translation id="519422657042045905">주석을 사용할 수 없음</translation>
 <translation id="5201306358585911203">이 페이지에 삽입된 페이지 내용:</translation>
@@ -1236,6 +1242,7 @@
 <translation id="6049488691372270142">페이지 제공</translation>
 <translation id="6051221802930200923">현재 <ph name="SITE" />에서 인증서 고정을 사용하기 때문에 방문할 수 없습니다. 네트워크 오류와 공격은 대부분 일시적이므로 나중에 이 페이지가 정상적으로 작동할 수 있습니다.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">사용자 접속 상태를 공유할까요?</translation>
 <translation id="6058977677006700226">모든 기기에서 카드를 사용하고 싶으신가요?</translation>
 <translation id="6059925163896151826">USB 기기</translation>
 <translation id="6060009363608157444">잘못된 DnsOverHttps 모드입니다.</translation>
@@ -1365,6 +1372,7 @@
 <translation id="6631202559048444592">정책에 대한 소스가 두 개 이상 있으나 값이 동일합니다.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">삭제</translation>
+<translation id="6645291930348198241">쿠키 및 사이트 데이터에 액세스합니다.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{없음}=1{사이트 1개(Google 계정에서 로그아웃되지 않음)}other{사이트 #개(Google 계정에서 로그아웃되지 않음)}}</translation>
 <translation id="6648459603387803038">관리자가 원격으로 브라우저 설정을 변경할 수 있습니다. 이 기기의 활동은 Chrome 외부에서도 관리할 수 있습니다.</translation>
 <translation id="6652101503459149953">Windows Hello 사용</translation>

@@ -1290,7 +1290,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2505127913256479918">Akun yang diawasi ini akan segera dihapus</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Layar #}other{Layar #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> dari <ph name="TOTAL_SIZE" /></translation>
-<translation id="250642123108534012">Perangkat di dekat Anda saat fitur Berbagi Langsung terbuka di perangkat mereka</translation>
+<translation id="250642123108534012">Perangkat di dekat Anda saat fitur Berbagi Langsung terbuka di perangkat tersebut</translation>
 <translation id="250704661983564564">Pengaturan tampilan</translation>
 <translation id="2507253002925770350">Tiket dihapus</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> dijeda</translation>
@@ -2632,7 +2632,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4095507791297118304">Tampilan utama</translation>
 <translation id="409579654357498729">Tambahkan ke Cloud Print</translation>
 <translation id="4096508467498758490">Nonaktifkan ekstensi mode pengembang</translation>
-<translation id="4096824249111507322">Modul aman sedang disiapkan, harap tunggu (proses ini mungkin membutuhkan beberapa menit)...</translation>
 <translation id="4097406557126260163">Aplikasi dan ekstensi</translation>
 <translation id="4097560579602855702">Telusuri Google</translation>
 <translation id="4098667039111970300">Alat stilus di toolbar</translation>
@@ -3362,7 +3361,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">Fitur periksa ejaan tidak didukung untuk bahasa yang Anda pilih</translation>
 <translation id="5052499409147950210">Edit situs</translation>
-<translation id="5053604404986157245">Sandi TPM yang dibuat secara acak tidak tersedia. Hal ini normal setelah menjalankan Powerwash.</translation>
 <translation id="5057110919553308744">Saat Anda mengklik ekstensi</translation>
 <translation id="5057403786441168405">Kelola akun Anda yang login. Situs, aplikasi, serta ekstensi di Chrome dan Google Play mungkin menggunakan akun ini untuk menyesuaikan pengalaman Anda, bergantung pada setelan izin. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Batasi login</translation>
@@ -3953,7 +3951,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="5774295353725270860">Membuka aplikasi File</translation>
 <translation id="577624874850706961">Telusuri cookie</translation>
 <translation id="5777468213129569553">Buka Chrome</translation>
-<translation id="5778747455497889540">Berikut adalah sandi modul aman yang dibuat secara acak, yang telah ditetapkan untuk komputer Anda:</translation>
 <translation id="5780011244986845107">Folder yang Anda pilih berisi file sensitif. Yakin ingin memberi "<ph name="APP_NAME" />" akses baca permanen ke folder ini?</translation>
 <translation id="5780973441651030252">Prioritas proses</translation>
 <translation id="5781092003150880845">Sinkronkan sebagai <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4662,7 +4659,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="6635956300022133031">Memilih dan menyesuaikan suara text-to-speech</translation>
 <translation id="6636588250634969791">Masukkan SIM sebelum melanjutkan</translation>
 <translation id="6639554308659482635">Memori SQLite</translation>
-<translation id="6641138807883536517">Sandi modul aman yang dibuat secara acak tidak tersedia. Hal ini normal setelah menjalankan Powerwash.</translation>
 <translation id="6642720633335369752">Untuk melihat semua jendela aplikasi yang terbuka, geser ke atas dari bagian bawah layar dan tahan.</translation>
 <translation id="664290675870910564">Pilihan Jaringan</translation>
 <translation id="6643016212128521049">Hapus</translation>
@@ -4990,7 +4986,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7029307918966275733">Crostini tidak diinstal. Instal Crostini untuk melihat kredit.</translation>
 <translation id="7029809446516969842">Sandi</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Port serial tersambung</translation>
-<translation id="7031962166228839643">TPM sedang disiapkan, harap tunggu (ini mungkin membutuhkan beberapa menit)...</translation>
 <translation id="7036706669646341689">Sebaiknya sediakan ruang sebesar <ph name="DISK_SIZE" /> untuk Linux. Untuk menambah ruang kosong, hapus file dari perangkat Anda.</translation>
 <translation id="7037509989619051237">Teks untuk dipratinjau</translation>
 <translation id="7038632520572155338">Tombol akses</translation>
@@ -5980,7 +5975,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8226222018808695353">Terlarang</translation>
 <translation id="8226619461731305576">Antrean</translation>
 <translation id="8226628635270268143">Pilih foto dan album favorit</translation>
-<translation id="8226742006292257240">Di bawah adalah sandi TPM yang dibuat secara acak yang telah ditetapkan untuk komputer Anda:</translation>
 <translation id="8227119283605456246">Lampirkan file</translation>
 <translation id="8230134520748321204">Simpan sandi untuk <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Gagal melakukan ping ke gateway jaringan default</translation>

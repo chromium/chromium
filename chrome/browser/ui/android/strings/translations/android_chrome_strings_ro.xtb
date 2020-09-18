@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
-<translation id="1013149566889033026">Se va deschide o nouă filă incognito</translation>
 <translation id="1028699632127661925">Se trimite la <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Ștergi și datele de la aceste site-uri și aplicații?</translation>
 <translation id="1036348656032585052">Dezactivează</translation>
@@ -166,6 +165,7 @@ Atinge orice cuvânt pentru a-l căuta. Ca să rafinezi căutarea, atinge lung p
 <translation id="2321086116217818302">Se pregătesc parolele…</translation>
 <translation id="2321958826496381788">Trage cursorul până poți citi textul cu ușurință. Textul trebuie să fie cel puțin la fel de mare ca acesta după o atingere dublă pe un paragraf.</translation>
 <translation id="2323763861024343754">Stocarea site-urilor</translation>
+<translation id="2326606747676847821">Treci în incognito</translation>
 <translation id="2328985652426384049">Nu se poate conecta</translation>
 <translation id="234265804618409743">Nu se poate deschide camera. A apărut o eroare.</translation>
 <translation id="2345671828921229300">Pentru a căuta, atinge lung un cuvânt</translation>
@@ -346,7 +346,6 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="3775705724665058594">Trimite pe dispozitivele tale</translation>
 <translation id="3778956594442850293">S-a adăugat pe ecranul de pornire</translation>
 <translation id="3789841737615482174">Instalează</translation>
-<translation id="3800748312755064483">Conectează-te temporar</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Gestionează</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> descărcări șterse</translation>
@@ -677,6 +676,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6341580099087024258">Întreabă unde să fie salvate fișierele</translation>
 <translation id="6342069812937806050">Adineauri</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
+<translation id="6345878117466430440">Marchează ca citit</translation>
 <translation id="6364438453358674297">Elimini sugestia din istoric?</translation>
 <translation id="6366047038980456022"><ph name="APP_NAME" /> are ingeniozitatea și viteza de care ai nevoie ca să lucrezi, să creezi și să explorezi online în siguranță</translation>
 <translation id="6378173571450987352">Detalii: sortate după volumul de date folosite</translation>
@@ -992,6 +992,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8655129584991699539">Poți șterge datele în Setările Chrome</translation>
 <translation id="8662811608048051533">Te deconectează de pe majoritatea site-urilor.</translation>
 <translation id="8664979001105139458">Numele fișierului există deja</translation>
+<translation id="8683039184091909753">imagine</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Nivelul puterii semnalului: # bară}few{Nivelul puterii semnalului: # bare}other{Nivelul puterii semnalului: # de bare}}</translation>
 <translation id="869891660844655955">Dată de expirare</translation>
 <translation id="8712637175834984815">Am înțeles</translation>

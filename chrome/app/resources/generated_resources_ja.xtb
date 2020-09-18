@@ -374,6 +374,7 @@
 <translation id="143027896309062157">自分のパソコンとアクセスしたウェブサイト上にある自分の全データの読み取りと変更</translation>
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1431188203598586230">最後のソフトウェア アップデート</translation>
+<translation id="1431402976894535801">サイトによるアクティブ状態の検出をブロックする</translation>
 <translation id="1431432486300429272">検索やその他の Google サービスをカスタマイズする目的で、Google が閲覧履歴を使用することがあります。この設定は保護者が myaccount.google.com/activitycontrols/search でいつでも変更できます。</translation>
 <translation id="1432581352905426595">検索エンジンの管理</translation>
 <translation id="1433811987160647649">アクセスする前に確認する</translation>
@@ -570,6 +571,7 @@
 <translation id="1651008383952180276">同じパスフレーズを 2 回入力する必要があります</translation>
 <translation id="1652326691684645429">ニアバイシェアを有効にする</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{プリンタを Google クラウド プリントに追加してください。登録したプリンタにはどこからでも印刷できます。}other{# 件のプリンタを Google クラウド プリントに追加してください。登録したプリンタにはどこからでも印刷できます。}}</translation>
+<translation id="1653575510930452864">テキストへのリンクをコピー</translation>
 <translation id="1656528038316521561">背景の透明度</translation>
 <translation id="1657406563541664238">使用統計データや障害レポートを Google に自動送信して <ph name="PRODUCT_NAME" /> の機能向上に役立てる</translation>
 <translation id="1657937299377480641">教育リソースにアクセスするために再度ログインするには、保護者の方に許可してもらってください</translation>
@@ -1003,6 +1005,7 @@
 <translation id="2178614541317717477">認証局が侵害された</translation>
 <translation id="2182058453334755893">クリップボードにコピーされました</translation>
 <translation id="2184515124301515068">サイトで音声が再生される可能性がある場合、Chrome で自動的に許可またはブロックする（推奨）</translation>
+<translation id="2187243482123994665">ユーザーのアクティブ状態</translation>
 <translation id="2187675480456493911">アカウントの他のデバイスと同期しています。他のユーザーが変更した設定は同期されません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">サーバー証明書インポート エラー</translation>
 <translation id="2187906491731510095">拡張機能が更新されました</translation>
@@ -1830,6 +1833,7 @@
 <translation id="3163201441334626963">不明な商品（<ph name="PRODUCT_ID" />、ベンダー: <ph name="VENDOR_ID" />）</translation>
 <translation id="3163254451837720982">次のサービスは、ユーザーデータの安全性とセキュリティの維持に役立ちます。これらの機能はいつでも無効にすることができます。</translation>
 <translation id="3164329792803560526">このタブを <ph name="APP_NAME" /> に共有しています</translation>
+<translation id="3165371858310906303">サイトがアクティブ状態を検出しようとしたときに確認する</translation>
 <translation id="3165390001037658081">携帯通信会社によってはこの機能を利用できない場合があります。</translation>
 <translation id="316652501498554287">G Suite for Education アカウント</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2628,7 +2632,6 @@
 <translation id="4095507791297118304">メイン ディスプレイ</translation>
 <translation id="409579654357498729">クラウド プリントに追加</translation>
 <translation id="4096508467498758490">デベロッパー モードの拡張機能を無効にする</translation>
-<translation id="4096824249111507322">セキュア モジュールを準備しています。しばらくお待ちください。これには数分かかることがあります。</translation>
 <translation id="4097406557126260163">アプリと拡張機能</translation>
 <translation id="4097560579602855702">Google で検索</translation>
 <translation id="4098667039111970300">ツールバーのタッチペン ツール</translation>
@@ -2947,6 +2950,7 @@
 <translation id="4527186207340858212">仕事用のプロファイルを新しく作成しますか？</translation>
 <translation id="452750746583162491">同期したデータを確認する</translation>
 <translation id="4530494379350999373">発行元:</translation>
+<translation id="4531924570968473143">この <ph name="DEVICE_TYPE" /> にどのユーザーを追加しますか？</translation>
 <translation id="4532646538815530781">このサイトはモーション センサーを使用しています。</translation>
 <translation id="4533846798469727141">それでは「OK Google」と話しかけてください</translation>
 <translation id="4533985347672295764">CPU 時間</translation>
@@ -3357,7 +3361,6 @@
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">選択した言語ではスペルチェックを使用できません</translation>
 <translation id="5052499409147950210">サイトの編集</translation>
-<translation id="5053604404986157245">ランダムに生成された TPM パスワードは使用できません。これは Powerwash 後の通常の動作です。</translation>
 <translation id="5057110919553308744">拡張機能をクリックしたとき</translation>
 <translation id="5057403786441168405">ログインしているアカウントを管理します。Chrome と Google Play のウェブサイト、アプリ、拡張機能では、許可されている場合に、これらのアカウントを使用してユーザー エクスペリエンスのカスタマイズが行われることがあります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">ログイン制限</translation>
@@ -3948,7 +3951,6 @@
 <translation id="5774295353725270860">ファイルのアプリを開く</translation>
 <translation id="577624874850706961">Cookie を検索</translation>
 <translation id="5777468213129569553">Chrome を起動</translation>
-<translation id="5778747455497889540">ご使用のパソコンに割り当てられたランダム生成のセキュア モジュール パスワードは以下のとおりです。</translation>
 <translation id="5780011244986845107">選択したフォルダには、機密ファイルが含まれています。このフォルダに対する永続的な読み取りアクセス権を「<ph name="APP_NAME" />」に付与してもよろしいですか？</translation>
 <translation id="5780973441651030252">プロセスの優先値</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> として同期</translation>
@@ -3978,6 +3980,7 @@
 <translation id="5804241973901381774">権限</translation>
 <translation id="5805697420284793859">ウィンドウ マネージャ</translation>
 <translation id="5806773519584576205">0°（デフォルト）</translation>
+<translation id="5808664694611589238">{0,plural, =1{ゲストモードを終了}other{ゲストモードを終了}}</translation>
 <translation id="5810809306422959727">このアカウントでは保護者による使用制限を設定できません</translation>
 <translation id="5812674658566766066">すべて展開</translation>
 <translation id="5814126672212206791">接続タイプ</translation>
@@ -4435,6 +4438,7 @@
 <translation id="6344170822609224263">ネットワーク接続のリストにアクセスする</translation>
 <translation id="6344576354370880196">保存済みのプリンタ</translation>
 <translation id="6345418402353744910">管理者がネットワークを設定できるよう、プロキシ「<ph name="PROXY" />」のユーザー名とパスワードを指定してください</translation>
+<translation id="6345878117466430440">既読にする</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> をインストールします</translation>
 <translation id="6349170655202535379">同期が機能していません。ログアウトして再度ログインしてみてください。</translation>
 <translation id="6351063337294363751">このメニューで閲覧データを削除できます</translation>
@@ -4655,7 +4659,6 @@
 <translation id="6635956300022133031">テキスト読み上げ用の音声を選択してカスタマイズします</translation>
 <translation id="6636588250634969791">続行する前に SIM を挿入してください</translation>
 <translation id="6639554308659482635">SQLite メモリ</translation>
-<translation id="6641138807883536517">ランダム生成のセキュア モジュール パスワードが使用できなくなっています。これは Powerwash の実行後に通常起こることです。</translation>
 <translation id="6642720633335369752">開いているアプリのウィンドウをすべて表示するには、下から上にスワイプして長押しします。</translation>
 <translation id="664290675870910564">ネットワークの選択</translation>
 <translation id="6643016212128521049">削除</translation>
@@ -4983,7 +4986,6 @@
 <translation id="7029307918966275733">Crostini はインストールされていません。クレジットを表示するには Crostini をインストールしてください。</translation>
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - シリアルポートを接続しました</translation>
-<translation id="7031962166228839643">TPM を準備しています。しばらくお待ちください（数分かかることがあります）...</translation>
 <translation id="7036706669646341689">Linux 用の推奨される空き容量は <ph name="DISK_SIZE" /> です。空き容量を増やすには、デバイスからファイルを削除してください。</translation>
 <translation id="7037509989619051237">テキスト読み上げの音声をプレビュー</translation>
 <translation id="7038632520572155338">スイッチ アクセス</translation>
@@ -5177,6 +5179,7 @@
 <translation id="7280649757394340890">テキスト読み上げの音声の設定</translation>
 <translation id="7280877790564589615">許可の要求</translation>
 <translation id="7282992757463864530">情報バー</translation>
+<translation id="7284411326658527427">ユーザーごとにアカウントをカスタマイズして、データのプライバシーを確保できます。</translation>
 <translation id="7287143125007575591">アクセスが拒否されました。</translation>
 <translation id="7287411021188441799">デフォルトの背景に戻す</translation>
 <translation id="7288013116963835700"><ph name="DEVICE_TYPE" /> の Linux を削除する</translation>
@@ -5753,6 +5756,7 @@
 <translation id="7963826112438303517">アシスタントによって、これらの録音データと音声によるリクエストからお客様の音声モデルが作成、更新されます。この音声モデルは、Voice Match をオンにしているデバイスにのみ保存されます。音声認識の確認や再認識は、[アシスタントの設定] で行います。</translation>
 <translation id="7966241909927244760">画像アドレスをコピー(&amp;C)</translation>
 <translation id="7968072247663421402">プロバイダ オプション</translation>
+<translation id="7968198493605442410">テキストへのリンクをコピー</translation>
 <translation id="7968742106503422125">コピーして貼り付けるデータの読み取りと修正</translation>
 <translation id="7968833647796919681">パフォーマンス データの収集を有効にする</translation>
 <translation id="7968982339740310781">詳細を表示</translation>
@@ -5971,7 +5975,6 @@
 <translation id="8226222018808695353">アクセスできません</translation>
 <translation id="8226619461731305576">キュー</translation>
 <translation id="8226628635270268143">お気に入りの写真やアルバムを選択してください</translation>
-<translation id="8226742006292257240">ランダムに生成され、ご使用のパソコンに割り当てられた TPM パスワードは以下のとおりです:</translation>
 <translation id="8227119283605456246">添付ファイル</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> のパスワードを保存しますか？</translation>
 <translation id="8230672074305416752">デフォルトのネットワーク ゲートウェイに向けた ping が失敗しました</translation>

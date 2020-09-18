@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
-<translation id="1013149566889033026">Uma nova guia anônima será aberta</translation>
 <translation id="1028699632127661925">Enviando para este dispositivo: <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Limpar também dados desses sites e apps?</translation>
 <translation id="1036348656032585052">Desativar</translation>
@@ -166,6 +165,7 @@ Toque em qualquer palavra para pesquisar. Para refinar a pesquisa, toque na tela
 <translation id="2321086116217818302">Preparando senhas…</translation>
 <translation id="2321958826496381788">Arraste o controle deslizante até a leitura ficar confortável. Com o toque duplo em um parágrafo, o texto ficará pelo menos deste tamanho.</translation>
 <translation id="2323763861024343754">Armazenamento do site</translation>
+<translation id="2326606747676847821">Navegar em modo anônimo</translation>
 <translation id="2328985652426384049">Não consigo fazer login</translation>
 <translation id="234265804618409743">Não foi possível abrir a câmera. Algo deu errado.</translation>
 <translation id="2345671828921229300">Para pesquisar, toque em uma palavra e a mantenha pressionada</translation>
@@ -346,7 +346,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="3775705724665058594">Enviar para seus dispositivos</translation>
 <translation id="3778956594442850293">Adicionado à tela inicial</translation>
 <translation id="3789841737615482174">Instalar</translation>
-<translation id="3800748312755064483">Fazer login temporário</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3810973564298564668">Gerenciar</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> downloads excluídos</translation>
@@ -387,7 +386,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="4135200667068010335">A lista de dispositivos com os quais é possível compartilhar uma guia está fechada.</translation>
 <translation id="4149994727733219643">Versão simplificada das páginas da Web</translation>
 <translation id="4170011742729630528">O serviço não está disponível. Tente novamente mais tarde.</translation>
-<translation id="4175173967354304331">Sua conta será conectada neste site, no Chrome e em apps do Google</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> usado(s)</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4183868528246477015">Pesquisar com Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>

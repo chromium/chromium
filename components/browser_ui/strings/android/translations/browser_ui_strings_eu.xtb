@@ -16,6 +16,7 @@
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> webgunea gehitu da</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
 <translation id="1384959399684842514">Pausatu da deskarga</translation>
+<translation id="1431402976894535801">Ez utzi webguneei presente noiz zauden jakiten</translation>
 <translation id="1446450296470737166">Onartu MIDI gailuen kontrol osoa</translation>
 <translation id="1509960214886564027">Baliteke webgune askotako eginbideek ez funtzionatzea</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">Ireki zuzeneko aplikazioa</translation>
 <translation id="2148716181193084225">Gaur</translation>
 <translation id="2182457891543959921">Eskatu zure baimena webguneei inguruaren 3D-ko mapa bat sortu edo kameraren posizioaren jarraipena egiteko baimena eman aurretik (gomendatua)</translation>
+<translation id="2187243482123994665">Erabiltzailearen presentzia</translation>
 <translation id="2212565012507486665">Onartu cookieak</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> aplikazioari kamera atzitzeko baimena emateko, kamera atzitzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="2289270750774289114">Eskatu nire baimena webgune batek inguruko Bluetooth bidezko gailuak bilatu nahi dituenean (gomendatua)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">Bideo-erreproduzigailua</translation>
 <translation id="3115898365077584848">Erakutsi informazioa</translation>
 <translation id="3123473560110926937">Webgune batzuetan blokeatu dira iragarkiak</translation>
+<translation id="3165371858310906303">Eskatu zure baimena webgune batek presente noiz zauden jakin nahi duenean</translation>
 <translation id="3198916472715691905">Gordetako datuak: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> aplikazioari jakinarazpenak bidaltzeko baimena emateko, jakinarazpenak bidaltzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofonoa</translation>
@@ -133,6 +136,7 @@
 <translation id="5197729504361054390">Hautatzen dituzun kontaktuak <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> webgunearekin partekatuko dira.</translation>
 <translation id="5300589172476337783">Erakutsi</translation>
 <translation id="5301954838959518834">Ados, ulertu dut</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" /></translation>
 <translation id="5313967007315987356">Gehitu webgunea</translation>
 <translation id="5317780077021120954">Gorde</translation>
 <translation id="5335288049665977812">Baimendu webguneei JavaScript erabiltzea (gomendatua)</translation>
@@ -144,6 +148,7 @@
 <translation id="5403592356182871684">Izenak</translation>
 <translation id="5489227211564503167"><ph name="ELAPSED_TIME" /> igaro dira, eta <ph name="TOTAL_TIME" /> gelditzen</translation>
 <translation id="5494752089476963479">Blokeatu iragarki oztopatzaileak edo iruzurrezkoak erakusten dituzten webguneetako iragarkiak</translation>
+<translation id="5502860503640766021">Baimena eman zaio honi: <ph name="PERMISSION_1" />: <ph name="PERMISSION_2" /> blokeatu egin da</translation>
 <translation id="5505264765875738116">Webguneek ezin dute eskatu jakinarazpenak bidaltzea</translation>
 <translation id="5516455585884385570">Ireki jakinarazpen-ezarpenak</translation>
 <translation id="5527111080432883924">Eskatu berrespena webguneei arbeleko testua eta irudiak ikustea baimendu baino lehen (gomendatua)</translation>
@@ -155,12 +160,15 @@
 <translation id="5690795753582697420">Kamera atzitzeko baimena desaktibatuta dago Android-en ezarpenetan</translation>
 <translation id="5710871682236653961">NFC darabilten gailuak ukitzean, eskatu baimena webguneei informazioa bidali eta jasotzeko (gomendatua)</translation>
 <translation id="5719847187258001597"><ph name="ORIGIN" /> webguneak edo hari dagokion hasierako pantailako aplikazioak gorde dituen datu eta cookie guztiak garbituko dira.</translation>
+<translation id="5771720122942595109"><ph name="PERMISSION_1" /> blokeatu da</translation>
 <translation id="5804241973901381774">Baimenak</translation>
 <translation id="5860033963881614850">Desaktibatuta</translation>
+<translation id="5863245810240683687">Baimena eman zaie hauei: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" /></translation>
 <translation id="5876056640971328065">Pausatu bideoa</translation>
 <translation id="5916664084637901428">Aktibatuta</translation>
 <translation id="5922853908706496913">Pantaila partekatzen</translation>
 <translation id="5939518447894949180">Berrezarri</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Kontrolatu webgune honek gailurako duen sarbidea</translation>
 <translation id="6040143037577758943">Itxi</translation>
 <translation id="6042308850641462728">Gehiago</translation>
@@ -172,6 +180,7 @@
 <translation id="6196640612572343990">Blokeatu hirugarrenen cookieak</translation>
 <translation id="6206551242102657620">Konexioa segurua da. Webguneari buruzko informazioa</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> - Aukerak</translation>
+<translation id="6262279340360821358"><ph name="PERMISSION_1" /> eta <ph name="PERMISSION_2" /> blokeatu dira</translation>
 <translation id="6270391203985052864">Webguneek jakinarazpenak bidaltzea eska dezakete</translation>
 <translation id="6295158916970320988">Webgune guztiak</translation>
 <translation id="6320088164292336938">Dardara</translation>
@@ -194,6 +203,7 @@
 <translation id="6790428901817661496">Erreproduzitu</translation>
 <translation id="6818926723028410516">Hautatu elementuak</translation>
 <translation id="6864395892908308021">Gailu honek ezin du irakurri NFC</translation>
+<translation id="6879016579615558281"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" /> blokeatuta</translation>
 <translation id="6910211073230771657">Ezabatu egin da</translation>
 <translation id="6912998170423641340">Ez utzi webguneei arbeleko testua eta irudiak ikusten</translation>
 <translation id="6945221475159498467">Hautatu</translation>
@@ -211,6 +221,7 @@
 <translation id="723171743924126238">Hautatu irudiak</translation>
 <translation id="7243308994586599757">Pantailaren behealdean agertzen dira dauden aukerak</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> hautatu dira</translation>
+<translation id="7260727271532453612">Baimena eman zaie hauei: <ph name="PERMISSION_1" /> eta <ph name="PERMISSION_2" /></translation>
 <translation id="7302486331832100261">Jakinarazpenak blokeatu ohi dituzu. Baimena emateko, sakatu "Xehetasunak".</translation>
 <translation id="7423098979219808738">Galdetu lehenbizi</translation>
 <translation id="7423538860840206698">Blokeatuta dago arbeleko edukia irakurtzeko aukera</translation>
@@ -242,6 +253,7 @@
 <translation id="8087000398470557479">Eduki hau <ph name="DOMAIN_NAME" /> domeinukoa da eta Google-k eskaintzen du.</translation>
 <translation id="8116925261070264013">Audioa desaktibatuta</translation>
 <translation id="8131740175452115882">Berretsi</translation>
+<translation id="8197286292360124385">Baimena eman zaio honi: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Berrekin</translation>
 <translation id="8206354486702514201">Administratzaileak betearazten du ezarpena.</translation>
 <translation id="8249310407154411074">Eraman goraino</translation>

@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Atkārtoti izveidojiet savienojumu ar Wi-Fi tīklu.</translation>
 <translation id="1165039591588034296">Kļūda</translation>
 <translation id="1165174597379888365">Apmeklēta lapa</translation>
+<translation id="1174723505405632867">Vai vēlaties atļaut vietnei <ph name="EMBEDDED_URL" /> izmantot sīkfailus un vietnes datus šeit: <ph name="TOP_LEVEL_URL" />?
+
+Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidencialitātes iestatījumiem. Tādējādi saturs, ar kuru mijiedarbojaties, darbosies pareizi, taču vietnei <ph name="EMBEDDED_URL" /> var tikt atļauts izsekot jūsu darbības.</translation>
 <translation id="1175364870820465910">Drukāt...</translation>
 <translation id="1175875016430184367">Trīskāršs skavojums labajā pusē</translation>
 <translation id="1178581264944972037">Pauzēt</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Politikas</translation>
 <translation id="2183608646556468874">Tālruņa numurs</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adrese}zero{# adreses}one{# adrese}other{# adreses}}</translation>
+<translation id="2187243482123994665">Lietotāja aktivitāte</translation>
 <translation id="2187317261103489799">Noteikt (pēc noklusējuma)</translation>
 <translation id="2188375229972301266">Vairāki caurumi apakšdaļā</translation>
 <translation id="2202020181578195191">Ievadiet derīgu gadu</translation>
@@ -531,6 +535,7 @@
       pārliecinātos, vai starpniekserveris darbojas. Ja uzskatāt, ka jums nav jāizmanto
       starpniekserveris,
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456">Vietne <ph name="URL" /> pieprasa informāciju, kad jūs esat aktīvs.</translation>
 <translation id="3188393374551744535">Konta atlikums</translation>
 <translation id="3194737229810486521">Vietnē <ph name="URL" /> tiek pieprasīta atļauja pastāvīgi glabāt datus jūsu ierīcē.</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> serverī <ph name="SERVER_NAME" /></translation>
@@ -1022,6 +1027,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Ierīce</translation>
 <translation id="5179510805599951267">Vai nav valodā: <ph name="ORIGINAL_LANGUAGE" />? Ziņot par šo kļūdu</translation>
+<translation id="5179740473595559246">Iegūt informāciju, kad jūs esat aktīvs</translation>
 <translation id="5190835502935405962">Grāmatzīmju josla</translation>
 <translation id="519422657042045905">Anotācija nav pieejama</translation>
 <translation id="5201306358585911203">Šajā lapā iegultā lapā ir rakstīts</translation>
@@ -1244,6 +1250,7 @@
 <translation id="6049488691372270142">Lapu izvade</translation>
 <translation id="6051221802930200923">Pašlaik nevarat apmeklēt vietni <ph name="SITE" />, jo tajā tiek izmantota sertifikātu piespraušana. Tā kā tīkla kļūdas un uzbrukumi parasti ir īslaicīgi, visticamāk, šī lapa vēlāk darbosies.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Vai kopīgot informāciju par jūsu aktivitāti?</translation>
 <translation id="6058977677006700226">Vai vēlaties izmantot kartes visās savās ierīcēs?</translation>
 <translation id="6059925163896151826">USB ierīces</translation>
 <translation id="6060009363608157444">Nederīgs DnsOverHttps režīms.</translation>
@@ -1373,6 +1380,7 @@
 <translation id="6631202559048444592">Šai politikai ir vairāk nekā viens avots, bet vērtības ir vienādas.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Notīrīt</translation>
+<translation id="6645291930348198241">Piekļūt sīkfailiem un vietnes datiem</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Nav}=1{No 1 vietnes (jūs netiksiet izrakstīts no sava Google konta)}zero{No # vietnēm (jūs netiksiet izrakstīts no sava Google konta)}one{No # vietnes (jūs netiksiet izrakstīts no sava Google konta)}other{No # vietnēm (jūs netiksiet izrakstīts no sava Google konta)}}</translation>
 <translation id="6648459603387803038">Jūsu administrators var attālināti mainīt jūsu pārlūka iestatījumus. Darbību šajā ierīcē var pārvaldīt arī ārpus Chrome.</translation>
 <translation id="6652101503459149953">Izmantot Windows Hello</translation>

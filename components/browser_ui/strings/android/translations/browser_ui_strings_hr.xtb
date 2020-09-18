@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Dodana je web-lokacija <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">Traži</translation>
 <translation id="1384959399684842514">Preuzimanje je pauzirano</translation>
+<translation id="1431402976894535801">Onemogućivanje web-lokacijama da znaju kad ste prisutni</translation>
 <translation id="1446450296470737166">Omogući potpuni nadzor za MIDI</translation>
 <translation id="1509960214886564027">Značajke na mnogim web-lokacijama mogu prestati funkcionirati</translation>
 <translation id="1620510694547887537">Fotoaparat</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">Otvori instant aplikaciju</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="2182457891543959921">Prikaži upit prije omogućivanja web-lokacijama da izrađuju 3D kartu vašeg okruženja i prate položaj kamere (preporučeno)</translation>
+<translation id="2187243482123994665">Korisnikova prisutnost</translation>
 <translation id="2212565012507486665">Dopusti kolačiće</translation>
 <translation id="2228071138934252756">Da bi aplikacija <ph name="APP_NAME" /> mogla pristupiti vašoj kameri, uključite kameru i u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
 <translation id="2289270750774289114">Prikaži upit kad web-lokacija želi tražiti Bluetooth uređaje u blizini (preporučeno)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">Player videozapisa</translation>
 <translation id="3115898365077584848">Prikaži informacije</translation>
 <translation id="3123473560110926937">Blokirano na nekim web-lokacijama</translation>
+<translation id="3165371858310906303">Prikaz upita kad web-lokacija želi znati kad ste prisutni</translation>
 <translation id="3198916472715691905">Pohranjeni podaci: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">Da bi vam aplikacija <ph name="APP_NAME" /> slati obavijesti, uključite obavijesti i u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -133,6 +136,7 @@
 <translation id="5197729504361054390">Kontakti koje odaberete podijelit će se s web-lokacijom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5301954838959518834">U redu, shvaćam</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" /></translation>
 <translation id="5313967007315987356">Dodaj web-lokaciju</translation>
 <translation id="5317780077021120954">Spremi</translation>
 <translation id="5335288049665977812">Web-lokacije mogu pokretati JavaScript (preporučeno)</translation>
@@ -144,6 +148,7 @@
 <translation id="5403592356182871684">Nazivi</translation>
 <translation id="5489227211564503167">Proteklo vrijeme: <ph name="ELAPSED_TIME" /> od <ph name="TOTAL_TIME" /></translation>
 <translation id="5494752089476963479">Blokiraj oglase na web-lokacijama koje prikazuju ometajuće ili obmanjujuće oglase</translation>
+<translation id="5502860503640766021">Odobreno je dopuštenje <ph name="PERMISSION_1" />, a blokirano <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Web-lokacije ne mogu postavljati pitanja o slanju obavijesti</translation>
 <translation id="5516455585884385570">Otvori postavke obavijesti</translation>
 <translation id="5527111080432883924">Traži dopuštenje prije nego što se web-lokacijama dopusti čitanje teksta i slika iz međuspremnika (preporučeno)</translation>
@@ -155,12 +160,15 @@
 <translation id="5690795753582697420">Kamera se isključuje u Androidovim postavkama</translation>
 <translation id="5710871682236653961">Pitati prije dopuštenja slanja i primanja informacija s web-lokacija kad dodirnete NFC uređaje (preporučeno)</translation>
 <translation id="5719847187258001597">Izbrisat će se svi podaci i kolačići koje je spremila web-lokacija <ph name="ORIGIN" /> ili njezina aplikacija na vašem početnom zaslonu.</translation>
+<translation id="5771720122942595109">Blokirano je dopuštenje <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Dozvoljeno</translation>
 <translation id="5860033963881614850">Isključeno</translation>
+<translation id="5863245810240683687">Odobrena su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /></translation>
 <translation id="5876056640971328065">Pauziraj videozapis</translation>
 <translation id="5916664084637901428">Uključi</translation>
 <translation id="5922853908706496913">Dijeljenje zaslona</translation>
 <translation id="5939518447894949180">Ponovno postavi</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Kontrolirajte pristup ove web-lokacije vašem uređaju</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6042308850641462728">Više</translation>
@@ -172,6 +180,7 @@
 <translation id="6196640612572343990">Blokiraj kolačiće trećih strana</translation>
 <translation id="6206551242102657620">Veza je sigurna. Informacije o web-lokaciji</translation>
 <translation id="6216432067784365534">Opcije stavke <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6262279340360821358">Blokirana su dopuštenja <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Web-lokacije mogu postavljati pitanja o slanju obavijesti</translation>
 <translation id="6295158916970320988">Sve web-lokacije</translation>
 <translation id="6320088164292336938">Omogući vibraciju</translation>
@@ -194,6 +203,7 @@
 <translation id="6790428901817661496">Reproduciraj</translation>
 <translation id="6818926723028410516">Odaberite stavke</translation>
 <translation id="6864395892908308021">Ovaj uređaj ne može čitati NFC</translation>
+<translation id="6879016579615558281">Blokirana su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, i još <ph name="NUM_MORE" /></translation>
 <translation id="6910211073230771657">Izbrisano</translation>
 <translation id="6912998170423641340">Blokiraj web-lokacijama čitanje teksta i slika iz međuspremnika</translation>
 <translation id="6945221475159498467">Odaberi</translation>
@@ -211,6 +221,7 @@
 <translation id="723171743924126238">Odaberite slike</translation>
 <translation id="7243308994586599757">Opcije dostupne pri dnu zaslona</translation>
 <translation id="7250468141469952378">Odabrano: <ph name="ITEM_COUNT" /></translation>
+<translation id="7260727271532453612">Odobrena su dopuštenja <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="7302486331832100261">Uglavnom blokirate obavijesti. Da biste ih dopustili, kliknite Pojedinosti.</translation>
 <translation id="7423098979219808738">Prvo pitaj</translation>
 <translation id="7423538860840206698">Blokirano je čitanje međuspremnika</translation>
@@ -242,6 +253,7 @@
 <translation id="8087000398470557479">Sadržaj potječe s domene <ph name="DOMAIN_NAME" />, a omogućuje ga Google.</translation>
 <translation id="8116925261070264013">Bez zvuka</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
+<translation id="8197286292360124385">Odobreno je dopuštenje <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Nastavi</translation>
 <translation id="8206354486702514201">Ovu postavku nametnuo je vaš administrator.</translation>
 <translation id="8249310407154411074">Na vrh</translation>

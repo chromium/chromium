@@ -2632,7 +2632,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4095507791297118304">Birincil ekran</translation>
 <translation id="409579654357498729">Google Cloud Print'e ekle</translation>
 <translation id="4096508467498758490">Geliştirici modu uzantılarını devre dışı bırakın</translation>
-<translation id="4096824249111507322">Güvenli modül hazırlanıyor, lütfen bekleyin (bu işlem birkaç dakika sürebilir)...</translation>
 <translation id="4097406557126260163">Uygulamalar ve uzantılar</translation>
 <translation id="4097560579602855702">Google’da Ara</translation>
 <translation id="4098667039111970300">Araç çubuğunda ekran kalemi araçları</translation>
@@ -3362,7 +3361,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">Yazım denetimi, seçtiğiniz diller için desteklenmiyor</translation>
 <translation id="5052499409147950210">Siteyi düzenle</translation>
-<translation id="5053604404986157245">Rastgele oluşturulmuş TPM şifresi kullanılamıyor. Powerwash sonrasında bu normaldir.</translation>
 <translation id="5057110919553308744">Uzantıyı tıkladığınızda</translation>
 <translation id="5057403786441168405">Oturum açtığınız hesaplarınızı yönetin. Chrome ve Google Play'deki web siteleri, uygulamalar ve uzantılar, izinlere bağlı olarak deneyiminizi özelleştirmek için bu hesapları kullanabilirler. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Oturum açma özelliğini kısıtla</translation>
@@ -3954,7 +3952,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5774295353725270860">Dosyalar uygulamasını aç</translation>
 <translation id="577624874850706961">Çerezlerde ara</translation>
 <translation id="5777468213129569553">Chrome'u aç</translation>
-<translation id="5778747455497889540">Aşağıda bilgisayarınıza atanmış ve rastgele oluşturulmuş güvenli modül şifresini görebilirsiniz:</translation>
 <translation id="5780011244986845107">Seçtiğiniz klasör hassas dosyalar içeriyor. "<ph name="APP_NAME" />" uygulamasına bu klasör için kalıcı okuma erişimi vermek istediğinizden emin misiniz?</translation>
 <translation id="5780973441651030252">Süreç önceliği</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> olarak senkronize et</translation>
@@ -4663,7 +4660,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6635956300022133031">Metin okuma seslerini seçer ve özelleştirir</translation>
 <translation id="6636588250634969791">Devam etmeden önce SIM kartı takın</translation>
 <translation id="6639554308659482635">SQLite belleği</translation>
-<translation id="6641138807883536517">Rastgele oluşturulmuş güvenli modül şifresi kullanılamıyor. Powerwash sonrasında bu normaldir.</translation>
 <translation id="6642720633335369752">Tüm açık pencereleri görmek için düğmeden yukarı kaydırıp basılı tutun.</translation>
 <translation id="664290675870910564">Ağ Seçimi</translation>
 <translation id="6643016212128521049">Temizle</translation>
@@ -4991,7 +4987,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7029307918966275733">Crostini yüklü değil. Kredileri görüntülemek için lütfen Crostini yükleyin.</translation>
 <translation id="7029809446516969842">Şifreler</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Seri bağlantı noktası bağlandı</translation>
-<translation id="7031962166228839643">TPM hazırlanıyor, lütfen bekleyin (bu işlem birkaç dakika sürebilir)...</translation>
 <translation id="7036706669646341689">Linux için <ph name="DISK_SIZE" /> alan olması önerilir. Boş alanı artırmak için cihazdan bazı dosyaları silin.</translation>
 <translation id="7037509989619051237">Önizlenecek metin</translation>
 <translation id="7038632520572155338">Anahtar erişimi</translation>
@@ -5980,7 +5975,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8226222018808695353">Yasak</translation>
 <translation id="8226619461731305576">Sıra</translation>
 <translation id="8226628635270268143">En beğendiğiniz fotoğraf ve albümleri seçin</translation>
-<translation id="8226742006292257240">Aşağıda bilgisayarınıza atanmış ve rastgele oluşturulmuş TPM şifresini görebilirsiniz:</translation>
 <translation id="8227119283605456246">Dosya ekle</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> için şifreniz kaydedilsin mi?</translation>
 <translation id="8230672074305416752">Varsayılan ağ geçidi pinglenemedi</translation>

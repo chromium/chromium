@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
-<translation id="1013149566889033026">एउटा नयाँ इन्कोग्निटो ट्याब खुल्ने छ</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> लाई पठाउँदै...</translation>
 <translation id="103269572468856066">यी साइट तथा एपहरूको डेटा पनि हटाउने हो?</translation>
 <translation id="1036348656032585052">निस्कृय पार्नुहोस्</translation>
@@ -166,6 +165,7 @@
 <translation id="2321086116217818302">पासवर्डहरू निर्यात गर्ने तयारी गरिँदै…</translation>
 <translation id="2321958826496381788">तपाईंले आरामसँग पढ्न सक्दासम्म स्लाइडरलाई तान्नुहोस्। अनुच्छेदमा दोहोरो ट्याप गरेपछि पाठ कम्तीमा पनि यतिको ठुलो देखिनुपर्छ।</translation>
 <translation id="2323763861024343754">साइटको भण्डारण</translation>
+<translation id="2326606747676847821">इन्कग्निटो अवस्थामा जानुहोस्</translation>
 <translation id="2328985652426384049">साइन इन गर्न सकिएन</translation>
 <translation id="234265804618409743">तपाईंको क्यामेरा खोल्न सकिएन। केही चिज गडबड भयो।</translation>
 <translation id="2345671828921229300">कुनै शब्दबारे जानकारी खोज्न त्यसलाई छोइराख्नुहोस्</translation>
@@ -346,7 +346,6 @@
 <translation id="3775705724665058594">आफ्ना यन्त्रहरूमा पठाउनुहोस्</translation>
 <translation id="3778956594442850293">गृह स्क्रिनमा थपियो</translation>
 <translation id="3789841737615482174">स्थापना गर्नुहोस्</translation>
-<translation id="3800748312755064483">केही समयका लागि साइन इन गर्नुहोस्</translation>
 <translation id="3810838688059735925">भिडियो</translation>
 <translation id="3810973564298564668">व्यवस्थित गर्नुहोस्</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोडहरूलाई मेटाइयो</translation>

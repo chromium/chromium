@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">ਸਾਈਟ <ph name="SITE_NAME" /> ਜੋੜੀ ਗਈ</translation>
 <translation id="1383876407941801731">ਖੋਜੋ</translation>
 <translation id="1384959399684842514">ਡਾਊਨਲੋਡ ਰੋਕਿਆ ਗਿਆ</translation>
+<translation id="1431402976894535801">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੀ ਮੌਜੂਦਗੀ ਬਾਰੇ ਜਾਣਨ ਤੋਂ ਰੋਕਣ ਲਈ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="1446450296470737166">MIDI ਡਿਵਾਈਸਾਂ ਦੇ ਪੂਰੇ ਨਿਯੰਤਰਣ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="1509960214886564027">ਸ਼ਾਇਦ ਕਈ ਸਾਈਟਾਂ 'ਤੇ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਠੀਕ ਤਰੀਕੇ ਨਾਲ ਕੰਮ ਨਾ ਕਰਨ</translation>
 <translation id="1620510694547887537">ਕੈਮਰਾ</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">ਤਤਕਾਲ ਐਪ ਖੋਲ੍ਹੋ</translation>
 <translation id="2148716181193084225">ਅੱਜ</translation>
 <translation id="2182457891543959921">ਸਾਈਟਾਂ ਵੱਲੋਂ ਤੁਹਾਡੇ ਆਲੇ-ਦੁਆਲੇ ਦਾ 3D ਨਕਸ਼ਾ ਬਣਾਉਣ ਜਾਂ ਕੈਮਰਾ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦੇਣ ਤੋਂ ਪਹਿਲਾਂ ਪੁੱਛੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
+<translation id="2187243482123994665">ਵਰਤੋਂਕਾਰ ਦੀ ਮੌਜੂਦਗੀ</translation>
 <translation id="2212565012507486665">ਕੁਕੀਜ਼ ਨੂੰ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> ਨੂੰ ਆਪਣੇ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੇਣ ਲਈ, <ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਕੈਮਰਾ ਵੀ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="2289270750774289114">ਕਿਸੇ ਸਾਈਟ ਵੱਲੋਂ ਨਜ਼ਦੀਕੀ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਦਾ ਪਤਾ ਲਗਾਉਣ ਵੇਲੇ ਪੁੱਛੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">ਵੀਡੀਓ ਪਲੇਅਰ</translation>
 <translation id="3115898365077584848">ਜਾਣਕਾਰੀ ਦਿਖਾਓ</translation>
 <translation id="3123473560110926937">ਕੁਝ ਸਾਈਟਾਂ 'ਤੇ ਬਲਾਕ ਕੀਤੇ ਗਏ</translation>
+<translation id="3165371858310906303">ਕਿਸੇ ਸਾਈਟ ਵੱਲੋਂ ਤੁਹਾਡੀ ਮੌਜੂਦਗੀ ਬਾਰੇ ਜਾਣਨ ਵੇਲੇ ਪੁੱਛੋ</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> ਸਟੋਰ ਕੀਤਾ ਡਾਟਾ</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> ਨੂੰ ਤੁਹਾਨੂੰ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਦੇਣ ਲਈ, <ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਸੂਚਨਾਵਾਂ ਵੀ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="3227137524299004712">ਮਾਈਕ੍ਰੋਫੋਨ</translation>
@@ -133,6 +136,7 @@
 <translation id="5197729504361054390">ਤੁਹਾਡੇ ਵੱਲੋਂ ਚੁਣੇ ਸੰਪਰਕ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ਨਾਲ ਸਾਂਝੇ ਕੀਤੇ ਜਾਣਗੇ।</translation>
 <translation id="5300589172476337783">ਦਿਖਾਓ</translation>
 <translation id="5301954838959518834">ਠੀਕ, ਸਮਝ ਲਿਆ</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ</translation>
 <translation id="5313967007315987356">ਸਾਈਟ ਜੋੜੋ</translation>
 <translation id="5317780077021120954">ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5335288049665977812">ਸਾਈਟਾਂ ਨੂੰ JavaScript ਚਲਾਉਣ ਦੀ ਆਗਿਆ ਦਿਓ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
@@ -144,6 +148,7 @@
 <translation id="5403592356182871684">ਨਾਮ</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> ਵਿੱਚੋਂ ਬੀਤਿਆ ਸਮਾਂ <ph name="ELAPSED_TIME" />।</translation>
 <translation id="5494752089476963479">ਉਹਨਾਂ ਸਾਈਟਾਂ 'ਤੇ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਬਲਾਕ ਕਰੋ, ਜੋ ਦਖਲਅੰਦਾਜ਼ੀ ਅਤੇ ਗੁਮਰਾਹ ਕਰਨ ਵਾਲੇ ਵਿਗਿਆਪਨ ਦਿਖਾਉਂਦੀਆਂ ਹਨ</translation>
+<translation id="5502860503640766021"><ph name="PERMISSION_1" /> ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ, <ph name="PERMISSION_2" /> ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5505264765875738116">ਸਾਈਟਾਂ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਲਈ ਪੁੱਛ ਨਹੀਂ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="5516455585884385570">ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="5527111080432883924">ਸਾਈਟਾਂ ਨੂੰ ਕਲਿੱਪਬੋਰਡ ਤੋਂ ਲਿਖਤ ਪੜ੍ਹਨ ਅਤੇ ਚਿੱਤਰ ਦੇਖਣ ਦੇਣ ਤੋਂ ਪਹਿਲਾਂ ਪੁੱਛੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
@@ -155,12 +160,15 @@
 <translation id="5690795753582697420">Android ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਕੈਮਰਾ ਬੰਦ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
 <translation id="5710871682236653961">ਤੁਹਾਡੇ ਵੱਲੋਂ NFC ਡੀਵਾਈਸਾਂ 'ਤੇ ਟੈਪ ਕਰਨ ਵੇਲੇ ਸਾਈਟਾਂ 'ਤੇ ਜਾਣਕਾਰੀ ਭੇਜਣ ਅਤੇ ਪ੍ਰਾਪਤ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਪੁੱਛੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="5719847187258001597">ਇੰਝ ਕਰਨ ਨਾਲ ਤੁਹਾਡੀ ਹੋਮ ਸਕ੍ਰੀਨ 'ਤੇ <ph name="ORIGIN" /> ਜਾਂ ਉਸਦੀ ਐਪ ਵੱਲੋਂ ਸਟੋਰ ਕੀਤੇ ਸਾਰੇ ਡਾਟੇ ਅਤੇ ਕੁਕੀਜ਼ ਨੂੰ ਕਲੀਅਰ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
+<translation id="5771720122942595109"><ph name="PERMISSION_1" /> ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5804241973901381774">ਅਨੁਮਤੀਆਂ</translation>
 <translation id="5860033963881614850">ਬੰਦ ਕਰੋ</translation>
+<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="5876056640971328065">ਵੀਡੀਓ ਰੋਕੋ</translation>
 <translation id="5916664084637901428">ਚਾਲੂ</translation>
 <translation id="5922853908706496913">ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਸਾਂਝੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="5939518447894949180">ਰੀਸੈਟ ਕਰੋ</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">ਆਪਣੇ ਡੀਵਾਈਸ ਤੱਕ ਇਸ ਸਾਈਟ ਦੀ ਪਹੁੰਚ ਨੂੰ ਕੰਟਰੋਲ ਕਰੋ</translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
 <translation id="6042308850641462728">ਹੋਰ</translation>
@@ -172,6 +180,7 @@
 <translation id="6196640612572343990">ਤੀਜੀ-ਧਿਰ ਵਾਲੀਆਂ ਕੁੱਕੀਜ਼ ਨੂੰ ਬਲੌਕ ਕਰੋ</translation>
 <translation id="6206551242102657620">ਕਨੈਕਸ਼ਨ ਸੁਰੱਖਿਅਤ ਹੈ। ਸਾਈਟ ਜਾਣਕਾਰੀ</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> ਵਿਕਲਪ</translation>
+<translation id="6262279340360821358"><ph name="PERMISSION_1" /> ਅਤੇ <ph name="PERMISSION_2" /> ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6270391203985052864">ਸਾਈਟਾਂ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="6295158916970320988">ਸਾਰੀਆਂ ਸਾਈਟਾਂ</translation>
 <translation id="6320088164292336938">ਵਾਈਬ੍ਰੇਟ ਕਰੋ</translation>
@@ -194,6 +203,7 @@
 <translation id="6790428901817661496">ਪਲੇ ਕਰੋ</translation>
 <translation id="6818926723028410516">ਆਈਟਮਾਂ ਚੁਣੋ</translation>
 <translation id="6864395892908308021">ਇਹ ਡੀਵਾਈਸ NFC ਨੂੰ ਨਹੀਂ ਪੜ੍ਹ ਸਕਦਾ</translation>
+<translation id="6879016579615558281"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6910211073230771657">ਮਿਟਾਇਆ ਗਿਆ</translation>
 <translation id="6912998170423641340">ਸਾਈਟਾਂ ਨੂੰ ਕਲਿੱਪਬੋਰਡ ਤੋਂ ਲਿਖਤ ਪੜ੍ਹਨ ਅਤੇ ਚਿੱਤਰ ਦੇਖਣ ਤੋਂ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="6945221475159498467">ਚੁਣੋ</translation>
@@ -211,6 +221,7 @@
 <translation id="723171743924126238">ਚਿੱਤਰ ਚੁਣੋ</translation>
 <translation id="7243308994586599757">ਵਿਕਲਪ ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਲੇ ਪਾਸੇ ਦੇ ਕੋਲ ਉਪਲਬਧ ਹਨ</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ</translation>
+<translation id="7260727271532453612"><ph name="PERMISSION_1" /> ਅਤੇ <ph name="PERMISSION_2" /> ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="7302486331832100261">ਆਮ ਤੌਰ 'ਤੇ ਤੁਸੀਂ ਸੂਚਨਾਵਾਂ ਨੂੰ ਬਲਾਕ ਕਰਦੇ ਹੋ। ਇਜਾਜ਼ਤ ਦੇਣ ਲਈ, ਵੇਰਵਿਆਂ 'ਤੇ ਟੈਪ ਕਰੋ।</translation>
 <translation id="7423098979219808738">ਪਹਿਲਾਂ ਪੁੱਛੋ</translation>
 <translation id="7423538860840206698">ਕਲਿੱਪਬੋਰਡ ਪੜ੍ਹਨ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
@@ -242,6 +253,7 @@
 <translation id="8087000398470557479">ਇਸ ਸਮੱਗਰੀ <ph name="DOMAIN_NAME" /> ਵੱਲੋਂ ਹੈ, ਜਿਸਨੂੰ Google ਡਿਲੀਵਰ ਕਰਦਾ ਹੈ।</translation>
 <translation id="8116925261070264013">ਮਿਊਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8131740175452115882">ਪੁਸ਼ਟੀ ਕਰੋ</translation>
+<translation id="8197286292360124385"><ph name="PERMISSION_1" /> ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="8200772114523450471">ਦੁਬਾਰਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="8206354486702514201">ਇਹ ਸੈਟਿੰਗ ਤੁਹਾਡੇ ਪ੍ਰਬੰਧਕ ਵੱਲੋਂ ਲਾਗੂ ਕੀਤੀ ਗਈ ਹੈ।</translation>
 <translation id="8249310407154411074">ਸਿਖਰ 'ਤੇ ਲੈ ਜਾਓ</translation>

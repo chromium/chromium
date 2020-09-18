@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
-<translation id="1013149566889033026">புதிய மறைநிலைத் தாவல் திறக்கப்படும்</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> சாதனத்திற்கு அனுப்புகிறது...</translation>
 <translation id="103269572468856066">இந்தத் தளங்கள் &amp; ஆப்ஸிலிருந்தும் தரவை அழிக்க வேண்டுமா?</translation>
 <translation id="1036348656032585052">முடக்கு</translation>
@@ -166,6 +165,7 @@
 <translation id="2321086116217818302">கடவுச்சொற்கள் தயாராகின்றன…</translation>
 <translation id="2321958826496381788">இதை வசதியாக படிப்பதற்கு, ஸ்லைடரை இழுக்கவும். பத்தியில் இரு முறை தட்டிய பிறகு, உரையானது குறைந்தது இந்த அளவு பெரியதாக தோன்ற வேண்டும்.</translation>
 <translation id="2323763861024343754">தளச் சேமிப்பகம்</translation>
+<translation id="2326606747676847821">மறைநிலைக்குச் செல்</translation>
 <translation id="2328985652426384049">உள்நுழைய முடியவில்லை</translation>
 <translation id="234265804618409743">கேமராவைத் திறக்க முடியவில்லை. ஏதோ தவறாகிவிட்டது.</translation>
 <translation id="2345671828921229300">தேட, சொல்லைத் தொட்டுப் பிடிக்கவும்</translation>
@@ -346,7 +346,6 @@
 <translation id="3775705724665058594">உங்கள் சாதனங்களுக்கு அனுப்புதல்</translation>
 <translation id="3778956594442850293">முகப்புத் திரையில் சேர்க்கப்பட்டது</translation>
 <translation id="3789841737615482174">நிறுவுக</translation>
-<translation id="3800748312755064483">தற்காலிகமாக உள்நுழைக</translation>
 <translation id="3810838688059735925">வீடியோ</translation>
 <translation id="3810973564298564668">நிர்வகி</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> பதிவிறக்கங்கள் உள்ளன</translation>
@@ -677,6 +676,7 @@
 <translation id="6341580099087024258">கோப்புகளை எங்கே சேமிக்க வேண்டும் என்று கேள்</translation>
 <translation id="6342069812937806050">இப்போது</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> முகவரி}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> முகவரிகள்}}</translation>
+<translation id="6345878117466430440">படித்ததாகக் குறி</translation>
 <translation id="6364438453358674297">வரலாற்றிலிருந்து பரிந்துரையை அகற்றவா?</translation>
 <translation id="6366047038980456022">ஆன்லைனில் நீங்கள் பாதுகாப்பாகச் செயல்படவும் உருவாக்கவும் உலாவவும் தேவையான கருவிகளையும் வேகத்தையும் <ph name="APP_NAME" /> கொண்டுள்ளது</translation>
 <translation id="6378173571450987352">விவரங்கள்: பயன்படுத்திய டேட்டா அளவின்படி வரிசைப்படுத்தப்பட்டுள்ளன</translation>
@@ -992,6 +992,7 @@
 <translation id="8655129584991699539">Chrome அமைப்புகளில் தரவை அழிக்கலாம்</translation>
 <translation id="8662811608048051533">பெரும்பாலான தளங்களிலிருந்து உங்களை வெளியேற்றும்.</translation>
 <translation id="8664979001105139458">கோப்புப் பெயர் ஏற்கனவே உள்ளது</translation>
+<translation id="8683039184091909753">படம்</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{சிக்னல் வலிமையின் அளவு: # கோடு}other{சிக்னல் வலிமையின் அளவு: # கோடுகள்}}</translation>
 <translation id="869891660844655955">காலாவதியாகும் தேதி</translation>
 <translation id="8712637175834984815">புரிந்தது</translation>

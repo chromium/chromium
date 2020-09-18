@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Wi-Fi tarmog‘iga qayta ulanish</translation>
 <translation id="1165039591588034296">Xatolik</translation>
 <translation id="1165174597379888365">Sahifa ochilishi</translation>
+<translation id="1174723505405632867"><ph name="EMBEDDED_URL" /> sayti <ph name="TOP_LEVEL_URL" /> cookie-fayllari va sayt maʼlumotlaridan foydalanishiga ruxsat berilsinmi?
+
+Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sahifalardagi kontent xatosiz ishlashi mumkin, lekin <ph name="EMBEDDED_URL" /> harakatlaringizni kuzatishiga ruxsat beradi.</translation>
 <translation id="1175364870820465910">&amp;Chop etish...</translation>
 <translation id="1175875016430184367">Oʻngdan 3 marta steplerlash</translation>
 <translation id="1178581264944972037">Pauza</translation>
@@ -308,6 +311,7 @@
 <translation id="2181821976797666341">Qoidalar</translation>
 <translation id="2183608646556468874">Telefon raqami</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 ta manzil}other{# ta manzil}}</translation>
+<translation id="2187243482123994665">Foydalanuvchining faolligi</translation>
 <translation id="2187317261103489799">Aniqlansin (standart parametr)</translation>
 <translation id="2188375229972301266">Quyidan bir nechta teshik ochish</translation>
 <translation id="2202020181578195191">Muddati tugaydigan yilni xatosiz kiriting</translation>
@@ -530,6 +534,7 @@
 <translation id="3174168572213147020">Orol</translation>
 <translation id="3176929007561373547">Proksi sozlamalarini tekshiring yoki administratordan kerakli parametrlarni so‘rang. Aks holda:
 <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> sayti qachon faol boʻlishingizni bilmoqchi</translation>
 <translation id="3188393374551744535">Hisob balansi</translation>
 <translation id="3194737229810486521"><ph name="URL" /> saytidan ma’lumotlarni mobil qurilmangizda doimiy saqlashga ruxsat so‘rovi keldi</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> – <ph name="SERVER_NAME" /></translation>
@@ -1020,6 +1025,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Mahalliy kompyuter</translation>
 <translation id="5179510805599951267">Bu <ph name="ORIGINAL_LANGUAGE" /> tili emasmi? Xatolik haqida xabar yuboring</translation>
+<translation id="5179740473595559246">Qachon faol boʻlishingiz haqida xabar berish</translation>
 <translation id="5190835502935405962">Xatcho‘plar paneli</translation>
 <translation id="519422657042045905">Annotatsiya qilish imkonsiz.</translation>
 <translation id="5201306358585911203">Amalni tasdiqlang</translation>
@@ -1242,6 +1248,7 @@
 <translation id="6049488691372270142">Sahifa yetkazib berilishi</translation>
 <translation id="6051221802930200923"><ph name="SITE" /> sayti ochilmadi, bu sayt taqilgan sertifikatdan foydalanayotgan bo‘lishi mumkin. Bunday xatolik tarmoq xatoligi va saytga hujumlar bo‘layotganda yuz beradi, lekin keyinroq sayt ishlab ketishi mumkin.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Faolligining haqida axborot berishni xohlaysizmi?</translation>
 <translation id="6058977677006700226">Kartalaringiz barcha qurilmalaringizda ishlatilsinmi?</translation>
 <translation id="6059925163896151826">USB qurilmalar</translation>
 <translation id="6060009363608157444">Yaroqsiz DnsOverHttps rejimi.</translation>
@@ -1370,6 +1377,7 @@
 <translation id="6631202559048444592">Parametr bir nechta manbaga ega, lekin qiymatlar bir xil kiritilgan.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Tozalash</translation>
+<translation id="6645291930348198241">Cookie-fayllari va boshqa sayt maʼlumotlariga ruxsat.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Hech qanday}=1{1 ta saytdan (Google hisobingizdan chiqmaysiz)}other{# ta saytdan (Google hisobingizdan chiqmaysiz)}}</translation>
 <translation id="6648459603387803038">Adminitratoringiz brauzerni masofadan sozlashi mumkin. Bu qurilmadagi amallar Chrome tashqarisidan boshqarilishi mumkin.</translation>
 <translation id="6652101503459149953">Windows Hello ishlatish</translation>

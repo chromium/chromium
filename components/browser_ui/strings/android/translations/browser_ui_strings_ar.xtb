@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">تمت إضافة الموقع <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">البحث</translation>
 <translation id="1384959399684842514">تم إيقاف التنزيل مؤقتًا</translation>
+<translation id="1431402976894535801">منع المواقع الإلكترونية من معرفة وقت نشاطك على الجهاز</translation>
 <translation id="1446450296470737166">‏السماح بالتحكم الكامل لأجهزة MIDI</translation>
 <translation id="1509960214886564027">قد تتوقف الميزات عن العمل في العديد من المواقع الإلكترونية.</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">فتح تطبيق فوري</translation>
 <translation id="2148716181193084225">اليوم</translation>
 <translation id="2182457891543959921">طلب الإذن قبل السماح لموقع إلكتروني بإنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك أو تتبُّع موضع الكاميرا (مقترَح)</translation>
+<translation id="2187243482123994665">حضور المستخدم</translation>
 <translation id="2212565012507486665">السماح بملفات تعريف الارتباط</translation>
 <translation id="2228071138934252756">‏للسماح لتطبيق <ph name="APP_NAME" /> بالوصول إلى الكاميرا، يُرجى أيضًا تفعيل الكاميرا في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="2289270750774289114">طلب الإذن عند محاولة موقع إلكتروني العثور على أجهزة البلوتوث المجاورة (إجراء موصَى به)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">مشغّل الفيديو</translation>
 <translation id="3115898365077584848">عرض المعلومات</translation>
 <translation id="3123473560110926937">حظر الإعلانات في بعض المواقع</translation>
+<translation id="3165371858310906303">طلب الإذن عند محاولة موقع إلكتروني معرفة وقت نشاطك على الجهاز</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> من البيانات المخزّنة</translation>
 <translation id="321187648315454507">‏للسماح لتطبيق <ph name="APP_NAME" /> بإرسال الإشعارات إليك، يُرجى أيضًا تفعيل الإشعارات في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">الميكروفون</translation>
@@ -133,6 +136,7 @@
 <translation id="5197729504361054390">ستتم مشاركة جهات الاتصال التي تختارها مع الموقع الإلكتروني <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">عرض</translation>
 <translation id="5301954838959518834">حسنًا</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر</translation>
 <translation id="5313967007315987356">إضافة موقع إلكتروني</translation>
 <translation id="5317780077021120954">حفظ</translation>
 <translation id="5335288049665977812">‏السماح للمواقع الإلكترونية بتشغيل JavaScript (موصى به)</translation>
@@ -144,6 +148,7 @@
 <translation id="5403592356182871684">الأسماء</translation>
 <translation id="5489227211564503167">الوقت المنقضي <ph name="ELAPSED_TIME" /> من <ph name="TOTAL_TIME" /></translation>
 <translation id="5494752089476963479">حظر الإعلانات في المواقع الإلكترونية التي تعرض إعلانات مضلِّلة أو غير مرغوب فيها</translation>
+<translation id="5502860503640766021">تم منح <ph name="PERMISSION_1" /> وحظر <ph name="PERMISSION_2" />.</translation>
 <translation id="5505264765875738116">منع المواقع الإلكترونية من طلب إرسال إشعارات</translation>
 <translation id="5516455585884385570">فتح إعدادات الإشعارات</translation>
 <translation id="5527111080432883924">السؤال أولاً قبل السماح للمواقع الإلكترونية بقراءة النصوص والصور من الحافظة (موصى به)</translation>
@@ -155,12 +160,15 @@
 <translation id="5690795753582697420">‏تم إيقاف الكاميرا في إعدادات Android.</translation>
 <translation id="5710871682236653961">‏السؤال قبل السماح للمواقع الإلكترونية بإرسال المعلومات وتلقّيها عند النقر على أجهزة NFC (مستحسن)</translation>
 <translation id="5719847187258001597">سيؤدي هذا الإجراء إلى محو جميع البيانات وملفات تعريف الارتباط المُخزّنة من خلال <ph name="ORIGIN" /> أو من خلال التطبيق على الشاشة الرئيسية.</translation>
+<translation id="5771720122942595109">تم حظر <ph name="PERMISSION_1" />.</translation>
 <translation id="5804241973901381774">الأذونات</translation>
 <translation id="5860033963881614850">غير مفعّل</translation>
+<translation id="5863245810240683687">تم منح أذونات <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.</translation>
 <translation id="5876056640971328065">إيقاف الفيديو مؤقتًا</translation>
 <translation id="5916664084637901428">مفعّل</translation>
 <translation id="5922853908706496913">جارٍ مشاركة شاشتك</translation>
 <translation id="5939518447894949180">إعادة الضبط</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">يمكنك التحكّم بإمكانية وصول هذا الموقع إلى جهازك.</translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="6042308850641462728">عرض المزيد</translation>
@@ -172,6 +180,7 @@
 <translation id="6196640612572343990">حظر ملفات تعريف الارتباط للجهات الخارجية</translation>
 <translation id="6206551242102657620">يُعدُّ اتصالك آمنًا. معلومات الموقع الإلكتروني</translation>
 <translation id="6216432067784365534">خيارات <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6262279340360821358">تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" />.</translation>
 <translation id="6270391203985052864">السماح للمواقع الإلكترونية بطلب إرسال إشعارات</translation>
 <translation id="6295158916970320988">جميع المواقع</translation>
 <translation id="6320088164292336938">اهتزاز</translation>
@@ -194,6 +203,7 @@
 <translation id="6790428901817661496">التشغيل</translation>
 <translation id="6818926723028410516">اختيار عناصر</translation>
 <translation id="6864395892908308021">‏يتعذّر على هذا الجهاز قراءة NFC.</translation>
+<translation id="6879016579615558281">تم حظر <ph name="PERMISSION_1" />، و<ph name="PERMISSION_2" />، و<ph name="NUM_MORE" /> إذن آخر.</translation>
 <translation id="6910211073230771657">تم الحذف</translation>
 <translation id="6912998170423641340">حظر المواقع الإلكترونية من قراءة الصور والنصوص من الحافظة</translation>
 <translation id="6945221475159498467">تحديد</translation>
@@ -211,6 +221,7 @@
 <translation id="723171743924126238">اختيار الصور</translation>
 <translation id="7243308994586599757">الخيارات المتاحة بالقرب من الجزء السفلي من الشاشة</translation>
 <translation id="7250468141469952378">تم اختيار <ph name="ITEM_COUNT" /> عنصراً</translation>
+<translation id="7260727271532453612">تم منح <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" />.</translation>
 <translation id="7302486331832100261">أنت تحظر الإشعارات عادةً. للسماح بها، يُرجى النقر على "التفاصيل".</translation>
 <translation id="7423098979219808738">السؤال أولاً</translation>
 <translation id="7423538860840206698">تم الحظر من قراءة الحافظة</translation>
@@ -242,6 +253,7 @@
 <translation id="8087000398470557479">‏هذا المحتوى من <ph name="DOMAIN_NAME" />، وتم عرضه من قبل Google.</translation>
 <translation id="8116925261070264013">المواقع الإلكترونية التي تم كتم الصوت فيها</translation>
 <translation id="8131740175452115882">التأكيد</translation>
+<translation id="8197286292360124385">تم منح الإذن <ph name="PERMISSION_1" />.</translation>
 <translation id="8200772114523450471">استئناف</translation>
 <translation id="8206354486702514201">تم فرض هذا الإعداد بواسطة المشرف.</translation>
 <translation id="8249310407154411074">نقل إلى الأعلى</translation>

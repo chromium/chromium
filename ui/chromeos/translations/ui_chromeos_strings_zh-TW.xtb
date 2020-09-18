@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">基於安全理由，你無法存取檔案。</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">正在壓縮 <ph name="NUMBER_OF_ITEMS" /> 個項目...</translation>
+<translation id="1731889557567069540">已複製 <ph name="NUMBER_OF_ITEMS" /> 個項目。</translation>
 <translation id="174173592514158117">顯示所有 Play 資料夾</translation>
 <translation id="174937106936716857">檔案總數</translation>
 <translation id="1775381402323441512">影片資訊</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">無效的字元：<ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">越南文鍵盤 (TCVN)</translation>
 <translation id="2168214441502403371">波斯文鍵盤</translation>
+<translation id="2197363559908958454">已移動 <ph name="NUMBER_OF_ITEMS" />。</translation>
 <translation id="2198315389084035571">簡體中文</translation>
 <translation id="2208158072373999562">Zip 封存</translation>
 <translation id="2225536596944493418">你確定要刪除 <ph name="NUMBER_OF_ITEMS" /> 個項目嗎？</translation>
 <translation id="2230062665678605299">無法建立資料夾「<ph name="FOLDER_NAME" />」。<ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">已移動。</translation>
 <translation id="2278988676849463018">坎那達文鍵盤 (拼音)</translation>
 <translation id="2288278176040912387">唱機</translation>
 <translation id="2291538123825441971">正在開啟 <ph name="NUMBER_OF_FILES" /> 個檔案。</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">所有檔案都已備份！</translation>
 <translation id="3626281679859535460">亮度</translation>
 <translation id="3644896802912593514">寬度</translation>
+<translation id="3645233063072417428">已移動 <ph name="NUMBER_OF_ITEMS" /> 個項目。</translation>
 <translation id="3645531960514756307">取消固定資料夾</translation>
 <translation id="3678559383040232393">馬爾他文鍵盤</translation>
 <translation id="3685122418104378273">使用行動數據時，Google 雲端硬碟同步功能預設為停用。</translation>
@@ -395,6 +399,7 @@
     無論裝置發生任何狀況，您的檔案都安全存放於 Google 雲端硬碟。<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />檔案集中存放，<ph name="MARKUP_8" />
     方便共用、建立檔案並與他人協同合作。<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">已複製。</translation>
 <translation id="5275973617553375938">從 Google 雲端硬碟還原檔案</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">儲存</translation>
@@ -751,6 +756,7 @@
 <translation id="943972244133411984">修改者</translation>
 <translation id="945522503751344254">提供意見</translation>
 <translation id="947144732524271678">已選取「<ph name="FROM_ENTRY_NAME" />」至「<ph name="TO_ENTRY_NAME" />」範圍內的 <ph name="ENTRY_COUNT" /> 個項目。</translation>
+<translation id="949308258121608615">已複製 <ph name="NUMBER_OF_ITEMS" />。</translation>
 <translation id="981121421437150478">離線</translation>
 <translation id="988685240266037636">名稱為「<ph name="FILE_NAME" />」的檔案已經存在，你要取代這個檔案嗎？</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

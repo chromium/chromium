@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">A(z) <ph name="SITE_NAME" /> webhely hozzáadva</translation>
 <translation id="1383876407941801731">Keresés</translation>
 <translation id="1384959399684842514">A letöltés szünetel</translation>
+<translation id="1431402976894535801">A webhelyek nem kaphatnak információt arról, hogy Ön mikor van jelen</translation>
 <translation id="1446450296470737166">MIDI-eszközök teljes vezérlése</translation>
 <translation id="1509960214886564027">Számos webhelyen nem működnek a funkciók</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">Azonnali alkalmazás megnyitása</translation>
 <translation id="2148716181193084225">Ma</translation>
 <translation id="2182457891543959921">Kérdezzen rá, mielőtt engedélyezi a webhelyek számára 3D-s térkép létrehozását az Ön környezetéről, valamint a kamera pozíciójának követését (ajánlott)</translation>
+<translation id="2187243482123994665">Felhasználói jelenlét</translation>
 <translation id="2212565012507486665">Cookie-k engedélyezése</translation>
 <translation id="2228071138934252756">Ahhoz, hogy a(z) <ph name="APP_NAME" /> hozzáférhessen a kamerához, a kamerát az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
 <translation id="2289270750774289114">Kérdezzen rá, ha valamelyik webhely szeretné felfedezni a közeli Bluetooth-eszközöket (ajánlott)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">Videólejátszó</translation>
 <translation id="3115898365077584848">Információk megjelenítése</translation>
 <translation id="3123473560110926937">Letiltva egyes webhelyeken</translation>
+<translation id="3165371858310906303">Kérdezzen rá, amikor egy webhely tudni szeretné, hogy Ön mikor van jelen</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> tárolt adat</translation>
 <translation id="321187648315454507">Ahhoz, hogy a(z) <ph name="APP_NAME" /> értesítéseket küldhessen, az értesítéseket az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -133,6 +136,7 @@
 <translation id="5197729504361054390">A kiválasztott névjegyeket megosztjuk a következő webhellyel: <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Megjelenítés</translation>
 <translation id="5301954838959518834">Rendben, értem</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" /></translation>
 <translation id="5313967007315987356">Webhely hozzáadása</translation>
 <translation id="5317780077021120954">Mentés</translation>
 <translation id="5335288049665977812">Engedélyezze a webhelyek számára a JavaScript futtatását (ajánlott)</translation>
@@ -144,6 +148,7 @@
 <translation id="5403592356182871684">Nevek</translation>
 <translation id="5489227211564503167">Eltelt idő: <ph name="ELAPSED_TIME" />, ennyiből: <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Hirdetések letiltása a tolakodó és félrevezető hirdetéseket megjelenítő webhelyeken</translation>
+<translation id="5502860503640766021"><ph name="PERMISSION_1" /> engedélyezve, <ph name="PERMISSION_2" /> letiltva</translation>
 <translation id="5505264765875738116">A webhelyek nem kérdezhetnek rá, hogy küldjenek-e Önnek értesítéseket</translation>
 <translation id="5516455585884385570">Értesítési beállítások megnyitása</translation>
 <translation id="5527111080432883924">Kérdezzen rá, mielőtt engedélyezi a webhelyeknek, hogy megtekintsék a vágólapon található szövegeket és képeket (ajánlott)</translation>
@@ -155,12 +160,15 @@
 <translation id="5690795753582697420">A kamera ki van kapcsolva az Android-beállítások között</translation>
 <translation id="5710871682236653961">Kérdezzen rá, mielőtt engedélyezi a webhelyek számára az adatok küldését és fogadását, amikor NFC-eszközökre koppint (javasolt)</translation>
 <translation id="5719847187258001597">Ezzel törli a(z) <ph name="ORIGIN" /> vagy az alkalmazása által tárolt összes adatot és cookie-t a kezdőképernyőn.</translation>
+<translation id="5771720122942595109"><ph name="PERMISSION_1" /> letiltva</translation>
 <translation id="5804241973901381774">Engedélyek</translation>
 <translation id="5860033963881614850">Kikapcsolva</translation>
+<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" /> engedélyezve</translation>
 <translation id="5876056640971328065">Videó szüneteltetése</translation>
 <translation id="5916664084637901428">Be</translation>
 <translation id="5922853908706496913">Képernyő megosztása</translation>
 <translation id="5939518447894949180">Visszaállítás</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">A webhelynek az eszközhöz való hozzáférésének vezérlése</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6042308850641462728">Továbbiak</translation>
@@ -172,6 +180,7 @@
 <translation id="6196640612572343990">Harmadik féltől származó cookie-k letiltása</translation>
 <translation id="6206551242102657620">A kapcsolat biztonságos. Webhelyadatok</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> – lehetőségek</translation>
+<translation id="6262279340360821358"><ph name="PERMISSION_1" /> és <ph name="PERMISSION_2" /> letiltva</translation>
 <translation id="6270391203985052864">A webhelyek rákérdezhetnek, hogy küldjenek-e Önnek értesítéseket</translation>
 <translation id="6295158916970320988">Az összes webhely</translation>
 <translation id="6320088164292336938">Rezgés</translation>
@@ -194,6 +203,7 @@
 <translation id="6790428901817661496">Lejátszás</translation>
 <translation id="6818926723028410516">Válasszon elemeket</translation>
 <translation id="6864395892908308021">Ez az eszköz nem képes az NFC-alapú kommunikáció olvasására</translation>
+<translation id="6879016579615558281"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" /> letiltva</translation>
 <translation id="6910211073230771657">Törölve</translation>
 <translation id="6912998170423641340">A vágólapon található szövegek és képek megtekintésének letiltása a webhelyek számára</translation>
 <translation id="6945221475159498467">Kiválasztás</translation>
@@ -211,6 +221,7 @@
 <translation id="723171743924126238">Képek kiválasztása</translation>
 <translation id="7243308994586599757">A beállítások a képernyő alsó részén találhatók</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> elem kiválasztva</translation>
+<translation id="7260727271532453612"><ph name="PERMISSION_1" /> és <ph name="PERMISSION_2" /> engedélyezve</translation>
 <translation id="7302486331832100261">Ön általában letiltja az értesítéseket. Az engedélyezéshez koppintson a Részletek elemre.</translation>
 <translation id="7423098979219808738">Kérdezzen rá</translation>
 <translation id="7423538860840206698">Le van tiltva a vágólap megtekintése</translation>
@@ -242,6 +253,7 @@
 <translation id="8087000398470557479">Ez a Google által megjelenített tartalom a(z) <ph name="DOMAIN_NAME" /> domainről származik.</translation>
 <translation id="8116925261070264013">Némítva</translation>
 <translation id="8131740175452115882">Megerősítés</translation>
+<translation id="8197286292360124385"><ph name="PERMISSION_1" /> engedélyezve</translation>
 <translation id="8200772114523450471">Folytatás</translation>
 <translation id="8206354486702514201">Ezt a beállítást rendszergazdája lépteti életbe.</translation>
 <translation id="8249310407154411074">Mozgatás az elejére</translation>

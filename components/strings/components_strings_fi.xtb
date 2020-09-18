@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Muodosta yhteys Wi-Fi-verkkoon uudelleen.</translation>
 <translation id="1165039591588034296">Virhe</translation>
 <translation id="1165174597379888365">Sivulla on käyty</translation>
+<translation id="1174723505405632867">Haluatko, että <ph name="EMBEDDED_URL" /> saa käyttää evästeitä ja sivustodataa (<ph name="TOP_LEVEL_URL" />)?
+
+Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän, käyttämäsi sisältö toimii oikein mutta <ph name="EMBEDDED_URL" /> voi saada seurata toimintaasi.</translation>
 <translation id="1175364870820465910">Tulo&amp;sta...</translation>
 <translation id="1175875016430184367">Kolme niittiä oikealla</translation>
 <translation id="1178581264944972037">Tauko</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Käytännöt</translation>
 <translation id="2183608646556468874">Puhelinnumero</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 osoite}other{# osoitetta}}</translation>
+<translation id="2187243482123994665">Käyttäjän paikallaolo</translation>
 <translation id="2187317261103489799">Tunnista (oletus)</translation>
 <translation id="2188375229972301266">Useita reikiä alareunassa</translation>
 <translation id="2202020181578195191">Anna kelvollinen viimeinen voimassaolovuosi.</translation>
@@ -534,6 +538,7 @@
       käytössä:
 
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> haluaa tietää, kun olet paikalla</translation>
 <translation id="3188393374551744535">Tilin saldo</translation>
 <translation id="3194737229810486521"><ph name="URL" /> haluaa tallentaa tietoja pysyvästi laitteellesi.</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" />, palvelin: <ph name="SERVER_NAME" /></translation>
@@ -1026,6 +1031,7 @@
 <translation id="5171689220826475070">European Fanfold</translation>
 <translation id="5172758083709347301">Kaikki tietokoneen käyttäjät</translation>
 <translation id="5179510805599951267">Eikö kieli ole <ph name="ORIGINAL_LANGUAGE" />? Ilmoita virheestä</translation>
+<translation id="5179740473595559246">tietää, kun olet paikalla</translation>
 <translation id="5190835502935405962">Kirjanmerkkipalkki</translation>
 <translation id="519422657042045905">Merkintää ei saatavilla</translation>
 <translation id="5201306358585911203">Viesti tälle sivulle upotetulta sivulta</translation>
@@ -1248,6 +1254,7 @@
 <translation id="6049488691372270142">Sivun toimitus</translation>
 <translation id="6051221802930200923"><ph name="SITE" /> ei juuri nyt ole käytettävissä, koska se käyttää varmenteiden kiinnittämistä. Verkkovirheet ja hyökkäykset ovat yleensä väliaikaisia, joten sivu luultavasti toimii myöhemmin.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Jaetaanko paikallaolosi?</translation>
 <translation id="6058977677006700226">Haluatko käyttää kortteja kaikilla laitteillasi?</translation>
 <translation id="6059925163896151826">USB-laitteet</translation>
 <translation id="6060009363608157444">Virheellinen DnsOverHttps-tila</translation>
@@ -1377,6 +1384,7 @@
 <translation id="6631202559048444592">Käytännölle on useita lähteitä, mutta arvot ovat samat.</translation>
 <translation id="663260587451432563">JIS B4 (257 mm x 364 mm)</translation>
 <translation id="6643016212128521049">Tyhjennä</translation>
+<translation id="6645291930348198241">päästä evästeisiin ja sivustodataan.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Ei mitään}=1{1 sivustolta (sinua ei kirjata ulos Google-tililtäsi)}other{# sivustolta (sinua ei kirjata ulos Google-tililtäsi)}}</translation>
 <translation id="6648459603387803038">Järjestelmänvalvoja voi muuttaa selaimen määrityksiä etäyhteydellä. Toimintaa tällä laitteella saatetaan ylläpitää myös Chromen ulkopuolelta.</translation>
 <translation id="6652101503459149953">Käytä Windows Hellota</translation>

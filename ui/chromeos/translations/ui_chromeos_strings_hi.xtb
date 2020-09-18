@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">सुरक्षा कारणों से फ़ाइल तक नहीं पहुंचा जा सका.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> आइटम ज़िप किए जा रहे हैं...</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> आइटम कॉपी किए गए.</translation>
 <translation id="174173592514158117">Play के सभी फ़ोल्डर दिखाएं</translation>
 <translation id="174937106936716857">फ़ाइलों की कुल संख्या</translation>
 <translation id="1775381402323441512">वीडियो की जानकारी</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">अमान्य वर्ण : <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">वियतनामी कीबोर्ड (TCVN)</translation>
 <translation id="2168214441502403371">पारसी कीबोर्ड</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> को भेज दिया गया.</translation>
 <translation id="2198315389084035571">सरलीकृत चीनी</translation>
 <translation id="2208158072373999562">ज़िप संग्रह</translation>
 <translation id="2225536596944493418">क्या आप वाकई <ph name="NUMBER_OF_ITEMS" /> आइटम मिटाना चाहते हैं?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" फ़ोल्डर बनाने में असमर्थ. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">भेज दिया गया.</translation>
 <translation id="2278988676849463018">कन्नड़ कीबोर्ड (फ़ोनेटिक)</translation>
 <translation id="2288278176040912387">रिकॉर्ड प्‍लेयर</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> फ़ाइलें खुल रही हैं.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">सभी का बैक अप लिया गया!</translation>
 <translation id="3626281679859535460">स्क्रीन की रोशनी</translation>
 <translation id="3644896802912593514">चौड़ाई</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> आइटम भेजे गए.</translation>
 <translation id="3645531960514756307">फ़ोल्डर को अनपिन करें</translation>
 <translation id="3678559383040232393">माल्‍टीज़ कीबोर्ड</translation>
 <translation id="3685122418104378273">मोबाइल डेटा का उपयोग करते समय, Google डिस्‍क समन्‍वयन डिफ़ॉल्‍ट रूप से अक्षम रहता है.</translation>
@@ -395,6 +399,7 @@
     चाहे आपके डिवाइस को कुछ भी हो जाए, आपकी फ़ाइलें Google डिस्क में सुरक्षित रूप से स्टोर रहती हैं.<ph name="MARKUP_6" />
     दूसरे लोगों के साथ एक ही स्थान पर फ़ाइलें
 <ph name="MARKUP_7" />शेयर करें, बनाएं और सहयोग करें<ph name="MARKUP_8" />.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">कॉपी किया गया.</translation>
 <translation id="5275973617553375938">Google डिस्क से पुनर्प्राप्त की गई फ़ाइलें</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">सेव करें</translation>
@@ -751,6 +756,7 @@
 <translation id="943972244133411984">बदलाव करने वाले</translation>
 <translation id="945522503751344254">फ़ीडबैक भेजें</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> से <ph name="TO_ENTRY_NAME" /> तक की <ph name="ENTRY_COUNT" /> एंट्री को चुना गया.</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> को कॉपी किया गया.</translation>
 <translation id="981121421437150478">ऑफ़लाइन</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" की एक फ़ाइल पहले से मौजूद है. क्या आप उसे बदलना चाहते हैं?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> एमबी</translation>

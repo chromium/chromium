@@ -2632,7 +2632,6 @@
 <translation id="4095507791297118304">การแสดงผลหลัก</translation>
 <translation id="409579654357498729">เพิ่มไปยัง Cloud Print</translation>
 <translation id="4096508467498758490">ปิดส่วนขยายโหมดนักพัฒนาซอฟต์แวร์</translation>
-<translation id="4096824249111507322">กำลังจัดเตรียมโมดูลความปลอดภัย โปรดรอสักครู่ (ขั้นตอนนี้อาจใช้เวลา 2-3 นาที)...</translation>
 <translation id="4097406557126260163">แอปและส่วนขยาย</translation>
 <translation id="4097560579602855702">ค้นหาใน Google</translation>
 <translation id="4098667039111970300">เครื่องมือสไตลัสในแถบเครื่องมือ</translation>
@@ -3362,7 +3361,6 @@
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">การตรวจตัวสะกดไม่รองรับภาษาที่คุณเลือก</translation>
 <translation id="5052499409147950210">แก้ไขเว็บไซต์</translation>
-<translation id="5053604404986157245">รหัสผ่าน TPM ที่สร้างแบบสุ่มไม่พร้อมใช้งาน เหตุการณ์นี้เป็นเรื่องปกติหลังจากการ Powerwash</translation>
 <translation id="5057110919553308744">เมื่อคุณคลิกส่วนขยาย</translation>
 <translation id="5057403786441168405">จัดการบัญชีที่ลงชื่อเข้าใช้ เว็บไซต์ แอป และส่วนขยายใน Chrome และ Google Play อาจใช้บัญชีเหล่านี้เพื่อปรับแต่งประสบการณ์การใช้งานของคุณ ทั้งนี้ขึ้นอยู่กับสิทธิ์ต่างๆ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">จำกัดการลงชื่อเข้าใช้</translation>
@@ -3953,7 +3951,6 @@
 <translation id="5774295353725270860">เปิดแอปพลิเคชันไฟล์</translation>
 <translation id="577624874850706961">ค้นหาคุกกี้</translation>
 <translation id="5777468213129569553">เปิด Chrome</translation>
-<translation id="5778747455497889540">ด้านล่างนี้คือรหัสผ่านโมดูลความปลอดภัยที่สร้างขึ้นโดยการสุ่มและได้รับการกำหนดให้กับคอมพิวเตอร์ของคุณ:</translation>
 <translation id="5780011244986845107">โฟลเดอร์ที่คุณเลือกมีไฟล์ที่ละเอียดอ่อน แน่ใจไหมว่าต้องการให้สิทธิ์การเข้าถึงในการอ่านโฟลเดอร์นี้อย่างถาวรแก่ "<ph name="APP_NAME" />"</translation>
 <translation id="5780973441651030252">ลำดับความสำคัญของกระบวนการ</translation>
 <translation id="5781092003150880845">ซิงค์จาก <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4662,7 +4659,6 @@
 <translation id="6635956300022133031">เลือกและปรับแต่งเสียงของการอ่านออกเสียงข้อความ</translation>
 <translation id="6636588250634969791">ใส่ซิมก่อนดำเนินการต่อ</translation>
 <translation id="6639554308659482635">หน่วยความจำ SQLite</translation>
-<translation id="6641138807883536517">รหัสผ่านโมดูลที่สร้างแบบสุ่มไม่พร้อมใช้งาน เหตุการณ์นี้เป็นเรื่องปกติหลังจากการ Powerwash</translation>
 <translation id="6642720633335369752">หากต้องการดูหน้าต่างแอปที่เปิดอยู่ทั้งหมด ให้เลื่อนขึ้นจากด้านล่างแล้วค้างไว้</translation>
 <translation id="664290675870910564">การเลือกเครือข่าย</translation>
 <translation id="6643016212128521049">ล้าง</translation>
@@ -4990,7 +4986,6 @@
 <translation id="7029307918966275733">ไม่ได้ติดตั้ง Crostini โปรดติดตั้ง Crostini เพื่อดูเครดิต</translation>
 <translation id="7029809446516969842">รหัสผ่าน</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - เชื่อมต่อพอร์ตอนุกรมอยู่</translation>
-<translation id="7031962166228839643">TPM กำลังได้รับการจัดเตรียม โปรดรอสักครู่ (การดำเนินการนี้อาจใช้เวลาสองถึงสามนาที)...</translation>
 <translation id="7036706669646341689">ขอแนะนำให้เตรียมพื้นที่ว่าง <ph name="DISK_SIZE" /> สำหรับ Linux หากต้องการเพิ่มพื้นที่ว่าง ให้ลบไฟล์ออกจากอุปกรณ์</translation>
 <translation id="7037509989619051237">ข้อความที่จะแสดงตัวอย่าง</translation>
 <translation id="7038632520572155338">การเข้าถึงด้วยสวิตช์</translation>
@@ -5980,7 +5975,6 @@
 <translation id="8226222018808695353">ต้องห้าม</translation>
 <translation id="8226619461731305576">คิว</translation>
 <translation id="8226628635270268143">เลือกรูปภาพและอัลบั้มที่ชื่นชอบ</translation>
-<translation id="8226742006292257240">ด้านล่างนี้คือรหัสผ่าน TPM ที่สร้างขึ้นโดยการสุ่มและได้รับการกำหนดให้กับคอมพิวเตอร์ของคุณ:</translation>
 <translation id="8227119283605456246">แนบไฟล์</translation>
 <translation id="8230134520748321204">บันทึกรหัสผ่านสำหรับ <ph name="ORIGIN" /> ไหม</translation>
 <translation id="8230672074305416752">ใช้คำสั่ง ping กับเกตเวย์เครือข่ายเริ่มต้นไม่สำเร็จ</translation>

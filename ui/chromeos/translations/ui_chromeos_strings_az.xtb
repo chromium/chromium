@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Fayl təhlükəsizlik məqsədilə əldə edilə bilməz.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> element sıxılır...</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> element kopyalanıb.</translation>
 <translation id="174173592514158117">Bütün Play qovluqlarını göstərin</translation>
 <translation id="174937106936716857">Ümumi fayl sayı</translation>
 <translation id="1775381402323441512">Video məlumatı</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Yanlış simvol: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Vyetnam klaviaturası (TCVN)</translation>
 <translation id="2168214441502403371">Fars klaviaturası</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> köçürülüb.</translation>
 <translation id="2198315389084035571">Sadələşmiş Çin</translation>
 <translation id="2208158072373999562">Zip arxivi</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> elementi silmək istədiyinizə əminsiniz?</translation>
 <translation id="2230062665678605299">Qovluq yaratmaq alınmadı "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Köçürülüb.</translation>
 <translation id="2278988676849463018">Kannada klaviaturası (fonetik)</translation>
 <translation id="2288278176040912387">Rekord oyunçu</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> fayl açılır.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Hamısı yedəklənib!</translation>
 <translation id="3626281679859535460">İşıqlanma dərəcəsi</translation>
 <translation id="3644896802912593514">En</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> element köçürüldü</translation>
 <translation id="3645531960514756307">Qovluğu paneldən çıxarın</translation>
 <translation id="3678559383040232393">Malta klaviaturası</translation>
 <translation id="3685122418104378273">Mobil data istifadə edərkən Google Disk sinxronizasiyası defolt olaraq deaktiv edilib.</translation>
@@ -395,6 +399,7 @@
     Cihazınıza nə baş verdiyindən asılı olmayaraq, fayllarınız Google Diskdə təhlükəsiz şəkildə saxlanılır.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Bir məkandan başqaları ilə faylları<ph name="MARKUP_8" />
     paylaşın, yaradın əməkdaşlıq edin.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Kopyalanıb.</translation>
 <translation id="5275973617553375938">Google Diskdən bərpa edilmiş fayllar</translation>
 <translation id="5317780077021120954">Yadda saxlayın</translation>
 <translation id="5318819489018851358">Linux ilə paylaşın</translation>
@@ -748,6 +753,7 @@
 <translation id="943972244133411984">Düzəliş edib:</translation>
 <translation id="945522503751344254">Geri əlaqə göndərin</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> - <ph name="TO_ENTRY_NAME" /> aralığında <ph name="ENTRY_COUNT" /> fayl seçildi.</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> kopyalanıb.</translation>
 <translation id="981121421437150478">Oflayn</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" adlı qovluq artıq mövcuddur. Onu əvəz etmək istəyirsiniz?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

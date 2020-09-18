@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">वाई-फ़ाई से फिर से कनेक्ट करें</translation>
 <translation id="1165039591588034296">गड़बड़ी</translation>
 <translation id="1165174597379888365">पेज को देखा जा चुका है</translation>
+<translation id="1174723505405632867">क्या आप <ph name="EMBEDDED_URL" /> काे <ph name="TOP_LEVEL_URL" /> पर कुकी और साइट के डेटा का इस्तेमाल करने की अनुमति देना चाहते हैं?
+
+ऐसा न करने पर, आपकी निजता सेटिंग के मुताबिक इस पर राेक लगा दी जाएगी. यह उस कॉन्टेंट को सही ढंग से काम करने की अनुमति देगा जिससे आपने इंटरैक्ट किया है. हालांकि, इससे <ph name="EMBEDDED_URL" /> आपकी गतिविधि ट्रैक कर सकती है.</translation>
 <translation id="1175364870820465910">&amp;प्रिंट करें...</translation>
 <translation id="1175875016430184367">दाईं ओर ट्रिपल स्टेपल</translation>
 <translation id="1178581264944972037">रोकें</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">नीतियां</translation>
 <translation id="2183608646556468874">फ़ोन नंबर</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 पता}one{# पते}other{# पते}}</translation>
+<translation id="2187243482123994665">उपयोगकर्ता की मौजूदगी</translation>
 <translation id="2187317261103489799">पता लगाएं (डिफ़ॉल्ट)</translation>
 <translation id="2188375229972301266">नीचे की ओर एक से ज़्यादा पंच</translation>
 <translation id="2202020181578195191">खत्म होने का मान्य वर्ष डालें</translation>
@@ -530,6 +534,7 @@
 <translation id="3176929007561373547">यह पक्का करने के लिए कि प्रॉक्सी सर्वर काम कर रहा है,
       अपनी प्रॉक्सी सेटिंग जांचें या अपने नेटवर्क एडमिन से संपर्क करें. अगर आपको नहीं लगता       कि आपको किसी प्रॉक्सी सर्वर का उपयोग करना चाहिए:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> जानना चाहती है कि आप डिवाइस का इस्तेमाल कब करते हैं</translation>
 <translation id="3188393374551744535">खाते में बाकी बैलेंस</translation>
 <translation id="3194737229810486521"><ph name="URL" /> आपके डिवाइस पर हमेशा के लिए डेटा संग्रहीत करना चाहता है</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> पर <ph name="PRINTER_NAME" /></translation>
@@ -1022,6 +1027,7 @@
 <translation id="5171689220826475070">फ़ैनफ़ोल्ड-यूरोपियन</translation>
 <translation id="5172758083709347301">मशीन</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> में नहीं है? इस गड़बड़ी की रिपोर्ट करें</translation>
+<translation id="5179740473595559246">आप डिवाइस का इस्तेमाल कब करते हैं</translation>
 <translation id="5190835502935405962">बुकमार्क बार</translation>
 <translation id="519422657042045905">व्याख्या की सुविधा उपलब्ध नहीं है</translation>
 <translation id="5201306358585911203">इस पेज पर एम्बेड किए गए पेज का कहना है कि</translation>
@@ -1244,6 +1250,7 @@
 <translation id="6049488691372270142">पेज डिलीवरी</translation>
 <translation id="6051221802930200923">आप इस समय <ph name="SITE" /> पर नहीं जा सकते क्योंकि वेबसाइट, प्रमाणपत्र पिनिंग का उपयोग करती है. नेटवर्क की गड़बड़ियां और हमले आमतौर पर कुछ समय के लिए होते हैं इसलिए यह पेज शायद बाद में ठीक से काम करेगा.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">क्या आप इस वेबसाइट को बताना चाहते हैं कि आप डिवाइस का इस्तेमाल कब करते हैं?</translation>
 <translation id="6058977677006700226">क्या आप अपने कार्ड का इस्तेमाल सभी डिवाइस पर करना चाहते हैं?</translation>
 <translation id="6059925163896151826">USB डिवाइस</translation>
 <translation id="6060009363608157444">अमान्य DnsOverHttps मोड.</translation>
@@ -1373,6 +1380,7 @@
 <translation id="6631202559048444592">इस नीति के लिए एक से ज़्यादा स्रोत मौजूद हैं, लेकिन इनके मान एक जैसे हैं.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">साफ़ करें</translation>
+<translation id="6645291930348198241">कुकी और साइट के डेटा को ऐक्सेस करना चाहती है.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{कोई नहीं}=1{1 साइट से (आप अपने Google खाते से साइन आउट नहीं होंगे)}one{# साइटों से (आप अपने Google खाते से साइन आउट नहीं होंगे)}other{# साइटों से (आप अपने Google खाते से साइन आउट नहीं होंगे)}}</translation>
 <translation id="6648459603387803038">आपका एडमिन किसी दूसरे डिवाइस से आपके ब्राउज़र का सेट अप बदल सकता है. इस डिवाइस की गतिविधि को Chrome से बाहर भी प्रबंधित किया जा सकता है.</translation>
 <translation id="6652101503459149953">Windows Hello का इस्तेमाल करें</translation>

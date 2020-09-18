@@ -374,6 +374,7 @@
 <translation id="143027896309062157">قراءة جميع بياناتك وتغييرها على جهاز الكمبيوتر، ومواقع الويب التي تزورها</translation>
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1431188203598586230">التحديث الأخير للبرنامج</translation>
+<translation id="1431402976894535801">منع المواقع الإلكترونية من معرفة وقت نشاطك على الجهاز</translation>
 <translation id="1431432486300429272">‏قد تستخدم Google سجلّ التصفُّح لتخصيص "البحث" وخدمات Google أخرى. ويمكنك أنت أو أحد والدَيك تغيير هذا الإعداد في أي وقت على myaccount.google.com/activitycontrols/search.</translation>
 <translation id="1432581352905426595">إدارة محركات البحث</translation>
 <translation id="1433811987160647649">السؤال قبل الوصول</translation>
@@ -570,6 +571,7 @@
 <translation id="1651008383952180276">يجب إدخال عبارة المرور نفسها مرتين</translation>
 <translation id="1652326691684645429">تفعيل ميزة "المشاركة عن قرب"</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{‏إضافة طابعة إلى الطباعة السحابية من Google حتى تتمكن من الطباعة من أي مكان.}zero{‏إضافة # من الطابعات إلى الطباعة السحابية من Google حتى تتمكن من الطباعة من أي مكان.}two{‏إضافة طابعتين (#) إلى الطباعة السحابية من Google حتى تتمكن من الطباعة من أي مكان.}few{‏إضافة # طابعات إلى الطباعة السحابية من Google حتى تتمكن من الطباعة من أي مكان.}many{‏إضافة # طابعة إلى الطباعة السحابية من Google حتى تتمكن من الطباعة من أي مكان.}other{‏إضافة # من الطابعات إلى الطباعة السحابية من Google حتى تتمكن من الطباعة من أي مكان.}}</translation>
+<translation id="1653575510930452864">نسخ رابط للنص</translation>
 <translation id="1656528038316521561">درجة تعتيم الخلفية</translation>
 <translation id="1657406563541664238">‏المساعدة في تحسين <ph name="PRODUCT_NAME" /> بإرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا</translation>
 <translation id="1657937299377480641">لإعادة تسجيل الدخول من أجل الوصول إلى موارد تعليمية، عليك طلب الإذن من أحد الوالدَين.</translation>
@@ -1003,6 +1005,7 @@
 <translation id="2178614541317717477">‏اختراق المرجع المصدق (CA)</translation>
 <translation id="2182058453334755893">تم النسخ إلى الحافظة.</translation>
 <translation id="2184515124301515068">‏السماح لمتصفِّح Chrome باختيار الوقت الذي يمكن للمواقع الإلكترونية تشغيل الصوت فيه (مُوصى به)</translation>
+<translation id="2187243482123994665">حضور المستخدم</translation>
 <translation id="2187675480456493911">تمت مزامنة الشبكة مع الأجهزة الأخرى المرتبطة بحسابك. ولن تتم مزامنة الإعدادات التي عدَّلها المستخدمون. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">خط استيراد شهادة الخادم</translation>
 <translation id="2187906491731510095">تم تحديث الإضافات.</translation>
@@ -1830,6 +1833,7 @@
 <translation id="3163201441334626963">المنتج غير معروف <ph name="PRODUCT_ID" /> من المورّد‬ <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">تساعد هذه الخدمات في الحفاظ على أمان بياناتك وسلامتها. ويمكنك إيقاف هذه الميزات في أيّ وقت.</translation>
 <translation id="3164329792803560526">مشاركة علامة التبويب هذه مع <ph name="APP_NAME" /></translation>
+<translation id="3165371858310906303">طلب الإذن عند محاولة موقع إلكتروني معرفة وقت نشاطك على الجهاز</translation>
 <translation id="3165390001037658081">قد يحظر بعض مشغلي شبكات الجوّال هذه الميزة.</translation>
 <translation id="316652501498554287">‏حسابات "G Suite للتعليم"</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2625,7 +2629,6 @@
 <translation id="4095507791297118304">شاشة أساسية</translation>
 <translation id="409579654357498729">إضافة إلى الطباعة السحابية</translation>
 <translation id="4096508467498758490">إيقاف إضافات وضع مطور البرامج</translation>
-<translation id="4096824249111507322">يتم حاليًا تحضيرالوحدة الآمنة، يُرجى الانتظار (قد يستغرق ذلك بضع دقائق)...</translation>
 <translation id="4097406557126260163">التطبيقات والإضافات</translation>
 <translation id="4097560579602855702">‏البحث في Google</translation>
 <translation id="4098667039111970300">أدوات قلم الشاشة في شريط الأدوات</translation>
@@ -2944,6 +2947,7 @@
 <translation id="4527186207340858212">هل تريد إنشاء ملف شخصي جديد للعمل؟</translation>
 <translation id="452750746583162491">مراجعة البيانات المتزامنة</translation>
 <translation id="4530494379350999373">الأصل</translation>
+<translation id="4531924570968473143">من الشخص الذي تريد إضافته إلى جهاز <ph name="DEVICE_TYPE" />؟</translation>
 <translation id="4532646538815530781">تم السماح للموقع الإلكتروني هذا باستخدام مستشعرات الحركة.</translation>
 <translation id="4533846798469727141">‏الآن، يُرجى قول "Ok Google"</translation>
 <translation id="4533985347672295764">وقت وحدة المعالجة المركزية</translation>
@@ -3354,7 +3358,6 @@
 <translation id="5050330054928994520">‏تحويل النص إلى كلام (TTS)</translation>
 <translation id="5051836348807686060">لا تتوفر ميزة التدقيق الإملائي للغات التي اخترتها.</translation>
 <translation id="5052499409147950210">تعديل موقع إلكتروني</translation>
-<translation id="5053604404986157245">‏كلمة مرور TPM التي تم إنشاؤها عشوائيًا غير متوفرة. هذا أمر عادي بعد إجراء Powerwash.</translation>
 <translation id="5057110919553308744">عند النقر على "الإضافة"</translation>
 <translation id="5057403786441168405">‏يمكنك إدارة حساباتك التي سجّلت الدخول إليها. وبناءً على الأذونات، قد تستخدم المواقع الإلكترونية والتطبيقات والإضافات في Chrome وGoogle Play هذه الحسابات لتخصيص تجربتك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">حظر تسجيل الدخول على مستخدمين محددين</translation>
@@ -3946,7 +3949,6 @@
 <translation id="5774295353725270860">فتح تطبيق الملفات</translation>
 <translation id="577624874850706961">ملفات تعريف ارتباط البحث</translation>
 <translation id="5777468213129569553">‏افتح Chrome</translation>
-<translation id="5778747455497889540">في ما يلي كلمة مرور الوحدة الآمنة التي تم إنشاؤها عشوائيًا والتي تم تعيينها للكمبيوتر:</translation>
 <translation id="5780011244986845107">يتضمَّن المجلَّد الذي اخترته ملفات حساسة. هل تريد بالتأكيد منح "<ph name="APP_NAME" />" الوصول الدائم للقراءة في هذا المجلَّد؟</translation>
 <translation id="5780973441651030252">أولوية المعالجة</translation>
 <translation id="5781092003150880845">المزامنة باسم <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -3976,6 +3978,7 @@
 <translation id="5804241973901381774">الأذونات</translation>
 <translation id="5805697420284793859">مدير النوافذ</translation>
 <translation id="5806773519584576205">0 درجة (تلقائي)</translation>
+<translation id="5808664694611589238">{0,plural, =1{إغلاق جميع النوافذ في وضع "الضيف"}zero{إغلاق جميع النوافذ في وضع "الضيف"}two{إغلاق جميع النوافذ في وضع "الضيف"}few{إغلاق جميع النوافذ في وضع "الضيف"}many{إغلاق جميع النوافذ في وضع "الضيف"}other{إغلاق جميع النوافذ في وضع "الضيف"}}</translation>
 <translation id="5810809306422959727">هذا الحساب غير مؤهّل لاستخدام أدوات الرقابة الأبوية</translation>
 <translation id="5812674658566766066">توسيع الكل</translation>
 <translation id="5814126672212206791">نوع الاتصال</translation>
@@ -4434,6 +4437,7 @@
 <translation id="6344170822609224263">قائمة الدخول لاتصالات الشبكة</translation>
 <translation id="6344576354370880196">الطابعات المحفوظة</translation>
 <translation id="6345418402353744910">يطلب الخادم الوكيل <ph name="PROXY" /> اسم المستخدم وكلمة المرور الخاصَّين بك حتى يتمكّن المشرف من إعداد الشبكة.</translation>
+<translation id="6345878117466430440">وضع علامة "مقروءة"</translation>
 <translation id="6349101878882523185">تثبيت <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">المزامنة لا تعمل. جرّب الخروج وتسجيل الدخول مرة أخرى.</translation>
 <translation id="6351063337294363751">يمكنك محو بيانات التصفح من هذه القائمة</translation>
@@ -4654,7 +4658,6 @@
 <translation id="6635956300022133031">اختيار إعدادات الصوت في ميزة تحويل النص إلى كلام وتخصيصها</translation>
 <translation id="6636588250634969791">‏يُرجى إدخال شريحة SIM قبل المتابعة.</translation>
 <translation id="6639554308659482635">‏ذاكرة SQLite</translation>
-<translation id="6641138807883536517">‏كلمة مرور الوحدة الآمنة التي تم إنشاؤها عشوائيًا غير متاحة. ويعد ذلك أمرًا عاديًا بعد إجراء Powerwash.</translation>
 <translation id="6642720633335369752">للاطّلاع على جميع نوافذ التطبيق المفتوحة، ما عليك سوى التمرير سريعًا من الأسفل إلى الأعلى مع الاستمرار.</translation>
 <translation id="664290675870910564">اختيار الشبكة</translation>
 <translation id="6643016212128521049">محو</translation>
@@ -4982,7 +4985,6 @@
 <translation id="7029307918966275733">‏نظام التشغيل Crostini غير مثبّت. يُرجى تثبيت نظام التشغيل Crostini لعرض أسماء المساهمين.</translation>
 <translation id="7029809446516969842">كلمات المرور</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - تم ربط المنفذ التسلسلي</translation>
-<translation id="7031962166228839643">‏يتم حاليًا تحضير TPM، يرجى الانتظار (قد يستغرق ذلك بضع دقائق)...</translation>
 <translation id="7036706669646341689">‏يُنصَح بتوفير <ph name="DISK_SIZE" /> من المساحة لنظام التشغيل Linux. ولزيادة المساحة الخالية، يجب حذف ملفات من جهازك.</translation>
 <translation id="7037509989619051237">نص للمعاينة</translation>
 <translation id="7038632520572155338">الوصول عبر مفتاح التحويل</translation>
@@ -5176,6 +5178,7 @@
 <translation id="7280649757394340890">إعدادات الصوت في ميزة تحويل النص إلى كلام</translation>
 <translation id="7280877790564589615">تمّ طلب إذن</translation>
 <translation id="7282992757463864530">شريط المعلومات</translation>
+<translation id="7284411326658527427">يمكن لكل شخص تخصيص حسابه والحفاظ على خصوصية بياناته.</translation>
 <translation id="7287143125007575591">تم رفض الدخول</translation>
 <translation id="7287411021188441799">استعادة الخلفية التلقائية</translation>
 <translation id="7288013116963835700">‏إزالة Linux من <ph name="DEVICE_TYPE" /></translation>
@@ -5752,6 +5755,7 @@
 <translation id="7963826112438303517">‏يستخدم "مساعد Google" هذه التسجيلات والطلبات المنطوقة لإنشاء نموذج صوتي وتحديثه، حيث يتم تخزينه فقط في أجهزة تُفعِّل Voice Match. يمكن عرض نشاط الصوت في إعدادات "مساعد Google" أو إعادة ضبطه.</translation>
 <translation id="7966241909927244760">&amp;نسخ عنوان الصورة</translation>
 <translation id="7968072247663421402">خيارات مقدِّم الخدمة</translation>
+<translation id="7968198493605442410">نسخ رابط للنص</translation>
 <translation id="7968742106503422125">قراءة وتعديل البيانات التي يتم نسخها ولصقها</translation>
 <translation id="7968833647796919681">تفعيل جمع بيانات عن مستوى الأداء</translation>
 <translation id="7968982339740310781">عرض التفاصيل</translation>
@@ -5970,7 +5974,6 @@
 <translation id="8226222018808695353">محظور </translation>
 <translation id="8226619461731305576">اللائحة</translation>
 <translation id="8226628635270268143">اختيار صورك وألبوماتك المفضَّلة</translation>
-<translation id="8226742006292257240">‏في ما يلي كلمة مرور TPM التي تم إنشاؤها عشوائيًا والتي تم تخصيصها للكمبيوتر:</translation>
 <translation id="8227119283605456246">إرفاق ملف</translation>
 <translation id="8230134520748321204">هل تريد حفظ كلمة المرور لـ <ph name="ORIGIN" />؟</translation>
 <translation id="8230672074305416752">تعذَّر فحص اتصال بوابة الشبكة التلقائية.</translation>

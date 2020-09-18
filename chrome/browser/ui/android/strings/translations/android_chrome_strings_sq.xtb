@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
-<translation id="1013149566889033026">Do të hapet një skedë e re "e fshehtë"</translation>
 <translation id="1028699632127661925">Po dërgohet te <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Të pastrohen edhe të dhënat nga këto sajte dhe aplikacione?</translation>
 <translation id="1036348656032585052">Çaktivizo</translation>
@@ -166,6 +165,7 @@ Trokit te një fjalë për të kërkuar. Për ta përsosur kërkimin, preke dhe 
 <translation id="2321086116217818302">Po përgatit fjalëkalimet…</translation>
 <translation id="2321958826496381788">Zvarrit rrëshqitësin derisa të arrish ta lexosh këtë pa u munduar. Teksti duhet të duket të paktën kaq i madh pas trokitjes dy herë mbi një paragraf.</translation>
 <translation id="2323763861024343754">Hapësira ruajtëse e sajtit</translation>
+<translation id="2326606747676847821">Kalo në shfletimin e fshehtë</translation>
 <translation id="2328985652426384049">Nuk mund të identifikohet</translation>
 <translation id="234265804618409743">Kamera nuk mund të hapet. Ndodhi një gabim.</translation>
 <translation id="2345671828921229300">Për të kërkuar, mbaj shtypur një fjalë</translation>
@@ -346,7 +346,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3775705724665058594">Dërgo te pajisjet e tua</translation>
 <translation id="3778956594442850293">U shtua në ekranin bazë</translation>
 <translation id="3789841737615482174">Instalo</translation>
-<translation id="3800748312755064483">Identifikohu përkohësisht</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Menaxho</translation>
 <translation id="3819178904835489326">U fshinë <ph name="NUMBER_OF_DOWNLOADS" /> shkarkime</translation>
@@ -387,7 +386,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="4135200667068010335">Lista e pajisjeve për të ndarë një skedë është e mbyllur.</translation>
 <translation id="4149994727733219643">Pamje e thjeshtuar për faqet e uebit</translation>
 <translation id="4170011742729630528">Shërbimi nuk ofrohet. Provo përsëri më vonë.</translation>
-<translation id="4175173967354304331">Do të identifikohesh në këtë sajt, Chrome dhe aplikacionet e Google</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> të përdorura</translation>
 <translation id="4181841719683918333">Gjuhët</translation>
 <translation id="4183868528246477015">Kërko me "Lenten e Google" <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>

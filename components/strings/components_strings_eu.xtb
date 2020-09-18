@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Wifi-sarera berriro konektatu.</translation>
 <translation id="1165039591588034296">Errorea</translation>
 <translation id="1165174597379888365">Orri bat bisitatu da</translation>
+<translation id="1174723505405632867"><ph name="TOP_LEVEL_URL" /> webguneko cookieak eta datuak erabiltzeko baimena eman nahi diozu <ph name="EMBEDDED_URL" /> webguneari?
+
+Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin, erabili duzun edukiak behar bezala funtzionatuko du, baina baliteke <ph name="EMBEDDED_URL" /> webguneak zure jardueren jarraipena egin ahal izatea.</translation>
 <translation id="1175364870820465910">In&amp;primatu…</translation>
 <translation id="1175875016430184367">Hiru grapa eskuinean</translation>
 <translation id="1178581264944972037">Pausatu</translation>
@@ -305,6 +308,7 @@
 <translation id="2181821976797666341">Gidalerroak</translation>
 <translation id="2183608646556468874">Telefono-zenbakia</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 helbide}other{# helbide}}</translation>
+<translation id="2187243482123994665">Erabiltzailearen presentzia</translation>
 <translation id="2187317261103489799">Hauteman (lehenetsia)</translation>
 <translation id="2188375229972301266">Hainbat zulo behean</translation>
 <translation id="2202020181578195191">Idatzi balio duen iraungitze-urte bat</translation>
@@ -524,6 +528,7 @@
 <translation id="3169472444629675720">Ezagutu</translation>
 <translation id="3174168572213147020">Uhartea</translation>
 <translation id="3176929007561373547">Egiaztatu proxy-ezarpenak edo jarri sarearen administratzailearekin harremanetan proxy-zerbitzaria badabilela ziurtatzeko. Proxy-zerbitzaririk erabili beharko ez zenukeela uste baduzu: <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> webguneak presente noiz zauden jakin nahi du</translation>
 <translation id="3188393374551744535">Kontuaren saldoa</translation>
 <translation id="3194737229810486521"><ph name="URL" /> webguneak datuak gorde nahi ditu gailuan modu iraunkorrean</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> zerbitzariko <ph name="PRINTER_NAME" /> inprimagailua</translation>
@@ -1010,6 +1015,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Gailua</translation>
 <translation id="5179510805599951267">Hizkuntza ez al da <ph name="ORIGINAL_LANGUAGE" />? Eman errorearen berri</translation>
+<translation id="5179740473595559246">Presente noiz zauden jakin</translation>
 <translation id="5190835502935405962">Laster-marken barra</translation>
 <translation id="519422657042045905">Oharpena ez dago erabilgarri</translation>
 <translation id="5201306358585911203">Orriko orri kapsulatu batek hau dio:</translation>
@@ -1232,6 +1238,7 @@
 <translation id="6049488691372270142">Orrien entrega</translation>
 <translation id="6051221802930200923">Une honetan ezin zara joan <ph name="SITE" /> webgunera, ziurtagiri-ainguratzea baitarabil. Sareko erroreak eta erasoak aldi baterakoak izan ohi dira; beraz, geroago funtzionatuko du orriak, segur aski.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Presentzia partekatu nahi duzu?</translation>
 <translation id="6058977677006700226">Gailu guztietan erabili nahi dituzu txartelak?</translation>
 <translation id="6059925163896151826">USB bidezko ailuak</translation>
 <translation id="6060009363608157444">DnsOverHttps moduak ez du balio.</translation>
@@ -1360,6 +1367,7 @@
 <translation id="6631202559048444592">Gidalerroak iturburu bat baino gehiago ditu, baina balio berberekin.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Garbitu</translation>
+<translation id="6645291930348198241">Cookieak eta webgunearen datuak atzitu.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Bat ere ez}=1{1 gune (ez da amaituko Google-ko kontuko saioa)}other{# gune (ez da amaituko Google-ko kontuko saioa)}}</translation>
 <translation id="6648459603387803038">Administratzaileak urrunetik alda dezake arakatzailearen konfigurazioa. Baliteke gailu honetako jarduerak Chrome-tik kanpo ere kudeatzea.</translation>
 <translation id="6652101503459149953">Erabili Windows Hello</translation>

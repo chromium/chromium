@@ -374,6 +374,7 @@
 <translation id="143027896309062157">Citește și modifică toate datele de pe computer și de pe site-urile pe care le accesezi</translation>
 <translation id="1430915738399379752">Printează</translation>
 <translation id="1431188203598586230">Actualizare de software finală</translation>
+<translation id="1431402976894535801">Împiedică site-urile să-ți detecteze prezența</translation>
 <translation id="1431432486300429272">Google poate folosi istoricul de navigare pentru a personaliza Căutarea și alte servicii Google. Tu sau părintele tău puteți modifica oricând această opțiune la myaccount.google.com/activitycontrols/search</translation>
 <translation id="1432581352905426595">Gestionați motoarele de căutare</translation>
 <translation id="1433811987160647649">Solicită permisiunea înainte de accesare</translation>
@@ -570,6 +571,7 @@
 <translation id="1651008383952180276">Trebuie să introduci aceeași expresie de acces de două ori</translation>
 <translation id="1652326691684645429">Activează Nearby Share</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Pentru a putea printa de oriunde, adaugă imprimanta în Google Cloud Print.}few{Pentru a putea printa de oriunde, adaugă cele # imprimante în Google Cloud Print.}other{Pentru a putea printa de oriunde, adaugă cele # de imprimante în Google Cloud Print.}}</translation>
+<translation id="1653575510930452864">Copiază linkul ca text</translation>
 <translation id="1656528038316521561">Opacitatea fundalului</translation>
 <translation id="1657406563541664238">Trimite automat statistici de utilizare și rapoarte de blocare la Google pentru a contribui la îmbunătățirea <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1657937299377480641">Ca să te conectezi din nou pentru acces la resurse educaționale, solicită permisiunea unui părinte</translation>
@@ -1003,6 +1005,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2178614541317717477">Compromitere CA</translation>
 <translation id="2182058453334755893">Copiat în clipboard</translation>
 <translation id="2184515124301515068">Permite Chrome să aleagă când site-urile pot reda sunet (recomandat)</translation>
+<translation id="2187243482123994665">Prezența utilizatorului</translation>
 <translation id="2187675480456493911">Sincronizată cu alte dispozitive din contul tău. Setările modificate de alți utilizatori nu vor fi sincronizate. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Eroare de import a certificatului serverului</translation>
 <translation id="2187906491731510095">Extensiile au fost actualizate</translation>
@@ -1830,6 +1833,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3163201441334626963">Produs necunoscut <ph name="PRODUCT_ID" /> de la furnizorul <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Cu ajutorul următoarelor servicii, îți vei menține datele în siguranță. Poți dezactiva oricând aceste funcții.</translation>
 <translation id="3164329792803560526">Se distribuie această filă către <ph name="APP_NAME" /></translation>
+<translation id="3165371858310906303">Întreabă-mă atunci când un site vrea să-mi detecteze prezența</translation>
 <translation id="3165390001037658081">Este posibil ca unii operatori să blocheze funcția.</translation>
 <translation id="316652501498554287">Conturi G Suite for Education</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2628,7 +2632,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4095507791297118304">Afișare principală</translation>
 <translation id="409579654357498729">Adăugați la Cloud Print</translation>
 <translation id="4096508467498758490">Dezactivați extensiile care rulează în modul pentru dezvoltatori</translation>
-<translation id="4096824249111507322">Se pregătește modulul securizat. Așteaptă (poate dura câteva minute)...</translation>
 <translation id="4097406557126260163">Aplicații și extensii</translation>
 <translation id="4097560579602855702">Caută pe Google</translation>
 <translation id="4098667039111970300">Instrumentele pentru creion din bara de instrumente</translation>
@@ -2947,6 +2950,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4527186207340858212">Vrei să creezi un profil pentru serviciu?</translation>
 <translation id="452750746583162491">Examinează datele sincronizate</translation>
 <translation id="4530494379350999373">Origine</translation>
+<translation id="4531924570968473143">Pentru cine vrei să adaugi acest <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4532646538815530781">Site-ul folosește senzorii de mișcare.</translation>
 <translation id="4533846798469727141">Acum rostește „Hei Google”</translation>
 <translation id="4533985347672295764">Timp CPU</translation>
@@ -3357,7 +3361,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">Verificarea ortografiei nu este acceptată pentru limbile selectate</translation>
 <translation id="5052499409147950210">Editează site-ul</translation>
-<translation id="5053604404986157245">Parola TPM generată aleatoriu nu este disponibilă. Acest lucru este normal după utilizarea Powerwash.</translation>
 <translation id="5057110919553308744">Când dai clic pe extensie</translation>
 <translation id="5057403786441168405">Gestionează-ți conturile conectate. Site-urile, aplicațiile și extensiile din Chrome și Google Play pot folosi aceste conturi pentru a-ți personaliza experiența, în funcție de permisiuni. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Restricționează conectarea</translation>
@@ -3948,7 +3951,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5774295353725270860">Deschideți aplicația Fișiere</translation>
 <translation id="577624874850706961">Caută cookie-uri</translation>
 <translation id="5777468213129569553">Deschide Chrome</translation>
-<translation id="5778747455497889540">Mai jos se află parola generată aleatoriu pentru modulul securizat, care a fost atribuită computerului tău.</translation>
 <translation id="5780011244986845107">Dosarul pe care l-ai selectat conține fișiere cu informații sensibile. Sigur dorești să permiți accesul de scriere permanent pentru „<ph name="APP_NAME" />” la acest dosar?</translation>
 <translation id="5780973441651030252">Prioritatea procesului</translation>
 <translation id="5781092003150880845">Sincronizează ca <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -3978,6 +3980,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5804241973901381774">Permisiuni</translation>
 <translation id="5805697420284793859">Managerul de ferestre</translation>
 <translation id="5806773519584576205">0° (prestabilit)</translation>
+<translation id="5808664694611589238">{0,plural, =1{Închide ferestrele pentru invitați}few{Închide ferestrele pentru invitați}other{Închide ferestrele pentru invitați}}</translation>
 <translation id="5810809306422959727">Acest cont nu este eligibil pentru controlul parental</translation>
 <translation id="5812674658566766066">Extinde tot</translation>
 <translation id="5814126672212206791">Tipul de conexiune</translation>
@@ -4435,6 +4438,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6344170822609224263">Accesează lista conexiunilor de rețea</translation>
 <translation id="6344576354370880196">Imprimante salvate</translation>
 <translation id="6345418402353744910">Numele de utilizator și parola sunt necesare pentru proxy-ul <ph name="PROXY" />, astfel încât administratorul să poată configura rețeaua</translation>
+<translation id="6345878117466430440">Marchează ca citit</translation>
 <translation id="6349101878882523185">Instalează <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Sincronizarea nu funcționează. Deconectează-te și conectează-te din nou.</translation>
 <translation id="6351063337294363751">Poți șterge datele de navigare din acest meniu</translation>
@@ -4655,7 +4659,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6635956300022133031">Selectează și personalizează vocile pentru redarea vocală a textului</translation>
 <translation id="6636588250634969791">Introdu cartela SIM înainte de a continua</translation>
 <translation id="6639554308659482635">Memorie SQLite</translation>
-<translation id="6641138807883536517">Parola generată aleatoriu pentru modulul securizat nu este disponibilă. Acest lucru este normal după utilizarea Powerwash.</translation>
 <translation id="6642720633335369752">Pentru a vedea toate ferestrele aplicațiilor deschise, glisează în sus din partea de jos și menține.</translation>
 <translation id="664290675870910564">Selectarea rețelei</translation>
 <translation id="6643016212128521049">Șterge</translation>
@@ -4983,7 +4986,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7029307918966275733">Crostini nu este instalat. Instalează Crostini pentru a afișa datele de conectare.</translation>
 <translation id="7029809446516969842">Parole</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Portul serial este conectat</translation>
-<translation id="7031962166228839643">Se pregătește TPM. Așteaptă (poate dura câteva minute)...</translation>
 <translation id="7036706669646341689">Pentru Linux, se recomandă un spațiu de <ph name="DISK_SIZE" />. Pentru a elibera spațiu, șterge fișiere de pe dispozitiv.</translation>
 <translation id="7037509989619051237">Textul pentru previzualizare</translation>
 <translation id="7038632520572155338">Acces prin comutare</translation>
@@ -5177,6 +5179,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7280649757394340890">Setări ale vocii pentru redarea vocală a textului</translation>
 <translation id="7280877790564589615">Permisiune solicitată</translation>
 <translation id="7282992757463864530">Bară de informații</translation>
+<translation id="7284411326658527427">Fiecare persoană poate să-și personalizeze contul și să-și păstreze datele private.</translation>
 <translation id="7287143125007575591">Acces refuzat.</translation>
 <translation id="7287411021188441799">Restabilește fundalul prestabilit</translation>
 <translation id="7288013116963835700">Elimină Linux pentru <ph name="DEVICE_TYPE" /></translation>
@@ -5753,6 +5756,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7963826112438303517">Asistentul folosește aceste înregistrări și cererile rostite ca să îți creeze și să îți actualizeze modelul vocal stocat doar pe dispozitivele pe care ai activat Voice Match. Vizualizează sau resetează activitatea vocală în Setările Asistentului.</translation>
 <translation id="7966241909927244760">C&amp;opiază adresa imaginii</translation>
 <translation id="7968072247663421402">Opțiuni de furnizori</translation>
+<translation id="7968198493605442410">Copiază linkul ca text</translation>
 <translation id="7968742106503422125">Citește și modifică datele pe care le copiezi și le inserezi</translation>
 <translation id="7968833647796919681">Activați culegerea datelor privind performanța</translation>
 <translation id="7968982339740310781">Afișați detaliile</translation>
@@ -5971,7 +5975,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8226222018808695353">Interzis</translation>
 <translation id="8226619461731305576">Coadă</translation>
 <translation id="8226628635270268143">Alege fotografiile și albumele preferate</translation>
-<translation id="8226742006292257240">Mai jos se află parola TPM generată aleatoriu, care a fost atribuită computerului tău:</translation>
 <translation id="8227119283605456246">Atașează un fișier</translation>
 <translation id="8230134520748321204">Salvezi parola pentru <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Nu s-a putut da ping către gateway-ul de rețea prestabilit</translation>

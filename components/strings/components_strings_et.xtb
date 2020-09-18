@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Ühendage uuesti WiFi-ga</translation>
 <translation id="1165039591588034296">Viga</translation>
 <translation id="1165174597379888365">Lehte külastatakse</translation>
+<translation id="1174723505405632867">Kas soovite lubada saidil <ph name="EMBEDDED_URL" /> ülataseme URL-il <ph name="TOP_LEVEL_URL" /> kasutada küpsisefaile ja saidi andmeid?
+
+Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie kasutatud sisul õigesti töötada, kuid võib lubada saidil <ph name="EMBEDDED_URL" /> jälgida teie tegevusi.</translation>
 <translation id="1175364870820465910">&amp;Prindi...</translation>
 <translation id="1175875016430184367">Kolm kirjaklambrit paremal</translation>
 <translation id="1178581264944972037">Peata</translation>
@@ -308,6 +311,7 @@
 <translation id="2181821976797666341">Reeglid</translation>
 <translation id="2183608646556468874">Telefoninumber</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 aadress}other{# aadressi}}</translation>
+<translation id="2187243482123994665">Kasutaja kohalolek</translation>
 <translation id="2187317261103489799">Tuvasta (vaikimisi)</translation>
 <translation id="2188375229972301266">Mitu auku all</translation>
 <translation id="2202020181578195191">Sisestage kehtiv aegumisaasta</translation>
@@ -532,6 +536,7 @@
     ja veenduge, et puhverserver töötaks. Kui arvate, et teil ei ole vaja
     puhverserverit kasutada:
     <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> soovib teada, millal saiti aktiivselt kasutate</translation>
 <translation id="3188393374551744535">Konto saldo</translation>
 <translation id="3194737229810486521"><ph name="URL" /> soovib andmed alaliselt teie seadmesse salvestada.</translation>
 <translation id="3195213714973468956">Printer <ph name="PRINTER_NAME" /> serveris <ph name="SERVER_NAME" /></translation>
@@ -1024,6 +1029,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Masin</translation>
 <translation id="5179510805599951267">Tegu ei ole <ph name="ORIGINAL_LANGUAGE" /> keelega? Andke veast teada</translation>
+<translation id="5179740473595559246">teada, millal saiti aktiivselt kasutate</translation>
 <translation id="5190835502935405962">Järjehoidjariba</translation>
 <translation id="519422657042045905">Märkuste lisamise funktsioon ei ole saadaval</translation>
 <translation id="5201306358585911203">Selle lehe manustatud leht ütleb</translation>
@@ -1246,6 +1252,7 @@
 <translation id="6049488691372270142">Lehe esitamine</translation>
 <translation id="6051221802930200923">Te ei saa saiti <ph name="SITE" /> praegu külastada, sest veebisait kasutab sertifikaadi kinnitamist. Võrguvead ja -rünnakud on tavaliselt ajutised, nii et leht tõenäoliselt hiljem töötab.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Kas jagada teie kohalolekut?</translation>
 <translation id="6058977677006700226">Kas soovite kaarte kasutada kõigis oma seadmetes?</translation>
 <translation id="6059925163896151826">USB-seadmed</translation>
 <translation id="6060009363608157444">Kehtetu DnsOverHttps-režiim.</translation>
@@ -1375,6 +1382,7 @@
 <translation id="6631202559048444592">Reeglil on rohkem kui üks allikas, aga väärtused on kõik samad.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Tühjenda</translation>
+<translation id="6645291930348198241">Juurdepääs küpsisefailidele ja saidi andmetele.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Mitte ükski}=1{1 saidilt (teid ei logita Google'i kontolt välja)}other{# saidilt (teid ei logita Google'i kontolt välja)}}</translation>
 <translation id="6648459603387803038">Teie administraator saab brauseri seadistust kaugühenduse kaudu muuta. Selle seadme tegevusi võidakse hallata ka väljaspool Chrome'i.</translation>
 <translation id="6652101503459149953">Kasuta Windows Hello autentimist</translation>

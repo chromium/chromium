@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">વાઇ-ફાઇ સાથે ફરીથી કનેક્ટ કરીને</translation>
 <translation id="1165039591588034296">ભૂલ</translation>
 <translation id="1165174597379888365">પેજની મુલાકાત લેવામાં આવી છે</translation>
+<translation id="1174723505405632867">શું તમે <ph name="EMBEDDED_URL" />ને <ph name="TOP_LEVEL_URL" /> પર કુકી અને સાઇટ ડેટાનો ઉપયોગ કરવાની મંજૂરી આપવા માગો છો?
+
+નહીંતર આને તમારા પ્રાઇવસી સેટિંગ વડે બ્લૉક કરવામાં આવશે. આ તમે જેની સાથે ક્રિયાપ્રતિક્રિયા કરી છે તે કન્ટેન્ટને સાચી રીતે કાર્ય કરવાની મંજૂરી આપશે, પણ <ph name="EMBEDDED_URL" />ને તમારી પ્રવૃત્તિ ટ્રૅક કરવાની મંજૂરી આપી શકે છે.</translation>
 <translation id="1175364870820465910">&amp;છાપો...</translation>
 <translation id="1175875016430184367">નીચે જમણી બાજુએ સ્ટેપલ લગાવો</translation>
 <translation id="1178581264944972037">થોભો</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">નીતિઓ</translation>
 <translation id="2183608646556468874">ફોન નંબર</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 સરનામું}one{# સરનામાં}other{# સરનામાં}}</translation>
+<translation id="2187243482123994665">વપરાશકર્તાની હાજરી</translation>
 <translation id="2187317261103489799">શોધો (ડિફૉલ્ટ)</translation>
 <translation id="2188375229972301266">નીચેની બાજુએ એકથી વધુ કાણાં પાડો</translation>
 <translation id="2202020181578195191">એક માન્ય સમાપ્તિ વર્ષ દાખલ કરો</translation>
@@ -533,6 +537,7 @@
       અથવા તમારા નેટવર્ક એડમિનનો સંપર્ક કરો. જો તમે પ્રૉક્સી સર્વરનો ઉપયોગ કરવો 
       જોઈએ એવું ન માનતા હો:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> જાણવા માગે છે તમે ક્યારે હાજર રહો છો</translation>
 <translation id="3188393374551744535">એકાઉન્ટ બૅલેન્સ</translation>
 <translation id="3194737229810486521"><ph name="URL" /> તમારા ઉપકરણ પર કાયમી ધોરણે ડેટા સ્ટોર કરવા માગે છે</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> પર <ph name="PRINTER_NAME" /></translation>
@@ -1025,6 +1030,7 @@
 <translation id="5171689220826475070">Fanfold-યુરોપિયન</translation>
 <translation id="5172758083709347301">મશીન</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> માં નથી? આ ભૂલની જાણ કરો </translation>
+<translation id="5179740473595559246">તમે હાજર હો ત્યારે જાણો</translation>
 <translation id="5190835502935405962">બુકમાર્ક્સ બાર</translation>
 <translation id="519422657042045905">ટીકાટિપ્પણી ઉપલબ્ધ નથી</translation>
 <translation id="5201306358585911203">આ પેજ પરનું શામેલ કરેલ પેજ કહે છે કે</translation>
@@ -1247,6 +1253,7 @@
 <translation id="6049488691372270142">પેજની ડિલિવરી</translation>
 <translation id="6051221802930200923">તમે અત્યારે આ <ph name="SITE" />ની મુલાકાત લઈ શકતાં નથી કારણ કે આ વેબસાઇટ પ્રમાણપત્ર પિનિંગનો ઉપયોગ કરે છે. નેટવર્કમાં ભૂલ આવવી અને હુમલા થવા સામાન્ય રીતે અસ્થાયી હોય છે, તેથી આ પેજ સંભવિત રૂપે થોડા સમય પછી કાર્ય કરશે.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">તમારી હાજરી શેર કરીએ?</translation>
 <translation id="6058977677006700226">તમારા બધાં ડિવાઇસ પર તમારાં કાર્ડનો ઉપયોગ કરીએ?</translation>
 <translation id="6059925163896151826">USB ઉપકરણો</translation>
 <translation id="6060009363608157444">અમાન્ય DnsOverHttps મોડ.</translation>
@@ -1376,6 +1383,7 @@
 <translation id="6631202559048444592">આ નીતિ માટે એકથી વધુ સૉર્સ ઉપલબ્ધ છે, પણ મૂલ્ય સમાન છે.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">સાફ કરો</translation>
+<translation id="6645291930348198241">કુકી અને સાઇટ ડેટાનો ઍક્સેસ કરો.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{કોઈ નહિ}=1{From 1 site (you won't be signed out of your Google Account)}one{From # sites (you won't be signed out of your Google Account)}other{From # sites (you won't be signed out of your Google Account)}}</translation>
 <translation id="6648459603387803038">તમારા વ્યવસ્થાપક તમારા બ્રાઉઝર સેટઅપને રિમોટલી બદલી શકે છે. આ ડિવાઇસ પરની પ્રવૃત્તિ Chromeની બહારથી પણ મેનેજ કરી શકાય છે.</translation>
 <translation id="6652101503459149953">Windows Helloનો ઉપયોગ કરો</translation>

@@ -2630,7 +2630,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4095507791297118304">Pantalla principal</translation>
 <translation id="409579654357498729">Afegeix a Cloud Print</translation>
 <translation id="4096508467498758490">Desactivació de les extensions del mode de desenvolupador</translation>
-<translation id="4096824249111507322">S'està preparant el mòdul de seguretat; espera (el procés pot tardar una estona)...</translation>
 <translation id="4097406557126260163">Aplicacions i extensions</translation>
 <translation id="4097560579602855702">Cerca a Google</translation>
 <translation id="4098667039111970300">Eines del llapis òptic a la barra d'eines</translation>
@@ -3360,7 +3359,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">El corrector ortogràfic no és compatible amb els idiomes que has seleccionat</translation>
 <translation id="5052499409147950210">Edita el lloc</translation>
-<translation id="5053604404986157245">La contrasenya de TPM generada aleatòriament no està disponible. Això és normal després d'executar la funció Powerwash.</translation>
 <translation id="5057110919553308744">Quan facis clic a l'extensió</translation>
 <translation id="5057403786441168405">Gestiona els comptes en què tens la sessió iniciada. És possible que els llocs web, les aplicacions i les extensions de Chrome i Google Play utilitzin aquests comptes per personalitzar la teva experiència, en funció dels permisos. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Restringeix l'inici de sessió</translation>
@@ -3953,7 +3951,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5774295353725270860">Obre l'aplicació Fitxers</translation>
 <translation id="577624874850706961">Cerca galetes</translation>
 <translation id="5777468213129569553">Obre Chrome</translation>
-<translation id="5778747455497889540">A continuació trobaràs la contrasenya del mòdul de seguretat generada aleatòriament que s'ha assignat al teu ordinador:</translation>
 <translation id="5780011244986845107">La carpeta que has seleccionat conté fitxers confidencials. Confirmes que vols concedir a "<ph name="APP_NAME" />" accés de lectura permanent en aquesta carpeta?</translation>
 <translation id="5780973441651030252">Prioritat del procés</translation>
 <translation id="5781092003150880845">Sincronitza com a <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4662,7 +4659,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6635956300022133031">Selecciona i personalitza les veus de text a parla</translation>
 <translation id="6636588250634969791">Insereix la SIM abans de continuar</translation>
 <translation id="6639554308659482635">Memòria SQLite</translation>
-<translation id="6641138807883536517">La contrasenya del mòdul de seguretat generada aleatòriament no està disponible. Això és normal després d'executar la funció Powerwash.</translation>
 <translation id="6642720633335369752">Per veure totes les finestres d'aplicacions obertes, llisca cap amunt des de la part inferior i mantén premut.</translation>
 <translation id="664290675870910564">Selecció de xarxa</translation>
 <translation id="6643016212128521049">Esborra</translation>
@@ -4990,7 +4986,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7029307918966275733">Crostini no està instal·lat. Instal·la'l per veure els crèdits.</translation>
 <translation id="7029809446516969842">Contrasenyes</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" />: port en sèrie connectat</translation>
-<translation id="7031962166228839643">El mòdul TPM s'està preparant (aquest procés pot trigar una estona). Espereu...</translation>
 <translation id="7036706669646341689">Es recomana tenir <ph name="DISK_SIZE" /> d'espai lliure per a Linux. Per augmentar l'espai lliure, suprimeix fitxers del dispositiu.</translation>
 <translation id="7037509989619051237">Text de prova</translation>
 <translation id="7038632520572155338">Accés amb interruptors</translation>
@@ -5979,7 +5974,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8226222018808695353">Prohibit</translation>
 <translation id="8226619461731305576">Cua</translation>
 <translation id="8226628635270268143">Tria les teves fotos i els teus àlbums preferits</translation>
-<translation id="8226742006292257240">A continuació, trobareu la contrasenya de TPM generada aleatòriament que s'ha assignat al vostre ordinador:</translation>
 <translation id="8227119283605456246">Adjunta un fitxer</translation>
 <translation id="8230134520748321204">Vols desar la contrasenya per a <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">No s'ha pogut fer ping a la passarel·la de xarxa predeterminada</translation>

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
-<translation id="1013149566889033026">새 시크릿 탭이 열립니다.</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />에 보내는 중...</translation>
 <translation id="103269572468856066">아래 사이트 및 앱의 데이터도 삭제하시겠습니까?</translation>
 <translation id="1036348656032585052">사용 중지</translation>
@@ -166,6 +165,7 @@
 <translation id="2321086116217818302">비밀번호 준비 중…</translation>
 <translation id="2321958826496381788">편하게 읽을 수 있을 때까지 슬라이더를 드래그하세요. 단락을 두 번 탭하면 텍스트가 이 이상의 크기로 표시됩니다.</translation>
 <translation id="2323763861024343754">사이트 저장공간</translation>
+<translation id="2326606747676847821">시크릿 탭 열기</translation>
 <translation id="2328985652426384049">로그인할 수 없음</translation>
 <translation id="234265804618409743">카메라를 열 수 없습니다. 문제가 발생했습니다.</translation>
 <translation id="2345671828921229300">검색하려면 단어를 길게 터치하세요.</translation>
@@ -346,7 +346,6 @@
 <translation id="3775705724665058594">기기로 전송</translation>
 <translation id="3778956594442850293">홈 화면에 추가됨</translation>
 <translation id="3789841737615482174">설치</translation>
-<translation id="3800748312755064483">임시 로그인</translation>
 <translation id="3810838688059735925">동영상</translation>
 <translation id="3810973564298564668">관리</translation>
 <translation id="3819178904835489326">다운로드 <ph name="NUMBER_OF_DOWNLOADS" />개 삭제됨</translation>
@@ -677,6 +676,7 @@
 <translation id="6341580099087024258">파일 저장 위치 묻기</translation>
 <translation id="6342069812937806050">완료됨</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />개}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />개}}</translation>
+<translation id="6345878117466430440">읽음으로 표시</translation>
 <translation id="6364438453358674297">기록에서 제안을 삭제하시겠습니까?</translation>
 <translation id="6366047038980456022"><ph name="APP_NAME" />은(는) 인터넷으로 작업과 탐색을 안전하게 진행하는 데 필요한 스마트한 기능과 빠른 속도를 제공합니다.</translation>
 <translation id="6378173571450987352">세부정보: 사용된 데이터 양에 따라 정렬</translation>
@@ -992,6 +992,7 @@
 <translation id="8655129584991699539">Chrome 설정에서 데이터를 삭제할 수 있습니다.</translation>
 <translation id="8662811608048051533">대부분의 사이트에서 로그아웃됩니다.</translation>
 <translation id="8664979001105139458">이미 존재하는 이름입니다.</translation>
+<translation id="8683039184091909753">이미지</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{신호 강도: 막대 #개}other{신호 강도: 막대 #개}}</translation>
 <translation id="869891660844655955">유효기간</translation>
 <translation id="8712637175834984815">확인</translation>

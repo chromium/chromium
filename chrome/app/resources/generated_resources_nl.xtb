@@ -1290,7 +1290,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2505127913256479918">Dit account dat onder toezicht staat, wordt binnenkort verwijderd</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Scherm #}other{Scherm #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> van <ph name="TOTAL_SIZE" /></translation>
-<translation id="250642123108534012">Apparaten bij jou in de buurt als 'Dichtbij delen' is geopend op het betreffende apparaat</translation>
+<translation id="250642123108534012">Apparaten bij jou in de buurt als 'Dichtbij delen' is geopend op die apparaten</translation>
 <translation id="250704661983564564">Schermindeling</translation>
 <translation id="2507253002925770350">Ticket verwijderd</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> is onderbroken</translation>
@@ -2632,7 +2632,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4095507791297118304">Primair scherm</translation>
 <translation id="409579654357498729">Toevoegen aan Cloudprinter</translation>
 <translation id="4096508467498758490">Extensies van ontwikkelaarsmodus uitschakelen</translation>
-<translation id="4096824249111507322">Beveiligde module wordt voorbereid, even geduld (dit kan enkele minuten duren)...</translation>
 <translation id="4097406557126260163">Apps en extensies</translation>
 <translation id="4097560579602855702">Zoeken op Google</translation>
 <translation id="4098667039111970300">Stylustools in werkbalk</translation>
@@ -3362,7 +3361,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">De spellingcontrole wordt niet ondersteund voor de talen die je hebt geselecteerd</translation>
 <translation id="5052499409147950210">Site bewerken</translation>
-<translation id="5053604404986157245">Het willekeurig gegenereerde TPM-wachtwoord is niet beschikbaar. Dit is normaal nadat de Powerwash-functie is uitgevoerd.</translation>
 <translation id="5057110919553308744">Wanneer je op de extensie klikt</translation>
 <translation id="5057403786441168405">Beheer je ingelogde accounts. Websites, apps en extensies in Chrome en Google Play kunnen deze accounts gebruiken om de functionaliteit te personaliseren, afhankelijk van de rechten. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Inloggen beperken</translation>
@@ -3953,7 +3951,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5774295353725270860">App Bestanden openen</translation>
 <translation id="577624874850706961">Cookies zoeken</translation>
 <translation id="5777468213129569553">Chrome openen</translation>
-<translation id="5778747455497889540">Hieronder staat het willekeurig gegenereerde wachtwoord voor de beveiligde module dat aan je computer is toegewezen:</translation>
 <translation id="5780011244986845107">De map die je hebt geselecteerd, bevat gevoelige bestanden. Weet je zeker dat je '<ph name="APP_NAME" />' permanente leestoegang wilt geven tot deze map?</translation>
 <translation id="5780973441651030252">Procesprioriteit</translation>
 <translation id="5781092003150880845">Synchroniseren als <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4662,7 +4659,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6635956300022133031">Stemmen voor tekst-naar-spraak selecteren en aanpassen</translation>
 <translation id="6636588250634969791">Plaats een simkaart voordat je doorgaat</translation>
 <translation id="6639554308659482635">SQLite-geheugen</translation>
-<translation id="6641138807883536517">Het willekeurig gegenereerde wachtwoord voor de beveiligde module is niet beschikbaar. Dit is normaal nadat de Powerwash-functie is uitgevoerd.</translation>
 <translation id="6642720633335369752">Als je alle geopende app-vensters wilt bekijken, swipe je omhoog vanaf de onderkant en houd je het scherm vast.</translation>
 <translation id="664290675870910564">Netwerk selecteren</translation>
 <translation id="6643016212128521049">Wissen</translation>
@@ -4990,7 +4986,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7029307918966275733">Crostini is niet geïnstalleerd. Installeer Crostini om credits te bekijken.</translation>
 <translation id="7029809446516969842">Wachtwoorden</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" />: seriële poort verbonden</translation>
-<translation id="7031962166228839643">TPM wordt voorbereid, even geduld (dit kan een paar minuten duren)...</translation>
 <translation id="7036706669646341689">Er wordt <ph name="DISK_SIZE" /> vrije opslagruimte aanbevolen voor Linux. Verwijder bestanden op het apparaat om opslagruimte vrij te maken.</translation>
 <translation id="7037509989619051237">Tekst voor voorbeeld</translation>
 <translation id="7038632520572155338">Toegang via schakelaar</translation>
@@ -5979,7 +5974,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8226222018808695353">Verboden</translation>
 <translation id="8226619461731305576">Wachtrij</translation>
 <translation id="8226628635270268143">Kies je favoriete foto's en albums</translation>
-<translation id="8226742006292257240">Hieronder staat het willekeurig gegenereerde TPM-wachtwoord dat aan je computer is toegekend:</translation>
 <translation id="8227119283605456246">Bestand bijvoegen</translation>
 <translation id="8230134520748321204">Wachtwoord opslaan voor <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Kan de standaard netwerkgateway niet pingen</translation>

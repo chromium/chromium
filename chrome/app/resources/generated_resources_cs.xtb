@@ -2630,7 +2630,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4095507791297118304">Primární obrazovka</translation>
 <translation id="409579654357498729">Přidat do služby Cloud Print</translation>
 <translation id="4096508467498758490">Deaktivovat rozšíření v režimu pro vývojáře</translation>
-<translation id="4096824249111507322">Připravuje se modul zabezpečení. Čekejte prosím (možná i několik minut)...</translation>
 <translation id="4097406557126260163">Aplikace a rozšíření</translation>
 <translation id="4097560579602855702">Vyhledávat na Googlu</translation>
 <translation id="4098667039111970300">Nástroje pro dotykové pero na liště</translation>
@@ -3360,7 +3359,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">V jazycích, které jste zadali, není kontrola pravopisu podporována</translation>
 <translation id="5052499409147950210">Upravit web</translation>
-<translation id="5053604404986157245">Náhodně generované heslo TPM není k dispozici. Po použití funkce Powerwash je to normální.</translation>
 <translation id="5057110919553308744">Když kliknete na rozšíření</translation>
 <translation id="5057403786441168405">Spravujte účty, ve kterých jste přihlášeni. V závislosti na oprávněních vám weby, aplikace a rozšíření v Chromu a na Google Play pomocí těchto účtů mohou přizpůsobovat prostředí. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Omezit přihlášení</translation>
@@ -3951,7 +3949,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5774295353725270860">Do aplikace Soubory</translation>
 <translation id="577624874850706961">Prohledávat cookie</translation>
 <translation id="5777468213129569553">Spustit Chrome</translation>
-<translation id="5778747455497889540">Níže je náhodně vygenerované heslo modulu zabezpečení, které bylo přiřazeno vašemu počítači:</translation>
 <translation id="5780011244986845107">Vybraná složka obsahuje citlivé soubory. Opravdu chcete aplikaci <ph name="APP_NAME" /> udělit trvalý přístup ke čtení této složky?</translation>
 <translation id="5780973441651030252">Priorita procesu</translation>
 <translation id="5781092003150880845">Synchronizovat jako <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4660,7 +4657,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6635956300022133031">Vybrat a upravit hlasy pro převod textu na řeč</translation>
 <translation id="6636588250634969791">Nejdřív vložte SIM kartu</translation>
 <translation id="6639554308659482635">Paměť SQLite</translation>
-<translation id="6641138807883536517">Náhodně generované heslo modulu zabezpečení není k dispozici. Po použití funkce Powerwash je to normální.</translation>
 <translation id="6642720633335369752">Všechna otevřená okna aplikací zobrazíte přejetím prstem ze spodního okraje nahoru a podržením obrazovky.</translation>
 <translation id="664290675870910564">Výběr sítě</translation>
 <translation id="6643016212128521049">Vymazat</translation>
@@ -4988,7 +4984,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7029307918966275733">Plugin Crostini není nainstalován. Chcete-li zobrazit seznam přispěvatelů, nainstalujte Crostini.</translation>
 <translation id="7029809446516969842">Hesla</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – připojeno k sériovému portu</translation>
-<translation id="7031962166228839643">Připravuje se modul TPM. Čekejte prosím (možná i několik minut)...</translation>
 <translation id="7036706669646341689">Pro Linux je doporučeno <ph name="DISK_SIZE" /> místa. Místo uvolníte smazáním souborů ze zařízení.</translation>
 <translation id="7037509989619051237">Text k náhledu</translation>
 <translation id="7038632520572155338">Přístup pomocí přepínačů</translation>
@@ -5977,7 +5972,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8226222018808695353">Zakázané</translation>
 <translation id="8226619461731305576">Fronta</translation>
 <translation id="8226628635270268143">Vyberte své oblíbené fotky a alba</translation>
-<translation id="8226742006292257240">Níže je náhodně vygenerované heslo modulu TPM, které bylo přiřazeno vašemu počítači:</translation>
 <translation id="8227119283605456246">Přiložit soubor</translation>
 <translation id="8230134520748321204">Uložit heslo pro <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Nepodařilo se pingnout bránu výchozí sítě</translation>

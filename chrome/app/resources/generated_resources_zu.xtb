@@ -2629,7 +2629,6 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="4095507791297118304">Isiboniso esiyinhloko</translation>
 <translation id="409579654357498729">Engeza ekuphrinteni kwamafu</translation>
 <translation id="4096508467498758490">Khubaza izandiso zemodi yomthuthukisi</translation>
-<translation id="4096824249111507322">Imojula yokuphepha iyalungiselelwa, sicela ulinde (lokhu kungathatha amaminithi ambalwa)...</translation>
 <translation id="4097406557126260163">Izinhlelo zokusebenza nezandiso</translation>
 <translation id="4097560579602855702">Usesho lwe-Google</translation>
 <translation id="4098667039111970300">Amathuluzi we-stylus kubha yamathuluzi</translation>
@@ -3359,7 +3358,6 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="5050330054928994520">I-TTS</translation>
 <translation id="5051836348807686060">Ukuhlolwa kokupeleta akusekelwe kuzilimi ozikhethile</translation>
 <translation id="5052499409147950210">Hlela isayithi</translation>
-<translation id="5053604404986157245">Iphasiwedi ekhiqizwa ngokunganakile ye-TPM ayitholakali. Lokhu kujwayelekile ngemuva kokugeza kwamandla.</translation>
 <translation id="5057110919553308744">Uma uchofoza isandiso</translation>
 <translation id="5057403786441168405">Phatha ama-akhawunti akho angene ngemvume. Amawebhusayithi, izinhlelo zokusebenza, nezandiso ku-Chrome naku-Google Play kungasebenzisa lawa ma-akhawunti ukuze kwenze kube ngendlela oyifisayo umuzwa wakho, ngokuya ngezimvume zakho. <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Khawulela ukungena ngemvume</translation>
@@ -3953,7 +3951,6 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="5774295353725270860">Vula uhlelo lokusebenza lamafayela</translation>
 <translation id="577624874850706961">Sesha amakhukhi</translation>
 <translation id="5777468213129569553">Vula i-Chrome</translation>
-<translation id="5778747455497889540">Ngaphansi kukhona iphasiwedi yemojula ekhiqizwa ngokunganakile enikezelwe kukhompyutha yakho:</translation>
 <translation id="5780011244986845107">Ifolda oyikhethile iqukethe amafayela azwelayo. Ingabe uqinisekile ukuthi ufuna ukunika i-"<ph name="APP_NAME" />" ukufinyelela kokufunda kwanaphakade kule folda?</translation>
 <translation id="5780973441651030252">Ukukhetha kwenqubo</translation>
 <translation id="5781092003150880845">Vumelanisa njengo-<ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4662,7 +4659,6 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="6635956300022133031">Khetha uphinde wenze ngendlela oyifisayo amazwi ombhalo ukuya kunkulumo</translation>
 <translation id="6636588250634969791">Faka i-SIM ngaphambi kokuqhubeka</translation>
 <translation id="6639554308659482635">Imemori ye-SQLite</translation>
-<translation id="6641138807883536517">Iphasiwedi ekhiqizwa ngokunganakile yemojula ayitholakali. Lokhu kujwayelekile ngemuva kokugeza kwamandla.</translation>
 <translation id="6642720633335369752">Ukuze ubone wonke amawindi avuliwe ohlelo lokusebenza, swayiphela ngaphezulu kusukela ngaphansi uphinde ubambe.</translation>
 <translation id="664290675870910564">Ukukhetha Inethiwekhi</translation>
 <translation id="6643016212128521049">Sula</translation>
@@ -4990,7 +4986,6 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="7029307918966275733">I-Crostini ayifakiwe. Sicela ufake i-Crostini ukuze ubuke amakhredithi.</translation>
 <translation id="7029809446516969842">Amaphasiwedi</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Imbobo ye-serial ixhunyiwe</translation>
-<translation id="7031962166228839643">I-TPM iyalungiselelwa, sicela ulinde (lokhu kungathatha amaminithi ambalwa)...</translation>
 <translation id="7036706669646341689">Kunconywa u-<ph name="DISK_SIZE" /> wesikhala ku-Linux. Ukukhuphula isikhala esingenalutho. susa amafayela kusuka kudivayisi yakho.</translation>
 <translation id="7037509989619051237">Umbhalo ozobukwa kuqala</translation>
 <translation id="7038632520572155338">Shintsha ukufinyelela</translation>
@@ -5979,7 +5974,6 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8226222018808695353">Kunqatshelwe</translation>
 <translation id="8226619461731305576">Umugqa</translation>
 <translation id="8226628635270268143">Khetha izithombe zakho eziyintandokazi kanye nama-albhamu</translation>
-<translation id="8226742006292257240">Ngaphansi kukhona iphasiwedi ye-TPM ekhiqizwa ngokunganakile enikezelwe kukhompyutha yakho.</translation>
 <translation id="8227119283605456246">Namathisela ifayela</translation>
 <translation id="8230134520748321204">Londolozela amaphasiwedi i-<ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Yehlulekile ukuqhweba umasango wenethiwekhi yokuzenzakalelayo</translation>

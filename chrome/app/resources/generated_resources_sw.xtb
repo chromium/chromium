@@ -2627,7 +2627,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4095507791297118304">Onyesho msingi</translation>
 <translation id="409579654357498729">Ongeza kwenye Printa ya Wingu</translation>
 <translation id="4096508467498758490">Zima viendelezi vya hali ya msanidi programu</translation>
-<translation id="4096824249111507322">Sehemu salama inaandaliwa, tafadhali subiri (huenda hatua hii ikachukua dakika chache)...</translation>
 <translation id="4097406557126260163">Programu na viendelezi</translation>
 <translation id="4097560579602855702">Tafuta kwenye Google</translation>
 <translation id="4098667039111970300">Zana za Stylus kwenye upau wa vidhibiti</translation>
@@ -3357,7 +3356,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">Kikagua tahajia hakitumiki kwa lugha uliyochagua</translation>
 <translation id="5052499409147950210">Badilisha tovuti</translation>
-<translation id="5053604404986157245">Nenosiri la TPM lililoundwa bila mpangilio halipatikani. Hii ni kawadia baada ya Powerwash.</translation>
 <translation id="5057110919553308744">Unapobofya kiendelezi</translation>
 <translation id="5057403786441168405">Dhibiti akaunti ulikoingia. Tovuti, programu na viendelezi katika Chrome na Google Play vinaweza kutumia akaunti hizi ili kuboresha hali yako ya utumiaji, kulingana na ruhusa. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Kudhibiti hatua ya kuingia katika akaunti</translation>
@@ -3948,7 +3946,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5774295353725270860">Fungua programu ya Faili</translation>
 <translation id="577624874850706961">Tafuta vidakuzi</translation>
 <translation id="5777468213129569553">Fungua Chrome</translation>
-<translation id="5778747455497889540">Hapa chini pana nenosiri la sehemu salama lililozalishwa bila mpangilio ambalo linatumiwa kwenye kompyuta yako:</translation>
 <translation id="5780011244986845107">Folda uliyochagua ina faili nyeti. Je, una uhakika unataka kutoa uwezo wa kudumu wa "<ph name="APP_NAME" />" wa kusoma folda hii?</translation>
 <translation id="5780973441651030252">Kipaumbele cha mchakato</translation>
 <translation id="5781092003150880845">Sawazisha ukitumia <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4657,7 +4654,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6635956300022133031">Chagua na ubadilishe upendavyo sauti za ubadilishaji wa maandishi kwenda usemi</translation>
 <translation id="6636588250634969791">Weka SIM kabla ya kuendelea</translation>
 <translation id="6639554308659482635">Kumbukumbu ya SQLite</translation>
-<translation id="6641138807883536517">Nenosiri la sehemu lililozalishwa bila mpangilio halipatikani. Hii ni kawadia baada ya Powerwash.</translation>
 <translation id="6642720633335369752">Ili uone madirisha yote ya programu yaliyofunguliwa, telezesha kidole juu kutoka chini na ushikilie.</translation>
 <translation id="664290675870910564">Chagua Mtandao</translation>
 <translation id="6643016212128521049">Futa</translation>
@@ -4985,7 +4981,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7029307918966275733">Crostini haijasakinishwa. Tafadhali sakinisha Crostini ili uone waliohusika.</translation>
 <translation id="7029809446516969842">Manenosiri</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Imeunganisha kwenye mlango wa kuchomeka vifaa</translation>
-<translation id="7031962166228839643">TPM inaandaliwa, tafadhali subiri (huenda hii ikachukua dakika chache)...</translation>
 <translation id="7036706669646341689">Tunapendekeza uwe na nafasi ya <ph name="DISK_SIZE" /> kwenye Linux. Ili upate nafasi zaidi ya hifadhi, futa faili kwenye kifaa chako.</translation>
 <translation id="7037509989619051237">Maandishi kwa ajili ya kukagua</translation>
 <translation id="7038632520572155338">Kufikia kupitia swichi</translation>
@@ -5977,7 +5972,6 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8226222018808695353">Hairuhusiwi</translation>
 <translation id="8226619461731305576">Foleni</translation>
 <translation id="8226628635270268143">Chagua picha na albamu uzipendazo zaidi</translation>
-<translation id="8226742006292257240">Hapa chini kuna nenosiri la TPM lililoundwa kinasibu ambalo limetolewa kwa kompyuta yako:</translation>
 <translation id="8227119283605456246">Ambatisha faili</translation>
 <translation id="8230134520748321204">Ungependa kuhifadhi nenosiri la <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Imeshindwa kuita lango la mtandao chaguomsingi</translation>

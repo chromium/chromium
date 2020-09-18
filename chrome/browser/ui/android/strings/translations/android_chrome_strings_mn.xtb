@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
-<translation id="1013149566889033026">Нууцлалтай таб шинээр нээгдэнэ</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />-д илгээж байна...</translation>
 <translation id="103269572468856066">Эдгээр сайт, аппаас мөн өгөгдөл арилгах уу?</translation>
 <translation id="1036348656032585052">Унтраа</translation>
@@ -166,6 +165,7 @@
 <translation id="2321086116217818302">Нууц үгийг бэлтгэж байна…</translation>
 <translation id="2321958826496381788">Уншихад тохиромжтой болох хүртэл хүрээг томруулж татна уу. Бичвэр дээр хоёр удаа товшсоны дараагаар текстийн хэмжээ томорч харагдана.</translation>
 <translation id="2323763861024343754">Сайтын сан</translation>
+<translation id="2326606747676847821">Incognito-д орох</translation>
 <translation id="2328985652426384049">Нэвтрэх боломжгүй</translation>
 <translation id="234265804618409743">Таны камерыг нээх боломжгүй байна. Алдаа гарлаа.</translation>
 <translation id="2345671828921229300">Хайхын тулд үгийг удаан дарна уу</translation>
@@ -346,7 +346,6 @@
 <translation id="3775705724665058594">Төхөөрөмжүүддээ илгээх</translation>
 <translation id="3778956594442850293">Үндсэн нүүрэнд нэмсэн</translation>
 <translation id="3789841737615482174">Суулгах</translation>
-<translation id="3800748312755064483">Түр нэвтрэх</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3810973564298564668">удирдах</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> таталтыг устгасан</translation>
@@ -387,7 +386,6 @@
 <translation id="4135200667068010335">Таб хуваалцах төхөөрөмжийн жагсаалтыг хаалаа.</translation>
 <translation id="4149994727733219643">Вэб хуудасны хялбаршуулсан харагдац</translation>
 <translation id="4170011742729630528">Энэ үйлчилгээг авах боломжгүй байна; Та дараа дахин оролдоно уу.</translation>
-<translation id="4175173967354304331">Таныг энэ сайт, Chrome болон Google аппад нэвтрүүлнэ</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" />-г ашигласан</translation>
 <translation id="4181841719683918333">Хэл</translation>
 <translation id="4183868528246477015">Google дуран <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" />-р хайх</translation>

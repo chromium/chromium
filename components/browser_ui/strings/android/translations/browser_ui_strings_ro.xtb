@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Site-ul <ph name="SITE_NAME" /> a fost adăugat</translation>
 <translation id="1383876407941801731">Caută</translation>
 <translation id="1384959399684842514">Descărcare întreruptă</translation>
+<translation id="1431402976894535801">Împiedică site-urile să-ți detecteze prezența</translation>
 <translation id="1446450296470737166">Control complet dispozitive MIDI</translation>
 <translation id="1509960214886564027">Este posibil ca funcțiile de pe mai multe site-uri să fie întrerupte</translation>
 <translation id="1620510694547887537">Cameră</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">Deschide aplicația instantanee</translation>
 <translation id="2148716181193084225">Astăzi</translation>
 <translation id="2182457891543959921">Întreabă înainte de a permite site-urilor să creeze o hartă 3D a lucrurilor din jur sau să urmărească poziția camerei video (recomandat)</translation>
+<translation id="2187243482123994665">Prezența utilizatorului</translation>
 <translation id="2212565012507486665">Permite cookie-urile</translation>
 <translation id="2228071138934252756">Pentru a permite aplicației <ph name="APP_NAME" /> să acceseze camera, activează camera și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
 <translation id="2289270750774289114">Întreabă-mă când un site dorește să descopere dispozitive Bluetooth din apropiere (recomandat)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">Player video</translation>
 <translation id="3115898365077584848">Afișează informațiile</translation>
 <translation id="3123473560110926937">Blocate pe anumite site-uri</translation>
+<translation id="3165371858310906303">Întreabă-mă atunci când un site vrea să-mi detecteze prezența</translation>
 <translation id="3198916472715691905">Date stocate: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">Pentru a permite aplicației <ph name="APP_NAME" /> să îți trimită notificări, activează notificările și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Microfon</translation>
@@ -133,6 +136,7 @@
 <translation id="5197729504361054390">Persoanele de contact pe care le selectezi vor fi trimise site-ului <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Afișează</translation>
 <translation id="5301954838959518834">OK, am înțeles</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /></translation>
 <translation id="5313967007315987356">Adaugă un site</translation>
 <translation id="5317780077021120954">Salvează</translation>
 <translation id="5335288049665977812">Permite site-urilor să ruleze JavaScript (recomandat)</translation>
@@ -144,6 +148,7 @@
 <translation id="5403592356182871684">Nume</translation>
 <translation id="5489227211564503167">Timp scurs: <ph name="ELAPSED_TIME" /> din <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blochează anunțurile pe site-urile care afișează anunțuri deranjante sau înșelătoare</translation>
+<translation id="5502860503640766021">S-a blocat <ph name="PERMISSION_1" />, se permite <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Site-urile nu îți pot solicita să îți trimită notificări</translation>
 <translation id="5516455585884385570">Deschide setările pentru notificări</translation>
 <translation id="5527111080432883924">Întreabă-mă înainte de a permite site-urilor să citească textul și imaginile din clipboard (recomandat)</translation>
@@ -155,12 +160,15 @@
 <translation id="5690795753582697420">Camera foto este dezactivată în setările Android</translation>
 <translation id="5710871682236653961">Întreabă înainte de a permite site-urilor să trimită și să primească informații când se ating dispozitive NFC (recomandat)</translation>
 <translation id="5719847187258001597">Astfel, se vor șterge toate datele și cookie-urile stocate de <ph name="ORIGIN" /> sau de aplicația asociată de pe ecranul de pornire.</translation>
+<translation id="5771720122942595109">S-a blocat <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permisiuni</translation>
 <translation id="5860033963881614850">Dezactivat</translation>
+<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt permise</translation>
 <translation id="5876056640971328065">Întrerupe videoclipul</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5922853908706496913">Se permite accesul la ecran</translation>
 <translation id="5939518447894949180">Resetează</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Gestionează accesul acestui site la dispozitivul tău</translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="6042308850641462728">Mai multe</translation>
@@ -172,6 +180,7 @@
 <translation id="6196640612572343990">Blochează cookie-urile terță parte</translation>
 <translation id="6206551242102657620">Conexiunea este sigură. Informații despre site</translation>
 <translation id="6216432067784365534">Opțiuni pentru <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6262279340360821358">Sunt blocate <ph name="PERMISSION_1" /> și <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Site-urile îți pot solicita să îți trimită notificări</translation>
 <translation id="6295158916970320988">Toate site-urile</translation>
 <translation id="6320088164292336938">Vibrații</translation>
@@ -194,6 +203,7 @@
 <translation id="6790428901817661496">Redă</translation>
 <translation id="6818926723028410516">Selectează elementele</translation>
 <translation id="6864395892908308021">Dispozitivul nu poate citi comunicările NFC</translation>
+<translation id="6879016579615558281"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt blocate</translation>
 <translation id="6910211073230771657">Șters</translation>
 <translation id="6912998170423641340">Blochează accesul de citire a textului și imaginilor din clipboard pentru site-uri</translation>
 <translation id="6945221475159498467">Selectează</translation>
@@ -211,6 +221,7 @@
 <translation id="723171743924126238">Selectează imagini</translation>
 <translation id="7243308994586599757">Opțiuni disponibile în partea de jos a ecranului</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> selectate</translation>
+<translation id="7260727271532453612"><ph name="PERMISSION_1" /> și <ph name="PERMISSION_2" /> sunt permise</translation>
 <translation id="7302486331832100261">De obicei blochezi notificările. Ca să le permiți, atinge Detalii.</translation>
 <translation id="7423098979219808738">Mai întâi întreabă</translation>
 <translation id="7423538860840206698">Citirea clipboardului este blocată</translation>
@@ -242,6 +253,7 @@
 <translation id="8087000398470557479">Acest conținut provine de pe <ph name="DOMAIN_NAME" />, oferit de Google.</translation>
 <translation id="8116925261070264013">Cu sunetul dezactivat</translation>
 <translation id="8131740175452115882">Confirmați</translation>
+<translation id="8197286292360124385">Se permite <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Reia</translation>
 <translation id="8206354486702514201">Această setare este impusă de administratorul dvs.</translation>
 <translation id="8249310407154411074">Mută la început</translation>

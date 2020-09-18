@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Fajlu se nije pristupilo iz sigurnosnih razloga.</translation>
 <translation id="169515659049020177">Gornji red</translation>
 <translation id="1722487484194605434">Izrađivanje zip arhive sljedećeg broja stavki: <ph name="NUMBER_OF_ITEMS" />...</translation>
+<translation id="1731889557567069540">Broj kopiranih stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="174173592514158117">Prikaži sve foldere Playa</translation>
 <translation id="174937106936716857">Ukupan broj fajlova</translation>
 <translation id="1775381402323441512">Informacije o videozapisu</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Nevažeći znak: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Vijetnamska tastatura (TCVN)</translation>
 <translation id="2168214441502403371">Perzijska tastatura</translation>
+<translation id="2197363559908958454">Broj premještenih stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">Pojednostavljeni kineski</translation>
 <translation id="2208158072373999562">Zip arhiva</translation>
 <translation id="2225536596944493418">Jeste li sigurni da želite izbrisati sljedeći broj stavki: <ph name="NUMBER_OF_ITEMS" />?</translation>
 <translation id="2230062665678605299">Kreiranje foldera "<ph name="FOLDER_NAME" />" nije uspjelo. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Premješteno.</translation>
 <translation id="2278988676849463018">Kannada tastatura (fonetska)</translation>
 <translation id="2288278176040912387">Gramofon</translation>
 <translation id="2291538123825441971">Broj fajlova koji se trenutno otvara: <ph name="NUMBER_OF_FILES" />.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Napravljene su sigurnosne kopije za sve fajlove!</translation>
 <translation id="3626281679859535460">Svjetlina</translation>
 <translation id="3644896802912593514">Širina</translation>
+<translation id="3645233063072417428">Broj premještenih stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="3645531960514756307">Otkači folder</translation>
 <translation id="3678559383040232393">Malteška tastatura</translation>
 <translation id="3685122418104378273">Sinkronizacija Google diska onemogućena je prema zadanim postavkama kada se upotrebljavaju mobilni podaci.</translation>
@@ -380,7 +384,7 @@
    Ako uklonite uređaj tokom njegovog korištenja, moguće je da će doći do gubljenja podataka.  Sačekajte da se radnja završi, a zatim isključite uređaj pomoću aplikacije Files.</translation>
 <translation id="5163869187418756376">Dijeljenje nije uspjelo. Provjerite vezu i pokušajte ponovo kasnije.</translation>
 <translation id="516592729076796170">SAD programer Dvorak</translation>
-<translation id="5167131699331641907">Holandska tastatura</translation>
+<translation id="5167131699331641907">Nizozemska tastatura</translation>
 <translation id="5170477580121653719">Slobodan prostor na Google Disku: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">Prikaz minijatura</translation>
 <translation id="5194713942430106590">Kliknite da poredate kolonu uzlaznim poretkom.</translation>
@@ -395,6 +399,7 @@
     Što god da se dogodi s vašim uređajem, vaše su datoteke sigurno pohranjene na Google disku.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Dijelite, stvarajte i surađujte<ph name="MARKUP_8" />
     na datotekama s drugima i sve to na jednom mjestu.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Kopirano.</translation>
 <translation id="5275973617553375938">Oporavljeni fajlovi iz Google Diska</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
@@ -751,6 +756,7 @@
 <translation id="943972244133411984">Izmijenio/la</translation>
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
 <translation id="947144732524271678">Odabran je niz unosa (<ph name="ENTRY_COUNT" />) od stavke <ph name="FROM_ENTRY_NAME" /> do stavke <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="949308258121608615">Broj kopiranih stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="981121421437150478">Van mreže</translation>
 <translation id="988685240266037636">Već postoji fajl s nazivom "<ph name="FILE_NAME" />". Želite li ga zamijeniti?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

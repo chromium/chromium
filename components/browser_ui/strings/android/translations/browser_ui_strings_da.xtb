@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Websitet <ph name="SITE_NAME" /> blev tilføjet</translation>
 <translation id="1383876407941801731">Søg</translation>
 <translation id="1384959399684842514">Download er sat på pause</translation>
+<translation id="1431402976894535801">Bloker websites fra at vide, hvornår du er tilstede</translation>
 <translation id="1446450296470737166">Tillad fuld kontrol over MIDI-enheder</translation>
 <translation id="1509960214886564027">Funktioner på mange websites virker muligvis ikke</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">Åbn instant-app</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="2182457891543959921">Spørg, inden websites kan oprette et 3D-kort over dine omgivelser eller registrere kamerapositionen (anbefales)</translation>
+<translation id="2187243482123994665">Brugertilstedeværelse</translation>
 <translation id="2212565012507486665">Tillad cookies</translation>
 <translation id="2228071138934252756">Aktivér også dit kamera i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til kameraet.</translation>
 <translation id="2289270750774289114">Spørg, når et website vil søge efter Bluetooth-enheder i nærheden (anbefalet)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">Videoafspiller</translation>
 <translation id="3115898365077584848">Vis info</translation>
 <translation id="3123473560110926937">Blokeret på visse websites</translation>
+<translation id="3165371858310906303">Spørg, når et website vil vide, hvornår du er tilstede</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> gemte data</translation>
 <translation id="321187648315454507">Aktivér også notifikationer i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> tilladelse til at sende dig notifikationer.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -133,6 +136,7 @@
 <translation id="5197729504361054390">De kontakter, du vælger, deles med <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5301954838959518834">OK, det er forstået</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> mere</translation>
 <translation id="5313967007315987356">Tilføj website</translation>
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5335288049665977812">Tillad, at websites kører JavaScript (anbefales)</translation>
@@ -144,6 +148,7 @@
 <translation id="5403592356182871684">Navne</translation>
 <translation id="5489227211564503167">Forløbet tid: <ph name="ELAPSED_TIME" /> af <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Bloker annoncer på websites, der viser påtrængende eller vildledende annoncer</translation>
+<translation id="5502860503640766021"><ph name="PERMISSION_1" /> blev tilladt, <ph name="PERMISSION_2" /> blev blokeret</translation>
 <translation id="5505264765875738116">Websites kan ikke spørge dig, om de må sende dig notifikationer</translation>
 <translation id="5516455585884385570">Åbn indstillinger for notifikationer</translation>
 <translation id="5527111080432883924">Spørg, før websites får adgang til at læse tekst og billeder fra udklipsholderen (anbefales)</translation>
@@ -155,12 +160,15 @@
 <translation id="5690795753582697420">Kameraet er deaktiveret i Android-indstillingerne</translation>
 <translation id="5710871682236653961">Spørg om tilladelse, før websites får mulighed for at sende og modtage oplysninger, når du parrer NFC-enheder (anbefalet)</translation>
 <translation id="5719847187258001597">Dette rydder alle data og cookies, som er gemt af <ph name="ORIGIN" /> eller de tilhørende apps på din startskærm.</translation>
+<translation id="5771720122942595109"><ph name="PERMISSION_1" /> blev blokeret</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
 <translation id="5860033963881614850">Fra</translation>
+<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> mere blev tilladt</translation>
 <translation id="5876056640971328065">Sæt video på pause</translation>
 <translation id="5916664084637901428">Til</translation>
 <translation id="5922853908706496913">Deling af din skærm</translation>
 <translation id="5939518447894949180">Nulstil</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Styr dette websites adgang til din enhed</translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6042308850641462728">Mere</translation>
@@ -172,6 +180,7 @@
 <translation id="6196640612572343990">Bloker cookies fra tredjeparter</translation>
 <translation id="6206551242102657620">Forbindelsen er sikker. Websiteoplysninger</translation>
 <translation id="6216432067784365534">Valgmuligheder for <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6262279340360821358"><ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> blev blokeret</translation>
 <translation id="6270391203985052864">Websites kan spørge dig, om de må sende dig notifikationer</translation>
 <translation id="6295158916970320988">Alle websites</translation>
 <translation id="6320088164292336938">Vibrer</translation>
@@ -194,6 +203,7 @@
 <translation id="6790428901817661496">Afspil</translation>
 <translation id="6818926723028410516">Vælg elementer</translation>
 <translation id="6864395892908308021">Denne enhed kan ikke læse NFC</translation>
+<translation id="6879016579615558281"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> mere blev blokeret</translation>
 <translation id="6910211073230771657">Slettet</translation>
 <translation id="6912998170423641340">Bloker websites, så de ikke kan læse tekst og billeder fra udklipsholderen</translation>
 <translation id="6945221475159498467">Vælg</translation>
@@ -211,6 +221,7 @@
 <translation id="723171743924126238">Vælg billeder</translation>
 <translation id="7243308994586599757">Du finder indstillingerne nederst på skærmen</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> er markeret</translation>
+<translation id="7260727271532453612"><ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> blev tilladt</translation>
 <translation id="7302486331832100261">Du blokerer som regel notifikationer. Tryk på Info for at give tilladelse.</translation>
 <translation id="7423098979219808738">Spørg først</translation>
 <translation id="7423538860840206698">Blokeret fra at læse udklipsholderen</translation>
@@ -242,6 +253,7 @@
 <translation id="8087000398470557479">Dette indhold er fra <ph name="DOMAIN_NAME" />, som leveres af Google.</translation>
 <translation id="8116925261070264013">Websites, hvor lyden er slået fra</translation>
 <translation id="8131740175452115882">Bekræft</translation>
+<translation id="8197286292360124385"><ph name="PERMISSION_1" /> blev tilladt</translation>
 <translation id="8200772114523450471">Genoptag</translation>
 <translation id="8206354486702514201">Denne indstilling håndhæves af din administrator.</translation>
 <translation id="8249310407154411074">Flyt til toppen</translation>

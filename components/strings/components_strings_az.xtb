@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Wi-Fi şəbəkəsinə təkrar qoşulur</translation>
 <translation id="1165039591588034296">Xəta</translation>
 <translation id="1165174597379888365">Səhifə ziyarət edilib</translation>
+<translation id="1174723505405632867"><ph name="EMBEDDED_URL" /> saytına <ph name="TOP_LEVEL_URL" /> ünvanında kukilər və sayt datasını istifadə etmək icazəsi verilsin?
+
+Əks halda, məxfilik ayarlarınız əsasında bloklanacaq. Bunun nəticəsində istifadə etdiyiniz məzmun düzgün işləyəcək, lakin <ph name="EMBEDDED_URL" /> saytına fəaliyyətinizi izləmək icazəsi verə bilər.</translation>
 <translation id="1175364870820465910">&amp;Çap edin...</translation>
 <translation id="1175875016430184367">Sağdan üçlü ştapel vurun</translation>
 <translation id="1178581264944972037">Durdurun</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Siyasətlər</translation>
 <translation id="2183608646556468874">Telefon Nömrəsi</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 ünvan}other{# ünvan}}</translation>
+<translation id="2187243482123994665">İstifadəçinin evdə olması</translation>
 <translation id="2187317261103489799">Aşkarlayın (defolt)</translation>
 <translation id="2188375229972301266">Aşağıdan çoxsaylı deşik açın</translation>
 <translation id="2202020181578195191">Düzgün bitmə ili daxil edin</translation>
@@ -531,6 +535,7 @@
 <translation id="3174168572213147020">Ada</translation>
 <translation id="3176929007561373547">Proksi serverin işləməsinə əmin olmaq üçün proksi ayarlarınızı yoxlayın və ya şəbəkə administratorunuzla əlaqə saxlayın. Proksi server işlətməli olduğunuza inanmırsınızsa: 
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> nə zaman evdə olduğunuzu bilmək istəyir</translation>
 <translation id="3188393374551744535">Hesab balansı</translation>
 <translation id="3194737229810486521"><ph name="URL" /> datanı həmişəlik cihazınızda saxlamaq istəyir</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> <ph name="SERVER_NAME" /> serverində</translation>
@@ -1020,6 +1025,7 @@
 <translation id="5171689220826475070">Fanfold-Avropa</translation>
 <translation id="5172758083709347301">Maşın</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> deyil? Bu xətanı xəbər verin</translation>
+<translation id="5179740473595559246">Nə zaman evdə olduğunuzu bilmək</translation>
 <translation id="5190835502935405962">Əlfəcinlər Paneli</translation>
 <translation id="519422657042045905">Annotasiya əlçatan deyil</translation>
 <translation id="5201306358585911203">Bu səhifə daxilində yerləşdirilmiş səhifə deyir:</translation>
@@ -1242,6 +1248,7 @@
 <translation id="6049488691372270142">Səhifə çatdırılması</translation>
 <translation id="6051221802930200923">Hazırda <ph name="SITE" /> saytına daxil olmaq mümkün deyil, çünki veb səhifə sertifikat bağlantısı istifadə edir. Şəbəkə xətaları və hücumları adətən müvəqqəti olur, beləliklə, səhifə yəqin ki daha sonra işləyəcək.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Evdə olduğunuz paylaşılsın?</translation>
 <translation id="6058977677006700226">Kartlardan bütün cihazlarda istifadə edilsin?</translation>
 <translation id="6059925163896151826">USB cihazları</translation>
 <translation id="6060009363608157444">Yanlış DnsOverHttps rejimi.</translation>
@@ -1371,6 +1378,7 @@
 <translation id="6631202559048444592">Siyasət üçün birdən çox mənbə var, lakin dəyərlər eynidir.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Silin</translation>
+<translation id="6645291930348198241">Kukilər və sayt datasına giriş.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Yoxdur}=1{1 saytdan (Google Hesabınızdan çıxmayacaqsınız)}other{ # saytdan (Google Hesabınızdan çıxmayacaqsınız)}}</translation>
 <translation id="6648459603387803038">Administrator brauzer quraşdırmasını uzaqdan dəyişə bilər. Bu cihazdakı fəaliyyət Chrome'dan kənarda da idarə edilə bilər.</translation>
 <translation id="6652101503459149953">Windows Hello işlədin</translation>

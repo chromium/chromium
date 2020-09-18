@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Újracsatlakozás Wi-Fi-hálózathoz</translation>
 <translation id="1165039591588034296">Hiba</translation>
 <translation id="1165174597379888365">Oldallátogatás történt</translation>
+<translation id="1174723505405632867">Engedélyezi a(z) <ph name="EMBEDDED_URL" /> számára, hogy cookie-kat és webhelyadatokat használjon a következő webhelyen: <ph name="TOP_LEVEL_URL" />?
+
+Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyezéssel lehetővé teszi a megnyitott tartalom megfelelő működését, de lehetővé teheti a(z) <ph name="EMBEDDED_URL" /> számára az Ön tevékenységeinek követését is.</translation>
 <translation id="1175364870820465910">&amp;Nyomtatás...</translation>
 <translation id="1175875016430184367">Három kapocs a jobb oldalon</translation>
 <translation id="1178581264944972037">Szünet</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Házirendek</translation>
 <translation id="2183608646556468874">Telefonszám</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 cím}other{# cím}}</translation>
+<translation id="2187243482123994665">Felhasználói jelenlét</translation>
 <translation id="2187317261103489799">Észlelés (alapértelmezett)</translation>
 <translation id="2188375229972301266">Több lyuk alul</translation>
 <translation id="2202020181578195191">Érvényes lejárati évet kell megadnia</translation>
@@ -529,6 +533,7 @@
 <translation id="3174168572213147020">Sziget</translation>
 <translation id="3176929007561373547">Ellenőrizze a proxybeállításokat, vagy kérdezze meg a rendszergazdájától, hogy a proxyszerver működik-e. Ha úgy gondolja, hogy nem használ proxyszervert:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456">A webhely (<ph name="URL" />) szeretné tudni, hogy Ön mikor van jelen</translation>
 <translation id="3188393374551744535">Számlaegyenleg</translation>
 <translation id="3194737229810486521">A(z) <ph name="URL" /> webhely állandó jelleggel adatokat szeretne tárolni az eszközön</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> nyomtató a(z) <ph name="SERVER_NAME" /> nevű szerveren</translation>
@@ -1021,6 +1026,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Számítógép</translation>
 <translation id="5179510805599951267">Nem <ph name="ORIGINAL_LANGUAGE" /> nyelven van? Hiba bejelentése</translation>
+<translation id="5179740473595559246">Tudni, Ön mikor van jelen</translation>
 <translation id="5190835502935405962">Könyvjelzősáv</translation>
 <translation id="519422657042045905">A jelölési funkció nem áll rendelkezésre</translation>
 <translation id="5201306358585911203">Az oldal egyik beágyazott oldalának közlendője</translation>
@@ -1243,6 +1249,7 @@
 <translation id="6049488691372270142">Oldalkézbesítés</translation>
 <translation id="6051221802930200923">Pillanatnyilag nem tudja felkeresni a(z) <ph name="SITE" /> webhelyet, mivel a webhely tanúsítványrögzítést használ. A hálózati hibák és támadások rendszerint átmenetiek, ezért az említett oldal működése később valószínűleg helyreáll.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Megosztja a jelenlétét?</translation>
 <translation id="6058977677006700226">Minden eszközén szeretné használni a kártyákat?</translation>
 <translation id="6059925163896151826">USB-eszközök</translation>
 <translation id="6060009363608157444">Érvénytelen DnsOverHttps-mód.</translation>
@@ -1372,6 +1379,7 @@
 <translation id="6631202559048444592">Egynél több forrás van megadva a házirendnél, de az értékeik ugyanazok.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Törlés</translation>
+<translation id="6645291930348198241">Hozzáférés a cookie-khoz és a webhelyadatokhoz.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Nincs}=1{1 webhelyről (a böngésző nem jelentkezteti ki Google-fiókjából)}other{# webhelyről (a böngésző nem jelentkezteti ki Google-fiókjából)}}</translation>
 <translation id="6648459603387803038">A rendszergazda távolról módosítani tudja a böngészőbeállításokat. Az is lehetséges, hogy az eszközön végzett tevékenységeket a Chrome-on kívülről felügyelik.</translation>
 <translation id="6652101503459149953">Windows Hello használata</translation>

@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Nadagdag na ang site ng <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">Hanapin</translation>
 <translation id="1384959399684842514">Na-pause ang pag-download</translation>
+<translation id="1431402976894535801">I-block ang mga site na malaman kapag aktibo ka</translation>
 <translation id="1446450296470737166">Payagan ganap na kontrol sa MIDI device</translation>
 <translation id="1509960214886564027">Posibleng masira ang mga feature sa maraming site</translation>
 <translation id="1620510694547887537">Camera</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">Buksan ang Instant App</translation>
 <translation id="2148716181193084225">Ngayon</translation>
 <translation id="2182457891543959921">Magtanong bago payagan ang mga site na gumawa ng 3D na mapa ng iyong kapaligiran o subaybayan ang posisyon ng camera (inirerekomenda)</translation>
+<translation id="2187243482123994665">Pagiging aktibo ng user</translation>
 <translation id="2212565012507486665">Payagan ang cookies</translation>
 <translation id="2228071138934252756">Para payagan ang <ph name="APP_NAME" /> na i-access ang iyong camera, i-on din ang camera sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="2289270750774289114">Magtanong kapag gusto ng isang site na tumuklas ng mga Bluetooth device na nasa malapit (inirerekomenda)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">Player ng video</translation>
 <translation id="3115898365077584848">Ipakita ang Impormasyon</translation>
 <translation id="3123473560110926937">Naka-block sa ilang site</translation>
+<translation id="3165371858310906303">Magtanong kapag gustong malaman ng isang site kapag aktibo ka</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> ang naka-store na data</translation>
 <translation id="321187648315454507">Para payagan ang <ph name="APP_NAME" /> na magpadala sa iyo ng mga notification, i-on din ang mga notification sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikropono</translation>
@@ -133,6 +136,7 @@
 <translation id="5197729504361054390">Ibabahagi sa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ang mga contact na pipiliin mo.</translation>
 <translation id="5300589172476337783">Ipakita</translation>
 <translation id="5301954838959518834">OK, nakuha ko</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa</translation>
 <translation id="5313967007315987356">Magdagdag ng site</translation>
 <translation id="5317780077021120954">I-save</translation>
 <translation id="5335288049665977812">Payagan ang mga site na magpatakbo ng JavaScript (inirerekomenda)</translation>
@@ -144,6 +148,7 @@
 <translation id="5403592356182871684">Mga Pangalan</translation>
 <translation id="5489227211564503167"><ph name="ELAPSED_TIME" /> ang lumipas mula sa <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">I-block ang mga ad sa mga site na nagpapakita ng mga nakakasagabal o nakakapanlinlang na ad</translation>
+<translation id="5502860503640766021">Pinapayagan ang <ph name="PERMISSION_1" />, naka-block ang <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Hindi puwedeng humiling ang mga site na magpadala ng mga notification</translation>
 <translation id="5516455585884385570">Buksan ang mga setting ng notification</translation>
 <translation id="5527111080432883924">Magtanong bago payagan ang mga site na i-read ang text at mga larawan mula sa clipboard (inirerekomenda)</translation>
@@ -155,12 +160,15 @@
 <translation id="5690795753582697420">Naka-off ang camera sa mga setting ng Android</translation>
 <translation id="5710871682236653961">Magtanong bago pahintulutan ang mga site na magpadala at tumanggap ng impormasyon kapag na-tap mo ang mga NFC device (inirerekomenda)</translation>
 <translation id="5719847187258001597">Iki-clear nito ang lahat ng data at cookies na na-store ng <ph name="ORIGIN" /> o ng app nito sa iyong Home screen.</translation>
+<translation id="5771720122942595109">Naka-block ang <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Mga Pahintulot</translation>
 <translation id="5860033963881614850">Naka-off</translation>
+<translation id="5863245810240683687">Pinapayagan ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa</translation>
 <translation id="5876056640971328065">I-pause ang video</translation>
 <translation id="5916664084637901428">Naka-on</translation>
 <translation id="5922853908706496913">Ibinabahagi ang iyong screen</translation>
 <translation id="5939518447894949180">I-reset</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Kontrolin ang access ng site na ito sa iyong device</translation>
 <translation id="6040143037577758943">Isara</translation>
 <translation id="6042308850641462728">Marami pang iba</translation>
@@ -172,6 +180,7 @@
 <translation id="6196640612572343990">I-block ang mga third-party na cookie</translation>
 <translation id="6206551242102657620">Secure ang koneksyon. Impormasyon ng site</translation>
 <translation id="6216432067784365534">Mga Opsyon sa <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6262279340360821358">Naka-block ang <ph name="PERMISSION_1" /> at <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Puwedeng humiling ang mga site na magpadala ng mga notification</translation>
 <translation id="6295158916970320988">Lahat ng site</translation>
 <translation id="6320088164292336938">Mag-vibrate</translation>
@@ -194,6 +203,7 @@
 <translation id="6790428901817661496">I-play</translation>
 <translation id="6818926723028410516">Pumili ng mga item</translation>
 <translation id="6864395892908308021">Hindi nababasa ng device na ito ang NFC</translation>
+<translation id="6879016579615558281">Naka-block ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa</translation>
 <translation id="6910211073230771657">Na-delete</translation>
 <translation id="6912998170423641340">I-block ang mga site sa pag-read ng text at mga larawan mula sa clipboard</translation>
 <translation id="6945221475159498467">Pumili</translation>
@@ -211,6 +221,7 @@
 <translation id="723171743924126238">Pumili ng mga larawan</translation>
 <translation id="7243308994586599757">May mga opsyon malapit sa ibaba ng screen</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ang napili</translation>
+<translation id="7260727271532453612">Pinapayagan ang <ph name="PERMISSION_1" /> at <ph name="PERMISSION_2" /></translation>
 <translation id="7302486331832100261">Kadalasan mong bina-block ang mga notification. Para payagan, i-tap ang Mga Detalye.</translation>
 <translation id="7423098979219808738">Magtanong muna</translation>
 <translation id="7423538860840206698">Na-block sa pag-read ng clipboard</translation>
@@ -242,6 +253,7 @@
 <translation id="8087000398470557479">Ang content na ito ay mula sa <ph name="DOMAIN_NAME" />, na ipinadala ng Google.</translation>
 <translation id="8116925261070264013">Naka-mute</translation>
 <translation id="8131740175452115882">Kumpirmahin</translation>
+<translation id="8197286292360124385">Pinapayagan ang <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8206354486702514201">Ipinapatupad ng iyong administrator ang setting na ito.</translation>
 <translation id="8249310407154411074">Ilipat sa itaas</translation>

@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Коопсуздук себептеринен улам файлды колдонуу мүмкүн болгон жок.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> файл кысылууда…</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> нерсе көчүрүлдү.</translation>
 <translation id="174173592514158117">Бардык Play папкаларын көрсөтүү</translation>
 <translation id="174937106936716857">Жалпы файлдардын саны</translation>
 <translation id="1775381402323441512">Видео тууралуу маалымат</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Жараксыз символ: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Вьетнамча баскычтоп (TCVN)</translation>
 <translation id="2168214441502403371">Персче баскычтоп</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> жылдырылды.</translation>
 <translation id="2198315389084035571">Жөнөкөйлөштүрүлгөн кытайча</translation>
 <translation id="2208158072373999562">Кысуу архиви</translation>
 <translation id="2225536596944493418">Чын эле <ph name="NUMBER_OF_ITEMS" /> нерсени жок кылгыңыз келеби?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" папкасын түзүү мүмкүн болбой жатат. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Жылдырылды.</translation>
 <translation id="2278988676849463018">Каннада баскычтобу (Фонетикалык)</translation>
 <translation id="2288278176040912387">Жазууну ойноткуч</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> файл ачылууда.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Баарынын камдык көчүрмөсү сакталды!</translation>
 <translation id="3626281679859535460">Жарыктыгы</translation>
 <translation id="3644896802912593514">Туурасы</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> нерсе жылдырылды.</translation>
 <translation id="3645531960514756307">Папканы бошотуу</translation>
 <translation id="3678559383040232393">Мальтача баскычтоп</translation>
 <translation id="3685122418104378273">Мобилдик дайындар колдонулуп жатканда, Google Drive шайкештештирүүсү демейки шартта өчүрүлөт.</translation>
@@ -395,6 +399,7 @@
     Түзмөгүңүзгө эмне болсо да, файлдарыңыз ар дайым коопсуз шартта Google Drive'да сакталып турат.<ph name="MARKUP_6" />
     Файлдарыңыздын баарын бир жерден
     <ph name="MARKUP_7" />бөлүшүп, түзүп жана башкалар менен иштешиңиз<ph name="MARKUP_8" />.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Көчүрүлдү.</translation>
 <translation id="5275973617553375938">Калыбына келтирилген Google Drive файлдары</translation>
 <translation id="5317780077021120954">Сактоо</translation>
 <translation id="5318819489018851358">Linux аркылуу бөлүшүү</translation>
@@ -750,6 +755,7 @@
 <translation id="943972244133411984">Өзгөрткөн:</translation>
 <translation id="945522503751344254">Пикириңизди билдириңиз</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />–<ph name="TO_ENTRY_NAME" /> ортосундагы <ph name="ENTRY_COUNT" /> пункт тандалды.</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> көчүрүлдү.</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" деген аталыштагы файл мурунтан эле бар. Аны алмаштыргыңыз келеби?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> Мб</translation>

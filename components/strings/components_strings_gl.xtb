@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Conectando de novo á wifi</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1165174597379888365">Visítase unha páxina</translation>
+<translation id="1174723505405632867">Queres permitir que <ph name="EMBEDDED_URL" /> utilice as cookies e os datos dos sitios en <ph name="TOP_LEVEL_URL" />?
+
+En caso contrario, a configuración de privacidade impedirao. Se o permites, o contido co que interactúes funcionará correctamente, pero <ph name="EMBEDDED_URL" /> poderá realizar un seguimento da túa actividade.</translation>
 <translation id="1175364870820465910">&amp;Imprimir...</translation>
 <translation id="1175875016430184367">Tres grampas na parte dereita</translation>
 <translation id="1178581264944972037">Pausar</translation>
@@ -308,6 +311,7 @@
 <translation id="2181821976797666341">Políticas</translation>
 <translation id="2183608646556468874">Número de teléfono</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 enderezo}other{# enderezos}}</translation>
+<translation id="2187243482123994665">Estado de actividade do usuario</translation>
 <translation id="2187317261103489799">Detectar (predeterminado)</translation>
 <translation id="2188375229972301266">Varias perforacións na parte inferior</translation>
 <translation id="2202020181578195191">Introduce un ano de caducidade válido</translation>
@@ -530,6 +534,7 @@
       asegurarte de que o servidor proxy funciona. Se non cres que deberías
       estar utilizando un servidor proxy:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> quere saber se estás activo</translation>
 <translation id="3188393374551744535">Saldo da conta</translation>
 <translation id="3194737229810486521">O URL <ph name="URL" /> quere almacenar datos de forma permanente no teu dispositivo</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> en <ph name="SERVER_NAME" /></translation>
@@ -1022,6 +1027,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Equipo</translation>
 <translation id="5179510805599951267">Non está en <ph name="ORIGINAL_LANGUAGE" />? Informar deste erro</translation>
+<translation id="5179740473595559246">Saber cando estás activo</translation>
 <translation id="5190835502935405962">Barra de marcadores</translation>
 <translation id="519422657042045905">O modo de anotación non está dispoñible</translation>
 <translation id="5201306358585911203">Unha páxina inserida nesta páxina di</translation>
@@ -1244,6 +1250,7 @@
 <translation id="6049488691372270142">Entrega da páxina</translation>
 <translation id="6051221802930200923">Non podes acceder a <ph name="SITE" /> agora momento porque o sitio web usa a fixación de certificados. Normalmente, os erros de rede e os ataques son temporais, polo que é posible que esta páxina funcione máis tarde.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Queres compartir o teu estado de actividade?</translation>
 <translation id="6058977677006700226">Queres utilizar as túas tarxetas en todos os teus dispositivos?</translation>
 <translation id="6059925163896151826">Dispositivos USB</translation>
 <translation id="6060009363608157444">Modo DnsOverHttps non válido.</translation>
@@ -1373,6 +1380,7 @@
 <translation id="6631202559048444592">A política contén máis dunha fonte, pero teñen os mesmos valores.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Borrar</translation>
+<translation id="6645291930348198241">Acceder ás cookies e aos datos dos sitios.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Ningún}=1{De 1 sitio (non se pechará sesión na túa conta de Google)}other{De # sitios (non se pechará sesión na túa conta de Google)}}</translation>
 <translation id="6648459603387803038">O teu administrador pode cambiar a configuración do navegador de forma remota. A actividade deste dispositivo tamén se pode xestionar fóra de Chrome.</translation>
 <translation id="6652101503459149953">Usar Windows Hello</translation>

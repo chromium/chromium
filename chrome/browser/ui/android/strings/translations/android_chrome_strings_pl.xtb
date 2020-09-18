@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
-<translation id="1013149566889033026">Zostanie otwarta nowa karta incognito</translation>
 <translation id="1028699632127661925">Przesyłam na: <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Wyczyścić też dane z tych stron i aplikacji?</translation>
 <translation id="1036348656032585052">Wyłącz</translation>
@@ -166,6 +165,7 @@ Aby coś wyszukać, dotknij dowolnego słowa. Aby doprecyzować wyszukiwanie, na
 <translation id="2321086116217818302">Przygotowuję hasła…</translation>
 <translation id="2321958826496381788">Przeciągaj suwak, by umożliwić wygodne czytanie. Gdy dwukrotnie klikniesz akapit, tekst powiększy się co najmniej do tej wielkości.</translation>
 <translation id="2323763861024343754">Dane witryn:</translation>
+<translation id="2326606747676847821">Włącz tryb incognito</translation>
 <translation id="2328985652426384049">Nie można się zalogować</translation>
 <translation id="234265804618409743">Nie udało się otworzyć aparatu. Coś poszło nie tak.</translation>
 <translation id="2345671828921229300">Aby wyszukać, naciśnij i przytrzymaj słowo</translation>
@@ -346,7 +346,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3775705724665058594">Wyślij na swoje urządzenia</translation>
 <translation id="3778956594442850293">Dodano do ekranu głównego</translation>
 <translation id="3789841737615482174">Zainstaluj</translation>
-<translation id="3800748312755064483">Zaloguj się tymczasowo</translation>
 <translation id="3810838688059735925">Wideo</translation>
 <translation id="3810973564298564668">Zarządzaj</translation>
 <translation id="3819178904835489326">Usunięte pobrane pliki: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
@@ -387,7 +386,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="4135200667068010335">Lista urządzeń, którym udostępnisz kartę, jest zamknięta.</translation>
 <translation id="4149994727733219643">Uproszczony widok stron internetowych</translation>
 <translation id="4170011742729630528">Usługa jest niedostępna. Spróbuj ponownie później.</translation>
-<translation id="4175173967354304331">Zalogujesz się na tej stronie, w Chrome i w aplikacjach Google</translation>
 <translation id="4179980317383591987">Wykorzystano <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Języki</translation>
 <translation id="4183868528246477015">Szukaj z Obiektywem Google <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>

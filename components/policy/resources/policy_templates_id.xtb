@@ -1830,7 +1830,6 @@ Jika ditetapkan ke False, <ph name="PRODUCT_NAME" /> tidak akan menggunakan noti
 <translation id="3631099945620529777">Jika ditetapkan ke False, tombol 'Akhiri proses' akan dinonaktifkan di Pengelola Tugas.
 
       Jika ditetapkan ke True atau tidak dikonfigurasi, pengguna dapat mengakhiri proses di Pengelola Tugas.</translation>
-<translation id="3639444551396586995">Mengizinkan Chrome untuk melaporkan peristiwa tidak aman kepada Google</translation>
 <translation id="3643284063603988867">Aktifkan fitur 'Ingat sandi'</translation>
 <translation id="3646859102161347133">Menyetel jenis lup</translation>
 <translation id="3647212518036289905">Menyetel kebijakan akan menentukan library GSSAPI mana yang akan digunakan untuk autentikasi HTTP. Setel kebijakan ke nama library atau jalur lengkap.
@@ -2056,9 +2055,6 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="3942041691320538491">Jika kebijakan ditetapkan ke 0 (default), Anda akan dapat mengakses alat developer dan konsol JavaScript, tetapi bukan dalam konteks ekstensi yang diinstal oleh kebijakan perusahaan. Jika kebijakan ditetapkan ke 1, Anda akan dapat mengakses alat developer dan konsol JavaScript di semua konteks, termasuk yang berasal dari ekstensi yang diinstal oleh kebijakan perusahaan. Jika kebijakan ditetapkan ke 2, Anda tidak akan dapat mengakses alat developer, dan Anda tidak dapat memeriksa elemen situs.
 
       Setelan ini juga menonaktifkan pintasan keyboard dan entri menu atau menu konteks untuk membuka alat developer atau konsol JavaScript.</translation>
-<translation id="3942080695743860553">Menyetel kebijakan akan mengontrol perintah yang digunakan untuk membuka URL dalam browser alternatif. Kebijakan ini dapat disetel ke salah satu <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, atau jalur file. Ketika kebijakan ini disetel ke jalur file, file tersebut akan digunakan sebagai file yang dapat dijalankan. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> hanya tersedia di <ph name="MS_WIN_NAME" />, dan <ph name="SAFARI_VALUE_PLACEHOLDER" /> hanya tersedia di <ph name="MS_WIN_NAME" /> dan <ph name="MAC_OS_NAME" />.
-
-      Kebijakan yang tidak disetel menempatkan default khusus platform yang digunakan: <ph name="IE_PRODUCT_NAME" /> untuk <ph name="MS_WIN_NAME" />, atau <ph name="SAFARI_PRODUCT_NAME" /> untuk <ph name="MAC_OS_NAME" />. Pada <ph name="LINUX_OS_NAME" />, peluncuran browser alternatif akan gagal.</translation>
 <translation id="3950110092991281616">Mengaktifkan autentikasi pasif di sesi reguler saja.</translation>
 <translation id="3950239119790560549">Memperbarui Batasan Waktu</translation>
 <translation id="3956686688560604829">Gunakan kebijakan SiteList Internet Explorer untuk Dukungan Browser Lama.</translation>
@@ -2618,10 +2614,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="4874982543810021567">Blokir WebUSB di situs ini</translation>
 <translation id="4876805738539874299">Versi SSL maksimum diaktifkan</translation>
 <translation id="4887274746092315609">Mengaktifkan halaman untuk pengubahan sandi dalam-sesi bagi pengguna SAML</translation>
-<translation id="4887863670424903990">Saat kebijakan ini ditetapkan ke aktif, <ph name="PRODUCT_NAME" /> akan melaporkan peristiwa tidak aman seperti penggunaan ulang sandi, download malware, interstisial, pelanggaran aturan perlindungan data sensitif, dll. kepada Google untuk dianalisis.  Beberapa peristiwa tidak aman seperti pelanggaran aturan perlindungan data sensitif bergantung pada kebijakan lain yang mengaktifkan pemeriksaan tersebut.
-
-      Jika kebijakan ini ditetapkan ke nonaktif atau tidak ditetapkan, <ph name="PRODUCT_NAME" /> tidak akan melaporkan peristiwa tidak aman.
-      </translation>
 <translation id="4894290482695457375">Kecuali <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> disetel ke Nonaktif, menyetel <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> ke Aktif akan menghubungkan <ph name="PRODUCT_NAME" /> ke perangkat Cast di semua alamat IP, bukan hanya alamat pribadi RFC1918/RFC4193.
 
       Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> hanya akan terhubung ke perangkat Cast di RFC1918/RFC4193.
@@ -2916,7 +2908,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="5293044154216294358">Jika kebijakan ditetapkan ke Benar (True), pengguna akan diizinkan untuk memainkan game dinosaurus. Jika kebijakan ditetapkan ke Salah (False), pengguna tidak dapat memainkan game dinosaurus sebagai fitur tersembunyi saat perangkat offline.
 
       Jika kebijakan tidak ditetapkan, pengguna tidak dapat memainkan game di <ph name="PRODUCT_OS_NAME" /> yang terdaftar, tetapi dapat memainkannya dalam kondisi lain.</translation>
-<translation id="529457411593078576">Mengaktifkan ToS saat CCT pertama kali dijalankan</translation>
+<translation id="529457411593078576">Menampilkan Persyaratan Layanan (ToS) saat CCT pertama kali dijalankan</translation>
 <translation id="5306186200045823863">Mengaktifkan kepercayaan pada Infrastruktur IKP Lama milik Symantec Corporation</translation>
 <translation id="5307432759655324440">Ketersediaan mode samaran</translation>
 <translation id="5311275381462687162">Setelan default perilaku cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>
@@ -3857,7 +3849,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Perlu diketahui bahwa kebijakan ini dapat diganti dengan EnabledPlugins dan DisabledPluginsExceptions.
 
       Jika kebijakan ini tidak ditetapkan, pengguna dapat menggunakan plugin mana pun yang diinstal di sistem kecuali plugin yang tidak kompatibel saat dilakukan hard code, usang, atau berbahaya.</translation>
-<translation id="6571871508154591774">Mengonfigurasi kamera, setelan browser, dan fitur setelan OS untuk dinonaktifkan</translation>
 <translation id="6573305661369899995">Setel sumber eksternal batasan URL</translation>
 <translation id="6575944031719151455">Menyetel kebijakan akan menentukan daftar akun lokal perangkat yang ditampilkan di layar login. ID akan menunjukkan akun lokal perangkat yang berbeda.
 
@@ -4953,11 +4944,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8050080920415773384">Pencetakan Asli</translation>
 <translation id="8053580360728293758">Mengganti mode warna pencetakan default. Jika mode tersebut tidak tersedia, kebijakan ini akan diabaikan.</translation>
-<translation id="8057841287222359526">Memungkinkan Anda menetapkan daftar fitur <ph name="PRODUCT_OS_NAME" /> untuk dinonaktifkan.
-
-      Jika salah satu fitur ini dinonaktifkan, pengguna tidak dapat mengaksesnya dari UI dan akan melihatnya sebagai "dinonaktifkan oleh admin".
-
-      Jika kebijakan tidak ditetapkan, semua fitur <ph name="PRODUCT_OS_NAME" /> akan diaktifkan secara default dan pengguna dapat menggunakan semua fitur tersebut.</translation>
 <translation id="8059164285174960932">URL tempat klien akses jarak jauh seharusnya memperoleh token autentikasi mereka</translation>
 <translation id="8077245272412229388">Menambahkan akun Kerberos yang telah diisi. Jika kredensial Kerberos cocok dengan kredensial login, akun dapat dikonfigurasi untuk menggunakan kembali kredensial login dengan menentukan '<ph name="LOGIN_EMAIL_PLACEHOLDER" />' dan <ph name="PASSWORD_PLACEHOLDER" />', masing-masing untuk akun utama dan sandi, sehingga tiket Kerberos dapat diambil secara otomatis kecuali autentikasi 2 langkah dikonfigurasi. Pengguna tidak dapat memodifikasi akun yang ditambahkan melalui kebijakan ini.
 

@@ -2632,7 +2632,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4095507791297118304">Primär skärm</translation>
 <translation id="409579654357498729">Lägg till i Cloud Print</translation>
 <translation id="4096508467498758490">Inaktivera tillägg i utvecklarläge</translation>
-<translation id="4096824249111507322">Vänta medan den säkra modulen förbereds (det kan ta några minuter) …</translation>
 <translation id="4097406557126260163">Appar och tillägg</translation>
 <translation id="4097560579602855702">Sök på Google</translation>
 <translation id="4098667039111970300">Verktyg för e-penna i verktygsfältet</translation>
@@ -3362,7 +3361,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5050330054928994520">Text till tal</translation>
 <translation id="5051836348807686060">Stavningskontroll stöds inte för de språk du valt</translation>
 <translation id="5052499409147950210">Redigera webbplats</translation>
-<translation id="5053604404986157245">Det slumpmässigt genererade TPM-lösenordet är inte tillgängligt. Det här är normalt efter en powerwash.</translation>
 <translation id="5057110919553308744">När du klickar på tillägget</translation>
 <translation id="5057403786441168405">Hantera konton där du är inloggad. Webbplatser, appar och tillägg i Chrome och på Google Play kan anpassa din upplevelse utifrån dessa konton beroende på behörighet. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Begränsa inloggning</translation>
@@ -3953,7 +3951,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5774295353725270860">Öppna appen Filer</translation>
 <translation id="577624874850706961">Sök efter cookies</translation>
 <translation id="5777468213129569553">Öppna Chrome</translation>
-<translation id="5778747455497889540">Nedan visas det slumpmässigt genererade lösenordet för den säkra modulen som har tilldelats din dator:</translation>
 <translation id="5780011244986845107">Mappen som du valde innehåller känsliga filer. Är du säker på att du vill bevilja <ph name="APP_NAME" /> permanent läsåtkomst till mappen?</translation>
 <translation id="5780973441651030252">Prioriteringsprocess</translation>
 <translation id="5781092003150880845">Synkronisera till <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4662,7 +4659,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6635956300022133031">Välj och anpassa röster för text till tal</translation>
 <translation id="6636588250634969791">Sätt i SIM-kortet innan du fortsätter</translation>
 <translation id="6639554308659482635">SQLite-minne</translation>
-<translation id="6641138807883536517">Det slumpmässigt genererade lösenordet för den säkra modulen är inte tillgängligt. Det här är normalt efter en powerwash.</translation>
 <translation id="6642720633335369752">Om du sveper uppåt från skärmens nederkant och håller kvar fingret visas alla öppna appfönster.</translation>
 <translation id="664290675870910564">Välj nätverk</translation>
 <translation id="6643016212128521049">Rensa</translation>
@@ -4990,7 +4986,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7029307918966275733">Crostini har inte installerats. Installera Crostini för att visa upphovspersoner.</translation>
 <translation id="7029809446516969842">Lösenord</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Serieporten är ansluten</translation>
-<translation id="7031962166228839643">TPM förbereds, vänta (det kan ta några minuter)...</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> utrymme rekommenderas för Linux. Frigör utrymme genom att radera filer på enheten.</translation>
 <translation id="7037509989619051237">Text för förhandsgranskning</translation>
 <translation id="7038632520572155338">Brytarstyrning</translation>
@@ -5980,7 +5975,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8226222018808695353">Förbjuden</translation>
 <translation id="8226619461731305576">Utskriftskö</translation>
 <translation id="8226628635270268143">Välj favoritfoton och favoritalbum</translation>
-<translation id="8226742006292257240">Nedan visas det slumpmässigt genererade lösenordet för TPM som har tilldelats din dator:</translation>
 <translation id="8227119283605456246">Bifoga fil</translation>
 <translation id="8230134520748321204">Vill du spara lösenordet för <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Det gick inte att pinga standardnätverkets gateway</translation>

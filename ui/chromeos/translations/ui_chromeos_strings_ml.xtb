@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">സുരക്ഷാ കാരണങ്ങളാൽ ഫയൽ ആക്‌സസ്സുചെയ്യാൻ കഴിഞ്ഞില്ല.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ സിപ്പ് ചെയ്യുന്നു...</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ പകർത്തി.</translation>
 <translation id="174173592514158117">എല്ലാ Play ഫോൾഡറുകളും കാണിക്കുക</translation>
 <translation id="174937106936716857">മൊത്തം ഫയലുകളുടെ എണ്ണം</translation>
 <translation id="1775381402323441512">വീഡിയോ വിവരം</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">അസാധുവായ പ്രതീകം: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">വിയറ്റ്‌നാമീസ് കീബോർഡ് (TCVN)</translation>
 <translation id="2168214441502403371">പേർഷ്യൻ കീബോർഡ്</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> നീക്കി.</translation>
 <translation id="2198315389084035571">(ലളിതമാക്കിയ ചൈനീസ്)</translation>
 <translation id="2208158072373999562">Zip ശേഖരം</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ ഇല്ലാതാക്കണമെന്ന് ഉറപ്പാണോ?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ഫോൾഡർ സൃഷ്‌ടിക്കാനാവില്ല. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">നീക്കി.</translation>
 <translation id="2278988676849463018">കന്നഡ കീബോർഡ് (സ്വരസൂചകം)</translation>
 <translation id="2288278176040912387">റെക്കോർഡ് പ്ലേയർ</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ഫയലുകൾ തുറക്കുന്നു.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">എല്ലാം ബാക്കപ്പുചെയ്‌തു!</translation>
 <translation id="3626281679859535460">മിഴിവ്</translation>
 <translation id="3644896802912593514">വീതി</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ നീക്കി.</translation>
 <translation id="3645531960514756307">ഫോൾഡർ അൺപിൻ ചെയ്യുക</translation>
 <translation id="3678559383040232393">മാൾട്ടീസ് കീബോർഡ്</translation>
 <translation id="3685122418104378273">മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കുമ്പോൾ, സാധാരണയായി Google ഡ്രൈവ് സമന്വയം പ്രവർത്തനരഹിതമാകുന്നു.</translation>
@@ -395,6 +399,7 @@
         ഉപകരണത്തിന് എന്തുസംഭവിച്ചാലും കുഴപ്പമില്ല, ഫയലുകൾ സുരക്ഷിതമായി Google ഡ്രൈവിൽ സൂക്ഷിച്ചിരിക്കും.<ph name="MARKUP_6" />
        <ph name="MARKUP_7" />മറ്റുള്ളവരുമായി ഒരിടത്തു നിന്നുതന്നെ ഫയലുകൾ<ph name="MARKUP_8" />
         പങ്കിടുകയും സൃഷ്‌ടിക്കുകയും സഹകരിക്കുകയും ചെയ്യുക.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">പകർത്തി.</translation>
 <translation id="5275973617553375938">Google ഡ്രൈവിൽ നിന്നും ഫയലുകൾ വീണ്ടെടുത്തു</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
@@ -751,6 +756,7 @@
 <translation id="943972244133411984">പരിഷ്‌ക്കരിച്ചത്</translation>
 <translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />-ൽ നിന്ന് <ph name="TO_ENTRY_NAME" />-ലേക്ക് <ph name="ENTRY_COUNT" /> എൻട്രികളുള്ള ഒരു ശ്രേണി തിരഞ്ഞെടുത്തു.</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> പകർത്തി.</translation>
 <translation id="981121421437150478">ഓഫ്‌ലൈൻ</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" എന്ന് പേരുള്ള ഫയൽ മുമ്പേ നിലവിലുണ്ട്. ഇത് മാറ്റി പകരം വയ്ക്കണോ?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

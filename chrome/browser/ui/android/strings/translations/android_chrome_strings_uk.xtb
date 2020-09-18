@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
-<translation id="1013149566889033026">Відкриється нова анонімна вкладка</translation>
 <translation id="1028699632127661925">Надсилання на пристрій "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="103269572468856066">Видалити дані з цих сайтів і додатків?</translation>
 <translation id="1036348656032585052">Вимкнути</translation>
@@ -166,6 +165,7 @@
 <translation id="2321086116217818302">Готуються паролі…</translation>
 <translation id="2321958826496381788">Перетягуйте повзунок, доки розмір тексту не стане зручним для читання. Якщо двічі торкнутись абзацу, розмір тексту має стати принаймні таким, як цей.</translation>
 <translation id="2323763861024343754">Дані сайтів</translation>
+<translation id="2326606747676847821">Відкрити в анонімному вікні</translation>
 <translation id="2328985652426384049">Не вдається ввійти</translation>
 <translation id="234265804618409743">Не вдається відкрити камеру. Помилка.</translation>
 <translation id="2345671828921229300">Щоб почати пошук, натисніть і утримуйте слово</translation>
@@ -346,7 +346,6 @@
 <translation id="3775705724665058594">Надіслати на пристрої</translation>
 <translation id="3778956594442850293">Додано на головний екран</translation>
 <translation id="3789841737615482174">Встановити</translation>
-<translation id="3800748312755064483">Увійти тимчасово</translation>
 <translation id="3810838688059735925">Відео</translation>
 <translation id="3810973564298564668">Змінити</translation>
 <translation id="3819178904835489326">Видалено завантажених файлів: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
@@ -387,7 +386,6 @@
 <translation id="4135200667068010335">Список пристроїв, на які можна надіслати вкладку, закрито.</translation>
 <translation id="4149994727733219643">Спрощений перегляд веб-сторінок</translation>
 <translation id="4170011742729630528">Служба не доступна. Повторіть спробу пізніше.</translation>
-<translation id="4175173967354304331">Ви ввійдете у свій обліковий запис на цьому сайті, у Chrome і додатках Google</translation>
 <translation id="4179980317383591987">Використано <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Мови</translation>
 <translation id="4183868528246477015">Пошук з Об'єктивом <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>

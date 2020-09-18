@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
-<translation id="1013149566889033026">Kichupo fiche kipya kitafunguka</translation>
 <translation id="1028699632127661925">Unatuma kwenye <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Utafuta data kwenye tovuti na programu hizi?</translation>
 <translation id="1036348656032585052">Zima</translation>
@@ -166,6 +165,7 @@ Gusa neno lolote ili utafute. Ili uchuje utafutaji wako, gusa na ushikilie ili u
 <translation id="2321086116217818302">Inatayarisha manenosiri…</translation>
 <translation id="2321958826496381788">Buruta kitelezi hadi uweze kusoma haya kwa starehe. Maandishi yanapaswa kuonekana angalau kwa ukubwa huu baada ya kugonga mara mbili kwenye aya.</translation>
 <translation id="2323763861024343754">Hifadhi ya tovuti</translation>
+<translation id="2326606747676847821">Vinjari katika Hali Fiche</translation>
 <translation id="2328985652426384049">Imeshindwa kuingia katika akaunti</translation>
 <translation id="234265804618409743">Imeshindwa kufungua kamera yako. Hitilafu fulani imetokea.</translation>
 <translation id="2345671828921229300">Ili utafute, gusa na ushikilie neno</translation>
@@ -346,7 +346,6 @@ Gusa na ushikilie neno lolote ili utafute. Ili uchuje utafutaji wako, chagua man
 <translation id="3775705724665058594">Tuma kwenye vifaa vyako</translation>
 <translation id="3778956594442850293">Imeongezwa kwenye Skrini ya Kwanza</translation>
 <translation id="3789841737615482174">Sakinisha</translation>
-<translation id="3800748312755064483">Ingia katika akaunti kwa muda</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Dhibiti</translation>
 <translation id="3819178904835489326">Vipakuliwa <ph name="NUMBER_OF_DOWNLOADS" /> vimefutwa</translation>
@@ -387,7 +386,6 @@ Gusa na ushikilie neno lolote ili utafute. Ili uchuje utafutaji wako, chagua man
 <translation id="4135200667068010335">Orodha ya vifaa vinavyoweza kutumia kichupo pamoja imefungwa.</translation>
 <translation id="4149994727733219643">Mwonekano uliorahisishwa kwa ajili ya kurasa za wavuti</translation>
 <translation id="4170011742729630528">Huduma haipatikani; jaribu tena baadaye.</translation>
-<translation id="4175173967354304331">Maelezo ya akaunti yako yatatumiwa kwenye tovuti hii, Chrome na programu za Google</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> imetumika</translation>
 <translation id="4181841719683918333">Lugha</translation>
 <translation id="4183868528246477015">Tafuta na Lenzi ya Google <ph name="BEGIN_NEW" />Mpya<ph name="END_NEW" /></translation>

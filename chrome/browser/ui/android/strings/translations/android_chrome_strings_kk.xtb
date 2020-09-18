@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
-<translation id="1013149566889033026">Жаңа инкогнито қойындысы ашылады.</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> құрылғысына жіберілуде…</translation>
 <translation id="103269572468856066">Деректер өшірілсін бе?</translation>
 <translation id="1036348656032585052">Өшіру</translation>
@@ -166,6 +165,7 @@
 <translation id="2321086116217818302">Құпия сөздер дайындалуда…</translation>
 <translation id="2321958826496381788">Сырғытпаны оқу ыңғайлы болғанға дейін сүйреңіз. Абзацты екі рет басқан кезде, мәтіннің үлкендігі осындай болуы керек.</translation>
 <translation id="2323763861024343754">Сайт деректері</translation>
+<translation id="2326606747676847821">Инкогнито режиміне өту</translation>
 <translation id="2328985652426384049">Кіру мүмкін емес</translation>
 <translation id="234265804618409743">Камера ашылмайды. Бірдеңе дұрыс болмады.</translation>
 <translation id="2345671828921229300">Іздеу үшін сөзді түртіп, ұстап тұрыңыз.</translation>
@@ -346,7 +346,6 @@
 <translation id="3775705724665058594">Құрылғыларға жіберу</translation>
 <translation id="3778956594442850293">Негізгі экранға қосылды</translation>
 <translation id="3789841737615482174">Орнату</translation>
-<translation id="3800748312755064483">Уақытша кіру</translation>
 <translation id="3810838688059735925">Бейне</translation>
 <translation id="3810973564298564668">Басқару</translation>
 <translation id="3819178904835489326">Жүктелген <ph name="NUMBER_OF_DOWNLOADS" /> файл жойылды</translation>
@@ -677,6 +676,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="6341580099087024258">Файл сақталатын орынды сұрау</translation>
 <translation id="6342069812937806050">Қазір ғана</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 және тағы <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 және тағы <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
+<translation id="6345878117466430440">Оқылды деп белгілеу</translation>
 <translation id="6364438453358674297">Журналдың ұсынысын жою қажет пе?</translation>
 <translation id="6366047038980456022"><ph name="APP_NAME" /> қолданбасы онлайн режимде қауіпсіз жұмыс істеуге, жасауға және іздеуге мүмкіндік беретін смарт функциялар мен жылдамдыққа ие.</translation>
 <translation id="6378173571450987352">Мәліметтер: пайдаланылған деректер көлемі бойынша сұрыпталды</translation>
@@ -992,6 +992,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="8655129584991699539">Деректерді Chrome параметрлерінде өшіруге болады.</translation>
 <translation id="8662811608048051533">Көп сайттардан шығарады.</translation>
 <translation id="8664979001105139458">Мұндай атаулы файл бұрыннан бар</translation>
+<translation id="8683039184091909753">сурет</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Сигнал деңгейі: # сызықша}other{Сигнал деңгейі: # сызықша}}</translation>
 <translation id="869891660844655955">Аяқталу мерзімі</translation>
 <translation id="8712637175834984815">Түсінікті</translation>

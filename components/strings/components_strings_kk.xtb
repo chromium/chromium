@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Wi-Fi желісіне қайта қосылу</translation>
 <translation id="1165039591588034296">Қате</translation>
 <translation id="1165174597379888365">Кірілген сайт</translation>
+<translation id="1174723505405632867"><ph name="EMBEDDED_URL" /> сайтына <ph name="TOP_LEVEL_URL" /> сайтында cookie файлдары мен сайт деректерін пайдалануға рұқсат бересіз бе?
+
+Рұқсат бермесеңіз, оны құпиялылық параметрлері бөгейді. Ал рұқсат берсеңіз, өзара әрекет еткен мазмұныңыз дұрыс жұмыс істейді, бірақ <ph name="EMBEDDED_URL" /> сайты әрекетіңізді қадағалайды.</translation>
 <translation id="1175364870820465910">&amp;Басып шығару…</translation>
 <translation id="1175875016430184367">Оң жағын үш рет қапсыру</translation>
 <translation id="1178581264944972037">Кідірту</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Саясаттар</translation>
 <translation id="2183608646556468874">Телефон нөмірі</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 мекенжай}other{# мекенжай}}</translation>
+<translation id="2187243482123994665">Пайдаланушының белсенді қолдануы</translation>
 <translation id="2187317261103489799">Анықтау (әдепкі)</translation>
 <translation id="2188375229972301266">Төменгі жағын бірнеше рет тесу</translation>
 <translation id="2202020181578195191">Дұрыс жарамдылық мерзімі аяқталатын жылды енгізіңіз</translation>
@@ -532,6 +536,7 @@
 <translation id="3176929007561373547">Прокси серверінің жұмыс істеп жатқанын тексеру үшін прокси параметрлерін
      тексеріңіз немесе желі әкімшісіне хабарласыңыз. Прокси сервері қажет емес деп ойласаңыз:
      <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> сіздің белсенді пайдаланып жатқаныңызды білгісі келеді.</translation>
 <translation id="3188393374551744535">Есептік жазба балансы</translation>
 <translation id="3194737229810486521"><ph name="URL" /> деректерді құрылғыңызда біржола сақтағысы келеді</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> серверіндегі <ph name="PRINTER_NAME" /></translation>
@@ -1024,6 +1029,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Машина</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> тілінде емес пе? Бұл қате туралы хабарлау</translation>
+<translation id="5179740473595559246">Сіздің белсенді пайдаланып жатқаныңызды білу</translation>
 <translation id="5190835502935405962">Бетбелгілер жолағы</translation>
 <translation id="519422657042045905">Аннотация жоқ</translation>
 <translation id="5201306358585911203">Бұл веббетке ендірілген беттегі сұрау</translation>
@@ -1246,6 +1252,7 @@
 <translation id="6049488691372270142">Бетті беру</translation>
 <translation id="6051221802930200923">Қазір <ph name="SITE" /> сайтына кіру мүмкін емес, себебі веб сайт сертификат бекітуді пайдаланады. Желі қателері мен шабуылдары әдетте уақытша болғандықтан, бұл бет кейінірек жұмыс істеуі мүмкін.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Белсенді пайдалану дерегіңізді бөлісесіз бе?</translation>
 <translation id="6058977677006700226">Карталарыңыз барлық құрылғыларда пайдаланылсын ба?</translation>
 <translation id="6059925163896151826">USB құрылғылары</translation>
 <translation id="6060009363608157444">DnsOverHttps режимі жарамсыз.</translation>
@@ -1375,6 +1382,7 @@
 <translation id="6631202559048444592">Саясат үшін бірнеше дереккөз бар, бірақ олардың мәндері бірдей.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Тазалау</translation>
+<translation id="6645291930348198241">Cookie файлдарын және сайт деректерін пайдалану.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Жоқ}=1{1 сайттан (Google есептік жазбаңыздан шықпайсыз)}other{# сайттан (Google есептік жазбаңыздан шықпайсыз)}}</translation>
 <translation id="6648459603387803038">Браузер параметрін әкімші қашықтан өзгерте алады. Сонымен қатар құрылғыдағы әрекеттерді Chrome браузерінен тыс басқаруға болады.</translation>
 <translation id="6652101503459149953">Windows Hello қолдану</translation>

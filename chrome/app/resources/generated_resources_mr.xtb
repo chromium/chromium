@@ -374,6 +374,7 @@
 <translation id="143027896309062157">तुमच्या काँम्पुटरवर आणि तुम्ही भेट देत असलेल्या वेबसाइट वरील सर्व तुमचा डेटा वाचा आणि बदला</translation>
 <translation id="1430915738399379752">प्रिंट</translation>
 <translation id="1431188203598586230">अंतिम सॉफ्टवेअर अपडेट</translation>
+<translation id="1431402976894535801">तुम्ही डिव्हाइस कधी वापरता हे साइटना जाणून घ्यायचे असते तेव्हा त्यांना ब्लॉक करा</translation>
 <translation id="1431432486300429272">Search आणि इतर Google सेवा पर्सनलाइझ करण्यासाठी Google तुमचा ब्राउझिंग इतिहास वापरू शकते. तुम्ही किंवा तुमचे पालक myaccount.google.com/activitycontrols/search येथे हे कधीही बदलू शकता</translation>
 <translation id="1432581352905426595">शोध इंजिन व्यवस्थापित करा</translation>
 <translation id="1433811987160647649">प्रवेश करण्यापूर्वी विचारा</translation>
@@ -569,6 +570,7 @@
 <translation id="1651008383952180276">समान सांकेतिक पासफ्रेझ दोनदा एंटर करणे आवश्यक आहे</translation>
 <translation id="1652326691684645429">Nearby सह शेअरिंग सुरू करा</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Google क्लाउड प्रिंट वर प्रिंटर जोडा जेणेकरून तुम्ही कुठूनही प्रिंट करू शकता.}other{Google क्लाउड प्रिंट वर # प्रिंटर जोडा जेणेकरून तुम्ही कुठूनही प्रिंट करू शकता.}}</translation>
+<translation id="1653575510930452864">मजकुराची लिंक कॉपी करा</translation>
 <translation id="1656528038316521561">बॅकग्राउंडची अपारदर्शकता</translation>
 <translation id="1657406563541664238">वापर आकडेवारी आणि क्रॅश अहवाल आपोआप Google कडे पाठवून <ph name="PRODUCT_NAME" /> ला अधिक चांगले करण्यास मदत करा</translation>
 <translation id="1657937299377480641">शैक्षणिक स्रोतांच्या अ‍ॅक्सेससाठी पुन्हा साइन इन करण्याकरिता, तुम्हाला परवानगी देण्याबाबत पालकाला सांगा</translation>
@@ -1002,6 +1004,7 @@
 <translation id="2178614541317717477">CA तडजोड</translation>
 <translation id="2182058453334755893">तुमच्या क्लिपबोर्डवर कॉपी केले</translation>
 <translation id="2184515124301515068">जेव्हा साइट आवाज प्ले करेल तेव्हा Chrome ला निवड करू दे (शिफारस केलेले)</translation>
+<translation id="2187243482123994665">वापरकर्त्याची ॲक्टिव्हिटी</translation>
 <translation id="2187675480456493911">तुमच्या खात्यावरील इतर डिव्हाइसशी सिंक केले आहे. इतर वापरकर्त्यांनी बदललेली सेटिंग्ज सिंक केली जाणार नाहीत. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">सर्व्हर सर्टिफिकेट आयात एरर</translation>
 <translation id="2187906491731510095">विस्तार अपडेट केले</translation>
@@ -1829,6 +1832,7 @@
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> विक्रेत्याकडील <ph name="PRODUCT_ID" /> अज्ञात उत्पादन</translation>
 <translation id="3163254451837720982">पुढील सेवा तुमचा डेटा सुरक्षित आणि संरक्षित करण्यात मदत करतात. तुम्ही ही वैशिष्ट्ये कधीही बंद करू शकता.</translation>
 <translation id="3164329792803560526"><ph name="APP_NAME" /> यावर हा टॅब शेअर करत आहे</translation>
+<translation id="3165371858310906303">तुम्ही डिव्हाइस कधी वापरता हे एखाद्या साइटला जाणून घ्यायचे असेल तेव्हा विचारा</translation>
 <translation id="3165390001037658081">काही वाहक हे वैशिष्ट्य अवरोधित शकतात.</translation>
 <translation id="316652501498554287">G Suite for Education खाती</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2625,7 +2629,6 @@
 <translation id="4095507791297118304">प्राथमिक डिस्प्ले</translation>
 <translation id="409579654357498729">क्लाउड प्रिंट वर जोडा</translation>
 <translation id="4096508467498758490">डेव्हलपर मोड एक्स्टेंशन अक्षम करा</translation>
-<translation id="4096824249111507322">सुरक्षित मॉड्युल तयार केले जात आहे, कृपया थांबा (यासाठी काही मिनिटे लागू शकतात)...</translation>
 <translation id="4097406557126260163">अ‍ॅप्स आणि एक्स्टेंशन</translation>
 <translation id="4097560579602855702">Google वर शोधा</translation>
 <translation id="4098667039111970300">टूलबारमध्ये स्टायलस टूल</translation>
@@ -2944,6 +2947,7 @@
 <translation id="4527186207340858212">कामासाठी वेगळी प्रोफाइल तयार करायची का?</translation>
 <translation id="452750746583162491">तुमच्या सिंक केलेल्या डेटाचे पुनरावलोकन करा</translation>
 <translation id="4530494379350999373">मूळ</translation>
+<translation id="4531924570968473143">तुम्हाला या <ph name="DEVICE_TYPE" /> वर कोणाला जोडायचे आहे?</translation>
 <translation id="4532646538815530781">ही साइट मोशन सेन्सर वापरत आहे.</translation>
 <translation id="4533846798469727141">आता "Hey Google" म्हणा</translation>
 <translation id="4533985347672295764">सीपीयू वेळ</translation>
@@ -3354,7 +3358,6 @@
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">तुम्ही निवडलेल्या भाषांसाठी स्पेल चेक सपोर्ट करत नाही</translation>
 <translation id="5052499409147950210">साइट संपादित करा</translation>
-<translation id="5053604404986157245">रँडमली जनरेट केलेला TPM पासवर्ड उपलब्ध नाही. Powerwash नंतर हे सामान्य आहे.</translation>
 <translation id="5057110919553308744">तुम्ही एक्स्टेंशनवर क्लिक करता तेव्हा</translation>
 <translation id="5057403786441168405">तुमची साइन-इन केलेली खाती व्यवस्थापित करा. परवानग्या असल्यास, Chrome आणि Google Play मधील अ‍ॅप्स, वेबसाइट आणि एक्स्टेंशन तुमचा अनुभव कस्टमाइझ करण्यासाठी ही खाती वापरू शकतील. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">साइन इन मर्यादित करा</translation>
@@ -3945,7 +3948,6 @@
 <translation id="5774295353725270860">फायलीचा ॲप्लिकेशन उघडा</translation>
 <translation id="577624874850706961">कुकीज शोधा</translation>
 <translation id="5777468213129569553">Chrome उघडा</translation>
-<translation id="5778747455497889540">खाली यादृच्छिकपणे तयार केलेला सुरक्षित मॉड्युल पासवर्ड आहे जो तुमच्‍‍‍‍या काँप्युटरसाठी असाइन केला गेला आहे:</translation>
 <translation id="5780011244986845107">तुम्ही निवडलेल्या फोल्डरमध्ये संवेदनशील फाइल आहेत. तुम्हाला नक्की "<ph name="APP_NAME" />" ला या फोल्डरचा कायमचा रीड अ‍ॅक्सेस द्यायचा आहे का?</translation>
 <translation id="5780973441651030252">प्रक्रिया प्राधान्य</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> म्हणून सिंक करा</translation>
@@ -3975,6 +3977,7 @@
 <translation id="5804241973901381774">परवानग्या</translation>
 <translation id="5805697420284793859">विंडो व्यवस्थापक</translation>
 <translation id="5806773519584576205">०° (डीफॉल्ट)</translation>
+<translation id="5808664694611589238">{0,plural, =1{अतिथी विंडो बंद करा}other{अतिथी विंडो बंद करा}}</translation>
 <translation id="5810809306422959727">हे खाते पालक नियंत्रणांसाठी पात्र नाही</translation>
 <translation id="5812674658566766066">सर्व विस्‍तृत करा</translation>
 <translation id="5814126672212206791">कनेक्शन प्रकार</translation>
@@ -4433,6 +4436,7 @@
 <translation id="6344170822609224263">नेटवर्क कनेक्शनच्या सूची ॲक्सेस करा</translation>
 <translation id="6344576354370880196">सेव्ह केलेले प्रिंटर</translation>
 <translation id="6345418402353744910">प्रॉक्सी <ph name="PROXY" /> साठी तुमचे वापरकर्ता नाव आणि पासवर्ड आवश्यक आहे जेणेकरून, ॲडमिन तुमचे नेटवर्क कॉंफिगर करू शकेल</translation>
+<translation id="6345878117466430440">वाचलेले अशी खूण करा</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> इंस्टॉल करा</translation>
 <translation id="6349170655202535379">सिंक कार्य करत नाही. साइन आउट करून पुन्हा साइन इन करून पहा.</translation>
 <translation id="6351063337294363751">तुम्ही या मेनूमधून तुमचा ब्राउझिंग डेटा साफ करू शकता</translation>
@@ -4653,7 +4657,6 @@
 <translation id="6635956300022133031">टेक्‍स्‍ट टू स्‍पीच व्हॉइस निवडा आणि कस्टमाइझ करा</translation>
 <translation id="6636588250634969791">पुढे जाण्यापूर्वी सिम घाला</translation>
 <translation id="6639554308659482635">SQLite मेमरी</translation>
-<translation id="6641138807883536517">यादृच्छिकपणे तयार केलेला सुरक्षित मॉड्युल पासवर्ड उपलब्ध नाही. पॉवरवॉशनंतर असे होणे स्‍वाभाविक आहे.</translation>
 <translation id="6642720633335369752">उघड्या असलेल्या सर्व अ‍ॅप विंडो पाहण्यासाठी, तळापासून वर स्वाइप करा आणि धरून ठेवा.</translation>
 <translation id="664290675870910564">नेटवर्कची निवड</translation>
 <translation id="6643016212128521049">साफ करा</translation>
@@ -4981,7 +4984,6 @@
 <translation id="7029307918966275733">Crostini इंस्टॉल केलेले नाही. क्रेडिट पाहण्यासाठी कृपया Crostini इंस्टॉल करा.</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - सिरीअल पोर्ट कनेक्ट केला आहे</translation>
-<translation id="7031962166228839643">TPM तयार केले जात आहे, कृपया प्रतीक्षा करा (याला काही मिनिटे लागू शकतात)...</translation>
 <translation id="7036706669646341689">Linux साठी <ph name="DISK_SIZE" /> मोकळ्या जागेची शिफारस केली जाते. मोकळी जागा वाढवण्यासाठी, तुमच्या डिव्हाइसमधून फाइल हटवा.</translation>
 <translation id="7037509989619051237">पूर्वावलोकनासाठी मजकूर</translation>
 <translation id="7038632520572155338">स्विच ॲक्सेस</translation>
@@ -5175,6 +5177,7 @@
 <translation id="7280649757394340890">टेक्‍स्‍ट टू स्‍पीच व्हॉइस सेटिंग्ज</translation>
 <translation id="7280877790564589615">परवानगीची विनंती केली</translation>
 <translation id="7282992757463864530">इन्फोबार</translation>
+<translation id="7284411326658527427">प्रत्येक व्यक्ती स्वतःचे खाते पर्सनलाइझ करू शकते आणि डेटा खाजगी ठेवू शकते.</translation>
 <translation id="7287143125007575591">ॲक्सेस नाकारला.</translation>
 <translation id="7287411021188441799">डीफॉल्ट बॅकग्राउंड रिस्टोअर करा</translation>
 <translation id="7288013116963835700"><ph name="DEVICE_TYPE" /> साठी Linux काढून टाका</translation>
@@ -5749,6 +5752,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7963826112438303517">तुमचे व्हॉइस मॉडेल तयार करण्यासाठी आणि अपडेट करण्यासाठी तुमचे असिस्टंट ही रेकॉर्डिंग आणि तुमच्या बोललेल्या विनंत्या वापरते, जे फक्त तुम्ही Voice Match सुरू केलेल्या डिव्हाइसवर स्टोअर केले जाते. असिस्टंट सेटिंग्जमध्ये व्हॉइस अ‍ॅक्टिव्हिटी पाहा किंवा पुन्हा शिका.</translation>
 <translation id="7966241909927244760">इमेज पत्ता कॉपी करा</translation>
 <translation id="7968072247663421402">पुरवठादार पर्याय</translation>
+<translation id="7968198493605442410">मजकुराची लिंक कॉपी करा</translation>
 <translation id="7968742106503422125">तुम्ही कॉपी आणि पेस्ट करता तो डेटा वाचा आणि सुधारित करा</translation>
 <translation id="7968833647796919681">कामप्रदर्शन डेटा संकलन सुरू करा</translation>
 <translation id="7968982339740310781">तपशील पहा</translation>
@@ -5967,7 +5971,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8226222018808695353">निषिद्ध केलेले</translation>
 <translation id="8226619461731305576">रांग</translation>
 <translation id="8226628635270268143">तुमचे आवडते फोटो आणि अल्बम निवडा</translation>
-<translation id="8226742006292257240">खाली यादृच्छिकपणे जनरेट केलेला TPM पासवर्ड आहे जो तुमच्या कॉंप्युटरचा नियुक्त केला गेला आहे:</translation>
 <translation id="8227119283605456246">फाईल संलग्न करा</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> साठी पासवर्ड सेव्ह करायचा आहे का?</translation>
 <translation id="8230672074305416752">डीफॉल्ट नेटवर्क गेटवे पिंग करता आला नाही</translation>

@@ -1290,7 +1290,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2505127913256479918">Þessi reikningur undir eftirliti verður brátt fjarlægður</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Skjár #}one{Skjár #}other{Skjár #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> af <ph name="TOTAL_SIZE" /></translation>
-<translation id="250642123108534012">Tæki nálægt þér þegar nærdeiling er opin í tæki viðkomandi</translation>
+<translation id="250642123108534012">Nálæg tæki með nærdeilingu opna</translation>
 <translation id="250704661983564564">Uppröðun skjáa</translation>
 <translation id="2507253002925770350">Miði fjarlægður</translation>
 <translation id="2507397597949272797">Hlé hefur verið gert á <ph name="NAME" /></translation>
@@ -2632,7 +2632,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4095507791297118304">Aðalskjár</translation>
 <translation id="409579654357498729">Bæta við skýjaprentun</translation>
 <translation id="4096508467498758490">Slökkva á viðbótum í forritarastillingu</translation>
-<translation id="4096824249111507322">Verið er að undirbúa örugga einingu, hinkraðu við (þetta getur tekið nokkrar mínútur)...</translation>
 <translation id="4097406557126260163">Forrit og viðbætur</translation>
 <translation id="4097560579602855702">Leita á Google</translation>
 <translation id="4098667039111970300">Pennaverkfæri á tækjastiku</translation>
@@ -3362,7 +3361,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5050330054928994520">Upplestur</translation>
 <translation id="5051836348807686060">Villuleit er ekki studd á þeim tungumálum sem þú valdir</translation>
 <translation id="5052499409147950210">Breyta vefsvæði</translation>
-<translation id="5053604404986157245">TPM-aðgangsorðið sem útbúið var af handahófi er ekki tiltækt. Þetta er eðlilegt eftir djúphreinsun.</translation>
 <translation id="5057110919553308744">Þegar þú smellir á viðbótina</translation>
 <translation id="5057403786441168405">Stjórnaðu innskráðum reikningum þínum. Vefsvæði, forrit og viðbætur í Chrome og Google Play geta notað þessa reikninga til að sérsníða upplifun þína, eftir því hvaða heimildir eru veittar. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Takmarka innskráningu</translation>
@@ -3953,7 +3951,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5774295353725270860">Opna skráaforritið</translation>
 <translation id="577624874850706961">Leita að fótsporum</translation>
 <translation id="5777468213129569553">Opna Chrome</translation>
-<translation id="5778747455497889540">Hér fyrir neðan er aðgangsorð öruggrar einingar sem valið var af handahófi og úthlutað til tölvunnar þinnar:</translation>
 <translation id="5780011244986845107">Mappan sem þú valdir inniheldur viðkvæmar skrár. Ertu viss um að þú viljir veita „<ph name="APP_NAME" />“ varanlegan lesaðgang að þessari möppu?</translation>
 <translation id="5780973441651030252">Forgangur ferla</translation>
 <translation id="5781092003150880845">Samstilla sem <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4662,7 +4659,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6635956300022133031">Velja og sérstilla raddir talgervla</translation>
 <translation id="6636588250634969791">Settu SIM-kort í áður en þú heldur áfram</translation>
 <translation id="6639554308659482635">SQLite-minni</translation>
-<translation id="6641138807883536517">Aðgangsorð öruggrar einingar sem útbúið var af handahófi er ekki tiltækt. Þetta er eðlilegt eftir djúphreinsun.</translation>
 <translation id="6642720633335369752">Strjúktu upp frá neðsta hluta skjásins og haltu fingrinum niðri til að sjá alla opna forritaglugga.</translation>
 <translation id="664290675870910564">Netval</translation>
 <translation id="6643016212128521049">Hreinsa</translation>
@@ -4990,7 +4986,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7029307918966275733">Crostini er ekki sett upp. Settu upp Crostini til að skoða einingar.</translation>
 <translation id="7029809446516969842">Aðgangsorð</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – raðtengi tengt</translation>
-<translation id="7031962166228839643">Verið er að undirbúa TPM, hinkraðu við (þetta getur tekið nokkrar mínútur)...</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> af plássi er nauðsynlegt fyrir Linux. Eyddu skrám úr tækinu til að auka geymslurýmið.</translation>
 <translation id="7037509989619051237">Texti til að nota sem sýnishorn</translation>
 <translation id="7038632520572155338">Rofaaðgangur</translation>
@@ -5678,7 +5673,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="786073089922909430">Þjónusta: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">Niðurhal</translation>
 <translation id="7864539943188674973">Slökkva á Bluetooth</translation>
-<translation id="7866352732146932341">Tæki nálægt þér þegar nærdeiling er opin í tækinu þínu</translation>
+<translation id="7866352732146932341">Nálæg tæki þegar nærdeiling er opin í tækinu þínu</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – parað</translation>
 <translation id="7870730066603611552">Fara yfir samstillingarkosti eftir uppsetningu</translation>
 <translation id="7870790288828963061">Engin sjálfsalaforrit í nýrri útgáfu fundust. Ekkert til að uppfæra. Fjarlægðu USB-lykilinn.</translation>
@@ -5979,7 +5974,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8226222018808695353">Bannað</translation>
 <translation id="8226619461731305576">Setja í biðröð</translation>
 <translation id="8226628635270268143">Veldu uppáhaldsmyndir og -möppur</translation>
-<translation id="8226742006292257240">Hér fyrir neðan er TPM-aðgangsorð sem valið var af handahófi og úthlutað til tölvunnar þinnar:</translation>
 <translation id="8227119283605456246">Hengja skrá við</translation>
 <translation id="8230134520748321204">Vista aðgangsorð fyrir <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Ping-prófun sjálfvalinnar netkerfisgáttar mistókst</translation>

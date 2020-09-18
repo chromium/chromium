@@ -2633,7 +2633,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4095507791297118304">Affichage principal</translation>
 <translation id="409579654357498729">Ajouter à Google Cloud Print</translation>
 <translation id="4096508467498758490">Désactiver les extensions du mode développeur</translation>
-<translation id="4096824249111507322">Le module de sécurité est en cours de préparation, veuillez patienter (cette opération peut prendre quelques minutes)…</translation>
 <translation id="4097406557126260163">Applications et extensions</translation>
 <translation id="4097560579602855702">Rechercher sur Google</translation>
 <translation id="4098667039111970300">Outils du stylet dans la barre d'outils</translation>
@@ -3363,7 +3362,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5050330054928994520">Synthèse vocale</translation>
 <translation id="5051836348807686060">Le correcteur orthographique n'est pas pris en charge pour les langues que vous avez sélectionnées</translation>
 <translation id="5052499409147950210">Modifier le site</translation>
-<translation id="5053604404986157245">Le mot de passe TPM généré de manière aléatoire n'est pas accessible, ce qui est normal après une réinitialisation « Powerwash ».</translation>
 <translation id="5057110919553308744">Lorsque vous cliquez sur l'extension</translation>
 <translation id="5057403786441168405">Gérez les comptes auxquels vous êtes connecté. Les sites Web, les applications et les extensions dans Chrome et dans Google Play peuvent utiliser ces comptes pour personnaliser votre expérience, selon les autorisations accordées. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Restreindre les connexions</translation>
@@ -3954,7 +3952,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5774295353725270860">Ouvrir l'application Fichiers</translation>
 <translation id="577624874850706961">Chercher des témoins</translation>
 <translation id="5777468213129569553">Ouvrir Chrome</translation>
-<translation id="5778747455497889540">Le mot de passe du module de sécurité ci-dessous, généré de façon aléatoire, a été attribué à votre ordinateur :</translation>
 <translation id="5780011244986845107">Le dossier que vous avez sélectionné contient des fichiers confidentiels. Voulez-vous vraiment accorder à « <ph name="APP_NAME" /> » un accès de lecture permanent à ce dossier?</translation>
 <translation id="5780973441651030252">Priorité de processus</translation>
 <translation id="5781092003150880845">Synchroniser en tant que <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4663,7 +4660,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6635956300022133031">Sélectionner et personnaliser des voix de synthèse vocale</translation>
 <translation id="6636588250634969791">Insérez la carte SIM avant de continuer</translation>
 <translation id="6639554308659482635">Mémoire SQLite</translation>
-<translation id="6641138807883536517">Le mot de passe du module de sécurité, généré de façon aléatoire, n'est pas accessible, ce qui est normal après une réinitialisation Powerwash.</translation>
 <translation id="6642720633335369752">Pour voir toutes les fenêtres d'applications ouvertes, balayez l'écran du bas vers le haut et maintenez le doigt en place.</translation>
 <translation id="664290675870910564">Sélection du réseau</translation>
 <translation id="6643016212128521049">Effacer</translation>
@@ -4991,7 +4987,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7029307918966275733">Crostini n'est pas installé. Veuillez installer Crostini pour voir le générique.</translation>
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> : connecté à un port série</translation>
-<translation id="7031962166228839643">Le module TPM est en cours de préparation, veuillez patienter (cette opération peut prendre quelques minutes)...</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> d'espace est recommandé pour utiliser Linux. Pour libérer de l'espace, supprimez des fichiers sur votre appareil.</translation>
 <translation id="7037509989619051237">Aperçu du texte</translation>
 <translation id="7038632520572155338">Switch Access</translation>
@@ -5980,7 +5975,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8226222018808695353">Interdit</translation>
 <translation id="8226619461731305576">File d'attente</translation>
 <translation id="8226628635270268143">Sélectionnez vos photos et vos albums préférés</translation>
-<translation id="8226742006292257240">Le mot de passe TPM ci-dessous, généré de façon aléatoire, a été attribué à votre ordinateur :</translation>
 <translation id="8227119283605456246">Joindre un fichier</translation>
 <translation id="8230134520748321204">Enregistrer le mot de passe pour <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Impossible d'effectuer un ping avec la passerelle réseau par défaut</translation>

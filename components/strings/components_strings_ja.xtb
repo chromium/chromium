@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Wi-Fi に再度接続する</translation>
 <translation id="1165039591588034296">エラー</translation>
 <translation id="1165174597379888365">ページがアクセスされた</translation>
+<translation id="1174723505405632867"><ph name="EMBEDDED_URL" /> が <ph name="TOP_LEVEL_URL" /> で Cookie とサイトデータを使用することを許可しますか？
+
+許可しない場合は、プライバシー設定に基づきブロックされます。許可した場合、サイトのコンテンツは適切に機能しますが、<ph name="EMBEDDED_URL" /> にアクティビティが追跡される可能性があります。</translation>
 <translation id="1175364870820465910">印刷(&amp;P)...</translation>
 <translation id="1175875016430184367">3 か所のステープル（右）</translation>
 <translation id="1178581264944972037">一時停止</translation>
@@ -305,6 +308,7 @@
 <translation id="2181821976797666341">ポリシー</translation>
 <translation id="2183608646556468874">電話番号</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 件のアドレス}other{# 件のアドレス}}</translation>
+<translation id="2187243482123994665">ユーザーのアクティブ状態</translation>
 <translation id="2187317261103489799">検出（デフォルト）</translation>
 <translation id="2188375229972301266">多穴パンチ（下）</translation>
 <translation id="2202020181578195191">有効期限（年）を正しい形式で入力してください</translation>
@@ -527,6 +531,7 @@
       動作しているかどうかを確認してください。プロキシ サーバーを使用していない場合は
       次の方法をお試しください。
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> がアクティブ状態の検出を求めています</translation>
 <translation id="3188393374551744535">アカウント残高</translation>
 <translation id="3194737229810486521"><ph name="URL" /> から、デバイスにデータを永続的に保存する許可を求められています</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" />（<ph name="SERVER_NAME" /> 上）</translation>
@@ -1014,6 +1019,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">マシン</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />でない場合はこのエラーを報告する</translation>
+<translation id="5179740473595559246">アクティブ状態の検出</translation>
 <translation id="5190835502935405962">ブックマーク バー</translation>
 <translation id="519422657042045905">注釈は使用できません</translation>
 <translation id="5201306358585911203">このページに埋め込まれているページの内容</translation>
@@ -1236,6 +1242,7 @@
 <translation id="6049488691372270142">排紙</translation>
 <translation id="6051221802930200923"><ph name="SITE" /> では証明書ピンニングが使用されているため、現在アクセスできません。通常、ネットワーク エラーやネットワークへの攻撃は一時的なものです。しばらくするとページにアクセスできるようになります。</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">アクティブ状態を共有しますか？</translation>
 <translation id="6058977677006700226">お使いのどのデバイスでも同じカードを使用できるようにしますか？</translation>
 <translation id="6059925163896151826">USB デバイス</translation>
 <translation id="6060009363608157444">無効な DnsOverHttps モードです。</translation>
@@ -1365,6 +1372,7 @@
 <translation id="6631202559048444592">ポリシーに複数のソースがありますが、値は同一です。</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">削除</translation>
+<translation id="6645291930348198241">Cookie とサイトデータへのアクセス</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{なし}=1{1 件のサイト（Google アカウントへのログイン状態は維持されます）}other{# 件のサイト（Google アカウントへのログイン状態は維持されます）}}</translation>
 <translation id="6648459603387803038">管理者はブラウザの設定をリモートで変更できます。このデバイスでのアクティビティは、Chrome 以外でも管理されている可能性があります。</translation>
 <translation id="6652101503459149953">Windows Hello を使用</translation>

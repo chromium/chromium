@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Hindi ma-access ang file sa mga kadahilanang pang-seguridad.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">Zini-zip ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> (na) item ang nakopya.</translation>
 <translation id="174173592514158117">Ipakita ang lahat ng folder ng Play</translation>
 <translation id="174937106936716857">Kabuuang bilang ng file</translation>
 <translation id="1775381402323441512">Impormasyon ng video</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Invalid na character: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Vietnamese keyboard (TCVN)</translation>
 <translation id="2168214441502403371">Persian keyboard</translation>
+<translation id="2197363559908958454">Inilipat ang <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">Simplified Chinese</translation>
 <translation id="2208158072373999562">Zip archive</translation>
 <translation id="2225536596944493418">Sigurado ka bang gusto mong i-delete ang <ph name="NUMBER_OF_ITEMS" /> (na) item?</translation>
 <translation id="2230062665678605299">Hindi malikha ang folder na "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Nailipat.</translation>
 <translation id="2278988676849463018">Kannada keyboard (Phonetic)</translation>
 <translation id="2288278176040912387">Record player</translation>
 <translation id="2291538123825441971">Binubuksan ang <ph name="NUMBER_OF_FILES" /> (na) file.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Naka-back up na ang lahat!</translation>
 <translation id="3626281679859535460">Tingkad</translation>
 <translation id="3644896802912593514">Lapad</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> (na) item ang inilipat.</translation>
 <translation id="3645531960514756307">I-unpin ang folder</translation>
 <translation id="3678559383040232393">Maltese keyboard</translation>
 <translation id="3685122418104378273">Naka-disable ang Google Drive bilang default, kapag gumagamit ng mobile data.</translation>
@@ -395,6 +399,7 @@
     Anuman ang mangyari sa iyong device, ligtas na naka-store ang iyong mga file sa Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Magbahagi, gumawa at mag-collaborate<ph name="MARKUP_8" />
     sa mga file kasama ng iba pa, lahat sa iisang lugar.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Nakopya.</translation>
 <translation id="5275973617553375938">Mga nabawing file mula sa Google Drive</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">I-save</translation>
@@ -751,6 +756,7 @@
 <translation id="943972244133411984">Binago ni</translation>
 <translation id="945522503751344254">Magpadala ng feedback</translation>
 <translation id="947144732524271678">Pumili ng hanay ng <ph name="ENTRY_COUNT" /> (na) entry mula sa <ph name="FROM_ENTRY_NAME" /> hanggang <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="949308258121608615">Nakopya ang <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Mayroon nang file na may pangalang "<ph name="FILE_NAME" />." Gusto mo ba itong palitan?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

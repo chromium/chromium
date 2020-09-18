@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Атрымаць доступ да файла не ўдалося ў мэтах бяспекі.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">Элементы (<ph name="NUMBER_OF_ITEMS" />) архівуюцца...</translation>
+<translation id="1731889557567069540">Скапіраваны элементы (<ph name="NUMBER_OF_ITEMS" />).</translation>
 <translation id="174173592514158117">Паказаць усе папкі Play</translation>
 <translation id="174937106936716857">Агульная колькасць файлаў</translation>
 <translation id="1775381402323441512">Звесткі пра відэа</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Недапушчальны сімвал: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">В'етнамская клавіятура (TCVN)</translation>
 <translation id="2168214441502403371">Персідская раскладка</translation>
+<translation id="2197363559908958454">Перамешчана: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">Кітайская (спрошчаная)</translation>
 <translation id="2208158072373999562">Архіў ZIP</translation>
 <translation id="2225536596944493418">Сапраўды выдаліць гэтыя элементы (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Не ўдалося стварыць папку "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Перамешчана.</translation>
 <translation id="2278988676849463018">Раскладка каннада (фанетычная)</translation>
 <translation id="2288278176040912387">Патэфон</translation>
 <translation id="2291538123825441971">Адкрываюцца некалькі файлаў (<ph name="NUMBER_OF_FILES" />) .</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Усё захавана ў рэзервовую копію!</translation>
 <translation id="3626281679859535460">Яркасць</translation>
 <translation id="3644896802912593514">Шырыня</translation>
+<translation id="3645233063072417428">Перамешчана элементаў: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="3645531960514756307">Адмацаваць папку</translation>
 <translation id="3678559383040232393">Мальтыйская клавіятура</translation>
 <translation id="3685122418104378273">Пры выкарыстанні мабільнай перадачы даных са стандартнымі наладамі сінхранізацыя з Google Дыскам выключана.</translation>
@@ -395,6 +399,7 @@
     Што б ні здарылася з прыладай, файлы будуць надзейна захоўвацца на Google Дыску.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Стварайце, абагульвайце файлы і працуйце<ph name="MARKUP_8" />
     над імі разам з іншымі – усё ў адным сэрвісе.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Скапіравана.</translation>
 <translation id="5275973617553375938">Адноўленыя файлы з Google Дыска</translation>
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5318819489018851358">Абагуліць з Linux</translation>
@@ -750,6 +755,7 @@
 <translation id="943972244133411984">Зменена карыстальнікам</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>
 <translation id="947144732524271678">Выбраны элементы з <ph name="FROM_ENTRY_NAME" /> да <ph name="TO_ENTRY_NAME" />, колькасць элементаў – <ph name="ENTRY_COUNT" />.</translation>
+<translation id="949308258121608615">Скапіравана: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="981121421437150478">Па-за сеткай</translation>
 <translation id="988685240266037636">Файл пад назвай "<ph name="FILE_NAME" />" ужо існуе. Замяніць яго?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> МБ</translation>

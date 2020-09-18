@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">ওয়াই-ফাই এ আবার সংযুক্ত করে দেখুন</translation>
 <translation id="1165039591588034296">ত্রুটি</translation>
 <translation id="1165174597379888365">যেসব পৃষ্ঠা ভিজিট করা হয়েছে</translation>
+<translation id="1174723505405632867">আপনি কি <ph name="EMBEDDED_URL" />-কে <ph name="TOP_LEVEL_URL" />-এ কুকি ও সাইট ডেটা ব্যবহার করতে দেবেন?
+
+নাহলে, আপনার 'গোপনীয়তা' সেটিংস এটি ব্লক করে দেবে। এটি আপনার ইন্টার‌্যাক্ট করা কন্টেন্টকে সঠিকভাবে কাজ করতে দেবে, তবে এটি <ph name="EMBEDDED_URL" />-কে আপনার অ্যাক্টিভিটি ট্র্যাক করতে অনুমতি দিতে পারে।</translation>
 <translation id="1175364870820465910">&amp;প্রিন্ট...</translation>
 <translation id="1175875016430184367">ডানদিকে ট্রিপল স্টেপল</translation>
 <translation id="1178581264944972037">বিরতি</translation>
@@ -310,6 +313,7 @@
 <translation id="2181821976797666341">নীতিসমূহ</translation>
 <translation id="2183608646556468874">ফোন নম্বর</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{১টি ঠিকানা}one{ #টি ঠিকানা}other{ #টি ঠিকানা}}</translation>
+<translation id="2187243482123994665">ব্যবহারকারীর উপস্থিতি</translation>
 <translation id="2187317261103489799">শনাক্ত করুন (ডিফল্ট)</translation>
 <translation id="2188375229972301266">নিচে মাল্টিপল পাঞ্চ</translation>
 <translation id="2202020181578195191">মেয়াদ শেষ হওয়ার বছরের সঠিক মান লিখুন</translation>
@@ -534,6 +538,7 @@
     বা আপনার নেটওয়ার্ক প্রশাসকের সাথে যোগাযোগ করুন৷ আপনি কোনো প্রক্সী সার্ভার
     ব্যবহার করবেন না বলে মনে করলে:
     <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456">আপনি কখন ডিভাইস ব্যবহার করছেন তা <ph name="URL" /> জানতে চায়</translation>
 <translation id="3188393374551744535">অ্যাকাউন্টের ব্যালেন্স</translation>
 <translation id="3194737229810486521"><ph name="URL" /> স্থায়ীভাবে আপনার ডিভাইসে ডেটা স্টোর করতে চায়</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> এ <ph name="PRINTER_NAME" /></translation>
@@ -1026,6 +1031,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">যন্ত্র</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />-এ নেই? এই ত্রুটি রিপোর্ট করুন</translation>
+<translation id="5179740473595559246">আপনি কখন ডিভাইস ব্যবহার করছেন তা জানতে দিন</translation>
 <translation id="5190835502935405962">বুকমার্ক বার</translation>
 <translation id="519422657042045905">ব্যাখ্যা নেই</translation>
 <translation id="5201306358585911203">এই পৃষ্ঠার এম্বেডেড করা একটি পৃষ্ঠায় এটি দেখানো হচ্ছে</translation>
@@ -1248,6 +1254,7 @@
 <translation id="6049488691372270142">পৃষ্ঠার ডেলিভারি</translation>
 <translation id="6051221802930200923">ওয়েবসাইটটি পিন করা সার্টিফিকেট ব্যবহার করার কারণে আপনি এখন <ph name="SITE" /> এ যেতে পারবেন না। নেটওয়ার্ক সমস্যা এবং আক্রমণ সাধারণত সাময়িকভাবে হয়, তাই এই পৃষ্ঠাটি সম্ভবত পরে কাজ করবে।</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">আপনার উপস্থিতি শেয়ার করবেন?</translation>
 <translation id="6058977677006700226">আপনার সমস্ত ডিভাইসে কার্ডগুলি ব্যবহার করবেন?</translation>
 <translation id="6059925163896151826">USB ডিভাইসগুলি</translation>
 <translation id="6060009363608157444">ভুল DnsOverHttps মোড।</translation>
@@ -1376,6 +1383,7 @@
 <translation id="6631202559048444592">এই নীতির জন্য একই মান সহ একাধিক উৎস রয়েছে।</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">সাফ করুন</translation>
+<translation id="6645291930348198241">কুকি ও সাইট ডেটা অ্যাক্সেস করার অনুমতি দিন।</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{কিছুই নয়}=1{১টি সাইট থেকে (আপনাকে আপনার Google অ্যাকাউন্ট থেকে সাইন-আউট করা হবে না)}one{#টি সাইট থেকে (আপনাকে আপনার Google অ্যাকাউন্ট থেকে সাইন-আউট করা হবে না)}other{#টি সাইট থেকে (আপনাকে আপনার Google অ্যাকাউন্ট থেকে সাইন-আউট করা হবে না)}}</translation>
 <translation id="6648459603387803038">আপনার অ্যাডমিনিস্ট্রেটর রিমোট লোকেশন থেকে আপনার ব্রাউজারের সেটআপ পরিবর্তন করতে পারেন। এই ডিভাইসের অ্যাক্টিভিটি Chrome-এর বাইরে থেকেও ম্যানেজ করা যেতে পারে।</translation>
 <translation id="6652101503459149953">Windows Hello ব্যবহার করুন</translation>

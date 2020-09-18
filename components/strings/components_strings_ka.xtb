@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Wi-Fi-სთან ხელახლა დაკავშირება</translation>
 <translation id="1165039591588034296">შეცდომა</translation>
 <translation id="1165174597379888365">მონახულებულია გვერდი</translation>
+<translation id="1174723505405632867">გსურთ, <ph name="EMBEDDED_URL" />-ს ჰქონდეს <ph name="TOP_LEVEL_URL" />-ის ქუქი-ჩანაწერებსა და საიტის მონაცემებზე წვდომა.?
+
+ნაგულისხმევად, აღნიშნული იბლოკება თქვენი კონფიდენციალურობის პარამეტრების მიხედვით. კონტენტი, რომელთანაც ინტერაქცია გქონდათ, გამართულად იმუშავებს, თუმცა <ph name="EMBEDDED_URL" /> შეძლებს თქვენი აქტივობისთვის თვალის მიდევნებას.</translation>
 <translation id="1175364870820465910">&amp;ბეჭდვა…</translation>
 <translation id="1175875016430184367">სამმაგად დასტეპლერება მარჯვნივ</translation>
 <translation id="1178581264944972037">პაუზა</translation>
@@ -305,6 +308,7 @@
 <translation id="2181821976797666341">წესები</translation>
 <translation id="2183608646556468874">ტელეფონის ნომერი</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 მისამართი}other{# მისამართი}}</translation>
+<translation id="2187243482123994665">მომხმარებლის დასწრება</translation>
 <translation id="2187317261103489799">ამოცნობა (ნაგულისხმევი)</translation>
 <translation id="2188375229972301266">მრავალად გახვრეტა ქვემოთ</translation>
 <translation id="2202020181578195191">შეიყვანეთ მოქმედების ვადის გასვლის სწორი წელი</translation>
@@ -527,6 +531,7 @@
       დარწმუნდეთ, რომ პროქსი სერვერი მუშაობს. თუ არ ხართ დარწმუნებული,
       რომ პროქსი სერვერს იყენებთ:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> ითხოვს ინფორმაციას თქვენი დასწრების შესახებ</translation>
 <translation id="3188393374551744535">ანგარიშის ბალანსი</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ითხოვს თქვენს მოწყობილობაზე მონაცემების სამუდამოდ შენახვის ნებართვას</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> <ph name="SERVER_NAME" />-ზე</translation>
@@ -1014,6 +1019,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">აპარატი</translation>
 <translation id="5179510805599951267">არ არის <ph name="ORIGINAL_LANGUAGE" />-ში? მოახსენეთ ამ შეცდომის შესახებ</translation>
+<translation id="5179740473595559246">თქვენი დასწრების შესახებ ინფორმაციის მიღება</translation>
 <translation id="5190835502935405962">სანიშნეების ზოლი</translation>
 <translation id="519422657042045905">ანოტაცია მიუწვდომელია</translation>
 <translation id="5201306358585911203">ამ გვერდში ჩაშენებული გვერდი იუწყება:</translation>
@@ -1236,6 +1242,7 @@
 <translation id="6049488691372270142">გვერდის მოწოდება</translation>
 <translation id="6051221802930200923"><ph name="SITE" />-ზე შესვლა ამჟამად ვერ მოხერხდება, რადგან ვებსაიტი იყენებს სერტიფიკატთა მიმაგრებას. ქსელის შეცდომები და მასზე შეტევები, ჩვეულებრივ, დროებითი მოვლენებია და შესაბამისად, ეს გვერდი შეიძლება მოგვიანებით ამუშავდეს.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">გსურთ თქვენი დასწრების შესახებ ინფორმაციის გაზიარება?</translation>
 <translation id="6058977677006700226">გსურთ თქვენი ბარათების გამოყენება ნებისმიერ მოწყობილობაზე?</translation>
 <translation id="6059925163896151826">USB მოწყობილობები</translation>
 <translation id="6060009363608157444">DnsOverHttps რეჟიმი არასწორია.</translation>
@@ -1365,6 +1372,7 @@
 <translation id="6631202559048444592">ამ წესებისთვის დაფიქსირებულია ერთზე მეტი წყარო, თუმცა მნიშვნელობები იდენტურია.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">გასუფთავება</translation>
+<translation id="6645291930348198241">ქუქი-ჩანაწერებსა და საიტის მონაცემებზე წვდომა.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{არცერთი}=1{1 საიტიდან (თქვენ არ გამოხვალთ Google ანგარიშიდან)}other{# საიტიდან (თქვენ არ გამოხვალთ Google ანგარიშიდან)}}</translation>
 <translation id="6648459603387803038">თქვენს ადმინისტრატორს დისტანციურად შეუძლია ბრაუზერში დაყენებული პარამეტრების შეცვლა. ამ მოწყობილობაზე აქტივობა შეიძლება იმართებოდეს Chrome-ს მიღმაც.</translation>
 <translation id="6652101503459149953">Windows Hello-ის გამოყენება</translation>

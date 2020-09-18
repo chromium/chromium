@@ -374,6 +374,7 @@
 <translation id="143027896309062157">Læse og redigere alle dine data på din computer og de websites, du besøger</translation>
 <translation id="1430915738399379752">Udskriv</translation>
 <translation id="1431188203598586230">Sidste softwareopdatering</translation>
+<translation id="1431402976894535801">Bloker websites fra at vide, hvornår du er tilstede</translation>
 <translation id="1431432486300429272">Google kan bruge din browserhistorik til at tilpasse Søgning og andre Google-tjenester. Du og din forælder kan til enhver tid ændre dette på myaccount.google.com/activitycontrols/search</translation>
 <translation id="1432581352905426595">Administrer søgemaskiner</translation>
 <translation id="1433811987160647649">Spørg, før der gives adgang</translation>
@@ -570,6 +571,7 @@
 <translation id="1651008383952180276">Du skal angive den samme adgangssætning to gange</translation>
 <translation id="1652326691684645429">Slå Deling tæt på til</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Føj printeren til Google Cloudprinter, så du kan udskrive, uanset hvor du befinder dig.}one{Føj # printere til Google Cloudprinter, så du kan udskrive, uanset hvor du befinder dig.}other{Føj # printere til Google Cloudprinter, så du kan udskrive, uanset hvor du befinder dig.}}</translation>
+<translation id="1653575510930452864">Kopiér link til tekst</translation>
 <translation id="1656528038316521561">Baggrundens gennemsigtighed</translation>
 <translation id="1657406563541664238">Vær med til at gøre <ph name="PRODUCT_NAME" /> bedre ved automatisk at sende forbrugsstatistikker og rapportere om nedbrud til Google</translation>
 <translation id="1657937299377480641">Hvis du vil logge ind igen, så du kan få adgang til uddannelsesressourcer, skal du bede en forælder om tilladelse</translation>
@@ -1003,6 +1005,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2178614541317717477">Sammensat nøglecenter</translation>
 <translation id="2182058453334755893">Kopieret til din udklipsholder</translation>
 <translation id="2184515124301515068">Lad Chrome bestemme, hvornår websites må afspille lyd (anbefales)</translation>
+<translation id="2187243482123994665">Brugertilstedeværelse</translation>
 <translation id="2187675480456493911">Synkroniseret med andre enheder på din konto. De indstillinger, der ændres af andre brugere, synkroniseres ikke. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Fejl ved import af servercertifikat</translation>
 <translation id="2187906491731510095">Udvidelserne er opdateret</translation>
@@ -1830,6 +1833,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3163201441334626963">Ukendt produkt, <ph name="PRODUCT_ID" />, fra leverandøren <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Følgende tjenester hjælper med at beskytte dine data. Du kan til enhver tid deaktivere disse funktioner.</translation>
 <translation id="3164329792803560526">Denne fane deles med <ph name="APP_NAME" /></translation>
+<translation id="3165371858310906303">Spørg, når et website vil vide, hvornår du er tilstede</translation>
 <translation id="3165390001037658081">Nogle mobilselskaber blokerer muligvis denne funktion.</translation>
 <translation id="316652501498554287">G Suite for Education-konti</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2628,7 +2632,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4095507791297118304">Primær skærm</translation>
 <translation id="409579654357498729">Føj til Cloudprinter</translation>
 <translation id="4096508467498758490">Deaktiver udvidelser, der kører i udviklertilstand</translation>
-<translation id="4096824249111507322">Sikkerhedsmodulet forberedes. Vent lidt (dette kan tage et par minutter)...</translation>
 <translation id="4097406557126260163">Apps og udvidelser</translation>
 <translation id="4097560579602855702">Søg på Google</translation>
 <translation id="4098667039111970300">Styluspenværktøjer på værktøjslinje</translation>
@@ -2947,6 +2950,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4527186207340858212">Vil du oprette en ny profil til arbejde?</translation>
 <translation id="452750746583162491">Gennemgå dine synkroniserede data</translation>
 <translation id="4530494379350999373">Origin</translation>
+<translation id="4531924570968473143">Hvem vil du føje til denne <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4532646538815530781">Dette website anvender bevægelsessensorer.</translation>
 <translation id="4533846798469727141">Sig "Hey Google"</translation>
 <translation id="4533985347672295764">CPU-tid</translation>
@@ -3357,7 +3361,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5050330054928994520">Oplæsning</translation>
 <translation id="5051836348807686060">Stavekontrol understøttes ikke for de sprog, du har valgt</translation>
 <translation id="5052499409147950210">Rediger website</translation>
-<translation id="5053604404986157245">Den vilkårligt genererede TPM-adgangskode er ikke tilgængelig. Dette er normalt efter en Powerwash.</translation>
 <translation id="5057110919553308744">Når du klikker på udvidelsen</translation>
 <translation id="5057403786441168405">Administrer de konti, hvor du er logget ind. Websites, apps og udvidelser i Chrome og Google Play kan bruge disse konti til at tilpasse din oplevelse afhængigt af tilladelserne. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Begræns login</translation>
@@ -3948,7 +3951,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5774295353725270860">Åbn appen Filer</translation>
 <translation id="577624874850706961">Søg i cookies</translation>
 <translation id="5777468213129569553">Åbn Chrome</translation>
-<translation id="5778747455497889540">Nedenfor ses den tilfældigt genererede adgangskode til sikkerhedsmodulet, der er tilknyttet din computer:</translation>
 <translation id="5780011244986845107">Den valgte mappe indeholder følsomme filer. Er du sikker på, at du vil give "<ph name="APP_NAME" />" permanent læseadgang til denne mappe?</translation>
 <translation id="5780973441651030252">Procesprioritet</translation>
 <translation id="5781092003150880845">Synkroniser som <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -3978,6 +3980,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
 <translation id="5805697420284793859">Vinduesadministrator</translation>
 <translation id="5806773519584576205">0° (standard)</translation>
+<translation id="5808664694611589238">{0,plural, =1{Luk gæstevindue}one{Close guest}other{Luk gæstevinduer}}</translation>
 <translation id="5810809306422959727">Denne konto er ikke kvalificeret til forældreindstillinger</translation>
 <translation id="5812674658566766066">Udvid alle</translation>
 <translation id="5814126672212206791">Forbindelsestype</translation>
@@ -4436,6 +4439,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="6344170822609224263">Få adgang til listen over netværksforbindelser</translation>
 <translation id="6344576354370880196">Gemte printere</translation>
 <translation id="6345418402353744910">Du skal oplyse dit brugernavn og din adgangskode til proxyen <ph name="PROXY" />, så administratoren kan konfigurere dit netværk</translation>
+<translation id="6345878117466430440">Markér som læst</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Synkronisering virker ikke. Prøv at logge ud og ind igen.</translation>
 <translation id="6351063337294363751">Du kan rydde dine browserdata fra denne menu</translation>
@@ -4656,7 +4660,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="6635956300022133031">Vælg og tilpas oplæsningsstemmer</translation>
 <translation id="6636588250634969791">Indsæt SIM-kort, før du fortsætter</translation>
 <translation id="6639554308659482635">SQLite-hukommelse</translation>
-<translation id="6641138807883536517">Den tilfældigt genererede adgangskode til sikkerhedsmodulet er ikke tilgængelig. Dette er normalt efter en Powerwash.</translation>
 <translation id="6642720633335369752">Hvis du vil se alle åbne appvinduer, skal du stryge opad fra bunden og holde fingeren nede.</translation>
 <translation id="664290675870910564">Valg af netværk</translation>
 <translation id="6643016212128521049">Ryd</translation>
@@ -4984,7 +4987,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7029307918966275733">Crostini er ikke installeret. Installer Crostini for at se krediteringer.</translation>
 <translation id="7029809446516969842">Adgangskoder</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – tilsluttet en serieport</translation>
-<translation id="7031962166228839643">TPM forberedes. Vent lidt (dette kan tage et par minutter)...</translation>
 <translation id="7036706669646341689">Du bør have mindst <ph name="DISK_SIZE" /> plads til Linux. Du kan frigøre plads ved at slette filer fra enheden.</translation>
 <translation id="7037509989619051237">Tekst til eksempel på oplæsning</translation>
 <translation id="7038632520572155338">Kontaktadgang</translation>
@@ -5178,6 +5180,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7280649757394340890">Taleindstillinger for oplæsning</translation>
 <translation id="7280877790564589615">Der er anmodet om tilladelse</translation>
 <translation id="7282992757463864530">Oplysningsbjælke</translation>
+<translation id="7284411326658527427">Hver person kan tilpasse sin konto og holde sine data private.</translation>
 <translation id="7287143125007575591">Adgang nægtet.</translation>
 <translation id="7287411021188441799">Gendan standardbaggrund</translation>
 <translation id="7288013116963835700">Fjern Linux til <ph name="DEVICE_TYPE" /></translation>
@@ -5753,6 +5756,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7963826112438303517">Assistenten bruger disse optagelser og dine indtalte anmodninger til at oprette og opdatere din stemmemodel, som kun gemmes på enheder, hvor du har aktiveret Voice Match. Se eller genoplær taleaktivitet i indstillingerne for Google Assistent.</translation>
 <translation id="7966241909927244760">K&amp;opiér billedets webadresse</translation>
 <translation id="7968072247663421402">Udbydermuligheder</translation>
+<translation id="7968198493605442410">Kopiér link til tekst</translation>
 <translation id="7968742106503422125">Læse og ændre data, du kopierer og indsætter</translation>
 <translation id="7968833647796919681">Aktivér registrering af data om ydeevne</translation>
 <translation id="7968982339740310781">Se info</translation>
@@ -5971,7 +5975,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8226222018808695353">Forbudt</translation>
 <translation id="8226619461731305576">Kø</translation>
 <translation id="8226628635270268143">Vælg dine foretrukne billeder og album</translation>
-<translation id="8226742006292257240">Nedenfor ses den vilkårlige TPM-adgangskode, der er tilknyttet din computer:</translation>
 <translation id="8227119283605456246">Vedhæft fil</translation>
 <translation id="8230134520748321204">Vil du gemme adgangskoden til <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Kunne ikke pinge standardnetværkets gateway</translation>

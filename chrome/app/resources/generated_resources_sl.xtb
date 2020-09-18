@@ -2632,7 +2632,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4095507791297118304">Glavni zaslon</translation>
 <translation id="409579654357498729">Dodaj v Google Tiskanje v oblaku</translation>
 <translation id="4096508467498758490">Onemogočanje razširitev za razvijalski način</translation>
-<translation id="4096824249111507322">Varni modul se pripravlja, počakajte (to bo morda trajalo nekaj minut) ...</translation>
 <translation id="4097406557126260163">Aplikacije in razširitve</translation>
 <translation id="4097560579602855702">Iščite v Googlu</translation>
 <translation id="4098667039111970300">Orodja za pisalo v orodni vrstici</translation>
@@ -3362,7 +3361,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">Preverjanje črkovanja za izbrane jezike ni podprto</translation>
 <translation id="5052499409147950210">Urejanje spletnega mesta</translation>
-<translation id="5053604404986157245">Naključno ustvarjeno geslo TPM ni na voljo. To je običajno po izvedbi funkcije Powerwash.</translation>
 <translation id="5057110919553308744">Ko kliknete razširitev</translation>
 <translation id="5057403786441168405">Upravljajte račune, v katere ste prijavljeni. Spletna mesta, aplikacije in razširitve v Chromu in Googlu Play morda uporabljajo te račune za prilagajanje izkušnje, vendar je to odvisno od dovoljenj. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Omejitev prijave</translation>
@@ -3955,7 +3953,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5774295353725270860">Odpiranje aplikacije Datoteke</translation>
 <translation id="577624874850706961">Preišči piškotke</translation>
 <translation id="5777468213129569553">Odpri Chrome</translation>
-<translation id="5778747455497889540">Spodaj je prikazano naključno ustvarjeno geslo za varni modul, dodeljeno vašemu računalniku:</translation>
 <translation id="5780011244986845107">Izbrana mapa vsebuje občutljive datoteke. Ali ste prepričani, da želite aplikaciji »<ph name="APP_NAME" />« odobriti trajni dostop za branje te mape?</translation>
 <translation id="5780973441651030252">Prednost postopkov</translation>
 <translation id="5781092003150880845">Sinhronizacija z računom uporabnika <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4664,7 +4661,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6635956300022133031">Izbira in prilagajanje glasov za pretvorbo besedila v govor</translation>
 <translation id="6636588250634969791">Pred nadaljevanjem vstavite kartico SIM.</translation>
 <translation id="6639554308659482635">Pomnilnik SQLite</translation>
-<translation id="6641138807883536517">Naključno ustvarjeno geslo za varni modul ni na voljo. To je običajno po izvedbi funkcije Powerwash.</translation>
 <translation id="6642720633335369752">Če si želite ogledati okna vseh odprtih aplikacij, s prstom povlecite z dna zaslona navzgor in pridržite.</translation>
 <translation id="664290675870910564">Izbira omrežja</translation>
 <translation id="6643016212128521049">Izbriši</translation>
@@ -4992,7 +4988,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="7029307918966275733">Crostini ni nameščen. Namestite ga, če si želite ogledati datoteko z ustvarjalci.</translation>
 <translation id="7029809446516969842">Gesla</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – povezana so serijska vrata</translation>
-<translation id="7031962166228839643">TPM se pripravlja, počakajte (to lahko traja nekaj minut) ...</translation>
 <translation id="7036706669646341689">Za Linux priporočamo <ph name="DISK_SIZE" /> prostora. Če želite povečati nezasedeni prostor, izbrišite datoteke iz naprave.</translation>
 <translation id="7037509989619051237">Besedilo za predogled</translation>
 <translation id="7038632520572155338">Stikalni dostop</translation>
@@ -5982,7 +5977,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8226222018808695353">Prepovedano</translation>
 <translation id="8226619461731305576">Čakalna vrsta</translation>
 <translation id="8226628635270268143">Izberite priljubljene fotografije in albume</translation>
-<translation id="8226742006292257240">Spodaj je prikazano naključno ustvarjeno geslo za TPM, dodeljeno vašemu računalniku:</translation>
 <translation id="8227119283605456246">Prilaganje datoteke</translation>
 <translation id="8230134520748321204">Želite shraniti geslo za <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Ni mogoče preveriti privzetega prehoda omrežja</translation>

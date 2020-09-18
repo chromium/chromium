@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">वाय-फाय शी पुन्हा कनेक्ट करत आहे</translation>
 <translation id="1165039591588034296">एरर</translation>
 <translation id="1165174597379888365">पेजला भेट दिली</translation>
+<translation id="1174723505405632867">तुम्हाला <ph name="TOP_LEVEL_URL" /> वरील कुकी आणि साइट डेटा <ph name="EMBEDDED_URL" /> ला वापरण्याची अनुमती द्यायची आहे का?
+
+अन्यथा तुमची गोपनीयता सेटिंग्ज हे ब्लॉक करतील. यामुळे तुम्ही परस्परसंवाद साधलेला आशय योग्य प्रकारे काम करेल पण, <ph name="EMBEDDED_URL" /> ला कदाचित तुमची अ‍ॅक्टिव्हिटी ट्रॅक करू देईल.</translation>
 <translation id="1175364870820465910">&amp;मुद्रण...</translation>
 <translation id="1175875016430184367">ट्रिपल स्टेपल राइट</translation>
 <translation id="1178581264944972037">विराम द्या</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">धोरणे</translation>
 <translation id="2183608646556468874">फोन नंबर</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 पत्ता}other{# पत्ते}}</translation>
+<translation id="2187243482123994665">वापरकर्त्याची ॲक्टिव्हिटी</translation>
 <translation id="2187317261103489799">शोधा (डीफॉल्ट)</translation>
 <translation id="2188375229972301266">मल्टिपल पंच बॉटम</translation>
 <translation id="2202020181578195191">वैध समाप्ती वर्ष एंटर करा</translation>
@@ -533,6 +537,7 @@
           किंवा तुमच्या नेटवर्क ॲडमिनिस्ट्रेटरशी संपर्क साधा. तुम्ही प्रॉक्सी सर्व्हर वापरत
          आहात यावर तुमचा विश्वास नसल्यास:
           <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456">तुम्ही डिव्हाइस कधी वापरता ते <ph name="URL" /> ला जाणून घ्यायचे आहे</translation>
 <translation id="3188393374551744535">खाते शिल्लक</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ला तुमच्या डिव्हाइसवर डेटा कायमचा स्टोअर करायचा आहे</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> वर <ph name="PRINTER_NAME" /></translation>
@@ -1024,6 +1029,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">मशीन</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> मध्ये नाही? या एररचा अहवाल नोंदवा</translation>
+<translation id="5179740473595559246">तुम्ही डिव्हाइसचा वापर कधी करता</translation>
 <translation id="5190835502935405962">बुकमार्क बार</translation>
 <translation id="519422657042045905">भाष्य उपलब्ध नाही</translation>
 <translation id="5201306358585911203">या पेजवरील एंबेड केलेल्‍या पेजचे म्हणणे हे आहे की</translation>
@@ -1246,6 +1252,7 @@
 <translation id="6049488691372270142">पेज वितरण</translation>
 <translation id="6051221802930200923">ही वेबसाइट सर्टिफिकेट पिनिंग वापरत असल्यामुळे तुम्ही आत्ता <ph name="SITE" /> पाहू शकणार नाही. नेटवर्क एरर आणि आक्रमण शक्यतो तात्पुरती असतात, त्यामुळे हे पेज नंतर पाहता येईल.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">तुमची ॲक्टिव्हिटी शेअर करायची आहे का?</translation>
 <translation id="6058977677006700226">तुमच्या सर्व डिव्हाइसवर तुमची कार्डे वापरायची का?</translation>
 <translation id="6059925163896151826">USB डिव्हाइसेस</translation>
 <translation id="6060009363608157444">चुकीचा DnsOverHttps मोड.</translation>
@@ -1376,6 +1383,7 @@
 <translation id="6631202559048444592">धोरणासाठी एकापेक्षा जास्त स्रोत आहेत, परंतु मूल्ये सारखी आहेत.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">साफ करा</translation>
+<translation id="6645291930348198241">कुकी आणि साइट डेटा अ‍ॅक्सेस करा.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{काहीही नाही}=1{एका साइटवरून (तुम्हाला तुमच्या Google खात्यातून साइन आउट केले जाणार नाही)}other{# साइटवरून (तुम्हाला तुमच्या Google खात्यातून साइन आउट केले जाणार नाही)}}</translation>
 <translation id="6648459603387803038">तुमचा अ‍ॅडमिनिस्ट्रेटर तुमच्या ब्राउझरचा सेटअप रिमोट पद्धतीने बदलू शकतो. या डिव्हाइसवरील अ‍ॅक्टिव्हिटी कदाचित Chrome च्या बाहेर व्यवस्थापित केलेली असू शकते.</translation>
 <translation id="6652101503459149953">Windows Hello वापरा</translation>

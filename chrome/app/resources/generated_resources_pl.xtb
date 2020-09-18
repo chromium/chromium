@@ -2628,7 +2628,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4095507791297118304">Ekran główny</translation>
 <translation id="409579654357498729">Dodaj do Cloud Print</translation>
 <translation id="4096508467498758490">Wyłącz rozszerzenia trybu dewelopera</translation>
-<translation id="4096824249111507322">Czekaj, moduł zabezpieczeń jest przygotowywany (może to potrwać kilka minut)…</translation>
 <translation id="4097406557126260163">Aplikacje i rozszerzenia</translation>
 <translation id="4097560579602855702">Szukaj w Google</translation>
 <translation id="4098667039111970300">Narzędzia rysika na pasku narzędzi</translation>
@@ -3358,7 +3357,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">Sprawdzanie pisowni w wybranych językach nie jest obsługiwane</translation>
 <translation id="5052499409147950210">Edytowanie strony internetowej</translation>
-<translation id="5053604404986157245">Losowo generowane hasło TPM jest niedostępne. Ta sytuacja jest normalna po użyciu funkcji Powerwash.</translation>
 <translation id="5057110919553308744">Gdy klikniesz rozszerzenie</translation>
 <translation id="5057403786441168405">Zarządzanie kontami zalogowanych użytkowników. Witryny, aplikacje i rozszerzenia w Chrome i Google Play mogą używać tych kont do dostosowywania swojego wyglądu i działania (jeśli mają odpowiednie uprawnienia). <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Ograniczanie logowania się</translation>
@@ -3949,7 +3947,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5774295353725270860">Otwórz aplikację Pliki</translation>
 <translation id="577624874850706961">Szukaj plików cookie</translation>
 <translation id="5777468213129569553">Otwórz Chrome</translation>
-<translation id="5778747455497889540">Poniżej znajduje się losowo wygenerowane hasło modułu zabezpieczeń, które zostało przypisane do Twojego komputera:</translation>
 <translation id="5780011244986845107">Wybrany folder zawiera poufne pliki. Czy na pewno chcesz, by aplikacja „<ph name="APP_NAME" />” miała do niego stały dostęp z uprawnieniami do odczytu?</translation>
 <translation id="5780973441651030252">Priorytet procesu</translation>
 <translation id="5781092003150880845">Synchronizuj z kontem: <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4658,7 +4655,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6635956300022133031">Wybierz i dostosuj głosy do zamiany tekstu na mowę</translation>
 <translation id="6636588250634969791">Zanim przejdziesz dalej, włóż kartę SIM</translation>
 <translation id="6639554308659482635">Pamięć SQLite</translation>
-<translation id="6641138807883536517">Losowo generowane hasło modułu zabezpieczeń jest niedostępne. Ta sytuacja jest normalna po użyciu funkcji Powerwash.</translation>
 <translation id="6642720633335369752">Aby zobaczyć wszystkie otwarte okna aplikacji, przesuń palcem w górę od dołu ekranu i przytrzymaj.</translation>
 <translation id="664290675870910564">Wybór sieci</translation>
 <translation id="6643016212128521049">Wyczyść</translation>
@@ -4986,7 +4982,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7029307918966275733">Nie zainstalowano Crostini. Zainstaluj Crostini, by zobaczyć autorów.</translation>
 <translation id="7029809446516969842">Hasła</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – podłączono port szeregowy</translation>
-<translation id="7031962166228839643">Czekaj, moduł TPM jest przygotowywany (może to potrwać kilka minut)...</translation>
 <translation id="7036706669646341689">Do korzystania z Linuksa zalecane jest <ph name="DISK_SIZE" /> wolnego miejsca. Aby zwolnić miejsce, usuń pliki z urządzenia.</translation>
 <translation id="7037509989619051237">Tekst do sprawdzenia mowy</translation>
 <translation id="7038632520572155338">Switch Access</translation>
@@ -5976,7 +5971,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8226222018808695353">Zabroniony</translation>
 <translation id="8226619461731305576">Kolejka</translation>
 <translation id="8226628635270268143">Wybierz ulubione zdjęcia i albumy</translation>
-<translation id="8226742006292257240">Poniżej znajduje się losowo wygenerowane hasło modułu TPM, które zostało przypisane do Twojego komputera:</translation>
 <translation id="8227119283605456246">Załącz plik</translation>
 <translation id="8230134520748321204">Zapisać hasło do: <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Nie udało się sprawdzić pingiem domyślnej bramy sieciowej</translation>

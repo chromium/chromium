@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
-<translation id="1013149566889033026">Odprl se bo nov zavihek brez beleženja dejavnosti</translation>
 <translation id="1028699632127661925">Pošiljanje v napravo <ph name="DEVICE_NAME" /> ...</translation>
 <translation id="103269572468856066">Želite izbrisati tudi podatke s teh mest in iz aplikacij?</translation>
 <translation id="1036348656032585052">Izklop</translation>
@@ -166,6 +165,7 @@ Dotaknite se poljubne besede, če želite iskati. Če želite izboljšati iskanj
 <translation id="2321086116217818302">Pripravljanje gesel …</translation>
 <translation id="2321958826496381788">Drsnik povlecite tako daleč, da boste lahko to besedilo brez težave prebrali. Besedilo bo po dvakratnem dotiku odstavka vsaj tako veliko.</translation>
 <translation id="2323763861024343754">Shranjeni podatki splet. mesta</translation>
+<translation id="2326606747676847821">Brskaj brez beleženja zgodovine</translation>
 <translation id="2328985652426384049">Ne morem se prijaviti</translation>
 <translation id="234265804618409743">Kamere ni mogoče odpreti. Prišlo je do napake.</translation>
 <translation id="2345671828921229300">Če želite iskati, pridržite besedo</translation>
@@ -346,7 +346,6 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="3775705724665058594">Pošiljanje v naprave</translation>
 <translation id="3778956594442850293">Dodano na začetni zaslon</translation>
 <translation id="3789841737615482174">Namesti</translation>
-<translation id="3800748312755064483">Začasna prijava</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Upravljanje</translation>
 <translation id="3819178904835489326">Št. izbrisanih prenosov: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
@@ -387,7 +386,6 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="4135200667068010335">Seznam naprav, s katerimi želite deliti zavihek, je zaprt.</translation>
 <translation id="4149994727733219643">Poenostavljen pogled za spletne strani</translation>
 <translation id="4170011742729630528">Storitev ni na voljo; poskusite znova pozneje.</translation>
-<translation id="4175173967354304331">Prijavljeni boste na tem spletnem mestu, v Chromu in Googlovih aplikacijah</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> prenesenih podatkov</translation>
 <translation id="4181841719683918333">Jeziki</translation>
 <translation id="4183868528246477015">Iskanje z Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>

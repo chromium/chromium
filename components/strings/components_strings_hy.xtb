@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Նորից միանալ Wi-Fi-ին</translation>
 <translation id="1165039591588034296">Սխալ</translation>
 <translation id="1165174597379888365">Բացվել է էջ</translation>
+<translation id="1174723505405632867">Ուզո՞ւմ եք թույլատրել <ph name="EMBEDDED_URL" /> կայքին օգտագործել <ph name="TOP_LEVEL_URL" /> կայքի քուքիներն ու տվյալները։
+
+Սա արգելափակված է ձեր գաղտնիության կարգավորումների կողմից։ Ձեր օգտագործած բովանդակությունը ճիշտ կաշխատի, սակայն <ph name="EMBEDDED_URL" /> կայքը կկարողանա հետագծել ձեր գործողությունները։</translation>
 <translation id="1175364870820465910">&amp;Տպել…</translation>
 <translation id="1175875016430184367">Երեք ամրակ աջ կողմում</translation>
 <translation id="1178581264944972037">Դադար</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Կանոններ</translation>
 <translation id="2183608646556468874">Հեռախոսահամար</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 հասցե}one{# addresses}other{# հասցե}}</translation>
+<translation id="2187243482123994665">Օգտատիրոջ ներկայություն</translation>
 <translation id="2187317261103489799">Որոշել (կանխադրված)</translation>
 <translation id="2188375229972301266">Մի քանի անցք ներքևում</translation>
 <translation id="2202020181578195191">Մուտքագրեք ժամկետի սպառման վավեր տարեթիվ</translation>
@@ -533,6 +537,7 @@
       ցանցի ադմինիստրատորի հետ, որպեսզի համոզվեք, որ 
       միջնորդ սերվերն աշխատում է: Եթե չեք օգտագործում միջնորդ սերվեր`
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> կայքն ուզում է տեղեկություններ ստանալ ձեր ներկայության մասին</translation>
 <translation id="3188393374551744535">Հաշվի մնացորդը</translation>
 <translation id="3194737229810486521"><ph name="URL" /> կայքն ուզում է ձեր սարքում մեծ ծավալով տվյալներ մշտապես պահել</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> տպիչ <ph name="SERVER_NAME" />֊ում</translation>
@@ -1025,6 +1030,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Համակարգիչ</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> չէ՞: Հաղորդեք սխալի մասին</translation>
+<translation id="5179740473595559246">Տեղեկություններ ստանալ ձեր ներկայության մասին</translation>
 <translation id="5190835502935405962">Էջանիշների գոտի</translation>
 <translation id="519422657042045905">Ծանոթագրությունը հասանելի չէ</translation>
 <translation id="5201306358585911203">Հաղորդագրություն այս կայքում ներկառուցված էջից</translation>
@@ -1247,6 +1253,7 @@
 <translation id="6049488691372270142">Էջերի մատուցում</translation>
 <translation id="6051221802930200923">Այս պահին չեք կարող այցելել <ph name="SITE" /> կայք, քանի որ այն օգտագործում է հավաստագրի ամրացում։ Ցանցային սխալներն ու հարձակումները սովորաբար ժամանակավոր բնույթ են կրում, և հավանաբար այս էջը հասանելի կլինի ավելի ուշ:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Փոխանցե՞լ տեղեկություններ ձեր ներկայության մասին</translation>
 <translation id="6058977677006700226">Օգտագործե՞լ քարտերը ձեր բոլոր սարքերում</translation>
 <translation id="6059925163896151826">USB սարքեր</translation>
 <translation id="6060009363608157444">DnsOverHttps ռեժիմն անվավեր է:</translation>
@@ -1376,6 +1383,7 @@
 <translation id="6631202559048444592">Այս կանոնի համար կան մեկից ավել աղբյուրներ, սակայն արժեքները նույնն են:</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Մաքրել</translation>
+<translation id="6645291930348198241">Օգտագործել քուքիներն ու կայքի տվյալները։</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Ոչինչ չկա}=1{1 կայքից (դուք դուրս չեք գա ձեր Google հաշվից)}one{# կայքից (դուք դուրս չեք գա ձեր Google հաշվից)}other{# կայքից (դուք դուրս չեք գա ձեր Google հաշվից)}}</translation>
 <translation id="6648459603387803038">Ձեր ադմինիստրատորը կարող է հեռակա փոխել ձեր դիտարկիչի կարգավորումները։ Սարքում արվող գործողությունները նույնպես կարող են կառավարվել Chrome-ից դուրս։</translation>
 <translation id="6652101503459149953">Օգտագործել Windows Hello</translation>

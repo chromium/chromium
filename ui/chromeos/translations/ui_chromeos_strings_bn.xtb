@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">নিরাপত্তাজড়িন কারণে ফাইলটিতে অ্যাক্সেস করা যায়নি৷</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" />টি আইটেম জিপ করা হচ্ছে…</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" />টি আইটেম কপি করা হয়েছে।</translation>
 <translation id="174173592514158117">সমস্ত Play ফোল্ডারগুলি দেখান</translation>
 <translation id="174937106936716857">মোট ফাইল সংখ্যা</translation>
 <translation id="1775381402323441512">ভিডিওর তথ্য</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">ভুল অক্ষর: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">ভিয়েতনামি কীবোর্ড (TCVN)</translation>
 <translation id="2168214441502403371">ফার্সি কীবোর্ড</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> সরানো হয়েছে।</translation>
 <translation id="2198315389084035571">সরলীকৃত চীনা</translation>
 <translation id="2208158072373999562">জিপ সংগ্রহ</translation>
 <translation id="2225536596944493418">আপনি কি <ph name="NUMBER_OF_ITEMS" />টি আইটেম মুছে ফেলার ব্যাপারে নিশ্চিত?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" /> " ফোল্ডার তৈরী করতে ব্যর্থ৷<ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">সরানো হয়েছে</translation>
 <translation id="2278988676849463018">কন্নড় কীবোর্ড (ফোনেটিক)</translation>
 <translation id="2288278176040912387">রেকর্ড প্লেয়ার</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" />টি ফাইল খোলা হচ্ছে।</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">সব ব্যাকআপ নেওয়া হয়ে গেছে!</translation>
 <translation id="3626281679859535460">উজ্জ্বলতা</translation>
 <translation id="3644896802912593514">প্রস্থ</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" />টি আইটেম সরানো হয়েছে।</translation>
 <translation id="3645531960514756307">ফোল্ডারটি আনপিন করুন</translation>
 <translation id="3678559383040232393">মাল্টাদেশীয় কীবোর্ড</translation>
 <translation id="3685122418104378273">মোবাইল ডেটা ব্যবহার করার সময় ডিফল্টরূপে Google ড্রাইভ সিঙ্ক বন্ধ করা হয়৷</translation>
@@ -394,6 +398,7 @@
     <ph name="MARKUP_4" />আপনার ফাইলগুলিকে নিরাপদ রাখুন।<ph name="MARKUP_5" />
     আপনার ডিভাইসে কি ঘটছে তা গুরুত্বপূর্ণ নয়, আপনার ফাইলগুলি Google ড্রাইভে নিরাপদভাবে সঞ্চয় করা হয়।
     <ph name="MARKUP_6" />ফাইলগুলি অন্যদের সাথে <ph name="MARKUP_7" />শেয়ার করুন, তৈরি এবং সহযোগিতা<ph name="MARKUP_8" />করুন, সবকিছু এক জায়গাতেই।<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">কপি করা হয়েছে।</translation>
 <translation id="5275973617553375938">Google ড্রাইভ থেকে উদ্ধার করা ফাইলগুলি</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">সেভ করুন</translation>
@@ -750,6 +755,7 @@
 <translation id="943972244133411984">পরিবর্তন করেছেন</translation>
 <translation id="945522503751344254">মতামত জানান</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> থেকে <ph name="TO_ENTRY_NAME" />-এর মধ্যে <ph name="ENTRY_COUNT" />টি এন্ট্রি বেছে নেওয়া হয়েছে।</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> কপি করা হয়েছে।</translation>
 <translation id="981121421437150478">অফলাইন</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" নামের ফাইল আগে থেকেই আছে। আপনি কি সেটি প্রতিস্থাপিত করতে চান?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> এমবি</translation>

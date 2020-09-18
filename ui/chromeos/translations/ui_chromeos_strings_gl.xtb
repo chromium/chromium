@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Non se puido acceder ao ficheiro por motivos de seguranza.</translation>
 <translation id="169515659049020177">Maiús</translation>
 <translation id="1722487484194605434">Comprimindo <ph name="NUMBER_OF_ITEMS" /> elementos…</translation>
+<translation id="1731889557567069540">Copiáronse <ph name="NUMBER_OF_ITEMS" /> elementos.</translation>
 <translation id="174173592514158117">Mostrar todos os cartafoles de Google Play</translation>
 <translation id="174937106936716857">Reconto total de ficheiros</translation>
 <translation id="1775381402323441512">Información do vídeo</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Carácter non válido: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Teclado vietnamita (TCVN)</translation>
 <translation id="2168214441502403371">Teclado persa</translation>
+<translation id="2197363559908958454">Artigos movidos: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">Chinés simplificado</translation>
 <translation id="2208158072373999562">Arquivo zip</translation>
 <translation id="2225536596944493418">Seguro que queres eliminar <ph name="NUMBER_OF_ITEMS" /> elementos?</translation>
 <translation id="2230062665678605299">Non se puido crear o cartafol "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Moveuse.</translation>
 <translation id="2278988676849463018">Teclado kannada (fonético)</translation>
 <translation id="2288278176040912387">Tocadiscos</translation>
 <translation id="2291538123825441971">Abrindo <ph name="NUMBER_OF_FILES" /> ficheiros.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Todos os ficheiros teñen unha copia de seguranza</translation>
 <translation id="3626281679859535460">Brillo</translation>
 <translation id="3644896802912593514">Largura</translation>
+<translation id="3645233063072417428">Movéronse <ph name="NUMBER_OF_ITEMS" /> elementos.</translation>
 <translation id="3645531960514756307">Deixar de fixar cartafol</translation>
 <translation id="3678559383040232393">Teclado maltés</translation>
 <translation id="3685122418104378273">A sincronización con Google Drive está desactivada de xeito predeterminado cando se utilizan os datos móbiles.</translation>
@@ -395,6 +399,7 @@
     Pase o que pase co dispositivo, os ficheiros estarán almacenados de forma segura en Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Crea ficheiros, compárteos e traballa en grupo<ph name="MARKUP_8" />
     desde un único lugar.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Copiouse.</translation>
 <translation id="5275973617553375938">Ficheiros recuperados de Google Drive</translation>
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5318819489018851358">Compartir con Linux</translation>
@@ -750,6 +755,7 @@
 <translation id="943972244133411984">Modificado por</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="947144732524271678">Seleccionouse un intervalo de <ph name="ENTRY_COUNT" /> entradas desde <ph name="FROM_ENTRY_NAME" /> ata <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="949308258121608615">Artigos copiados: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="981121421437150478">Sen conexión</translation>
 <translation id="988685240266037636">Xa existe un ficheiro co nome "<ph name="FILE_NAME" />". Queres substituílo?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

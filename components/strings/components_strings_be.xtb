@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Паўторна падключыцца да Wi-Fi</translation>
 <translation id="1165039591588034296">Памылка</translation>
 <translation id="1165174597379888365">Наведваецца старонка</translation>
+<translation id="1174723505405632867">Дазволіць сайту <ph name="EMBEDDED_URL" /> выкарыстоўваць файлы cookie і даныя сайта <ph name="TOP_LEVEL_URL" />?
+
+Калі не дазволіць, доступ будзе заблакіраваны наладамі прыватнасці. Калі дазволіць, вы зможаце нармальна працаваць са змесцівам, але сайт <ph name="EMBEDDED_URL" /> зможа адсочваць вашы дзеянні.</translation>
 <translation id="1175364870820465910">&amp;Друк...</translation>
 <translation id="1175875016430184367">Тры скабы справа</translation>
 <translation id="1178581264944972037">Прыпыніць</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Палітыкі</translation>
 <translation id="2183608646556468874">Нумар тэлефона</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 адрас}one{# адрас}few{# адрасы}many{# адрасоў}other{# адраса}}</translation>
+<translation id="2187243482123994665">Прысутнасць карыстальніка</translation>
 <translation id="2187317261103489799">Выяўляць (стандартна)</translation>
 <translation id="2188375229972301266">Некалькі дзірак знізу</translation>
 <translation id="2202020181578195191">Увядзіце сапраўдны год заканчэння тэрміну дзеяння</translation>
@@ -533,6 +537,7 @@
       упэўніцца, што проксі-сервер працуе. Калі вы не згодны, што трэба
       выкарыстоўваць проксі-сервер:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456">Сайт <ph name="URL" /> запытвае дазвол атрымліваць звесткі аб вашай прысутнасці</translation>
 <translation id="3188393374551744535">Баланс уліковага запісу</translation>
 <translation id="3194737229810486521">Сайт <ph name="URL" /> запытвае дазволу захоўваць даныя на вашай прыладзе</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на серверы <ph name="SERVER_NAME" /></translation>
@@ -1024,6 +1029,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Машына</translation>
 <translation id="5179510805599951267">Мова старонкі – не <ph name="ORIGINAL_LANGUAGE" />? Паведаміце пра памылку</translation>
+<translation id="5179740473595559246">Атрымліваць звесткі аб вашай прысутнасці.</translation>
 <translation id="5190835502935405962">Панэль закладак</translation>
 <translation id="519422657042045905">Анатацыя недаступная</translation>
 <translation id="5201306358585911203">Убудаваная старонка на гэтай старонцы паведамляе</translation>
@@ -1246,6 +1252,7 @@
 <translation id="6049488691372270142">Дастаўка старонак</translation>
 <translation id="6051221802930200923">Вы не можаце адкрыць вэб-сайт <ph name="SITE" />, бо ён выкарыстоўвае механізм замацоўвання сертыфікатаў. Сеткавыя памылкі і атакі звычайна маюць часовы характар. Хутчэй за ўсё, праз некаторы час вэб-сайт будзе працаваць зноў.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Абагульваць звесткі аб вашай прысутнасці?</translation>
 <translation id="6058977677006700226">Выкарыстоўваць вашы карткі на ўсіх прыладах?</translation>
 <translation id="6059925163896151826">Прылады USB</translation>
 <translation id="6060009363608157444">Няправільны рэжым DnsOverHttps.</translation>
@@ -1375,6 +1382,7 @@
 <translation id="6631202559048444592">Для гэтай палітыкі ёсць больш чым адна крыніца, але значэнні аднолькавыя.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Ачысціць</translation>
+<translation id="6645291930348198241">Атрымаць доступ да файлаў cookie і даных сайта.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Няма}=1{З 1 сайта (вы не выйдзеце з Уліковага запісу Google)}one{З # сайта (вы не выйдзеце з Уліковага запісу Google)}few{З # сайтаў (вы не выйдзеце з Уліковага запісу Google)}many{З # сайтаў (вы не выйдзеце з Уліковага запісу Google)}other{З # сайта (вы не выйдзеце з Уліковага запісу Google)}}</translation>
 <translation id="6648459603387803038">Адміністратар можа аддалена змяняць налады браўзера. Сама прылада таксама можа знаходзіцца пад знешнім кіраваннем.</translation>
 <translation id="6652101503459149953">Выкарыстоўваць Windows Hello</translation>

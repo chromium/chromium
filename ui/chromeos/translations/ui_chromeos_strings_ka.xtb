@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">ფაილზე წვდომა ვერ ხერხდება უსაფრთხოების გამო.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ერთეულის დაარქივება…</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ერთეული დაკოპირდა.</translation>
 <translation id="174173592514158117">ყველა Google Play საქაღალდის ჩვენება</translation>
 <translation id="174937106936716857">ფაილების საერთო რაოდენობა</translation>
 <translation id="1775381402323441512">ვიდეოს ინფორმაცია</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">არასწორი სიმბოლო: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">ვიეტნამური კლავიატურა (TCVN)</translation>
 <translation id="2168214441502403371">სპარსული კლავიატურა</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> გადატანილია.</translation>
 <translation id="2198315389084035571">გამარტივებული ჩინური</translation>
 <translation id="2208158072373999562">Zip არქივი</translation>
 <translation id="2225536596944493418">ნამდვილად გსურთ, წაშალოთ <ph name="NUMBER_OF_ITEMS" /> ერთეული?</translation>
 <translation id="2230062665678605299">ვერ შეიქმნა საქაღალდე „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">გადატანილია.</translation>
 <translation id="2278988676849463018">კანადური კლავიატურა (ფონეტიკური)</translation>
 <translation id="2288278176040912387">ფლეიერი</translation>
 <translation id="2291538123825441971">მიმდინარეობს <ph name="NUMBER_OF_FILES" /> ფაილის გახსნა.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">ყველაფერი გადატანილია სარეზერვო მეხსიერებაში!</translation>
 <translation id="3626281679859535460">სიკაშკაშე</translation>
 <translation id="3644896802912593514">სიგანე</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ერთეული გადატანილია.</translation>
 <translation id="3645531960514756307">საქაღალდის ჩამაგრების მოხსნა</translation>
 <translation id="3678559383040232393">Maltese-ის კლავიატურა</translation>
 <translation id="3685122418104378273">Google Drive სინქრონიზაცია ნაგულისხმევად გამორთულია მობილური მონაცემების გამოყენების დროს.</translation>
@@ -395,6 +399,7 @@
     თუ თქვენს მოწყობილობას რაიმე დაემართება, თქვენი ფაილები უსაფრთხოდ იქნება შენახული Google Drive-ზე.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />გააზიარეთ, შექმენით და ითამშრომლეთ<ph name="MARKUP_8" />
     ფაილებზე სხვებთან ერთად და ერთი სივრციდან.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">დაკოპირდა.</translation>
 <translation id="5275973617553375938">აღდგენილი ფაილი Google Drive-დან</translation>
 <translation id="5317780077021120954">შენახვა</translation>
 <translation id="5318819489018851358">Linux-თან გაზიარება</translation>
@@ -750,6 +755,7 @@
 <translation id="943972244133411984">შემცვლელი</translation>
 <translation id="945522503751344254">შეფასების გაგზავნა</translation>
 <translation id="947144732524271678">არჩეულია <ph name="ENTRY_COUNT" /> ჩანაწერის დიაპაზონი „<ph name="FROM_ENTRY_NAME" />“-დან „<ph name="TO_ENTRY_NAME" />“-მდე.</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> დაკოპირდა.</translation>
 <translation id="981121421437150478">ოფლაინი</translation>
 <translation id="988685240266037636">ფაილი სახელად „<ph name="FILE_NAME" />“ უკვე არსებობს. გსურთ მისი ჩანაცვლება?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> მბაიტი</translation>

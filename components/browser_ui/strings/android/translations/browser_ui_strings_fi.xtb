@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Sivusto <ph name="SITE_NAME" /> lisättiin.</translation>
 <translation id="1383876407941801731">Haku</translation>
 <translation id="1384959399684842514">Lataus keskeytettiin.</translation>
+<translation id="1431402976894535801">Estä sivustoja tietämästä, kun olet paikalla</translation>
 <translation id="1446450296470737166">Salli MIDI-laitteiden täysi käyttöoik.</translation>
 <translation id="1509960214886564027">Useiden sivustojen ominaisuudet saattavat lakata toimimasta</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">Avaa Instant-sovellus</translation>
 <translation id="2148716181193084225">Tänään</translation>
 <translation id="2182457891543959921">Kysy, saavatko sivustot luoda 3D-kartan ympäristöstäsi tai seurata kameran asentoa (suositus)</translation>
+<translation id="2187243482123994665">Käyttäjän paikallaolo</translation>
 <translation id="2212565012507486665">Salli evästeet</translation>
 <translation id="2228071138934252756">Laita kamera päälle myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> saa pääsyn kameraasi.</translation>
 <translation id="2289270750774289114">Kysy aina, kun sivusto pyytää lupaa löytää lähellä olevat Bluetooth-laitteet (suositus)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">Videosoitin</translation>
 <translation id="3115898365077584848">Näytä tiedot</translation>
 <translation id="3123473560110926937">Estetty tietyillä sivustoilla</translation>
+<translation id="3165371858310906303">Pyydä lupaa, kun sivusto haluaa tietää, oletko paikalla</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> tallennettua tietoa</translation>
 <translation id="321187648315454507">Ota ilmoitukset käyttöön myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> voi lähettää sinulle ilmoituksia.</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
@@ -133,6 +136,7 @@
 <translation id="5197729504361054390"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saa valitsemasi yhteystiedot.</translation>
 <translation id="5300589172476337783">Näytä</translation>
 <translation id="5301954838959518834">Selvä</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta</translation>
 <translation id="5313967007315987356">Lisää sivusto</translation>
 <translation id="5317780077021120954">Tallenna</translation>
 <translation id="5335288049665977812">Anna kaikkien sivustojen käyttää JavaScriptiä (suositus).</translation>
@@ -144,6 +148,7 @@
 <translation id="5403592356182871684">Nimet</translation>
 <translation id="5489227211564503167">Kulunut aika: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" /></translation>
 <translation id="5494752089476963479">Estä häiritseviä tai harhaanjohtavia mainoksia näyttävien sivustojen mainokset</translation>
+<translation id="5502860503640766021"><ph name="PERMISSION_1" /> sallittu, <ph name="PERMISSION_2" /> estetty</translation>
 <translation id="5505264765875738116">Sivustot eivät saa pyytää lupaa ilmoitusten lähettämiseen</translation>
 <translation id="5516455585884385570">Avaa ilmoitusasetukset</translation>
 <translation id="5527111080432883924">Pyydä lupaa, kun sivustot yrittävät lukea tekstiä ja kuvia leikepöydältä (suositus)</translation>
@@ -155,12 +160,15 @@
 <translation id="5690795753582697420">Kamera laitettiin pois päältä Androidin asetuksista</translation>
 <translation id="5710871682236653961">Kysy, saavatko sivustot lähettää ja vastaanottaa tietoja, kun kosketat NFC-laitteita (suositus)</translation>
 <translation id="5719847187258001597">Tämä tyhjentää kaiken datan ja kaikki evästeet, jotka <ph name="ORIGIN" /> tai sen aloitusnäytölläsi oleva sovellus on tallentanut.</translation>
+<translation id="5771720122942595109"><ph name="PERMISSION_1" /> estetty</translation>
 <translation id="5804241973901381774">Käyttöoikeudet</translation>
 <translation id="5860033963881614850">Pois päältä</translation>
+<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta sallittu</translation>
 <translation id="5876056640971328065">Keskeytä video</translation>
 <translation id="5916664084637901428">Päällä</translation>
 <translation id="5922853908706496913">Näyttösi jaetaan</translation>
 <translation id="5939518447894949180">Tyhjennä</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Valitse, mitä tämä sivusto saa tehdä laitteellasi</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6042308850641462728">Lisää</translation>
@@ -172,6 +180,7 @@
 <translation id="6196640612572343990">Estä kolmannen osapuolen evästeet</translation>
 <translation id="6206551242102657620">Yhteys on turvallinen. Sivuston tiedot</translation>
 <translation id="6216432067784365534">Vaihtoehdot: <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6262279340360821358"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> estetty</translation>
 <translation id="6270391203985052864">Sivustot saavat pyytää lupaa lähettää ilmoituksia</translation>
 <translation id="6295158916970320988">Kaikki sivustot</translation>
 <translation id="6320088164292336938">Värinä</translation>
@@ -194,6 +203,7 @@
 <translation id="6790428901817661496">Toista</translation>
 <translation id="6818926723028410516">Valitse kohteet</translation>
 <translation id="6864395892908308021">Tämä laite ei lue NFC-dataa</translation>
+<translation id="6879016579615558281"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta estetty</translation>
 <translation id="6910211073230771657">Poistettu</translation>
 <translation id="6912998170423641340">Estä sivustoja lukemasta tekstiä ja kuvia leikepöydältä</translation>
 <translation id="6945221475159498467">Valitse</translation>
@@ -211,6 +221,7 @@
 <translation id="723171743924126238">Valitse kuvat</translation>
 <translation id="7243308994586599757">Asetukset löytyvät näytön alalaidasta.</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> valittu</translation>
+<translation id="7260727271532453612"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> sallittu</translation>
 <translation id="7302486331832100261">Estät yleensä ilmoitukset. Voit sallia ne valitsemalla Tiedot.</translation>
 <translation id="7423098979219808738">Kysy ensin</translation>
 <translation id="7423538860840206698">Leikepöydältä lukeminen estetty</translation>
@@ -242,6 +253,7 @@
 <translation id="8087000398470557479">Google on toimittanut tämän sisällön osoitteesta <ph name="DOMAIN_NAME" />.</translation>
 <translation id="8116925261070264013">Mykistetty</translation>
 <translation id="8131740175452115882">Vahvista</translation>
+<translation id="8197286292360124385"><ph name="PERMISSION_1" /> sallittu</translation>
 <translation id="8200772114523450471">Jatka</translation>
 <translation id="8206354486702514201">Järjestelmänvalvojasi hallinnoi tätä asetusta.</translation>
 <translation id="8249310407154411074">Siirrä ylimmäksi</translation>

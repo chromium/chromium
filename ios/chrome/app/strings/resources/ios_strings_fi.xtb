@@ -293,6 +293,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="4277990410970811858">Selaussuoja</translation>
 <translation id="4281844954008187215">Käyttöehdot</translation>
 <translation id="430793432425771671">Synkronoi kaikki</translation>
+<translation id="4309403553630140242">Katso lisätietoja kaksoisnapauttamalla</translation>
 <translation id="430967081421617822">Koko historia</translation>
 <translation id="4334428914252001502">1 lukematon artikkeli</translation>
 <translation id="4338650699862464074">Lähettää avaamiesi sivujen URL-osoitteet Googlelle.</translation>
@@ -639,6 +640,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8073670137947914548">Lataus valmis</translation>
 <translation id="8073872304774253879">Paranna hakuja ja selausta</translation>
 <translation id="8076014560081431679">Tallennettuja sivustoasetuksia ei poisteta, ja ne saattavat sisältää tietoa selaustavoistasi. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
+<translation id="8079602123447022758">Tätä asetusta ylläpidetään, katso lisätietoja kaksoisnapauttamalla</translation>
 <translation id="8105368624971345109">Poista käytöstä</translation>
 <translation id="8114753159095730575">Ladattava tiedosto on saatavilla. Ruudun alaosassa on käytettävissä valintoja.</translation>
 <translation id="8131740175452115882">Vahvista</translation>

@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">să te reconectezi la Wi-Fi</translation>
 <translation id="1165039591588034296">Eroare</translation>
 <translation id="1165174597379888365">Este accesată o pagină</translation>
+<translation id="1174723505405632867">Permiți ca <ph name="EMBEDDED_URL" /> să folosească date privind site-urile și cookie-uri pe <ph name="TOP_LEVEL_URL" />?
+
+În caz contrar, adresa va fi blocată de setările de confidențialitate. Astfel, conținutul cu care ai interacționat va funcționa corect, dar este posibil ca <ph name="EMBEDDED_URL" /> să-ți urmărească activitatea.</translation>
 <translation id="1175364870820465910">&amp;Printează...</translation>
 <translation id="1175875016430184367">Capsare triplă în dreapta</translation>
 <translation id="1178581264944972037">Întrerupe</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Politici</translation>
 <translation id="2183608646556468874">Număr de telefon</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresă}few{# adrese}other{# de adrese}}</translation>
+<translation id="2187243482123994665">Prezența utilizatorului</translation>
 <translation id="2187317261103489799">Detectează (în mod prestabilit)</translation>
 <translation id="2188375229972301266">Perforare multiplă în partea de jos</translation>
 <translation id="2202020181578195191">Introdu un an de expirare valid</translation>
@@ -531,6 +535,7 @@
       pentru a te asigura că serverul proxy funcționează. Dacă nu consideri că ar trebui
       să folosești un server proxy:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> vrea să-ți detecteze prezența</translation>
 <translation id="3188393374551744535">Soldul contului</translation>
 <translation id="3194737229810486521"><ph name="URL" /> dorește să stocheze permanent date pe dispozitiv</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> pe <ph name="SERVER_NAME" /></translation>
@@ -1023,6 +1028,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Computer</translation>
 <translation id="5179510805599951267">Nu este în <ph name="ORIGINAL_LANGUAGE" />? Semnalează această eroare.</translation>
+<translation id="5179740473595559246">Să-ți detecteze prezența</translation>
 <translation id="5190835502935405962">Bară de marcaje</translation>
 <translation id="519422657042045905">Adnotarea nu este disponibilă</translation>
 <translation id="5201306358585911203">O pagină încorporată de pe această pagină afișează mesajul</translation>
@@ -1245,6 +1251,7 @@
 <translation id="6049488691372270142">Scoaterea paginilor</translation>
 <translation id="6051221802930200923">Nu poți accesa <ph name="SITE" /> acum, deoarece site-ul folosește fixarea certificatelor. Erorile de rețea și atacurile sunt de obicei temporare și probabil că această pagină va funcționa mai târziu.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Permiți detectarea prezenței?</translation>
 <translation id="6058977677006700226">Folosești cardurile pe toate dispozitivele?</translation>
 <translation id="6059925163896151826">Dispozitive USB</translation>
 <translation id="6060009363608157444">Mod DnsOverHttps nevalid.</translation>
@@ -1374,6 +1381,7 @@
 <translation id="6631202559048444592">Este prezentă mai mult de o sursă pentru politică, dar valorile sunt identice.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Șterge</translation>
+<translation id="6645291930348198241">Să acceseze cookie-urile și datele privind site-urile.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Niciunul}=1{De pe un site (nu te va deconecta de la Contul Google)}few{De pe # site-uri (nu te va deconecta de la Contul Google)}other{De pe # de site-uri (nu te va deconecta de la Contul Google)}}</translation>
 <translation id="6648459603387803038">Administratorul poate schimba configurația browserului de la distanță. Este posibil ca activitatea de pe acest dispozitiv să fie gestionată și din afara Chrome.</translation>
 <translation id="6652101503459149953">Folosește Windows Hello</translation>

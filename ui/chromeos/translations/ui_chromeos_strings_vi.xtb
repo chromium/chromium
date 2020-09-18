@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Không thể truy cập tệp vì các lý do bảo mật.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">Đang nén <ph name="NUMBER_OF_ITEMS" /> mục...</translation>
+<translation id="1731889557567069540">Đã sao chép <ph name="NUMBER_OF_ITEMS" /> mục.</translation>
 <translation id="174173592514158117">Hiển thị tất cả các thư mục Play</translation>
 <translation id="174937106936716857">Tổng số lượng tệp</translation>
 <translation id="1775381402323441512">Thông tin về tệp video</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Ký tự không hợp lệ: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Bàn phím tiếng Việt (TCVN)</translation>
 <translation id="2168214441502403371">Bàn phím tiếng Ba Tư</translation>
+<translation id="2197363559908958454">Đã di chuyển <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">Tiếng Trung giản thể</translation>
 <translation id="2208158072373999562">Nén zip</translation>
 <translation id="2225536596944493418">Bạn có chắc chắn muốn xóa <ph name="NUMBER_OF_ITEMS" /> mục không?</translation>
 <translation id="2230062665678605299">Không thể tạo thư mục "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Đã di chuyển.</translation>
 <translation id="2278988676849463018">Bàn phím tiếng Kannada (Ngữ âm)</translation>
 <translation id="2288278176040912387">Máy quay đĩa hát</translation>
 <translation id="2291538123825441971">Đang mở <ph name="NUMBER_OF_FILES" /> tệp.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Đã sao lưu tất cả!</translation>
 <translation id="3626281679859535460">Độ sáng</translation>
 <translation id="3644896802912593514">Chiều rộng</translation>
+<translation id="3645233063072417428">Đã di chuyển <ph name="NUMBER_OF_ITEMS" /> mục.</translation>
 <translation id="3645531960514756307">Bỏ ghim thư mục</translation>
 <translation id="3678559383040232393">Bàn phím tiếng Malta</translation>
 <translation id="3685122418104378273">Tính năng đồng bộ hóa Google Drive được tắt theo mặc định khi sử dụng dữ liệu di động.</translation>
@@ -395,6 +399,7 @@
     Dù có điều gì xảy ra với thiết bị, tệp của bạn vẫn được lưu trữ an toàn trong Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Chia sẻ, tạo và cộng tác<ph name="MARKUP_8" />
     trên các tệp với những người khác, tất cả tại cùng một địa điểm.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Đã sao chép.</translation>
 <translation id="5275973617553375938">Tệp được khôi phục từ Google Drive</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Lưu</translation>
@@ -751,6 +756,7 @@
 <translation id="943972244133411984">Người sửa đổi:</translation>
 <translation id="945522503751344254">Gửi phản hồi</translation>
 <translation id="947144732524271678">Đã chọn một loạt <ph name="ENTRY_COUNT" /> mục từ <ph name="FROM_ENTRY_NAME" /> đến <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="949308258121608615">Đã sao chép <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="981121421437150478">Ngoại tuyến</translation>
 <translation id="988685240266037636">Một tệp có tên <ph name="FILE_NAME" /> đã tồn tại. Bạn có muốn thay thế tệp đó không?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

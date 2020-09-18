@@ -16,6 +16,7 @@
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> ಸೈಟ್ ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384959399684842514">ಡೌನ್‌ಲೋಡ್ ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
+<translation id="1431402976894535801">ಸೈಟ್‌ಗಳು ನಿಮ್ಮ ಉಪಸ್ಥಿತಿಯ ಕುರಿತು ತಿಳಿದುಕೊಳ್ಳದಂತೆ ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="1446450296470737166">MIDI ಸಾಧನಗಳ ಪೂರ್ಣ ನಿಯಂತ್ರಣ ಅನುಮತಿಸಿ</translation>
 <translation id="1509960214886564027">ಹಲವು ಸೈಟ್‌ಗಳಲ್ಲಿನ ಫೀಚರ್‌ಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಬಹುದು</translation>
 <translation id="1620510694547887537">ಕ್ಯಾಮರಾ</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">ತತ್‌ಕ್ಷಣದ ಅಪ್ಲಿಕೇಶನ್ ತೆರೆಯಿರಿ</translation>
 <translation id="2148716181193084225">ಇಂದು</translation>
 <translation id="2182457891543959921">ನಿಮ್ಮ ಸುತ್ತಮುತ್ತಲಿನ 3D ನಕ್ಷೆಗಳನ್ನು ರಚಿಸಲು ಅಥವಾ ಕ್ಯಾಮರಾ ಸ್ಥಿತಿಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು ಸೈಟ್‌ಗೆ ಅನುಮತಿಸುವ ಮೊದಲು ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿರುವುದು)</translation>
+<translation id="2187243482123994665">ಬಳಕೆದಾರರ ಉಪಸ್ಥಿತಿ</translation>
 <translation id="2212565012507486665">ಕುಕೀಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಪ್ರವೇಶಿಸುವುದಕ್ಕೆ ಅನುಮತಿಸಲು, <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಕ್ಯಾಮರಾವನ್ನು ಸಹ ಆನ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ.</translation>
 <translation id="2289270750774289114">ಸೈಟ್ ಯಾವಾಗ ಸಮೀಪದ ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳನ್ನು ಅನ್ವೇಷಿಸಲು ಬಯಸುತ್ತದೆಯೋ ಆಗ ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">ವೀಡಿಯೊ ಪ್ಲೇಯರ್</translation>
 <translation id="3115898365077584848">ಮಾಹಿತಿಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3123473560110926937">ಕೆಲವು ಸೈಟ್‌ಗಳಲ್ಲಿ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
+<translation id="3165371858310906303">ನಿಮ್ಮ ಉಪಸ್ಥಿತಿಯ ಕುರಿತು ಮಾಹಿತಿಯನ್ನು ಕೇಳಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಿ</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> ಸಂಗ್ರಹಿಸಿದ ಡೇಟಾ</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> ನಿಮಗೆ ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸುವುದಕ್ಕೆ ಅನುಮತಿಸಲು, <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಅಧಿಸೂಚನೆಗಳನ್ನು ಸಹ ಆನ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ.</translation>
 <translation id="3227137524299004712">ಮೈಕ್ರೋಫೋನ್</translation>
@@ -133,6 +136,7 @@
 <translation id="5197729504361054390">ನೀವು ಆಯ್ಕೆ ಮಾಡುವ ಸಂಪರ್ಕಗಳನ್ನು <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತದೆ.</translation>
 <translation id="5300589172476337783">ತೋರಿಸಿ</translation>
 <translation id="5301954838959518834">ಸರಿ, ಅರ್ಥವಾಯಿತು</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" /></translation>
 <translation id="5313967007315987356">ಸೈಟ್ ಸೇರಿಸಿ</translation>
 <translation id="5317780077021120954">ಉಳಿಸು</translation>
 <translation id="5335288049665977812">JavaScript ರನ್ ಮಾಡಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
@@ -144,6 +148,7 @@
 <translation id="5403592356182871684">ಹೆಸರುಗಳು</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> ನಲ್ಲಿ <ph name="ELAPSED_TIME" /> ಸಮಯ ಕಳೆದಿದೆ.</translation>
 <translation id="5494752089476963479">ಅನಪೇಕ್ಷಿತ ಅಥವಾ ತಪ್ಪುದಾರಿಗೆಳೆಯುವ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸುವ ಸೈಟ್‌ಗಳಲ್ಲಿ ಜಾಹೀರಾತುಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
+<translation id="5502860503640766021"><ph name="PERMISSION_1" /> ಅನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ <ph name="PERMISSION_2" /> ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5505264765875738116">ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಬಹುದೇ ಎಂದು ಸೈಟ್‌ಗಳು ಕೇಳಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="5516455585884385570">ಅಧಿಸೂಚನೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5527111080432883924">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಿರುವ ಪಠ್ಯ ಮತ್ತು ಚಿತ್ರಗಳನ್ನು ನೋಡಲು ಸೈಟ್‌ಗೆ ಅನುಮತಿಸುವ ಮುನ್ನ ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
@@ -155,12 +160,15 @@
 <translation id="5690795753582697420">Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಕ್ಯಾಮರಾವನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5710871682236653961">ನೀವು NFC ಸಾಧನಗಳನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿದಾಗ ಮಾಹಿತಿಯನ್ನು ಕಳುಹಿಸಲು ಮತ್ತು ಸ್ವೀಕರಿಸಲು ವೆಬ್‌ಸೈಟ್‌ಗಳನ್ನು ಅನುಮತಿಸುವ ಮೊದಲು ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="5719847187258001597"><ph name="ORIGIN" /> ಅಥವಾ ನಿಮ್ಮ ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿರುವ ಅದರ ಆ್ಯಪ್ ಮೂಲಕ ಸಂಗ್ರಹಣೆ ಮಾಡಲಾಗಿರುವ ಎಲ್ಲಾ ಡೇಟಾ ಮತ್ತು ಕುಕೀಗಳನ್ನು ಇದು ತೆರವುಗೊಳಿಸುತ್ತದೆ.</translation>
+<translation id="5771720122942595109"><ph name="PERMISSION_1" /> ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5804241973901381774">ಅನುಮತಿಗಳು</translation>
 <translation id="5860033963881614850">ಆಫ್</translation>
+<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" /> ಸಂಗತಿಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="5876056640971328065">ವೀಡಿಯೊ ವಿರಾಮಗೊಳಿಸಿ</translation>
 <translation id="5916664084637901428">ಆನ್‌</translation>
 <translation id="5922853908706496913">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5939518447894949180">ಮರುಹೊಂದಿಸು</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಈ ಸೈಟ್‌ನ ಪ್ರವೇಶವನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
 <translation id="6040143037577758943">ಮುಚ್ಚಿರಿ</translation>
 <translation id="6042308850641462728">ಇನ್ನಷ್ಟು</translation>
@@ -172,6 +180,7 @@
 <translation id="6196640612572343990">ಥರ್ಡ್ ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="6206551242102657620">ಸಂಪರ್ಕ ಸುರಕ್ಷಿತವಾಗಿದೆ. ಸೈಟ್ ಮಾಹಿತಿ</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> ಆಯ್ಕೆಗಳು</translation>
+<translation id="6262279340360821358"><ph name="PERMISSION_1" /> ಮತ್ತು <ph name="PERMISSION_2" /> ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="6270391203985052864">ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಬಹುದೇ ಎಂದು ಸೈಟ್‌ಗಳು ಕೇಳಬಹುದು</translation>
 <translation id="6295158916970320988">ಎಲ್ಲಾ ಸೈಟ್‌ಗಳು</translation>
 <translation id="6320088164292336938">ವೈಬ್ರೇಟ್‌</translation>
@@ -194,6 +203,7 @@
 <translation id="6790428901817661496">ಪ್ಲೇ ಮಾಡು</translation>
 <translation id="6818926723028410516">ಐಟಂಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6864395892908308021">ಈ ಸಾಧನವು NFC ಯನ್ನು ಓದಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="6879016579615558281"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" /> ಅನುಮತಿಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="6910211073230771657">ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="6912998170423641340">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಿರುವ ಪಠ್ಯ ಮತ್ತು ಚಿತ್ರಗಳನ್ನು ಓದದಂತೆ ಸೈಟ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="6945221475159498467">ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -211,6 +221,7 @@
 <translation id="723171743924126238">ಚಿತ್ರಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7243308994586599757">ಪರದೆಯ ಕೆಳಗೆ ಲಭ್ಯವಿರುವ ಆಯ್ಕೆಗಳು</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
+<translation id="7260727271532453612"><ph name="PERMISSION_1" /> ಮತ್ತು <ph name="PERMISSION_2" /> ಅನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="7302486331832100261">ನೀವು ಸಾಮಾನ್ಯವಾಗಿ ಅಧಿಸೂಚನೆಗಳನ್ನು ನಿರ್ಬಂಧಿಸುತ್ತೀರಿ. ಅನುಮತಿಸಲು, ವಿವರಗಳನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="7423098979219808738">ಮೊದಲು ಕೇಳಿ</translation>
 <translation id="7423538860840206698">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ಓದದಂತೆ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
@@ -242,6 +253,7 @@
 <translation id="8087000398470557479"><ph name="DOMAIN_NAME" /> ಡೊಮೇನ್‌‌ನ ಈ ವಿಷಯವನ್ನು Google ನಿಂದ ವಿತರಿಸಲಾಗಿದೆ.</translation>
 <translation id="8116925261070264013">ಮ್ಯೂಟ್‌ ಆಗಿರುವುದು</translation>
 <translation id="8131740175452115882">ದೃಢೀಕರಿಸು</translation>
+<translation id="8197286292360124385"><ph name="PERMISSION_1" /> ಅನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="8200772114523450471">ಪುನರಾರಂಭಿಸು</translation>
 <translation id="8206354486702514201">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಂದ ಜಾರಿಗೊಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="8249310407154411074">ಮೇಲಕ್ಕೆ ಸರಿಸಿ</translation>

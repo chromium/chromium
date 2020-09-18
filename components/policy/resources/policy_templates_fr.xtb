@@ -1831,7 +1831,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="3631099945620529777">Si cette règle est définie sur "false", le bouton "Arrêter le processus" est désactivé dans le gestionnaire de tâches.
 
       Si cette règle est définie sur "true" ou si elle n'est pas configurée, l'utilisateur peut mettre fin à des processus dans le gestionnaire de tâches.</translation>
-<translation id="3639444551396586995">Autoriser Chrome à signaler à Google les événements à risque</translation>
 <translation id="3643284063603988867">Activer la fonctionnalité "Mémoriser le mot de passe"</translation>
 <translation id="3646859102161347133">Définir le type de loupe</translation>
 <translation id="3647212518036289905">Permet de spécifier la bibliothèque GSSAPI à utiliser pour l'authentification HTTP. Vous pouvez indiquer le nom de la bibliothèque ou son chemin d'accès complet.
@@ -2056,9 +2055,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="3942041691320538491">Si cette règle est définie sur 0 (valeur par défaut), vous pouvez accéder aux outils pour les développeurs et à la Console JavaScript, sauf si des extensions ont été installées dans le cadre des règles de l'entreprise. Si cette règle est définie sur 1, vous pouvez accéder aux outils pour les développeurs et à la Console JavaScript dans tous les cas, y compris si des extensions ont été installées dans le cadre des règles de l'entreprise. Si cette règle est définie sur 2, vous ne pouvez pas accéder aux outils pour les développeurs ni examiner des éléments de sites Web.
 
       En outre, les raccourcis clavier, ainsi que les options de menu ou de menu contextuel permettant d'ouvrir ces outils ou cette console sont désactivés.</translation>
-<translation id="3942080695743860553">Permet de spécifier la commande à utiliser pour ouvrir les URL dans un navigateur secondaire. Cette règle peut être définie sur le navigateur <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" /> ou <ph name="OPERA_VALUE_PLACEHOLDER" />, ou sur un chemin d'accès à un fichier. Si elle est définie sur un chemin d'accès à un fichier, ce dernier est utilisé comme fichier exécutable. Sachez que le navigateur <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> n'est disponible que sous <ph name="MS_WIN_NAME" />, tandis que <ph name="SAFARI_VALUE_PLACEHOLDER" /> n'est disponible que sous <ph name="MS_WIN_NAME" /> et <ph name="MAC_OS_NAME" />.
-
-      Si cette règle n'est pas configurée, l'URL s'ouvre par défaut dans un navigateur spécifique à la plate-forme : <ph name="IE_PRODUCT_NAME" /> sous <ph name="MS_WIN_NAME" /> ou <ph name="SAFARI_PRODUCT_NAME" /> sous <ph name="MAC_OS_NAME" />. Sous <ph name="LINUX_OS_NAME" />, le lancement d'un navigateur secondaire entraîne une erreur.</translation>
 <translation id="3950110092991281616">Activer l'authentification ambiante seulement pour les sessions standards.</translation>
 <translation id="3950239119790560549">Mettre à jour les restrictions de temps</translation>
 <translation id="3956686688560604829">Utiliser la règle SiteList d'Internet Explorer pour Legacy Browser Support.</translation>
@@ -2624,10 +2620,6 @@ Si cette règle n'est pas configurée, l'utilisateur peut décider d'afficher ou
 <translation id="4874982543810021567">Bloquer WebUSB sur ces sites</translation>
 <translation id="4876805738539874299">Version SSL maximale activée</translation>
 <translation id="4887274746092315609">Affiche une page permettant aux utilisateurs SAML de changer de mot de passe en cours de session</translation>
-<translation id="4887863670424903990">Si cette règle est activée, <ph name="PRODUCT_NAME" /> signale à Google, pour analyse, les événements à risque tels que la réutilisation de mots de passe, les téléchargements de logiciels malveillants, les interstitiels et les non-respects des règles de protection des données sensibles.  Certains événements à risque, comme les non-respects des règles de protection des données sensibles, dépendent d'autres règles en vertu desquelles de telles vérifications sont activées.
-
-      Si cette règle est désactivée ou si elle n'est pas définie, <ph name="PRODUCT_NAME" /> ne signale pas les événements à risque.
-      </translation>
 <translation id="4894290482695457375">Tant que la règle <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> n'est pas désactivée, le fait d'activer la règle <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> connecte <ph name="PRODUCT_NAME" /> aux appareils Cast pour toutes les adresses IP, et pas seulement les adresses privées décrites dans la RFC 1918 ou la RFC 4193.
 
       Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ne se connecte aux appareils Cast que sur les adresses privées décrites dans la RFC 1918 ou la RFC 4193.
@@ -3859,7 +3851,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Cette règle peut être ignorée par EnabledPlugins et DisabledPluginsExceptions.
 
       Si cette règle n'est pas configurée, l'utilisateur peut utiliser n'importe quel plug-in installé sur le système, à l'exception des plug-ins codés en dur incompatibles, et des plug-ins obsolètes ou dangereux.</translation>
-<translation id="6571871508154591774">Désactiver la caméra, les paramètres du navigateur et les paramètres de l'OS</translation>
 <translation id="6573305661369899995">Définir une source externe pour les restrictions d'URL</translation>
 <translation id="6575944031719151455">Permet d'établir la liste des comptes locaux de l'appareil à afficher sur l'écran de connexion. Les identifiants distinguent les différents comptes locaux de l'appareil.
 
@@ -4964,11 +4955,6 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
       Elle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8050080920415773384">Impression en mode natif</translation>
 <translation id="8053580360728293758">Remplace le mode d'impression couleur par défaut. Si le mode est indisponible, cette règle est ignorée.</translation>
-<translation id="8057841287222359526">Permet de dresser la liste des fonctionnalités <ph name="PRODUCT_OS_NAME" /> à désactiver.
-
-      Si vous désactivez l'une de ces fonctionnalités, elle est accompagnée de la mention "Désactivé par l'administrateur", et l'utilisateur ne peut pas y accéder depuis l'interface utilisateur.
-
-      Si cette règle n'est pas configurée, toutes les fonctionnalités <ph name="PRODUCT_OS_NAME" /> sont activées par défaut et accessibles à l'utilisateur.</translation>
 <translation id="8059164285174960932">URL où les clients d'accès à distance doivent obtenir leur jeton d'authentification</translation>
 <translation id="8077245272412229388">Permet d'ajouter des comptes Kerberos préremplis. Si les identifiants Kerberos et de connexion sont les mêmes, un compte peut être configuré pour réutiliser les identifiants de connexion en définissant respectivement "<ph name="LOGIN_EMAIL_PLACEHOLDER" />" et "<ph name="PASSWORD_PLACEHOLDER" />" comme compte principal et mot de passe, afin que le ticket Kerberos puisse être récupéré automatiquement, sauf si l’authentification à deux facteurs est configurée. Les utilisateurs ne peuvent pas modifier de comptes avec cette règle.
 

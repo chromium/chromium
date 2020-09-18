@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">WLAN-Verbindung erneut herstellen</translation>
 <translation id="1165039591588034296">Fehler</translation>
 <translation id="1165174597379888365">Seite aufgerufen</translation>
+<translation id="1174723505405632867">Möchten Sie <ph name="EMBEDDED_URL" /> erlauben, auf <ph name="TOP_LEVEL_URL" /> Cookies und Websitedaten zu verwenden?
+
+Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies und Websitedaten verwendet werden dürfen, funktionieren die gewünschten Inhalte erwartungsgemäß, <ph name="EMBEDDED_URL" /> kann dadurch aber möglicherweise Ihre Aktivitäten verfolgen.</translation>
 <translation id="1175364870820465910">&amp;Drucken...</translation>
 <translation id="1175875016430184367">Drei Heftklammern rechts</translation>
 <translation id="1178581264944972037">Pause</translation>
@@ -305,6 +308,7 @@
 <translation id="2181821976797666341">Richtlinien</translation>
 <translation id="2183608646556468874">Telefonnummer</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 Adresse}other{# Adressen}}</translation>
+<translation id="2187243482123994665">Nutzerpräsenz</translation>
 <translation id="2187317261103489799">Erkennen (Standardeinstellung)</translation>
 <translation id="2188375229972301266">Mehrfache Lochung unten</translation>
 <translation id="2202020181578195191">Geben Sie ein gültiges Ablaufjahr ein</translation>
@@ -527,6 +531,7 @@
       Proxyeinstellungen oder wenden Sie sich an Ihren Netzwerkadministrator.
       Falls Sie keinen Proxyserver verwenden möchten, deaktivieren Sie ihn wie
       folgt: <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> möchte Informationen zu Ihrer Präsenz abrufen</translation>
 <translation id="3188393374551744535">Guthaben</translation>
 <translation id="3194737229810486521"><ph name="URL" /> möchte Daten dauerhaft auf Ihrem Gerät speichern</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> auf <ph name="SERVER_NAME" /></translation>
@@ -1012,6 +1017,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Computer</translation>
 <translation id="5179510805599951267">Nicht auf <ph name="ORIGINAL_LANGUAGE" />? Diesen Fehler melden</translation>
+<translation id="5179740473595559246">Informationen zu Ihrer Präsenz abrufen</translation>
 <translation id="5190835502935405962">Lesezeichenleiste</translation>
 <translation id="519422657042045905">Anmerkungsmodus nicht verfügbar</translation>
 <translation id="5201306358585911203">Auf einer in dieser Seite eingebetteten Seite wird Folgendes angezeigt</translation>
@@ -1234,6 +1240,7 @@
 <translation id="6049488691372270142">Ausgabe der Seiten</translation>
 <translation id="6051221802930200923">Sie können <ph name="SITE" /> zurzeit nicht aufrufen, weil die Website das Zertifikats-Pinning nutzt. Netzwerkfehler und Angriffe sind in der Regel nur vorübergehend, sodass die Seite wahrscheinlich später wieder funktioniert.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Ihre Präsenz teilen?</translation>
 <translation id="6058977677006700226">Karten auf allen Ihren Geräten nutzen?</translation>
 <translation id="6059925163896151826">USB-Geräte</translation>
 <translation id="6060009363608157444">Ungültiger DnsOverHttps-Modus.</translation>
@@ -1363,6 +1370,7 @@
 <translation id="6631202559048444592">Für die Richtlinie sind mehrere Quellen vorhanden, aber die Werte sind gleich.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Löschen</translation>
+<translation id="6645291930348198241">Auf Cookies und Websitedaten zugreifen.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Keine}=1{1 Website (Anmeldung in Google-Konto bleibt erhalten)}other{# Websites (Anmeldung in Google-Konto bleibt erhalten)}}</translation>
 <translation id="6648459603387803038">Ihr Administrator kann die Browsereinstellungen per Remotezugriff ändern. Aktivitäten auf diesem Gerät können auch außerhalb von Chrome verwaltet werden.</translation>
 <translation id="6652101503459149953">Windows Hello verwenden</translation>

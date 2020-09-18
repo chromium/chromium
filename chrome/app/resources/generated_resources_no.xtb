@@ -2627,7 +2627,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4095507791297118304">Hovedskjerm</translation>
 <translation id="409579654357498729">Legg til Cloud Print</translation>
 <translation id="4096508467498758490">Deaktiver utvidelser for utviklermodus</translation>
-<translation id="4096824249111507322">Den sikre modulen klargjøres. Vent litt – dette kan ta noen få minutter.</translation>
 <translation id="4097406557126260163">Apper og utvidelser</translation>
 <translation id="4097560579602855702">Søk på Google</translation>
 <translation id="4098667039111970300">Pekepennverktøy på verktøyraden</translation>
@@ -3357,7 +3356,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5050330054928994520">TTT</translation>
 <translation id="5051836348807686060">Stavekontroll støttes ikke for språkene du har valgt</translation>
 <translation id="5052499409147950210">Rediger nettstedet</translation>
-<translation id="5053604404986157245">Tilfeldig genererte TPM-passord er ikke tilgjengelige. Dette er vanlig etter en Powerwash.</translation>
 <translation id="5057110919553308744">Når du klikker på utvidelsen</translation>
 <translation id="5057403786441168405">Administrer de påloggede kontoene dine. Nettsteder, apper og utvidelser i Chrome og Google Play kan bruke disse kontoene til å tilpasse opplevelsen din, avhengig av tillatelser. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Begrens pålogging</translation>
@@ -3948,7 +3946,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5774295353725270860">Åpne Filer-appen</translation>
 <translation id="577624874850706961">Søk i informasjonskapsler</translation>
 <translation id="5777468213129569553">Åpne Chrome</translation>
-<translation id="5778747455497889540">Nedenfor ser du det tilfeldig genererte sikker modul-passordet som er tildelt datamaskinen din:</translation>
 <translation id="5780011244986845107">Mappen du valgte, inneholder sensitive filer. Er du sikker på at du vil gi «<ph name="APP_NAME" />» permanent lesetilgang til denne mappen?</translation>
 <translation id="5780973441651030252">Prosessprioritet</translation>
 <translation id="5781092003150880845">Synkroniser som <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4657,7 +4654,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6635956300022133031">Velg og tilpass tekst til tale-stemmer</translation>
 <translation id="6636588250634969791">Sett inn SIM-kortet før du fortsetter</translation>
 <translation id="6639554308659482635">SQLite-minne</translation>
-<translation id="6641138807883536517">Det tilfeldig genererte sikker modul-passordet er ikke tilgjengelig. Dette er vanlig etter en Powerwash.</translation>
 <translation id="6642720633335369752">For å se alle åpne appvinduer, sveip opp fra bunnen og hold inne.</translation>
 <translation id="664290675870910564">Nettverksvalg</translation>
 <translation id="6643016212128521049">Tøm</translation>
@@ -4985,7 +4981,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7029307918966275733">Crostini er ikke installert. Installer Crostini for å se anerkjennelser.</translation>
 <translation id="7029809446516969842">Passord</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – seriell port er tilkoblet</translation>
-<translation id="7031962166228839643">TMP blir klargjort. Vent litt (dette kan ta noen minutter).</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> ledig plass anbefales for Linux. For å få mer ledig plass, slett filer fra enheten.</translation>
 <translation id="7037509989619051237">Tekst til forhåndsvisning</translation>
 <translation id="7038632520572155338">Brytertilgang</translation>
@@ -5975,7 +5970,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8226222018808695353">Forbudt</translation>
 <translation id="8226619461731305576">Kø</translation>
 <translation id="8226628635270268143">Velg favorittbildene og -albumene dine</translation>
-<translation id="8226742006292257240">Nedenfor ser du et tilfeldig generert TPM-passord som er tildelt datamaskinen din:</translation>
 <translation id="8227119283605456246">Legg ved fil</translation>
 <translation id="8230134520748321204">Vil du lagre passord for <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Kunne ikke pinge gatewayen for standardnettverket</translation>

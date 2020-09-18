@@ -1806,7 +1806,6 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 <translation id="3631099945620529777">Se definida como falsa, o botão "Encerrar processo" será desativado no Gerenciador de tarefas.
 
       Se definida como verdadeira ou se não for configurada, o usuário poderá encerrar processos no Gerenciador de tarefas.</translation>
-<translation id="3639444551396586995">Permite que o Chrome informe eventos inseguros ao Google</translation>
 <translation id="3643284063603988867">Ativar o recurso "Lembrar senha"</translation>
 <translation id="3646859102161347133">Definir tipo de lupa</translation>
 <translation id="3647212518036289905">Definir a política especifica qual biblioteca GSSAPI será usada para a autenticação HTTP. Defina a política como um nome de biblioteca ou um caminho completo.
@@ -2031,9 +2030,6 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 <translation id="3942041691320538491">Se a política for definida como 0 (o padrão), você poderá acessar as ferramentas para desenvolvedores e o Console JavaScript, mas não no contexto de extensões instaladas pela política da empresa. Se ela for definida como 1, você poderá acessar as ferramentas para desenvolvedores e o Console JavaScript em todos os contextos, inclusive o das extensões instaladas pela política da empresa. Se ela for definida como 2, não será possível acessar as ferramentas para desenvolvedores nem inspecionar elementos de sites.
 
       Essa definição também desativa atalhos de teclado e entradas do menu de contexto ou do menu para abrir as ferramentas para desenvolvedores e o Console JavaScript.</translation>
-<translation id="3942080695743860553">Se a política for definida, ela controlará o comando usado para abrir URLs em um navegador alternativo. Ela pode ser definida como <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" /> ou um caminho de arquivo. Quando esta política é definida como um caminho de arquivo, o arquivo em questão é usado como um executável. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> está disponível apenas no <ph name="MS_WIN_NAME" />, e <ph name="SAFARI_VALUE_PLACEHOLDER" /> está disponível apenas no <ph name="MS_WIN_NAME" /> e no <ph name="MAC_OS_NAME" />.
-
-      Se a política não for definida, o padrão usado seguirá a plataforma: <ph name="IE_PRODUCT_NAME" /> para <ph name="MS_WIN_NAME" /> ou <ph name="SAFARI_PRODUCT_NAME" /> para <ph name="MAC_OS_NAME" />. No <ph name="LINUX_OS_NAME" />, não será possível abrir um navegador alternativo.</translation>
 <translation id="3950110092991281616">Ativar a autenticação pelo SO apenas em sessões normais.</translation>
 <translation id="3950239119790560549">Atualiza restrições de tempo</translation>
 <translation id="3956686688560604829">Usar a política SiteList do Internet Explorer para o Suporte a navegadores legados.</translation>
@@ -2591,10 +2587,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 <translation id="4874982543810021567">Bloquear o WebUSB nesses sites</translation>
 <translation id="4876805738539874299">Versão máxima de SSL ativada</translation>
 <translation id="4887274746092315609">Ativa uma página para alteração de senha durante a sessão para usuários do SAML</translation>
-<translation id="4887863670424903990">Quando esta política é definida como ativada, o <ph name="PRODUCT_NAME" /> informa ao Google se há eventos inseguros, por exemplo, reutilização de senha, downloads de malware, intersticiais, violações da regra de proteção de dados confidenciais etc., para que eles sejam analisados.  Alguns eventos não seguros, como violações da regra de proteção de dados confidenciais, dependem de outras políticas para ativar essas verificações.
-
-      Se esta política for desativada ou não for definida, o <ph name="PRODUCT_NAME" /> não informará eventos inseguros.
-      </translation>
 <translation id="4894290482695457375">A menos que <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> esteja definida como desativada, definir <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> como ativada irá conectar o <ph name="PRODUCT_NAME" /> aos dispositivos Cast em todos os endereços IP, não apenas no endereço particular RFC1918/RFC4193.
 
       Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> será conectado aos dispositivos Cast apenas em RFC1918/RFC4193.
@@ -3813,7 +3805,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Observe que a política pode ser substituída por EnabledPlugins e DisabledPluginsExceptions.
 
       Quando esta política não for definida, o usuário poderá usar qualquer plug-in instalado no sistema, a não ser plug-ins codificados incompatíveis, obsoletos ou perigosos.</translation>
-<translation id="6571871508154591774">Define os recursos da câmera, das configurações do navegador e das configurações do SO que serão desativadas</translation>
 <translation id="6573305661369899995">Definir uma fonte externa de restrições de URL</translation>
 <translation id="6575944031719151455">A definição da política especifica a lista de contas locais do dispositivo que serão exibidas na tela de login. Os identificadores diferenciam essas contas.
 
@@ -4913,11 +4904,6 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
       Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
 <translation id="8050080920415773384">Impressão nativa</translation>
 <translation id="8053580360728293758">Modifica o modo de cor de impressão padrão. Se o modo não estiver disponível, esta política será ignorada.</translation>
-<translation id="8057841287222359526">Permite que você defina uma lista de recursos do <ph name="PRODUCT_OS_NAME" /> que serão desativados.
-
-      Desativar um desses recursos significa que o usuário não poderá acessá-los pela IU, onde serão exibidos como "desativado pelo administrador".
-
-      Se a política não for definida, todos os recursos do <ph name="PRODUCT_OS_NAME" /> ficarão ativados por padrão, e o usuário poderá usar qualquer um deles.</translation>
 <translation id="8059164285174960932">URL no qual clientes de acesso remoto devem receber seu token de autenticação</translation>
 <translation id="8077245272412229388">Adiciona contas já preenchidas do Kerberos. Se as credenciais do Kerberos coincidirem com as credenciais de login, uma conta poderá ser configurada para reutilizar as credenciais de login especificando "<ph name="LOGIN_EMAIL_PLACEHOLDER" />" e "<ph name="PASSWORD_PLACEHOLDER" />" como conta principal e senha, respectivamente. Assim, o tíquete do Kerberos poderá ser recuperado automaticamente, a não ser que a "autenticação de dois fatores" esteja configurada. O usuário não poderá modificar contas adicionadas por meio desta política.
 

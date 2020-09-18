@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">ກຳລັງເຊື່ອມຕໍ່ຄືນໃໝ່ກັບ Wi-Fi</translation>
 <translation id="1165039591588034296">ຜິດພາດ</translation>
 <translation id="1165174597379888365">ມີການເຂົ້າເບິ່ງໜ້າເວັບ</translation>
+<translation id="1174723505405632867">ທ່ານຕ້ອງການອະນຸຍາດໃຫ້ <ph name="EMBEDDED_URL" /> ໃຊ້ຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊໃນ <ph name="TOP_LEVEL_URL" /> ບໍ?
+
+ຖ້າບໍ່ ນີ້ຈະຖືກບລັອກໄວ້ຕາມການຕັ້ງຄ່າຄວາມເປັນສ່ວນຕົວຂອງທ່ານ. ນີ້ຈະຊ່ວຍໃຫ້ເນື້ອຫາທີ່ທ່ານໂຕ້ຕອບກັບເຮັດວຽກໄດ້ຢ່າງຖືກຕ້ອງ, ແຕ່ອາດຈະອະນຸຍາດໃຫ້ <ph name="EMBEDDED_URL" /> ຕິດຕາມການເຄື່ອນໄຫວຂອງທ່ານ.</translation>
 <translation id="1175364870820465910">ພິມ...</translation>
 <translation id="1175875016430184367">ໜີບກະຫຼັບເຟີຢູ່ເບື້ອງຂວາສາມເທື່ອ</translation>
 <translation id="1178581264944972037">ຢຸດຊົ່ວຄາວ</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">ນະ​ໂຍ​ບາຍ</translation>
 <translation id="2183608646556468874">ເບີໂທລະສັບ</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 ທີ່ຢູ່}other{# ທີ່ຢູ່}}</translation>
+<translation id="2187243482123994665">ການເຄື່ອນໄຫວນຳໃຊ້ຂອງຜູ້ໃຊ້</translation>
 <translation id="2187317261103489799">ກວດຫາ (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="2188375229972301266">ເຈາະຮູຢູ່ລຸ່ມສຸດຫຼາຍຮູ</translation>
 <translation id="2202020181578195191">ປ້ອນປີໝົດອາຍຸທີ່ຖືກຕ້ອງ</translation>
@@ -533,6 +537,7 @@
       ຮັບປະກັນວ່າພຣັອກຊີເຊີບເວີເຮັດວຽກຢູ່. ຖ້າທ່ານບໍ່ຄິດວ່າທ່ານຄວນ
       ຈະໃຊ້ພຣັອກຊີເຊີບເວີ:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> ຕ້ອງການຮູ້ເມື່ອທ່ານມີການເຄື່ອນໄຫວນຳໃຊ້</translation>
 <translation id="3188393374551744535">ຍອດເງິນໃນບັນຊີ</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ຕ້ອງການເກັບຂໍ້ມູນໄວ້ໃນອຸປະກອນຂອງທ່ານຢ່າງຖາວອນ</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> ໃນ <ph name="SERVER_NAME" /></translation>
@@ -1025,6 +1030,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">ເຄື່ອງຈັກ</translation>
 <translation id="5179510805599951267">ບໍ່ເປັນ <ph name="ORIGINAL_LANGUAGE" /> ບໍ? ລາຍງານຄວາມຜິດພາດນີ້</translation>
+<translation id="5179740473595559246">ຮູ້ເມື່ອທ່ານມີການເຄື່ອນໄຫວນຳໃຊ້</translation>
 <translation id="5190835502935405962">ແຖບບຸກມາກສ໌</translation>
 <translation id="519422657042045905">ຄຳອະທິບາຍປະກອບບໍ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="5201306358585911203">ໜ້າຝັງຕິດໃນໜ້ານີ້ບອກວ່າ</translation>
@@ -1247,6 +1253,7 @@
 <translation id="6049488691372270142">ໜ້າທີ່ສະແດງ</translation>
 <translation id="6051221802930200923">ທ່ານບໍ່ສາມາດເຂົ້າເບິ່ງ <ph name="SITE" /> ໄດ້ໃນຂະນະນີ້ ເພາະວ່າເວັບໄຊນີ້ໃຊ້ການປັກໝຸດໃບຢັ້ງຢືນ. ໂດຍປົກກະຕິແລ້ວ ຂໍ້ຜິດພາດ ແລະ ການໂຈມຕີທາງເຄືອຂ່າຍແມ່ນຊົ່ວຄາວເທົ່ານັ້ນ, ສະນັ້ນ ໜ້ານີ້ອາດຈະໃຊ້ໄດ້ໃນພາຍຫຼັງ.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">ແບ່ງປັນການເຄື່ອນໄຫວນຳໃຊ້ຂອງທ່ານບໍ?</translation>
 <translation id="6058977677006700226">ໃຊ້ບັດຂອງທ່ານຢູ່ໃນອຸປະກອນຂອງທ່ານທັງໝົດບໍ?</translation>
 <translation id="6059925163896151826">ອຸປະກອນ USB</translation>
 <translation id="6060009363608157444">ໂໝດ DnsOverHttps ບໍ່ຖືກຕ້ອງ.</translation>
@@ -1376,6 +1383,7 @@
 <translation id="6631202559048444592">ນະໂຍບາຍມີແຫຼ່ງທີ່ມາຫຼາຍກວ່າໜຶ່ງແຫຼ່ງ, ແຕ່ມີຄ່າຄືກັນ.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">ລຶບ</translation>
+<translation id="6645291930348198241">ເຂົ້າເຖິງຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊ.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{ບໍ່ມີ}=1{ຈາກ 1 ເວັບໄຊ (ທ່ານຈະບໍ່ຖືກນຳອອກຈາກລະບົບບັນຊີ Google ຂອງທ່ານ)}other{ຈາກ # ເວັບໄຊ (ທ່ານຈະບໍ່ຖືກນຳອອກຈາກລະບົບບັນຊີ Google ຂອງທ່ານ)}}</translation>
 <translation id="6648459603387803038">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດປ່ຽນການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບຂອງທ່ານຈາກທາງໄກໄດ້. ການເຄື່ອນໄຫວໃນອຸປະກອນນີ້ອາດຈະຖືກຈັດການຢູ່ນອກ Chrome ໄດ້ເຊັ່ນກັນ.</translation>
 <translation id="6652101503459149953">ໃຊ້ Windows Hello</translation>

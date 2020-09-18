@@ -2632,7 +2632,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4095507791297118304">Primêre skerm</translation>
 <translation id="409579654357498729">Voeg by Wolkdruk</translation>
 <translation id="4096508467498758490">Deaktiveer ontwikkelaarmodus se uitbreidings</translation>
-<translation id="4096824249111507322">Veilige module word tans voorberei. Wag asseblief (dit kan 'n paar minute neem) …</translation>
 <translation id="4097406557126260163">Programme en uitbreidings</translation>
 <translation id="4097560579602855702">Deursoek Google</translation>
 <translation id="4098667039111970300">Stilusnutsgoed in nutsbalk</translation>
@@ -3362,7 +3361,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">Speltoets word nie gesteun vir die tale wat jy gekies het nie</translation>
 <translation id="5052499409147950210">Redigeer werf</translation>
-<translation id="5053604404986157245">Die lukraak-gegenereerde TPM-wagwoord is nie beskikbaar nie. Dit is normaal na 'n Kragwas.</translation>
 <translation id="5057110919553308744">Wanneer jy die uitbreiding klik</translation>
 <translation id="5057403786441168405">Bestuur jou aangemelde rekeninge. Webwerwe, programme en uitbreidings in Chrome en Google Play kan hierdie rekeninge gebruik om jou ervaring te pasmaak, na gelang van jou toestemmings. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Beperk aanmelding</translation>
@@ -3954,7 +3952,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5774295353725270860">Maak Lêers-program oop</translation>
 <translation id="577624874850706961">Deursoek webkoekies</translation>
 <translation id="5777468213129569553">Maak Chrome oop</translation>
-<translation id="5778747455497889540">Hieronder is die veiligemodule-wagwoord wat lukraak gegenereer is en wat aan jou rekenaar toegewys is:</translation>
 <translation id="5780011244986845107">Die vouer wat jy gekies het, bevat sensitiewe lêers. Is jy seker jy wil permanente skryftoegang tot hierdie vouer aan "<ph name="APP_NAME" />" verleen?</translation>
 <translation id="5780973441651030252">Verwerkingsprioriteit</translation>
 <translation id="5781092003150880845">Sinkroniseer as <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4663,7 +4660,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6635956300022133031">Kies en pasmaak teks-na-spraak-stemme</translation>
 <translation id="6636588250634969791">Sit SIM in voortdat jy voortgaan</translation>
 <translation id="6639554308659482635">SQLite-geheue</translation>
-<translation id="6641138807883536517">Die veiligemodule-wagwoord wat lukraak gegenereer is, is nie beskikbaar nie. Dit is normaal na 'n Powerwash.</translation>
 <translation id="6642720633335369752">Swiep op van die onderkant af en hou om alle oop programvensters te sien.</translation>
 <translation id="664290675870910564">Uitgesoekte netwerk</translation>
 <translation id="6643016212128521049">Vee uit</translation>
@@ -4991,7 +4987,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7029307918966275733">Crostini is nie geïnstalleer nie. Installeer Crostini om krediete te bekyk.</translation>
 <translation id="7029809446516969842">Wagwoorde</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Reekspoort is gekoppel</translation>
-<translation id="7031962166228839643">TPM word tans voorberei. Wag asseblief (dit kan 'n paar minute neem) …</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> se spasie word vir Linux aanbeveel. Vee lêers op jou toestel uit om meer spasie beskikbaar te maak.</translation>
 <translation id="7037509989619051237">Teks om te voorbeskou</translation>
 <translation id="7038632520572155338">Skakelaartoegang</translation>
@@ -5980,7 +5975,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8226222018808695353">Verbode</translation>
 <translation id="8226619461731305576">Waglys</translation>
 <translation id="8226628635270268143">Kies jou gunstelingfoto's en -albums</translation>
-<translation id="8226742006292257240">Hieronder is die TPM-wagwoord wat lukraak gegenereer is en wat aan jou rekenaar toegewys is:</translation>
 <translation id="8227119283605456246">Heg lêer aan</translation>
 <translation id="8230134520748321204">Stoor wagwoord vir <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Kon nie die versteknetwerkdeurgang pieng nie</translation>

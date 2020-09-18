@@ -1831,7 +1831,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="3631099945620529777">Nếu bạn đặt chính sách này thành false thì nút 'Kết thúc quá trình' sẽ bị tắt trong Trình quản lý tác vụ.
 
       Nếu bạn không định cấu hình hoặc nếu bạn đặt chính sách này thành true, người dùng có thể kết thúc các quá trình trong Trình quản lý tác vụ.</translation>
-<translation id="3639444551396586995">Cho phép Chrome báo cáo các sự kiện không an toàn cho Google</translation>
 <translation id="3643284063603988867">Bật tính năng 'Nhớ mật khẩu'</translation>
 <translation id="3646859102161347133">Đặt loại kính lúp màn hình</translation>
 <translation id="3647212518036289905">Nếu bạn đặt chính sách này, hệ thống sẽ chỉ định thư viện GSSAPI dùng để xác thực HTTP. Hãy đặt chính sách này thành tên thư viện hoặc đường dẫn đầy đủ.
@@ -2056,9 +2055,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="3942041691320538491">Nếu đặt chính sách này thành 0 (giá trị mặc định), thì bạn có thể truy cập vào công cụ cho nhà phát triển và Bảng điều khiển JavaScript. Tuy nhiên, bạn sẽ không truy cập được trong trường hợp đã cài đặt tiện ích theo chính sách doanh nghiệp. Nếu đặt chính sách này thành 1, thì bạn có thể truy cập vào công cụ cho nhà phát triển và Bảng điều khiển JavaScript trong mọi trường hợp, bao gồm cả trường hợp đã cài đặt tiện ích theo chính sách doanh nghiệp. Nếu đặt chính sách này thành 2, thì bạn không thể truy cập vào công cụ cho nhà phát triển cũng như không thể kiểm tra các thành phần của trang web.
 
       Tùy chọn cài đặt này cũng tắt các phím tắt và mục truy cập trên trình đơn hoặc trình đơn ngữ cảnh để mở công cụ cho nhà phát triển hoặc Bảng điều khiển JavaScript.</translation>
-<translation id="3942080695743860553">Nếu bạn đặt chính sách này, hệ thống sẽ kiểm soát lệnh nào dùng để mở URL trong trình duyệt thay thế. Bạn có thể đặt chính sách này thành một trong các giá trị <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" /> hoặc một đường dẫn tệp. Khi bạn đặt chính sách này thành một đường dẫn tệp, tệp đó sẽ được dùng làm tệp thực thi. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> chỉ dùng được trên <ph name="MS_WIN_NAME" />, <ph name="SAFARI_VALUE_PLACEHOLDER" /> chỉ dùng được trên <ph name="MS_WIN_NAME" /> và <ph name="MAC_OS_NAME" />.
-
-      Nếu bạn không đặt chính sách này, thì trình duyệt mặc định dành riêng cho nền tảng sẽ được sử dụng: <ph name="IE_PRODUCT_NAME" /> đối với <ph name="MS_WIN_NAME" /> hoặc <ph name="SAFARI_PRODUCT_NAME" /> đối với <ph name="MAC_OS_NAME" />. Trên <ph name="LINUX_OS_NAME" />, trình duyệt thay thế sẽ không chạy được.</translation>
 <translation id="3950110092991281616">Chỉ bật tùy chọn xác thực môi trường xung quanh đối với các phiên thông thường.</translation>
 <translation id="3950239119790560549">Giới hạn thời gian cập nhật</translation>
 <translation id="3956686688560604829">Sử dụng chính sách SiteList của Internet Explorer để hỗ trợ trình duyệt cũ.</translation>
@@ -2625,10 +2621,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="4874982543810021567">Chặn WebUSB trên các trang web này</translation>
 <translation id="4876805738539874299">Đã bật phiên bản SSL tối đa</translation>
 <translation id="4887274746092315609">Cho phép một trang để người dùng SAML có thể đổi mật khẩu ngay trong phiên đăng nhập</translation>
-<translation id="4887863670424903990">Khi bạn đặt chính sách này thành bật, thì <ph name="PRODUCT_NAME" /> sẽ báo cáo các sự kiện không an toàn, chẳng hạn như dùng lại mật khẩu, tệp đã tải xuống có phần mềm độc hại, quảng cáo xen kẽ, hành vi vi phạm quy tắc bảo vệ dữ liệu nhạy cảm, v.v. cho Google để phân tích.  Một số sự kiện không an toàn, chẳng hạn như hành vi vi phạm quy tắc bảo vệ dữ liệu nhạy cảm, sẽ phụ thuộc vào các chính sách khác cho phép các hoạt động kiểm tra liên quan.
-
-      Nếu bạn không đặt hoặc đặt chính sách này thành tắt, thì <ph name="PRODUCT_NAME" /> sẽ không báo cáo các sự kiện không an toàn.
-      </translation>
 <translation id="4894290482695457375">Trừ khi bạn đặt <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> thành Tắt, nếu bạn đặt <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> thành Bật, thì <ph name="PRODUCT_NAME" /> sẽ kết nối với các thiết bị truyền trên mọi địa chỉ IP, chứ không chỉ các địa chỉ riêng RFC1918/RFC4193.
 
       Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" /> sẽ chỉ kết nối với các thiết bị truyền trên địa chỉ RFC1918/RFC4193.
@@ -2929,7 +2921,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="5293044154216294358">Nếu bạn đặt chính sách này thành True, thì người dùng có thể chơi trò chơi khủng long. Nếu bạn đặt chính sách này thành False, thì người dùng không thể chơi trò chơi ẩn có tên khủng long khi thiết bị không có kết nối mạng.
 
       Nếu bạn không đặt chính sách này, thì người dùng không thể chơi trò chơi đó trên <ph name="PRODUCT_OS_NAME" /> đã đăng ký nhưng vẫn có thể chơi trong những trường hợp khác.</translation>
-<translation id="529457411593078576">Bật Điều khoản dịch vụ (ToS) trong lần chạy đầu tiên của CCT</translation>
+<translation id="529457411593078576">Bật Điều khoản dịch vụ trong lần chạy đầu tiên của CCT</translation>
 <translation id="5306186200045823863">Cho phép tin cậy Cơ sở hạ tầng khóa công khai (PKI) cũ của Symantec Corporation</translation>
 <translation id="5307432759655324440">Tính khả dụng của chế độ ẩn danh</translation>
 <translation id="5311275381462687162">Tùy chọn cài đặt mặc định cho hành vi <ph name="ATTRIBUTE_SAMESITE_NAME" /> cũ của cookie</translation>
@@ -3635,6 +3627,11 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
           Nếu bạn không đặt chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ tải tất cả máy chủ nhắn tin gốc đã cài đặt.</translation>
 <translation id="6224304369267200483">URL/miền đã tự động cho phép chứng thực Khóa bảo mật trực tiếp</translation>
+<translation id="6230442621691161858">Tính năng này sẽ bật tùy chọn đề xuất nội dung mới để khám phá. Bao gồm ứng dụng, trang web và nhiều nội dung khác.
+      Nếu bạn đặt chính sách này thành Bật, tùy chọn đề xuất nội dung mới để khám phá sẽ bật.
+      Nếu bạn đặt chính sách này thành Tắt, tùy chọn đề xuất nội dung mới để khám phá sẽ tắt.
+      Nếu bạn không đặt chính sách này, tùy chọn đề xuất nội dung mới để khám phá sẽ tắt đối với người dùng được quản lý và sẽ bật cho những người dùng khác.
+      </translation>
 <translation id="6233173491898450179">Đặt thư mục tải xuống</translation>
 <translation id="6234177445959386333">Định cấu hình danh sách các URL đăng nhập của doanh nghiệp mà dịch vụ bảo vệ mật khẩu sẽ ghi lại hàm băm có chuỗi ngẫu nhiên của mật khẩu.</translation>
 <translation id="6242147107333796512">Báo cáo thông tin liên quan đến báo cáo sự cố, chẳng hạn như mã nhận dạng từ xa,
@@ -3866,7 +3863,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Xin lưu ý rằng EnabledPlugins và DisabledPluginsExceptions có thể ghi đè chính sách này.
 
       Nếu bạn không đặt chính sách này, thì người dùng có thể sử dụng bất kỳ plugin nào được cài đặt trên hệ thống, ngoại trừ các plugin không tương thích, lỗi thời hoặc nguy hiểm đã được mã hóa cứng.</translation>
-<translation id="6571871508154591774">Tắt máy ảnh, các tùy chọn cài đặt của trình duyệt và của hệ điều hành</translation>
 <translation id="6573305661369899995">Đặt nguồn bên ngoài cho hạn chế URL</translation>
 <translation id="6575944031719151455">Nếu bạn đặt chính sách này, hệ thống sẽ chỉ định danh sách các tài khoản trên thiết bị sẽ hiển thị trên màn hình đăng nhập. Các tài khoản trên thiết bị được phân biệt thông qua mã nhận dạng.
 
@@ -4973,11 +4969,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Chính sách này luôn có hiệu lực đối với <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8050080920415773384">In bản gốc</translation>
 <translation id="8053580360728293758">Ghi đè chế độ in màu mặc định. Nếu không có chế độ này thì chính sách này sẽ bị bỏ qua.</translation>
-<translation id="8057841287222359526">Cho phép bạn thiết lập danh sách các tính năng của <ph name="PRODUCT_OS_NAME" /> sẽ bị tắt.
-
-      Khi tắt bất kỳ tính năng nào trong số các tính năng này, người dùng sẽ không truy cập được vào tính năng đó từ giao diện người dùng và sẽ thấy trạng thái của tính năng đó là "do quản trị viên tắt".
-
-      Nếu bạn không đặt chính sách này, thì tất cả các tính năng của <ph name="PRODUCT_OS_NAME" /> sẽ được bật theo mặc định và người dùng có thể sử dụng bất kỳ tính năng nào trong số đó.</translation>
 <translation id="8059164285174960932">URL nơi ứng dụng truy cập từ xa sẽ lấy mã thông báo xác thực</translation>
 <translation id="8077245272412229388">Thêm các tài khoản Kerberos đã điền trước. Nếu thông tin đăng nhập Kerberos khớp với thông tin đăng nhập, thì bạn có thể định cấu hình một tài khoản để sử dụng lại thông tin đăng nhập bằng cách chỉ định '<ph name="LOGIN_EMAIL_PLACEHOLDER" />' và <ph name="PASSWORD_PLACEHOLDER" />' tương ứng với tài khoản chính và mật khẩu. Nhờ vậy, hệ thống có thể tự động truy xuất các phiếu Kerberos, trừ khi bạn định cấu hình tính năng xác thực hai yếu tố. Người dùng không thể sửa đổi các tài khoản đã thêm thông qua chính sách này.
 

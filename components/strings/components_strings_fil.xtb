@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Muling kumonekta sa Wi-Fi</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1165174597379888365">Binisita ang page</translation>
+<translation id="1174723505405632867">Gusto mo bang payagan ang <ph name="EMBEDDED_URL" /> na gumamit ng cookies at data ng site sa <ph name="TOP_LEVEL_URL" />?
+
+Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang content na nakaugnayan mong gumana nang maayos, pero posible nitong payagan ang <ph name="EMBEDDED_URL" /> na i-track ang iyong aktibidad.</translation>
 <translation id="1175364870820465910">&amp;I-print...</translation>
 <translation id="1175875016430184367">Triple staple right</translation>
 <translation id="1178581264944972037">I-pause</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Mga Patakaran</translation>
 <translation id="2183608646556468874">Numero ng Telepono</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 address}one{# address}other{# na address}}</translation>
+<translation id="2187243482123994665">Pagiging aktibo ng user</translation>
 <translation id="2187317261103489799">Tukuyin (default)</translation>
 <translation id="2188375229972301266">Multiple punch bottom</translation>
 <translation id="2202020181578195191">Maglagay ng wastong taon ng pag-expire</translation>
@@ -533,6 +537,7 @@
       administrator upang matiyak na gumagana ang proxy server. Kung sa palagay mo
       ay hindi ka dapat gumagamit ng proxy server:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456">Gustong malaman ng <ph name="URL" /> kapag aktibo ka</translation>
 <translation id="3188393374551744535">Balanse sa account</translation>
 <translation id="3194737229810486521">Gusto ng <ph name="URL" /> na permanenteng mag-store ng data sa iyong device</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> sa <ph name="SERVER_NAME" /></translation>
@@ -1025,6 +1030,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Computer</translation>
 <translation id="5179510805599951267">Wala sa <ph name="ORIGINAL_LANGUAGE" />? Iulat ang error na ito</translation>
+<translation id="5179740473595559246">Kapag aktibo ka</translation>
 <translation id="5190835502935405962">Bar ng Mga Bookmark</translation>
 <translation id="519422657042045905">Hindi available ang anotasyon</translation>
 <translation id="5201306358585911203">Isinasaad ng naka-embed na page sa page na ito na</translation>
@@ -1247,6 +1253,7 @@
 <translation id="6049488691372270142">Paghahatid ng page</translation>
 <translation id="6051221802930200923">Hindi mo maaaring bisitahin ang <ph name="SITE" /> sa ngayon dahil gumagamit ng pag-pin ng certificate ang website. Karaniwang pansamantala lang ang mga error at pag-atake sa network, kaya malamang na gagana ang page na ito sa ibang pagkakataon.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Ibahagi ang status ng iyong pagiging aktibo?</translation>
 <translation id="6058977677006700226">Gamitin ang iyong mga card sa lahat ng device mo?</translation>
 <translation id="6059925163896151826">Mga USB device</translation>
 <translation id="6060009363608157444">Invalid ang DnsOverHttps mode.</translation>
@@ -1376,6 +1383,7 @@
 <translation id="6631202559048444592">Mayroong higit sa isang pinagmulan para sa patakaran, pero pareho ang mga value.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">I-clear</translation>
+<translation id="6645291930348198241">I-access ang cookies at data ng site.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Wala}=1{Mula sa 1 site (hindi ka masa-sign out sa iyong Google Account)}one{Mula sa # site (hindi ka masa-sign out sa iyong Google Account)}other{Mula sa # na site (hindi ka masa-sign out sa iyong Google Account)}}</translation>
 <translation id="6648459603387803038">Puwedeng baguhin ng iyong administrator ang setup ng browser mo sa remote na paraan. Puwede ring pamahalaan sa labas ng Chrome ang aktibidad sa device na ito.</translation>
 <translation id="6652101503459149953">Gamitin ang Windows Hello</translation>

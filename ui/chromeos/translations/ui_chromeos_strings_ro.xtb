@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Fișierul nu a putut fi accesat din motive de securitate.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">Se arhivează <ph name="NUMBER_OF_ITEMS" /> elemente...</translation>
+<translation id="1731889557567069540">Elemente copiate: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="174173592514158117">Afișează toate dosarele Play</translation>
 <translation id="174937106936716857">Numărul total de fișiere</translation>
 <translation id="1775381402323441512">Informații despre fișierul video</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Caracter nevalid: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Tastatură vietnameză (TCVN)</translation>
 <translation id="2168214441502403371">Tastatură persană</translation>
+<translation id="2197363559908958454">Mutate: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">Chineză simplificată</translation>
 <translation id="2208158072373999562">Arhivă zip</translation>
 <translation id="2225536596944493418">Sigur dorești să ștergi <ph name="NUMBER_OF_ITEMS" /> elemente?</translation>
 <translation id="2230062665678605299">Nu s-a putut crea dosarul „<ph name="FOLDER_NAME" />”. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Mutat.</translation>
 <translation id="2278988676849463018">Tastatură kannada (Fonetică)</translation>
 <translation id="2288278176040912387">Picup</translation>
 <translation id="2291538123825441971">Se deschid <ph name="NUMBER_OF_FILES" /> fișiere.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">S-a făcut backup pentru tot!</translation>
 <translation id="3626281679859535460">Luminozitate</translation>
 <translation id="3644896802912593514">Lățime</translation>
+<translation id="3645233063072417428">Elemente mutate: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="3645531960514756307">Anulează fixarea dosarului</translation>
 <translation id="3678559383040232393">Tastatură malteză</translation>
 <translation id="3685122418104378273">Sincronizarea cu Google Drive este dezactivată în mod prestabilit la folosirea datelor mobile.</translation>
@@ -395,6 +399,7 @@
     Indiferent de ceea ce se întâmplă cu dispozitivul, fișierele sunt stocate în siguranță în Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Trimite și creează fișiere. Colaborează<ph name="MARKUP_8" />
     cu alte persoane la realizarea fișierelor. Totul într-un singur loc.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Copiat.</translation>
 <translation id="5275973617553375938">Fișiere recuperate din Google Drive</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Salvează</translation>
@@ -751,6 +756,7 @@
 <translation id="943972244133411984">Modificat de</translation>
 <translation id="945522503751344254">Trimite feedback</translation>
 <translation id="947144732524271678">S-au selectat o serie de <ph name="ENTRY_COUNT" /> intrări, de la <ph name="FROM_ENTRY_NAME" /> la <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="949308258121608615">Copiate: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Fișierul cu numele „<ph name="FILE_NAME" />” există deja. Vrei să îl înlocuiești?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

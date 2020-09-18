@@ -2629,7 +2629,6 @@
 <translation id="4095507791297118304">نمایشگر اصلی</translation>
 <translation id="409579654357498729">‏افزودن به Cloud Print</translation>
 <translation id="4096508467498758490">غیرفعال کردن افزونه‌های حالت برنامه‌نویس</translation>
-<translation id="4096824249111507322">مدول امن درحال آماده شدن است،‌ لطفاً منتظر بمانید (ممکن است چند دقیقه طول بکشد)…</translation>
 <translation id="4097406557126260163">برنامه‌ها و افزونه‌ها</translation>
 <translation id="4097560579602855702">‏جستجو در Google</translation>
 <translation id="4098667039111970300">ابزارهای قلم در نوارابزار</translation>
@@ -3359,7 +3358,6 @@
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">غلط گیر املا از زبان‌هایی که انتخاب کرده‌اید پشتیبانی نمی‌کند.</translation>
 <translation id="5052499409147950210">ویرایش سایت</translation>
-<translation id="5053604404986157245">‏‫گذرواژه TPM، که به صورت تصادفی ایجاد می‌شود، در دسترس نیست. پس از Powerwash این اتفاق عادی است.</translation>
 <translation id="5057110919553308744">وقتی روی افزونه کلیک می‌کنید</translation>
 <translation id="5057403786441168405">‏حساب‌های به سیستم واردشده‌تان را مدیریت کنید. وب‌سایت‌ها، برنامه‌ها، و افزونه‌ها در Chrome و Google Play ممکن است بسته به اجازه‌ها، از این حساب‌ها برای سفارشی کردن تجربه شما استفاده کنند. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">محدود کردن ورود به سیستم</translation>
@@ -3950,7 +3948,6 @@
 <translation id="5774295353725270860">‏باز کردن برنامه Files</translation>
 <translation id="577624874850706961">جستجوی کوکی‌ها</translation>
 <translation id="5777468213129569553">‏باز کردن Chrome</translation>
-<translation id="5778747455497889540">گذرواژه زیر، گذرواژه به‌صورت تصادفی ایجادشده مدول امن است که به رایانه شما اختصاص داده شده است:</translation>
 <translation id="5780011244986845107">پوشه‌ای که انتخاب کرده‌اید حاوی فایل‌های حساسی است. آیا مطمئنید می‌خواهید به «<ph name="APP_NAME" />» دسترسی دائم خواندن این پوشه را بدهید؟</translation>
 <translation id="5780973441651030252">پردازش اولویت‌دار</translation>
 <translation id="5781092003150880845">همگام‌سازی با حساب <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4659,7 +4656,6 @@
 <translation id="6635956300022133031">انتخاب و سفارشی‌سازی صداهای نوشتار به گفتار</translation>
 <translation id="6636588250634969791">قبل از ادامه، سیم‌کارت را وارد کنید</translation>
 <translation id="6639554308659482635">‏حافظه SQLite</translation>
-<translation id="6641138807883536517">‏گذرواژه به‌صورت تصادفی ایجادشده مدول امن دردسترس نیست. این حالت بعد از Powerwash عادی است.</translation>
 <translation id="6642720633335369752">برای دیدن پنجره‌های مربوط به همه برنامه‌های باز، از پایین صفحه تند به‌سمت بالا بکشید و نگه دارید.</translation>
 <translation id="664290675870910564">انتخاب شبکه</translation>
 <translation id="6643016212128521049">پاک کردن</translation>
@@ -4987,7 +4983,6 @@
 <translation id="7029307918966275733">‏Crostini نصب نشده است. لطفاً برای مشاهده اعتبارها، Crostini را نصب کنید.</translation>
 <translation id="7029809446516969842">گذرواژه‌ها</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - متصل به درگاه سریال</translation>
-<translation id="7031962166228839643">‏TPM در حال آماده شدن است، لطفاً منتظر بمانید (این مرحله ممکن است چند دقیقه طول بکشد)...</translation>
 <translation id="7036706669646341689">‏توصیه می‌شود <ph name="DISK_SIZE" /> فضا برای Linux داشته باشید برای افزایش فضای آزاد، فایل‌ها را از دستگاه حذف کنید.</translation>
 <translation id="7037509989619051237">نوشتار برای پیش‌نمایش</translation>
 <translation id="7038632520572155338">دسترسی کلیدی</translation>
@@ -5977,7 +5972,6 @@
 <translation id="8226222018808695353">ممنوع</translation>
 <translation id="8226619461731305576">صف</translation>
 <translation id="8226628635270268143">انتخاب عکس‌ها و آلبوم‌های دلخواه</translation>
-<translation id="8226742006292257240">‏در زیر گذرواژه TPM ایجاد شده به صورت تصادفی، آورده شده که به رایانهٔ شما اختصاص داده شده است:</translation>
 <translation id="8227119283605456246">پیوست کردن فایل</translation>
 <translation id="8230134520748321204">گذرواژه <ph name="ORIGIN" /> ذخیره شود؟</translation>
 <translation id="8230672074305416752">پینگ کردن دروازه شبکه پیش‌فرض انجام نشد</translation>

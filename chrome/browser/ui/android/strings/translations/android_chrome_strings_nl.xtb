@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
-<translation id="1013149566889033026">Er wordt een nieuw incognitotabblad geopend</translation>
 <translation id="1028699632127661925">Verzenden naar <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Ook gegevens van deze sites en apps wissen?</translation>
 <translation id="1036348656032585052">Uitschakelen</translation>
@@ -166,6 +165,7 @@ Tik op een woord om te zoeken. Je kunt je zoekopdracht verfijnen door te tikken 
 <translation id="2321086116217818302">Wachtwoorden voorbereiden…</translation>
 <translation id="2321958826496381788">Sleep de schuifknop tot je deze tekst prettig kunt lezen. De tekst moet minimaal deze grootte hebben nadat je op een alinea hebt gedubbeltikt.</translation>
 <translation id="2323763861024343754">Site-opslag</translation>
+<translation id="2326606747676847821">Incognito gaan</translation>
 <translation id="2328985652426384049">Kan niet inloggen</translation>
 <translation id="234265804618409743">Kan de camera niet openen. Er is iets misgegaan.</translation>
 <translation id="2345671828921229300">Tik op een woord en houd dit vast om te zoeken</translation>
@@ -346,7 +346,6 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="3775705724665058594">Verzenden naar je apparaten</translation>
 <translation id="3778956594442850293">Toegevoegd aan startscherm</translation>
 <translation id="3789841737615482174">Installeren</translation>
-<translation id="3800748312755064483">Tijdelijk inloggen</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Beheren</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> downloads verwijderd</translation>
@@ -387,7 +386,6 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="4135200667068010335">De lijst met apparaten om een tabblad mee te delen is gesloten.</translation>
 <translation id="4149994727733219643">Vereenvoudigde weergave voor webpagina's</translation>
 <translation id="4170011742729630528">De service is niet beschikbaar. Probeer het later opnieuw.</translation>
-<translation id="4175173967354304331">Je wordt ingelogd bij deze site, Chrome en Google-apps</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> gebruikt</translation>
 <translation id="4181841719683918333">Talen</translation>
 <translation id="4183868528246477015">Zoeken met Google Lens <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>

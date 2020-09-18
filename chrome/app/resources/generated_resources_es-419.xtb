@@ -2629,7 +2629,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4095507791297118304">Pantalla principal</translation>
 <translation id="409579654357498729">Agregar a Google Cloud Print</translation>
 <translation id="4096508467498758490">Inhabilitar extensiones en modo de programador</translation>
-<translation id="4096824249111507322">Se está preparando el módulo de seguridad. Espera (esta acción tardará algunos minutos)…</translation>
 <translation id="4097406557126260163">Apps y extensiones</translation>
 <translation id="4097560579602855702">Buscar en Google</translation>
 <translation id="4098667039111970300">Herramientas de la pluma stylus de la barra de herramientas</translation>
@@ -3359,7 +3358,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5050330054928994520">Texto a voz</translation>
 <translation id="5051836348807686060">Los idiomas seleccionados no son compatibles con el corrector ortográfico</translation>
 <translation id="5052499409147950210">Editar sitio</translation>
-<translation id="5053604404986157245">La contraseña TPM generada al azar no está disponible. Esto es normal después de un Powerwash.</translation>
 <translation id="5057110919553308744">Cuando haces clic en la extensión</translation>
 <translation id="5057403786441168405">Administra las cuentas en las que accediste. En función de los permisos, es posible que los sitios web, las apps y las extensiones en Chrome y Google Play usen estas cuentas para personalizar tu experiencia. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Restringir el acceso</translation>
@@ -3950,7 +3948,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5774295353725270860">Abrir Archivos</translation>
 <translation id="577624874850706961">Buscar cookies</translation>
 <translation id="5777468213129569553">Abrir Chrome</translation>
-<translation id="5778747455497889540">A continuación, encontrarás la contraseña del módulo de seguridad generada de manera aleatoria que se le asigna a tu computadora:</translation>
 <translation id="5780011244986845107">La carpeta seleccionada contiene archivos confidenciales. ¿Confirmas que deseas otorgar a "<ph name="APP_NAME" />" acceso de lectura permanente a esta carpeta?</translation>
 <translation id="5780973441651030252">Prioridad del proceso</translation>
 <translation id="5781092003150880845">Sincronizar como <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4659,7 +4656,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6635956300022133031">Seleccionar y personalizar las voces de texto a voz</translation>
 <translation id="6636588250634969791">Inserta la tarjeta SIM para continuar</translation>
 <translation id="6639554308659482635">Memoria SQLite</translation>
-<translation id="6641138807883536517">La contraseña del módulo de seguridad generada de manera aleatoria no está disponible. Esto es normal después de un Powerwash.</translation>
 <translation id="6642720633335369752">Para ver todas las ventanas de las apps abiertas, desliza el dedo hacia arriba desde la parte inferior y mantén presionada la pantalla.</translation>
 <translation id="664290675870910564">Selección de red</translation>
 <translation id="6643016212128521049">Borrar</translation>
@@ -4987,7 +4983,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7029307918966275733">No se instaló Crostini. Instálalo para ver los créditos.</translation>
 <translation id="7029809446516969842">Contraseñas</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Puerto en serie conectado</translation>
-<translation id="7031962166228839643">TPM se está preparando, espera (esto llevará algunos minutos)</translation>
 <translation id="7036706669646341689">Se recomienda tener <ph name="DISK_SIZE" /> de espacio para Linux. Si necesitas liberar espacio, borra archivos del dispositivo.</translation>
 <translation id="7037509989619051237">Texto de prueba</translation>
 <translation id="7038632520572155338">Accesibilidad mejorada</translation>
@@ -5977,7 +5972,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8226222018808695353">Prohibido</translation>
 <translation id="8226619461731305576">Cola</translation>
 <translation id="8226628635270268143">Elige tus fotos y álbumes favoritos</translation>
-<translation id="8226742006292257240">A continuación verás la contraseña TPM, generada al azar, que se le ha asignado a tu equipo:</translation>
 <translation id="8227119283605456246">Adjuntar un archivo</translation>
 <translation id="8230134520748321204">¿Quieres guardar la contraseña para <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">no se pudo hacer ping en la puerta de enlace de la red predeterminada</translation>

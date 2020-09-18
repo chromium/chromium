@@ -2632,7 +2632,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4095507791297118304">Paparan utama</translation>
 <translation id="409579654357498729">Tambahkan pada Cetakan Awan</translation>
 <translation id="4096508467498758490">Lumpuhkan sambungan mod pembangun</translation>
-<translation id="4096824249111507322">Modul selamat sedang disediakan, sila tunggu (proses ini mungkin mengambil masa beberapa minit)...</translation>
 <translation id="4097406557126260163">Apl dan sambungan</translation>
 <translation id="4097560579602855702">Cari di Google</translation>
 <translation id="4098667039111970300">Alatan stilus dalam bar alat</translation>
@@ -3362,7 +3361,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">Semak ejaan tidak disokong untuk bahasa yang anda pilih</translation>
 <translation id="5052499409147950210">Edit tapak</translation>
-<translation id="5053604404986157245">Kata laluan TPM yang dihasilkan secara rawak tidak tersedia. Perkara ini biasa berlaku selepas Powerwash.</translation>
 <translation id="5057110919553308744">Apabila anda mengklik sambungan</translation>
 <translation id="5057403786441168405">Urus akaun log masuk anda. Tapak web, apl dan sambungan dalam Chrome dan Google Play mungkin menggunakan akaun ini untuk menyesuaikan pengalaman anda, bergantung pada kebenaran. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Sekat log masuk</translation>
@@ -3953,7 +3951,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="5774295353725270860">Buka apl Fail</translation>
 <translation id="577624874850706961">Cari kuki</translation>
 <translation id="5777468213129569553">Buka Chrome</translation>
-<translation id="5778747455497889540">Di bawah ini ialah kata laluan modul selamat yang dijana secara rawak yang telah diperuntukkan kepada komputer anda:</translation>
 <translation id="5780011244986845107">Folder yang anda pilih mengandungi fail sensitif. Adakah anda pasti anda mahu memberi "<ph name="APP_NAME" />" akses baca kekal kepada folder ini?</translation>
 <translation id="5780973441651030252">Keutamaan proses</translation>
 <translation id="5781092003150880845">Segerakkan sebagai <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4662,7 +4659,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="6635956300022133031">Pilih dan sesuaikan suara teks ke pertuturan</translation>
 <translation id="6636588250634969791">Masukkan SIM sebelum meneruskan</translation>
 <translation id="6639554308659482635">Memori SQLite</translation>
-<translation id="6641138807883536517">Kata laluan modul selamat yang dijana secara rawak tidak tersedia. Perkara ini biasa berlaku selepas Powerwash.</translation>
 <translation id="6642720633335369752">Untuk melihat semua tetingkap apl yang terbuka, leret ke atas dari bawah dan tahan.</translation>
 <translation id="664290675870910564">Pilihan Rangkaian</translation>
 <translation id="6643016212128521049">Kosongkan</translation>
@@ -4990,7 +4986,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="7029307918966275733">Crostini tidak dipasang. Sila pasang Crostini untuk melihat kredit.</translation>
 <translation id="7029809446516969842">Kata laluan</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Port bersiri disambungkan</translation>
-<translation id="7031962166228839643">TPM sedang disediakan, sila tunggu (ini mungkin mengambil masa beberapa minit)...</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> ruang disyorkan untuk Linux. Untuk meningkatkan ruang kosong, padamkan fail daripada peranti anda.</translation>
 <translation id="7037509989619051237">Teks ke pratonton</translation>
 <translation id="7038632520572155338">Akses suis</translation>
@@ -5980,7 +5975,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8226222018808695353">Dilarang</translation>
 <translation id="8226619461731305576">Baris Gilir</translation>
 <translation id="8226628635270268143">Pilih foto dan album kegemaran anda</translation>
-<translation id="8226742006292257240">Di bawah adalah kata laluan TPM yang dijana secara rawak yang diperuntukkan kepada komputer anda:</translation>
 <translation id="8227119283605456246">Lampirkan fail</translation>
 <translation id="8230134520748321204">Simpan kata laluan untuk <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Gagal untuk ping get laluan rangkaian lalai</translation>

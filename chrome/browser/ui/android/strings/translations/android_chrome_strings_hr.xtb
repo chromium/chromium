@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
-<translation id="1013149566889033026">Otvorit će se nova anonimna kartica</translation>
 <translation id="1028699632127661925">Šalje se uređaju <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Izbrisati i podatke s ovih web-lokacija i aplikacija?</translation>
 <translation id="1036348656032585052">Isključi</translation>
@@ -166,6 +165,7 @@ Dodirnite bilo koju riječ da biste pokrenuli pretraživanje. Ako želite preciz
 <translation id="2321086116217818302">Priprema zaporki…</translation>
 <translation id="2321958826496381788">Pomičite klizač dok ne budete mogli čitati ovaj tekst bez poteškoća. Tekst bi trebao biti barem ovoliko velik nakon što dvaput dodirnete odlomak.</translation>
 <translation id="2323763861024343754">Pohrana web-lokacije</translation>
+<translation id="2326606747676847821">Anonimni način</translation>
 <translation id="2328985652426384049">Prijava nije moguća</translation>
 <translation id="234265804618409743">Kamera se ne može otvoriti. Nešto nije u redu.</translation>
 <translation id="2345671828921229300">Za pretraživanje dodirnite i držite riječ</translation>
@@ -346,7 +346,6 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="3775705724665058594">Pošaljite na svoje uređaje</translation>
 <translation id="3778956594442850293">Dodano na početni zaslon</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
-<translation id="3800748312755064483">Prijavite se privremeno</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
 <translation id="3819178904835489326">Izbrisano preuzimanja: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
@@ -677,6 +676,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6341580099087024258">Pitaj gdje spremiti datoteke</translation>
 <translation id="6342069812937806050">Samo sad</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
+<translation id="6345878117466430440">Označi kao pročitano</translation>
 <translation id="6364438453358674297">Želite li ukloniti prijedlog iz povijesti?</translation>
 <translation id="6366047038980456022"><ph name="APP_NAME" /> ima pametne značajke i brzinu koja vam treba za rad, stvaranje i istraživanje online.</translation>
 <translation id="6378173571450987352">Pojedinosti: poredano prema količini iskorištenih podataka</translation>
@@ -992,6 +992,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="8655129584991699539">Podatke možete izbrisati u postavkama Chromea</translation>
 <translation id="8662811608048051533">Odjavit ćete se s većine web-lokacija.</translation>
 <translation id="8664979001105139458">Već postoji datoteka s tim nazivom</translation>
+<translation id="8683039184091909753">slika</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Jačina signala: # crtica}one{Jačina signala: # crtica}few{Jačina signala: # crtice}other{Jačina signala: # crtica}}</translation>
 <translation id="869891660844655955">Datum isteka</translation>
 <translation id="8712637175834984815">Shvaćam</translation>

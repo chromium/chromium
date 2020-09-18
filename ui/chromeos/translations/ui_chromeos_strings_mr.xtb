@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">फाइलमध्ये सुरक्षिततेच्या कारणांमुळे प्रवेश करता येऊ शकला नाही.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> आयटम झिप करत आहे...</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> आयटम कॉपी केले.</translation>
 <translation id="174173592514158117">सर्व Play फोल्डर दाखवा</translation>
 <translation id="174937106936716857">एकूण फाईल संख्या</translation>
 <translation id="1775381402323441512">व्हिडिओ माहिती</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">चुकीचा वर्ण: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">व्हिएतनामी कीबोर्ड (TCVN)</translation>
 <translation id="2168214441502403371">पर्शियन कीबोर्ड</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> हलवले.</translation>
 <translation id="2198315389084035571">सरलीकृत चीनी</translation>
 <translation id="2208158072373999562">झीप संग्रहण करा</translation>
 <translation id="2225536596944493418">तुम्हाला नक्की <ph name="NUMBER_OF_ITEMS" /> आयटम हटवायचे आहेत का?</translation>
 <translation id="2230062665678605299">फोल्डर "<ph name="FOLDER_NAME" />" तयार करण्‍यात अक्षम. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">हलवले.</translation>
 <translation id="2278988676849463018">कन्नड कीबोर्ड (Phonetic)</translation>
 <translation id="2288278176040912387">रेकॉर्ड प्लेयर</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> फाइल उघडत आहे</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">सर्व बॅकअप घेतला!</translation>
 <translation id="3626281679859535460">ब्राइटनेस</translation>
 <translation id="3644896802912593514">रूंदी</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> आयटम हलवले.</translation>
 <translation id="3645531960514756307">फोल्डर अनपिन करा</translation>
 <translation id="3678559383040232393">माल्टीज कीबोर्ड</translation>
 <translation id="3685122418104378273">मोबाईल डेटा वापरला जातो, तेव्हा Google ड्राइव्ह सिंक बाय डीफॉल्ट बंद केले जाते.</translation>
@@ -395,6 +399,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 तुमच्या डिव्हाइसला काहीही झाले तरीही, तुमच्या फाइल Google ड्राइव्ह मध्ये सुरक्षितपणे स्टोअर केल्या आहेत.<ph name="MARKUP_6" />
 <ph name="MARKUP_7" />फाइलवर इतरांसह सर्व एकाच ठिकाणी<ph name="MARKUP_8" />
 शेअर करा, तयार करा आणि सहयोग करा.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">कॉपी केले.</translation>
 <translation id="5275973617553375938">Google ड्राइव्ह वरून पुनर्प्राप्त केलेल्‍या फाइल</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
@@ -751,6 +756,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="943972244133411984">ने सुधारित केली</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> ते <ph name="TO_ENTRY_NAME" /> मधील <ph name="ENTRY_COUNT" /> नोंदींची रेंज निवडली आहे.</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> कॉपी केला.</translation>
 <translation id="981121421437150478">ऑफलाइन</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" नावाची फाइल आधीच अस्तित्वात आहे. तुम्हाला ती बदलायची आहे का?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

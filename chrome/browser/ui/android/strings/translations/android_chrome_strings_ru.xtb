@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
-<translation id="1013149566889033026">Откроется новая вкладка в режиме инкогнито</translation>
 <translation id="1028699632127661925">Отправка на устройство "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="103269572468856066">Удалить эти данные?</translation>
 <translation id="1036348656032585052">Отключить</translation>
@@ -166,6 +165,7 @@
 <translation id="2321086116217818302">Подготовка паролей…</translation>
 <translation id="2321958826496381788">Перемещайте ползунок, пока текст не станет удобным для чтения. После двойного нажатия на абзац текст должен быть такого размера.</translation>
 <translation id="2323763861024343754">Данные сайтов</translation>
+<translation id="2326606747676847821">Режим инкогнито</translation>
 <translation id="2328985652426384049">Не удается войти</translation>
 <translation id="234265804618409743">Произошла ошибка. Не удается открыть камеру.</translation>
 <translation id="2345671828921229300">Для поиска нажмите на слово и удерживайте</translation>
@@ -346,7 +346,6 @@
 <translation id="3775705724665058594">Отправка на свои устройства</translation>
 <translation id="3778956594442850293">Добавлено на главный экран</translation>
 <translation id="3789841737615482174">Установить</translation>
-<translation id="3800748312755064483">Войти временно</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3810973564298564668">Настроить</translation>
 <translation id="3819178904835489326">Удаленные скачивания: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
@@ -387,7 +386,6 @@
 <translation id="4135200667068010335">Список устройств для отправки вкладки закрыт.</translation>
 <translation id="4149994727733219643">Упрощенный просмотр веб-страниц</translation>
 <translation id="4170011742729630528">Сервис недоступен. Повторите попытку позже.</translation>
-<translation id="4175173967354304331">Будет выполнен вход на этот сайт, в Chrome и в приложения Google.</translation>
 <translation id="4179980317383591987">Использовано: <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Языки</translation>
 <translation id="4183868528246477015">Найти через Google Объектив <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>

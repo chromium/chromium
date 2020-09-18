@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">出于安全原因，无法访问该文件。</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">正在压缩 <ph name="NUMBER_OF_ITEMS" /> 项内容…</translation>
+<translation id="1731889557567069540">已复制 <ph name="NUMBER_OF_ITEMS" /> 项。</translation>
 <translation id="174173592514158117">显示所有 Play 文件夹</translation>
 <translation id="174937106936716857">文件总数</translation>
 <translation id="1775381402323441512">视频信息</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">字符无效：<ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">越南语键盘(TCVN)</translation>
 <translation id="2168214441502403371">波斯语键盘</translation>
+<translation id="2197363559908958454">已移动 <ph name="NUMBER_OF_ITEMS" />。</translation>
 <translation id="2198315389084035571">简体中文</translation>
 <translation id="2208158072373999562">Zip 归档</translation>
 <translation id="2225536596944493418">确定要删除这 <ph name="NUMBER_OF_ITEMS" /> 项吗？</translation>
 <translation id="2230062665678605299">无法创建文件夹“<ph name="FOLDER_NAME" />”。<ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">已移动。</translation>
 <translation id="2278988676849463018">卡纳达语键盘（注音）</translation>
 <translation id="2288278176040912387">电唱机</translation>
 <translation id="2291538123825441971">正在打开 <ph name="NUMBER_OF_FILES" /> 个文件。</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">所有文件都已备份！</translation>
 <translation id="3626281679859535460">亮度</translation>
 <translation id="3644896802912593514">宽度</translation>
+<translation id="3645233063072417428">已移动 <ph name="NUMBER_OF_ITEMS" /> 项。</translation>
 <translation id="3645531960514756307">取消固定文件夹</translation>
 <translation id="3678559383040232393">马耳他语键盘</translation>
 <translation id="3685122418104378273">当您使用移动数据网络时，Google 云端硬盘同步功能默认情况下处于停用状态。</translation>
@@ -390,6 +394,7 @@
 <translation id="5253070652067921974">创建者</translation>
 <translation id="5257456363153333584">蜻蜓</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />可随时随地访问文件，即使处于离线状态也没关系。<ph name="MARKUP_2" />Google 云端硬盘上的文件是最新的，并可通过任意设备访问。<ph name="MARKUP_3" /><ph name="MARKUP_4" />可确保文件安全。<ph name="MARKUP_5" />无论您的设备出现什么状况，您的文件都会安全地存储在 Google 云端硬盘上。<ph name="MARKUP_6" /><ph name="MARKUP_7" />文件集中存储，方便您与他人在同一个地方共享、创建和协作处理<ph name="MARKUP_8" />文件。<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">已复制。</translation>
 <translation id="5275973617553375938">从 Google 云端硬盘恢复的文件</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">保存</translation>
@@ -746,6 +751,7 @@
 <translation id="943972244133411984">修改者</translation>
 <translation id="945522503751344254">发送反馈</translation>
 <translation id="947144732524271678">已选择从<ph name="FROM_ENTRY_NAME" />到<ph name="TO_ENTRY_NAME" />的 <ph name="ENTRY_COUNT" /> 个条目。</translation>
+<translation id="949308258121608615">已复制 <ph name="NUMBER_OF_ITEMS" />。</translation>
 <translation id="981121421437150478">离线</translation>
 <translation id="988685240266037636">已有名为“<ph name="FILE_NAME" />”的文件。要覆盖它吗？</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
-<translation id="1013149566889033026">ఒక కొత్త అజ్ఞాత ట్యాబ్ తెరవబడుతుంది</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />కు పంపుతోంది...</translation>
 <translation id="103269572468856066">ఈ సైట్‌లు,యాప్‌ల డేటా కూడా తొలగించాలా?</translation>
 <translation id="1036348656032585052">ఆఫ్ చేయి</translation>
@@ -166,6 +165,7 @@
 <translation id="2321086116217818302">పాస్‌వర్డ్‌లను సిద్ధం చేస్తోంది…</translation>
 <translation id="2321958826496381788">మీరు దీనిని సౌకర్యవంతంగా చదవగలిగే వరకు స్లైడర్‌ను లాగండి. పేరాపై రెండుసార్లు నొక్కిన తర్వాత వచనం కనీసం ఇంత పెద్దదిగా కనిపించాలి.</translation>
 <translation id="2323763861024343754">సైట్ నిల్వ</translation>
+<translation id="2326606747676847821">అజ్ఞాతంలోకి వెళ్లు</translation>
 <translation id="2328985652426384049">సైన్ ఇన్ చేయడం సాధ్యపడదు</translation>
 <translation id="234265804618409743">మీ కెమెరాను తెరవడం సాధ్యపడలేదు. ఏదో పొరపాటు జరిగింది.</translation>
 <translation id="2345671828921229300">వెతకడానికి, ఒక పదాన్ని తాకి &amp; అలాగే నొక్కి ఉంచండి</translation>
@@ -346,7 +346,6 @@
 <translation id="3775705724665058594">మీ పరికరాలకు పంపండి</translation>
 <translation id="3778956594442850293">హోమ్ స్క్రీన్‌కు జోడించబడింది</translation>
 <translation id="3789841737615482174">ఇన్‌స్టాల్ చేయి</translation>
-<translation id="3800748312755064483">తాత్కాలికంగా సైన్ ఇన్ చేయండి</translation>
 <translation id="3810838688059735925">వీడియో</translation>
 <translation id="3810973564298564668">నిర్వహించు</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> డౌన్‌లోడ్‌లు తొలగించబడ్డాయి</translation>
@@ -387,7 +386,6 @@
 <translation id="4135200667068010335">ట్యాబ్‌ను షేర్ చేయాల్సిన పరికరాల జాబితా మూసివేయబడింది.</translation>
 <translation id="4149994727733219643">వెబ్ పేజీల కోసం సరళమైన వీక్షణ</translation>
 <translation id="4170011742729630528">సేవ అందుబాటులో లేదు; తర్వాత మళ్లీ ప్రయత్నించండి.</translation>
-<translation id="4175173967354304331">ఈ సైట్, Chrome, Google యాప్‌లలో మీరు సైన్ ఇన్ చేస్తారు</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> వినియోగించబడింది</translation>
 <translation id="4181841719683918333">భాషలు</translation>
 <translation id="4183868528246477015">Google లెన్స్‌తో శోధన <ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /></translation>

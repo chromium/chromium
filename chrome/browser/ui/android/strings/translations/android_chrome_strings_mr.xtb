@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
-<translation id="1013149566889033026">नवीन गुप्त टॅब उघडेल</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> ला पाठवत आहे…</translation>
 <translation id="103269572468856066">डेटासुद्धा साफ करायचा?</translation>
 <translation id="1036348656032585052">बंद करा</translation>
@@ -166,6 +165,7 @@
 <translation id="2321086116217818302">पासवर्ड तयार करत आहे…</translation>
 <translation id="2321958826496381788">तुम्ही हे व्यवस्थित वाचू शकण्यापार्यंत स्लायडर ड्रॅग करा. परिच्छेदावर डबल-टॅपिंग केल्यानंतर मजकूर कमीत कमी यापेक्षा मोठा दिसावा.</translation>
 <translation id="2323763861024343754">साइट स्टोरेज</translation>
+<translation id="2326606747676847821">गुप्त व्हा</translation>
 <translation id="2328985652426384049">साइन इन करू शकत नाही</translation>
 <translation id="234265804618409743">तुमचा कॅमेरा उघडू शकत नाही. काहीतरी चूक झाली.</translation>
 <translation id="2345671828921229300">शोधण्यासाठी, शब्दाला स्पर्श करा आणि धरून ठेवा</translation>
@@ -346,7 +346,6 @@
 <translation id="3775705724665058594">तुमच्या डिव्हाइसवर पाठवा</translation>
 <translation id="3778956594442850293">होम स्क्रीनवर जोडले</translation>
 <translation id="3789841737615482174">स्थापना करा</translation>
-<translation id="3800748312755064483">तात्पुरते साइन इन करा</translation>
 <translation id="3810838688059735925">व्हिडिओ</translation>
 <translation id="3810973564298564668">व्यवस्थापित करा</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड हटविले</translation>
@@ -677,6 +676,7 @@
 <translation id="6341580099087024258">फाइल कुठे सेव्ह करायच्या ते विचारा</translation>
 <translation id="6342069812937806050">आत्ताच</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अधिक}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अधिक}}</translation>
+<translation id="6345878117466430440">वाचलेले अशी खूण करा</translation>
 <translation id="6364438453358674297">इतिहासातून सूचना काढून टाकायची?</translation>
 <translation id="6366047038980456022"><ph name="APP_NAME" /> कडे ऑनलाइन सुरक्षितपणे काम करणे, तयार करणे आणि एक्सप्लोर करणे यांसाठी तुम्हाला आवश्यक असणारे कौशल्य आणि वेग आहे</translation>
 <translation id="6378173571450987352">तपशील: वापरलेल्या डेटाच्या प्रमाणानुसार क्रमाने लावलेला</translation>
@@ -992,6 +992,7 @@
 <translation id="8655129584991699539">तुम्ही Chrome सेटिंग्जमध्ये डेटा साफ करू शकता</translation>
 <translation id="8662811608048051533">तुम्हाला बहुतांश साइटवरून साइन आउट करते.</translation>
 <translation id="8664979001105139458">फाइलचे नाव आधीपासून अस्तित्वात आहे</translation>
+<translation id="8683039184091909753">इमेज</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{सिग्नल क्षमता पातळी: # बार}other{सिग्नल क्षमता पातळी: # बार}}</translation>
 <translation id="869891660844655955">कालावधी समाप्ती तारीख</translation>
 <translation id="8712637175834984815">समजले</translation>

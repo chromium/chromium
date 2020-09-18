@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">ਵਾਈ-ਫਾਈ ਨਾਲ ਦੁਬਾਰਾ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="1165039591588034296">ਗੜਬੜ</translation>
 <translation id="1165174597379888365">ਪੰਨਾ ਦੇਖਿਆ ਗਿਆ</translation>
+<translation id="1174723505405632867">ਕੀ ਤੁਸੀਂ <ph name="EMBEDDED_URL" /> ਵੱਲੋਂ <ph name="TOP_LEVEL_URL" /> 'ਤੇ ਕੁਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟਾ ਵਰਤਣ ਨੂੰ ਮਨਜ਼ੂਰ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?
+
+ਨਹੀਂ ਤਾਂ ਤੁਹਾਡੀਆਂ ਪਰਦੇਦਾਰੀ ਸੈਟਿੰਗਾਂ ਵੱਲੋਂ ਇਸ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਜਾਵੇਗਾ। ਇਸ ਨਾਲ ਤੁਸੀਂ ਜਿਸ ਸਮੱਗਰੀ ਨਾਲ ਅੰਤਰਕਿਰਿਆ ਕੀਤੀ ਹੈ ਉਹ ਸਹੀ ਤਰ੍ਹਾਂ ਨਾਲ ਕੰਮ ਕਰੇਗੀ, ਪਰ <ph name="EMBEDDED_URL" /> ਵੱਲੋਂ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨੂੰ ਟਰੈਕ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="1175364870820465910">&amp;ਪ੍ਰਿੰਟ...</translation>
 <translation id="1175875016430184367">ਸੱਜੇ ਪਾਸੇ ਤਿੰਨ ਪਿੰਨਾਂ</translation>
 <translation id="1178581264944972037">ਰੋਕੋ</translation>
@@ -305,6 +308,7 @@
 <translation id="2181821976797666341">ਨੀਤੀਆਂ</translation>
 <translation id="2183608646556468874">ਫ਼ੋਨ ਨੰਬਰ</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 ਪਤਾ}one{# ਪਤੇ}other{# ਪਤੇ}}</translation>
+<translation id="2187243482123994665">ਵਰਤੋਂਕਾਰ ਦੀ ਮੌਜੂਦਗੀ</translation>
 <translation id="2187317261103489799">ਪਤਾ ਲਗਾਓ (ਪੂਰਵ-ਨਿਰਧਾਰਤ)</translation>
 <translation id="2188375229972301266">ਹੇਠਾਂ ਇੱਕ ਤੋਂ ਵੱਧ ਮੋਰੀਆਂ</translation>
 <translation id="2202020181578195191">ਇੱਕ ਵੈਧ ਮਿਆਦ ਸਮਾਪਤੀ ਸਾਲ ਦਾਖਲ ਕਰੋ</translation>
@@ -526,6 +530,7 @@
 <translation id="3174168572213147020">ਟਾਪੂ</translation>
 <translation id="3176929007561373547">ਪ੍ਰੌਕਸੀ ਸਰਵਰ ਕੰਮ ਕਰ ਰਿਹਾ ਹੈ ਇਹ ਪੱਕਾ ਕਰੋ ਕਰਨ ਲਈ ਆਪਣੀਆਂ ਪ੍ਰੌਕਸੀ ਸੈਟਿੰਗਾਂ ਦੀ ਜਾਂਚ ਕਰੋ ਜਾਂ ਆਪਣੇ ਨੈੱਟਵਰਕ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ, ਜੇਕਰ ਤੁਸੀਂ ਪੱਕਾ ਨਹੀਂ ਕਰਦੇ ਤਾਂ ਤੁਹਾਨੂੰ ਇੱਕ ਪ੍ਰੌਕਸੀ ਸਰਵਰ ਦੀ ਵਰਤੋਂ ਕਰਨੀ ਚਾਹੀਦੀ ਹੈ:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> ਤੁਹਾਡੀ ਮੌਜੂਦਗੀ ਬਾਰੇ ਜਾਣਨਾ ਚਾਹੁੰਦਾ ਹੈ</translation>
 <translation id="3188393374551744535">ਖਾਤਾ ਬਕਾਇਆ</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ਦੀ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਸਥਾਈ ਤੌਰ 'ਤੇ ਡਾਟਾ ਸਟੋਰ ਕਰਨ ਦੀ ਇੱਛਾ ਹੈ</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> 'ਤੇ <ph name="PRINTER_NAME" /></translation>
@@ -1012,6 +1017,7 @@
 <translation id="5171689220826475070">ਫੈਨਫੋਲਡ-ਯੂਰਪੀ</translation>
 <translation id="5172758083709347301">ਮਸ਼ੀਨ</translation>
 <translation id="5179510805599951267">ਕੀ <ph name="ORIGINAL_LANGUAGE" /> ਵਿੱਚ ਨਹੀਂ ਹੈ? ਇਸ ਗੜਬੜ ਦੀ ਰਿਪੋਰਟ ਕਰੋ</translation>
+<translation id="5179740473595559246">ਆਪਣੀ ਮੌਜੂਦਗੀ ਬਾਰੇ ਜਾਣੋ</translation>
 <translation id="5190835502935405962">ਬੁੱਕਮਾਰਸ ਬਾਰ</translation>
 <translation id="519422657042045905">ਐਨੋਟੇਸ਼ਨ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="5201306358585911203">ਇਸ ਪੰਨੇ 'ਤੇ ਇੱਕ ਪਰੋਏ ਗਏ ਪੰਨੇ ਦੇ ਮੁਤਾਬਕ</translation>
@@ -1234,6 +1240,7 @@
 <translation id="6049488691372270142">ਪੰਨਾ ਡਿਲੀਵਰੀ</translation>
 <translation id="6051221802930200923">ਤੁਸੀਂ ਇਸ ਵੇਲੇ <ph name="SITE" /> 'ਤੇ ਨਹੀਂ ਜਾ ਸਕਦੇ, ਕਿਉਂਕਿ ਵੈੱਬਸਾਈਟ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਪਿੰਨਿੰਗ ਦੀ ਵਰਤੋਂ ਕਰਦੀ ਹੈ।ਨੈੱਟਵਰਕ ਗੜਬੜੀਆਂ ਅਤੇ ਹਮਲੇ ਆਮ ਤੌਰ 'ਤੇ ਅਸਥਾਈ ਹੁੰਦੇ ਹਨ, ਇਸਲਈ ਇਹ ਪੰਨਾ ਸ਼ਾਇਦ ਬਾਅਦ ਵਿੱਚ ਠੀਕ ਢੰਗ ਨਾਲ ਕੰਮ ਕਰੇਗਾ।</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">ਕੀ ਆਪਣੀ ਮੌਜੂਦਗੀ ਨੂੰ ਸਾਂਝਾ ਕਰਨਾ ਹੈ?</translation>
 <translation id="6058977677006700226">ਕੀ ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਕਾਰਡਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨੀ ਹੈ?</translation>
 <translation id="6059925163896151826">USB ਡੀਵਾਈਸਾਂ</translation>
 <translation id="6060009363608157444">ਅਵੈਧ DnsOverHttps ਮੋਡ।</translation>
@@ -1362,6 +1369,7 @@
 <translation id="6631202559048444592">ਨੀਤੀ ਲਈ ਇੱਕ ਤੋਂ ਵੱਧ ਸਰੋਤ ਮੌਜੂਦ ਹਨ, ਪਰ ਮੁੱਲ ਇੱਕੋ ਹਨ।</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">ਹਟਾਓ</translation>
+<translation id="6645291930348198241">ਕੁਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟਾ ਤੱਕ ਪਹੁੰਚ ਕਰੋ।</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{ਕੋਈ ਨਹੀਂ}=1{1 ਸਾਈਟ ਤੋਂ (ਤੁਸੀਂ ਆਪਣੇ 'Google ਖਾਤੇ' ਤੋਂ ਸਾਈਨ-ਆਊਟ ਨਹੀਂ ਹੋਵੋਗੇ।)}other{# ਸਾਈਟਾਂ ਤੋਂ (ਤੁਸੀਂ ਆਪਣੇ 'Google ਖਾਤੇ' ਤੋਂ ਸਾਈਨ-ਆਊਟ ਨਹੀਂ ਹੋਵੋਗੇ।)}}</translation>
 <translation id="6648459603387803038">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਦੂਰ-ਦੁਰਾਡੇ ਤੋਂ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਸੈੱਟਅੱਪ ਨੂੰ ਬਦਲ ਸਕਦਾ ਹੈ। ਇਸ ਡੀਵਾਈਸ ਦੀ ਸਰਗਰਮੀ ਦਾ ਪ੍ਰਬੰਧਨ Chrome ਤੋਂ ਬਾਹਰ ਵੀ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="6652101503459149953">Windows Hello ਨੂੰ ਵਰਤੋ</translation>

@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Ezin izan da atzitu fitxategia segurtasun-arrazoiengatik.</translation>
 <translation id="169515659049020177">Maius</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> elementu konpimatzen…</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elementu kopiatu dira.</translation>
 <translation id="174173592514158117">Erakutsi Play karpeta guztiak</translation>
 <translation id="174937106936716857">Fitxategi kopurua guztira</translation>
 <translation id="1775381402323441512">Bideoari buruzko informazioa</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Karaktere honek ez du balio: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Teklatu vietnamdarra (TCVN)</translation>
 <translation id="2168214441502403371">Teklatu persiarra</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> tokiz aldatu da.</translation>
 <translation id="2198315389084035571">Txinera (sinplifikatua)</translation>
 <translation id="2208158072373999562">Zip fitxategia</translation>
 <translation id="2225536596944493418">Ziur <ph name="NUMBER_OF_ITEMS" /> elementu ezabatu nahi dituzula?</translation>
 <translation id="2230062665678605299">Ezin  izan da sortu "<ph name="FOLDER_NAME" />" fitxategia. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Tokiz aldatu da.</translation>
 <translation id="2278988676849463018">Teklatu kannadarra (fonetikoa)</translation>
 <translation id="2288278176040912387">Disko-jogailua</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> fitxategi irekitzen.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Fitxategi guztien babeskopia egin da!</translation>
 <translation id="3626281679859535460">Distira</translation>
 <translation id="3644896802912593514">Zabalera</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementu mugitu dira.</translation>
 <translation id="3645531960514756307">Kendu aingura karpetari</translation>
 <translation id="3678559383040232393">Teklatu maltarra</translation>
 <translation id="3685122418104378273">Datu-konexioa erabiltzean, Google Drive sinkronizazioa modu lehenetsian desaktibatuta dago.</translation>
@@ -395,6 +399,7 @@
     Gailuari edozer gertatzen zaiola ere, babestuta egongo dira fitxategiak Google Drive-n.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Partekatu eta sortu fitxategiak, eta jardun elkarlanean<ph name="MARKUP_8" />
     beste erabiltzaile batzuekin. Toki bakarrean egin dezakezu hori guztia.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Kopiatu da.</translation>
 <translation id="5275973617553375938">Google Drive-tik berreskuratutako fitxategiak</translation>
 <translation id="5317780077021120954">Gorde</translation>
 <translation id="5318819489018851358">Partekatu Linux erabilita</translation>
@@ -750,6 +755,7 @@
 <translation id="943972244133411984">Aldaketaren egilea:</translation>
 <translation id="945522503751344254">Bidali oharrak</translation>
 <translation id="947144732524271678">Hautatu da <ph name="ENTRY_COUNT" /> sarrerako barruti bat, <ph name="FROM_ENTRY_NAME" /> sarreratik <ph name="TO_ENTRY_NAME" /> sarrerara.</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> kopiatu da.</translation>
 <translation id="981121421437150478">Konexiorik gabekoak</translation>
 <translation id="988685240266037636">Badago "<ph name="FILE_NAME" />" izeneko fitxategi bat. Ordeztu egin nahi duzu?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

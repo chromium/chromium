@@ -374,6 +374,7 @@
 <translation id="143027896309062157">Basahin at baguhin ang lahat ng iyong data sa iyong computer at sa mga binibisita mong website</translation>
 <translation id="1430915738399379752">I-print</translation>
 <translation id="1431188203598586230">Panghuling update sa software</translation>
+<translation id="1431402976894535801">I-block ang mga site na malaman kapag aktibo ka</translation>
 <translation id="1431432486300429272">Posibleng gamitin ng Google ang iyong history ng pag-browse para ma-personalize ang Search at iba pang serbisyo ng Google. Magagawa mo o ng iyong magulang na baguhin ito anumang oras sa myaccount.google.com/activitycontrols/search</translation>
 <translation id="1432581352905426595">Pamahalaan ang mga search engine</translation>
 <translation id="1433811987160647649">Magtanong bago i-access</translation>
@@ -570,6 +571,7 @@
 <translation id="1651008383952180276">Dapat mong ilagay ang katulad na passphrase nang dalawang beses</translation>
 <translation id="1652326691684645429">I-enable ang Nearby Share</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Idagdag ang printer sa Google Cloud Print nang sa gayon ay makakapag-print ka kahit saan.}one{Idagdag ang # printer sa Google Cloud Print nang sa gayon ay makakapag-print ka kahit saan.}other{Idagdag ang # na printer sa Google Cloud Print nang sa gayon ay makakapag-print ka kahit saan.}}</translation>
+<translation id="1653575510930452864">Kopyahin ang Link sa Text</translation>
 <translation id="1656528038316521561">Opacity ng background</translation>
 <translation id="1657406563541664238">Tulungan ang <ph name="PRODUCT_NAME" /> na maging mas mahusay sa pamamagitan ng awtomatikong pagpapadala ng mga istatistika ng paggamit at mga crash report sa Google</translation>
 <translation id="1657937299377480641">Para mag-sign in ulit para sa access sa mga pang-edukasyong resource, hilingin sa isang magulang na bigyan ka ng pahintulot</translation>
@@ -1003,6 +1005,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2178614541317717477">CA Compromise</translation>
 <translation id="2182058453334755893">Kinopya sa Iyong Clipboard</translation>
 <translation id="2184515124301515068">Hayaan ang Chrome na pumili kung kailan makakapag-play ng tunog ang mga site (inirerekomenda)</translation>
+<translation id="2187243482123994665">Pagiging aktibo ng user</translation>
 <translation id="2187675480456493911">Naka-sync sa iba pang device sa iyong account. Hindi masi-sync ang mga setting na binago ng iba pang user. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Error sa Pag-import ng Certificate ng Server</translation>
 <translation id="2187906491731510095">Na-update ang mga extension</translation>
@@ -1830,6 +1833,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3163201441334626963">Hindi kilalang produkto na <ph name="PRODUCT_ID" /> mula sa vendor na <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Nakakatulong ang mga sumusunod na serbisyo na mapanatiling ligtas at secure ang iyong data. Puwede mo itong i-off anumang oras.</translation>
 <translation id="3164329792803560526">Ibinabahagi ang tab na ito sa <ph name="APP_NAME" /></translation>
+<translation id="3165371858310906303">Magtanong kapag gustong malaman ng isang site kapag aktibo ka</translation>
 <translation id="3165390001037658081">Maaaring i-block ng ilang carrier ang feature na ito.</translation>
 <translation id="316652501498554287">Mga G Suite for Education account</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2628,7 +2632,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4095507791297118304">Pangunahing display</translation>
 <translation id="409579654357498729">Idagdag sa Cloud Print</translation>
 <translation id="4096508467498758490">I-disable ang mga extension ng developer mode</translation>
-<translation id="4096824249111507322">Inihahanda ang secure na module, pakihintay (maaari itong abutin nang ilang minuto)...</translation>
 <translation id="4097406557126260163">Mga App at extension</translation>
 <translation id="4097560579602855702">Maghanap sa Google</translation>
 <translation id="4098667039111970300">Mga tool ng stylus sa toolbar</translation>
@@ -2947,6 +2950,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4527186207340858212">Gumawa ng bagong profile para sa trabaho?</translation>
 <translation id="452750746583162491">Suriin ang iyong naka-sync na data</translation>
 <translation id="4530494379350999373">Pinanggalingan</translation>
+<translation id="4531924570968473143">Sino ang gusto mong idagdag sa <ph name="DEVICE_TYPE" /> na ito?</translation>
 <translation id="4532646538815530781">Gumagamit ang site na ito ng mga sensor ng paggalaw.</translation>
 <translation id="4533846798469727141">Ngayon, sabihin ang "Hey Google"</translation>
 <translation id="4533985347672295764">Oras ng CPU</translation>
@@ -3357,7 +3361,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">Hindi sinusuportahan ang spellcheck para sa mga pinili mong wika</translation>
 <translation id="5052499409147950210">I-edit ang site</translation>
-<translation id="5053604404986157245">Hindi available ang random na nabuong TPM password. Normal ito pagkatapos ng Powerwash.</translation>
 <translation id="5057110919553308744">Kapag iki-click mo ang extension</translation>
 <translation id="5057403786441168405">Pamahalaan ang iyong mga naka-sign in na account. Puwedeng gamitin ng mga website, app, at extension sa Chrome at Google Play ang mga account na ito para i-customize ang iyong karanasan, depende sa mga pahintulot. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Paghigpitan ang pag-sign in</translation>
@@ -3948,7 +3951,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="5774295353725270860">App na Buksan ang Mga File</translation>
 <translation id="577624874850706961">Maghanap ng cookies</translation>
 <translation id="5777468213129569553">Buksan ang Chrome</translation>
-<translation id="5778747455497889540">Nasa ibaba ang random na ginawang password ng secure na module na naitalaga sa iyong computer:</translation>
 <translation id="5780011244986845107">Naglalaman ng mga sensitibong file ang folder na pinili mo. Sigurado ka bang gusto mong bigyan ang "<ph name="APP_NAME" />" ng permanenteng access sa pag-read sa folder na ito?</translation>
 <translation id="5780973441651030252">Priority ng proseso</translation>
 <translation id="5781092003150880845">I-sync bilang <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -3978,6 +3980,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="5804241973901381774">Mga Pahintulot</translation>
 <translation id="5805697420284793859">Window manager</translation>
 <translation id="5806773519584576205">0° (Default)</translation>
+<translation id="5808664694611589238">{0,plural, =1{Isara ang bisita}one{Isara ang bisita}other{Isara ang bisita}}</translation>
 <translation id="5810809306422959727">Hindi kwalipikado ang account na ito para sa parental controls</translation>
 <translation id="5812674658566766066">I-expand lahat</translation>
 <translation id="5814126672212206791">Uri ng koneksyon</translation>
@@ -4435,6 +4438,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="6344170822609224263">I-access ang listahan ng mga koneksyon sa network</translation>
 <translation id="6344576354370880196">Mga naka-save na printer</translation>
 <translation id="6345418402353744910">Kailangan ang iyong username at password para sa proxy na <ph name="PROXY" /> para ma-configure ng admin ang network mo</translation>
+<translation id="6345878117466430440">Markahang nabasa na</translation>
 <translation id="6349101878882523185">I-install ang <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Hindi gumagana ang pag-sync. Subukang mag-sign out at muling mag-sign in.</translation>
 <translation id="6351063337294363751">Maaari mong i-clear ang iyong data sa pag-browse sa menu na ito</translation>
@@ -4655,7 +4659,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="6635956300022133031">Pumili at mag-customize ng mga boses ng text-to-speech</translation>
 <translation id="6636588250634969791">Maglagay ng SIM bago magpatuloy</translation>
 <translation id="6639554308659482635">Memorya sa SQLite</translation>
-<translation id="6641138807883536517">Hindi available ang random na ginawang password ng secure na module. Normal lang ito pagkatapos ng Powerwash.</translation>
 <translation id="6642720633335369752">Para makita ang lahat ng nakabukas na window ng app, mag-swipe pataas mula sa ibaba at i-hold ito.</translation>
 <translation id="664290675870910564">Pagpili ng Network</translation>
 <translation id="6643016212128521049">I-clear</translation>
@@ -4983,7 +4986,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="7029307918966275733">Hindi naka-install ang Crostini. Paki-install ang Crostini para matingnan ang mga credit.</translation>
 <translation id="7029809446516969842">Mga Password</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Nakakonekta ang serial port</translation>
-<translation id="7031962166228839643">Ang TPM ay ihinahanda, mangyaring maghintay (maaaring tumagal ito nang ilang minuto)...</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> na espasyo ang inirerekomenda para sa Linux. Para madagdagan ang bakanteng espasyo, mag-delete ng mga file sa iyong device.</translation>
 <translation id="7037509989619051237">Text na ipi-preview</translation>
 <translation id="7038632520572155338">Switch access</translation>
@@ -5177,6 +5179,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="7280649757394340890">Mga setting ng boses ng Text-to-Speech</translation>
 <translation id="7280877790564589615">Nahiling ang pahintulot</translation>
 <translation id="7282992757463864530">Infobar</translation>
+<translation id="7284411326658527427">Magagawa ng bawat taong i-personalize ang kanyang account at panatilihing pribado ang data.</translation>
 <translation id="7287143125007575591">Tinanggihan ang access.</translation>
 <translation id="7287411021188441799">I-restore ang default na background</translation>
 <translation id="7288013116963835700">Alisin ang Linux para sa <ph name="DEVICE_TYPE" /></translation>
@@ -5753,6 +5756,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="7963826112438303517">Ginagamit ng iyong Assistant ang mga recording na ito at ang mga binigkas mong kahilingan para gawin at i-update ang iyong voice model, na naka-store lang sa mga device kung saan mo na-on ang Voice Match. Tingnan o muling sanayin ang aktibidad ng boses sa Mga Setting ng Assistant.</translation>
 <translation id="7966241909927244760">K&amp;opyahin ang Address ng Larawan</translation>
 <translation id="7968072247663421402">Mga opsyon sa provider</translation>
+<translation id="7968198493605442410">Kopyahin ang link sa text</translation>
 <translation id="7968742106503422125">Basahin at baguhin ang data na kinokopya at pine-paste mo</translation>
 <translation id="7968833647796919681">I-enable ang pagkolekta ng data ng pagganap</translation>
 <translation id="7968982339740310781">Tingnan ang mga detalye</translation>
@@ -5971,7 +5975,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8226222018808695353">Ipinagbabawal</translation>
 <translation id="8226619461731305576">I-queue</translation>
 <translation id="8226628635270268143">Piliin ang iyong mga paboritong larawan at album</translation>
-<translation id="8226742006292257240">Sa ibaba ay ang random na binubuong TPM password na itinalaga sa iyong computer:</translation>
 <translation id="8227119283605456246">Mag-attach ng file</translation>
 <translation id="8230134520748321204">I-save ang password para sa <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Hindi na-ping ang default na network gateway</translation>

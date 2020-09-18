@@ -374,6 +374,7 @@
 <translation id="143027896309062157">તમે મુલાકાત લો છો તે વેબસાઇટ્સ અને તમારા કમ્પ્યુટર પરના તમારા ડેટાને વાંચો અને બદલો</translation>
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
 <translation id="1431188203598586230">ફાયનલ સૉફ્ટવેર અપડેટ</translation>
+<translation id="1431402976894535801">તમે ક્યારે હાજર છો તે જાણવાથી સાઇટને બ્લૉક કરો</translation>
 <translation id="1431432486300429272">Google, Search અને અન્ય Googleની સેવાઓને મનગમતી બનાવવા માટે તમારા બ્રાઉઝિંગ ઇતિહાસનો ઉપયોગ કરી શકે છે. તમે કે તમારા માતાપિતા કોઈપણ સમયે myaccount.google.com/activitycontrols/search પર જઈને આમાં ફેરફાર કરી શકે છે</translation>
 <translation id="1432581352905426595">શોધ એંજિન્સ સંચાલિત કરો</translation>
 <translation id="1433811987160647649">ઍક્સેસ કરતાં પહેલાં પૂછો</translation>
@@ -566,6 +567,7 @@
 <translation id="1651008383952180276">તમારે તે જ પાસફ્રેઝ બે વાર દાખલ કરવો આવશ્યક છે</translation>
 <translation id="1652326691684645429">'નજીકના શેર' સુવિધા ચાલુ કરો</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Google ક્લાઉડ પ્રિન્ટમાં પ્રિન્ટર ઉમેરો જેથી તમે ગમે-ત્યાંથી પ્રિન્ટ કાઢી શકો.}one{Google ક્લાઉડ પ્રિન્ટમાં # પ્રિન્ટર ઉમેરો જેથી તમે ગમે-ત્યાંથી પ્રિન્ટ કાઢી શકો.}other{Google ક્લાઉડ પ્રિન્ટમાં # પ્રિન્ટર ઉમેરો જેથી તમે ગમે-ત્યાંથી પ્રિન્ટ કાઢી શકો.}}</translation>
+<translation id="1653575510930452864">લિંકને ટેક્સ્ટ પર કૉપિ કરો</translation>
 <translation id="1656528038316521561">બૅકગ્રાઉન્ડની અપારદર્શકતા</translation>
 <translation id="1657406563541664238">ઉપયોગનાં આંકડાઓ અને ક્રૅશ રિપોર્ટ ઑટોમૅટિક રીતે Googleને મોકલીને <ph name="PRODUCT_NAME" />ને વધુ સારું બનાવવામાં મદદ કરો</translation>
 <translation id="1657937299377480641">શૈક્ષણિક સંસાધનોના ઍક્સેસ માટે ફરી સાઇન ઇન કરવા, તમને પરવાનગી આપવાનું માતાપિતાને કહો</translation>
@@ -999,6 +1001,7 @@
 <translation id="2178614541317717477">CA સમાધાન</translation>
 <translation id="2182058453334755893">તમારા ક્લિપબોર્ડ પર કૉપિ કરવામાં આવ્યું</translation>
 <translation id="2184515124301515068">સાઇટ સાઉન્ડ ક્યારે ચલાવી શકે તે Chromeને પસંદ કરવા દો (સુઝાવ આપેલ)</translation>
+<translation id="2187243482123994665">વપરાશકર્તાની હાજરી</translation>
 <translation id="2187675480456493911">તમારા એકાઉન્ટ પરના અન્ય ડિવાઇસ સાથે સિંક કરેલું. અન્ય વપરાશકર્તાઓ દ્વારા બદલવામાં આવેલા સેટિંગ સિંક કરવામાં આવશે નહીં. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">સર્વર પ્રમાણપત્ર આયાત કરવામાં ભૂલ</translation>
 <translation id="2187906491731510095">એક્સ્ટેંશન અપડેટ કર્યા</translation>
@@ -1826,6 +1829,7 @@
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> વિક્રેતાનું અજાણ્યું ઉત્પાદન <ph name="PRODUCT_ID" /></translation>
 <translation id="3163254451837720982">નીચે જણાવેલી સેવાઓ તમારા ડેટાને સલામત અને સુરક્ષિત રાખવામાં સહાય કરે છે. તમે કોઈપણ સમયે આ સુવિધાઓ બંધ કરી શકો છો.</translation>
 <translation id="3164329792803560526">આ ટૅબને <ph name="APP_NAME" />માં શેર કરી રહ્યાં છીએ</translation>
+<translation id="3165371858310906303">જ્યારે સાઇટને જાણવું હોય કે તમે ક્યારે હાજર છો ત્યારે પૂછો</translation>
 <translation id="3165390001037658081">કેટલાક કૅરિઅર આ સુવિધાને અવરોધિત કરી શકે છે.</translation>
 <translation id="316652501498554287">G Suite for Education એકાઉન્ટ</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2624,7 +2628,6 @@
 <translation id="4095507791297118304">પ્રાથમિક ડિસ્પ્લે</translation>
 <translation id="409579654357498729">ક્લાઉડ પ્રિન્ટ પર ઉમેરો</translation>
 <translation id="4096508467498758490">ડેવલપર મોડ એક્સ્ટેન્શન બંધ કરો</translation>
-<translation id="4096824249111507322">સુરક્ષિત મોડ્યુલ તૈયાર કરવામાં આવી રહ્યું છે, કૃપા કરીને રાહ જુઓ (તેમાં થોડીક મિનિટ લાગી શકે છે)…</translation>
 <translation id="4097406557126260163">ઍપ અને એક્સ્ટેંશન</translation>
 <translation id="4097560579602855702">Google પર શોધો</translation>
 <translation id="4098667039111970300">ટૂલબારમાં સ્ટાયલસના સાધનો</translation>
@@ -2943,6 +2946,7 @@
 <translation id="4527186207340858212">ઑફિસ માટે નવી પ્રોફાઇલ બનાવવી છે?</translation>
 <translation id="452750746583162491">તમારા સિંક કરેલા ડેટાનો રિવ્યૂ કરો</translation>
 <translation id="4530494379350999373">મૂળ</translation>
+<translation id="4531924570968473143">આ <ph name="DEVICE_TYPE" /> પર કોને ઉમેરવાનું પસંદ કરશો?</translation>
 <translation id="4532646538815530781">આ સાઇટ મોશન સેન્સરનો ઉપયોગ કરી રહી છે.</translation>
 <translation id="4533846798469727141">હવે "હે Google" કહો</translation>
 <translation id="4533985347672295764">CPU સમય</translation>
@@ -3353,7 +3357,6 @@
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">તમે પસંદ કરેલી ભાષાઓ માટે જોડણીતપાસ સમર્થિત નથી</translation>
 <translation id="5052499409147950210">સાઇટમાં ફેરફાર કરો</translation>
-<translation id="5053604404986157245">રેન્ડમલી બનાવેલ TPM પાસવર્ડ ઉપલબ્ધ નથી. Powerwash પછી આ સામાન્ય હોય છે.</translation>
 <translation id="5057110919553308744">તમે એક્સ્ટેંશનને ક્લિક કરો ત્યારે</translation>
 <translation id="5057403786441168405">તમારા સાઇન ઇન કરેલા એકાઉન્ટ મેનેજ કરો. Chrome અને Google Playમાં રહેલી વેબસાઇટ, ઍપ અને એક્સ્ટેંશન, પરવાનગીઓના આધારે આ એકાઉન્ટનો ઉપયોગ તમારા અનુભવને ક્સ્ટમાઇઝ કરવા માટે કરી શકે છે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">સાઇન ઇન કરવાનું પ્રતિબંધિત કરો</translation>
@@ -3945,7 +3948,6 @@
 <translation id="5774295353725270860">ફાઇલ્સ ઍપ્લિકેશન ખોલો</translation>
 <translation id="577624874850706961">કૂકીઝ શોધો</translation>
 <translation id="5777468213129569553">Chrome ખોલો</translation>
-<translation id="5778747455497889540">નીચે રૅન્ડમલી બનાવવામાં આવેલ સુરક્ષિત મોડ્યુલ પાસવર્ડ છે, જે તમારા કમ્પ્યુટરને આપવામાં આવ્યો છે:</translation>
 <translation id="5780011244986845107">તમે પસંદ કરેલું ફોલ્ડર સંવેદનશીલ ફાઇલો ધરાવે છે. શું તમે ખરેખર "<ph name="APP_NAME" />"ને આ ફોલ્ડરની કાયમી વાંચવાનો ઍક્સેસ આપવા માંગો છો?</translation>
 <translation id="5780973441651030252">પ્રાધાન્યતા પર પ્રક્રિયા કરો</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> તરીકે સિંક કરો</translation>
@@ -3975,6 +3977,7 @@
 <translation id="5804241973901381774">પરવાનગીઓ</translation>
 <translation id="5805697420284793859">વિન્ડો મેનેજર</translation>
 <translation id="5806773519584576205">0° (ડિફૉલ્ટ)</translation>
+<translation id="5808664694611589238">{0,plural, =1{અતિથિ વિંડો બંધ કરો}one{અતિથિ વિંડો બંધ કરો}other{અતિથિ વિંડો બંધ કરો}}</translation>
 <translation id="5810809306422959727">આ એકાઉન્ટ માતાપિતાના યોગ્ય નિયંત્રણો માટે યોગ્યતા ધરાવતું નથી</translation>
 <translation id="5812674658566766066">વધુ જુઓ</translation>
 <translation id="5814126672212206791">કનેક્શનનો પ્રકાર</translation>
@@ -4433,6 +4436,7 @@ USB ડિવાઇસ</translation>
 <translation id="6344170822609224263">નેટવર્ક કનેક્શન્સની ઍક્સેસ સૂચિ</translation>
 <translation id="6344576354370880196">સાચવેલા પ્રિન્ટર</translation>
 <translation id="6345418402353744910"><ph name="PROXY" /> પ્રૉક્સી માટે તમારું વપરાશકર્તાનું નામ અને પાસવર્ડ આવશ્યક છે, જેથી વ્યવસ્થાપક તમારા નેટવર્કની ગોઠવણી કરી શકે</translation>
+<translation id="6345878117466430440">વાંચેલાં તરીકે માર્ક કરો</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ઇન્સ્ટૉલ કરો</translation>
 <translation id="6349170655202535379">સિંક કામ કરી રહ્યું નથી. સાઇન આઉટ કરીને ફરી પાછા સાઇન ઇન કરવાનો પ્રયાસ કરો.</translation>
 <translation id="6351063337294363751">તમે આ મેનૂમાંથી તમારો બ્રાઉઝિંગ ડેટા સાફ કરી શકો છો</translation>
@@ -4653,7 +4657,6 @@ USB ડિવાઇસ</translation>
 <translation id="6635956300022133031">ટેક્સ્ટ ટૂ સ્પીચ વૉઇસ પસંદ કરો અને કસ્ટમાઇઝ કરો</translation>
 <translation id="6636588250634969791">આગળ વધતા પહેલાં સિમ કાર્ડ દાખલ કરો</translation>
 <translation id="6639554308659482635">SQLite મેમરી</translation>
-<translation id="6641138807883536517">રૅન્ડમલી બનાવવામાં આવેલો સુરક્ષિત મોડ્યુલ પાસવર્ડ ઉપલબ્ધ નથી. પાવરવૉશ પછી આમ થવું સામાન્ય છે.</translation>
 <translation id="6642720633335369752">ખુલ્લી ઍપની બધી વિંડો જોવા માટે, નીચેથી ઉપરની તરફ સ્વાઇપ કરીને હોલ્ડ કરો.</translation>
 <translation id="664290675870910564">નેટવર્કની પસંદગી</translation>
 <translation id="6643016212128521049">સાફ કરો</translation>
@@ -4981,7 +4984,6 @@ USB ડિવાઇસ</translation>
 <translation id="7029307918966275733">Crostini ઇન્સ્ટૉલ કરેલી નથી. કૃપા કરીને ક્રેડિટ જોવા માટે Crostini ઇન્સ્ટૉલ કરો.</translation>
 <translation id="7029809446516969842">પાસવર્ડ્સ</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - સિરીઅલ પોર્ટ કનેક્ટ કર્યું</translation>
-<translation id="7031962166228839643">TPM બનાવાઈ રહી છે, કૃપા કરીને રાહ જુઓ (આમાં થોડીવાર લાગી શકે છે)...</translation>
 <translation id="7036706669646341689">Linux માટે <ph name="DISK_SIZE" /> સ્પેસનો સુઝાવ આપ્યો છે. ખાસી સ્પેસ વધારવા માટે, તમારા ડિવાઇસમાંથી ફાઇલો ડિલીટ કરો.</translation>
 <translation id="7037509989619051237">ટેક્સ્ટ ટૂ સ્પીચના પ્રીવ્યૂ માટે</translation>
 <translation id="7038632520572155338">સ્વિચ ઍક્સેસ</translation>
@@ -5175,6 +5177,7 @@ USB ડિવાઇસ</translation>
 <translation id="7280649757394340890">ટેક્સ્ટ-ટૂ-સ્પીચ વૉઇસ સેટિંગ</translation>
 <translation id="7280877790564589615">પરવાનગીની વિનંતી કરી</translation>
 <translation id="7282992757463864530">માહિતી બાર</translation>
+<translation id="7284411326658527427">દરેક વ્યક્તિ તેમનું એકાઉન્ટ મનગમતું બનાવી શકે છે અને ડેટા ખાનગી રાખી શકે છે.</translation>
 <translation id="7287143125007575591">ઍક્સેસ નિષેધ.</translation>
 <translation id="7287411021188441799">ડિફૉલ્ટ બૅકગ્રાઉન્ડ પાછું મેળવો</translation>
 <translation id="7288013116963835700"><ph name="DEVICE_TYPE" /> માટે Linux કાઢી નાખો</translation>
@@ -5750,6 +5753,7 @@ USB ડિવાઇસ</translation>
 <translation id="7963826112438303517">તમારા આસિસ્ટંટ, તમારું વૉઇસ મૉડલ બનાવવા તથા અપડેટ કરવા માટે આ રેકોર્ડિંગનો તથા તમારી બોલાયેલી વિનંતીઓનો ઉપયોગ કરે છે, જેનો સંગ્રહ તમે જેમાં Voice Match ચાલુ કર્યું છે તે જ ડિવાઇસમાં કરવામાં આવે છે. આસિસ્ટંટના સેટિંગમાં વૉઇસ પ્રવૃત્તિ જુઓ અથવા ફરી તાલીમ આપો.</translation>
 <translation id="7966241909927244760">છબી સરનામું કૉ&amp;પિ કરો</translation>
 <translation id="7968072247663421402">પ્રદાતાના વિકલ્પો</translation>
+<translation id="7968198493605442410">લિંકને ટેક્સ્ટ પર કૉપિ કરો</translation>
 <translation id="7968742106503422125">તમે કૉપિ અને પેસ્ટ કરો છો તે ડેટા વાંચો અને તેને સંશોધિત કરો</translation>
 <translation id="7968833647796919681">પ્રદર્શન ડેટા સંગ્રહ ચાલુ કરો</translation>
 <translation id="7968982339740310781">વિગતો જુઓ</translation>
@@ -5963,7 +5967,6 @@ USB ડિવાઇસ</translation>
 <translation id="8226222018808695353">પ્રતિબંધિત</translation>
 <translation id="8226619461731305576">કતારમાં</translation>
 <translation id="8226628635270268143">તમારા મનગમતા ફોટા અને આલ્બમ પસંદ કરો</translation>
-<translation id="8226742006292257240">નીચે રેંડમલી બનાવેલો TPM પાસવર્ડ છે જે તમારા કમ્પ્યુટરને અસાઇન કરવામાં આવ્યો છે:</translation>
 <translation id="8227119283605456246">ફાઇલ જોડો</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> માટેનો પાસવર્ડ સાચવીએ?</translation>
 <translation id="8230672074305416752">ડિફૉલ્ટ નેટવર્ક ગેટવેને પિંગ કરવામાં નિષ્ફળ રહ્યાં</translation>

@@ -16,6 +16,7 @@
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> on lisatud</translation>
 <translation id="1383876407941801731">Otsi</translation>
 <translation id="1384959399684842514">Allalaadimine peatatud</translation>
+<translation id="1431402976894535801">Keela saitidel selle tuvastamine, millal saiti aktiivselt kasutan</translation>
 <translation id="1446450296470737166">MIDI-seadm. täieliku juht. lub.</translation>
 <translation id="1509960214886564027">Paljude saitide funktsioonid ei pruugi töötada</translation>
 <translation id="1620510694547887537">Kaamera</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">Ava installimata avatav rakendus</translation>
 <translation id="2148716181193084225">Täna</translation>
 <translation id="2182457891543959921">Küsi enne saitidele loa andmist mind ümbritsevast 3D-kaardi loomiseks või kaamera asendi jälgimiseks (soovitatav)</translation>
+<translation id="2187243482123994665">Kasutaja kohalolek</translation>
 <translation id="2212565012507486665">Luba küpsisefailid</translation>
 <translation id="2228071138934252756">Selleks et anda rakendusele <ph name="APP_NAME" /> juurdepääs teie kaamerale, lülitage kaamera sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="2289270750774289114">Küsi, kui sait soovib läheduses asuvaid Bluetoothi seadmeid tuvastada (soovitatav)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">Videopleier</translation>
 <translation id="3115898365077584848">Kuva teave</translation>
 <translation id="3123473560110926937">Blokeeritud teatud saitidel</translation>
+<translation id="3165371858310906303">Küsi, kui sait soovib teada, millal seda aktiivselt kasutan</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> salvestatud andmeid</translation>
 <translation id="321187648315454507">Selleks et lubada rakendusel <ph name="APP_NAME" /> teile märguandeid saata, lülitage märguanded sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -133,6 +136,7 @@
 <translation id="5197729504361054390">Teie valitud kontakte jagatakse saidiga <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Kuva</translation>
 <translation id="5301954838959518834">Selge, sain aru</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" /></translation>
 <translation id="5313967007315987356">Lisa sait</translation>
 <translation id="5317780077021120954">Salvesta</translation>
 <translation id="5335288049665977812">Luba saitidel käitada JavaScripti (soovitatav)</translation>
@@ -144,6 +148,7 @@
 <translation id="5403592356182871684">Nimed</translation>
 <translation id="5489227211564503167">Kulunud aeg: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokeeri reklaamid saitidel, mis kuvavad sekkuvaid või eksitavaid reklaame</translation>
+<translation id="5502860503640766021"><ph name="PERMISSION_1" /> on lubatud, <ph name="PERMISSION_2" /> on keelatud</translation>
 <translation id="5505264765875738116">Saidid ei saa küsida luba märguannete saatmiseks</translation>
 <translation id="5516455585884385570">Ava märguandeseaded</translation>
 <translation id="5527111080432883924">Küsi luba, kui sait soovib lugeda lõikelaual olevat teksti ja pilte (soovitatav)</translation>
@@ -155,12 +160,15 @@
 <translation id="5690795753582697420">Kaamera on Androidi seadetes välja lülitatud</translation>
 <translation id="5710871682236653961">Küsitakse, enne kui lubatakse saitide jaoks teabe saatmine ja saamine, kui puudutate NFC-seadmeid (soovitatav)</translation>
 <translation id="5719847187258001597">See kustutab saidi <ph name="ORIGIN" /> või selle rakenduse salvestatud kõik andmed ja küpsisefailid teie avakuvalt.</translation>
+<translation id="5771720122942595109"><ph name="PERMISSION_1" /> on keelatud</translation>
 <translation id="5804241973901381774">Load</translation>
 <translation id="5860033963881614850">Väljas</translation>
+<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" /> on lubatud</translation>
 <translation id="5876056640971328065">Video peatamine</translation>
 <translation id="5916664084637901428">Sees</translation>
 <translation id="5922853908706496913">Ekraanikuva jagamine</translation>
 <translation id="5939518447894949180">Lähtesta</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Selle saidi juurdepääsu muutmine teie seadmele</translation>
 <translation id="6040143037577758943">Sulge</translation>
 <translation id="6042308850641462728">Rohkem</translation>
@@ -172,6 +180,7 @@
 <translation id="6196640612572343990">Blokeeri kolmanda osapoole küpsisefailid</translation>
 <translation id="6206551242102657620">Ühendus on turvaline. Saidi teave</translation>
 <translation id="6216432067784365534">Üksuse <ph name="NAME_OF_LIST_ITEM" /> valikud</translation>
+<translation id="6262279340360821358"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> on keelatud</translation>
 <translation id="6270391203985052864">Saidid saavad küsida luba märguannete saatmiseks</translation>
 <translation id="6295158916970320988">Kõik saidid</translation>
 <translation id="6320088164292336938">Vibreerimine</translation>
@@ -194,6 +203,7 @@
 <translation id="6790428901817661496">Esita</translation>
 <translation id="6818926723028410516">Valige üksused</translation>
 <translation id="6864395892908308021">See seade ei saa NFC andmeid lugeda</translation>
+<translation id="6879016579615558281"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" /> on keelatud</translation>
 <translation id="6910211073230771657">Kustutatud</translation>
 <translation id="6912998170423641340">Keela saitidel lugeda lõikelaual olevat teksti ja pilte</translation>
 <translation id="6945221475159498467">Vali</translation>
@@ -211,6 +221,7 @@
 <translation id="723171743924126238">Kujutiste valimine</translation>
 <translation id="7243308994586599757">Valikud on saadaval ekraani allosas</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> on valitud</translation>
+<translation id="7260727271532453612"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> on lubatud</translation>
 <translation id="7302486331832100261">Tavaliselt blokeerite märguanded. Lubamiseks puudutage valikut Üksikasjad.</translation>
 <translation id="7423098979219808738">Esmalt küsib</translation>
 <translation id="7423538860840206698">Lõikelaua lugemine on blokeeritud</translation>
@@ -242,6 +253,7 @@
 <translation id="8087000398470557479">See sisu pärineb domeenilt <ph name="DOMAIN_NAME" /> ja seda pakub Google.</translation>
 <translation id="8116925261070264013">Vaigistatud</translation>
 <translation id="8131740175452115882">Kinnita</translation>
+<translation id="8197286292360124385"><ph name="PERMISSION_1" /> on lubatud</translation>
 <translation id="8200772114523450471">Taasta</translation>
 <translation id="8206354486702514201">Selle seade jõustas teie administraator.</translation>
 <translation id="8249310407154411074">Teisalda kõige üles</translation>

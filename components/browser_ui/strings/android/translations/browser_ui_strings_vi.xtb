@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Đã thêm trang web <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">Tìm kiếm</translation>
 <translation id="1384959399684842514">Đã tạm dừng quá trình tải xuống</translation>
+<translation id="1431402976894535801">Chặn không cho các trang web biết trạng thái hoạt động của bạn</translation>
 <translation id="1446450296470737166">Cho phép kiểm soát hoàn toàn thiết bị MIDI</translation>
 <translation id="1509960214886564027">Các tính năng trên nhiều trang web có thể hoạt động không đúng cách</translation>
 <translation id="1620510694547887537">Máy ảnh</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">Mở ứng dụng tức thì</translation>
 <translation id="2148716181193084225">Hôm nay</translation>
 <translation id="2182457891543959921">Hỏi trước khi cho phép các trang web tạo bản đồ 3D về các khu vực xung quanh bạn hoặc theo dõi thông tin vị trí của máy ảnh (khuyên dùng)</translation>
+<translation id="2187243482123994665">Hoạt động của người dùng</translation>
 <translation id="2212565012507486665">Cho phép cookie</translation>
 <translation id="2228071138934252756">Để cho phép <ph name="APP_NAME" /> truy cập vào máy ảnh của bạn, hãy bật cả máy ảnh trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="2289270750774289114">Hỏi khi một trang web muốn tìm các thiết bị Bluetooth ở gần (khuyên dùng)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">Trình phát video</translation>
 <translation id="3115898365077584848">Hiển thị thông tin</translation>
 <translation id="3123473560110926937">Đã chặn trên một số trang web</translation>
+<translation id="3165371858310906303">Hỏi khi có một trang web muốn biết trạng thái hoạt động của bạn</translation>
 <translation id="3198916472715691905">Dữ liệu đã lưu trữ: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">Để cho phép <ph name="APP_NAME" /> gửi thông báo cho bạn, hãy bật cả thông báo trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Micrô</translation>
@@ -133,6 +136,7 @@
 <translation id="5197729504361054390">Những người liên hệ bạn chọn sẽ được chia sẻ với <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Hiển thị</translation>
 <translation id="5301954838959518834">Ok</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác</translation>
 <translation id="5313967007315987356">Thêm trang web</translation>
 <translation id="5317780077021120954">Lưu</translation>
 <translation id="5335288049665977812">Cho phép các trang web chạy JavaScript (được đề xuất)</translation>
@@ -144,6 +148,7 @@
 <translation id="5403592356182871684">Tên</translation>
 <translation id="5489227211564503167">Thời gian đã trôi qua: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Chặn quảng cáo trên các trang web hiển thị quảng cáo xâm nhập hoặc quảng cáo gây hiểu nhầm</translation>
+<translation id="5502860503640766021">Đã cho phép <ph name="PERMISSION_1" />, đã chặn <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Các trang web không thể xin phép gửi thông báo</translation>
 <translation id="5516455585884385570">Mở mục cài đặt thông báo</translation>
 <translation id="5527111080432883924">Hỏi trước khi cho phép các trang web đọc văn bản và hình ảnh từ khay nhớ tạm (khuyên dùng)</translation>
@@ -155,12 +160,15 @@
 <translation id="5690795753582697420">Bạn đã tắt máy ảnh trong phần cài đặt của Android</translation>
 <translation id="5710871682236653961">Hỏi ý bạn trước khi cho phép các trang web gửi và nhận thông tin khi bạn nhấn vào tùy chọn thiết bị dùng công nghệ giao tiếp tầm gần (NFC) (khuyên dùng)</translation>
 <translation id="5719847187258001597">Thao tác này sẽ xóa toàn bộ dữ liệu và cookie lưu trữ trong <ph name="ORIGIN" /> hoặc ứng dụng liên quan trên Màn hình chính.</translation>
+<translation id="5771720122942595109">Đã chặn <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="5860033963881614850">Tắt</translation>
+<translation id="5863245810240683687">Đã cho phép <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác</translation>
 <translation id="5876056640971328065">Tạm dừng video</translation>
 <translation id="5916664084637901428">Bật</translation>
 <translation id="5922853908706496913">Đang chia sẻ màn hình của bạn</translation>
 <translation id="5939518447894949180">Đặt lại</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Kiểm soát quyền truy cập của trang web này vào thiết bị của bạn</translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6042308850641462728">Xem thêm</translation>
@@ -172,6 +180,7 @@
 <translation id="6196640612572343990">Chặn cookie của bên thứ ba</translation>
 <translation id="6206551242102657620">Kết nối an toàn. Thông tin trang web</translation>
 <translation id="6216432067784365534">Tùy chọn <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6262279340360821358">Đã chặn <ph name="PERMISSION_1" /> và <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Các trang web có thể xin phép gửi thông báo</translation>
 <translation id="6295158916970320988">Tất cả các trang web</translation>
 <translation id="6320088164292336938">Rung</translation>
@@ -194,6 +203,7 @@
 <translation id="6790428901817661496">Phát</translation>
 <translation id="6818926723028410516">Chọn mục</translation>
 <translation id="6864395892908308021">Thiết bị này không hỗ trợ công nghệ Giao tiếp phạm vi gần (NFC)</translation>
+<translation id="6879016579615558281">Đã chặn <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác</translation>
 <translation id="6910211073230771657">Đã xóa</translation>
 <translation id="6912998170423641340">Chặn trang web đọc văn bản và hình ảnh từ khay nhớ tạm</translation>
 <translation id="6945221475159498467">Chọn</translation>
@@ -211,6 +221,7 @@
 <translation id="723171743924126238">Chọn hình ảnh</translation>
 <translation id="7243308994586599757">Có các tùy chọn ở gần cuối màn hình</translation>
 <translation id="7250468141469952378">Đã chọn <ph name="ITEM_COUNT" /></translation>
+<translation id="7260727271532453612">Đã cho phép <ph name="PERMISSION_1" /> và <ph name="PERMISSION_2" /></translation>
 <translation id="7302486331832100261">Bạn thường chặn các thông báo. Để cho phép, hãy nhấn vào Chi tiết.</translation>
 <translation id="7423098979219808738">Hỏi trước</translation>
 <translation id="7423538860840206698">Đã chặn quyền đọc khay nhớ tạm</translation>
@@ -242,6 +253,7 @@
 <translation id="8087000398470557479">Nội dung này đến từ <ph name="DOMAIN_NAME" />, do Google phân phối.</translation>
 <translation id="8116925261070264013">Đã ẩn</translation>
 <translation id="8131740175452115882">Xác nhận</translation>
+<translation id="8197286292360124385">Đã cho phép <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Tiếp tục</translation>
 <translation id="8206354486702514201">Cài đặt này được quản trị viên của bạn thực thi.</translation>
 <translation id="8249310407154411074">Chuyển lên trên cùng</translation>

@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Kết nối lại với Wi-Fi</translation>
 <translation id="1165039591588034296">Lỗi</translation>
 <translation id="1165174597379888365">Trang đã truy cập</translation>
+<translation id="1174723505405632867">Bạn có muốn cho phép <ph name="EMBEDDED_URL" /> sử dụng cookie và dữ liệu trang web trên <ph name="TOP_LEVEL_URL" /> không?
+
+Nếu bạn từ chối, các tùy chọn cài đặt quyền riêng tư của bạn sẽ chặn không cho trang web này truy cập. Nếu bạn cho phép, nội dung bạn đã tương tác sẽ hoạt động đúng cách, nhưng <ph name="EMBEDDED_URL" /> có thể theo dõi hoạt động của bạn.</translation>
 <translation id="1175364870820465910">&amp;In...</translation>
 <translation id="1175875016430184367">Dập 3 ghim bên phải</translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Chính sách</translation>
 <translation id="2183608646556468874">Số điện thoại</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 địa chỉ}other{# địa chỉ}}</translation>
+<translation id="2187243482123994665">Hoạt động của người dùng</translation>
 <translation id="2187317261103489799">Phát hiện (mặc định)</translation>
 <translation id="2188375229972301266">Đục nhiều lỗ dưới cùng</translation>
 <translation id="2202020181578195191">Nhập năm hết hạn hợp lệ</translation>
@@ -533,6 +537,7 @@
       đảm bảo rằng máy chủ proxy đang hoạt động. Nếu bạn cho rằng mình không cần
       sử dụng máy chủ proxy:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> muốn biết trạng thái hoạt động của bạn</translation>
 <translation id="3188393374551744535">Số dư tài khoản</translation>
 <translation id="3194737229810486521"><ph name="URL" /> muốn lưu trữ vĩnh viễn dữ liệu trên thiết bị của bạn</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> trên <ph name="SERVER_NAME" /></translation>
@@ -1025,6 +1030,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Máy</translation>
 <translation id="5179510805599951267">Không ở <ph name="ORIGINAL_LANGUAGE" />? Báo cáo lỗi này</translation>
+<translation id="5179740473595559246">Biết trạng thái hoạt động của bạn</translation>
 <translation id="5190835502935405962">Thanh Dấu trang</translation>
 <translation id="519422657042045905">Không có chú thích</translation>
 <translation id="5201306358585911203">Một trang được nhúng trên trang này cho biết</translation>
@@ -1247,6 +1253,7 @@
 <translation id="6049488691372270142">Phân phối trang</translation>
 <translation id="6051221802930200923">Bạn không thể truy cập vào <ph name="SITE" /> ngay bây giờ do trang web sử dụng tính năng ghim chứng chỉ. Lỗi mạng và các cuộc tấn công mạng thường chỉ là tạm thời nên trang này có thể sẽ hoạt động lại sau.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Chia sẻ trạng thái hoạt động của bạn?</translation>
 <translation id="6058977677006700226">Bạn muốn sử dụng thẻ trên tất cả thiết bị?</translation>
 <translation id="6059925163896151826">Thiết bị USB</translation>
 <translation id="6060009363608157444">Chế độ DnsOverHttps không hợp lệ.</translation>
@@ -1376,6 +1383,7 @@
 <translation id="6631202559048444592">Chính sách này hiện có nhiều nguồn nhưng các giá trị giống nhau.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Xóa</translation>
+<translation id="6645291930348198241">Truy cập vào cookie và dữ liệu trang web.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Không có}=1{Của 1 trang web (bạn sẽ không bị đăng xuất khỏi Tài khoản Google của mình)}other{Của # trang web (bạn sẽ không bị đăng xuất khỏi Tài khoản Google của mình)}}</translation>
 <translation id="6648459603387803038">Quản trị viên có thể thay đổi quy trình thiết lập trình duyệt của bạn từ xa. Hoạt động trên thiết bị này cũng có thể được quản lý bên ngoài Chrome.</translation>
 <translation id="6652101503459149953">Sử dụng Windows Hello</translation>

@@ -1789,7 +1789,6 @@
 <translation id="3631099945620529777">如果設為 False，工作管理員中的「結束處理程序」按鈕隨即會停用。
 
       如果設為 True 或不設定，使用者將可以在工作管理員中結束處理程序。</translation>
-<translation id="3639444551396586995">允許 Chrome 向 Google 回報不安全的事件</translation>
 <translation id="3643284063603988867">啟用「記住密碼」功能</translation>
 <translation id="3646859102161347133">設定螢幕放大鏡類型</translation>
 <translation id="3647212518036289905">你可以透過這項政策指定要用於 HTTP 驗證的 GSSAPI 程式庫。請將這項政策設為程式庫名稱或完整路徑。
@@ -2009,9 +2008,6 @@
 <translation id="3942041691320538491">如果將這項政策設為 0 (預設值)，你將可存取開發人員工具和 JavaScript 控制台，但無法在由企業政策安裝的擴充功能中進行存取。如果將這項政策設為 1，你將可在所有情況下存取開發人員工具和 JavaScript 控制台，在由企業政策安裝的擴充功能中也能進行存取。如果將這項政策設為 2，你將無法存取開發人員工具，也無法檢查網站元素。
 
       此外，用來開啟開發人員工具或 JavaScript 控制台的鍵盤快速鍵、選單項目或內容選單項目也會停用。</translation>
-<translation id="3942080695743860553">你可以透過這項政策控管在替代瀏覽器中開啟網址時，系統所使用的指令。你可以將這項政策設為 <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />、<ph name="FIREFOX_VALUE_PLACEHOLDER" />、<ph name="SAFARI_VALUE_PLACEHOLDER" />、<ph name="OPERA_VALUE_PLACEHOLDER" /> 或檔案路徑的其中一項。如果將這項政策設為檔案路徑，系統會將該檔案做為執行檔使用。<ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> 只適用於 <ph name="MS_WIN_NAME" />，而 <ph name="SAFARI_VALUE_PLACEHOLDER" /> 只適用於 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" />。
-
-      如果不設定這項政策，系統會使用平台專屬的預設值：<ph name="MS_WIN_NAME" /> 使用 <ph name="IE_PRODUCT_NAME" />、<ph name="MAC_OS_NAME" /> 使用 <ph name="SAFARI_PRODUCT_NAME" />。<ph name="LINUX_OS_NAME" /> 將無法啟動替代瀏覽器。</translation>
 <translation id="3950110092991281616">僅在一般工作階段中啟用背景驗證功能。</translation>
 <translation id="3950239119790560549">更新時間限制</translation>
 <translation id="3956686688560604829">使用 Internet Explorer 的 SiteList 政策取得舊版瀏覽器支援。</translation>
@@ -2572,10 +2568,6 @@
 <translation id="4874982543810021567">在這些網站上封鎖 WebUSB</translation>
 <translation id="4876805738539874299">已啟用 SSL 最高版本</translation>
 <translation id="4887274746092315609">為 SAML 使用者啟用可在工作階段中變更密碼的頁面</translation>
-<translation id="4887863670424903990">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 會向 Google 回報不安全的事件以進行分析，例如重複使用密碼、下載惡意程式、插頁式廣告、違反機密資料保護規則等等。有些不安全事件 (例如違反機密資料保護規則) 和啟用這類檢查的其他政策有關。
-
-      如果不設定這項政策或設為停用，<ph name="PRODUCT_NAME" /> 將不會回報不安全的事件。
-      </translation>
 <translation id="4894290482695457375">除非 <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> 已設為停用，否則將 <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> 設為啟用會將 <ph name="PRODUCT_NAME" /> 連線至所有 IP 位址上的 Cast 裝置，而不是只有 RFC1918/RFC4193 私人位址上的 Cast 裝置。
 
       如果將這項政策設為停用，系統只會將 <ph name="PRODUCT_NAME" /> 連線至 RFC1918/RFC4193 上的 Cast 裝置。
@@ -3571,6 +3563,11 @@
 
           如果不設定這項政策，<ph name="PRODUCT_NAME" /> 會載入所有已安裝的內建訊息傳遞主機。</translation>
 <translation id="6224304369267200483">自動允許直接安全金鑰認證的網址/網域</translation>
+<translation id="6230442621691161858">這項功能會啟用探索新內容的建議項目，包括應用程式和網頁等等。
+      如果將這項政策設為 True，系統會啟用探索新內容的建議項目。
+      如果將這項政策設為 False，系統會停用探索新內容的建議項目。
+      如果不設定這項政策，系統會針對受管理的使用者停用探索新內容的建議項目，並且為其他使用者啟用這項設定。
+      </translation>
 <translation id="6233173491898450179">設定下載目錄</translation>
 <translation id="6234177445959386333">設定企業登入網址清單，密碼保護服務會從這些網址擷取密碼的加料式雜湊值。</translation>
 <translation id="6242147107333796512">回報與當機報告相關的資訊，例如遠端 ID、擷取時間戳記和原因。
@@ -3795,7 +3792,6 @@
       如果啟用這項設定，<ph name="PRODUCT_NAME" /> 一律不會使用清單中指定的外掛程式，並且會在「about:plugins」中將這些外掛程式標示為已停用，使用者將無法予以啟用。請注意，EnabledPlugins 和 DisabledPluginsExceptions 可覆寫這項政策。
 
       如果不設定這項政策，使用者可以使用系統上安裝的任何外掛程式 (不含與硬式編碼不相容、過舊或危險的外掛程式)。</translation>
-<translation id="6571871508154591774">設定要停用的攝影機、瀏覽器設定和 OS 設定功能</translation>
 <translation id="6573305661369899995">設定外部網址來源限制</translation>
 <translation id="6575944031719151455">你可以透過這項政策指定裝置本機帳戶清單，系統會在登入畫面上顯示這些帳戶。可透過 ID 來分辨不同的裝置本機帳戶。
 
@@ -4891,11 +4887,6 @@
       如果是 <ph name="PRODUCT_OS_NAME" />，這項政策會一律生效。</translation>
 <translation id="8050080920415773384">原生列印</translation>
 <translation id="8053580360728293758">覆寫預設列印色彩模式。如果設定的模式不適用，系統會忽略這項政策。</translation>
-<translation id="8057841287222359526">這項政策可讓你設定要停用的 <ph name="PRODUCT_OS_NAME" />功能清單。
-
-      停用清單上的任何一項功能後，使用者將無法在使用者介面上存取這項功能，且畫面上會顯示為「已由管理員停用」。
-
-      如果不設定這項政策，系統在預設狀態下會啟用所有 <ph name="PRODUCT_OS_NAME" />功能，且使用者皆可存取。</translation>
 <translation id="8059164285174960932">遠端存取用戶端取得驗證憑證的來源網址</translation>
 <translation id="8077245272412229388">新增預先填寫的 Kerberos 帳戶。如果 Kerberos 憑證與登入憑證相符，只要將主體與密碼分別指定為「<ph name="LOGIN_EMAIL_PLACEHOLDER" />」和「<ph name="PASSWORD_PLACEHOLDER" />」，即可將帳戶設定為重複使用登入憑證。設定完成後，除非你為帳戶設定雙重驗證，否則系統會自動擷取 Kerberos 票證。使用者無法修改透過這項政策新增的帳戶。
 

@@ -1794,7 +1794,6 @@
 <translation id="3631099945620529777">如果设为 false，则任务管理器中的“结束进程”按钮会处于停用状态。
 
       如果设为 true 或未配置，则用户可以在任务管理器中结束进程。</translation>
-<translation id="3639444551396586995">允许 Chrome 向 Google 报告不安全事件</translation>
 <translation id="3643284063603988867">启用“记住密码”功能</translation>
 <translation id="3646859102161347133">设置放大镜类型</translation>
 <translation id="3647212518036289905">通过设置此政策，您可以指定要用于 HTTP 身份验证的 GSSAPI 库。您可以将此政策设为库名称或完整路径。
@@ -2015,9 +2014,6 @@
 <translation id="3942041691320538491">如果此政策设为 0（默认值），您可以访问开发者工具和 JavaScript 控制台，但无法在由企业政策安装的扩展程序中访问。如果此政策设为 1，无论在什么情境下（包括在由企业政策安装的扩展程序中），您都可以访问开发者工具和 JavaScript 控制台。如果此政策设为 2，您既无法访问开发者工具，也无法检查网站元素。
 
       此设置还可关闭用于打开开发者工具或 JavaScript 控制台的键盘快捷键及菜单（或上下文菜单）条目。</translation>
-<translation id="3942080695743860553">通过设置此政策，您可以控制应使用哪个命令在备用浏览器中打开网址。此政策可以设为下列任一值：<ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />、<ph name="FIREFOX_VALUE_PLACEHOLDER" />、<ph name="SAFARI_VALUE_PLACEHOLDER" />、<ph name="OPERA_VALUE_PLACEHOLDER" /> 或文件路径。如果此政策设为文件路径，系统会将相应文件用作可执行文件。<ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> 仅适用于 <ph name="MS_WIN_NAME" />，<ph name="SAFARI_VALUE_PLACEHOLDER" /> 仅适用于 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" />。
-
-      如果您不设置此政策，系统会使用相应的平台专用默认浏览器：在 <ph name="MS_WIN_NAME" /> 上使用 <ph name="IE_PRODUCT_NAME" />，在 <ph name="MAC_OS_NAME" /> 上使用 <ph name="SAFARI_PRODUCT_NAME" />。在 <ph name="LINUX_OS_NAME" /> 上，无法启动备用浏览器。</translation>
 <translation id="3950110092991281616">仅为常规会话启用静默身份验证。</translation>
 <translation id="3950239119790560549">更新时间限制</translation>
 <translation id="3956686688560604829">为旧版浏览器支持使用 Internet Explorer 的 SiteList 政策。</translation>
@@ -2575,10 +2571,6 @@
 <translation id="4874982543810021567">禁止这些网站使用 WebUSB</translation>
 <translation id="4876805738539874299">启用最高 SSL 版本</translation>
 <translation id="4887274746092315609">启用一个页面，以便 SAML 用户在会话期间更改密码</translation>
-<translation id="4887863670424903990">如果此政策设为“enabled”，<ph name="PRODUCT_NAME" /> 会向 Google 报告密码重用、恶意软件下载、插页式广告、违反敏感数据保护规则的行为等不安全事件，以供分析。至于是否报告某些不安全事件（例如违反敏感数据保护规则的行为），取决于启用此类检查的其他政策。
-
-      如果此政策设为“disabled”或未设置，<ph name="PRODUCT_NAME" /> 将不会报告不安全事件。
-      </translation>
 <translation id="4894290482695457375">除非 <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> 设为“已停用”，否则，如果 <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> 已启用，<ph name="PRODUCT_NAME" /> 将会连接到位于所有 IP 地址的投射设备，而不是只连接到位于 RFC1918/RFC4193 私有地址的投射设备。
 
       如果此政策已停用，<ph name="PRODUCT_NAME" /> 将会只连接到位于 RFC1918/RFC4193 的投射设备。
@@ -3566,6 +3558,11 @@
 
           如果此政策未设置，<ph name="PRODUCT_NAME" /> 将会加载所有已安装的本地消息传递主机。</translation>
 <translation id="6224304369267200483">自动允许直接安全密钥认证的网址/网域</translation>
+<translation id="6230442621691161858">如果您启用了此功能，系统便会显示建议的新内容以供探索，包括应用、网页等。
+      如果此政策设为 True，系统会启用“建议新内容以供探索”功能。
+      如果此政策设为 False，系统会停用“建议新内容以供探索”功能。
+      如果此政策未设置，系统会针对受管用户停用“建议新内容以供探索”功能，并针对其他用户启用该功能。
+      </translation>
 <translation id="6233173491898450179">设置下载目录</translation>
 <translation id="6234177445959386333">配置企业登录网址列表，以便密码保护服务从这些网址中捕获密码的加盐哈希值。</translation>
 <translation id="6242147107333796512">报告与崩溃报告相关的信息，例如远程 ID、捕获时间戳和原因。
@@ -3794,7 +3791,6 @@
       请注意，此政策可被 EnabledPlugins 和 DisabledPluginsExceptions 覆盖。
 
       如果未设置此政策，则用户可以使用系统中安装的任何插件，经过硬编码且不兼容、已过期或危险的插件除外。</translation>
-<translation id="6571871508154591774">配置要停用的摄像头、浏览器设置和操作系统设置功能</translation>
 <translation id="6573305661369899995">设置网址限制条件的外部来源</translation>
 <translation id="6575944031719151455">通过设置此政策，您可以指定将在登录屏幕中显示的设备本地帐号的列表。标识符会将不同的设备本地帐号区分开。
 
@@ -4893,11 +4889,6 @@
       对于 <ph name="PRODUCT_OS_NAME" />，此政策一直有效。</translation>
 <translation id="8050080920415773384">本机打印</translation>
 <translation id="8053580360728293758">替换默认打印颜色模式。如果这种模式不适用，则忽略此政策。</translation>
-<translation id="8057841287222359526">允许您以列表形式设置要停用的 <ph name="PRODUCT_OS_NAME" />功能。
-
-      如果停用了此列表中的任一功能，用户便无法从界面中使用该功能，而且该功能的状态会显示为“已被管理员停用”。
-
-      如果未设置此政策，则所有 <ph name="PRODUCT_OS_NAME" />功能都会默认处于启用状态，而且用户可以使用其中的任何功能。</translation>
 <translation id="8059164285174960932">远程访问客户端获取身份验证令牌的网址</translation>
 <translation id="8077245272412229388">添加预先填充的 Kerberos 帐号。如果 Kerberos 凭据与登录凭据相匹配，则可以将帐号配置为重复使用登录凭据，方法是针对主帐号和密码分别指定“<ph name="LOGIN_EMAIL_PLACEHOLDER" />”和“<ph name="PASSWORD_PLACEHOLDER" />”；这样一来，除非配置了双重身份验证，否则系统便可以自动检索 Kerberos 票据。用户无法修改通过此政策添加的帐号。
 

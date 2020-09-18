@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">સાઈટ <ph name="SITE_NAME" /> ઉમેરવામાં આવી</translation>
 <translation id="1383876407941801731">શોધો</translation>
 <translation id="1384959399684842514">ડાઉનલોડ થોભાવ્યું</translation>
+<translation id="1431402976894535801">તમે ક્યારે હાજર છો તે જાણવાથી સાઇટને બ્લૉક કરો</translation>
 <translation id="1446450296470737166">MIDI ઉપકરણોના પૂર્ણ નિયંત્રણની મંજૂરી આપો</translation>
 <translation id="1509960214886564027">ઘણી સાઇટ પરની સુવિધાઓને કદાચ બંધ કરવામાં આવી શકે</translation>
 <translation id="1620510694547887537">કૅમેરો</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">ઝટપટ ઍપ્લિકેશન ખોલો</translation>
 <translation id="2148716181193084225">આજે</translation>
 <translation id="2182457891543959921">કોઈ સાઇટને તમારી આજુબાજુનો 3D નકશો બનાવતા અથવા કૅમેરાની સ્થિતિને ટ્રૅક કરવાની મંજૂરી આપતા પહેલાં પૂછો (સુઝાવ આપીએ છીએ)</translation>
+<translation id="2187243482123994665">વપરાશકર્તાની હાજરી</translation>
 <translation id="2212565012507486665">કુકીને મંજૂરી આપો</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> તમારો કૅમેરા ઍક્સેસ કરી શકે તે માટે <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં પણ કૅમેરા ચાલુ કરો.</translation>
 <translation id="2289270750774289114">જ્યારે કોઈ સાઇટ નજીકના બ્લૂટૂથ ડિવાઇસને શોધવા માગે ત્યારે પૂછો (સુઝાવ આપેલ)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">વીડિયો પ્લેયર</translation>
 <translation id="3115898365077584848">માહિતી બતાવો</translation>
 <translation id="3123473560110926937">કેટલીક સાઇટ પર બ્લૉક કરેલ</translation>
+<translation id="3165371858310906303">જ્યારે સાઇટને જાણવું હોય કે તમે ક્યારે હાજર છો ત્યારે પૂછો</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> સંગ્રહિત ડેટા</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> તમને નોટિફિકેશન મોકલી શકે તે માટે <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં પણ નોટિફિકેશન ચાલુ કરો.</translation>
 <translation id="3227137524299004712">માઇક્રોફોન</translation>
@@ -133,6 +136,7 @@
 <translation id="5197729504361054390">તમે પસંદ કરશો તે સંપર્કોને <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> સાથે શેર કરવામાં આવશે.</translation>
 <translation id="5300589172476337783">બતાવો</translation>
 <translation id="5301954838959518834">બરાબર, સમજાઇ ગયું</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" /></translation>
 <translation id="5313967007315987356">સાઈટ ઉમેરો</translation>
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5335288049665977812">સાઇટ્સને JavaScript ચલાવાની મંજૂરી આપો (ભલામણ કરેલ)</translation>
@@ -144,6 +148,7 @@
 <translation id="5403592356182871684">નામ</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" />માંથી <ph name="ELAPSED_TIME" />નો સમય વીતી ગયો.</translation>
 <translation id="5494752089476963479">ઘૃણાસ્પદ અથવા ભ્રામક જાહેરાતો બતાવતી સાઇટ પરથી જાહેરાતો બ્લૉક કરો</translation>
+<translation id="5502860503640766021"><ph name="PERMISSION_1" />ને મંજૂરી આપી, <ph name="PERMISSION_2" />ને બ્લૉક કર્યો</translation>
 <translation id="5505264765875738116">સાઇટ તમને નોટિફિકેશન મોકલવા માટે પૂછી શકશે નહીં</translation>
 <translation id="5516455585884385570">નોટિફિકેશનના સેટિંગ ખોલો</translation>
 <translation id="5527111080432883924">સાઇટને ક્લિપબોર્ડ પરની ટેક્સ્ટ અને છબીઓને વાંચવાની મંજૂરી આપતાં પહેલાં પૂછો (સુઝાવ આપેલ)</translation>
@@ -155,12 +160,15 @@
 <translation id="5690795753582697420">Android સેટિંગમાંથી કૅમેરા બંધ કરવામાં આવ્યો છે</translation>
 <translation id="5710871682236653961">જ્યારે તમે NFC ડિવાઇસ પર ટૅપ કરો ત્યારે સાઇટને માહિતી મોકલવા અને પ્રાપ્ત કરવાની મંજૂરી આપતા પહેલાં પૂછો (સુઝાવ આપેલો છે)</translation>
 <translation id="5719847187258001597">આમ કરવાથી તમારી હોમ સ્ક્રીન પર <ph name="ORIGIN" /> અથવા તેની ઍપ દ્વારા સ્ટોર કરવામાં આવેલો બધો ડેટા અને કૂકી સાફ કરવામાં આવશે.</translation>
+<translation id="5771720122942595109"><ph name="PERMISSION_1" /> બ્લૉક કરી</translation>
 <translation id="5804241973901381774">પરવાનગીઓ</translation>
 <translation id="5860033963881614850">બંધ</translation>
+<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />ની મંજૂરી આપી</translation>
 <translation id="5876056640971328065">વીડિયો થોભાવો</translation>
 <translation id="5916664084637901428">ચાલુ</translation>
 <translation id="5922853908706496913">તમારી સ્ક્રીન શેર કરીએ છીએ</translation>
 <translation id="5939518447894949180">રીસેટ કરો</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">આ સાઇટના તમારા ડિવાઇસના ઍક્સેસનું નિયંત્રણ કરો</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="6042308850641462728">વધુ</translation>
@@ -172,6 +180,7 @@
 <translation id="6196640612572343990">તૃતીય પક્ષની કુકીઝ અવરોધિત કરો</translation>
 <translation id="6206551242102657620">કનેક્શન સુરક્ષિત છે. સાઇટની માહિતી</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />ના વિકલ્પો</translation>
+<translation id="6262279340360821358"><ph name="PERMISSION_1" /> અને <ph name="PERMISSION_2" />ને બ્લૉક કર્યા</translation>
 <translation id="6270391203985052864">સાઇટ તમને નોટિફિકેશન મોકલવા માટે પૂછી શકે છે</translation>
 <translation id="6295158916970320988">બધી સાઇટ્સ</translation>
 <translation id="6320088164292336938">વાઇબ્રેટ</translation>
@@ -194,6 +203,7 @@
 <translation id="6790428901817661496">ચલાવો</translation>
 <translation id="6818926723028410516">આઇટમ પસંદ કરો</translation>
 <translation id="6864395892908308021">આ ડિવાઇસ NFC વાંચી શકતું નથી</translation>
+<translation id="6879016579615558281"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" /> બ્લૉક કરી</translation>
 <translation id="6910211073230771657">કાઢી નાખ્યું</translation>
 <translation id="6912998170423641340">બધી સાઇટને ક્લિપબોર્ડ પરની ટેક્સ્ટ અને છબીઓ વાંચવાથી બ્લૉક કરો</translation>
 <translation id="6945221475159498467">પસંદ કરો</translation>
@@ -211,6 +221,7 @@
 <translation id="723171743924126238">છબીઓ પસંદ કરો</translation>
 <translation id="7243308994586599757">સ્ક્રીનના તળિયા નજીક વિકલ્પો ઉપલબ્ધ છે</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />ની પસંદગી કરી</translation>
+<translation id="7260727271532453612"><ph name="PERMISSION_1" /> અને <ph name="PERMISSION_2" />ની મંજૂરી આપી</translation>
 <translation id="7302486331832100261">તમે સામાન્ય રીતે નોટિફિકેશનને બ્લૉક કરો છો. મંજૂરી આપવા માટે, વિગતો પર ટૅપ કરો.</translation>
 <translation id="7423098979219808738">પ્રથમ પૂછો</translation>
 <translation id="7423538860840206698">ક્લિપબોર્ડ વાંચવાનું બ્લૉક કરેલ છે</translation>
@@ -242,6 +253,7 @@
 <translation id="8087000398470557479">આ કન્ટેન્ટ <ph name="DOMAIN_NAME" /> માંથી, Google દ્વારા વિતરિત કરેલ છે.</translation>
 <translation id="8116925261070264013">મ્યૂટ કરેલ</translation>
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>
+<translation id="8197286292360124385"><ph name="PERMISSION_1" />ની મંજૂરી આપી</translation>
 <translation id="8200772114523450471">રિઝ્યુમે</translation>
 <translation id="8206354486702514201">આ સેટિંગ તમારા વહીવટકર્તા દ્વારા લાગુ કરેલી છે.</translation>
 <translation id="8249310407154411074">ટોચે ખસેડો</translation>

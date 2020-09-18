@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">ਸੁਰੱਖਿਆ ਕਾਰਨਾਂ ਕਰਕੇ ਫਾਈਲ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਨੂੰ ਜ਼ਿਪ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਨੂੰ ਕਾਪੀ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="174173592514158117">ਸਾਰੇ Play ਫੋਲਡਰ ਦਿਖਾਓ</translation>
 <translation id="174937106936716857">ਫ਼ਾਈਲਾਂ ਦੀ ਕੁੱਲ ਗਿਣਤੀ</translation>
 <translation id="1775381402323441512">ਵੀਡੀਓ ਜਾਣਕਾਰੀ</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">ਅਵੈਧ ਅੱਖਰ-ਚਿੰਨ੍ਹ: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">ਵੀਅਤਨਾਮੀ ਕੀ-ਬੋਰਡ (TCVN)</translation>
 <translation id="2168214441502403371">ਫ਼ਾਰਸੀ ਕੀ-ਬੋਰਡ</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> ਨੂੰ ਲਿਜਾਇਆ ਗਿਆ।</translation>
 <translation id="2198315389084035571">ਸਰਲੀਕ੍ਰਿਤ ਚੀਨੀ</translation>
 <translation id="2208158072373999562">ਜ਼ਿਪ ਪੁਰਾਲੇਖ</translation>
 <translation id="2225536596944493418">ਕੀ ਤੁਸੀਂ ਪੱਕਾ <ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਨੂੰ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ਫੋਲਡਰ ਬਣਾਉਣ ਵਿੱਚ ਅਸਮਰੱਥ। <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">ਲਿਜਾਈ ਗਈ।</translation>
 <translation id="2278988676849463018">ਕੰਨੜ ਕੀ-ਬੋਰਡ (ਫੋਨੈਟਿਕ)</translation>
 <translation id="2288278176040912387">ਰਿਕਾਰਡ ਪਲੇਅਰ</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹੀਆਂ ਜਾ ਰਹੀਆਂ ਹਨ।</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">ਸਾਰੇ ਬੈਕ ਅਪ ਕੀਤੇ ਗਏ!</translation>
 <translation id="3626281679859535460">ਚਮਕ</translation>
 <translation id="3644896802912593514">ਚੌੜਾਈ</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਲਿਜਾਈਆਂ ਗਈਆਂ।</translation>
 <translation id="3645531960514756307">ਫੋਲਡਰ ਨੂੰ ਅਨਪਿੰਨ ਕਰੋ</translation>
 <translation id="3678559383040232393">ਮਾਲਟੀਜ ਕੀ-ਬੋਰਡ</translation>
 <translation id="3685122418104378273">Google Drive ਸਿੰਕ ਮੋਬਾਈਲ ਡਾਟਾ ਵਰਤਦੇ ਸਮੇਂ, ਬਾਇ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਅਸਮਰਥਿਤ ਹੁੰਦਾ ਹੈ।</translation>
@@ -395,6 +399,7 @@
     ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨਾਲ ਕੁਝ ਵੀ ਵਾਪਰਨ 'ਤੇ, ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ 'Google ਡਰਾਈਵ' ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸਟੋਰ ਰਹਿੰਦੀਆਂ ਹਨ।<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />ਇੱਕੋ ਥਾਂ ਵਿੱਚ ਫ਼ਾਈਲਾਂ ਨੂੰ ਹੋਰਾਂ ਨਾਲ<ph name="MARKUP_8" />
     ਸਾਂਝਾ ਕਰੋ, ਬਣਾਓ, ਅਤੇ ਉਹਨਾਂ 'ਤੇ ਸਹਿਯੋਗ ਦਿਓ।<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">ਕਾਪੀ ਕੀਤੀ ਗਈ।</translation>
 <translation id="5275973617553375938">Google Drive ਤੋਂ ਰਿਕਵਰ ਕੀਤੀਆਂ ਫਾਈਲਾਂ</translation>
 <translation id="5317780077021120954">ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5318819489018851358">Linux ਨਾਲ ਸਾਂਝਾ ਕਰੋ</translation>
@@ -750,6 +755,7 @@
 <translation id="943972244133411984">ਇਸ ਵੱਲੋਂ ਸੋਧੀ ਗਈ</translation>
 <translation id="945522503751344254">ਪ੍ਰਤੀਕਰਮ ਭੇਜੋ</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> ਤੋਂ <ph name="TO_ENTRY_NAME" /> ਤੱਕ <ph name="ENTRY_COUNT" /> ਇੰਦਰਾਜਾਂ ਦੀ ਰੇਂਜ ਚੁਣੀ ਗਈ ਹੈ।</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> ਨੂੰ ਕਾਪੀ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="981121421437150478">ਆਫ਼ਲਾਈਨ</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" ਨਾਮਕ ਫ਼ਾਈਲ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ। ਕੀ ਤੁਸੀਂ ਇਸਨੂੰ ਬਦਲਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

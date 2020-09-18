@@ -2629,7 +2629,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4095507791297118304">Glavni prikaz</translation>
 <translation id="409579654357498729">Dodaj u Cloud štampanje</translation>
 <translation id="4096508467498758490">Onemogućite dodatke u režimu programera</translation>
-<translation id="4096824249111507322">Bezbednosni modul je u pripremi. Sačekajte (ovo može da potraje nekoliko minuta)...</translation>
 <translation id="4097406557126260163">Aplikacije i dodaci</translation>
 <translation id="4097560579602855702">Pretražite Google</translation>
 <translation id="4098667039111970300">Alatke za pisaljku na traci sa alatkama</translation>
@@ -3359,7 +3358,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">Provera pravopisa nije podržana za jezike koje ste izabrali</translation>
 <translation id="5052499409147950210">Izmenite sajt</translation>
-<translation id="5053604404986157245">Nasumično generisana lozinka za modul pouzdane platforme nije dostupna. To je normalno posle Powerwash-a.</translation>
 <translation id="5057110919553308744">Kada kliknete na dodatak</translation>
 <translation id="5057403786441168405">Upravljajte nalozima na koje ste prijavljeni. Veb-sajtovi, aplikacije i dodaci u Chrome-u i na Google Play-u mogu da koriste te naloge za prilagođavanje doživljaja, u zavisnosti od dozvola. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Ograničite prijavljivanje</translation>
@@ -3951,7 +3949,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5774295353725270860">Otvaranje aplikacije Datoteke</translation>
 <translation id="577624874850706961">Pretražite kolačiće</translation>
 <translation id="5777468213129569553">Otvori Chrome</translation>
-<translation id="5778747455497889540">U nastavku je nasumično generisana lozinka za bezbednosni modul koja je dodeljena računaru:</translation>
 <translation id="5780011244986845107">Direktorijum koji ste izabrali sadrži osetljive datoteke. Želite li stvarno da odobrite aplikaciji „<ph name="APP_NAME" />“ stalan pristup za čitanje za ovaj direktorijum?</translation>
 <translation id="5780973441651030252">Prioritet procesa</translation>
 <translation id="5781092003150880845">Sinhronizuj kao <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4660,7 +4657,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6635956300022133031">Izaberite i prilagodite glasove za pretvaranje teksta u govor</translation>
 <translation id="6636588250634969791">Umetnite SIM karticu da biste nastavili</translation>
 <translation id="6639554308659482635">SQLite memorija</translation>
-<translation id="6641138807883536517">Nasumično generisana lozinka za bezbednosni modul nije dostupna. To je normalno posle Powerwash-a.</translation>
 <translation id="6642720633335369752">Da biste videli sve otvorene prozore aplikacija, prevucite nagore od dna i zadržite.</translation>
 <translation id="664290675870910564">Izbor mreže</translation>
 <translation id="6643016212128521049">Obriši</translation>
@@ -4988,7 +4984,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7029307918966275733">Crostini nije instaliran. Instalirajte Crostini da biste videli impresum.</translation>
 <translation id="7029809446516969842">Lozinke</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – serijski port je povezan</translation>
-<translation id="7031962166228839643">Modul pouzdane platforme je u pripremi. Sačekajte (ovo može da potraje nekoliko minuta)...</translation>
 <translation id="7036706669646341689">Za Linux se preporučuje <ph name="DISK_SIZE" /> prostora. Da biste oslobodili prostor, izbrišite datoteke sa uređaja.</translation>
 <translation id="7037509989619051237">Tekst za pregled</translation>
 <translation id="7038632520572155338">Pristup pomoću prekidača</translation>
@@ -5978,7 +5973,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8226222018808695353">Zabranjeno je</translation>
 <translation id="8226619461731305576">Red</translation>
 <translation id="8226628635270268143">Odaberite omiljene slike i albume</translation>
-<translation id="8226742006292257240">U nastavku je nasumično generisana TPM lozinka koja je dodeljena računaru:</translation>
 <translation id="8227119283605456246">Priloži datoteku</translation>
 <translation id="8230134520748321204">Želite li da sačuvate lozinku za <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Pingovanje podrazumevanog mrežnog prolaza nije uspelo</translation>

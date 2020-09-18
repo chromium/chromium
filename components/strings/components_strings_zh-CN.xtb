@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">重新连接到 Wi-Fi 网络</translation>
 <translation id="1165039591588034296">错误</translation>
 <translation id="1165174597379888365">访问过的网页</translation>
+<translation id="1174723505405632867">您想允许 <ph name="EMBEDDED_URL" /> 使用 <ph name="TOP_LEVEL_URL" /> 上的 Cookie 和网站数据吗？
+
+如果不允许，您的隐私设置便会禁止上述操作。授予该权限会使得您与之互动的内容正常运行，但可能会允许 <ph name="EMBEDDED_URL" /> 跟踪您的活动。</translation>
 <translation id="1175364870820465910">打印(&amp;P)...</translation>
 <translation id="1175875016430184367">三钉（右侧）</translation>
 <translation id="1178581264944972037">暂停</translation>
@@ -305,6 +308,7 @@
 <translation id="2181821976797666341">政策</translation>
 <translation id="2183608646556468874">电话号码</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 个地址}other{# 个地址}}</translation>
+<translation id="2187243482123994665">用户活跃状态</translation>
 <translation id="2187317261103489799">检测（默认）</translation>
 <translation id="2188375229972301266">多孔（底部）</translation>
 <translation id="2202020181578195191">请输入有效的失效年份</translation>
@@ -525,6 +529,7 @@
 <translation id="3174168572213147020">岛</translation>
 <translation id="3176929007561373547">请检查您的代理服务器设置或与网络管理员联系，以确保代理服务器正常运行。如果您认为自己不需要使用代理服务器，请执行以下操作：
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> 想知道您何时处于活跃状态</translation>
 <translation id="3188393374551744535">帐号余额</translation>
 <translation id="3194737229810486521"><ph name="URL" /> 想在您的设备上永久存储数据</translation>
 <translation id="3195213714973468956">“<ph name="SERVER_NAME" />”上的“<ph name="PRINTER_NAME" />”</translation>
@@ -1010,6 +1015,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">本机</translation>
 <translation id="5179510805599951267">不是<ph name="ORIGINAL_LANGUAGE" />？报告此错误</translation>
+<translation id="5179740473595559246">了解您何时处于活跃状态</translation>
 <translation id="5190835502935405962">书签栏</translation>
 <translation id="519422657042045905">注释不可用</translation>
 <translation id="5201306358585911203">此网页上的嵌入式页面显示</translation>
@@ -1232,6 +1238,7 @@
 <translation id="6049488691372270142">页面传送</translation>
 <translation id="6051221802930200923">您目前无法访问 <ph name="SITE" />，因为此网站使用了证书锁定。网络错误和攻击通常是暂时的，因此，此网页稍后可能会恢复正常。</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">分享您的活跃状态？</translation>
 <translation id="6058977677006700226">在您的所有设备上使用您的卡？</translation>
 <translation id="6059925163896151826">USB 设备</translation>
 <translation id="6060009363608157444">DnsOverHttps 模式无效。</translation>
@@ -1360,6 +1367,7 @@
 <translation id="6631202559048444592">此政策存在多个来源，但它们具有相同的值。</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">清除</translation>
+<translation id="6645291930348198241">访问 Cookie 和网站数据。</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{无}=1{来自 1 个网站（这不会致使您退出自己的 Google 帐号）}other{来自 # 个网站（这不会致使您退出自己的 Google 帐号）}}</translation>
 <translation id="6648459603387803038">您的管理员可以远程更改您的浏览器设置。此设备上的活动可能也在接受 Chrome 外部的管理。</translation>
 <translation id="6652101503459149953">使用 Windows Hello</translation>

@@ -1807,7 +1807,6 @@ Wird die Richtlinie auf "False" gesetzt , verwendet <ph name="PRODUCT_NAME" /> k
 <translation id="3631099945620529777">Wenn diese Richtlinie auf "false" gesetzt ist, ist die Schaltfläche "Prozess beenden" im Task-Manager deaktiviert.
 
       Ist sie auf "true" gesetzt oder nicht konfiguriert, kann der Nutzer Prozesse im Task-Manager beenden.</translation>
-<translation id="3639444551396586995">Unsichere Ereignisse in Chrome an Google melden</translation>
 <translation id="3643284063603988867">Funktion zum Speichern des Passworts aktivieren</translation>
 <translation id="3646859102161347133">Lupentyp festlegen</translation>
 <translation id="3647212518036289905">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche GSSAPI-Bibliothek für die HTTP-Authentifizierung verwendet werden soll. Geben Sie entweder nur den Namen einer Bibliothek oder einen vollständigen Pfad an.
@@ -2029,9 +2028,6 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 <translation id="3942041691320538491">Wenn die Richtlinie auf "0" gesetzt ist (Standardeinstellung), kann generell auf die Entwicklertools und die JavaScript-Konsole zugegriffen werden. Für Erweiterungen, die über die Unternehmensrichtlinie installiert wurden, ist der Zugriff aber nicht möglich. Ist die Richtlinie auf "1" gesetzt, können die Entwicklertools und die JavaScript-Konsole in allen Kontexten aufgerufen und verwendet werden, also auch von Erweiterungen, die über die Unternehmensrichtlinie installiert wurden. Wenn die Richtlinie auf "2" gesetzt ist, kann nicht auf die Entwicklertools zugegriffen werden und Websiteelemente können nicht mehr geprüft werden.
 
       Alle Tastenkombinationen und Einträge im Menü oder Kontextmenü, mit denen die Entwicklertools oder die JavaScript-Konsole aufgerufen werden, werden deaktiviert.</translation>
-<translation id="3942080695743860553">Mit dieser Richtlinie wird festgelegt, welcher Befehl zum Öffnen von URLs in einem alternativen Browser verwendet werden soll. Die Richtlinie kann mit <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" /> oder einem Dateipfad konfiguriert werden. Wenn für die Richtlinie ein Dateipfad festgelegt ist, wird diese Datei als ausführbare Datei verwendet. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> ist nur unter <ph name="MS_WIN_NAME" /> verfügbar und <ph name="SAFARI_VALUE_PLACEHOLDER" /> ist nur unter <ph name="MS_WIN_NAME" /> und <ph name="MAC_OS_NAME" /> verfügbar.
-
-      Ist die Richtlinie nicht konfiguriert, wird eine plattformspezifische Standardeinstellung verwendet: <ph name="IE_PRODUCT_NAME" /> für <ph name="MS_WIN_NAME" /> oder <ph name="SAFARI_PRODUCT_NAME" /> für <ph name="MAC_OS_NAME" />. Unter <ph name="LINUX_OS_NAME" /> wird kein alternativer Browser geöffnet.</translation>
 <translation id="3950110092991281616">Aktiviert die passive Authentifizierung nur für reguläre Sitzungen.</translation>
 <translation id="3950239119790560549">Zeitbeschränkungen aktualisieren</translation>
 <translation id="3956686688560604829">Richtlinie "SiteList" von Internet Explorer zur Unterstützung älterer Browser verwenden.</translation>
@@ -2589,10 +2585,6 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
 <translation id="4874982543810021567">WebUSB auf diesen Websites blockieren</translation>
 <translation id="4876805738539874299">SSL-Höchstversion aktiviert</translation>
 <translation id="4887274746092315609">Erlaubt SAML-Nutzern das Ändern des Passworts während einer Sitzung</translation>
-<translation id="4887863670424903990">Wenn diese Richtlinie aktiviert ist, werden unsichere Ereignisse in <ph name="PRODUCT_NAME" /> zur Analyse an Google gesendet, darunter die Wiederverwendung von Passwörtern, der Download von Malware, Interstitials, Verstöße gegen die Richtlinie zum Schutz von sensiblen Daten usw.  Einige dieser Ereignisse, etwa Verstöße gegen die Richtlinie zum Schutz von sensiblen Daten, sind abhängig von anderen Richtlinien, mit denen entsprechende Überprüfungen aktiviert werden.
-
-      Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden unsichere Ereignisse in <ph name="PRODUCT_NAME" /> nicht gemeldet.
-      </translation>
 <translation id="4894290482695457375">Wenn "<ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />" aktiviert und "<ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" />" konfiguriert ist, wird <ph name="PRODUCT_NAME" /> unter allen IP-Adressen und nicht nur unter privaten RFC1918-/RFC4193-Adressen mit Cast-Geräten verbunden.
 
       Ist die Richtlinie deaktiviert, wird <ph name="PRODUCT_NAME" /> nur unter RFC1918-/RFC4193-Adressen mit Cast-Geräten verbunden.
@@ -3592,6 +3584,11 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 
           Wenn diese Richtlinie nicht konfiguriert ist, wird <ph name="PRODUCT_NAME" /> alle installierten Hosts für natives Messaging laden.</translation>
 <translation id="6224304369267200483">Automatischer Nachweis des Sicherheitsschlüssels durch URLs/Domains</translation>
+<translation id="6230442621691161858">Mit dieser Funktion werden Vorschläge zur Entdeckung neuer Inhalte aktiviert. Dazu gehören zum Beispiel Apps und Webseiten.
+      Wenn diese Richtlinie auf "True" gesetzt ist, werden Vorschläge zur Entdeckung neuer Inhalte aktiviert.
+      Ist sie auf "False" gesetzt, werden Vorschläge zur Entdeckung neuer Inhalte deaktiviert.
+      Wenn die Richtlinie nicht konfiguriert ist, werden Vorschläge zur Entdeckung neuer Inhalte für verwaltete Nutzer deaktiviert und für andere Nutzer aktiviert.
+      </translation>
 <translation id="6233173491898450179">Downloadverzeichnis festlegen</translation>
 <translation id="6234177445959386333">Hiermit wird die Liste der URLs für die Unternehmensanmeldung konfiguriert, auf denen der Passwortschutzdienst den Salted-Hash-Wert von Passwörtern erfassen soll.</translation>
 <translation id="6242147107333796512">Informationen im Zusammenhang mit Absturzberichten melden, wie Remote ID,
@@ -3824,7 +3821,6 @@ Ein Teil der Proxyeinstellungen ist für Android-Apps verfügbar und kann auf fr
       Beachten Sie, dass diese Richtlinie von EnabledPlugins und DisabledPluginsExceptions überschrieben werden kann.
 
       Wenn die Richtlinie nicht konfiguriert ist, kann der Nutzer beliebige auf dem System installierte Plug-ins verwenden, ausgenommen inkompatible, veraltete oder gefährliche Plug-ins, die hartcodiert sind.</translation>
-<translation id="6571871508154591774">Kamera, Browser-Einstellungen und Einstellungsmöglichkeiten des Betriebssystems deaktivieren</translation>
 <translation id="6573305661369899995">Eine externe Quelle für URL-Einschränkungen festlegen</translation>
 <translation id="6575944031719151455">Wenn die Richtlinie konfiguriert ist, wird die Liste der lokalen Gerätekonten angegeben, die auf der Anmeldeseite angezeigt werden sollen. Durch Kennungen werden die verschiedenen lokalen Gerätekonten auseinandergehalten.
 
@@ -4924,11 +4920,6 @@ Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen
       Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
 <translation id="8050080920415773384">Natives Drucken</translation>
 <translation id="8053580360728293758">Dadurch wird der standardmäßige Farbdruckmodus überschrieben. Wenn der Modus nicht verfügbar ist, wird die Richtlinie ignoriert.</translation>
-<translation id="8057841287222359526">Ermöglicht die Zusammenstellung einer Liste mit <ph name="PRODUCT_OS_NAME" />-Funktionen, die deaktiviert werden sollen.
-
-      Wenn diese Funktionen deaktiviert werden, kann der Nutzer nicht über die Benutzeroberfläche darauf zugreifen und sie erscheinen als "Vom Administrator deaktiviert".
-
-      Ist die Richtlinie nicht konfiguriert, sind alle <ph name="PRODUCT_OS_NAME" />-Funktionen standardmäßig aktiviert und können vom Nutzer verwendet werden.</translation>
 <translation id="8059164285174960932">URL, unter der Remotezugriff-Clients ihr Authentifizierungs-Token abrufen sollten</translation>
 <translation id="8077245272412229388">Damit werden vorausgefüllte Kerberos-Konten hinzugefügt. Wenn die Kerberos-Anmeldedaten mit den für die Kontoanmeldung verwendeten Daten übereinstimmen, kann ein Konto so konfiguriert werden, dass die Anmeldedaten wiederverwendet werden. Dazu müssen <ph name="LOGIN_EMAIL_PLACEHOLDER" /> und <ph name="PASSWORD_PLACEHOLDER" /> jeweils als Hauptkonto und Passwort festgelegt werden, sodass das Kerberos-Ticket automatisch abgerufen werden kann. Das ist jedoch nicht möglich, wenn die Bestätigung in zwei Schritten konfiguriert ist. Nutzer können über diese Richtlinie hinzugefügte Konten nicht ändern.
 

@@ -2631,7 +2631,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4095507791297118304">Display principale</translation>
 <translation id="409579654357498729">Aggiungi a Cloud Print</translation>
 <translation id="4096508467498758490">Disattiva estensioni in modalità sviluppatore</translation>
-<translation id="4096824249111507322">Preparazione del modulo per la sicurezza in corso, attendi (l'operazione potrebbe richiedere alcuni minuti)...</translation>
 <translation id="4097406557126260163">App ed estensioni</translation>
 <translation id="4097560579602855702">Cerca su Google</translation>
 <translation id="4098667039111970300">Strumenti stilo nella barra degli strumenti</translation>
@@ -2950,7 +2949,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4527186207340858212">Creare un nuovo profilo di lavoro?</translation>
 <translation id="452750746583162491">Verifica i tuoi dati sincronizzati</translation>
 <translation id="4530494379350999373">Origine</translation>
-<translation id="4531924570968473143">Chi vorresti aggiungere a questo dispositivo <ph name="DEVICE_TYPE" />?</translation>
+<translation id="4531924570968473143">Chi vorresti aggiungere a questo <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4532646538815530781">Questo sito usa sensori di movimento.</translation>
 <translation id="4533846798469727141">Ora dì "Ok Google"</translation>
 <translation id="4533985347672295764">Tempo di CPU</translation>
@@ -3361,7 +3360,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5050330054928994520">Sintesi vocale</translation>
 <translation id="5051836348807686060">Il controllo ortografico non è supportato per le lingue selezionate</translation>
 <translation id="5052499409147950210">Modifica del sito</translation>
-<translation id="5053604404986157245">La password TPM generata in modo casuale non è disponibile, ma è normale dopo un Powerwash.</translation>
 <translation id="5057110919553308744">Quando fai clic sull'estensione</translation>
 <translation id="5057403786441168405">Gestisci gli account a cui hai eseguito l'accesso. Siti web, app ed estensioni in Chrome e Google Play potrebbero utilizzare questi account per personalizzare la tua esperienza in base alle autorizzazioni. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Limitare accesso</translation>
@@ -3952,7 +3950,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5774295353725270860">Apri l'applicazione File</translation>
 <translation id="577624874850706961">Cerca cookie</translation>
 <translation id="5777468213129569553">Apri Chrome</translation>
-<translation id="5778747455497889540">Di seguito viene indicata la password del modulo per la sicurezza generata in modo casuale che è stata assegnata al tuo computer:</translation>
 <translation id="5780011244986845107">La cartella che hai selezionato contiene file sensibili. Vuoi concedere a "<ph name="APP_NAME" />" accesso di lettura permanente a questa cartella?</translation>
 <translation id="5780973441651030252">Priorità processo</translation>
 <translation id="5781092003150880845">Sincronizza come <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -3982,7 +3979,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5804241973901381774">Autorizzazioni</translation>
 <translation id="5805697420284793859">Gestione finestre</translation>
 <translation id="5806773519584576205">0° (valore predefinito)</translation>
-<translation id="5808664694611589238">{0,plural, =1{Chiudi ospite}other{Chiudi ospite}}</translation>
+<translation id="5808664694611589238">{0,plural, =1{Chiudi ospiti}other{Chiudi ospiti}}</translation>
 <translation id="5810809306422959727">Questo account non è idoneo per la funzionalità Controllo genitori</translation>
 <translation id="5812674658566766066">Espandi tutto</translation>
 <translation id="5814126672212206791">Tipo di connessione</translation>
@@ -4661,7 +4658,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6635956300022133031">Seleziona e personalizza le voci per la sintesi vocale</translation>
 <translation id="6636588250634969791">Inserisci SIM prima di procedere</translation>
 <translation id="6639554308659482635">Memoria SQLite</translation>
-<translation id="6641138807883536517">La password del modulo per la sicurezza generata in modo casuale non è disponibile, ma è normale dopo un Powerwash.</translation>
 <translation id="6642720633335369752">Per visualizzare le finestre di tutte le app aperte, scorri dal basso verso l'alto e tieni premuto.</translation>
 <translation id="664290675870910564">Selezione rete</translation>
 <translation id="6643016212128521049">Cancella</translation>
@@ -4989,7 +4985,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7029307918966275733">Crostini non è installato. Per visualizzare i crediti, installa Crostini.</translation>
 <translation id="7029809446516969842">Password</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Porta seriale collegata</translation>
-<translation id="7031962166228839643">Preparazione del TPM in corso, attendi (l'operazione potrebbe richiedere alcuni minuti)...</translation>
 <translation id="7036706669646341689">Sono consigliati <ph name="DISK_SIZE" /> di spazio libero per Linux. Per aumentare lo spazio disponibile, elimina i file dal dispositivo.</translation>
 <translation id="7037509989619051237">Anteprima del testo</translation>
 <translation id="7038632520572155338">Switch Access</translation>
@@ -5183,7 +5178,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7280649757394340890">Impostazioni voce per sintesi vocale</translation>
 <translation id="7280877790564589615">Richiesta di autorizzazione</translation>
 <translation id="7282992757463864530">Barra delle informazioni</translation>
-<translation id="7284411326658527427">Ogni persona potrà personalizzare il proprio account e tenere privati i dati.</translation>
+<translation id="7284411326658527427">Ogni persona potrà personalizzare il proprio account e mantenere privati i dati.</translation>
 <translation id="7287143125007575591">Accesso negato.</translation>
 <translation id="7287411021188441799">Ripristina sfondo predefinito</translation>
 <translation id="7288013116963835700">Rimuovi Linux per il dispositivo <ph name="DEVICE_TYPE" /></translation>
@@ -5978,7 +5973,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8226222018808695353">Vietato</translation>
 <translation id="8226619461731305576">Coda</translation>
 <translation id="8226628635270268143">Scegli le tue foto e i tuoi album preferiti</translation>
-<translation id="8226742006292257240">Di seguito viene indicata la password TPM generata in modo casuale che è stata assegnata al tuo computer:</translation>
 <translation id="8227119283605456246">Allega file</translation>
 <translation id="8230134520748321204">Salvare la password per <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">impossibile eseguire il ping del gateway di rete predefinito</translation>

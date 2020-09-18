@@ -374,6 +374,7 @@
 <translation id="143027896309062157">读取和更改您在自己的计算机上以及访问的网站上的所有数据</translation>
 <translation id="1430915738399379752">打印</translation>
 <translation id="1431188203598586230">最后一次软件更新</translation>
+<translation id="1431402976894535801">禁止网站了解您何时处于活跃状态</translation>
 <translation id="1431432486300429272">Google 可能会使用您的浏览记录为您提供个性化的 Google 搜索和其他 Google 服务。您或您的家长可以随时前往 myaccount.google.com/activitycontrols/search 更改此设置</translation>
 <translation id="1432581352905426595">管理搜索引擎</translation>
 <translation id="1433811987160647649">使用前先询问</translation>
@@ -567,6 +568,7 @@
 <translation id="1651008383952180276">您两次输入的密码必须相同</translation>
 <translation id="1652326691684645429">启用“附近分享”功能</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{请将该打印机添加到 Google 云打印，以便您可以随时随地进行打印。}other{请将 # 台打印机添加到 Google 云打印，以便您可以随时随地进行打印。}}</translation>
+<translation id="1653575510930452864">复制指向文本的链接</translation>
 <translation id="1656528038316521561">背景不透明度</translation>
 <translation id="1657406563541664238">将使用情况统计信息和崩溃报告自动发送给 Google，帮助我们完善 <ph name="PRODUCT_NAME" /></translation>
 <translation id="1657937299377480641">要重新登录并访问教育资源，请让您的家长向您授予权限</translation>
@@ -1000,6 +1002,7 @@
 <translation id="2178614541317717477">CA 泄漏</translation>
 <translation id="2182058453334755893">已复制到您的剪贴板</translation>
 <translation id="2184515124301515068">让 Chrome 选择何时允许网站播放声音（推荐）</translation>
+<translation id="2187243482123994665">用户活跃状态</translation>
 <translation id="2187675480456493911">已与您帐号中的其他设备同步。其他用户修改的设置不会进行同步。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">服务器证书导入错误</translation>
 <translation id="2187906491731510095">扩展程序已更新</translation>
@@ -1826,6 +1829,7 @@
 <translation id="3163201441334626963">来自供应商 <ph name="VENDOR_ID" /> 的未知产品 <ph name="PRODUCT_ID" /></translation>
 <translation id="3163254451837720982">以下服务有助于确保您的数据安全稳妥。您可以随时关闭这些功能。</translation>
 <translation id="3164329792803560526">与 <ph name="APP_NAME" /> 分享此标签页</translation>
+<translation id="3165371858310906303">在网站想知道您何时处于活跃状态时询问您</translation>
 <translation id="3165390001037658081">有些运营商可能会屏蔽此功能。</translation>
 <translation id="316652501498554287">G Suite 教育版帐号</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2623,7 +2627,6 @@
 <translation id="4095507791297118304">主显示屏</translation>
 <translation id="409579654357498729">添加到云打印</translation>
 <translation id="4096508467498758490">请停用以开发者模式运行的扩展程序</translation>
-<translation id="4096824249111507322">正在准备安全模块，请稍候（这可能需要几分钟的时间）…</translation>
 <translation id="4097406557126260163">应用和扩展程序</translation>
 <translation id="4097560579602855702">在 Google 中搜索</translation>
 <translation id="4098667039111970300">在工具栏中显示触控笔工具</translation>
@@ -2942,6 +2945,7 @@
 <translation id="4527186207340858212">创建一份新的工作资料？</translation>
 <translation id="452750746583162491">查看您已同步的数据</translation>
 <translation id="4530494379350999373">来源</translation>
+<translation id="4531924570968473143">您想将谁添加到此 <ph name="DEVICE_TYPE" />？</translation>
 <translation id="4532646538815530781">此网站正在使用动态传感器。</translation>
 <translation id="4533846798469727141">现在说“Hey Google”</translation>
 <translation id="4533985347672295764">CPU 时间</translation>
@@ -3352,7 +3356,6 @@
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">所选语言不支持拼写检查</translation>
 <translation id="5052499409147950210">修改网站</translation>
-<translation id="5053604404986157245">随机生成的 TPM 密码不可用。这是执行 Powerwash 之后的正常现象。</translation>
 <translation id="5057110919553308744">当您点击此扩展程序时</translation>
 <translation id="5057403786441168405">管理您登录过的帐号。Chrome 和 Google Play 中的网站、应用和扩展程序可能会使用这些帐号为您定制专属体验，具体取决于所获权限。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">限制登录</translation>
@@ -3943,7 +3946,6 @@
 <translation id="5774295353725270860">打开文件应用</translation>
 <translation id="577624874850706961">搜索 Cookie</translation>
 <translation id="5777468213129569553">打开 Chrome</translation>
-<translation id="5778747455497889540">以下是系统向您计算机分配的随机生成的安全模块密码：</translation>
 <translation id="5780011244986845107">您所选的文件夹中包含敏感文件。确定要向“<ph name="APP_NAME" />”授予对此文件夹的永久读取权限吗？</translation>
 <translation id="5780973441651030252">进程优先级</translation>
 <translation id="5781092003150880845">以<ph name="ACCOUNT_FULL_NAME" />的身份同步</translation>
@@ -3973,6 +3975,7 @@
 <translation id="5804241973901381774">权限</translation>
 <translation id="5805697420284793859">窗口管理器</translation>
 <translation id="5806773519584576205">0°（默认）</translation>
+<translation id="5808664694611589238">{0,plural, =1{关闭访客窗口}other{关闭访客窗口}}</translation>
 <translation id="5810809306422959727">此帐号无法使用家长控制功能</translation>
 <translation id="5812674658566766066">全部展开</translation>
 <translation id="5814126672212206791">连接类型</translation>
@@ -4430,6 +4433,7 @@
 <translation id="6344170822609224263">网络连接的访问权限列表</translation>
 <translation id="6344576354370880196">已保存的打印机</translation>
 <translation id="6345418402353744910">代理 <ph name="PROXY" /> 要求您提供用户名和密码，以方便管理员配置您的网络</translation>
+<translation id="6345878117466430440">标记为已读</translation>
 <translation id="6349101878882523185">安装“<ph name="APP_NAME" />”</translation>
 <translation id="6349170655202535379">无法同步。请尝试退出并重新登录。</translation>
 <translation id="6351063337294363751">您可以使用此菜单清除浏览数据</translation>
@@ -4650,7 +4654,6 @@
 <translation id="6635956300022133031">选择和自定义文字转语音的语音</translation>
 <translation id="6636588250634969791">插入 SIM 卡才能继续操作</translation>
 <translation id="6639554308659482635">SQLite 使用的内存</translation>
-<translation id="6641138807883536517">无法提供随机生成的安全模块密码。这是执行 Powerwash 之后的正常现象。</translation>
 <translation id="6642720633335369752">要查看所有已打开的应用窗口，请从屏幕底部向上滑动并按住屏幕。</translation>
 <translation id="664290675870910564">选择网络</translation>
 <translation id="6643016212128521049">清除</translation>
@@ -4978,7 +4981,6 @@
 <translation id="7029307918966275733">未安装 Crostini。请安装 Crostini 以查看开发人员名单。</translation>
 <translation id="7029809446516969842">密码</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - 已连接到串行端口</translation>
-<translation id="7031962166228839643">正在准备 TPM，请稍候（这可能需要几分钟时间）...</translation>
 <translation id="7036706669646341689">建议为 Linux 留出 <ph name="DISK_SIZE" /> 的空间。如需增加可用空间，请从您的设备中删除文件。</translation>
 <translation id="7037509989619051237">要试听的文字</translation>
 <translation id="7038632520572155338">开关控制</translation>
@@ -5172,6 +5174,7 @@
 <translation id="7280649757394340890">文字转语音的语音设置</translation>
 <translation id="7280877790564589615">已请求权限</translation>
 <translation id="7282992757463864530">信息栏</translation>
+<translation id="7284411326658527427">每个人都可对自己的帐号进行个性化设置并确保数据的私密性。</translation>
 <translation id="7287143125007575591">访问遭拒。</translation>
 <translation id="7287411021188441799">恢复默认背景</translation>
 <translation id="7288013116963835700">为 <ph name="DEVICE_TYPE" /> 移除 Linux</translation>
@@ -5748,6 +5751,7 @@
 <translation id="7963826112438303517">Google 助理会使用这些录音以及您的语音请求来创建和更新您的语音模型，语音模型仅会存储在已开启 Voice Match 的设备上。您可在 Google 助理的“设置”中查看或重新调校语音活动。</translation>
 <translation id="7966241909927244760">复制图片地址(&amp;O)</translation>
 <translation id="7968072247663421402">提供商选项</translation>
+<translation id="7968198493605442410">复制指向文本的链接</translation>
 <translation id="7968742106503422125">读取和修改您复制和粘贴的数据</translation>
 <translation id="7968833647796919681">启用性能数据收集</translation>
 <translation id="7968982339740310781">查看详情</translation>
@@ -5965,7 +5969,6 @@
 <translation id="8226222018808695353">已被禁止</translation>
 <translation id="8226619461731305576">队列</translation>
 <translation id="8226628635270268143">选择您喜爱的照片和影集</translation>
-<translation id="8226742006292257240">以下是一个分配给您计算机的、随机生成的 TPM 密码：</translation>
 <translation id="8227119283605456246">附上文件</translation>
 <translation id="8230134520748321204">要保存 <ph name="ORIGIN" /> 的密码吗？</translation>
 <translation id="8230672074305416752">未能对默认网关执行 ping 操作</translation>

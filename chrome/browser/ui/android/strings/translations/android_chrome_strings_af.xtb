@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
-<translation id="1013149566889033026">'n Nuwe incognitovenster sal oopmaak</translation>
 <translation id="1028699632127661925">Stuur tans na <ph name="DEVICE_NAME" /> toe …</translation>
 <translation id="103269572468856066">Vee ook dié data uit?</translation>
 <translation id="1036348656032585052">Skakel af</translation>
@@ -166,6 +165,7 @@ Tik op enige woord om te soek. Raak en hou om meer of minder woorde te kies as j
 <translation id="2321086116217818302">Maak tans wagwoorde gereed …</translation>
 <translation id="2321958826496381788">Trek die glyer totdat jy dit gemaklik kan lees. Teks behoort minstens só groot te lyk nadat jy op 'n paragraaf gedubbeltik het.</translation>
 <translation id="2323763861024343754">Werfberging</translation>
+<translation id="2326606747676847821">Skakel oor na incognito</translation>
 <translation id="2328985652426384049">Kan nie aanmeld nie</translation>
 <translation id="234265804618409743">Kan nie jou kamera oopmaak nie. Iets is fout.</translation>
 <translation id="2345671828921229300">Raak en hou 'n woord om te soek</translation>
@@ -346,7 +346,6 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="3775705724665058594">Stuur na jou toestelle toe</translation>
 <translation id="3778956594442850293">By tuisskerm gevoeg</translation>
 <translation id="3789841737615482174">Installeer</translation>
-<translation id="3800748312755064483">Meld tydelik aan</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Bestuur</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> aflaaie is uitgevee</translation>
@@ -387,7 +386,6 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="4135200667068010335">Lys toestelle om 'n oortjie mee te deel, is toegemaak.</translation>
 <translation id="4149994727733219643">Vereenvoudigde aansig vir webbladsye</translation>
 <translation id="4170011742729630528">Die diens is nie beskikbaar nie, probeer later weer.</translation>
-<translation id="4175173967354304331">Jy sal by hierdie werf, Chrome en Google-programme aangemeld word</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> gebruik</translation>
 <translation id="4181841719683918333">Tale</translation>
 <translation id="4183868528246477015">Soek met Google Lens <ph name="BEGIN_NEW" />Nuut<ph name="END_NEW" /></translation>

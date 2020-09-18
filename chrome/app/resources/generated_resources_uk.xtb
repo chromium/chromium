@@ -2632,7 +2632,6 @@
 <translation id="4095507791297118304">Основний дисплей</translation>
 <translation id="409579654357498729">Додати в Cloud Print</translation>
 <translation id="4096508467498758490">Вимкнути розширення в режимі розробника</translation>
-<translation id="4096824249111507322">Готується модуль безпеки. Зачекайте (це може зайняти кілька хвилин)…</translation>
 <translation id="4097406557126260163">Додатки та розширення</translation>
 <translation id="4097560579602855702">Пошук Google</translation>
 <translation id="4098667039111970300">Інструменти стилуса на панелі інструментів</translation>
@@ -3362,7 +3361,6 @@
 <translation id="5050330054928994520">Синтез мовлення</translation>
 <translation id="5051836348807686060">Перевірка орфографії не підтримується для вибраних мов</translation>
 <translation id="5052499409147950210">Редагувати сайт</translation>
-<translation id="5053604404986157245">Навмання згенерований пароль TPM не доступний. Це нормально після Powerwash (очищення).</translation>
 <translation id="5057110919553308744">Коли ви натискаєте розширення</translation>
 <translation id="5057403786441168405">Керуйте обліковими записами, у які ви ввійшли. За їх допомогою веб-сайти, додатки й розширення в Chrome і Google Play можуть персоналізувати налаштування, залежно від наданих дозволів. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Обмежити вхід</translation>
@@ -3953,7 +3951,6 @@
 <translation id="5774295353725270860">Відкрити програму файлів</translation>
 <translation id="577624874850706961">Пошук файлів cookie</translation>
 <translation id="5777468213129569553">Відкрити Chrome</translation>
-<translation id="5778747455497889540">Ось навмання згенерований пароль для модуля безпеки, присвоєний вашому комп’ютеру:</translation>
 <translation id="5780011244986845107">Вибрана папка містить файли з конфіденційною інформацією. Надати додатку <ph name="APP_NAME" /> постійний дозвіл на перегляд цієї папки?</translation>
 <translation id="5780973441651030252">Пріоритет обробки</translation>
 <translation id="5781092003150880845">Синхронізувати як <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -4662,7 +4659,6 @@
 <translation id="6635956300022133031">Вибрати й налаштувати голоси для синтезу мовлення</translation>
 <translation id="6636588250634969791">Спершу вставте SIM-карту</translation>
 <translation id="6639554308659482635">Пам'ять SQLite</translation>
-<translation id="6641138807883536517">Немає навмання згенерованого пароля для модуля безпеки. Це нормально після використання функції Powerwash.</translation>
 <translation id="6642720633335369752">Щоб побачити всі відкриті вікна додатків, проведіть пальцем знизу вгору й утримуйте.</translation>
 <translation id="664290675870910564">Вибір мережі</translation>
 <translation id="6643016212128521049">Очистити</translation>
@@ -4990,7 +4986,6 @@
 <translation id="7029307918966275733">Crostini не встановлено. Установіть це рішення, щоб переглянути дані про розробників.</translation>
 <translation id="7029809446516969842">Паролі</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" />: підключено послідовний порт</translation>
-<translation id="7031962166228839643">Триває підготовка модуля TPM, зачекайте (це може тривати декілька хвилин)...</translation>
 <translation id="7036706669646341689">Для Linux потрібно <ph name="DISK_SIZE" /> вільного місця. Щоб звільнити місце, видаліть файли з пристрою.</translation>
 <translation id="7037509989619051237">Текст для попереднього прослуховування</translation>
 <translation id="7038632520572155338">Кнопковий доступ</translation>
@@ -5980,7 +5975,6 @@
 <translation id="8226222018808695353">Заборонено</translation>
 <translation id="8226619461731305576">Черга</translation>
 <translation id="8226628635270268143">Вибрати улюблені фотографії й альбоми</translation>
-<translation id="8226742006292257240">Нижче наведено навмання створений пароль для модуля TPM, присвоєний вашому комп'ютеру:</translation>
 <translation id="8227119283605456246">Вкласти файл</translation>
 <translation id="8230134520748321204">Зберегти пароль для <ph name="ORIGIN" />?</translation>
 <translation id="8230672074305416752">Не вдалося надіслати запит ping шлюзу мережі за умовчанням</translation>

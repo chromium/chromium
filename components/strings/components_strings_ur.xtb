@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">‏Wi-Fi سے دوبارہ منسلک ہو رہا ہے</translation>
 <translation id="1165039591588034296">خرابی</translation>
 <translation id="1165174597379888365">صفحہ کا ملاحظہ کیا جاتا ہے</translation>
+<translation id="1174723505405632867">کیا آپ <ph name="EMBEDDED_URL" /> کو <ph name="TOP_LEVEL_URL" /> پر کوکیز اور سائٹ کا ڈيٹا استعمال کرنے کی اجازت دینا چاہتے ہیں؟
+
+بصورت دیگر آپ کی رازداری کی ترتیبات اسے مسدود کر دیں گی۔ اس سے اس مواد کو صحیح طور پر کام کرنے کی اجازت ہوگی جس کے ساتھ آپ تعامل کرتے ہیں، لیکن اس سے <ph name="EMBEDDED_URL" /> کو آپ کی سرگرمی کو ٹریک کرنے کی اجازت مل سکتی ہے۔</translation>
 <translation id="1175364870820465910">&amp;پرنٹ کریں…</translation>
 <translation id="1175875016430184367">دائیں طرف تین سٹیپل</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
@@ -310,6 +313,7 @@
 <translation id="2181821976797666341">پالیسیاں</translation>
 <translation id="2183608646556468874">فون نمبر</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 پتہ}other{# پتے}}</translation>
+<translation id="2187243482123994665">صارف کی موجودگی</translation>
 <translation id="2187317261103489799">پتا لگائیں (ڈیفالٹ)</translation>
 <translation id="2188375229972301266">نیچے متعدد سوراخ</translation>
 <translation id="2202020181578195191">ایک درست سالِ اختتام درج کریں</translation>
@@ -536,6 +540,7 @@
 سرور کام کر رہا ہے۔ اگر آپ کو یقین نہیں ہے تو
     آپ ایک پراکسی سرور استعمال کر رہے ہوں گے:
     <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> آپ کی موجودگی کے بارے میں جاننا چاہتا ہے</translation>
 <translation id="3188393374551744535">اکاؤنٹ بیلنس</translation>
 <translation id="3194737229810486521"><ph name="URL" /> آپ کے آلے پر مستقل طور پر ڈیٹا اسٹور کرنا چاہتا ہے</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> پر <ph name="PRINTER_NAME" /></translation>
@@ -1028,6 +1033,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">مشین</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> میں نہیں ہے؟ اس خرابی کی اطلاع دیں</translation>
+<translation id="5179740473595559246">اپنی موجودگی سے آگاہ رہیں</translation>
 <translation id="5190835502935405962">بُک مارکس بار</translation>
 <translation id="519422657042045905">تشریح دستیاب نہیں ہے</translation>
 <translation id="5201306358585911203">اس صفحے پر انضمام کردہ ایک صفحے کے مطابق</translation>
@@ -1250,6 +1256,7 @@
 <translation id="6049488691372270142">صفحہ کی ڈیلیوری</translation>
 <translation id="6051221802930200923">آپ ابھی <ph name="SITE" /> ملاحظہ نہیں کر سکتے ہیں کیونکہ ویب سائٹ سرٹیفکیٹ پننگ کا استعمال کرتی ہے۔ نیٹ ورک کی خرابیاں اور حملے عام طور پر عارضی ہوتے ہیں، لہذا یہ صفحہ شاید بعد میں کام کرے گا۔</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">اپنی موجودگی کی اجازت دیں؟</translation>
 <translation id="6058977677006700226">اپنے تمام آلات پر اپنے کارڈز استعمال کریں؟</translation>
 <translation id="6059925163896151826">‏USB آلات</translation>
 <translation id="6060009363608157444">‏DnsOverHttps وضع غلط ہے۔</translation>
@@ -1380,6 +1387,7 @@
 <translation id="6631202559048444592">اس پالیسی کیلئے ایک سے زیادہ سورسز موجود ہیں، لیکن قدریں ایک جیسی ہیں۔</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">صاف کریں</translation>
+<translation id="6645291930348198241">کوکیز اور سائٹ کے ڈیٹا تک رسائی حاصل کریں۔</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{کوئی سائٹ نہیں}=1{‏1 سائٹ سے (آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوں گے)}other{‏# سائٹس سے (آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوں گے)}}</translation>
 <translation id="6648459603387803038">‏آپ کا منتظم دور سے آپ کے براؤزر کا سیٹ اپ تبدیل کر سکتا ہے۔ اس آلے پر ہونے والی سرگرمی کا نظم Chrome سے باہر بھی کیا جا سکتا ہے۔</translation>
 <translation id="6652101503459149953">‏Windows Hello کا استعمال کریں</translation>
