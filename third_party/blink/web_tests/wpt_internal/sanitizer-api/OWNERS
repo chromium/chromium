@@ -1,0 +1,4 @@
+# TEAM: security-dev@chromium.org
+# COMPONENT: Blink>SecurityFeature>SanitizerAPI
+# WPT-NOTIFY: true
+file://third_party/blink/renderer/modules/sanitizer_api/OWNERS

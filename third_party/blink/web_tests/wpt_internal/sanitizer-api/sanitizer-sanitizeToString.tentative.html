@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="support/testcases.sub.js"></script>
+</head>
+
+<body>
+<script>
+    test(t => {
+      let s = new Sanitizer({});
+      assert_object_equals(s.creationOptions, {dropElements: null});
+      assert_throws_js(TypeError, _ => s.sanitizeToString());
+    }, "SanitizerAPI sanitize function without argument should throw an error.");
+
+    testcases.forEach(c => test(t => {
+        let s = new Sanitizer(c.config_input);
+        assert_object_equals(s.creationOptions, c.config_value);
+        assert_equals(s.sanitizeToString(c.value), c.result);
+    }, "SanitizerAPI config: " + c.message + ", sanitizeToString function for " + c.message));
+</script>
+</body>
+</html>

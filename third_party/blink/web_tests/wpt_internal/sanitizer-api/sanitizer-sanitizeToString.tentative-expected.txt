@@ -1,0 +1,26 @@
+This is a testharness.js-based test.
+PASS SanitizerAPI sanitize function without argument should throw an error.
+PASS SanitizerAPI config: string, sanitizeToString function for string
+PASS SanitizerAPI config: html fragment, sanitizeToString function for html fragment
+PASS SanitizerAPI config: broken html, sanitizeToString function for broken html
+PASS SanitizerAPI config: empty object, sanitizeToString function for empty object
+PASS SanitizerAPI config: number, sanitizeToString function for number
+PASS SanitizerAPI config: zeros, sanitizeToString function for zeros
+PASS SanitizerAPI config: arithmetic, sanitizeToString function for arithmetic
+PASS SanitizerAPI config: empty string, sanitizeToString function for empty string
+PASS SanitizerAPI config: undefined, sanitizeToString function for undefined
+PASS SanitizerAPI config: null, sanitizeToString function for null
+PASS SanitizerAPI config: document, sanitizeToString function for document
+PASS SanitizerAPI config: html without close tag, sanitizeToString function for html without close tag
+FAIL SanitizerAPI config: scripts, sanitizeToString function for scripts assert_equals: expected "" but got "<script>alert('i am a test')</script>"
+FAIL SanitizerAPI config: onclick scripts, sanitizeToString function for onclick scripts assert_equals: expected "<p>Click.</p>" but got "<p onclick=\"a= 123\">Click.</p>"
+PASS SanitizerAPI config: invalid config_input, sanitizeToString function for invalid config_input
+PASS SanitizerAPI config: empty dropElements list, sanitizeToString function for empty dropElements list
+PASS SanitizerAPI config: test html without close tag with dropElements list ['div'], sanitizeToString function for test html without close tag with dropElements list ['div']
+PASS SanitizerAPI config: test script with ["script"] as dropElements list, sanitizeToString function for test script with ["script"] as dropElements list
+PASS SanitizerAPI config: dropElements list ["test", "i"]}, sanitizeToString function for dropElements list ["test", "i"]}
+PASS SanitizerAPI config: dropElements list ["I", "AM"]}, sanitizeToString function for dropElements list ["I", "AM"]}
+PASS SanitizerAPI config: dropElements list ["am", "p"]}, sanitizeToString function for dropElements list ["am", "p"]}
+PASS SanitizerAPI config: dropElements list with invalid values}, sanitizeToString function for dropElements list with invalid values}
+Harness: the test ran to completion.
+
