@@ -34,6 +34,7 @@ class DrmDisplayHost : public GpuThreadObserver {
   void UpdateDisplaySnapshot(std::unique_ptr<display::DisplaySnapshot> params);
   void GetHDCPState(display::GetHDCPStateCallback callback);
   void SetHDCPState(display::HDCPState state,
+                    display::ContentProtectionMethod protection_method,
                     display::SetHDCPStateCallback callback);
   void SetColorMatrix(const std::vector<float>& color_matrix);
   void SetGammaCorrection(
@@ -43,7 +44,9 @@ class DrmDisplayHost : public GpuThreadObserver {
 
   // Called when the IPC from the GPU process arrives to answer the above
   // commands.
-  void OnHDCPStateReceived(bool status, display::HDCPState state);
+  void OnHDCPStateReceived(bool status,
+                           display::HDCPState state,
+                           display::ContentProtectionMethod protection_method);
   void OnHDCPStateUpdated(bool status);
 
   // GpuThreadObserver:

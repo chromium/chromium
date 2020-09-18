@@ -68,7 +68,8 @@ class DrmDisplayHostManager : public DeviceEventObserver, GpuThreadObserver {
   void GpuHasUpdatedNativeDisplays(MovableDisplaySnapshots displays);
   void GpuReceivedHDCPState(int64_t display_id,
                             bool status,
-                            display::HDCPState state);
+                            display::HDCPState state,
+                            display::ContentProtectionMethod protection_method);
   void GpuUpdatedHDCPState(int64_t display_id, bool status);
   void GpuTookDisplayControl(bool status);
   void GpuRelinquishedDisplayControl(bool status);

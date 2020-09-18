@@ -412,12 +412,14 @@ void DrmDisplayHostManager::GpuHasUpdatedNativeDisplays(
   }
 }
 
-void DrmDisplayHostManager::GpuReceivedHDCPState(int64_t display_id,
-                                                 bool status,
-                                                 display::HDCPState state) {
+void DrmDisplayHostManager::GpuReceivedHDCPState(
+    int64_t display_id,
+    bool status,
+    display::HDCPState state,
+    display::ContentProtectionMethod protection_method) {
   DrmDisplayHost* display = GetDisplay(display_id);
   if (display)
-    display->OnHDCPStateReceived(status, state);
+    display->OnHDCPStateReceived(status, state, protection_method);
   else
     LOG(ERROR) << "Couldn't find display with id=" << display_id;
 }

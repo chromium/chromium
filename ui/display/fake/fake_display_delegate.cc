@@ -172,12 +172,15 @@ void FakeDisplayDelegate::Configure(
 
 void FakeDisplayDelegate::GetHDCPState(const DisplaySnapshot& output,
                                        GetHDCPStateCallback callback) {
-  std::move(callback).Run(false, HDCP_STATE_UNDESIRED);
+  std::move(callback).Run(false, HDCP_STATE_UNDESIRED,
+                          CONTENT_PROTECTION_METHOD_NONE);
 }
 
-void FakeDisplayDelegate::SetHDCPState(const DisplaySnapshot& output,
-                                       HDCPState state,
-                                       SetHDCPStateCallback callback) {
+void FakeDisplayDelegate::SetHDCPState(
+    const DisplaySnapshot& output,
+    HDCPState state,
+    ContentProtectionMethod protection_method,
+    SetHDCPStateCallback callback) {
   std::move(callback).Run(false);
 }
 

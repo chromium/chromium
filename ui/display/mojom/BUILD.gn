@@ -66,6 +66,10 @@ mojom("mojom") {
           cpp = "::display::HDCPState"
         },
         {
+          mojom = "display.mojom.ContentProtectionMethod"
+          cpp = "::display::ContentProtectionMethod"
+        },
+        {
           mojom = "display.mojom.PrivacyScreenState"
           cpp = "::display::PrivacyScreenState"
         },

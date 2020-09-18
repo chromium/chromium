@@ -50,6 +50,14 @@ class TestNativeDisplayDelegate : public NativeDisplayDelegate {
   HDCPState hdcp_state() const { return hdcp_state_; }
   void set_hdcp_state(HDCPState state) { hdcp_state_ = state; }
 
+  ContentProtectionMethod content_protection_method() const {
+    return content_protection_method_;
+  }
+  void set_content_protection_method(
+      ContentProtectionMethod protection_method) {
+    content_protection_method_ = protection_method;
+  }
+
   void set_run_async(bool run_async) { run_async_ = run_async; }
 
   // NativeDisplayDelegate overrides:
@@ -64,6 +72,7 @@ class TestNativeDisplayDelegate : public NativeDisplayDelegate {
                     GetHDCPStateCallback callback) override;
   void SetHDCPState(const DisplaySnapshot& output,
                     HDCPState state,
+                    ContentProtectionMethod protection_method,
                     SetHDCPStateCallback callback) override;
   bool SetColorMatrix(int64_t display_id,
                       const std::vector<float>& color_matrix) override;
@@ -82,6 +91,7 @@ class TestNativeDisplayDelegate : public NativeDisplayDelegate {
 
   void DoSetHDCPState(int64_t display_id,
                       HDCPState state,
+                      ContentProtectionMethod protection_method,
                       SetHDCPStateCallback callback);
 
   // Outputs to be returned by GetDisplays().
@@ -100,6 +110,7 @@ class TestNativeDisplayDelegate : public NativeDisplayDelegate {
 
   // Result value of GetHDCPState().
   HDCPState hdcp_state_;
+  ContentProtectionMethod content_protection_method_;
 
   // If true, the callbacks are posted on the message loop.
   bool run_async_;

@@ -242,26 +242,30 @@ base::flat_map<int64_t, bool> DrmGpuDisplayManager::ConfigureDisplays(
   return statuses;
 }
 
-bool DrmGpuDisplayManager::GetHDCPState(int64_t display_id,
-                                        display::HDCPState* state) {
+bool DrmGpuDisplayManager::GetHDCPState(
+    int64_t display_id,
+    display::HDCPState* state,
+    display::ContentProtectionMethod* protection_method) {
   DrmDisplay* display = FindDisplay(display_id);
   if (!display) {
     LOG(ERROR) << "There is no display with ID " << display_id;
     return false;
   }
 
-  return display->GetHDCPState(state);
+  return display->GetHDCPState(state, protection_method);
 }
 
-bool DrmGpuDisplayManager::SetHDCPState(int64_t display_id,
-                                        display::HDCPState state) {
+bool DrmGpuDisplayManager::SetHDCPState(
+    int64_t display_id,
+    display::HDCPState state,
+    display::ContentProtectionMethod protection_method) {
   DrmDisplay* display = FindDisplay(display_id);
   if (!display) {
     LOG(ERROR) << "There is no display with ID " << display_id;
     return false;
   }
 
-  return display->SetHDCPState(state);
+  return display->SetHDCPState(state, protection_method);
 }
 
 void DrmGpuDisplayManager::SetColorMatrix(

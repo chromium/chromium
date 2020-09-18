@@ -54,8 +54,12 @@ class DrmGpuDisplayManager {
 
   base::flat_map<int64_t, bool> ConfigureDisplays(
       const std::vector<display::DisplayConfigurationParams>& config_requests);
-  bool GetHDCPState(int64_t display_id, display::HDCPState* state);
-  bool SetHDCPState(int64_t display_id, display::HDCPState state);
+  bool GetHDCPState(int64_t display_id,
+                    display::HDCPState* state,
+                    display::ContentProtectionMethod* protection_method);
+  bool SetHDCPState(int64_t display_id,
+                    display::HDCPState state,
+                    display::ContentProtectionMethod protection_method);
   void SetColorMatrix(int64_t display_id,
                       const std::vector<float>& color_matrix);
   void SetBackgroundColor(int64_t display_id, const uint64_t background_color);

@@ -109,6 +109,53 @@ bool EnumTraits<display::mojom::HDCPState, display::HDCPState>::FromMojom(
 }
 
 // static
+display::mojom::ContentProtectionMethod EnumTraits<
+    display::mojom::ContentProtectionMethod,
+    display::ContentProtectionMethod>::ToMojom(display::ContentProtectionMethod
+                                                   type) {
+  switch (type) {
+    case display::ContentProtectionMethod::CONTENT_PROTECTION_METHOD_NONE:
+      return display::mojom::ContentProtectionMethod::
+          CONTENT_PROTECTION_METHOD_NONE;
+    case display::ContentProtectionMethod::
+        CONTENT_PROTECTION_METHOD_HDCP_TYPE_0:
+      return display::mojom::ContentProtectionMethod::
+          CONTENT_PROTECTION_METHOD_HDCP_TYPE_0;
+    case display::ContentProtectionMethod::
+        CONTENT_PROTECTION_METHOD_HDCP_TYPE_1:
+      return display::mojom::ContentProtectionMethod::
+          CONTENT_PROTECTION_METHOD_HDCP_TYPE_1;
+  }
+  NOTREACHED();
+  return display::mojom::ContentProtectionMethod::
+      CONTENT_PROTECTION_METHOD_NONE;
+}
+
+// static
+bool EnumTraits<display::mojom::ContentProtectionMethod,
+                display::ContentProtectionMethod>::
+    FromMojom(display::mojom::ContentProtectionMethod type,
+              display::ContentProtectionMethod* out) {
+  switch (type) {
+    case display::mojom::ContentProtectionMethod::
+        CONTENT_PROTECTION_METHOD_NONE:
+      *out = display::ContentProtectionMethod::CONTENT_PROTECTION_METHOD_NONE;
+      return true;
+    case display::mojom::ContentProtectionMethod::
+        CONTENT_PROTECTION_METHOD_HDCP_TYPE_0:
+      *out = display::ContentProtectionMethod::
+          CONTENT_PROTECTION_METHOD_HDCP_TYPE_0;
+      return true;
+    case display::mojom::ContentProtectionMethod::
+        CONTENT_PROTECTION_METHOD_HDCP_TYPE_1:
+      *out = display::ContentProtectionMethod::
+          CONTENT_PROTECTION_METHOD_HDCP_TYPE_1;
+      return true;
+  }
+  return false;
+}
+
+// static
 display::mojom::PanelOrientation EnumTraits<
     display::mojom::PanelOrientation,
     display::PanelOrientation>::ToMojom(display::PanelOrientation rotation) {

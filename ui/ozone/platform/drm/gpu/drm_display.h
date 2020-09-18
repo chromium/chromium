@@ -44,8 +44,10 @@ class DrmDisplay {
       size_t device_index);
 
   void SetOrigin(const gfx::Point origin) { origin_ = origin; }
-  bool GetHDCPState(display::HDCPState* state);
-  bool SetHDCPState(display::HDCPState state);
+  bool GetHDCPState(display::HDCPState* state,
+                    display::ContentProtectionMethod* protection_method);
+  bool SetHDCPState(display::HDCPState state,
+                    display::ContentProtectionMethod protection_method);
   void SetColorMatrix(const std::vector<float>& color_matrix);
   void SetBackgroundColor(const uint64_t background_color);
   void SetGammaCorrection(

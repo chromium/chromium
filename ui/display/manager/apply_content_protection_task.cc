@@ -39,7 +39,7 @@ void ApplyContentProtectionTask::Run() {
       return;
     }
 
-    if (protection_mask & CONTENT_PROTECTION_METHOD_HDCP)
+    if (protection_mask & kContentProtectionMethodHdcpAll)
       hdcp_capable_displays.push_back(display);
   }
 
@@ -59,18 +59,34 @@ void ApplyContentProtectionTask::Run() {
   }
 }
 
-void ApplyContentProtectionTask::OnGetHDCPState(int64_t display_id,
-                                                bool success,
-                                                HDCPState state) {
+void ApplyContentProtectionTask::OnGetHDCPState(
+    int64_t display_id,
+    bool success,
+    HDCPState state,
+    ContentProtectionMethod protection_method) {
   success_ &= success;
 
   bool hdcp_enabled = state != HDCP_STATE_UNDESIRED;
-  bool hdcp_requested =
-      GetDesiredProtectionMask(display_id) & CONTENT_PROTECTION_METHOD_HDCP;
+  uint32_t desired_hdcp_protections =
+      GetDesiredProtectionMask(display_id) & kContentProtectionMethodHdcpAll;
+  // Remove Type 0 from the mask if Type 1 is there.
+  if (desired_hdcp_protections & CONTENT_PROTECTION_METHOD_HDCP_TYPE_1)
+    desired_hdcp_protections &= ~CONTENT_PROTECTION_METHOD_HDCP_TYPE_0;
 
-  if (hdcp_enabled != hdcp_requested) {
+  if (hdcp_enabled != !!desired_hdcp_protections ||
+      desired_hdcp_protections != protection_method) {
+    ContentProtectionMethod new_method;
+    if (!desired_hdcp_protections)
+      new_method = CONTENT_PROTECTION_METHOD_NONE;
+    else if (desired_hdcp_protections & CONTENT_PROTECTION_METHOD_HDCP_TYPE_1)
+      new_method = CONTENT_PROTECTION_METHOD_HDCP_TYPE_1;
+    else
+      new_method = CONTENT_PROTECTION_METHOD_HDCP_TYPE_0;
+
     hdcp_requests_.emplace_back(
-        display_id, hdcp_requested ? HDCP_STATE_DESIRED : HDCP_STATE_UNDESIRED);
+        display_id,
+        desired_hdcp_protections ? HDCP_STATE_DESIRED : HDCP_STATE_UNDESIRED,
+        new_method);
   }
 
   pending_requests_--;
@@ -93,11 +109,12 @@ void ApplyContentProtectionTask::OnGetHDCPState(int64_t display_id,
   }
 
   std::vector<DisplaySnapshot*> displays = layout_manager_->GetDisplayStates();
-  std::vector<std::pair<DisplaySnapshot*, HDCPState>> hdcped_displays;
+  std::vector<std::tuple<DisplaySnapshot*, HDCPState, ContentProtectionMethod>>
+      hdcped_displays;
   // Lookup the displays again since display configuration may have changed.
-  for (const auto& pair : hdcp_requests_) {
+  for (const auto& request : hdcp_requests_) {
     auto it = std::find_if(displays.begin(), displays.end(),
-                           [id = pair.first](DisplaySnapshot* display) {
+                           [id = request.display_id](DisplaySnapshot* display) {
                              return id == display->display_id();
                            });
     if (it == displays.end()) {
@@ -105,15 +122,15 @@ void ApplyContentProtectionTask::OnGetHDCPState(int64_t display_id,
       return;
     }
 
-    hdcped_displays.emplace_back(*it, pair.second);
+    hdcped_displays.emplace_back(*it, request.state, request.protection_method);
   }
 
   // In synchronous callback execution this task can be deleted from the last
   // invocation of SetHDCPState(), thus the for-loop should not iterate over
   // object specific state (eg: |hdcp_requests_|).
-  for (const auto& pair : hdcped_displays) {
+  for (const auto& tuple : hdcped_displays) {
     native_display_delegate_->SetHDCPState(
-        *pair.first, pair.second,
+        *std::get<0>(tuple), std::get<1>(tuple), std::get<2>(tuple),
         base::BindOnce(&ApplyContentProtectionTask::OnSetHDCPState,
                        weak_ptr_factory_.GetWeakPtr()));
   }

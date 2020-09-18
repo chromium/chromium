@@ -151,10 +151,14 @@ class DrmThread : public base::Thread,
       const std::vector<display::DisplayConfigurationParams>& config_requests,
       ConfigureNativeDisplaysCallback callback) override;
   void GetHDCPState(int64_t display_id,
-                    base::OnceCallback<void(int64_t, bool, display::HDCPState)>
+                    base::OnceCallback<void(int64_t,
+                                            bool,
+                                            display::HDCPState,
+                                            display::ContentProtectionMethod)>
                         callback) override;
   void SetHDCPState(int64_t display_id,
                     display::HDCPState state,
+                    display::ContentProtectionMethod protection_method,
                     base::OnceCallback<void(int64_t, bool)> callback) override;
   void SetColorMatrix(int64_t display_id,
                       const std::vector<float>& color_matrix) override;

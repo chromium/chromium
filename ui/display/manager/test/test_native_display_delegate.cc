@@ -21,6 +21,7 @@ TestNativeDisplayDelegate::TestNativeDisplayDelegate(ActionLogger* log)
       get_hdcp_expectation_(true),
       set_hdcp_expectation_(true),
       hdcp_state_(HDCP_STATE_UNDESIRED),
+      content_protection_method_(CONTENT_PROTECTION_METHOD_NONE),
       run_async_(false),
       log_(log) {}
 
@@ -89,29 +90,37 @@ void TestNativeDisplayDelegate::GetHDCPState(const DisplaySnapshot& output,
   if (run_async_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), get_hdcp_expectation_,
-                                  hdcp_state_));
+                                  hdcp_state_, content_protection_method_));
   } else {
-    std::move(callback).Run(get_hdcp_expectation_, hdcp_state_);
+    std::move(callback).Run(get_hdcp_expectation_, hdcp_state_,
+                            content_protection_method_);
   }
 }
 
-void TestNativeDisplayDelegate::SetHDCPState(const DisplaySnapshot& output,
-                                             HDCPState state,
-                                             SetHDCPStateCallback callback) {
+void TestNativeDisplayDelegate::SetHDCPState(
+    const DisplaySnapshot& output,
+    HDCPState state,
+    ContentProtectionMethod protection_method,
+    SetHDCPStateCallback callback) {
   if (run_async_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&TestNativeDisplayDelegate::DoSetHDCPState,
-                                  base::Unretained(this), output.display_id(),
-                                  state, std::move(callback)));
+        FROM_HERE,
+        base::BindOnce(&TestNativeDisplayDelegate::DoSetHDCPState,
+                       base::Unretained(this), output.display_id(), state,
+                       protection_method, std::move(callback)));
   } else {
-    DoSetHDCPState(output.display_id(), state, std::move(callback));
+    DoSetHDCPState(output.display_id(), state, protection_method,
+                   std::move(callback));
   }
 }
 
-void TestNativeDisplayDelegate::DoSetHDCPState(int64_t display_id,
-                                               HDCPState state,
-                                               SetHDCPStateCallback callback) {
-  log_->AppendAction(GetSetHDCPStateAction(display_id, state));
+void TestNativeDisplayDelegate::DoSetHDCPState(
+    int64_t display_id,
+    HDCPState state,
+    ContentProtectionMethod protection_method,
+    SetHDCPStateCallback callback) {
+  log_->AppendAction(
+      GetSetHDCPStateAction(display_id, state, protection_method));
 
   switch (state) {
     case HDCP_STATE_ENABLED:
@@ -128,6 +137,10 @@ void TestNativeDisplayDelegate::DoSetHDCPState(int64_t display_id,
         hdcp_state_ = HDCP_STATE_UNDESIRED;
       break;
   }
+
+  content_protection_method_ = set_hdcp_expectation_
+                                   ? protection_method
+                                   : CONTENT_PROTECTION_METHOD_NONE;
 
   std::move(callback).Run(set_hdcp_expectation_);
 }

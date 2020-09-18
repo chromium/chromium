@@ -23,6 +23,7 @@ namespace ui {
 namespace {
 
 const char kContentProtection[] = "Content Protection";
+const char kHdcpContentType[] = "HDCP Content Type";
 
 const char kPrivacyScreen[] = "privacy-screen";
 
@@ -31,10 +32,19 @@ struct ContentProtectionMapping {
   display::HDCPState state;
 };
 
+struct HdcpContentTypeMapping {
+  const char* name;
+  display::ContentProtectionMethod content_type;
+};
+
 const ContentProtectionMapping kContentProtectionStates[] = {
     {"Undesired", display::HDCP_STATE_UNDESIRED},
     {"Desired", display::HDCP_STATE_DESIRED},
     {"Enabled", display::HDCP_STATE_ENABLED}};
+
+const HdcpContentTypeMapping kHdcpContentTypeStates[] = {
+    {"HDCP Type0", display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_0},
+    {"HDCP Type1", display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_1}};
 
 // Converts |state| to the DRM value associated with the it.
 uint32_t GetContentProtectionValue(drmModePropertyRes* property,
@@ -47,9 +57,31 @@ uint32_t GetContentProtectionValue(drmModePropertyRes* property,
     }
   }
 
-  for (int i = 0; i < property->count_enums; ++i)
+  for (int i = 0; i < property->count_enums; ++i) {
     if (name == property->enums[i].name)
       return i;
+  }
+
+  NOTREACHED();
+  return 0;
+}
+
+// Converts |content_type| to the DRM value associated with the it.
+uint32_t GetHdcpContentTypeValue(
+    drmModePropertyRes* property,
+    display::ContentProtectionMethod content_type) {
+  std::string name;
+  for (size_t i = 0; i < base::size(kHdcpContentTypeStates); ++i) {
+    if (kHdcpContentTypeStates[i].content_type == content_type) {
+      name = kHdcpContentTypeStates[i].name;
+      break;
+    }
+  }
+
+  for (int i = 0; i < property->count_enums; ++i) {
+    if (name == property->enums[i].name)
+      return i;
+  }
 
   NOTREACHED();
   return 0;
@@ -133,7 +165,9 @@ std::unique_ptr<display::DisplaySnapshot> DrmDisplay::Update(
   return params;
 }
 
-bool DrmDisplay::GetHDCPState(display::HDCPState* state) {
+bool DrmDisplay::GetHDCPState(
+    display::HDCPState* state,
+    display::ContentProtectionMethod* protection_method) {
   if (!connector_)
     return false;
 
@@ -150,26 +184,83 @@ bool DrmDisplay::GetHDCPState(display::HDCPState* state) {
       connector_->connector_id, DRM_MODE_OBJECT_CONNECTOR));
   std::string name =
       GetEnumNameForProperty(property_values.get(), hdcp_property.get());
-  for (size_t i = 0; i < base::size(kContentProtectionStates); ++i) {
+  size_t i;
+  for (i = 0; i < base::size(kContentProtectionStates); ++i) {
     if (name == kContentProtectionStates[i].name) {
       *state = kContentProtectionStates[i].state;
       VLOG(3) << "HDCP state: " << *state << " (" << name << ")";
-      return true;
+      break;
     }
   }
 
-  LOG(ERROR) << "Unknown content protection value '" << name << "'";
-  return false;
+  if (i == base::size(kContentProtectionStates)) {
+    LOG(ERROR) << "Unknown content protection value '" << name << "'";
+    return false;
+  }
+
+  if (*state == display::HDCP_STATE_UNDESIRED) {
+    // ProtectionMethod doesn't matter if we don't have it desired/enabled.
+    *protection_method = display::CONTENT_PROTECTION_METHOD_NONE;
+    return true;
+  }
+
+  ScopedDrmPropertyPtr content_type_property(
+      drm_->GetProperty(connector_.get(), kHdcpContentType));
+  if (!content_type_property) {
+    // This won't exist if the driver doesn't support HDCP 2.2, so default it in
+    // that case.
+    VLOG(3) << "HDCP Content Type not supported, default to Type 0";
+    *protection_method = display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_0;
+    return true;
+  }
+  name = GetEnumNameForProperty(property_values.get(),
+                                content_type_property.get());
+  for (i = 0; i < base::size(kHdcpContentTypeStates); ++i) {
+    if (name == kHdcpContentTypeStates[i].name) {
+      *protection_method = kHdcpContentTypeStates[i].content_type;
+      VLOG(3) << "Content Protection Method: " << *protection_method << " ("
+              << name << ")";
+      break;
+    }
+  }
+
+  if (i == base::size(kHdcpContentTypeStates)) {
+    LOG(ERROR) << "Unknown HDCP content type value '" << name << "'";
+    return false;
+  }
+  return true;
 }
 
-bool DrmDisplay::SetHDCPState(display::HDCPState state) {
+bool DrmDisplay::SetHDCPState(
+    display::HDCPState state,
+    display::ContentProtectionMethod protection_method) {
   if (!connector_) {
     return false;
   }
 
+  if (protection_method != display::CONTENT_PROTECTION_METHOD_NONE) {
+    ScopedDrmPropertyPtr content_type_property(
+        drm_->GetProperty(connector_.get(), kHdcpContentType));
+    if (!content_type_property) {
+      // If the driver doesn't support HDCP 2.2, this won't exist.
+      if (protection_method & display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_1) {
+        // We can't do this, since we can't specify the content type.
+        VLOG(3)
+            << "Cannot set HDCP Content Type 1 since driver doesn't support it";
+        return false;
+      }
+      VLOG(3) << "HDCP Content Type not supported, default to Type 0";
+    } else if (!drm_->SetProperty(
+                   connector_->connector_id, content_type_property->prop_id,
+                   GetHdcpContentTypeValue(content_type_property.get(),
+                                           protection_method))) {
+      // Failed setting HDCP Content Type.
+      return false;
+    }
+  }
+
   ScopedDrmPropertyPtr hdcp_property(
       drm_->GetProperty(connector_.get(), kContentProtection));
-
   if (!hdcp_property) {
     PLOG(INFO) << "'" << kContentProtection << "' property doesn't exist.";
     return false;

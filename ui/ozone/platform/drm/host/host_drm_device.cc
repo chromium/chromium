@@ -208,14 +208,17 @@ bool HostDrmDevice::GpuGetHDCPState(int64_t display_id) {
   return true;
 }
 
-bool HostDrmDevice::GpuSetHDCPState(int64_t display_id,
-                                    display::HDCPState state) {
+bool HostDrmDevice::GpuSetHDCPState(
+    int64_t display_id,
+    display::HDCPState state,
+    display::ContentProtectionMethod protection_method) {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
   if (!IsConnected())
     return false;
   auto callback = base::BindOnce(&HostDrmDevice::GpuSetHDCPStateCallback, this);
 
-  drm_device_->SetHDCPState(display_id, state, std::move(callback));
+  drm_device_->SetHDCPState(display_id, state, protection_method,
+                            std::move(callback));
 
   return true;
 }
@@ -267,11 +270,14 @@ void HostDrmDevice::GpuRelinquishDisplayControlCallback(bool success) const {
   display_manager_->GpuRelinquishedDisplayControl(success);
 }
 
-void HostDrmDevice::GpuGetHDCPStateCallback(int64_t display_id,
-                                            bool success,
-                                            display::HDCPState state) const {
+void HostDrmDevice::GpuGetHDCPStateCallback(
+    int64_t display_id,
+    bool success,
+    display::HDCPState state,
+    display::ContentProtectionMethod protection_method) const {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
-  display_manager_->GpuReceivedHDCPState(display_id, success, state);
+  display_manager_->GpuReceivedHDCPState(display_id, success, state,
+                                         protection_method);
 }
 
 void HostDrmDevice::GpuSetHDCPStateCallback(int64_t display_id,

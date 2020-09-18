@@ -36,6 +36,7 @@ class DrmNativeDisplayDelegate : public display::NativeDisplayDelegate {
                     display::GetHDCPStateCallback callback) override;
   void SetHDCPState(const display::DisplaySnapshot& output,
                     display::HDCPState state,
+                    display::ContentProtectionMethod protection_method,
                     display::SetHDCPStateCallback callback) override;
   bool SetColorMatrix(int64_t display_id,
                       const std::vector<float>& color_matrix) override;

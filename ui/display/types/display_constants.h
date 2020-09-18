@@ -51,7 +51,15 @@ enum DisplayConnectionType {
 enum ContentProtectionMethod {
   CONTENT_PROTECTION_METHOD_NONE = 0,
   CONTENT_PROTECTION_METHOD_HDCP = 1 << 0,
+  // TYPE_0 for HDCP is the default, so make them equivalent.
+  CONTENT_PROTECTION_METHOD_HDCP_TYPE_0 = CONTENT_PROTECTION_METHOD_HDCP,
+  CONTENT_PROTECTION_METHOD_HDCP_TYPE_1 = 1 << 1,
 };
+
+// Bitmask of all the different HDCP types.
+constexpr uint32_t kContentProtectionMethodHdcpAll =
+    CONTENT_PROTECTION_METHOD_HDCP_TYPE_0 |
+    CONTENT_PROTECTION_METHOD_HDCP_TYPE_1;
 
 // HDCP protection state.
 enum HDCPState {

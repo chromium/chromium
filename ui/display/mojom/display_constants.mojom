@@ -23,6 +23,13 @@ enum HDCPState {
   HDCP_STATE_ENABLED,
 };
 
+// Corresponding to display::ContentProtectionMethod.
+enum ContentProtectionMethod {
+  CONTENT_PROTECTION_METHOD_NONE = 0,
+  CONTENT_PROTECTION_METHOD_HDCP_TYPE_0 = 1,
+  CONTENT_PROTECTION_METHOD_HDCP_TYPE_1 = 2,
+};
+
 // Corresponds to display::PanelOrientation.
 enum PanelOrientation {
   NORMAL = 0,

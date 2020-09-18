@@ -363,19 +363,27 @@ void DrmThread::RemoveGraphicsDevice(const base::FilePath& path) {
 
 void DrmThread::GetHDCPState(
     int64_t display_id,
-    base::OnceCallback<void(int64_t, bool, display::HDCPState)> callback) {
+    base::OnceCallback<void(int64_t,
+                            bool,
+                            display::HDCPState,
+                            display::ContentProtectionMethod)> callback) {
   TRACE_EVENT0("drm", "DrmThread::GetHDCPState");
   display::HDCPState state = display::HDCP_STATE_UNDESIRED;
-  bool success = display_manager_->GetHDCPState(display_id, &state);
-  std::move(callback).Run(display_id, success, state);
+  display::ContentProtectionMethod protection_method =
+      display::CONTENT_PROTECTION_METHOD_NONE;
+  bool success =
+      display_manager_->GetHDCPState(display_id, &state, &protection_method);
+  std::move(callback).Run(display_id, success, state, protection_method);
 }
 
 void DrmThread::SetHDCPState(int64_t display_id,
                              display::HDCPState state,
+                             display::ContentProtectionMethod protection_method,
                              base::OnceCallback<void(int64_t, bool)> callback) {
   TRACE_EVENT0("drm", "DrmThread::SetHDCPState");
-  std::move(callback).Run(display_id,
-                          display_manager_->SetHDCPState(display_id, state));
+  std::move(callback).Run(
+      display_id,
+      display_manager_->SetHDCPState(display_id, state, protection_method));
 }
 
 void DrmThread::SetColorMatrix(int64_t display_id,

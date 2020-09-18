@@ -48,8 +48,10 @@ class GpuThreadAdapter {
       const std::vector<display::DisplayConfigurationParams>& config_requests,
       display::ConfigureCallback callback) = 0;
   virtual bool GpuGetHDCPState(int64_t display_id) = 0;
-  virtual bool GpuSetHDCPState(int64_t display_id,
-                               display::HDCPState state) = 0;
+  virtual bool GpuSetHDCPState(
+      int64_t display_id,
+      display::HDCPState state,
+      display::ContentProtectionMethod protection_method) = 0;
   virtual bool GpuSetColorMatrix(int64_t display_id,
                                  const std::vector<float>& color_matrix) = 0;
   virtual bool GpuSetGammaCorrection(

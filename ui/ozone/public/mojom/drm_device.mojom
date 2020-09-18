@@ -57,11 +57,16 @@ interface DrmDevice {
       array<display.mojom.DisplayConfigurationParams> config_requests) =>
     (map<int64, bool> statuses);
 
-  // Gets or sets high-definition content protection (HDCP) (DRM as in
+  // Gets high-definition content protection (HDCP) (DRM as in
   // digital rights management) state.
   GetHDCPState(int64 display_id) =>
-      (int64 display_id, bool success, display.mojom.HDCPState state);
-  SetHDCPState(int64 display_id, display.mojom.HDCPState  state) =>
+      (int64 display_id, bool success, display.mojom.HDCPState state,
+       display.mojom.ContentProtectionMethod protection_method);
+
+  // Sets high-definition content protection (HDCP) (DRM as in
+  // digital rights management) state.
+  SetHDCPState(int64 display_id, display.mojom.HDCPState state,
+               display.mojom.ContentProtectionMethod protection_method) =>
       (int64 display_id, bool success);
 
   // Sets a 3x3 color transform matrix on the display hardware.

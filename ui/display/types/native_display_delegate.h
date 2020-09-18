@@ -27,7 +27,8 @@ using GetDisplaysCallback =
     base::OnceCallback<void(const std::vector<DisplaySnapshot*>&)>;
 using ConfigureCallback =
     base::OnceCallback<void(const base::flat_map<int64_t, bool>&)>;
-using GetHDCPStateCallback = base::OnceCallback<void(bool, HDCPState)>;
+using GetHDCPStateCallback =
+    base::OnceCallback<void(bool, HDCPState, ContentProtectionMethod)>;
 using SetHDCPStateCallback = base::OnceCallback<void(bool)>;
 using DisplayControlCallback = base::OnceCallback<void(bool)>;
 
@@ -68,6 +69,7 @@ class DISPLAY_TYPES_EXPORT NativeDisplayDelegate {
   // Sets HDCP state of output.
   virtual void SetHDCPState(const DisplaySnapshot& output,
                             HDCPState state,
+                            ContentProtectionMethod protection_method,
                             SetHDCPStateCallback callback) = 0;
 
   // Sets the given 3x3 |color_matrix| on the display with |display_id|.

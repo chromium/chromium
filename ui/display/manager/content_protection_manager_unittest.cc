@@ -18,7 +18,7 @@ namespace test {
 
 namespace {
 
-constexpr int64_t kDisplayIds[] = {123, 456, 789};
+constexpr int64_t kDisplayIds[] = {123, 234, 345, 456};
 const DisplayMode kDisplayMode{gfx::Size(1366, 768), false, 60.0f};
 
 }  // namespace
@@ -55,23 +55,16 @@ class ContentProtectionManagerTest : public testing::Test {
   void SetUp() override {
     manager_.set_native_display_delegate(&native_display_delegate_);
 
-    displays_[0] = FakeDisplaySnapshot::Builder()
-                       .SetId(kDisplayIds[0])
-                       .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
-                       .SetCurrentMode(kDisplayMode.Clone())
-                       .Build();
-
-    displays_[1] = FakeDisplaySnapshot::Builder()
-                       .SetId(kDisplayIds[1])
-                       .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
-                       .SetCurrentMode(kDisplayMode.Clone())
-                       .Build();
-
-    displays_[2] = FakeDisplaySnapshot::Builder()
-                       .SetId(kDisplayIds[2])
-                       .SetType(DISPLAY_CONNECTION_TYPE_VGA)
-                       .SetCurrentMode(kDisplayMode.Clone())
-                       .Build();
+    DisplayConnectionType conn_types[] = {
+        DISPLAY_CONNECTION_TYPE_INTERNAL, DISPLAY_CONNECTION_TYPE_HDMI,
+        DISPLAY_CONNECTION_TYPE_VGA, DISPLAY_CONNECTION_TYPE_HDMI};
+    for (size_t i = 0; i < base::size(kDisplayIds); ++i) {
+      displays_[i] = FakeDisplaySnapshot::Builder()
+                         .SetId(kDisplayIds[i])
+                         .SetType(conn_types[i])
+                         .SetCurrentMode(kDisplayMode.Clone())
+                         .Build();
+    }
 
     UpdateDisplays(2);
   }
@@ -128,7 +121,7 @@ class ContentProtectionManagerTest : public testing::Test {
   uint32_t connection_mask_ = DISPLAY_CONNECTION_TYPE_NONE;
   uint32_t protection_mask_ = CONTENT_PROTECTION_METHOD_NONE;
 
-  std::unique_ptr<DisplaySnapshot> displays_[3];
+  std::unique_ptr<DisplaySnapshot> displays_[base::size(kDisplayIds)];
 
   DISALLOW_COPY_AND_ASSIGN(ContentProtectionManagerTest);
 };
@@ -173,7 +166,8 @@ TEST_F(ContentProtectionManagerTest, Basic) {
 
   EXPECT_EQ(1, apply_content_protection_call_count_);
   EXPECT_TRUE(apply_content_protection_success_);
-  EXPECT_EQ(GetSetHDCPStateAction(kDisplayIds[1], HDCP_STATE_DESIRED),
+  EXPECT_EQ(GetSetHDCPStateAction(kDisplayIds[1], HDCP_STATE_DESIRED,
+                                  CONTENT_PROTECTION_METHOD_HDCP),
             log_.GetActionsAndClear());
 
   EXPECT_EQ(HDCP_STATE_ENABLED, native_display_delegate_.hdcp_state());
@@ -217,7 +211,8 @@ TEST_F(ContentProtectionManagerTest, Basic) {
   // Protections should be disabled after unregister.
   manager_.UnregisterClient(id);
 
-  EXPECT_EQ(GetSetHDCPStateAction(kDisplayIds[1], HDCP_STATE_UNDESIRED),
+  EXPECT_EQ(GetSetHDCPStateAction(kDisplayIds[1], HDCP_STATE_UNDESIRED,
+                                  CONTENT_PROTECTION_METHOD_NONE),
             log_.GetActionsAndClear());
   EXPECT_EQ(HDCP_STATE_UNDESIRED, native_display_delegate_.hdcp_state());
 }
@@ -259,7 +254,8 @@ TEST_F(ContentProtectionManagerTest, BasicAsync) {
   EXPECT_EQ(DISPLAY_CONNECTION_TYPE_HDMI, connection_mask_);
   EXPECT_EQ(CONTENT_PROTECTION_METHOD_HDCP, protection_mask_);
 
-  EXPECT_EQ(GetSetHDCPStateAction(kDisplayIds[1], HDCP_STATE_DESIRED),
+  EXPECT_EQ(GetSetHDCPStateAction(kDisplayIds[1], HDCP_STATE_DESIRED,
+                                  CONTENT_PROTECTION_METHOD_HDCP),
             log_.GetActionsAndClear());
   EXPECT_EQ(HDCP_STATE_ENABLED, native_display_delegate_.hdcp_state());
 
@@ -292,7 +288,8 @@ TEST_F(ContentProtectionManagerTest, BasicAsync) {
   EXPECT_EQ(CONTENT_PROTECTION_METHOD_NONE, protection_mask_);
 
   // Disabling protection should fail.
-  EXPECT_EQ(GetSetHDCPStateAction(kDisplayIds[1], HDCP_STATE_UNDESIRED),
+  EXPECT_EQ(GetSetHDCPStateAction(kDisplayIds[1], HDCP_STATE_UNDESIRED,
+                                  CONTENT_PROTECTION_METHOD_NONE),
             log_.GetActionsAndClear());
   EXPECT_EQ(HDCP_STATE_ENABLED, native_display_delegate_.hdcp_state());
 }
@@ -312,7 +309,8 @@ TEST_F(ContentProtectionManagerTest, TwoClients) {
   EXPECT_EQ(1, apply_content_protection_call_count_);
   EXPECT_TRUE(apply_content_protection_success_);
 
-  EXPECT_EQ(GetSetHDCPStateAction(kDisplayIds[1], HDCP_STATE_DESIRED),
+  EXPECT_EQ(GetSetHDCPStateAction(kDisplayIds[1], HDCP_STATE_DESIRED,
+                                  CONTENT_PROTECTION_METHOD_HDCP),
             log_.GetActionsAndClear());
   EXPECT_EQ(HDCP_STATE_ENABLED, native_display_delegate_.hdcp_state());
 
@@ -360,7 +358,8 @@ TEST_F(ContentProtectionManagerTest, TwoClients) {
   EXPECT_EQ(3, apply_content_protection_call_count_);
   EXPECT_TRUE(apply_content_protection_success_);
 
-  EXPECT_EQ(GetSetHDCPStateAction(kDisplayIds[1], HDCP_STATE_UNDESIRED),
+  EXPECT_EQ(GetSetHDCPStateAction(kDisplayIds[1], HDCP_STATE_UNDESIRED,
+                                  CONTENT_PROTECTION_METHOD_NONE),
             log_.GetActionsAndClear());
   EXPECT_EQ(HDCP_STATE_UNDESIRED, native_display_delegate_.hdcp_state());
 }
@@ -389,7 +388,8 @@ TEST_F(ContentProtectionManagerTest, TwoClientsEnable) {
   EXPECT_EQ(2, apply_content_protection_call_count_);
   EXPECT_TRUE(apply_content_protection_success_);
 
-  EXPECT_EQ(GetSetHDCPStateAction(kDisplayIds[1], HDCP_STATE_DESIRED),
+  EXPECT_EQ(GetSetHDCPStateAction(kDisplayIds[1], HDCP_STATE_DESIRED,
+                                  CONTENT_PROTECTION_METHOD_HDCP),
             log_.GetActionsAndClear());
   EXPECT_EQ(HDCP_STATE_ENABLED, native_display_delegate_.hdcp_state());
 
@@ -446,7 +446,9 @@ TEST_F(ContentProtectionManagerTest, RequestRetention) {
   EXPECT_TRUE(apply_content_protection_success_);
 
   // Protection on external display should be retained.
-  EXPECT_EQ(GetSetHDCPStateAction(kDisplayIds[1], HDCP_STATE_DESIRED).c_str(),
+  EXPECT_EQ(GetSetHDCPStateAction(kDisplayIds[1], HDCP_STATE_DESIRED,
+                                  CONTENT_PROTECTION_METHOD_HDCP)
+                .c_str(),
             log_.GetActionsAndClear());
   EXPECT_EQ(HDCP_STATE_ENABLED, native_display_delegate_.hdcp_state());
 }
@@ -479,10 +481,13 @@ TEST_F(ContentProtectionManagerTest, ClientRegistration) {
 
   // Unregistration should disable protection.
   EXPECT_EQ(
-      JoinActions(
-          GetSetHDCPStateAction(kDisplayIds[1], HDCP_STATE_DESIRED).c_str(),
-          GetSetHDCPStateAction(kDisplayIds[1], HDCP_STATE_UNDESIRED).c_str(),
-          nullptr),
+      JoinActions(GetSetHDCPStateAction(kDisplayIds[1], HDCP_STATE_DESIRED,
+                                        CONTENT_PROTECTION_METHOD_HDCP)
+                      .c_str(),
+                  GetSetHDCPStateAction(kDisplayIds[1], HDCP_STATE_UNDESIRED,
+                                        CONTENT_PROTECTION_METHOD_NONE)
+                      .c_str(),
+                  nullptr),
       log_.GetActionsAndClear());
   EXPECT_EQ(HDCP_STATE_UNDESIRED, native_display_delegate_.hdcp_state());
 }

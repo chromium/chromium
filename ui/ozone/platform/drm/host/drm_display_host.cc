@@ -38,15 +38,18 @@ void DrmDisplayHost::UpdateDisplaySnapshot(
 void DrmDisplayHost::GetHDCPState(display::GetHDCPStateCallback callback) {
   get_hdcp_callback_ = std::move(callback);
   if (!sender_->GpuGetHDCPState(snapshot_->display_id()))
-    OnHDCPStateReceived(false, display::HDCP_STATE_UNDESIRED);
+    OnHDCPStateReceived(false, display::HDCP_STATE_UNDESIRED,
+                        display::CONTENT_PROTECTION_METHOD_NONE);
 }
 
-void DrmDisplayHost::OnHDCPStateReceived(bool status,
-                                         display::HDCPState state) {
+void DrmDisplayHost::OnHDCPStateReceived(
+    bool status,
+    display::HDCPState state,
+    display::ContentProtectionMethod protection_method) {
   if (!get_hdcp_callback_.is_null()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(get_hdcp_callback_), status, state));
+        FROM_HERE, base::BindOnce(std::move(get_hdcp_callback_), status, state,
+                                  protection_method));
   } else {
     LOG(ERROR) << "Got unexpected event for display "
                << snapshot_->display_id();
@@ -55,10 +58,13 @@ void DrmDisplayHost::OnHDCPStateReceived(bool status,
   get_hdcp_callback_.Reset();
 }
 
-void DrmDisplayHost::SetHDCPState(display::HDCPState state,
-                                  display::SetHDCPStateCallback callback) {
+void DrmDisplayHost::SetHDCPState(
+    display::HDCPState state,
+    display::ContentProtectionMethod protection_method,
+    display::SetHDCPStateCallback callback) {
   set_hdcp_callback_ = std::move(callback);
-  if (!sender_->GpuSetHDCPState(snapshot_->display_id(), state))
+  if (!sender_->GpuSetHDCPState(snapshot_->display_id(), state,
+                                protection_method))
     OnHDCPStateUpdated(false);
 }
 
@@ -103,7 +109,8 @@ void DrmDisplayHost::OnGpuThreadRetired() {}
 
 void DrmDisplayHost::ClearCallbacks() {
   if (!get_hdcp_callback_.is_null())
-    OnHDCPStateReceived(false, display::HDCP_STATE_UNDESIRED);
+    OnHDCPStateReceived(false, display::HDCP_STATE_UNDESIRED,
+                        display::CONTENT_PROTECTION_METHOD_NONE);
   if (!set_hdcp_callback_.is_null())
     OnHDCPStateUpdated(false);
 }

@@ -29,11 +29,12 @@ namespace test {
 class ContentProtectionManagerTest;
 }  // namespace test
 
-// Fulfills client requests to query and apply per-display content protection,
-// and notifies observers of display security changes. Changes are detected by
-// polling as required by the kernel API, since authentication latency depends
-// on hardware topology, and the hardware may temporarily drop authentication,
-// in which case the kernel automatically tries to re-establish protection.
+// Fulfills client requests to query and apply per-display or all display
+// content protection, and notifies observers of display security changes.
+// Changes are detected by polling as required by the kernel API, since
+// authentication latency depends on hardware topology, and the hardware may
+// temporarily drop authentication, in which case the kernel automatically tries
+// to re-establish protection.
 class DISPLAY_MANAGER_EXPORT ContentProtectionManager
     : public DisplayConfigurator::Observer {
  public:

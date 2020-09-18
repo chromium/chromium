@@ -29,9 +29,11 @@ std::string GetCrtcAction(
           : "NULL");
 }
 
-std::string GetSetHDCPStateAction(int64_t display_id, HDCPState state) {
-  return base::StringPrintf("set_hdcp(id=%" PRId64 ",state=%d)", display_id,
-                            state);
+std::string GetSetHDCPStateAction(int64_t display_id,
+                                  HDCPState state,
+                                  ContentProtectionMethod protection_method) {
+  return base::StringPrintf("set_hdcp(id=%" PRId64 ",state=%d,method=%d)",
+                            display_id, state, protection_method);
 }
 
 std::string SetColorMatrixAction(int64_t display_id,

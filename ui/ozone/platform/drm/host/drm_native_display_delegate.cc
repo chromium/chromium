@@ -66,9 +66,10 @@ void DrmNativeDisplayDelegate::GetHDCPState(
 void DrmNativeDisplayDelegate::SetHDCPState(
     const display::DisplaySnapshot& output,
     display::HDCPState state,
+    display::ContentProtectionMethod protection_method,
     display::SetHDCPStateCallback callback) {
   DrmDisplayHost* display = display_manager_->GetDisplay(output.display_id());
-  display->SetHDCPState(state, std::move(callback));
+  display->SetHDCPState(state, protection_method, std::move(callback));
 }
 
 bool DrmNativeDisplayDelegate::SetColorMatrix(
