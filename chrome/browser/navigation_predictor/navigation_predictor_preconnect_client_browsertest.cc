@@ -11,6 +11,7 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
@@ -56,6 +57,8 @@ class NavigationPredictorPreconnectClientBrowserTest
   void SetUpOnMainThread() override {
     subresource_filter::SubresourceFilterBrowserTest::SetUpOnMainThread();
     host_resolver()->ClearRules();
+    NavigationPredictorPreconnectClient::EnablePreconnectsForLocalIPsForTesting(
+        true);
 
     auto* loading_predictor =
         predictors::LoadingPredictorFactory::GetForProfile(
@@ -131,6 +134,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTest,
                        PreconnectNotSearch) {
+  base::HistogramTester histogram_tester;
   const GURL& url = GetTestURL("/anchors_different_area.html");
 
   ui_test_utils::NavigateToURL(browser(), url);
@@ -138,6 +142,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTest,
   // client.
   WaitForPreresolveCount(2);
   EXPECT_EQ(2, preresolve_done_count_);
+  histogram_tester.ExpectUniqueSample("NavigationPredictor.IsPubliclyRoutable",
+                                      true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTest,
@@ -407,6 +413,34 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTestWithSearch,
   // preconnect.
   WaitForPreresolveCount(4);
   EXPECT_EQ(4, preresolve_done_count_);
+}
+
+class NavigationPredictorPreconnectClientLocalURLBrowserTest
+    : public NavigationPredictorPreconnectClientBrowserTest {
+ public:
+  NavigationPredictorPreconnectClientLocalURLBrowserTest() = default;
+
+ private:
+  void SetUpOnMainThread() override {
+    NavigationPredictorPreconnectClientBrowserTest::SetUpOnMainThread();
+    NavigationPredictorPreconnectClient::EnablePreconnectsForLocalIPsForTesting(
+        false);
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(
+      NavigationPredictorPreconnectClientLocalURLBrowserTest);
+};
+
+IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientLocalURLBrowserTest,
+                       NoPreconnectSearch) {
+  base::HistogramTester histogram_tester;
+  const GURL& url = GetTestURL("/anchors_different_area.html");
+
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  // There should not be any preconnects to non-public addresses.
+  histogram_tester.ExpectUniqueSample("NavigationPredictor.IsPubliclyRoutable",
+                                      false, 1);
 }
 
 }  // namespace

@@ -94445,6 +94445,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="NavigationPredictor.IsPubliclyRoutable" enum="Boolean"
+    expires_after="M90">
+  <owner>tbansal@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <summary>
+    Set to true if the IP address of the origin of the main frame URL is
+    publically routable. Recorded everytime a preconnect attempt is made by the
+    navigation predictor.
+  </summary>
+</histogram>
+
 <histogram base="true" name="NavigationPredictor.LinkClickedPrerenderResult"
     enum="NavigationPredictorLinkClickedPrerenderResult" expires_after="M85">
   <owner>ryansturm@chromium.org</owner>

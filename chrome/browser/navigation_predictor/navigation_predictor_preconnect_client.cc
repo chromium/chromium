@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
@@ -23,6 +24,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/features.h"
+#include "net/base/ip_address.h"
 
 namespace {
 
@@ -44,8 +46,22 @@ NavigationPredictorPreconnectClient::~NavigationPredictorPreconnectClient() =
 void NavigationPredictorPreconnectClient::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInMainFrame() ||
-      !navigation_handle->HasCommitted() ||
-      (!base::FeatureList::IsEnabled(
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+
+  if (!navigation_handle->IsSameDocument()) {
+    is_publicly_routable_ = false;
+
+    base::Optional<bool> is_publicly_routable =
+        IsPubliclyRoutable(navigation_handle);
+
+    if (is_publicly_routable) {
+      is_publicly_routable_ = is_publicly_routable.value();
+    }
+  }
+
+  if ((!base::FeatureList::IsEnabled(
            features::
                kNavigationPredictorEnablePreconnectOnSameDocumentNavigations) &&
        navigation_handle->IsSameDocument())) {
@@ -141,6 +157,14 @@ void NavigationPredictorPreconnectClient::MaybePreconnectNow(
     return;
   }
 
+  UMA_HISTOGRAM_BOOLEAN("NavigationPredictor.IsPubliclyRoutable",
+                        is_publicly_routable_);
+
+  // Disable preconnecting to servers that are not publicly routable. These
+  // could likely be small IoT servers that may not support extra traffic.
+  if (!is_publicly_routable_)
+    return;
+
   auto* loading_predictor = predictors::LoadingPredictorFactory::GetForProfile(
       Profile::FromBrowserContext(browser_context_));
   GURL preconnect_url_serialized(preconnect_origin.Serialize());
@@ -163,7 +187,7 @@ void NavigationPredictorPreconnectClient::MaybePreconnectNow(
       FROM_HERE,
       base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
           net::features::kNetUnusedIdleSocketTimeout,
-          "unused_idle_socket_timeout_seconds", 60)) +
+          "unused_idle_socket_timeout_seconds", 10)) +
           base::TimeDelta::FromMilliseconds(retry_delay_ms),
       base::BindOnce(&NavigationPredictorPreconnectClient::MaybePreconnectNow,
                      base::Unretained(this), preconnects_attempted + 1));
@@ -177,5 +201,28 @@ bool NavigationPredictorPreconnectClient::IsSearchEnginePage() const {
   return template_service->IsSearchResultsPageFromDefaultSearchProvider(
       web_contents()->GetLastCommittedURL());
 }
+
+base::Optional<bool> NavigationPredictorPreconnectClient::IsPubliclyRoutable(
+    content::NavigationHandle* navigation_handle) const {
+  net::IPEndPoint remote_endpoint = navigation_handle->GetSocketAddress();
+  net::IPAddress page_ip_address_ = remote_endpoint.address();
+
+  // Sometimes the IP address may not be set (e.g., if the socket is being
+  // reused).
+  if (!page_ip_address_.IsValid()) {
+    return base::nullopt;
+  }
+
+  if (!enable_preconnects_for_local_ips_for_testing_) {
+    if (page_ip_address_.IsLoopback() ||
+        !page_ip_address_.IsPubliclyRoutable()) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool NavigationPredictorPreconnectClient::
+    enable_preconnects_for_local_ips_for_testing_ = false;
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(NavigationPredictorPreconnectClient)
