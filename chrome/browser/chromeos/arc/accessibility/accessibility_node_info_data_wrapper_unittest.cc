@@ -642,4 +642,87 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, ControlIsFocusable) {
   ASSERT_TRUE(wrapper.CanBeAccessibilityFocused());
 }
 
+TEST_F(AccessibilityNodeInfoDataWrapperTest, FocusAndClickAction) {
+  AXNodeInfoData root;
+  root.id = 10;
+  AccessibilityNodeInfoDataWrapper root_wrapper(tree_source(), &root);
+  SetIdToWrapper(&root_wrapper);
+  SetProperty(&root, AXStringProperty::CLASS_NAME, "");
+  SetProperty(&root, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(&root, AXBooleanProperty::FOCUSABLE, true);
+  SetProperty(&root, AXBooleanProperty::CLICKABLE, true);
+  SetProperty(&root, AXIntListProperty::CHILD_NODE_IDS, std::vector<int>({1}));
+
+  AXNodeInfoData child1;
+  child1.id = 1;
+  AccessibilityNodeInfoDataWrapper child1_wrapper(tree_source(), &child1);
+  SetIdToWrapper(&child1_wrapper);
+  SetProperty(&child1, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(&child1, AXIntListProperty::CHILD_NODE_IDS,
+              std::vector<int>({2}));
+  SetParentId(child1.id, root.id);
+
+  AXNodeInfoData child2;
+  child2.id = 2;
+  AccessibilityNodeInfoDataWrapper child2_wrapper(tree_source(), &child2);
+  SetIdToWrapper(&child2_wrapper);
+  SetProperty(&child2, AXBooleanProperty::IMPORTANCE, true);
+  SetParentId(child2.id, child1.id);
+
+  SetProperty(&child2, AXStringProperty::CONTENT_DESCRIPTION, "test text");
+
+  set_screen_reader_mode(true);
+
+  ui::AXNodeData data = CallSerialize(root_wrapper);
+  std::string name;
+  ASSERT_TRUE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_EQ("test text", name);
+  ASSERT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kClickable));
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kFocusable));
+
+  data = CallSerialize(child1_wrapper);
+  ASSERT_FALSE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_FALSE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kClickable));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kFocusable));
+
+  // Set click and focus action to child1. child1 will be clickable and
+  // focusable, and gets ax name from descendants.
+  SetProperty(&child1, AXIntListProperty::STANDARD_ACTION_IDS,
+              std::vector<int>({static_cast<int>(AXActionType::CLICK),
+                                static_cast<int>(AXActionType::FOCUS)}));
+
+  data = CallSerialize(root_wrapper);
+  ASSERT_FALSE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kClickable));
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kFocusable));
+
+  data = CallSerialize(child1_wrapper);
+  ASSERT_TRUE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_EQ("test text", name);
+  ASSERT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kClickable));
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kFocusable));
+
+  // Same for clear_focus action instead of focus action.
+  SetProperty(&child1, AXIntListProperty::STANDARD_ACTION_IDS,
+              std::vector<int>({static_cast<int>(AXActionType::CLICK),
+                                static_cast<int>(AXActionType::CLEAR_FOCUS)}));
+
+  data = CallSerialize(root_wrapper);
+  ASSERT_FALSE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kClickable));
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kFocusable));
+
+  data = CallSerialize(child1_wrapper);
+  ASSERT_TRUE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_EQ("test text", name);
+  ASSERT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kClickable));
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kFocusable));
+}
+
 }  // namespace arc

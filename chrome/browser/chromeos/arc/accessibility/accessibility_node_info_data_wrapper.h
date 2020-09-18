@@ -74,6 +74,9 @@ class AccessibilityNodeInfoDataWrapper : public AccessibilityInfoDataWrapper {
   void ComputeNameFromContents(std::vector<std::string>* names) const;
   void ComputeNameFromContentsInternal(std::vector<std::string>* names) const;
 
+  bool IsClickable() const;
+  bool IsFocusable() const;
+
   bool IsScrollableContainer() const;
   bool IsToplevelScrollItem() const;
 

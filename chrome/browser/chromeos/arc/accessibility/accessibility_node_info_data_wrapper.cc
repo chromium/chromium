@@ -102,15 +102,15 @@ bool AccessibilityNodeInfoDataWrapper::IsAccessibilityFocusableContainer()
     const {
   if (IsVirtualNode()) {
     return GetProperty(AXBooleanProperty::SCREEN_READER_FOCUSABLE) ||
-           GetProperty(AXBooleanProperty::FOCUSABLE);
+           IsFocusable();
   }
 
   if (!IsImportantInAndroid() || (IsScrollableContainer() && !HasText()))
     return false;
 
   return GetProperty(AXBooleanProperty::SCREEN_READER_FOCUSABLE) ||
-         GetProperty(AXBooleanProperty::CLICKABLE) ||
-         GetProperty(AXBooleanProperty::FOCUSABLE) || IsToplevelScrollItem();
+         IsFocusable() || IsClickable() || IsToplevelScrollItem();
+  // TODO(hirokisato): probably check long clickable as well.
 }
 
 void AccessibilityNodeInfoDataWrapper::PopulateAXRole(
@@ -296,7 +296,7 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXState(
 
   const bool focusable = tree_source_->IsScreenReaderMode()
                              ? IsAccessibilityFocusableContainer()
-                             : GetProperty(AXBooleanProperty::FOCUSABLE);
+                             : IsFocusable();
   if (focusable)
     out_data->AddState(ax::mojom::State::kFocusable);
 
@@ -393,12 +393,12 @@ void AccessibilityNodeInfoDataWrapper::Serialize(
 
   // Boolean properties.
   PopulateAXState(out_data);
-  if (GetProperty(AXBooleanProperty::SCROLLABLE)) {
+  if (GetProperty(AXBooleanProperty::SCROLLABLE))
     out_data->AddBoolAttribute(ax::mojom::BoolAttribute::kScrollable, true);
-  }
-  if (GetProperty(AXBooleanProperty::CLICKABLE)) {
+
+  if (IsClickable())
     out_data->AddBoolAttribute(ax::mojom::BoolAttribute::kClickable, true);
-  }
+
   if (GetProperty(AXBooleanProperty::SELECTED)) {
     if (ui::SupportsSelected(out_data->role)) {
       out_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
@@ -697,6 +697,17 @@ void AccessibilityNodeInfoDataWrapper::ComputeNameFromContentsInternal(
   }
 }
 
+bool AccessibilityNodeInfoDataWrapper::IsClickable() const {
+  return GetProperty(AXBooleanProperty::CLICKABLE) ||
+         HasStandardAction(AXActionType::CLICK);
+}
+
+bool AccessibilityNodeInfoDataWrapper::IsFocusable() const {
+  return GetProperty(AXBooleanProperty::FOCUSABLE) ||
+         HasStandardAction(AXActionType::FOCUS) ||
+         HasStandardAction(AXActionType::CLEAR_FOCUS);
+}
+
 bool AccessibilityNodeInfoDataWrapper::IsScrollableContainer() const {
   if (GetProperty(AXBooleanProperty::SCROLLABLE))
     return true;
@@ -739,18 +750,13 @@ bool AccessibilityNodeInfoDataWrapper::HasImportantPropertyInternal() const {
     return true;
   }
 
+  if (IsFocusable() || IsClickable())
+    return true;
+
   // These properties are sorted in the same order of mojom file.
   if (GetProperty(AXBooleanProperty::CHECKABLE) ||
-      GetProperty(AXBooleanProperty::FOCUSABLE) ||
       GetProperty(AXBooleanProperty::SELECTED) ||
-      GetProperty(AXBooleanProperty::CLICKABLE) ||
       GetProperty(AXBooleanProperty::EDITABLE)) {
-    return true;
-  }
-
-  if (HasStandardAction(AXActionType::FOCUS) ||
-      HasStandardAction(AXActionType::CLEAR_FOCUS) ||
-      HasStandardAction(AXActionType::CLICK)) {
     return true;
   }
 
