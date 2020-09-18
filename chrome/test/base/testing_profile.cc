@@ -70,6 +70,7 @@
 #include "components/keyed_service/core/simple_dependency_manager.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/keyed_service/core/simple_key_map.h"
+#include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/history_index_restore_observer.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
@@ -492,6 +493,16 @@ TestingProfile::~TestingProfile() {
 
   if (host_content_settings_map_.get())
     host_content_settings_map_->ShutdownOnUIThread();
+
+  // Make sure SharedProtoDatabase doesn't post delayed tasks anymore.
+  ForEachStoragePartition(
+      this,
+      base::BindRepeating([](content::StoragePartition* storage_partition) {
+        if (auto* provider =
+                storage_partition->GetProtoDatabaseProviderForTesting()) {
+          provider->SetSharedDBDeleteObsoleteDelayForTesting(base::TimeDelta());
+        }
+      }));
 
   // Shutdown storage partitions before we post a task to delete
   // the resource context.

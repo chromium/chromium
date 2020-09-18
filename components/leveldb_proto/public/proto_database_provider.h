@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/leveldb_proto/internal/proto_database_impl.h"
 #include "components/leveldb_proto/internal/shared_proto_database_provider.h"
@@ -60,8 +61,9 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoDatabaseProvider {
       const base::FilePath& unique_db_dir,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
 
-
   virtual ~ProtoDatabaseProvider();
+
+  void SetSharedDBDeleteObsoleteDelayForTesting(base::TimeDelta delay);
 
  private:
   friend class TestProtoDatabaseProvider;

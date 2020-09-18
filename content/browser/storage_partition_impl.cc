@@ -1662,6 +1662,11 @@ void StoragePartitionImpl::SetProtoDatabaseProvider(
   proto_database_provider_ = std::move(proto_db_provider);
 }
 
+leveldb_proto::ProtoDatabaseProvider*
+StoragePartitionImpl::GetProtoDatabaseProviderForTesting() {
+  return proto_database_provider_.get();
+}
+
 void StoragePartitionImpl::OpenLocalStorage(
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {

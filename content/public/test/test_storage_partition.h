@@ -142,6 +142,8 @@ class TestStoragePartition : public StoragePartition {
   void SetProtoDatabaseProvider(
       std::unique_ptr<leveldb_proto::ProtoDatabaseProvider> proto_db_provider)
       override;
+  leveldb_proto::ProtoDatabaseProvider* GetProtoDatabaseProviderForTesting()
+      override;
 
   void set_content_index_context(ContentIndexContext* context) {
     content_index_context_ = context;

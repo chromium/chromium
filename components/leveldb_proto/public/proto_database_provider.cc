@@ -52,4 +52,10 @@ void ProtoDatabaseProvider::GetSharedDBInstance(
                                  base::BindOnce(std::move(callback), db_));
 }
 
+void ProtoDatabaseProvider::SetSharedDBDeleteObsoleteDelayForTesting(
+    base::TimeDelta delay) {
+  if (db_)
+    db_->set_delete_obsolete_delay_for_testing(delay);  // IN-TEST
+}
+
 }  // namespace leveldb_proto

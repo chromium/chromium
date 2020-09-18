@@ -16,9 +16,6 @@ class TabStateDBFactoryTest : public testing::Test {
   TabStateDBFactoryTest() = default;
 
   void SetUp() override {
-    // TODO(crbug.com/546640): This test seems to leak data across tests (on
-    // Windows, even temp files) because SharedProtoDatabase doesn't get
-    // reliably deleted upon steardown.
     ASSERT_TRUE(profile_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(different_profile_dir_.CreateUniqueTempDir());
 

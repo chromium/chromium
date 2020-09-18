@@ -285,6 +285,11 @@ class CONTENT_EXPORT StoragePartition {
       mojo::PendingRemote<network::mojom::NetworkContext>
           network_context_remote) = 0;
 
+  // Returns the same provider as GetProtoDatabaseProvider() but doesn't create
+  // a new instance and returns nullptr instead.
+  virtual leveldb_proto::ProtoDatabaseProvider*
+  GetProtoDatabaseProviderForTesting() = 0;
+
   // The value pointed to by |settings| should remain valid until the
   // the function is called again with a new value or a nullptr.
   static void SetDefaultQuotaSettingsForTesting(
