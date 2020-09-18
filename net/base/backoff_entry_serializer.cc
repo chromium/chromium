@@ -80,8 +80,7 @@ std::unique_ptr<BackoffEntry> BackoffEntrySerializer::DeserializeFromValue(
     return nullptr;
   int64_t absolute_release_time_us;
   if (!base::StringToInt64(absolute_release_time_string,
-                           &absolute_release_time_us) ||
-      absolute_release_time_us < 0) {
+                           &absolute_release_time_us)) {
     return nullptr;
   }
 
