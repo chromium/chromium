@@ -47,10 +47,18 @@ class AndroidSkiaGoldSessionDiffTest(fake_filesystem_unittest.TestCase):
     call_args = cmd_mock.call_args[0][0]
     self.assertIn('diff', call_args)
     assertArgWith(self, call_args, '--corpus', 'corpus')
-    assertArgWith(self, call_args, '--instance', 'instance')
+    # TODO(skbug.com/10610): Remove the -public once we go back to using the
+    # non-public instance, or add a second test for testing that the correct
+    # instance is chosen if we decide to support both depending on what the
+    # user is authenticated for.
+    assertArgWith(self, call_args, '--instance', 'instance-public')
     assertArgWith(self, call_args, '--input', 'png_file')
     assertArgWith(self, call_args, '--test', 'name')
-    assertArgWith(self, call_args, '--work-dir', self._working_dir)
+    # TODO(skbug.com/10611): Re-add this assert and remove the check for the
+    # absence of the directory once we switch back to using the proper working
+    # directory.
+    # assertArgWith(self, call_args, '--work-dir', self._working_dir)
+    self.assertNotIn(self._working_dir, call_args)
     i = call_args.index('--out-dir')
     # The output directory should be a subdirectory of the working directory.
     self.assertIn(self._working_dir, call_args[i + 1])

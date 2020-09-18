@@ -5,6 +5,7 @@
 
 import logging
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -325,25 +326,39 @@ class SkiaGoldSession(object):
           'tests locally.')
 
     output_dir = self._CreateDiffOutputDir()
-    diff_cmd = [
-        GOLDCTL_BINARY,
-        'diff',
-        '--corpus',
-        self._corpus,
-        '--instance',
-        self._instance,
-        '--input',
-        png_file,
-        '--test',
-        name,
-        '--work-dir',
-        self._working_dir,
-        '--out-dir',
-        output_dir,
-    ]
-    rc, stdout = self._RunCmdForRcAndOutput(diff_cmd)
-    self._StoreDiffLinks(name, output_manager, output_dir)
-    return rc, stdout
+    # TODO(skbug.com/10611): Remove this temporary work dir and instead just use
+    # self._working_dir once `goldctl diff` stops clobbering the auth files in
+    # the provided work directory.
+    temp_work_dir = tempfile.mkdtemp()
+    # shutil.copytree() fails if the destination already exists, so use a
+    # subdirectory of the temporary directory.
+    temp_work_dir = os.path.join(temp_work_dir, 'diff_work_dir')
+    try:
+      shutil.copytree(self._working_dir, temp_work_dir)
+      diff_cmd = [
+          GOLDCTL_BINARY,
+          'diff',
+          '--corpus',
+          self._corpus,
+          '--instance',
+          # TODO(skbug.com/10610): Decide whether to use the public or
+          # non-public instance once authentication is fixed for the non-public
+          # instance.
+          str(self._instance) + '-public',
+          '--input',
+          png_file,
+          '--test',
+          name,
+          '--work-dir',
+          temp_work_dir,
+          '--out-dir',
+          output_dir,
+      ]
+      rc, stdout = self._RunCmdForRcAndOutput(diff_cmd)
+      self._StoreDiffLinks(name, output_manager, output_dir)
+      return rc, stdout
+    finally:
+      shutil.rmtree(os.path.realpath(os.path.join(temp_work_dir, '..')))
 
   def GetTriageLinks(self, name):
     """Gets the triage links for the given image.
