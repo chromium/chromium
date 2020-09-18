@@ -1,0 +1,36 @@
+<style>
+  .container,
+  .signin-frame {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+
+  .container {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    margin-top: calc(-1 * var(--dialog-top-border-size));
+  }
+
+  .signin-frame {
+    background-color: white;
+    overflow: hidden;
+  }
+
+  paper-spinner-lite {
+    --spinner-size: 25px;
+    display: none;
+    height: var(--spinner-size);
+    width: var(--spinner-size);
+  }
+
+  paper-spinner-lite[active] {
+    display: inline-block;
+  }
+</style>
+
+<div class="container">
+   <webview id="signinFrame" hidden$="[[loading_]]" class="signin-frame" allowscaling></webview>
+</div>

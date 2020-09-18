@@ -1,0 +1,75 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  deps = [
+    ":edu_coexistence_app",
+    ":edu_coexistence_controller",
+    ":edu_coexistence_ui",
+  ]
+
+  closure_flags = default_closure_args + [
+                    "js_module_root=../../chrome/browser/resources/gaia_auth_host/",
+                    "js_module_root=./gen/chrome/browser/resources/gaia_auth_host/",
+                    "js_module_root=../../chrome/browser/resources/chromeos/add_supervision/",
+                    "js_module_root=./gen/chrome/browser/resources/chromeos/add_supervision/",
+                  ]
+}
+
+js_library("edu_coexistence_app") {
+  deps = [
+    ":edu_coexistence_ui",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+}
+
+js_library("edu_coexistence_ui") {
+  deps = [
+    ":edu_coexistence_controller",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/webview_tag.js",
+  ]
+}
+
+js_library("edu_coexistence_controller") {
+  deps = [
+    "//chrome/browser/resources/chromeos/add_supervision:post_message_api.m",
+    "//chrome/browser/resources/gaia_auth_host:authenticator.m",
+  ]
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/webview_tag.js",
+  ]
+}
+
+polymer_modulizer("edu_coexistence_app") {
+  js_file = "edu_coexistence_app.js"
+  html_file = "edu_coexistence_app.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("edu_coexistence_ui") {
+  js_file = "edu_coexistence_ui.js"
+  html_file = "edu_coexistence_ui.html"
+  html_type = "v3-ready"
+}
+
+group("polymer3_elements") {
+  public_deps = [
+    ":edu_coexistence_app_module",
+    ":edu_coexistence_ui_module",
+  ]
+}

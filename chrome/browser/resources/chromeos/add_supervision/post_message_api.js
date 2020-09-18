@@ -8,7 +8,7 @@
  * methods provided in methodList should be implemented as methods
  * of the subclass.
  */
-class PostMessageAPIServer {
+/* #export */ class PostMessageAPIServer {
   constructor(clientElement, methodList, targetURL, messageOriginURLFilter) {
     /**
      * The Window type element to which this server will listen for messages,
@@ -128,7 +128,7 @@ class PostMessageAPIServer {
  * over the postMessage API.  This should be subclassed and the methods in the
  * server that the client needs to access should be provided in methodList.
  */
-class PostMessageAPIClient {
+/* #export */ class PostMessageAPIClient {
   /**
    * @param {!Array<string>} methodList The list of methods accessible via the
    *     client.

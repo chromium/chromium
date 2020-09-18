@@ -6241,8 +6241,11 @@ grit("resources") {
     deps += [
       "//chrome/browser/resources/chromeos/account_manager:web_components",
       "//chrome/browser/resources/chromeos/account_manager/components:web_components",
+      "//chrome/browser/resources/chromeos/add_supervision:post_message_api.m",
       "//chrome/browser/resources/chromeos/crostini_installer:polymer3_elements",
       "//chrome/browser/resources/chromeos/crostini_upgrader:polymer3_elements",
+      "//chrome/browser/resources/chromeos/edu_coexistence:edu_coexistence_controller",
+      "//chrome/browser/resources/chromeos/edu_coexistence:polymer3_elements",
       "//chrome/browser/resources/chromeos/edu_login:polymer3_elements",
       "//chrome/browser/resources/chromeos/emulator:polymer3_elements",
       "//chrome/browser/resources/chromeos/gaia_action_buttons:web_components",

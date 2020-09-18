@@ -129,12 +129,22 @@ content::WebUIDataSource* CreateWebUIDataSource() {
     {"edu_login_parent_info.js", IDR_EDU_LOGIN_EDU_LOGIN_PARENT_INFO_JS},
     {"edu_login_signin.js", IDR_EDU_LOGIN_EDU_LOGIN_SIGNIN_JS},
     {"edu_login_error.js", IDR_EDU_LOGIN_EDU_LOGIN_ERROR_JS},
+    // Resources for the server-based edu coexistence flow.
+    {"edu-coexistence", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_HTML},
+    {"edu_coexistence_app.js", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_APP_JS},
+    {"edu_coexistence_ui.js", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_UI_JS},
+    {"edu_coexistence_controller.js",
+     IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_CONTROLLER_JS},
+    {"chromeos/add_supervision/post_message_api.m.js",
+     IDR_ADD_SUPERVISION_POST_MESSAGE_API_M_JS},
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {"googleg.svg", IDR_ACCOUNT_MANAGER_WELCOME_GOOGLE_LOGO_SVG},
 #endif
     {"family_link_logo.svg", IDR_FAMILY_LINK_LOGO_SVG},
 #endif  // defined(OS_CHROMEOS)
   };
+
   webui::AddResourcePathsBulk(source, kResources);
 
   source->AddLocalizedString("title", IDS_CHROME_SIGNIN_TITLE);
