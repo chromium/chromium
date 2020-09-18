@@ -110,13 +110,13 @@ class PLATFORM_EXPORT MIMETypeRegistry {
   static bool IsSupportedTextTrackMIMEType(const String& mime_type);
 
   // Checks to see if a mime type is an image type with lossy compression, whose
-  // size will be restricted via the 'unoptimized-lossy-images' feature
+  // size will be restricted via the 'lossy-images-max-bpp' document
   // policy. (JPEG)
   static bool IsLossyImageMIMEType(const String& mime_type);
 
   // Checks to see if a mime type is an image type with lossless (or no)
   // compression, whose size may be restricted via the
-  // 'unoptimized-lossless-images' feature policy. (BMP, GIF, PNG, WEBP)
+  // 'lossless-images-max-bpp' document policy. (BMP, GIF, PNG, WEBP)
   static bool IsLosslessImageMIMEType(const String& mime_type);
 
   // Checks to see if a mime type is suitable for being loaded as XML.
