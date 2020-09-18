@@ -140,7 +140,7 @@ KEYS_DEFINING_SCHEMAS_PER_TYPE = {
 }
 
 # The list of platforms policy could support.
-ALL_SUPPORTED_PLATFOMRS = [
+ALL_SUPPORTED_PLATFORMS = [
     'chrome_frame', 'chrome_os', 'android', 'webview_android', 'ios',
     'chrome.win', 'chrome.win7', 'chrome.linux', 'chrome.mac', 'chrome.*'
 ]
@@ -878,10 +878,10 @@ class PolicyTemplateChecker(object):
 
     duplicated = set()
     for platform in platforms:
-      if platform not in ALL_SUPPORTED_PLATFOMRS:
+      if platform not in ALL_SUPPORTED_PLATFORMS:
         self._Error(
             'Platform %s is not supported in %s. Valid platforms are %s.' %
-            (platform, field_name, ', '.join(ALL_SUPPORTED_PLATFOMRS)),
+            (platform, field_name, ', '.join(ALL_SUPPORTED_PLATFORMS)),
             'policy', policy_name)
       if platform in duplicated:
         self._Error(
