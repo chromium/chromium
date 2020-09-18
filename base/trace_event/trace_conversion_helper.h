@@ -10,6 +10,7 @@
 
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/template_util.h"
 #include "base/trace_event/traced_value.h"
 
 namespace base {
@@ -27,38 +28,6 @@ std::string OstreamValueToString(const ValueType& value) {
   return ss.str();
 }
 
-// Helper class to mark call priority when trying different options in SFINAE.
-// Lower number has precedence.
-//
-// Example: Suppose that we are looking if there is a method |T::foo| or
-// |T::bar| and if there are both we should use |T::foo|.
-//
-//   // decltype will return the type of the last expression (in this case int)
-//   // if the first expression compiles. If the first part does not compile
-//   // other versions of |getValueHelper| will be considered, as "substitution
-//   // failure is not an error".
-//   decltype(std::declval<const T&>().foo(), int())
-//   getValueHelper(SFINAEPriority<0>, const T& obj) {
-//     return obj.foo();
-//   }
-//
-//   // If both versions are defined (there are both |T::foo| and |T::bar|) then
-//   // this version is not used because of the type of the first argument
-//   // (SFINAEPriority<0> takes precedence during overload resolution because
-//   // it is the more specific (child) class).
-//   decltype(std::declval<const T&>().bar(), int())
-//   getValueHelper(SFINAEPriority<1>, const T& obj) {
-//     return obj.bar();
-//   }
-template <int N>
-class SFINAEPriority : public SFINAEPriority<N + 1> {};
-template <>
-// The number must be at least the largest used.
-// Functions that use this class:
-//   ValueToStringHelper
-//   SetTracedValueArgHelper
-class SFINAEPriority<6> {};
-
 // Use SFINAE to decide how to extract a string from the given parameter.
 
 // Check if |value| can be used as a parameter of |base::NumberToString|. If
@@ -69,7 +38,7 @@ class SFINAEPriority<6> {};
 // faster than using |std::ostream::operator<<|.
 template <typename ValueType>
 decltype(base::NumberToString(std::declval<const ValueType>()), std::string())
-ValueToStringHelper(SFINAEPriority<0>,
+ValueToStringHelper(base::internal::priority_tag<5>,
                     const ValueType& value,
                     std::string /* unused */) {
   return base::NumberToString(value);
@@ -79,7 +48,7 @@ ValueToStringHelper(SFINAEPriority<0>,
 // |std::string|, use this. Else use other methods.
 template <typename ValueType>
 decltype(std::string(std::declval<const ValueType>().ToString()))
-ValueToStringHelper(SFINAEPriority<1>,
+ValueToStringHelper(base::internal::priority_tag<4>,
                     const ValueType& value,
                     std::string /* unused */) {
   return value.ToString();
@@ -90,7 +59,7 @@ template <typename ValueType>
 decltype(
     std::declval<std::ostream>().operator<<(std::declval<const ValueType>()),
     std::string())
-ValueToStringHelper(SFINAEPriority<2>,
+ValueToStringHelper(base::internal::priority_tag<3>,
                     const ValueType& value,
                     std::string /* unused */) {
   return OstreamValueToString(value);
@@ -101,7 +70,7 @@ template <typename ValueType>
 decltype(operator<<(std::declval<std::ostream&>(),
                     std::declval<const ValueType&>()),
          std::string())
-ValueToStringHelper(SFINAEPriority<3>,
+ValueToStringHelper(base::internal::priority_tag<2>,
                     const ValueType& value,
                     std::string /* unused */) {
   return OstreamValueToString(value);
@@ -111,7 +80,7 @@ ValueToStringHelper(SFINAEPriority<3>,
 // |std::string|, use it.
 template <typename ValueType>
 decltype(std::string(std::declval<const ValueType>().data()))
-ValueToStringHelper(SFINAEPriority<4>,
+ValueToStringHelper(base::internal::priority_tag<1>,
                     const ValueType& value,
                     std::string /* unused */) {
   return value.data();
@@ -120,7 +89,7 @@ ValueToStringHelper(SFINAEPriority<4>,
 // Fallback returns the |fallback_value|. Needs to have |ValueToStringPriority|
 // with the highest number (to be called last).
 template <typename ValueType>
-std::string ValueToStringHelper(SFINAEPriority<5>,
+std::string ValueToStringHelper(base::internal::priority_tag<0>,
                                 const ValueType& /* unused */,
                                 std::string fallback_value) {
   return fallback_value;
@@ -130,12 +99,13 @@ std::string ValueToStringHelper(SFINAEPriority<5>,
 ********* SetTracedValueArg methods. *********
 *********************************************/
 
-// SFINAEPriority parameter is there to define ordering in which the following
-// methods will be considered. Note that for instance |bool| type is also
-// |std::is_integral|, so we need to test |bool| before testing for integral.
+// base::internal::priority_tag parameter is there to define ordering in which
+// the following methods will be considered. Note that for instance |bool| type
+// is also |std::is_integral|, so we need to test |bool| before testing for
+// integral.
 template <typename T>
 typename std::enable_if<std::is_same<T, bool>::value>::type
-SetTracedValueArgHelper(SFINAEPriority<0>,
+SetTracedValueArgHelper(base::internal::priority_tag<6>,
                         TracedValue* traced_value,
                         const char* name,
                         const T& value) {
@@ -144,10 +114,10 @@ SetTracedValueArgHelper(SFINAEPriority<0>,
 
 // std::is_integral<bool>::value == true
 // This needs to be considered only when T is not bool (has higher
-// SFINAEPriority).
+// base::internal::priority_tag).
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value>::type
-SetTracedValueArgHelper(SFINAEPriority<1>,
+SetTracedValueArgHelper(base::internal::priority_tag<5>,
                         TracedValue* traced_value,
                         const char* name,
                         const T& value) {
@@ -163,7 +133,7 @@ SetTracedValueArgHelper(SFINAEPriority<1>,
 // Any floating point type is converted to double.
 template <typename T>
 typename std::enable_if<std::is_floating_point<T>::value>::type
-SetTracedValueArgHelper(SFINAEPriority<2>,
+SetTracedValueArgHelper(base::internal::priority_tag<4>,
                         TracedValue* traced_value,
                         const char* name,
                         const T& value) {
@@ -173,7 +143,7 @@ SetTracedValueArgHelper(SFINAEPriority<2>,
 // |void*| is traced natively.
 template <typename T>
 typename std::enable_if<std::is_same<T, void*>::value>::type
-SetTracedValueArgHelper(SFINAEPriority<3>,
+SetTracedValueArgHelper(base::internal::priority_tag<3>,
                         TracedValue* traced_value,
                         const char* name,
                         const T& value) {
@@ -183,7 +153,7 @@ SetTracedValueArgHelper(SFINAEPriority<3>,
 // |const char*| is traced natively.
 template <typename T>
 typename std::enable_if<std::is_same<T, const char*>::value>::type
-SetTracedValueArgHelper(SFINAEPriority<4>,
+SetTracedValueArgHelper(base::internal::priority_tag<2>,
                         TracedValue* traced_value,
                         const char* name,
                         const T& value) {
@@ -194,7 +164,7 @@ SetTracedValueArgHelper(SFINAEPriority<4>,
 // |T| trace |value| as a string.
 template <typename T>
 decltype(base::StringPiece(std::declval<const T>()), void())
-SetTracedValueArgHelper(SFINAEPriority<5>,
+SetTracedValueArgHelper(base::internal::priority_tag<1>,
                         TracedValue* traced_value,
                         const char* name,
                         const T& value) {
@@ -203,7 +173,7 @@ SetTracedValueArgHelper(SFINAEPriority<5>,
 
 // Fallback.
 template <typename T>
-void SetTracedValueArgHelper(SFINAEPriority<6>,
+void SetTracedValueArgHelper(base::internal::priority_tag<0>,
                              TracedValue* traced_value,
                              const char* name,
                              const T& /* unused */) {
@@ -218,7 +188,7 @@ void SetTracedValueArgHelper(SFINAEPriority<6>,
 template <typename ValueType>
 std::string ValueToString(const ValueType& value,
                           std::string fallback_value = "<value>") {
-  return internal::ValueToStringHelper(internal::SFINAEPriority<0>(), value,
+  return internal::ValueToStringHelper(base::internal::priority_tag<5>(), value,
                                        std::move(fallback_value));
 }
 
@@ -252,8 +222,8 @@ template <typename ValueType>
 void SetTracedValueArg(TracedValue* traced_value,
                        const char* name,
                        const ValueType& value) {
-  internal::SetTracedValueArgHelper(internal::SFINAEPriority<0>(), traced_value,
-                                    name, value);
+  internal::SetTracedValueArgHelper(base::internal::priority_tag<6>(),
+                                    traced_value, name, value);
 }
 
 // Parameter pack support: do nothing for an empty parameter pack.
