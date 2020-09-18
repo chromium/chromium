@@ -282,6 +282,9 @@
   <message name="IDS_FILE_BROWSER_FORMAT_DEVICE_BUTTON_LABEL" desc="Title of the action for formatting removable device.">
     Format device
   </message>
+  <message name="IDS_FILE_BROWSER_REPARTITION_DEVICE_BUTTON_LABEL" desc="Title of the action for repartitioning removable device.">
+    Format device
+  </message>
   <message name="IDS_FILE_BROWSER_CONFIGURE_VOLUME_BUTTON_LABEL" desc="Title of the action for configuring the selected volume.">
     Configure
   </message>
@@ -967,8 +970,16 @@
   <message name="IDS_FILE_BROWSER_FORMAT_DIALOG_TITLE" desc="Title of the format USB drive dialog.">
     Format <ph name="DRIVE_NAME">$1<ex>Untitled USB</ex></ph>
   </message>
+  <!-- TODO (crbug/1129692): Clean up after SinglePartitionFormat launch. -->
   <message name="IDS_FILE_BROWSER_FORMAT_DIALOG_MESSAGE" desc="Advisory message shown before formatting a USB drive.">
     Formatting a drive will delete all data stored on it. This action cannot be undone.
+  </message>
+  <message name="IDS_FILE_BROWSER_FORMAT_PARTITION_DIALOG_MESSAGE" desc="Advisory message shown before formatting a USB partition.">
+    Formatting a partition will erase all data stored on it. This action cannot be undone.
+  </message>
+  <!-- TODO END -->
+  <message name="IDS_FILE_BROWSER_REPARTITION_DIALOG_MESSAGE" desc="Advisory message shown before formatting a USB drive.">
+    Formatting a drive will erase all data stored on it and remove all existing partitions, including partitions that may not be visible. This action cannot be undone.
   </message>
   <message name="IDS_FILE_BROWSER_FORMAT_DIALOG_DELETE_WARNING" desc="Advisory message shown before formatting a USB drive that contains files.">
     <ph name="TOTAL_FILE_SIZE">$1<ex>38.3 MB</ex></ph> of files will be deleted
@@ -979,10 +990,17 @@
   <message name="IDS_FILE_BROWSER_FORMAT_DIALOG_FORMAT_LABEL" desc="Label for the format filesystem selector">
     Format
   </message>
+  <!-- TODO (crbug/1129692): Clean up after SinglePartitionFormat launch. -->
   <message name="IDS_FILE_BROWSER_FORMAT_DIALOG_CONFIRM_LABEL" desc="Label for the confirm button">
     Erase and Format
   </message>
-
+  <message name="IDS_FILE_BROWSER_FORMAT_DIALOG_CONFIRM_SHORT_LABEL" desc="Label for the confirm button">
+    Format
+  </message>
+  <!-- TODO END -->
+  <message name="IDS_FILE_BROWSER_REPARTITION_DIALOG_CONFIRM_LABEL" desc="Label for the confirm button">
+    Format
+  </message>
   <message name="IDS_FILE_BROWSER_FORMAT_PROGRESS_MESSAGE" desc="Notification message displayed while formatting an external drive">
     Formatting <ph name="DRIVE_NAME">$1<ex>My USB</ex></ph>...
   </message>
