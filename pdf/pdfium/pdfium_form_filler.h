@@ -73,6 +73,7 @@ class PDFiumFormFiller : public FPDF_FORMFILLINFO, public IPDF_JSPLATFORM {
                                                    FPDF_BYTESTRING uri,
                                                    int modifiers);
 
+#if defined(PDF_ENABLE_V8)
 #if defined(PDF_ENABLE_XFA)
   static void Form_EmailTo(FPDF_FORMFILLINFO* param,
                            FPDF_FILEHANDLER* file_handler,
@@ -181,6 +182,7 @@ class PDFiumFormFiller : public FPDF_FORMFILLINFO, public IPDF_JSPLATFORM {
                               int length,
                               FPDF_WIDESTRING url);
   static void Form_GotoPage(IPDF_JSPLATFORM* param, int page_number);
+#endif  // defined(PDF_ENABLE_V8)
 
   static PDFiumEngine* GetEngine(FPDF_FORMFILLINFO* info);
   static PDFiumEngine* GetEngine(IPDF_JSPLATFORM* platform);

@@ -53,6 +53,38 @@ PDFiumFormFiller::PDFiumFormFiller(PDFiumEngine* engine, bool enable_javascript)
   FPDF_FORMFILLINFO::FFI_OnFocusChange = Form_OnFocusChange;
   FPDF_FORMFILLINFO::FFI_DoURIActionWithKeyboardModifier =
       Form_DoURIActionWithKeyboardModifier;
+  FPDF_FORMFILLINFO::xfa_disabled = true;
+  FPDF_FORMFILLINFO::FFI_EmailTo = nullptr;
+  FPDF_FORMFILLINFO::FFI_DisplayCaret = nullptr;
+  FPDF_FORMFILLINFO::FFI_SetCurrentPage = nullptr;
+  FPDF_FORMFILLINFO::FFI_GetCurrentPageIndex = nullptr;
+  FPDF_FORMFILLINFO::FFI_GetPageViewRect = nullptr;
+  FPDF_FORMFILLINFO::FFI_GetPlatform = nullptr;
+  FPDF_FORMFILLINFO::FFI_PageEvent = nullptr;
+  FPDF_FORMFILLINFO::FFI_PopupMenu = nullptr;
+  FPDF_FORMFILLINFO::FFI_PostRequestURL = nullptr;
+  FPDF_FORMFILLINFO::FFI_PutRequestURL = nullptr;
+  FPDF_FORMFILLINFO::FFI_UploadTo = nullptr;
+  FPDF_FORMFILLINFO::FFI_DownloadFromURL = nullptr;
+  FPDF_FORMFILLINFO::FFI_OpenFile = nullptr;
+  FPDF_FORMFILLINFO::FFI_GotoURL = nullptr;
+  FPDF_FORMFILLINFO::FFI_GetLanguage = nullptr;
+  FPDF_FORMFILLINFO::m_pJsPlatform = nullptr;
+
+#if defined(PDF_ENABLE_V8)
+  if (enable_javascript) {
+    FPDF_FORMFILLINFO::m_pJsPlatform = this;
+    IPDF_JSPLATFORM::version = 3;
+    IPDF_JSPLATFORM::app_alert = Form_Alert;
+    IPDF_JSPLATFORM::app_beep = Form_Beep;
+    IPDF_JSPLATFORM::app_response = Form_Response;
+    IPDF_JSPLATFORM::Doc_getFilePath = Form_GetFilePath;
+    IPDF_JSPLATFORM::Doc_mail = Form_Mail;
+    IPDF_JSPLATFORM::Doc_print = Form_Print;
+    IPDF_JSPLATFORM::Doc_submitForm = Form_SubmitForm;
+    IPDF_JSPLATFORM::Doc_gotoPage = Form_GotoPage;
+    IPDF_JSPLATFORM::Field_browse = nullptr;
+  }
 #if defined(PDF_ENABLE_XFA)
   FPDF_FORMFILLINFO::xfa_disabled = false;
   FPDF_FORMFILLINFO::FFI_EmailTo = Form_EmailTo;
@@ -70,40 +102,8 @@ PDFiumFormFiller::PDFiumFormFiller(PDFiumEngine* engine, bool enable_javascript)
   FPDF_FORMFILLINFO::FFI_OpenFile = Form_OpenFile;
   FPDF_FORMFILLINFO::FFI_GotoURL = Form_GotoURL;
   FPDF_FORMFILLINFO::FFI_GetLanguage = Form_GetLanguage;
-#else
-  FPDF_FORMFILLINFO::xfa_disabled = true;
-  FPDF_FORMFILLINFO::FFI_EmailTo = nullptr;
-  FPDF_FORMFILLINFO::FFI_DisplayCaret = nullptr;
-  FPDF_FORMFILLINFO::FFI_SetCurrentPage = nullptr;
-  FPDF_FORMFILLINFO::FFI_GetCurrentPageIndex = nullptr;
-  FPDF_FORMFILLINFO::FFI_GetPageViewRect = nullptr;
-  FPDF_FORMFILLINFO::FFI_GetPlatform = nullptr;
-  FPDF_FORMFILLINFO::FFI_PageEvent = nullptr;
-  FPDF_FORMFILLINFO::FFI_PopupMenu = nullptr;
-  FPDF_FORMFILLINFO::FFI_PostRequestURL = nullptr;
-  FPDF_FORMFILLINFO::FFI_PutRequestURL = nullptr;
-  FPDF_FORMFILLINFO::FFI_UploadTo = nullptr;
-  FPDF_FORMFILLINFO::FFI_DownloadFromURL = nullptr;
-  FPDF_FORMFILLINFO::FFI_OpenFile = nullptr;
-  FPDF_FORMFILLINFO::FFI_GotoURL = nullptr;
-  FPDF_FORMFILLINFO::FFI_GetLanguage = nullptr;
 #endif  // defined(PDF_ENABLE_XFA)
-
-  if (enable_javascript) {
-    FPDF_FORMFILLINFO::m_pJsPlatform = this;
-    IPDF_JSPLATFORM::version = 3;
-    IPDF_JSPLATFORM::app_alert = Form_Alert;
-    IPDF_JSPLATFORM::app_beep = Form_Beep;
-    IPDF_JSPLATFORM::app_response = Form_Response;
-    IPDF_JSPLATFORM::Doc_getFilePath = Form_GetFilePath;
-    IPDF_JSPLATFORM::Doc_mail = Form_Mail;
-    IPDF_JSPLATFORM::Doc_print = Form_Print;
-    IPDF_JSPLATFORM::Doc_submitForm = Form_SubmitForm;
-    IPDF_JSPLATFORM::Doc_gotoPage = Form_GotoPage;
-    IPDF_JSPLATFORM::Field_browse = nullptr;
-  } else {
-    FPDF_FORMFILLINFO::m_pJsPlatform = nullptr;
-  }
+#endif  // defined(PDF_ENABLE_V8)
 }
 
 PDFiumFormFiller::~PDFiumFormFiller() = default;
@@ -327,6 +327,7 @@ void PDFiumFormFiller::Form_DoURIActionWithKeyboardModifier(
   engine->client_->NavigateTo(std::string(uri), disposition);
 }
 
+#if defined(PDF_ENABLE_V8)
 #if defined(PDF_ENABLE_XFA)
 
 // static
@@ -672,6 +673,8 @@ void PDFiumFormFiller::Form_GotoPage(IPDF_JSPLATFORM* param, int page_number) {
   PDFiumEngine* engine = GetEngine(param);
   engine->ScrollToPage(page_number);
 }
+
+#endif  // defined(PDF_ENABLE_V8)
 
 // static
 PDFiumEngine* PDFiumFormFiller::GetEngine(FPDF_FORMFILLINFO* info) {
