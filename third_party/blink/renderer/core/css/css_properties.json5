@@ -5134,7 +5134,7 @@
       name: "advance-override",
       is_descriptor: true,
       is_property: false,
-      runtime_flag: "CSSFontMetricsOverride",
+      runtime_flag: "CSSFontFaceAdvanceOverride",
     },
     {
       name: "line-gap-override",

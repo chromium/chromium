@@ -462,6 +462,11 @@
       status: "experimental",
     },
     {
+      name: "CSSFontFaceAdvanceOverride",
+      status: "test",
+      depends_on: ["CSSFontMetricsOverride"],
+    },
+    {
       name: "CSSFontMetricsOverride",
       status: "test",
     },
