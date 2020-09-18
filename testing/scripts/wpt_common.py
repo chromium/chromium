@@ -12,6 +12,7 @@ import common
 
 BLINK_TOOLS_DIR = os.path.join(common.SRC_DIR, 'third_party', 'blink', 'tools')
 WEB_TESTS_DIR = os.path.join(BLINK_TOOLS_DIR, os.pardir, 'web_tests')
+EXTERNAL_WPT_TESTS_DIR = os.path.join(WEB_TESTS_DIR, 'external', 'wpt')
 
 if BLINK_TOOLS_DIR not in sys.path:
     sys.path.append(BLINK_TOOLS_DIR)
@@ -29,6 +30,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         super(BaseWptScriptAdapter, self).__init__()
         host = Host()
         self.port = host.port_factory.get()
+        self.wpt_manifest = self.port.wpt_manifest("external/wpt")
 
     def generate_test_output_args(self, output):
         return ['--log-chromium', output]
@@ -109,6 +111,11 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
                     test_failures.FILENAME_SUFFIX_ACTUAL,
                     results_dir, path_so_far, log_artifact)
                 root_node["artifacts"]["actual_text"] = [artifact_subpath]
+                # Try to locate the expected output of this test, if it exists.
+                expected_subpath = self._maybe_write_expected_output(
+                    results_dir, path_so_far)
+                if expected_subpath:
+                    root_node["artifacts"]["expected_text"] = [expected_subpath]
 
             screenshot_artifact = root_node["artifacts"].pop("screenshots",
                                                              None)
@@ -135,6 +142,47 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             new_path = path_so_far + delim + key if path_so_far else key
             self._process_test_leaves(results_dir, delim, root_node[key],
                                       new_path)
+
+    def _maybe_write_expected_output(self, results_dir, test_name):
+        """Attempts to create an expected output artifact for the test.
+
+        The expected output of tests is checked-in to the source tree beside the
+        test itself, with a .ini extension. Not all tests have expected output.
+
+        Args:
+            results_dir: str path to the dir to write the output to
+            test_name: str name of the test to write expected output for
+
+        Returns:
+            string path to the artifact file that the expected output was
+            written to, relative to the directory that the original output is
+            located. Returns None if there is no expected output for this test.
+        """
+        test_file_subpath = self.wpt_manifest.file_path_for_test_url(test_name)
+        if not test_file_subpath:
+            # Not all tests in the output have a corresponding test file. This
+            # could be print-reftests (which are unsupported by the blinkpy
+            # manifest) or .any.js tests (which appear in the output even though
+            # they do not actually run - they have corresponding tests like
+            # .any.worker.html which are covered here).
+            return None
+
+        test_file_path = os.path.join(EXTERNAL_WPT_TESTS_DIR, test_file_subpath)
+        expected_ini_path = test_file_path + ".ini"
+        if not os.path.exists(expected_ini_path):
+            return None
+
+        # This test has checked-in expected output. It needs to be copied to the
+        # results viewer directory and renamed from <test>.ini to
+        # <test>-expected.txt
+        # Note: Here we read-in the checked-in ini file and pass its contents to
+        # |_write_log_artifact| to reuse code. This is probably less efficient
+        # than just copying, but makes for cleaner code.
+        contents = ""
+        with open(expected_ini_path, "r") as ini_file:
+            contents = ini_file.read()
+        return self._write_log_artifact(test_failures.FILENAME_SUFFIX_EXPECTED,
+                                        results_dir, test_name, [contents])
 
     def _write_log_artifact(self, suffix, results_dir, test_name, log_artifact):
         """Writes a log artifact to disk.
