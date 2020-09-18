@@ -273,12 +273,22 @@ if (is_android) {
     ]
   }
 
+  android_library("gurl_junit_test_support") {
+    testonly = true
+    sources = [ "android/test/java/src/org/chromium/url/JUnitTestGURLs.java" ]
+    deps = [ ":gurl_java" ]
+  }
+
   android_library("gurl_javatests") {
     testonly = true
-    sources = [ "android/javatests/src/org/chromium/url/GURLJavaTest.java" ]
+    sources = [
+      "android/javatests/src/org/chromium/url/GURLJavaTest.java",
+      "android/javatests/src/org/chromium/url/JUnitTestGURLsTest.java",
+    ]
     deps = [
       ":gurl_android_test_helper_java",
       ":gurl_java",
+      ":gurl_junit_test_support",
       "//base:base_java",
       "//base:base_java_test_support",
       "//base:jni_java",

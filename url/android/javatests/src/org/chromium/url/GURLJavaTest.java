@@ -41,7 +41,7 @@ public class GURLJavaTest {
         GURLJavaTestHelper.nativeInitializeICU();
     }
 
-    private void deepAssertEquals(GURL expected, GURL actual) {
+    /* package */ static void deepAssertEquals(GURL expected, GURL actual) {
         Assert.assertEquals(expected, actual);
         Assert.assertEquals(expected.getScheme(), actual.getScheme());
         Assert.assertEquals(expected.getUsername(), actual.getUsername());
