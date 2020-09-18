@@ -21,7 +21,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {Destination, DestinationOrigin} from '../data/destination.js';
 // <if expr="chromeos">
-import {IconLocation} from '../data/printer_status_cros.js';
+import {computePrinterState, IconLocation, PrinterState, PrinterStatusReason} from '../data/printer_status_cros.js';
 // </if>
 
 import {updateHighlights} from './highlight_utils.js';
@@ -97,6 +97,12 @@ Polymer({
       },
       readOnly: true,
     },
+
+    /** @private */
+    printerState_: {
+      type: Number,
+      value: PrinterState.UNKNOWN,
+    }
     // </if>
   },
 
@@ -105,6 +111,9 @@ Polymer({
         'destination.displayName, destination.isOfflineOrInvalid, ' +
         'destination.isExtension)',
     'updateHighlightsAndHint_(destination, searchQuery)',
+    // <if expr="chromeos">
+    'requestPrinterStatus_(destination.key)',
+    // </if>
   ],
 
   /** @private {!Array<!Node>} */
@@ -205,4 +214,32 @@ Polymer({
         this.destination.origin === DestinationOrigin.CROS;
     // </if>
   },
+
+  // <if expr="chromeos">
+  /** @private */
+  requestPrinterStatus_() {
+    if (!this.printerStatusFlagEnabled_) {
+      return;
+    }
+
+    // Requesting printer status only allowed for local CrOS printers.
+    if (this.destination.origin !== DestinationOrigin.CROS) {
+      return;
+    }
+
+    this.destination.requestPrinterStatus().then(
+        destinationKey => this.onPrinterStatusReceived_(destinationKey));
+  },
+
+  /**
+   * @param {string} destinationKey
+   * @private
+   */
+  onPrinterStatusReceived_(destinationKey) {
+    if (this.destination.key === destinationKey) {
+      this.printerState_ =
+          computePrinterState(this.destination.printerStatusReason);
+    }
+  },
+  // </if>
 });

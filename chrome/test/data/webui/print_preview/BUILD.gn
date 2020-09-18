@@ -72,6 +72,7 @@ js_type_check("closure_compile") {
   if (is_chromeos) {
     deps += [
       ":destination_dropdown_cros_test",
+      ":destination_item_test_cros",
       ":destination_search_test_chromeos",
       ":destination_select_test_cros",
     ]
@@ -274,6 +275,16 @@ if (is_chromeos) {
       ":print_preview_test_utils",
       "..:chai_assert",
       "..:test_util.m",
+      "//chrome/browser/resources/print_preview:print_preview",
+      "//ui/webui/resources/js:assert.m",
+    ]
+    externs_list = [ "$externs_path/mocha-2.5.js" ]
+  }
+
+  js_library("destination_item_test_cros") {
+    deps = [
+      ":print_preview_test_utils",
+      "..:chai_assert",
       "//chrome/browser/resources/print_preview:print_preview",
       "//ui/webui/resources/js:assert.m",
     ]

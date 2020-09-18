@@ -77,7 +77,7 @@
     </iron-icon>
 <if expr="chromeos">
     <printer-status-icon-cros icon-location="[[iconLocation_.DROPDOWN]]"
-        hidden="[[!isDestinationCrosLocal_]]">
+        printer-state="[[printerState_]]" hidden="[[!isDestinationCrosLocal_]]">
     </printer-status-icon-cros>
 </if>
     <span class="name searchable">[[destination.displayName]]</span>
