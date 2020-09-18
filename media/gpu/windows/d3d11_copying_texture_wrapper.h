@@ -31,14 +31,14 @@ class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public Texture2DWrapper {
                           base::Optional<gfx::ColorSpace> output_color_space);
   ~CopyingTexture2DWrapper() override;
 
-  Status ProcessTexture(ComD3D11Texture2D texture,
-                        size_t array_slice,
-                        const gfx::ColorSpace& input_color_space,
+  Status ProcessTexture(const gfx::ColorSpace& input_color_space,
                         MailboxHolderArray* mailbox_dest,
                         gfx::ColorSpace* output_color_space) override;
 
   Status Init(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
-              GetCommandBufferHelperCB get_helper_cb) override;
+              GetCommandBufferHelperCB get_helper_cb,
+              ComD3D11Texture2D texture,
+              size_t array_slice) override;
 
   void SetStreamHDRMetadata(const gl::HDRMetadata& stream_metadata) override;
   void SetDisplayHDRMetadata(
@@ -54,6 +54,9 @@ class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public Texture2DWrapper {
 
   // If set, this is the color space that we last saw in ProcessTexture.
   base::Optional<gfx::ColorSpace> previous_input_color_space_;
+
+  ComD3D11Texture2D texture_;
+  size_t array_slice_ = 0;
 };
 
 }  // namespace media

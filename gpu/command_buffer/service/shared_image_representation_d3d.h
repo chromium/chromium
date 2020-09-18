@@ -20,6 +20,8 @@
 
 namespace gpu {
 
+class SharedImageBackingD3D;
+
 // Representation of a SharedImageBackingD3D as a GL TexturePassthrough.
 class SharedImageRepresentationGLTexturePassthroughD3D
     : public SharedImageRepresentationGLTexturePassthrough {
@@ -64,6 +66,22 @@ class SharedImageRepresentationDawnD3D : public SharedImageRepresentationDawn {
   DawnProcTable dawn_procs_;
 };
 #endif  // BUILDFLAG(USE_DAWN)
+
+// Representation of a SharedImageBackingD3D as an overlay.
+class SharedImageRepresentationOverlayD3D
+    : public SharedImageRepresentationOverlay {
+ public:
+  SharedImageRepresentationOverlayD3D(SharedImageManager* manager,
+                                      SharedImageBacking* backing,
+                                      MemoryTypeTracker* tracker);
+  ~SharedImageRepresentationOverlayD3D() override = default;
+
+ private:
+  bool BeginReadAccess() override;
+  void EndReadAccess() override;
+
+  gl::GLImage* GetGLImage() override;
+};
 
 }  // namespace gpu
 #endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_REPRESENTATION_D3D_H_

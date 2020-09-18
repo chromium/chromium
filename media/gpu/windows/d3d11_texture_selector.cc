@@ -175,7 +175,8 @@ std::unique_ptr<Texture2DWrapper> TextureSelector::CreateTextureWrapper(
     ComD3D11DeviceContext device_context,
     gfx::Size size) {
   // TODO(liberato): If the output format is rgb, then create a pbuffer wrapper.
-  return std::make_unique<DefaultTexture2DWrapper>(size, OutputDXGIFormat());
+  return std::make_unique<DefaultTexture2DWrapper>(size, OutputDXGIFormat(),
+                                                   PixelFormat());
 }
 
 bool TextureSelector::WillCopyForTesting() const {
@@ -214,7 +215,9 @@ std::unique_ptr<Texture2DWrapper> CopyTextureSelector::CreateTextureWrapper(
     return nullptr;
 
   return std::make_unique<CopyingTexture2DWrapper>(
-      size, std::make_unique<DefaultTexture2DWrapper>(size, OutputDXGIFormat()),
+      size,
+      std::make_unique<DefaultTexture2DWrapper>(size, OutputDXGIFormat(),
+                                                PixelFormat()),
       std::make_unique<VideoProcessorProxy>(video_device, device_context),
       out_texture, output_color_space_);
 }

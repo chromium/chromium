@@ -6,6 +6,7 @@
 
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/service/shared_image_representation_d3d.h"
 #include "gpu/command_buffer/service/shared_image_representation_skia_gl.h"
@@ -45,7 +46,7 @@ SharedImageBackingD3D::SharedImageBackingD3D(
     uint32_t usage,
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
     scoped_refptr<gles2::TexturePassthrough> texture,
-    scoped_refptr<gl::GLImageD3D> image,
+    scoped_refptr<gl::GLImage> image,
     size_t buffer_index,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     base::win::ScopedHandle shared_handle,
@@ -66,7 +67,6 @@ SharedImageBackingD3D::SharedImageBackingD3D(
       d3d11_texture_(std::move(d3d11_texture)),
       shared_handle_(std::move(shared_handle)),
       dxgi_keyed_mutex_(std::move(dxgi_keyed_mutex)) {
-  DCHECK(d3d11_texture_);
   DCHECK(texture_);
 }
 
@@ -171,6 +171,10 @@ HANDLE SharedImageBackingD3D::GetSharedHandle() const {
   return shared_handle_.Get();
 }
 
+gl::GLImage* SharedImageBackingD3D::GetGLImage() const {
+  return image_.get();
+}
+
 bool SharedImageBackingD3D::PresentSwapChain() {
   TRACE_EVENT0("gpu", "SharedImageBackingD3D::PresentSwapChain");
   if (buffer_index_ != 0) {
@@ -195,7 +199,7 @@ bool SharedImageBackingD3D::PresentSwapChain() {
 
   api->glBindTextureFn(GL_TEXTURE_2D, texture_->service_id());
   if (!image_->BindTexImage(GL_TEXTURE_2D)) {
-    DLOG(ERROR) << "GLImageD3D::BindTexImage failed";
+    DLOG(ERROR) << "GLImage::BindTexImage failed";
     return false;
   }
 
@@ -221,6 +225,14 @@ SharedImageBackingD3D::ProduceSkia(
   return SharedImageRepresentationSkiaGL::Create(
       ProduceGLTexturePassthrough(manager, tracker), std::move(context_state),
       manager, this, tracker);
+}
+
+std::unique_ptr<SharedImageRepresentationOverlay>
+SharedImageBackingD3D::ProduceOverlay(SharedImageManager* manager,
+                                      MemoryTypeTracker* tracker) {
+  TRACE_EVENT0("gpu", "SharedImageBackingD3D::ProduceOverlay");
+  return std::make_unique<SharedImageRepresentationOverlayD3D>(manager, this,
+                                                               tracker);
 }
 
 }  // namespace gpu

@@ -52,8 +52,9 @@ Status D3D11PictureBuffer::Init(
   view_desc.ViewDimension = D3D11_VDOV_DIMENSION_TEXTURE2D;
   view_desc.Texture2D.ArraySlice = array_slice_;
 
-  Status result = texture_wrapper_->Init(std::move(gpu_task_runner),
-                                         std::move(get_helper_cb));
+  Status result =
+      texture_wrapper_->Init(std::move(gpu_task_runner),
+                             std::move(get_helper_cb), texture_, array_slice_);
   if (!result.is_ok()) {
     MEDIA_LOG(ERROR, media_log) << "Failed to Initialize the wrapper";
     return result;
@@ -75,8 +76,7 @@ Status D3D11PictureBuffer::ProcessTexture(
     const gfx::ColorSpace& input_color_space,
     MailboxHolderArray* mailbox_dest,
     gfx::ColorSpace* output_color_space) {
-  return texture_wrapper_->ProcessTexture(Texture(), array_slice_,
-                                          input_color_space, mailbox_dest,
+  return texture_wrapper_->ProcessTexture(input_color_space, mailbox_dest,
                                           output_color_space);
 }
 

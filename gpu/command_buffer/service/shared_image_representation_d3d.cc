@@ -132,4 +132,22 @@ void SharedImageRepresentationDawnD3D::EndAccess() {
 }
 #endif  // BUILDFLAG(USE_DAWN)
 
+SharedImageRepresentationOverlayD3D::SharedImageRepresentationOverlayD3D(
+    SharedImageManager* manager,
+    SharedImageBacking* backing,
+    MemoryTypeTracker* tracker)
+    : SharedImageRepresentationOverlay(manager, backing, tracker) {}
+
+bool SharedImageRepresentationOverlayD3D::BeginReadAccess() {
+  // Note: only the DX11 video decoder uses this overlay and does not need to
+  // synchronize read access from different devices.
+  return true;
+}
+
+void SharedImageRepresentationOverlayD3D::EndReadAccess() {}
+
+gl::GLImage* SharedImageRepresentationOverlayD3D::GetGLImage() {
+  return static_cast<SharedImageBackingD3D*>(backing())->GetGLImage();
+}
+
 }  // namespace gpu

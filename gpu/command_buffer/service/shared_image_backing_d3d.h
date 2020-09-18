@@ -32,7 +32,8 @@ struct Mailbox;
 // Implementation of SharedImageBacking that holds buffer (front buffer/back
 // buffer of swap chain) texture (as gles2::Texture/gles2::TexturePassthrough)
 // and a reference to created swap chain.
-class SharedImageBackingD3D : public ClearTrackingSharedImageBacking {
+class GPU_GLES2_EXPORT SharedImageBackingD3D
+    : public ClearTrackingSharedImageBacking {
  public:
   SharedImageBackingD3D(
       const Mailbox& mailbox,
@@ -44,7 +45,7 @@ class SharedImageBackingD3D : public ClearTrackingSharedImageBacking {
       uint32_t usage,
       Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
       scoped_refptr<gles2::TexturePassthrough> texture,
-      scoped_refptr<gl::GLImageD3D> image,
+      scoped_refptr<gl::GLImage> image,
       size_t buffer_index,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
       base::win::ScopedHandle shared_handle,
@@ -73,6 +74,7 @@ class SharedImageBackingD3D : public ClearTrackingSharedImageBacking {
   void EndAccessD3D11();
 
   HANDLE GetSharedHandle() const;
+  gl::GLImage* GetGLImage() const;
 
   bool PresentSwapChain() override;
 
@@ -80,6 +82,10 @@ class SharedImageBackingD3D : public ClearTrackingSharedImageBacking {
   std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
   ProduceGLTexturePassthrough(SharedImageManager* manager,
                               MemoryTypeTracker* tracker) override;
+
+  std::unique_ptr<SharedImageRepresentationOverlay> ProduceOverlay(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker) override;
 
   std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
       SharedImageManager* manager,
@@ -89,8 +95,10 @@ class SharedImageBackingD3D : public ClearTrackingSharedImageBacking {
  private:
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain_;
   scoped_refptr<gles2::TexturePassthrough> texture_;
-  scoped_refptr<gl::GLImageD3D> image_;
+  scoped_refptr<gl::GLImage> image_;
   const size_t buffer_index_;
+
+  // Texture could be nullptr if an empty backing is needed for testing.
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
 
   // If d3d11_texture_ has a keyed mutex, it will be stored in

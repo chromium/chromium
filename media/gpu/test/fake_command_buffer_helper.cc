@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "media/gpu/test/fake_command_buffer_helper.h"
+#include "gpu/command_buffer/service/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image_representation.h"
 
 #include "base/logging.h"
 
@@ -77,6 +79,21 @@ bool FakeCommandBufferHelper::MakeContextCurrent() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   is_context_current_ = !is_context_lost_;
   return is_context_current_;
+}
+
+std::unique_ptr<gpu::SharedImageRepresentationFactoryRef>
+FakeCommandBufferHelper::Register(
+    std::unique_ptr<gpu::SharedImageBacking> backing) {
+  DVLOG(2) << __func__;
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  return nullptr;
+}
+
+gpu::TextureBase* FakeCommandBufferHelper::GetTexture(GLuint service_id) const {
+  DVLOG(2) << __func__ << "(" << service_id << ")";
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(service_ids_.count(service_id));
+  return nullptr;
 }
 
 GLuint FakeCommandBufferHelper::CreateTexture(GLenum target,

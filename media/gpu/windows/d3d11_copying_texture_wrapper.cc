@@ -30,8 +30,6 @@ CopyingTexture2DWrapper::CopyingTexture2DWrapper(
 CopyingTexture2DWrapper::~CopyingTexture2DWrapper() = default;
 
 Status CopyingTexture2DWrapper::ProcessTexture(
-    ComD3D11Texture2D texture,
-    size_t array_slice,
     const gfx::ColorSpace& input_color_space,
     MailboxHolderArray* mailbox_dest,
     gfx::ColorSpace* output_color_space) {
@@ -48,11 +46,11 @@ Status CopyingTexture2DWrapper::ProcessTexture(
 
   D3D11_VIDEO_PROCESSOR_INPUT_VIEW_DESC input_view_desc = {0};
   input_view_desc.ViewDimension = D3D11_VPIV_DIMENSION_TEXTURE2D;
-  input_view_desc.Texture2D.ArraySlice = array_slice;
+  input_view_desc.Texture2D.ArraySlice = array_slice_;
   input_view_desc.Texture2D.MipSlice = 0;
   ComD3D11VideoProcessorInputView input_view;
   hr = video_processor_->CreateVideoProcessorInputView(
-      texture.Get(), &input_view_desc, &input_view);
+      texture_.Get(), &input_view_desc, &input_view);
   if (!SUCCEEDED(hr)) {
     return Status(StatusCode::kCreateVideoProcessorInputViewFailed)
         .AddCause(HresultToStatus(hr));
@@ -85,19 +83,27 @@ Status CopyingTexture2DWrapper::ProcessTexture(
         .AddCause(HresultToStatus(hr));
   }
 
-  return output_texture_wrapper_->ProcessTexture(
-      output_texture_, 0, copy_color_space, mailbox_dest, output_color_space);
+  return output_texture_wrapper_->ProcessTexture(copy_color_space, mailbox_dest,
+                                                 output_color_space);
 }
 
 Status CopyingTexture2DWrapper::Init(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
-    GetCommandBufferHelperCB get_helper_cb) {
+    GetCommandBufferHelperCB get_helper_cb,
+    ComD3D11Texture2D texture,
+    size_t array_slice) {
   auto result = video_processor_->Init(size_.width(), size_.height());
   if (!result.is_ok())
     return std::move(result).AddHere();
 
+  // Remember the texture + array_slice so later, ProcessTexture can still use
+  // it.
+  texture_ = texture;
+  array_slice_ = array_slice;
+
   return output_texture_wrapper_->Init(std::move(gpu_task_runner),
-                                       std::move(get_helper_cb));
+                                       std::move(get_helper_cb),
+                                       output_texture_, /*array_slice=*/0);
 }
 
 void CopyingTexture2DWrapper::SetStreamHDRMetadata(

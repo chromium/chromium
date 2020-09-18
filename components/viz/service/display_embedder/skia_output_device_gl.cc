@@ -370,20 +370,24 @@ scoped_refptr<gl::GLImage> SkiaOutputDeviceGL::GetGLImageForMailbox(
     const gpu::Mailbox& mailbox) {
   // TODO(crbug.com/1005306): Stop using MailboxManager for lookup once all
   // clients are using SharedImageInterface to create textures.
+  // For example, the legacy mailbox still uses GL textures (no overlay)
+  // and is still used.
   auto* texture_base = mailbox_manager_->ConsumeTexture(mailbox);
   if (!texture_base) {
-    // Newer video paths use shared images to store textures.
-    std::unique_ptr<gpu::SharedImageRepresentationGLTexturePassthrough>
-        shared_image =
-            shared_image_representation_factory_->ProduceGLTexturePassthrough(
-                mailbox);
+    auto overlay =
+        shared_image_representation_factory_->ProduceOverlay(mailbox);
+    if (!overlay)
+      return nullptr;
 
-    if (shared_image) {
-      gpu::gles2::TexturePassthrough* texture =
-          shared_image->GetTexturePassthrough().get();
-      return texture->GetLevelImage(texture->target(), 0);
-    }
-    return nullptr;
+    // Return GLImage since the ScopedReadAccess isn't being held by anyone.
+    // TODO(crbug.com/1011555): Have SkiaOutputSurfaceImplOnGpu hold on to the
+    // ScopedReadAccess for overlays like it does for PromiseImage based
+    // resources.
+    std::unique_ptr<gpu::SharedImageRepresentationOverlay::ScopedReadAccess>
+        scoped_overlay_read_access =
+            overlay->BeginScopedReadAccess(/*need_gl_image=*/true);
+    DCHECK(scoped_overlay_read_access);
+    return scoped_overlay_read_access->gl_image();
   }
 
   if (texture_base->GetType() == gpu::TextureBase::Type::kPassthrough) {

@@ -88,9 +88,12 @@ class D3D11TextureWrapperUnittest : public ::testing::Test {
 TEST_F(D3D11TextureWrapperUnittest, NV12InitSucceeds) {
   STOP_IF_WIN7();
   const DXGI_FORMAT dxgi_format = DXGI_FORMAT_NV12;
+  const VideoPixelFormat pixel_format = PIXEL_FORMAT_NV12;
 
-  auto wrapper = std::make_unique<DefaultTexture2DWrapper>(size_, dxgi_format);
-  const Status init_result = wrapper->Init(task_runner_, get_helper_cb_);
+  auto wrapper = std::make_unique<DefaultTexture2DWrapper>(size_, dxgi_format,
+                                                           pixel_format);
+  const Status init_result = wrapper->Init(
+      task_runner_, get_helper_cb_, /*texture_d3d=*/nullptr, /*array_slice=*/0);
   EXPECT_TRUE(init_result.is_ok());
 
   // TODO: verify that ProcessTexture processes both textures.
@@ -99,28 +102,49 @@ TEST_F(D3D11TextureWrapperUnittest, NV12InitSucceeds) {
 TEST_F(D3D11TextureWrapperUnittest, BGRA8InitSucceeds) {
   STOP_IF_WIN7();
   const DXGI_FORMAT dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
+  const VideoPixelFormat pixel_format = PIXEL_FORMAT_ARGB;
 
-  auto wrapper = std::make_unique<DefaultTexture2DWrapper>(size_, dxgi_format);
-  const Status init_result = wrapper->Init(task_runner_, get_helper_cb_);
+  auto wrapper = std::make_unique<DefaultTexture2DWrapper>(size_, dxgi_format,
+                                                           pixel_format);
+  const Status init_result = wrapper->Init(
+      task_runner_, get_helper_cb_, /*texture_d3d=*/nullptr, /*array_slice=*/0);
   EXPECT_TRUE(init_result.is_ok());
 }
 
 TEST_F(D3D11TextureWrapperUnittest, FP16InitSucceeds) {
   STOP_IF_WIN7();
   const DXGI_FORMAT dxgi_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+  const VideoPixelFormat pixel_format = PIXEL_FORMAT_ARGB;
 
-  auto wrapper = std::make_unique<DefaultTexture2DWrapper>(size_, dxgi_format);
-  const Status init_result = wrapper->Init(task_runner_, get_helper_cb_);
+  auto wrapper = std::make_unique<DefaultTexture2DWrapper>(size_, dxgi_format,
+                                                           pixel_format);
+  const Status init_result = wrapper->Init(
+      task_runner_, get_helper_cb_, /*texture_d3d=*/nullptr, /*array_slice=*/0);
   EXPECT_TRUE(init_result.is_ok());
 }
 
 TEST_F(D3D11TextureWrapperUnittest, P010InitSucceeds) {
   STOP_IF_WIN7();
   const DXGI_FORMAT dxgi_format = DXGI_FORMAT_P010;
+  const VideoPixelFormat pixel_format = PIXEL_FORMAT_NV12;
 
-  auto wrapper = std::make_unique<DefaultTexture2DWrapper>(size_, dxgi_format);
-  const Status init_result = wrapper->Init(task_runner_, get_helper_cb_);
+  auto wrapper = std::make_unique<DefaultTexture2DWrapper>(size_, dxgi_format,
+                                                           pixel_format);
+  const Status init_result = wrapper->Init(
+      task_runner_, get_helper_cb_, /*texture_d3d=*/nullptr, /*array_slice=*/0);
   EXPECT_TRUE(init_result.is_ok());
+}
+
+TEST_F(D3D11TextureWrapperUnittest, UnknownInitFails) {
+  STOP_IF_WIN7();
+  const DXGI_FORMAT dxgi_format = DXGI_FORMAT_UNKNOWN;
+  const VideoPixelFormat pixel_format = PIXEL_FORMAT_UNKNOWN;
+
+  auto wrapper = std::make_unique<DefaultTexture2DWrapper>(size_, dxgi_format,
+                                                           pixel_format);
+  const Status init_result = wrapper->Init(
+      task_runner_, get_helper_cb_, /*texture_d3d=*/nullptr, /*array_slice=*/0);
+  EXPECT_FALSE(init_result.is_ok());
 }
 
 }  // namespace media
