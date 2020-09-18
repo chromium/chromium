@@ -246,7 +246,7 @@ void RangeInputType::CreateShadowSubtree() {
 
   Document& document = GetElement().GetDocument();
   auto* track = MakeGarbageCollected<blink::SliderTrackElement>(document);
-  track->SetShadowPseudoId(AtomicString("-webkit-slider-runnable-track"));
+  track->SetShadowPseudoId(shadow_element_names::kPseudoSliderTrack);
   track->setAttribute(html_names::kIdAttr,
                       shadow_element_names::kIdSliderTrack);
   track->AppendChild(MakeGarbageCollected<SliderThumbElement>(document));

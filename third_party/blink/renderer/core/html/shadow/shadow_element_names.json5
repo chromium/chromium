@@ -94,6 +94,10 @@
       Symbol: "kPseudoInternalInputSuggested",
     },
     {
+      name: "-internal-media-controls-segmented-track",
+      Symbol: "kPseudoMediaControlsSegmentedTrack",
+    },
+    {
       name: "-webkit-media-slider-container",
       Symbol: "kPseudoMediaSliderContainer",
     },
@@ -104,6 +108,10 @@
     {
       name: "-webkit-slider-container",
       Symbol: "kPseudoSliderContainer",
+    },
+    {
+      name: "-webkit-slider-runnable-track",
+      Symbol: "kPseudoSliderTrack",
     },
     {
       name: "-webkit-textfield-decoration-container",

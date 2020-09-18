@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_slider_element.h"
 
 #include "third_party/blink/renderer/core/html/html_div_element.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
@@ -114,7 +115,8 @@ void MediaControlSliderElement::SetupBarSegments() {
     return;
 
   Element& track = GetTrackElement();
-  track.SetShadowPseudoId("-internal-media-controls-segmented-track");
+  track.SetShadowPseudoId(
+      shadow_element_names::kPseudoMediaControlsSegmentedTrack);
 
   // Add the following structure to #track.
   //
