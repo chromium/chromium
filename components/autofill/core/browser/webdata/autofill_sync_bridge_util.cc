@@ -313,6 +313,7 @@ void SetAutofillOfferSpecificsFromOfferData(
 
 AutofillOfferData AutofillOfferDataFromOfferSpecifics(
     const sync_pb::AutofillOfferSpecifics& offer_specifics) {
+  DCHECK(IsOfferSpecificsValid(offer_specifics));
   AutofillOfferData offer_data;
   offer_data.offer_id = offer_specifics.id();
   if (offer_specifics.has_percentage_reward()) {
@@ -492,5 +493,41 @@ template bool AreAnyItemsDifferent<>(
 template bool AreAnyItemsDifferent<>(
     const std::vector<std::unique_ptr<CreditCardCloudTokenData>>&,
     const std::vector<CreditCardCloudTokenData>&);
+
+bool IsOfferSpecificsValid(const sync_pb::AutofillOfferSpecifics specifics) {
+  // A valid offer has a non-empty id.
+  if (!specifics.has_id())
+    return false;
+
+  // A valid offer has a non-empty offer details url and the url must be valid.
+  if (!specifics.has_offer_details_url() ||
+      !GURL(specifics.offer_details_url()).is_valid()) {
+    return false;
+  }
+
+  // A valid offer has at least one merchant domain.
+  if (specifics.merchant_domain().size() == 0) {
+    return false;
+  }
+
+  // A valid offer has at least one linked card instrument id.
+  if (!specifics.has_card_linked_offer_data() ||
+      specifics.card_linked_offer_data().instrument_id().size() == 0) {
+    return false;
+  }
+
+  // A valid offer must have either a percentage reward or a fixed amount
+  // reward.
+  if (!specifics.has_percentage_reward() ||
+      !specifics.percentage_reward().has_percentage()) {
+    return specifics.has_fixed_amount_reward() &&
+           specifics.fixed_amount_reward().has_amount();
+  } else if (specifics.percentage_reward().percentage().find('%') ==
+             std::string::npos) {
+    return false;
+  }
+
+  return true;
+}
 
 }  // namespace autofill

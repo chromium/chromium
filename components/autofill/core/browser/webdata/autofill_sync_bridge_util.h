@@ -63,6 +63,7 @@ void SetAutofillOfferSpecificsFromOfferData(
     sync_pb::AutofillOfferSpecifics* offer_specifics);
 
 // Creates an AutofillOfferData from the specified |offer_specifics|.
+// |offer_specifics| must be valid (as per IsOfferSpecificsValid()).
 AutofillOfferData AutofillOfferDataFromOfferSpecifics(
     const sync_pb::AutofillOfferSpecifics& offer_specifics);
 
@@ -96,6 +97,9 @@ void PopulateWalletTypesFromSyncData(
 template <class Item>
 bool AreAnyItemsDifferent(const std::vector<std::unique_ptr<Item>>& old_data,
                           const std::vector<Item>& new_data);
+
+// Returns whether the Wallet Offer |specifics| is valid data.
+bool IsOfferSpecificsValid(const sync_pb::AutofillOfferSpecifics specifics);
 
 }  // namespace autofill
 

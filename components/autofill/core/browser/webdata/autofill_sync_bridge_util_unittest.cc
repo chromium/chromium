@@ -304,5 +304,54 @@ TEST_F(AutofillSyncBridgeUtilTest,
   EXPECT_TRUE(AreAnyItemsDifferent(old_offer_data, new_offer_data));
 }
 
+// Ensures that function IsOfferSpecificsValid is working correctly.
+TEST_F(AutofillSyncBridgeUtilTest, IsOfferSpecificsValid) {
+  sync_pb::AutofillOfferSpecifics specifics;
+  SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData1(),
+                                         &specifics);
+  // Expects default specifics is valid.
+  EXPECT_TRUE(IsOfferSpecificsValid(specifics));
+
+  specifics.clear_id();
+  // Expects specifics without id to be invalid.
+  EXPECT_FALSE(IsOfferSpecificsValid(specifics));
+
+  SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData1(),
+                                         &specifics);
+  specifics.set_offer_details_url("invalid url");
+  // Expects specifics with invalid offer_details_url to be invalid.
+  EXPECT_FALSE(IsOfferSpecificsValid(specifics));
+  specifics.clear_offer_details_url();
+  // Expects specifics without offer_details_url to be invalid.
+  EXPECT_FALSE(IsOfferSpecificsValid(specifics));
+
+  SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData1(),
+                                         &specifics);
+  specifics.clear_merchant_domain();
+  // Expects specifics without merchant domain to be invalid.
+  EXPECT_FALSE(IsOfferSpecificsValid(specifics));
+
+  SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData1(),
+                                         &specifics);
+  specifics.mutable_card_linked_offer_data()->clear_instrument_id();
+  // Expects specifics without linked card instrument id to be invalid.
+  EXPECT_FALSE(IsOfferSpecificsValid(specifics));
+  specifics.clear_card_linked_offer_data();
+  // Expects specifics without card linked offer data to be invalid.
+  EXPECT_FALSE(IsOfferSpecificsValid(specifics));
+
+  SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData1(),
+                                         &specifics);
+  specifics.mutable_percentage_reward()->set_percentage("5");
+  // Expects specifics without correct reward text to be invalid.
+  EXPECT_FALSE(IsOfferSpecificsValid(specifics));
+  specifics.clear_percentage_reward();
+  // Expects specifics without reward text to be invalid.
+  EXPECT_FALSE(IsOfferSpecificsValid(specifics));
+  specifics.mutable_fixed_amount_reward()->set_amount("$5");
+  // Expects specifics with only fixed amount reward text to be valid.
+  EXPECT_TRUE(IsOfferSpecificsValid(specifics));
+}
+
 }  // namespace
 }  // namespace autofill

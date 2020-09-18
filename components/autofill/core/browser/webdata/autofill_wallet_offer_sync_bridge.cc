@@ -173,9 +173,14 @@ void AutofillWalletOfferSyncBridge::MergeRemoteData(
   std::vector<AutofillOfferData> offer_data;
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
     DCHECK(change->data().specifics.has_autofill_offer());
-    // TODO(crbug.com/1112095): Add offer data validation.
-    offer_data.push_back(AutofillOfferDataFromOfferSpecifics(
-        change->data().specifics.autofill_offer()));
+    const sync_pb::AutofillOfferSpecifics specifics =
+        change->data().specifics.autofill_offer();
+    if (IsOfferSpecificsValid(specifics)) {
+      offer_data.push_back(AutofillOfferDataFromOfferSpecifics(specifics));
+    } else {
+      // TODO(crbug.com/1112095): Add logging to record how often invalid data
+      // arrives.
+    }
   }
 
   AutofillTable* table = GetAutofillTable();
