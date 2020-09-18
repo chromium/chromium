@@ -174,6 +174,11 @@ class CORE_EXPORT HTMLInputElement
       ExceptionState&,
       TextFieldEventBehavior = TextFieldEventBehavior::kDispatchNoEvent);
 
+  // For type=range, returns a ratio of the current value in the range between
+  // min and max.  i.e. (value - min) / (max - min)
+  // For other types, this function fails with DCHECK().
+  Decimal RatioValue() const;
+
   String ValueOrDefaultLabel() const;
 
   // This function dispatches 'input' event for non-textfield types. Callers

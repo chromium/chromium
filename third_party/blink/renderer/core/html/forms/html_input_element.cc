@@ -1264,6 +1264,14 @@ void HTMLInputElement::setValueAsNumber(double new_value,
   input_type_->SetValueAsDouble(new_value, event_behavior, exception_state);
 }
 
+Decimal HTMLInputElement::RatioValue() const {
+  DCHECK_EQ(type(), input_type_names::kRange);
+  const StepRange step_range(CreateStepRange(kRejectAny));
+  const Decimal old_value =
+      ParseToDecimalForNumberType(value(), step_range.DefaultValue());
+  return step_range.ProportionFromValue(step_range.ClampValue(old_value));
+}
+
 void HTMLInputElement::SetValueFromRenderer(const String& value) {
   // File upload controls will never use this.
   DCHECK_NE(type(), input_type_names::kFile);

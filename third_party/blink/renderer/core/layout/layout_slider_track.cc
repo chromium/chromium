@@ -33,22 +33,13 @@
 
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
-#include "third_party/blink/renderer/core/html/forms/slider_thumb_element.h"
 #include "third_party/blink/renderer/core/html/forms/slider_track_element.h"
-#include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 
 namespace blink {
 
 LayoutSliderTrack::LayoutSliderTrack(SliderTrackElement* element)
     : LayoutBlockFlow(element) {}
-
-inline static Decimal SliderPosition(HTMLInputElement* element) {
-  const StepRange step_range(element->CreateStepRange(kRejectAny));
-  const Decimal old_value =
-      ParseToDecimalForNumberType(element->value(), step_range.DefaultValue());
-  return step_range.ProportionFromValue(step_range.ClampValue(old_value));
-}
 
 void LayoutSliderTrack::UpdateLayout() {
   auto* input = To<HTMLInputElement>(GetNode()->OwnerShadowHost());
@@ -73,7 +64,7 @@ void LayoutSliderTrack::UpdateLayout() {
   if (!thumb)
     return;
 
-  double percentage_offset = SliderPosition(input).ToDouble();
+  double percentage_offset = input->RatioValue().ToDouble();
   LayoutUnit available_extent = is_vertical ? ContentHeight() : ContentWidth();
   available_extent -=
       is_vertical ? thumb->Size().Height() : thumb->Size().Width();
