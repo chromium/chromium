@@ -61,6 +61,10 @@ enum class SystemAppType {
   TELEMETRY,
   SAMPLE,
 #endif  // !defined(OFFICIAL_BUILD)
+
+  // When adding a new System App, add a corresponding histogram suffix in
+  // WebAppSystemAppInternalName (histograms.xml). The suffix name should match
+  // the App's |internal_name|. This is for reporting per-app install results.
 };
 
 using OriginTrialsMap = std::map<url::Origin, std::vector<std::string>>;
@@ -80,8 +84,9 @@ struct SystemAppInfo {
   ~SystemAppInfo();
 
   // A developer-friendly name for, among other things, reporting metrics and
-  // interacting with tast tests. It should follow PascalCase convention. It
-  // shouldn't be changed afterwards.
+  // interacting with tast tests. It should follow PascalCase convention, and
+  // have a corresponding entry in WebAppSystemAppInternalName histogram
+  // suffixes. The internal name shouldn't be changed afterwards.
   std::string internal_name;
 
   // The URL that the System App will be installed from.

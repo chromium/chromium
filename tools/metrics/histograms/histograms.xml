@@ -216427,13 +216427,22 @@ regressions. -->
   <affected-histogram name="WebApp.Engagement"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="WebAppSystemAppNameForLogging" separator=".">
-  <suffix name="BrowserSettings" label="Browser Settings"/>
+<histogram_suffixes name="WebAppSystemAppInternalName" separator=".">
+  <suffix name="BrowserSettings" label="Browser Settings">
+    <obsolete>
+      Deprecated as of 2019-12-24.
+    </obsolete>
+  </suffix>
   <suffix name="Camera" label="Camera"/>
+  <suffix name="Diagnostics" label="Diagnostics"/>
   <suffix name="Discover" label="Discovery"/>
   <suffix name="Help" label="Help"/>
   <suffix name="Media" label="Media"/>
   <suffix name="OSSettings" label="OS Settings"/>
+  <suffix name="PrintManagement" label="PrintManagement"/>
+  <suffix name="Sample" label="Sample"/>
+  <suffix name="Scanning" label="Scanning"/>
+  <suffix name="Telemetry" label="Telemetry"/>
   <suffix name="Terminal" label="Terminal"/>
   <affected-histogram name="Webapp.InstallResult.System.Apps"/>
 </histogram_suffixes>
