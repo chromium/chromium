@@ -249,6 +249,24 @@ class PpdProviderTest : public ::testing::Test {
   void DiscardResolvePpd(PpdProvider::CallbackResultCode code,
                          const std::string& contents) {}
 
+  // Calls the ResolveManufacturer() method of the |provider| and
+  // waits for its completion. Ignores the returned string values and
+  // returns whether the result code was
+  // PpdProvider::CallbackResultCode::SUCCESS.
+  bool SuccessfullyResolveManufacturers(PpdProvider* provider) {
+    base::RunLoop run_loop;
+    PpdProvider::CallbackResultCode code;
+    provider->ResolveManufacturers(base::BindLambdaForTesting(
+        [&run_loop, &code](
+            PpdProvider::CallbackResultCode result_code,
+            const std::vector<std::string>& unused_manufacturers) {
+          code = result_code;
+          run_loop.QuitClosure().Run();
+        }));
+    run_loop.Run();
+    return code == PpdProvider::CallbackResultCode::SUCCESS;
+  }
+
  protected:
   // List of relevant endpoint for this FakeServer
   std::vector<std::pair<std::string, std::string>> server_contents() const {
@@ -455,20 +473,11 @@ TEST_F(PpdProviderTest, FailsOldestQueuedResolveManufacturers) {
       CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
                       PropagateLocaleToMetadataManager::kDoNotPropagate});
 
-  // The moment we constructed a provider, it will have requested a
-  // metadata locale. But we don't want it to ever obtain one: we
-  // want to fill up the deferral queue and test that behavior, without
-  // ever hitting the success _or_ failure cases in getting the metadata
-  // locale.
-  //
-  // The pending task is the FakePrinterConfigCache calling back to
-  // indicate failure. We have to take this one, but before we do, we
-  // can ask the FakePrinterConfigCache to pretend to be an infinitely
-  // slow server for future calls.
-  ASSERT_EQ(1UL, task_environment_.GetPendingMainThreadTaskCount());
+  // Prevents the provider from ever getting a metadata locale.
+  // We want it to stall out, forcing it to perpetually defer method
+  // calls to ResolveManufacturers().
   provider_backdoor_.manager_config_cache->DiscardFetchRequestFor(
       "metadata_v3/locales.json");
-  task_environment_.FastForwardUntilNoTasksRemain();
 
   for (int i = kMethodDeferralLimitForTesting; i >= 0; i--) {
     provider->ResolveManufacturers(base::BindOnce(
@@ -495,20 +504,11 @@ TEST_F(PpdProviderTest, FailsOldestQueuedReverseLookup) {
       CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
                       PropagateLocaleToMetadataManager::kDoNotPropagate});
 
-  // The moment we constructed a provider, it will have requested a
-  // metadata locale. But we don't want it to ever obtain one: we
-  // want to fill up the deferral queue and test that behavior, without
-  // ever hitting the success _or_ failure cases in getting the metadata
-  // locale.
-  //
-  // The pending task is the FakePrinterConfigCache calling back to
-  // indicate failure. We have to take this one, but before we do, we
-  // can ask the FakePrinterConfigCache to pretend to be an infinitely
-  // slow server for future calls.
-  ASSERT_EQ(1UL, task_environment_.GetPendingMainThreadTaskCount());
+  // Prevents the provider from ever getting a metadata locale.
+  // We want it to stall out, forcing it to perpetually defer method
+  // calls to ReverseLookup().
   provider_backdoor_.manager_config_cache->DiscardFetchRequestFor(
       "metadata_v3/locales.json");
-  task_environment_.FastForwardUntilNoTasksRemain();
 
   for (int i = kMethodDeferralLimitForTesting; i >= 0; i--) {
     provider->ReverseLookup(
@@ -536,15 +536,6 @@ TEST_F(PpdProviderTest, ManufacturersFetch) {
                       PropagateLocaleToMetadataManager::kDoNotPropagate});
   StartFakePpdServer();
 
-  // The provider attempted to get a metadata locale as soon as it was
-  // constructed. The pending task on the sequence is a callback from
-  // the FakePrinterConfigCache indicating that it failed to get a
-  // metadata locale. We'll let that fail harmelssly; having called
-  // StartFakePpdServer(), the retry attempt will allow the provider to
-  // successfully obtain a metadata locale.
-  ASSERT_EQ(1UL, task_environment_.GetPendingMainThreadTaskCount());
-  task_environment_.FastForwardUntilNoTasksRemain();
-
   // Issue two requests at the same time, both should be resolved properly.
   provider->ResolveManufacturers(base::BindOnce(
       &PpdProviderTest::CaptureResolveManufacturers, base::Unretained(this)));
@@ -568,26 +559,13 @@ TEST_F(PpdProviderTest, ManufacturersFetchNoServer) {
       CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
                       PropagateLocaleToMetadataManager::kDoNotPropagate});
 
-  // Unlike the above, there is no breaking out of the failure loop in
-  // which the provider attempts to fetch a metadata locale and the
-  // fake server indicates that none are forthcoming.
-  //
-  // Since the provider never stops trying to get the metadata locale,
-  // it's not appropriate to use things like RunUntilIdle() or
-  // FastForwardUntilNoTasksRemain().
-  base::RunLoop run_loop;
-
   // Issue two requests at the same time, both should resolve properly
   // (though they will fail).
   provider->ResolveManufacturers(base::BindOnce(
       &PpdProviderTest::CaptureResolveManufacturers, base::Unretained(this)));
-  provider->ResolveManufacturers(base::BindLambdaForTesting(
-      [this, &run_loop](PpdProvider::CallbackResultCode code,
-                        const std::vector<std::string>& empty_manufacturers) {
-        this->CaptureResolveManufacturers(code, empty_manufacturers);
-        run_loop.QuitClosure().Run();
-      }));
-  run_loop.Run();
+  provider->ResolveManufacturers(base::BindOnce(
+      &PpdProviderTest::CaptureResolveManufacturers, base::Unretained(this)));
+  task_environment_.FastForwardUntilNoTasksRemain();
 
   ASSERT_EQ(2UL, captured_resolve_manufacturers_.size());
   EXPECT_EQ(PpdProvider::SERVER_ERROR,
@@ -718,11 +696,10 @@ TEST_F(PpdProviderTest, ResolvePrinters) {
                       PropagateLocaleToMetadataManager::kDoPropagate});
   StartFakePpdServer();
 
-  // Same as the contents in test fixture's server_contents() above,
-  // but allows us to bypass PpdProvider::ResolveManufacturers().
+  // Required setup calls to advance past PpdProvider's method deferral.
   ASSERT_TRUE(provider_backdoor_.metadata_manager->SetManufacturersForTesting(
       kDefaultManufacturersJson));
-  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(SuccessfullyResolveManufacturers(provider.get()));
 
   provider->ResolvePrinters(
       "Manufacturer A", base::BindOnce(&PpdProviderTest::CaptureResolvePrinters,
@@ -765,11 +742,10 @@ TEST_F(PpdProviderTest, ResolvePrintersBadReference) {
                       PropagateLocaleToMetadataManager::kDoPropagate});
   StartFakePpdServer();
 
-  // Same as the contents in test fixture's server_contents() above,
-  // but allows us to bypass PpdProvider::ResolveManufacturers().
+  // Required setup calls to advance past PpdProvider's method deferral.
   ASSERT_TRUE(provider_backdoor_.metadata_manager->SetManufacturersForTesting(
       kDefaultManufacturersJson));
-  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(SuccessfullyResolveManufacturers(provider.get()));
 
   provider->ResolvePrinters(
       "bogus_doesnt_exist",
@@ -786,11 +762,10 @@ TEST_F(PpdProviderTest, ResolvePrintersNoServer) {
       CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
                       PropagateLocaleToMetadataManager::kDoPropagate});
 
-  // Same as the contents in test fixture's server_contents() above,
-  // but allows us to bypass PpdProvider::ResolveManufacturers().
+  // Required setup calls to advance past PpdProvider's method deferral.
   ASSERT_TRUE(provider_backdoor_.metadata_manager->SetManufacturersForTesting(
       kDefaultManufacturersJson));
-  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(SuccessfullyResolveManufacturers(provider.get()));
 
   provider->ResolvePrinters(
       "Manufacturer A", base::BindOnce(&PpdProviderTest::CaptureResolvePrinters,
