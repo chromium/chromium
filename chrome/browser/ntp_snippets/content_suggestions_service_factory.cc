@@ -35,7 +35,6 @@
 #include "components/ntp_snippets/features.h"
 #include "components/ntp_snippets/ntp_snippets_constants.h"
 #include "components/ntp_snippets/remote/persistent_scheduler.h"
-#include "components/ntp_snippets/remote/prefetched_pages_tracker.h"
 #include "components/ntp_snippets/remote/remote_suggestions_database.h"
 #include "components/ntp_snippets/remote/remote_suggestions_fetcher_impl.h"
 #include "components/ntp_snippets/remote/remote_suggestions_provider_impl.h"
@@ -43,7 +42,6 @@
 #include "components/ntp_snippets/remote/remote_suggestions_status_service_impl.h"
 #include "components/ntp_snippets/remote/request_params.h"
 #include "components/ntp_snippets/user_classifier.h"
-#include "components/offline_pages/buildflags/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
@@ -60,18 +58,6 @@
 #include "components/feed/feed_feature_list.h"
 #endif
 
-#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-#include "chrome/browser/offline_pages/offline_page_model_factory.h"
-#include "chrome/browser/offline_pages/prefetch/prefetch_service_factory.h"
-#include "chrome/browser/offline_pages/request_coordinator_factory.h"
-#include "components/ntp_snippets/remote/prefetched_pages_tracker_impl.h"
-#include "components/offline_pages/core/background/request_coordinator.h"
-#include "components/offline_pages/core/offline_page_feature.h"
-#include "components/offline_pages/core/offline_page_model.h"
-#include "components/offline_pages/core/prefetch/prefetch_service.h"
-#include "components/offline_pages/core/prefetch/suggested_articles_observer.h"
-#endif
-
 using content::BrowserThread;
 using history::HistoryService;
 using image_fetcher::ImageFetcherImpl;
@@ -80,21 +66,12 @@ using ntp_snippets::CategoryRanker;
 using ntp_snippets::ContentSuggestionsService;
 using ntp_snippets::GetFetchEndpoint;
 using ntp_snippets::PersistentScheduler;
-using ntp_snippets::PrefetchedPagesTracker;
 using ntp_snippets::RemoteSuggestionsDatabase;
 using ntp_snippets::RemoteSuggestionsFetcherImpl;
 using ntp_snippets::RemoteSuggestionsProviderImpl;
 using ntp_snippets::RemoteSuggestionsSchedulerImpl;
 using ntp_snippets::RemoteSuggestionsStatusServiceImpl;
 using ntp_snippets::UserClassifier;
-
-#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-using ntp_snippets::PrefetchedPagesTrackerImpl;
-using offline_pages::OfflinePageModel;
-using offline_pages::OfflinePageModelFactory;
-using offline_pages::RequestCoordinator;
-using offline_pages::RequestCoordinatorFactory;
-#endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
 
 // For now, ContentSuggestionsService must only be instantiated on Android.
 // See also crbug.com/688366.
@@ -110,25 +87,8 @@ using offline_pages::RequestCoordinatorFactory;
 
 namespace {
 
-#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-
-void RegisterWithPrefetching(ContentSuggestionsService* service,
-                             Profile* profile) {
-  // There's a circular dependency between ContentSuggestionsService and
-  // PrefetchService. This closes the circle.
-  offline_pages::PrefetchServiceFactory::GetForKey(profile->GetProfileKey())
-      ->SetContentSuggestionsService(service);
-}
-
-#endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
-
 bool IsArticleProviderEnabled() {
   return base::FeatureList::IsEnabled(ntp_snippets::kArticleSuggestionsFeature);
-}
-
-bool IsKeepingPrefetchedSuggestionsEnabled() {
-  return base::FeatureList::IsEnabled(
-      ntp_snippets::kKeepPrefetchedContentSuggestions);
 }
 
 void ParseJson(const std::string& json,
@@ -149,8 +109,7 @@ void ParseJson(const std::string& json,
 
 void RegisterArticleProviderIfEnabled(ContentSuggestionsService* service,
                                       Profile* profile,
-                                      UserClassifier* user_classifier,
-                                      OfflinePageModel* offline_page_model) {
+                                      UserClassifier* user_classifier) {
   if (!IsArticleProviderEnabled()) {
     return;
   }
@@ -176,13 +135,6 @@ void RegisterArticleProviderIfEnabled(ContentSuggestionsService* service,
                                 : google_apis::GetNonStableAPIKey();
   }
 
-  std::unique_ptr<PrefetchedPagesTracker> prefetched_pages_tracker;
-#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-  if (IsKeepingPrefetchedSuggestionsEnabled()) {
-    prefetched_pages_tracker =
-        std::make_unique<PrefetchedPagesTrackerImpl>(offline_page_model);
-  }
-#endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
   auto suggestions_fetcher = std::make_unique<RemoteSuggestionsFetcherImpl>(
       identity_manager, url_loader_factory, pref_service, language_histogram,
       base::BindRepeating(&ParseJson), GetFetchEndpoint(), api_key,
@@ -200,7 +152,6 @@ void RegisterArticleProviderIfEnabled(ContentSuggestionsService* service,
           database_dir),
       std::make_unique<RemoteSuggestionsStatusServiceImpl>(
           identity_manager->HasPrimaryAccount(), pref_service, std::string()),
-      std::move(prefetched_pages_tracker),
       std::make_unique<base::OneShotTimer>());
 
   service->remote_suggestions_scheduler()->SetProvider(provider.get());
@@ -239,10 +190,6 @@ ContentSuggestionsServiceFactory::ContentSuggestionsServiceFactory()
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(LargeIconServiceFactory::GetInstance());
-#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-  // Depends on OfflinePageModelFactory in SimpleDependencyManager.
-  DependsOn(offline_pages::PrefetchServiceFactory::GetInstance());
-#endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
 }
 
 ContentSuggestionsServiceFactory::~ContentSuggestionsServiceFactory() = default;
@@ -266,13 +213,6 @@ KeyedService* ContentSuggestionsServiceFactory::BuildServiceInstanceFor(
   auto user_classifier = std::make_unique<UserClassifier>(
       pref_service, base::DefaultClock::GetInstance());
   auto* user_classifier_raw = user_classifier.get();
-
-#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-  OfflinePageModel* offline_page_model =
-      OfflinePageModelFactory::GetForBrowserContext(profile);
-#else
-  OfflinePageModel* offline_page_model = nullptr;
-#endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
 
   // Create the RemoteSuggestionsScheduler.
   PersistentScheduler* persistent_scheduler = nullptr;
@@ -299,12 +239,7 @@ KeyedService* ContentSuggestionsServiceFactory::BuildServiceInstanceFor(
       pref_service, std::move(category_ranker), std::move(user_classifier),
       std::move(scheduler));
 
-  RegisterArticleProviderIfEnabled(service, profile, user_classifier_raw,
-                                   offline_page_model);
-
-#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-  RegisterWithPrefetching(service, profile);
-#endif
+  RegisterArticleProviderIfEnabled(service, profile, user_classifier_raw);
 
   return service;
 

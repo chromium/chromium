@@ -10,7 +10,6 @@ import org.junit.runner.Description;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
-import org.chromium.chrome.browser.suggestions.SuggestionsEventReporter;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProvider;
 import org.chromium.chrome.browser.ui.favicon.LargeIconBridge;
@@ -54,15 +53,8 @@ public class SuggestionsDependenciesRule extends TestWatcher {
     public static class TestFactory extends SuggestionsDependencyFactory {
         public MostVisitedSites mostVisitedSites;
         public LargeIconBridge largeIconBridge;
-        public SuggestionsEventReporter eventReporter;
         public ThumbnailProvider thumbnailProvider;
         public OfflinePageBridge offlinePageBridge;
-
-        @Override
-        public SuggestionsEventReporter createEventReporter() {
-            if (eventReporter != null) return eventReporter;
-            return super.createEventReporter();
-        }
 
         @Override
         public MostVisitedSites createMostVisitedSites(Profile profile) {

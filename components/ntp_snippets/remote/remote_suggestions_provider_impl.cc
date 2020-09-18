@@ -66,21 +66,6 @@ const char kCategoryContentAllowFetchingMore[] = "allow_fetching_more";
 const char kOrderNewRemoteCategoriesBasedOnArticlesCategory[] =
     "order_new_remote_categories_based_on_articles_category";
 
-// Variation parameter for additional prefetched suggestions quantity. Not more
-// than this number of prefetched suggestions will be kept longer.
-const char kMaxAdditionalPrefetchedSuggestionsParamName[] =
-    "max_additional_prefetched_suggestions";
-
-const int kDefaultMaxAdditionalPrefetchedSuggestions = 5;
-
-// Variation parameter for additional prefetched suggestions age. Only
-// prefetched suggestions fetched not later than this are considered to be kept
-// longer.
-const char kMaxAgeForAdditionalPrefetchedSuggestionParamName[] =
-    "max_age_for_additional_prefetched_suggestion_minutes";
-
-const int kDefaultMaxAgeForAdditionalPrefetchedSuggestionMinutes = 36 * 60;
-
 bool IsOrderingNewRemoteCategoriesBasedOnArticlesCategoryEnabled() {
   // TODO(vitaliii): Use GetFieldTrialParamByFeature(As.*)? from
   // base/metrics/field_trial_params.h. GetVariationParamByFeature(As.*)? are
@@ -117,24 +102,6 @@ void AddFetchedCategoriesToRankerBasedOnArticlesCategory(
                                            articles_category);
   }
   NOTREACHED() << "Articles category was not found.";
-}
-
-bool IsKeepingPrefetchedSuggestionsEnabled() {
-  return base::FeatureList::IsEnabled(kKeepPrefetchedContentSuggestions);
-}
-
-int GetMaxAdditionalPrefetchedSuggestions() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kKeepPrefetchedContentSuggestions,
-      kMaxAdditionalPrefetchedSuggestionsParamName,
-      kDefaultMaxAdditionalPrefetchedSuggestions);
-}
-
-base::TimeDelta GetMaxAgeForAdditionalPrefetchedSuggestion() {
-  return base::TimeDelta::FromMinutes(base::GetFieldTrialParamByFeatureAsInt(
-      kKeepPrefetchedContentSuggestions,
-      kMaxAgeForAdditionalPrefetchedSuggestionParamName,
-      kDefaultMaxAgeForAdditionalPrefetchedSuggestionMinutes));
 }
 
 // Whether notifications for fetched suggestions are enabled. Note that this
@@ -340,7 +307,6 @@ RemoteSuggestionsProviderImpl::RemoteSuggestionsProviderImpl(
     std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher,
     std::unique_ptr<RemoteSuggestionsDatabase> database,
     std::unique_ptr<RemoteSuggestionsStatusService> status_service,
-    std::unique_ptr<PrefetchedPagesTracker> prefetched_pages_tracker,
     std::unique_ptr<base::OneShotTimer> fetch_timeout_timer)
     : RemoteSuggestionsProvider(observer),
       state_(State::NOT_INITED),
@@ -357,7 +323,6 @@ RemoteSuggestionsProviderImpl::RemoteSuggestionsProviderImpl(
       clear_history_dependent_state_when_initialized_(false),
       clear_cached_suggestions_when_initialized_(false),
       clock_(base::DefaultClock::GetInstance()),
-      prefetched_pages_tracker_(std::move(prefetched_pages_tracker)),
       fetch_timeout_timer_(std::move(fetch_timeout_timer)),
       request_status_(FetchRequestStatus::NONE) {
   DCHECK(fetch_timeout_timer_);
@@ -906,16 +871,6 @@ void RemoteSuggestionsProviderImpl::OnFetchFinished(
     return;
   }
 
-  if (IsKeepingPrefetchedSuggestionsEnabled() && prefetched_pages_tracker_ &&
-      !prefetched_pages_tracker_->IsInitialized()) {
-    // Wait until the tracker is initialized.
-    prefetched_pages_tracker_->Initialize(base::BindOnce(
-        &RemoteSuggestionsProviderImpl::OnFetchFinished, base::Unretained(this),
-        std::move(callback), interactive_request, status,
-        std::move(fetched_categories)));
-    return;
-  }
-
   if (fetched_categories) {
     for (FetchedCategory& fetched_category : *fetched_categories) {
       for (std::unique_ptr<RemoteSuggestion>& suggestion :
@@ -1075,50 +1030,6 @@ void RemoteSuggestionsProviderImpl::IntegrateSuggestions(
   // IDs though).
   EraseByPrimaryID(&content->suggestions,
                    *GetSuggestionIDVector(new_suggestions));
-
-  // If enabled, keep some older prefetched article suggestions, otherwise the
-  // user has little time to see them.
-  if (IsKeepingPrefetchedSuggestionsEnabled() &&
-      category == articles_category_ && prefetched_pages_tracker_) {
-    DCHECK(prefetched_pages_tracker_->IsInitialized());
-
-    // Select suggestions to keep.
-    std::sort(content->suggestions.begin(), content->suggestions.end(),
-              [](const std::unique_ptr<RemoteSuggestion>& first,
-                 const std::unique_ptr<RemoteSuggestion>& second) {
-                return first->fetch_date() > second->fetch_date();
-              });
-    std::vector<std::unique_ptr<RemoteSuggestion>>
-        additional_prefetched_suggestions, other_suggestions;
-    for (auto& remote_suggestion : content->suggestions) {
-      const GURL& url = remote_suggestion->amp_url().is_empty()
-                            ? remote_suggestion->url()
-                            : remote_suggestion->amp_url();
-      if (prefetched_pages_tracker_->PrefetchedOfflinePageExists(url) &&
-          clock_->Now() - remote_suggestion->fetch_date() <
-              GetMaxAgeForAdditionalPrefetchedSuggestion() &&
-          static_cast<int>(additional_prefetched_suggestions.size()) <
-              GetMaxAdditionalPrefetchedSuggestions()) {
-        additional_prefetched_suggestions.push_back(
-            std::move(remote_suggestion));
-      } else {
-        other_suggestions.push_back(std::move(remote_suggestion));
-      }
-    }
-
-    // Mix them into the new set according to their score.
-    for (auto& remote_suggestion : additional_prefetched_suggestions) {
-      new_suggestions.push_back(std::move(remote_suggestion));
-    }
-    std::sort(new_suggestions.begin(), new_suggestions.end(),
-              [](const std::unique_ptr<RemoteSuggestion>& first,
-                 const std::unique_ptr<RemoteSuggestion>& second) {
-                return first->score() > second->score();
-              });
-
-    // Treat remaining suggestions as usual.
-    content->suggestions = std::move(other_suggestions);
-  }
 
   // Do not delete the thumbnail images as they are still handy on open NTPs.
   database_->DeleteSnippets(GetSuggestionIDVector(content->suggestions));

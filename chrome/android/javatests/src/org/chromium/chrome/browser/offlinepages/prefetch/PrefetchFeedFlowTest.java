@@ -259,7 +259,6 @@ public class PrefetchFeedFlowTest {
                         }
                     });
             PrefetchTestBridge.enableLimitlessPrefetching(true);
-            PrefetchTestBridge.skipNTPSuggestionsAPIKeyCheck();
         });
 
         OfflineTestUtil.setPrefetchingEnabledByServer(true);

@@ -43,8 +43,7 @@ class ServerForbiddenCheckRequestTest : public PrefetchRequestTestBase {
   FakeSuggestionsProvider suggestions_provider_;
 };
 
-ServerForbiddenCheckRequestTest::ServerForbiddenCheckRequestTest()
-    : taco_(PrefetchServiceTestTaco::SuggestionSource::kFeed) {}
+ServerForbiddenCheckRequestTest::ServerForbiddenCheckRequestTest() = default;
 
 void ServerForbiddenCheckRequestTest::SetUp() {
   PrefetchRequestTestBase::SetUp();

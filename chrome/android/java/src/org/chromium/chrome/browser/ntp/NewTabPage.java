@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.query_tiles.QueryTileSection.QueryInfo;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
-import org.chromium.chrome.browser.suggestions.SuggestionsEventReporter;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
@@ -183,10 +182,9 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
     protected class NewTabPageManagerImpl
             extends SuggestionsUiDelegateImpl implements NewTabPageManager {
-        public NewTabPageManagerImpl(SuggestionsEventReporter eventReporter,
-                SuggestionsNavigationDelegate navigationDelegate, Profile profile,
-                NativePageHost nativePageHost, SnackbarManager snackbarManager) {
-            super(eventReporter, navigationDelegate, profile, nativePageHost, snackbarManager);
+        public NewTabPageManagerImpl(SuggestionsNavigationDelegate navigationDelegate,
+                Profile profile, NativePageHost nativePageHost, SnackbarManager snackbarManager) {
+            super(navigationDelegate, profile, nativePageHost, snackbarManager);
         }
 
         @Override
@@ -307,12 +305,11 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         Profile profile = Profile.fromWebContents(mTab.getWebContents());
 
         SuggestionsDependencyFactory depsFactory = SuggestionsDependencyFactory.getInstance();
-        SuggestionsEventReporter eventReporter = depsFactory.createEventReporter();
 
         SuggestionsNavigationDelegate navigationDelegate = new SuggestionsNavigationDelegate(
                 activity, profile, nativePageHost, tabModelSelector, mTab);
         mNewTabPageManager = new NewTabPageManagerImpl(
-                eventReporter, navigationDelegate, profile, nativePageHost, snackbarManager);
+                navigationDelegate, profile, nativePageHost, snackbarManager);
         mTileGroupDelegate = new NewTabPageTileGroupDelegate(
                 activity, profile, navigationDelegate, snackbarManager);
 
@@ -373,8 +370,6 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
             public void onViewDetachedFromWindow(View view) {}
         });
         mBrowserControlsStateProvider.addObserver(this);
-
-        eventReporter.onSurfaceOpened();
 
         DownloadManagerService.getDownloadManagerService().checkForExternallyRemovedDownloads(
                 /*isOffTheRecord=*/false);

@@ -36,10 +36,6 @@ public class SuggestionsDependencyFactory {
         sInstance = testInstance;
     }
 
-    public SuggestionsEventReporter createEventReporter() {
-        return new SuggestionsEventReporterBridge();
-    }
-
     public MostVisitedSites createMostVisitedSites(Profile profile) {
         return new MostVisitedSitesBridge(profile);
     }

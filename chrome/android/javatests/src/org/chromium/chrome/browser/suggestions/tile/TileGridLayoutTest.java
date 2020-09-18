@@ -324,8 +324,7 @@ public class TileGridLayoutTest {
         // TODO (https://crbug.com/1063807):  Add incognito mode tests.
         Profile profile = Profile.getLastUsedRegularProfile();
         SuggestionsUiDelegate uiDelegate =
-                new SuggestionsUiDelegateImpl(mSuggestionsDeps.getFactory().createEventReporter(),
-                        null, profile, null, activity.getSnackbarManager());
+                new SuggestionsUiDelegateImpl(null, profile, null, activity.getSnackbarManager());
 
         FakeOfflinePageBridge offlinePageBridge = new FakeOfflinePageBridge();
         List<OfflinePageItem> offlinePageItems = new ArrayList<>();

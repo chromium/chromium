@@ -18,7 +18,6 @@ import java.util.List;
  */
 public class SuggestionsUiDelegateImpl implements SuggestionsUiDelegate {
     private final List<DestructionObserver> mDestructionObservers = new ArrayList<>();
-    private final SuggestionsEventReporter mSuggestionsEventReporter;
     private final SuggestionsNavigationDelegate mSuggestionsNavigationDelegate;
     private final NativePageHost mHost;
     private final ImageFetcher mImageFetcher;
@@ -26,21 +25,13 @@ public class SuggestionsUiDelegateImpl implements SuggestionsUiDelegate {
 
     private boolean mIsDestroyed;
 
-    public SuggestionsUiDelegateImpl(SuggestionsEventReporter eventReporter,
-            SuggestionsNavigationDelegate navigationDelegate, Profile profile, NativePageHost host,
-            SnackbarManager snackbarManager) {
-        mSuggestionsEventReporter = eventReporter;
+    public SuggestionsUiDelegateImpl(SuggestionsNavigationDelegate navigationDelegate,
+            Profile profile, NativePageHost host, SnackbarManager snackbarManager) {
         mSuggestionsNavigationDelegate = navigationDelegate;
         mImageFetcher = new ImageFetcher(profile);
         mSnackbarManager = snackbarManager;
 
         mHost = host;
-    }
-
-    @Nullable
-    @Override
-    public SuggestionsEventReporter getEventReporter() {
-        return mSuggestionsEventReporter;
     }
 
     @Nullable

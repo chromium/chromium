@@ -76,7 +76,7 @@ struct OfflinePageClientPolicy {
   //   disabled.
   bool requires_specific_user_settings = false;
 
-  // Whether the pages originate from suggestion engines like Zine or the Feed.
+  // Whether the pages originate from suggestion engines like the Feed.
   bool is_suggested = false;
 
   // Whether a background page download is allowed to be converted to a regular

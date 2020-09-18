@@ -28,10 +28,8 @@ class PrefetchImporter;
 class PrefetchNetworkRequestFactory;
 class PrefetchService;
 class PrefetchStore;
-class SuggestedArticlesObserver;
 class TestDownloadClient;
 class TestDownloadService;
-class ThumbnailFetcher;
 
 // The taco class acts as a wrapper around the prefetch service making
 // it easy to create for tests, using test versions of the dependencies.
@@ -40,15 +38,7 @@ class ThumbnailFetcher;
 // custom versions that have test-specific hooks.
 class PrefetchServiceTestTaco {
  public:
-  // Zine/Feed
-  // Chooses whether to configure the taco to be compatible with a Zine or Feed
-  // suggestion source.
-  enum SuggestionSource {
-    kContentSuggestions,
-    kFeed,
-  };
-  explicit PrefetchServiceTestTaco(
-      SuggestionSource source = kContentSuggestions);
+  explicit PrefetchServiceTestTaco();
   ~PrefetchServiceTestTaco();
 
   // These methods must be called before CreatePrefetchService() is invoked.
@@ -65,18 +55,12 @@ class PrefetchServiceTestTaco {
   void SetPrefetchNetworkRequestFactory(
       std::unique_ptr<PrefetchNetworkRequestFactory> network_request_factory);
   void SetPrefetchStore(std::unique_ptr<PrefetchStore> prefetch_store_sql);
-  // Defaults to SuggestedArticlesObserver.  Initializes the testing suggestions
-  // by default, so no ContentSuggestionsService is required..
-  void SetSuggestedArticlesObserver(
-      std::unique_ptr<SuggestedArticlesObserver> suggested_articles_observer);
   void SetPrefetchDownloader(
       std::unique_ptr<PrefetchDownloader> prefetch_downloader);
   void SetPrefetchImporter(std::unique_ptr<PrefetchImporter> prefetch_importer);
   void SetPrefetchBackgroundTaskHandler(
       std::unique_ptr<PrefetchBackgroundTaskHandler>
           prefetch_background_task_handler);
-  // Default type: MockThumbnailFetcher.
-  void SetThumbnailFetcher(std::unique_ptr<ThumbnailFetcher> thumbnail_fetcher);
   // Default type: image_fetcher::MockImageFetcher.
   void SetThumbnailImageFetcher(
       std::unique_ptr<image_fetcher::ImageFetcher> thumbnail_image_fetcher);
@@ -117,13 +101,11 @@ class PrefetchServiceTestTaco {
   std::unique_ptr<PrefetchGCMHandler> gcm_handler_;
   std::unique_ptr<PrefetchNetworkRequestFactory> network_request_factory_;
   std::unique_ptr<PrefetchStore> prefetch_store_;
-  std::unique_ptr<SuggestedArticlesObserver> suggested_articles_observer_;
   std::unique_ptr<PrefetchDownloader> prefetch_downloader_;
   std::unique_ptr<PrefetchImporter> prefetch_importer_;
   std::unique_ptr<PrefetchBackgroundTaskHandler>
       prefetch_background_task_handler_;
   std::unique_ptr<PrefetchService> prefetch_service_;
-  std::unique_ptr<ThumbnailFetcher> thumbnail_fetcher_;
   std::unique_ptr<image_fetcher::ImageFetcher> thumbnail_image_fetcher_;
   std::unique_ptr<OfflinePageModel> offline_page_model_;
   std::unique_ptr<TestDownloadService> download_service_;

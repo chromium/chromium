@@ -14,9 +14,6 @@ public interface SuggestionsUiDelegate {
     // TODO(dgn): remove these methods once the users have a different way to get a reference
     // to these objects (https://crbug.com/677672)
 
-    /** Convenience method to access the {@link SuggestionsEventReporter}. */
-    SuggestionsEventReporter getEventReporter();
-
     /** Convenience method to access the {@link SuggestionsNavigationDelegate}. */
     SuggestionsNavigationDelegate getNavigationDelegate();
 

@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
-import org.chromium.chrome.browser.suggestions.SuggestionsEventReporter;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
 import org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView;
@@ -60,8 +59,6 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
 
         // This function is never called in incognito mode.
         Profile profile = Profile.getLastUsedRegularProfile();
-        SuggestionsEventReporter eventReporter =
-                SuggestionsDependencyFactory.getInstance().createEventReporter();
 
         ImageFetcher imageFetcher = new ImageFetcher(profile);
         SnackbarManager snackbarManager = mActivity.getSnackbarManager();
@@ -75,7 +72,7 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
         TileGroupDelegateImpl tileGroupDelegate =
                 new TileGroupDelegateImpl(mActivity, profile, null, snackbarManager);
         SuggestionsUiDelegate suggestionsUiDelegate =
-                new MostVisitedSuggestionsUiDelegate(eventReporter, profile, snackbarManager);
+                new MostVisitedSuggestionsUiDelegate(profile, snackbarManager);
         mTileGroup = new TileGroup(
                 mRenderer, suggestionsUiDelegate, null, tileGroupDelegate, this, offlinePageBridge);
         mTileGroup.startObserving(MAX_RESULTS);
@@ -164,9 +161,8 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
 
     /** Suggestions UI Delegate for constructing the TileGroup. */
     private static class MostVisitedSuggestionsUiDelegate extends SuggestionsUiDelegateImpl {
-        public MostVisitedSuggestionsUiDelegate(SuggestionsEventReporter eventReporter,
-                Profile profile, SnackbarManager snackbarManager) {
-            super(eventReporter, null, profile, null, snackbarManager);
+        public MostVisitedSuggestionsUiDelegate(Profile profile, SnackbarManager snackbarManager) {
+            super(null, profile, null, snackbarManager);
         }
 
         @Override

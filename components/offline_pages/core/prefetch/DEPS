@@ -3,7 +3,6 @@ include_rules = [
   "+components/download/public",
   "+components/gcm_driver",
   "+components/image_fetcher",
-  "+components/ntp_snippets",
   "+components/prefs",
   "+components/variations",
   "+components/version_info",

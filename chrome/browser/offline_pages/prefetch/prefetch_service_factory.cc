@@ -18,12 +18,10 @@
 #include "chrome/browser/download/download_service_factory.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/ntp_snippets/content_suggestions_service_factory.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "chrome/browser/offline_pages/prefetch/gcm_token.h"
 #include "chrome/browser/offline_pages/prefetch/offline_metrics_collector_impl.h"
 #include "chrome/browser/offline_pages/prefetch/prefetch_background_task_handler_impl.h"
-#include "chrome/browser/offline_pages/prefetch/thumbnail_fetcher_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/transition_manager/full_browser_transition_manager.h"
@@ -42,7 +40,6 @@
 #include "components/offline_pages/core/prefetch/prefetch_network_request_factory_impl.h"
 #include "components/offline_pages/core/prefetch/prefetch_service_impl.h"
 #include "components/offline_pages/core/prefetch/store/prefetch_store.h"
-#include "components/offline_pages/core/prefetch/suggested_articles_observer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -116,9 +113,6 @@ std::unique_ptr<KeyedService> PrefetchServiceFactory::BuildServiceInstanceFor(
     SimpleFactoryKey* key) const {
   ProfileKey* profile_key = ProfileKey::FromSimpleFactoryKey(key);
 
-  const bool feed_enabled =
-      base::FeatureList::IsEnabled(feed::kInterestFeedContentSuggestions) ||
-      base::FeatureList::IsEnabled(feed::kInterestFeedV2);
   OfflinePageModel* offline_page_model =
       OfflinePageModelFactory::GetForKey(profile_key);
   DCHECK(offline_page_model);
@@ -153,19 +147,8 @@ std::unique_ptr<KeyedService> PrefetchServiceFactory::BuildServiceInstanceFor(
   auto prefetch_store =
       std::make_unique<PrefetchStore>(background_task_runner, store_path);
 
-  // Zine/Feed
-  // Conditional components for Zine. Not created when using Feed.
-  std::unique_ptr<SuggestedArticlesObserver> suggested_articles_observer;
-  std::unique_ptr<ThumbnailFetcherImpl> thumbnail_fetcher;
-  // Conditional components for Feed. Not created when using Zine.
-  image_fetcher::ImageFetcher* image_fetcher = nullptr;
-  if (!feed_enabled) {
-    suggested_articles_observer = std::make_unique<SuggestedArticlesObserver>();
-    thumbnail_fetcher = std::make_unique<ThumbnailFetcherImpl>();
-  } else {
-    image_fetcher = GetImageFetcher(
-        profile_key, image_fetcher::ImageFetcherConfig::kReducedMode);
-  }
+  image_fetcher::ImageFetcher* image_fetcher = GetImageFetcher(
+      profile_key, image_fetcher::ImageFetcherConfig::kReducedMode);
 
   auto prefetch_downloader = std::make_unique<PrefetchDownloaderImpl>(
       DownloadServiceFactory::GetForKey(profile_key), chrome::GetChannel(),
@@ -181,11 +164,10 @@ std::unique_ptr<KeyedService> PrefetchServiceFactory::BuildServiceInstanceFor(
   auto service = std::make_unique<PrefetchServiceImpl>(
       std::move(offline_metrics_collector), std::move(prefetch_dispatcher),
       std::move(prefetch_network_request_factory), offline_page_model,
-      std::move(prefetch_store), std::move(suggested_articles_observer),
-      std::move(prefetch_downloader), std::move(prefetch_importer),
-      std::make_unique<PrefetchGCMAppHandler>(),
-      std::move(prefetch_background_task_handler), std::move(thumbnail_fetcher),
-      image_fetcher, profile_key->GetPrefs());
+      std::move(prefetch_store), std::move(prefetch_downloader),
+      std::move(prefetch_importer), std::make_unique<PrefetchGCMAppHandler>(),
+      std::move(prefetch_background_task_handler), image_fetcher,
+      profile_key->GetPrefs());
 
   auto callback = base::BindOnce(&OnProfileCreated, service.get());
   FullBrowserTransitionManager::Get()->RegisterCallbackOnProfileCreation(

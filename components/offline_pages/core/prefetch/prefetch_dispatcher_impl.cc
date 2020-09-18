@@ -29,7 +29,6 @@
 #include "components/offline_pages/core/prefetch/prefetch_service.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 #include "components/offline_pages/core/prefetch/server_forbidden_check_request.h"
-#include "components/offline_pages/core/prefetch/suggested_articles_observer.h"
 #include "components/offline_pages/core/prefetch/suggestions_provider.h"
 #include "components/offline_pages/core/prefetch/tasks/add_unique_urls_task.h"
 #include "components/offline_pages/core/prefetch/tasks/download_archives_task.h"
@@ -48,7 +47,6 @@
 #include "components/offline_pages/core/prefetch/tasks/remove_url_task.h"
 #include "components/offline_pages/core/prefetch/tasks/sent_get_operation_cleanup_task.h"
 #include "components/offline_pages/core/prefetch/tasks/stale_entry_finalizer_task.h"
-#include "components/offline_pages/core/prefetch/thumbnail_fetcher.h"
 #include "components/offline_pages/core/prefetch/visuals_fetch_by_url.h"
 #include "components/prefs/pref_service.h"
 #include "url/gurl.h"
@@ -480,21 +478,11 @@ void PrefetchDispatcherImpl::VisualsAvailabilityChecked(
   if (availability.has_thumbnail && availability.has_favicon) {
     FetchVisuals(std::move(remaining_ids), is_first_attempt);
   } else {
-    // Zine/Feed: thumbnail_fetcher is non-null only with Zine.
-    ThumbnailFetcher* thumbnail_fetcher = service_->GetThumbnailFetcher();
-    if (thumbnail_fetcher) {
-      auto complete_callback = base::BindOnce(
-          &PrefetchDispatcherImpl::ThumbnailFetchComplete, GetWeakPtr(),
-          offline_id, std::move(remaining_ids), is_first_attempt, GURL());
-      thumbnail_fetcher->FetchSuggestionImageData(client_id,
-                                                  std::move(complete_callback));
-    } else {
-      task_queue_.AddTask(std::make_unique<GetVisualsInfoTask>(
-          service_->GetPrefetchStore(), offline_id,
-          base::BindOnce(&PrefetchDispatcherImpl::VisualsInfoReceived,
-                         GetWeakPtr(), offline_id, std::move(remaining_ids),
-                         is_first_attempt, availability)));
-    }
+    task_queue_.AddTask(std::make_unique<GetVisualsInfoTask>(
+        service_->GetPrefetchStore(), offline_id,
+        base::BindOnce(&PrefetchDispatcherImpl::VisualsInfoReceived,
+                       GetWeakPtr(), offline_id, std::move(remaining_ids),
+                       is_first_attempt, availability)));
   }
 }
 

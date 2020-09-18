@@ -20,20 +20,16 @@ namespace offline_pages {
 
 class PrefetchServiceImpl : public PrefetchService {
  public:
-  // Zine/Feed: when using Feed, suggested_articles_observer and
-  // thumbnail_fetcher should be null. All other parameters must be non-null.
   PrefetchServiceImpl(
       std::unique_ptr<OfflineMetricsCollector> offline_metrics_collector,
       std::unique_ptr<PrefetchDispatcher> dispatcher,
       std::unique_ptr<PrefetchNetworkRequestFactory> network_request_factory,
       OfflinePageModel* offline_page_model,
       std::unique_ptr<PrefetchStore> prefetch_store,
-      std::unique_ptr<SuggestedArticlesObserver> suggested_articles_observer,
       std::unique_ptr<PrefetchDownloader> prefetch_downloader,
       std::unique_ptr<PrefetchImporter> prefetch_importer,
       std::unique_ptr<PrefetchGCMHandler> gcm_handler,
       std::unique_ptr<PrefetchBackgroundTaskHandler> background_task_handler,
-      std::unique_ptr<ThumbnailFetcher> thumbnail_fetcher,
       image_fetcher::ImageFetcher* image_fetcher_,
       PrefService* prefs);
 
@@ -41,8 +37,6 @@ class PrefetchServiceImpl : public PrefetchService {
 
   // PrefetchService implementation:
   // Externally used functions.
-  void SetContentSuggestionsService(
-      ntp_snippets::ContentSuggestionsService* content_suggestions) override;
   void SetSuggestionProvider(
       SuggestionsProvider* suggestions_provider) override;
   void NewSuggestionsAvailable() override;
@@ -66,12 +60,7 @@ class PrefetchServiceImpl : public PrefetchService {
   void GCMTokenReceived(const std::string& gcm_token,
                         instance_id::InstanceID::Result result);
 
-  // Thumbnail fetchers. With Feed, GetImageFetcher() is available
-  // and GetThumbnailFetcher() is null.
-  ThumbnailFetcher* GetThumbnailFetcher() override;
   image_fetcher::ImageFetcher* GetImageFetcher() override;
-
-  SuggestedArticlesObserver* GetSuggestedArticlesObserverForTesting() override;
 
   base::WeakPtr<PrefetchServiceImpl> GetWeakPtr();
 
@@ -99,14 +88,9 @@ class PrefetchServiceImpl : public PrefetchService {
       prefetch_background_task_handler_;
   PrefService* prefs_;
 
-  // Zine/Feed: only non-null when using Zine.
-  std::unique_ptr<SuggestedArticlesObserver> suggested_articles_observer_;
-  std::unique_ptr<ThumbnailFetcher> thumbnail_fetcher_;
   // Owned by CachedImageFetcherService.
   image_fetcher::ImageFetcher* image_fetcher_;
-  ntp_snippets::ContentSuggestionsService* content_suggestions_;
 
-  // Zine/Feed: only non-null when using Feed.
   SuggestionsProvider* suggestions_provider_ = nullptr;
 
   base::WeakPtrFactory<PrefetchServiceImpl> weak_ptr_factory_{this};

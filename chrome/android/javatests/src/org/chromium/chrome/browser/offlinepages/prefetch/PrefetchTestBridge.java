@@ -15,9 +15,6 @@ public class PrefetchTestBridge {
     public static boolean isLimitlessPrefetchingEnabled() {
         return nativeIsLimitlessPrefetchingEnabled();
     }
-    public static void skipNTPSuggestionsAPIKeyCheck() {
-        nativeSkipNTPSuggestionsAPIKeyCheck();
-    }
     public static void insertIntoCachedImageFetcher(String url, byte[] imageData) {
         nativeInsertIntoCachedImageFetcher(url, imageData);
     }
@@ -28,7 +25,6 @@ public class PrefetchTestBridge {
 
     static native void nativeEnableLimitlessPrefetching(boolean enabled);
     static native boolean nativeIsLimitlessPrefetchingEnabled();
-    static native void nativeSkipNTPSuggestionsAPIKeyCheck();
     static native void nativeInsertIntoCachedImageFetcher(String url, byte[] imageData);
     static native void nativeAddCandidatePrefetchURL(String url, String title, String thumbnailUrl,
             String faviconUrl, String snippet, String attribution);
