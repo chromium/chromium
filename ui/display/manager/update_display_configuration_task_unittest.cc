@@ -347,6 +347,9 @@ TEST_F(UpdateDisplayConfigurationTaskTest, FailExtendedConfiguration) {
                                  gfx::Point(0, small_mode_.size().height()),
                                  &big_mode_})
                       .c_str(),
+                  GetCrtcAction(
+                      {displays_[0]->display_id(), gfx::Point(), &small_mode_})
+                      .c_str(),
                   GetCrtcAction({displays_[1]->display_id(),
                                  gfx::Point(0, small_mode_.size().height()),
                                  &small_mode_})

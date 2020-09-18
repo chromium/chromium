@@ -1232,6 +1232,7 @@ TEST_F(DisplayConfiguratorTest,
   EXPECT_EQ(
       JoinActions(
           GetCrtcActions(&small_mode_, &big_mode_).c_str(),
+          GetCrtcActions(&small_mode_).c_str(),
           GetCrtcAction({outputs_[1]->display_id(),
                          gfx::Point(0, small_mode_.size().height() +
                                            DisplayConfigurator::kVerticalGap),
@@ -1555,7 +1556,7 @@ TEST_F(DisplayConfiguratorMultiMirroringTest,
   // Initialize with 3 external displays.
   outputs_[0] =
       FakeDisplaySnapshot::Builder()
-          .SetId(kDisplayIds[1])
+          .SetId(kDisplayIds[0])
           .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
           .SetNativeMode(MakeDisplayMode(1920, 1200, true, 60.0))
           .AddMode(MakeDisplayMode(1920, 1200, true, 60.0))  // same AR
@@ -1564,7 +1565,7 @@ TEST_F(DisplayConfiguratorMultiMirroringTest,
           .Build();
   outputs_[1] =
       FakeDisplaySnapshot::Builder()
-          .SetId(kDisplayIds[2])
+          .SetId(kDisplayIds[1])
           .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
           .SetNativeMode(MakeDisplayMode(1920, 1200, false, 60.0))
           .AddMode(MakeDisplayMode(1920, 1200, false, 60.0))  // same AR
@@ -1587,7 +1588,7 @@ TEST_F(DisplayConfiguratorMultiMirroringTest,
   // Find an exactly matching mirror mode while not preserving aspect.
   outputs_[2] =
       FakeDisplaySnapshot::Builder()
-          .SetId(kDisplayIds[0])
+          .SetId(kDisplayIds[2])
           .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
           .SetNativeMode(MakeDisplayMode(1920, 1600, false, 60.0))
           .AddMode(MakeDisplayMode(1920, 1600, false, 60.0))  // same AR
@@ -1599,7 +1600,7 @@ TEST_F(DisplayConfiguratorMultiMirroringTest,
   // Cannot find a matching mirror mode, so enable software mirroring.
   outputs_[2] =
       FakeDisplaySnapshot::Builder()
-          .SetId(kDisplayIds[0])
+          .SetId(kDisplayIds[2])
           .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
           .SetNativeMode(MakeDisplayMode(1920, 1600, false, 60.0))
           .AddMode(MakeDisplayMode(1920, 1600, false, 60.0))  // same AR

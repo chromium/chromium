@@ -23,8 +23,6 @@ class ConfigureDisplaysTaskTest : public testing::Test {
  public:
   ConfigureDisplaysTaskTest()
       : delegate_(&log_),
-        callback_called_(false),
-        status_(ConfigureDisplaysTask::ERROR),
         small_mode_(gfx::Size(1366, 768), false, 60.0f),
         big_mode_(gfx::Size(2560, 1600), false, 60.0f) {
     displays_[0] = FakeDisplaySnapshot::Builder()
@@ -52,8 +50,8 @@ class ConfigureDisplaysTaskTest : public testing::Test {
   ActionLogger log_;
   TestNativeDisplayDelegate delegate_;
 
-  bool callback_called_;
-  ConfigureDisplaysTask::Status status_;
+  bool callback_called_ = false;
+  ConfigureDisplaysTask::Status status_ = ConfigureDisplaysTask::ERROR;
 
   const DisplayMode small_mode_;
   const DisplayMode big_mode_;
@@ -188,6 +186,9 @@ TEST_F(ConfigureDisplaysTaskTest, ConfigureWithTwoDisplayFails) {
                         GetCrtcAction({displays_[1]->display_id(), gfx::Point(),
                                        &big_mode_})
                             .c_str(),
+                        GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
+                                       &small_mode_})
+                            .c_str(),
                         GetCrtcAction({displays_[1]->display_id(), gfx::Point(),
                                        &small_mode_})
                             .c_str(),
@@ -217,6 +218,9 @@ TEST_F(ConfigureDisplaysTaskTest, ConfigureWithTwoDisplaysPartialSuccess) {
                             .c_str(),
                         GetCrtcAction({displays_[1]->display_id(), gfx::Point(),
                                        &big_mode_})
+                            .c_str(),
+                        GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
+                                       &small_mode_})
                             .c_str(),
                         GetCrtcAction({displays_[1]->display_id(), gfx::Point(),
                                        &small_mode_})
@@ -251,6 +255,9 @@ TEST_F(ConfigureDisplaysTaskTest, AsyncConfigureWithTwoDisplaysPartialSuccess) {
                             .c_str(),
                         GetCrtcAction({displays_[1]->display_id(), gfx::Point(),
                                        &big_mode_})
+                            .c_str(),
+                        GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
+                                       &small_mode_})
                             .c_str(),
                         GetCrtcAction({displays_[1]->display_id(), gfx::Point(),
                                        &small_mode_})

@@ -118,11 +118,18 @@ void ConfigureDisplaysTask::Run() {
 
   {
     base::AutoReset<bool> recursivity_guard(&is_configuring_, true);
+    // The callback passed to delegate_->Configure() could be run synchronously
+    // or async. If it runs synchronously and any display fails and tries to
+    // reconfigure, new requests will get added to |pending_request_indexes_|,
+    // then another attempt to reconfigure will recursively call Run(). However
+    // |is_configuring_| will block the run due to the reason mentioned above.
+    // Hence, after we configure the first set of pending requests (loop over
+    // |current_pending_requests_count|), we check again if the new requests
+    // were added (!pending_request_indexes_.empty()).
     while (!pending_request_indexes_.empty()) {
-      // Loop over all the current requests, then it will loop again making sure
-      // no new requests were added and are pending.
       std::vector<display::DisplayConfigurationParams> config_requests;
-      for (size_t i = 0; i < pending_request_indexes_.size(); ++i) {
+      size_t current_pending_requests_count = pending_request_indexes_.size();
+      for (size_t i = 0; i < current_pending_requests_count; ++i) {
         size_t index = pending_request_indexes_.front();
         DisplayConfigureRequest* request = &requests_[index];
         pending_request_indexes_.pop();
@@ -215,9 +222,12 @@ void ConfigureDisplaysTask::OnConfigured(
       if (!display_success) {
         const DisplayConfigureRequest* request =
             GetRequestForDisplayId(display_id, requests_).base();
-        const_cast<DisplayConfigureRequest*>(request)->mode =
+        const DisplayMode* next_mode =
             FindNextMode(*request->display, request->mode);
-        should_reconfigure = !!request->mode;
+        if (next_mode) {
+          const_cast<DisplayConfigureRequest*>(request)->mode = next_mode;
+          should_reconfigure = true;
+        }
       }
     }
     // When reconfiguring, reconfigure all displays, not only the failing ones
