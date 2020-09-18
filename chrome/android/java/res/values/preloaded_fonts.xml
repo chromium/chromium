@@ -4,13 +4,7 @@
      found in the LICENSE file. -->
 
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
-    <!--
-      Fonts that are specified to be preloaded by AndroidManifest.xml.
-
-      Note: we override this resource in API 26 so that we can provide an empty array to preload on
-      Android O which will crash when preloading fonts because of a platform bug.
-      b/67327250 or b/111754038
-    -->
+    <!-- Fonts that are specified to be preloaded by AndroidManifest.xml. -->
     <array name="preloaded_google_sans_fonts">
         <item>@font/google_sans</item>
         <item>@font/google_sans_medium</item>
