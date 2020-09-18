@@ -264,7 +264,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             containerParams.urlTitleLongClickCallback = viewParams.urlTitleLongClickCallback;
             containerParams.urlTitleShown = viewParams.urlTitleShown;
             mContainer.setParams(containerParams);
-            mContainer.showPage(mView, "", true);
+            mContainer.showPage(mView, null, null);
             PageInfoViewV2 view2 = (PageInfoViewV2) mView;
             mConnectionController = new PageInfoConnectionController(
                     this, view2.getConnectionRowView(), mWebContents, mDelegate.getVrHandler());
@@ -580,17 +580,23 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
      */
     @Override
     public void launchSubpage(PageInfoSubpageController controller) {
+        if (mSubpageController != null) return;
         mSubpageController = controller;
         CharSequence title = mSubpageController.getSubpageTitle();
         View subview = mSubpageController.createViewForSubpage(mContainer);
-        mContainer.showPage(subview, title, false);
+        mContainer.showPage(subview, title, null);
         controller.onSubPageAttached();
     }
 
+    /**
+     * Exits the subpage of the current controller.
+     */
     @Override
     public void exitSubpage() {
-        mContainer.showPage(mView, "", true);
-        mSubpageController.onSubpageRemoved();
-        mSubpageController = null;
+        if (mSubpageController == null) return;
+        mContainer.showPage(mView, null, () -> {
+            mSubpageController.onSubpageRemoved();
+            mSubpageController = null;
+        });
     }
 }

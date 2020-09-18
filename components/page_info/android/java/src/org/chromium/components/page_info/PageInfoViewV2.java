@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,7 +32,7 @@ public class PageInfoViewV2 extends PageInfoView {
     protected void init(PageInfoView.PageInfoViewParams params) {
         super.init(params);
         mRowWrapper = findViewById(R.id.page_info_row_wrapper);
-        initializePageInfoViewChild(mRowWrapper, true, 0f, null);
+        initializePageInfoViewChild(mRowWrapper, true, null);
     }
 
     @Override
@@ -81,13 +81,8 @@ public class PageInfoViewV2 extends PageInfoView {
         throw new RuntimeException();
     }
 
-    /**
-     * Create a list of all the views which we want to individually fade in.
-     */
     @Override
     protected List<View> collectAnimatableViews() {
-        // TODO(crbug.com/1077766): Sort and use rows instead of the rowWrapper.
-        return Arrays.asList(mPreviewMessage, mPreviewLoadOriginal, mPreviewSeparator,
-                mInstantAppButton, mRowWrapper, mSiteSettingsButton);
+        return Collections.emptyList();
     }
 }

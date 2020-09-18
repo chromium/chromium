@@ -64,6 +64,7 @@ public class PageInfoPermissionsController implements PageInfoSubpageController 
 
     @Override
     public void onSubpageRemoved() {
+        assert mSubpageFragment != null;
         AppCompatActivity host = (AppCompatActivity) mRowView.getContext();
         host.getSupportFragmentManager().beginTransaction().remove(mSubpageFragment).commitNow();
         mSubpageFragment = null;

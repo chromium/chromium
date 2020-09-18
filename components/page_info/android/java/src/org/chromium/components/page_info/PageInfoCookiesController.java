@@ -75,7 +75,7 @@ public class PageInfoCookiesController
         mSubPage.setParams(params);
 
         AppCompatActivity host = (AppCompatActivity) mRowView.getContext();
-        host.getSupportFragmentManager().beginTransaction().add(mSubPage, "FOO").commitNow();
+        host.getSupportFragmentManager().beginTransaction().add(mSubPage, null).commitNow();
         return mSubPage.requireView();
     }
 
@@ -99,6 +99,7 @@ public class PageInfoCookiesController
 
     @Override
     public void onSubpageRemoved() {
+        assert mSubPage != null;
         AppCompatActivity host = (AppCompatActivity) mRowView.getContext();
         host.getSupportFragmentManager().beginTransaction().remove(mSubPage).commitNow();
         mSubPage = null;

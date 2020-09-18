@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -17,6 +18,10 @@ import org.chromium.ui.widget.ChromeImageButton;
  * Represents the url, a sub page header and container for page info content.
  */
 public class PageInfoContainer extends FrameLayout {
+    public static final float sScale = 0.92f;
+    public static final int sOutDuration = 90;
+    public static final int sInDuration = 210;
+
     /**  Parameters to configure the view of page info subpage. */
     public static class Params {
         // Whether the URL title should be shown.
@@ -35,16 +40,20 @@ public class PageInfoContainer extends FrameLayout {
     private PageInfoView.ElidedUrlTextView mUrlTitle;
     private TextView mTruncatedUrlTitle;
 
+    private final ViewGroup mWrapper;
+    private final ViewGroup mContent;
+    private View mCurrentView;
+
     private final View mSubpageHeader;
-    private TextView mSubpageTitle;
-    private final FrameLayout mContent;
+    private final TextView mSubpageTitle;
 
     public PageInfoContainer(Context context) {
         super(context);
         LayoutInflater.from(context).inflate(R.layout.page_info_container, this, true);
+        mWrapper = findViewById(R.id.page_info_wrapper);
+        mContent = findViewById(R.id.page_info_content);
         mSubpageHeader = findViewById(R.id.page_info_subpage_header);
         mSubpageTitle = findViewById(R.id.page_info_subpage_title);
-        mContent = findViewById(R.id.page_info_content);
     }
 
     public void setParams(Params params) {
@@ -94,10 +103,37 @@ public class PageInfoContainer extends FrameLayout {
         mTruncatedUrlTitle.setCompoundDrawablesRelative(favicon, null, null, null);
     }
 
-    public void showPage(View view, CharSequence title, boolean isMainPage) {
+    public void showPage(View view, CharSequence subPageTitle, Runnable onPreviousPageRemoved) {
+        if (mCurrentView == null) {
+            // Don't animate if there is no current view.
+            assert onPreviousPageRemoved == null;
+            replaceContentView(view, subPageTitle);
+            return;
+        }
+        // Create "fade-through" animation.
+        // TODO(crbug.com/1077766): Animate height change and set correct interpolator.
+        mWrapper.animate().setDuration(sOutDuration).alpha(0).withEndAction(() -> {
+            replaceContentView(view, subPageTitle);
+            mWrapper.setScaleX(sScale);
+            mWrapper.setScaleY(sScale);
+            mWrapper.setAlpha(0);
+            mWrapper.animate()
+                    .setDuration(sInDuration)
+                    .scaleX(1)
+                    .scaleY(1)
+                    .alpha(1)
+                    .withEndAction(onPreviousPageRemoved);
+        });
+    }
+
+    /**
+     * Replaces the current view with |view| and configures the subpage header.
+     */
+    private void replaceContentView(View view, CharSequence subPageTitle) {
         mContent.removeAllViews();
+        mCurrentView = view;
+        mSubpageHeader.setVisibility(subPageTitle != null ? VISIBLE : GONE);
+        mSubpageTitle.setText(subPageTitle);
         mContent.addView(view);
-        mSubpageHeader.setVisibility(isMainPage ? GONE : VISIBLE);
-        mSubpageTitle.setText(title);
     }
 }

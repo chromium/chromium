@@ -19,8 +19,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:ellipsize="end"
         android:layout_marginVertical="16dp"
+        android:ellipsize="end"
         android:lineSpacingExtra="6dp"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
@@ -33,42 +33,49 @@
         android:ellipsize="end"
         android:lineSpacingExtra="6dp"
         android:paddingVertical="16dp"
-        android:visibility="gone"
         android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:visibility="gone" />
 
     <LinearLayout
+        android:id="@+id/page_info_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="16dp"
-        android:id="@+id/page_info_subpage_header">
+        android:orientation="vertical">
 
-        <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/subpage_back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="-12dp"
-            android:minHeight="@dimen/min_touch_target_size"
-            android:minWidth="@dimen/min_touch_target_size"
-            android:layout_marginEnd="20dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_arrow_back_white_24dp"
-            app:tint="@color/default_icon_color" />
-
-        <TextView
-            android:id="@+id/page_info_subpage_title"
+        <LinearLayout
+            android:id="@+id/page_info_subpage_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="12dp"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
-    </LinearLayout>
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp">
 
-    <!-- Programmatically add page specific inner view here -->
-    <FrameLayout
-        android:id="@+id/page_info_content"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+            <org.chromium.ui.widget.ChromeImageButton
+                android:id="@+id/subpage_back_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="-12dp"
+                android:layout_marginEnd="20dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:minWidth="@dimen/min_touch_target_size"
+                android:minHeight="@dimen/min_touch_target_size"
+                android:src="@drawable/ic_arrow_back_white_24dp"
+                app:tint="@color/default_icon_color" />
+
+            <TextView
+                android:id="@+id/page_info_subpage_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="12dp"
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+        </LinearLayout>
+
+        <!-- Programmatically add page specific inner view here -->
+        <FrameLayout
+            android:id="@+id/page_info_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
 </LinearLayout>
