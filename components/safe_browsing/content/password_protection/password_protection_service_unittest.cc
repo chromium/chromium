@@ -138,7 +138,9 @@ class TestPasswordProtectionService : public MockPasswordProtectionService {
                                       nullptr),
         cache_manager_(
             std::make_unique<VerdictCacheManager>(nullptr,
-                                                  content_setting_map.get())) {}
+                                                  content_setting_map.get())) {
+    cache_manager_->StopCleanUpTimerForTesting();
+  }
 
   void RequestFinished(
       PasswordProtectionRequest* request,
