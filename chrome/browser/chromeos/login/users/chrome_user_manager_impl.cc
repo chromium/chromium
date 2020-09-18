@@ -1377,8 +1377,20 @@ bool ChromeUserManagerImpl::IsManagedSessionEnabledForUser(
   if (!service)
     return kManagedSessionEnabledByDefault;
 
-  return IsManagedSessionEnabled(
-      service->GetBrokerForUser(active_user.GetAccountId().GetUserEmail()));
+  policy::DeviceLocalAccountPolicyBroker* broker =
+      service->GetBrokerForUser(active_user.GetAccountId().GetUserEmail());
+
+  if (!broker) {
+    // The broker could be unavailable at the early initialization stage when
+    // - |DeviceSettingsProvider| does not have a list of device local accounts
+    //   in |kAccountsPrefDeviceLocalAccounts|
+    // - and there is an attempt to autologin with public account before the
+    // device settings become available. The broker will become available later
+    // and the real policy value will be returned with future calls.
+    return kManagedSessionEnabledByDefault;
+  }
+
+  return IsManagedSessionEnabled(broker);
 }
 
 bool ChromeUserManagerImpl::IsFullManagementDisclosureNeeded(
