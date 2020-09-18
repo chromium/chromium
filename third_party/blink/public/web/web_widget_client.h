@@ -57,10 +57,6 @@
 
 class SkBitmap;
 
-namespace cc {
-class PaintImage;
-}
-
 namespace gfx {
 class Point;
 class PointF;
@@ -179,12 +175,6 @@ class WebWidgetClient {
                                       const gfx::Point& drag_image_offset) {
     return false;
   }
-
-  // Requests an image decode and will have the |callback| run asynchronously
-  // when it completes. Forces a new main frame to occur that will trigger
-  // pushing the decode through the compositor.
-  virtual void RequestDecode(const cc::PaintImage& image,
-                             base::OnceCallback<void(bool)> callback) {}
 
   using LayerTreeFrameSinkCallback = base::OnceCallback<void(
       std::unique_ptr<cc::LayerTreeFrameSink>,

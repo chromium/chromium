@@ -904,11 +904,6 @@ void RenderWidget::DidAutoResize(const gfx::Size& new_size) {
   }
 }
 
-void RenderWidget::RequestDecode(const cc::PaintImage& image,
-                                 base::OnceCallback<void(bool)> callback) {
-  layer_tree_host_->QueueImageDecode(image, std::move(callback));
-}
-
 viz::FrameSinkId RenderWidget::GetFrameSinkId() {
   return viz::FrameSinkId(RenderThread::Get()->GetClientId(), routing_id());
 }

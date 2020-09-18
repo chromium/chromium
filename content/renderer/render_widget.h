@@ -73,7 +73,6 @@ class WebPagePopup;
 }  // namespace blink
 
 namespace gfx {
-class ColorSpace;
 struct PresentationFeedback;
 class Range;
 }
@@ -242,8 +241,6 @@ class CONTENT_EXPORT RenderWidget
       bool request_unadjusted_movement) override;
   void RequestPointerUnlock() override;
   bool IsPointerLocked() override;
-  void RequestDecode(const cc::PaintImage& image,
-                     base::OnceCallback<void(bool)> callback) override;
   viz::FrameSinkId GetFrameSinkId() override;
   void RecordTimeToFirstActivePaint(base::TimeDelta duration) override;
   void DidCommitCompositorFrame(base::TimeTicks commit_start_time) override;
@@ -343,7 +340,6 @@ class CONTENT_EXPORT RenderWidget
 
   // RenderWidget IPC message handlers.
   void OnClose();
-  void OnCreatingNewAck();
   void OnRequestSetBoundsAck();
 
   void OnSetViewportIntersection(
@@ -375,11 +371,6 @@ class CONTENT_EXPORT RenderWidget
 
   // Used to force the size of a window when running web tests.
   void SetWindowRectSynchronously(const gfx::Rect& new_window_rect);
-
-  void UpdateTextInputStateInternal(bool show_virtual_keyboard,
-                                    bool reply_to_request);
-
-  gfx::ColorSpace GetRasterColorSpace() const;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Returns the focused pepper plugin, if any, inside the WebWidget. That is

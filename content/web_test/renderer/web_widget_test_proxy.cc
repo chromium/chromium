@@ -31,21 +31,6 @@ void WebWidgetTestProxy::WillBeginMainFrame() {
   RenderWidget::WillBeginMainFrame();
 }
 
-void WebWidgetTestProxy::RequestDecode(
-    const cc::PaintImage& image,
-    base::OnceCallback<void(bool)> callback) {
-  RenderWidget::RequestDecode(image, std::move(callback));
-
-  // In web tests the request does not actually cause a commit, because the
-  // compositor is scheduled by the test runner to avoid flakiness. So for this
-  // case we must request a main frame the way blink would.
-  //
-  // Pass true for |do_raster| to ensure the compositor is actually run, rather
-  // than just doing the main frame animate step.
-  if (GetTestRunner()->TestIsRunning())
-    ScheduleAnimationInternal(/*do_raster=*/true);
-}
-
 void WebWidgetTestProxy::ScheduleAnimation() {
   if (GetTestRunner()->TestIsRunning())
     ScheduleAnimationInternal(GetTestRunner()->animation_requires_raster());

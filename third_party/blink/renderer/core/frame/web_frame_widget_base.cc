@@ -598,7 +598,12 @@ void WebFrameWidgetBase::DidLosePointerLock() {
 void WebFrameWidgetBase::RequestDecode(
     const PaintImage& image,
     base::OnceCallback<void(bool)> callback) {
-  Client()->RequestDecode(image, std::move(callback));
+  widget_base_->LayerTreeHost()->QueueImageDecode(image, std::move(callback));
+
+  // In web tests the request does not actually cause a commit, because the
+  // compositor is scheduled by the test runner to avoid flakiness. So for this
+  // case we must request a main frame.
+  Client()->ScheduleAnimationForWebTests();
 }
 
 void WebFrameWidgetBase::Trace(Visitor* visitor) const {
