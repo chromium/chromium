@@ -27,7 +27,7 @@ class WallClockTimerTest : public ::testing::Test {
     if (!with_power)
       fake_power_monitor_source_.Suspend();
 
-    clock_.SetNow(clock_.Now() + delay);
+    clock_.Advance(delay);
 
     if (with_power) {
       task_environment_.FastForwardBy(delay);
