@@ -4412,7 +4412,7 @@
   {
     "name": "trust-tokens",
     "owners": [ "davidvc", "privacy-sandbox-dev" ],
-    "expiry_milestone": 86
+    "expiry_milestone": 90
   },
   {
     "name": "turn-off-streaming-media-caching-always",
