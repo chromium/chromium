@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_SETTINGS_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_SETTINGS_IMPL_H_
 
+#include "third_party/blink/public/common/web_preferences/editing_behavior_types.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -82,7 +83,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetDontSendKeyEventsToJavascript(bool) override;
   void SetDoubleTapToZoomEnabled(bool) override;
   void SetDownloadableBinaryFontsEnabled(bool) override;
-  void SetEditingBehavior(EditingBehavior) override;
+  void SetEditingBehavior(web_pref::EditingBehaviorType) override;
   void SetEnableScrollAnimator(bool) override;
   void SetPrefersReducedMotion(bool) override;
   void SetWebGL1Enabled(bool) override;

@@ -59,6 +59,7 @@
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
 #include "third_party/blink/public/common/page/launching_process_state.h"
+#include "third_party/blink/public/common/web_preferences/editing_behavior_types.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom-blink.h"
@@ -6444,7 +6445,7 @@ TEST_F(WebFrameTest, ReplaceMisspelledRange) {
   Element* element = document->getElementById("data");
 
   web_view_helper.GetWebView()->GetSettings()->SetEditingBehavior(
-      WebSettings::EditingBehavior::kWin);
+      web_pref::EditingBehaviorType::kEditingWindowsBehavior);
 
   element->focus();
   NonThrowableExceptionState exception_state;
@@ -6490,7 +6491,7 @@ TEST_F(WebFrameTest, RemoveSpellingMarkers) {
   Element* element = document->getElementById("data");
 
   web_view_helper.GetWebView()->GetSettings()->SetEditingBehavior(
-      WebSettings::EditingBehavior::kWin);
+      web_pref::EditingBehaviorType::kEditingWindowsBehavior);
 
   element->focus();
   NonThrowableExceptionState exception_state;
@@ -6541,7 +6542,7 @@ TEST_F(WebFrameTest, RemoveSpellingMarkersUnderWords) {
   Element* element = document->getElementById("data");
 
   web_view_helper.GetWebView()->GetSettings()->SetEditingBehavior(
-      WebSettings::EditingBehavior::kWin);
+      web_pref::EditingBehaviorType::kEditingWindowsBehavior);
 
   element->focus();
   NonThrowableExceptionState exception_state;
@@ -6615,7 +6616,7 @@ TEST_F(WebFrameTest, SlowSpellcheckMarkerPosition) {
   Element* element = document->getElementById("data");
 
   web_view_helper.GetWebView()->GetSettings()->SetEditingBehavior(
-      WebSettings::EditingBehavior::kWin);
+      web_pref::EditingBehaviorType::kEditingWindowsBehavior);
 
   element->focus();
   NonThrowableExceptionState exception_state;
@@ -6649,7 +6650,7 @@ TEST_F(WebFrameTest, SpellcheckResultErasesMarkers) {
   Element* element = document->getElementById("data");
 
   web_view_helper.GetWebView()->GetSettings()->SetEditingBehavior(
-      WebSettings::EditingBehavior::kWin);
+      web_pref::EditingBehaviorType::kEditingWindowsBehavior);
 
   element->focus();
   NonThrowableExceptionState exception_state;
@@ -6685,7 +6686,7 @@ TEST_F(WebFrameTest, SpellcheckResultsSavedInDocument) {
   Element* element = document->getElementById("data");
 
   web_view_helper.GetWebView()->GetSettings()->SetEditingBehavior(
-      WebSettings::EditingBehavior::kWin);
+      web_pref::EditingBehaviorType::kEditingWindowsBehavior);
 
   element->focus();
   NonThrowableExceptionState exception_state;

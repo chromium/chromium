@@ -98,7 +98,7 @@
     {
       name: "editingBehaviorType",
       initial: "EditingBehaviorTypeForPlatform()",
-      type: "EditingBehaviorType",
+      type: "web_pref::EditingBehaviorType",
     },
 
     {

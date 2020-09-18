@@ -296,12 +296,4 @@ bool EditingBehavior::ShouldInsertCharacter(const KeyboardEvent& event) const {
   return true;
 }
 
-STATIC_ASSERT_ENUM(WebSettings::EditingBehavior::kMac, kEditingMacBehavior);
-STATIC_ASSERT_ENUM(WebSettings::EditingBehavior::kWin, kEditingWindowsBehavior);
-STATIC_ASSERT_ENUM(WebSettings::EditingBehavior::kUnix, kEditingUnixBehavior);
-STATIC_ASSERT_ENUM(WebSettings::EditingBehavior::kAndroid,
-                   kEditingAndroidBehavior);
-STATIC_ASSERT_ENUM(WebSettings::EditingBehavior::kChromeOS,
-                   kEditingChromeOSBehavior);
-
 }  // namespace blink

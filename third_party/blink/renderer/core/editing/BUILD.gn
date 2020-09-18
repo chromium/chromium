@@ -115,7 +115,6 @@ blink_core_sources("editing") {
     "drag_caret.h",
     "editing_behavior.cc",
     "editing_behavior.h",
-    "editing_behavior_types.h",
     "editing_boundary.h",
     "editing_strategy.cc",
     "editing_strategy.h",

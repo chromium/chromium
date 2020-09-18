@@ -6,7 +6,6 @@
 
 #include "build/build_config.h"
 
-using blink::WebSettings;
 using blink::WebString;
 
 namespace content {
@@ -31,9 +30,10 @@ void TestPreferences::Reset() {
   allow_universal_access_from_file_urls = false;
 
 #if defined(OS_MAC)
-  editing_behavior = WebSettings::EditingBehavior::kMac;
+  editing_behavior = blink::web_pref::EditingBehaviorType::kEditingMacBehavior;
 #else
-  editing_behavior = WebSettings::EditingBehavior::kWin;
+  editing_behavior =
+      blink::web_pref::EditingBehaviorType::kEditingWindowsBehavior;
 #endif
 
   tabs_to_links = false;

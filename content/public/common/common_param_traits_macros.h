@@ -54,8 +54,8 @@ IPC_ENUM_TRAITS_MAX_VALUE(blink::WebHistoryScrollRestorationType,
 IPC_ENUM_TRAITS_MAX_VALUE(blink::SecurityStyle, blink::SecurityStyle::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::PermissionStatus,
                           blink::mojom::PermissionStatus::LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(blink::web_pref::EditingBehavior,
-                          blink::web_pref::EDITING_BEHAVIOR_LAST)
+IPC_ENUM_TRAITS_MAX_VALUE(blink::web_pref::EditingBehaviorType,
+                          blink::web_pref::kEditingLastBehavior)
 IPC_ENUM_TRAITS_MAX_VALUE(WindowOpenDisposition,
                           WindowOpenDisposition::MAX_VALUE)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::V8CacheOptions,

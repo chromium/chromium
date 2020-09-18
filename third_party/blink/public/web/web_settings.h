@@ -53,8 +53,6 @@ class WebString;
 // WebCore/page/Settings.h.
 class WebSettings {
  public:
-  enum class EditingBehavior { kMac, kWin, kUnix, kAndroid, kChromeOS };
-
   // Selection strategy defines how the selection granularity changes when the
   // selection extent is moved.
   enum class SelectionStrategyType {
@@ -137,7 +135,7 @@ class WebSettings {
   virtual void SetDontSendKeyEventsToJavascript(bool) = 0;
   virtual void SetDoubleTapToZoomEnabled(bool) = 0;
   virtual void SetDownloadableBinaryFontsEnabled(bool) = 0;
-  virtual void SetEditingBehavior(EditingBehavior) = 0;
+  virtual void SetEditingBehavior(web_pref::EditingBehaviorType) = 0;
   virtual void SetEnableScrollAnimator(bool) = 0;
   virtual void SetPrefersReducedMotion(bool) = 0;
   virtual void SetSmoothScrollForFindEnabled(bool) = 0;

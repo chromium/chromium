@@ -315,15 +315,15 @@ void InternalSettings::setEditingBehavior(const String& editing_behavior,
                                           ExceptionState& exception_state) {
   InternalSettingsGuardForSettings();
   if (EqualIgnoringASCIICase(editing_behavior, "win"))
-    GetSettings()->SetEditingBehaviorType(kEditingWindowsBehavior);
+    GetSettings()->SetEditingBehaviorType(web_pref::kEditingWindowsBehavior);
   else if (EqualIgnoringASCIICase(editing_behavior, "mac"))
-    GetSettings()->SetEditingBehaviorType(kEditingMacBehavior);
+    GetSettings()->SetEditingBehaviorType(web_pref::kEditingMacBehavior);
   else if (EqualIgnoringASCIICase(editing_behavior, "unix"))
-    GetSettings()->SetEditingBehaviorType(kEditingUnixBehavior);
+    GetSettings()->SetEditingBehaviorType(web_pref::kEditingUnixBehavior);
   else if (EqualIgnoringASCIICase(editing_behavior, "android"))
-    GetSettings()->SetEditingBehaviorType(kEditingAndroidBehavior);
+    GetSettings()->SetEditingBehaviorType(web_pref::kEditingAndroidBehavior);
   else if (EqualIgnoringASCIICase(editing_behavior, "chromeos"))
-    GetSettings()->SetEditingBehaviorType(kEditingChromeOSBehavior);
+    GetSettings()->SetEditingBehaviorType(web_pref::kEditingChromeOSBehavior);
   else
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "The editing behavior type provided ('" +

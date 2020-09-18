@@ -465,8 +465,9 @@ void WebSettingsImpl::SetShowContextMenuOnMouseUp(bool enabled) {
   settings_->SetShowContextMenuOnMouseUp(enabled);
 }
 
-void WebSettingsImpl::SetEditingBehavior(EditingBehavior behavior) {
-  settings_->SetEditingBehaviorType(static_cast<EditingBehaviorType>(behavior));
+void WebSettingsImpl::SetEditingBehavior(
+    web_pref::EditingBehaviorType behavior) {
+  settings_->SetEditingBehaviorType(behavior);
 }
 
 void WebSettingsImpl::SetHideScrollbars(bool enabled) {

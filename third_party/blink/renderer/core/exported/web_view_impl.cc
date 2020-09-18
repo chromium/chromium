@@ -1978,8 +1978,7 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       static_cast<blink::HoverType>(prefs.primary_hover_type));
   settings->SetBarrelButtonForDragEnabled(prefs.barrel_button_for_drag_enabled);
 
-  settings->SetEditingBehavior(
-      static_cast<WebSettings::EditingBehavior>(prefs.editing_behavior));
+  settings->SetEditingBehavior(prefs.editing_behavior);
 
   settings->SetSupportsMultipleWindows(prefs.supports_multiple_windows);
 

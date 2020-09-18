@@ -34,14 +34,6 @@ const char kCommonScript[] = "Zyyy";
   static_assert(static_cast<int>(a) == static_cast<int>(b), \
                 "mismatching enums: " #a)
 
-STATIC_ASSERT_ENUM(EDITING_BEHAVIOR_MAC, WebSettings::EditingBehavior::kMac);
-STATIC_ASSERT_ENUM(EDITING_BEHAVIOR_WIN, WebSettings::EditingBehavior::kWin);
-STATIC_ASSERT_ENUM(EDITING_BEHAVIOR_UNIX, WebSettings::EditingBehavior::kUnix);
-STATIC_ASSERT_ENUM(EDITING_BEHAVIOR_ANDROID,
-                   WebSettings::EditingBehavior::kAndroid);
-STATIC_ASSERT_ENUM(EDITING_BEHAVIOR_CHROMEOS,
-                   WebSettings::EditingBehavior::kChromeOS);
-
 STATIC_ASSERT_ENUM(ui::POINTER_TYPE_NONE, blink::kPointerTypeNone);
 STATIC_ASSERT_ENUM(ui::POINTER_TYPE_COARSE, blink::kPointerTypeCoarse);
 STATIC_ASSERT_ENUM(ui::POINTER_TYPE_FINE, blink::kPointerTypeFine);
@@ -125,20 +117,20 @@ WebPreferences::WebPreferences()
       sync_xhr_in_documents_enabled(true),
       number_of_cpu_cores(1),
 #if defined(OS_MAC)
-      editing_behavior(EDITING_BEHAVIOR_MAC),
+      editing_behavior(web_pref::kEditingMacBehavior),
 #elif defined(OS_WIN)
-      editing_behavior(EDITING_BEHAVIOR_WIN),
+      editing_behavior(web_pref::kEditingWindowsBehavior),
 #elif defined(OS_ANDROID)
-      editing_behavior(EDITING_BEHAVIOR_ANDROID),
+      editing_behavior(web_pref::kEditingAndroidBehavior),
 #elif defined(OS_CHROMEOS)
       editing_behavior(
           base::FeatureList::IsEnabled(blink::features::kCrOSAutoSelect)
-              ? EDITING_BEHAVIOR_CHROMEOS
-              : EDITING_BEHAVIOR_UNIX),
+              ? web_pref::kEditingChromeOSBehavior
+              : web_pref::kEditingUnixBehavior),
 #elif defined(OS_POSIX)
-      editing_behavior(EDITING_BEHAVIOR_UNIX),
+      editing_behavior(web_pref::kEditingUnixBehavior),
 #else
-      editing_behavior(EDITING_BEHAVIOR_MAC),
+      editing_behavior(web_pref::kEditingMacBehavior),
 #endif
       supports_multiple_windows(true),
       viewport_enabled(false),

@@ -73,8 +73,7 @@ namespace content {
 void ExportWebTestSpecificPreferences(const TestPreferences& from,
                                       blink::web_pref::WebPreferences* to) {
   to->javascript_can_access_clipboard = from.java_script_can_access_clipboard;
-  to->editing_behavior =
-      static_cast<blink::web_pref::EditingBehavior>(from.editing_behavior);
+  to->editing_behavior = from.editing_behavior;
   to->default_font_size = from.default_font_size;
   to->minimum_font_size = from.minimum_font_size;
   to->default_encoding = from.default_text_encoding_name.Utf8().data();

@@ -18,10 +18,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_EDITING_BEHAVIOR_TYPES_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_EDITING_BEHAVIOR_TYPES_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_WEB_PREFERENCES_EDITING_BEHAVIOR_TYPES_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_WEB_PREFERENCES_EDITING_BEHAVIOR_TYPES_H_
 
 namespace blink {
+namespace web_pref {
 
 // There are multiple editing details that are different on Windows than
 // Macintosh. We use a single switch for all of them. Some examples:
@@ -42,9 +43,11 @@ enum EditingBehaviorType {
   kEditingWindowsBehavior,
   kEditingUnixBehavior,
   kEditingAndroidBehavior,
-  kEditingChromeOSBehavior
+  kEditingChromeOSBehavior,
+  kEditingLastBehavior
 };
 
+}  // namespace web_pref
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_EDITING_BEHAVIOR_TYPES_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_WEB_PREFERENCES_EDITING_BEHAVIOR_TYPES_H_

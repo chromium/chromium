@@ -132,7 +132,7 @@ SelectionInDOMTree Editor::SelectionForCommand(Event* event) {
 // not available.
 EditingBehavior Editor::Behavior() const {
   if (!GetFrame().GetSettings())
-    return EditingBehavior(kEditingMacBehavior);
+    return EditingBehavior(web_pref::kEditingMacBehavior);
 
   return EditingBehavior(GetFrame().GetSettings()->GetEditingBehaviorType());
 }

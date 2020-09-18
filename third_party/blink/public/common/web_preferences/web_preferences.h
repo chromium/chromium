@@ -15,6 +15,7 @@
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/css/preferred_color_scheme.h"
+#include "third_party/blink/public/common/web_preferences/editing_behavior_types.h"
 #include "third_party/blink/public/common/web_preferences/image_animation_policy.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-forward.h"
 #include "ui/base/pointer/pointer_device.h"
@@ -29,15 +30,6 @@ namespace web_pref {
 // Map of ISO 15924 four-letter script code to font family.  For example,
 // "Arab" to "My Arabic Font".
 typedef std::map<std::string, base::string16> ScriptFontFamilyMap;
-
-enum EditingBehavior {
-  EDITING_BEHAVIOR_MAC,
-  EDITING_BEHAVIOR_WIN,
-  EDITING_BEHAVIOR_UNIX,
-  EDITING_BEHAVIOR_ANDROID,
-  EDITING_BEHAVIOR_CHROMEOS,
-  EDITING_BEHAVIOR_LAST = EDITING_BEHAVIOR_CHROMEOS
-};
 
 enum class ViewportStyle { DEFAULT, MOBILE, TELEVISION, LAST = TELEVISION };
 
@@ -152,7 +144,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool barrel_button_for_drag_enabled = false;
   bool sync_xhr_in_documents_enabled;
   int number_of_cpu_cores;
-  EditingBehavior editing_behavior;
+  EditingBehaviorType editing_behavior;
   bool supports_multiple_windows;
   bool viewport_enabled;
   bool viewport_meta_enabled;

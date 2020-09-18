@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 
 #include "build/build_config.h"
+#include "third_party/blink/public/common/web_preferences/editing_behavior_types.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -121,7 +122,7 @@ TEST_F(LayoutViewTest, NamedPages) {
 
 struct HitTestConfig {
   bool layout_ng;
-  EditingBehaviorType editing_behavior;
+  web_pref::EditingBehaviorType editing_behavior;
 };
 
 class LayoutViewHitTestTest : public testing::WithParamInterface<HitTestConfig>,
@@ -135,8 +136,8 @@ class LayoutViewHitTestTest : public testing::WithParamInterface<HitTestConfig>,
  protected:
   bool LayoutNG() { return RuntimeEnabledFeatures::LayoutNGEnabled(); }
   bool IsAndroidOrWindowsEditingBehavior() {
-    return GetParam().editing_behavior == kEditingAndroidBehavior ||
-           GetParam().editing_behavior == kEditingWindowsBehavior;
+    return GetParam().editing_behavior == web_pref::kEditingAndroidBehavior ||
+           GetParam().editing_behavior == web_pref::kEditingWindowsBehavior;
   }
 
   void SetUp() override {
@@ -146,21 +147,22 @@ class LayoutViewHitTestTest : public testing::WithParamInterface<HitTestConfig>,
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         LayoutViewHitTestTest,
-                         ::testing::Values(
-                             // Legacy
-                             HitTestConfig{false, kEditingMacBehavior},
-                             HitTestConfig{false, kEditingWindowsBehavior},
-                             HitTestConfig{false, kEditingUnixBehavior},
-                             HitTestConfig{false, kEditingAndroidBehavior},
-                             HitTestConfig{false, kEditingChromeOSBehavior},
-                             // LayoutNG
-                             HitTestConfig{true, kEditingMacBehavior},
-                             HitTestConfig{true, kEditingWindowsBehavior},
-                             HitTestConfig{true, kEditingUnixBehavior},
-                             HitTestConfig{true, kEditingAndroidBehavior},
-                             HitTestConfig{true, kEditingChromeOSBehavior}));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LayoutViewHitTestTest,
+    ::testing::Values(
+        // Legacy
+        HitTestConfig{false, web_pref::kEditingMacBehavior},
+        HitTestConfig{false, web_pref::kEditingWindowsBehavior},
+        HitTestConfig{false, web_pref::kEditingUnixBehavior},
+        HitTestConfig{false, web_pref::kEditingAndroidBehavior},
+        HitTestConfig{false, web_pref::kEditingChromeOSBehavior},
+        // LayoutNG
+        HitTestConfig{true, web_pref::kEditingMacBehavior},
+        HitTestConfig{true, web_pref::kEditingWindowsBehavior},
+        HitTestConfig{true, web_pref::kEditingUnixBehavior},
+        HitTestConfig{true, web_pref::kEditingAndroidBehavior},
+        HitTestConfig{true, web_pref::kEditingChromeOSBehavior}));
 
 TEST_P(LayoutViewHitTestTest, HitTestHorizontal) {
   LoadAhem();

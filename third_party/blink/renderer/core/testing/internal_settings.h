@@ -27,9 +27,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_INTERNAL_SETTINGS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_INTERNAL_SETTINGS_H_
 
+#include "third_party/blink/public/common/web_preferences/editing_behavior_types.h"
 #include "third_party/blink/public/common/web_preferences/image_animation_policy.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
-#include "third_party/blink/renderer/core/editing/editing_behavior_types.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/internal_settings_generated.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
@@ -57,7 +57,7 @@ class InternalSettings final : public InternalSettingsGenerated,
 
     bool original_csp_;
     bool original_overlay_scrollbars_enabled_;
-    EditingBehaviorType original_editing_behavior_;
+    web_pref::EditingBehaviorType original_editing_behavior_;
     bool original_text_autosizing_enabled_;
     IntSize original_text_autosizing_window_size_override_;
     float original_accessibility_font_scale_factor_;
