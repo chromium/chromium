@@ -8,13 +8,19 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/check.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/controller/performance_manager/v8_worker_memory_reporter.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -23,16 +29,15 @@ namespace {
 
 class FrameAssociatedMeasurementDelegate : public v8::MeasureMemoryDelegate {
  public:
-  using GetV8MemoryUsageCallback =
-      mojom::blink::V8DetailedMemoryReporter::GetV8MemoryUsageCallback;
+  using ResultCallback =
+      base::OnceCallback<void(mojom::blink::PerIsolateV8MemoryUsagePtr)>;
 
-  explicit FrameAssociatedMeasurementDelegate(
-      GetV8MemoryUsageCallback&& callback)
+  explicit FrameAssociatedMeasurementDelegate(ResultCallback&& callback)
       : callback_(std::move(callback)) {}
 
   ~FrameAssociatedMeasurementDelegate() override {
     if (callback_) {
-      std::move(callback_).Run(mojom::blink::PerProcessV8MemoryUsage::New());
+      std::move(callback_).Run(mojom::blink::PerIsolateV8MemoryUsage::New());
     }
   }
 
@@ -80,14 +85,11 @@ class FrameAssociatedMeasurementDelegate : public v8::MeasureMemoryDelegate {
 #endif
       isolate_memory_usage->contexts.push_back(std::move(context_memory_usage));
     }
-
-    mojom::blink::PerProcessV8MemoryUsagePtr result =
-        mojom::blink::PerProcessV8MemoryUsage::New();
-    result->isolates.push_back(std::move(isolate_memory_usage));
-    std::move(callback_).Run(std::move(result));
+    std::move(callback_).Run(std::move(isolate_memory_usage));
   }
 
-  GetV8MemoryUsageCallback callback_;
+ private:
+  ResultCallback callback_;
 };
 
 v8::MeasureMemoryExecution ToV8MeasureMemoryExecution(
@@ -103,6 +105,82 @@ v8::MeasureMemoryExecution ToV8MeasureMemoryExecution(
   NOTREACHED();
 }
 
+ExecutionContextToken ToExecutionContextToken(WorkerToken token) {
+  if (token.Is<DedicatedWorkerToken>())
+    return ExecutionContextToken(token.GetAs<DedicatedWorkerToken>());
+  if (token.Is<SharedWorkerToken>())
+    return ExecutionContextToken(token.GetAs<SharedWorkerToken>());
+  return ExecutionContextToken(token.GetAs<ServiceWorkerToken>());
+}
+
+// A helper class that runs two async functions, combines their
+// results, and invokes the given callback. The async functions are:
+// - v8::Isolate::MeasureMemory - for the main V8 isolate.
+// - V8WorkerMemoryReporter::GetMemoryUsage - for all worker isolates.
+class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
+ public:
+  using GetV8MemoryUsageCallback =
+      mojom::blink::V8DetailedMemoryReporter::GetV8MemoryUsageCallback;
+
+  explicit V8ProcessMemoryReporter(GetV8MemoryUsageCallback&& callback)
+      : callback_(std::move(callback)),
+        result_(mojom::blink::PerProcessV8MemoryUsage::New()) {}
+
+  void StartMeasurements(V8DetailedMemoryReporterImpl::Mode mode) {
+    v8::Isolate* isolate = v8::Isolate::GetCurrent();
+    // 1. Start measurement of the main V8 isolate.
+    if (!isolate) {
+      // This can happen in tests that do not set up the main V8 isolate
+      // or during setup/teardown of the process.
+      MainMeasurementComplete(mojom::blink::PerIsolateV8MemoryUsage::New());
+    } else {
+      auto delegate = std::make_unique<FrameAssociatedMeasurementDelegate>(
+          WTF::Bind(&V8ProcessMemoryReporter::MainMeasurementComplete,
+                    scoped_refptr<V8ProcessMemoryReporter>(this)));
+
+      isolate->MeasureMemory(std::move(delegate),
+                             ToV8MeasureMemoryExecution(mode));
+    }
+    // 2. Start measurement of all worker isolates.
+    V8WorkerMemoryReporter::GetMemoryUsage(
+        WTF::Bind(&V8ProcessMemoryReporter::WorkerMeasurementComplete,
+                  scoped_refptr<V8ProcessMemoryReporter>(this)),
+        ToV8MeasureMemoryExecution(mode));
+  }
+
+ private:
+  void MainMeasurementComplete(
+      mojom::blink::PerIsolateV8MemoryUsagePtr isolate_memory_usage) {
+    result_->isolates.push_back(std::move(isolate_memory_usage));
+    main_measurement_done_ = true;
+    MaybeInvokeCallback();
+  }
+
+  void WorkerMeasurementComplete(const V8WorkerMemoryReporter::Result& result) {
+    for (auto& worker : result.workers) {
+      auto worker_memory_usage = mojom::blink::PerIsolateV8MemoryUsage::New();
+      auto context_memory_usage = mojom::blink::PerContextV8MemoryUsage::New();
+      context_memory_usage->token = ToExecutionContextToken(worker.token);
+      context_memory_usage->bytes_used = worker.bytes;
+      worker_memory_usage->contexts.push_back(std::move(context_memory_usage));
+      result_->isolates.push_back(std::move(worker_memory_usage));
+    }
+    worker_measurement_done_ = true;
+    MaybeInvokeCallback();
+  }
+
+  void MaybeInvokeCallback() {
+    if (!main_measurement_done_ || !worker_measurement_done_)
+      return;
+
+    std::move(callback_).Run(std::move(result_));
+  }
+  GetV8MemoryUsageCallback callback_;
+  mojom::blink::PerProcessV8MemoryUsagePtr result_;
+  bool main_measurement_done_ = false;
+  bool worker_measurement_done_ = false;
+};
+
 }  // namespace
 
 // static
@@ -115,17 +193,11 @@ void V8DetailedMemoryReporterImpl::Create(
 void V8DetailedMemoryReporterImpl::GetV8MemoryUsage(
     V8DetailedMemoryReporterImpl::Mode mode,
     GetV8MemoryUsageCallback callback) {
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
-  if (!isolate) {
-    std::move(callback).Run(mojom::blink::PerProcessV8MemoryUsage::New());
-  } else {
-    std::unique_ptr<FrameAssociatedMeasurementDelegate> delegate =
-        std::make_unique<FrameAssociatedMeasurementDelegate>(
-            std::move(callback));
-
-    isolate->MeasureMemory(std::move(delegate),
-                           ToV8MeasureMemoryExecution(mode));
-  }
+  auto v8_process_memory_reporter =
+      base::MakeRefCounted<V8ProcessMemoryReporter>(std::move(callback));
+  // Start async measurements. The lifetime of the reporter is extended
+  // using more shared pointers until the measuremnts complete.
+  v8_process_memory_reporter->StartMeasurements(mode);
 }
 
 }  // namespace blink
