@@ -806,7 +806,6 @@ mojom("mojom_core") {
     ":mojom_platform",
     ":script_type_mojo_bindings",
     ":web_feature_mojo_bindings",
-    "//cc/mojom",
     "//components/payments/mojom",
     "//mojo/public/mojom/base",
     "//services/network/public/mojom",
@@ -822,6 +821,7 @@ mojom("mojom_core") {
   if (is_android) {
     # Direct deps (instead of transitive deps) are necessary for java targets.
     public_deps += [
+      "//cc/mojom",
       "//services/data_decoder/public/mojom:mojom_resource_snapshot_for_web_bundle",
       "//services/network/public/mojom:cookies_mojom",
       "//third_party/blink/public/mojom/frame",

@@ -7,9 +7,9 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "cc/mojom/render_frame_metadata.mojom.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
-#include "content/common/render_frame_metadata.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -27,12 +27,12 @@ ACTION_P(InvokeClosure, closure) {
 }  // namespace
 
 class MockRenderFrameMetadataObserverClient
-    : public mojom::RenderFrameMetadataObserverClient {
+    : public cc::mojom::RenderFrameMetadataObserverClient {
  public:
   MockRenderFrameMetadataObserverClient(
-      mojo::PendingReceiver<mojom::RenderFrameMetadataObserverClient>
+      mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserverClient>
           client_receiver,
-      mojo::PendingRemote<mojom::RenderFrameMetadataObserver> observer)
+      mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserver> observer)
       : render_frame_metadata_observer_client_receiver_(
             this,
             std::move(client_receiver)),
@@ -47,9 +47,9 @@ class MockRenderFrameMetadataObserverClient
 #endif
 
  private:
-  mojo::Receiver<mojom::RenderFrameMetadataObserverClient>
+  mojo::Receiver<cc::mojom::RenderFrameMetadataObserverClient>
       render_frame_metadata_observer_client_receiver_;
-  mojo::Remote<mojom::RenderFrameMetadataObserver>
+  mojo::Remote<cc::mojom::RenderFrameMetadataObserver>
       render_frame_metadata_observer_remote_;
 
   DISALLOW_COPY_AND_ASSIGN(MockRenderFrameMetadataObserverClient);
@@ -66,10 +66,11 @@ class RenderFrameMetadataObserverImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    mojo::PendingRemote<mojom::RenderFrameMetadataObserver> observer_remote;
-    mojo::PendingReceiver<mojom::RenderFrameMetadataObserver> receiver =
+    mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserver> observer_remote;
+    mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserver> receiver =
         observer_remote.InitWithNewPipeAndPassReceiver();
-    mojo::PendingRemote<mojom::RenderFrameMetadataObserverClient> client_remote;
+    mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserverClient>
+        client_remote;
 
     client_ = std::make_unique<
         testing::NiceMock<MockRenderFrameMetadataObserverClient>>(

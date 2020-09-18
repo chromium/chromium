@@ -454,7 +454,6 @@ mojom("mojo_bindings") {
     "page_state.mojom",
     "prefetched_signed_exchange_info.mojom",
     "render_accessibility.mojom",
-    "render_frame_metadata.mojom",
     "render_message_filter.mojom",
     "renderer.mojom",
     "renderer_host.mojom",
@@ -651,22 +650,6 @@ mojom("mojo_bindings") {
       traits_private_headers = [
         "//content/common/frame_messages.h",
         "//content/common/resource_messages.h",
-      ]
-    },
-    {
-      types = [
-        {
-          mojom = "content.mojom.RenderFrameMetadata"
-          cpp = "::cc::RenderFrameMetadata"
-        },
-      ]
-      traits_headers =
-          [ "//content/common/render_frame_metadata_mojom_traits.h" ]
-      traits_sources =
-          [ "//content/common/render_frame_metadata_mojom_traits.cc" ]
-      traits_deps = [
-        "//cc",
-        "//ui/gfx/geometry/mojom:mojom_traits",
       ]
     },
   ]

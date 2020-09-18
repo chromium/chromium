@@ -19,8 +19,9 @@ constexpr float kEdgeThreshold = 10.0f;
 }
 
 RenderFrameMetadataObserverImpl::RenderFrameMetadataObserverImpl(
-    mojo::PendingReceiver<mojom::RenderFrameMetadataObserver> receiver,
-    mojo::PendingRemote<mojom::RenderFrameMetadataObserverClient> client_remote)
+    mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserver> receiver,
+    mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserverClient>
+        client_remote)
     : receiver_(std::move(receiver)),
       client_remote_(std::move(client_remote)) {}
 

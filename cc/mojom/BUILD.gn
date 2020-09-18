@@ -4,15 +4,39 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+component("shared_mojom_traits") {
+  output_name = "cc_shared_mojom_traits"
+  defines = [ "IS_CC_SHARED_MOJOM_TRAITS_IMPL" ]
+  sources = [
+    "render_frame_metadata_mojom_traits.cc",
+    "render_frame_metadata_mojom_traits.h",
+  ]
+  public_deps = [
+    ":mojom_shared",
+    "//cc:cc",
+    "//mojo/public/cpp/base:shared_typemap_traits",
+    "//ui/gfx/geometry/mojom:mojom_traits",
+  ]
+}
+
 mojom("mojom") {
   generate_java = true
   sources = [
     "browser_controls_params.mojom",
     "overscroll_behavior.mojom",
+    "render_frame_metadata.mojom",
     "touch_action.mojom",
   ]
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//services/viz/public/mojom",
+    "//ui/gfx/geometry/mojom",
+  ]
+
+  export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/public/platform/web_common.h"
 
   shared_typemap = [
     {
@@ -44,6 +68,16 @@ mojom("mojom") {
       ]
       traits_headers = [ "//cc/ipc/cc_param_traits_macros.h" ]
       traits_public_deps = [ "//cc/ipc" ]
+    },
+    {
+      types = [
+        {
+          mojom = "cc.mojom.RenderFrameMetadata"
+          cpp = "::cc::RenderFrameMetadata"
+        },
+      ]
+      traits_headers = [ "//cc/mojom/render_frame_metadata_mojom_traits.h" ]
+      traits_public_deps = [ ":shared_mojom_traits" ]
     },
   ]
 

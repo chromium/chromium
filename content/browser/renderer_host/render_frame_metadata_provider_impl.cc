@@ -26,9 +26,9 @@ void RenderFrameMetadataProviderImpl::RemoveObserver(Observer* observer) {
 }
 
 void RenderFrameMetadataProviderImpl::Bind(
-    mojo::PendingReceiver<mojom::RenderFrameMetadataObserverClient>
+    mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserverClient>
         client_receiver,
-    mojo::PendingRemote<mojom::RenderFrameMetadataObserver> observer) {
+    mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserver> observer) {
   render_frame_metadata_observer_remote_.reset();
   render_frame_metadata_observer_remote_.Bind(std::move(observer));
   render_frame_metadata_observer_client_receiver_.reset();

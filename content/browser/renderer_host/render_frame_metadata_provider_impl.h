@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
-#include "content/common/render_frame_metadata.mojom.h"
+#include "cc/mojom/render_frame_metadata.mojom.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -29,7 +29,7 @@ class FrameTokenMessageQueue;
 // All RenderFrameMetadataProvider::Observer will be notified.
 class CONTENT_EXPORT RenderFrameMetadataProviderImpl
     : public RenderFrameMetadataProvider,
-      public mojom::RenderFrameMetadataObserverClient {
+      public cc::mojom::RenderFrameMetadataObserverClient {
  public:
   RenderFrameMetadataProviderImpl(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
@@ -39,9 +39,10 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
-  void Bind(mojo::PendingReceiver<mojom::RenderFrameMetadataObserverClient>
-                client_receiver,
-            mojo::PendingRemote<mojom::RenderFrameMetadataObserver> observer);
+  void Bind(
+      mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserverClient>
+          client_receiver,
+      mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserver> observer);
 
   const cc::RenderFrameMetadata& LastRenderFrameMetadata() override;
 
@@ -71,7 +72,7 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
   // purpose.
   void SetLastRenderFrameMetadataForTest(cc::RenderFrameMetadata metadata);
 
-  // mojom::RenderFrameMetadataObserverClient:
+  // cc::mojom::RenderFrameMetadataObserverClient:
   void OnRenderFrameMetadataChanged(
       uint32_t frame_token,
       const cc::RenderFrameMetadata& metadata) override;
@@ -93,9 +94,9 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
   // Not owned.
   FrameTokenMessageQueue* const frame_token_message_queue_;
 
-  mojo::Receiver<mojom::RenderFrameMetadataObserverClient>
+  mojo::Receiver<cc::mojom::RenderFrameMetadataObserverClient>
       render_frame_metadata_observer_client_receiver_{this};
-  mojo::Remote<mojom::RenderFrameMetadataObserver>
+  mojo::Remote<cc::mojom::RenderFrameMetadataObserver>
       render_frame_metadata_observer_remote_;
 
 #if defined(OS_ANDROID)

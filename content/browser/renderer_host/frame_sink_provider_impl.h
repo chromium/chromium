@@ -5,8 +5,8 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_FRAME_SINK_PROVIDER_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_FRAME_SINK_PROVIDER_IMPL_H_
 
+#include "cc/mojom/render_frame_metadata.mojom.h"
 #include "content/common/frame_sink_provider.mojom.h"
-#include "content/common/render_frame_metadata.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -32,9 +32,9 @@ class FrameSinkProviderImpl : public mojom::FrameSinkProvider {
           compositor_frame_sink_client) override;
   void RegisterRenderFrameMetadataObserver(
       int32_t widget_id,
-      mojo::PendingReceiver<mojom::RenderFrameMetadataObserverClient>
+      mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserverClient>
           render_frame_metadata_observer_client_receiver,
-      mojo::PendingRemote<mojom::RenderFrameMetadataObserver> observer)
+      mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserver> observer)
       override;
 
  private:

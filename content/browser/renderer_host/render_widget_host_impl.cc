@@ -3193,9 +3193,9 @@ void RenderWidgetHostImpl::RequestCompositorFrameSink(
 }
 
 void RenderWidgetHostImpl::RegisterRenderFrameMetadataObserver(
-    mojo::PendingReceiver<mojom::RenderFrameMetadataObserverClient>
+    mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserverClient>
         render_frame_metadata_observer_client_receiver,
-    mojo::PendingRemote<mojom::RenderFrameMetadataObserver>
+    mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserver>
         render_frame_metadata_observer) {
   render_frame_metadata_provider_.Bind(
       std::move(render_frame_metadata_observer_client_receiver),

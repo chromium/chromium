@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/render_frame_metadata_mojom_traits.h"
+#include "cc/mojom/render_frame_metadata_mojom_traits.h"
 
 #include "build/build_config.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
@@ -14,10 +14,10 @@
 namespace mojo {
 
 // static
-bool StructTraits<content::mojom::RenderFrameMetadataDataView,
-                  cc::RenderFrameMetadata>::
-    Read(content::mojom::RenderFrameMetadataDataView data,
-         cc::RenderFrameMetadata* out) {
+bool StructTraits<
+    cc::mojom::RenderFrameMetadataDataView,
+    cc::RenderFrameMetadata>::Read(cc::mojom::RenderFrameMetadataDataView data,
+                                   cc::RenderFrameMetadata* out) {
   out->root_background_color = data.root_background_color();
   out->is_scroll_offset_at_top = data.is_scroll_offset_at_top();
   out->is_mobile_optimized = data.is_mobile_optimized();

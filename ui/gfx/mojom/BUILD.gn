@@ -99,6 +99,16 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "gfx.mojom.SelectionBound"
+          cpp = "::gfx::SelectionBound"
+        },
+      ]
+      traits_headers = [ "selection_bound_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/gfx/geometry/mojom:mojom_traits" ]
+    },
+    {
+      types = [
+        {
           mojom = "gfx.mojom.SwapTimings"
           cpp = "::gfx::SwapTimings"
         },
@@ -184,16 +194,6 @@ mojom("mojom") {
         },
       ]
       traits_headers = [ "rrect_f_mojom_traits.h" ]
-      traits_public_deps = [ "//ui/gfx/geometry/mojom:mojom_traits" ]
-    },
-    {
-      types = [
-        {
-          mojom = "gfx.mojom.SelectionBound"
-          cpp = "::gfx::SelectionBound"
-        },
-      ]
-      traits_headers = [ "selection_bound_mojom_traits.h" ]
       traits_public_deps = [ "//ui/gfx/geometry/mojom:mojom_traits" ]
     },
     {

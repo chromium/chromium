@@ -2111,6 +2111,7 @@ test("content_unittests") {
     "//build:chromecast_buildflags",
     "//cc",
     "//cc:test_support",
+    "//cc/mojom",
     "//components/cbor",
     "//components/network_session_configurator/browser",
     "//components/network_session_configurator/common",

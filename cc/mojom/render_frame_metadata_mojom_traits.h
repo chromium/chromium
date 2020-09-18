@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_RENDER_FRAME_METADATA_MOJOM_TRAITS_H_
-#define CONTENT_COMMON_RENDER_FRAME_METADATA_MOJOM_TRAITS_H_
+#ifndef CC_MOJOM_RENDER_FRAME_METADATA_MOJOM_TRAITS_H_
+#define CC_MOJOM_RENDER_FRAME_METADATA_MOJOM_TRAITS_H_
 
+#include "base/component_export.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "cc/mojom/render_frame_metadata.mojom-shared.h"
 #include "cc/trees/render_frame_metadata.h"
-#include "content/common/render_frame_metadata.mojom-shared.h"
 #include "services/viz/public/cpp/compositing/local_surface_id_allocation_mojom_traits.h"
 
 namespace mojo {
 
 template <>
-struct StructTraits<content::mojom::RenderFrameMetadataDataView,
-                    cc::RenderFrameMetadata> {
+struct COMPONENT_EXPORT(CC_SHARED_MOJOM_TRAITS)
+    StructTraits<cc::mojom::RenderFrameMetadataDataView,
+                 cc::RenderFrameMetadata> {
   static SkColor root_background_color(
       const cc::RenderFrameMetadata& metadata) {
     return metadata.root_background_color;
@@ -130,10 +132,10 @@ struct StructTraits<content::mojom::RenderFrameMetadataDataView,
   }
 #endif
 
-  static bool Read(content::mojom::RenderFrameMetadataDataView data,
+  static bool Read(cc::mojom::RenderFrameMetadataDataView data,
                    cc::RenderFrameMetadata* out);
 };
 
 }  // namespace mojo
 
-#endif  // CONTENT_COMMON_RENDER_FRAME_METADATA_MOJOM_TRAITS_H_
+#endif  // CC_MOJOM_RENDER_FRAME_METADATA_MOJOM_TRAITS_H_

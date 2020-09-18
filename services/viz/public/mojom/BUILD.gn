@@ -141,6 +141,26 @@ mojom("mojom") {
       traits_headers = [ "//services/viz/public/cpp/compositing/local_surface_id_allocation_mojom_traits.h" ]
       traits_public_deps = [ "//components/viz/common" ]
     },
+    {
+      types = [
+        {
+          mojom = "viz.mojom.Selection"
+          cpp = "::viz::Selection<::gfx::SelectionBound>"
+        },
+      ]
+      traits_headers =
+          [ "//services/viz/public/cpp/compositing/selection_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "viz.mojom.VerticalScrollDirection"
+          cpp = "::viz::VerticalScrollDirection"
+        },
+      ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/vertical_scroll_direction_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
   ]
 
   cpp_typemaps = shared_cpp_typemaps
@@ -399,16 +419,6 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "viz.mojom.Selection"
-          cpp = "::viz::Selection<::gfx::SelectionBound>"
-        },
-      ]
-      traits_headers =
-          [ "//services/viz/public/cpp/compositing/selection_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
           mojom = "viz.mojom.SharedQuadState"
           cpp = "::viz::SharedQuadState"
         },
@@ -441,16 +451,6 @@ mojom("mojom") {
         "//gpu/ipc/common:mojom_traits",
         "//ui/gfx/geometry/mojom",
       ]
-    },
-    {
-      types = [
-        {
-          mojom = "viz.mojom.VerticalScrollDirection"
-          cpp = "::viz::VerticalScrollDirection"
-        },
-      ]
-      traits_headers = [ "//services/viz/public/cpp/compositing/vertical_scroll_direction_mojom_traits.h" ]
-      traits_public_deps = [ "//components/viz/common" ]
     },
   ]
 

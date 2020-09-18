@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module content.mojom;
+module cc.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id_allocation.mojom";
@@ -128,7 +128,8 @@ interface RenderFrameMetadataObserver {
 // RenderFrameMetadataObserver::ReportAllRootScrolls.
 interface RenderFrameMetadataObserverClient {
   // Notified when RenderFrameMetadata has changed.
-  OnRenderFrameMetadataChanged(uint32 frame_token, RenderFrameMetadata metadata);
+  OnRenderFrameMetadataChanged(uint32 frame_token,
+                               RenderFrameMetadata metadata);
 
   // Notified on all frame submissions.
   OnFrameSubmissionForTesting(uint32 frame_token);

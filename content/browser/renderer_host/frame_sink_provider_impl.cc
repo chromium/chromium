@@ -45,9 +45,9 @@ void FrameSinkProviderImpl::CreateForWidget(
 
 void FrameSinkProviderImpl::RegisterRenderFrameMetadataObserver(
     int32_t widget_id,
-    mojo::PendingReceiver<mojom::RenderFrameMetadataObserverClient>
+    mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserverClient>
         render_frame_metadata_observer_client_receiver,
-    mojo::PendingRemote<mojom::RenderFrameMetadataObserver>
+    mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserver>
         render_frame_metadata_observer) {
   RenderWidgetHostImpl* render_widget_host_impl =
       RenderWidgetHostImpl::FromID(process_id_, widget_id);

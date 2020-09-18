@@ -4,7 +4,7 @@
 
 module content.mojom;
 
-import "content/common/render_frame_metadata.mojom";
+import "cc/mojom/render_frame_metadata.mojom";
 import "services/viz/public/mojom/compositing/compositor_frame_sink.mojom";
 
 // This interface provides CompositorFrameSink and a
@@ -21,8 +21,8 @@ interface FrameSinkProvider {
 
    RegisterRenderFrameMetadataObserver(
       int32  widget_id,
-      pending_receiver<RenderFrameMetadataObserverClient>
+      pending_receiver<cc.mojom.RenderFrameMetadataObserverClient>
         render_frame_metadata_observer_client_receiver,
-      pending_remote<RenderFrameMetadataObserver>
+      pending_remote<cc.mojom.RenderFrameMetadataObserver>
         render_frame_metadata_observer);
 };

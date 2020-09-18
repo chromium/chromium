@@ -6,10 +6,10 @@
 #define CONTENT_RENDERER_RENDER_FRAME_METADATA_OBSERVER_IMPL_H_
 
 #include "build/build_config.h"
+#include "cc/mojom/render_frame_metadata.mojom.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "content/common/content_export.h"
-#include "content/common/render_frame_metadata.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -28,11 +28,11 @@ namespace content {
 // Subsequent usage should only be from the Compositor thread.
 class CONTENT_EXPORT RenderFrameMetadataObserverImpl
     : public cc::RenderFrameMetadataObserver,
-      public mojom::RenderFrameMetadataObserver {
+      public cc::mojom::RenderFrameMetadataObserver {
  public:
   RenderFrameMetadataObserverImpl(
-      mojo::PendingReceiver<mojom::RenderFrameMetadataObserver> receiver,
-      mojo::PendingRemote<mojom::RenderFrameMetadataObserverClient>
+      mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserver> receiver,
+      mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserverClient>
           client_remote);
   ~RenderFrameMetadataObserverImpl() override;
 
@@ -78,12 +78,13 @@ class CONTENT_EXPORT RenderFrameMetadataObserverImpl
   base::Optional<cc::RenderFrameMetadata> last_render_frame_metadata_;
 
   // These are destroyed when BindToCurrentThread() is called.
-  mojo::PendingReceiver<mojom::RenderFrameMetadataObserver> receiver_;
-  mojo::PendingRemote<mojom::RenderFrameMetadataObserverClient> client_remote_;
+  mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserver> receiver_;
+  mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserverClient>
+      client_remote_;
 
-  mojo::Receiver<mojom::RenderFrameMetadataObserver>
+  mojo::Receiver<cc::mojom::RenderFrameMetadataObserver>
       render_frame_metadata_observer_receiver_{this};
-  mojo::Remote<mojom::RenderFrameMetadataObserverClient>
+  mojo::Remote<cc::mojom::RenderFrameMetadataObserverClient>
       render_frame_metadata_observer_client_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderFrameMetadataObserverImpl);

@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "cc/mojom/render_frame_metadata.mojom.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
@@ -40,7 +41,6 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/input_messages.h"
-#include "content/common/render_frame_metadata.mojom.h"
 #include "content/common/widget_messages.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/common/content_features.h"
@@ -280,11 +280,11 @@ class MockRenderViewHostDelegateView : public RenderViewHostDelegateView {
 // All methods are no-opts, the provided mojo receiver and remote are held, but
 // never bound.
 class FakeRenderFrameMetadataObserver
-    : public mojom::RenderFrameMetadataObserver {
+    : public cc::mojom::RenderFrameMetadataObserver {
  public:
   FakeRenderFrameMetadataObserver(
-      mojo::PendingReceiver<mojom::RenderFrameMetadataObserver> receiver,
-      mojo::PendingRemote<mojom::RenderFrameMetadataObserverClient>
+      mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserver> receiver,
+      mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserverClient>
           client_remote);
   ~FakeRenderFrameMetadataObserver() override {}
 
@@ -294,14 +294,16 @@ class FakeRenderFrameMetadataObserver
   void ReportAllFrameSubmissionsForTesting(bool enabled) override {}
 
  private:
-  mojo::PendingReceiver<mojom::RenderFrameMetadataObserver> receiver_;
-  mojo::PendingRemote<mojom::RenderFrameMetadataObserverClient> client_remote_;
+  mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserver> receiver_;
+  mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserverClient>
+      client_remote_;
   DISALLOW_COPY_AND_ASSIGN(FakeRenderFrameMetadataObserver);
 };
 
 FakeRenderFrameMetadataObserver::FakeRenderFrameMetadataObserver(
-    mojo::PendingReceiver<mojom::RenderFrameMetadataObserver> receiver,
-    mojo::PendingRemote<mojom::RenderFrameMetadataObserverClient> client_remote)
+    mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserver> receiver,
+    mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserverClient>
+        client_remote)
     : receiver_(std::move(receiver)),
       client_remote_(std::move(client_remote)) {}
 
@@ -562,11 +564,11 @@ class RenderWidgetHostTest : public testing::Test {
     // Init() happens once the navigation completes.
     host_->Init();
 
-    mojo::PendingRemote<mojom::RenderFrameMetadataObserver>
+    mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserver>
         renderer_render_frame_metadata_observer_remote;
-    mojo::PendingRemote<mojom::RenderFrameMetadataObserverClient>
+    mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserverClient>
         render_frame_metadata_observer_remote;
-    mojo::PendingReceiver<mojom::RenderFrameMetadataObserverClient>
+    mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserverClient>
         render_frame_metadata_observer_client_receiver =
             render_frame_metadata_observer_remote
                 .InitWithNewPipeAndPassReceiver();
@@ -2272,7 +2274,7 @@ TEST_F(RenderWidgetHostTest, OnVerticalScrollDirectionChanged) {
 
         cc::RenderFrameMetadata metadata;
         metadata.new_vertical_scroll_direction = scroll_direction;
-        static_cast<mojom::RenderFrameMetadataObserverClient*>(
+        static_cast<cc::mojom::RenderFrameMetadataObserverClient*>(
             host_->render_frame_metadata_provider())
             ->OnRenderFrameMetadataChanged(frame_token++, metadata);
       };
