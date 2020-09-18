@@ -76,12 +76,6 @@ const ClipboardFormatType& ClipboardFormatType::GetPlainTextType() {
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetFilenameType() {
-  static base::NoDestructor<ClipboardFormatType> type(NSFilenamesPboardType);
-  return *type;
-}
-
-// static
 const ClipboardFormatType& ClipboardFormatType::GetHtmlType() {
   static base::NoDestructor<ClipboardFormatType> type(NSHTMLPboardType);
   return *type;

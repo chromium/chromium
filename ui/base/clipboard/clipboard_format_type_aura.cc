@@ -8,10 +8,6 @@
 
 namespace ui {
 
-namespace {
-constexpr char kMimeTypeFilename[] = "chromium/filename";
-}
-
 // TODO(huangdarwin): Investigate creating a new clipboard_format_type_x11 as a
 // wrapper around an X11 ::Atom. This wasn't possible in the past, because unit
 // tests spawned a new X11 server for each test, meaning Atom numeric values
@@ -60,20 +56,8 @@ const ClipboardFormatType& ClipboardFormatType::GetUrlType() {
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetMozUrlType() {
-  static base::NoDestructor<ClipboardFormatType> type(kMimeTypeMozillaURL);
-  return *type;
-}
-
-// static
 const ClipboardFormatType& ClipboardFormatType::GetPlainTextType() {
   static base::NoDestructor<ClipboardFormatType> type(kMimeTypeText);
-  return *type;
-}
-
-// static
-const ClipboardFormatType& ClipboardFormatType::GetFilenameType() {
-  static base::NoDestructor<ClipboardFormatType> type(kMimeTypeFilename);
   return *type;
 }
 

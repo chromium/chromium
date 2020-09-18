@@ -174,22 +174,8 @@ const ClipboardFormatType& ClipboardFormatType::GetUrlType() {
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetMozUrlType() {
-  static base::NoDestructor<ClipboardFormatType> format(
-      ::RegisterClipboardFormat(L"text/x-moz-url"));
-  return *format;
-}
-
-// static
 const ClipboardFormatType& ClipboardFormatType::GetPlainTextType() {
   static base::NoDestructor<ClipboardFormatType> format(CF_UNICODETEXT);
-  return *format;
-}
-
-// static
-const ClipboardFormatType& ClipboardFormatType::GetFilenameType() {
-  static base::NoDestructor<ClipboardFormatType> format(
-      ::RegisterClipboardFormat(CFSTR_FILENAMEW));
   return *format;
 }
 
@@ -312,9 +298,23 @@ const ClipboardFormatType& ClipboardFormatType::GetFileContentAtIndexType(
 }
 
 // static
+const ClipboardFormatType& ClipboardFormatType::GetFilenameType() {
+  static base::NoDestructor<ClipboardFormatType> format(
+      ::RegisterClipboardFormat(CFSTR_FILENAMEW));
+  return *format;
+}
+
+// static
 const ClipboardFormatType& ClipboardFormatType::GetIDListType() {
   static base::NoDestructor<ClipboardFormatType> format(
       ::RegisterClipboardFormat(CFSTR_SHELLIDLIST));
+  return *format;
+}
+
+// static
+const ClipboardFormatType& ClipboardFormatType::GetMozUrlType() {
+  static base::NoDestructor<ClipboardFormatType> format(
+      ::RegisterClipboardFormat(L"text/x-moz-url"));
   return *format;
 }
 
