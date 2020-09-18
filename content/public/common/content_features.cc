@@ -620,7 +620,7 @@ const base::Feature kSignedExchangeReportingForDistributors{
 // Subresource prefetching+loading via Signed HTTP Exchange
 // https://www.chromestatus.com/features/5126805474246656
 const base::Feature kSignedExchangeSubresourcePrefetch{
-    "SignedExchangeSubresourcePrefetch", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SignedExchangeSubresourcePrefetch", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Origin-Signed HTTP Exchanges (for WebPackage Loading)
 // https://www.chromestatus.com/features/5745285984681984
