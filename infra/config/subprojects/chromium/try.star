@@ -1092,7 +1092,7 @@ try_.chromium_mac_builder(
     branch_selector = branches.STANDARD_RELEASES,
     goma_jobs = goma.jobs.J150,
     main_list_view = settings.main_list_view_name,
-    os = os.MAC_10_13,
+    os = os.MAC_DEFAULT,
     tryjob = try_.job(),
 )
 
@@ -1144,7 +1144,7 @@ try_.chromium_mac_builder(
     branch_selector = branches.STANDARD_RELEASES,
     goma_jobs = goma.jobs.J150,
     main_list_view = settings.main_list_view_name,
-    os = os.MAC_10_13,
+    os = os.MAC_DEFAULT,
     tryjob = try_.job(),
 )
 
