@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/header_modification_delegate_impl.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow.h"
 #include "chrome/browser/profiles/profile_io_data.h"
@@ -65,12 +66,18 @@ void HeaderModificationDelegateImpl::ProcessRequest(
   }
 #endif
 
+  ConsentLevel consent_level = ConsentLevel::kSync;
+#if defined(OS_ANDROID)
+  if (base::FeatureList::IsEnabled(kMobileIdentityConsistency))
+    consent_level = ConsentLevel::kNotRequired;
+#endif
+
   FixAccountConsistencyRequestHeader(
       request_adapter, redirect_url, profile_->IsOffTheRecord(),
       prefs->GetInteger(prefs::kIncognitoModeAvailability),
       AccountConsistencyModeManager::GetMethodForProfile(profile_),
       IdentityManagerFactory::GetForProfile(profile_)
-          ->GetPrimaryAccountInfo()
+          ->GetPrimaryAccountInfo(consent_level)
           .gaia,
 #if defined(OS_CHROMEOS)
       is_secondary_account_addition_allowed,
