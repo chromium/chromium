@@ -368,11 +368,10 @@ ClassicEvaluationResult WorkerOrWorkletScriptController::EvaluateAndReturnValue(
     // script evaluation code paths.
     if (!block.CanContinue()) {
       ForbidExecution();
-    }
-
-    if (IsExecutionForbidden()) {
       return ClassicEvaluationResult();
     }
+
+    CHECK(!IsExecutionForbidden());
 
     if (!block.HasCaught()) {
       // Step 10. If evaluationStatus is a normal completion, then return
