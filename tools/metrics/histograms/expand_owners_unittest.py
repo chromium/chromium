@@ -32,7 +32,6 @@ def _GetSrcRelativePath(path):
   Args:
     path: An absolute path, e.g. '/some/directory/chromium/src/tools/OWNERS'.
   """
-  # TODO(crbug/1126653): This fails if chromium is not in the path.
   return path.split('chromium/')[1]
 
 
@@ -62,61 +61,6 @@ class ExpandOwnersTest(unittest.TestCase):
   def tearDown(self):
     super(ExpandOwnersTest, self).tearDown()
     shutil.rmtree(self.temp_dir)
-
-  def testExpandOwnersUsesMetadataOverOwners(self):
-    """Checks that DIR_METADATA is used if available"""
-    with open(os.path.join(self.temp_dir, 'DIR_METADATA'), "w+") as md:
-      md.write("\n".join(['monorail {', 'component: "Bees"', '}']))
-    absolute_path = _MakeOwnersFile('simple_OWNERS', self.temp_dir)
-    with open(absolute_path, 'w') as owners_file:
-      owners_file.write('\n'.join(
-          ['amy@chromium.org', _DEFAULT_COMPONENT, 'rae@chromium.org']))
-    self.maxDiff = None
-    src_relative_path = _GetSrcRelativePath(absolute_path)
-    histograms = xml.dom.minidom.parseString("""
-<histograms>
-
-<histogram name="Caffeination" units="mg">
-  <owner>joe@chromium.org</owner>
-  <owner>{path}</owner>
-  <summary>I like coffee.</summary>
-</histogram>
-
-<histogram name="Maple.Syrup" units="units">
-  <owner>joe@chromium.org</owner>
-  <owner>{path}</owner>
-  <owner>kim@chromium.org</owner>
-  <summary>I like maple syrup, too.</summary>
-</histogram>
-
-</histograms>
-""".format(path=src_relative_path))
-
-    expected_histograms = xml.dom.minidom.parseString("""
-<histograms>
-
-<histogram name="Caffeination" units="mg">
-  <owner>joe@chromium.org</owner>
-  <owner>amy@chromium.org</owner>
-  <owner>rae@chromium.org</owner>
-  <summary>I like coffee.</summary>
-  <component>Bees</component>
-</histogram>
-
-<histogram name="Maple.Syrup" units="units">
-  <owner>joe@chromium.org</owner>
-  <owner>amy@chromium.org</owner>
-  <owner>rae@chromium.org</owner>
-  <owner>kim@chromium.org</owner>
-  <summary>I like maple syrup, too.</summary>
-  <component>Bees</component>
-</histogram>
-
-</histograms>
-""")
-
-    expand_owners.ExpandHistogramsOWNERS(histograms)
-    self.assertMultiLineEqual(histograms.toxml(), expected_histograms.toxml())
 
   def testExpandOwnersWithSimpleOWNERSFilePath(self):
     """Checks that OWNERS files are expanded."""
@@ -382,7 +326,7 @@ class ExpandOwnersTest(unittest.TestCase):
 
     with self.assertRaisesRegexp(
         expand_owners.Error,
-        'The histogram Caffeination must have a valid primary owner, i.e. a '
+        'The histogram Caffeination must have a valid first owner, i.e. a '
         'person with an @google.com or @chromium.org email address.'):
       expand_owners.ExpandHistogramsOWNERS(histograms_without_valid_first_owner)
 
@@ -405,7 +349,7 @@ class ExpandOwnersTest(unittest.TestCase):
 
     with self.assertRaisesRegexp(
         expand_owners.Error,
-        'The histogram Caffeination must have a valid primary owner, i.e. a '
+        'The histogram Caffeination must have a valid first owner, i.e. a '
         'person with an @google.com or @chromium.org email address.'):
       expand_owners.ExpandHistogramsOWNERS(histograms_without_valid_first_owner)
 
@@ -428,7 +372,7 @@ class ExpandOwnersTest(unittest.TestCase):
 
     with self.assertRaisesRegexp(
         expand_owners.Error,
-        'The histogram Caffeination must have a valid primary owner, i.e. a '
+        'The histogram Caffeination must have a valid first owner, i.e. a '
         'person with an @google.com or @chromium.org email address.'):
       expand_owners.ExpandHistogramsOWNERS(histograms_without_valid_first_owner)
 
@@ -476,6 +420,11 @@ class ExpandOwnersTest(unittest.TestCase):
         r'No emails could be derived from .*empty_OWNERS\.'):
       expand_owners.ExpandHistogramsOWNERS(histograms_without_owners_from_file)
 
+    with self.assertRaisesRegexp(
+        expand_owners.Error,
+        r'The file at .*src/medium/medium/roast/OWNERS does not exist\.'):
+      expand_owners.ExpandHistogramsOWNERS(histograms_with_fake_file_path)
+
   def testExpandOwnersWithSameOwners(self):
     """
     Checks that no error is raised when all owners in a file are already in
@@ -500,7 +449,8 @@ class ExpandOwnersTest(unittest.TestCase):
 </histograms>
 """.format(src_relative_path))
 
-    self.assertIsNone(expand_owners.ExpandHistogramsOWNERS(histograms_string))
+    self.assertEqual(
+        expand_owners.ExpandHistogramsOWNERS(histograms_string), [])
 
   def testExpandOwnersWithoutOWNERSPathPrefix(self):
     """Checks that an error is raised when the path is not well-formatted."""

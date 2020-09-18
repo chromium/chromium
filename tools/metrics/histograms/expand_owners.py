@@ -5,10 +5,7 @@
 """Functions for extracting emails and components from OWNERS files."""
 
 import extract_histograms
-import json
 import os
-import subprocess
-import sys
 import re
 
 _EMAIL_PATTERN = r'^[\w\-\+\%\.]+\@[\w\-\+\%\.]+$'
@@ -196,57 +193,6 @@ def _ExtractEmailAddressesFromOWNERS(path, depth=0):
   return extracted_emails
 
 
-def _ComponentFromDirmd(json_data, subpath):
-  """Returns the component for a subpath based on dirmd output.
-
-  Returns an empty string if no component can be extracted
-
-  Args:
-    json_data: json object output from dirmd.
-    subpath: The subpath for the directory being queried, e.g. src/storage'.
-  """
-  # If no component exists for the directory, or if METADATA migration is
-  # incomplete there will be no component information.
-  return json_data.get('dirs', {}).get(subpath,
-                                       {}).get('monorail',
-                                               {}).get('component', '')
-
-
-def _ExtractComponentViaDirmd(path):
-  """Returns the component for monorail issues at the given path.
-
-  Examples are 'Blink>Storage>FileAPI' and 'UI'.
-
-  Uses dirmd in third_party/depot_tools to parse metadata and walk parent
-  directories up to the top level of the repo.
-
-  Returns an empty string if no component can be extracted.
-
-  Args:
-    path: The path to an directory to query, e.g. 'src/storage'.
-  """
-  # Verify that the paths are absolute and the root is a parent of the
-  # passed in path.
-  root_path = os.path.abspath(os.path.join(*_DIR_ABOVE_TOOLS))
-  path = os.path.abspath(path)
-  if not path.startswith(root_path):
-    raise Error('Path {} is not a subpath of the root path {}.'.format(
-        path, root_path))
-  subpath = path[len(root_path) + 1:] or '.'  # E.g. content/public.
-  dirmd_exe = 'dirmd'
-  if sys.platform == 'win32':
-    dirmd_exe == 'dirmd.bat'
-  dirmd_path = os.path.join(*(_DIR_ABOVE_TOOLS +
-                              ['third_party', 'depot_tools', dirmd_exe]))
-  dirmd = subprocess.Popen([dirmd_path, 'compute', '--root', root_path, path],
-                           stdout=subprocess.PIPE)
-  if dirmd.wait() != 0:
-    raise Error('dirmd failed.')
-  json_out = json.load(dirmd.stdout)
-  return _ComponentFromDirmd(json_out, subpath)
-
-
-# TODO(crbug/1102997): remove once metadata migration is complete
 def _ExtractComponentFromOWNERS(path):
   """Returns the string component associated with the file at the given path.
 
@@ -415,9 +361,7 @@ def ExpandHistogramsOWNERS(histograms):
 
       _UpdateHistogramOwners(histogram, owner, owners_to_add)
 
-      component = _ExtractComponentViaDirmd(os.path.dirname(path))
-      if not component:
-        component = _ExtractComponentFromOWNERS(path)
+      component = _ExtractComponentFromOWNERS(path)
       if component and component not in components_with_dom_elements:
         components_with_dom_elements.add(component)
         _AddHistogramComponent(histogram, component)
