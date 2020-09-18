@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_embedder_graph_builder.h"
+
+#include <memory>
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
@@ -21,6 +23,7 @@ namespace {
 
 using Traceable = const void*;
 using Graph = v8::EmbedderGraph;
+using Detachedness = v8::EmbedderGraph::Node::Detachedness;
 
 // Information about whether a node is attached to the main DOM tree
 // or not. It is computed as follows:
@@ -37,54 +40,41 @@ using Graph = v8::EmbedderGraph;
 //    considered (conservatively) as attached.
 // The unknown state applies to ScriptWrappables during graph
 // traversal when we don't have reachability information yet.
-enum class DomTreeState { kAttached, kDetached, kUnknown };
-
-DomTreeState DomTreeStateFromWrapper(v8::Isolate* isolate,
+Detachedness DetachednessFromWrapper(v8::Isolate* isolate,
                                      uint16_t class_id,
                                      v8::Local<v8::Object> v8_value) {
   if (class_id != WrapperTypeInfo::kNodeClassId)
-    return DomTreeState::kUnknown;
+    return Detachedness::kUnknown;
   Node* node = V8Node::ToImpl(v8_value);
   Node* root = V8GCController::OpaqueRootForGC(isolate, node);
   if (root->isConnected() && node->GetExecutionContext())
-    return DomTreeState::kAttached;
-  return DomTreeState::kDetached;
+    return Detachedness::kAttached;
+  return Detachedness::kDetached;
 }
 
 class EmbedderNode : public Graph::Node {
  public:
   EmbedderNode(const char* name,
                Graph::Node* wrapper,
-               DomTreeState dom_tree_state)
-      : name_(name), wrapper_(wrapper), dom_tree_state_(dom_tree_state) {}
+               Detachedness detachedness)
+      : name_(name), wrapper_(wrapper), detachedness_(detachedness) {}
 
-  DomTreeState GetDomTreeState() { return dom_tree_state_; }
-  void UpdateDomTreeState(DomTreeState parent_dom_tree_state) {
-    // If the child's state is unknown, then take the parent's state.
-    // If the parent is attached, then the child is also attached.
-    if (dom_tree_state_ == DomTreeState::kUnknown ||
-        parent_dom_tree_state == DomTreeState::kAttached) {
-      dom_tree_state_ = parent_dom_tree_state;
-    }
-  }
   // Graph::Node overrides.
   const char* Name() override { return name_; }
-  const char* NamePrefix() override {
-    return dom_tree_state_ == DomTreeState::kDetached ? "Detached" : nullptr;
-  }
   size_t SizeInBytes() override { return 0; }
   Graph::Node* WrapperNode() override { return wrapper_; }
+  Detachedness GetDetachedness() override { return detachedness_; }
 
  private:
   const char* name_;
   Graph::Node* wrapper_;
-  DomTreeState dom_tree_state_;
+  const Detachedness detachedness_;
 };
 
 class EmbedderRootNode : public EmbedderNode {
  public:
   explicit EmbedderRootNode(const char* name)
-      : EmbedderNode(name, nullptr, DomTreeState::kUnknown) {}
+      : EmbedderNode(name, nullptr, Detachedness::kUnknown) {}
   // Graph::Node override.
   bool IsRootNode() override { return true; }
 
@@ -107,7 +97,7 @@ class NodeBuilder final {
   EmbedderNode* GraphNode(Traceable,
                           const char* name,
                           Graph::Node* wrapper,
-                          DomTreeState);
+                          Detachedness);
   bool Contains(Traceable traceable) const {
     return graph_nodes_.Contains(traceable);
   }
@@ -125,15 +115,14 @@ v8::EmbedderGraph::Node* NodeBuilder::GraphNode(
 EmbedderNode* NodeBuilder::GraphNode(Traceable traceable,
                                      const char* name,
                                      v8::EmbedderGraph::Node* wrapper,
-                                     DomTreeState dom_tree_state) {
+                                     Detachedness detachedness) {
   auto iter = graph_nodes_.find(traceable);
   if (iter != graph_nodes_.end()) {
-    iter->value->UpdateDomTreeState(dom_tree_state);
     return iter->value;
   }
   // Ownership of the new node is transferred to the graph_.
   // graph_node_.at(tracable) is valid for all BuildEmbedderGraph execution.
-  auto* raw_node = new EmbedderNode(name, wrapper, dom_tree_state);
+  auto* raw_node = new EmbedderNode(name, wrapper, detachedness);
   EmbedderNode* node = static_cast<EmbedderNode*>(
       graph_->AddNode(std::unique_ptr<Graph::Node>(raw_node)));
   graph_nodes_.insert(traceable, node);
@@ -142,7 +131,7 @@ EmbedderNode* NodeBuilder::GraphNode(Traceable traceable,
 
 // V8EmbedderGraphBuilder is used to build heap snapshots of Blink's managed
 // object graph. On a high level, the following operations are performed:
-// - Objects are classified as attached, detached, or unknown.
+// - Node objects are classified as attached, detached, or unknown.
 // - Depending an implicit mode, objects are classified as relevant or internal.
 //   This classification happens based on NameTrait and the fact that all
 //   ScriptWrappable objects (those that can have JS properties) are using that
@@ -207,10 +196,9 @@ class GC_PLUGIN_IGNORE(
     USING_FAST_MALLOC(State);
 
    public:
-    State(Traceable traceable, const char* name, DomTreeState dom_tree_state)
-        : traceable_(traceable), name_(name), dom_tree_state_(dom_tree_state) {}
-    explicit State(EmbedderNode* node)
-        : node_(node), dom_tree_state_(node->GetDomTreeState()) {}
+    State(Traceable traceable, const char* name, Detachedness detachedness)
+        : traceable_(traceable), name_(name) {}
+    explicit State(EmbedderNode* node) : node_(node) {}
 
     bool IsVisited() const { return visited_; }
     void MarkVisited() { visited_ = true; }
@@ -223,21 +211,10 @@ class GC_PLUGIN_IGNORE(
     EmbedderNode* GetOrCreateNode(NodeBuilder* builder) {
       if (!node_) {
         DCHECK(name_);
-        node_ = builder->GraphNode(traceable_, name_, nullptr, dom_tree_state_);
+        node_ = builder->GraphNode(traceable_, name_, nullptr,
+                                   Detachedness::kUnknown);
       }
       return node_;
-    }
-
-    DomTreeState GetDomTreeState() const { return dom_tree_state_; }
-    void UpdateDomTreeState(DomTreeState parent_dom_tree_state) {
-      // If the child's state is unknown, then take the parent's state.
-      // If the parent is attached, then the child is also attached.
-      if (dom_tree_state_ == DomTreeState::kUnknown ||
-          parent_dom_tree_state == DomTreeState::kAttached) {
-        dom_tree_state_ = parent_dom_tree_state;
-      }
-      if (node_)
-        node_->UpdateDomTreeState(dom_tree_state_);
     }
 
     void AddEdge(State* destination, std::string edge_name) {
@@ -262,7 +239,6 @@ class GC_PLUGIN_IGNORE(
     EmbedderNode* node_ = nullptr;
     Traceable traceable_ = nullptr;
     const char* name_ = nullptr;
-    DomTreeState dom_tree_state_;
     HashMap<State* /*destination*/, std::string> named_edges_;
     bool visited_ = false;
     bool pending_ = false;
@@ -360,9 +336,9 @@ class GC_PLUGIN_IGNORE(
 
   State* GetOrCreateState(Traceable traceable,
                           const char* name,
-                          DomTreeState dom_tree_state) {
+                          Detachedness detachedness) {
     if (!states_.Contains(traceable)) {
-      states_.insert(traceable, new State(traceable, name, dom_tree_state));
+      states_.insert(traceable, new State(traceable, name, detachedness));
     }
     return states_.at(traceable);
   }
@@ -436,14 +412,8 @@ class GC_PLUGIN_IGNORE(
 
   Traceable current_parent_ = nullptr;
   HashMap<Traceable, State*> states_;
-  // The default worklist that is used to visit transitive closure.
+  // Worklist that is used to visit transitive closure.
   Deque<std::unique_ptr<WorklistItemBase>> worklist_;
-  // The worklist that collects detached Nodes during persistent handle
-  // iteration.
-  Deque<std::unique_ptr<VisitationItem>> detached_worklist_;
-  // The worklist that collects ScriptWrappables with unknown information
-  // about attached/detached state during persistent handle iteration.
-  Deque<std::unique_ptr<VisitationItem>> unknown_worklist_;
   // The worklist that collects Ephemeron entries for later processing.
   Deque<std::unique_ptr<EphemeronItem>> ephemeron_worklist_;
 };
@@ -471,56 +441,10 @@ void V8EmbedderGraphBuilder::BuildEmbedderGraph() {
   v8::EmbedderHeapTracer* const tracer = static_cast<v8::EmbedderHeapTracer*>(
       ThreadState::Current()->unified_heap_controller());
   tracer->IterateTracedGlobalHandles(this);
-// At this point we collected ScriptWrappables in three groups:
-// attached, detached, and unknown.
-#if DCHECK_IS_ON()
-  for (auto const& item : worklist_) {
-    DCHECK_EQ(DomTreeState::kAttached, item->to_process()->GetDomTreeState());
-  }
-  for (auto const& item : detached_worklist_) {
-    DCHECK_EQ(DomTreeState::kDetached, item->to_process()->GetDomTreeState());
-  }
-  for (auto const& item : unknown_worklist_) {
-    DCHECK_EQ(DomTreeState::kUnknown, item->to_process()->GetDomTreeState());
-  }
-#endif
-  // We need to propagate attached/detached information to ScriptWrappables
-  // with the unknown state. The information propagates from a parent to
-  // a child as follows:
-  // - if the parent is attached, then the child is considered attached.
-  // - if the parent is detached and the child is unknown, then the child is
-  //   considered detached.
-  // - if the parent is unknown, then the state of the child does not change.
-  //
-  // We need to organize DOM traversal in three stages to ensure correct
-  // propagation:
-  // 1) Traverse from the attached nodes. All nodes discovered in this stage
-  //    will be marked as kAttached.
-  // 2) Traverse from the detached nodes. All nodes discovered in this stage
-  //    will be marked as kDetached if they are not already marked as kAttached.
-  // 3) Traverse from the unknown nodes. This is needed only for edge recording.
-  // Stage 1: find transitive closure of the attached nodes.
-  VisitTransitiveClosure();
-  // Stage 2: find transitive closure of the detached nodes.
-  while (!detached_worklist_.empty()) {
-    auto item = std::move(detached_worklist_.back());
-    detached_worklist_.pop_back();
-    PushVisitationItem(std::move(item));
-  }
-  VisitTransitiveClosure();
-  // Stage 3: find transitive closure of the unknown nodes.
-  // Nodes reachable only via pending activities are treated as unknown.
-  VisitPendingActivities();
   VisitBlinkRoots();
-  while (!unknown_worklist_.empty()) {
-    auto item = std::move(unknown_worklist_.back());
-    unknown_worklist_.pop_back();
-    PushVisitationItem(std::move(item));
-  }
+  VisitPendingActivities();
   VisitTransitiveClosure();
   DCHECK(worklist_.empty());
-  DCHECK(detached_worklist_.empty());
-  DCHECK(unknown_worklist_.empty());
   // ephemeron_worklist_ might not be empty. We might have an ephemeron whose
   // key is alive but was never observed by the snapshot (e.g. objects pointed
   // to by the stack). Such entries will remain in the worklist.
@@ -536,32 +460,17 @@ void V8EmbedderGraphBuilder::VisitPersistentHandleInternal(
   if (!traceable)
     return;
   Graph::Node* wrapper = node_builder_->GraphNode(v8_value);
-  DomTreeState dom_tree_state =
-      DomTreeStateFromWrapper(isolate_, class_id, v8_value);
+  auto detachedness = DetachednessFromWrapper(isolate_, class_id, v8_value);
   EmbedderNode* graph_node = node_builder_->GraphNode(
-      traceable, traceable->NameInHeapSnapshot(), wrapper, dom_tree_state);
+      traceable, traceable->NameInHeapSnapshot(), wrapper, detachedness);
   State* const to_process_state = EnsureState(traceable, graph_node);
   if (to_process_state->IsVisited()) {
     return;
   }
   const TraceDescriptor& descriptor =
       TraceDescriptorFor<ScriptWrappable>(traceable);
-  switch (graph_node->GetDomTreeState()) {
-    case DomTreeState::kAttached:
-      CreateAndPushVisitationItem(nullptr, to_process_state, traceable,
-                                  descriptor.callback);
-      break;
-    case DomTreeState::kDetached:
-      detached_worklist_.push_back(
-          std::unique_ptr<VisitationItem>{new VisitationItem(
-              nullptr, to_process_state, traceable, descriptor.callback)});
-      break;
-    case DomTreeState::kUnknown:
-      unknown_worklist_.push_back(
-          std::unique_ptr<VisitationItem>{new VisitationItem(
-              nullptr, to_process_state, traceable, descriptor.callback)});
-      break;
-  }
+  CreateAndPushVisitationItem(nullptr, to_process_state, traceable,
+                              descriptor.callback);
 }
 
 void V8EmbedderGraphBuilder::VisitTracedReference(
@@ -609,7 +518,7 @@ void V8EmbedderGraphBuilder::VisitRoot(const void* object,
     State* const parent = GetStateNotNull(current_parent_);
     State* const current = GetOrCreateState(
         traceable, HeapObjectHeader::FromPayload(traceable)->Name(),
-        parent->GetDomTreeState());
+        Detachedness::kUnknown);
     parent->AddRootEdge(current, location.ToString());
   }
   Visit(object, wrapper_descriptor);
@@ -624,7 +533,7 @@ void V8EmbedderGraphBuilder::Visit(const void* object,
 
   State* const parent = GetStateNotNull(current_parent_);
   State* const current =
-      GetOrCreateState(traceable, name.value, parent->GetDomTreeState());
+      GetOrCreateState(traceable, name.value, Detachedness::kUnknown);
   if (current->IsPending()) {
     if (parent->HasNode()) {
       // Backedge in currently processed graph.
@@ -637,9 +546,6 @@ void V8EmbedderGraphBuilder::Visit(const void* object,
   if (!name.name_is_hidden) {
     current->GetOrCreateNode(node_builder_);
   }
-
-  // Propagate the parent's DomTreeState down to the current state.
-  current->UpdateDomTreeState(parent->GetDomTreeState());
 
   if (!current->IsVisited()) {
     CreateAndPushVisitationItem(parent, current, traceable, info.trace);
@@ -695,8 +601,8 @@ void V8EmbedderGraphBuilder::VisitEphemeron(
     const void* key,
     const void* value,
     TraceCallback value_trace_callback) {
-  ephemeron_worklist_.push_back(std::unique_ptr<EphemeronItem>{
-      new EphemeronItem(key, value, value_trace_callback)});
+  ephemeron_worklist_.push_back(
+      std::make_unique<EphemeronItem>(key, value, value_trace_callback));
 }
 
 void V8EmbedderGraphBuilder::VisitPendingActivities() {
