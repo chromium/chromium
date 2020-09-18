@@ -999,6 +999,15 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_GET_STARTED_BUTTON" desc="Get started button on the onboarding dialog for user to opt in this feature and start the consent flow.">
         Get started
       </message>
+      <message name="IDS_ASH_PHONE_HUB_INITIAL_CONNECTING_DIALOG_TITLE" desc="The title of the initial connecting dialog that indicates the device is trying to connect to your phone after the user has opted in the Phone Hub feature.">
+        Connecting to your phone...
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_INITIAL_CONNECTING_DIALOG_DESCRIPTION" desc="The description of the onboarding dialog that indicates the device is trying to connect to your phone after the user has opted in the Phone Hub feature." translateable="false">
+        Make sure your phone is nearby with Bluetooth and Wi-Fi turned on.
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_INITIAL_CONNECTING_DIALOG_CANCEL_BUTTON" desc="Cancel button on the initial connecting dialog to cancel the connection attempt to your phone.">
+        Cancel
+      </message>
 
       <message name="IDS_ASH_STYLUS_TOOLS_CAPTURE_REGION_ACTION" desc="Title of the capture region action in the stylus tools (a pop-up panel next to the status tray). This causes a partial screenshot to be taken (the user selects an area of the screen to take a screenshot of).">
         Capture region

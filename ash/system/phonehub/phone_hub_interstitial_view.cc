@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/unified/rounded_label_button.h"
 #include "base/strings/string16.h"
@@ -20,6 +22,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
 
@@ -37,6 +40,8 @@ constexpr int kVerticalPaddingDip = 20;
 constexpr int kTitleBottomPaddingDip = 10;
 constexpr int kButtonSpacingDip = 10;
 constexpr int kButtonContainerTopPaddingDip = 45;
+constexpr int kProgressBarHeightDip = 2;
+constexpr double kInfiniteLoadingProgressValue = -1.0;
 
 // Adds a ColumnSet on |layout| with a single View column and padding columns
 // on either side of it with |padding| width.
@@ -52,8 +57,8 @@ void AddColumnWithSidePadding(views::GridLayout* layout, int padding, int id) {
 
 }  // namespace
 
-PhoneHubInterstitialView::PhoneHubInterstitialView() {
-  InitLayout();
+PhoneHubInterstitialView::PhoneHubInterstitialView(bool show_progress) {
+  InitLayout(show_progress);
 }
 
 PhoneHubInterstitialView::~PhoneHubInterstitialView() = default;
@@ -76,29 +81,47 @@ void PhoneHubInterstitialView::SetDescription(const base::string16& desc) {
   description_->SetText(desc);
 }
 
-void PhoneHubInterstitialView::SetButtons(
-    const std::vector<views::Button*>& buttons) {
-  for (auto* button : buttons)
-    button_container_->AddChildView(std::move(button));
+void PhoneHubInterstitialView::AddButton(
+    std::unique_ptr<views::Button> button) {
+  button_container_->AddChildView(std::move(button));
 }
 
-void PhoneHubInterstitialView::InitLayout() {
+void PhoneHubInterstitialView::InitLayout(bool show_progress) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
   // Set up layout column.
   views::GridLayout* layout =
       SetLayoutManager(std::make_unique<views::GridLayout>());
-  const int kColumnSetId = 0;
-  AddColumnWithSidePadding(layout, kHorizontalPaddingDip, kColumnSetId);
+  const int kFirstColumnSetId = 0;
+  // Set up the first column set to layout the progressing bar if needed.
+  views::ColumnSet* column_set = layout->AddColumnSet(kFirstColumnSetId);
+  column_set->AddColumn(views::GridLayout::Alignment::FILL,
+                        views::GridLayout::CENTER, 1,
+                        views::GridLayout::ColumnSize::kFixed, 0, 0);
+  // Set up the second column set with horizontal paddings to layout the image,
+  // text and buttons.
+  const int kSecondColumnSetId = 1;
+  AddColumnWithSidePadding(layout, kHorizontalPaddingDip, kSecondColumnSetId);
+
+  if (show_progress) {
+    // Set up layout row for the progress bar if |show_progess| is true.
+    layout->StartRow(views::GridLayout::kFixedSize, kFirstColumnSetId);
+    progress_bar_ = layout->AddView(
+        std::make_unique<views::ProgressBar>(kProgressBarHeightDip));
+    progress_bar_->SetForegroundColor(
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconColorProminent));
+    progress_bar_->SetValue(kInfiniteLoadingProgressValue);
+  }
 
   // Set up layout row for the image view.
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
+  layout->StartRow(views::GridLayout::kFixedSize, kSecondColumnSetId);
   image_ = layout->AddView(std::make_unique<views::ImageView>());
   image_->SetImageSize(gfx::Size(kImageWidthDip, kImageHeightDip));
 
   // Set up layout row for the title view, which should be left-aligned.
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
+  layout->StartRow(views::GridLayout::kFixedSize, kSecondColumnSetId);
   title_ =
       layout->AddView(std::make_unique<views::Label>(), 1, 1,
                       views::GridLayout::LEADING, views::GridLayout::CENTER);
@@ -106,7 +129,7 @@ void PhoneHubInterstitialView::InitLayout() {
   title_style.SetupLabel(title_);
 
   // Set up layout row for the multi-line description view.
-  layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnSetId,
+  layout->StartRowWithPadding(views::GridLayout::kFixedSize, kSecondColumnSetId,
                               views::GridLayout::kFixedSize,
                               kTitleBottomPaddingDip);
   description_ = layout->AddView(std::make_unique<views::Label>());
@@ -118,7 +141,7 @@ void PhoneHubInterstitialView::InitLayout() {
 
   // Set up the layout row for the button container view, which should be
   // right-aligned.
-  layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnSetId,
+  layout->StartRowWithPadding(views::GridLayout::kFixedSize, kSecondColumnSetId,
                               views::GridLayout::kFixedSize,
                               kButtonContainerTopPaddingDip);
   button_container_ =

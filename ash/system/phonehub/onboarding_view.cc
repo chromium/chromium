@@ -32,10 +32,10 @@ constexpr int kGetStartedTag = 2;
 
 OnboardingView::OnboardingView() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  content_view_ = AddChildView(std::make_unique<PhoneHubInterstitialView>());
+  content_view_ = AddChildView(
+      std::make_unique<PhoneHubInterstitialView>(/*show_progress=*/true));
 
-  // TODO(meilinw): Replace PNG file with vector icon. See
-  // https://crbug.com/1127996.
+  // TODO(crbug.com/1127996): Replace PNG file with vector icon.
   gfx::ImageSkia* image =
       ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
           IDR_PHONE_HUB_ONBOARDING_IMAGE);
@@ -46,18 +46,19 @@ OnboardingView::OnboardingView() {
       IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DESCRIPTION));
 
   // Add "Dismiss" and "Get started" buttons.
-  auto* dismiss = new views::LabelButton(
+  auto dismiss = std::make_unique<views::LabelButton>(
       this, l10n_util::GetStringUTF16(
                 IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DISMISS_BUTTON));
   dismiss->SetEnabledTextColors(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
   dismiss->set_tag(kDismissButtonTag);
+  content_view_->AddButton(std::move(dismiss));
 
-  auto* get_started = new RoundedLabelButton(
+  auto get_started = std::make_unique<RoundedLabelButton>(
       this, l10n_util::GetStringUTF16(
                 IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_GET_STARTED_BUTTON));
   get_started->set_tag(kGetStartedTag);
-  content_view_->SetButtons({std::move(dismiss), std::move(get_started)});
+  content_view_->AddButton(std::move(get_started));
 }
 
 OnboardingView::~OnboardingView() = default;
