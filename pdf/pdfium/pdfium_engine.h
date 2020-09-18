@@ -62,6 +62,7 @@ class PDFiumEngine : public PDFEngine,
   // Exposed for testing.
   enum class FocusElementType { kNone, kDocument, kPage };
 
+  // NOTE: |enable_javascript| is ignored when PDF_ENABLE_V8 is not defined.
   PDFiumEngine(PDFEngine::Client* client, bool enable_javascript);
   PDFiumEngine(const PDFiumEngine&) = delete;
   PDFiumEngine& operator=(const PDFiumEngine&) = delete;

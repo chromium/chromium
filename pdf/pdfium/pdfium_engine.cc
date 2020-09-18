@@ -222,6 +222,7 @@ bool FindMultipleClickBoundary(bool is_double_click, base::char16 cur) {
   return false;
 }
 
+#if defined(PDF_ENABLE_V8)
 gin::IsolateHolder* g_isolate_holder = nullptr;
 
 bool IsV8Initialized() {
@@ -247,6 +248,7 @@ void TearDownV8() {
   delete g_isolate_holder;
   g_isolate_holder = nullptr;
 }
+#endif  // defined(PDF_ENABLE_V8)
 
 // Returns true if the given |area| and |form_type| combination from
 // PDFiumEngine::GetCharIndex() indicates it is a form text area.
@@ -396,7 +398,11 @@ void InitializeSDK(bool enable_v8) {
   FPDF_LIBRARY_CONFIG config;
   config.version = 3;
   config.m_pUserFontPaths = nullptr;
+  config.m_pIsolate = nullptr;
+  config.m_pPlatform = nullptr;
+  config.m_v8EmbedderSlot = gin::kEmbedderPDFium;
 
+#if defined(PDF_ENABLE_V8)
   if (enable_v8) {
     SetUpV8();
     config.m_pIsolate = v8::Isolate::GetCurrent();
@@ -404,11 +410,9 @@ void InitializeSDK(bool enable_v8) {
     // will manipulate the pointer value should gin::V8Platform someday have
     // multiple base classes.
     config.m_pPlatform = static_cast<v8::Platform*>(gin::V8Platform::Get());
-  } else {
-    config.m_pIsolate = nullptr;
-    config.m_pPlatform = nullptr;
   }
-  config.m_v8EmbedderSlot = gin::kEmbedderPDFium;
+#endif  // defined(PDF_ENABLE_V8)
+
   FPDF_InitLibraryWithConfig(&config);
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -420,8 +424,10 @@ void InitializeSDK(bool enable_v8) {
 
 void ShutdownSDK() {
   FPDF_DestroyLibrary();
+#if defined(PDF_ENABLE_V8)
   if (IsV8Initialized())
     TearDownV8();
+#endif  // defined(PDF_ENABLE_V8)
 }
 
 PDFEngine::AccessibilityLinkInfo::AccessibilityLinkInfo() = default;
@@ -458,8 +464,10 @@ PDFiumEngine::PDFiumEngine(PDFEngine::Client* client, bool enable_javascript)
       mouse_down_state_(PDFiumPage::NONSELECTABLE_AREA,
                         PDFiumPage::LinkTarget()),
       print_(this) {
+#if defined(PDF_ENABLE_V8)
   if (enable_javascript)
     DCHECK(IsV8Initialized());
+#endif  // defined(PDF_ENABLE_V8)
 
   IFSDK_PAUSE::version = 1;
   IFSDK_PAUSE::user = nullptr;

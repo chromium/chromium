@@ -19,6 +19,7 @@ class PDFiumEngine;
 
 class PDFiumFormFiller : public FPDF_FORMFILLINFO, public IPDF_JSPLATFORM {
  public:
+  // NOTE: |enable_javascript| is ignored when PDF_ENABLE_V8 is not defined.
   PDFiumFormFiller(PDFiumEngine* engine, bool enable_javascript);
   PDFiumFormFiller(const PDFiumFormFiller&) = delete;
   PDFiumFormFiller& operator=(const PDFiumFormFiller&) = delete;
