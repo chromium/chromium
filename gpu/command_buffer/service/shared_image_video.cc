@@ -229,7 +229,8 @@ class SharedImageRepresentationVideoSkiaVk
       int final_msaa_count,
       const SkSurfaceProps& surface_props,
       std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphores) override {
+      std::vector<GrBackendSemaphore>* end_semaphores,
+      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
     // Writes are not intended to used for video backed representations.
     NOTIMPLEMENTED();
     return nullptr;
@@ -239,7 +240,8 @@ class SharedImageRepresentationVideoSkiaVk
 
   sk_sp<SkPromiseImageTexture> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphores) override {
+      std::vector<GrBackendSemaphore>* end_semaphores,
+      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
     DCHECK(!scoped_hardware_buffer_);
     auto* video_backing = static_cast<SharedImageVideo*>(backing());
     DCHECK(video_backing);
@@ -288,7 +290,7 @@ class SharedImageRepresentationVideoSkiaVk
     }
 
     return SharedImageRepresentationSkiaVkAndroid::BeginReadAccess(
-        begin_semaphores, end_semaphores);
+        begin_semaphores, end_semaphores, end_state);
   }
 
   void EndReadAccess() override {
