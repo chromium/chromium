@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -65,6 +66,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operations.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "ui/base/ui_base_features.h"
 
 namespace blink {
 
@@ -72,6 +74,22 @@ namespace {
 
 bool IsOverflowClipOrVisible(EOverflow overflow) {
   return overflow == EOverflow::kClip || overflow == EOverflow::kVisible;
+}
+
+bool IsEditableElement(Element* element, const ComputedStyle& style) {
+  if (style.UserModify() != EUserModify::kReadOnly)
+    return true;
+
+  if (!element)
+    return false;
+
+  if (auto* textarea = DynamicTo<HTMLTextAreaElement>(*element))
+    return !textarea->IsDisabledOrReadOnly();
+
+  if (auto* input = DynamicTo<HTMLInputElement>(*element))
+    return !input->IsDisabledOrReadOnly() && input->IsTextField();
+
+  return false;
 }
 
 TouchAction AdjustTouchActionForElement(TouchAction touch_action,
@@ -571,6 +589,13 @@ static void AdjustEffectiveTouchAction(ComputedStyle& style,
   TouchAction enforced_by_policy = TouchAction::kNone;
   if (element->GetDocument().IsVerticalScrollEnforced())
     enforced_by_policy = TouchAction::kPanY;
+  if (base::FeatureList::IsEnabled(::features::kSwipeToMoveCursor) &&
+      IsEditableElement(element, style)) {
+    EventHandlerRegistry& registry =
+        element->GetDocument().GetFrame()->GetEventHandlerRegistry();
+    registry.DidAddEventHandler(
+        *element, EventHandlerRegistry::kTouchStartOrMoveEventBlocking);
+  }
 
   // Apply the adjusted parent effective touch actions.
   style.SetEffectiveTouchAction((element_touch_action & inherited_action) |

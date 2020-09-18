@@ -255,4 +255,7 @@ const char kPredictorNameEmpty[] = "empty";
 const char kFilterNameEmpty[] = "empty_filter";
 const char kFilterNameOneEuro[] = "one_euro_filter";
 
+const base::Feature kSwipeToMoveCursor{"SwipeToMoveCursor",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features

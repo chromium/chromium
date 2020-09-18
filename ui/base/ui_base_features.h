@@ -142,6 +142,10 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) extern const char kPredictorNameEmpty[];
 COMPONENT_EXPORT(UI_BASE_FEATURES) extern const char kFilterNameEmpty[];
 COMPONENT_EXPORT(UI_BASE_FEATURES) extern const char kFilterNameOneEuro[];
 
+// Android only feature, for swipe to move cursor.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const base::Feature kSwipeToMoveCursor;
+
 }  // namespace features
 
 #endif  // UI_BASE_UI_BASE_FEATURES_H_

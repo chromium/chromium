@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "ui/base/ui_base_features.h"
 
 namespace blink {
 
@@ -156,6 +159,78 @@ TEST_F(StyleAdjusterTest, AdjustOverflow) {
   ASSERT_TRUE(target);
   EXPECT_EQ(EOverflow::kHidden, target->GetComputedStyle()->OverflowX());
   EXPECT_EQ(EOverflow::kAuto, target->GetComputedStyle()->OverflowY());
+}
+
+TEST_F(StyleAdjusterTest, SetListenerForContentEditableArea) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({::features::kSwipeToMoveCursor}, {});
+  ASSERT_TRUE(base::FeatureList::IsEnabled(::features::kSwipeToMoveCursor));
+
+  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
+  SetBodyInnerHTML(R"HTML(
+    <div id='target' contenteditable='false'></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  EventHandlerRegistry& registry =
+      GetDocument().GetFrame()->GetEventHandlerRegistry();
+
+  Element* target = GetDocument().getElementById("target");
+  EXPECT_FALSE(registry.HasEventHandlers(
+      EventHandlerRegistry::kTouchStartOrMoveEventBlocking));
+
+  target->setAttribute(html_names::kContenteditableAttr, "true");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(registry.HasEventHandlers(
+      EventHandlerRegistry::kTouchStartOrMoveEventBlocking));
+}
+
+TEST_F(StyleAdjusterTest, SetListenerForInputElement) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({::features::kSwipeToMoveCursor}, {});
+  ASSERT_TRUE(base::FeatureList::IsEnabled(::features::kSwipeToMoveCursor));
+
+  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
+  SetBodyInnerHTML(R"HTML(
+    <input type="text" id='target' disabled>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  EventHandlerRegistry& registry =
+      GetDocument().GetFrame()->GetEventHandlerRegistry();
+
+  Element* target = GetDocument().getElementById("target");
+  EXPECT_FALSE(registry.HasEventHandlers(
+      EventHandlerRegistry::kTouchStartOrMoveEventBlocking));
+
+  target->removeAttribute(html_names::kDisabledAttr);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(registry.HasEventHandlers(
+      EventHandlerRegistry::kTouchStartOrMoveEventBlocking));
+}
+
+TEST_F(StyleAdjusterTest, SetListenerForTextAreaElement) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({::features::kSwipeToMoveCursor}, {});
+  ASSERT_TRUE(base::FeatureList::IsEnabled(::features::kSwipeToMoveCursor));
+
+  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
+  SetBodyInnerHTML(R"HTML(
+    <textarea id="target" readonly></textarea>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  EventHandlerRegistry& registry =
+      GetDocument().GetFrame()->GetEventHandlerRegistry();
+
+  Element* target = GetDocument().getElementById("target");
+  EXPECT_FALSE(registry.HasEventHandlers(
+      EventHandlerRegistry::kTouchStartOrMoveEventBlocking));
+
+  target->removeAttribute(html_names::kReadonlyAttr);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(registry.HasEventHandlers(
+      EventHandlerRegistry::kTouchStartOrMoveEventBlocking));
 }
 
 }  // namespace blink
