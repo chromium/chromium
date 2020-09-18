@@ -2746,7 +2746,7 @@ class KioskVirtualKeyboardTest : public KioskTest,
 };
 
 // Flaky. crbug.com/1094809
-IN_PROC_BROWSER_TEST_F(KioskVirtualKeyboardTest, DISABLED_RestrictFeatures) {
+IN_PROC_BROWSER_TEST_F(KioskVirtualKeyboardTest, RestrictFeatures) {
   set_test_app_id(kTestVirtualKeyboardKioskApp);
   set_test_app_version("0.1");
   set_test_crx_file(test_app_id() + ".crx");
