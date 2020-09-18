@@ -28,8 +28,9 @@ std::string WideStringToString(FPDF_WIDESTRING wide_string) {
 
 }  // namespace
 
-PDFiumFormFiller::PDFiumFormFiller(PDFiumEngine* engine, bool enable_javascript)
-    : engine_(engine) {
+PDFiumFormFiller::PDFiumFormFiller(PDFiumEngine* engine,
+                                   ScriptOption script_option)
+    : engine_(engine), script_option_(script_option) {
   // Initialize FPDF_FORMFILLINFO member variables.  Deriving from this struct
   // allows the static callbacks to be able to cast the FPDF_FORMFILLINFO in
   // callbacks to ourself instead of maintaining a map of them to
@@ -72,7 +73,7 @@ PDFiumFormFiller::PDFiumFormFiller(PDFiumEngine* engine, bool enable_javascript)
   FPDF_FORMFILLINFO::m_pJsPlatform = nullptr;
 
 #if defined(PDF_ENABLE_V8)
-  if (enable_javascript) {
+  if (script_option != ScriptOption::kNoJavaScript) {
     FPDF_FORMFILLINFO::m_pJsPlatform = this;
     IPDF_JSPLATFORM::version = 3;
     IPDF_JSPLATFORM::app_alert = Form_Alert;
@@ -86,22 +87,24 @@ PDFiumFormFiller::PDFiumFormFiller(PDFiumEngine* engine, bool enable_javascript)
     IPDF_JSPLATFORM::Field_browse = nullptr;
   }
 #if defined(PDF_ENABLE_XFA)
-  FPDF_FORMFILLINFO::xfa_disabled = false;
-  FPDF_FORMFILLINFO::FFI_EmailTo = Form_EmailTo;
-  FPDF_FORMFILLINFO::FFI_DisplayCaret = Form_DisplayCaret;
-  FPDF_FORMFILLINFO::FFI_SetCurrentPage = Form_SetCurrentPage;
-  FPDF_FORMFILLINFO::FFI_GetCurrentPageIndex = Form_GetCurrentPageIndex;
-  FPDF_FORMFILLINFO::FFI_GetPageViewRect = Form_GetPageViewRect;
-  FPDF_FORMFILLINFO::FFI_GetPlatform = Form_GetPlatform;
-  FPDF_FORMFILLINFO::FFI_PageEvent = Form_PageEvent;
-  FPDF_FORMFILLINFO::FFI_PopupMenu = Form_PopupMenu;
-  FPDF_FORMFILLINFO::FFI_PostRequestURL = Form_PostRequestURL;
-  FPDF_FORMFILLINFO::FFI_PutRequestURL = Form_PutRequestURL;
-  FPDF_FORMFILLINFO::FFI_UploadTo = Form_UploadTo;
-  FPDF_FORMFILLINFO::FFI_DownloadFromURL = Form_DownloadFromURL;
-  FPDF_FORMFILLINFO::FFI_OpenFile = Form_OpenFile;
-  FPDF_FORMFILLINFO::FFI_GotoURL = Form_GotoURL;
-  FPDF_FORMFILLINFO::FFI_GetLanguage = Form_GetLanguage;
+  if (script_option == ScriptOption::kJavaScriptAndXFA) {
+    FPDF_FORMFILLINFO::xfa_disabled = false;
+    FPDF_FORMFILLINFO::FFI_EmailTo = Form_EmailTo;
+    FPDF_FORMFILLINFO::FFI_DisplayCaret = Form_DisplayCaret;
+    FPDF_FORMFILLINFO::FFI_SetCurrentPage = Form_SetCurrentPage;
+    FPDF_FORMFILLINFO::FFI_GetCurrentPageIndex = Form_GetCurrentPageIndex;
+    FPDF_FORMFILLINFO::FFI_GetPageViewRect = Form_GetPageViewRect;
+    FPDF_FORMFILLINFO::FFI_GetPlatform = Form_GetPlatform;
+    FPDF_FORMFILLINFO::FFI_PageEvent = Form_PageEvent;
+    FPDF_FORMFILLINFO::FFI_PopupMenu = Form_PopupMenu;
+    FPDF_FORMFILLINFO::FFI_PostRequestURL = Form_PostRequestURL;
+    FPDF_FORMFILLINFO::FFI_PutRequestURL = Form_PutRequestURL;
+    FPDF_FORMFILLINFO::FFI_UploadTo = Form_UploadTo;
+    FPDF_FORMFILLINFO::FFI_DownloadFromURL = Form_DownloadFromURL;
+    FPDF_FORMFILLINFO::FFI_OpenFile = Form_OpenFile;
+    FPDF_FORMFILLINFO::FFI_GotoURL = Form_GotoURL;
+    FPDF_FORMFILLINFO::FFI_GetLanguage = Form_GetLanguage;
+  }
 #endif  // defined(PDF_ENABLE_XFA)
 #endif  // defined(PDF_ENABLE_V8)
 }

@@ -109,7 +109,7 @@ bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
   initial_params_ = {};
 
   PerProcessInitializer::GetInstance().Acquire();
-  InitializeEngine(/*enable_javascript=*/false);
+  InitializeEngine(PDFiumFormFiller::ScriptOption::kNoJavaScript);
   LoadUrl(stream_url, /*is_print_preview=*/false);
   return true;
 }

@@ -455,6 +455,14 @@ bool IsSaveDataSizeValid(size_t size) {
   return size > 0 && size <= kMaximumSavedFileSize;
 }
 
+PDFiumFormFiller::ScriptOption DefaultScriptOption() {
+#if defined(PDF_ENABLE_XFA)
+  return PDFiumFormFiller::ScriptOption::kJavaScriptAndXFA;
+#else   // defined(PDF_ENABLE_XFA)
+  return PDFiumFormFiller::ScriptOption::kJavaScript;
+#endif  // defined(PDF_ENABLE_XFA)
+}
+
 }  // namespace
 
 OutOfProcessInstance::OutOfProcessInstance(PP_Instance instance)
@@ -512,7 +520,7 @@ bool OutOfProcessInstance::Init(uint32_t argc,
 
   text_input_ = std::make_unique<pp::TextInput_Dev>(this);
 
-  bool enable_javascript = true;
+  PDFiumFormFiller::ScriptOption script_option = DefaultScriptOption();
   bool has_edits = false;
   const char* stream_url = nullptr;
   const char* original_url = nullptr;
@@ -534,8 +542,10 @@ bool OutOfProcessInstance::Init(uint32_t argc,
       success =
           base::StringToInt(argv[i], &top_toolbar_height_in_viewport_coords_);
     } else if (strcmp(argn[i], "javascript") == 0) {
-      if (base::FeatureList::IsEnabled(features::kPdfHonorJsContentSettings))
-        enable_javascript = (strcmp(argv[i], "allow") == 0);
+      if (base::FeatureList::IsEnabled(features::kPdfHonorJsContentSettings)) {
+        if (strcmp(argv[i], "allow") != 0)
+          script_option = PDFiumFormFiller::ScriptOption::kNoJavaScript;
+      }
     } else if (strcmp(argn[i], "has-edits") == 0) {
       has_edits = true;
     }
@@ -549,7 +559,7 @@ bool OutOfProcessInstance::Init(uint32_t argc,
   if (!stream_url)
     stream_url = original_url;
 
-  InitializeEngine(enable_javascript);
+  InitializeEngine(script_option);
 
   // If we're in print preview mode we don't need to load the document yet.
   // A |kJSResetPrintPreviewModeType| message will be sent to the plugin letting
@@ -1092,9 +1102,8 @@ void OutOfProcessInstance::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
                                           int32_t result) {
   if (result == PP_OK) {
     preview_client_ = std::make_unique<PreviewModeClient>(this);
-    preview_engine_ =
-        std::make_unique<PDFiumEngine>(preview_client_.get(),
-                                       /*enable_javascript=*/false);
+    preview_engine_ = std::make_unique<PDFiumEngine>(
+        preview_client_.get(), PDFiumFormFiller::ScriptOption::kNoJavaScript);
     preview_engine_->HandleDocumentLoad(std::move(loader));
   } else {
     NOTREACHED();
@@ -1718,7 +1727,7 @@ void OutOfProcessInstance::HandleResetPrintPreviewModeMessage(
   document_load_state_ = LOAD_STATE_LOADING;
   LoadUrl(url_, /*is_print_preview=*/false);
   preview_engine_.reset();
-  InitializeEngine(/*enable_javascript=*/false);
+  InitializeEngine(PDFiumFormFiller::ScriptOption::kNoJavaScript);
   engine()->SetGrayscale(dict.Get(pp::Var(kJSPrintPreviewGrayscale)).AsBool());
   engine()->New(url_.c_str(), /*headers=*/nullptr);
 

@@ -13,6 +13,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "pdf/pdfium/pdfium_form_filler.h"
 
 namespace chrome_pdf {
 
@@ -30,11 +31,8 @@ class PdfViewPluginBase : public PDFEngine::Client {
   PdfViewPluginBase();
   ~PdfViewPluginBase() override;
 
-  // Initializes the main `PDFiumEngine`. If `enable_javascript` is true, the
-  // engine will support executing JavaScript.
-  //
-  // Any existing engine will be replaced.
-  void InitializeEngine(bool enable_javascript);
+  // Initializes the main `PDFiumEngine`. Any existing engine will be replaced.
+  void InitializeEngine(PDFiumFormFiller::ScriptOption script_option);
 
   // Destroys the main `PDFiumEngine`. Subclasses should call this method in
   // their destructor to ensure the engine is destroyed first.

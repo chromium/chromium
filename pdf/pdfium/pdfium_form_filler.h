@@ -19,11 +19,15 @@ class PDFiumEngine;
 
 class PDFiumFormFiller : public FPDF_FORMFILLINFO, public IPDF_JSPLATFORM {
  public:
-  // NOTE: |enable_javascript| is ignored when PDF_ENABLE_V8 is not defined.
-  PDFiumFormFiller(PDFiumEngine* engine, bool enable_javascript);
+  enum class ScriptOption { kNoJavaScript, kJavaScript, kJavaScriptAndXFA };
+
+  // NOTE: |script_option| is ignored when PDF_ENABLE_V8 is not defined.
+  PDFiumFormFiller(PDFiumEngine* engine, ScriptOption script_option);
   PDFiumFormFiller(const PDFiumFormFiller&) = delete;
   PDFiumFormFiller& operator=(const PDFiumFormFiller&) = delete;
   ~PDFiumFormFiller();
+
+  ScriptOption script_option() const { return script_option_; }
 
  private:
   friend class FormFillerTest;
@@ -191,7 +195,7 @@ class PDFiumFormFiller : public FPDF_FORMFILLINFO, public IPDF_JSPLATFORM {
   void KillTimer(int timer_id);
 
   PDFiumEngine* const engine_;
-
+  const ScriptOption script_option_;
   std::map<int, std::unique_ptr<base::RepeatingTimer>> timers_;
 };
 

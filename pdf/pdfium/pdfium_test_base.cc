@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "pdf/pdfium/pdfium_engine.h"
+#include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/test/test_client.h"
 #include "pdf/test/test_document_loader.h"
@@ -85,8 +86,8 @@ PDFiumTestBase::InitializeEngineWithoutLoading(
     const base::FilePath::CharType* pdf_name) {
   InitializeEngineResult result;
 
-  result.engine =
-      std::make_unique<PDFiumEngine>(client, /*enable_javascript=*/false);
+  result.engine = std::make_unique<PDFiumEngine>(
+      client, PDFiumFormFiller::ScriptOption::kNoJavaScript);
   client->set_engine(result.engine.get());
 
   auto test_loader =

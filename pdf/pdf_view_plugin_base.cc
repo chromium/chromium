@@ -20,8 +20,9 @@ PdfViewPluginBase::PdfViewPluginBase() = default;
 
 PdfViewPluginBase::~PdfViewPluginBase() = default;
 
-void PdfViewPluginBase::InitializeEngine(bool enable_javascript) {
-  engine_ = std::make_unique<PDFiumEngine>(this, enable_javascript);
+void PdfViewPluginBase::InitializeEngine(
+    PDFiumFormFiller::ScriptOption script_option) {
+  engine_ = std::make_unique<PDFiumEngine>(this, script_option);
 }
 
 void PdfViewPluginBase::DestroyEngine() {
