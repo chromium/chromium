@@ -8,6 +8,7 @@
 
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idle_options.h"
@@ -15,11 +16,11 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
-#include "third_party/blink/renderer/modules/idle/idle_manager.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+
 namespace blink {
 
 namespace {
@@ -40,7 +41,9 @@ IdleDetector* IdleDetector::Create(ScriptState* script_state) {
 }
 
 IdleDetector::IdleDetector(ExecutionContext* context)
-    : ExecutionContextClient(context), receiver_(this, context) {}
+    : ExecutionContextClient(context),
+      receiver_(this, context),
+      idle_service_(context) {}
 
 IdleDetector::~IdleDetector() = default;
 
@@ -80,17 +83,6 @@ String IdleDetector::screenState() const {
     case mojom::blink::ScreenIdleState::kUnlocked:
       return "unlocked";
   }
-}
-
-// static
-ScriptPromise IdleDetector::requestPermission(ScriptState* script_state,
-                                              ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid())
-    return ScriptPromise();
-
-  auto* context = ExecutionContext::From(script_state);
-  return IdleManager::From(context)->RequestPermission(script_state,
-                                                       exception_state);
 }
 
 ScriptPromise IdleDetector::start(ScriptState* script_state,
@@ -136,16 +128,21 @@ ScriptPromise IdleDetector::start(ScriptState* script_state,
 
   // See https://bit.ly/2S0zRAS for task types.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      context->GetTaskRunner(TaskType::kMiscPlatformAPI);
+      GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
+
+  if (!idle_service_.is_bound()) {
+    GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
+        idle_service_.BindNewPipeAndPassReceiver(task_runner));
+    idle_service_.set_disconnect_handler(WTF::Bind(
+        &IdleDetector::OnServiceDisconnected, WrapWeakPersistent(this)));
+  }
 
   mojo::PendingRemote<mojom::blink::IdleMonitor> remote;
   receiver_.Bind(remote.InitWithNewPipeAndPassReceiver(), task_runner);
-  receiver_.set_disconnect_handler(WTF::Bind(
-      &IdleDetector::OnMonitorDisconnected, WrapWeakPersistent(this)));
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  IdleManager::From(context)->AddMonitor(
+  idle_service_->AddMonitor(
       threshold_, std::move(remote),
       WTF::Bind(&IdleDetector::OnAddMonitor, WrapWeakPersistent(this),
                 WrapPersistent(resolver)));
@@ -164,16 +161,18 @@ void IdleDetector::Abort(AbortSignal* signal) {
     resolver_ = nullptr;
   }
 
+  idle_service_.reset();
   receiver_.reset();
 }
 
-void IdleDetector::OnMonitorDisconnected() {
+void IdleDetector::OnServiceDisconnected() {
   if (resolver_) {
     resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotSupportedError, "Idle detection not available."));
     resolver_ = nullptr;
   }
 
+  idle_service_.reset();
   receiver_.reset();
 }
 
@@ -184,7 +183,7 @@ void IdleDetector::OnAddMonitor(ScriptPromiseResolver* resolver,
     case IdleManagerError::kPermissionDisabled:
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
-          "Idle detection permission denied"));
+          "Notification permission disabled"));
       break;
     case IdleManagerError::kSuccess:
       DCHECK(state);
@@ -213,6 +212,7 @@ void IdleDetector::Trace(Visitor* visitor) const {
   visitor->Trace(signal_);
   visitor->Trace(resolver_);
   visitor->Trace(receiver_);
+  visitor->Trace(idle_service_);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   ActiveScriptWrappable::Trace(visitor);

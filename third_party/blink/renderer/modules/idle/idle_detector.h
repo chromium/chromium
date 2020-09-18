@@ -50,7 +50,6 @@ class IdleDetector final : public EventTargetWithInlineData,
   // IdleDetector IDL interface.
   String userState() const;
   String screenState() const;
-  static ScriptPromise requestPermission(ScriptState*, ExceptionState&);
   ScriptPromise start(ScriptState*, const IdleOptions*, ExceptionState&);
   DEFINE_ATTRIBUTE_EVENT_LISTENER(change, kChange)
 
@@ -62,7 +61,7 @@ class IdleDetector final : public EventTargetWithInlineData,
   void Update(mojom::blink::IdleStatePtr state) override;
 
   void Abort(AbortSignal*);
-  void OnMonitorDisconnected();
+  void OnServiceDisconnected();
   void OnAddMonitor(ScriptPromiseResolver*,
                     mojom::blink::IdleManagerError,
                     mojom::blink::IdleStatePtr);
@@ -79,6 +78,9 @@ class IdleDetector final : public EventTargetWithInlineData,
                    IdleDetector,
                    HeapMojoWrapperMode::kWithoutContextObserver>
       receiver_;
+  HeapMojoRemote<mojom::blink::IdleManager,
+                 HeapMojoWrapperMode::kWithoutContextObserver>
+      idle_service_;
 };
 
 }  // namespace blink
