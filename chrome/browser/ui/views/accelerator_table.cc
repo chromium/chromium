@@ -14,6 +14,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
 
 namespace {
@@ -151,8 +152,6 @@ const AcceleratorMapping kAcceleratorMap[] = {
     {ui::VKEY_BROWSER_STOP, ui::EF_NONE, IDC_STOP},
     // On Chrome OS, Search + Esc is used to call out task manager.
     {ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN, IDC_TASK_MANAGER},
-    {ui::VKEY_7, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN,
-     IDC_CARET_BROWSING_TOGGLE},
 #else  // !OS_CHROMEOS
     {ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN, IDC_TASK_MANAGER},
     {ui::VKEY_LMENU, ui::EF_NONE, IDC_FOCUS_MENU_BAR},
@@ -217,6 +216,22 @@ const AcceleratorMapping kAcceleratorMap[] = {
 #endif  // !OS_MAC
 };
 
+#if defined(OS_CHROMEOS)
+// Accelerators to enable if features::IsNewShortcutMappingEnabled is false.
+const AcceleratorMapping kDisableWithNewMappingAcceleratorMap[] = {
+    // On Chrome OS, Control + Search + 7 toggles caret browsing.
+    // Note that VKEY_F7 is not a typo; Search + 7 maps to F7 for accelerators.
+    {ui::VKEY_F7, ui::EF_CONTROL_DOWN, IDC_CARET_BROWSING_TOGGLE},
+};
+
+// Accelerators to enable if features::IsNewShortcutMappingEnabled is true.
+const AcceleratorMapping kEnableWithNewMappingAcceleratorMap[] = {
+    // On Chrome OS, Control + Search + 7 toggles caret browsing.
+    {ui::VKEY_7, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN,
+     IDC_CARET_BROWSING_TOGGLE},
+};
+#endif
+
 const int kRepeatableCommandIds[] = {
   IDC_FIND_NEXT,
   IDC_FIND_PREVIOUS,
@@ -232,8 +247,25 @@ const size_t kRepeatableCommandIdsLength = base::size(kRepeatableCommandIds);
 } // namespace
 
 std::vector<AcceleratorMapping> GetAcceleratorList() {
-  static base::NoDestructor<std::vector<AcceleratorMapping>> accelerators(
-      std::begin(kAcceleratorMap), std::end(kAcceleratorMap));
+  static base::NoDestructor<std::vector<AcceleratorMapping>> accelerators;
+
+  if (accelerators->empty()) {
+    accelerators->insert(accelerators->begin(), std::begin(kAcceleratorMap),
+                         std::end(kAcceleratorMap));
+
+#if defined(OS_CHROMEOS)
+    if (::features::IsNewShortcutMappingEnabled()) {
+      accelerators->insert(accelerators->begin(),
+                           std::begin(kEnableWithNewMappingAcceleratorMap),
+                           std::end(kEnableWithNewMappingAcceleratorMap));
+    } else {
+      accelerators->insert(accelerators->begin(),
+                           std::begin(kDisableWithNewMappingAcceleratorMap),
+                           std::end(kDisableWithNewMappingAcceleratorMap));
+    }
+#endif
+  }
+
   return *accelerators;
 }
 

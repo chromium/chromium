@@ -373,6 +373,20 @@ Polymer({
   },
 
   /**
+   * @param {!Event} event
+   * @private
+   */
+  onA11yCaretBrowsingChange_(event) {
+    if (event.target.checked) {
+      chrome.metricsPrivate.recordUserAction(
+          'Accessibility.CaretBrowsing.EnableWithSettings');
+    } else {
+      chrome.metricsPrivate.recordUserAction(
+          'Accessibility.CaretBrowsing.DisableWithSettings');
+    }
+  },
+
+  /**
    * @return {boolean} Whether shelf navigation buttons should implicitly be
    *     enabled in tablet mode (due to accessibility settings different than
    *     shelf_navigation_buttons_enabled_in_tablet_mode).

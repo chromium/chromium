@@ -157,6 +157,13 @@
         pref="{{prefs.settings.a11y.caret_highlight}}"
         label="$i18n{caretHighlightLabel}">
     </settings-toggle-button>
+    <settings-toggle-button
+        class="hr"
+        pref="{{prefs.settings.a11y.caretbrowsing.enabled}}"
+        on-change="onA11yCaretBrowsingChange_"
+        label="$i18n{caretBrowsingTitle}"
+        sub-label="$i18n{caretBrowsingSubtitle}">
+    </settings-toggle-button>
     <template is="dom-if" if="[[shouldShowExperimentalSwitchAccess_]]">
       <settings-toggle-button
           class="hr"

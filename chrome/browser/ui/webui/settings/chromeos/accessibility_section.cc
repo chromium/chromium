@@ -524,6 +524,8 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_TITLE},
       {"captionsEnableLiveCaptionSubtitle",
        IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE},
+      {"caretBrowsingTitle", IDS_SETTINGS_ENABLE_CARET_BROWSING_TITLE},
+      {"caretBrowsingSubtitle", IDS_SETTINGS_ENABLE_CARET_BROWSING_SUBTITLE},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 
