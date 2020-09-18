@@ -71,9 +71,8 @@ class UserImageManager {
 
   // Starts downloading the profile image for the user.  If user's image
   // index is |USER_IMAGE_PROFILE|, newly downloaded image is immediately
-  // set as user's current picture.  |reason| is an arbitrary string
-  // (used to report UMA histograms with download times).
-  virtual void DownloadProfileImage(const std::string& reason) = 0;
+  // set as user's current picture.
+  virtual void DownloadProfileImage() = 0;
 
   // Returns the result of the last successful profile image download, if any.
   // Otherwise, returns an empty bitmap.

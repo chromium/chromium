@@ -23,7 +23,7 @@ class MockUserImageManager : public UserImageManager {
   void SaveUserImage(std::unique_ptr<user_manager::UserImage>) {}
   MOCK_METHOD1(SaveUserImageFromFile, void(const base::FilePath&));
   MOCK_METHOD0(SaveUserImageFromProfileImage, void());
-  MOCK_METHOD1(DownloadProfileImage, void(const std::string&));
+  MOCK_METHOD0(DownloadProfileImage, void());
   MOCK_CONST_METHOD0(DownloadedProfileImage, const gfx::ImageSkia&(void));
 };
 

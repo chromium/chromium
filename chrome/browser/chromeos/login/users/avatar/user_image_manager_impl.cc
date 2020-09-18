@@ -59,16 +59,6 @@ const int kProfileDataDownloadRetryIntervalSec = 300;
 // Delay betweeen subsequent profile refresh attempts (24 hrs).
 const int kProfileRefreshIntervalSec = 24 * 3600;
 
-// Time histogram suffix for a profile image download after login.
-const char kProfileDownloadReasonLoggedIn[] = "LoggedIn";
-// Time histogram suffix for a profile image download when the user chooses the
-// profile image but it has not been downloaded yet.
-const char kProfileDownloadReasonProfileImageChosen[] = "ProfileImageChosen";
-// Time histogram suffix for a scheduled profile image download.
-const char kProfileDownloadReasonScheduled[] = "Scheduled";
-// Time histogram suffix for a profile image download retry.
-const char kProfileDownloadReasonRetry[] = "Retry";
-
 static bool g_ignore_profile_data_download_delay_ = false;
 
 // Converts |image_index| to UMA histogram value.
@@ -586,12 +576,12 @@ void UserImageManagerImpl::UserProfileCreated() {
             ? base::TimeDelta()
             : base::TimeDelta::FromSeconds(kProfileDataDownloadDelaySec),
         base::BindOnce(&UserImageManagerImpl::DownloadProfileData,
-                       base::Unretained(this), kProfileDownloadReasonLoggedIn));
+                       base::Unretained(this)));
     // Schedule periodic refreshes of the profile data.
     profile_download_periodic_timer_.Start(
         FROM_HERE, base::TimeDelta::FromSeconds(kProfileRefreshIntervalSec),
         base::Bind(&UserImageManagerImpl::DownloadProfileData,
-                   base::Unretained(this), kProfileDownloadReasonScheduled));
+                   base::Unretained(this)));
   } else {
     profile_download_one_shot_timer_.Stop();
     profile_download_periodic_timer_.Stop();
@@ -640,7 +630,7 @@ void UserImageManagerImpl::SaveUserImageFromProfileImage() {
   // If no profile image has been downloaded yet, ensure that a download is
   // started.
   if (downloaded_profile_image_.isNull())
-    DownloadProfileData(kProfileDownloadReasonProfileImageChosen);
+    DownloadProfileData();
 }
 
 void UserImageManagerImpl::DeleteUserImage() {
@@ -648,9 +638,9 @@ void UserImageManagerImpl::DeleteUserImage() {
   DeleteUserImageAndLocalStateEntry(kUserImageProperties);
 }
 
-void UserImageManagerImpl::DownloadProfileImage(const std::string& reason) {
+void UserImageManagerImpl::DownloadProfileImage() {
   profile_image_requested_ = true;
-  DownloadProfileData(reason);
+  DownloadProfileData();
 }
 
 const gfx::ImageSkia& UserImageManagerImpl::DownloadedProfileImage() const {
@@ -794,7 +784,7 @@ void UserImageManagerImpl::OnProfileDownloadFailure(
         FROM_HERE,
         base::TimeDelta::FromSeconds(kProfileDataDownloadRetryIntervalSec),
         base::BindOnce(&UserImageManagerImpl::DownloadProfileData,
-                       base::Unretained(this), kProfileDownloadReasonRetry));
+                       base::Unretained(this)));
   }
 
   user_manager_->NotifyUserProfileImageUpdateFailed(*GetUser());
@@ -829,7 +819,7 @@ bool UserImageManagerImpl::NeedProfileImage() const {
           profile_image_requested_);
 }
 
-void UserImageManagerImpl::DownloadProfileData(const std::string& reason) {
+void UserImageManagerImpl::DownloadProfileData() {
   if (!IsUserLoggedInAndHasGaiaAccount())
     return;
 
