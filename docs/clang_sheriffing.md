@@ -24,6 +24,9 @@ Ideally these tests are covered by upstream LLVM bots and breakages are
 quickly noticed and fixed by the original author of a breaking commit,
 but that is sadly not always the case.
 
+We try to update Clang (roughly) weekly. Time permitting, try to [update the
+compiler](updating_clang.md) when bots are green enough.
+
 [TOC]
 
 ## Disk out of space
