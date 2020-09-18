@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <utility>
 
 #include "base/threading/simple_thread.h"
 #include "base/trace_event/trace_event.h"
@@ -16,8 +17,7 @@ namespace cc {
 SingleThreadTaskGraphRunner::SingleThreadTaskGraphRunner()
     : lock_(),
       has_ready_to_run_tasks_cv_(&lock_),
-      has_namespaces_with_finished_running_tasks_cv_(&lock_),
-      shutdown_(false) {
+      has_namespaces_with_finished_running_tasks_cv_(&lock_) {
   has_ready_to_run_tasks_cv_.declare_only_used_while_idle();
 }
 
@@ -129,8 +129,6 @@ void SingleThreadTaskGraphRunner::Run() {
 bool SingleThreadTaskGraphRunner::RunTaskWithLockAcquired() {
   TRACE_EVENT0("toplevel",
                "SingleThreadTaskGraphRunner::RunTaskWithLockAcquired");
-
-  lock_.AssertAcquired();
 
   // Find the first category with any tasks to run. This task graph runner
   // treats categories as an additional priority.

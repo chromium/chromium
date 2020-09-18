@@ -5,6 +5,8 @@
 #include "cc/raster/staging_buffer_pool.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
@@ -194,8 +196,6 @@ bool StagingBufferPool::OnMemoryDump(
 
 void StagingBufferPool::AddStagingBuffer(const StagingBuffer* staging_buffer,
                                          viz::ResourceFormat format) {
-  lock_.AssertAcquired();
-
   DCHECK(buffers_.find(staging_buffer) == buffers_.end());
   buffers_.insert(staging_buffer);
   int buffer_usage_in_bytes = viz::ResourceSizes::UncheckedSizeInBytes<int>(
@@ -205,8 +205,6 @@ void StagingBufferPool::AddStagingBuffer(const StagingBuffer* staging_buffer,
 
 void StagingBufferPool::RemoveStagingBuffer(
     const StagingBuffer* staging_buffer) {
-  lock_.AssertAcquired();
-
   DCHECK(buffers_.find(staging_buffer) != buffers_.end());
   buffers_.erase(staging_buffer);
   int buffer_usage_in_bytes = viz::ResourceSizes::UncheckedSizeInBytes<int>(
@@ -217,8 +215,6 @@ void StagingBufferPool::RemoveStagingBuffer(
 
 void StagingBufferPool::MarkStagingBufferAsFree(
     const StagingBuffer* staging_buffer) {
-  lock_.AssertAcquired();
-
   int buffer_usage_in_bytes = viz::ResourceSizes::UncheckedSizeInBytes<int>(
       staging_buffer->size, staging_buffer->format);
   free_staging_buffer_usage_in_bytes_ += buffer_usage_in_bytes;
@@ -226,8 +222,6 @@ void StagingBufferPool::MarkStagingBufferAsFree(
 
 void StagingBufferPool::MarkStagingBufferAsBusy(
     const StagingBuffer* staging_buffer) {
-  lock_.AssertAcquired();
-
   int buffer_usage_in_bytes = viz::ResourceSizes::UncheckedSizeInBytes<int>(
       staging_buffer->size, staging_buffer->format);
   DCHECK_GE(free_staging_buffer_usage_in_bytes_, buffer_usage_in_bytes);
@@ -334,8 +328,6 @@ std::unique_ptr<StagingBuffer> StagingBufferPool::AcquireStagingBuffer(
 }
 
 base::TimeTicks StagingBufferPool::GetUsageTimeForLRUBuffer() {
-  lock_.AssertAcquired();
-
   if (!free_buffers_.empty())
     return free_buffers_.front()->last_usage;
 
@@ -346,8 +338,6 @@ base::TimeTicks StagingBufferPool::GetUsageTimeForLRUBuffer() {
 }
 
 void StagingBufferPool::ScheduleReduceMemoryUsage() {
-  lock_.AssertAcquired();
-
   if (reduce_memory_usage_pending_)
     return;
 
@@ -387,8 +377,6 @@ void StagingBufferPool::ReduceMemoryUsage() {
 }
 
 void StagingBufferPool::ReleaseBuffersNotUsedSince(base::TimeTicks time) {
-  lock_.AssertAcquired();
-
   {
     viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
         worker_context_provider_);

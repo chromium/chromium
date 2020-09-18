@@ -103,15 +103,20 @@ class CC_EXPORT StagingBufferPool
 
  private:
   void AddStagingBuffer(const StagingBuffer* staging_buffer,
-                        viz::ResourceFormat format);
-  void RemoveStagingBuffer(const StagingBuffer* staging_buffer);
-  void MarkStagingBufferAsFree(const StagingBuffer* staging_buffer);
-  void MarkStagingBufferAsBusy(const StagingBuffer* staging_buffer);
+                        viz::ResourceFormat format)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void RemoveStagingBuffer(const StagingBuffer* staging_buffer)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void MarkStagingBufferAsFree(const StagingBuffer* staging_buffer)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void MarkStagingBufferAsBusy(const StagingBuffer* staging_buffer)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  base::TimeTicks GetUsageTimeForLRUBuffer();
-  void ScheduleReduceMemoryUsage();
+  base::TimeTicks GetUsageTimeForLRUBuffer() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void ScheduleReduceMemoryUsage() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void ReduceMemoryUsage();
-  void ReleaseBuffersNotUsedSince(base::TimeTicks time);
+  void ReleaseBuffersNotUsedSince(base::TimeTicks time)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> StateAsValue()
       const;
@@ -131,14 +136,14 @@ class CC_EXPORT StagingBufferPool
   StagingBufferSet buffers_;
   using StagingBufferDeque =
       base::circular_deque<std::unique_ptr<StagingBuffer>>;
-  StagingBufferDeque free_buffers_;
-  StagingBufferDeque busy_buffers_;
-  const int max_staging_buffer_usage_in_bytes_;
-  int staging_buffer_usage_in_bytes_;
-  int free_staging_buffer_usage_in_bytes_;
-  const base::TimeDelta staging_buffer_expiration_delay_;
-  bool reduce_memory_usage_pending_;
-  base::RepeatingClosure reduce_memory_usage_callback_;
+  StagingBufferDeque free_buffers_ GUARDED_BY(lock_);
+  StagingBufferDeque busy_buffers_ GUARDED_BY(lock_);
+  const int max_staging_buffer_usage_in_bytes_ GUARDED_BY(lock_);
+  int staging_buffer_usage_in_bytes_ GUARDED_BY(lock_);
+  int free_staging_buffer_usage_in_bytes_ GUARDED_BY(lock_);
+  const base::TimeDelta staging_buffer_expiration_delay_ GUARDED_BY(lock_);
+  bool reduce_memory_usage_pending_ GUARDED_BY(lock_);
+  base::RepeatingClosure reduce_memory_usage_callback_ GUARDED_BY(lock_);
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
