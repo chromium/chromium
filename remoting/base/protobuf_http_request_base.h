@@ -46,7 +46,11 @@ class ProtobufHttpRequestBase {
   const ProtobufHttpRequestConfig& config() const { return *config_; }
 
  protected:
+  // Called when the protobuf HTTP client failed to get the access token. Note
+  // that the subclass implementation should not invoke |invalidator_| since the
+  // request has never been started.
   virtual void OnAuthFailed(const ProtobufHttpStatus& status) = 0;
+
   virtual void StartRequestInternal(
       network::mojom::URLLoaderFactory* loader_factory) = 0;
 
