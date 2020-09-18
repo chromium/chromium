@@ -483,8 +483,8 @@ class NodeIDPlusEventWrapper
     ui::AXTreeID tree_id =
         ui::AXTreeID::FromString(*v8::String::Utf8Value(isolate, args[0]));
     int node_id = args[1].As<v8::Int32>()->Value();
-    auto event_type = ui::ParseAXEnum<ax::mojom::Event>(
-        *v8::String::Utf8Value(isolate, args[2]));
+    ax::mojom::Event event_type =
+        ui::ParseEvent(*v8::String::Utf8Value(isolate, args[2]));
 
     AutomationAXTreeWrapper* tree_wrapper =
         automation_bindings_->GetAutomationAXTreeWrapperFromTreeID(tree_id);
@@ -999,8 +999,8 @@ void AutomationInternalCustomBindings::AddRoutes() {
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
          ui::AXTree* tree, ui::AXNode* node,
          const std::string& attribute_name) {
-        auto attribute =
-            ui::ParseAXEnum<ax::mojom::StringAttribute>(attribute_name.c_str());
+        ax::mojom::StringAttribute attribute =
+            ui::ParseStringAttribute(attribute_name.c_str());
         const char* attr_value;
         if (attribute == ax::mojom::StringAttribute::kFontFamily ||
             attribute == ax::mojom::StringAttribute::kLanguage) {
@@ -1019,8 +1019,8 @@ void AutomationInternalCustomBindings::AddRoutes() {
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
          ui::AXTree* tree, ui::AXNode* node,
          const std::string& attribute_name) {
-        auto attribute =
-            ui::ParseAXEnum<ax::mojom::BoolAttribute>(attribute_name.c_str());
+        ax::mojom::BoolAttribute attribute =
+            ui::ParseBoolAttribute(attribute_name.c_str());
         bool attr_value;
         if (!node->data().GetBoolAttribute(attribute, &attr_value))
           return;
@@ -1032,8 +1032,8 @@ void AutomationInternalCustomBindings::AddRoutes() {
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
          ui::AXTree* tree, ui::AXNode* node,
          const std::string& attribute_name) {
-        auto attribute =
-            ui::ParseAXEnum<ax::mojom::IntAttribute>(attribute_name.c_str());
+        ax::mojom::IntAttribute attribute =
+            ui::ParseIntAttribute(attribute_name.c_str());
         int attr_value;
 
         if (attribute == ax::mojom::IntAttribute::kPosInSet &&
@@ -1053,8 +1053,8 @@ void AutomationInternalCustomBindings::AddRoutes() {
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
          ui::AXTree* tree, ui::AXNode* node,
          const std::string& attribute_name) {
-        auto attribute =
-            ui::ParseAXEnum<ax::mojom::IntAttribute>(attribute_name.c_str());
+        ax::mojom::IntAttribute attribute =
+            ui::ParseIntAttribute(attribute_name.c_str());
         std::set<int32_t> ids =
             tree->GetReverseRelations(attribute, node->id());
         v8::Local<v8::Context> context = isolate->GetCurrentContext();
@@ -1073,8 +1073,8 @@ void AutomationInternalCustomBindings::AddRoutes() {
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
          ui::AXTree* tree, ui::AXNode* node,
          const std::string& attribute_name) {
-        auto attribute =
-            ui::ParseAXEnum<ax::mojom::FloatAttribute>(attribute_name.c_str());
+        ax::mojom::FloatAttribute attribute =
+            ui::ParseFloatAttribute(attribute_name.c_str());
         float attr_value;
 
         if (!node->data().GetFloatAttribute(attribute, &attr_value))
@@ -1091,8 +1091,8 @@ void AutomationInternalCustomBindings::AddRoutes() {
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
          ui::AXTree* tree, ui::AXNode* node,
          const std::string& attribute_name) {
-        auto attribute = ui::ParseAXEnum<ax::mojom::IntListAttribute>(
-            attribute_name.c_str());
+        ax::mojom::IntListAttribute attribute =
+            ui::ParseIntListAttribute(attribute_name.c_str());
         if (!node->data().HasIntListAttribute(attribute))
           return;
         const std::vector<int32_t>& attr_value =
@@ -1113,8 +1113,8 @@ void AutomationInternalCustomBindings::AddRoutes() {
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
          ui::AXTree* tree, ui::AXNode* node,
          const std::string& attribute_name) {
-        auto attribute = ui::ParseAXEnum<ax::mojom::IntListAttribute>(
-            attribute_name.c_str());
+        ax::mojom::IntListAttribute attribute =
+            ui::ParseIntListAttribute(attribute_name.c_str());
         std::set<int32_t> ids =
             tree->GetReverseRelations(attribute, node->id());
         v8::Local<v8::Context> context = isolate->GetCurrentContext();
@@ -1278,8 +1278,8 @@ void AutomationInternalCustomBindings::AddRoutes() {
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
          ui::AXTree* tree, ui::AXNode* node,
          const std::string& attribute_name) {
-        auto attr =
-            ui::ParseAXEnum<ax::mojom::StringAttribute>(attribute_name.c_str());
+        ax::mojom::StringAttribute attr =
+            ui::ParseStringAttribute(attribute_name.c_str());
         if (attr == ax::mojom::StringAttribute::kNone) {
           // Set result as empty array.
           result.Set(v8::Array::New(isolate, 0));
@@ -1383,7 +1383,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
         // spin button.
         const std::string& role_string =
             node->GetStringAttribute(ax::mojom::StringAttribute::kRole);
-        auto role = ui::ParseAXEnum<ax::mojom::Role>(role_string.c_str());
+        ax::mojom::Role role = ui::ParseRole(role_string.c_str());
         if (role == ax::mojom::Role::kSlider ||
             role == ax::mojom::Role::kSpinButton) {
           standard_actions.push_back(

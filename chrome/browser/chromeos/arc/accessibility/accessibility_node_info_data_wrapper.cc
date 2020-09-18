@@ -208,7 +208,7 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXRole(
 
   std::string chrome_role;
   if (GetProperty(AXStringProperty::CHROME_ROLE, &chrome_role)) {
-    auto role_value = ui::ParseAXEnum<ax::mojom::Role>(chrome_role.c_str());
+    ax::mojom::Role role_value = ui::ParseRole(chrome_role.c_str());
     if (role_value != ax::mojom::Role::kNone) {
       // The webView and rootWebArea roles differ between Android and Chrome. In
       // particular, Android includes far fewer attributes which leads to
