@@ -13,6 +13,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/modules/ModuleInstallUi.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/notifications",
+  "+chrome/android/java/src/org/chromium/chrome/browser/screenshot/EditorScreenshotSource.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/screenshot/EditorScreenshotTask.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/share",
   "+chrome/android/java/src/org/chromium/chrome/browser/tab/Tab.java",

@@ -8,6 +8,8 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.graphics.Bitmap;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
@@ -22,25 +24,27 @@ public class ScreenshotShareSheetDialogCoordinator {
     /**
      * Constructs a new Screenshot Dialog.
      *
-     * @param context The context to use for user permissions.
-     * @param screenshot The screenshot to be shared.
-     * @param tab The shared tab.
-     * @param chromeOptionShareCallback the callback to trigger on share.
-     * @param installCallback the callback to trigger on install.
+     * @param activity The parent activity.
+     * @param dialog The Share Sheet dialog to use as fallback.
+     * @param screenshot The Bitmap of the screenshot to share.
+     * @param tab The Tab which contains the content to share.
+     * @param shareCallback Callback called when falling back to the share sheet.
+     * @param installCallback Callback called when the image editor is installed and run.
      */
-    public ScreenshotShareSheetDialogCoordinator(Activity activity, Bitmap screenshot, Tab tab,
-            ChromeOptionShareCallback chromeOptionShareCallback,
-            Callback<Runnable> installCallback) {
+    public ScreenshotShareSheetDialogCoordinator(Activity activity,
+            ScreenshotShareSheetDialog dialog, Bitmap screenshot, Tab tab,
+            ChromeOptionShareCallback shareCallback, Callback<Runnable> installCallback) {
         mFragmentManager = activity.getFragmentManager();
+        mDialog = dialog;
         mScreenshot = screenshot;
-        mDialog = new ScreenshotShareSheetDialog();
-        mDialog.init(mScreenshot, tab, chromeOptionShareCallback, installCallback);
+        mDialog.init(mScreenshot, tab, shareCallback, installCallback);
     }
 
     /**
      * Show the main share sheet dialog.
      */
-    protected void showShareSheet() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public void showShareSheet() {
         mDialog.show(mFragmentManager, null);
     }
 }

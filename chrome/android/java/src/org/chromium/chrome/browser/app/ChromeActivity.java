@@ -1347,7 +1347,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_SCREENSHOT)) {
-            ImageEditorModuleProvider.maybeInstallModuleDeferred();
+            ImageEditorModuleProvider.get().maybeInstallModuleDeferred();
         }
 
         super.finishNativeInitialization();
