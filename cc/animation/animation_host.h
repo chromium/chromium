@@ -221,6 +221,8 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
                           bool current_frame_had_raf,
                           bool next_frame_has_pending_raf);
 
+  void SetHasCanvasInvalidation(bool has_canvas_invalidation);
+
  private:
   explicit AnimationHost(ThreadInstance thread_instance);
 
@@ -272,6 +274,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   size_t main_thread_animations_count_ = 0;
   bool current_frame_had_raf_ = false;
   bool next_frame_has_pending_raf_ = false;
+  bool has_canvas_invalidation_ = false;
 
   PendingThroughputTrackerInfos pending_throughput_tracker_infos_;
 

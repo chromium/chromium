@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/page/page_animator.h"
 
 #include "base/auto_reset.h"
+#include "cc/animation/animation_host.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -118,6 +119,16 @@ void PageAnimator::PostAnimate() {
     next_frame_has_raf |= document->NextFrameHasPendingRAF();
   if (!next_frame_has_raf)
     Clock().SetAllowedToDynamicallyUpdateTime(true);
+}
+
+void PageAnimator::SetHasCanvasInvalidation(bool has_canvas_invalidation) {
+  has_canvas_invalidation_ = has_canvas_invalidation;
+}
+
+void PageAnimator::ReportFrameAnimations(cc::AnimationHost* animation_host) {
+  if (animation_host)
+    animation_host->SetHasCanvasInvalidation(has_canvas_invalidation_);
+  has_canvas_invalidation_ = false;
 }
 
 void PageAnimator::SetSuppressFrameRequestsWorkaroundFor704763Only(

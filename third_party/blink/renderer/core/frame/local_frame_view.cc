@@ -2797,6 +2797,8 @@ void LocalFrameView::RunPaintLifecyclePhase() {
       }
     }
   }
+  if (GetPage())
+    GetPage()->Animator().ReportFrameAnimations(GetCompositorAnimationHost());
 }
 
 bool LocalFrameView::RunAccessibilityLifecyclePhase(

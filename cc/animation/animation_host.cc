@@ -127,6 +127,12 @@ void AnimationHost::RemoveAnimationTimeline(
   SetNeedsPushProperties();
 }
 
+void AnimationHost::SetHasCanvasInvalidation(bool has_canvas_invalidation) {
+  // TODO(crbug.com/1111392): send this value to LayerTreeHostImpl for
+  // constructing a canvas frame sequence tracker.
+  has_canvas_invalidation_ = has_canvas_invalidation;
+}
+
 void AnimationHost::UpdateRegisteredElementIds(ElementListType changed_list) {
   for (auto map_entry : element_to_animations_map_) {
     if (mutator_host_client()->IsElementInPropertyTrees(map_entry.first,
