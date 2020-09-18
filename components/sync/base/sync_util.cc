@@ -9,6 +9,7 @@
 #include "base/strings/stringize_macros.h"
 #include "build/build_config.h"
 #include "components/sync/base/sync_base_switches.h"
+#include "google_apis/gaia/gaia_config.h"
 #include "ui/base/device_form_factor.h"
 #include "url/gurl.h"
 
@@ -75,33 +76,47 @@ std::string FormatUserAgentForSync(const std::string& system,
 
 GURL GetSyncServiceURL(const base::CommandLine& command_line,
                        version_info::Channel channel) {
-  // By default, dev, canary, and unbranded Chromium users will go to the
-  // development servers. Development servers have more features than standard
-  // sync servers. Users with officially-branded Chrome stable and beta builds
-  // will go to the standard sync servers.
-  GURL result(internal::kSyncDevServerUrl);
+  // Priorities for determining the sync URL:
+  // 1. Explicitly specified --sync-url
+  // 2. Specified as part of the --gaia-config
+  // 3. Default URL (different for Stable/Beta vs. Dev/Canary/unbranded)
 
-  if (channel == version_info::Channel::STABLE ||
-      channel == version_info::Channel::BETA) {
-    result = GURL(internal::kSyncServerUrl);
-  }
-
-  // Override the sync server URL from the command-line, if sync server
-  // command-line argument exists.
+  // 1. Get the sync server URL from the --sync-url command-line param, if
+  // specified.
   if (command_line.HasSwitch(switches::kSyncServiceURL)) {
     std::string value(
         command_line.GetSwitchValueASCII(switches::kSyncServiceURL));
     if (!value.empty()) {
       GURL custom_sync_url(value);
       if (custom_sync_url.is_valid()) {
-        result = custom_sync_url;
+        return custom_sync_url;
       } else {
         LOG(WARNING) << "The following sync URL specified at the command-line "
                      << "is invalid: " << value;
       }
     }
   }
-  return result;
+
+  // 2. Get the sync server URL from the --gaia-config, if the config exists and
+  // contains a sync URL.
+  GaiaConfig* gaia_config = GaiaConfig::GetInstance();
+  if (gaia_config) {
+    GURL url;
+    if (gaia_config->GetURLIfExists("sync_url", &url)) {
+      return url;
+    }
+  }
+
+  // 3. By default, dev, canary, and unbranded Chromium users will go to the
+  // development servers. Development servers have more features than standard
+  // sync servers. Users with officially-branded Chrome stable and beta builds
+  // will go to the standard sync servers.
+  if (channel == version_info::Channel::STABLE ||
+      channel == version_info::Channel::BETA) {
+    return GURL(internal::kSyncServerUrl);
+  }
+
+  return GURL(internal::kSyncDevServerUrl);
 }
 
 std::string MakeUserAgentForSync(version_info::Channel channel) {
