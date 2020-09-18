@@ -78,7 +78,10 @@ Polymer({
     ];
     return this.languageHelper.getInputMethodsForLanguages(languageCodes)
         .filter(inputMethod => {
-          return !this.languageHelper.isInputMethodEnabled(inputMethod.id);
+          if (this.languageHelper.isInputMethodEnabled(inputMethod.id)) {
+            return false;
+          }
+          return !inputMethod.isProhibitedByPolicy;
         });
   },
 

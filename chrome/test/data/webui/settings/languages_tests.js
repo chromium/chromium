@@ -138,7 +138,7 @@ suite('settings-languages', function() {
     test('modifying input methods', function() {
       assertEquals(2, languageHelper.languages.inputMethods.enabled.length);
       const inputMethods = languageHelper.getInputMethodsForLanguage('en-US');
-      assertEquals(3, inputMethods.length);
+      assertEquals(4, inputMethods.length);
 
       // We can remove one input method.
       const dvorak =

@@ -61,6 +61,10 @@
         width: var(--cr-icon-size);
       }
 
+      iron-icon[icon='cr20:domain'] {
+        margin-inline-end: 10px;
+      }
+
       /* The default implementation of the actionable list item makes the
        * entire list item row a button such that clicking anywhere will
        * activate the action of the list item. The input method list behaves
@@ -112,6 +116,13 @@
 
       <div class="hr bottom-margin">
         <h2>$i18n{inputMethodListTitle}</h2>
+        <template is="dom-if" if="[[inputMethodsLimitedByPolicy_(
+            prefs.settings.language.allowed_input_methods.*)]]">
+          <div class="cr-row continuation" id="inputMethodsManagedbyPolicy">
+            <iron-icon icon="cr20:domain"></iron-icon>
+            <div class="secondary">$i18n{inputMethodsManagedbyPolicy}</div>
+          </div>
+        </template>
         <div class="list-frame vertical-list" id="inputMethodsList">
           <template is="dom-repeat"
               items="[[languages.inputMethods.enabled]]">

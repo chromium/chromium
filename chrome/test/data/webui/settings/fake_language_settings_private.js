@@ -172,6 +172,14 @@ cr.define('settings', function() {
           enabled: false,
         },
         {
+          id: '_comp_ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:us:intl',
+          displayName: 'US International keyboard',
+          languageCodes: ['en-US'],
+          tags: ['US International keyboard', 'English(United States)'],
+          enabled: false,
+          isProhibitedByPolicy: true,
+        },
+        {
           id: '_comp_ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:vi:vi',
           displayName: 'Vietnamese keyboard',
           languageCodes: ['vi'],
@@ -503,6 +511,11 @@ cr.define('settings', function() {
         key: 'settings.language.ime_menu_activated',
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
+      });
+      fakePrefs.push({
+        key: 'settings.language.allowed_input_methods',
+        type: chrome.settingsPrivate.PrefType.LIST,
+        value: [],
       });
     }
     return fakePrefs;

@@ -4,6 +4,7 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_scrollable_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_search_field/cr_search_field.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
 <link rel="import" href="../metrics_recorder.html">
 <link rel="import" href="../../languages_page/languages.html">
@@ -11,7 +12,7 @@
 
 <dom-module id="os-settings-add-input-methods-dialog">
   <template>
-    <style include="settings-shared">
+    <style include="settings-shared iron-flex">
       #dialogBody {
         display: flex;
         flex-direction: column;
@@ -72,11 +73,23 @@
               items="[[getAllInputMethods_(languages.inputMethods,
                   lowercaseQueryString_)]]">
             <template>
-              <cr-checkbox class="list-item no-outline"
-                  checked="[[willAdd_(item.id, inputMethodsToAdd_.size)]]"
-                  tab-index="[[tabIndex]]" on-change="onCheckboxChange_">
-                [[item.displayName]]
-              </cr-checkbox>
+              <div class="list-item no-outline">
+                <cr-checkbox class="flex"
+                    checked="[[willAdd_(item.id, inputMethodsToAdd_.size)]]"
+                    disabled="[[item.isProhibitedByPolicy]]"
+                    tab-index="[[tabIndex]]" on-change="onCheckboxChange_">
+                  [[item.displayName]]
+                </cr-checkbox>
+                <template is="dom-if" if="[[item.isProhibitedByPolicy]]">
+                  <iron-icon id="policy[[index]]" class="policy"
+                      icon="cr20:domain" describedby="tooltip[[index]]">
+                  </iron-icon>
+                  <paper-tooltip for="policy[[index]]" id="tooltip[[index]]"
+                      role="tooltip" tabindex="-1" position="left">
+                    $i18n{inputMethodNotAllowed}
+                  </paper-tooltip>
+                </template>
+              </div>
             </template>
           </iron-list>
         </div>

@@ -127,6 +127,16 @@ Polymer({
   },
 
   /**
+   * @return {boolean}
+   * @private
+   */
+  inputMethodsLimitedByPolicy_() {
+    const allowedInputMethodsPref =
+        this.getPref('settings.language.allowed_input_methods');
+    return !!allowedInputMethodsPref && allowedInputMethodsPref.value.length;
+  },
+
+  /**
    * Handler for click events on an input method on the main page,
    * which sets it as the current input method.
    * @param {!{model: !{item: !chrome.languageSettingsPrivate.InputMethod},

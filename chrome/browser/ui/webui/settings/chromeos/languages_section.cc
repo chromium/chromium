@@ -307,6 +307,8 @@ void AddInputPageStringsV2(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_LANGUAGES_ALL_INPUT_METHODS_LABEL},
       {"searchInputMethodsLabel",
        IDS_OS_SETTINGS_LANGUAGES_SEARCH_INPUT_METHODS_LABEL},
+      {"inputMethodNotAllowed",
+       IDS_OS_SETTINGS_LANGUAGES_INPUT_METHOD_NOT_ALLOWED},
       {"spellCheckTitle", IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_TITLE},
       {"spellCheckEnhancedLabel",
        IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_ENHANCED_LABEL},

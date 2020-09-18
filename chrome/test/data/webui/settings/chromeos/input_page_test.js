@@ -167,6 +167,18 @@ suite('input page', () => {
           items[1].querySelector('.display-name').textContent.trim());
       assertFalse(!!items[1].querySelector('.icon-clear').disabled);
     });
+
+    test('shows managed input methods label', () => {
+      const inputMethodsManagedbyPolicy =
+          inputPage.$$('#inputMethodsManagedbyPolicy');
+      assertFalse(!!inputMethodsManagedbyPolicy);
+
+      inputPage.setPrefValue(
+          'settings.language.allowed_input_methods', ['xkb:us::eng']);
+      Polymer.dom.flush();
+
+      assertTrue(!!inputPage.$$('#inputMethodsManagedbyPolicy'));
+    });
   });
 
   suite('input page', () => {
@@ -233,10 +245,11 @@ suite('input page', () => {
       assertTrue(actionButton.disabled);
     });
 
-    test('adds input methods', () => {
+    test('has correct structure and adds input methods', () => {
       const suggestedItems =
           suggestedInputMethods.querySelectorAll('.list-item');
       // input methods are based on and ordered by enabled languages
+      // only allowed input methods are shown.
       assertEquals(2, suggestedItems.length);
       assertEquals('US Swahili keyboard', suggestedItems[0].textContent.trim());
       assertEquals('Swahili keyboard', suggestedItems[1].textContent.trim());
@@ -246,15 +259,59 @@ suite('input page', () => {
       const allItems = allInputMethods.querySelectorAll('.list-item');
       // All input methods should appear and ordered based on fake settings
       // data.
-      assertEquals(3, allItems.length);
-      assertEquals('Swahili keyboard', allItems[0].textContent.trim());
-      // checked is reflected
-      assertTrue(allItems[0].checked);
-      assertEquals('US Swahili keyboard', allItems[1].textContent.trim());
-      assertFalse(allItems[1].checked);
-      assertEquals('Vietnamese keyboard', allItems[2].textContent.trim());
+      assertEquals(4, allItems.length);
+
+      const expectedItems = [
+        {
+          name: 'Swahili keyboard',
+          checkboxDisabled: false,
+          checkboxChecked: true,
+          policyIcon: false,
+        },
+        {
+          name: 'US Swahili keyboard',
+          checkboxDisabled: false,
+          checkboxChecked: false,
+          policyIcon: false,
+        },
+        {
+          name: 'US International keyboard',
+          checkboxDisabled: true,
+          checkboxChecked: false,
+          policyIcon: true,
+        },
+        {
+          name: 'Vietnamese keyboard',
+          checkboxDisabled: false,
+          checkboxChecked: false,
+          policyIcon: false,
+        },
+      ];
+
+      for (let i = 0; i < allItems.length; i++) {
+        assertTrue(
+            allItems[i].textContent.includes(expectedItems[i].name),
+            `expect ${allItems[i].textContent} to include ${
+                expectedItems[i].name}`);
+        assertEquals(
+            expectedItems[i].checkboxDisabled,
+            allItems[i].querySelector('cr-checkbox').disabled,
+            `expect ${expectedItems[i].name}'s checkbox disabled state to be ${
+                expectedItems[i].checkboxDisabled}`);
+        assertEquals(
+            expectedItems[i].checkboxChecked,
+            allItems[i].querySelector('cr-checkbox').checked,
+            `expect ${expectedItems[i].name}'s checkbox checked state to be ${
+                expectedItems[i].checkboxChecked}`);
+        assertEquals(
+            expectedItems[i].policyIcon,
+            !!allItems[i].querySelector('iron-icon'),
+            `expect ${expectedItems[i].name}'s policy icon presence to be ${
+                expectedItems[i].policyIcon}`);
+      }
+
       // selecting Vietnamese keyboard
-      allItems[2].click();
+      allItems[3].querySelector('cr-checkbox').click();
 
       actionButton.click();
 
