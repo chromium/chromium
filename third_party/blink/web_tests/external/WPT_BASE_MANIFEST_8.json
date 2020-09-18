@@ -63,6 +63,15 @@
       ]
      ]
     },
+    "css-contain": {
+     "contain-crash.html": [
+      "373e004c0507e764e1383b17a05e64537b6711ab",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "css-flexbox": {
      "fixedpos-video-in-abspos-quirk-crash.html": [
       "80cae086ca7ba1ceb9af2631ea2a5aa04249040b",
@@ -157519,6 +157528,19 @@
         {}
        ]
       ],
+      "overlapped-positioned-and-will-change-transform-descendant.html": [
+       "e5c6a1b99cdecaa9161465b0c9d0d9cd10f69b53",
+       [
+        null,
+        [
+         [
+          "/svg/struct/reftests/reference/green-100x100.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "position-svg-root-in-foreign-object.html": [
        "fd32d2a961efc8f474a1c5f745602719ab775bb2",
        [
@@ -229896,10 +229918,6 @@
      []
     ],
     "pointerlock": {
-     "pointerevent_pointermove_in_pointerlock.html.ini": [
-      "0c21bf5b526d6ab982ef6e4c6dd6699bafaa6177",
-      []
-     ],
      "resources": {
       "pointerevent_movementxy-iframe.html": [
        "627af3b61cad74bb112558169b1e66f6a24b1129",
@@ -246195,6 +246213,10 @@
      "the-audiocontext-interface": {
       "audiocontext-not-fully-active-expected.txt": [
        "86d99c233ebb1d7ad83ddbb3571b87a5bb9fdc06",
+       []
+      ],
+      "audiocontext-suspend-resume-expected.txt": [
+       "4b3708bcb872ac53b8e82e6d780745dcb59cafab",
        []
       ],
       "constructor-allowed-to-start-expected.txt": [
@@ -400001,6 +400023,13 @@
         {}
        ]
       ],
+      "getboundingclientrect.html": [
+       "82941bd14b3c6935a6b6a17b89fb390bc1b01b8f",
+       [
+        null,
+        {}
+       ]
+      ],
       "properties.svg": [
        "dd198f177dfb2906ce6be9184df9fbbb8feefe93",
        [
@@ -410204,7 +410233,7 @@
        ]
       ],
       "delay-time-clamping.html": [
-       "b79f0de0e5871607c06f23a7d2a7beda4bb56c5c",
+       "fa010df3cd51389a2629f757c9201778cc7f4aa5",
        [
         null,
         {}
@@ -410482,7 +410511,7 @@
        ]
       ],
       "audiocontext-suspend-resume.html": [
-       "48506d65ac9cf82e8e81841832193ac1f1f3cb56",
+       "ff3daebf39635a0a62951b387195bb463619202d",
        [
         null,
         {}

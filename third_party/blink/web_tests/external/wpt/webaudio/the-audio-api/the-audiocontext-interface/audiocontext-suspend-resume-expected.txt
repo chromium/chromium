@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+PASS # AUDIT TASK RUNNER STARTED.
+PASS Executing "test-suspend"
+PASS Executing "test-resume"
+PASS Executing "test-after-close"
+PASS Executing "resume-running-context"
+PASS Audit report
+PASS > [test-suspend] Test suspend() for offline context
+PASS   offlineContext = new OfflineAudioContext(1, 44100, 44100) did not throw an exception.
+PASS   offlineContext.state is equal to suspended.
+PASS   p1 = offlineContext.suspend() did not throw an exception.
+PASS   p1 instanceof Promise is true.
+PASS   p1 rejected correctly with TypeError: Failed to execute 'suspend' on 'OfflineAudioContext': 1 argument required, but only 0 present..
+PASS < [test-suspend] All assertions passed. (total 5 assertions)
+PASS > [test-resume] Test resume() for offline context
+PASS   p2 = offlineContext.resume() did not throw an exception.
+PASS   p2 instanceof Promise is true.
+PASS   After resume, offlineContext.state is equal to suspended.
+PASS   p2 rejected correctly with InvalidStateError: cannot resume an offline context that has not started.
+PASS < [test-resume] All assertions passed. (total 4 assertions)
+PASS > [test-after-close] Test state after context closed
+PASS   p3 = offlineContext.startRendering() did not throw an exception.
+PASS   After close, offlineContext.state is equal to closed.
+PASS   offlineContext.suspend() rejected correctly with TypeError: Failed to execute 'suspend' on 'OfflineAudioContext': 1 argument required, but only 0 present..
+PASS   offlineContext.resume() rejected correctly with InvalidStateError: cannot resume an offline context that has not started.
+PASS < [test-after-close] All assertions passed. (total 4 assertions)
+PASS > [resume-running-context] Test resuming a running context
+PASS   Create online context did not throw an exception.
+FAIL X context.state is not equal to suspended. Got running. assert_true: expected true got false
+PASS   context.resume resolved correctly.
+PASS   context.state after resume is equal to running.
+FAIL < [resume-running-context] 1 out of 4 assertions were failed. assert_true: expected true got false
+FAIL # AUDIT TASK RUNNER FINISHED: 1 out of 4 tasks were failed. assert_true: expected true got false
+Harness: the test ran to completion.
+
