@@ -12,6 +12,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.help.HelpAndFeedback;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.account_picker.AccountConsistencyPromoAction;
+import org.chromium.chrome.browser.signin.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -63,8 +65,9 @@ public class IncognitoInterstitialDelegate {
      */
     @MainThread
     void openCurrentUrlInIncognitoTab() {
-        // TODO(https://crbug.com/1120334): Add metrics to web sign-in flow.
         ThreadUtils.assertOnUiThread();
+        AccountPickerDelegate.recordAccountConsistencyPromoAction(
+                AccountConsistencyPromoAction.STARTED_INCOGNITO_SESSION);
         Tab currentRegularTab = TabModelUtils.getCurrentTab(mRegularTabModel);
         mIncognitoTabCreator.launchUrl(
                 currentRegularTab.getUrlString(), TabLaunchType.FROM_CHROME_UI);

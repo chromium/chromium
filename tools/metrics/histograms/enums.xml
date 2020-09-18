@@ -955,6 +955,11 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="AddAccount">
     User has tapped |Add account to device| from expanded account list.
   </int>
+  <int value="3" label="StartedIncognitoSession">
+    User tapped the button from the expanded account list to open the incognito
+    interstitial then confirmed opening the page in the incognito tab by tapping
+    |Continue| in the incognito interstitial.
+  </int>
 </enum>
 
 <enum name="AccountManagerAccountAdditionSource">

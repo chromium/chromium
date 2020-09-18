@@ -20,6 +20,7 @@ import java.lang.annotation.RetentionPolicy;
         AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS,
         AccountConsistencyPromoAction.DISMISSED_BACK,
         AccountConsistencyPromoAction.ADD_ACCOUNT,
+        AccountConsistencyPromoAction.STARTED_INCOGNITO_SESSION,
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface AccountConsistencyPromoAction {
@@ -38,5 +39,12 @@ public @interface AccountConsistencyPromoAction {
      */
     int ADD_ACCOUNT = 2;
 
-    int MAX = 3;
+    /**
+     * User tapped the button from the expanded account list to open the incognito interstitial
+     * then confirmed opening the page in the incognito tab by tapping |Continue| in the incognito
+     * interstitial.
+     */
+    int STARTED_INCOGNITO_SESSION = 3;
+
+    int MAX = 4;
 }
