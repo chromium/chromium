@@ -1356,13 +1356,9 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      * history load are used.
      */
     private final void restoreIfNeeded() {
-        // Attempts to display the Paint Preview representation of this Tab instead of fully
-        // restoring. Please note that this is behind an experimental flag.
-        if (isFrozen()
-                && PaintPreviewHelper.showPaintPreviewOnRestore(
-                        this, () -> restoreIfNeeded(), () -> restoreIfNeeded())) {
-            return;
-        }
+        // Attempts to display the Paint Preview representation of this Tab. Please note that this
+        // is behind an experimental flag (crbug.com/1008520).
+        if (isFrozen()) PaintPreviewHelper.showPaintPreviewOnRestore(this);
 
         try {
             TraceEvent.begin("Tab.restoreIfNeeded");

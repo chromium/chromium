@@ -72,8 +72,7 @@ public class PaintPreviewHelper {
      * @return Whether the Paint Preview started to initialize or is already initializating.
      * Note that if the Paint Preview is already showing, this will return false.
      */
-    public static boolean showPaintPreviewOnRestore(
-            Tab tab, Runnable onShown, Runnable onDismissed) {
+    public static boolean showPaintPreviewOnRestore(Tab tab) {
         if (!CachedFeatureFlags.isEnabled(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP)
                 || sHasAttemptedToShowOnRestore
                 || ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
@@ -91,8 +90,7 @@ public class PaintPreviewHelper {
             }
         };
 
-        if (!player.maybeShow(onShown, () -> {
-                onDismissed.run();
+        if (!player.maybeShow(() -> {
                 PageLoadMetrics.removeObserver(observer);
             }, sActivityCreationTimeMs, () -> {
                 return UmaUtils.hasComeToForeground() && !UmaUtils.hasComeToBackground();

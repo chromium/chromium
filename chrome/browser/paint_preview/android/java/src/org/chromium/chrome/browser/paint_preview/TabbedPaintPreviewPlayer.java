@@ -148,7 +148,6 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
     /**
      * Shows a Paint Preview for the provided tab if it exists and has not been displayed for this
      * Tab before.
-     * @param onShown The callback for when the Paint Preview is shown.
      * @param onDismissed The callback for when the Paint Preview is dismissed.
      * @param activityCreationTimestampMs The hosting activity's creation time in ms from
      * @param recordFirstPaint Callable to determine if first paint should be recorded.
@@ -156,8 +155,8 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
      * @return Whether the Paint Preview started to initialize or is already initializating.
      * Note that if the Paint Preview is already showing, this will return false.
      */
-    public boolean maybeShow(@Nullable Runnable onShown, @Nullable Runnable onDismissed,
-            long activityCreationTimestampMs, Callable<Boolean> recordFirstPaint) {
+    public boolean maybeShow(@Nullable Runnable onDismissed, long activityCreationTimestampMs,
+            Callable<Boolean> recordFirstPaint) {
         if (mInitializing != null) return mInitializing;
 
         // Check if a capture exists. This is a quick check using a cache.
@@ -178,7 +177,6 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
                         removePaintPreview(ExitCause.TAB_FINISHED_LOADING);
                         return;
                     }
-                    onShown.run();
                     mMetricsHelper.onShown();
                 },
                 () -> {
