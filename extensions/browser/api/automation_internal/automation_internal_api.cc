@@ -381,8 +381,8 @@ AutomationInternalPerformActionFunction::ConvertToAXActionData(
               params->opt_args.additional_properties, &hit_test_params));
       action->action = ax::mojom::Action::kHitTest;
       action->target_point = gfx::Point(hit_test_params.x, hit_test_params.y);
-      action->hit_test_event_to_fire =
-          ui::ParseEvent(hit_test_params.event_to_fire.c_str());
+      action->hit_test_event_to_fire = ui::ParseAXEnum<ax::mojom::Event>(
+          hit_test_params.event_to_fire.c_str());
       if (action->hit_test_event_to_fire == ax::mojom::Event::kNone)
         return RespondNow(NoArguments());
       break;
