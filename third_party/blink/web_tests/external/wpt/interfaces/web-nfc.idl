@@ -74,7 +74,6 @@ dictionary NDEFReadingEventInit : EventInit {
 };
 
 dictionary NDEFWriteOptions {
-  boolean ignoreRead = true;
   boolean overwrite = true;
   AbortSignal? signal;
 };
