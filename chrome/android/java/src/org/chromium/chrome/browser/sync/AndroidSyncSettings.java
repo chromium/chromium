@@ -18,6 +18,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.IdentityServicesProvider;
@@ -27,6 +28,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncContentResolverDelegate;
 import org.chromium.components.sync.SystemSyncContentResolverDelegate;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * WARNING: Chrome will be decoupled from Android auto-sync (crbug.com/1105795).
@@ -102,6 +104,13 @@ public class AndroidSyncSettings {
      * @param callback Callback that will be called after updating account is finished.
      * @param account The sync account if sync is enabled, null otherwise.
      */
+    // TODO(crbug.com/1125622): Once this class is used only on the UI thread, |callback|
+    // can be removed (syncability update will be synchronous). Same goes for the corresponding
+    // parameter in |updateAccount()|.
+    // TODO(crbug.com/1125622): Exposing these testing constructors that don't register the
+    // singleton instance can be dangerous when there's code that explicitly calls |get()|
+    // (in that case, a new object would be returned, not the one constructed by the test).
+    // Consider exposing them as static methods that also register a singleton instance.
     @VisibleForTesting
     public AndroidSyncSettings(SyncContentResolverDelegate syncContentResolverDelegate,
             @Nullable Runnable callback, @Nullable Account account) {
@@ -112,19 +121,21 @@ public class AndroidSyncSettings {
         updateCachedSettings();
         updateSyncability(callback);
 
-        mSyncContentResolverDelegate.addStatusChangeListener(
-                ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, new SyncStatusObserver() {
-                    @Override
-                    public void onStatusChanged(int which) {
-                        if (which == ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS) {
-                            // Sync settings have changed; update our cached values.
-                            if (updateCachedSettings()) {
-                                // If something actually changed, tell our observers.
-                                notifyObservers();
-                            }
-                        }
+        SyncStatusObserver androidOsListener = new SyncStatusObserver() {
+            @Override
+            public void onStatusChanged(int which) {
+                if (which != ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS) return;
+                // This is called by Android on a background thread, but AndroidSyncSettings
+                // methods should be called from the UI thread, so post a task.
+                PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+                    if (updateCachedSettings()) {
+                        notifyObservers();
                     }
                 });
+            }
+        };
+        mSyncContentResolverDelegate.addStatusChangeListener(
+                ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, androidOsListener);
     }
 
     /**

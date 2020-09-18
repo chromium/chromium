@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import static org.mockito.Mockito.when;
+
 import android.accounts.Account;
 
 import androidx.test.filters.SmallTest;
@@ -14,6 +16,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
@@ -23,7 +28,6 @@ import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
-import org.chromium.components.sync.test.util.MockSyncContentResolverDelegate;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -44,24 +48,26 @@ public class PasswordViewingTypeTest {
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mChromeBrowserTestRule).around(mSettingsActivityTestRule);
 
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private ChromeBasePreference mPasswordsPref;
-    private MockSyncContentResolverDelegate mSyncContentResolverDelegate;
     private String mAuthority;
     private Account mAccount;
+    @Mock
+    private AndroidSyncSettings mAndroidSyncSettings;
 
     @Before
     public void setUp() {
         mAccount = mChromeBrowserTestRule.addAccount("account@example.com");
-        mSyncContentResolverDelegate = new MockSyncContentResolverDelegate();
         mSettingsActivityTestRule.startSettingsActivity();
         MainSettings mainSettings = mSettingsActivityTestRule.getFragment();
         mPasswordsPref =
                 (ChromeBasePreference) mainSettings.findPreference(MainSettings.PREF_PASSWORDS);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AndroidSyncSettings.overrideForTests(
-                    new AndroidSyncSettings(mSyncContentResolverDelegate));
+            AndroidSyncSettings.overrideForTests(mAndroidSyncSettings);
+            setSyncability(false);
             mAuthority = AndroidSyncSettings.getContractAuthority();
-            AndroidSyncSettings.get().updateAccount(mAccount);
         });
     }
 
@@ -87,19 +93,12 @@ public class PasswordViewingTypeTest {
     /**
      * Turn syncability on/off.
      */
-    private void setSyncability(boolean syncState) throws InterruptedException {
-        // Turn on syncability
-        mSyncContentResolverDelegate.setMasterSyncAutomatically(syncState);
-        mSyncContentResolverDelegate.waitForLastNotificationCompleted();
-
-        // First sync
-        mSyncContentResolverDelegate.setIsSyncable(mAccount, mAuthority, (syncState) ? 1 : 0);
-        mSyncContentResolverDelegate.waitForLastNotificationCompleted();
-
-        if (syncState) {
-            mSyncContentResolverDelegate.setSyncAutomatically(mAccount, mAuthority, syncState);
-            mSyncContentResolverDelegate.waitForLastNotificationCompleted();
-        }
+    private void setSyncability(boolean syncState) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            when(mAndroidSyncSettings.isSyncEnabled()).thenReturn(syncState);
+            when(mAndroidSyncSettings.isChromeSyncEnabled()).thenReturn(syncState);
+            when(mAndroidSyncSettings.doesMasterSyncSettingAllowChromeSync()).thenReturn(true);
+        });
     }
 
     /**
@@ -109,7 +108,7 @@ public class PasswordViewingTypeTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testUserRedirectSyncSettings() throws InterruptedException {
+    public void testUserRedirectSyncSettings() {
         setSyncability(true);
         overrideProfileSyncService(false);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -127,7 +126,7 @@ public class PasswordViewingTypeTest {
      */
     @Test
     @SmallTest
-    public void testSyncingNativePasswordView() throws InterruptedException {
+    public void testSyncingNativePasswordView() {
         setSyncability(true);
         overrideProfileSyncService(true);
         Assert.assertEquals(
@@ -140,7 +139,7 @@ public class PasswordViewingTypeTest {
      */
     @Test
     @SmallTest
-    public void testNonSyncingNativePasswordView() throws InterruptedException {
+    public void testNonSyncingNativePasswordView() {
         setSyncability(false);
         Assert.assertEquals(
                 PasswordSettings.class.getCanonicalName(), mPasswordsPref.getFragment());

@@ -27,6 +27,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.MockChangeEventChecker;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.components.sync.test.util.MockSyncContentResolverDelegate;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -107,10 +108,16 @@ public class SyncTest {
             SigninHelper.updateAccountRenameData(eventChecker, oldAccount.name);
 
             // Tell the fake content resolver that a rename had happen and copy over the sync
-            // settings. This would normally be done by the
-            // SystemSyncTestRule.getSyncContentResolver().
-            mSyncTestRule.getSyncContentResolver().renameAccounts(
-                    oldAccount, newAccount, AndroidSyncSettings.getContractAuthority());
+            // settings.
+            MockSyncContentResolverDelegate contentResolver =
+                    mSyncTestRule.getSyncContentResolver();
+            String authority = AndroidSyncSettings.getContractAuthority();
+            int oldIsSyncable = contentResolver.getIsSyncable(oldAccount, authority);
+            contentResolver.setIsSyncable(newAccount, authority, oldIsSyncable);
+            if (oldIsSyncable > 0) {
+                contentResolver.setSyncAutomatically(newAccount, authority,
+                        contentResolver.getSyncAutomatically(oldAccount, authority));
+            }
 
             // Starts the rename process. Normally, this is triggered by the broadcast
             // listener as well.
@@ -223,8 +230,6 @@ public class SyncTest {
 
         // Disabling master sync first. Sync should be off.
         mSyncTestRule.getSyncContentResolver().setMasterSyncAutomatically(false);
-        // TODO(crbug.com/921025): Master sync shouldn't influence isSyncRequested, so at this point
-        // isSyncRequested should be true; only canSyncFeatureStart should be false.
         Assert.assertFalse(SyncTestUtil.isSyncRequested());
         Assert.assertFalse(SyncTestUtil.canSyncFeatureStart());
 
@@ -235,9 +240,6 @@ public class SyncTest {
 
         // Re-enabling Chrome sync should not turn sync back on.
         mSyncTestRule.getSyncContentResolver().setSyncAutomatically(account, authority, true);
-        // TODO(crbug.com/921025): Master sync (which is still disabled) shouldn't influence
-        // isSyncRequested, so at this point isSyncRequested should be true (but
-        // canSyncFeatureStart should remain false).
         Assert.assertFalse(SyncTestUtil.isSyncRequested());
         Assert.assertFalse(SyncTestUtil.canSyncFeatureStart());
 

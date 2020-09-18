@@ -11,18 +11,12 @@ import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.junit.Assert;
-
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.task.AsyncTask;
 import org.chromium.components.sync.SyncContentResolverDelegate;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Fake implementation of the {@link SyncContentResolverDelegate}.
@@ -35,65 +29,65 @@ import java.util.concurrent.TimeUnit;
 public class MockSyncContentResolverDelegate implements SyncContentResolverDelegate {
     private final Set<String> mSyncAutomaticallySet;
     private final Map<String, Boolean> mIsSyncableMap;
-    private final Object mSyncableMapLock = new Object();
-
-    private final Set<AsyncSyncStatusObserver> mObservers;
-
+    private final Set<SyncStatusObserver> mObservers;
     private boolean mMasterSyncAutomatically;
-    private boolean mDisableObserverNotifications;
 
-    private Semaphore mPendingObserverCount;
+    private Object mLock = new Object();
 
     public MockSyncContentResolverDelegate() {
         mSyncAutomaticallySet = new HashSet<String>();
         mIsSyncableMap = new HashMap<String, Boolean>();
-        mObservers = new HashSet<AsyncSyncStatusObserver>();
+        mObservers = new HashSet<SyncStatusObserver>();
     }
 
     @Override
-    public Object addStatusChangeListener(int mask, SyncStatusObserver callback) {
+    public Object addStatusChangeListener(int mask, SyncStatusObserver observer) {
         if (mask != ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS) {
             throw new IllegalArgumentException("This implementation only supports "
                     + "ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS as the mask");
         }
-        AsyncSyncStatusObserver asyncSyncStatusObserver = new AsyncSyncStatusObserver(callback);
-        synchronized (mObservers) {
-            mObservers.add(asyncSyncStatusObserver);
+        synchronized (mLock) {
+            mObservers.add(observer);
         }
-        return asyncSyncStatusObserver;
+        return observer;
     }
 
     @Override
     public void removeStatusChangeListener(Object handle) {
-        synchronized (mObservers) {
+        synchronized (mLock) {
             mObservers.remove(handle);
         }
     }
 
+    // Once this returns, observers are guaranteed to have been synchronously notified.
     @Override
     @VisibleForTesting
     public void setMasterSyncAutomatically(boolean sync) {
-        if (mMasterSyncAutomatically == sync) return;
-
-        mMasterSyncAutomatically = sync;
+        synchronized (mLock) {
+            if (mMasterSyncAutomatically == sync) return;
+            mMasterSyncAutomatically = sync;
+        }
         notifyObservers();
     }
 
     @Override
     public boolean getMasterSyncAutomatically() {
-        return mMasterSyncAutomatically;
-    }
-
-    @Override
-    public boolean getSyncAutomatically(Account account, String authority) {
-        synchronized (mSyncableMapLock) {
-            return mSyncAutomaticallySet.contains(createKey(account, authority));
+        synchronized (mLock) {
+            return mMasterSyncAutomatically;
         }
     }
 
     @Override
+    public boolean getSyncAutomatically(Account account, String authority) {
+        synchronized (mLock) {
+            return mSyncAutomaticallySet.contains(createKey(account, authority));
+        }
+    }
+
+    // Once this returns, observers are guaranteed to have been synchronously notified.
+    @Override
     public void setSyncAutomatically(Account account, String authority, boolean sync) {
-        synchronized (mSyncableMapLock) {
+        synchronized (mLock) {
             String key = createKey(account, authority);
             if (sync) {
                 mSyncAutomaticallySet.add(key);
@@ -104,9 +98,10 @@ public class MockSyncContentResolverDelegate implements SyncContentResolverDeleg
         notifyObservers();
     }
 
+    // Once this returns, observers are guaranteed to have been synchronously notified.
     @Override
     public void setIsSyncable(Account account, String authority, int syncable) {
-        synchronized (mSyncableMapLock) {
+        synchronized (mLock) {
             String key = createKey(account, authority);
             if (syncable > 0) {
                 mIsSyncableMap.put(key, true);
@@ -121,7 +116,7 @@ public class MockSyncContentResolverDelegate implements SyncContentResolverDeleg
 
     @Override
     public int getIsSyncable(Account account, String authority) {
-        synchronized (mSyncableMapLock) {
+        synchronized (mLock) {
             String key = createKey(account, authority);
             if (mIsSyncableMap.containsKey(key)) {
                 return mIsSyncableMap.get(key) ? 1 : 0;
@@ -138,71 +133,11 @@ public class MockSyncContentResolverDelegate implements SyncContentResolverDeleg
     }
 
     private void notifyObservers() {
-        if (mDisableObserverNotifications) return;
-        synchronized (mObservers) {
-            mPendingObserverCount = new Semaphore(1 - mObservers.size());
-            for (AsyncSyncStatusObserver observer : mObservers) {
-                observer.notifyObserverAsync(mPendingObserverCount);
+        synchronized (mLock) {
+            for (SyncStatusObserver observer : mObservers) {
+                observer.onStatusChanged(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS);
             }
         }
     }
 
-    /**
-     * Blocks until the last notification has been issued to all registered observers.
-     * Note that if an observer is removed while a notification is being handled this can
-     * fail to return correctly.
-     *
-     * @throws InterruptedException
-     */
-    @VisibleForTesting
-    public void waitForLastNotificationCompleted() throws InterruptedException {
-        Assert.assertTrue("Timed out waiting for notifications to complete.",
-                mPendingObserverCount.tryAcquire(5, TimeUnit.SECONDS));
-    }
-
-    public void disableObserverNotifications() {
-        mDisableObserverNotifications = true;
-    }
-
-    /**
-      * Simulate an account rename, which copies settings to the new account.
-      */
-    public void renameAccounts(Account oldAccount, Account newAccount, String authority) {
-        int oldIsSyncable = getIsSyncable(oldAccount, authority);
-        setIsSyncable(newAccount, authority, oldIsSyncable);
-        if (oldIsSyncable == 1) {
-            setSyncAutomatically(
-                    newAccount, authority, getSyncAutomatically(oldAccount, authority));
-        }
-    }
-
-    private static class AsyncSyncStatusObserver {
-        private final SyncStatusObserver mSyncStatusObserver;
-
-        private AsyncSyncStatusObserver(SyncStatusObserver syncStatusObserver) {
-            mSyncStatusObserver = syncStatusObserver;
-        }
-
-        private void notifyObserverAsync(final Semaphore pendingObserverCount) {
-            if (ThreadUtils.runningOnUiThread()) {
-                new AsyncTask<Void>() {
-                    @Override
-                    protected Void doInBackground() {
-                        mSyncStatusObserver.onStatusChanged(
-                                ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS);
-                        return null;
-                    }
-
-                    @Override
-                    protected void onPostExecute(Void result) {
-                        pendingObserverCount.release();
-                    }
-                }
-                        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            } else {
-                mSyncStatusObserver.onStatusChanged(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS);
-                pendingObserverCount.release();
-            }
-        }
-    }
 }
