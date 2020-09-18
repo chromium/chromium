@@ -1,4 +1,8 @@
+file://chrome/updater/OWNERS
+
+# For iOS / obj-C specific issues:
 rohitrao@chromium.org
 
-# TEAM: ios-directory-owners@chromium.org
+# COMPONENT: Internals>Installer
+# TEAM: chrome-updates-dev@chromium.org
 # OS: iOS

@@ -1,3 +1,7 @@
+file://chrome/updater/OWNERS
+
 nyquist@chromium.org
-sorin@chromium.org
-waffles@chromium.org
+
+# COMPONENT: Internals>Installer
+# TEAM: chrome-updates-dev@chromium.org
+# OS: Android
