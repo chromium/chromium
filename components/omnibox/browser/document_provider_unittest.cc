@@ -271,7 +271,6 @@ TEST_F(DocumentProviderTest, CheckFeaturePrerequisiteServerBackoff) {
   provider_->backoff_for_session_ = true;
   EXPECT_FALSE(
       provider_->IsDocumentProviderAllowed(client_.get(), AutocompleteInput()));
-  provider_->backoff_for_session_ = false;
 }
 
 TEST_F(DocumentProviderTest, IsInputLikelyURL) {
@@ -340,7 +339,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResults) {
   EXPECT_EQ(matches[1].relevance, 0);
   EXPECT_TRUE(matches[1].stripped_destination_url.is_empty());
 
-  ASSERT_FALSE(provider_->backoff_for_session_);
+  EXPECT_FALSE(provider_->backoff_for_session_);
 }
 
 TEST_F(DocumentProviderTest, ProductDescriptionStringsAndAccessibleLabels) {
@@ -600,7 +599,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTies) {
   EXPECT_EQ(matches[2].relevance, 1232);  // Tie demoted, twice.
   EXPECT_TRUE(matches[2].stripped_destination_url.is_empty());
 
-  ASSERT_FALSE(provider_->backoff_for_session_);
+  EXPECT_FALSE(provider_->backoff_for_session_);
 }
 
 TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTiesCascade) {
@@ -658,7 +657,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTiesCascade) {
   EXPECT_EQ(matches[2].relevance, 1232);
   EXPECT_TRUE(matches[2].stripped_destination_url.is_empty());
 
-  ASSERT_FALSE(provider_->backoff_for_session_);
+  EXPECT_FALSE(provider_->backoff_for_session_);
 }
 
 TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTiesZeroLimit) {
@@ -715,45 +714,10 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTiesZeroLimit) {
   EXPECT_EQ(matches[2].relevance, 0);
   EXPECT_TRUE(matches[2].stripped_destination_url.is_empty());
 
-  ASSERT_FALSE(provider_->backoff_for_session_);
+  EXPECT_FALSE(provider_->backoff_for_session_);
 }
 
-TEST_F(DocumentProviderTest, ParseDocumentSearchResultsWithBackoff) {
-  // Response where the server wishes to trigger backoff.
-  const char kBackoffJSONResponse[] = R"({
-      "error": {
-        "code": 503,
-        "message": "Not eligible to query, see retry info.",
-        "status": "UNAVAILABLE",
-        "details": [
-          {
-            "@type": "type.googleapis.com/google.rpc.RetryInfo",
-            "retryDelay": "100000s"
-          },
-        ]
-      }
-    })";
-
-  ASSERT_FALSE(provider_->backoff_for_session_);
-  base::Optional<base::Value> backoff_response = base::JSONReader::Read(
-      kBackoffJSONResponse, base::JSON_ALLOW_TRAILING_COMMAS);
-  ASSERT_TRUE(backoff_response);
-  ASSERT_TRUE(backoff_response->is_dict());
-
-  ACMatches matches = provider_->ParseDocumentSearchResults(*backoff_response);
-  ASSERT_TRUE(provider_->backoff_for_session_);
-}
-
-TEST_F(DocumentProviderTest, ParseDocumentSearchResultsWithIneligibleFlag) {
-  // Response where the server wishes to trigger backoff.
-  const char kIneligibleJSONResponse[] = R"({
-      "error": {
-        "code": 403,
-        "message": "Not eligible to query due to admin disabled Chrome search settings.",
-        "status": "PERMISSION_DENIED",
-      }
-    })";
-
+TEST_F(DocumentProviderTest, ParseDocumentSearchResultsWithBadResponse) {
   // Same as above, but the message doesn't match. We should accept this
   // response, but it isn't expected to trigger backoff.
   const char kMismatchedMessageJSON[] = R"({
@@ -767,22 +731,14 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsWithIneligibleFlag) {
   ACMatches matches;
   ASSERT_FALSE(provider_->backoff_for_session_);
 
-  // First, parse an invalid response - shouldn't prohibit future requests
-  // from working but also shouldn't trigger backoff.
   base::Optional<base::Value> bad_response = base::JSONReader::Read(
       kMismatchedMessageJSON, base::JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(bad_response);
   ASSERT_TRUE(bad_response->is_dict());
   matches = provider_->ParseDocumentSearchResults(*bad_response);
-  ASSERT_FALSE(provider_->backoff_for_session_);
-
-  // Now parse a response that does trigger backoff.
-  base::Optional<base::Value> backoff_response = base::JSONReader::Read(
-      kIneligibleJSONResponse, base::JSON_ALLOW_TRAILING_COMMAS);
-  ASSERT_TRUE(backoff_response);
-  ASSERT_TRUE(backoff_response->is_dict());
-  matches = provider_->ParseDocumentSearchResults(*backoff_response);
-  ASSERT_TRUE(provider_->backoff_for_session_);
+  EXPECT_EQ(matches.size(), 0u);
+  // Shouldn't prohibit future requests or trigger backoff.
+  EXPECT_FALSE(provider_->backoff_for_session_);
 }
 
 // This test is affected by an iOS 10 simulator bug: https://crbug.com/782033
@@ -803,7 +759,7 @@ TEST_F(DocumentProviderTest, GenerateLastModifiedString) {
   base::Time modified_this_year = local_now + base::TimeDelta::FromDays(-8);
   base::Time modified_last_year = local_now + base::TimeDelta::FromDays(-365);
 
-  // GenerateLastModifiedString should accept any parseable timestamp, but use
+  // GenerateLastModifiedString should accept any parsable timestamp, but use
   // ISO8601 UTC timestamp strings since the service returns them in practice.
   EXPECT_EQ(DocumentProvider::GenerateLastModifiedString(
                 base::TimeToISO8601(modified_today), local_now),

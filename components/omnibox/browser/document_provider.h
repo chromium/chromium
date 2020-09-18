@@ -101,9 +101,7 @@ class DocumentProvider : public AutocompleteProvider {
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
                            ParseDocumentSearchResultsBreakTiesZeroLimit);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
-                           ParseDocumentSearchResultsWithBackoff);
-  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
-                           ParseDocumentSearchResultsWithIneligibleFlag);
+                           ParseDocumentSearchResultsWithBadResponse);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, GenerateLastModifiedString);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, Scoring);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, Caching);

@@ -3815,9 +3815,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-drive-suggestions",
      flag_descriptions::kOmniboxDriveSuggestionsName,
      flag_descriptions::kOmniboxDriveSuggestionsDescriptions, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kDocumentProvider,
-                                    kOmniboxDocumentProviderVariations,
-                                    "OmniboxBundledExperimentV1")},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox::kDocumentProvider,
+         kOmniboxDocumentProviderVariations,
+         "OmniboxDocumentProviderNonDogfoodExperiments")},
     {"omnibox-autocomplete-titles",
      flag_descriptions::kOmniboxAutocompleteTitlesName,
      flag_descriptions::kOmniboxAutocompleteTitlesDescription, kOsDesktop,

@@ -101,40 +101,6 @@ AutocompleteMatch::DocumentType GetIconForMIMEType(
              : AutocompleteMatch::DocumentType::DRIVE_OTHER;
 }
 
-const char kErrorMessageAdminDisabled[] =
-    "Not eligible to query due to admin disabled Chrome search settings.";
-const char kErrorMessageRetryLater[] = "Not eligible to query, see retry info.";
-
-// TODO(manukh): Remove ResponseContainsBackoffSignal once the check using http
-// status code in |OnURLLoadComplete| rolls out and the backend returns to
-// sending 4xx backoff responses as opposed to 2xx; or, if the backend is never
-// adjusted to send 2xx responses, once that check rolls out.
-bool ResponseContainsBackoffSignal(const base::DictionaryValue* root_dict) {
-  const base::DictionaryValue* error_info;
-  if (!root_dict->GetDictionary("error", &error_info)) {
-    return false;
-  }
-  int code;
-  std::string status;
-  std::string message;
-  if (!error_info->GetInteger("code", &code) ||
-      !error_info->GetString("status", &status) ||
-      !error_info->GetString("message", &message)) {
-    return false;
-  }
-
-  // 403/PERMISSION_DENIED: Account is currently ineligible to receive results.
-  if (code == 403 && status == "PERMISSION_DENIED" &&
-      message == kErrorMessageAdminDisabled) {
-    return true;
-  }
-
-  // 503/UNAVAILABLE: Uninteresting set of results, or another server request to
-  // backoff.
-  return code == 503 && status == "UNAVAILABLE" &&
-         message == kErrorMessageRetryLater;
-}
-
 struct FieldMatches {
   double weight;
   String16Vector words;
@@ -732,15 +698,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
     return matches;
   }
 
-  // The server may ask the client to back off, in which case we back off for
-  // the session.
-  // TODO(skare): Respect retryDelay if provided, ideally by calling via gRPC.
-  if (ResponseContainsBackoffSignal(root_dict)) {
-    backoff_for_session_ = true;
-    return matches;
-  }
-
-  // Otherwise parse the results.
+  // Parse the results.
   if (!root_dict->GetList("results", &results_list)) {
     return matches;
   }
@@ -794,7 +752,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
       WithinBounds(input_.text().length(), min_query_show_length_,
                    max_query_show_length_);
   // In order to compare small slices of input length while excluding noise from
-  // the larger group of all input lenghts, |min_query_log_length_| and
+  // the larger group of all input lengths, |min_query_log_length_| and
   // |max_query_log_length_| specify the queries that will log
   // field_trial_triggered. E.g., if |min_query_log_length_| is 50 and
   // |max_query_log_length_| is -1, only inputs of length 50 or greater which
