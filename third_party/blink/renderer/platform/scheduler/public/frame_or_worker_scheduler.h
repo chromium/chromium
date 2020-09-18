@@ -63,6 +63,8 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
     SchedulingAffectingFeatureHandle& operator=(
         SchedulingAffectingFeatureHandle&&);
 
+    explicit operator bool() const { return scheduler_.get(); }
+
     inline void reset() {
       if (scheduler_)
         scheduler_->OnStoppedUsingFeature(feature_, policy_);

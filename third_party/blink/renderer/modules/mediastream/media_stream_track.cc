@@ -27,7 +27,9 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
@@ -40,6 +42,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/imagecapture/image_capture.h"
 #include "third_party/blink/renderer/modules/mediastream/apply_constraints_request.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
@@ -259,6 +262,11 @@ MediaStreamTrack::MediaStreamTrack(ExecutionContext* context,
     execution_context_->GetTaskRunner(TaskType::kInternalMedia)
         ->PostTask(FROM_HERE, std::move(callback));
   }
+
+  // Note that both 'live' and 'muted' correspond to a 'live' ready state in the
+  // web API.
+  if (ready_state_ != MediaStreamSource::kReadyStateEnded)
+    EnsureFeatureHandleForScheduler();
 }
 
 MediaStreamTrack::~MediaStreamTrack() = default;
@@ -402,6 +410,7 @@ void MediaStreamTrack::stopTrack(ExecutionContext* execution_context) {
     return;
 
   ready_state_ = MediaStreamSource::kReadyStateEnded;
+  feature_handle_for_scheduler_.reset();
   UserMediaController* user_media =
       UserMediaController::From(To<LocalDOMWindow>(execution_context));
   if (user_media)
@@ -730,19 +739,25 @@ void MediaStreamTrack::SourceChangedState() {
   if (Ended())
     return;
 
+  // Note that both 'live' and 'muted' correspond to a 'live' ready state in the
+  // web API, hence the following logic around |feature_handle_for_scheduler_|.
+
   ready_state_ = component_->Source()->GetReadyState();
   switch (ready_state_) {
     case MediaStreamSource::kReadyStateLive:
       component_->SetMuted(false);
       DispatchEvent(*Event::Create(event_type_names::kUnmute));
+      EnsureFeatureHandleForScheduler();
       break;
     case MediaStreamSource::kReadyStateMuted:
       component_->SetMuted(true);
       DispatchEvent(*Event::Create(event_type_names::kMute));
+      EnsureFeatureHandleForScheduler();
       break;
     case MediaStreamSource::kReadyStateEnded:
       DispatchEvent(*Event::Create(event_type_names::kEnded));
       PropagateTrackEnded();
+      feature_handle_for_scheduler_.reset();
       break;
   }
   SendLogMessage(
@@ -811,6 +826,26 @@ void MediaStreamTrack::Trace(Visitor* visitor) const {
   visitor->Trace(image_capture_);
   visitor->Trace(execution_context_);
   EventTargetWithInlineData::Trace(visitor);
+}
+
+void MediaStreamTrack::EnsureFeatureHandleForScheduler() {
+  if (feature_handle_for_scheduler_)
+    return;
+  LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(GetExecutionContext());
+  // Ideally we'd use To<LocalDOMWindow>, but in unittests the ExecutionContext
+  // may not be a LocalDOMWindow.
+  if (!window)
+    return;
+  // This can happen for detached frames.
+  if (!window->GetFrame())
+    return;
+  feature_handle_for_scheduler_ =
+      window->GetFrame()->GetFrameScheduler()->RegisterFeature(
+          SchedulingPolicy::Feature::kWebRTC,
+          base::FeatureList::IsEnabled(features::kOptOutWebRTCFromAllThrottling)
+              ? SchedulingPolicy{SchedulingPolicy::DisableAllThrottling()}
+              : SchedulingPolicy{
+                    SchedulingPolicy::DisableAggressiveThrottling()});
 }
 
 }  // namespace blink

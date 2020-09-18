@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 
@@ -166,6 +167,10 @@ class MODULES_EXPORT RTCDataChannel final
   bool SendRawData(const char* data, size_t length);
   bool SendDataBuffer(webrtc::DataBuffer data_buffer);
 
+  // Initializes |feature_handle_for_scheduler_|, which must not yet have been
+  // initialized.
+  void CreateFeatureHandleForScheduler();
+
   webrtc::DataChannelInterface::DataState state_;
 
   enum BinaryType { kBinaryTypeBlob, kBinaryTypeArrayBuffer };
@@ -177,6 +182,12 @@ class MODULES_EXPORT RTCDataChannel final
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, Close);
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, Message);
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, BufferedAmountLow);
+
+  // This handle notifies the scheduler about a connected data channel
+  // associated with a frame. The handle should be destroyed when the channel
+  // is closed.
+  FrameScheduler::SchedulingAffectingFeatureHandle
+      feature_handle_for_scheduler_;
 
   unsigned buffered_amount_low_threshold_;
   unsigned buffered_amount_;
