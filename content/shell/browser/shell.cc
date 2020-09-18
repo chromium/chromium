@@ -673,20 +673,29 @@ void Shell::SetContentsBounds(WebContents* source, const gfx::Rect& bounds) {
 }
 
 gfx::Size Shell::GetShellDefaultSize() {
-  static gfx::Size default_shell_size;
+  static gfx::Size default_shell_size;  // Only go through this method once.
+
   if (!default_shell_size.IsEmpty())
     return default_shell_size;
+
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kContentShellHostWindowSize)) {
     const std::string size_str = command_line->GetSwitchValueASCII(
                   switches::kContentShellHostWindowSize);
     int width, height;
-    CHECK_EQ(2, sscanf(size_str.c_str(), "%dx%d", &width, &height));
-    default_shell_size = gfx::Size(width, height);
-  } else {
+    if (sscanf(size_str.c_str(), "%dx%d", &width, &height) == 2) {
+      default_shell_size = gfx::Size(width, height);
+    } else {
+      LOG(ERROR) << "Invalid size \"" << size_str << "\" given to --"
+                 << switches::kContentShellHostWindowSize;
+    }
+  }
+
+  if (default_shell_size.IsEmpty()) {
     default_shell_size = gfx::Size(
       kDefaultTestWindowWidthDip, kDefaultTestWindowHeightDip);
   }
+
   return default_shell_size;
 }
 
