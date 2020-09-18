@@ -28,10 +28,15 @@ const _NAMES_TO_FLAGS = Object.freeze({
  * Wrapper around fetch for requesting the same resource multiple times.
  */
 class DataFetcher {
-  constructor(input) {
+  constructor(accessToken) {
+    /** @type {string | null} */
+    this._accessToken = accessToken;
     /** @type {AbortController | null} */
     this._controller = null;
-    this.setInput(input);
+    /** @type {string | null} */
+    this._input = null;
+    /** @type {Uint8Array | null} */
+    this._cache = null;
   }
 
   /**
@@ -39,24 +44,13 @@ class DataFetcher {
    * @param {string | Request} input URL to the resource you want to fetch.
    */
   setInput(input) {
-    if (typeof this._input === 'string' && this._input.startsWith('blob:')) {
+    if (this._input && this._input.startsWith('blob:')) {
       // Revoke the previous Blob url to prevent memory leaks
       URL.revokeObjectURL(this._input);
     }
 
-    /** @type {Uint8Array | null} */
     this._cache = null;
     this._input = input;
-  }
-
-  /**
-   * Sets the access token to be used for authenticated requests. If accessToken
-   * is non-null and the URL is a google storage URL, an authenticated request
-   * is performed instead.
-   * @param {?string} accessToken
-   */
-  setAccessToken(accessToken) {
-    this._accessToken = accessToken;
   }
 
   /**
@@ -86,12 +80,15 @@ class DataFetcher {
     if (!headers) {
       headers = new Headers();
     }
-    headers.append('cache-control', 'no-cache');
-    return fetch(url, {
+    let response = await fetch(url, {
       headers,
       credentials: 'same-origin',
       signal: this._controller.signal,
     });
+    if (!response.ok) {
+      throw new Error('Fetch failed.');
+    }
+    return response;
   }
 
   /**
@@ -135,8 +132,7 @@ async function Open(name) {
   });
 }
 
-// Placeholder input name until supplied via setInput()
-const g_fetcher = new DataFetcher('data.ndjson');
+let g_fetcher = null;
 let g_beforeFetcher = null;
 let g_sizeFileLoaded = false;
 
@@ -181,7 +177,12 @@ async function buildTree(
       if (g_beforeFetcher !== null) {
         load_promises.push(loadSizeFile(true, g_beforeFetcher));
       }
-      await Promise.all(load_promises).then(loadSizeProperties);
+      try {
+        await Promise.all(load_promises).then(loadSizeProperties);
+      } catch (e) {
+        onProgress({percent: 1, id: 0});
+        throw e;
+      }
       onProgress({percent: 0.4, id: 0});
       g_sizeFileLoaded = true;
     }
@@ -268,8 +269,8 @@ const actions = {
       url,
       beforeUrl,
     } = parseOptions(options);
-    if (accessToken) {
-      g_fetcher.setAccessToken(accessToken);
+    if (!g_fetcher) {
+      g_fetcher = new DataFetcher(accessToken);
     }
     if (input === 'from-url://' && url) {
       // Display the data from the `load_url` query parameter
@@ -281,7 +282,8 @@ const actions = {
     }
 
     if (beforeUrl) {
-      g_beforeFetcher = new DataFetcher(beforeUrl);
+      g_beforeFetcher = new DataFetcher(accessToken);
+      g_beforeFetcher.setInput(beforeUrl);
     }
 
     return buildTree(
