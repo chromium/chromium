@@ -243,7 +243,8 @@ void ProxyManagerImpl::OnParseIpp(
 void ProxyManagerImpl::SpoofGetPrinters() {
   std::vector<chromeos::Printer> printers = FilterPrintersForPluginVm(
       delegate_->GetPrinters(chromeos::PrinterClass::kSaved),
-      delegate_->GetPrinters(chromeos::PrinterClass::kEnterprise));
+      delegate_->GetPrinters(chromeos::PrinterClass::kEnterprise),
+      delegate_->GetRecentlyUsedPrinters());
   base::Optional<IppResponse> response =
       BuildGetDestsResponse(in_flight_->request, printers);
   if (!response.has_value()) {

@@ -54,12 +54,13 @@ base::Optional<std::string> GetPrinterId(ipp_t* ipp);
 base::Optional<std::string> ParseEndpointForPrinterId(
     base::StringPiece endpoint);
 
-// Returned list of printers contains first |saved| printers, backfilled with
-// |enterprise| printers listed alphabetically up until the hard printer limit
-// of kPluginVmPrinterLimit.
+// Return list of printers containing first recently used printers,
+// then |saved| printers and |enterprise| printers up until the hard printer
+// limit of kPluginVmPrinterLimit.
 std::vector<chromeos::Printer> FilterPrintersForPluginVm(
     const std::vector<chromeos::Printer>& saved,
-    const std::vector<chromeos::Printer>& enterprise);
+    const std::vector<chromeos::Printer>& enterprise,
+    const std::vector<std::string>& recent);
 
 }  // namespace cups_proxy
 

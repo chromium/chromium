@@ -10,6 +10,7 @@
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
+#include "chrome/browser/printing/print_preview_sticky_settings.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -47,6 +48,15 @@ std::vector<Printer> CupsProxyServiceDelegateImpl::GetPrinters(
 
   // TODO(crbug.com/945409): Include saved + enterprise (+ephemeral?).
   return printers_manager_->GetPrinters(printer_class);
+}
+
+std::vector<std::string>
+CupsProxyServiceDelegateImpl::GetRecentlyUsedPrinters() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto* sticky_settings = printing::PrintPreviewStickySettings::GetInstance();
+  CHECK(sticky_settings);
+  sticky_settings->RestoreFromPrefs(profile_->GetPrefs());
+  return sticky_settings->GetRecentlyUsedPrinters();
 }
 
 bool CupsProxyServiceDelegateImpl::IsPrinterInstalled(const Printer& printer) {

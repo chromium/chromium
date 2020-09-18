@@ -42,6 +42,9 @@ class CupsProxyServiceDelegateImpl
   // Get the currently known list of printers.
   std::vector<Printer> GetPrinters(PrinterClass printer_class) override;
 
+  // Get the recently used printer list from print_preview_sticky_settings.
+  std::vector<std::string> GetRecentlyUsedPrinters() override;
+
   // Returns whether |printer| is currently installed in CUPS with this config.
   bool IsPrinterInstalled(const Printer& printer) override;
 

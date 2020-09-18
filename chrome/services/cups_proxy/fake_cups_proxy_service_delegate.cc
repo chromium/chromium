@@ -20,6 +20,11 @@ base::Optional<chromeos::Printer> FakeCupsProxyServiceDelegate::GetPrinter(
   return base::nullopt;
 }
 
+std::vector<std::string>
+FakeCupsProxyServiceDelegate::GetRecentlyUsedPrinters() {
+  return {};
+}
+
 bool FakeCupsProxyServiceDelegate::IsPrinterInstalled(
     const chromeos::Printer& printer) {
   return false;

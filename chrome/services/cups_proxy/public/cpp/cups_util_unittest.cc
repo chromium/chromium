@@ -6,11 +6,10 @@
 
 #include <cups/ipp.h>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -51,7 +50,7 @@ ipp_t* GetPrinterAttributesRequest(
 }
 
 // Generates |num_printers| printers with unique display_names starting with
-// |prefix|. Returned printers are in alphabetically ascending order.
+// |prefix|.
 std::vector<Printer> GenPrinters(int num_printers, base::StringPiece prefix) {
   std::vector<Printer> ret;
   for (int i = 0; i < num_printers; i++) {
@@ -59,12 +58,6 @@ std::vector<Printer> GenPrinters(int num_printers, base::StringPiece prefix) {
     printer.set_display_name(base::StrCat({prefix, base::NumberToString(i)}));
     ret.push_back(printer);
   }
-
-  // Alphabetically ascending order by display name.
-  std::sort(ret.begin(), ret.end(), [](const Printer& a, const Printer& b) {
-    return a.display_name() < b.display_name();
-  });
-
   return ret;
 }
 
@@ -127,35 +120,64 @@ TEST(ParseEndpointForPrinterIdTest, MissingPathDelimiter) {
 TEST(FilterPrintersForPluginVmTest, EnoughSavedPrinters) {
   auto saved = GetSavedPrinters(kPluginVmPrinterLimit);
   auto enterprise = GetEnterprisePrinters(10);
-  auto ret = FilterPrintersForPluginVm(saved, enterprise);
-  EXPECT_THAT(saved, Pointwise(DisplayNameEq(), ret));
+  auto ret = FilterPrintersForPluginVm(saved, enterprise, {});
+  EXPECT_THAT(ret, Pointwise(DisplayNameEq(), saved));
 }
 
-// Backfilled enterprise printers should be in alphabetical order, by
-// display_name.
-TEST(FilterPrintersForPluginVmTest, OrderedEnterprisePrinters) {
-  auto enterprise = GetEnterprisePrinters(50);
+// If there are less than kPluginVmPrinterLimit printers, serve all of them.
+TEST(FilterPrintersForPluginVmTest, VeryFewSavedPrinters) {
+  auto saved = GetSavedPrinters(4);
+  auto enterprise = GetEnterprisePrinters(1);
+  std::vector<std::string> recent = {saved[2].id(), saved[1].id(),
+                                     saved[3].id()};
+  std::vector<Printer> expected = {saved[2], saved[1], saved[3], saved[0],
+                                   enterprise[0]};
+  auto ret = FilterPrintersForPluginVm(saved, enterprise, recent);
+  EXPECT_THAT(ret, Pointwise(DisplayNameEq(), expected));
+}
+
+// Make sure stale recent printers (printers not found in either the saved or
+// enterprise list) are ignored.
+TEST(FilterPrintersForPluginVmTest, StaleSavedPrinters) {
+  auto stale = GetSavedPrinters(3);
+  auto enterprise = GetEnterprisePrinters(2);
+  std::vector<std::string> recent = {stale[0].id(), stale[1].id(),
+                                     enterprise[1].id(), stale[2].id()};
+  std::vector<Printer> expected = {enterprise[1], enterprise[0]};
+  auto ret = FilterPrintersForPluginVm({}, enterprise, recent);
+  EXPECT_THAT(ret, Pointwise(DisplayNameEq(), expected));
+}
+
+// Serve printers in the following order: recent printers followed by saved
+// printers followed by enterprise printers, up to the limit.
+TEST(FilterPrintersForPluginVmTest, EnterprisePrinters) {
   auto saved = GetSavedPrinters(10);
+  auto enterprise = GetEnterprisePrinters(50);
+  std::vector<std::string> recent = {enterprise[1].id(), saved[1].id()};
 
-  // Filtered list should be saved printers + top enterprise printers up to the
-  // limit.
-  auto expected = saved;
-  expected.insert(expected.end(), enterprise.begin(),
-                  enterprise.begin() + (kPluginVmPrinterLimit - saved.size()));
+  std::vector<Printer> expected = {enterprise[1], saved[1], saved[0]};
+  expected.insert(expected.end(), saved.begin() + 2, saved.end());
+  expected.push_back(enterprise[0]);
+  expected.insert(expected.end(), enterprise.begin() + 2, enterprise.end());
+  if (expected.size() > kPluginVmPrinterLimit)
+    expected.resize(kPluginVmPrinterLimit);
 
-  // We pre-shuffle the enterprise printers to test the ordering constraints.
-  base::RandomShuffle(enterprise.begin(), enterprise.end());
-  auto ret = FilterPrintersForPluginVm(saved, enterprise);
+  auto ret = FilterPrintersForPluginVm(saved, enterprise, recent);
   EXPECT_THAT(ret, Pointwise(DisplayNameEq(), expected));
 
   // Test self-check.
-  EXPECT_EQ(ret.front().display_name(), "SavedPrinter0");
-  EXPECT_EQ(ret.back().display_name(), "EnterprisePrinter35");
+  EXPECT_EQ(ret.front().display_name(), "EnterprisePrinter1");
+  EXPECT_EQ(ret[1].display_name(), "SavedPrinter1");
+  EXPECT_EQ(ret[2].display_name(), "SavedPrinter0");
+  EXPECT_EQ(ret[3].display_name(), "SavedPrinter2");
+  EXPECT_EQ(ret.back().display_name(), "EnterprisePrinter29");
 
-  size_t last_saved_printer_idx = 9;
+  size_t last_saved_printer_idx = 10;
   EXPECT_EQ(ret[last_saved_printer_idx].display_name(), "SavedPrinter9");
   EXPECT_EQ(ret[last_saved_printer_idx + 1].display_name(),
             "EnterprisePrinter0");
+  EXPECT_EQ(ret[last_saved_printer_idx + 2].display_name(),
+            "EnterprisePrinter2");
 }
 
 }  // namespace

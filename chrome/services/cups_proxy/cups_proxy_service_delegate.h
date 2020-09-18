@@ -38,6 +38,7 @@ class CupsProxyServiceDelegate {
       chromeos::PrinterClass printer_class) = 0;
   virtual base::Optional<chromeos::Printer> GetPrinter(
       const std::string& id) = 0;
+  virtual std::vector<std::string> GetRecentlyUsedPrinters() = 0;
   virtual bool IsPrinterInstalled(const chromeos::Printer& printer) = 0;
   virtual void PrinterInstalled(const chromeos::Printer& printer) = 0;
   virtual scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() = 0;
