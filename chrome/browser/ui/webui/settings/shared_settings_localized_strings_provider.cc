@@ -253,8 +253,6 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_ROW_TITLE},
       {"nearbyShareDeviceNameDialogTitle",
        IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_DIALOG_TITLE},
-      {"nearbyShareDeviceNameDialogInputLabel",
-       IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_INPUT_LABEL},
       {"nearbyShareEditDeviceName", IDS_SETTINGS_NEARBY_SHARE_EDIT_DEVICE_NAME},
       {"nearbyShareDeviceNameAriaDescription",
        IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_ARIA_DESCRIPTION},

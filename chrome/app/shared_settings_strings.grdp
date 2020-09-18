@@ -105,11 +105,8 @@
   <message name="IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_DIALOG_TITLE" desc="Title for the dialog which allows a user to set the name of their device which is shown to other devices for the Nearby Share feature.">
     Device Name
   </message>
-  <message name="IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_INPUT_LABEL" desc="Label for the input field which allows a user to set the name of their device which is shown to other devices for the Nearby Share feature.">
-    New device name
-  </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_EDIT_DEVICE_NAME" desc="Label for the button that opens the dialog which allows a user to set the name of their device which is shown to other devices for the Nearby Share feature.">
-    Change name
+    Change device name
   </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_ARIA_DESCRIPTION" desc="Description for screen readers, not displayed in UI, specifying the current device name which is shown to other devices for the Nearby Share feature." is_accessibility_with_no_ui="true">
     Current device name is <ph name="DEVICE_NAME">$1<ex>Michael's Chromebook</ex></ph>
