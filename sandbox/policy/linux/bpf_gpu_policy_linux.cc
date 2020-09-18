@@ -100,10 +100,9 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
     return Allow();
 #endif
 
-  auto* broker_process = SandboxLinux::GetInstance()->broker_process();
-  if (broker_process->IsSyscallAllowed(sysno)) {
-    return Trap(BrokerProcess::SIGSYS_Handler, broker_process);
-  }
+  auto* sandbox_linux = SandboxLinux::GetInstance();
+  if (sandbox_linux->ShouldBrokerHandleSyscall(sysno))
+    return sandbox_linux->HandleViaBroker();
 
   // Default on the baseline policy.
   return BPFBasePolicy::EvaluateSyscall(sysno);

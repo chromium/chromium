@@ -500,6 +500,15 @@ void SandboxLinux::StartBrokerProcess(
                                              options, allowed_command_set)));
 }
 
+bool SandboxLinux::ShouldBrokerHandleSyscall(int sysno) const {
+  return broker_process_->IsSyscallAllowed(sysno);
+}
+
+sandbox::bpf_dsl::ResultExpr SandboxLinux::HandleViaBroker() const {
+  return sandbox::bpf_dsl::Trap(
+      sandbox::syscall_broker::BrokerProcess::SIGSYS_Handler, broker_process_);
+}
+
 bool SandboxLinux::HasOpenDirectories() const {
   return ProcUtil::HasOpenDirectory(proc_fd_);
 }

@@ -33,12 +33,11 @@ NetworkProcessPolicy::NetworkProcessPolicy() {}
 NetworkProcessPolicy::~NetworkProcessPolicy() {}
 
 ResultExpr NetworkProcessPolicy::EvaluateSyscall(int sysno) const {
-  auto* broker_process = SandboxLinux::GetInstance()->broker_process();
-  if (broker_process->IsSyscallAllowed(sysno)) {
-    return Trap(BrokerProcess::SIGSYS_Handler, broker_process);
-  }
+  auto* sandbox_linux = SandboxLinux::GetInstance();
+  if (sandbox_linux->ShouldBrokerHandleSyscall(sysno))
+    return sandbox_linux->HandleViaBroker();
 
-  // TODO(tsepez): FIX this.
+  // TODO(mpdenton): FIX this.
   return Allow();
 }
 

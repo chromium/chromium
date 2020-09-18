@@ -14,7 +14,7 @@ namespace sandbox {
 namespace policy {
 
 // A broker policy is one for a privileged syscall broker that allows
-// access, open, openat, and (in the non-Chrome OS case) unlink.
+// a limited set of filesystem calls.
 class SANDBOX_POLICY_EXPORT BrokerProcessPolicy : public BPFBasePolicy {
  public:
   explicit BrokerProcessPolicy(

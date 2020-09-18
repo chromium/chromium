@@ -233,9 +233,16 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
       PreSandboxHook broker_side_hook,
       const Options& options);
 
-  syscall_broker::BrokerProcess* broker_process() const {
-    return broker_process_;
-  }
+  // Returns true if the broker should handle a particular syscall indicated by
+  // |sysno|. This will typically return true for system calls that take
+  // filepaths as arguments.
+  bool ShouldBrokerHandleSyscall(int sysno) const;
+
+  // Returns an expression that indicates the syscall in question should be
+  // handled transparently by the broker process. This is useful for file
+  // syscalls that take pathnames, so we can enforce pathname whitelisting.
+  // Only usable if StartBrokerProcess() was already called.
+  bpf_dsl::ResultExpr HandleViaBroker() const;
 
  private:
   friend struct base::DefaultSingletonTraits<SandboxLinux>;

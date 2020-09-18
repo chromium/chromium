@@ -34,9 +34,9 @@ ResultExpr SpeechRecognitionProcessPolicy::EvaluateSyscall(
       return Allow();
 #endif
     default:
-      auto* broker_process = SandboxLinux::GetInstance()->broker_process();
-      if (broker_process->IsSyscallAllowed(system_call_number))
-        return Trap(BrokerProcess::SIGSYS_Handler, broker_process);
+      auto* sandbox_linux = SandboxLinux::GetInstance();
+      if (sandbox_linux->ShouldBrokerHandleSyscall(system_call_number))
+        return sandbox_linux->HandleViaBroker();
 
       // Default on the content baseline policy.
       return BPFBasePolicy::EvaluateSyscall(system_call_number);
