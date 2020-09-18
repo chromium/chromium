@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/metrics/histogram_macros.h"
@@ -463,11 +464,20 @@ void DOMWindow::InstallCoopAccessMonitor(
   // The new documents will still be part of a different virtual browsing
   // context group, however the new COOPAccessMonitor might now contain updated
   // URLs.
-  DisconnectCoopAccessMonitor(monitor.accessing_main_frame);
-
+  //
+  // There are up to 2 CoopAccessMonitor for the same access, because it can be
+  // reported to the accessing and the accessed window at the same time.
+  for (CoopAccessMonitor& old : coop_access_monitor_) {
+    if (old.accessing_main_frame == monitor.accessing_main_frame &&
+        network::IsAccessFromCoopPage(old.report_type) ==
+            network::IsAccessFromCoopPage(monitor.report_type)) {
+      old = std::move(monitor);
+      return;
+    }
+  }
+  coop_access_monitor_.push_back(std::move(monitor));
   // Any attempts to access |this| window from |accessing_main_frame| will now
   // trigger reports (network, ReportingObserver, Devtool).
-  coop_access_monitor_.push_back(std::move(monitor));
 }
 
 // Check if the accessing context would be able to access this window if COOP
