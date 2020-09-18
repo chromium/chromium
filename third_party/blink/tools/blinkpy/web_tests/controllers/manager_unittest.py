@@ -218,3 +218,36 @@ class ManagerTest(unittest.TestCase):
             if not port.host.filesystem.exists(dir_name):
                 deleted_dir_count = deleted_dir_count + 1
         self.assertEqual(deleted_dir_count, 5)
+
+    def test_restore_order(self):
+        host = MockHost()
+        port = host.port_factory.get('test-mac-mac10.10')
+
+        def get_manager():
+            manager = Manager(port,
+                              options=optparse.Values({'max_locked_shards':
+                                                       1}),
+                              printer=FakePrinter())
+            return manager
+
+        manager = get_manager()
+        paths = [
+            "external/wpt/css/css-backgrounds/animations/background-size-interpolation.html",
+            "virtual/gpu/fast/canvas/CanvasFillTextWithMinimalSize.html",
+            "fast/backgrounds/size/backgroundSize-*"
+        ]
+        # As returned by base.tests()
+        test_names = [
+            "virtual/gpu/fast/canvas/CanvasFillTextWithMinimalSize.html",
+            "fast/backgrounds/size/backgroundSize-in-background-shorthand.html",
+            "fast/backgrounds/size/backgroundSize-viewportPercentage-width.html",
+            "external/wpt/css/css-backgrounds/animations/background-size-interpolation.html"
+        ]
+        expected_order = [
+            "external/wpt/css/css-backgrounds/animations/background-size-interpolation.html",
+            "virtual/gpu/fast/canvas/CanvasFillTextWithMinimalSize.html",
+            "fast/backgrounds/size/backgroundSize-in-background-shorthand.html",
+            "fast/backgrounds/size/backgroundSize-viewportPercentage-width.html"
+        ]
+        test_names_restored = manager._restore_order(paths, test_names)
+        self.assertEqual(expected_order, test_names_restored)

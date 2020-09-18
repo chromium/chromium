@@ -91,8 +91,9 @@ class WebTestFinder(object):
             running_all_tests = True
 
         test_files = filter_tests(test_files, [f.split('::') for f in filters])
-        # de-dupe the test list here before running them.
+        # de-dupe the test list and paths here before running them.
         test_files = list(OrderedDict.fromkeys(test_files))
+        paths = list(OrderedDict.fromkeys(paths))
         return (paths, test_files, running_all_tests)
 
     def _times_trie(self):

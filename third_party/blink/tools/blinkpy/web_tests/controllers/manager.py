@@ -36,6 +36,7 @@ including crash logs and mismatches with expectations.
 The Manager object has a constructor and one main method called run.
 """
 
+import fnmatch
 import json
 import logging
 import random
@@ -113,12 +114,17 @@ class Manager(object):
                 exit_code=exit_codes.NO_TESTS_EXIT_STATUS)
 
         test_names = self._finder.split_into_chunks(all_test_names)
-
         if self._options.order == 'natural':
             test_names.sort(key=self._port.test_key)
         elif self._options.order == 'random':
             test_names.sort()
             random.Random(self._options.seed).shuffle(test_names)
+        elif self._options.order == 'none':
+            # Restore the test order to user specified order.
+            # base.tests() may change the order as it returns tests in the
+            # real, external/wpt, virtual order.
+            if paths:
+                test_names = self._restore_order(paths, test_names)
 
         if not self._options.no_expectations:
             self._printer.write_update('Parsing expectations ...')
@@ -285,6 +291,16 @@ class Manager(object):
 
                 tests_to_retry = self._tests_to_retry(retry_results)
         return (initial_results, all_retry_results)
+
+    def _restore_order(self, paths, test_names):
+        original_test_names = list(test_names)
+        test_names = []
+        for path in paths:
+            for test in original_test_names:
+                if test.startswith(path) or fnmatch.fnmatch(test, path):
+                    test_names.append(test)
+        test_names += list(set(original_test_names) - set(test_names))
+        return test_names
 
     def _collect_tests(self, args):
         return self._finder.find_tests(
