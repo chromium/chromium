@@ -373,8 +373,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     private void updateButtonsTint() {
-        getMenuButtonCoordinator().setImageTintList(
-                mUseDarkColors ? mDarkModeTint : mLightModeTint);
         updateButtonTint(mCloseButton);
         int numCustomActionButtons = mCustomActionButtons.getChildCount();
         for (int i = 0; i < numCustomActionButtons; i++) {

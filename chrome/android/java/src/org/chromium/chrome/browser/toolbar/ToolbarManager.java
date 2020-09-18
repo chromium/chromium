@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressCoordinator
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController.ActionBarDelegate;
+import org.chromium.chrome.browser.toolbar.top.CustomTabToolbar;
 import org.chromium.chrome.browser.toolbar.top.TabSwitcherActionMenuCoordinator;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
@@ -295,13 +296,16 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         ThemeColorProvider browsingModeThemeColorProvider =
                 mActivity.isTablet() ? mAppThemeColorProvider : mTabThemeColorProvider;
         ThemeColorProvider overviewModeThemeColorProvider = mAppThemeColorProvider;
+        ToolbarLayout toolbarLayout = mActivity.findViewById(R.id.toolbar);
 
         mMenuButtonCoordinator = new MenuButtonCoordinator(appMenuCoordinatorSupplier,
                 mControlsVisibilityDelegate, mActivity,
                 (focus, type)
                         -> setUrlBarFocus(focus, type),
                 mActivity.getCompositorViewHolder()::requestFocus, shouldShowUpdateBadge,
-                mActivity::isInOverviewMode, browsingModeThemeColorProvider,
+                mActivity::isInOverviewMode,
+                toolbarLayout instanceof CustomTabToolbar ? mAppThemeColorProvider
+                                                          : browsingModeThemeColorProvider,
                 R.id.menu_button_wrapper);
         MenuButtonCoordinator startSurfaceMenuButtonCoordinator = new MenuButtonCoordinator(
                 appMenuCoordinatorSupplier, mControlsVisibilityDelegate, mActivity,
@@ -310,7 +314,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 mActivity.getCompositorViewHolder()::requestFocus, shouldShowUpdateBadge,
                 mActivity::isInOverviewMode, overviewModeThemeColorProvider, R.id.none);
 
-        mToolbar = new TopToolbarCoordinator(controlContainer, mActivity.findViewById(R.id.toolbar),
+        mToolbar = new TopToolbarCoordinator(controlContainer, toolbarLayout,
                 identityDiscController, mLocationBarModel, mToolbarTabController,
                 new UserEducationHelper(mActivity, mHandler), buttonDataProviders,
                 mOverviewModeBehaviorSupplier, browsingModeThemeColorProvider,
