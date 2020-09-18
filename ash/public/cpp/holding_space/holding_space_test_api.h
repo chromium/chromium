@@ -42,6 +42,10 @@ class ASH_EXPORT HoldingSpaceTestApi {
   // Returns true if holding space UI is showing, false otherwise.
   bool IsShowing();
 
+  // Returns true if the holding space tray is showing in the shelf, false
+  // otherwise.
+  bool IsShowingInShelf();
+
   // Returns the collection of download chips in holding space UI.
   // If holding space UI is not visible, an empty collection is returned.
   std::vector<views::View*> GetDownloadChips();

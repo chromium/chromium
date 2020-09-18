@@ -47,6 +47,10 @@ class HoldingSpaceBrowserTestBase : public InProcessBrowserTest {
   // Returns true if holding space UI is showing, false otherwise.
   bool IsShowing();
 
+  // Returns true if the holding space tray is showing in the shelf, false
+  // otherwise.
+  bool IsShowingInShelf();
+
   // Adds and returns an arbitrary download file to the holding space.
   HoldingSpaceItem* AddDownloadFile();
 
@@ -67,6 +71,9 @@ class HoldingSpaceBrowserTestBase : public InProcessBrowserTest {
   // Returns the collection of screenshot views in holding space UI.
   // If holding space UI is not visible, an empty collection is returned.
   std::vector<views::View*> GetScreenshotViews();
+
+  // Requests lock screen, waiting to return until session state is locked.
+  void RequestAndAwaitLockScreen();
 
  private:
   // InProcessBrowserTest:

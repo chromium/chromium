@@ -48,6 +48,8 @@ source_set("test_support") {
     "//chrome/browser/extensions",
     "//chrome/browser/ui",
     "//chrome/test:test_support_ui",
+    "//chromeos/dbus/session_manager",
+    "//components/session_manager/core",
     "//ui/views",
   ]
 }

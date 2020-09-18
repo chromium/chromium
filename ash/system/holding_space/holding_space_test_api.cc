@@ -89,6 +89,10 @@ bool HoldingSpaceTestApi::IsShowing() {
          holding_space_tray_->GetBubbleView()->GetVisible();
 }
 
+bool HoldingSpaceTestApi::IsShowingInShelf() {
+  return holding_space_tray_ && holding_space_tray_->GetVisible();
+}
+
 std::vector<views::View*> HoldingSpaceTestApi::GetDownloadChips() {
   std::vector<views::View*> download_chips;
   if (holding_space_tray_->GetBubbleView()) {

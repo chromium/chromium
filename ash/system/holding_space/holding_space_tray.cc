@@ -118,8 +118,8 @@ bool HoldingSpaceTray::PerformAction(const ui::Event& event) {
 }
 
 void HoldingSpaceTray::UpdateAfterLoginStatusChange() {
-  SetVisiblePreferred(true);
-  PreferredSizeChanged();
+  SetVisiblePreferred(shelf()->GetStatusAreaWidget()->login_status() ==
+                      LoginStatus::USER);
 }
 
 void HoldingSpaceTray::CloseBubble() {

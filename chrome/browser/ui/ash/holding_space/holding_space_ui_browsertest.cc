@@ -149,6 +149,13 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, DragAndDrop) {
   drop_target_view->GetWidget()->Close();
 }
 
+// Verifies that the holding space tray does not appear on the lock screen.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, LockScreen) {
+  ASSERT_TRUE(IsShowingInShelf());
+  RequestAndAwaitLockScreen();
+  ASSERT_FALSE(IsShowingInShelf());
+}
+
 // Base class for holding space UI browser tests that take screenshots.
 // Parameterized by whether or not `features::CaptureMode` is enabled.
 class HoldingSpaceUiScreenshotBrowserTest

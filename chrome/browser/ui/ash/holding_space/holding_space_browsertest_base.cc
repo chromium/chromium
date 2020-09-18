@@ -13,11 +13,15 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
 #include "base/bind_helpers.h"
+#include "base/scoped_observer.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/view.h"
@@ -90,6 +94,45 @@ base::FilePath CreateImageFile(Profile* profile) {
   return CreateFile(profile, "png");
 }
 
+// SessionStateWaiter ----------------------------------------------------------
+
+// Utility class which allows waiting for a `session_manager::SessionState`.
+class SessionStateWaiter : public session_manager::SessionManagerObserver {
+ public:
+  SessionStateWaiter() {
+    session_manager_observer_.Add(session_manager::SessionManager::Get());
+  }
+
+  void WaitFor(session_manager::SessionState state) {
+    if (session_state() == state)
+      return;
+
+    state_ = state;
+
+    wait_loop_ = std::make_unique<base::RunLoop>();
+    wait_loop_->Run();
+    wait_loop_.reset();
+  }
+
+ private:
+  // session_manager::SessionManagerObserver:
+  void OnSessionStateChanged() override {
+    if (wait_loop_ && session_state() == state_)
+      wait_loop_->Quit();
+  }
+
+  session_manager::SessionState session_state() const {
+    return session_manager::SessionManager::Get()->session_state();
+  }
+
+  session_manager::SessionState state_ = session_manager::SessionState::UNKNOWN;
+  std::unique_ptr<base::RunLoop> wait_loop_;
+
+  ScopedObserver<session_manager::SessionManager,
+                 session_manager::SessionManagerObserver>
+      session_manager_observer_{this};
+};
+
 }  // namespace
 
 // HoldingSpaceBrowserTestBase -------------------------------------------------
@@ -121,6 +164,10 @@ bool HoldingSpaceBrowserTestBase::IsShowing() {
   return test_api_->IsShowing();
 }
 
+bool HoldingSpaceBrowserTestBase::IsShowingInShelf() {
+  return test_api_->IsShowingInShelf();
+}
+
 HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddDownloadFile() {
   return AddItem(GetProfile(), HoldingSpaceItem::Type::kDownload,
                  /*file_path=*/CreateTextFile(GetProfile()));
@@ -146,6 +193,14 @@ std::vector<views::View*> HoldingSpaceBrowserTestBase::GetPinnedFileChips() {
 
 std::vector<views::View*> HoldingSpaceBrowserTestBase::GetScreenshotViews() {
   return test_api_->GetScreenshotViews();
+}
+
+void HoldingSpaceBrowserTestBase::RequestAndAwaitLockScreen() {
+  if (session_manager::SessionManager::Get()->IsScreenLocked())
+    return;
+
+  chromeos::SessionManagerClient::Get()->RequestLockScreen();
+  SessionStateWaiter().WaitFor(session_manager::SessionState::LOCKED);
 }
 
 void HoldingSpaceBrowserTestBase::SetUpInProcessBrowserTestFixture() {
