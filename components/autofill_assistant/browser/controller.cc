@@ -1815,8 +1815,11 @@ void Controller::DidStartNavigation(
     return;
   }
 
-  // The following types of navigations are allowed for the main frame, when
-  // in PROMPT state:
+  // In lite scripts, navigations are allowed (the lite script will fail if the
+  // trigger condition stops being true).
+  //
+  // In regular scripts, the following types of navigations are allowed for the
+  // main frame, when in PROMPT state:
   //  - first-time URL load
   //  - script-directed navigation, while a script is running unless
   //    there's a touchable area.
@@ -1831,7 +1834,7 @@ void Controller::DidStartNavigation(
   // Everything else, such as going back to a previous page, or refreshing the
   // page is considered an end condition. If going back to a previous page is
   // required, consider using the BROWSE state instead.
-  if (state_ == AutofillAssistantState::PROMPT &&
+  if (!IsRunningLiteScript() && state_ == AutofillAssistantState::PROMPT &&
       web_contents()->GetLastCommittedURL().is_valid() &&
       !navigation_handle->WasServerRedirect() &&
       !navigation_handle->IsRendererInitiated()) {

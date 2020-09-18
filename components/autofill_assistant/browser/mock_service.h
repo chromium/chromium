@@ -65,6 +65,8 @@ class MockService : public ServiceImpl {
                     const std::string& previous_script_payload,
                     const std::vector<ProcessedActionProto>& processed_actions,
                     ResponseCallback& callback));
+
+  MOCK_CONST_METHOD0(IsLiteService, bool());
 };
 
 }  // namespace autofill_assistant

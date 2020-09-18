@@ -115,6 +115,8 @@ class ControllerTest : public content::RenderViewHostTestHarness {
     ON_CALL(*mock_service_, OnGetNextActions(_, _, _, _, _))
         .WillByDefault(RunOnceCallback<4>(true, ""));
 
+    ON_CALL(*mock_service_, IsLiteService).WillByDefault(Return(false));
+
     ON_CALL(*mock_web_controller_, OnElementCheck(_, _))
         .WillByDefault(RunOnceCallback<1>(ClientStatus()));
 
@@ -1720,6 +1722,60 @@ TEST_F(ControllerTest, UnexpectedNavigationDuringPromptAction) {
                                    AutofillAssistantState::RUNNING,
                                    AutofillAssistantState::PROMPT,
                                    AutofillAssistantState::STOPPED));
+}
+
+TEST_F(ControllerTest, UnexpectedNavigationDuringLiteScriptPromptAction) {
+  ON_CALL(*mock_service_, IsLiteService).WillByDefault(Return(true));
+
+  SupportsScriptResponseProto script_response;
+  AddRunnableScript(&script_response, "autostart")
+      ->mutable_presentation()
+      ->set_autostart(true);
+  SetNextScriptResponse(script_response);
+
+  ActionsResponseProto autostart_script;
+  autostart_script.add_actions()
+      ->mutable_prompt()
+      ->add_choices()
+      ->mutable_chip()
+      ->set_text("continue");
+  autostart_script.add_actions()->mutable_tell()->set_message("never shown");
+  SetupActionsForScript("autostart", autostart_script);
+
+  Start();
+  EXPECT_EQ(AutofillAssistantState::PROMPT, controller_->GetState());
+  ASSERT_THAT(controller_->GetUserActions(), SizeIs(1));
+  EXPECT_EQ(controller_->GetUserActions()[0].chip().text, "continue");
+
+  // No error is shown for lite scripts.
+  EXPECT_CALL(mock_observer_, OnStatusMessageChanged(_)).Times(0);
+
+  // Renderer (Document) initiated navigation is allowed.
+  EXPECT_CALL(mock_client_, Shutdown(_)).Times(0);
+  EXPECT_CALL(mock_client_, RecordDropOut(_)).Times(0);
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("http://a.example.com/page"), web_contents()->GetMainFrame());
+  EXPECT_EQ(AutofillAssistantState::PROMPT, controller_->GetState());
+
+  // Expected browser initiated navigation is allowed.
+  EXPECT_CALL(mock_client_, Shutdown(_)).Times(0);
+  EXPECT_CALL(mock_client_, RecordDropOut(_)).Times(0);
+  controller_->ExpectNavigation();
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://b.example.com/page"));
+  EXPECT_EQ(AutofillAssistantState::PROMPT, controller_->GetState());
+
+  // Unexpected browser initiated navigation is allowed for lite scripts.
+  EXPECT_CALL(mock_client_, Shutdown(_)).Times(0);
+  EXPECT_CALL(mock_client_, RecordDropOut(_)).Times(0);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://c.example.com/page"));
+  EXPECT_EQ(AutofillAssistantState::PROMPT, controller_->GetState());
+
+  // Full history of state transitions.
+  EXPECT_THAT(states_, ElementsAre(AutofillAssistantState::STARTING,
+                                   AutofillAssistantState::RUNNING,
+                                   AutofillAssistantState::PROMPT));
 }
 
 TEST_F(ControllerTest, UnexpectedNavigationInRunningState) {
