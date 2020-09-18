@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "sandbox/linux/syscall_broker/broker_channel.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
+#include "sandbox/sandbox_export.h"
 
 namespace sandbox {
 namespace syscall_broker {
@@ -25,7 +26,7 @@ class BrokerPermissionList;
 // thread-safe and async-signal safe way. The goal is to be able to use it to
 // replace the open() or access() system calls happening anywhere in a process
 // (as allowed for instance by seccomp-bpf's SIGSYS mechanism).
-class BrokerClient {
+class SANDBOX_EXPORT BrokerClient {
  public:
   // |policy| needs to match the policy used by BrokerHost. This
   // allows to predict some of the requests which will be denied

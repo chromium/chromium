@@ -84,6 +84,11 @@ class SANDBOX_EXPORT BrokerProcess {
   // calls are forwarded to the broker process for handling.
   bool IsSyscallAllowed(int sysno) const;
 
+  // Gets the signal-based BrokerClient created by Init().
+  syscall_broker::BrokerClient* GetBrokerClientSignalBased() const {
+    return broker_client_.get();
+  }
+
   // The following methods are used in place of the equivalently-named
   // syscalls by the trap handler. They, in turn, forward the call onto
   // |broker_client_| for further processing. They will all be async signal
@@ -120,6 +125,13 @@ class SANDBOX_EXPORT BrokerProcess {
 
  private:
   friend class BrokerProcessTestHelper;
+  friend class HandleFilesystemViaBrokerPolicy;
+
+  // IsSyscallBrokerable() answers the same question as IsSyscallAllowed(),
+  // but takes |fast_check| as a parameter. If |fast_check| is false, do not
+  // check |allowed_command_set_| before returning true for a syscall that is
+  // brokerable.
+  bool IsSyscallBrokerable(int sysno, bool fast_check) const;
 
   // Close the IPC channel with the other party. This should only be used
   // by tests an none of the class methods should be used afterwards.

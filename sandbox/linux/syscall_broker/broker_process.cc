@@ -110,44 +110,45 @@ bool BrokerProcess::Init(
 }
 
 bool BrokerProcess::IsSyscallAllowed(int sysno) const {
+  return IsSyscallBrokerable(sysno, fast_check_in_client_);
+}
+
+bool BrokerProcess::IsSyscallBrokerable(int sysno, bool fast_check) const {
   switch (sysno) {
 #if !defined(__aarch64__)
     case __NR_access:
 #endif
     case __NR_faccessat:
-      return !fast_check_in_client_ ||
-             allowed_command_set_.test(COMMAND_ACCESS);
+      return !fast_check || allowed_command_set_.test(COMMAND_ACCESS);
 
 #if !defined(__aarch64__)
     case __NR_mkdir:
 #endif
     case __NR_mkdirat:
-      return !fast_check_in_client_ || allowed_command_set_.test(COMMAND_MKDIR);
+      return !fast_check || allowed_command_set_.test(COMMAND_MKDIR);
 
 #if !defined(__aarch64__)
     case __NR_open:
 #endif
     case __NR_openat:
-      return !fast_check_in_client_ || allowed_command_set_.test(COMMAND_OPEN);
+      return !fast_check || allowed_command_set_.test(COMMAND_OPEN);
 
 #if !defined(__aarch64__)
     case __NR_readlink:
 #endif
     case __NR_readlinkat:
-      return !fast_check_in_client_ ||
-             allowed_command_set_.test(COMMAND_READLINK);
+      return !fast_check || allowed_command_set_.test(COMMAND_READLINK);
 
 #if !defined(__aarch64__)
     case __NR_rename:
 #endif
     case __NR_renameat:
     case __NR_renameat2:
-      return !fast_check_in_client_ ||
-             allowed_command_set_.test(COMMAND_RENAME);
+      return !fast_check || allowed_command_set_.test(COMMAND_RENAME);
 
 #if !defined(__aarch64__)
     case __NR_rmdir:
-      return !fast_check_in_client_ || allowed_command_set_.test(COMMAND_RMDIR);
+      return !fast_check || allowed_command_set_.test(COMMAND_RMDIR);
 #endif
 
 #if !defined(__aarch64__)
@@ -163,7 +164,7 @@ bool BrokerProcess::IsSyscallAllowed(int sysno) const {
 #if defined(__x86_64__) || defined(__aarch64__)
     case __NR_newfstatat:
 #endif
-      return !fast_check_in_client_ || allowed_command_set_.test(COMMAND_STAT);
+      return !fast_check || allowed_command_set_.test(COMMAND_STAT);
 
 #if defined(__i386__) || defined(__arm__) || \
     (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
@@ -172,18 +173,16 @@ bool BrokerProcess::IsSyscallAllowed(int sysno) const {
       // For security purposes, map stat64 to COMMAND_STAT permission. The
       // separate COMMAND_STAT64 only exists to broker different-sized
       // argument structs.
-      return !fast_check_in_client_ || allowed_command_set_.test(COMMAND_STAT);
+      return !fast_check || allowed_command_set_.test(COMMAND_STAT);
 #endif
 
 #if !defined(__aarch64__)
     case __NR_unlink:
-      return !fast_check_in_client_ ||
-             allowed_command_set_.test(COMMAND_UNLINK);
+      return !fast_check || allowed_command_set_.test(COMMAND_UNLINK);
 #endif
     case __NR_unlinkat:
       // If rmdir() doesn't exist, unlinkat is used with AT_REMOVEDIR.
-      return !fast_check_in_client_ ||
-             allowed_command_set_.test(COMMAND_RMDIR) ||
+      return !fast_check || allowed_command_set_.test(COMMAND_RMDIR) ||
              allowed_command_set_.test(COMMAND_UNLINK);
 
     default:

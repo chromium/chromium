@@ -53,7 +53,10 @@ class BrokerProcessTestHelper {
 
 namespace {
 
-const int kFakeErrnoSentinel = 99999;
+// Our fake errno must be less than 255 or various libc implementations will
+// not accept this as a valid error number. E.g. bionic accepts up to 255, glibc
+// and musl up to 4096.
+constexpr int kFakeErrnoSentinel = 254;
 
 bool NoOpCallback() {
   return true;
@@ -483,9 +486,13 @@ void TestOpenComplexFlags(bool fast_check_in_client) {
   fd = open_broker.Open(kCpuInfo, O_RDONLY);
   ASSERT_GE(fd, 0);
   ret = fcntl(fd, F_GETFL);
-  ASSERT_NE(-1, ret);
-  // The descriptor shouldn't have the O_CLOEXEC attribute, nor O_NONBLOCK.
+  ASSERT_NE(-1, ret) << errno;
+  // The description shouldn't have the O_CLOEXEC attribute, nor O_NONBLOCK.
   ASSERT_EQ(0, ret & (O_CLOEXEC | O_NONBLOCK));
+  ret = fcntl(fd, F_GETFD);
+  ASSERT_NE(-1, ret) << errno;
+  // The descriptor also should not have FD_CLOEXEC.
+  ASSERT_EQ(FD_CLOEXEC & ret, 0);
   ASSERT_EQ(0, close(fd));
 
   fd = open_broker.Open(kCpuInfo, O_RDONLY | O_CLOEXEC);
