@@ -1220,19 +1220,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     }
   }
 
-  // If it's focusable but didn't have any other name or value, compute a name
-  // from its descendants. Note that this is a workaround because VoiceOver
-  // does not always present focus changes if the new focus lacks a name.
-  base::string16 value = _owner->GetValue();
-  if (_owner->HasState(ax::mojom::State::kFocusable) &&
-      !ui::IsControl(_owner->GetRole()) && value.empty() &&
-      [self internalRole] != ax::mojom::Role::kDateTime &&
-      [self internalRole] != ax::mojom::Role::kWebArea &&
-      [self internalRole] != ax::mojom::Role::kRootWebArea) {
-    return base::SysUTF8ToNSString(
-        _owner->ComputeAccessibleNameFromDescendants());
-  }
-
   return @"";
 }
 

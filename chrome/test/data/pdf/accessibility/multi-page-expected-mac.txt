@@ -1,4 +1,4 @@
-AXGroup AXDescription='PDF document containing 2 pages'
+AXGroup
 ++AXGroup AXDescription='PDF document containing 2 pages'
 ++++AXGroup AXDescription='Page 1'
 ++++++AXGroup

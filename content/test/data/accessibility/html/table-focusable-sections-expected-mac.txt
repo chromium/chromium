@@ -1,12 +1,12 @@
 AXWebArea AXTitle='Table example - focusable thead, tbody, tfoot'
 ++AXTable
-++++AXGroup AXDescription='Sum Subtraction'
+++++AXGroup
 ++++++AXRow AXIndex=0
 ++++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 0}
 ++++++++++AXStaticText AXValue='Sum'
 ++++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 0}
 ++++++++++AXStaticText AXValue='Subtraction'
-++++AXGroup AXDescription='10 7 2 4'
+++++AXGroup
 ++++++AXRow AXIndex=1
 ++++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 1}
 ++++++++++AXStaticText AXValue='10'
@@ -17,7 +17,7 @@ AXWebArea AXTitle='Table example - focusable thead, tbody, tfoot'
 ++++++++++AXStaticText AXValue='2'
 ++++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 2}
 ++++++++++AXStaticText AXValue='4'
-++++AXGroup AXDescription='12 3'
+++++AXGroup
 ++++++AXRow AXIndex=3
 ++++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 3}
 ++++++++++AXStaticText AXValue='12'

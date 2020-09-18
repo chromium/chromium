@@ -382,9 +382,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // Returns true if the accessible name was explicitly set to "" by the author
   bool HasExplicitlyEmptyName() const;
 
-  // TODO(nektar): Remove this method and replace with GetInnerText.
-  std::string ComputeAccessibleNameFromDescendants() const;
-
   // Get text to announce for a live region change, for ATs that do not
   // implement this functionality.
   std::string GetLiveRegionText() const;

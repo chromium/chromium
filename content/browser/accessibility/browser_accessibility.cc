@@ -1022,30 +1022,6 @@ bool BrowserAccessibility::HasExplicitlyEmptyName() const {
          ax::mojom::NameFrom::kAttributeExplicitlyEmpty;
 }
 
-std::string BrowserAccessibility::ComputeAccessibleNameFromDescendants() const {
-  std::string name;
-  for (InternalChildIterator it = InternalChildrenBegin();
-       it != InternalChildrenEnd(); ++it) {
-    const BrowserAccessibility* child = it.get();
-    std::string child_name;
-    if (child->GetStringAttribute(ax::mojom::StringAttribute::kName,
-                                  &child_name)) {
-      if (!name.empty())
-        name += " ";
-      name += child_name;
-    } else if (!child->HasState(ax::mojom::State::kFocusable)) {
-      child_name = child->ComputeAccessibleNameFromDescendants();
-      if (!child_name.empty()) {
-        if (!name.empty())
-          name += " ";
-        name += child_name;
-      }
-    }
-  }
-
-  return name;
-}
-
 std::string BrowserAccessibility::GetLiveRegionText() const {
   if (IsIgnored())
     return "";
