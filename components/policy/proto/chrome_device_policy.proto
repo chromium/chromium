@@ -113,33 +113,33 @@ message NetworkHostnameProto {
 
 // Policies to turn on portions of the device status reports.
 message DeviceReportingProto {
-  optional bool report_version_info = 1 [default = true];
-  optional bool report_activity_times = 2 [default = true];
-  optional bool report_boot_mode = 3 [default = true];
-  optional bool report_location = 4 [default = false];
-  optional bool report_network_interfaces = 5 [default = true];
-  optional bool report_users = 6 [default = true];
-  optional bool report_hardware_status = 7 [default = true];
-  optional bool report_session_status = 8 [default = true];
-  optional bool report_os_update_status = 10 [default = false];
-  optional bool report_running_kiosk_app = 11 [default = false];
-  optional bool report_power_status = 12 [default = false];
-  optional bool report_storage_status = 13 [default = false];
-  optional bool report_board_status = 14 [default = false];
-  optional bool report_cpu_info = 15 [default = false];
-  optional bool report_graphics_status = 16 [default = false];
-  optional bool report_crash_report_info = 17 [default = false];
-  optional bool report_timezone_info = 18 [default = false];
-  optional bool report_memory_info = 19 [default = false];
-  optional bool report_backlight_info = 20 [default = false];
-  optional bool report_app_info = 21 [default = false];
-  optional bool report_bluetooth_info = 22 [default = false];
-  optional bool report_fan_info = 23 [default = false];
-  optional bool report_vpd_info = 24 [default = false];
-  optional bool report_system_info = 25 [default = false];
+  optional bool report_version_info = 1;
+  optional bool report_activity_times = 2;
+  optional bool report_boot_mode = 3;
+  optional bool report_location = 4;
+  optional bool report_network_interfaces = 5;
+  optional bool report_users = 6;
+  optional bool report_hardware_status = 7;
+  optional bool report_session_status = 8;
+  optional bool report_os_update_status = 10;
+  optional bool report_running_kiosk_app = 11;
+  optional bool report_power_status = 12;
+  optional bool report_storage_status = 13;
+  optional bool report_board_status = 14;
+  optional bool report_cpu_info = 15;
+  optional bool report_graphics_status = 16;
+  optional bool report_crash_report_info = 17;
+  optional bool report_timezone_info = 18;
+  optional bool report_memory_info = 19;
+  optional bool report_backlight_info = 20;
+  optional bool report_app_info = 21;
+  optional bool report_bluetooth_info = 22;
+  optional bool report_fan_info = 23;
+  optional bool report_vpd_info = 24;
+  optional bool report_system_info = 25;
 
-  // Frequency to report device status, default to 3 hours.
-  optional int64 device_status_frequency = 9 [default = 10800000];
+  // Frequency to report device status.
+  optional int64 device_status_frequency = 9;
 }
 
 message EphemeralUsersEnabledProto {
