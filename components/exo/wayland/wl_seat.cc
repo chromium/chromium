@@ -86,27 +86,22 @@ void seat_get_pointer(wl_client* client, wl_resource* resource, uint32_t id) {
 }
 
 void seat_get_keyboard(wl_client* client, wl_resource* resource, uint32_t id) {
-#if defined(OS_CHROMEOS)
-#if BUILDFLAG(USE_XKBCOMMON)
+#if defined(OS_CHROMEOS) && BUILDFLAG(USE_XKBCOMMON)
   auto* data = GetUserDataAs<WaylandSeat>(resource);
 
   uint32_t version = wl_resource_get_version(resource);
   wl_resource* keyboard_resource =
       wl_resource_create(client, &wl_keyboard_interface, version, id);
 
-  WaylandKeyboardDelegate* delegate =
-      new WaylandKeyboardDelegate(keyboard_resource, data->serial_tracker);
-  std::unique_ptr<Keyboard> keyboard =
-      std::make_unique<Keyboard>(delegate, data->seat);
-  keyboard->AddObserver(delegate);
+  auto keyboard =
+      std::make_unique<Keyboard>(std::make_unique<WaylandKeyboardDelegate>(
+                                     keyboard_resource, data->serial_tracker),
+                                 data->seat);
   SetImplementation(keyboard_resource, &keyboard_implementation,
                     std::move(keyboard));
 #else
   NOTIMPLEMENTED();
-#endif  // BUILDFLAG(USE_XKBCOMMON)
-#else
-  NOTIMPLEMENTED();
-#endif  // defined(OS_CHROMEOS)
+#endif  // defined(OS_CHROMEOS) && BUILDFLAG(USE_XKBCOMMON)
 }
 
 void seat_get_touch(wl_client* client, wl_resource* resource, uint32_t id) {

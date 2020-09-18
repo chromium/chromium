@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_EXO_KEYBOARD_H_
 #define COMPONENTS_EXO_KEYBOARD_H_
 
-#include <vector>
+#include <memory>
 
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/containers/flat_map.h"
@@ -36,10 +36,10 @@ class Keyboard : public ui::EventHandler,
                  public SeatObserver,
                  public ash::KeyboardControllerObserver {
  public:
-  Keyboard(KeyboardDelegate* delegate, Seat* seat);
+  Keyboard(std::unique_ptr<KeyboardDelegate> delegate, Seat* seat);
   ~Keyboard() override;
 
-  KeyboardDelegate* delegate() const { return delegate_; }
+  KeyboardDelegate* delegate() const { return delegate_.get(); }
 
   bool HasDeviceConfigurationDelegate() const;
   void SetDeviceConfigurationDelegate(
@@ -91,7 +91,7 @@ class Keyboard : public ui::EventHandler,
 
   // The delegate instance that all events except for events about device
   // configuration are dispatched to.
-  KeyboardDelegate* const delegate_;
+  std::unique_ptr<KeyboardDelegate> delegate_;
 
   // Seat that the Keyboard recieves focus events from.
   Seat* const seat_;

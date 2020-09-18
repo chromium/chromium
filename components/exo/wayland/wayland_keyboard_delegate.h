@@ -38,8 +38,7 @@ class SerialTracker;
 // Keyboard delegate class that accepts events for surfaces owned by the same
 // client as a keyboard resource.
 class WaylandKeyboardDelegate : public WaylandInputDelegate,
-                                public KeyboardDelegate,
-                                public KeyboardObserver
+                                public KeyboardDelegate
 #if defined(OS_CHROMEOS)
     ,
                                 public ash::ImeControllerImpl::Observer
@@ -52,7 +51,6 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
   ~WaylandKeyboardDelegate() override;
 
   // Overridden from KeyboardDelegate:
-  void OnKeyboardDestroying(Keyboard* keyboard) override;
   bool CanAcceptKeyboardEventsForSurface(Surface* surface) const override;
   void OnKeyboardEnter(
       Surface* surface,

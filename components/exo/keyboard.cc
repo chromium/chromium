@@ -165,8 +165,8 @@ bool IsArcSurface(Surface* surface) {
 ////////////////////////////////////////////////////////////////////////////////
 // Keyboard, public:
 
-Keyboard::Keyboard(KeyboardDelegate* delegate, Seat* seat)
-    : delegate_(delegate),
+Keyboard::Keyboard(std::unique_ptr<KeyboardDelegate> delegate, Seat* seat)
+    : delegate_(std::move(delegate)),
       seat_(seat),
       expiration_delay_for_pending_key_acks_(base::TimeDelta::FromMilliseconds(
           kExpirationDelayForPendingKeyAcksMs)) {

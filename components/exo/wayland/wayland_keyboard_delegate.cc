@@ -42,10 +42,6 @@ WaylandKeyboardDelegate::~WaylandKeyboardDelegate() {
 #endif
 }
 
-void WaylandKeyboardDelegate::OnKeyboardDestroying(Keyboard* keyboard) {
-  delete this;
-}
-
 bool WaylandKeyboardDelegate::CanAcceptKeyboardEventsForSurface(
     Surface* surface) const {
   wl_resource* surface_resource = GetSurfaceResource(surface);

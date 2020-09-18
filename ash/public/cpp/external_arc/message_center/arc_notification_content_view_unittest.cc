@@ -589,14 +589,16 @@ TEST_F(ArcNotificationContentViewTest, AcceptInputTextWithActivate) {
   ActivateArcNotification();
   EXPECT_EQ(surface()->window(), GetFocusedWindow());
 
-  MockKeyboardDelegate delegate;
-  EXPECT_CALL(delegate, CanAcceptKeyboardEventsForSurface(surface()))
+  auto delegate = std::make_unique<MockKeyboardDelegate>();
+  auto* delegate_ptr = delegate.get();
+  EXPECT_CALL(*delegate, CanAcceptKeyboardEventsForSurface(surface()))
       .WillOnce(testing::Return(true));
   exo::Seat seat;
-  auto keyboard = std::make_unique<exo::Keyboard>(&delegate, &seat);
+  auto keyboard = std::make_unique<exo::Keyboard>(std::move(delegate), &seat);
 
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
-  EXPECT_CALL(delegate, OnKeyboardKey(testing::_, ui::DomCode::US_A, true));
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyboardKey(testing::_, ui::DomCode::US_A, true));
   seat.set_physical_code_for_currently_processing_event_for_testing(
       ui::DomCode::US_A);
   generator.PressKey(ui::VKEY_A, 0);
@@ -615,13 +617,15 @@ TEST_F(ArcNotificationContentViewTest, NotAcceptInputTextWithoutActivate) {
   CreateAndShowNotificationView(notification);
   EXPECT_FALSE(GetFocusedWindow());
 
-  MockKeyboardDelegate delegate;
-  EXPECT_CALL(delegate, CanAcceptKeyboardEventsForSurface(surface())).Times(0);
+  auto delegate = std::make_unique<MockKeyboardDelegate>();
+  auto* delegate_ptr = delegate.get();
+  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface()))
+      .Times(0);
   exo::Seat seat;
-  auto keyboard = std::make_unique<exo::Keyboard>(&delegate, &seat);
+  auto keyboard = std::make_unique<exo::Keyboard>(std::move(delegate), &seat);
 
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
-  EXPECT_CALL(delegate, OnKeyboardKey(testing::_, testing::_, testing::_))
+  EXPECT_CALL(*delegate_ptr, OnKeyboardKey(testing::_, testing::_, testing::_))
       .Times(0);
   seat.set_physical_code_for_currently_processing_event_for_testing(
       ui::DomCode::US_A);
