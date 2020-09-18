@@ -45,6 +45,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
 import org.chromium.chrome.tab_ui.R;
@@ -155,6 +156,7 @@ public class TasksViewBinderTest extends DummyUiActivityTestCase {
 
     @Test
     @SmallTest
+    @DisabledTest
     public void testSetVoiceSearchButtonVisibilityAndClickListener() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTasksViewPropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, true);
