@@ -81,6 +81,15 @@ id<GREYMatcher> NavigationBarEditButton() {
 
 // Tests that editing the credit card nickname is possible.
 - (void)testValidNickname {
+#if !TARGET_OS_SIMULATOR
+  // TODO(crbug.com/1108809): These seem to fail on device only downstream,
+  // iOS 12.4 only.
+  if (@available(iOS 13, *)) {
+  } else {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS12 device.");
+  }
+#endif
+
   [[EarlGrey selectElementWithMatcher:NicknameTextField()]
       performAction:grey_replaceText(@"Nickname")];
 
@@ -94,6 +103,15 @@ id<GREYMatcher> NavigationBarEditButton() {
 
 // Tests that invalid nicknames are not allowed when editing a card.
 - (void)testInvalidNickname {
+#if !TARGET_OS_SIMULATOR
+  // TODO(crbug.com/1108809): These seem to fail on device only downstream,
+  // iOS 12.4 only.
+  if (@available(iOS 13, *)) {
+  } else {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS12 device.");
+  }
+#endif
+
   [[EarlGrey selectElementWithMatcher:NicknameTextField()]
       performAction:grey_typeText(@"1233")];
 
