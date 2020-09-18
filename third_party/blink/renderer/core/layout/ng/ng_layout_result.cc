@@ -38,6 +38,14 @@ ASSERT_SIZE(NGLayoutResult, SameSizeAsNGLayoutResult);
 
 }  // namespace
 
+// static
+scoped_refptr<const NGLayoutResult>
+NGLayoutResult::CloneWithPostLayoutFragments(const NGLayoutResult& other) {
+  return base::AdoptRef(new NGLayoutResult(
+      other, NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
+                 To<NGPhysicalBoxFragment>(other.PhysicalFragment()))));
+}
+
 NGLayoutResult::NGLayoutResult(
     NGBoxFragmentBuilderPassKey passkey,
     scoped_refptr<const NGPhysicalContainerFragment> physical_fragment,
@@ -153,6 +161,29 @@ NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
 
   if (new_end_margin_strut != NGMarginStrut() || HasRareData())
     EnsureRareData()->end_margin_strut = new_end_margin_strut;
+
+#if DCHECK_IS_ON()
+  has_valid_space_ = other.has_valid_space_;
+#endif
+}
+
+NGLayoutResult::NGLayoutResult(
+    const NGLayoutResult& other,
+    scoped_refptr<const NGPhysicalContainerFragment> physical_fragment)
+    : space_(other.space_),
+      physical_fragment_(std::move(physical_fragment)),
+      intrinsic_block_size_(other.intrinsic_block_size_),
+      bitfields_(other.bitfields_) {
+  if (HasRareData()) {
+    rare_data_ = new RareData(*other.rare_data_);
+  } else if (!bitfields_.has_oof_positioned_offset) {
+    bfc_offset_ = other.bfc_offset_;
+  } else {
+    DCHECK(physical_fragment_->IsOutOfFlowPositioned());
+    oof_positioned_offset_ = other.oof_positioned_offset_;
+  }
+
+  DCHECK_EQ(physical_fragment_->Size(), other.physical_fragment_->Size());
 
 #if DCHECK_IS_ON()
   has_valid_space_ = other.has_valid_space_;

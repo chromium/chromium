@@ -44,10 +44,28 @@ NGFragmentItems::NGFragmentItems(NGFragmentItemsBuilder* builder)
       size_(builder->items_.size()),
       size_of_earlier_fragments_(0) {
   NGFragmentItemsBuilder::ItemWithOffsetList& source_items = builder->items_;
-  for (unsigned i = 0; i < size_; ++i) {
+  for (wtf_size_t i = 0; i < size_; ++i) {
     // Call the move constructor to move without |AddRef|. Items in
     // |NGFragmentItemsBuilder| are not used after |this| was constructed.
     new (&items_[i]) NGFragmentItem(std::move(source_items[i].item));
+  }
+}
+
+NGFragmentItems::NGFragmentItems(const NGFragmentItems& other)
+    : text_content_(other.text_content_),
+      first_line_text_content_(other.first_line_text_content_),
+      size_(other.size_),
+      size_of_earlier_fragments_(other.size_of_earlier_fragments_) {
+  for (wtf_size_t i = 0; i < size_; ++i) {
+    const auto& other_item = other.items_[i];
+    new (&items_[i]) NGFragmentItem(other_item);
+
+    // The |other| object is likely going to be freed after this copy. Detach
+    // any |AbstractInlineTextBox|, as they store a pointer to an individual
+    // |NGFragmentItem|.
+    if (auto* layout_text =
+            ToLayoutTextOrNull(other_item.GetMutableLayoutObject()))
+      layout_text->DetachAbstractInlineTextBoxesIfNeeded();
   }
 }
 
