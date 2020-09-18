@@ -80,7 +80,12 @@ static const int kV4TimerUpdateWaitSecMax = 15 * 60;  // 15 minutes
 #if defined(OS_IOS)
 // Maximum number of entries in each list, when the limited list size experiment
 // is enabled.
-static const int kMaximumEntriesPerList = 1 << 18;
+static const int kMaximumEntriesPerLimitedList = 1 << 18;
+
+// Maximum number of entries in each list, when the limited list size experiment
+// is not enabled.
+// TODO(crbug.com/1129162): Review and adjust this limit periodically.
+static const int kMaximumEntriesPerList = 1 << 20;
 #endif
 
 ChromeClientInfo::SafeBrowsingReportingPopulation GetReportingLevelProtoValue(
@@ -251,10 +256,10 @@ std::string V4UpdateProtocolManager::GetBase64SerializedUpdateRequestProto() {
         RICE);
 
 #if defined(OS_IOS)
-    if (base::FeatureList::IsEnabled(kLimitedListSizeForIOS)) {
-      list_update_request->mutable_constraints()->set_max_database_entries(
-          kMaximumEntriesPerList);
-    }
+    list_update_request->mutable_constraints()->set_max_database_entries(
+        base::FeatureList::IsEnabled(kLimitedListSizeForIOS)
+            ? kMaximumEntriesPerLimitedList
+            : kMaximumEntriesPerList);
 #endif
   }
 

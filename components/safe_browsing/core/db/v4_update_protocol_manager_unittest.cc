@@ -14,6 +14,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/db/safebrowsing.pb.h"
 #include "components/safe_browsing/core/db/util.h"
@@ -292,7 +293,10 @@ TEST_F(V4UpdateProtocolManagerTest, TestBase64EncodingUsesUrlEncoding) {
 
   std::string expected =
       "Cg8KCHVuaXR0ZXN0EgMxLjAaGAgBEAIaCmg4eGZZcVk-OlIiBCABIAIoASICCAE=";
-#if !BUILDFLAG(FULL_SAFE_BROWSING)
+#if defined(OS_IOS)
+  expected =
+      "Cg8KCHVuaXR0ZXN0EgMxLjAaHAgBEAIaCmg4eGZZcVk-OlIiCBCAgEAgASACKAEiAggB";
+#elif !BUILDFLAG(FULL_SAFE_BROWSING)
   if (base::SysInfo::IsLowEndDevice()) {
     expected =
         "Cg8KCHVuaXR0ZXN0EgMxLjAaGwgBEAIaCmg4eGZZcVk-OlIiBxCAICABIAIoASICCAE=";
@@ -363,7 +367,9 @@ TEST_F(V4UpdateProtocolManagerTest, TestExtendedReportingLevelIncluded) {
   (*store_state_map_)[ListIdentifier(LINUX_PLATFORM, URL, MALWARE_THREAT)] =
       "state";
   std::string base = "Cg8KCHVuaXR0ZXN0EgMxLjAaEwgBEAIaBXN0YXRlIgQgASACKAEiAgg";
-#if !BUILDFLAG(FULL_SAFE_BROWSING)
+#if defined(OS_IOS)
+  base = "Cg8KCHVuaXR0ZXN0EgMxLjAaFwgBEAIaBXN0YXRlIggQgIBAIAEgAigBIgIIA";
+#elif !BUILDFLAG(FULL_SAFE_BROWSING)
   if (base::SysInfo::IsLowEndDevice()) {
     base = "Cg8KCHVuaXR0ZXN0EgMxLjAaFggBEAIaBXN0YXRlIgcQgCAgASACKAEiAgg";
   }
@@ -372,18 +378,35 @@ TEST_F(V4UpdateProtocolManagerTest, TestExtendedReportingLevelIncluded) {
   std::unique_ptr<V4UpdateProtocolManager> pm_with_off(CreateProtocolManager(
       std::vector<ListUpdateResponse>({}), false, SBER_LEVEL_OFF));
   pm_with_off->store_state_map_ = std::move(store_state_map_);
-  EXPECT_EQ(base + "B", pm_with_off->GetBase64SerializedUpdateRequestProto());
+#if defined(OS_IOS)
+  std::string suffix = "Q==";
+#else
+  std::string suffix = "B";
+#endif
+  EXPECT_EQ(base + suffix,
+            pm_with_off->GetBase64SerializedUpdateRequestProto());
 
   std::unique_ptr<V4UpdateProtocolManager> pm_with_legacy(CreateProtocolManager(
       std::vector<ListUpdateResponse>({}), false, SBER_LEVEL_LEGACY));
   pm_with_legacy->store_state_map_ = std::move(pm_with_off->store_state_map_);
-  EXPECT_EQ(base + "C",
+#if defined(OS_IOS)
+  suffix = "g==";
+#else
+  suffix = "C";
+#endif
+  EXPECT_EQ(base + suffix,
             pm_with_legacy->GetBase64SerializedUpdateRequestProto());
 
   std::unique_ptr<V4UpdateProtocolManager> pm_with_scout(CreateProtocolManager(
       std::vector<ListUpdateResponse>({}), false, SBER_LEVEL_SCOUT));
   pm_with_scout->store_state_map_ = std::move(pm_with_legacy->store_state_map_);
-  EXPECT_EQ(base + "D", pm_with_scout->GetBase64SerializedUpdateRequestProto());
+#if defined(OS_IOS)
+  suffix = "w==";
+#else
+  suffix = "D";
+#endif
+  EXPECT_EQ(base + suffix,
+            pm_with_scout->GetBase64SerializedUpdateRequestProto());
 }
 
 }  // namespace safe_browsing
