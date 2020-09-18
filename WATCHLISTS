@@ -915,6 +915,10 @@
                   'chrome/browser/chromeos/login/demo_mode/|'\
                   'ash/metrics/demo_session_metrics_recorder.*',
     },
+    'desktop_in_product_help': {
+      'filepath': 'chrome/browser/ui/in_product_help|'\
+                  'chrome/browser/ui/views/in_product_help',
+    },
     'device_bluetooth': {
       'filepath': 'device/.*bluetooth'
     },
@@ -2442,6 +2446,7 @@
     'data_decoder': ['mbarowsky+watch-data-decoder@chromium.org'],
     'dbus': ['hashimoto+watch@chromium.org'],
     'demo_mode': ['cros-essential-apps-dev+watch@chromium.org'],
+    'desktop_in_product_help': ['collinbaker+watch@chromium.org'],
     'device_bluetooth': ['mattreynolds+watch@chromium.org',
                          'ortuno+watch@chromium.org'],
     'device_chooser': ['juncai+watch@chromium.org',
