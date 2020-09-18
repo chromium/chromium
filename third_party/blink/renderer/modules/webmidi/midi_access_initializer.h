@@ -24,7 +24,6 @@ class ScriptState;
 
 class MODULES_EXPORT MIDIAccessInitializer : public ScriptPromiseResolver,
                                              public MIDIDispatcher::Client {
-  USING_PRE_FINALIZER(MIDIAccessInitializer, Dispose);
 
  public:
   struct PortDescriptor {
@@ -61,8 +60,6 @@ class MODULES_EXPORT MIDIAccessInitializer : public ScriptPromiseResolver,
   MIDIAccessInitializer(ScriptState*, const MIDIOptions*);
   ~MIDIAccessInitializer() override = default;
 
-  void Dispose();
-
   // MIDIDispatcher::Client
   void DidAddInputPort(const String& id,
                        const String& manufacturer,
@@ -97,7 +94,7 @@ class MODULES_EXPORT MIDIAccessInitializer : public ScriptPromiseResolver,
   void OnPermissionsUpdated(mojom::blink::PermissionStatus);
   void OnPermissionUpdated(mojom::blink::PermissionStatus);
 
-  std::unique_ptr<MIDIDispatcher> dispatcher_;
+  Member<MIDIDispatcher> dispatcher_;
   Vector<PortDescriptor> port_descriptors_;
   Member<const MIDIOptions> options_;
 

@@ -26,15 +26,20 @@ namespace {
 static const size_t kMaxUnacknowledgedBytesSent = 10 * 1024 * 1024;  // 10 MB.
 }  // namespace
 
-MIDIDispatcher::MIDIDispatcher(ExecutionContext* execution_context) {
+MIDIDispatcher::MIDIDispatcher(ExecutionContext* execution_context)
+    : midi_session_(execution_context),
+      receiver_(this, execution_context),
+      midi_session_provider_(execution_context) {
   TRACE_EVENT0("midi", "MIDIDispatcher::MIDIDispatcher");
   // See https://bit.ly/2S0zRAS for task types.
   execution_context->GetBrowserInterfaceBroker().GetInterface(
       midi_session_provider_.BindNewPipeAndPassReceiver(
           execution_context->GetTaskRunner(blink::TaskType::kMiscPlatformAPI)));
   midi_session_provider_->StartSession(
-      midi_session_.BindNewPipeAndPassReceiver(),
-      receiver_.BindNewPipeAndPassRemote());
+      midi_session_.BindNewPipeAndPassReceiver(
+          execution_context->GetTaskRunner(blink::TaskType::kMiscPlatformAPI)),
+      receiver_.BindNewPipeAndPassRemote(
+          execution_context->GetTaskRunner(blink::TaskType::kMiscPlatformAPI)));
 }
 
 MIDIDispatcher::~MIDIDispatcher() = default;
@@ -130,6 +135,12 @@ void MIDIDispatcher::DataReceived(uint32_t port,
 
   if (initialized_)
     client_->DidReceiveMIDIData(port, &data[0], data.size(), timestamp);
+}
+
+void MIDIDispatcher::Trace(Visitor* visitor) const {
+  visitor->Trace(midi_session_);
+  visitor->Trace(receiver_);
+  visitor->Trace(midi_session_provider_);
 }
 
 }  // namespace blink
