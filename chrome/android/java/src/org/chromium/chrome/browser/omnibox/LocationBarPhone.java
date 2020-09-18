@@ -17,7 +17,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.ntp.NewTabPage;
-import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 
 import java.util.List;
@@ -30,7 +29,7 @@ public class LocationBarPhone extends LocationBarLayout {
 
     private View mFirstVisibleFocusedView;
     private View mUrlBar;
-    private StatusView mStatusView;
+    private View mStatusView;
 
     /**
      * Constructor used to inflate from XML.
@@ -85,10 +84,6 @@ public class LocationBarPhone extends LocationBarLayout {
         // This branch will be hit if the search engine logo experiment is enabled and we should
         // show the logo.
         if (shouldShowSearchEngineLogo) {
-            mStatusView.updateSearchEngineStatusIcon(
-                    shouldShowSearchEngineLogo, isSearchEngineGoogle, searchEngineUrl);
-            mFirstVisibleFocusedView = mStatusView;
-
             // When the search engine icon is enabled, icons are translations into the parent view's
             // padding area. Set clip padding to false to prevent them from getting clipped.
             setClipToPadding(false);
@@ -140,7 +135,7 @@ public class LocationBarPhone extends LocationBarLayout {
      * @return The offset for the location bar when showing the dse icon.
      */
     public int getLocationBarOffsetForFocusAnimation(boolean hasFocus) {
-        if (mStatusView == null) return 0;
+        if (mStatusCoordinator == null) return 0;
 
         // No offset is required if the experiment is disabled.
         if (!SearchEngineLogoUtils.shouldShowSearchEngineLogo(
@@ -175,7 +170,7 @@ public class LocationBarPhone extends LocationBarLayout {
     public float getUrlBarTranslationXForToolbarAnimation(
             float urlExpansionPercent, boolean hasFocus) {
         // This will be called before status view is ready.
-        if (mStatusView == null || mStatusCoordinator == null) return 0;
+        if (mStatusCoordinator == null) return 0;
 
         // No offset is required if the experiment is disabled.
         if (!SearchEngineLogoUtils.shouldShowSearchEngineLogo(
@@ -191,7 +186,7 @@ public class LocationBarPhone extends LocationBarLayout {
         float translation =
                 urlExpansionPercent * mStatusCoordinator.getEndPaddingPixelSizeOnFocusDelta();
 
-        if (!hasFocus && mStatusView.isSearchEngineStatusIconVisible()
+        if (!hasFocus && mStatusCoordinator.isSearchEngineStatusIconVisible()
                 && SearchEngineLogoUtils.currentlyOnNTP(mToolbarDataProvider)) {
             // When:
             // 1. unfocusing the LocationBar on the NTP.
@@ -295,6 +290,7 @@ public class LocationBarPhone extends LocationBarLayout {
     @Override
     public void setShowIconsWhenUrlFocused(boolean showIcon) {
         super.setShowIconsWhenUrlFocused(showIcon);
+        mFirstVisibleFocusedView = showIcon ? mStatusView : mUrlBar;
         mStatusCoordinator.setShowIconsWhenUrlFocused(showIcon);
     }
 
@@ -307,11 +303,7 @@ public class LocationBarPhone extends LocationBarLayout {
     public void updateVisualsForState() {
         super.updateVisualsForState();
         boolean isIncognito = getToolbarDataProvider().isIncognito();
-        boolean shouldShowSearchEngineLogo =
-                SearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito);
-        setShowIconsWhenUrlFocused(shouldShowSearchEngineLogo);
-        mFirstVisibleFocusedView = shouldShowSearchEngineLogo ? mStatusView : mUrlBar;
-
+        setShowIconsWhenUrlFocused(SearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito));
         updateStatusVisibility();
     }
 

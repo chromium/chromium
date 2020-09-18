@@ -33,6 +33,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * verbose status text.
  */
 public class StatusCoordinator implements View.OnClickListener, UrlTextChangeListener {
+    // TODO(crbug.com/1109369): Do not store the StatusView
     private final StatusView mStatusView;
     private final StatusMediator mMediator;
     private final PropertyModel mModel;
@@ -172,6 +173,12 @@ public class StatusCoordinator implements View.OnClickListener, UrlTextChangeLis
         return mMediator.isSecurityButtonShown();
     }
 
+    /** Returns {@code true} if the search engine status is currently being displayed. */
+    public boolean isSearchEngineStatusIconVisible() {
+        // TODO(crbug.com/1109369): try to hide this method
+        return mStatusView.isSearchEngineStatusIconVisible();
+    }
+
     /** Returns the ID of the drawable currently shown in the security icon. */
     @DrawableRes
     public int getSecurityIconResourceIdForTesting() {
@@ -255,11 +262,21 @@ public class StatusCoordinator implements View.OnClickListener, UrlTextChangeLis
             boolean isSearchEngineGoogle, String searchEngineUrl) {
         mMediator.updateSearchEngineStatusIcon(
                 shouldShowSearchEngineLogo, isSearchEngineGoogle, searchEngineUrl);
+        // TODO(crbug.com/1109369): Do not use the StatusView here
+        mStatusView.updateSearchEngineStatusIcon(
+                shouldShowSearchEngineLogo, isSearchEngineGoogle, searchEngineUrl);
     }
 
     /** Returns width of the status icon including start/end margins. */
     public int getStatusIconWidth() {
+        // TODO(crbug.com/1109369): try to hide this method
         return mStatusView.getStatusIconWidth();
+    }
+
+    /** @see View#getMeasuredWidth() */
+    public int getMeasuredWidth() {
+        // TODO(crbug.com/1109369): try to hide this method
+        return mStatusView.getMeasuredWidth();
     }
 
     /** Returns the increase in StatusView end padding, when the Url bar is focused. */
