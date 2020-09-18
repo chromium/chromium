@@ -21,9 +21,11 @@ WaylandPointer::WaylandPointer(wl_pointer* pointer,
                                Delegate* delegate)
     : obj_(pointer), connection_(connection), delegate_(delegate) {
   static const wl_pointer_listener listener = {
-      &WaylandPointer::Enter,  &WaylandPointer::Leave, &WaylandPointer::Motion,
-      &WaylandPointer::Button, &WaylandPointer::Axis,
-  };
+      &WaylandPointer::Enter,       &WaylandPointer::Leave,
+      &WaylandPointer::Motion,      &WaylandPointer::Button,
+      &WaylandPointer::Axis,        &WaylandPointer::Frame,
+      &WaylandPointer::AxisSource,  &WaylandPointer::AxisStop,
+      &WaylandPointer::AxisDiscrete};
 
   DCHECK(delegate_);
   delegate_->OnPointerCreated(this);
@@ -134,6 +136,39 @@ void WaylandPointer::Axis(void* data,
     return;
   }
   pointer->delegate_->OnPointerAxisEvent(offset);
+}
+
+// static
+void WaylandPointer::Frame(void* data, wl_pointer* obj) {
+  WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
+  pointer->delegate_->OnPointerFrameEvent();
+}
+
+// static
+void WaylandPointer::AxisSource(void* data,
+                                wl_pointer* obj,
+                                uint32_t axis_source) {
+  WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
+  pointer->delegate_->OnPointerAxisSourceEvent(axis_source);
+}
+
+// static
+void WaylandPointer::AxisStop(void* data,
+                              wl_pointer* obj,
+                              uint32_t time,
+                              uint32_t axis) {
+  WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
+  pointer->delegate_->OnPointerAxisStopEvent(axis);
+}
+
+// static
+void WaylandPointer::AxisDiscrete(void* data,
+                                  wl_pointer* obj,
+                                  uint32_t axis,
+                                  int32_t discrete) {
+  // TODO(fukino): Use this events for better handling of mouse wheel events.
+  // crbug.com/1129259.
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 }  // namespace ui

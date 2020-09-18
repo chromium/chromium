@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_EVENT_SOURCE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_EVENT_SOURCE_H_
 
+#include <deque>
 #include <memory>
 
 #include "base/containers/flat_map.h"
@@ -99,6 +100,9 @@ class WaylandEventSource : public PlatformEventSource,
                             WaylandWindow* window = nullptr) override;
   void OnPointerMotionEvent(const gfx::PointF& location) override;
   void OnPointerAxisEvent(const gfx::Vector2d& offset) override;
+  void OnPointerFrameEvent() override;
+  void OnPointerAxisSourceEvent(uint32_t axis_source) override;
+  void OnPointerAxisStopEvent(uint32_t axis) override;
 
   // WaylandTouch::Delegate
   void OnTouchCreated(WaylandTouch* touch) override;
@@ -114,6 +118,13 @@ class WaylandEventSource : public PlatformEventSource,
   void OnTouchCancelEvent() override;
 
  private:
+  struct PointerFrame {
+    uint32_t axis_source = WL_POINTER_AXIS_SOURCE_WHEEL;
+    float dx = 0.0f;
+    float dy = 0.0f;
+    base::TimeDelta dt;
+    bool is_axis_stop = false;
+  };
   struct TouchPoint;
 
   // PlatformEventSource:
@@ -129,6 +140,9 @@ class WaylandEventSource : public PlatformEventSource,
                               bool focused,
                               base::Optional<PointerId> id = base::nullopt);
   bool ShouldUnsetTouchFocus(WaylandWindow* window, PointerId id);
+
+  // Computes initial velocity of fling scroll based on recent frames.
+  gfx::Vector2dF ComputeFlingVelocity();
 
   WaylandWindowManager* const window_manager_;
 
@@ -148,6 +162,16 @@ class WaylandEventSource : public PlatformEventSource,
 
   // Last known pointer location.
   gfx::PointF pointer_location_;
+
+  // Current frame
+  PointerFrame current_pointer_frame_;
+
+  // Time of the last pointer frame event.
+  base::TimeTicks last_pointer_frame_time_;
+
+  // Recent pointer frames to compute fling scroll.
+  // Front is newer, and back is older.
+  std::deque<PointerFrame> recent_pointer_frames_;
 
   // The window the pointer is over.
   WaylandWindow* window_with_pointer_focus_ = nullptr;

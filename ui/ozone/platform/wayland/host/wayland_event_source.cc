@@ -37,6 +37,12 @@ bool HasAnyPointerButtonFlag(int flags) {
                    EF_FORWARD_MOUSE_BUTTON)) != 0;
 }
 
+// Number of fingers for scroll gestures.
+constexpr int kGestureScrollFingerCount = 2;
+
+// Maximum size of the stored recent pointer frame information.
+constexpr int kRecentPointerFrameMaxSize = 20;
+
 }  // namespace
 
 struct WaylandEventSource::TouchPoint {
@@ -200,6 +206,51 @@ void WaylandEventSource::OnPointerAxisEvent(const gfx::Vector2d& offset) {
   MouseWheelEvent event(offset, pointer_location_, pointer_location_,
                         EventTimeForNow(), flags, 0);
   DispatchEvent(&event);
+  current_pointer_frame_.dx += offset.x();
+  current_pointer_frame_.dy += offset.y();
+}
+
+void WaylandEventSource::OnPointerFrameEvent() {
+  base::TimeTicks now = EventTimeForNow();
+  current_pointer_frame_.dt = now - last_pointer_frame_time_;
+  last_pointer_frame_time_ = now;
+
+  // Dispatch Fling event if pointer.axis_stop is notified and the recent
+  // pointer.axis events meets the criteria to start fling scroll.
+  if (current_pointer_frame_.dx == 0 && current_pointer_frame_.dy == 0 &&
+      current_pointer_frame_.is_axis_stop) {
+    gfx::Vector2dF initial_velocity = ComputeFlingVelocity();
+    float vx = initial_velocity.x();
+    float vy = initial_velocity.y();
+    ScrollEvent event(
+        vx == 0 && vy == 0 ? ET_SCROLL_FLING_CANCEL : ET_SCROLL_FLING_START,
+        pointer_location_, pointer_location_, now,
+        pointer_flags_ | keyboard_modifiers_, vx, vy, vx, vy,
+        kGestureScrollFingerCount);
+    DispatchEvent(&event);
+    recent_pointer_frames_.clear();
+  } else {
+    if (recent_pointer_frames_.size() + 1 > kRecentPointerFrameMaxSize)
+      recent_pointer_frames_.pop_back();
+    recent_pointer_frames_.push_front(current_pointer_frame_);
+  }
+  // Reset |current_pointer_frame_|.
+  current_pointer_frame_.dx = 0;
+  current_pointer_frame_.dy = 0;
+  current_pointer_frame_.is_axis_stop = false;
+}
+
+void WaylandEventSource::OnPointerAxisSourceEvent(uint32_t axis_source) {
+  current_pointer_frame_.axis_source = axis_source;
+}
+
+void WaylandEventSource::OnPointerAxisStopEvent(uint32_t axis) {
+  if (axis == WL_POINTER_AXIS_VERTICAL_SCROLL) {
+    current_pointer_frame_.dy = 0;
+  } else if (axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL) {
+    current_pointer_frame_.dx = 0;
+  }
+  current_pointer_frame_.is_axis_stop = true;
 }
 
 void WaylandEventSource::OnTouchCreated(WaylandTouch* touch) {
@@ -357,6 +408,30 @@ bool WaylandEventSource::ShouldUnsetTouchFocus(WaylandWindow* win,
       touch_points_.begin(), touch_points_.end(),
       [win, id](auto& p) { return p.second->window == win && p.first != id; });
   return result == touch_points_.end();
+}
+
+gfx::Vector2dF WaylandEventSource::ComputeFlingVelocity() {
+  // Return average velocity in the last 200ms.
+  // TODO(fukino): Make the formula similar to libgestures's
+  // RegressScrollVelocity(). crbug.com/1129263.
+  base::TimeDelta dt;
+  float dx = 0.0f;
+  float dy = 0.0f;
+  for (auto& frame : recent_pointer_frames_) {
+    if (frame.axis_source != WL_POINTER_AXIS_SOURCE_FINGER)
+      break;
+    if (frame.dx == 0 && frame.dy == 0)
+      break;
+    if (dt + frame.dt > base::TimeDelta::FromMilliseconds(200))
+      break;
+
+    dx += frame.dx;
+    dy += frame.dy;
+    dt += frame.dt;
+  }
+  float dt_inv = 1.0f / dt.InSecondsF();
+  return dt.is_zero() ? gfx::Vector2dF()
+                      : gfx::Vector2dF(dx * dt_inv, dy * dt_inv);
 }
 
 }  // namespace ui

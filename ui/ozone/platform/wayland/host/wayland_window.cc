@@ -253,6 +253,8 @@ bool WaylandWindow::CanDispatchEvent(const PlatformEvent& event) {
     return has_keyboard_focus_;
   if (event->IsTouchEvent())
     return has_touch_focus_;
+  if (event->IsScrollEvent())
+    return has_pointer_focus_;
   return false;
 }
 
