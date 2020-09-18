@@ -323,35 +323,6 @@ class CorbAndCorsExtensionBrowserTest
     return IsExtensionAllowlisted();
   }
 
-  void VerifyPassiveUmaForAllowlistForCors(
-      const base::HistogramTester& histograms,
-      base::Optional<bool> expected_value) {
-    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-
-    const char* kUmaName =
-        "SiteIsolation.XSD.Browser.AllowedByCorbButNotCors.ContentScript";
-    bool expect_uma_presence = expected_value.has_value();
-
-    // This logging is to get an initial estimate, and it won't work once we
-    // actually turn the new CORS content script behavior on.
-    if (IsCorsForContentScriptsEnabled())
-      expect_uma_presence = false;
-
-    // If the extension is allowlisted, then CORB is disabled (and therefore the
-    // UMA logging code in CrossOriginReadBlocking::ResponseAnalyzer won't run
-    // at all for allowlisted extensions).
-    if (IsExtensionAllowlisted())
-      expect_uma_presence = false;
-
-    // Verify |expect_uma_presence| and |expected_value|.
-    if (!expect_uma_presence) {
-      histograms.ExpectTotalCount(kUmaName, 0);
-    } else {
-      histograms.ExpectUniqueSample(kUmaName, static_cast<int>(*expected_value),
-                                    1);
-    }
-  }
-
   // Verifies that |console_observer| has captured a console message indicating
   // that CORS has blocked a response.
   //
@@ -395,10 +366,6 @@ class CorbAndCorsExtensionBrowserTest
                                  CORBAction::kResponseStarted, 1);
     histograms.ExpectBucketCount("SiteIsolation.XSD.Browser.Action",
                                  CORBAction::kBlockedWithoutSniffing, 1);
-
-    // If CORB blocks the response, then there is no risk in enabling
-    // CorbAllowlistAlsoAppliesToOorCors and we shouldn't log the UMA.
-    VerifyPassiveUmaForAllowlistForCors(histograms, base::nullopt);
   }
 
   void VerifyFetchFromContentScriptWasAllowedByCorb(
@@ -440,11 +407,6 @@ class CorbAndCorsExtensionBrowserTest
       const std::string& actual_fetch_result,
       const std::string& expected_fetch_result) {
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-
-    // VerifyCorbEligibleFetchFromContentScript is only called for Content Types
-    // covered by CORB and therefore these requests carry no risk for
-    // CorbAllowlistAlsoAppliesToOorCors - verify that we didn't log the UMA.
-    VerifyPassiveUmaForAllowlistForCors(histograms, base::nullopt);
 
     if (AreContentScriptFetchesExpectedToBeBlocked()) {
       if (IsCorsForContentScriptsEnabled()) {
@@ -491,11 +453,6 @@ class CorbAndCorsExtensionBrowserTest
       EXPECT_THAT(actual_fetch_result,
                   ::testing::StartsWith(expected_fetch_result_prefix));
     }
-
-    // This is the kind of response (i.e., cross-origin fetch of a non-CORB
-    // type) that could be affected by the planned
-    // CorbAllowlistAlsoAppliesToOorCors feature.
-    VerifyPassiveUmaForAllowlistForCors(histograms, true);
   }
 
   content::WebContents* active_web_contents() {
@@ -1298,9 +1255,6 @@ IN_PROC_BROWSER_TEST_P(CorbAndCorsExtensionBrowserTest,
   EXPECT_THAT(fetch_result, ::testing::StartsWith("nosniff.xml - body"));
   VerifyFetchFromContentScriptWasAllowedByCorb(histograms,
                                                false /* expecting_sniffing */);
-
-  // Same-origin requests are not at risk of being broken.
-  VerifyPassiveUmaForAllowlistForCors(histograms, false);
 }
 
 // Test that responses that would have been allowed by CORB anyway are not

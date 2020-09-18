@@ -262,7 +262,6 @@
 #include "components/site_isolation/site_isolation_policy.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/translate/core/common/translate_switches.h"
-#include "components/ukm/app_source_url_recorder.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/variations/variations_associated_data.h"
@@ -339,8 +338,6 @@
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -5741,21 +5738,6 @@ void ChromeContentBrowserClient::IsClipboardPasteAllowed(
 #else
   std::move(callback).Run(ClipboardPasteAllowed(true));
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
-}
-
-void ChromeContentBrowserClient::
-    LogUkmEventForCrossOriginFetchFromContentScript3(
-        const std::string& isolated_world_host) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  const std::string& extension_id = isolated_world_host;
-  ukm::SourceId source_id =
-      ukm::AppSourceUrlRecorder::GetSourceIdForChromeExtension(extension_id);
-  if (source_id != ukm::kInvalidSourceId) {
-    ukm::builders::Extensions_CrossOriginFetchFromContentScript3 ukm_event(
-        source_id);
-    ukm_event.SetEventHappened(true).Record(ukm::UkmRecorder::Get());
-  }
-#endif
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)

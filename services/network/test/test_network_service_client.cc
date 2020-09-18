@@ -64,7 +64,4 @@ void TestNetworkServiceClient::OnCorsPreflightRequestCompleted(
     const base::UnguessableToken& devtool_request_id,
     const network::URLLoaderCompletionStatus& status) {}
 
-void TestNetworkServiceClient::LogCrossOriginFetchFromContentScript3(
-    const std::string& isolated_world_host) {}
-
 }  // namespace network

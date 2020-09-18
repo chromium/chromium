@@ -1877,18 +1877,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // fullscreen when mock screen orientation changes.
   virtual bool CanEnterFullscreenWithoutUserActivation();
 
-  // Called to log a UKM event for the
-  // Extensions.CrossOriginFetchFromContentScript3 metric.  See the metric
-  // definition in //tools/metrics/ukm/ukm.xml for more details, including when
-  // this event should be logged.
-  //
-  // |isolated_world_host| is the hostname of the isolated world origin that has
-  // initiated the network request.  See the doc comment for
-  // network.mojom.URLRequest.isolated_world_origin for more details.  In
-  // practice, |isolated_world_host| is the Chrome Extension ID.
-  virtual void LogUkmEventForCrossOriginFetchFromContentScript3(
-      const std::string& isolated_world_host);
-
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Returns true if |embedder_origin| is allowed to embed a plugin described by
   // |plugin_info|.  This method allows restricting some internal plugins (like

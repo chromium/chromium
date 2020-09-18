@@ -12,7 +12,6 @@
 
 #include <string>
 
-class ChromeContentBrowserClient;
 class GURL;
 
 namespace app_list {
@@ -34,12 +33,6 @@ class AppSourceUrlRecorder {
   friend class app_list::AppLaunchEventLogger;
 
   friend class badging::BadgeManager;
-
-  // TODO(lukasza): https://crbug.com/920638: Remove the friendship declaration
-  // below, after gathering sufficient data for the
-  // Extensions.CrossOriginFetchFromContentScript3 metric (possibly as early as
-  // M83).
-  friend class ::ChromeContentBrowserClient;
 
   // Get a UKM SourceId for a Chrome extension.
   static SourceId GetSourceIdForChromeExtension(const std::string& id);

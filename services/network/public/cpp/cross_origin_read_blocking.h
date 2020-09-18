@@ -27,10 +27,6 @@ FORWARD_DECLARE_TEST(CrossSiteDocumentResourceHandlerTest,
 
 namespace network {
 
-namespace mojom {
-class NetworkServiceClient;
-}  // namespace mojom
-
 // CrossOriginReadBlocking (CORB) implements response blocking
 // policy for Site Isolation.  CORB will monitor network responses to a
 // renderer and block illegal responses so that a compromised renderer cannot
@@ -107,18 +103,12 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     // Creates a ResponseAnalyzer for the request (|request_url| and
     // |request_initiator|), |response| pair.  The ResponseAnalyzer will decide
     // whether |response| needs to be blocked.
-    //
-    // TODO(lukasza): https://crbug.com/920638: Remove
-    // |isolated_world_origin| and |network_service_client| once we gather
-    // enough UMA and Rappor data.
     ResponseAnalyzer(
         const GURL& request_url,
         const base::Optional<url::Origin>& request_initiator,
         const network::mojom::URLResponseHead& response,
         const base::Optional<url::Origin>& request_initiator_origin_lock,
-        mojom::RequestMode request_mode,
-        const base::Optional<url::Origin>& isolated_world_origin,
-        mojom::NetworkServiceClient* network_service_client);
+        mojom::RequestMode request_mode);
 
     ~ResponseAnalyzer();
 
@@ -186,20 +176,13 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     };
     // Static because this method is called both during the actual decision, and
     // for the CORB protection logging decision.
-    //
-    // |is_cors_blocking_expected| returns whether the response is 1)
-    // cross-origin, 2) made in CORS mode and 3) doesn't have the right ACAO
-    // response header.
-    // TODO(lukasza): https://crbug.com/920638: Remove
-    // |is_cors_blocking_expected| once we gather enough UMA data.
     static BlockingDecision ShouldBlockBasedOnHeaders(
         mojom::RequestMode request_mode,
         const GURL& request_url,
         const base::Optional<url::Origin>& request_initiator,
         const network::mojom::URLResponseHead& response,
         const base::Optional<url::Origin>& request_initiator_origin_lock,
-        MimeType canonical_mime_type,
-        bool* is_cors_blocking_expected);
+        MimeType canonical_mime_type);
 
     // Returns true if the response has a nosniff header.
     static bool HasNoSniff(const network::mojom::URLResponseHead& response);
@@ -280,16 +263,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
 
     // Sniffing results.
     bool found_blockable_content_ = false;
-
-    // State used for calculating the
-    // SiteIsolation.XSD.Browser.AllowedByCorbButNotCors.ContentScript UMA
-    // and Extensions.CrossOriginFetchFromContentScript3 UKM data.
-    //
-    // TODO(lukasza): https://crbug.com/920638: Remove the fields below once we
-    // gather enough UMA and UKM data.
-    const base::Optional<url::Origin> isolated_world_origin_;
-    bool is_cors_blocking_expected_ = false;
-    mojom::NetworkServiceClient* const network_service_client_;
 
     DISALLOW_COPY_AND_ASSIGN(ResponseAnalyzer);
   };

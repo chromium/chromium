@@ -524,7 +524,6 @@ URLLoader::URLLoader(
       fetch_window_id_(request.fetch_window_id),
       origin_policy_manager_(nullptr),
       trust_token_helper_factory_(std::move(trust_token_helper_factory)),
-      isolated_world_origin_(request.isolated_world_origin),
       cookie_observer_(std::move(cookie_observer)),
       has_fetch_streaming_upload_body_(HasFetchStreamingUploadBody(&request)),
       allow_http1_for_streaming_upload_(
@@ -1314,8 +1313,7 @@ void URLLoader::ContinueOnResponseStarted() {
     corb_analyzer_ =
         std::make_unique<CrossOriginReadBlocking::ResponseAnalyzer>(
             url_request_->url(), url_request_->initiator(), *response_,
-            factory_params_->request_initiator_origin_lock, request_mode_,
-            isolated_world_origin_, network_service_client_);
+            factory_params_->request_initiator_origin_lock, request_mode_);
     is_more_corb_sniffing_needed_ = corb_analyzer_->needs_sniffing();
     if (corb_analyzer_->ShouldBlock()) {
       DCHECK(!is_more_corb_sniffing_needed_);

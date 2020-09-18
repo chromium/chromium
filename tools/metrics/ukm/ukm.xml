@@ -3967,6 +3967,10 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Extensions.CrossOriginFetchFromContentScript3">
+  <obsolete>
+    Deprecated in Chrome 87 / September 2020 - it was not needed anymore since
+    CORS-for-content-scripts has succesfully shipped in M85.
+  </obsolete>
   <owner>lukasza@chromium.org</owner>
   <summary>
     This UKM event is logged when an extension which triggers a cross-origin

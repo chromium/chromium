@@ -259,13 +259,4 @@ void NetworkServiceClient::OnCorsPreflightRequestCompleted(
       process_id, render_frame_id, devtools_request_id, status);
 }
 
-void NetworkServiceClient::LogCrossOriginFetchFromContentScript3(
-    const std::string& isolated_world_host) {
-  ContentBrowserClient* client = GetContentClient()->browser();
-  if (client) {
-    client->LogUkmEventForCrossOriginFetchFromContentScript3(
-        isolated_world_host);
-  }
-}
-
 }  // namespace content
