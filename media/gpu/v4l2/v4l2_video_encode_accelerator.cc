@@ -12,6 +12,7 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
+#include <memory>
 #include <numeric>
 #include <utility>
 
@@ -161,7 +162,7 @@ V4L2VideoEncodeAccelerator::InputFrameInfo::InputFrameInfo(
 V4L2VideoEncodeAccelerator::InputFrameInfo::InputFrameInfo(
     const InputFrameInfo&) = default;
 
-V4L2VideoEncodeAccelerator::InputFrameInfo::~InputFrameInfo() {}
+V4L2VideoEncodeAccelerator::InputFrameInfo::~InputFrameInfo() = default;
 
 V4L2VideoEncodeAccelerator::V4L2VideoEncodeAccelerator(
     scoped_refptr<V4L2Device> device)
@@ -212,7 +213,7 @@ bool V4L2VideoEncodeAccelerator::Initialize(const Config& config,
 
   encoder_input_visible_rect_ = gfx::Rect(config.input_visible_size);
 
-  client_ptr_factory_.reset(new base::WeakPtrFactory<Client>(client));
+  client_ptr_factory_ = std::make_unique<base::WeakPtrFactory<Client>>(client);
   client_ = client_ptr_factory_->GetWeakPtr();
 
   output_format_fourcc_ =
@@ -1371,8 +1372,7 @@ bool V4L2VideoEncodeAccelerator::StopDevicePoll() {
   // Reset all our accounting info.
   while (!encoder_input_queue_.empty())
     encoder_input_queue_.pop();
-  for (size_t i = 0; i < input_buffer_map_.size(); ++i) {
-    InputRecord& input_record = input_buffer_map_[i];
+  for (auto& input_record : input_buffer_map_) {
     input_record.frame = nullptr;
   }
 
