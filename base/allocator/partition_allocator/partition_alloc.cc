@@ -823,21 +823,28 @@ PartitionAllocator<thread_safe>::~PartitionAllocator() {
 
 template <bool thread_safe>
 void PartitionAllocator<thread_safe>::init(
-    PartitionAllocatorAlignment alignment) {
-  partition_root_.Init(
-      alignment ==
-          PartitionAllocatorAlignment::kAlignedAlloc /* enforce_alignment */,
-      false);
+    PartitionAllocatorAlignment alignment,
+    bool with_thread_cache) {
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  CHECK(!with_thread_cache)
+      << "Cannot use a thread cache when PartitionAlloc is malloc()."
+#endif
+         partition_root_.Init(alignment ==
+                                  PartitionAllocatorAlignment::
+                                      kAlignedAlloc /* enforce_alignment */,
+                              with_thread_cache);
   PartitionAllocMemoryReclaimer::Instance()->RegisterPartition(
       &partition_root_);
 }
 
 template PartitionAllocator<internal::ThreadSafe>::~PartitionAllocator();
 template void PartitionAllocator<internal::ThreadSafe>::init(
-    PartitionAllocatorAlignment alignment);
+    PartitionAllocatorAlignment alignment,
+    bool with_thread_cache);
 template PartitionAllocator<internal::NotThreadSafe>::~PartitionAllocator();
 template void PartitionAllocator<internal::NotThreadSafe>::init(
-    PartitionAllocatorAlignment alignment);
+    PartitionAllocatorAlignment alignment,
+    bool with_thread_cache);
 
 #if DCHECK_IS_ON()
 void DCheckIfManagedByPartitionAllocNormalBuckets(const void* ptr) {

@@ -57,6 +57,7 @@
 
 #include <atomic>
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/checked_ptr_support.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
@@ -1145,7 +1146,8 @@ struct BASE_EXPORT PartitionAllocator {
   ~PartitionAllocator();
 
   void init(PartitionAllocatorAlignment alignment =
-                PartitionAllocatorAlignment::kRegular);
+                PartitionAllocatorAlignment::kRegular,
+            bool with_thread_cache = false);
   ALWAYS_INLINE PartitionRoot<thread_safe>* root() { return &partition_root_; }
 
  private:
