@@ -6,9 +6,6 @@
 # produce an output file and a source_set to build it.
 #
 # Parameters:
-#   inputs:
-#     List of file name to read. Each file should be a .xml file with
-#     histogram descriptions.
 #
 #   namespace (optional):
 #     Namespace in which the generated code should be scoped. If left empty,
@@ -30,7 +27,6 @@ template("generate_expired_histograms_array") {
     script = "//tools/metrics/histograms/generate_expired_histograms_array.py"
     outputs = [ header_filename ]
 
-    inputs = invoker.inputs
     major_branch_date_filepath = invoker.major_branch_date_filepath
     milestone_filepath = invoker.milestone_filepath
 
@@ -41,10 +37,10 @@ template("generate_expired_histograms_array") {
     }
 
     args += [
-              "-o" + rebase_path(root_gen_dir, root_build_dir),
-              "-H" + rebase_path(header_filename, root_gen_dir),
-              "-d" + rebase_path(major_branch_date_filepath, root_build_dir),
-              "-m" + rebase_path(milestone_filepath, root_build_dir),
-            ] + rebase_path(inputs, root_build_dir)
+      "-o" + rebase_path(root_gen_dir, root_build_dir),
+      "-H" + rebase_path(header_filename, root_gen_dir),
+      "-d" + rebase_path(major_branch_date_filepath, root_build_dir),
+      "-m" + rebase_path(milestone_filepath, root_build_dir),
+    ]
   }
 }

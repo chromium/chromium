@@ -13,6 +13,7 @@ import sys
 
 import extract_histograms
 import merge_xml
+import histogram_paths
 
 _DATE_FILE_RE = re.compile(r".*MAJOR_BRANCH_DATE=(.+).*")
 _CURRENT_MILESTONE_RE = re.compile(r"MAJOR=([0-9]{2,3})\n")
@@ -232,7 +233,7 @@ def _GenerateFile(arguments):
       arguments.major_branch_date_filepath: File path for base date.
       arguments.milestone_filepath: File path for milestone information.
   """
-  descriptions = merge_xml.MergeFiles(arguments.inputs)
+  descriptions = merge_xml.MergeFiles(histogram_paths.ALL_XMLS)
   with open(arguments.major_branch_date_filepath, "r") as date_file:
     branch_file_content = date_file.read()
   with open(arguments.milestone_filepath, "r") as milestone_file:
@@ -277,10 +278,6 @@ def _ParseArguments():
       "-m",
       required=True,
       help="A path to the file with the milestone information.")
-  arg_parser.add_argument(
-      "inputs",
-      nargs="+",
-      help="Paths to .xml files with histogram descriptions.")
   return arg_parser.parse_args()
 
 

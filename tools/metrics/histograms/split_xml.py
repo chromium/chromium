@@ -173,7 +173,7 @@ def _WriteDocumentDict(document_dict, output_dir):
         value is a list of nodes or another dict.
     output_dir: The output directory of the resulting folders.
   """
-  for key, val in document_dict:
+  for key, val in document_dict.items():
     if isinstance(val, list):
       _OutputToFolderAndXML(val, output_dir, key)
     else:

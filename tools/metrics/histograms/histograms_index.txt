@@ -1,4 +1,5 @@
 tools/metrics/histograms/histograms.xml
+tools/metrics/histograms/histograms_xml/Blink/histograms.xml
 tools/metrics/histograms/histograms_xml/Fingerprint/histograms.xml
 tools/metrics/histograms/histograms_xml/UMA/histograms.xml
 tools/metrics/histograms/histograms_xml/histogram_suffixes_list.xml

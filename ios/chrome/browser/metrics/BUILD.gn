@@ -268,10 +268,6 @@ source_set("eg2_tests") {
 import("//components/metrics/generate_expired_histograms_array.gni")
 
 generate_expired_histograms_array("expired_histograms_array") {
-  inputs = [
-    "//tools/metrics/histograms/histograms.xml",
-    "//tools/metrics/histograms/enums.xml",
-  ]
   namespace = ""
   header_filename = "ios_expired_histograms_array.h"
   major_branch_date_filepath = "//chrome/MAJOR_BRANCH_DATE"
