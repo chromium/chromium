@@ -89,20 +89,30 @@ gfx::DisplayColorSpaces FillDisplayColorSpaces(
                                    DisplaySnapshot::PrimaryFormat());
   }
 
-  // TODO(b/158126931): |snapshot_color_space| Primaries/Transfer function
-  // cannot be used directly, as users prefer saturated colors to accurate ones.
-  // Instead, clamp at DCI-P3 and clamp at that level or with a small overshoot.
-  gfx::DisplayColorSpaces display_color_spaces(
-      gfx::ColorSpace::CreateSRGB(), DisplaySnapshot::PrimaryFormat());
+  const auto primary_id = snapshot_color_space.GetPrimaryID();
+
+  skcms_Matrix3x3 primary_matrix{};
+  if (primary_id == gfx::ColorSpace::PrimaryID::CUSTOM)
+    snapshot_color_space.GetPrimaryMatrix(&primary_matrix);
+
+  // Reconstruct the native colorspace with an IEC61966 2.1 transfer function
+  // for SDR content (matching that of sRGB).
+  gfx::ColorSpace sdr_color_space;
+  if (primary_id == gfx::ColorSpace::PrimaryID::CUSTOM) {
+    sdr_color_space = gfx::ColorSpace::CreateCustom(
+        primary_matrix, gfx::ColorSpace::TransferID::IEC61966_2_1);
+  } else {
+    sdr_color_space =
+        gfx::ColorSpace(primary_id, gfx::ColorSpace::TransferID::IEC61966_2_1);
+  }
+  gfx::DisplayColorSpaces display_color_spaces = gfx::DisplayColorSpaces(
+      sdr_color_space, DisplaySnapshot::PrimaryFormat());
 
   if (allow_high_bit_depth && snapshot_color_space.IsHDR()) {
     constexpr float kSDRJoint = 0.75;
     constexpr float kHDRLevel = 4.0;
-    const auto primary_id = snapshot_color_space.GetPrimaryID();
     gfx::ColorSpace hdr_color_space;
     if (primary_id == gfx::ColorSpace::PrimaryID::CUSTOM) {
-      skcms_Matrix3x3 primary_matrix{};
-      snapshot_color_space.GetPrimaryMatrix(&primary_matrix);
       hdr_color_space = gfx::ColorSpace::CreatePiecewiseHDR(
           primary_id, kSDRJoint, kHDRLevel, &primary_matrix);
     } else {

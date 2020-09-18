@@ -380,6 +380,40 @@ TEST_P(DisplayChangeObserverTest, SDRDisplayColorSpaces) {
             gfx::ColorSpace::TransferID::IEC61966_2_1);
 }
 
+TEST_P(DisplayChangeObserverTest, WCGDisplayColorSpaces) {
+  const std::unique_ptr<DisplaySnapshot> display_snapshot =
+      FakeDisplaySnapshot::Builder()
+          .SetId(123)
+          .SetName("AmazingFakeDisplay")
+          .SetNativeMode(MakeDisplayMode(1920, 1080, true, 60))
+          .SetColorSpace(gfx::ColorSpace::CreateDisplayP3D65())
+          .Build();
+
+  ui::DeviceDataManager::CreateInstance();
+  DisplayManager manager(nullptr);
+  const auto display_mode = MakeDisplayMode(1920, 1080, true, 60);
+  DisplayChangeObserver observer(&manager);
+  const ManagedDisplayInfo display_info = CreateManagedDisplayInfo(
+      &observer, display_snapshot.get(), display_mode.get());
+
+  EXPECT_EQ(display_info.bits_per_channel(), 8u);
+
+  const auto display_color_spaces = display_info.display_color_spaces();
+  EXPECT_FALSE(display_color_spaces.SupportsHDR());
+
+  EXPECT_EQ(
+      DisplaySnapshot::PrimaryFormat(),
+      display_color_spaces.GetOutputBufferFormat(gfx::ContentColorUsage::kSRGB,
+                                                 /*needs_alpha=*/true));
+
+  const auto color_space = display_color_spaces.GetRasterColorSpace();
+  EXPECT_TRUE(color_space.IsValid());
+  EXPECT_EQ(color_space.GetPrimaryID(),
+            gfx::ColorSpace::PrimaryID::SMPTEST432_1);
+  EXPECT_EQ(color_space.GetTransferID(),
+            gfx::ColorSpace::TransferID::IEC61966_2_1);
+}
+
 #if defined(OS_CHROMEOS)
 TEST_P(DisplayChangeObserverTest, HDRDisplayColorSpaces) {
   // TODO(crbug.com/1012846): Remove this flag and provision when HDR is fully
@@ -387,12 +421,13 @@ TEST_P(DisplayChangeObserverTest, HDRDisplayColorSpaces) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kUseHDRTransferFunction);
 
+  const auto display_color_space = gfx::ColorSpace::CreateHDR10(100.0f);
   const std::unique_ptr<DisplaySnapshot> display_snapshot =
       FakeDisplaySnapshot::Builder()
           .SetId(123)
           .SetName("AmazingFakeDisplay")
           .SetNativeMode(MakeDisplayMode(1920, 1080, true, 60))
-          .SetColorSpace(gfx::ColorSpace::CreateHDR10(100.0f))
+          .SetColorSpace(display_color_space)
           .SetBitsPerChannel(10u)
           .Build();
 
@@ -418,7 +453,7 @@ TEST_P(DisplayChangeObserverTest, HDRDisplayColorSpaces) {
       display_color_spaces.GetOutputColorSpace(gfx::ContentColorUsage::kSRGB,
                                                /*needs_alpha=*/true);
   EXPECT_TRUE(sdr_color_space.IsValid());
-  EXPECT_EQ(sdr_color_space.GetPrimaryID(), gfx::ColorSpace::PrimaryID::BT709);
+  EXPECT_EQ(sdr_color_space.GetPrimaryID(), display_color_space.GetPrimaryID());
   EXPECT_EQ(sdr_color_space.GetTransferID(),
             gfx::ColorSpace::TransferID::IEC61966_2_1);
 
