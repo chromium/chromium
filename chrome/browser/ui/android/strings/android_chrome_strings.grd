@@ -2845,6 +2845,41 @@ Cookies and other data may be used across open Incognito tabs.
         URL required
       </message>
 
+      <!-- Read later strings -->
+      <message name="IDS_READING_LIST_TITLE" desc="The title for the reading list page in main bookmark UI.">
+        Reading list
+      </message>
+      <message name="IDS_READING_LIST_READ" desc="The header for the read section in the reading list UI.">
+        Read
+      </message>
+      <message name="IDS_READING_LIST_UNREAD" desc="The header for the unread section in the reading list UI.">
+        Unread
+      </message>
+      <message name="IDS_READING_LIST_READY_FOR_OFFLINE" desc="The string to inform the user that the reading list has offline page ready.">
+        Ready for offline
+      </message>
+      <message name="IDS_READING_LIST_MARK_AS_READ" desc="The text for the action to mark the reading list as read.">
+        Mark as read
+      </message>
+      <message name="IDS_READING_LIST_SHARE" desc="The text for the action to share the reading list item.">
+        Share
+      </message>
+      <message name="IDS_READING_LIST_REMINDER_NOTIFICATION_TITLE" desc="The title of the reminder notification for reading list.">
+        Catch up on your reading list
+      </message>
+      <message name="IDS_READING_LIST_REMINDER_NOTIFICATION_SUBTITLE" desc="The subtitle of the reminder notification for reading list.">
+        You have <ph name="READING_LIST_COUNT">%1$d<ex>5</ex></ph> pages
+      </message>
+      <message name="IDS_READING_LIST_UNREAD_PAGE_COUNT" desc="Inform the user about the number of unread reading list items.">
+        <ph name="READING_LIST_COUNT">%1$d<ex>5</ex></ph> unread pages
+      </message>
+      <message name="IDS_READING_LIST_INTRO_TEXT" desc="The text on the reading list in product help bubble and other UIs to introduce the feature to the user.">
+        Save this page for later and get a reminder
+      </message>
+      <message name="IDS_READING_LIST_FIND_IN_BOOKMARKS" desc="The text to inform the user to find the reading list in bookmarks UI.">
+        Find your reading list in Bookmarks
+      </message>
+
       <!-- Offline pages -->
       <message name="IDS_OFFLINE_PAGES_VIEWING_OFFLINE_PAGE" desc="Text explaining that the user is viewing an offline copy of a web page.">
         Viewing an offline copy of this page
