@@ -251,6 +251,12 @@ enum CrostiniEventType {
   unshare
 };
 
+enum ProviderSource {
+  file,
+  device,
+  network
+};
+
 // A file task represents an action that the file manager can perform over the
 // currently selected files. See
 // chrome/browser/chromeos/extensions/file_manager/file_tasks.h for details
@@ -679,7 +685,7 @@ dictionary Provider {
   boolean multipleMounts;
 
   // Source of file systems' data.
-  manifestTypes.FileSystemProviderSource source;
+  ProviderSource source;
 };
 
 // Information about a Linux package in response to GetLinuxPackageInfo.

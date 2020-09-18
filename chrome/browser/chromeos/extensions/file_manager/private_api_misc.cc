@@ -590,16 +590,13 @@ FileManagerPrivateGetProvidersFunction::Run() {
     result_item.multiple_mounts = capabilities.multiple_mounts;
     switch (capabilities.source) {
       case SOURCE_FILE:
-        result_item.source =
-            api::manifest_types::FILE_SYSTEM_PROVIDER_SOURCE_FILE;
+        result_item.source = api::file_manager_private::PROVIDER_SOURCE_FILE;
         break;
       case SOURCE_DEVICE:
-        result_item.source =
-            api::manifest_types::FILE_SYSTEM_PROVIDER_SOURCE_DEVICE;
+        result_item.source = api::file_manager_private::PROVIDER_SOURCE_DEVICE;
         break;
       case SOURCE_NETWORK:
-        result_item.source =
-            api::manifest_types::FILE_SYSTEM_PROVIDER_SOURCE_NETWORK;
+        result_item.source = api::file_manager_private::PROVIDER_SOURCE_NETWORK;
         break;
     }
     result.push_back(std::move(result_item));
