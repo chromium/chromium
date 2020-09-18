@@ -71,6 +71,63 @@ TEST_F('RectUtilUnitTest', 'Adjacent', function() {
   }
 });
 
+TEST_F('RectUtilUnitTest', 'Close', function() {
+  const centerRect = {left: 10, top: 10, width: 10, height: 10};
+  assertTrue(RectUtil.close(centerRect, centerRect, 0));
+
+  // Adjacent to the left of centerRect.
+  const leftRect = {left: 5, top: 10, width: 5, height: 5};
+  assertTrue(RectUtil.close(centerRect, leftRect, 5));
+  assertTrue(RectUtil.close(centerRect, leftRect, 0));
+  assertTrue(RectUtil.close(leftRect, centerRect, 0));
+
+  // 2dp away to the right of centerRect.
+  const rightRect = {left: 22, top: 17, width: 5, height: 5};
+  assertTrue(RectUtil.close(centerRect, rightRect, 5));
+  assertTrue(RectUtil.close(rightRect, centerRect, 5));
+  assertFalse(RectUtil.close(centerRect, rightRect, 0));
+  assertFalse(RectUtil.close(rightRect, centerRect, 0));
+
+  // 5dp above centerRect.
+  const topRect = {left: 12, top: 0, width: 5, height: 5};
+  assertTrue(RectUtil.close(centerRect, topRect, 5));
+  assertTrue(RectUtil.close(topRect, centerRect, 5));
+  assertFalse(RectUtil.close(centerRect, topRect, 4));
+  assertFalse(RectUtil.close(topRect, centerRect, 4));
+
+  // Adjacent below centerRect.
+  const bottomRect = {left: 15, top: 20, width: 5, height: 5};
+  assertTrue(RectUtil.close(centerRect, bottomRect, 0));
+  assertTrue(RectUtil.close(bottomRect, centerRect, 0));
+
+  // Touching at the top left corner of centerRect.
+  const topLeftRect = {left: 5, top: 5, width: 5, height: 5};
+  assertTrue(RectUtil.close(centerRect, topLeftRect, 0));
+  assertTrue(RectUtil.close(topLeftRect, centerRect, 0));
+
+  // 1dp off in each dimension from the bottom right corner of centerRect.
+  const bottomRightRect = {left: 21, top: 21, width: 5, height: 5};
+  assertTrue(RectUtil.close(centerRect, bottomRightRect, 1));
+  assertTrue(RectUtil.close(bottomRightRect, centerRect, 1));
+  assertFalse(RectUtil.close(centerRect, bottomRightRect, 0));
+  assertFalse(RectUtil.close(bottomRightRect, centerRect, 0));
+
+  // Overlapping horizontally, but far vertically.
+  const verticallyFarRect = {left: 15, top: 100, width: 5, height: 5};
+  assertFalse(RectUtil.close(centerRect, verticallyFarRect, 5));
+  assertFalse(RectUtil.close(verticallyFarRect, centerRect, 5));
+
+  // Overlapping vertically, but far horizontally.
+  const horizontallyFarRect = {left: 100, top: 15, width: 5, height: 5};
+  assertFalse(RectUtil.close(centerRect, horizontallyFarRect, 5));
+  assertFalse(RectUtil.close(horizontallyFarRect, centerRect, 5));
+
+  // Far away in both dimensions from centerRect.
+  const farRect = {left: 100, top: 100, width: 1, height: 1};
+  assertFalse(RectUtil.close(centerRect, farRect, 20));
+  assertFalse(RectUtil.close(farRect, centerRect, 20));
+});
+
 TEST_F('RectUtilUnitTest', 'Equals', function() {
   const rect1 = {left: 0, top: 0, width: 10, height: 10};
   const rect2 = {left: 0, top: 0, width: 10, height: 10};

@@ -79,6 +79,28 @@ const RectUtil = {
   },
 
   /**
+   * Checks if the two specified rectangles are within at most a specified
+   * distance of each other both horizontally and vertically.
+   * @param {ScreenRect} rect1
+   * @param {ScreenRect} rect2
+   * @param {number} tolerance
+   * @return {boolean}
+   */
+  close: (rect1, rect2, tolerance) => {
+    const maxLeft = rect1.left > rect2.left ? rect1.left : rect2.left;
+    const minRight = RectUtil.right(rect1) < RectUtil.right(rect2) ?
+        RectUtil.right(rect1) :
+        RectUtil.right(rect2);
+    const maxTop = rect1.top > rect2.top ? rect1.top : rect2.top;
+    const minBottom = RectUtil.bottom(rect1) < RectUtil.bottom(rect2) ?
+        RectUtil.bottom(rect1) :
+        RectUtil.bottom(rect2);
+
+    // Negative values indicate the rectangles overlap in that dimension.
+    return maxLeft - minRight <= tolerance && maxTop - minBottom <= tolerance;
+  },
+
+  /**
    * @param {ScreenRect} outer
    * @param {ScreenRect} inner
    * @return {boolean}
