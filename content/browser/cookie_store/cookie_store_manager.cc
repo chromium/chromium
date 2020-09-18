@@ -16,9 +16,9 @@
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_version.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
 #include "url/gurl.h"
@@ -187,7 +187,7 @@ void CookieStoreManager::AddSubscriptions(
   }
 
   for (const auto& mojo_subscription : mojo_subscriptions) {
-    if (!ServiceWorkerUtils::ScopeMatches(service_worker_registration->scope(),
+    if (!blink::ServiceWorkerScopeMatches(service_worker_registration->scope(),
                                           mojo_subscription->url)) {
       // Blink should have validated subscription URLs against the service
       // worker registration scope. A mismatch here means that the renderer was

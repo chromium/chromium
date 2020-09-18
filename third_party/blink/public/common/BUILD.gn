@@ -167,6 +167,7 @@ source_set("headers") {
     "scheduler/web_scheduler_tracked_feature.h",
     "security/security_style.h",
     "security_context/insecure_request_policy.h",
+    "service_worker/service_worker_scope_match.h",
     "service_worker/service_worker_status_code.h",
     "service_worker/service_worker_type_converters.h",
     "service_worker/service_worker_types.h",

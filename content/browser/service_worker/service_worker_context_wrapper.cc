@@ -48,6 +48,7 @@
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
+#include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
@@ -195,7 +196,7 @@ void ServiceWorkerContextWrapper::RunOrPostTaskOnCoreThread(
 
 // static
 bool ServiceWorkerContext::ScopeMatches(const GURL& scope, const GURL& url) {
-  return ServiceWorkerUtils::ScopeMatches(scope, url);
+  return blink::ServiceWorkerScopeMatches(scope, url);
 }
 
 // static

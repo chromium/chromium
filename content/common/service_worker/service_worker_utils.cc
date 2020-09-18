@@ -66,13 +66,6 @@ bool ServiceWorkerUtils::IsMainRequestDestination(
 }
 
 // static
-bool ServiceWorkerUtils::ScopeMatches(const GURL& scope, const GURL& url) {
-  DCHECK(!scope.has_ref());
-  return base::StartsWith(url.spec(), scope.spec(),
-                          base::CompareCase::SENSITIVE);
-}
-
-// static
 bool ServiceWorkerUtils::IsPathRestrictionSatisfied(
     const GURL& scope,
     const GURL& script_url,
@@ -243,16 +236,6 @@ const char* ServiceWorkerUtils::FetchResponseSourceToSuffix(
   }
   NOTREACHED();
   return ".Unknown";
-}
-
-bool LongestScopeMatcher::MatchLongest(const GURL& scope) {
-  if (!ServiceWorkerUtils::ScopeMatches(scope, url_))
-    return false;
-  if (match_.is_empty() || match_.spec().size() < scope.spec().size()) {
-    match_ = scope;
-    return true;
-  }
-  return false;
 }
 
 }  // namespace content

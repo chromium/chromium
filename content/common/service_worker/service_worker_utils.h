@@ -29,9 +29,6 @@ class ServiceWorkerUtils {
   static bool IsMainRequestDestination(
       network::mojom::RequestDestination destination);
 
-  // Returns true if |scope| matches |url|.
-  CONTENT_EXPORT static bool ScopeMatches(const GURL& scope, const GURL& url);
-
   // Returns true if the script at |script_url| is allowed to control |scope|
   // according to Service Worker's path restriction policy. If
   // |service_worker_allowed| is not null, it points to the
@@ -82,21 +79,6 @@ class ServiceWorkerUtils {
       bool service_worker_allowed_header_supported,
       const std::string* service_worker_allowed_header_value,
       std::string* error_message);
-};
-
-class CONTENT_EXPORT LongestScopeMatcher {
- public:
-  explicit LongestScopeMatcher(const GURL& url) : url_(url) {}
-  virtual ~LongestScopeMatcher() {}
-
-  // Returns true if |scope| matches |url_| longer than |match_|.
-  bool MatchLongest(const GURL& scope);
-
- private:
-  const GURL url_;
-  GURL match_;
-
-  DISALLOW_COPY_AND_ASSIGN(LongestScopeMatcher);
 };
 
 }  // namespace content
