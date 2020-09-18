@@ -44,13 +44,14 @@ class KURL;
 class ResourceFetcher;
 class SingleCachedMetadataHandler;
 
-// ScriptResource is a resource representing a JavaScript script. It is only
-// used for "classic" scripts, i.e. not modules.
+// ScriptResource is a resource representing a JavaScript, either a classic or
+// module script.
 //
 // In addition to loading the script, a ScriptResource can optionally stream the
 // script to the JavaScript parser/compiler, using a ScriptStreamer. In this
 // case, clients of the ScriptResource will not receive the finished
 // notification until the streaming completes.
+// Note: ScriptStreamer is only used for "classic" scripts, i.e. not modules.
 //
 // See also:
 // https://docs.google.com/document/d/143GOPl_XVgLPFfO-31b_MdBcnjklLEX2OIg_6eN6fQ4
