@@ -41,6 +41,11 @@ const base::Feature kAllowSignedHTTPExchangeCertsWithoutExtension{
     "AllowSignedHTTPExchangeCertsWithoutExtension",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Allows Blink to request fonts from the Android Downloadable Fonts API through
+// the service implemented on the Java side.
+const base::Feature kAndroidDownloadableFontsMatching{
+    "AndroidDownloadableFontsMatching", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Launches the audio service on the browser startup.
 const base::Feature kAudioServiceLaunchOnStartup{
     "AudioServiceLaunchOnStartup", base::FEATURE_DISABLED_BY_DEFAULT};

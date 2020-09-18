@@ -358,6 +358,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            kEnableOnly},
           {"AllowContentInitiatedDataUrlNavigations",
            features::kAllowContentInitiatedDataUrlNavigations, kDefault},
+          {"AndroidDownloadableFontsMatching",
+           features::kAndroidDownloadableFontsMatching, kDefault},
           {"AudioWorkletRealtimeThread",
            blink::features::kAudioWorkletRealtimeThread, kEnableOnly},
           {"BlockCredentialedSubresources",

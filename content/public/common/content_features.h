@@ -20,6 +20,7 @@ CONTENT_EXPORT extern const base::Feature kAllowActivationDelegationAttr;
 CONTENT_EXPORT extern const base::Feature
     kAllowContentInitiatedDataUrlNavigations;
 CONTENT_EXPORT extern const base::Feature kAllowPopupsDuringPageUnload;
+CONTENT_EXPORT extern const base::Feature kAndroidDownloadableFontsMatching;
 CONTENT_EXPORT extern const base::Feature
     kAllowSignedHTTPExchangeCertsWithoutExtension;
 CONTENT_EXPORT extern const base::Feature kAudioServiceLaunchOnStartup;

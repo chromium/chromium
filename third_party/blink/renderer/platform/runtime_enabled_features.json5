@@ -151,6 +151,9 @@
       origin_trial_feature_name: "AllowSyncXHRInPageDismissal",
     },
     {
+      name: "AndroidDownloadableFontsMatching",
+    },
+    {
       name: "AnimationWorklet",
       status: "experimental",
     },

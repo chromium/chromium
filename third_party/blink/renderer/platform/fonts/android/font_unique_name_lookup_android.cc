@@ -84,11 +84,17 @@ sk_sp<SkTypeface> FontUniqueNameLookupAndroid::MatchUniqueName(
       MatchUniqueNameFromFirmwareFonts(font_unique_name);
   if (result_font)
     return result_font;
-  return MatchUniqueNameFromDownloadableFonts(font_unique_name);
+  if (RuntimeEnabledFeatures::AndroidDownloadableFontsMatchingEnabled()) {
+    return MatchUniqueNameFromDownloadableFonts(font_unique_name);
+  } else {
+    return nullptr;
+  }
 }
 
 void FontUniqueNameLookupAndroid::EnsureServiceConnected() {
-  if (firmware_font_lookup_service_ && android_font_lookup_service_)
+  if (firmware_font_lookup_service_ &&
+      (!RuntimeEnabledFeatures::AndroidDownloadableFontsMatchingEnabled() ||
+       android_font_lookup_service_))
     return;
 
   if (!firmware_font_lookup_service_) {
@@ -96,7 +102,8 @@ void FontUniqueNameLookupAndroid::EnsureServiceConnected() {
         firmware_font_lookup_service_.BindNewPipeAndPassReceiver());
   }
 
-  if (!android_font_lookup_service_) {
+  if (RuntimeEnabledFeatures::AndroidDownloadableFontsMatchingEnabled() &&
+      !android_font_lookup_service_) {
     Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
         android_font_lookup_service_.BindNewPipeAndPassReceiver());
   }
