@@ -42,6 +42,20 @@ static_library("multidevice") {
   ]
 }
 
+static_library("stub_multidevice_util") {
+  sources = [
+    "stub_multidevice_util.cc",
+    "stub_multidevice_util.h",
+  ]
+
+  deps = [
+    ":multidevice",
+    "//base",
+    "//chromeos/constants",
+    "//chromeos/services/device_sync/proto",
+  ]
+}
+
 static_library("test_support") {
   testonly = true
 

@@ -117,6 +117,7 @@ source_set("chromeos") {
     "//chromeos/components/media_app_ui",
     "//chromeos/components/mojo_bootstrap",
     "//chromeos/components/multidevice",
+    "//chromeos/components/multidevice:stub_multidevice_util",
     "//chromeos/components/multidevice/logging",
     "//chromeos/components/phonehub",
     "//chromeos/components/power",
