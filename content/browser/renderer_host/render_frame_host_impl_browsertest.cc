@@ -22,9 +22,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/input/timeout_monitor.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/sms/test/mock_sms_provider.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame_messages.h"
@@ -3715,21 +3717,39 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_EQ(LifecycleState::kActive, current_rfh->lifecycle_state());
 }
 
-// Test is flaky: crbug.com/1120305.
 // Check that same site navigation correctly resets document_used_web_otp_.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
-                       DISABLED_SameSiteNavigationResetsDocumentUsedWebOTP) {
-  const GURL first_url(
-      embedded_test_server()->GetURL("/page_with_webotp.html"));
-  const GURL second_url(embedded_test_server()->GetURL("/empty.html"));
-
-  // Load a URL that maps to the same SiteInstance as the second URL, to make
-  // sure the second navigation will not be cross-process.
+                       SameSiteNavigationResetsDocumentUsedWebOTP) {
+  const GURL first_url(embedded_test_server()->GetURL("/title1.html"));
   ASSERT_TRUE(NavigateToURL(shell(), first_url));
+
+  auto provider = std::make_unique<MockSmsProvider>();
+  MockSmsProvider* mock_provider_ptr = provider.get();
+  BrowserMainLoop::GetInstance()->SetSmsProviderForTesting(std::move(provider));
+
+  std::string script = R"(
+    (async () => {
+      let cred = await navigator.credentials.get({otp: {transport: ["sms"]}});
+      return cred.code;
+    }) ();
+  )";
+
+  EXPECT_CALL(*mock_provider_ptr, Retrieve(testing::_))
+      .WillOnce(testing::Invoke([&]() {
+        mock_provider_ptr->NotifyReceive(url::Origin::Create(first_url),
+                                         "hello");
+      }));
+
+  // EvalJs waits for the promise being resolved. This ensures that the browser
+  // has time to see the otp usage, and records it, before we test for it below.
+  EXPECT_EQ("hello", EvalJs(shell(), script));
 
   RenderFrameHostImpl* main_rfh = web_contents()->GetMainFrame();
   EXPECT_TRUE(main_rfh->DocumentUsedWebOTP());
 
+  // Loads a URL that maps to the same SiteInstance as the first URL, to make
+  // sure the navigation will not be cross-process.
+  const GURL second_url(embedded_test_server()->GetURL("/title2.html"));
   ASSERT_TRUE(NavigateToURL(shell(), second_url));
   EXPECT_FALSE(main_rfh->DocumentUsedWebOTP());
 }
