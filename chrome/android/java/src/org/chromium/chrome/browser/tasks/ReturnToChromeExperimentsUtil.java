@@ -237,6 +237,29 @@ public final class ReturnToChromeExperimentsUtil {
     }
 
     /**
+     * @return Whether we should show Start Surface as the home page on phone. Start surface
+     *         hasn't been enabled on tablet yet.
+     */
+    public static boolean shouldShowStartSurfaceAsTheHomePageOnPhone(boolean isTablet) {
+        return !isTablet && shouldShowStartSurfaceAsTheHomePage();
+    }
+
+    /**
+     * @return Whether Start Surface should be shown as NTP.
+     */
+    public static boolean shouldShowStartSurfaceHomeAsNTP(boolean incognito, boolean isTablet) {
+        return !incognito && shouldShowStartSurfaceAsTheHomePageOnPhone(isTablet);
+    }
+
+    /**
+     * @return Whether hides the home button on an incognito tab.
+     */
+    public static boolean shouldHideHomeButtonForStartSurface(boolean incognito, boolean isTablet) {
+        return incognito && StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH.getValue()
+                && shouldShowStartSurfaceAsTheHomePageOnPhone(isTablet);
+    }
+
+    /**
      * Check whether we should show Start Surface as the home page for initial tab creation.
      *
      * @return Whether Start Surface should be shown as the home page.

@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.KeyboardNavigationListener;
@@ -1623,7 +1624,9 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
     public void updateButtonVisibility() {
         if (mHomeButton == null) return;
 
-        boolean hideHomeButton = !mIsHomeButtonEnabled;
+        boolean hideHomeButton = !mIsHomeButtonEnabled
+                || ReturnToChromeExperimentsUtil.shouldHideHomeButtonForStartSurface(
+                        isIncognito(), false /* isTablet */);
         if (hideHomeButton) {
             removeHomeButton();
         } else {

@@ -643,8 +643,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             OnClickListener bookmarkClickHandler = v -> addOrEditBookmark(getActivityTab());
 
             Supplier<Boolean> showStartSurfaceSupplier = () -> {
-                if (ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage()
-                        && !isTablet()) {
+                if (ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePageOnPhone(
+                            isTablet())) {
                     showOverview(OverviewModeState.SHOWING_HOMEPAGE);
                     return true;
                 }
@@ -2018,8 +2018,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private boolean showStartSurfaceHomeForNTP(boolean isNTP, boolean incognito) {
-        if (isNTP && ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage()
-                && !isTablet()) {
+        if (isNTP
+                && ReturnToChromeExperimentsUtil.shouldShowStartSurfaceHomeAsNTP(
+                        incognito, isTablet())) {
             getTabModelSelector().selectModel(incognito);
 
             if (TabUiFeatureUtilities.supportInstantStart(isTablet())

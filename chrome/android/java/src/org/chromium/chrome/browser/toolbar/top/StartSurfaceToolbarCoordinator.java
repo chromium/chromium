@@ -64,18 +64,19 @@ public class StartSurfaceToolbarCoordinator {
         mPropertyModel =
                 new PropertyModel.Builder(StartSurfaceToolbarProperties.ALL_KEYS)
                         .with(StartSurfaceToolbarProperties.INCOGNITO_SWITCHER_VISIBLE,
-                                StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER
+                                !StartSurfaceConfiguration
+                                                .START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB
                                                 .getValue()
-                                        ? false
-                                        : true)
+                                        && !StartSurfaceConfiguration
+                                                    .START_SURFACE_HIDE_INCOGNITO_SWITCH.getValue())
                         .with(StartSurfaceToolbarProperties.IN_START_SURFACE_MODE, false)
                         .with(StartSurfaceToolbarProperties.MENU_IS_VISIBLE, true)
                         .with(StartSurfaceToolbarProperties.IS_VISIBLE, true)
                         .build();
 
-        // START_SURFACE_HIDE_INCOGNITO_SWITCH and START_SURFACE_SHOW_STACK_TAB_SWITCHER should not
-        // be both true.
-        assert !(StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH.getValue()
+        // START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB and START_SURFACE_SHOW_STACK_TAB_SWITCHER
+        // should not be both true.
+        assert !(StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue()
                 && StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue());
         mToolbarMediator = new StartSurfaceToolbarMediator(mPropertyModel, identityDiscController,
                 (iphCommandBuilder)
@@ -86,6 +87,7 @@ public class StartSurfaceToolbarCoordinator {
                     userEducationHelper.requestShowIPH(
                             iphCommandBuilder.setAnchorView(mView.getIdentityDiscView()).build());
                 },
+                StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue(),
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH.getValue(),
                 StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue(),
                 menuButtonCoordinator);

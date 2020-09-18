@@ -432,6 +432,77 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/hide_incognito_switch/true"})
+    public void testShow_SingleAsHomepage_NoIncognitoSwitch() {
+        if (!mImmediateReturn) {
+            onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
+        }
+        Assert.assertTrue(StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH.getValue());
+
+        CriteriaHelper.pollUiThread(
+                ()
+                        -> mActivityTestRule.getActivity().getLayoutManager() != null
+                        && mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+
+        onView(withId(R.id.primary_tasks_surface_view)).check(matches(isDisplayed()));
+        onView(withId(R.id.search_box_text)).check(matches(isDisplayed()));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container))
+                .check(matches(isDisplayed()));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.tab_switcher_title))
+                .check(matches(isDisplayed()));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container))
+                .check(matches(isDisplayed()));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.tasks_surface_body))
+                .check(matches(isDisplayed()));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.trendy_terms_recycler_view))
+                .check(matches(withEffectiveVisibility(GONE)));
+
+        // TODO(crbug.com/1076274): fix toolbar to make incognito switch part of the view.
+        onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_switch))
+                .check(matches(withEffectiveVisibility(GONE)));
+
+        // Note that onView(R.id.more_tabs).perform(click()) can not be used since it requires 90
+        // percent of the view's area is displayed to the users. However, this view has negative
+        // margin which makes the percentage is less than 90.
+        // TODO(crbug.com/1025296): Investigate whether this would be a problem for real users.
+        try {
+            TestThreadUtils.runOnUiThreadBlocking(
+                    ()
+                            -> mActivityTestRule.getActivity()
+                                       .findViewById(org.chromium.chrome.tab_ui.R.id.more_tabs)
+                                       .performClick());
+        } catch (ExecutionException e) {
+            fail("Failed to tap 'more tabs' " + e.toString());
+        }
+        onViewWaiting(withId(R.id.secondary_tasks_surface_view));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_switch))
+                .check(matches(withEffectiveVisibility(VISIBLE)));
+
+        pressBack();
+        onViewWaiting(withId(R.id.primary_tasks_surface_view));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_switch))
+                .check(matches(withEffectiveVisibility(GONE)));
+
+        if (isInstantReturn()
+                && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                        && Build.VERSION.SDK_INT < Build.VERSION_CODES.O)) {
+            // TODO(crbug.com/1092642): Fix androidx.test.espresso.PerformException issue when
+            // performing a single click on position: 0. See code below.
+            return;
+        }
+
+        OverviewModeBehaviorWatcher hideWatcher =
+                TabUiTestHelper.createOverviewHideWatcher(mActivityTestRule.getActivity());
+        onView(allOf(withParent(withId(
+                             org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container)),
+                       withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        hideWatcher.waitForBehavior();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single" +
         "/exclude_mv_tiles/true/hide_switch_when_no_incognito_tabs/true"})

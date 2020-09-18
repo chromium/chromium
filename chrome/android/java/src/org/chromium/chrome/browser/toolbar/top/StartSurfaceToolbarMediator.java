@@ -50,6 +50,7 @@ class StartSurfaceToolbarMediator {
     private final IdentityDiscController mIdentityDiscController;
     private final Callback<IPHCommandBuilder> mShowIPHCallback;
     private final boolean mHideIncognitoSwitchWhenNoTabs;
+    private final boolean mHideIncognitoSwitchOnHomePage;
     private final boolean mShowNewTabAndIdentityDiscAtStart;
 
     private TabModelSelector mTabModelSelector;
@@ -64,13 +65,15 @@ class StartSurfaceToolbarMediator {
 
     StartSurfaceToolbarMediator(PropertyModel model, IdentityDiscController identityDiscController,
             Callback<IPHCommandBuilder> showIPHCallback, boolean hideIncognitoSwitchWhenNoTabs,
-            boolean showNewTabAndIdentityDiscAtStart, MenuButtonCoordinator menuButtonCoordinator) {
+            boolean hideIncognitoSwitchOnHomePage, boolean showNewTabAndIdentityDiscAtStart,
+            MenuButtonCoordinator menuButtonCoordinator) {
         mPropertyModel = model;
         mOverviewModeState = OverviewModeState.NOT_SHOWN;
         mIdentityDiscController = identityDiscController;
         mIdentityDiscController.addObserver(this::identityDiscStateChanged);
         mShowIPHCallback = showIPHCallback;
         mHideIncognitoSwitchWhenNoTabs = hideIncognitoSwitchWhenNoTabs;
+        mHideIncognitoSwitchOnHomePage = hideIncognitoSwitchOnHomePage;
         mShowNewTabAndIdentityDiscAtStart = showNewTabAndIdentityDiscAtStart;
         mMenuButtonCoordinator = menuButtonCoordinator;
     }
@@ -116,15 +119,27 @@ class StartSurfaceToolbarMediator {
                     mPropertyModel.set(IS_INCOGNITO, mTabModelSelector.isIncognitoSelected());
                     updateIdentityDisc(
                             mIdentityDiscController.getForStartSurface(mOverviewModeState));
-                    if (mHideIncognitoSwitchWhenNoTabs) {
-                        mPropertyModel.set(INCOGNITO_SWITCHER_VISIBLE, hasIncognitoTabs());
-                    }
+                    updateIncognitoSwitchVisibility();
                 }
             };
         }
         mPropertyModel.set(IS_INCOGNITO, mTabModelSelector.isIncognitoSelected());
         updateIdentityDisc(mIdentityDiscController.getForStartSurface(mOverviewModeState));
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
+    }
+
+    private void updateIncognitoSwitchVisibility() {
+        if (mOverviewModeState == OverviewModeState.SHOWN_HOMEPAGE && mHideIncognitoSwitchOnHomePage
+                || mShowNewTabAndIdentityDiscAtStart) {
+            mPropertyModel.set(INCOGNITO_SWITCHER_VISIBLE, false);
+            return;
+        }
+
+        if (mHideIncognitoSwitchWhenNoTabs) {
+            mPropertyModel.set(INCOGNITO_SWITCHER_VISIBLE, hasIncognitoTabs());
+        } else {
+            mPropertyModel.set(INCOGNITO_SWITCHER_VISIBLE, true);
+        }
     }
 
     // TODO(crbug.com/1042997): share with TabSwitcherModeTTPhone.
@@ -168,15 +183,14 @@ class StartSurfaceToolbarMediator {
             public void onOverviewModeStateChanged(
                     @OverviewModeState int overviewModeState, boolean showTabSwitcherToolbar) {
                 mOverviewModeState = overviewModeState;
+                updateIncognitoSwitchVisibility();
                 updateNewTabButtonVisibility();
                 updateLogoVisibility(mIsGoogleSearchEngine);
                 updateIdentityDisc(mIdentityDiscController.getForStartSurface(mOverviewModeState));
             }
             @Override
             public void onOverviewModeStartedShowing(boolean showToolbar) {
-                if (mHideIncognitoSwitchWhenNoTabs) {
-                    mPropertyModel.set(INCOGNITO_SWITCHER_VISIBLE, hasIncognitoTabs());
-                }
+                updateIncognitoSwitchVisibility();
                 if (mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
                         || mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_TRENDY_TERMS
                         || mShowNewTabAndIdentityDiscAtStart) {
