@@ -112,7 +112,6 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.ModelType;
@@ -714,8 +713,8 @@ public class PasswordSettingsTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PasswordSettings passwordPrefs = mSettingsActivityTestRule.getFragment();
-            ChromeBaseCheckBoxPreference onOffSwitch =
-                    (ChromeBaseCheckBoxPreference) passwordPrefs.findPreference(
+            ChromeSwitchPreference onOffSwitch =
+                    (ChromeSwitchPreference) passwordPrefs.findPreference(
                             PasswordSettings.PREF_AUTOSIGNIN_SWITCH);
             Assert.assertTrue(onOffSwitch.isChecked());
 
@@ -732,8 +731,8 @@ public class PasswordSettingsTest {
         startPasswordSettingsFromMainSettings();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PasswordSettings passwordPrefs = mSettingsActivityTestRule.getFragment();
-            ChromeBaseCheckBoxPreference onOffSwitch =
-                    (ChromeBaseCheckBoxPreference) passwordPrefs.findPreference(
+            ChromeSwitchPreference onOffSwitch =
+                    (ChromeSwitchPreference) passwordPrefs.findPreference(
                             PasswordSettings.PREF_AUTOSIGNIN_SWITCH);
             Assert.assertFalse(onOffSwitch.isChecked());
         });
