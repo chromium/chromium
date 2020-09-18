@@ -596,6 +596,7 @@ if (is_android) {
     ]
 
     sources = [
+      "../browser/sync/test/integration/single_client_autofill_profile_sync_test.cc",
       "../browser/sync/test/integration/single_client_typed_urls_sync_test.cc",
       "android/browsertests_apk/android_browsertests_jni_onload.cc",
     ]
@@ -6568,6 +6569,8 @@ if (!is_fuchsia) {
   source_set("sync_integration_test_support") {
     testonly = true
     sources = [
+      "../browser/sync/test/integration/autofill_helper.cc",
+      "../browser/sync/test/integration/autofill_helper.h",
       "../browser/sync/test/integration/configuration_refresher.cc",
       "../browser/sync/test/integration/configuration_refresher.h",
       "../browser/sync/test/integration/fake_server_invalidation_sender.cc",
@@ -6599,8 +6602,6 @@ if (!is_fuchsia) {
       sources += [
         "../browser/sync/test/integration/apps_helper.cc",
         "../browser/sync/test/integration/apps_helper.h",
-        "../browser/sync/test/integration/autofill_helper.cc",
-        "../browser/sync/test/integration/autofill_helper.h",
         "../browser/sync/test/integration/await_match_status_change_checker.cc",
         "../browser/sync/test/integration/await_match_status_change_checker.h",
         "../browser/sync/test/integration/bookmarks_helper.cc",
