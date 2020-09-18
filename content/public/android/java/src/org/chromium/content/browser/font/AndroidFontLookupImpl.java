@@ -33,9 +33,9 @@ import org.chromium.mojo_base.mojom.File;
 import org.chromium.services.service_manager.InterfaceFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
@@ -53,19 +53,34 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static final String MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM =
             "Android.FontLookup.MatchLocalFontByUniqueName.Time";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static final String GMS_FONT_REQUEST_HISTOGRAM = "Android.FontLookup.GmsFontRequest.Time";
 
     private final Context mAppContext;
-    private FontsContractWrapper mFontsContract = new FontsContractWrapper();
+    private final FontsContractWrapper mFontsContract;
     /**
      * Map from ICU case folded full font names to corresponding GMS Core font provider query.
-     *
-     * This collection of Android Downloadable fonts should match the fonts listed in
-     * preloaded_fonts.xml.
      */
-    private Map<String, String> mFullFontNameToQuery = createFullFontNameToQueryMap();
+    private final Map<String, String> mFullFontNameToQuery;
+    /**
+     * Collection of fonts (by ICU case folded full font name) that may be available
+     * locally from GMS Core. This collection of Android Downloadable fonts should initially match
+     * the fonts listed in preloaded_fonts.xml. If/when fonts are determined to be unavailable
+     * on-device they will be removed from this set.
+     */
+    private final Set<String> mExpectedFonts;
 
-    AndroidFontLookupImpl(Context appContext) {
+    private AndroidFontLookupImpl(Context appContext) {
+        this(appContext, new FontsContractWrapper(), createFullFontNameToQueryMap());
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    AndroidFontLookupImpl(Context appContext, FontsContractWrapper fontsContract,
+            Map<String, String> fullFontNameToQuery) {
         mAppContext = appContext;
+        mFontsContract = fontsContract;
+        mFullFontNameToQuery = fullFontNameToQuery;
+        mExpectedFonts = new HashSet<>(mFullFontNameToQuery.keySet());
     }
 
     // These values are persisted to logs. Entries should not be renumbered and
@@ -74,7 +89,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
     @IntDef({FetchFontResult.SUCCESS, FetchFontResult.FAILED_UNEXPECTED_NAME,
             FetchFontResult.FAILED_STATUS_CODE, FetchFontResult.FAILED_NON_UNIQUE_RESULT,
             FetchFontResult.FAILED_RESULT_CODE, FetchFontResult.FAILED_FILE_OPEN,
-            FetchFontResult.FAILED_EXCEPTION})
+            FetchFontResult.FAILED_EXCEPTION, FetchFontResult.FAILED_AVOID_RETRY})
     @interface FetchFontResult {
         int SUCCESS = 0;
         int FAILED_UNEXPECTED_NAME = 1;
@@ -83,43 +98,34 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
         int FAILED_RESULT_CODE = 4;
         int FAILED_FILE_OPEN = 5;
         int FAILED_EXCEPTION = 6;
-        int COUNT = 7;
+        int FAILED_AVOID_RETRY = 7;
+        int COUNT = 8;
     }
 
     /**
-     * Verifies which fonts are available from GMS Core and can be fetched quickly, and
-     * asynchronously responds with that list. These fonts should have already been preloaded via
-     * the "preloaded_fonts" AndroidManifest directive. This second programmatic prefetch request is
-     * necessary to confirm whether those fonts were successfully downloaded and are now available.
+     * Synchronously returns the list of fonts (by ICU case folded full font name) that may be
+     * available from GMS Core on-device. These fonts should have already been preloaded via the
+     * "preloaded_fonts" AndroidManifest directive, and have not previously failed a programmatic
+     * font fetch request.
      *
-     * TODO(chouinard): Consider requiring the returned list to be sorted.
+     * TODO(crbug.com/1111148): Ensure the font preload by manifest XML is also done for WebView.
      *
-     * @param callback The callback to be called with the list of available fonts.
+     * @param callback The callback to be called with the list of fonts expected (but not
+     *         guaranteed) to be available. The list is sorted in ascending order.
      */
     @Override
     public void getUniqueNameLookupTable(GetUniqueNameLookupTableResponse callback) {
-        // Get executor associated with the current thread for running Mojo callback.
-        Executor executor = ExecutorFactory.getExecutorForCurrentThread(CoreImpl.getInstance());
-
-        PostTask.postTask(TaskTraits.BEST_EFFORT, () -> {
-            Set<String> expectedFonts = mFullFontNameToQuery.keySet();
-            List<String> availableFonts = new ArrayList<>();
-
-            for (String fontName : expectedFonts) {
-                if (tryFetchFont(fontName) != null) {
-                    availableFonts.add(fontName);
-                }
-            }
-
-            String[] results = availableFonts.toArray(new String[availableFonts.size()]);
-            executor.execute(() -> callback.call(results));
-        });
+        String[] results = mExpectedFonts.toArray(new String[mExpectedFonts.size()]);
+        Arrays.sort(results);
+        callback.call(results);
     }
 
     /**
-     * Fetches the requested font from GMS Core on a background thread.
+     * Fetches the requested font from GMS Core on a background thread. If the font could not be
+     * fetched successfully, it is removed from {@link #mExpectedFonts} and will not be retried this
+     * session.
      *
-     * @param fontUniqueName The unique full font name requested.
+     * @param fontUniqueName The ICU case folded full font name to fetch.
      * @param callback The callback to be called with the resulting opened font file handle, or null
      *         if the font file is not available. Caller is responsible for closing file when done.
      */
@@ -134,10 +140,13 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
 
         // Post synchronous font request to background worker thread.
         PostTask.postTask(TaskTraits.USER_BLOCKING, () -> {
-            ParcelFileDescriptor fileDescriptor = tryFetchFont(fontUniqueName);
             File file = null;
 
-            if (fileDescriptor != null) {
+            ParcelFileDescriptor fileDescriptor = tryFetchFont(fontUniqueName);
+            if (fileDescriptor == null) {
+                // Avoid re-requesting this font in future.
+                mExpectedFonts.remove(fontUniqueName);
+            } else {
                 // Wrap file descriptor as an opened Mojo file handle.
                 file = new File();
                 file.fd = core.wrapFileDescriptor(fileDescriptor);
@@ -151,6 +160,16 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
         });
     }
 
+    /**
+     * Tries to fetch the specified font from GMS Core (the Android Downloadable fonts provider).
+     *
+     * This method makes a synchronous request to GMS Core and should not be called from the IO
+     * thread. This requirement may be re-evaluated based on the timing results of {@link
+     * #GMS_FONT_REQUEST_HISTOGRAM}.
+     *
+     * @param fontUniqueName The ICU case folded unique full font name to fetch.
+     * @return An opened font file descriptor, or null if the font file is not available.
+     */
     private ParcelFileDescriptor tryFetchFont(String fontUniqueName) {
         String query = mFullFontNameToQuery.get(fontUniqueName);
         if (query == null) {
@@ -159,12 +178,21 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
             return null;
         }
 
+        if (!mExpectedFonts.contains(fontUniqueName)) {
+            Log.d(TAG, "Skipping fetch for font that previously failed: %s", fontUniqueName);
+            logFetchFontResult(FetchFontResult.FAILED_AVOID_RETRY);
+            return null;
+        }
+
         FontRequest request = new FontRequest("com.google.android.gms.fonts",
                 "com.google.android.gms", query, R.array.com_google_android_gms_fonts_certs);
 
         try {
+            long startTimeMs = SystemClock.elapsedRealtime();
             FontFamilyResult fontFamilyResult =
                     mFontsContract.fetchFonts(mAppContext, null, request);
+            RecordHistogram.recordTimesHistogram(
+                    GMS_FONT_REQUEST_HISTOGRAM, SystemClock.elapsedRealtime() - startTimeMs);
 
             if (fontFamilyResult.getStatusCode() != FontFamilyResult.STATUS_OK) {
                 Log.d(TAG, "Font fetch failed with status code: %d",
@@ -235,16 +263,6 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
 
     @Override
     public void onConnectionError(MojoException e) {}
-
-    @VisibleForTesting
-    void setFontsContractForTest(FontsContractWrapper fontsContract) {
-        mFontsContract = fontsContract;
-    }
-
-    @VisibleForTesting
-    void setFullFontNameToQueryMapForTest(Map<String, String> fullFontNameToQuery) {
-        mFullFontNameToQuery = fullFontNameToQuery;
-    }
 
     /**
      * A factory for implementations of the AndroidFontLookup interface.

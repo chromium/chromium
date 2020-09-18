@@ -3676,6 +3676,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.FontLookup.GmsFontRequest.Time" units="ms"
+    expires_after="M89">
+  <owner>chouinard@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records the time taken to make a fetchFonts font request to GMS Core via the
+    Android downloadable font provider API. This metric may be used to determine
+    whether it's reasonable to execute this task on the IO thread rather than
+    posting to a background thread.
+  </summary>
+</histogram>
+
 <histogram name="Android.FontLookup.MatchLocalFontByUniqueName.Time" units="ms"
     expires_after="M89">
   <owner>chouinard@chromium.org</owner>

@@ -29597,6 +29597,7 @@ Called by update_feature_policy_enum.py.-->
   <int value="4" label="Failed with non-OK result code on font info"/>
   <int value="5" label="Failed to open font file"/>
   <int value="6" label="Failed with an exception"/>
+  <int value="7" label="Skipped to avoid retrying previous failure"/>
 </enum>
 
 <enum name="FetchRequestMode">

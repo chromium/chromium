@@ -9,13 +9,17 @@ import "mojo/public/mojom/base/file.mojom";
 // Interface for renderer to request Android downloaded fonts from font
 // providers on-device.
 interface AndroidFontLookup {
-  // Returns a list of ICU case folded full font names available to be fetched
-  // locally from on-device storage, without a network roundtrip.
+  // Returns a list of ICU case folded full font names, sorted in ascending
+  // lexicographic order, which may be available to be fetched locally from
+  // on-device storage.
+  [Sync]
   GetUniqueNameLookupTable()
-    => (array<string> available_unique_font_names);
+    => (array<string> unique_font_names);
 
   // Returns an opened read-only File for a font with the given ICU case folded
-  // full font name or null if the font is not available.
+  // full font name or null if the font is not available. Although the
+  // implementation posts to a user-blocking background thread, this interface
+  // is synchronous for the renderer to avoid unnecessary re-layout jank.
   [Sync]
   MatchLocalFontByUniqueName(string font_unique_name)
     => (mojo_base.mojom.File? font_file_handle);

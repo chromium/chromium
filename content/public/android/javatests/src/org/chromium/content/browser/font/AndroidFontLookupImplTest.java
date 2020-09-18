@@ -52,13 +52,19 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.mojo.MojoTestRule;
 
+import java.util.Map;
+
 /**
  * Tests the {@link AndroidFontLookup} implementation.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public final class AndroidFontLookupImplTest {
-    private static final String FULL_FONT_NAME = "foo";
-    private static final String FONT_QUERY = "name=Foo&weight=400";
+    private static final String FULL_FONT_NAME_1 = "foo";
+    private static final String FONT_QUERY_1 = "name=Foo&weight=400";
+    private static final String FULL_FONT_NAME_2 = "bar";
+    private static final String FONT_QUERY_2 = "name=Bar&weight=400";
+    private static final String FULL_FONT_NAME_3 = "bar bold";
+    private static final String FONT_QUERY_3 = "name=Bar&weight=700";
     private static final String AUTHORITY = "com.google.android.gms.fonts";
     private static final Uri URI = Uri.parse("content://com.google.android.gms.fonts/123");
     private static final Uri URI2 = Uri.parse("content://com.google.android.gms.fonts/456");
@@ -108,98 +114,55 @@ public final class AndroidFontLookupImplTest {
         });
         mMockContext = new IsolatedContext(resolver, mockContext);
 
-        mAndroidFontLookup = new AndroidFontLookupImpl(mMockContext);
-        mAndroidFontLookup.setFontsContractForTest(mMockFontsContractWrapper);
-        mAndroidFontLookup.setFullFontNameToQueryMapForTest(
-                ImmutableMap.of(FULL_FONT_NAME, FONT_QUERY));
+        Map<String, String> fullFontNameToQuery = ImmutableMap.of(FULL_FONT_NAME_1, FONT_QUERY_1,
+                FULL_FONT_NAME_2, FONT_QUERY_2, FULL_FONT_NAME_3, FONT_QUERY_3);
+
+        mAndroidFontLookup = new AndroidFontLookupImpl(
+                mMockContext, mMockFontsContractWrapper, fullFontNameToQuery);
     }
 
     @SmallTest
     @Test
-    public void testGetUniqueNameLookupTable_Empty() throws NameNotFoundException {
-        String[] expected = new String[0];
-        FontFamilyResult result = new FontFamilyResult(FontFamilyResult.STATUS_OK, new FontInfo[0]);
-        whenFetchFontsWith(FONT_QUERY).thenReturn(result);
+    public void testGetUniqueNameLookupTable_Available() {
+        String[] expected = new String[] {FULL_FONT_NAME_2, FULL_FONT_NAME_3, FULL_FONT_NAME_1};
 
         mAndroidFontLookup.getUniqueNameLookupTable(mGetUniqueNameLookupTableCallback);
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mGetUniqueNameLookupTableCallback).call(aryEq(expected));
-
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        AndroidFontLookupImpl.FETCH_FONT_HISTOGRAM,
-                        FetchFontResult.FAILED_NON_UNIQUE_RESULT));
-    }
-
-    @SmallTest
-    @Test
-    public void testGetUniqueNameLookupTable_Available() throws NameNotFoundException {
-        String[] expected = new String[] {FULL_FONT_NAME};
-
-        FontInfo fontInfo = new FontInfo(URI, 0, 400, false, Columns.RESULT_CODE_OK);
-        FontFamilyResult result =
-                new FontFamilyResult(FontFamilyResult.STATUS_OK, new FontInfo[] {fontInfo});
-        whenFetchFontsWith(FONT_QUERY).thenReturn(result);
-
-        mAndroidFontLookup.getUniqueNameLookupTable(mGetUniqueNameLookupTableCallback);
-
-        mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
-        verify(mGetUniqueNameLookupTableCallback).call(aryEq(expected));
-
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        AndroidFontLookupImpl.FETCH_FONT_HISTOGRAM, FetchFontResult.SUCCESS));
     }
 
     @SmallTest
     @Test
     public void testGetUniqueNameLookupTable_MultipleFonts() throws NameNotFoundException {
-        String fullFontName2 = "bar";
-        String fontQuery2 = "name=Bar&weight=400";
-        String fullFontName3 = "bar bold";
-        String fontQuery3 = "name=Bar&weight=700";
-
-        String[] expected = new String[] {FULL_FONT_NAME, fullFontName2};
-
-        mAndroidFontLookup.setFullFontNameToQueryMapForTest(ImmutableMap.of(
-                FULL_FONT_NAME, FONT_QUERY, fullFontName2, fontQuery2, fullFontName3, fontQuery3));
-
-        // Foo is available.
-        FontInfo fontInfo = new FontInfo(URI, 0, 400, false, Columns.RESULT_CODE_OK);
-        FontFamilyResult result =
-                new FontFamilyResult(FontFamilyResult.STATUS_OK, new FontInfo[] {fontInfo});
-        whenFetchFontsWith(FONT_QUERY).thenReturn(result);
-
-        // Bar is available.
-        FontInfo fontInfo2 = new FontInfo(URI2, 0, 400, false, Columns.RESULT_CODE_OK);
-        FontFamilyResult result2 =
-                new FontFamilyResult(FontFamilyResult.STATUS_OK, new FontInfo[] {fontInfo2});
-        whenFetchFontsWith(fontQuery2).thenReturn(result2);
+        // All 3 fonts should be found in results.
+        mAndroidFontLookup.getUniqueNameLookupTable(mGetUniqueNameLookupTableCallback);
+        mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
+        verify(mGetUniqueNameLookupTableCallback)
+                .call(aryEq(new String[] {FULL_FONT_NAME_2, FULL_FONT_NAME_3, FULL_FONT_NAME_1}));
 
         // Bar Bold is not available.
         FontFamilyResult result3 =
                 new FontFamilyResult(FontFamilyResult.STATUS_OK, new FontInfo[0]);
-        whenFetchFontsWith(fontQuery3).thenReturn(result3);
-
-        mAndroidFontLookup.getUniqueNameLookupTable(mGetUniqueNameLookupTableCallback);
-
+        whenFetchFontsWith(FONT_QUERY_3).thenReturn(result3);
+        mAndroidFontLookup.matchLocalFontByUniqueName(
+                FULL_FONT_NAME_3, mMatchLocalFontByUniqueNameCallback);
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
-        verify(mGetUniqueNameLookupTableCallback).call(aryEq(expected));
+        verify(mMatchLocalFontByUniqueNameCallback,
+                timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .call(isNull());
 
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        AndroidFontLookupImpl.FETCH_FONT_HISTOGRAM,
-                        FetchFontResult.FAILED_NON_UNIQUE_RESULT));
-        assertEquals(2,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        AndroidFontLookupImpl.FETCH_FONT_HISTOGRAM, FetchFontResult.SUCCESS));
+        // Bar Bold should now be excluded from list.
+        mAndroidFontLookup.getUniqueNameLookupTable(mGetUniqueNameLookupTableCallback);
+        mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
+        verify(mGetUniqueNameLookupTableCallback)
+                .call(aryEq(new String[] {FULL_FONT_NAME_2, FULL_FONT_NAME_1}));
     }
 
     @SmallTest
     @Test
     public void testMatchLocalFontByUniqueName_UnsupportedFontName() {
-        mAndroidFontLookup.matchLocalFontByUniqueName("bar", mMatchLocalFontByUniqueNameCallback);
+        mAndroidFontLookup.matchLocalFontByUniqueName("baz", mMatchLocalFontByUniqueNameCallback);
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mMatchLocalFontByUniqueNameCallback,
@@ -221,10 +184,10 @@ public final class AndroidFontLookupImplTest {
     public void testMatchLocalFontByUniqueName_BadResultStatus() throws NameNotFoundException {
         FontFamilyResult result =
                 new FontFamilyResult(FontFamilyResult.STATUS_UNEXPECTED_DATA_PROVIDED, null);
-        whenFetchFontsWith(FONT_QUERY).thenReturn(result);
+        whenFetchFontsWith(FONT_QUERY_1).thenReturn(result);
 
         mAndroidFontLookup.matchLocalFontByUniqueName(
-                FULL_FONT_NAME, mMatchLocalFontByUniqueNameCallback);
+                FULL_FONT_NAME_1, mMatchLocalFontByUniqueNameCallback);
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mMatchLocalFontByUniqueNameCallback,
@@ -245,10 +208,10 @@ public final class AndroidFontLookupImplTest {
     @Test
     public void testMatchLocalFontByUniqueName_EmptyResults() throws NameNotFoundException {
         FontFamilyResult result = new FontFamilyResult(FontFamilyResult.STATUS_OK, new FontInfo[0]);
-        whenFetchFontsWith(FONT_QUERY).thenReturn(result);
+        whenFetchFontsWith(FONT_QUERY_1).thenReturn(result);
 
         mAndroidFontLookup.matchLocalFontByUniqueName(
-                FULL_FONT_NAME, mMatchLocalFontByUniqueNameCallback);
+                FULL_FONT_NAME_1, mMatchLocalFontByUniqueNameCallback);
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mMatchLocalFontByUniqueNameCallback,
@@ -271,10 +234,10 @@ public final class AndroidFontLookupImplTest {
         FontInfo fontInfo = new FontInfo(URI, 0, 400, false, Columns.RESULT_CODE_FONT_NOT_FOUND);
         FontFamilyResult result =
                 new FontFamilyResult(FontFamilyResult.STATUS_OK, new FontInfo[] {fontInfo});
-        whenFetchFontsWith(FONT_QUERY).thenReturn(result);
+        whenFetchFontsWith(FONT_QUERY_1).thenReturn(result);
 
         mAndroidFontLookup.matchLocalFontByUniqueName(
-                FULL_FONT_NAME, mMatchLocalFontByUniqueNameCallback);
+                FULL_FONT_NAME_1, mMatchLocalFontByUniqueNameCallback);
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mMatchLocalFontByUniqueNameCallback,
@@ -294,10 +257,10 @@ public final class AndroidFontLookupImplTest {
     @SmallTest
     @Test
     public void testMatchLocalFontByUniqueName_Throws() throws NameNotFoundException {
-        whenFetchFontsWith(FONT_QUERY).thenThrow(new NameNotFoundException());
+        whenFetchFontsWith(FONT_QUERY_1).thenThrow(new NameNotFoundException());
 
         mAndroidFontLookup.matchLocalFontByUniqueName(
-                FULL_FONT_NAME, mMatchLocalFontByUniqueNameCallback);
+                FULL_FONT_NAME_1, mMatchLocalFontByUniqueNameCallback);
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mMatchLocalFontByUniqueNameCallback,
@@ -316,14 +279,52 @@ public final class AndroidFontLookupImplTest {
 
     @SmallTest
     @Test
+    public void testMatchLocalFontByUniqueName_NoRetry() throws NameNotFoundException {
+        // Request font and fail.
+        whenFetchFontsWith(FONT_QUERY_1).thenThrow(new NameNotFoundException());
+
+        mAndroidFontLookup.matchLocalFontByUniqueName(
+                FULL_FONT_NAME_1, mMatchLocalFontByUniqueNameCallback);
+
+        mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
+        verify(mMatchLocalFontByUniqueNameCallback,
+                timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .call(isNull());
+
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        AndroidFontLookupImpl.FETCH_FONT_HISTOGRAM,
+                        FetchFontResult.FAILED_EXCEPTION));
+
+        // Second request should early out with FAILED_AVOID_RETRY.
+        mAndroidFontLookup.matchLocalFontByUniqueName(
+                FULL_FONT_NAME_1, mMatchLocalFontByUniqueNameCallback);
+
+        mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
+        verify(mMatchLocalFontByUniqueNameCallback,
+                timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(2))
+                .call(isNull());
+
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        AndroidFontLookupImpl.FETCH_FONT_HISTOGRAM,
+                        FetchFontResult.FAILED_AVOID_RETRY));
+
+        assertEquals(2,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        AndroidFontLookupImpl.MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM));
+    }
+
+    @SmallTest
+    @Test
     public void testMatchLocalFontByUniqueName_Success() throws NameNotFoundException {
         FontInfo fontInfo = new FontInfo(URI, 0, 400, false, Columns.RESULT_CODE_OK);
         FontFamilyResult result =
                 new FontFamilyResult(FontFamilyResult.STATUS_OK, new FontInfo[] {fontInfo});
-        whenFetchFontsWith(FONT_QUERY).thenReturn(result);
+        whenFetchFontsWith(FONT_QUERY_1).thenReturn(result);
 
         mAndroidFontLookup.matchLocalFontByUniqueName(
-                FULL_FONT_NAME, mMatchLocalFontByUniqueNameCallback);
+                FULL_FONT_NAME_1, mMatchLocalFontByUniqueNameCallback);
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mMatchLocalFontByUniqueNameCallback,
