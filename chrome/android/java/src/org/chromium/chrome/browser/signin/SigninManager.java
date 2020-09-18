@@ -522,6 +522,11 @@ public class SigninManager
         // The user should not be already signed in
         assert !mIdentityManager.hasPrimaryAccount();
 
+        // Setting the primary account triggers observers which query accounts from IdentityManager.
+        // Reloading before setting the primary ensures they don't get an empty list of accounts.
+        mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(
+                mSignInState.mCoreAccountInfo.getId());
+
         @ConsentLevel
         int consentLevel =
                 mSignInState.shouldTurnSyncOn() ? ConsentLevel.SYNC : ConsentLevel.NOT_REQUIRED;
@@ -550,9 +555,6 @@ public class SigninManager
         if (mSignInState.mCallback != null) {
             mSignInState.mCallback.onSignInComplete();
         }
-
-        // Trigger token requests via identity mutator.
-        reloadAllAccountsFromSystem();
 
         Log.d(TAG, "Signin completed.");
         mSignInState = null;
