@@ -5,7 +5,6 @@
 import base64
 import json
 import os
-import shutil
 import sys
 
 import common
@@ -18,6 +17,7 @@ if BLINK_TOOLS_DIR not in sys.path:
     sys.path.append(BLINK_TOOLS_DIR)
 
 from blinkpy.common.host import Host
+from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.web_tests.models import test_failures
 
 class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
@@ -28,6 +28,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
 
     def __init__(self):
         super(BaseWptScriptAdapter, self).__init__()
+        self.fs = FileSystem()
         host = Host()
         self.port = host.port_factory.get()
         self.wpt_manifest = self.port.wpt_manifest("external/wpt")
@@ -50,24 +51,23 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         results_dir = os.path.dirname(self.options.isolated_script_test_output)
         layout_test_results = os.path.join(results_dir, 'layout-test-results')
         if os.path.exists(layout_test_results):
-            shutil.rmtree(layout_test_results)
-        os.mkdir(layout_test_results)
+            self.fs.rmtree(layout_test_results)
+        self.fs.maybe_make_directory(layout_test_results)
 
         # Perform post-processing of wptrunner output
         self.process_wptrunner_output()
 
-        shutil.copyfile(self.options.isolated_script_test_output,
+        self.fs.copyfile(self.options.isolated_script_test_output,
                         os.path.join(layout_test_results, 'full_results.json'))
         # create full_results_jsonp.js file which is used to
         # load results into the results viewer
-        with open(self.options.isolated_script_test_output, 'r') \
-            as full_results, \
-            open(os.path.join(
-                layout_test_results, 'full_results_jsonp.js'), 'w') \
-                as json_js:
-            json_js.write('ADD_FULL_RESULTS(%s);' % full_results.read())
+        self.fs.write_text_file(
+            os.path.join(layout_test_results, 'full_results_jsonp.js'),
+            'ADD_FULL_RESULTS(%s);' % self.fs.read_text_file(
+                self.options.isolated_script_test_output))
+
         # copy layout test results viewer to layout-test-results directory
-        shutil.copyfile(
+        self.fs.copyfile(
             os.path.join(WEB_TESTS_DIR, 'fast', 'harness', 'results.html'),
             os.path.join(layout_test_results, 'results.html'))
 
@@ -77,15 +77,15 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         This output contains a single large json file containing the raw content
         or artifacts which need to be extracted into their own files and removed
         from the json file (to avoid duplication)."""
-        output_json = json.load(
-            open(self.options.isolated_script_test_output, "r"))
+        output_json = json.loads(
+            self.fs.read_text_file(self.options.isolated_script_test_output))
         test_json = output_json["tests"]
         results_dir = os.path.dirname(self.options.isolated_script_test_output)
         self._process_test_leaves(results_dir, output_json["path_delimiter"],
                                   test_json, "")
         # Write output_json back to the same file after modifying it in memory
-        with open(self.options.isolated_script_test_output, "w") as output_file:
-            json.dump(output_json, output_file)
+        self.fs.write_text_file(self.options.isolated_script_test_output,
+                                json.dumps(output_json))
 
     def _process_test_leaves(self, results_dir, delim, root_node, path_so_far):
         """Finds and processes each test leaf below the specified root.
@@ -178,9 +178,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         # Note: Here we read-in the checked-in ini file and pass its contents to
         # |_write_log_artifact| to reuse code. This is probably less efficient
         # than just copying, but makes for cleaner code.
-        contents = ""
-        with open(expected_ini_path, "r") as ini_file:
-            contents = ini_file.read()
+        contents = self.fs.read_text_file(expected_ini_path)
         return self._write_log_artifact(test_failures.FILENAME_SUFFIX_EXPECTED,
                                         results_dir, test_name, [contents])
 
@@ -209,9 +207,10 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         log_artifact_full_path = os.path.join(results_dir,
                                               log_artifact_sub_path)
         if not os.path.exists(os.path.dirname(log_artifact_full_path)):
-            os.makedirs(os.path.dirname(log_artifact_full_path))
-        with open(log_artifact_full_path, "w") as artifact_file:
-            artifact_file.write("\n".join(log_artifact).encode("utf-8"))
+            self.fs.maybe_make_directory(
+                os.path.dirname(log_artifact_full_path))
+        self.fs.write_text_file(log_artifact_full_path,
+                                "\n".join(log_artifact))
 
         return log_artifact_sub_path
 
@@ -259,8 +258,8 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
 
             screenshot_full_path = os.path.join(results_dir,screenshot_sub_path)
             if not os.path.exists(os.path.dirname(screenshot_full_path)):
-                os.makedirs(os.path.dirname(screenshot_full_path))
+                self.fs.maybe_make_directory(
+                    os.path.dirname(screenshot_full_path))
             # Note: we are writing raw bytes to this file
-            with open(screenshot_full_path, "wb") as artifact_file:
-                artifact_file.write(image_bytes)
+            self.fs.write_binary_file(screenshot_full_path, image_bytes)
         return result
