@@ -123,12 +123,10 @@ class TestResponseDelegate
     return false;
   }
 
-  bool GetCharset(JNIEnv* env,
+  void GetCharset(JNIEnv* env,
                   const GURL& url,
                   embedder_support::InputStream* stream,
-                  std::string* charset) override {
-    return false;
-  }
+                  std::string* charset) override {}
 
   void AppendResponseHeaders(JNIEnv* env,
                              net::HttpResponseHeaders* headers) override {

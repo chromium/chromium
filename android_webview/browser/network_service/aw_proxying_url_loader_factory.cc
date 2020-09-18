@@ -192,11 +192,11 @@ class InterceptResponseDelegate
     return response_->GetMimeType(env, mime_type);
   }
 
-  bool GetCharset(JNIEnv* env,
+  void GetCharset(JNIEnv* env,
                   const GURL& url,
                   embedder_support::InputStream* stream,
                   std::string* charset) override {
-    return response_->GetCharset(env, charset);
+    response_->GetCharset(env, charset);
   }
 
   void AppendResponseHeaders(JNIEnv* env,
@@ -247,12 +247,11 @@ class ProtocolResponseDelegate
     return GetInputStreamMimeType(env, url, stream, mime_type);
   }
 
-  bool GetCharset(JNIEnv* env,
+  void GetCharset(JNIEnv* env,
                   const GURL& url,
                   embedder_support::InputStream* stream,
                   std::string* charset) override {
     // TODO: We should probably be getting this from the managed side.
-    return false;
   }
 
   void AppendResponseHeaders(JNIEnv* env,
