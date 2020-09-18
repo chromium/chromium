@@ -207,7 +207,7 @@ cr.define('accessibility', function() {
     browsers.appendChild(row);
   }
 
-  function formatRow(row, data) {
+  function formatRow(row, data, requestType) {
     if (!('url' in data)) {
       if ('error' in data) {
         row.appendChild(createErrorMessageElement(data));
@@ -240,7 +240,8 @@ cr.define('accessibility', function() {
     row.appendChild(document.createTextNode(' | '));
 
     const hasTree = 'tree' in data;
-    row.appendChild(createShowAccessibilityTreeElement(data, row.id, hasTree));
+    row.appendChild(
+        createShowAccessibilityTreeElement(data, row.id, requestType, hasTree));
     if (navigator.clipboard) {
       row.appendChild(createCopyAccessibilityTreeElement(data, row.id));
     }
@@ -341,12 +342,18 @@ cr.define('accessibility', function() {
     return link;
   }
 
-  function createShowAccessibilityTreeElement(data, id, opt_refresh) {
+  function createShowAccessibilityTreeElement(
+      data, id, requestType, opt_refresh) {
     const show = document.createElement('button');
-    if (opt_refresh) {
-      show.textContent = 'Refresh accessibility tree';
+    if (requestType == 'showOrRefreshTree') {
+      // Give feedback that the tree has loaded.
+      show.textContent = 'Accessibility tree loaded';
+      setTimeout(() => {
+        show.textContent = 'Refresh accessibility tree';
+      }, 5000);
     } else {
-      show.textContent = 'Show accessibility tree';
+      show.textContent = opt_refresh ? 'Refresh accessibility tree' :
+                                       'Show accessibility tree';
     }
     show.id = id + ':showOrRefreshTree';
     show.setAttribute('aria-expanded', String(opt_refresh));
@@ -420,7 +427,7 @@ cr.define('accessibility', function() {
     }
 
     row.textContent = '';
-    formatRow(row, data);
+    formatRow(row, data, 'showOrRefreshTree');
     $(id + ':showOrRefreshTree').focus();
   }
 
