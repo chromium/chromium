@@ -199,6 +199,14 @@ void FakeCrosHealthdService::RunBatteryChargeRoutine(
       callback_delay_);
 }
 
+void FakeCrosHealthdService::RunMemoryRoutine(
+    RunMemoryRoutineCallback callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), run_routine_response_.Clone()),
+      callback_delay_);
+}
+
 void FakeCrosHealthdService::AddBluetoothObserver(
     mojom::CrosHealthdBluetoothObserverPtr observer) {
   bluetooth_observers_.Add(observer.PassInterface());

@@ -172,6 +172,13 @@ class ServiceConnection {
       mojom::CrosHealthdDiagnosticsService::RunBatteryChargeRoutineCallback
           callback) = 0;
 
+  // Requests that cros_healthd runs the memory routine. See
+  // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
+  // details.
+  virtual void RunMemoryRoutine(
+      mojom::CrosHealthdDiagnosticsService::RunMemoryRoutineCallback
+          callback) = 0;
+
   // Subscribes to cros_healthd's Bluetooth-related events. See
   // src/chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.

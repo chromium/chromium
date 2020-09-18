@@ -101,6 +101,9 @@ class ServiceConnectionImpl : public ServiceConnection {
       uint32_t minimum_charge_percent_required,
       mojom::CrosHealthdDiagnosticsService::RunBatteryChargeRoutineCallback
           callback) override;
+  void RunMemoryRoutine(
+      mojom::CrosHealthdDiagnosticsService::RunMemoryRoutineCallback callback)
+      override;
   void AddBluetoothObserver(
       mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> pending_observer)
       override;
@@ -341,6 +344,13 @@ void ServiceConnectionImpl::RunBatteryChargeRoutine(
   cros_healthd_diagnostics_service_->RunBatteryChargeRoutine(
       exec_duration.InSeconds(), minimum_charge_percent_required,
       std::move(callback));
+}
+
+void ServiceConnectionImpl::RunMemoryRoutine(
+    mojom::CrosHealthdDiagnosticsService::RunMemoryRoutineCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  BindCrosHealthdDiagnosticsServiceIfNeeded();
+  cros_healthd_diagnostics_service_->RunMemoryRoutine(std::move(callback));
 }
 
 void ServiceConnectionImpl::AddBluetoothObserver(
