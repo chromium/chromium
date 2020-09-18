@@ -611,7 +611,8 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
 
   // Rebuild the keyframe model for a CSS animation if it may have been
   // invalidated by a change to the text direction or writing mode.
-  const ComputedStyle* old_style = animating_element->GetComputedStyle();
+  const ComputedStyle* old_style =
+      animating_element ? animating_element->GetComputedStyle() : nullptr;
   bool logical_property_mapping_change =
       old_style && (old_style->Direction() != style.Direction() ||
                     old_style->GetWritingMode() != style.GetWritingMode());
