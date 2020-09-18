@@ -63,6 +63,12 @@ export class BrowserProxy {
   getI18nMessage(name, ...substitutions) {}
 
   /**
+   * @param {function(boolean)} callback
+   * @abstract
+   */
+  addOnLockListener(callback) {}
+
+  /**
    * @return {!Promise<boolean>}
    * @abstract
    */

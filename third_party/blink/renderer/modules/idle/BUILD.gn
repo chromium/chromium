@@ -8,5 +8,9 @@ blink_modules_sources("idle") {
   sources = [
     "idle_detector.cc",
     "idle_detector.h",
+    "idle_manager.cc",
+    "idle_manager.h",
   ]
+
+  deps = [ "//third_party/blink/renderer/modules/permissions" ]
 }

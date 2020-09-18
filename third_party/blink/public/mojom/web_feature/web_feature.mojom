@@ -2804,6 +2804,7 @@ enum WebFeature {
   kWebkitPrerenderStopEventFired = 3474,
   kWebkitPrerenderLoadEventFired = 3475,
   kWebkitPrerenderDOMContentLoadedEventFired = 3476,
+  kIdleDetectionPermissionRequested = 3477,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -238,12 +238,13 @@ export class Camera extends View {
     });
 
     // Monitor the states to stop camera when locked/minimized.
-    ChromeHelper.getInstance().addOnLockListener((isLocked) => {
+    browserProxy.addOnLockListener((isLocked) => {
       this.locked_ = isLocked;
       if (this.locked_) {
         this.start();
       }
     });
+
     browserProxy.addOnMinimizedListener(() => {
       this.start();
     });

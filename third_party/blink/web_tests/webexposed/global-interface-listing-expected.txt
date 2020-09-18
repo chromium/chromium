@@ -4506,6 +4506,7 @@ interface IdleDeadline
     method constructor
     method timeRemaining
 interface IdleDetector : EventTarget
+    static method requestPermission
     attribute @@toStringTag
     getter onchange
     getter screenState

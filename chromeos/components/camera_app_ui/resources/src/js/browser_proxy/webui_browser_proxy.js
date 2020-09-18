@@ -109,6 +109,11 @@ class WebUIBrowserProxy {
   }
 
   /** @override */
+  addOnLockListener(callback) {
+    ChromeHelper.getInstance().addOnLockListener(callback);
+  }
+
+  /** @override */
   async isMetricsAndCrashReportingEnabled() {
     return ChromeHelper.getInstance().isMetricsAndCrashReportingEnabled();
   }

@@ -41,6 +41,7 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/frame_service_base.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/idle_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -53,6 +54,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/idle_test_utils.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_navigation_throttle.h"
@@ -676,6 +678,20 @@ class PageLifecycleStateManagerTestDelegate
   base::OnceClosure store_in_back_forward_cache_sent_;
   base::OnceClosure store_in_back_forward_cache_ack_received_;
   base::OnceClosure restore_from_back_forward_cache_sent_;
+};
+
+class FakeIdleTimeProvider : public IdleManager::IdleTimeProvider {
+ public:
+  FakeIdleTimeProvider() = default;
+  ~FakeIdleTimeProvider() override = default;
+  FakeIdleTimeProvider(const FakeIdleTimeProvider&) = delete;
+  FakeIdleTimeProvider& operator=(const FakeIdleTimeProvider&) = delete;
+
+  base::TimeDelta CalculateIdleTime() override {
+    return base::TimeDelta::FromSeconds(0);
+  }
+
+  bool CheckIdleStateIsLocked() override { return false; }
 };
 
 }  // namespace
@@ -2174,6 +2190,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIdleManager) {
   EXPECT_TRUE(NavigateToURL(shell(), url));
   RenderFrameHostImpl* rfh_a = current_frame_host();
   RenderFrameDeletedObserver deleted(rfh_a);
+
+  content::IdleManagerHelper::SetIdleTimeProviderForTest(
+      rfh_a, std::make_unique<FakeIdleTimeProvider>());
 
   EXPECT_TRUE(ExecJs(rfh_a, R"(
     new Promise(async resolve => {

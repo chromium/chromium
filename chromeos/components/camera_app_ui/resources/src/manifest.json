@@ -17,6 +17,7 @@
     "storage",
     "system.display",
     "unlimitedStorage",
+    "idle",
     "chromeosInfoPrivate",
     "metricsPrivate",
     "fileManagerPrivate",

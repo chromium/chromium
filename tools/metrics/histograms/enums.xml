@@ -29188,6 +29188,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3474" label="WebkitPrerenderStopEventFired"/>
   <int value="3475" label="WebkitPrerenderLoadEventFired"/>
   <int value="3476" label="WebkitPrerenderDOMContentLoadedEventFired"/>
+  <int value="3477" label="IdleDetectionPermissionRequested"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

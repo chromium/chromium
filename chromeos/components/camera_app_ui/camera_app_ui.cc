@@ -176,10 +176,8 @@ CameraAppUI::CameraAppUI(content::WebUI* web_ui,
       host_origin, ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
   allowlist->RegisterAutoGrantedPermission(host_origin,
                                            ContentSettingsType::COOKIES);
-  // The notifications permissison is needed by the IdleManager, which we use
-  // for lock screen detection.
   allowlist->RegisterAutoGrantedPermission(host_origin,
-                                           ContentSettingsType::NOTIFICATIONS);
+                                           ContentSettingsType::IDLE_DETECTION);
 
   delegate_->SetLaunchDirectory();
 
