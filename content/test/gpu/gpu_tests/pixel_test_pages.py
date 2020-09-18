@@ -5,8 +5,11 @@
 # This is more akin to a .pyl/JSON file, so it's expected to be long.
 # pylint: disable=too-many-lines
 
+import os
+
 from gpu_tests import common_browser_args as cba
 from gpu_tests import skia_gold_matching_algorithms as algo
+from gpu_tests import path_util
 
 CRASH_TYPE_GPU = 'gpu'
 
@@ -107,6 +110,14 @@ def CopyPagesWithNewBrowserArgsAndSuffix(pages, browser_args, suffix):
 def CopyPagesWithNewBrowserArgsAndPrefix(pages, browser_args, prefix):
   return [
       p.CopyWithNewBrowserArgsAndPrefix(browser_args, prefix) for p in pages
+  ]
+
+
+def GetMediaStreamTestBrowserArgs(media_stream_source_relpath):
+  return [
+      '--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream',
+      '--use-file-for-fake-video-capture=' +
+      os.path.join(path_util.GetChromiumSrcDir(), media_stream_source_relpath)
   ]
 
 
@@ -224,6 +235,13 @@ class PixelTestPages(object):
                           max_different_pixels=31100,
                           pixel_delta_threshold=30,
                           edge_threshold=250)),
+        PixelTestPage(
+            'pixel_video_media_stream_incompatible_stride.html',
+            base_name + '_Video_Media_Stream_Incompatible_Stride',
+            browser_args=GetMediaStreamTestBrowserArgs(
+                'media/test/data/four-colors-incompatible-stride.y4m'),
+            test_rect=[0, 0, 240, 135],
+            matching_algorithm=VERY_PERMISSIVE_SOBEL_ALGO),
 
         # The MP4 contains H.264 which is primarily hardware decoded on bots.
         PixelTestPage(

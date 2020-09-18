@@ -46,6 +46,7 @@
 #include "media/video/half_float_maker.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
+#include "third_party/khronos/GLES3/gl3.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -1163,10 +1164,12 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
     const size_t bytes_per_row =
         viz::ResourceSizes::CheckedWidthInBytes<size_t>(
             resource_size_pixels.width(), plane_resource_format);
+
     // Use 4-byte row alignment (OpenGL default) for upload performance.
     // Assuming that GL_UNPACK_ALIGNMENT has not changed from default.
-    const size_t upload_image_stride =
-        cc::MathUtil::CheckedRoundUp<size_t>(bytes_per_row, 4u);
+    constexpr size_t kDefaultUnpackAlignment = 4;
+    const size_t upload_image_stride = cc::MathUtil::CheckedRoundUp<size_t>(
+        bytes_per_row, kDefaultUnpackAlignment);
 
     const size_t resource_bit_depth =
         static_cast<size_t>(viz::BitsPerPixel(plane_resource_format));
@@ -1174,20 +1177,35 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
     // Data downshifting is needed if the resource bit depth is not enough.
     const bool needs_bit_downshifting = bits_per_channel > resource_bit_depth;
 
-    // A copy to adjust strides is needed if those are different and both source
-    // and destination have the same bit depth.
-    const bool needs_stride_adaptation =
-        (bits_per_channel == resource_bit_depth) &&
-        (upload_image_stride != static_cast<size_t>(video_stride_bytes));
-
     // We need to convert the incoming data if we're transferring to half float,
     // if the need a bit downshift or if the strides need to be reconciled.
-    const bool needs_conversion = plane_resource_format == viz::LUMINANCE_F16 ||
-                                  needs_bit_downshifting ||
-                                  needs_stride_adaptation;
+    const bool needs_conversion =
+        plane_resource_format == viz::LUMINANCE_F16 || needs_bit_downshifting;
+
+    constexpr size_t kDefaultUnpackRowLength = 0;
+    GLuint unpack_row_length = kDefaultUnpackRowLength;
+    GLuint unpack_alignment = kDefaultUnpackAlignment;
 
     const uint8_t* pixels;
+
     if (!needs_conversion) {
+      // Stride adaptation is needed if source and destination strides are
+      // different but they have the same bit depth.
+      const bool needs_stride_adaptation =
+          (bits_per_channel == resource_bit_depth) &&
+          (upload_image_stride != static_cast<size_t>(video_stride_bytes));
+      if (needs_stride_adaptation) {
+        const int bytes_per_element =
+            VideoFrame::BytesPerElement(video_frame->format(), i);
+        // Stride is aligned to VideoFrameLayout::kFrameAddressAlignment (32)
+        // which should be divisible by pixel size for YUV formats (1, 2 or 4).
+        DCHECK_EQ(video_stride_bytes % bytes_per_element, 0);
+        // Unpack row length is in pixels not bytes.
+        unpack_row_length = video_stride_bytes / bytes_per_element;
+        // Use a non-standard alignment only if necessary.
+        if (video_stride_bytes % kDefaultUnpackAlignment != 0)
+          unpack_alignment = bytes_per_element;
+      }
       pixels = video_frame->data(i);
     } else {
       // Avoid malloc for each frame/plane if possible.
@@ -1218,14 +1236,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
             video_stride_bytes / 2, upload_pixels_.get(), upload_image_stride,
             scale, bytes_per_row, resource_size_pixels.height());
       } else {
-        // Make a copy to reconcile stride, size and format being equal.
-        DCHECK(needs_stride_adaptation);
-        DCHECK(plane_resource_format == viz::LUMINANCE_8 ||
-               plane_resource_format == viz::RED_8);
-        libyuv::CopyPlane(video_frame->data(i), video_stride_bytes,
-                          upload_pixels_.get(), upload_image_stride,
-                          resource_size_pixels.width(),
-                          resource_size_pixels.height());
+        NOTREACHED();
       }
 
       pixels = upload_pixels_.get();
@@ -1238,12 +1249,18 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
     DCHECK(GLSupportsFormat(plane_resource_format));
     {
       HardwarePlaneResource::ScopedTexture scope(gl, plane_resource);
+
       gl->BindTexture(plane_resource->texture_target(), scope.texture_id());
+
+      gl->PixelStorei(GL_UNPACK_ROW_LENGTH, unpack_row_length);
+      gl->PixelStorei(GL_UNPACK_ALIGNMENT, unpack_alignment);
       gl->TexSubImage2D(plane_resource->texture_target(), 0, 0, 0,
                         resource_size_pixels.width(),
                         resource_size_pixels.height(),
                         GLDataFormat(plane_resource_format),
                         GLDataType(plane_resource_format), pixels);
+      gl->PixelStorei(GL_UNPACK_ROW_LENGTH, kDefaultUnpackRowLength);
+      gl->PixelStorei(GL_UNPACK_ALIGNMENT, kDefaultUnpackAlignment);
     }
 
     plane_resource->SetUniqueId(video_frame->unique_id(), i);
