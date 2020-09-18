@@ -48,8 +48,8 @@ TabCloseButton::TabCloseButton(views::ButtonListener* listener,
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
   SetInkDropMode(InkDropMode::ON);
-  set_ink_drop_highlight_opacity(0.16f);
-  set_ink_drop_visible_opacity(0.14f);
+  SetInkDropHighlightOpacity(0.16f);
+  SetInkDropVisibleOpacity(0.14f);
 
   // Disable animation so that the hover indicator shows up immediately to help
   // avoid mis-clicks.

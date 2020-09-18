@@ -81,6 +81,8 @@ bool MdTextButton::GetProminent() const {
 }
 
 void MdTextButton::SetBgColorOverride(const base::Optional<SkColor>& color) {
+  if (color == bg_color_override_)
+    return;
   bg_color_override_ = color;
   UpdateColors();
   OnPropertyChanged(&bg_color_override_, kPropertyEffectsNone);
@@ -91,8 +93,11 @@ base::Optional<SkColor> MdTextButton::GetBgColorOverride() const {
 }
 
 void MdTextButton::SetCornerRadius(float radius) {
+  if (corner_radius_ == radius)
+    return;
   corner_radius_ = radius;
-  set_ink_drop_corner_radii(corner_radius_, corner_radius_);
+  SetInkDropSmallCornerRadius(corner_radius_);
+  SetInkDropLargeCornerRadius(corner_radius_);
   OnPropertyChanged(&corner_radius_, kPropertyEffectsPaint);
 }
 

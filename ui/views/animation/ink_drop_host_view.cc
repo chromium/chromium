@@ -84,7 +84,7 @@ std::unique_ptr<InkDrop> InkDropHostView::CreateInkDrop() {
 std::unique_ptr<InkDropRipple> InkDropHostView::CreateInkDropRipple() const {
   return std::make_unique<views::FloodFillInkDropRipple>(
       size(), gfx::Insets(), GetInkDropCenterBasedOnLastEvent(),
-      GetInkDropBaseColor(), ink_drop_visible_opacity());
+      GetInkDropBaseColor(), GetInkDropVisibleOpacity());
 }
 
 std::unique_ptr<InkDropHighlight> InkDropHostView::CreateInkDropHighlight()
@@ -114,6 +114,51 @@ SkColor InkDropHostView::GetInkDropBaseColor() const {
 void InkDropHostView::SetInkDropMode(InkDropMode ink_drop_mode) {
   ink_drop_mode_ = ink_drop_mode;
   ink_drop_ = nullptr;
+}
+
+void InkDropHostView::SetInkDropVisibleOpacity(float visible_opacity) {
+  if (visible_opacity == ink_drop_visible_opacity_)
+    return;
+  ink_drop_visible_opacity_ = visible_opacity;
+  OnPropertyChanged(&ink_drop_visible_opacity_, kPropertyEffectsPaint);
+}
+
+float InkDropHostView::GetInkDropVisibleOpacity() const {
+  return ink_drop_visible_opacity_;
+}
+
+void InkDropHostView::SetInkDropHighlightOpacity(
+    base::Optional<float> opacity) {
+  if (opacity == ink_drop_highlight_opacity_)
+    return;
+  ink_drop_highlight_opacity_ = opacity;
+  OnPropertyChanged(&ink_drop_highlight_opacity_, kPropertyEffectsPaint);
+}
+
+base::Optional<float> InkDropHostView::GetInkDropHighlightOpacity() const {
+  return ink_drop_highlight_opacity_;
+}
+
+void InkDropHostView::SetInkDropSmallCornerRadius(int small_radius) {
+  if (small_radius == ink_drop_small_corner_radius_)
+    return;
+  ink_drop_small_corner_radius_ = small_radius;
+  OnPropertyChanged(&ink_drop_small_corner_radius_, kPropertyEffectsLayout);
+}
+
+int InkDropHostView::GetInkDropSmallCornerRadius() const {
+  return ink_drop_small_corner_radius_;
+}
+
+void InkDropHostView::SetInkDropLargeCornerRadius(int large_radius) {
+  if (large_radius == ink_drop_large_corner_radius_)
+    return;
+  ink_drop_large_corner_radius_ = large_radius;
+  OnPropertyChanged(&ink_drop_large_corner_radius_, kPropertyEffectsLayout);
+}
+
+int InkDropHostView::GetInkDropLargeCornerRadius() const {
+  return ink_drop_large_corner_radius_;
 }
 
 void InkDropHostView::AnimateInkDrop(InkDropState state,
@@ -177,7 +222,7 @@ std::unique_ptr<InkDropRipple> InkDropHostView::CreateSquareInkDropRipple(
   auto ripple = std::make_unique<SquareInkDropRipple>(
       CalculateLargeInkDropSize(size), ink_drop_large_corner_radius_, size,
       ink_drop_small_corner_radius_, center_point, GetInkDropBaseColor(),
-      ink_drop_visible_opacity());
+      GetInkDropVisibleOpacity());
   return ripple;
 }
 
@@ -257,6 +302,10 @@ InkDropEventHandler* InkDropHostView::GetEventHandler() {
 
 BEGIN_METADATA(InkDropHostView, View)
 ADD_READONLY_PROPERTY_METADATA(bool, Highlighted)
+ADD_PROPERTY_METADATA(float, InkDropVisibleOpacity)
+ADD_PROPERTY_METADATA(base::Optional<float>, InkDropHighlightOpacity)
+ADD_PROPERTY_METADATA(int, InkDropLargeCornerRadius)
+ADD_PROPERTY_METADATA(int, InkDropSmallCornerRadius)
 END_METADATA
 
 }  // namespace views

@@ -305,8 +305,8 @@ void PrivacyInfoView::InitCloseButton() {
   constexpr SkColor kInkDropBaseColor = gfx::kGoogleGrey900;
   constexpr float kInkDropVisibleOpacity = 0.06f;
   constexpr float kInkDropHighlightOpacity = 0.08f;
-  close_button->set_ink_drop_visible_opacity(kInkDropVisibleOpacity);
-  close_button->set_ink_drop_highlight_opacity(kInkDropHighlightOpacity);
+  close_button->SetInkDropVisibleOpacity(kInkDropVisibleOpacity);
+  close_button->SetInkDropHighlightOpacity(kInkDropHighlightOpacity);
   close_button->set_ink_drop_base_color(kInkDropBaseColor);
   close_button->set_has_ink_drop_action_on_click(true);
   views::InstallCircleHighlightPathGenerator(close_button.get());

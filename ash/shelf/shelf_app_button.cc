@@ -864,10 +864,10 @@ std::unique_ptr<views::InkDropRipple> ShelfAppButton::CreateInkDropRipple()
   const int ripple_size = shelf_view_->GetShelfItemRippleSize();
 
   return std::make_unique<views::SquareInkDropRipple>(
-      gfx::Size(ripple_size, ripple_size), ink_drop_large_corner_radius(),
-      small_ripple_area.size(), ink_drop_small_corner_radius(),
+      gfx::Size(ripple_size, ripple_size), GetInkDropLargeCornerRadius(),
+      small_ripple_area.size(), GetInkDropSmallCornerRadius(),
       small_ripple_area.CenterPoint(), GetInkDropBaseColor(),
-      ink_drop_visible_opacity());
+      GetInkDropVisibleOpacity());
 }
 
 bool ShelfAppButton::HandleAccessibleAction(

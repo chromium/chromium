@@ -25,7 +25,7 @@ PaddedButton::PaddedButton(views::ButtonListener* listener)
   set_animate_on_state_change(false);
 
   SetInkDropMode(InkDropMode::ON);
-  set_ink_drop_visible_opacity(0.12f);
+  SetInkDropVisibleOpacity(0.12f);
   set_has_ink_drop_action_on_click(true);
 }
 

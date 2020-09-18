@@ -84,7 +84,7 @@ ToolbarButton::ToolbarButton(views::ButtonListener* listener,
   // UI direction.
   EnableCanvasFlippingForRTLUI(true);
 
-  set_ink_drop_visible_opacity(kToolbarInkDropVisibleOpacity);
+  SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
 
   SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));

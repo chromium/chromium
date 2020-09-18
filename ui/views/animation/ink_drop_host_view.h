@@ -89,25 +89,17 @@ class VIEWS_EXPORT InkDropHostView : public View {
   // subclasses/clients to specify the flavor of ink drop.
   void SetInkDropMode(InkDropMode ink_drop_mode);
 
-  void set_ink_drop_visible_opacity(float visible_opacity) {
-    ink_drop_visible_opacity_ = visible_opacity;
-  }
-  float ink_drop_visible_opacity() const { return ink_drop_visible_opacity_; }
+  void SetInkDropVisibleOpacity(float visible_opacity);
+  float GetInkDropVisibleOpacity() const;
 
-  void set_ink_drop_highlight_opacity(base::Optional<float> opacity) {
-    ink_drop_highlight_opacity_ = opacity;
-  }
+  void SetInkDropHighlightOpacity(base::Optional<float> opacity);
+  base::Optional<float> GetInkDropHighlightOpacity() const;
 
-  void set_ink_drop_corner_radii(int small_radius, int large_radius) {
-    ink_drop_small_corner_radius_ = small_radius;
-    ink_drop_large_corner_radius_ = large_radius;
-  }
-  int ink_drop_small_corner_radius() const {
-    return ink_drop_small_corner_radius_;
-  }
-  int ink_drop_large_corner_radius() const {
-    return ink_drop_large_corner_radius_;
-  }
+  void SetInkDropSmallCornerRadius(int small_radius);
+  int GetInkDropSmallCornerRadius() const;
+
+  void SetInkDropLargeCornerRadius(int large_radius);
+  int GetInkDropLargeCornerRadius() const;
 
   // Allows InstallableInkDrop to override our InkDropEventHandler
   // instance.

@@ -83,7 +83,7 @@ FrameCaptionButton::FrameCaptionButton(views::ButtonListener* listener,
 
   set_has_ink_drop_action_on_click(true);
   SetInkDropMode(InkDropMode::ON);
-  set_ink_drop_visible_opacity(kInkDropVisibleOpacity);
+  SetInkDropVisibleOpacity(kInkDropVisibleOpacity);
   UpdateInkDropBaseColor();
 
   views::HighlightPathGenerator::Install(
@@ -207,7 +207,7 @@ std::unique_ptr<views::InkDropRipple> FrameCaptionButton::CreateInkDropRipple()
     const {
   return std::make_unique<views::FloodFillInkDropRipple>(
       size(), GetInkdropInsets(size()), GetInkDropCenterBasedOnLastEvent(),
-      GetInkDropBaseColor(), ink_drop_visible_opacity());
+      GetInkDropBaseColor(), GetInkDropVisibleOpacity());
 }
 
 void FrameCaptionButton::SetBackgroundColor(SkColor background_color) {

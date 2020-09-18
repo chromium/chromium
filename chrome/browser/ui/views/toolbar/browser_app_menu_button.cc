@@ -142,7 +142,7 @@ BrowserAppMenuButton::BrowserAppMenuButton(ToolbarView* toolbar_view)
   SetInkDropMode(InkDropMode::ON);
   SetHorizontalAlignment(gfx::ALIGN_RIGHT);
 
-  set_ink_drop_visible_opacity(kToolbarInkDropVisibleOpacity);
+  SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
 }
 
 BrowserAppMenuButton::~BrowserAppMenuButton() {}

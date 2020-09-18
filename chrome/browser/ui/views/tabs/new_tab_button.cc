@@ -66,8 +66,8 @@ NewTabButton::NewTabButton(TabStrip* tab_strip, views::ButtonListener* listener)
       AddChildView(std::make_unique<views::InkDropContainerView>());
 
   SetInkDropMode(InkDropMode::ON);
-  set_ink_drop_highlight_opacity(0.16f);
-  set_ink_drop_visible_opacity(0.14f);
+  SetInkDropHighlightOpacity(0.16f);
+  SetInkDropVisibleOpacity(0.14f);
 
   SetInstallFocusRingOnFocus(true);
   views::HighlightPathGenerator::Install(

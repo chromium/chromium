@@ -54,7 +54,7 @@ AssistantButton::AssistantButton(AssistantButtonListener* listener,
   SetInkDropMode(InkDropMode::ON);
   set_has_ink_drop_action_on_click(true);
   set_ink_drop_base_color(kInkDropBaseColor);
-  set_ink_drop_visible_opacity(kInkDropVisibleOpacity);
+  SetInkDropVisibleOpacity(kInkDropVisibleOpacity);
   views::InstallCircleHighlightPathGenerator(this, gfx::Insets(kInkDropInset));
 }
 
@@ -118,7 +118,7 @@ std::unique_ptr<views::InkDropRipple> AssistantButton::CreateInkDropRipple()
     const {
   return std::make_unique<views::FloodFillInkDropRipple>(
       size(), gfx::Insets(kInkDropInset), GetInkDropCenterBasedOnLastEvent(),
-      GetInkDropBaseColor(), ink_drop_visible_opacity());
+      GetInkDropBaseColor(), GetInkDropVisibleOpacity());
 }
 
 void AssistantButton::ButtonPressed(views::Button* sender,

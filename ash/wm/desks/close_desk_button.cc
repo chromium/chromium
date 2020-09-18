@@ -40,7 +40,7 @@ CloseDeskButton::CloseDeskButton(views::ButtonListener* listener)
 
   SetInkDropMode(InkDropMode::ON);
   set_has_ink_drop_action_on_click(true);
-  set_ink_drop_visible_opacity(ripple_attributes.inkdrop_opacity);
+  SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
   SetFocusPainter(nullptr);
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));

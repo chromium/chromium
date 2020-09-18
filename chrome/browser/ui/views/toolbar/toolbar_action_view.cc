@@ -77,7 +77,7 @@ ToolbarActionView::ToolbarActionView(
 
   InstallToolbarButtonHighlightPathGenerator(this);
 
-  set_ink_drop_visible_opacity(kToolbarInkDropVisibleOpacity);
+  SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
 
   UpdateState();
 }

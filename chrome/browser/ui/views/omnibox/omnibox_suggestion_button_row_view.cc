@@ -49,7 +49,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     SetCornerRadius(GetInsets().height() +
                     GetLayoutConstant(LOCATION_BAR_ICON_SIZE));
 
-    set_ink_drop_highlight_opacity(CalculateInkDropHighlightOpacity());
+    SetInkDropHighlightOpacity(CalculateInkDropHighlightOpacity());
     focus_ring()->SetHasFocusPredicate([=](View* view) {
       return view->GetVisible() &&
              popup_contents_view_->model()->selection() == selection_;

@@ -371,7 +371,7 @@ NotificationInputContainerMD::NotificationInputContainerMD(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
 
   SetInkDropMode(InkDropMode::ON);
-  set_ink_drop_visible_opacity(1);
+  SetInkDropVisibleOpacity(1);
 
   AddChildView(ink_drop_container_);
 
@@ -420,7 +420,7 @@ std::unique_ptr<views::InkDropRipple>
 NotificationInputContainerMD::CreateInkDropRipple() const {
   return std::make_unique<views::FloodFillInkDropRipple>(
       size(), GetInkDropCenterBasedOnLastEvent(), GetInkDropBaseColor(),
-      ink_drop_visible_opacity());
+      GetInkDropVisibleOpacity());
 }
 
 SkColor NotificationInputContainerMD::GetInkDropBaseColor() const {
@@ -592,7 +592,7 @@ NotificationViewMD::NotificationViewMD(const Notification& notification)
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 
-  set_ink_drop_visible_opacity(1);
+  SetInkDropVisibleOpacity(1);
 
   AddChildView(ink_drop_container_);
 
@@ -1497,7 +1497,7 @@ std::unique_ptr<views::InkDropRipple> NotificationViewMD::CreateInkDropRipple()
     const {
   return std::make_unique<views::FloodFillInkDropRipple>(
       GetPreferredSize(), GetInkDropCenterBasedOnLastEvent(),
-      GetInkDropBaseColor(), ink_drop_visible_opacity());
+      GetInkDropBaseColor(), GetInkDropVisibleOpacity());
 }
 
 std::vector<views::View*> NotificationViewMD::GetChildrenForLayerAdjustment()

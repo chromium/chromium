@@ -52,7 +52,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(const HoldingSpaceItem* item)
       kHoldingSpaceChipCornerRadius));
 
   SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
-  set_ink_drop_visible_opacity(
+  SetInkDropVisibleOpacity(
       ShelfConfig::Get()->GetInkDropRippleAttributes().inkdrop_opacity);
   SetNotifyEnterExitOnChild(true);
 

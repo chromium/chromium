@@ -124,8 +124,8 @@ void SystemLabelButton::SetAlertMode(bool alert_mode) {
     const AshColorProvider::RippleAttributes ripple_attributes =
         AshColorProvider::Get()->GetRippleAttributes(background_color_);
     set_ink_drop_base_color(ripple_attributes.base_color);
-    set_ink_drop_visible_opacity(ripple_attributes.inkdrop_opacity);
-    set_ink_drop_highlight_opacity(ripple_attributes.highlight_opacity);
+    SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
+    SetInkDropHighlightOpacity(ripple_attributes.highlight_opacity);
   } else {
     // using RippleAttributes here doesn't give visually satisfying results
     // in default display mode

@@ -91,7 +91,7 @@ class Arrow : public Button {
     return std::make_unique<views::FloodFillInkDropRipple>(
         size(), GetInkDropCenterBasedOnLastEvent(),
         style::GetColor(*this, style::CONTEXT_TEXTFIELD, style::STYLE_PRIMARY),
-        ink_drop_visible_opacity());
+        GetInkDropVisibleOpacity());
   }
 
  private:

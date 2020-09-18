@@ -78,9 +78,9 @@ void NewDeskButton::UpdateButtonState() {
   if (!enabled)
     background_color_ = AshColorProvider::GetDisabledColor(background_color_);
 
-  set_ink_drop_visible_opacity(AshColorProvider::Get()
-                                   ->GetRippleAttributes(background_color_)
-                                   .inkdrop_opacity);
+  SetInkDropVisibleOpacity(AshColorProvider::Get()
+                               ->GetRippleAttributes(background_color_)
+                               .inkdrop_opacity);
   SchedulePaint();
 }
 

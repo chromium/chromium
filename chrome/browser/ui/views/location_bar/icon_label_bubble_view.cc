@@ -138,10 +138,8 @@ IconLabelBubbleView::IconLabelBubbleView(const gfx::FontList& font_list,
 
   separator_view_->SetVisible(ShouldShowSeparator());
 
-  set_ink_drop_visible_opacity(
-      GetOmniboxStateOpacity(OmniboxPartState::SELECTED));
-  set_ink_drop_highlight_opacity(
-      GetOmniboxStateOpacity(OmniboxPartState::HOVERED));
+  SetInkDropVisibleOpacity(GetOmniboxStateOpacity(OmniboxPartState::SELECTED));
+  SetInkDropHighlightOpacity(GetOmniboxStateOpacity(OmniboxPartState::HOVERED));
 
   views::HighlightPathGenerator::Install(
       this, std::make_unique<HighlightPathGenerator>());

@@ -104,7 +104,7 @@ class TransparentButton : public Button {
             size(), GetInkDropCenterBasedOnLastEvent(),
             GetNativeTheme()->GetSystemColor(
                 ui::NativeTheme::kColorId_LabelEnabledColor),
-            ink_drop_visible_opacity()));
+            GetInkDropVisibleOpacity()));
   }
 
  private:

@@ -24,7 +24,7 @@ ShelfButton::ShelfButton(Shelf* shelf,
   AshColorProvider::RippleAttributes ripple_attributes =
       ShelfConfig::Get()->GetInkDropRippleAttributes();
   set_ink_drop_base_color(ripple_attributes.base_color);
-  set_ink_drop_visible_opacity(ripple_attributes.inkdrop_opacity);
+  SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
   SetFocusPainter(views::Painter::CreateSolidFocusPainter(
