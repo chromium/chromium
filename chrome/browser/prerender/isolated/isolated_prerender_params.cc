@@ -135,7 +135,10 @@ IsolatedPrerenderOriginProbeType IsolatedPrerenderOriginProbeMechanism() {
     return IsolatedPrerenderOriginProbeType::kDns;
   if (param == "http_head")
     return IsolatedPrerenderOriginProbeType::kHttpHead;
+  if (param == "tls")
+    return IsolatedPrerenderOriginProbeType::kTls;
 
+  // Most restrictive by default.
   return IsolatedPrerenderOriginProbeType::kHttpHead;
 }
 

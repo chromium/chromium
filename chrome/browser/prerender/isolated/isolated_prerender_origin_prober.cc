@@ -14,15 +14,46 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/tls_socket.mojom.h"
 #include "url/origin.h"
 
 namespace {
+
+net::NetworkTrafficAnnotationTag GetProbingTrafficAnnotation() {
+  return net::DefineNetworkTrafficAnnotation("isolated_prerender_probe", R"(
+        semantics {
+          sender: "Isolated Prerender Probe Loader"
+          description:
+            "Verifies the end to end connection between Chrome and the "
+            "origin site that the user is currently navigating to. This is "
+            "done during a navigation that was previously prerendered over a "
+            "proxy to check that the site is not blocked by middleboxes. "
+            "Such prerenders will be used to prefetch render-blocking "
+            "content before being navigated by the user without impacting "
+            "privacy."
+          trigger:
+            "Used for sites off of Google SRPs (Search Result Pages) only "
+            "for Lite mode users when the experimental feature flag is "
+            "enabled."
+          data: "None."
+          destination: WEBSITE
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Users can control Lite mode on Android via the settings menu. "
+            "Lite mode is not available on iOS, and on desktop only for "
+            "developer testing."
+          policy_exception_justification: "Not implemented."
+      })");
+}
 
 class DNSProber : public network::mojom::ResolveHostClient {
  public:
@@ -55,6 +86,90 @@ class DNSProber : public network::mojom::ResolveHostClient {
 
  private:
   OnDNSResultsCallback callback_;
+};
+
+void TLSDropHandler(base::OnceClosure ui_only_callback) {
+  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                               std::move(ui_only_callback));
+}
+
+class TLSProber {
+ public:
+  TLSProber(const GURL& url,
+            IsolatedPrerenderOriginProber::OnProbeResultCallback callback)
+      : url_(url), callback_(std::move(callback)) {}
+  ~TLSProber() { DCHECK(!callback_); }
+
+  network::mojom::NetworkContext::CreateTCPConnectedSocketCallback
+  GetOnTCPConnectedCallback() {
+    network::mojom::NetworkContext::CreateTCPConnectedSocketCallback
+        tcp_handler = base::BindOnce(&TLSProber::OnTCPConnected,
+                                     weak_factory_.GetWeakPtr());
+
+    return mojo::WrapCallbackWithDropHandler(std::move(tcp_handler),
+                                             GetDropHandler());
+  }
+
+  mojo::PendingReceiver<network::mojom::TCPConnectedSocket>
+  GetTCPSocketReceiver() {
+    return tcp_socket_.BindNewPipeAndPassReceiver();
+  }
+
+ private:
+  void OnTCPConnected(int result,
+                      const base::Optional<net::IPEndPoint>& local_addr,
+                      const base::Optional<net::IPEndPoint>& peer_addr,
+                      mojo::ScopedDataPipeConsumerHandle receive_stream,
+                      mojo::ScopedDataPipeProducerHandle send_stream) {
+    if (result != net::OK) {
+      HandleFailure();
+      return;
+    }
+
+    network::mojom::TCPConnectedSocket::UpgradeToTLSCallback tls_handler =
+        base::BindOnce(&TLSProber::OnUpgradeToTLS, weak_factory_.GetWeakPtr());
+
+    tcp_socket_->UpgradeToTLS(
+        net::HostPortPair::FromURL(url_), /*options=*/nullptr,
+        net::MutableNetworkTrafficAnnotationTag(GetProbingTrafficAnnotation()),
+        tls_socket_.BindNewPipeAndPassReceiver(),
+        /*observer=*/mojo::NullRemote(),
+        mojo::WrapCallbackWithDropHandler(std::move(tls_handler),
+                                          GetDropHandler()));
+  }
+
+  void OnUpgradeToTLS(int result,
+                      mojo::ScopedDataPipeConsumerHandle receive_stream,
+                      mojo::ScopedDataPipeProducerHandle send_stream,
+                      const base::Optional<net::SSLInfo>& ssl_info) {
+    std::move(callback_).Run(result == net::OK);
+    delete this;
+  }
+
+  base::OnceClosure GetDropHandler() {
+    // The drop handler is not guaranteed to be run on the original thread. Use
+    // the anon method above to fix that.
+    return base::BindOnce(
+        &TLSDropHandler,
+        base::BindOnce(&TLSProber::HandleFailure, weak_factory_.GetWeakPtr()));
+  }
+
+  void HandleFailure() {
+    std::move(callback_).Run(false);
+    delete this;
+  }
+
+  // The URL of the resource being probed. Only the host:port is used.
+  const GURL url_;
+
+  // The callback to run when the probe is complete.
+  IsolatedPrerenderOriginProber::OnProbeResultCallback callback_;
+
+  // Mojo sockets. We only test that both can be connected.
+  mojo::Remote<network::mojom::TCPConnectedSocket> tcp_socket_;
+  mojo::Remote<network::mojom::TLSClientSocket> tls_socket_;
+
+  base::WeakPtrFactory<TLSProber> weak_factory_{this};
 };
 
 void HTTPProbeHelper(
@@ -220,12 +335,20 @@ void IsolatedPrerenderOriginProber::Probe(const GURL& url,
     case IsolatedPrerenderOriginProbeType::kHttpHead:
       HTTPProbe(probe_url, std::move(callback));
       return;
+    case IsolatedPrerenderOriginProbeType::kTls:
+      TLSProbe(probe_url, std::move(callback));
+      return;
   }
 }
 
 void IsolatedPrerenderOriginProber::DNSProbe(const GURL& url,
                                              OnProbeResultCallback callback) {
   StartDNSResolution(url, std::move(callback), /*also_do_tls_connect=*/false);
+}
+
+void IsolatedPrerenderOriginProber::TLSProbe(const GURL& url,
+                                             OnProbeResultCallback callback) {
+  StartDNSResolution(url, std::move(callback), /*also_do_tls_connect=*/true);
 }
 
 void IsolatedPrerenderOriginProber::StartDNSResolution(
@@ -257,34 +380,6 @@ void IsolatedPrerenderOriginProber::StartDNSResolution(
 
 void IsolatedPrerenderOriginProber::HTTPProbe(const GURL& url,
                                               OnProbeResultCallback callback) {
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("isolated_prerender_probe", R"(
-          semantics {
-            sender: "Isolated Prerender Probe Loader"
-            description:
-              "Verifies the end to end connection between Chrome and the "
-              "origin site that the user is currently navigating to. This is "
-              "done during a navigation that was previously prerendered over a "
-              "proxy to check that the site is not blocked by middleboxes. "
-              "Such prerenders will be used to prefetch render-blocking "
-              "content before being navigated by the user without impacting "
-              "privacy."
-            trigger:
-              "Used for sites off of Google SRPs (Search Result Pages) only "
-              "for Lite mode users when the experimental feature flag is "
-              "enabled."
-            data: "None."
-            destination: WEBSITE
-          }
-          policy {
-            cookies_allowed: NO
-            setting:
-              "Users can control Lite mode on Android via the settings menu. "
-              "Lite mode is not available on iOS, and on desktop only for "
-              "developer testing."
-            policy_exception_justification: "Not implemented."
-        })");
-
   AvailabilityProber::TimeoutPolicy timeout_policy;
   timeout_policy.base_timeout = IsolatedPrerenderProbeTimeout();
   AvailabilityProber::RetryPolicy retry_policy;
@@ -298,7 +393,7 @@ void IsolatedPrerenderOriginProber::HTTPProbe(const GURL& url,
           nullptr /* pref_service */,
           AvailabilityProber::ClientName::kIsolatedPrerenderOriginCheck, url,
           AvailabilityProber::HttpMethod::kHead, net::HttpRequestHeaders(),
-          retry_policy, timeout_policy, traffic_annotation,
+          retry_policy, timeout_policy, GetProbingTrafficAnnotation(),
           0 /* max_cache_entries */,
           base::TimeDelta::FromSeconds(0) /* revalidate_cache_after */);
   AvailabilityProber* prober_ptr = prober.get();
@@ -332,6 +427,28 @@ void IsolatedPrerenderOriginProber::OnDNSResolved(
     return;
   }
 
-  // TODO(robertogden): Handle also_do_tls_connect.
-  NOTREACHED();
+  DoTLSProbeAfterDNSResolution(url, std::move(callback), *resolved_addresses);
+}
+
+void IsolatedPrerenderOriginProber::DoTLSProbeAfterDNSResolution(
+    const GURL& url,
+    OnProbeResultCallback callback,
+    const net::AddressList& addresses) {
+  DCHECK(!addresses.empty());
+
+  std::unique_ptr<TLSProber> prober =
+      std::make_unique<TLSProber>(url, std::move(callback));
+
+  content::BrowserContext::GetDefaultStoragePartition(profile_)
+      ->GetNetworkContext()
+      ->CreateTCPConnectedSocket(
+          /*local_addr=*/base::nullopt, addresses,
+          /*tcp_connected_socket_options=*/nullptr,
+          net::MutableNetworkTrafficAnnotationTag(
+              GetProbingTrafficAnnotation()),
+          prober->GetTCPSocketReceiver(),
+          /*observer=*/mojo::NullRemote(), prober->GetOnTCPConnectedCallback());
+
+  // |prober| manages its own lifetime, using the mojo pipes.
+  prober.release();
 }

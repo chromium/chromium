@@ -48,12 +48,19 @@ class IsolatedPrerenderOriginProber {
  private:
   void DNSProbe(const GURL& url, OnProbeResultCallback callback);
   void HTTPProbe(const GURL& url, OnProbeResultCallback callback);
+  void TLSProbe(const GURL& url, OnProbeResultCallback callback);
 
   // Does a DNS resolution for a DNS or TLS probe, passing all the arguments to
   // |OnDNSResolved|.
   void StartDNSResolution(const GURL& url,
                           OnProbeResultCallback callback,
                           bool also_do_tls_connect);
+
+  // Both DNS and TLS probes need to resolve DNS. This starts the TLS probe with
+  // the |addresses| from the DNS resolution.
+  void DoTLSProbeAfterDNSResolution(const GURL& url,
+                                    OnProbeResultCallback callback,
+                                    const net::AddressList& addresses);
 
   // If the DNS resolution was successful, this will either run |callback| for a
   // DNS probe, or start the TLS socket for a TLS probe. This is determined by
