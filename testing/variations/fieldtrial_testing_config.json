@@ -1899,6 +1899,21 @@
             ]
         }
     ],
+    "CryptAuthV2DeviceSync": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20200427",
+                    "enable_features": [
+                        "CryptAuthV2DeviceSync"
+                    ]
+                }
+            ]
+        }
+    ],
     "CryptAuthV2Enrollment": [
         {
             "platforms": [
