@@ -106,7 +106,7 @@
 #include "ui/events/test/event_generator.h"
 #endif  // defined(OS_CHROMEOS)
 
-#if !defined(OS_CHROMEOS) && defined(OS_LINUX)
+#if !defined(OS_CHROMEOS) && defined(USE_X11)
 #include "ui/views/test/test_desktop_screen_x11.h"
 #endif
 
