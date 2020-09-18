@@ -12,6 +12,7 @@ class TestPluginVmBrowserProxy extends TestBrowserProxy {
       'setPluginVmPermission',
       'relaunchPluginVm',
     ]);
+    this.removeSharedPathResult = true;
     this.pluginVmRunning = false;
     this.permissions = [true, true];  // [0]Camera, [1]Microphone
   }
@@ -25,6 +26,7 @@ class TestPluginVmBrowserProxy extends TestBrowserProxy {
   /** @override */
   removePluginVmSharedPath(vmName, path) {
     this.methodCalled('removePluginVmSharedPath', vmName, path);
+    return Promise.resolve(this.removeSharedPathResult);
   }
 
   /** @override */

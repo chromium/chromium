@@ -3081,6 +3081,15 @@
   <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_SHARING" desc="Tooltip to show when hovering on the remove icon for a Parallels shared folder.">
     Stop sharing
   </message>
+  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_FAILURE_DIALOG_MESSAGE" desc="Message to show user when unsharing a Parallels shared folder fails. Do not translate 'Parallels Desktop'">
+    Couldn't unshare because an application is using this folder. The folder will be unshared when Parallels Desktop is next shut down.
+  </message>
+  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_FAILURE_DIALOG_TITLE" desc="Title of the error dialog shown to a user when unsharing a Parallels shared folder fails.">
+    Unshare failed
+  </message>
+  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_FAILURE_TRY_AGAIN" desc="Button text in the dialog shown when unsharing a Parallels shared folder fails.  Pressing this button will attempt to unshare the folder again.">
+    Try again
+  </message>
   <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_LIST_EMPTY_MESSAGE" desc="Message shown when the user has not yet shared any folders in Parallels.">
     Shared folders will appear here
   </message>

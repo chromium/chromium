@@ -31,6 +31,17 @@ Polymer({
      * @private {Array<!{path: string, pathDisplayText: string}>}
      */
     sharedPaths_: Array,
+
+    /**
+     * The shared path which failed to be removed in the most recent attempt
+     * to remove a path. Null indicates that removal succeeded. When non-null,
+     * the failure dialog is shown.
+     * @private {?string}
+     */
+    sharedPathWhichFailedRemoval_: {
+      type: String,
+      value: null,
+    },
   },
 
   observers: [
@@ -58,13 +69,37 @@ Polymer({
   },
 
   /**
+   * @param {string} path
+   * @private
+   */
+  removeSharedPath_(path) {
+    this.sharedPathWhichFailedRemoval_ = null;
+    settings.PluginVmBrowserProxyImpl.getInstance()
+        .removePluginVmSharedPath(PLUGIN_VM, path)
+        .then(success => {
+          if (!success) {
+            this.sharedPathWhichFailedRemoval_ = path;
+          }
+        });
+    settings.recordSettingChange();
+  },
+
+  /**
    * @param {!Event} event
    * @private
    */
   onRemoveSharedPathClick_(event) {
-    settings.PluginVmBrowserProxyImpl.getInstance().removePluginVmSharedPath(
-        PLUGIN_VM, event.model.item.path);
-    settings.recordSettingChange();
+    this.removeSharedPath_(event.model.item.path);
+  },
+
+  /** @private */
+  onRemoveFailedRetryClick_() {
+    this.removeSharedPath_(assert(this.sharedPathWhichFailedRemoval_));
+  },
+
+  /** @private */
+  onRemoveFailedDismissClick_() {
+    this.sharedPathWhichFailedRemoval_ = null;
   },
 });
 })();

@@ -9,6 +9,7 @@ class TestPluginVmBrowserProxy extends TestBrowserProxy {
       'getPluginVmSharedPathsDisplayText',
       'removePluginVmSharedPath',
     ]);
+    this.removeSharedPathResult = true;
   }
 
   /** override */
@@ -20,6 +21,7 @@ class TestPluginVmBrowserProxy extends TestBrowserProxy {
   /** override */
   removePluginVmSharedPath(vmName, path) {
     this.methodCalled('removePluginVmSharedPath', [vmName, path]);
+    return Promise.resolve(this.removeSharedPathResult);
   }
 }
 
@@ -93,5 +95,26 @@ suite('SharedPaths', function() {
     assertTrue(page.$.pluginVmInstructionsRemove.hidden);
     assertTrue(page.$.pluginVmList.hidden);
     assertFalse(page.$.pluginVmListEmpty.hidden);
+  });
+
+  test('RemoveFailedRetry', async function() {
+    await setPrefs({'path1': ['PvmDefault'], 'path2': ['PvmDefault']});
+
+    // Remove shared path fails.
+    pluginVmBrowserProxy.removeSharedPathResult = false;
+    page.$$('.list-item cr-icon-button').click();
+
+    await pluginVmBrowserProxy.whenCalled('removePluginVmSharedPath');
+    Polymer.dom.flush();
+    assertTrue(page.$$('#removeSharedPathFailedDialog').open);
+
+    // Click retry and make sure 'removePluginVmSharedPath' is called
+    // and dialog is closed/removed.
+    pluginVmBrowserProxy.removeSharedPathResult = true;
+    page.$$('#removeSharedPathFailedDialog')
+        .querySelector('.action-button')
+        .click();
+    await pluginVmBrowserProxy.whenCalled('removePluginVmSharedPath');
+    assertFalse(!!page.$$('#removeSharedPathFailedDialog'));
   });
 });

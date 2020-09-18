@@ -41,6 +41,7 @@ cr.define('settings', function() {
     /**
      * @param {string} vmName VM to stop sharing path with.
      * @param {string} path Path to stop sharing.
+     * @return {!Promise<boolean>} Result of unsharing.
      */
     removePluginVmSharedPath(vmName, path) {}
 
@@ -82,7 +83,7 @@ cr.define('settings', function() {
 
     /** @override */
     removePluginVmSharedPath(vmName, path) {
-      chrome.send('removePluginVmSharedPath', [vmName, path]);
+      return cr.sendWithPromise('removePluginVmSharedPath', vmName, path);
     }
 
     /** @override */

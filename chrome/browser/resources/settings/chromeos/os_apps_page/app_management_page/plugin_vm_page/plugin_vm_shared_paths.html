@@ -42,6 +42,27 @@
         </template>
       </iron-list>
     </div>
+    <template is="dom-if" if="[[sharedPathWhichFailedRemoval_]]" restamp>
+      <cr-dialog id="removeSharedPathFailedDialog" close-text="$i18n{close}"
+          show-on-attach>
+        <div slot="title">
+          $i18n{pluginVmSharedPathsRemoveFailureDialogTitle}
+        </div>
+        <div slot="body">
+          $i18n{pluginVmSharedPathsRemoveFailureDialogMessage}
+        </div>
+        <div slot="button-container">
+          <cr-button id="cancel" class="cancel-button"
+              on-click="onRemoveFailedDismissClick_">
+            $i18n{ok}
+          </cr-button>
+          <cr-button id="retry" class="action-button"
+              on-click="onRemoveFailedRetryClick_">
+            $i18n{pluginVmSharedPathsRemoveFailureTryAgain}
+          </cr-button>
+        </div>
+      </cr-dialog>
+    </template>
   </template>
   <script src="plugin_vm_shared_paths.js"></script>
 </dom-module>

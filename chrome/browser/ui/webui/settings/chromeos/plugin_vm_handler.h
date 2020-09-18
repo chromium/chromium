@@ -52,6 +52,11 @@ class PluginVmHandler : public ::settings::SettingsPageUIHandler,
   // Relaunches Plugin VM.
   void HandleRelaunchPluginVm(const base::ListValue* args);
 
+  void OnPluginVmSharedPathRemoved(const std::string& callback_id,
+                                   const std::string& path,
+                                   bool success,
+                                   const std::string& failure_reason);
+
   Profile* profile_;
 
   // weak_ptr_factory_ should always be last member.
