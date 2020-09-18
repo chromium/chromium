@@ -1290,7 +1290,6 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kDisable3DAPIs, false);
   registry->RegisterBooleanPref(prefs::kEnableHyperlinkAuditing, true);
-  registry->RegisterListPref(prefs::kEnableDeprecatedWebPlatformFeatures);
   // Register user prefs for mapping SitePerProcess and IsolateOrigins in
   // user policy in addition to the same named ones in Local State (which are
   // used for mapping the command-line flags).
@@ -2205,17 +2204,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
           prefs->GetBoolean(prefs::kDisable3DAPIs)) {
         // Turn this policy into a command line switch.
         command_line->AppendSwitch(switches::kDisable3DAPIs);
-      }
-
-      const base::ListValue* switches =
-          prefs->GetList(prefs::kEnableDeprecatedWebPlatformFeatures);
-      if (switches) {
-        // Enable any deprecated features that have been re-enabled by policy.
-        for (auto it = switches->begin(); it != switches->end(); ++it) {
-          std::string switch_to_enable;
-          if (it->GetAsString(&switch_to_enable))
-            command_line->AppendSwitch(switch_to_enable);
-        }
       }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

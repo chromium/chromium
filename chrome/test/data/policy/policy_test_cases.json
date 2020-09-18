@@ -4722,16 +4722,7 @@
 
   "EnableDeprecatedWebPlatformFeatures": {
     "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": {
-          "EnableDeprecatedWebPlatformFeatures": [
-            "ShowModalDialog_EffectiveUntil20150430"
-          ]
-        },
-        "prefs": { "enable_deprecated_web_platform_features": {} }
-      }
-    ]
+    "policy_pref_mapping_test": []
   },
 
   "TouchVirtualKeyboardEnabled": {

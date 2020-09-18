@@ -13389,7 +13389,8 @@
           'caption': '''Enable ExampleDeprecatedFeature API through 2008/09/02''',
         }
       ],
-      'supported_on': ['chrome.*:37-', 'chrome_os:37-', 'android:37-'],
+      'supported_on': ['chrome.*:37-87', 'chrome_os:37-87', 'android:37-87'],
+      'deprecated': True,
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,

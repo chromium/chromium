@@ -1339,13 +1339,6 @@ void GetExtensionAllowedTypesMap(
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-void GetDeprecatedFeaturesMap(
-    std::vector<std::unique_ptr<StringMappingListPolicyHandler::MappingEntry>>*
-        result) {
-  // Maps feature tags as specified in policy to the corresponding switch to
-  // re-enable them.
-}
-
 // Future policies are not supported on Stable and Beta by default.
 bool AreFuturePoliciesSupported() {
   // Enable future policies for branded browser tests.
@@ -1465,10 +1458,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           key::kSafeBrowsingAllowlistDomains,
           prefs::kSafeBrowsingWhitelistDomains, base::Value::Type::LIST)));
   handlers->AddHandler(std::make_unique<syncer::SyncPolicyHandler>());
-  handlers->AddHandler(std::make_unique<StringMappingListPolicyHandler>(
-      key::kEnableDeprecatedWebPlatformFeatures,
-      prefs::kEnableDeprecatedWebPlatformFeatures,
-      base::Bind(GetDeprecatedFeaturesMap)));
   handlers->AddHandler(std::make_unique<BrowsingHistoryPolicyHandler>());
 
   handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
