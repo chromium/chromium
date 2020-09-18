@@ -567,7 +567,17 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // current contents of this frame. This is the primary entry point for
   // determining if a navigation to |dest_url| should stay in this
   // RenderFrameHost's SiteInstance.
-  bool IsNavigationSameSite(const GURL& dest_url);
+  //
+  // |is_coop_coep_cross_origin_isolated| should be true if the response for
+  // |dest_url| has set COOP and COEP headers to same-origin and require-corp
+  // respectively.
+  // if |is_coop_coep_cross_origin_isolated| is true,
+  // |coop_coep_cross_origin_isolated_origin| indicates the top level origin
+  // of the page.
+  bool IsNavigationSameSite(
+      const GURL& dest_url,
+      bool is_coop_coep_cross_origin_isolated,
+      base::Optional<url::Origin> coop_coep_cross_origin_isolated_origin);
 
   // Returns |frame_origin| if this frame is the top (i.e. root) frame in the
   // frame tree. Otherwise, it returns the top frame's origin.

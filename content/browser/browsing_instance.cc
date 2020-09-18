@@ -223,7 +223,9 @@ BrowsingInstance::~BrowsingInstance() {
 }
 
 SiteInfo BrowsingInstance::ComputeSiteInfoForURL(const GURL& url) const {
-  return SiteInstanceImpl::ComputeSiteInfo(isolation_context_, url);
+  return SiteInstanceImpl::ComputeSiteInfo(
+      isolation_context_, url, is_coop_coep_cross_origin_isolated_,
+      coop_coep_cross_origin_isolated_origin_);
 }
 
 }  // namespace content

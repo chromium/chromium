@@ -56,7 +56,15 @@ bool DoesURLRequireDedicatedProcess(const IsolationContext& isolation_context,
                                     const GURL& url) {
   return SiteInstanceImpl::DoesSiteInfoRequireDedicatedProcess(
       isolation_context,
-      SiteInstanceImpl::ComputeSiteInfo(isolation_context, url));
+      SiteInstanceImpl::ComputeSiteInfoForTesting(isolation_context, url));
+}
+
+SiteInfo CreateSimpleSiteInfo(const GURL& process_lock_url,
+                              bool is_origin_keyed) {
+  return SiteInfo(GURL("https://www.foo.com"), process_lock_url,
+                  is_origin_keyed,
+                  false /* is_coop_coep_cross_origin_isolated */,
+                  base::nullopt /* coop_coep_cross_origin_isolated_origin */);
 }
 
 }  // namespace
@@ -175,8 +183,8 @@ class SiteInstanceTest : public testing::Test {
   BrowserContext* context() { return &context_; }
 
   SiteInfo GetSiteInfoForURL(const std::string& url) {
-    return SiteInstanceImpl::ComputeSiteInfo(IsolationContext(&context_),
-                                             GURL(url));
+    return SiteInstanceImpl::ComputeSiteInfoForTesting(
+        IsolationContext(&context_), GURL(url));
   }
 
   static bool IsSameSite(BrowserContext* context,
@@ -201,24 +209,20 @@ class SiteInstanceTest : public testing::Test {
 // Test SiteInfos with identical site URLs but various lock URLs, including
 // variations of each that are origin keyed ("ok").
 TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
-  SiteInfo site_info_1(GURL("https://www.foo.com"), GURL("https://foo.com"),
-                       false /* is_origin_keyed */);
-  SiteInfo site_info_1ok(GURL("https://www.foo.com"), GURL("https://foo.com"),
-                         true /* is_origin_keyed */);
-  SiteInfo site_info_2(GURL("https://www.foo.com"), GURL("https://www.foo.com"),
-                       false /* is_origin_keyed */);
-  SiteInfo site_info_2ok(GURL("https://www.foo.com"),
-                         GURL("https://www.foo.com"),
-                         true /* is_origin_keyed */);
-  SiteInfo site_info_3(GURL("https://www.foo.com"), GURL("https://sub.foo.com"),
-                       false /* is_origin_keyed */);
-  SiteInfo site_info_3ok(GURL("https://www.foo.com"),
-                         GURL("https://sub.foo.com"),
-                         true /* is_origin_keyed */);
-  SiteInfo site_info_4(GURL("https://www.foo.com"), GURL(),
-                       false /* is_origin_keyed */);
-  SiteInfo site_info_4ok(GURL("https://www.foo.com"), GURL(),
-                         true /* is_origin_keyed */);
+  auto site_info_1 = CreateSimpleSiteInfo(GURL("https://foo.com"),
+                                          false /* is_origin_keyed */);
+  auto site_info_1ok =
+      CreateSimpleSiteInfo(GURL("https://foo.com"), true /* is_origin_keyed */);
+  auto site_info_2 = CreateSimpleSiteInfo(GURL("https://www.foo.com"),
+                                          false /* is_origin_keyed */);
+  auto site_info_2ok = CreateSimpleSiteInfo(GURL("https://www.foo.com"),
+                                            true /* is_origin_keyed */);
+  auto site_info_3 = CreateSimpleSiteInfo(GURL("https://sub.foo.com"),
+                                          false /* is_origin_keyed */);
+  auto site_info_3ok = CreateSimpleSiteInfo(GURL("https://sub.foo.com"),
+                                            true /* is_origin_keyed */);
+  auto site_info_4 = CreateSimpleSiteInfo(GURL(), false /* is_origin_keyed */);
+  auto site_info_4ok = CreateSimpleSiteInfo(GURL(), true /* is_origin_keyed */);
 
   // Test SiteInfoOperators.
   // Use EXPECT_TRUE and == below to avoid need to define SiteInfo::operator<<.
@@ -643,9 +647,11 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
     EXPECT_EQ(app_url, site_url);
   }
 
-  SiteInfo expected_site_info(app_url /* site_url */,
-                              nonapp_site_url /* process_lock_url */,
-                              false /* is_origin_keyed */);
+  SiteInfo expected_site_info(
+      app_url /* site_url */, nonapp_site_url /* process_lock_url */,
+      false /* is_origin_keyed */,
+      false /* is_coop_coep_cross_origin_isolated */,
+      base::nullopt /* coop_coep_cross_origin_isolated_origin */);
 
   // New SiteInstance in a new BrowsingInstance with a predetermined URL.
   {
@@ -1436,9 +1442,11 @@ TEST_F(SiteInstanceTest, OriginalURL) {
       SetBrowserClientForTesting(&modified_client);
   std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
 
-  SiteInfo expected_site_info(app_url /* site_url */,
-                              original_url /* process_lock_url */,
-                              false /* is_origin_keyed */);
+  SiteInfo expected_site_info(
+      app_url /* site_url */, original_url /* process_lock_url */,
+      false /* is_origin_keyed */,
+      false /* is_coop_coep_cross_origin_isolated */,
+      base::nullopt /* coop_coep_cross_origin_isolated_origin */);
 
   // New SiteInstance in a new BrowsingInstance with a predetermined URL.  In
   // this and subsequent cases, the site URL should consist of the effective
@@ -1483,7 +1491,9 @@ namespace {
 
 ProcessLock ProcessLockFromString(const std::string& url) {
   return ProcessLock(
-      SiteInfo(GURL(url), GURL(url), false /* is_origin_keyed */));
+      SiteInfo(GURL(url), GURL(url), false /* is_origin_keyed */,
+               false /* is_coop_coep_cross_origin_isolated */,
+               base::nullopt /* coop_coep_cross_origin_isolated_origin */));
 }
 
 }  // namespace

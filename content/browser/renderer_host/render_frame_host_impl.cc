@@ -5496,7 +5496,8 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   const CanCommitStatus can_commit_status = policy->CanCommitOriginAndUrl(
       GetProcess()->GetID(), GetSiteInstance()->GetIsolationContext(), origin,
-      url);
+      url, GetSiteInstance()->IsCoopCoepCrossOriginIsolated(),
+      GetSiteInstance()->CoopCoepCrossOriginIsolatedOrigin());
   if (can_commit_status != CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL) {
     LogCanCommitOriginAndUrlFailureReason("cpspi_disallowed_commit");
     return can_commit_status;
@@ -5873,7 +5874,9 @@ bool RenderFrameHostImpl::ShouldDispatchPagehideAndVisibilitychangeDuringCommit(
   if (old_frame_host->GetProcess() != GetProcess()) {
     return false;
   }
-  if (!old_frame_host->IsNavigationSameSite(dest_url)) {
+  if (!old_frame_host->IsNavigationSameSite(
+          dest_url, GetSiteInstance()->IsCoopCoepCrossOriginIsolated(),
+          GetSiteInstance()->CoopCoepCrossOriginIsolatedOrigin())) {
     return false;
   }
   DCHECK(frame_tree_node_->IsMainFrame());
@@ -7898,10 +7901,13 @@ void RenderFrameHostImpl::BeforeUnloadTimeout() {
 }
 
 void RenderFrameHostImpl::SetLastCommittedSiteInfo(const GURL& url) {
-  SiteInfo site_info = url.is_empty()
-                           ? SiteInfo()
-                           : SiteInstanceImpl::ComputeSiteInfo(
-                                 GetSiteInstance()->GetIsolationContext(), url);
+  SiteInfo site_info =
+      url.is_empty()
+          ? SiteInfo()
+          : SiteInstanceImpl::ComputeSiteInfo(
+                GetSiteInstance()->GetIsolationContext(), url,
+                GetSiteInstance()->IsCoopCoepCrossOriginIsolated(),
+                GetSiteInstance()->CoopCoepCrossOriginIsolatedOrigin());
 
   if (last_committed_site_info_ == site_info)
     return;
@@ -8065,7 +8071,16 @@ RenderFrameHostImpl::CreateMessageFilterForAssociatedReceiver(
       BackForwardCacheImpl::GetChannelAssociatedMessageHandlingPolicy());
 }
 
-bool RenderFrameHostImpl::IsNavigationSameSite(const GURL& dest_url) {
+bool RenderFrameHostImpl::IsNavigationSameSite(
+    const GURL& dest_url,
+    bool is_coop_coep_cross_origin_isolated,
+    base::Optional<url::Origin> coop_coep_cross_origin_isolated_origin) {
+  if (GetSiteInstance()->IsCoopCoepCrossOriginIsolated() !=
+          is_coop_coep_cross_origin_isolated ||
+      GetSiteInstance()->CoopCoepCrossOriginIsolatedOrigin() !=
+          coop_coep_cross_origin_isolated_origin) {
+    return false;
+  }
   return GetSiteInstance()->IsNavigationSameSite(
       last_successful_url(), GetLastCommittedOrigin(),
       frame_tree_node()->IsMainFrame(), dest_url);

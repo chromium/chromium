@@ -860,9 +860,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
   // The page and its popup should be in different processes even though the
   // process limit was reached.
-  // TODO(clamy, pmeuleman, ahemery): The assert below should be false once we
-  // fix the process reuse for COOP.
-  EXPECT_EQ(current_frame_host()->GetProcess(),
+  EXPECT_NE(current_frame_host()->GetProcess(),
             popup_webcontents->GetMainFrame()->GetProcess());
 }
 
@@ -891,9 +889,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
   // The page and its popup should be in different processes even though the
   // process limit was reached.
-  // TODO(clamy, pmeuleman, ahemery): The assert below should be false once we
-  // fix the process reuse for COOP.
-  EXPECT_EQ(current_frame_host()->GetProcess(),
+  EXPECT_NE(current_frame_host()->GetProcess(),
             popup_webcontents->GetMainFrame()->GetProcess());
 
   // Navigate to a new page without COOP and COEP. Because of process reuse, it
@@ -1989,6 +1985,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
     EXPECT_TRUE(current_si->IsCoopCoepCrossOriginIsolated());
     EXPECT_FALSE(current_si->IsRelatedSiteInstance(previous_si.get()));
+    EXPECT_NE(current_si->GetProcess(), previous_si->GetProcess());
   }
 
   // Navigation to the same cross-origin isolated page.
@@ -2009,6 +2006,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
     EXPECT_FALSE(current_si->IsCoopCoepCrossOriginIsolated());
     EXPECT_FALSE(current_si->IsRelatedSiteInstance(previous_si.get()));
+    EXPECT_NE(current_si->GetProcess(), previous_si->GetProcess());
   }
 
   // Back navigation from a cross-origin isolated page to a non cross-origin
@@ -2030,6 +2028,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                      ->IsCoopCoepCrossOriginIsolated());
     EXPECT_FALSE(non_cross_origin_isolated_site_instance->IsRelatedSiteInstance(
         cross_origin_isolated_site_instance.get()));
+    EXPECT_NE(non_cross_origin_isolated_site_instance->GetProcess(),
+              cross_origin_isolated_site_instance->GetProcess());
   }
 
   // Cross origin navigation in between two cross-origin isolated pages.
@@ -2042,6 +2042,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     EXPECT_TRUE(site_instance_1->IsCoopCoepCrossOriginIsolated());
     EXPECT_TRUE(site_instance_2->IsCoopCoepCrossOriginIsolated());
     EXPECT_FALSE(site_instance_1->IsRelatedSiteInstance(site_instance_2));
+    EXPECT_NE(site_instance_1->GetProcess(), site_instance_2->GetProcess());
   }
 }
 
@@ -2077,6 +2078,7 @@ IN_PROC_BROWSER_TEST_P(
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
     EXPECT_TRUE(current_si->IsCoopCoepCrossOriginIsolated());
     EXPECT_FALSE(current_si->IsRelatedSiteInstance(previous_si.get()));
+    EXPECT_NE(current_si->GetProcess(), previous_si->GetProcess());
   }
 
   // Navigation to the same cross-origin isolated page.
@@ -2097,6 +2099,7 @@ IN_PROC_BROWSER_TEST_P(
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
     EXPECT_FALSE(current_si->IsCoopCoepCrossOriginIsolated());
     EXPECT_FALSE(current_si->IsRelatedSiteInstance(previous_si.get()));
+    EXPECT_NE(current_si->GetProcess(), previous_si->GetProcess());
   }
 
   // Cross origin navigation in between two cross-origin isolated pages.
@@ -2109,6 +2112,7 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(site_instance_1->IsCoopCoepCrossOriginIsolated());
     EXPECT_TRUE(site_instance_2->IsCoopCoepCrossOriginIsolated());
     EXPECT_FALSE(site_instance_1->IsRelatedSiteInstance(site_instance_2));
+    EXPECT_NE(site_instance_1->GetProcess(), site_instance_2->GetProcess());
   }
 }
 
@@ -2169,6 +2173,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     SiteInstanceImpl* iframe_si = iframe->GetSiteInstance();
     EXPECT_TRUE(iframe_si->IsCoopCoepCrossOriginIsolated());
     EXPECT_TRUE(iframe_si->IsRelatedSiteInstance(main_si));
+    EXPECT_EQ(iframe_si->GetProcess(), main_si->GetProcess());
   }
 }
 
@@ -2239,6 +2244,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     EXPECT_FALSE(popup_frame->GetSiteInstance()->IsRelatedSiteInstance(
         current_frame_host()->GetSiteInstance()));
     EXPECT_FALSE(popup_frame->frame_tree_node()->opener());
+    EXPECT_NE(popup_frame->GetSiteInstance()->GetProcess(),
+              current_frame_host()->GetSiteInstance()->GetProcess());
   }
 }
 
@@ -2338,6 +2345,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     EXPECT_FALSE(NavigateToURL(shell(), invalid_url));
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
     EXPECT_FALSE(current_si->IsRelatedSiteInstance(previous_si.get()));
+    EXPECT_NE(current_si->GetProcess(), previous_si->GetProcess());
     EXPECT_FALSE(current_si->IsCoopCoepCrossOriginIsolated());
   }
 }

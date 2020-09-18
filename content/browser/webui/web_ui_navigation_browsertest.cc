@@ -50,7 +50,7 @@ bool DoesURLRequireDedicatedProcess(const IsolationContext& isolation_context,
                                     const GURL& url) {
   return SiteInstanceImpl::DoesSiteInfoRequireDedicatedProcess(
       isolation_context,
-      SiteInstanceImpl::ComputeSiteInfo(isolation_context, url));
+      SiteInstanceImpl::ComputeSiteInfoForTesting(isolation_context, url));
 }
 
 }  // namespace

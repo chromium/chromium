@@ -51,7 +51,10 @@ class StoragePartitionImpl;
 class CONTENT_EXPORT SiteInfo {
  public:
   static SiteInfo CreateForErrorPage();
-  static SiteInfo CreateForDefaultSiteInstance();
+  static SiteInfo CreateForDefaultSiteInstance(
+      bool is_coop_coep_cross_origin_isolated,
+      const base::Optional<url::Origin>&
+          coop_coep_cross_origin_isolated_origin);
 
   // The SiteInfo constructor should take in all values needed for comparing two
   // SiteInfos, to help ensure all creation sites are updated accordingly when
@@ -59,8 +62,13 @@ class CONTENT_EXPORT SiteInfo {
   // accordingly.
   SiteInfo(const GURL& site_url,
            const GURL& process_lock_url,
-           bool is_origin_keyed);
-  SiteInfo() = default;
+           bool is_origin_keyed,
+           bool is_coop_coep_cross_origin_isolated,
+           const base::Optional<url::Origin>&
+               coop_coep_cross_origin_isolated_origin);
+  SiteInfo();
+  SiteInfo(const SiteInfo& rhs);
+  ~SiteInfo();
 
   // Returns the site URL associated with all of the documents and workers in
   // this principal, as described above.
@@ -106,8 +114,23 @@ class CONTENT_EXPORT SiteInfo {
   // in their site urls.
   bool is_origin_keyed() const { return is_origin_keyed_; }
 
+  // Returns true if this SiteInfo is part of a CoopCoepCrossOriginIsolated
+  // BrowsingInstance.
+  bool is_coop_coep_cross_origin_isolated() const {
+    return is_coop_coep_cross_origin_isolated_;
+  }
+
+  // If is_coop_coep_cross_origin_isolated() returns true, this returns the
+  // origin shared across all top level frames in the
+  // CoopCoepCrossOriginIsolated BrowsingInstance.
+  base::Optional<url::Origin> coop_coep_cross_origin_isolated_origin() const {
+    return coop_coep_cross_origin_isolated_origin_;
+  }
+
   // Returns false if the site_url() is empty.
   bool is_empty() const { return site_url().possibly_invalid_spec().empty(); }
+
+  SiteInfo& operator=(const SiteInfo& rhs);
 
   bool operator==(const SiteInfo& other) const;
   bool operator!=(const SiteInfo& other) const;
@@ -132,6 +155,16 @@ class CONTENT_EXPORT SiteInfo {
   // isolation. In contrast, the site-level URLs that are typically used in
   // SiteInfo include subdomains, as do command-line isolated origins.
   bool is_origin_keyed_ = false;
+
+  // Indicates if this SiteInfo is part of a CoopCoepCrossOriginIsolated
+  // BrowsingInstance. (i.e. A page that has a cross-origin-opener-policy of
+  // same-origin and a cross-origin-embedder-policy of require-corp.)
+  bool is_coop_coep_cross_origin_isolated_ = false;
+
+  // If |is_coop_coep_cross_origin_isolated_| returns true, this returns the
+  // origin shared across all top level frames in the
+  // CoopCoepCrossOriginIsolated BrowsingInstance.
+  base::Optional<url::Origin> coop_coep_cross_origin_isolated_origin_;
 };
 
 CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,
@@ -305,8 +338,17 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // process_lock_url computed. This function can only be called on the UI
   // thread since it expects an effective URL.
   // Note: eventually this function will replace GetSiteForURL().
-  static SiteInfo ComputeSiteInfo(const IsolationContext& isolation_context,
-                                  const GURL& url);
+  static SiteInfo ComputeSiteInfo(
+      const IsolationContext& isolation_context,
+      const GURL& url,
+      bool is_coop_coep_cross_origin_isolated,
+      const base::Optional<url::Origin>& cross_origin_isolated_origin);
+
+  // Helper method for tests that don't trigger special COOP/COEP
+  // functionality.
+  static SiteInfo ComputeSiteInfoForTesting(
+      const IsolationContext& isolation_context,
+      const GURL& url);
 
   // Returns the site for the given URL, which includes only the scheme and
   // registered domain.  Returns an empty GURL if the URL has no host.
@@ -329,7 +371,9 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // this will return a ProcessLock that doesn't consider effective URLs.
   static ProcessLock DetermineProcessLock(
       const IsolationContext& isolation_context,
-      const GURL& url);
+      const GURL& url,
+      bool is_coop_coep_cross_origin_isolated,
+      base::Optional<url::Origin> coop_coep_cross_origin_isolated_origin);
 
   // Set the web site that this SiteInstance is rendering pages for.
   // This includes the scheme and registered domain, but not the port.  If the

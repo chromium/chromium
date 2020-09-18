@@ -3178,11 +3178,12 @@ void RenderProcessHostImpl::SetProcessLock(
   ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(
       isolation_context, GetID(), process_lock);
 
-  // Note that SetProcessLock is only called once per RenderProcessHostImpl
-  // (when committing a navigation into an empty renderer).  Therefore, the
-  // call to NotifyRendererOfLockedStateUpdate below is insufficient for setting
-  // up renderers respawned after crashing - this is handled by another call to
-  // NotifyRendererOfLockedStateUpdate from OnProcessLaunched.
+  // Note that SetProcessLock is only called on ProcessLock state transitions.
+  // (e.g. invalid -> allows_any_site and allows_any_site -> locked_to_site).
+  // Therefore, the call to NotifyRendererOfLockedStateUpdate below is
+  // insufficient for setting up renderers respawned after crashing - this is
+  // handled by another call to NotifyRendererOfLockedStateUpdate from
+  // OnProcessLaunched.
   NotifyRendererOfLockedStateUpdate();
 }
 
@@ -3198,6 +3199,9 @@ void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
 
   if (process_lock.is_invalid())
     return;
+
+  GetRendererInterface()->SetIsCrossOriginIsolated(
+      process_lock.is_coop_coep_cross_origin_isolated());
 
   if (!process_lock.IsASiteOrOrigin())
     return;
@@ -4164,6 +4168,15 @@ bool RenderProcessHostImpl::IsSuitableHost(
       if (process_lock != ProcessLock(site_info))
         return false;
     } else {
+      // Even when this process is not locked to a site, it is still associated
+      // with a particular COOP/COEP configuration.  Ensure that it cannot be
+      // reused for destinations with incompatible COOP/COEP requirements.
+      if (process_lock.allows_any_site() &&
+          !process_lock.IsCompatibleWithCoopCoepCrossOriginIsolation(
+              site_info)) {
+        return false;
+      }
+
       if (!host->IsUnused() && SiteInstanceImpl::ShouldLockProcess(
                                    isolation_context, site_info, is_guest)) {
         // If this process has been used to host any other content, it cannot
@@ -4179,7 +4192,7 @@ bool RenderProcessHostImpl::IsSuitableHost(
     return false;
   }
 
-  // If this site_url is going to require a dedicated process, then check
+  // If this site_info is going to require a dedicated process, then check
   // whether this process has a pending navigation to a URL for which
   // SiteInstance does not assign site URLs.  If this is the case, it is not
   // safe to reuse this process for a navigation which itself assigns site
@@ -4968,7 +4981,6 @@ void RenderProcessHostImpl::OnProcessLaunched() {
   }
 
   // Pass bits of global renderer state to the renderer.
-  GetRendererInterface()->SetIsCrossOriginIsolated(cross_origin_isolated_);
   GetRendererInterface()->SetUserAgent(
       GetContentClient()->browser()->GetUserAgent());
   GetRendererInterface()->SetUserAgentMetadata(

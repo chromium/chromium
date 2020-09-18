@@ -135,11 +135,14 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
 
   // Embedders might disable locking for WebUI URLs, which is bad idea, however
   // this method should take this into account.
+  SiteInstanceImpl* site_instance = render_frame_host->GetSiteInstance();
   SiteInfo site_info = SiteInstanceImpl::ComputeSiteInfo(
-      render_frame_host->GetSiteInstance()->GetIsolationContext(), url);
-  bool should_lock_process = SiteInstanceImpl::ShouldLockProcess(
-      render_frame_host->GetSiteInstance()->GetIsolationContext(), site_info,
-      render_frame_host->GetSiteInstance()->IsGuest());
+      site_instance->GetIsolationContext(), url,
+      site_instance->IsCoopCoepCrossOriginIsolated(),
+      site_instance->CoopCoepCrossOriginIsolatedOrigin());
+  bool should_lock_process =
+      SiteInstanceImpl::ShouldLockProcess(site_instance->GetIsolationContext(),
+                                          site_info, site_instance->IsGuest());
 
   // If the |render_frame_host| has any WebUI bindings, disallow URLs that are
   // not allowed in a WebUI renderer process.
@@ -247,7 +250,11 @@ void Navigator::DidNavigate(
   }
   bool is_cross_document_same_site_navigation =
       !is_same_document_navigation &&
-      old_frame_host->IsNavigationSameSite(params.url);
+      old_frame_host->IsNavigationSameSite(
+          params.url,
+          render_frame_host->GetSiteInstance()->IsCoopCoepCrossOriginIsolated(),
+          render_frame_host->GetSiteInstance()
+              ->CoopCoepCrossOriginIsolatedOrigin());
   if (is_cross_document_same_site_navigation) {
     UMA_HISTOGRAM_BOOLEAN(
         "BackForwardCache.ProactiveSameSiteBISwap.SameSiteNavigationDidSwap",

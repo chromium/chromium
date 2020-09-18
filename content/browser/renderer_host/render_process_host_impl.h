@@ -1227,13 +1227,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   friend class IOThreadHostImpl;
   base::Optional<base::SequenceBound<IOThreadHostImpl>> io_thread_host_impl_;
 
-  // Representing agent cluster's "cross-origin isolated" concept.
-  // TODO(yhirano): Have the spec URL.
-  // This property is renderer process global because we ensure that a
-  // renderer process host only cross-origin isolated agents or only
-  // non-cross-origin isolated agents, not both.
-  const bool cross_origin_isolated_ = false;
-
   base::WeakPtrFactory<RenderProcessHostImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RenderProcessHostImpl);

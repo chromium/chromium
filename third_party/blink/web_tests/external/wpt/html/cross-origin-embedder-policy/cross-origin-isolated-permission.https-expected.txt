@@ -1,8 +1,8 @@
 This is a testharness.js-based test.
-FAIL origin = https://web-platform.test:8444, value = undefined assert_equals: expected true but got false
-FAIL origin = https://web-platform.test:8444, value = * assert_equals: expected true but got false
-FAIL origin = https://web-platform.test:8444, value = 'self' assert_equals: expected true but got false
-PASS origin = https://web-platform.test:8444, value = 'none'
+PASS origin = https://web-platform.test:8444, value = undefined
+PASS origin = https://web-platform.test:8444, value = *
+PASS origin = https://web-platform.test:8444, value = 'self'
+FAIL origin = https://web-platform.test:8444, value = 'none' assert_equals: expected false but got true
 PASS origin = https://www1.web-platform.test:8444, value = undefined
 FAIL origin = https://www1.web-platform.test:8444, value = * assert_equals: expected true but got false
 PASS origin = https://www1.web-platform.test:8444, value = 'self'

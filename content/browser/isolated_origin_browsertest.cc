@@ -79,7 +79,10 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
   }
 
   ProcessLock ProcessLockFromUrl(const std::string& url) {
-    return ProcessLock(SiteInfo(GURL(url), GURL(url), false));
+    return ProcessLock(
+        SiteInfo(GURL(url), GURL(url), false /* is_origin_keyed */,
+                 false /* is_coop_coep_cross_origin_isolated */,
+                 base::nullopt /* coop_coep_cross_origin_isolated_origin */));
   }
 
   WebContentsImpl* web_contents() const {
@@ -96,7 +99,9 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
   ProcessLock GetStrictProcessLock(const GURL& url) {
     GURL origin_url = url::Origin::Create(url).GetURL();
     return ProcessLock(
-        SiteInfo(origin_url, origin_url, false /* is_origin_keyed */));
+        SiteInfo(origin_url, origin_url, false /* is_origin_keyed */,
+                 false /* is_coop_coep_cross_origin_isolated */,
+                 base::nullopt /* coop_coep_cross_origin_isolated_origin */));
   }
 
  private:
@@ -424,8 +429,10 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
   GURL isolated_suborigin_url(
       https_server()->GetURL("isolated.foo.com", "/isolate_origin"));
   GURL origin_url = url::Origin::Create(isolated_suborigin_url).GetURL();
-  auto expected_isolated_suborigin_lock =
-      ProcessLock(SiteInfo(origin_url, origin_url, true /* is_origin_keyed */));
+  auto expected_isolated_suborigin_lock = ProcessLock(
+      SiteInfo(origin_url, origin_url, true /* is_origin_keyed */,
+               false /* is_coop_coep_cross_origin_isolated */,
+               base::nullopt /* coop_coep_cross_origin_isolated_origin */));
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(2u, shell()->web_contents()->GetAllFrames().size());
 
@@ -1405,11 +1412,11 @@ IN_PROC_BROWSER_TEST_F(StrictOriginIsolationTest,
   // Calculate the expected SiteInfo for each URL.  Both |foo_url| and
   // |bar_url| should have a site URL of |app_url|, but the process locks
   // should be foo.com and bar.com.
-  SiteInfo foo_site_info = SiteInstanceImpl::ComputeSiteInfo(
+  SiteInfo foo_site_info = SiteInstanceImpl::ComputeSiteInfoForTesting(
       web_contents()->GetSiteInstance()->GetIsolationContext(), foo_url);
   EXPECT_EQ(app_url, foo_site_info.site_url());
   EXPECT_EQ(foo_url.GetOrigin(), foo_site_info.process_lock_url());
-  SiteInfo bar_site_info = SiteInstanceImpl::ComputeSiteInfo(
+  SiteInfo bar_site_info = SiteInstanceImpl::ComputeSiteInfoForTesting(
       web_contents()->GetSiteInstance()->GetIsolationContext(), bar_url);
   EXPECT_EQ(app_url, bar_site_info.site_url());
   EXPECT_EQ(bar_url.GetOrigin(), bar_site_info.process_lock_url());
@@ -1963,7 +1970,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, ProcessLimit) {
                                                const GURL& url) {
     return RenderProcessHostImpl::IsSuitableHost(
         process, isolation_context,
-        SiteInstanceImpl::ComputeSiteInfo(isolation_context, url),
+        SiteInstanceImpl::ComputeSiteInfoForTesting(isolation_context, url),
         /* is_guest= */ false);
   };
   EXPECT_TRUE(is_suitable_host(foo_process, foo_url));

@@ -104,7 +104,7 @@ TEST_F(ServiceWorkerProcessManagerTest,
        AllocateWorkerProcess_WithProcessReuse) {
   const int kEmbeddedWorkerId = 100;
   const GURL kSiteUrl = GURL("http://example.com");
-  SiteInfo site_info = SiteInstanceImpl::ComputeSiteInfo(
+  SiteInfo site_info = SiteInstanceImpl::ComputeSiteInfoForTesting(
       IsolationContext(browser_context_.get()), kSiteUrl);
 
   // Create a process that is hosting a frame with kSiteUrl.
@@ -148,7 +148,7 @@ TEST_F(ServiceWorkerProcessManagerTest,
        AllocateWorkerProcess_WithoutProcessReuse) {
   const int kEmbeddedWorkerId = 100;
   const GURL kSiteUrl = GURL("http://example.com");
-  SiteInfo site_info = SiteInstanceImpl::ComputeSiteInfo(
+  SiteInfo site_info = SiteInstanceImpl::ComputeSiteInfoForTesting(
       IsolationContext(browser_context_.get()), kSiteUrl);
 
   // Create a process that is hosting a frame with kSiteUrl.

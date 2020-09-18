@@ -78,8 +78,13 @@ class CONTENT_EXPORT ProcessLock {
   static ProcessLock CreateForErrorPage();
 
   // Create a lock that that represents a process that is associated with at
-  // least one SiteInstance, but is not locked to a specific site.
-  static ProcessLock CreateAllowAnySite();
+  // least one SiteInstance, but is not locked to a specific site. Any request
+  // that wants to commit in this process must have COOP/COEP information that
+  // matches the values used to create this lock.
+  static ProcessLock CreateAllowAnySite(
+      bool is_coop_coep_cross_origin_isolated,
+      const base::Optional<url::Origin>&
+          coop_coep_cross_origin_isolated_origin);
 
   ProcessLock();
   explicit ProcessLock(const SiteInfo& site_info);
@@ -99,12 +104,16 @@ class CONTENT_EXPORT ProcessLock {
   bool is_invalid() const { return !site_info_.has_value(); }
 
   // Returns true if the process is locked, but it is not restricted to a
-  // specific site. Any site is allowed to commit in the process.
+  // specific site. Any site is allowed to commit in the process as long as
+  // the request's COOP/COEP information matches the info provided when
+  // the lock was created.
   bool allows_any_site() const {
     return site_info_.has_value() && site_info_->process_lock_url().is_empty();
   }
 
-  // Returns true if the lock is restricted to a specific site.
+  // Returns true if the lock is restricted to a specific site and requires
+  // the request's COOP/COEP information to match the values provided when
+  // the lock was created.
   bool is_locked_to_site() const {
     return site_info_.has_value() && !site_info_->process_lock_url().is_empty();
   }
@@ -127,6 +136,24 @@ class CONTENT_EXPORT ProcessLock {
     return site_info_.has_value() && site_info_->is_origin_keyed();
   }
 
+  // Representing agent cluster's "cross-origin isolated" concept.
+  // https://html.spec.whatwg.org/multipage/webappapis.html#dom-crossoriginisolated
+  // This property is renderer process global because we ensure that a
+  // renderer process host only cross-origin isolated agents or only
+  // non-cross-origin isolated agents, not both.
+  bool is_coop_coep_cross_origin_isolated() const {
+    return site_info_.has_value() &&
+           site_info_->is_coop_coep_cross_origin_isolated();
+  }
+
+  // If is_coop_coep_cross_origin_isolated() returns true, this returns the
+  // origin shared across all top level frames in the renderer process.
+  base::Optional<url::Origin> coop_coep_cross_origin_isolated_origin() const {
+    return site_info_.has_value()
+               ? site_info_->coop_coep_cross_origin_isolated_origin()
+               : base::nullopt;
+  }
+
   // Returns whether lock_url() is at least at the granularity of a site (i.e.,
   // a scheme plus eTLD+1, like https://google.com).  Also returns true if the
   // lock is to a more specific origin (e.g., https://accounts.google.com), but
@@ -142,6 +169,11 @@ class CONTENT_EXPORT ProcessLock {
 
   // Returns true if |origin| matches the lock's origin.
   bool MatchesOrigin(const url::Origin& origin) const;
+
+  // Returns true if the COOP/COEP origin isolation information in this lock
+  // is set and matches the information in |site_info|.
+  bool IsCompatibleWithCoopCoepCrossOriginIsolation(
+      const SiteInfo& site_info) const;
 
   bool operator==(const ProcessLock& rhs) const;
   bool operator!=(const ProcessLock& rhs) const;
@@ -329,8 +361,10 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                               const GURL& url,
                               bool url_is_precursor_of_opaque_origin);
 
-  // Determines if the combination of |origin| & |url| is safe to commit to
-  // the process associated with |child_id|.
+  // Determines if the combination of |origin|, |url|,
+  // |is_coop_coep_cross_origin_isolated|, and
+  // |coop_coep_cross_origin_isolated_origin| is safe to commit to the process
+  // associated with |child_id|.
   //
   // Returns CAN_COMMIT_ORIGIN_AND_URL if it is safe to commit the |origin| and
   // |url| combination to the process associated with |child_id|.
@@ -340,7 +374,10 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       int child_id,
       const IsolationContext& isolation_context,
       const url::Origin& origin,
-      const GURL& url);
+      const GURL& url,
+      bool is_coop_coep_cross_origin_isolated,
+      const base::Optional<url::Origin>&
+          coop_coep_cross_origin_isolated_origin);
 
   // This function will check whether |origin| requires process isolation
   // within |isolation_context|, and if so, it will return true and put the

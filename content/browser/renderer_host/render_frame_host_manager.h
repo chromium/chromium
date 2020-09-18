@@ -524,6 +524,13 @@ class CONTENT_EXPORT RenderFrameHostManager
     attach_to_inner_delegate_state_ = AttachToInnerDelegateState::ATTACHED;
   }
 
+  // Computes the COOP/COEP information based on the |navigation_request|
+  // and current |frame_tree_node_| & |render_frame_host_| info.
+  void GetCoopCoepCrossOriginIsolationInfo(
+      NavigationRequest* navigation_request,
+      bool* is_coop_coep_cross_origin_isolated,
+      base::Optional<url::Origin>* coop_coep_cross_origin_isolated_origin);
+
  private:
   friend class NavigatorTest;
   friend class RenderFrameHostManagerTest;
@@ -622,6 +629,8 @@ class CONTENT_EXPORT RenderFrameHostManager
       SiteInstanceImpl* current_instance,
       SiteInstance* destination_instance,
       const GURL& destination_url,
+      bool is_coop_coep_cross_origin_isolated,
+      const base::Optional<url::Origin>& coop_coep_cross_origin_isolated_origin,
       bool destination_is_view_source_mode,
       ui::PageTransition transition,
       bool is_failure,
@@ -630,17 +639,20 @@ class CONTENT_EXPORT RenderFrameHostManager
       bool cross_origin_opener_policy_mismatch,
       bool was_server_redirect,
       bool should_replace_current_entry,
-      bool is_coop_coep_cross_origin_isolated,
       bool is_speculative);
 
   ShouldSwapBrowsingInstance ShouldProactivelySwapBrowsingInstance(
       const GURL& destination_url,
+      bool is_coop_coep_cross_origin_isolated,
+      const base::Optional<url::Origin>& coop_coep_cross_origin_isolated_origin,
       bool is_reload,
       bool should_replace_current_entry);
 
   // Returns the SiteInstance to use for the navigation.
   scoped_refptr<SiteInstance> GetSiteInstanceForNavigation(
       const GURL& dest_url,
+      bool is_coop_coep_cross_origin_isolated,
+      const base::Optional<url::Origin>& coop_coep_cross_origin_isolated_origin,
       SiteInstanceImpl* source_instance,
       SiteInstanceImpl* dest_instance,
       SiteInstanceImpl* candidate_instance,
@@ -653,7 +665,6 @@ class CONTENT_EXPORT RenderFrameHostManager
       bool was_server_redirect,
       bool cross_origin_opener_policy_mismatch,
       bool should_replace_current_entry,
-      bool is_coop_coep_cross_origin_isolated,
       bool is_speculative,
       bool* did_same_site_proactive_browsing_instance_swap);
 
@@ -661,6 +672,13 @@ class CONTENT_EXPORT RenderFrameHostManager
   // |dest_url|, possibly reusing the current, source or destination
   // SiteInstance. The actual SiteInstance can then be obtained calling
   // ConvertToSiteInstance with the descriptor.
+  //
+  // |is_coop_coep_cross_origin_isolated| should be true if the response for
+  // |dest_url| has set COOP and COEP headers to same-origin and require-corp
+  // respectively.
+  // if |is_coop_coep_cross_origin_isolated| is true,
+  // |coop_coep_cross_origin_isolated_origin| indicates the top level origin
+  // of the page.
   //
   // |source_instance| is the SiteInstance of the frame that initiated the
   // navigation. |current_instance| is the SiteInstance of the frame that is
@@ -678,6 +696,8 @@ class CONTENT_EXPORT RenderFrameHostManager
   // This is a helper function for GetSiteInstanceForNavigation.
   SiteInstanceDescriptor DetermineSiteInstanceForURL(
       const GURL& dest_url,
+      bool is_coop_coep_cross_origin_isolated,
+      const base::Optional<url::Origin>& coop_coep_cross_origin_isolated_origin,
       SiteInstance* source_instance,
       SiteInstance* current_instance,
       SiteInstance* dest_instance,
@@ -687,7 +707,6 @@ class CONTENT_EXPORT RenderFrameHostManager
       bool dest_is_view_source_mode,
       bool force_browsing_instance_swap,
       bool was_server_redirect,
-      bool is_coop_coep_cross_origin_isolated,
       bool is_speculative);
 
   // Returns true if a navigation to |dest_url| that uses the specified
@@ -733,8 +752,11 @@ class CONTENT_EXPORT RenderFrameHostManager
   // |dest_url|. This method is a special case for handling hosted apps in
   // this object. Most code should call IsNavigationSameSite() on
   // |candidate| instead of this method.
-  bool IsCandidateSameSite(RenderFrameHostImpl* candidate,
-                           const GURL& dest_url);
+  bool IsCandidateSameSite(
+      RenderFrameHostImpl* candidate,
+      const GURL& dest_url,
+      bool is_coop_coep_cross_origin_isolated,
+      base::Optional<url::Origin> coop_coep_cross_origin_isolated_origin);
 
   // Ensure that we have created all needed proxies for a new RFH with
   // SiteInstance |new_instance|: (1) create swapped-out RVHs and proxies for

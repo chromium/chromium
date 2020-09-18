@@ -113,7 +113,10 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
         base::BindOnce(&NavigationRequestTest::UpdateThrottleCheckResult,
                        base::Unretained(this)));
 
-    request_->WillRedirectRequest(GURL(), nullptr);
+    request_->WillRedirectRequest(
+        GURL(), false /* is_coop_coep_cross_origin_isolated */,
+        base::nullopt /* coop_coep_cross_origin_isolated_origin */,
+        nullptr /* post_redirect_process */);
   }
 
   // Helper function to call WillFailRequest on |handle|. If this function

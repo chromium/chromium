@@ -8595,8 +8595,8 @@ IN_PROC_BROWSER_TEST_P(
       root->current_frame_host()->GetSiteInstance()->GetIsolationContext();
   EXPECT_TRUE(SiteInstanceImpl::DoesSiteInfoRequireDedicatedProcess(
       current_isolation_context,
-      SiteInstanceImpl::ComputeSiteInfo(current_isolation_context,
-                                        GURL("http://foo.com"))));
+      SiteInstanceImpl::ComputeSiteInfoForTesting(current_isolation_context,
+                                                  GURL("http://foo.com"))));
 
   // Set up the work to be done after the renderer is asked to commit
   // |siteless_url|, but before the corresponding DidCommitProvisionalLoad IPC
@@ -8672,8 +8672,11 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_NE(process1, process2);
   EXPECT_EQ(GURL("http://foo.com"),
             web_contents->GetMainFrame()->GetSiteInstance()->GetSiteURL());
-  EXPECT_EQ(ProcessLock(SiteInfo(GURL("http://foo.com"), GURL("http://foo.com"),
-                                 false /* is_origin_keyed */)),
+  EXPECT_EQ(ProcessLock(SiteInfo(
+                GURL("http://foo.com"), GURL("http://foo.com"),
+                false /* is_origin_keyed */,
+                false /* is_coop_coep_cross_origin_isolated */,
+                base::nullopt /* coop_coep_cross_origin_isolated_origin */)),
             policy->GetProcessLock(process2->GetID()));
 
   // Ensure also that the foo.com process didn't change midway through the

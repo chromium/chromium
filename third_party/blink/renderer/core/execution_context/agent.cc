@@ -45,7 +45,8 @@ bool Agent::IsCrossOriginIsolated() {
 // static
 void Agent::SetIsCrossOriginIsolated(bool value) {
 #if DCHECK_IS_ON()
-  DCHECK(!is_cross_origin_isolated_set);
+  if (is_cross_origin_isolated_set)
+    DCHECK_EQ(is_cross_origin_isolated, value);
   is_cross_origin_isolated_set = true;
 #endif
   is_cross_origin_isolated = value;
