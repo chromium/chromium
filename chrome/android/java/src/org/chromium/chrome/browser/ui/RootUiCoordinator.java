@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
+import org.chromium.chrome.browser.crash.PureJavaExceptionReporter;
 import org.chromium.chrome.browser.directactions.DirectActionInitializer;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
@@ -664,6 +665,9 @@ public class RootUiCoordinator
                 () -> mScrimCoordinator, sheetInitializedCallback, mActivity.getWindow(),
                 mActivity.getWindowAndroid().getKeyboardDelegate(),
                 () -> mActivity.findViewById(R.id.coordinator));
+        BottomSheetControllerFactory.setExceptionReporter(
+                (throwable)
+                        -> PureJavaExceptionReporter.reportJavaException((Throwable) throwable));
         BottomSheetControllerFactory.attach(mActivity.getWindowAndroid(), mBottomSheetController);
 
         mBottomSheetManager = new BottomSheetManager(mBottomSheetController, mActivityTabProvider,
