@@ -59,11 +59,13 @@
         </div>
         <div slot="button-container">
           <cr-button id="cancel" class="cancel-button"
-              on-click="onRemoveFailedDismissTap_">$i18n{ok}</cr-button>
+              on-click="onRemoveFailedDismissTap_">
+            $i18n{ok}
           </cr-button>
           <cr-button id="retry" class="action-button"
               on-click="onRemoveFailedRetryTap_">
-              $i18n{crostiniSharedPathsRemoveFailureTryAgain}
+            $i18n{crostiniSharedPathsRemoveFailureTryAgain}
+          </cr-button>
         </div>
       </cr-dialog>
     </template>
