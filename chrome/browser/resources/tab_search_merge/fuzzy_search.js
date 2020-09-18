@@ -6,6 +6,7 @@ import Fuse from './fuse.js';
 
 const OPTIONS = {
   includeScore: true,
+  ignoreLocation: true,
   keys: [
     {
       name: 'title',
