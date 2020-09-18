@@ -43248,6 +43248,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Download.Later.ScheduledDownloadSize" units="Mb"
+    expires_after="2021-09-01">
+  <owner>xingliu@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
+  <summary>
+    The size of downloads when the user tries to download at a scheduled time.
+    Recorded when the positive button in download later dialog is clicked.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Download.Later.UI.DialogChoice"
     enum="DownloadLaterDialogChoice" expires_after="2021-07-01">
 <!-- Name completed by histogram_suffixes name="DownloadDialogSource" -->
@@ -202500,6 +202510,10 @@ regressions. -->
   <suffix name="DownloadHome" label="Download home."/>
   <suffix name="Infobar" label="Download infobar."/>
   <suffix name="Main" label="Main download later dialog."/>
+  <suffix name="Main.DataSaverOff"
+      label="Main download later dialog with data saver off."/>
+  <suffix name="Main.DataSaverOn"
+      label="Main download later dialog with data saver on."/>
   <affected-histogram name="Download.Later.UI.DialogChoice"/>
 </histogram_suffixes>
 

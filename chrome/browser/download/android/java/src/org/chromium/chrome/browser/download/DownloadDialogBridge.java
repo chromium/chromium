@@ -165,7 +165,9 @@ public class DownloadDialogBridge
             @DownloadLaterDialogChoice int choice, long startTime) {
         mDownloadLaterChoice = choice;
         mDownloadLaterTime = startTime;
-        DownloadLaterMetrics.recordDownloadLaterDialogChoice(choice);
+
+        DownloadLaterMetrics.recordDownloadLaterDialogChoice(
+                choice, DownloadDialogBridgeJni.get().isDataReductionProxyEnabled(), mTotalBytes);
 
         // When there is no error message, skip the location dialog.
         if (mLocationDialogType == DownloadLocationDialogType.DEFAULT) {
@@ -298,5 +300,6 @@ public class DownloadDialogBridge
         void onCanceled(long nativeDownloadDialogBridge, DownloadDialogBridge caller);
         String getDownloadDefaultDirectory();
         void setDownloadAndSaveFileDefaultDirectory(String directory);
+        boolean isDataReductionProxyEnabled();
     }
 }

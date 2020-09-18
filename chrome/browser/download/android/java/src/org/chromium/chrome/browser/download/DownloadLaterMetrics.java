@@ -8,11 +8,14 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogChoice;
+import org.chromium.components.browser_ui.util.ConversionUtils;
 
 /**
  * Class that contains helper functions for download later feature metrics recording.
  */
 public final class DownloadLaterMetrics {
+    private static final long MAX_HISTOGRAM_FILE_SIZE_MB = 10 * 1024;
+
     /**
      * Defines UI events for download later feature. Used in histograms, don't reuse or remove
      * items. Keep in sync with DownloadLaterUiEvent in enums.xml.
@@ -57,10 +60,32 @@ public final class DownloadLaterMetrics {
      * Records the user choice on the download later dialog.
      * @param choice The user choice, see {@link DownloadLaterDialogChoice}.
      */
-    public static void recordDownloadLaterDialogChoice(@DownloadLaterDialogChoice int choice) {
+    public static void recordDownloadLaterDialogChoice(
+            @DownloadLaterDialogChoice int choice, boolean dataSaverOn, long totalBytes) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Download.Later.UI.DialogChoice.Main", choice, DownloadLaterDialogChoice.COUNT);
+
+        // Records the selection with data reduction proxy status.
+        if (dataSaverOn) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Download.Later.UI.DialogChoice.Main.DataSaverOn", choice,
+                    DownloadLaterDialogChoice.COUNT);
+        } else {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Download.Later.UI.DialogChoice.Main.DataSaverOff", choice,
+                    DownloadLaterDialogChoice.COUNT);
+        }
+
         recordDownloadLaterUiEvent(DownloadLaterUiEvent.DOWNLOAD_LATER_DIALOG_COMPLETE);
+
+        // Records the file size when for later downloads.
+        if (totalBytes > 0 && choice == DownloadLaterDialogChoice.DOWNLOAD_LATER) {
+            long sizeInMb = ConversionUtils.bytesToMegabytes(totalBytes);
+            // Avoid long to int overflow.
+            sizeInMb = Math.min(MAX_HISTOGRAM_FILE_SIZE_MB, sizeInMb);
+            RecordHistogram.recordCount1000Histogram(
+                    "Download.Later.ScheduledDownloadSize", (int) sizeInMb);
+        }
     }
 
     /**

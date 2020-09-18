@@ -46,13 +46,40 @@ public class DownloadLaterMetricsUnitTest {
 
     @Test
     public void testRecordDownloadLaterDialogChoice() {
-        DownloadLaterMetrics.recordDownloadLaterDialogChoice(DownloadLaterDialogChoice.ON_WIFI);
+        DownloadLaterMetrics.recordDownloadLaterDialogChoice(
+                DownloadLaterDialogChoice.ON_WIFI, true, -1);
         assertEquals(1,
                 ShadowRecordHistogram.getHistogramValueCountForTesting(
                         "Download.Later.UI.DialogChoice.Main", DownloadLaterDialogChoice.ON_WIFI));
         assertEquals(1,
                 ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        "Download.Later.UI.DialogChoice.Main.DataSaverOn",
+                        DownloadLaterDialogChoice.ON_WIFI));
+        assertEquals(0,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        "Download.Later.UI.DialogChoice.Main.DataSaverOff",
+                        DownloadLaterDialogChoice.ON_WIFI));
+        assertEquals(1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
                         UI_EVENT_METRIC_NAME, DownloadLaterUiEvent.DOWNLOAD_LATER_DIALOG_COMPLETE));
+
+        DownloadLaterMetrics.recordDownloadLaterDialogChoice(
+                DownloadLaterDialogChoice.DOWNLOAD_LATER, false, 1024);
+        assertEquals(1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        "Download.Later.UI.DialogChoice.Main",
+                        DownloadLaterDialogChoice.DOWNLOAD_LATER));
+        assertEquals(0,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        "Download.Later.UI.DialogChoice.Main.DataSaverOn",
+                        DownloadLaterDialogChoice.DOWNLOAD_LATER));
+        assertEquals(1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        "Download.Later.UI.DialogChoice.Main.DataSaverOff",
+                        DownloadLaterDialogChoice.DOWNLOAD_LATER));
+        assertEquals(1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        "Download.Later.ScheduledDownloadSize", 0));
     }
 
     @Test
