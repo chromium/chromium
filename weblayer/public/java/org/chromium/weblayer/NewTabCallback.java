@@ -28,5 +28,5 @@ public abstract class NewTabCallback {
      * @see Browser#destroyTab
      */
     @Deprecated
-    public abstract void onCloseTab();
+    public void onCloseTab() {}
 }

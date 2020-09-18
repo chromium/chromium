@@ -137,9 +137,6 @@ public class Navigation extends IClientNavigation.Stub {
      */
     public boolean isDownload() {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 84) {
-            throw new UnsupportedOperationException();
-        }
         try {
             return mNavigationImpl.isDownload();
         } catch (RemoteException e) {
@@ -155,9 +152,6 @@ public class Navigation extends IClientNavigation.Stub {
      */
     public boolean wasStopCalled() {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 84) {
-            throw new UnsupportedOperationException();
-        }
         try {
             return mNavigationImpl.wasStopCalled();
         } catch (RemoteException e) {
@@ -186,9 +180,6 @@ public class Navigation extends IClientNavigation.Stub {
      */
     public void setRequestHeader(@NonNull String name, @NonNull String value) {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 83) {
-            throw new UnsupportedOperationException();
-        }
         try {
             mNavigationImpl.setRequestHeader(name, value);
         } catch (RemoteException e) {
@@ -211,9 +202,6 @@ public class Navigation extends IClientNavigation.Stub {
      */
     public void setUserAgentString(@NonNull String value) {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 84) {
-            throw new UnsupportedOperationException();
-        }
         try {
             mNavigationImpl.setUserAgentString(value);
         } catch (RemoteException e) {

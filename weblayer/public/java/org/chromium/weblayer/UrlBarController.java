@@ -36,10 +36,6 @@ public class UrlBarController {
     @NonNull
     public View createUrlBarView(@NonNull UrlBarOptions options) {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 82) {
-            throw new UnsupportedOperationException();
-        }
-
         try {
             if (WebLayer.getSupportedMajorVersionInternal() < 86) {
                 return ObjectWrapper.unwrap(

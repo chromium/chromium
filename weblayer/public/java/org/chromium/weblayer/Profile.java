@@ -76,11 +76,7 @@ public class Profile {
     private Profile(String name, IProfile impl) {
         mName = name;
         mImpl = impl;
-        if (WebLayer.getSupportedMajorVersionInternal() >= 83) {
-            mCookieManager = CookieManager.create(impl);
-        } else {
-            mCookieManager = null;
-        }
+        mCookieManager = CookieManager.create(impl);
 
         sProfiles.put(name, this);
     }
@@ -129,9 +125,6 @@ public class Profile {
      */
     public void destroyAndDeleteDataFromDisk(@Nullable Runnable completionCallback) {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 82) {
-            throw new UnsupportedOperationException();
-        }
         try {
             mImpl.destroyAndDeleteDataFromDisk(ObjectWrapper.wrap(completionCallback));
         } catch (RemoteException e) {
@@ -163,10 +156,6 @@ public class Profile {
      */
     public void setDownloadDirectory(@NonNull File directory) {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 81) {
-            throw new UnsupportedOperationException();
-        }
-
         try {
             mImpl.setDownloadDirectory(directory.toString());
         } catch (RemoteException e) {
@@ -183,9 +172,6 @@ public class Profile {
      */
     public void setDownloadCallback(@Nullable DownloadCallback callback) {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 83) {
-            throw new UnsupportedOperationException();
-        }
         try {
             if (callback != null) {
                 mDownloadCallbackClient = new DownloadCallbackClientImpl(callback);
@@ -207,9 +193,6 @@ public class Profile {
     @NonNull
     public CookieManager getCookieManager() {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 83) {
-            throw new UnsupportedOperationException();
-        }
 
         return mCookieManager;
     }
@@ -225,10 +208,6 @@ public class Profile {
      */
     public void setBooleanSetting(@SettingType int type, boolean value) {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 84) {
-            throw new UnsupportedOperationException();
-        }
-
         try {
             mImpl.setBooleanSetting(type, value);
         } catch (RemoteException e) {
@@ -244,10 +223,6 @@ public class Profile {
      */
     public boolean getBooleanSetting(@SettingType int type) {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 84) {
-            throw new UnsupportedOperationException();
-        }
-
         try {
             return mImpl.getBooleanSetting(type);
         } catch (RemoteException e) {

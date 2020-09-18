@@ -34,9 +34,6 @@ public class SiteSettingsActivity extends AppCompatActivity {
      * settings categories.
      */
     public static Intent createIntentForCategoryList(Context context, String profileName) {
-        if (WebLayer.getSupportedMajorVersion(context) < 84) {
-            throw new UnsupportedOperationException();
-        }
         return SiteSettingsIntentHelper.createIntentForCategoryList(context, profileName);
     }
 

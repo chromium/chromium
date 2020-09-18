@@ -46,29 +46,9 @@ public class Browser {
 
         try {
             mImpl.setClient(new BrowserClientImpl());
-            if (WebLayer.getSupportedMajorVersionInternal() >= 82) {
-                mUrlBarController = new UrlBarController(mImpl.getUrlBarController());
-            } else {
-                mUrlBarController = null;
-            }
+            mUrlBarController = new UrlBarController(mImpl.getUrlBarController());
         } catch (RemoteException e) {
             throw new APICallException(e);
-        }
-        if (WebLayer.getSupportedMajorVersionInternal() < 82) {
-            // On WebLayer versions < 82 the tabs are internally created before the client is set,
-            // so it doesn't receive the onTabAdded() callbacks; hence the client-side Tab
-            // objects need to be manually created to mirror the implementation-side objects.
-            try {
-                for (Object tab : impl.getTabs()) {
-                    // getTabs() returns List<TabImpl>, which isn't accessible from the client
-                    // library.
-                    ITab iTab = ITab.Stub.asInterface((android.os.IBinder) tab);
-                    // Tab's constructor calls registerTab().
-                    new Tab(iTab, this);
-                }
-            } catch (RemoteException e) {
-                throw new APICallException(e);
-            }
         }
     }
 
@@ -283,9 +263,6 @@ public class Browser {
     public void setBottomView(@Nullable View view) {
         ThreadCheck.ensureOnUiThread();
         throwIfDestroyed();
-        if (WebLayer.getSupportedMajorVersionInternal() < 84) {
-            throw new UnsupportedOperationException();
-        }
         try {
             mImpl.setBottomView(ObjectWrapper.wrap(view));
         } catch (RemoteException e) {
@@ -361,9 +338,6 @@ public class Browser {
     public UrlBarController getUrlBarController() {
         ThreadCheck.ensureOnUiThread();
         throwIfDestroyed();
-        if (WebLayer.getSupportedMajorVersionInternal() < 82) {
-            throw new UnsupportedOperationException();
-        }
         return mUrlBarController;
     }
 

@@ -261,12 +261,10 @@ public class Tab {
      * asynchronously closes the tab.
      *
      * If there is a beforeunload handler a dialog is shown to the user which will allow them to
-     * choose whether to proceed with closing the tab. If the WebLayer implementation is < 84 the
-     * closure will be notified via {@link NewTabCallback#onCloseTab}; on 84 and above, WebLayer
-     * closes the tab internally and the embedder will be notified via
-     * TabListCallback#onTabRemoved(). The tab will not close if the user chooses to cancel the
-     * action. If there is no beforeunload handler, the tab closure will be asynchronous (but
-     * immediate) and will be notified in the same way.
+     * choose whether to proceed with closing the tab. WebLayer closes the tab internally and the
+     * embedder will be notified via TabListCallback#onTabRemoved(). The tab will not close if the
+     * user chooses to cancel the action. If there is no beforeunload handler, the tab closure will
+     * be asynchronous (but immediate) and will be notified in the same way.
      *
      * To close the tab synchronously without running beforeunload, use {@link Browser#destroyTab}.
      *
@@ -275,9 +273,6 @@ public class Tab {
     public void dispatchBeforeUnloadAndClose() {
         ThreadCheck.ensureOnUiThread();
         throwIfDestroyed();
-        if (WebLayer.getSupportedMajorVersionInternal() < 82) {
-            throw new UnsupportedOperationException();
-        }
         try {
             mImpl.dispatchBeforeUnloadAndClose();
         } catch (RemoteException e) {
@@ -300,9 +295,6 @@ public class Tab {
     public boolean dismissTransientUi() {
         ThreadCheck.ensureOnUiThread();
         throwIfDestroyed();
-        if (WebLayer.getSupportedMajorVersionInternal() < 82) {
-            throw new UnsupportedOperationException();
-        }
         try {
             return mImpl.dismissTransientUi();
         } catch (RemoteException e) {
@@ -381,9 +373,6 @@ public class Tab {
     public void captureScreenShot(float scale, @NonNull CaptureScreenShotCallback callback) {
         ThreadCheck.ensureOnUiThread();
         throwIfDestroyed();
-        if (WebLayer.getSupportedMajorVersionInternal() < 84) {
-            throw new UnsupportedOperationException();
-        }
         try {
             mImpl.captureScreenShot(scale,
                     ObjectWrapper.wrap(
@@ -409,9 +398,6 @@ public class Tab {
     public String getGuid() {
         ThreadCheck.ensureOnUiThread();
         throwIfDestroyed();
-        if (WebLayer.getSupportedMajorVersionInternal() < 82) {
-            throw new UnsupportedOperationException();
-        }
         try {
             return mImpl.getGuid();
         } catch (RemoteException e) {

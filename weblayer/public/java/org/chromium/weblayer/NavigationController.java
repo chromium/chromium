@@ -55,9 +55,6 @@ public class NavigationController {
      */
     public void navigate(@NonNull Uri uri, @Nullable NavigateParams params) {
         ThreadCheck.ensureOnUiThread();
-        if ((WebLayer.getSupportedMajorVersionInternal() < 83) && (params != null)) {
-            throw new UnsupportedOperationException();
-        }
         try {
             if (params == null || WebLayer.getSupportedMajorVersionInternal() < 86) {
                 mNavigationController.navigate(
@@ -152,9 +149,6 @@ public class NavigationController {
      */
     public void goToIndex(int index) throws IndexOutOfBoundsException {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 81) {
-            throw new UnsupportedOperationException();
-        }
         checkNavigationIndex(index);
         try {
             mNavigationController.goToIndex(index);
@@ -243,9 +237,6 @@ public class NavigationController {
     @NonNull
     public String getNavigationEntryTitle(int index) throws IndexOutOfBoundsException {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 81) {
-            throw new UnsupportedOperationException();
-        }
         checkNavigationIndex(index);
         try {
             return mNavigationController.getNavigationEntryTitle(index);

@@ -228,10 +228,6 @@ abstract class RemoteFragment extends Fragment {
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ThreadCheck.ensureOnUiThread();
         try {
-            if (WebLayer.getSupportedMajorVersion(getContext()) < 84) {
-                return ObjectWrapper.unwrap(
-                        mRemoteFragment.deprecatedHandleOnCreateView(), View.class);
-            }
             return ObjectWrapper.unwrap(
                     mRemoteFragment.handleOnCreateView(
                             ObjectWrapper.wrap(container), ObjectWrapper.wrap(savedInstanceState)),

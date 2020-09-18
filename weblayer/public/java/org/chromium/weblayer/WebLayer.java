@@ -389,12 +389,10 @@ public class WebLayer {
     private WebLayer(IWebLayer iWebLayer) {
         mImpl = iWebLayer;
 
-        if (getSupportedMajorVersionInternal() >= 83) {
-            try {
-                mImpl.setClient(new WebLayerClientImpl());
-            } catch (RemoteException e) {
-                throw new APICallException(e);
-            }
+        try {
+            mImpl.setClient(new WebLayerClientImpl());
+        } catch (RemoteException e) {
+            throw new APICallException(e);
         }
     }
 
@@ -424,9 +422,6 @@ public class WebLayer {
      */
     public void enumerateAllProfileNames(@NonNull Callback<String[]> callback) {
         ThreadCheck.ensureOnUiThread();
-        if (getSupportedMajorVersionInternal() < 82) {
-            throw new UnsupportedOperationException();
-        }
         try {
             ValueCallback<String[]> valueCallback = (String[] value) -> callback.onResult(value);
             mImpl.enumerateAllProfileNames(ObjectWrapper.wrap(valueCallback));
@@ -444,9 +439,6 @@ public class WebLayer {
      */
     public String getUserAgentString() {
         ThreadCheck.ensureOnUiThread();
-        if (getSupportedMajorVersionInternal() < 84) {
-            throw new UnsupportedOperationException();
-        }
         try {
             return mImpl.getUserAgentString();
         } catch (RemoteException e) {
@@ -507,9 +499,6 @@ public class WebLayer {
     public static Fragment createBrowserFragment(
             @Nullable String profileName, @Nullable String persistenceId) {
         ThreadCheck.ensureOnUiThread();
-        if (persistenceId != null && getSupportedMajorVersionInternal() < 81) {
-            throw new UnsupportedOperationException();
-        }
         // TODO: use a profile id instead of the path to the actual file.
         Bundle args = new Bundle();
         args.putString(BrowserFragmentArgs.PROFILE_NAME, sanitizeProfileName(profileName));
@@ -536,9 +525,6 @@ public class WebLayer {
     public void registerExternalExperimentIDs(
             @NonNull String trialName, @NonNull int[] experimentIds) {
         ThreadCheck.ensureOnUiThread();
-        if (getSupportedMajorVersionInternal() < 84) {
-            throw new UnsupportedOperationException();
-        }
         try {
             mImpl.registerExternalExperimentIDs(trialName, experimentIds);
         } catch (RemoteException e) {
@@ -564,9 +550,6 @@ public class WebLayer {
      */
     /* package */ ISiteSettingsFragment connectSiteSettingsFragment(
             IRemoteFragmentClient remoteFragmentClient, Bundle fragmentArgs) {
-        if (getSupportedMajorVersionInternal() < 84) {
-            throw new UnsupportedOperationException();
-        }
         try {
             return mImpl.createSiteSettingsFragmentImpl(
                     remoteFragmentClient, ObjectWrapper.wrap(fragmentArgs));
