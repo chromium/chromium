@@ -800,6 +800,11 @@ deps = {
       'condition': 'checkout_android',
   },
 
+  'src/third_party/barhopper': {
+      'url': 'https://chrome-internal.googlesource.com/chrome/deps/barhopper.git' + '@' + '47934f2c634ca9a0a512ad160b47f3108649a390',
+      'condition': 'checkout_src_internal and checkout_chromeos',
+  },
+
   'src/third_party/bazel': {
       'packages': [
           {
