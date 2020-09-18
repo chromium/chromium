@@ -227,6 +227,12 @@ class PrerenderTest : public testing::Test {
     return item->textContent();
   }
 
+  bool IsUseCounted(mojom::WebFeature web_feature) {
+    Document* document =
+        web_view_helper_.LocalMainFrame()->GetFrame()->GetDocument();
+    return document->IsUseCounted(web_feature);
+  }
+
   void ExecuteScript(const char* code) {
     web_view_helper_.LocalMainFrame()->ExecuteScript(
         WebScriptSource(WebString::FromUTF8(code)));
@@ -267,21 +273,31 @@ TEST_F(PrerenderTest, SinglePrerender) {
   EXPECT_EQ(0u, prerender->CancelCount());
   EXPECT_EQ(0u, prerender->AbandonCount());
 
+  EXPECT_FALSE(IsUseCounted(WebFeature::kWebkitPrerenderStartEventFired));
   prerender->NotifyDidStartPrerender();
   EXPECT_EQ(1u, ConsoleLength());
   EXPECT_EQ("webkitprerenderstart", ConsoleAt(0));
+  EXPECT_TRUE(IsUseCounted(WebFeature::kWebkitPrerenderStartEventFired));
 
+  EXPECT_FALSE(
+      IsUseCounted(WebFeature::kWebkitPrerenderDOMContentLoadedEventFired));
   prerender->NotifyDidSendDOMContentLoadedForPrerender();
   EXPECT_EQ(2u, ConsoleLength());
   EXPECT_EQ("webkitprerenderdomcontentloaded", ConsoleAt(1));
+  EXPECT_TRUE(
+      IsUseCounted(WebFeature::kWebkitPrerenderDOMContentLoadedEventFired));
 
+  EXPECT_FALSE(IsUseCounted(WebFeature::kWebkitPrerenderLoadEventFired));
   prerender->NotifyDidSendLoadForPrerender();
   EXPECT_EQ(3u, ConsoleLength());
   EXPECT_EQ("webkitprerenderload", ConsoleAt(2));
+  EXPECT_TRUE(IsUseCounted(WebFeature::kWebkitPrerenderLoadEventFired));
 
+  EXPECT_FALSE(IsUseCounted(WebFeature::kWebkitPrerenderStopEventFired));
   prerender->NotifyDidStopPrerender();
   EXPECT_EQ(4u, ConsoleLength());
   EXPECT_EQ("webkitprerenderstop", ConsoleAt(3));
+  EXPECT_TRUE(IsUseCounted(WebFeature::kWebkitPrerenderStopEventFired));
 }
 
 TEST_F(PrerenderTest, CancelPrerender) {

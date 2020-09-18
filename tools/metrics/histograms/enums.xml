@@ -29184,6 +29184,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3470" label="ElementAttachInternalsBeforeConstructor"/>
   <int value="3471" label="SMILElementHasRepeatNEventListener"/>
   <int value="3472" label="WebTransport"/>
+  <int value="3473" label="WebkitPrerenderStartEventFired"/>
+  <int value="3474" label="WebkitPrerenderStopEventFired"/>
+  <int value="3475" label="WebkitPrerenderLoadEventFired"/>
+  <int value="3476" label="WebkitPrerenderDOMContentLoadedEventFired"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
