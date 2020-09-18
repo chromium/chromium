@@ -86,6 +86,7 @@ namespace content {
 namespace {
 
 using ::testing::EndsWith;
+using ::testing::NotNull;
 
 // Implementation of ContentBrowserClient that overrides
 // OverridePageVisibilityState() and allows consumers to set a value.
@@ -4205,6 +4206,58 @@ IN_PROC_BROWSER_TEST_F(
   // Check that the page can load a local resource.
   EXPECT_EQ(true,
             EvalJs(root_frame_host(), FetchSubresourceScript("image.jpg")));
+}
+
+// This test verifies that when the right feature is enabled, requests:
+//  - from a secure page with the "treat-as-public-address" CSP directive
+//  - embedded in an insecure page served from a local IP address
+//  - to local IP addresses
+//  are blocked.
+//
+// TODO(crbug.com/1126856): Expect blocked once logic is fixed.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    FromSecurePublicEmbeddedInInsecureLocalToLocalIsBlocked) {
+  // First navigate to an insecure page served by a local IP address.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("foo.test", "/empty.html")));
+
+  auto* security_state =
+      root_frame_host()->last_committed_client_security_state().get();
+  ASSERT_THAT(security_state, NotNull());
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
+            security_state->ip_address_space);
+
+  // Then embed a secure public iframe.
+  auto iframe_url = embedded_test_server()->GetURL(
+      "/set-header?Content-Security-Policy: treat-as-public-address");
+  std::string script = base::ReplaceStringPlaceholders(
+      R"(
+        const iframe = document.createElement("iframe");
+        iframe.src = "$1";
+        document.body.appendChild(iframe);
+      )",
+      {iframe_url.spec()}, nullptr);
+  EXPECT_TRUE(ExecJs(root_frame_host(), script));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  auto* child_frame = root_frame_host()->child_at(0)->current_frame_host();
+
+  security_state = child_frame->last_committed_client_security_state().get();
+  ASSERT_THAT(security_state, NotNull());
+
+  // TODO(crbug.com/1126856): Expect false once logic is fixed.
+  EXPECT_TRUE(security_state->is_web_secure_context);
+
+  // The address space of the document, however, is not influenced by the
+  // parent's address space.
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+
+  // TODO(crbug.com/1126856): Expect false once logic is fixed.
+  EXPECT_EQ(true, EvalJs(child_frame, FetchSubresourceScript("image.jpg")));
 }
 
 namespace {
