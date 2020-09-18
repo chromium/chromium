@@ -2526,7 +2526,7 @@ ci.fyi_builder(
         category = "linux",
     ),
     experimental = True,
-    goma_backend = None,
+    goma_backend = goma.backend.RBE_PROD,
 )
 
 # This is launching & collecting entirely isolated tests.
@@ -2537,7 +2537,7 @@ ci.fyi_builder(
         category = "mac",
         short_name = "beta",
     ),
-    goma_backend = None,
+    goma_backend = goma.backend.RBE_PROD,
     main_console_view = None,
     triggered_by = ["ci/Mac Builder"],
 )
