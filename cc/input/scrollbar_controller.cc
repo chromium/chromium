@@ -99,7 +99,11 @@ InputHandlerPointerResult ScrollbarController::HandlePointerDown(
   scrollbar_scroll_is_active_ = true;
   scroll_result.scroll_units =
       Granularity(scrollbar_part, perform_jump_click_on_track);
-  if (scrollbar_part == ScrollbarPart::THUMB) {
+
+  // Initialize drag state if either the scrollbar thumb is being dragged OR the
+  // user has initiated a jump click (since the thumb would have jumped under
+  // the pointer).
+  if (scrollbar_part == ScrollbarPart::THUMB || perform_jump_click_on_track) {
     drag_state_ = DragState();
     bool clipped = false;
     drag_state_->drag_origin =
@@ -109,13 +113,21 @@ InputHandlerPointerResult ScrollbarController::HandlePointerDown(
 
     // Record the current scroller offset. This will be needed to snap the
     // thumb back to its original position if the pointer moves too far away
-    // from the track during a thumb drag.
-    drag_state_->scroll_position_at_start_ = scrollbar->current_pos();
+    // from the track during a thumb drag. Additionally, if a thumb drag is
+    // being initiated *after* a jump click, scroll_position_at_start_ needs
+    // to account for that.
+    const float jump_click_thumb_drag_offset =
+        scrollbar->orientation() == ScrollbarOrientation::HORIZONTAL
+            ? scroll_result.scroll_offset.x()
+            : scroll_result.scroll_offset.y();
+    drag_state_->scroll_position_at_start_ =
+        scrollbar->current_pos() +
+        (perform_jump_click_on_track ? jump_click_thumb_drag_offset : 0);
     drag_state_->scroller_length_at_previous_move =
         scrollbar->scroll_layer_length();
   }
 
-  if (!scroll_result.scroll_offset.IsZero()) {
+  if (!scroll_result.scroll_offset.IsZero() && !perform_jump_click_on_track) {
     // Thumb drag is the only scrollbar manipulation that cannot produce an
     // autoscroll. All other interactions like clicking on arrows/trackparts
     // have the potential of initiating an autoscroll (if held down for long
