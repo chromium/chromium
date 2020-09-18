@@ -109,7 +109,9 @@ Polymer({
    * @private
    */
   appsChanged_() {
-    if (this.selectedAppNotFound_()) {
+    if (settings.Router.getInstance().getCurrentRoute() ===
+            settings.routes.APP_MANAGEMENT_DETAIL &&
+        this.selectedAppNotFound_()) {
       this.async(() => {
         app_management.util.openMainPage();
       });
