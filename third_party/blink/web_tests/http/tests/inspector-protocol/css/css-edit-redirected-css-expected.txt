@@ -1,0 +1,6 @@
+Test disabling of style rules for external CSS files served via a redirect.
+CSS text for #target before disabling a style:
+color: blue;
+CSS text for #target after disabling a style:
+/* color: blue; */
+
