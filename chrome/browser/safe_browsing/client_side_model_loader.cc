@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -251,6 +252,8 @@ void ModelLoader::OnURLLoaderComplete(
     model_str_.assign(data);
     model_.swap(model);
     model_status = MODEL_SUCCESS;
+    base::UmaHistogramSparse("SBClientPhishing.ClientModelVersionFetched",
+                             model_->version());
   }
   EndFetch(model_status, max_age);
 }

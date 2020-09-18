@@ -151398,6 +151398,16 @@ Safe Browsing lookups, which is critical for security. -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.ClientModelVersionFetched" units="version"
+    expires_after="2021-09-17">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the version of the local phishing detection model fetched. This
+    histogram is logged each time we load a model.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.DOMFeatureChunkTime" units="ms"
     expires_after="M77">
   <owner>gab@chromium.org</owner>
@@ -151494,6 +151504,17 @@ Safe Browsing lookups, which is critical for security. -->
   <summary>
     The number of whitelist_expression entries in a ClientPhishingResponse that
     could not be canonicalized.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.LocalModelDetectsPhishing"
+    enum="BooleanIsPhishing" expires_after="2021-09-17">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records whether the local phishing detection model detects phishing. This
+    histogram is logged each time the model is run (roughly on every navigation
+    to a non-allowlisted site)
   </summary>
 </histogram>
 
@@ -151599,6 +151620,17 @@ Safe Browsing lookups, which is critical for security. -->
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The counts for phishing verdicts given by server side model.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.ServerModelDetectsPhishing"
+    enum="BooleanIsPhishing" expires_after="2021-09-17">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records whether the server-side phishing detection model detects phishing.
+    This histogram is logged each time we contact Safe Browsing to evaluate
+    whether a site is phishing.
   </summary>
 </histogram>
 

@@ -504,6 +504,9 @@ void ClientSideDetectionHost::PhishingDetectionDone(
       verdict->clear_phash_dimension_size();
     }
 
+    base::UmaHistogramBoolean("SBClientPhishing.LocalModelDetectsPhishing",
+                              verdict->is_phishing());
+
     // We only send phishing verdict to the server if the verdict is phishing or
     // if a SafeBrowsing interstitial was already shown for this site.  E.g., a
     // phishing interstitial was shown but the user clicked
@@ -525,6 +528,8 @@ void ClientSideDetectionHost::PhishingDetectionDone(
 void ClientSideDetectionHost::MaybeShowPhishingWarning(GURL phishing_url,
                                                        bool is_phishing) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  base::UmaHistogramBoolean("SBClientPhishing.ServerModelDetectsPhishing",
+                            is_phishing);
   if (is_phishing) {
     DCHECK(web_contents());
     if (ui_manager_.get()) {
