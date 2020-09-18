@@ -47,11 +47,9 @@ bool IsValidPVRTCSize(GLint level, GLsizei size) {
 }
 
 bool IsValidS3TCSizeForWebGLAndANGLE(GLint level, GLsizei size) {
-  // WebGL and ANGLE only allow multiple-of-4 sizes, except for levels > 0 where
-  // it also allows 1 or 2. See WEBGL_compressed_texture_s3tc and
-  // ANGLE_compressed_texture_dxt*
-  return (level && size == 1) || (level && size == 2) ||
-         !(size % kS3TCBlockWidth);
+  // WebGL and ANGLE only allow multiple-of-4 sizes for the base level. See
+  // WEBGL_compressed_texture_s3tc and ANGLE_compressed_texture_dxt*
+  return (level > 0) || (size % kS3TCBlockWidth == 0);
 }
 
 const char* GetDebugSourceString(GLenum source) {
