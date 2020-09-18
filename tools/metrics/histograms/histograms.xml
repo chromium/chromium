@@ -162613,7 +162613,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.CertificateFetch.CacheHit"
-    enum="BooleanCacheHit" expires_after="2020-10-01">
+    enum="BooleanCacheHit" expires_after="2021-04-01">
   <owner>ksakamoto@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
   <owner>horo@chromium.org</owner>
@@ -162624,7 +162624,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.CertVerificationResult" enum="NetErrorCodes"
-    expires_after="2020-10-01">
+    expires_after="2021-04-01">
   <owner>ksakamoto@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
   <owner>horo@chromium.org</owner>
@@ -162634,7 +162634,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.CTVerificationResult" enum="CTComplianceStatus"
-    expires_after="2020-10-01">
+    expires_after="2021-04-01">
   <owner>ksakamoto@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
   <owner>horo@chromium.org</owner>
@@ -162644,7 +162644,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.FallbackRedirectLoop" enum="BooleanDetected"
-    expires_after="2020-10-01">
+    expires_after="2021-04-01">
   <owner>ksakamoto@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
   <owner>horo@chromium.org</owner>
@@ -162672,7 +162672,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.LoadResult2" enum="SignedExchangeLoadResult"
-    expires_after="2021-01-24">
+    expires_after="2021-04-01">
   <owner>ksakamoto@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
   <owner>horo@chromium.org</owner>
@@ -162683,7 +162683,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.OCSPResponseStatus" enum="OCSPResponseStatus"
-    expires_after="2020-10-01">
+    expires_after="2021-04-01">
   <owner>ksakamoto@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
   <owner>horo@chromium.org</owner>
@@ -162694,7 +162694,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.OCSPRevocationStatus"
-    enum="OCSPRevocationStatus" expires_after="2020-10-01">
+    enum="OCSPRevocationStatus" expires_after="2021-04-01">
   <owner>ksakamoto@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
   <owner>horo@chromium.org</owner>
@@ -162719,7 +162719,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.Prefetch.LoadResult2"
-    enum="SignedExchangeLoadResult" expires_after="2020-10-01">
+    enum="SignedExchangeLoadResult" expires_after="2021-04-01">
   <owner>kinuko@chromium.org</owner>
   <owner>ksakamoto@chromium.org</owner>
   <owner>horo@chromium.org</owner>
@@ -162730,7 +162730,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.Prefetch.Precision.30Seconds"
-    enum="BooleanUsage" expires_after="2020-10-01">
+    enum="BooleanUsage" expires_after="2021-04-01">
   <owner>kinuko@chromium.org</owner>
   <owner>ksakamoto@chromium.org</owner>
   <owner>horo@chromium.org</owner>
@@ -162743,7 +162743,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.Prefetch.Recall.30Seconds" enum="BooleanUsage"
-    expires_after="2020-10-01">
+    expires_after="2021-04-01">
   <owner>kinuko@chromium.org</owner>
   <owner>ksakamoto@chromium.org</owner>
   <owner>horo@chromium.org</owner>
@@ -162755,7 +162755,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.SignatureVerificationError.Expired"
-    units="seconds" expires_after="2020-10-01">
+    units="seconds" expires_after="2021-04-01">
   <owner>kinuko@chromium.org</owner>
   <owner>ksakamoto@chromium.org</owner>
   <owner>horo@chromium.org</owner>
@@ -162766,7 +162766,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.SignatureVerificationError.NotYetValid"
-    units="seconds" expires_after="2020-10-01">
+    units="seconds" expires_after="2021-04-01">
   <owner>ksakamoto@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
   <owner>horo@chromium.org</owner>
@@ -162777,7 +162777,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.SignatureVerificationResult"
-    enum="SignedExchangeSignatureVerificationResult" expires_after="2021-01-24">
+    enum="SignedExchangeSignatureVerificationResult" expires_after="2021-04-01">
   <owner>kinuko@chromium.org</owner>
   <owner>ksakamoto@chromium.org</owner>
   <owner>horo@chromium.org</owner>
@@ -162788,7 +162788,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.Time.CertificateFetch.Failure" units="ms"
-    expires_after="2020-10-01">
+    expires_after="2021-04-01">
   <owner>ksakamoto@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
   <owner>horo@chromium.org</owner>
@@ -162799,7 +162799,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.Time.CertificateFetch.Success" units="ms"
-    expires_after="2020-10-01">
+    expires_after="2021-04-01">
   <owner>ksakamoto@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
   <owner>horo@chromium.org</owner>
@@ -162810,7 +162810,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.Time.SignatureVerify" units="ms"
-    expires_after="2021-01-24">
+    expires_after="2021-04-01">
   <owner>ksakamoto@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
   <owner>horo@chromium.org</owner>
@@ -162821,7 +162821,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.TimeUntilExpiration" units="seconds"
-    expires_after="2020-10-01">
+    expires_after="2021-04-01">
   <owner>kinuko@chromium.org</owner>
   <owner>ksakamoto@chromium.org</owner>
   <owner>horo@chromium.org</owner>
@@ -162833,7 +162833,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.ValidityPingDuration" units="ms"
-    expires_after="2020-10-01">
+    expires_after="2021-04-01">
   <owner>kinuko@chromium.org</owner>
   <owner>ksakamoto@chromium.org</owner>
   <owner>horo@chromium.org</owner>
@@ -162844,7 +162844,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.ValidityPingResult"
-    enum="SignedExchangeValidityPingResult" expires_after="2020-10-01">
+    enum="SignedExchangeValidityPingResult" expires_after="2021-04-01">
   <owner>kinuko@chromium.org</owner>
   <owner>ksakamoto@chromium.org</owner>
   <owner>horo@chromium.org</owner>
