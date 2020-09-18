@@ -98,4 +98,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyAPItest, GetMatchedRules) {
   ASSERT_TRUE(RunTest("get_matched_rules")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyAPItest, IsRegexSupported) {
+  ASSERT_TRUE(RunTest("is_regex_supported")) << message_;
+}
+
 }  // namespace

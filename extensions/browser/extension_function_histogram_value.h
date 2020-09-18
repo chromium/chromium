@@ -1568,6 +1568,7 @@ enum HistogramValue {
   INPUTMETHODPRIVATE_SETCOMPOSINGRANGE = 1505,
   AUTOTESTPRIVATE_LAUNCHSYSTEMWEBAPP = 1506,
   ACCESSIBILITY_PRIVATE_PERFORMACCELERATORACTION = 1507,
+  DECLARATIVENETREQUEST_ISREGEXSUPPORTED = 1508,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

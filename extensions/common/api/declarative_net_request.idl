@@ -66,6 +66,16 @@ namespace declarativeNetRequest {
     allowAllRequests
   };
 
+  // Describes the reason why a given regular expression isn't supported.
+  enum UnsupportedRegexReason {
+    // The regular expression is syntactically incorrect, or uses features
+    // not available in the
+    // <a href = "https://github.com/google/re2/wiki/Syntax">RE2 syntax</a>.
+    syntaxError,
+    // The regular expression exceeds the memory limit.
+    memoryLimitExceeded
+  };
+
   // Describes a single static ruleset.
   dictionary Ruleset {
     // A non-empty string uniquely identifying the ruleset. IDs beginning with
@@ -379,11 +389,34 @@ namespace declarativeNetRequest {
     DNRInfo declarative_net_request;
   };
 
+  dictionary RegexOptions {
+    // The regular expresson to check.
+    DOMString regex;
+
+    // Whether the <code>regex</code> specified is case sensitive. Default is
+    // true.
+    boolean? isCaseSensitive;
+
+    // Whether the <code>regex</code> specified requires capturing. Capturing is
+    // only required for redirect rules which specify a
+    // <code>regexSubstition</code> action. The default is false.
+    boolean? requireCapturing;
+  };
+
+  dictionary IsRegexSupportedResult {
+    boolean isSupported;
+
+    // Specifies the reason why the regular expression is not supported. Only
+    // provided if <code>isSupported</code> is false.
+    UnsupportedRegexReason? reason;
+  };
+
   callback EmptyCallback = void();
   callback GetAllowedPagesCallback = void(DOMString[] result);
   callback GetRulesCallback = void(Rule[] rules);
   callback GetMatchedRulesCallback = void(RulesMatchedDetails details);
   callback GetEnabledRulesetsCallback = void(DOMString[] rulesetIds);
+  callback IsRegexSupportedCallback = void(IsRegexSupportedResult result);
 
   interface Functions {
 
@@ -460,6 +493,14 @@ namespace declarativeNetRequest {
     // action count for a tab. This preference is persisted across sessions and
     // is false by default.
     static void setActionCountAsBadgeText(boolean enable);
+
+    // Checks if the given regular expression will be supported as a
+    // <code>regexFilter</code> rule condition.
+    // |regexOptions|: The regular expression to check.
+    // |callback|: Called with details consisting of whether the regular
+    // expression is supported and the reason if not.
+    static void isRegexSupported(RegexOptions regexOptions,
+                                 IsRegexSupportedCallback callback);
   };
 
   interface Properties {

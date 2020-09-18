@@ -118,6 +118,19 @@ class DeclarativeNetRequestSetActionCountAsBadgeTextFunction
   ExtensionFunction::ResponseAction Run() override;
 };
 
+class DeclarativeNetRequestIsRegexSupportedFunction : public ExtensionFunction {
+ public:
+  DeclarativeNetRequestIsRegexSupportedFunction();
+  DECLARE_EXTENSION_FUNCTION("declarativeNetRequest.isRegexSupported",
+                             DECLARATIVENETREQUEST_ISREGEXSUPPORTED)
+
+ protected:
+  ~DeclarativeNetRequestIsRegexSupportedFunction() override;
+
+  // ExtensionFunction override:
+  ExtensionFunction::ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_DECLARATIVE_NET_REQUEST_API_H_

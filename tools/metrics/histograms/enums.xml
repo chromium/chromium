@@ -24569,6 +24569,7 @@ Called by update_extension_histograms.py.-->
   <int value="1505" label="INPUTMETHODPRIVATE_SETCOMPOSINGRANGE"/>
   <int value="1506" label="AUTOTESTPRIVATE_LAUNCHSYSTEMWEBAPP"/>
   <int value="1507" label="ACCESSIBILITY_PRIVATE_PERFORMACCELERATORACTION"/>
+  <int value="1508" label="DECLARATIVENETREQUEST_ISREGEXSUPPORTED"/>
 </enum>
 
 <enum name="ExtensionIconState">

@@ -354,4 +354,42 @@ DeclarativeNetRequestSetActionCountAsBadgeTextFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+DeclarativeNetRequestIsRegexSupportedFunction::
+    DeclarativeNetRequestIsRegexSupportedFunction() = default;
+DeclarativeNetRequestIsRegexSupportedFunction::
+    ~DeclarativeNetRequestIsRegexSupportedFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeclarativeNetRequestIsRegexSupportedFunction::Run() {
+  using Params = dnr_api::IsRegexSupported::Params;
+
+  base::string16 error;
+  std::unique_ptr<Params> params(Params::Create(*args_, &error));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  EXTENSION_FUNCTION_VALIDATE(error.empty());
+
+  bool is_case_sensitive = params->regex_options.is_case_sensitive
+                               ? *params->regex_options.is_case_sensitive
+                               : true;
+  bool require_capturing = params->regex_options.require_capturing
+                               ? *params->regex_options.require_capturing
+                               : false;
+  re2::RE2 regex(params->regex_options.regex,
+                 declarative_net_request::CreateRE2Options(is_case_sensitive,
+                                                           require_capturing));
+
+  dnr_api::IsRegexSupportedResult result;
+  if (regex.ok()) {
+    result.is_supported = true;
+  } else {
+    result.is_supported = false;
+    result.reason = regex.error_code() == re2::RE2::ErrorPatternTooLarge
+                        ? dnr_api::UNSUPPORTED_REGEX_REASON_MEMORYLIMITEXCEEDED
+                        : dnr_api::UNSUPPORTED_REGEX_REASON_SYNTAXERROR;
+  }
+
+  return RespondNow(
+      ArgumentList(dnr_api::IsRegexSupported::Results::Create(result)));
+}
+
 }  // namespace extensions
