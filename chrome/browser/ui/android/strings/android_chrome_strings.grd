@@ -2405,11 +2405,8 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SIGNIN_ADD_ACCOUNT_TO_DEVICE" desc="Text for adding another Google Account to device in the web sign-in flow and account picker dialog, users will be asked to add an account to his device when this text is tapped">
         Add account to device
       </message>
-      <message name="IDS_SIGNIN_INCOGNITO_MODE_PRIMARY" desc="Text for signing in incognito mode.">
-        Sign in temporarily
-      </message>
-      <message name="IDS_SIGNIN_INCOGNITO_MODE_SECONDARY" desc="Secondary text for signing in incognito mode.">
-        A new incognito tab will open
+      <message name="IDS_SIGNIN_GO_INCOGNITO" desc="Button text to open the incognito interstitial in the web sign-in account picker bottom sheet">
+        Go Incognito
       </message>
       <message name="IDS_SIGNIN_GMS_UPDATING" desc="Message notifying user that Google Play Services is still updating.">
         Waiting for Google Play Services to finish updating
@@ -2417,15 +2414,14 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
 
       <!-- Strings for Incognito Interstitial. -->
       <message name="IDS_INCOGNITO_INTERSTITIAL_TITLE" desc="The title of the incognito interstitial bottom sheet.">
-        Use Incognito to sign in temporarily
+        Go Incognito
       </message>
       <message name="IDS_INCOGNITO_INTERSTITIAL_MESSAGE" desc="The content of incognito interstitial which is shown when a user is in the sign-in flow and they want to go incognito mode to sign in temporarily. Before they go incognito mode they would be presented with this incognito interstitial which would inform them about how they can clear sign-in information in incognito, how their activity may be visbile to others and the possibility of cookies and other incognito data being used across other already open incognito tabs.">
-        To clear your sign-in information and other data from Chrome, close all incognito tabs. 
-        
-In Incognito, your activity might still be visible to websites that you visit, your employer or school and your Internet service provider.
-        
-Cookies and other data may be used across open Incognito tabs.
+        To clear your sign-in information and other data from Chrome, close all Incognito tabs.
+
+In Incognito, your activity might still be visible to websites that you visit, your employer or school, and your internet service provider.
       </message>
+
       <!-- Strings for Streamlined Signin and Unified Consent. -->
       <message name="IDS_SIGNIN_TITLE" desc="Title for the screen that asks users to sign-in and turn on Sync. [CHAR-LIMIT=27]">
         Turn on sync?
@@ -2449,7 +2445,7 @@ Cookies and other data may be used across open Incognito tabs.
         Choose an account
       </message>
       <message name="IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE" desc="The subtitle for the account picker bottom sheet that tells the user what happens if the button 'Continue as John Doe' is clicked">
-        You’ll be signed in to this site, Chrome, and Google apps
+        Sign in to this site, your Google Account, and Chrome. You may turn on sync later.
       </message>
       <message name="IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SIGNIN_TITLE" desc="The title of the account picker bottom sheet tells that the user is in the process of signing in with their Google Account">
         Signing in...

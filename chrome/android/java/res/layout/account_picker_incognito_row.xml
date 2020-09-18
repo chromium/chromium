@@ -2,39 +2,18 @@
 <!-- Copyright 2020 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:drawablePadding="24dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="8dp"
+    android:paddingTop="12dp"
+    android:paddingBottom="12dp"
     android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:padding="8dp">
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="24dp"
-        android:gravity="center_vertical"
-        app:srcCompat="@drawable/ic_incognito_24dp"
-        tools:ignore="ContentDescription" />
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
-        <TextView
-            android:text="@string/signin_incognito_mode_primary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
-        <TextView
-            android:text="@string/signin_incognito_mode_secondary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
-    </LinearLayout>
-</LinearLayout>
+    android:text="@string/signin_go_incognito"
+    android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+    app:drawableStartCompat="@drawable/ic_incognito_24dp" />

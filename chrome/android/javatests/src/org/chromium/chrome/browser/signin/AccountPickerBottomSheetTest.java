@@ -191,7 +191,7 @@ public class AccountPickerBottomSheetTest {
     @MediumTest
     public void testExpandedSheetShowsWhenBackpressingOnIncognitoInterstitial() {
         buildAndShowExpandedBottomSheet();
-        onView(withText(R.string.signin_incognito_mode_primary)).perform(click());
+        onView(withText(R.string.signin_go_incognito)).perform(click());
         onView(isRoot()).perform(pressBack());
 
         onView(withText(R.string.signin_account_picker_dialog_title)).check(matches(isDisplayed()));
@@ -434,8 +434,7 @@ public class AccountPickerBottomSheetTest {
     @MediumTest
     public void testIncognitoOptionShownOnExpandedSheet() {
         buildAndShowExpandedBottomSheet();
-        onView(withText(R.string.signin_incognito_mode_secondary)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_incognito_mode_primary)).perform(click());
+        onView(withText(R.string.signin_go_incognito)).perform(click());
         checkIncognitoInterstitialSheet();
     }
 
