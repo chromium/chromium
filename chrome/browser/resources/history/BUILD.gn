@@ -4,13 +4,12 @@
 
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_grit.gni")
 import("//tools/polymer/html_to_js.gni")
 import("../optimize_webui.gni")
 
 if (optimize_webui) {
-  history_pak_file = "history_resources.pak"
-  unpak_folder = "history_resources.unpak"
+  preprocess_folder = "preprocess"
 
   optimize_webui("build") {
     host = "history"
@@ -18,7 +17,7 @@ if (optimize_webui) {
       "history.js",
       "lazy_load.js",
     ]
-    input = rebase_path("$target_gen_dir/$unpak_folder", root_build_dir)
+    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
     js_out_files = [
       "history.rollup.js",
       "lazy_load.rollup.js",
@@ -26,36 +25,43 @@ if (optimize_webui) {
     ]
 
     deps = [
-      ":unpak",
+      ":preprocess",
+      ":preprocess_generated",
       "../../../../ui/webui/resources:preprocess",
     ]
     excludes = [ "chrome://resources/js/cr.m.js" ]
   }
 
-  unpak("unpak") {
-    pak_file = history_pak_file
-    out_folder = unpak_folder
-
-    deps = [ ":flattened_resources" ]
+  preprocess_grit("preprocess") {
+    in_folder = "./"
+    out_folder = "$target_gen_dir/$preprocess_folder"
+    in_files = [
+      "browser_service.js",
+      "constants.js",
+      "externs.js",
+      "history.js",
+      "lazy_load.js",
+      "query_manager.js",
+      "searched_label.js",
+    ]
   }
 
-  grit("flattened_resources") {
-    source = "history_resources.grd"
-
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-    ]
-
+  preprocess_grit("preprocess_generated") {
     deps = [ ":web_components" ]
-    defines = chrome_grit_defines
-    outputs = [
-      "grit/history_resources.h",
-      "grit/history_resources_map.cc",
-      "grit/history_resources_map.h",
-      history_pak_file,
+    in_folder = target_gen_dir
+    out_folder = "$target_gen_dir/$preprocess_folder"
+    in_files = [
+      "app.js",
+      "history_item.js",
+      "history_list.js",
+      "history_toolbar.js",
+      "router.js",
+      "shared_style.js",
+      "shared_vars.js",
+      "side_bar.js",
+      "synced_device_card.js",
+      "synced_device_manager.js",
     ]
-    output_dir = "$root_gen_dir/chrome/browser/resources/history"
   }
 }
 

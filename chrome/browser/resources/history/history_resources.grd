@@ -15,75 +15,65 @@
       <!-- Generated Polymer 3 elements -->
       <include name="IDR_HISTORY_APP_JS"
                file="${root_gen_dir}/chrome/browser/resources/history/app.js"
-               use_base_dir="false" compress="false" type="BINDATA" preprocess="true" />
+               use_base_dir="false" type="BINDATA" preprocess="true" />
       <include name="IDR_HISTORY_HISTORY_ITEM_JS"
                file="${root_gen_dir}/chrome/browser/resources/history/history_item.js"
-               use_base_dir="false" compress="false" type="BINDATA" />
+               use_base_dir="false" type="BINDATA" />
       <include name="IDR_HISTORY_HISTORY_LIST_JS"
                file="${root_gen_dir}/chrome/browser/resources/history/history_list.js"
-               use_base_dir="false" compress="false" type="BINDATA" />
+               use_base_dir="false" type="BINDATA" />
       <include name="IDR_HISTORY_HISTORY_TOOLBAR_JS"
                file="${root_gen_dir}/chrome/browser/resources/history/history_toolbar.js"
-               use_base_dir="false" compress="false" type="BINDATA" />
+               use_base_dir="false" type="BINDATA" />
       <include name="IDR_HISTORY_ROUTER_JS"
                file="${root_gen_dir}/chrome/browser/resources/history/router.js"
-               use_base_dir="false" compress="false" type="BINDATA" />
+               use_base_dir="false" type="BINDATA" />
       <include name="IDR_HISTORY_SHARED_STYLE_JS"
                file="${root_gen_dir}/chrome/browser/resources/history/shared_style.js"
-               use_base_dir="false" compress="false" type="BINDATA" />
+               use_base_dir="false" type="BINDATA" />
       <include name="IDR_HISTORY_SHARED_VARS_JS"
                file="${root_gen_dir}/chrome/browser/resources/history/shared_vars.js"
-               use_base_dir="false" compress="false" type="BINDATA" />
+               use_base_dir="false" type="BINDATA" />
       <include name="IDR_HISTORY_SIDE_BAR_JS"
                file="${root_gen_dir}/chrome/browser/resources/history/side_bar.js"
-               use_base_dir="false" compress="false" type="BINDATA" />
+               use_base_dir="false" type="BINDATA" />
       <include name="IDR_HISTORY_SYNCED_DEVICE_CARD_JS"
                file="${root_gen_dir}/chrome/browser/resources/history/synced_device_card.js"
-               use_base_dir="false" compress="false" type="BINDATA" />
+               use_base_dir="false" type="BINDATA" />
       <include name="IDR_HISTORY_SYNCED_DEVICE_MANAGER_JS"
                file="${root_gen_dir}/chrome/browser/resources/history/synced_device_manager.js"
-               use_base_dir="false" compress="false" type="BINDATA" />
+               use_base_dir="false" type="BINDATA" />
 
       <include name="IDR_HISTORY_CONSTANTS_JS"
                file="constants.js"
-               compress="false"
                type="BINDATA" />
       <include name="IDR_HISTORY_EXTERNS_JS"
                file="externs.js"
-               compress="false"
                type="BINDATA" />
       <include name="IDR_HISTORY_HISTORY_HTML"
                file="history.html"
                preprocess="true"
-               compress="false"
                type="BINDATA" />
       <include name="IDR_HISTORY_HISTORY_JS"
                file="history.js"
-               compress="false"
                type="BINDATA" />
       <include name="IDR_HISTORY_IMAGES_SIGN_IN_PROMO_DARK_SVG"
                file="images\sign_in_promo_dark.svg"
-               compress="false"
                type="BINDATA" />
       <include name="IDR_HISTORY_IMAGES_SIGN_IN_PROMO_SVG"
                file="images\sign_in_promo.svg"
-               compress="false"
                type="BINDATA" />
       <include name="IDR_HISTORY_BROWSER_SERVICE_JS"
                file="browser_service.js"
-               compress="false"
                type="BINDATA" />
       <include name="IDR_HISTORY_LAZY_LOAD_JS"
                file="lazy_load.js"
-               compress="false"
                type="BINDATA" />
       <include name="IDR_HISTORY_QUERY_MANAGER_JS"
                file="query_manager.js"
-               compress="false"
                type="BINDATA" />
       <include name="IDR_HISTORY_SEARCHED_LABEL_JS"
                file="searched_label.js"
-               compress="false"
                type="BINDATA" />
     </includes>
   </release>
