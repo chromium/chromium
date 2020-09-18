@@ -45,14 +45,14 @@ bool HasPolicyValue(const PrefService* pref_service, const char* value) {
          quick_unlock_allowlist->end();
 }
 
+}  // namespace
+
 bool IsFingerprintDisabledByPolicy(const PrefService* pref_service) {
   const bool enabled =
       HasPolicyValue(pref_service, kQuickUnlockAllowlistOptionAll) ||
       HasPolicyValue(pref_service, kQuickUnlockAllowlistOptionFingerprint);
   return !enabled;
 }
-
-}  // namespace
 
 base::TimeDelta PasswordConfirmationFrequencyToTimeDelta(
     PasswordConfirmationFrequency frequency) {

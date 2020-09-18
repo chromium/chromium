@@ -27,8 +27,9 @@ FingerprintStorage::FingerprintStorage(Profile* profile) : profile_(profile) {
 
   content::GetDeviceService().BindFingerprint(
       fp_service_.BindNewPipeAndPassReceiver());
+
   const std::string user_id =
-      ProfileHelper::Get()->GetUserIdHashFromProfile(profile);
+      ProfileHelper::Get()->GetUserIdHashFromProfile(profile_);
   // Get actual records to update cached prefs::kQuickUnlockFingerprintRecord.
   fp_service_->GetRecordsForUser(
       user_id, base::BindOnce(&FingerprintStorage::OnGetRecords,
@@ -61,8 +62,22 @@ bool FingerprintStorage::ExceededUnlockAttempts() const {
 
 void FingerprintStorage::OnGetRecords(
     const base::flat_map<std::string, std::string>& fingerprints_list_mapping) {
-  profile_->GetPrefs()->SetInteger(prefs::kQuickUnlockFingerprintRecord,
-                                   fingerprints_list_mapping.size());
+  if (!IsFingerprintDisabledByPolicy(profile_->GetPrefs())) {
+    profile_->GetPrefs()->SetInteger(prefs::kQuickUnlockFingerprintRecord,
+                                     fingerprints_list_mapping.size());
+    return;
+  }
+
+  for (const auto& it : fingerprints_list_mapping) {
+    fp_service_->RemoveRecord(it.first, base::BindOnce([](bool success) {
+                                if (success)
+                                  return;
+                                LOG(ERROR)
+                                    << "Failed to remove fingerprint record";
+                              }));
+  }
+
+  profile_->GetPrefs()->SetInteger(prefs::kQuickUnlockFingerprintRecord, 0);
 }
 
 }  // namespace quick_unlock

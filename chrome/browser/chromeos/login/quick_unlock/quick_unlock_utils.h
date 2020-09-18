@@ -50,10 +50,11 @@ bool IsPinEnabled(PrefService* pref_service);
 // Returns true if the fingerprint is allowed for specified profile.
 bool IsFingerprintEnabled(Profile* profile);
 
-// Returns fingerprint sensor location depending on the board name. Used to
-// display correct UI. Returns TABLET by default.
-// TODO(rsorokin): Reevaluate this once the fingerprint UI settings are
-// supported by cros_config.
+// Returns true if the fingerprint unlock is disabled by policy.
+bool IsFingerprintDisabledByPolicy(const PrefService* pref_service);
+
+// Returns fingerprint sensor location depending on the command line switch.
+// Is used to display correct UI assets. Returns TABLET_POWER_BUTTON by default.
 FingerprintLocation GetFingerprintLocation();
 
 // Enable or Disable quick-unlock modes for testing
