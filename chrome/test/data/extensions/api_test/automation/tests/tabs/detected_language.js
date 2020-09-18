@@ -21,14 +21,6 @@ var allTests = [
     chrome.test.succeed();
   },
 
-  function detectedLanguageForInvalidAttribute() {
-    var item = rootNode.children[2].children[0];
-    var langAnnotation =
-      item.languageAnnotationForStringAttribute('invalid attribute');
-    assertEq(0, langAnnotation.length);
-    chrome.test.succeed();
-  },
-
   function detectedLanguageCharacter() {
     var item = rootNode.children[2].children[0];
     var langAnnotation = item.languageAnnotationForStringAttribute('name');
