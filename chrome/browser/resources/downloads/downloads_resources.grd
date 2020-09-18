@@ -14,64 +14,51 @@
     <includes>
       <include name="IDR_DOWNLOADS_IMAGES_INCOGNITO_MARKER_SVG"
           file="images\incognito_marker.svg"
-          compress="false"
           type="BINDATA" />
       <include name="IDR_DOWNLOADS_IMAGES_NO_DOWNLOADS_SVG"
           file="images\no_downloads.svg"
-          compress="false"
           type="BINDATA" />
       <include name="IDR_DOWNLOADS_MOJO_LITE_JS"
           file="${root_gen_dir}\chrome\browser\ui\webui\downloads\downloads.mojom-lite.js"
           use_base_dir="false"
-          compress="false"
           type="chrome_html" />
       <include name="IDR_DOWNLOADS_MANAGER_JS"
           file="${root_gen_dir}\chrome\browser\resources\downloads\manager.js"
           use_base_dir="false"
           preprocess="true"
-          compress="false"
           type="chrome_html" />
       <include name="IDR_DOWNLOADS_ITEM_JS"
           file="${root_gen_dir}\chrome\browser\resources\downloads\item.js"
           use_base_dir="false"
-          compress="false"
           type="chrome_html" />
       <include name="IDR_DOWNLOADS_TOOLBAR_JS"
           file="${root_gen_dir}\chrome\browser\resources\downloads\toolbar.js"
           use_base_dir="false"
-          compress="false"
           type="chrome_html" />
       <include name="IDR_DOWNLOADS_ICONS_JS"
           file="${root_gen_dir}\chrome\browser\resources\downloads\icons.js"
           use_base_dir="false"
-          compress="false"
           type="chrome_html" />
     </includes>
     <structures>
       <structure name="IDR_DOWNLOADS_DOWNLOADS_HTML"
           file="downloads.html"
           preprocess="true"
-          compress="false"
           type="chrome_html" />
       <structure name="IDR_DOWNLOADS_BROWSER_PROXY_JS"
           file="browser_proxy.js"
-          compress="false"
           type="chrome_html" />
       <structure name="IDR_DOWNLOADS_CONSTANTS_JS"
           file="constants.js"
-          compress="false"
           type="chrome_html" />
       <structure name="IDR_DOWNLOADS_DOWNLOADS_JS"
           file="downloads.js"
-          compress="false"
           type="chrome_html" />
       <structure name="IDR_DOWNLOADS_ICON_LOADER_JS"
           file="icon_loader.js"
-          compress="false"
           type="chrome_html" />
       <structure name="IDR_DOWNLOADS_SEARCH_SERVICE_JS"
           file="search_service.js"
-          compress="false"
           type="chrome_html" />
     </structures>
   </release>

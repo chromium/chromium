@@ -4,58 +4,62 @@
 
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_grit.gni")
 import("//tools/polymer/html_to_js.gni")
 import("../optimize_webui.gni")
 
 if (optimize_webui) {
-  downloads_pak_file = "downloads_resources.pak"
-  unpak_folder = "downloads_resources.unpak"
+  preprocess_folder = "preprocess"
 
   optimize_webui("build") {
     host = "downloads"
-    input = rebase_path("$target_gen_dir/$unpak_folder", root_build_dir)
+    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
     js_out_files = [ "downloads.rollup.js" ]
     js_module_in_files = [ "downloads.js" ]
     excludes = [
       "chrome://resources/js/cr.m.js",
       "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
-      "downloads.mojom-lite.js",
     ]
 
     deps = [
-      ":unpak",
+      ":preprocess",
+      ":preprocess_generated",
+      ":preprocess_mojo",
       "../../../../ui/webui/resources:preprocess",
     ]
   }
 
-  unpak("unpak") {
-    pak_file = downloads_pak_file
-    out_folder = unpak_folder
-    excludes = [ "../../ui/webui/downloads/downloads.mojom-lite.js" ]
-
-    deps = [ ":flattened_resources" ]
+  preprocess_grit("preprocess") {
+    in_folder = "./"
+    out_folder = "$target_gen_dir/$preprocess_folder"
+    in_files = [
+      "browser_proxy.js",
+      "constants.js",
+      "downloads.js",
+      "externs.js",
+      "icon_loader.js",
+      "search_service.js",
+    ]
   }
 
-  grit("flattened_resources") {
-    source = "downloads_resources.grd"
+  preprocess_grit("preprocess_generated") {
+    deps = [ ":web_components" ]
+    in_folder = target_gen_dir
+    out_folder = "$target_gen_dir/$preprocess_folder"
+    in_files = [
+      "icons.js",
+      "item.js",
+      "manager.js",
+      "toolbar.js",
+    ]
+  }
 
-    defines = chrome_grit_defines
-    outputs = [
-      "grit/downloads_resources.h",
-      "grit/downloads_resources_map.cc",
-      "grit/downloads_resources_map.h",
-      downloads_pak_file,
+  copy("preprocess_mojo") {
+    deps = [ "//chrome/browser/ui/webui/downloads:mojo_bindings_js" ]
+    sources = [
+      "$root_gen_dir/chrome/browser/ui/webui/downloads/downloads.mojom-lite.js",
     ]
-    deps = [
-      ":web_components",
-      "//chrome/browser/ui/webui/downloads:mojo_bindings_js",
-    ]
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-    ]
-    output_dir = "$root_gen_dir/chrome/browser/resources/downloads"
+    outputs = [ "$target_gen_dir/$preprocess_folder/downloads.mojom-lite.js" ]
   }
 }
 

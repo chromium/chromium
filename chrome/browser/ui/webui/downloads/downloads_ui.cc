@@ -167,8 +167,10 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
                           IDR_DOWNLOADS_IMAGES_INCOGNITO_MARKER_SVG);
   source->AddResourcePath("images/no_downloads.svg",
                           IDR_DOWNLOADS_IMAGES_NO_DOWNLOADS_SVG);
+#if !BUILDFLAG(OPTIMIZE_WEBUI)
   source->AddResourcePath("downloads.mojom-lite.js",
                           IDR_DOWNLOADS_MOJO_LITE_JS);
+#endif
 
   source->AddBoolean(
       "allowOpenNow",
