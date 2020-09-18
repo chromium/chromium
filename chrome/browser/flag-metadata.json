@@ -3727,11 +3727,6 @@
     "expiry_milestone": 88
   },
   {
-    "name": "prefetch-privacy-changes",
-    "owners": [ "dom", "yhirano" ],
-    "expiry_milestone": 85
-  },
-  {
     "name": "print-job-management-app",
     "owners": [ "jimmyxgong", "cros-peripherals@google.com" ],
     "expiry_milestone": 88

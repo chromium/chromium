@@ -4072,10 +4072,6 @@ const FeatureEntry kFeatureEntries[] = {
          kDelayCompetingLowPriorityRequestsFeatureVariations,
          "DelayCompetingLowPriorityRequests")},
 
-    {"prefetch-privacy-changes", flag_descriptions::kPrefetchPrivacyChangesName,
-     flag_descriptions::kPrefetchPrivacyChangesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kPrefetchPrivacyChanges)},
-
     {"intensive-wake-up-throttling",
      flag_descriptions::kIntensiveWakeUpThrottlingName,
      flag_descriptions::kIntensiveWakeUpThrottlingDescription, kOsAll,

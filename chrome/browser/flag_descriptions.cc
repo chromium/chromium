@@ -2003,13 +2003,6 @@ const char kDelayCompetingLowPriorityRequestsDescription[] =
     "Low priority requests will be delayed if they would otherwise compete "
     "with a high priority request.";
 
-const char kPrefetchPrivacyChangesName[] =
-    "Prefetch request properties are updated to be privacy-preserving";
-const char kPrefetchPrivacyChangesDescription[] =
-    "Prefetch requests will not follow redirects, not send a Referer header, "
-    "not send credentials for cross-origin requests, and do not pass through "
-    "service workers.";
-
 const char kIntensiveWakeUpThrottlingName[] =
     "Throttle Javascript timers in background.";
 const char kIntensiveWakeUpThrottlingDescription[] =
