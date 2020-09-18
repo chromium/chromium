@@ -132,19 +132,7 @@ affecting the client view.
 
 The overall structure of a Widget and its helper Views looks like this:
 
-```
-(Widget
-  (RootView
-    (NonClientView
-      (NonClientFrameView
-        title
-        non-client buttons, e.g. close button
-        ...)
-      (ClientView
-        contents
-        dialog buttons
-        ...))))
-```
+![views](views.png)
 
 ## Dialogs
 

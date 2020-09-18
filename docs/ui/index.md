@@ -16,9 +16,9 @@ Recipes to help you work with Chrome UI.
 Details on Chrome UI.
 
 * [Best Practices](/docs/ui/learn/index.md#best-practices)
+* [Views](/docs/ui/views/overview.md)
 * [Product Excellence](/docs/ui/product_excellence/index.md)
 * [UI Devtools](/docs/ui/ui_devtools/index.md)
-* [Views](/docs/ui/views/overview.md)
 
 Archival Documentation on Chrome UI.
 * [Aura](/docs/ui/aura/index.md)
