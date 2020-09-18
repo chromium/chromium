@@ -74,8 +74,10 @@ std::unique_ptr<View> CreateCheckboxControl(std::unique_ptr<Checkbox> checkbox,
 }  // namespace
 
 BubbleDialogModelHost::BubbleDialogModelHost(
-    std::unique_ptr<ui::DialogModel> model)
-    : model_(std::move(model)) {
+    std::unique_ptr<ui::DialogModel> model,
+    View* anchor_view,
+    BubbleBorder::Arrow arrow)
+    : BubbleDialogDelegateView(anchor_view, arrow), model_(std::move(model)) {
   model_->set_host(GetPassKey(), this);
 
   ConfigureGridLayout();

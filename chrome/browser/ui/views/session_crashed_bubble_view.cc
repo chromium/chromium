@@ -263,10 +263,8 @@ views::BubbleDialogDelegateView* SessionCrashedBubbleView::ShowBubble(
                      base::Unretained(bubble_delegate), browser),
       l10n_util::GetStringUTF16(IDS_SESSION_CRASHED_VIEW_RESTORE_BUTTON));
 
-  auto bubble =
-      std::make_unique<views::BubbleDialogModelHost>(dialog_builder.Build());
-  bubble->SetAnchorView(anchor_view);
-  bubble->SetArrow(views::BubbleBorder::TOP_RIGHT);
+  auto bubble = std::make_unique<views::BubbleDialogModelHost>(
+      dialog_builder.Build(), anchor_view, views::BubbleBorder::TOP_RIGHT);
 
   views::BubbleDialogDelegateView* bubble_ptr = bubble.get();
   views::BubbleDialogDelegateView::CreateBubble(bubble.release())->Show();

@@ -18,14 +18,13 @@ class GridLayout;
 class Textfield;
 
 // BubbleDialogModelHost is a views implementation of ui::DialogModelHost which
-// hosts a ui::DialogModel as a BubbleDialogDelegateView. This exposes
-// views-specific methods such as SetAnchorView(), SetArrow() and
-// SetHighlightedButton(). For methods that are reflected in ui::DialogModelHost
-// (such as ::Close()), prefer using the ui::DialogModelHost to avoid
-// platform-specific code (GetWidget()->Close()) where unnecessary. For those
-// methods, note that this can be retrieved as a ui::DialogModelHost through
-// DialogModel::host(). This helps minimize platform-specific code from
-// platform-agnostic model-delegate code.
+// hosts a ui::DialogModel as a BubbleDialogDelegateView. This exposes such as
+// SetAnchorView(), SetArrow() and SetHighlightedButton(). For methods that are
+// reflected in ui::DialogModelHost (such as ::Close()), prefer using the
+// ui::DialogModelHost to avoid platform-specific code (GetWidget()->Close())
+// where unnecessary. For those methods, note that this can be retrieved as a
+// ui::DialogModelHost through DialogModel::host(). This helps minimize
+// platform-specific code from platform-agnostic model-delegate code.
 class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
                                            public ui::DialogModelHost {
  public:
@@ -33,7 +32,9 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
   // BubbleDialogDelegateView. The BubbleDialogDelegateView is nominally handed
   // to BubbleDialogDelegateView::CreateBubble() which returns a Widget that has
   // taken ownership of the bubble. Widget::Show() finally shows the bubble.
-  explicit BubbleDialogModelHost(std::unique_ptr<ui::DialogModel> model);
+  BubbleDialogModelHost(std::unique_ptr<ui::DialogModel> model,
+                        View* anchor_view,
+                        BubbleBorder::Arrow arrow);
   ~BubbleDialogModelHost() override;
 
   // BubbleDialogDelegateView:

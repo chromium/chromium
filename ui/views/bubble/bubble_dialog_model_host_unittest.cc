@@ -59,9 +59,9 @@ TEST_F(BubbleDialogModelHostTest, CloseIsSynchronousAndCallsWindowClosing) {
   auto delegate = std::make_unique<TestModelDelegate>(&stats);
   auto weak_delegate = delegate->GetWeakPtr();
 
-  auto host = std::make_unique<views::BubbleDialogModelHost>(
-      TestModelDelegate::BuildModel(std::move(delegate)));
-  host->SetAnchorView(anchor_widget->GetContentsView());
+  auto host = std::make_unique<BubbleDialogModelHost>(
+      TestModelDelegate::BuildModel(std::move(delegate)),
+      anchor_widget->GetContentsView(), BubbleBorder::Arrow::TOP_RIGHT);
   auto* host_ptr = host.get();
 
   Widget* bubble_widget =
