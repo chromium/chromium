@@ -7,9 +7,9 @@
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/ppapi_migration/input_event_conversions.h"
 #include "pdf/test/test_client.h"
-#include "ppapi/c/pp_point.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/pdfium/public/fpdf_annot.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 
 using testing::InSequence;
@@ -114,14 +114,14 @@ TEST_F(FormFillerTest, DoURIActionWithKeyboardModifier) {
 TEST_F(FormFillerTest, FormOnFocusChange) {
   struct {
     // Initial scroll position of the document.
-    PP_Point initial_position;
+    gfx::Point initial_position;
     // Page number on which the annotation is present.
     int page_index;
     // The index of test annotation on page_index.
     int annot_index;
     // The scroll position to bring the annotation into view. (0,0) if the
     // annotation is already in view.
-    PP_Point final_scroll_position;
+    gfx::Point final_scroll_position;
   } static constexpr test_cases[] = {
       {{0, 0}, 0, 0, {242, 746}},   {{0, 0}, 0, 1, {510, 478}},
       {{242, 40}, 0, 0, {0, 746}},  {{60, 758}, 0, 0, {242, 0}},
@@ -139,19 +139,19 @@ TEST_F(FormFillerTest, FormOnFocusChange) {
     InSequence sequence;
 
     for (const auto& test_case : test_cases) {
-      if (test_case.final_scroll_position.y != 0) {
+      if (test_case.final_scroll_position.y() != 0) {
         EXPECT_CALL(client,
-                    ScrollToY(test_case.final_scroll_position.y, false));
+                    ScrollToY(test_case.final_scroll_position.y(), false));
       }
-      if (test_case.final_scroll_position.x != 0)
-        EXPECT_CALL(client, ScrollToX(test_case.final_scroll_position.x));
+      if (test_case.final_scroll_position.x() != 0)
+        EXPECT_CALL(client, ScrollToX(test_case.final_scroll_position.x()));
     }
   }
 
   for (const auto& test_case : test_cases) {
     // Setting up the initial scroll positions.
-    engine->ScrolledToXPosition(test_case.initial_position.x);
-    engine->ScrolledToYPosition(test_case.initial_position.y);
+    engine->ScrolledToXPosition(test_case.initial_position.x());
+    engine->ScrolledToYPosition(test_case.initial_position.y());
 
     PDFiumPage& page = GetPDFiumPageForTest(*engine, test_case.page_index);
     ScopedFPDFAnnotation annot(

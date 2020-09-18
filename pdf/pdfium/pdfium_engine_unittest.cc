@@ -19,9 +19,9 @@
 #include "pdf/ppapi_migration/input_event_conversions.h"
 #include "pdf/test/test_client.h"
 #include "pdf/test/test_document_loader.h"
-#include "ppapi/cpp/size.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -946,13 +946,13 @@ TEST_F(PDFiumEngineTabbingTest, MaintainViewportWhenFocusIsUpdated) {
 
   {
     InSequence sequence;
-    static constexpr PP_Point kScrollValue = {510, 478};
-    EXPECT_CALL(client, ScrollToY(kScrollValue.y, false))
+    static constexpr gfx::Point kScrollValue = {510, 478};
+    EXPECT_CALL(client, ScrollToY(kScrollValue.y(), false))
         .WillOnce(Invoke(
-            [&engine]() { engine->ScrolledToYPosition(kScrollValue.y); }));
-    EXPECT_CALL(client, ScrollToX(kScrollValue.x)).WillOnce(Invoke([&engine]() {
-      engine->ScrolledToXPosition(kScrollValue.x);
-    }));
+            [&engine]() { engine->ScrolledToYPosition(kScrollValue.y()); }));
+    EXPECT_CALL(client, ScrollToX(kScrollValue.x()))
+        .WillOnce(Invoke(
+            [&engine]() { engine->ScrolledToXPosition(kScrollValue.x()); }));
   }
 
   EXPECT_EQ(PDFiumEngine::FocusElementType::kNone,
@@ -970,9 +970,9 @@ TEST_F(PDFiumEngineTabbingTest, MaintainViewportWhenFocusIsUpdated) {
             GetFocusedElementType(engine.get()));
 
   // Scroll focused annotation out of viewport.
-  static constexpr PP_Point kScrollPosition = {242, 746};
-  engine->ScrolledToXPosition(kScrollPosition.x);
-  engine->ScrolledToYPosition(kScrollPosition.y);
+  static constexpr gfx::Point kScrollPosition = {242, 746};
+  engine->ScrolledToXPosition(kScrollPosition.x());
+  engine->ScrolledToYPosition(kScrollPosition.y());
 
   engine->UpdateFocus(/*has_focus=*/false);
   EXPECT_EQ(PDFiumEngine::FocusElementType::kPage,
@@ -999,16 +999,16 @@ TEST_F(PDFiumEngineTabbingTest, ScrollFocusedAnnotationIntoView) {
 
   {
     InSequence sequence;
-    static constexpr PP_Point kScrollValues[] = {{510, 478}, {510, 478}};
+    static constexpr gfx::Point kScrollValues[] = {{510, 478}, {510, 478}};
 
     for (const auto& scroll_value : kScrollValues) {
-      EXPECT_CALL(client, ScrollToY(scroll_value.y, false))
+      EXPECT_CALL(client, ScrollToY(scroll_value.y(), false))
           .WillOnce(Invoke([&engine, &scroll_value]() {
-            engine->ScrolledToYPosition(scroll_value.y);
+            engine->ScrolledToYPosition(scroll_value.y());
           }));
-      EXPECT_CALL(client, ScrollToX(scroll_value.x))
+      EXPECT_CALL(client, ScrollToX(scroll_value.x()))
           .WillOnce(Invoke([&engine, &scroll_value]() {
-            engine->ScrolledToXPosition(scroll_value.x);
+            engine->ScrolledToXPosition(scroll_value.x());
           }));
     }
   }
@@ -1028,9 +1028,9 @@ TEST_F(PDFiumEngineTabbingTest, ScrollFocusedAnnotationIntoView) {
             GetFocusedElementType(engine.get()));
 
   // Scroll focused annotation out of viewport.
-  static constexpr PP_Point kScrollPosition = {242, 746};
-  engine->ScrolledToXPosition(kScrollPosition.x);
-  engine->ScrolledToYPosition(kScrollPosition.y);
+  static constexpr gfx::Point kScrollPosition = {242, 746};
+  engine->ScrolledToXPosition(kScrollPosition.x());
+  engine->ScrolledToYPosition(kScrollPosition.y());
 
   // Scroll the focused annotation into view.
   ScrollFocusedAnnotationIntoView(engine.get());
