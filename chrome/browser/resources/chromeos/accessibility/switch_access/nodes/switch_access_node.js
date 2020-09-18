@@ -205,8 +205,8 @@ class SAChildNode {
   /**
    * String-ifies the node (for debugging purposes).
    * @param {boolean} wholeTree Whether to recursively include descendants.
-   * @param {string=} prefix
-   * @param {SAChildNode=} currentNode the currentNode, to highlight.
+   * @param {string} prefix
+   * @param {?SAChildNode} currentNode the currentNode, to highlight.
    * @return {string}
    */
   debugString(wholeTree, prefix = '', currentNode = null) {
@@ -215,7 +215,7 @@ class SAChildNode {
           wholeTree, prefix + '  ', currentNode);
     }
 
-    let str = this.role + ' ';
+    let str = this.constructor.name + ' role(' + this.role + ') ';
 
     if (this.automationNode.name) {
       str += 'name(' + this.automationNode.name + ') ';
@@ -407,13 +407,14 @@ class SARootNode {
 
   /**
    * String-ifies the node (for debugging purposes).
-   * @param {boolean=} wholeTree Whether to recursively descend the tree
-   * @param {string=} prefix
-   * @param {SAChildNode} currentNode the currently focused node, to mark.
+   * @param {boolean} wholeTree Whether to recursively descend the tree
+   * @param {string} prefix
+   * @param {?SAChildNode} currentNode the currently focused node, to mark.
    * @return {string}
    */
   debugString(wholeTree = false, prefix = '', currentNode = null) {
-    let str = 'Root: ' + this.automationNode.role + ' ';
+    let str =
+        'Root: ' + this.constructor.name + ' ' + this.automationNode.role + ' ';
     if (this.automationNode.name) {
       str += 'name(' + this.automationNode.name + ') ';
     }
