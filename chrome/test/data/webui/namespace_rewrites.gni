@@ -4,6 +4,7 @@
 
 test_namespace_rewrites = [
   "cellularSetup.PSimUIState|PSimUIState",
+  "cellularSetup.CellularSetupPageName|CellularSetupPageName",
   "global.traceAssertionsForTesting|window.traceAssertionsForTesting",
   "MockInteractions.blur|blur",
   "MockInteractions.downAndUp|downAndUp",

@@ -60,7 +60,9 @@ Polymer({
 
   /** @private */
   onPageChange_() {
-    this.currentPage_.initSubflow();
+    if (this.currentPage_) {
+      this.currentPage_.initSubflow();
+    }
   },
 
   /** @private */

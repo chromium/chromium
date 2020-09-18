@@ -5,21 +5,41 @@
 // clang-format off
 // #import 'chrome://os-settings/strings.m.js';
 // #import 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_setup.m.js';
+// #import 'chrome://resources/cr_components/chromeos/cellular_setup/setup_selection_flow.m.js';
+// #import 'chrome://resources/cr_components/chromeos/cellular_setup/psim_flow_ui.m.js';
 
+// #import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertTrue} from '../../../chai_assert.js';
 // clang-format on
 
 suite('CrComponentsCellularSetupTest', function() {
-  let cellularSetup;
+  let cellularSetupPage;
   setup(function() {
-    cellularSetup = document.createElement('cellular-setup');
-    document.body.appendChild(cellularSetup);
+    cellularSetupPage = document.createElement('cellular-setup');
+    document.body.appendChild(cellularSetupPage);
     Polymer.dom.flush();
   });
 
   test('Base test', function() {
-    const ironPage = cellularSetup.$$('iron-pages');
+    const ironPage = cellularSetupPage.$$('iron-pages');
     assertTrue(!!ironPage);
+  });
+
+  test('Page selection change', function() {
+    assertTrue(
+        cellularSetupPage.currentPageName_ ===
+        cellularSetup.CellularSetupPageName.SETUP_FLOW_SELECTION);
+
+    const selectionFlow = cellularSetupPage.$$('setup-selection-flow');
+    assertTrue(!!selectionFlow);
+
+    const psimBtn = selectionFlow.$$('#psim-flow-ui-btn');
+    assertTrue(!!psimBtn);
+
+    psimBtn.click();
+    assertTrue(
+        cellularSetupPage.selectedFlow_ ===
+        cellularSetup.CellularSetupPageName.PSIM_FLOW_UI);
   });
 });
