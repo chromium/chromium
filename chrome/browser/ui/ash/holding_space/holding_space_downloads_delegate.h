@@ -63,8 +63,8 @@ class HoldingSpaceDownloadsDelegate : public HoldingSpaceKeyedServiceDelegate,
   // download::DownloadItem::Observer:
   void OnDownloadUpdated(download::DownloadItem* item) override;
 
-  // Invoked when the specified `item` has completed downloading.
-  void OnDownloadCompleted(download::DownloadItem* item);
+  // Invoked when the specified `file_path` has completed downloading.
+  void OnDownloadCompleted(const base::FilePath& file_path);
 
   // Removes all observers.
   void RemoveObservers();
@@ -80,6 +80,8 @@ class HoldingSpaceDownloadsDelegate : public HoldingSpaceKeyedServiceDelegate,
 
   ScopedObserver<download::DownloadItem, download::DownloadItem::Observer>
       download_item_observer_{this};
+
+  base::WeakPtrFactory<HoldingSpaceDownloadsDelegate> weak_factory_{this};
 };
 
 }  // namespace ash

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_file_system_delegate.h"
 
+#include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
@@ -129,22 +130,25 @@ void HoldingSpaceFileSystemDelegate::OnFilePathChanged(
   // to verify the existence of these backing files and remove any holding space
   // items that no longer exist.
 
-  std::vector<base::FilePath> file_paths;
+  holding_space_util::FilePathsWithValidityRequirements
+      file_paths_with_requirements;
   for (const auto& item : model()->items()) {
-    if (file_path.IsParent(item->file_path()))
-      file_paths.push_back(item->file_path());
+    if (file_path.IsParent(item->file_path())) {
+      file_paths_with_requirements.push_back(
+          {item->file_path(), /*requirements=*/{}});
+    }
   }
 
-  holding_space_util::PartitionFilePathsByExistence(
-      profile(), std::move(file_paths),
+  holding_space_util::PartitionFilePathsByValidity(
+      profile(), std::move(file_paths_with_requirements),
       base::BindOnce(
           [](const base::WeakPtr<HoldingSpaceFileSystemDelegate>& weak_ptr,
-             std::vector<base::FilePath> existing_file_paths,
-             std::vector<base::FilePath> non_existing_file_paths) {
+             std::vector<base::FilePath> valid_file_paths,
+             std::vector<base::FilePath> invalid_file_paths) {
             if (weak_ptr) {
               auto file_removed_callback = weak_ptr->file_removed_callback_;
-              for (const auto& non_existing_file_path : non_existing_file_paths)
-                file_removed_callback.Run(non_existing_file_path);
+              for (const auto& invalid_file_path : invalid_file_paths)
+                file_removed_callback.Run(invalid_file_path);
             }
           },
           weak_factory_.GetWeakPtr()));

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_persistence_delegate.h"
 
+#include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "chrome/browser/profiles/profile.h"
@@ -68,9 +69,9 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemRemoved(
 
   // Remove the |item| from persistent storage.
   ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
-  update->EraseListValueIf([&item](const base::Value& existing_item) {
+  update->EraseListValueIf([&item](const base::Value& persisted_item) {
     return HoldingSpaceItem::DeserializeId(
-               base::Value::AsDictionaryValue(existing_item)) == item->id();
+               base::Value::AsDictionaryValue(persisted_item)) == item->id();
   });
 }
 
@@ -88,7 +89,8 @@ void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
   }
 
   std::vector<HoldingSpaceItemPtr> holding_space_items;
-  std::vector<base::FilePath> holding_space_file_paths;
+  holding_space_util::FilePathsWithValidityRequirements
+      file_paths_with_requirements;
 
   for (const auto& persisted_holding_space_item :
        persisted_holding_space_items->GetList()) {
@@ -98,37 +100,42 @@ void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
                        base::Unretained(profile())),
         base::BindOnce(&holding_space_util::ResolveImage,
                        base::Unretained(thumbnail_loader_))));
-    holding_space_file_paths.push_back(holding_space_items.back()->file_path());
+    holding_space_util::ValidityRequirement requirements;
+    HoldingSpaceItem* holding_space_item = holding_space_items.back().get();
+    if (holding_space_item->type() != HoldingSpaceItem::Type::kPinnedFile)
+      requirements.must_be_newer_than = kMaxFileAge;
+    file_paths_with_requirements.push_back(
+        {holding_space_item->file_path(), requirements});
   }
 
-  holding_space_util::PartitionFilePathsByExistence(
-      profile(), std::move(holding_space_file_paths),
-      base::BindOnce(&HoldingSpacePersistenceDelegate::RestoreModelByExistence,
+  holding_space_util::PartitionFilePathsByValidity(
+      profile(), std::move(file_paths_with_requirements),
+      base::BindOnce(&HoldingSpacePersistenceDelegate::RestoreModelByValidity,
                      weak_factory_.GetWeakPtr(),
                      std::move(holding_space_items)));
 }
 
-void HoldingSpacePersistenceDelegate::RestoreModelByExistence(
+void HoldingSpacePersistenceDelegate::RestoreModelByValidity(
     std::vector<HoldingSpaceItemPtr> holding_space_items,
-    std::vector<base::FilePath> existing_file_paths,
-    std::vector<base::FilePath> non_existing_file_paths) {
+    std::vector<base::FilePath> valid_file_paths,
+    std::vector<base::FilePath> invalid_file_paths) {
   DCHECK(model()->items().empty());
 
-  // Restore existing holding space items.
+  // Restore valid holding space items.
   for (auto& holding_space_item : holding_space_items) {
-    if (base::Contains(existing_file_paths, holding_space_item->file_path()))
+    if (base::Contains(valid_file_paths, holding_space_item->file_path()))
       item_restored_callback_.Run(std::move(holding_space_item));
   }
 
-  // Clean up non-existing holding space items from persistence.
-  if (!non_existing_file_paths.empty()) {
+  // Clean up invalid holding space items from persistence.
+  if (!invalid_file_paths.empty()) {
     ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
     update->EraseListValueIf(
-        [&non_existing_file_paths](const base::Value& persisted_item) {
+        [&invalid_file_paths](const base::Value& persisted_item) {
           base::FilePath persisted_file_path =
               HoldingSpaceItem::DeserializeFilePath(
                   base::Value::AsDictionaryValue(persisted_item));
-          return base::Contains(non_existing_file_paths, persisted_file_path);
+          return base::Contains(invalid_file_paths, persisted_file_path);
         });
   }
 

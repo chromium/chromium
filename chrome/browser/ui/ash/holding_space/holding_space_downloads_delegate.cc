@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_downloads_delegate.h"
 
+#include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "base/barrier_closure.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
@@ -67,23 +70,39 @@ void HoldingSpaceDownloadsDelegate::OnManagerInitialized() {
   download::SimpleDownloadManager::DownloadVector downloads;
   download_manager->GetAllDownloads(&downloads);
 
+  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+      downloads.size(), std::move(downloads_restored_callback_));
+
   for (auto* download : downloads) {
     switch (download->GetState()) {
-      case download::DownloadItem::COMPLETE:
-        OnDownloadCompleted(download);
-        break;
+      case download::DownloadItem::COMPLETE: {
+        holding_space_util::ValidityRequirement requirements;
+        requirements.must_be_newer_than = kMaxFileAge;
+        holding_space_util::FilePathValid(
+            profile(), {download->GetFullPath(), requirements},
+            base::BindOnce(
+                [](const base::FilePath& path,
+                   base::RepeatingClosure barrier_closure,
+                   ItemDownloadedCallback callback, bool valid) {
+                  if (valid)
+                    callback.Run(path);
+                  barrier_closure.Run();
+                },
+                download->GetFullPath(), barrier_closure,
+                base::BindRepeating(
+                    &HoldingSpaceDownloadsDelegate::OnDownloadCompleted,
+                    weak_factory_.GetWeakPtr())));
+      } break;
       case download::DownloadItem::IN_PROGRESS:
         download_item_observer_.Add(download);
-        break;
+        FALLTHROUGH;
       case download::DownloadItem::CANCELLED:
       case download::DownloadItem::INTERRUPTED:
       case download::DownloadItem::MAX_DOWNLOAD_STATE:
+        barrier_closure.Run();
         break;
     }
   }
-
-  // Notify completion of downloads restoration.
-  std::move(downloads_restored_callback_).Run();
 }
 
 void HoldingSpaceDownloadsDelegate::ManagerGoingDown(
@@ -101,7 +120,7 @@ void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
     download::DownloadItem* item) {
   switch (item->GetState()) {
     case download::DownloadItem::COMPLETE:
-      OnDownloadCompleted(item);
+      OnDownloadCompleted(item->GetFullPath());
       FALLTHROUGH;
     case download::DownloadItem::CANCELLED:
     case download::DownloadItem::INTERRUPTED:
@@ -114,9 +133,9 @@ void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
 }
 
 void HoldingSpaceDownloadsDelegate::OnDownloadCompleted(
-    download::DownloadItem* item) {
+    const base::FilePath& file_path) {
   if (!is_restoring_persistence())
-    item_downloaded_callback_.Run(item->GetFullPath());
+    item_downloaded_callback_.Run(file_path);
 }
 
 void HoldingSpaceDownloadsDelegate::RemoveObservers() {

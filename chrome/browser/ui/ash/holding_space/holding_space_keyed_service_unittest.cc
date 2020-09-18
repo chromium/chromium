@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/file_icon_util.h"
+#include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
@@ -20,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
@@ -322,6 +324,7 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     SetUpDownloadManager();
     BrowserWithTestWindowTest::SetUp();
+    holding_space_util::SetNowForTesting(base::nullopt);
   }
 
   void SetUpDownloadManager() {
@@ -605,10 +608,113 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
             persisted_holding_space_items_after_restoration);
 }
 
+// Verifies that screenshots restored from persistence are not older than
+// kMaxFileAge.
+TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistance) {
+  // Create file system mount point.
+  ScopedDownloadsMountPoint downloads_mount(GetProfile());
+  ASSERT_TRUE(downloads_mount.IsValid());
+
+  HoldingSpaceKeyedService* const primary_holding_space_service =
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
+
+  HoldingSpaceModel::ItemList restored_holding_space_items;
+  base::ListValue persisted_holding_space_items_after_restoration;
+
+  // Create a secondary profile w/ a pre-populated pref store.
+  TestingProfile* const secondary_profile = CreateSecondaryProfile(
+      base::BindLambdaForTesting([&](TestingPrefStore* pref_store) {
+        auto persisted_holding_space_items_before_restoration =
+            std::make_unique<base::ListValue>();
+
+        // Persist some holding space items of each type.
+        for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+          // We do not persist `kDownload` type items.
+          if (type == HoldingSpaceItem::Type::kDownload)
+            continue;
+
+          const base::FilePath file = CreateArbitraryFile(downloads_mount);
+          const GURL file_system_url = GetFileSystemUrl(GetProfile(), file);
+
+          auto fresh_holding_space_item =
+              HoldingSpaceItem::CreateFileBackedItem(
+                  type, file, file_system_url,
+                  holding_space_util::ResolveImage(
+                      primary_holding_space_service
+                          ->thumbnail_loader_for_testing(),
+                      type, file));
+
+          persisted_holding_space_items_before_restoration->Append(
+              fresh_holding_space_item->Serialize());
+
+          // We don't expect the screenshots to still be in persistence or
+          // restoration after model restoration since the file will be older
+          // than the time limit for restored files.
+          if (type != HoldingSpaceItem::Type::kScreenshot) {
+            persisted_holding_space_items_after_restoration.Append(
+                fresh_holding_space_item->Serialize());
+            restored_holding_space_items.push_back(
+                std::move(fresh_holding_space_item));
+          }
+
+          auto stale_holding_space_item =
+              HoldingSpaceItem::CreateFileBackedItem(
+                  type,
+                  base::FilePath(base::UnguessableToken::Create().ToString()),
+                  GURL(),
+                  std::make_unique<HoldingSpaceImage>(
+                      /*placeholder=*/gfx::ImageSkia(),
+                      /*async_bitmap_resolver=*/base::DoNothing()));
+
+          // NOTE: While the `stale_holding_space_item` is persisted here, we do
+          // *not* expect it to be restored or to be persisted after model
+          // restoration since its backing file does *not* exist.
+          persisted_holding_space_items_before_restoration->Append(
+              stale_holding_space_item->Serialize());
+        }
+
+        pref_store->SetValueSilently(
+            HoldingSpacePersistenceDelegate::kPersistencePath,
+            std::move(persisted_holding_space_items_before_restoration),
+            PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
+      }));
+
+  holding_space_util::SetNowForTesting(base::Time::Now() + kMaxFileAge);
+
+  ActivateSecondaryProfile();
+  HoldingSpaceModelAttachedWaiter(secondary_profile).Wait();
+
+  HoldingSpaceKeyedService* const secondary_holding_space_service =
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
+          secondary_profile);
+  HoldingSpaceModel* const secondary_holding_space_model =
+      HoldingSpaceController::Get()->model();
+
+  EXPECT_EQ(secondary_holding_space_model,
+            secondary_holding_space_service->model_for_testing());
+
+  EXPECT_EQ(secondary_holding_space_model->items().size(),
+            restored_holding_space_items.size());
+
+  // Verify in-memory holding space items.
+  for (size_t i = 0; i < secondary_holding_space_model->items().size(); ++i) {
+    const auto& item = secondary_holding_space_model->items()[i];
+    const auto& restored_item = restored_holding_space_items[i];
+    EXPECT_EQ(*item, *restored_item)
+        << "Expected equality of values at index " << i << ":"
+        << "\n\tActual: " << item->id()
+        << "\n\rRestored: " << restored_item->id();
+  }
+
+  // Verify persisted holding space items.
+  EXPECT_EQ(*secondary_profile->GetPrefs()->GetList(
+                HoldingSpacePersistenceDelegate::kPersistencePath),
+            persisted_holding_space_items_after_restoration);
+}
+
 TEST_F(HoldingSpaceKeyedServiceTest, RetrieveHistory) {
-  TestingProfile* profile = GetProfile();
   // Create a test downloads mount point.
-  ScopedDownloadsMountPoint downloads_mount(profile);
+  ScopedDownloadsMountPoint downloads_mount(GetProfile());
   ASSERT_TRUE(downloads_mount.IsValid());
 
   std::vector<base::FilePath> virtual_paths;
@@ -645,8 +751,9 @@ TEST_F(HoldingSpaceKeyedServiceTest, RetrieveHistory) {
   EXPECT_CALL(*mock_download_manager, GetAllDownloads(testing::_))
       .WillOnce(testing::SetArgPointee<0>(download_items_mock));
 
-  CreateSecondaryProfile();
+  TestingProfile* secondary_profile = CreateSecondaryProfile();
   ActivateSecondaryProfile();
+  HoldingSpaceModelAttachedWaiter(secondary_profile).Wait();
 
   HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
   ASSERT_EQ(2u, model->items().size());
@@ -732,6 +839,48 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddDownloadItem) {
   EXPECT_EQ(download_item_virtual_path,
             GetVirtualPathFromUrl(download_item->file_system_url(),
                                   downloads_mount.name()));
+}
+
+TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderDownloads) {
+  // Create a test downloads mount point.
+  ScopedDownloadsMountPoint downloads_mount(GetProfile());
+  ASSERT_TRUE(downloads_mount.IsValid());
+
+  std::vector<base::FilePath> virtual_paths;
+  std::vector<base::FilePath> full_paths;
+  content::DownloadManager::DownloadVector download_items_mock;
+
+  content::MockDownloadManager* mock_download_manager = download_manager();
+
+  for (int i = 0; i < 3; ++i) {
+    const base::FilePath download_item_virtual_path(
+        "Download " + base::NumberToString(i) + ".png");
+    virtual_paths.push_back(download_item_virtual_path);
+    const base::FilePath download_item_full_path =
+        CreateFile(downloads_mount, download_item_virtual_path,
+                   "download " + base::NumberToString(i));
+    full_paths.push_back(download_item_full_path);
+    std::unique_ptr<download::MockDownloadItem> item(
+        CreateMockDownloadItem(download_item_full_path));
+    EXPECT_CALL(*item, GetState())
+        .WillOnce(testing::Return(download::DownloadItem::COMPLETE));
+    download_items_mock.push_back(item.release());
+  }
+  EXPECT_CALL(*mock_download_manager, GetAllDownloads(testing::_))
+      .WillOnce(testing::SetArgPointee<0>(download_items_mock));
+
+  // Set time to kMaxFileAge from current time, no downloads should be added.
+  holding_space_util::SetNowForTesting(base::Time::Now() + kMaxFileAge);
+
+  TestingProfile* secondary_profile = CreateSecondaryProfile();
+  ActivateSecondaryProfile();
+  HoldingSpaceModelAttachedWaiter(secondary_profile).Wait();
+
+  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+  ASSERT_EQ(0u, model->items().size());
+
+  for (int i = 0; i < 3; ++i)
+    delete download_items_mock[i];
 }
 
 }  // namespace ash

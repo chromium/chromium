@@ -67,10 +67,10 @@ class HoldingSpacePersistenceDelegate
 
   // Restores the holding space model from persistent storage.
   void RestoreModelFromPersistence();
-  void RestoreModelByExistence(
+  void RestoreModelByValidity(
       std::vector<HoldingSpaceItemPtr> holding_space_items,
-      std::vector<base::FilePath> existing_file_paths,
-      std::vector<base::FilePath> non_existing_file_paths);
+      std::vector<base::FilePath> valid_file_paths,
+      std::vector<base::FilePath> invalid_file_paths);
 
   // Owned by `HoldingSpaceKeyedService`.
   HoldingSpaceThumbnailLoader* const thumbnail_loader_;

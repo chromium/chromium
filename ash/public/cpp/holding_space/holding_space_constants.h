@@ -36,6 +36,10 @@ constexpr gfx::Size kHoldingSpaceScreenshotSize(104, 80);
 constexpr int kHoldingSpacePinnedFilesContainerId = 1;
 constexpr int kHoldingSpaceRecentFilesContainerId = 2;
 
+// The maximum allowed time age for files restored into holding space model.
+// This is not enforced for pinned items.
+const base::TimeDelta kMaxFileAge = base::TimeDelta::FromDays(1);
+
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_CONSTANTS_H_

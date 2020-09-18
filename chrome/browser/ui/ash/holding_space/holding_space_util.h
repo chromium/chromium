@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/callback_forward.h"
+#include "base/time/time.h"
 
 class GURL;
 class Profile;
@@ -26,23 +27,34 @@ class HoldingSpaceThumbnailLoader;
 // A utility for holding space.
 namespace holding_space_util {
 
+struct ValidityRequirement {
+  ValidityRequirement();
+  ValidityRequirement(const ValidityRequirement& other);
+  ValidityRequirement(ValidityRequirement&& other);
+  bool must_exist = true;
+  base::Optional<base::TimeDelta> must_be_newer_than = base::nullopt;
+};
+
 using FilePathList = std::vector<base::FilePath>;
+using FilePathWithValidityRequirement =
+    std::pair<base::FilePath, ValidityRequirement>;
+using FilePathsWithValidityRequirements =
+    std::vector<FilePathWithValidityRequirement>;
 
-// Checks `file_path` existence, returning the result via `callback`.
-using FilePathExistsCallback = base::OnceCallback<void(bool)>;
-void FilePathExists(Profile* profile,
-                    const base::FilePath& file_path,
-                    FilePathExistsCallback callback);
+// Checks `file_path` validity, returning the result via `callback`.
+using FilePathValidCallback = base::OnceCallback<void(bool)>;
+void FilePathValid(Profile*,
+                   FilePathWithValidityRequirement,
+                   FilePathValidCallback);
 
-// Partitions `file_paths` into `existing_file_paths` and
-// `non_existing_file_paths`, returning the result via `callback`.
-using PartitionFilePathsByExistenceCallback =
-    base::OnceCallback<void(FilePathList existing_file_paths,
-                            FilePathList non_existing_file_paths)>;
-void PartitionFilePathsByExistence(
-    Profile* profile,
-    FilePathList file_paths,
-    PartitionFilePathsByExistenceCallback callback);
+// Partitions `file_paths` into `valid_file_paths` and
+// `invalid_file_paths`, returning the result via `callback`.
+using PartitionFilePathsByValidityCallback =
+    base::OnceCallback<void(FilePathList valid_file_paths,
+                            FilePathList invalid_file_paths)>;
+void PartitionFilePathsByValidity(Profile*,
+                                  FilePathsWithValidityRequirements,
+                                  PartitionFilePathsByValidityCallback);
 
 // Resolves the file system URL associated with the specified `file_path`.
 GURL ResolveFileSystemUrl(Profile* profile, const base::FilePath& file_path);
@@ -52,6 +64,8 @@ std::unique_ptr<HoldingSpaceImage> ResolveImage(
     HoldingSpaceThumbnailLoader* thumbnail_loader,
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path);
+
+void SetNowForTesting(base::Optional<base::Time> now);
 
 }  // namespace holding_space_util
 }  // namespace ash
