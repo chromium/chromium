@@ -892,7 +892,7 @@ bool PepperPluginInstanceImpl::HandleDocumentLoad(
 
   if (module()->is_crashed() || !render_frame_) {
     // Don't create a resource for a crashed plugin.
-    container()->GetDocument().GetFrame()->StopLoading();
+    container()->GetDocument().GetFrame()->DeprecatedStopLoading();
     return false;
   }
 

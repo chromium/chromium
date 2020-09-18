@@ -1064,8 +1064,12 @@ WebAssociatedURLLoader* WebLocalFrameImpl::CreateAssociatedURLLoader(
   return new WebAssociatedURLLoaderImpl(GetFrame()->DomWindow(), options);
 }
 
-void WebLocalFrameImpl::StopLoading() {
-  GetFrame()->StopLoading();
+void WebLocalFrameImpl::DeprecatedStopLoading() {
+  if (!GetFrame())
+    return;
+  // FIXME: Figure out what we should really do here. It seems like a bug
+  // that FrameLoader::stopLoading doesn't call stopAllLoaders.
+  GetFrame()->Loader().StopAllLoaders(/*abort_client=*/true);
 }
 
 void WebLocalFrameImpl::ReplaceSelection(const WebString& text) {

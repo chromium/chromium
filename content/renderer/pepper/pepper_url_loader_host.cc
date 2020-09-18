@@ -391,7 +391,7 @@ void PepperURLLoaderHost::Close() {
     // crbug.com/384197.
     WebLocalFrame* frame = GetFrame();
     if (frame)
-      frame->StopLoading();
+      frame->DeprecatedStopLoading();
   }
 }
 

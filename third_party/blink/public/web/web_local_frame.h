@@ -630,9 +630,10 @@ class WebLocalFrame : public WebFrame {
   virtual WebAssociatedURLLoader* CreateAssociatedURLLoader(
       const WebAssociatedURLLoaderOptions&) = 0;
 
-  // This API is deprecated and only required by PepperURLLoaderHost::Close(),
-  // and so it should not be used on a regular basis.
-  virtual void StopLoading() = 0;
+  // This API is deprecated and only required by PepperURLLoaderHost::Close()
+  // and PepperPluginInstanceImpl::HandleDocumentLoad() and so it should not be
+  // used on a regular basis.
+  virtual void DeprecatedStopLoading() = 0;
 
   // Geometry -----------------------------------------------------------------
 

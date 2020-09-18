@@ -271,7 +271,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   WebInputMethodController* GetInputMethodController() override;
   WebAssociatedURLLoader* CreateAssociatedURLLoader(
       const WebAssociatedURLLoaderOptions&) override;
-  void StopLoading() override;
+  void DeprecatedStopLoading() override;
   WebSize GetScrollOffset() const override;
   void SetScrollOffset(const WebSize&) override;
   WebSize DocumentSize() const override;
