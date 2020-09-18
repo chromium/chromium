@@ -38,6 +38,30 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
 
 TabStripRegionView::~TabStripRegionView() = default;
 
+bool TabStripRegionView::IsRectInWindowCaption(const gfx::Rect& rect) {
+  const auto get_target_rect = [&](views::View* target) {
+    gfx::RectF rect_in_target_coords_f(rect);
+    View::ConvertRectToTarget(this, target, &rect_in_target_coords_f);
+    return gfx::ToEnclosingRect(rect_in_target_coords_f);
+  };
+
+  // Perform a hit test against the |tab_strip_container_| to ensure that the
+  // rect is within the visible portion of the |tab_strip_| before calling the
+  // tab strip's |IsRectInWindowCaption()|.
+  // TODO(tluk): Address edge case where |rect| might partially intersect with
+  // the |tab_strip_container_| and the |tab_strip_| but not over the same
+  // pixels. This could lead to this returning false when it should be returning
+  // true.
+  if (tab_strip_container_->HitTestRect(get_target_rect(tab_strip_container_)))
+    return tab_strip_->IsRectInWindowCaption(get_target_rect(tab_strip_));
+
+  return true;
+}
+
+bool TabStripRegionView::IsPositionInWindowCaption(const gfx::Point& point) {
+  return IsRectInWindowCaption(gfx::Rect(point, gfx::Size(1, 1)));
+}
+
 const char* TabStripRegionView::GetClassName() const {
   return "TabStripRegionView";
 }

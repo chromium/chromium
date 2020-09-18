@@ -15,6 +15,16 @@ class TabStripRegionView final : public views::View {
   explicit TabStripRegionView(std::unique_ptr<TabStrip> tab_strip);
   ~TabStripRegionView() override;
 
+  // Returns true if the specified rect intersects the window caption area of
+  // the browser window. |rect| is in the local coordinate space
+  // of |this|.
+  bool IsRectInWindowCaption(const gfx::Rect& rect);
+
+  // A convenience function which calls |IsRectInWindowCaption()| with a rect of
+  // size 1x1 and an origin of |point|. |point| is in the local coordinate space
+  // of |this|.
+  bool IsPositionInWindowCaption(const gfx::Point& point);
+
   // views::View overrides:
   const char* GetClassName() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
@@ -28,7 +38,7 @@ class TabStripRegionView final : public views::View {
   int CalculateTabStripAvailableWidth();
 
   views::View* tab_strip_container_;
-  views::View* tab_strip_;
+  TabStrip* tab_strip_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_

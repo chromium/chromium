@@ -135,7 +135,7 @@ BrowserViewLayout::BrowserViewLayout(
     gfx::NativeView host_view,
     BrowserView* browser_view,
     views::View* top_container,
-    views::View* tab_strip_region_view,
+    TabStripRegionView* tab_strip_region_view,
     TabStrip* tab_strip,
     views::View* toolbar,
     InfoBarContainerView* infobar_container,
@@ -233,10 +233,10 @@ int BrowserViewLayout::NonClientHitTest(const gfx::Point& point) {
   // Determine if the TabStrip exists and is capable of being clicked on. We
   // might be a popup window without a TabStrip.
   if (delegate_->IsTabStripVisible()) {
-    // See if the mouse pointer is within the bounds of the TabStrip.
+    // See if the mouse pointer is within the bounds of the TabStripRegionView.
     gfx::Point test_point(point);
-    if (ConvertedHitTest(parent, tab_strip_, &test_point)) {
-      if (tab_strip_->IsPositionInWindowCaption(test_point))
+    if (ConvertedHitTest(parent, tab_strip_region_view_, &test_point)) {
+      if (tab_strip_region_view_->IsPositionInWindowCaption(test_point))
         return HTCAPTION;
       return HTCLIENT;
     }
@@ -244,10 +244,12 @@ int BrowserViewLayout::NonClientHitTest(const gfx::Point& point) {
     // The top few pixels of the TabStrip are a drop-shadow - as we're pretty
     // starved of dragable area, let's give it to window dragging (this also
     // makes sense visually).
+    // TODO(tluk): Investigate the impact removing this has on draggable area
+    // given the tab strip no longer uses shadows.
     views::Widget* widget = browser_view_->GetWidget();
     if (!(widget->IsMaximized() || widget->IsFullscreen()) &&
         (point_in_browser_view_coords.y() <
-            (tab_strip_->y() + kTabShadowSize))) {
+         (tab_strip_region_view_->y() + kTabShadowSize))) {
       // We return HTNOWHERE as this is a signal to our containing
       // NonClientView that it should figure out what the correct hit-test
       // code is given the mouse position...

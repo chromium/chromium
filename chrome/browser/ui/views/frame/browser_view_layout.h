@@ -21,6 +21,7 @@ class BrowserViewLayoutDelegate;
 class ImmersiveModeController;
 class InfoBarContainerView;
 class TabStrip;
+class TabStripRegionView;
 
 namespace gfx {
 class Point;
@@ -52,7 +53,7 @@ class BrowserViewLayout : public views::LayoutManager {
                     gfx::NativeView host_view,
                     BrowserView* browser_view,
                     views::View* top_container,
-                    views::View* tab_strip_region_view,
+                    TabStripRegionView* tab_strip_region_view,
                     TabStrip* tab_strip,
                     views::View* toolbar,
                     InfoBarContainerView* infobar_container,
@@ -146,7 +147,7 @@ class BrowserViewLayout : public views::LayoutManager {
   // NOTE: If you add a view, try to add it as a views::View, which makes
   // testing much easier.
   views::View* const top_container_;
-  views::View* const tab_strip_region_view_;
+  TabStripRegionView* const tab_strip_region_view_;
   views::View* const toolbar_;
   InfoBarContainerView* const infobar_container_;
   views::View* const contents_container_;

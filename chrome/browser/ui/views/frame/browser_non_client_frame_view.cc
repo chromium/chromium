@@ -321,24 +321,29 @@ bool BrowserNonClientFrameView::DoesIntersectRect(const views::View* target,
   if (!frame_->client_view()->HitTestRect(rect_in_client_view_coords))
     return true;
 
-  // Otherwise, claim |rect| only if it is above the bottom of the tabstrip in
-  // a non-tab portion.
-  TabStrip* tabstrip = browser_view_->tabstrip();
-  // The tabstrip may not be in a Widget (e.g. when switching into immersive
-  // reveal).
-  if (tabstrip->GetWidget()) {
-    gfx::RectF rect_in_tabstrip_coords_f(rect);
-    View::ConvertRectToTarget(this, tabstrip, &rect_in_tabstrip_coords_f);
-    gfx::Rect rect_in_tabstrip_coords =
-        gfx::ToEnclosingRect(rect_in_tabstrip_coords_f);
-    if (rect_in_tabstrip_coords.y() >= tabstrip->GetLocalBounds().bottom()) {
-      // |rect| is below the tabstrip.
+  // Otherwise, claim |rect| only if it is above the bottom of the tab strip
+  // region view in a non-tab portion.
+  TabStripRegionView* tab_strip_region_view =
+      browser_view_->tab_strip_region_view();
+
+  // The |tab_strip_region_view| may not be in a Widget (e.g. when switching
+  // into immersive reveal the BrowserView's TopContainerView is reparented).
+  if (tab_strip_region_view->GetWidget()) {
+    gfx::RectF rect_in_region_view_coords_f(rect);
+    View::ConvertRectToTarget(this, tab_strip_region_view,
+                              &rect_in_region_view_coords_f);
+    gfx::Rect rect_in_region_view_coords =
+        gfx::ToEnclosingRect(rect_in_region_view_coords_f);
+    if (rect_in_region_view_coords.y() >=
+        tab_strip_region_view->GetLocalBounds().bottom()) {
+      // |rect| is below the tab_strip_region_view.
       return false;
     }
 
-    if (tabstrip->HitTestRect(rect_in_tabstrip_coords)) {
+    if (tab_strip_region_view->HitTestRect(rect_in_region_view_coords)) {
       // Claim |rect| if it is in a non-tab portion of the tabstrip.
-      return tabstrip->IsRectInWindowCaption(rect_in_tabstrip_coords);
+      return tab_strip_region_view->IsRectInWindowCaption(
+          rect_in_region_view_coords);
     }
   }
 
