@@ -12,6 +12,7 @@ import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.contrib.RecyclerViewActions.scrollToHolder;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.BundleMatchers.hasEntry;
@@ -67,6 +68,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.preference.PreferenceViewHolder;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
@@ -154,6 +157,27 @@ public class PasswordSettingsTest {
             new SettingsActivityTestRule<>(PasswordEntryEditor.class);
     @Mock
     private PasswordCheck mPasswordCheck;
+
+    /**
+     * @param text The text that the view holder has in its view hierarchy.
+     * @return A Matcher to find a particular {@link ViewHolder} that contains certain text.
+     */
+    private static Matcher<ViewHolder> hasTextInViewHolder(String text) {
+        return new BoundedMatcher<ViewHolder, PreferenceViewHolder>(PreferenceViewHolder.class) {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("has text: " + text);
+            }
+
+            @Override
+            protected boolean matchesSafely(PreferenceViewHolder preferenceViewHolder) {
+                ArrayList<View> outViews = new ArrayList<>();
+                preferenceViewHolder.itemView.findViewsWithText(
+                        outViews, text, View.FIND_VIEWS_WITH_TEXT);
+                return !outViews.isEmpty();
+            }
+        };
+    }
 
     private static final class FakePasswordManagerHandler implements PasswordManagerHandler {
         // This class has exactly one observer, set on construction and expected to last at least as
@@ -847,7 +871,7 @@ public class PasswordSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS)
+    @EnableFeatures({ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS})
     public void testSelectedStoredPasswordIndexIsSameAsInShowPasswordEntryEditingView() {
         PasswordEditingDelegateProvider.getInstance().setPasswordEditingDelegate(
                 mMockPasswordEditingDelegate);
@@ -857,7 +881,8 @@ public class PasswordSettingsTest {
                         new SavedPasswordEntry("https://test.com", "test user", "test password")});
 
         startPasswordSettingsFromMainSettings();
-
+        Espresso.onView(withId(R.id.recycler_view))
+                .perform(scrollToHolder(hasTextInViewHolder("test user")));
         Espresso.onView(withText(containsString("test user"))).perform(click());
 
         Espresso.onView(withEditMenuIdOrText()).perform(click());
@@ -902,6 +927,8 @@ public class PasswordSettingsTest {
 
         startPasswordSettingsFromMainSettings();
 
+        Espresso.onView(withId(R.id.recycler_view))
+                .perform(scrollToHolder(hasTextInViewHolder("test user")));
         Espresso.onView(withText(containsString("test user"))).perform(click());
 
         Espresso.onView(withEditMenuIdOrText()).perform(click());
@@ -931,6 +958,8 @@ public class PasswordSettingsTest {
 
         startPasswordSettingsFromMainSettings();
 
+        Espresso.onView(withId(R.id.recycler_view))
+                .perform(scrollToHolder(hasTextInViewHolder("test user")));
         Espresso.onView(withText(containsString("test user"))).perform(click());
 
         Espresso.onView(withEditMenuIdOrText()).perform(click());
@@ -946,6 +975,8 @@ public class PasswordSettingsTest {
 
         Espresso.pressBack();
         // Check if the password preferences activity has the updated data in the list of passwords.
+        Espresso.onView(withId(R.id.recycler_view))
+                .perform(scrollToHolder(hasTextInViewHolder("test user new")));
         Espresso.onView(withText("test user new")).check(matches(isDisplayed()));
     }
 
@@ -1754,6 +1785,8 @@ public class PasswordSettingsTest {
         final SettingsActivity settingsActivity = startPasswordSettingsFromMainSettings();
 
         View mainDecorView = settingsActivity.getWindow().getDecorView();
+        Espresso.onView(withId(R.id.recycler_view))
+                .perform(scrollToHolder(hasTextInViewHolder("test user")));
         Espresso.onView(withText(containsString("test user"))).perform(click());
         Espresso.onView(withContentDescription(R.string.password_entry_viewer_copy_stored_password))
                 .perform(click());
@@ -1777,7 +1810,8 @@ public class PasswordSettingsTest {
                 ReauthenticationManager.OverrideState.AVAILABLE);
 
         startPasswordSettingsFromMainSettings();
-
+        Espresso.onView(withId(R.id.recycler_view))
+                .perform(scrollToHolder(hasTextInViewHolder("test user")));
         Espresso.onView(withText(containsString("test user"))).perform(click());
 
         // Before tapping the view button, pretend that the last successful reauthentication just
@@ -1823,7 +1857,8 @@ public class PasswordSettingsTest {
                 new SavedPasswordEntry("https://example.com", "test user", "test password"));
 
         startPasswordSettingsFromMainSettings();
-
+        Espresso.onView(withId(R.id.recycler_view))
+                .perform(scrollToHolder(hasTextInViewHolder("test user")));
         Espresso.onView(withText(containsString("test user"))).perform(click());
 
         Espresso.onView(withEditMenuIdOrText()).check(matches(isDisplayed()));
