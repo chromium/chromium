@@ -1683,10 +1683,9 @@ CommandHandler.COMMANDS_['toggle-holding-space'] = new class extends Command {
       const selectedUrls = util.entriesToURLs(entries);
       this.addsItems_ = selectedUrls.some(url => !itemsSet[url]);
 
-      // TODO(https://crbug.com/1122076): Update the labels when the wording
-      // gets finalized.
-      command.label = this.addsItems_ ? '[Needs l10n] Pin to shelf' :
-                                        '[Needs l10n] Unpin from shelf';
+      command.label = this.addsItems_ ?
+          str('HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL') :
+          str('HOLDING_SPACE_UNPIN_FROM_SHELF_COMMAND_LABEL');
     });
   }
 };

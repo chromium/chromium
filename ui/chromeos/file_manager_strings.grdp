@@ -1505,6 +1505,14 @@
     More sub-folders...
   </message>
 
+<!-- Holding space -->
+  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL" desc="Label for the command which pins one or more files to the holding space in the shelf.">
+    Pin to shelf
+  </message>
+  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_UNPIN_FROM_SHELF_COMMAND_LABEL" desc="Label for the command which unpins one or more files from the holding space in the shelf.">
+    Unpin from shelf
+  </message>
+
 <!-- Common for Audio player and Media player -->
   <message name="IDS_MEDIA_PLAYER_PLAY_BUTTON_LABEL" desc="Label for the Play button of media players (audio player / video player).">
     Play

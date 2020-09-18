@@ -396,6 +396,13 @@ void AddStringsForSharesheet(base::DictionaryValue* dict) {
   SET_STRING("SHARESHEET_BUTTON_LABEL", IDS_SHARESHEET_TITLE_LABEL);
 }
 
+void AddStringsForHoldingSpace(base::DictionaryValue* dict) {
+  SET_STRING("HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL",
+             IDS_FILE_BROWSER_HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL);
+  SET_STRING("HOLDING_SPACE_UNPIN_FROM_SHELF_COMMAND_LABEL",
+             IDS_FILE_BROWSER_HOLDING_SPACE_UNPIN_FROM_SHELF_COMMAND_LABEL);
+}
+
 }  // namespace
 
 std::unique_ptr<base::DictionaryValue> GetFileManagerStrings() {
@@ -413,6 +420,7 @@ std::unique_ptr<base::DictionaryValue> GetFileManagerStrings() {
   AddStringsForFileErrors(dict.get());
   AddStringsForZipArchiver(dict.get());
   AddStringsForSharesheet(dict.get());
+  AddStringsForHoldingSpace(dict.get());
 
   SET_STRING("ADD_NEW_SERVICES_BUTTON_LABEL",
              IDS_FILE_BROWSER_ADD_NEW_SERVICES_BUTTON_LABEL);
