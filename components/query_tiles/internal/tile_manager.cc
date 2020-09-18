@@ -17,9 +17,13 @@
 #include "components/query_tiles/internal/tile_config.h"
 #include "components/query_tiles/internal/tile_iterator.h"
 #include "components/query_tiles/internal/tile_manager.h"
+#include "components/query_tiles/internal/tile_utils.h"
 
 namespace query_tiles {
 namespace {
+
+// A special tile group for tile stats.
+constexpr char kTileStatsGroup[] = "tile_stats";
 
 class TileManagerImpl : public TileManager {
  public:
@@ -137,6 +141,9 @@ class TileManagerImpl : public TileManager {
       if (!group)
         continue;
 
+      if (pair.first == kTileStatsGroup)
+        continue;
+
       if (ValidateLocale(group) && !IsGroupExpired(group) &&
           (group->last_updated_ts > last_updated_time)) {
         last_updated_time = group->last_updated_ts;
@@ -150,6 +157,15 @@ class TileManagerImpl : public TileManager {
       loaded_groups.erase(selected_group_id);
     } else {
       status = TileGroupStatus::kNoTiles;
+    }
+
+    // Keep the stats group in memory for tile score calculation.
+    if (loaded_groups.find(kTileStatsGroup) != loaded_groups.end()) {
+      tile_stats_group_ = std::move(loaded_groups[kTileStatsGroup]);
+      // prevent the stats group from being deleted.
+      loaded_groups.erase(kTileStatsGroup);
+      if (tile_group_)
+        SortTiles(&tile_group_->tiles, &tile_stats_group_->tile_stats);
     }
 
     // Deletes other groups.
@@ -221,6 +237,11 @@ class TileManagerImpl : public TileManager {
 
   // The tile group in-memory holder.
   std::unique_ptr<TileGroup> tile_group_;
+
+  // The tile group that contains stats for ranking all tiles.
+  // TODO(qinmin): Having a separate TileGroup just for ranking the tiles
+  // seems weird, probably do it through a separate store or use PrefService.
+  std::unique_ptr<TileGroup> tile_stats_group_;
 
   // Clock object.
   base::Clock* clock_;

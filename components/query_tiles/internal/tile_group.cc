@@ -20,6 +20,7 @@ void DeepCopyGroup(const TileGroup& input, TileGroup* output) {
   output->tiles.clear();
   for (const auto& tile : input.tiles)
     output->tiles.emplace_back(std::make_unique<Tile>(*tile.get()));
+  output->tile_stats = input.tile_stats;
 }
 
 }  // namespace

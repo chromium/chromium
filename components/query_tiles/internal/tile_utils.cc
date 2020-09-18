@@ -1,0 +1,84 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include <algorithm>
+#include <limits>
+
+#include "components/query_tiles/internal/tile_utils.h"
+
+namespace query_tiles {
+namespace {
+
+struct TileComparator {
+  explicit TileComparator(const std::map<std::string, TileStats>& tile_stats)
+      : tile_stats(tile_stats) {}
+
+  inline bool operator()(const std::unique_ptr<Tile>& a,
+                         const std::unique_ptr<Tile>& b) {
+    auto iter_a = tile_stats.find(a->id);
+    auto iter_b = tile_stats.find(b->id);
+    return (iter_a != tile_stats.end() ? iter_a->second.score : 0) >
+           (iter_b != tile_stats.end() ? iter_b->second.score : 0);
+  }
+
+  std::map<std::string, TileStats> tile_stats;
+};
+
+}  // namespace
+
+void SortTiles(std::vector<std::unique_ptr<Tile>>* tiles,
+               std::map<std::string, TileStats>* tile_stats) {
+  if (!tiles || tiles->empty())
+    return;
+
+  // Some tiles do not have scores, so the first step is to calculate scores
+  // for them.
+  // To calculate scores for new tiles, ordering from the server response will
+  // be taken into consideration. As the server has already ordered tiles
+  // according to their importance.
+  // For example, if the first tile returned by server never appeared before, we
+  // should set its score to at least the 2nd tile. so that it can show up in
+  // the first place if no other tiles in the back have a higher score. For
+  // a new tile at position x, its score should be the minimum of its neighbors
+  // at position x-1 and x+1. For new tiles showing up at the end, their score
+  // will be set to 0.
+  // For example, if the tile scores are (new_tile, 0.5, 0.7), then the adjusted
+  // score will be (0.5, 0.5, 0.7). Simularly, (0.5, new_tile1, 0.7, new_tile2)
+  // will result in (0.5, 0.5, 0.7, 0).
+  double last_score = std::numeric_limits<double>::max();
+  size_t new_tile_index = 0;
+  base::Time now_time = base::Time::Now();
+  // Find any tiles that don't have scores, and add new entries for them.
+  for (size_t i = 0; i < tiles->size(); ++i) {
+    auto iter = tile_stats->find((*tiles)[i]->id);
+    // Find a new tile. Skip it for now, will add the entry when we found the
+    // first
+    if (iter == tile_stats->end())
+      continue;
+
+    // If the previous tiles are new tiles, fill them with a value that is
+    // minimum of their neighbors.
+    if (i > new_tile_index) {
+      double score = std::min(last_score, iter->second.score);
+      TileStats new_stats(now_time, score);
+      for (size_t j = new_tile_index; j < i; ++j)
+        tile_stats->emplace((*tiles)[j]->id, new_stats);
+    }
+    // Move |new_tile_index| to the next one that might not have
+    // a score.
+    new_tile_index = i + 1;
+    last_score = iter->second.score;
+  }
+  if (new_tile_index < tiles->size()) {
+    TileStats new_stats(now_time, 0);
+    for (size_t j = new_tile_index; j < tiles->size(); ++j)
+      tile_stats->emplace((*tiles)[j]->id, new_stats);
+  }
+  // Sort the tiles in descending order.
+  std::sort(tiles->begin(), tiles->end(), TileComparator(*tile_stats));
+  for (auto& tile : *tiles)
+    SortTiles(&tile->sub_tiles, tile_stats);
+}
+
+}  // namespace query_tiles

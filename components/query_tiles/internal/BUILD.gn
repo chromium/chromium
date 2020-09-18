@@ -45,6 +45,8 @@ source_set("internal") {
     "tile_store.cc",
     "tile_store.h",
     "tile_types.h",
+    "tile_utils.cc",
+    "tile_utils.h",
   ]
 
   public_deps = [ "//components/image_fetcher/core" ]
@@ -80,6 +82,7 @@ source_set("unit_tests") {
     "tile_service_impl_unittest.cc",
     "tile_service_scheduler_unittest.cc",
     "tile_store_unittest.cc",
+    "tile_utils_unittest.cc",
   ]
 
   deps = [

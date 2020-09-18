@@ -40,8 +40,18 @@ message Tile {
   repeated string search_params = 7;
 }
 
+// Stats of the tile. Used for ranking tiles.
+// Next tag: 3
+message TileStats {
+  // Timestamp when the tile is last clicked, in ms.
+  int64 last_clicked_time_ms = 1;
+
+  // Score of the tile, used for ranking.
+  double score = 2;
+}
+
 // Data schema of a group of entries and its metadata.
-// Next tag: 5
+// Next tag: 6
 message TileGroup {
   // Unique id of each group.
   string id = 1;
@@ -54,4 +64,7 @@ message TileGroup {
 
   // Top level tiles;
   repeated Tile tiles = 4;
+
+  // Map from tile id to its stats.
+  map<string, TileStats> tile_stats = 5;
 }

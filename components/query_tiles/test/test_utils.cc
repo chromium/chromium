@@ -56,6 +56,13 @@ void ResetTestGroup(TileGroup* group) {
   group->tiles.emplace_back(std::move(test_entry_1));
   group->tiles.emplace_back(std::move(test_entry_2));
   group->tiles.emplace_back(std::move(test_entry_3));
+  group->tile_stats["guid-1-1"] = TileStats(group->last_updated_ts, 0.5);
+  group->tile_stats["guid-1-2"] = TileStats(group->last_updated_ts, 0.2);
+  group->tile_stats["guid-1-3"] = TileStats(group->last_updated_ts, 0.7);
+  group->tile_stats["guid-1-4"] = TileStats(group->last_updated_ts, 0.4);
+  group->tile_stats["guid-2-1"] = TileStats(group->last_updated_ts, 0.3);
+  group->tile_stats["guid-2-2"] = TileStats(group->last_updated_ts, 0.6);
+  group->tile_stats["guid-3-1"] = TileStats(group->last_updated_ts, 0.5);
 }
 
 bool AreTileGroupsIdentical(const TileGroup& lhs, const TileGroup& rhs) {
@@ -72,7 +79,7 @@ bool AreTileGroupsIdentical(const TileGroup& lhs, const TileGroup& rhs) {
       return false;
   }
 
-  return true;
+  return lhs.tile_stats == rhs.tile_stats;
 }
 
 bool AreTilesIdentical(const Tile& lhs, const Tile& rhs) {

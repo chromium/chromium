@@ -26,6 +26,21 @@ struct ImageMetadata {
   GURL url;
 };
 
+// Stats of a tile, used for ranking.
+struct TileStats {
+  TileStats();
+  TileStats(base::Time last_clicked_time, double score);
+  ~TileStats();
+  TileStats(const TileStats& other);
+  bool operator==(const TileStats& other) const;
+
+  // Last clicked timestamp.
+  base::Time last_clicked_time;
+
+  // Score of the tile, used for ranking.
+  double score;
+};
+
 // Represents the in memory structure of Tile.
 struct Tile {
   Tile();

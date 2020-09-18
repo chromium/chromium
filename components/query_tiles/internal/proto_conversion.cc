@@ -9,6 +9,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 
+using TileStatsProto = query_tiles::proto::TileStats;
+
 namespace query_tiles {
 namespace {
 
@@ -108,6 +110,14 @@ void TileGroupToProto(TileGroup* group, TileGroupProto* proto) {
   for (auto& tile : group->tiles) {
     TileToProto(tile.get(), proto->add_tiles());
   }
+  auto& map = *(proto->mutable_tile_stats());
+  for (auto& entry : group->tile_stats) {
+    TileStatsProto stats;
+    stats.set_score(entry.second.score);
+    stats.set_last_clicked_time_ms(
+        TimeToMilliseconds(entry.second.last_clicked_time));
+    map[entry.first] = stats;
+  }
 }
 
 void TileGroupFromProto(TileGroupProto* proto, TileGroup* group) {
@@ -119,6 +129,11 @@ void TileGroupFromProto(TileGroupProto* proto, TileGroup* group) {
     auto child = std::make_unique<Tile>();
     TileFromProto(&entry_proto, child.get());
     group->tiles.emplace_back(std::move(child));
+  }
+  for (auto& entry : proto->tile_stats()) {
+    group->tile_stats[entry.first] =
+        TileStats(MillisecondsToTime(entry.second.last_clicked_time_ms()),
+                  entry.second.score());
   }
 }
 

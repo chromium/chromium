@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_QUERY_TILES_INTERNAL_TILE_GROUP_H_
 #define COMPONENTS_QUERY_TILES_INTERNAL_TILE_GROUP_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -39,6 +40,9 @@ struct TileGroup {
 
   // Top level tiles.
   std::vector<std::unique_ptr<Tile>> tiles;
+
+  // Map from tile id to its stats.
+  std::map<std::string, TileStats> tile_stats;
 
   // Print pretty formatted content in TileGroup struct.
   std::string DebugString();

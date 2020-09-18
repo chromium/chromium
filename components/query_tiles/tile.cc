@@ -88,6 +88,19 @@ bool ImageMetadata::operator==(const ImageMetadata& other) const {
   return url == other.url;
 }
 
+TileStats::TileStats() = default;
+
+TileStats::TileStats(base::Time last_clicked_time, double score)
+    : last_clicked_time(last_clicked_time), score(score) {}
+
+TileStats::~TileStats() = default;
+
+TileStats::TileStats(const TileStats& other) = default;
+
+bool TileStats::operator==(const TileStats& other) const {
+  return last_clicked_time == other.last_clicked_time && score == other.score;
+}
+
 bool Tile::operator==(const Tile& other) const {
   return id == other.id && display_text == other.display_text &&
          query_text == other.query_text &&
