@@ -33035,6 +33035,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Cryptohome.FreeDiskSpaceTotalTime" units="ms"
     expires_after="M90">
+  <obsolete>
+    Replaced by Cryptohome.FreeDiskSpaceTotalTime2 in M81.
+  </obsolete>
   <owner>slangley@chromium.org</owner>
   <owner>weifangsun@chromium.org</owner>
   <summary>
