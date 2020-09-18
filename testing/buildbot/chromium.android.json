@@ -33410,8 +33410,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android23.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.weblayer_browsertests.filter"
+          "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
         "merge": {
           "args": [

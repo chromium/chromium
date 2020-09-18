@@ -206,12 +206,6 @@ source_set("viz_unittests_filters") {
   ]
 }
 
-source_set("weblayer_browsertests_filters") {
-  testonly = true
-
-  data = [ "//testing/buildbot/filters/android.emulator_m.weblayer_browsertests.filter" ]
-}
-
 source_set("webview_cts_tests_filters") {
   testonly = true
 
