@@ -232,4 +232,21 @@ id<GREYMatcher> ToolsMenuTranslateButton() {
   SetPolicy(true, policy::key::kTranslateEnabled);
 }
 
+// Test whether the managed item will be shown if a policy is set.
+- (void)testPopupMenuItem {
+  // Setup a machine level policy.
+  SetPolicy(false, policy::key::kTranslateEnabled);
+
+  // Open the menu and click on the item.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:grey_accessibilityID(kTextMenuEnterpriseInfo)];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Check the navigation.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
+                                          "chrome://management")]
+      assertWithMatcher:grey_notNil()];
+}
+
 @end
