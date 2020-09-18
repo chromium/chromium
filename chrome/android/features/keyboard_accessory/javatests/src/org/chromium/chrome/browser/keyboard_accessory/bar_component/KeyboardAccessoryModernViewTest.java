@@ -262,7 +262,7 @@ public class KeyboardAccessoryModernViewTest {
         });
 
         onViewWaiting(withText("Johnathan"));
-        waitForHelpBubble(withText(R.string.iph_keyboard_accessory_fill_password));
+        waitForHelpBubble(withText(R.string.iph_keyboard_accessory_fill_with_chrome));
         onView(withChild(withText("Johnathan"))).check(matches(isSelected()));
         onView(withText("Johnathan")).perform(click());
 
@@ -290,7 +290,7 @@ public class KeyboardAccessoryModernViewTest {
         });
 
         onViewWaiting(withText("Johnathan"));
-        waitForHelpBubble(withText(R.string.iph_keyboard_accessory_fill_address));
+        waitForHelpBubble(withText(R.string.iph_keyboard_accessory_fill_with_chrome));
         onView(withText("Johnathan")).perform(click());
 
         assertThat(tracker.wasDismissed(), is(true));
@@ -316,7 +316,7 @@ public class KeyboardAccessoryModernViewTest {
         });
 
         onViewWaiting(withText("Johnathan"));
-        waitForHelpBubble(withText(R.string.iph_keyboard_accessory_fill_payment));
+        waitForHelpBubble(withText(R.string.iph_keyboard_accessory_fill_with_chrome));
         onView(withText("Johnathan")).perform(click());
 
         assertThat(tracker.wasDismissed(), is(true));
