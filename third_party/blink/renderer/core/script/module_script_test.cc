@@ -107,7 +107,7 @@ class ModuleScriptTest : public ::testing::Test, public ParametrizedModuleTest {
 
     ClassicScript::CreateUnspecifiedScript(
         ScriptSourceCode("window.foo = undefined;"))
-        ->RunScriptAndReturnValue(&scope.GetFrame());
+        ->RunScript(&scope.GetFrame());
   }
 
   // Accessors for ModuleScript private members.
@@ -249,7 +249,7 @@ TEST_P(ModuleScriptTest, V8CodeCacheWithoutDiscarding) {
   ClassicScript::CreateUnspecifiedScript(
       ScriptSourceCode(LargeSourceText(), ScriptSourceLocationType::kInternal,
                        cache_handler))
-      ->RunScriptAndReturnValue(&scope.GetFrame());
+      ->RunScript(&scope.GetFrame());
 
   checkpoint.Call(4);
 
@@ -390,7 +390,7 @@ TEST_P(ModuleScriptTest, V8CodeCacheWithDiscarding) {
   ClassicScript::CreateUnspecifiedScript(
       ScriptSourceCode(LargeSourceText(), ScriptSourceLocationType::kInternal,
                        cache_handler))
-      ->RunScriptAndReturnValue(&scope.GetFrame());
+      ->RunScript(&scope.GetFrame());
   checkpoint.Call(4);
 
   TestFoo(scope);
