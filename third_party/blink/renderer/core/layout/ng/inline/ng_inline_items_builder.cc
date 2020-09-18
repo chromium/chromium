@@ -142,11 +142,6 @@ inline bool ShouldIgnore(UChar c) {
   return c == kCarriageReturnCharacter || c == kFormFeedCharacter;
 }
 
-inline bool IsCollapsibleSpace(UChar c) {
-  return c == kSpaceCharacter || c == kNewlineCharacter ||
-         c == kTabulationCharacter || c == kCarriageReturnCharacter;
-}
-
 // Characters needing a separate control item than other text items.
 // It makes the line breaker easier to handle.
 inline bool IsControlItemCharacter(UChar c) {
@@ -165,12 +160,12 @@ inline bool MoveToEndOfCollapsibleSpaces(const StringView& string,
                                          unsigned* offset,
                                          UChar* c) {
   DCHECK_EQ(*c, string[*offset]);
-  DCHECK(IsCollapsibleSpace(*c));
+  DCHECK(Character::IsCollapsibleSpace(*c));
   bool space_run_has_newline = *c == kNewlineCharacter;
   for ((*offset)++; *offset < string.length(); (*offset)++) {
     *c = string[*offset];
     space_run_has_newline |= *c == kNewlineCharacter;
-    if (!IsCollapsibleSpace(*c))
+    if (!Character::IsCollapsibleSpace(*c))
       break;
   }
   return space_run_has_newline;
@@ -322,7 +317,8 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
           break;
         case NGInlineItem::kNotCollapsible: {
           const String& source_text = layout_text->GetText();
-          if (source_text.length() && IsCollapsibleSpace(source_text[0])) {
+          if (source_text.length() &&
+              Character::IsCollapsibleSpace(source_text[0])) {
             // If the start of the original string was collapsed, it may be
             // restored.
             if (original_string[old_item0.StartOffset()] != kSpaceCharacter)
@@ -518,7 +514,7 @@ void NGInlineItemsBuilderTemplate<
   unsigned i = 0;
   UChar c = string[i];
   bool space_run_has_newline = false;
-  if (IsCollapsibleSpace(c)) {
+  if (Character::IsCollapsibleSpace(c)) {
     // Find the end of the collapsible space run.
     space_run_has_newline = MoveToEndOfCollapsibleSpaces(string, &i, &c);
 
@@ -624,11 +620,11 @@ void NGInlineItemsBuilderTemplate<
     while (true) {
       // Append the non-space text until we find a collapsible space.
       // |string[i]| is guaranteed not to be a space.
-      DCHECK(!IsCollapsibleSpace(string[i]));
+      DCHECK(!Character::IsCollapsibleSpace(string[i]));
       unsigned start_of_non_space = i;
       for (i++; i < string.length(); i++) {
         c = string[i];
-        if (IsCollapsibleSpace(c))
+        if (Character::IsCollapsibleSpace(c))
           break;
       }
       text_.Append(string, start_of_non_space, i - start_of_non_space);
@@ -641,7 +637,7 @@ void NGInlineItemsBuilderTemplate<
 
       // Process a collapsible space run. First, find the end of the run.
       DCHECK_EQ(c, string[i]);
-      DCHECK(IsCollapsibleSpace(c));
+      DCHECK(Character::IsCollapsibleSpace(c));
       unsigned start_of_spaces = i;
       space_run_has_newline = MoveToEndOfCollapsibleSpaces(string, &i, &c);
 

@@ -108,6 +108,12 @@ class PLATFORM_EXPORT Character {
   // http://unicode.org/reports/tr9/#Directional_Formatting_Characters
   static bool IsBidiControl(UChar32 character);
 
+  // Collapsible white space characters defined in CSS:
+  // https://drafts.csswg.org/css-text-3/#collapsible-white-space
+  static bool IsCollapsibleSpace(UChar c) {
+    return c == kSpaceCharacter || c == kNewlineCharacter ||
+           c == kTabulationCharacter || c == kCarriageReturnCharacter;
+  }
   static bool TreatAsSpace(UChar32 c) {
     return c == kSpaceCharacter || c == kTabulationCharacter ||
            c == kNewlineCharacter || c == kNoBreakSpaceCharacter;
