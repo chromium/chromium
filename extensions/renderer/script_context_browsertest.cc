@@ -8,6 +8,7 @@
 #include "extensions/common/script_constants.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/gurl.h"
@@ -51,7 +52,8 @@ TEST_F(ScriptContextTest, GetEffectiveDocumentURL) {
          <iframe name='frame4' src="data:text/html,<html>Hi</html>"></iframe>
          <iframe name='frame5'
              src="data:text/html,<html>Hi</html>"
-             sandbox=''></iframe>)";
+             sandbox=''></iframe>
+         <iframe disallowdocumentaccess name='frame6'></iframe>)";
 
   const char frame3_html[] =
       R"(<iframe name='frame3_1'></iframe>
@@ -61,6 +63,7 @@ TEST_F(ScriptContextTest, GetEffectiveDocumentURL) {
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_TRUE(frame);
+  blink::WebRuntimeFeatures::EnableDisallowDocumentAccess(true);
 
   content::RenderFrame::FromWebFrame(frame)->LoadHTMLString(
       frame_html, top_url, "UTF-8", GURL(), false /* replace_current_item */);
@@ -90,6 +93,9 @@ TEST_F(ScriptContextTest, GetEffectiveDocumentURL) {
   WebLocalFrame* frame5 = frame4->NextSibling()->ToWebLocalFrame();
   ASSERT_TRUE(frame5);
   ASSERT_EQ("frame5", frame5->AssignedName());
+  WebLocalFrame* frame6 = frame5->NextSibling()->ToWebLocalFrame();
+  ASSERT_TRUE(frame6);
+  ASSERT_EQ("frame6", frame6->AssignedName());
 
   // Load a blank document in a frame from a different origin.
   content::RenderFrame::FromWebFrame(frame3)->LoadHTMLString(
@@ -153,6 +159,11 @@ TEST_F(ScriptContextTest, GetEffectiveDocumentURL) {
       GetEffectiveDocumentURLForInjection(
           frame5,
           MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree));
+
+  // Documents with disallowed access (disallowdocumentaccess) behave much like
+  // sandboxed documents.
+  EXPECT_EQ(blank_url, GetEffectiveDocumentURLForContext(frame6));
+  EXPECT_EQ(top_url, GetEffectiveDocumentURLForInjection(frame6));
 
   // top -> different origin = different origin
   EXPECT_EQ(different_url, GetEffectiveDocumentURLForContext(frame3));

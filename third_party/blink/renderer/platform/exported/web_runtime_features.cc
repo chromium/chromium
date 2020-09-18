@@ -589,6 +589,10 @@ void WebRuntimeFeatures::EnableExperimentalProductivityFeatures(bool enable) {
   RuntimeEnabledFeatures::SetExperimentalProductivityFeaturesEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableDisallowDocumentAccess(bool enable) {
+  RuntimeEnabledFeatures::SetDisallowDocumentAccessEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableDisplayCutoutAPI(bool enable) {
   RuntimeEnabledFeatures::SetDisplayCutoutAPIEnabled(enable);
 }

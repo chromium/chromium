@@ -83,6 +83,12 @@ GURL GetEffectiveDocumentURL(
     return document_url;
   }
 
+  // Note: Just because the frame origin can theoretically access its
+  // precursor origin, there may be more restrictions in practice - such as
+  // if the frame has the disallowdocumentaccess attribute. It's okay to
+  // ignore this case for context classification because it's not meant as an
+  // origin boundary (unlike e.g. a sandboxed frame).
+
   // Looks like the initiator origin is an appropriate fallback!
 
   if (match_origin_as_fallback == MatchOriginAsFallbackBehavior::kAlways) {
@@ -154,6 +160,16 @@ GURL GetEffectiveDocumentURL(
       // example.com, but the parent tuple origin is a.com.
       // Note that usually, this would have bailed earlier with a remote frame,
       // but it may not if we're at the process limit.
+      return document_url;
+    }
+
+    // If we don't allow inaccessible parents, the security origin may still
+    // be restricted if the author has prevented same-origin access via the
+    // disallowdocumentaccess attribute on iframe.
+    if (!allow_inaccessible_parents &&
+        !web_frame_origin.CanAccess(
+            blink::WebSecurityOrigin(parent_document.GetSecurityOrigin()))) {
+      // The frame can't access its precursor. Bail.
       return document_url;
     }
 
