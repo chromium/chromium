@@ -10,7 +10,7 @@
 
 * **Device: **The physical hardware that we run performance tests on.
 
-* **Flakiness dashboard: **[A dashboard](https://test-results.appspot.com/dashboards/flakiness_dashboard.html#testType=blink_perf.canvas) that shows the revisions at which a given test failed. Also known as the test results dashboard.
+* **Flakiness dashboard: **[A dashboard](https://test-results.appspot.com/dashboards/flakiness_dashboard.html#testType=blink_perf.layout) that shows the revisions at which a given test failed. Also known as the test results dashboard.
 
 * **Host: **The physical hardware that Telemetry runs on. For desktop testing, this is the same as the *device* on which the testing is done. For mobile testing, the *host* can mean either the Linux desktop or one of the multiple Docker containers within that Linux desktop, each with access to a single attached mobile device.
 

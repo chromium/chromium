@@ -166,29 +166,6 @@ Here is an example for testing Cache Storage API of service workers:
 
 [cache-open-add-delete-10K-service-worker.js](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/perf_tests/service_worker/resources/cache-open-add-delete-10K-service-worker.js)
 
-## Canvas Tests
-
-The sub-framework [canvas_runner.js](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/perf_tests/canvas/resources/canvas_runner.js) is used for
-tests in the `canvas` directory. This can measure rasterization and GPU time
-using requestAnimationFrame (RAF) and contains a callback framework for video.
-
-Normal tests using `runTest()` work similarly to the asynchronous test above,
-but crucially wait for RAF after completing a single trial of
-`MEASURE_DRAW_TIMES` runs.
-
-RAF tests are triggered by appending the query string `raf` (case insensitive)
-to the test's url. These tests wait for RAF to return before making a
-measurement. This way rasterization and GPU time are included in the
-measurement.
-
-For example:
-
-The test [gpu-bound-shader.html](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/perf_tests/canvas/gpu-bound-shader.html) is just measuring
-CPU, and thus looks extremely fast as the test is just one slow shader.
-
-The url `gpu-bound-shader.html?raf` will measure rasterization and GPU time as
-well, thus giving a more realistic measurement of performance.
-
 ## Running Tests
 
 **Running tests directly in browser**

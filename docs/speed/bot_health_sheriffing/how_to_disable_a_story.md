@@ -22,7 +22,8 @@ As of January 2020, no benchmarks are named in a similar fashion.
 
 Start a fresh branch in an up-to-date Chromium checkout. If you're unsure of how to do this, [see these instructions](https://www.chromium.org/developers/how-tos/get-the-code).
 
-In your editor, open up [`tools/perf/expectations.config`](https://cs.chromium.org/chromium/src/tools/perf/expectations.config?q=expectations.config&sq=package:chromium&dr).
+
+In your editor, open up [`tools/perf/expectations.config`](https://cs.chromium.org/chromium/src/tools/perf/expectations.config?q=expectations.config&sq=package:chromium&dr).
 
 You'll see that the file is divided into sections sorted alphabetically by benchmark name. Find the section for the benchmark in question. (If it doesn't exist, add it in the correct alphabetical location.)
 
@@ -46,12 +47,12 @@ Add a new line for each story that you need to disable, or an asterisk if you're
 
 For example, an entry disabling a particular story might look like:
 
-    crbug.com/738453 [ Nexus_6 ] blink_perf.canvas/putImageData.html [ Skip ]
+    crbug.com/738453 [ Nexus_6 ] blink_perf.layout/subtree-detaching.html [ Skip ]
 
 
 whereas an entry disabling a benchmark on an entire platform might look like:
 
-    crbug.com/593973 [ Android_Svelte ] blink_perf.canvas/* [ Skip ]
+    crbug.com/593973 [ Android_Svelte ] blink_perf.layout/* [ Skip ]
 
 ## Submit changes
 
