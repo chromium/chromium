@@ -408,6 +408,13 @@
      ]
     },
     "css-text": {
+     "altering-dom-crash.html": [
+      "227956e7a313fbfef1ac7882e0f5df10db4f5c43",
+      [
+       null,
+       {}
+      ]
+     ],
      "overflow-wrap": {
       "overflow-wrap-break-word-long-crash.html": [
        "e318386ded5bd3d1d61cf876fe420c8f5ada799f",
@@ -155697,6 +155704,19 @@
         ],
         {}
        ]
+      ],
+      "mo-single-char-and-children.html": [
+       "79cb17447fc27d2f262a0ba13534b898d5e18255",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/operators/mo-single-char-and-children-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "radicals": {
@@ -164403,7 +164423,7 @@
     },
     "resources": {
      "bluetooth-fake-devices.js": [
-      "6d4b30e59b7da85dcca23ad1f03380f13ae4b358",
+      "c4d699ad40a5bbf3a105cf7335b8b30c383f08ee",
       []
      ],
      "bluetooth-scanning-helpers.js": [
@@ -164411,7 +164431,7 @@
       []
      ],
      "bluetooth-test.js": [
-      "dd385689cb950d2300f9e934bf8715451ab25720",
+      "b99564bf9ec3c8262029cd36e6df4c67d12ae83f",
       []
      ],
      "health-thermometer-iframe.html": [
@@ -187132,10 +187152,6 @@
       "9b2e5be0a19c48f73b57fe0ad8bbeea81238a1d1",
       []
      ],
-     "animation-002-expected.txt": [
-      "b6c86d0c907e707470cad57dda064b4fd88f4d5d",
-      []
-     ],
      "cascading-001-ref.html": [
       "79a432c4557bbda081a9b1c8d0dd9602c0eb85e5",
       []
@@ -203131,7 +203147,7 @@
       []
      ],
      "is-where-parsing-expected.txt": [
-      "f58dd8236ec2f2609264a0c881297bb5b85b6de1",
+      "aab5eebf868c1dbed99de8119b2c48b57a1fcd75",
       []
      ],
      "not-links-ref.html": [
@@ -203412,6 +203428,10 @@
      ],
      "pattern-tr.png": [
       "8b4b25364e0ffbe09e563e13b567fa57330e48d5",
+      []
+     ],
+     "query-testcommon.js": [
+      "73246e17e879ecfa711d9d804768a28a9910cc82",
       []
      ],
      "red-rect.svg": [
@@ -214531,7 +214551,7 @@
       []
      ],
      "cross-origin-isolated-permission.https-expected.txt": [
-      "f5520f6b830c42d0343abde17ddfdf36ff2d2c33",
+      "d48cc4da64113089839977cbb7e5fe3a2434997c",
       []
      ],
      "cross-origin-isolated-permission.https.html.headers": [
@@ -214768,10 +214788,6 @@
      ],
      "coep-redirect.https.html.headers": [
       "63b60e490f47f4db77d33d7a4ca2f5b9a4181de8",
-      []
-     ],
-     "coep.https-expected.txt": [
-      "44fd456b7809fefc69b44394255c2d17b528c362",
       []
      ],
      "coep.https.html.headers": [
@@ -218935,7 +218951,7 @@
         []
        ],
        "nested-sharedworker-success.https-expected.txt": [
-        "7ee8febe6ed8fb2f308534aad4547e2d4fd55895",
+        "5eb58128f735d8cb1b0460463581c29211b39a12",
         []
        ],
        "nested-sharedworker-success.https.html.headers": [
@@ -218948,10 +218964,6 @@
        ],
        "nested-worker-success.any.sharedworker-expected.txt": [
         "7b70ea298989ba1aeafd5cadeff2dd50b97c56e2",
-        []
-       ],
-       "nested-worker-success.https-expected.txt": [
-        "54f236627eb168354cf2ed6522b0091f8f9fb14a",
         []
        ],
        "nested-worker-success.https.html.headers": [
@@ -226863,16 +226875,8 @@
        "72694959a86f1917cbd3db13b7f1a8b71714b711",
        []
       ],
-      "mrow-preferred-width-expected.txt": [
-       "2e6534d698795894b441f3d595e5f37623d2c293",
-       []
-      ],
       "no-spacing-expected.txt": [
        "2bc609eb3fab54dddddbc68911789a485a3696a5",
-       []
-      ],
-      "spacing-expected.txt": [
-       "ae5164078bd5ca3f545a06b264dfafe8876dc899",
        []
       ]
      },
@@ -226939,6 +226943,10 @@
       ],
       "mo-paint-lspace-rspace-ref.html": [
        "da0b79ff9a67cbe53daeb141aaa2efd4f2eb96ad",
+       []
+      ],
+      "mo-single-char-and-children-ref.html": [
+       "5a290283396d4f1de2c222170d523cc806c4a765",
        []
       ],
       "mo-stretch-properties-dynamic-001-expected.txt": [
@@ -232439,7 +232447,7 @@
       []
      ],
      "web-bluetooth-test.js": [
-      "b63658e2e753218d50508b41199fc6ff18711dbf",
+      "aa4b80d2831c3c69ef16d7016b41d818bd58bd7b",
       []
      ],
      "web-bluetooth-test.js.headers": [
@@ -266046,6 +266054,32 @@
        "cb6532be68ece2a04f5d70106f7b58869906b086",
        [
         "bluetooth/device/watchAdvertisements/concurrent-watchAdvertisements-calls.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "service-and-manufacturer-data-filtered-from-event.https.window.js": [
+       "f6b93ffb4bfa0f90310f56b1b6d946acdcceb8f2",
+       [
+        "bluetooth/device/watchAdvertisements/service-and-manufacturer-data-filtered-from-event.https.window.html",
         {
          "script_metadata": [
           [
@@ -301573,70 +301607,70 @@
       ]
      ],
      "parsing": {
-      "attribute.html": [
+      "parse-attribute.html": [
        "a8fcfb24f5a9b1350adda6e59af814f1111325c1",
        [
         null,
         {}
        ]
       ],
-      "child.html": [
+      "parse-child.html": [
        "510c45db867e978fc54d3b66f705d18acbf2aff8",
        [
         null,
         {}
        ]
       ],
-      "class.html": [
+      "parse-class.html": [
        "00abcf838da18641d96c9381da77d38365329356",
        [
         null,
         {}
        ]
       ],
-      "descendant.html": [
+      "parse-descendant.html": [
        "5ff3a7bbfd973a88a30d1c804347403e1df57562",
        [
         null,
         {}
        ]
       ],
-      "id.html": [
+      "parse-id.html": [
        "2441c4217eb4b9ef1c8bde1aa5a96269b09b6304",
        [
         null,
         {}
        ]
       ],
-      "is.html": [
+      "parse-is.html": [
        "68236445c5f1e871cd4e0c500057b2ad11955b60",
        [
         null,
         {}
        ]
       ],
-      "not.html": [
+      "parse-not.html": [
        "3895683d1c84c1a39a38f2976f7b672a2b06e121",
        [
         null,
         {}
        ]
       ],
-      "sibling.html": [
+      "parse-sibling.html": [
        "4f7a7a3fbcc14d20282a7eee5ab4f9dd768467bb",
        [
         null,
         {}
        ]
       ],
-      "universal.html": [
+      "parse-universal.html": [
        "e944a93f12c0eafc9c19a2e827d93eb4448984e0",
        [
         null,
         {}
        ]
       ],
-      "where.html": [
+      "parse-where.html": [
        "3a90969570925fd85df07508a76baa02dc1ec5b6",
        [
         null,
@@ -301651,6 +301685,22 @@
        {}
       ]
      ],
+     "query": {
+      "query-is.html": [
+       "918eaee7019e7e6939b0af87a05af50a193842a7",
+       [
+        null,
+        {}
+       ]
+      ],
+      "query-where.html": [
+       "b7cf5e1b204aeac5342260628d2a1836998f3062",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "scope-selector.html": [
       "0340f25919f34aaad07d53d1550d5155f73fb26b",
       [
@@ -364902,6 +364952,13 @@
       {}
      ]
     ],
+    "contain-paint-fully-clipped.html": [
+     "bb02b6da3ec86e12f5ec1d4628bd879e77c1c19e",
+     [
+      null,
+      {}
+     ]
+    ],
     "fully-clipped-visual-rect.html": [
      "bfd74a2407e2d91cdb2a13b86945b040aeb6dcca",
      [
@@ -426541,6 +426598,17 @@
      "d8b2cc48f3647d216a3824e1391cd2612419c1f1",
      [
       null,
+      {}
+     ]
+    ],
+    "xhr-timeout-longtask.any.js": [
+     "161713104aefcf8a195e9c7c120bfcddb3f89b92",
+     [
+      "xhr/xhr-timeout-longtask.any.html",
+      {}
+     ],
+     [
+      "xhr/xhr-timeout-longtask.any.worker.html",
       {}
      ]
     ],
