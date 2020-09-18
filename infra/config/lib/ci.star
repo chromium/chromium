@@ -28,6 +28,7 @@ defaults = args.defaults(
     main_console_view = None,
     cq_mirrors_console_view = None,
     repo = None,
+    refs = None,
 )
 
 def declare_bucket(milestone_vars, *, branch_selector = branches.MAIN_ONLY):
@@ -107,6 +108,7 @@ def set_defaults(milestone_vars, **kwargs):
         pool = "luci.chromium.ci",
         project_trigger_overrides = {"chromium": settings.project} if not settings.is_master else None,
         repo = "https://chromium.googlesource.com/chromium/src",
+        refs = [milestone_vars.ref],
         service_account = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
         swarming_tags = ["vpython:native-python-wrapper"],
         triggered_by = [milestone_vars.ci_poller],
@@ -351,6 +353,7 @@ def console_view(*, name, branch_selector = branches.MAIN_ONLY, ordering = None,
 
     kwargs["header"] = defaults.get_value_from_kwargs("header", kwargs)
     kwargs["repo"] = defaults.get_value_from_kwargs("repo", kwargs)
+    kwargs["refs"] = defaults.get_value_from_kwargs("refs", kwargs)
     luci.console_view(
         name = name,
         **kwargs
