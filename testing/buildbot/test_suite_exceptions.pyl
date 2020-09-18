@@ -685,6 +685,7 @@
       'android-asan',  # https://crbug.com/964562
       'android-code-coverage-native', # https://crbug.com/1018780
       'android-lollipop-arm-rel', # https://crbug.com/1060245
+      'android-marshmallow-x86-rel-non-cq', # runs on MM-x86-rel already
     ],
     'modifications': {
       'Android CFI': {
