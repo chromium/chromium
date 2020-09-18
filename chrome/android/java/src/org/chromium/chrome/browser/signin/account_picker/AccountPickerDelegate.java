@@ -44,12 +44,11 @@ public class AccountPickerDelegate implements WebSigninBridge.Listener {
     private Callback<GoogleServiceAuthError> mOnSignInErrorCallback;
 
     /**
-     * @param windowAndroid The {@link WindowAndroid} instance of the {@link ChromeActivity}.
-     * @param currentTab The {@Tab} instance where the account picker dialog is displayed.
+     * @param windowAndroid The {@link WindowAndroid} instance of the activity.
+     * @param currentTab The current tab where the account picker bottom sheet is displayed.
      * @param webSigninBridgeFactory A {@link WebSigninBridge.Factory} to create {@link
      *         WebSigninBridge} instances.
-     * @param continueUrl A string representing the URL the user would be redirected to after
-     *         sign-in succeeds.
+     * @param continueUrl The URL that the user would be redirected to after sign-in succeeds.
      */
     public AccountPickerDelegate(WindowAndroid windowAndroid, Tab currentTab,
             WebSigninBridge.Factory webSigninBridgeFactory, String continueUrl) {

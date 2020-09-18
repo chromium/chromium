@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -37,10 +38,12 @@ import org.chromium.chrome.browser.signin.SigninManager;
 import org.chromium.chrome.browser.signin.WebSigninBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -53,8 +56,12 @@ import java.lang.ref.WeakReference;
 public class AccountPickerDelegateTest {
     private static final String CONTINUE_URL = "https://test-continue-url.com";
 
+    private final FakeAccountManagerFacade mFakeAccountManagerFacade =
+            spy(new FakeAccountManagerFacade(null));
+
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    public final AccountManagerTestRule mAccountManagerTestRule =
+            new AccountManagerTestRule(mFakeAccountManagerFacade);
 
     @Mock
     private WebSigninBridge.Factory mWebSigninBridgeFactoryMock;
@@ -149,5 +156,15 @@ public class AccountPickerDelegateTest {
         mDelegate.onSigninFailed(error);
         verify(mockCallback).onResult(error);
         verify(mWebSigninBridgeMock).destroy();
+    }
+
+    @Test
+    public void testUpdateCredentials() {
+        Callback<Boolean> callback = (isSuccess) -> {};
+        mDelegate.updateCredentials(AccountManagerTestRule.TEST_ACCOUNT_EMAIL, callback);
+        verify(mFakeAccountManagerFacade)
+                .updateCredentials(AccountUtils.createAccountFromName(
+                                           AccountManagerTestRule.TEST_ACCOUNT_EMAIL),
+                        mActivity, callback);
     }
 }
