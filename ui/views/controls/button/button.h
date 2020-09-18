@@ -106,6 +106,7 @@ class VIEWS_EXPORT Button : public InkDropHostView,
   void SetFocusForPlatform();
 
   void SetTooltipText(const base::string16& tooltip_text);
+  base::string16 GetTooltipText() const;
 
   int tag() const { return tag_; }
   void set_tag(int tag) { tag_ = tag; }

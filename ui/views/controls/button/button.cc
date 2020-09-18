@@ -140,11 +140,19 @@ void Button::SetTooltipText(const base::string16& tooltip_text) {
   tooltip_text_ = tooltip_text;
   OnSetTooltipText(tooltip_text);
   TooltipTextChanged();
+  OnPropertyChanged(&tooltip_text_, kPropertyEffectsNone);
   NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 }
 
+base::string16 Button::GetTooltipText() const {
+  return tooltip_text_;
+}
+
 void Button::SetAccessibleName(const base::string16& name) {
+  if (name == accessible_name_)
+    return;
   accessible_name_ = name;
+  OnPropertyChanged(&accessible_name_, kPropertyEffectsNone);
   NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 }
 
@@ -599,7 +607,9 @@ DEFINE_ENUM_CONVERTERS(
     {Button::STATE_DISABLED, base::ASCIIToUTF16("STATE_DISABLED")})
 
 BEGIN_METADATA(Button, InkDropHostView)
+ADD_PROPERTY_METADATA(base::string16, AccessibleName)
 ADD_PROPERTY_METADATA(ButtonState, State)
+ADD_PROPERTY_METADATA(base::string16, TooltipText)
 END_METADATA
 
 }  // namespace views
