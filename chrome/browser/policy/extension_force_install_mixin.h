@@ -25,10 +25,6 @@ namespace extensions {
 class Extension;
 }  // namespace extensions
 
-namespace policy {
-class MockConfigurationPolicyProvider;
-}  // namespace policy
-
 #if defined(OS_CHROMEOS)
 
 namespace chromeos {
@@ -95,10 +91,6 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
 
   // Use one of the Init*() methods to initialize the object before calling any
   // other method:
-
-  void InitWithMockPolicyProvider(
-      Profile* profile,
-      policy::MockConfigurationPolicyProvider* mock_policy_provider);
 
 #if defined(OS_CHROMEOS)
   void InitWithDeviceStateMixin(Profile* profile,
@@ -185,7 +177,6 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   base::ScopedTempDir temp_dir_;
   net::EmbeddedTestServer embedded_test_server_;
   Profile* profile_ = nullptr;
-  policy::MockConfigurationPolicyProvider* mock_policy_provider_ = nullptr;
 #if defined(OS_CHROMEOS)
   chromeos::DeviceStateMixin* device_state_mixin_ = nullptr;
   policy::DevicePolicyCrosTestHelper* device_policy_cros_test_helper_ = nullptr;

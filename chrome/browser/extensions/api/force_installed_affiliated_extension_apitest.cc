@@ -4,16 +4,11 @@
 
 #include "chrome/browser/extensions/api/force_installed_affiliated_extension_apitest.h"
 
-#include "base/files/file_path.h"
 #include "base/json/json_writer.h"
-#include "base/optional.h"
-#include "base/path_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/affiliation_test_helper.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/chrome_paths.h"
-#include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/browser/extensions/policy_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/prefs/pref_service.h"
@@ -33,10 +28,6 @@ constexpr char kAnotherAffiliationID[] = "another-affiliation-id";
 
 constexpr char kAffiliatedUserEmail[] = "user@example.com";
 constexpr char kAffiliatedUserGaiaId[] = "1029384756";
-
-base::FilePath GetTestDataDir() {
-  return base::PathService::CheckedGet(chrome::DIR_TEST_DATA);
-}
 
 }  // namespace
 
@@ -58,33 +49,16 @@ ForceInstalledAffiliatedExtensionApiTest::
 ForceInstalledAffiliatedExtensionApiTest::
     ~ForceInstalledAffiliatedExtensionApiTest() = default;
 
-void ForceInstalledAffiliatedExtensionApiTest::SetUp() {
-  mixin_host_.SetUp();
-  ExtensionApiTest::SetUp();
-}
-
 void ForceInstalledAffiliatedExtensionApiTest::SetUpCommandLine(
     base::CommandLine* command_line) {
-  mixin_host_.SetUpCommandLine(command_line);
+  ExtensionApiTest::SetUpCommandLine(command_line);
   policy::AffiliationTestHelper::AppendCommandLineSwitchesForLoginManager(
       command_line);
-  ExtensionApiTest::SetUpCommandLine(command_line);
-}
-
-void ForceInstalledAffiliatedExtensionApiTest::SetUpDefaultCommandLine(
-    base::CommandLine* command_line) {
-  mixin_host_.SetUpDefaultCommandLine(command_line);
-  ExtensionApiTest::SetUpDefaultCommandLine(command_line);
-}
-
-bool ForceInstalledAffiliatedExtensionApiTest::SetUpUserDataDirectory() {
-  return mixin_host_.SetUpUserDataDirectory() &&
-         ExtensionApiTest::SetUpUserDataDirectory();
 }
 
 void ForceInstalledAffiliatedExtensionApiTest::
     SetUpInProcessBrowserTestFixture() {
-  mixin_host_.SetUpInProcessBrowserTestFixture();
+  ExtensionApiTest::SetUpInProcessBrowserTestFixture();
 
   // Initialize clients here so they are available during setup. They will be
   // shutdown in ChromeBrowserMain.
@@ -119,18 +93,9 @@ void ForceInstalledAffiliatedExtensionApiTest::
 
   // Set retry delay to prevent timeouts.
   policy::DeviceManagementService::SetRetryDelayForTesting(0);
-
-  ExtensionApiTest::SetUpInProcessBrowserTestFixture();
-}
-
-void ForceInstalledAffiliatedExtensionApiTest::CreatedBrowserMainParts(
-    content::BrowserMainParts* browser_main_parts) {
-  mixin_host_.CreatedBrowserMainParts(browser_main_parts);
-  ExtensionApiTest::CreatedBrowserMainParts(browser_main_parts);
 }
 
 void ForceInstalledAffiliatedExtensionApiTest::SetUpOnMainThread() {
-  mixin_host_.SetUpOnMainThread();
   // Log in user that was created with
   // policy::AffiliationTestHelper::PreLoginUser() in the PRE_ test.
   const base::ListValue* users =
@@ -139,36 +104,24 @@ void ForceInstalledAffiliatedExtensionApiTest::SetUpOnMainThread() {
     policy::AffiliationTestHelper::LoginUser(affiliated_account_id_);
   }
 
-  force_install_mixin_.InitWithMockPolicyProvider(profile(), &policy_provider_);
+  policy_test_utils::SetUpEmbeddedTestServer(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
   ExtensionApiTest::SetUpOnMainThread();
-}
-
-void ForceInstalledAffiliatedExtensionApiTest::TearDownOnMainThread() {
-  mixin_host_.TearDownOnMainThread();
-  ExtensionApiTest::TearDownOnMainThread();
-}
-
-void ForceInstalledAffiliatedExtensionApiTest::
-    TearDownInProcessBrowserTestFixture() {
-  mixin_host_.TearDownInProcessBrowserTestFixture();
-  ExtensionApiTest::TearDownInProcessBrowserTestFixture();
-}
-
-void ForceInstalledAffiliatedExtensionApiTest::TearDown() {
-  mixin_host_.TearDown();
-  ExtensionApiTest::TearDown();
 }
 
 const extensions::Extension*
 ForceInstalledAffiliatedExtensionApiTest::ForceInstallExtension(
-    const std::string& extension_path,
-    const std::string& pem_path) {
-  extensions::ExtensionId extension_id;
-  EXPECT_TRUE(force_install_mixin_.ForceInstallFromSourceDir(
-      GetTestDataDir().AppendASCII(extension_path),
-      GetTestDataDir().AppendASCII(pem_path),
-      ExtensionForceInstallMixin::WaitMode::kLoad, &extension_id));
-  return force_install_mixin_.GetInstalledExtension(extension_id);
+    const extensions::ExtensionId& extension_id,
+    const std::string& update_manifest_path) {
+  policy_test_utils::SetExtensionInstallForcelistPolicy(
+      extension_id, embedded_test_server()->GetURL(update_manifest_path),
+      profile(), &policy_provider_);
+  const extensions::Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+          extension_id);
+  DCHECK(extension);
+  return extension;
 }
 
 void ForceInstalledAffiliatedExtensionApiTest::TestExtension(
