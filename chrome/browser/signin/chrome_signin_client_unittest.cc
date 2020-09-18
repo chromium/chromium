@@ -245,6 +245,12 @@ bool IsSignoutDisallowedByPolicy(
     case signin_metrics::ProfileSignout::FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST:
       // Allow signout for tests that want to force it.
       return false;
+    case signin_metrics::ProfileSignout::USER_DELETED_ACCOUNT_COOKIES:
+      // There's no special-casing for this in ChromeSigninClient, as this only
+      // happens when there's no sync account and policies aren't enforced.
+      // PrimaryAccountManager won't actually invoke PreSignOut in this case,
+      // thus it is fine for ChromeSigninClient to not have any special-casing.
+      return true;
     case signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS:
       NOTREACHED();
       return false;
@@ -317,6 +323,7 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::ACCOUNT_REMOVED_FROM_DEVICE,
     signin_metrics::ProfileSignout::SIGNIN_NOT_ALLOWED_ON_PROFILE_INIT,
     signin_metrics::ProfileSignout::FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST,
+    signin_metrics::ProfileSignout::USER_DELETED_ACCOUNT_COOKIES,
 };
 static_assert(base::size(kSignoutSources) ==
                   signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS,

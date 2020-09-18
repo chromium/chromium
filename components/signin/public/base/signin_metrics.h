@@ -59,6 +59,9 @@ enum ProfileSignout : int {
   SIGNIN_NOT_ALLOWED_ON_PROFILE_INIT,
   // Sign out is forced allowed. Only used for tests.
   FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST,
+  // User cleared account cookies when there's no sync consent, which has caused
+  // sign out.
+  USER_DELETED_ACCOUNT_COOKIES,
   // Keep this as the last enum.
   NUM_PROFILE_SIGNOUT_METRICS,
 };

@@ -726,6 +726,19 @@ public class SigninManager
         notifySignInAllowedChanged();
     }
 
+    @Override
+    public void onAccountsCookieDeletedByUserAction() {
+        // No need to sign out if the user is already signed out.
+        if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED) == null) return;
+
+        // If the user consented for sync, then the user should not be signed out.
+        // Account cookies will be rebuilt by the account reconcilor.
+        if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) != null) return;
+
+        // Clearing account cookies should also sign the user out if the user was not syncing.
+        signOut(SignoutReason.USER_DELETED_ACCOUNT_COOKIES);
+    }
+
     /**
      * Verifies if the account is managed. Callback may be called either
      * synchronously or asynchronously depending on the availability of the

@@ -36,10 +36,12 @@ import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ClearAccountsAction;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityMutator;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SignoutDelete;
 import org.chromium.components.signin.metrics.SignoutReason;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -233,6 +235,36 @@ public class SigninManagerTest {
 
         // Sign-out should only clear the profile when the user is managed.
         verify(mNativeMock, times(1)).wipeProfileData(anyLong(), any());
+        verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
+    }
+
+    @Test
+    public void clearingAccountCookiesTriggersSignout() {
+        // Stub out various native calls. Some of these are verified as never called
+        // and those stubs simply allow that verification to catch any issues.
+        doNothing().when(mNativeMock).wipeProfileData(anyLong(), any());
+        doNothing().when(mNativeMock).wipeGoogleServiceWorkerCaches(anyLong(), any());
+
+        // Clearing cookies shouldn't do anything when there's no primary account.
+        doReturn(null).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
+        mIdentityManager.onAccountsCookieDeletedByUserAction();
+        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt(), anyInt(), anyInt());
+
+        // Clearing cookies shouldn't do anything when there's sync account.
+        doReturn(mAccount).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
+        mIdentityManager.onAccountsCookieDeletedByUserAction();
+        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt(), anyInt(), anyInt());
+
+        // Clearing cookies when there's only an unconsented account should trigger sign-out.
+        doReturn(mAccount).when(mIdentityManager).getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED);
+        doReturn(null).when(mIdentityManager).getPrimaryAccountInfo(ConsentLevel.SYNC);
+        mIdentityManager.onAccountsCookieDeletedByUserAction();
+        verify(mIdentityMutator)
+                .clearPrimaryAccount(ClearAccountsAction.DEFAULT,
+                        SignoutReason.USER_DELETED_ACCOUNT_COOKIES, SignoutDelete.IGNORE_METRIC);
+
+        // Sign-out triggered by wiping account cookies shouldn't wipe data.
+        verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
     }
 

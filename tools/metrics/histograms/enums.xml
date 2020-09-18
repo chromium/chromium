@@ -65765,6 +65765,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="11" label="[Tests] Force sign-out">
     Signout is forced. Used only for tests.
   </int>
+  <int value="12" label="User deleted account cookies">
+    User cleared account cookies when there's no sync consent, which has caused
+    sign out.
+  </int>
 </enum>
 
 <enum name="SigninSource">

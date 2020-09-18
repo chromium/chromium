@@ -118,7 +118,8 @@ public class IdentityManager {
     }
 
     @CalledByNative
-    private void onAccountsCookieDeletedByUserAction() {
+    @VisibleForTesting
+    public void onAccountsCookieDeletedByUserAction() {
         for (Observer observer : mObservers) {
             observer.onAccountsCookieDeletedByUserAction();
         }
