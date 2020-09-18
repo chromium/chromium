@@ -11,6 +11,8 @@ import android.os.Bundle;
 
 /**
  * A SyncContentResolverDelegate that simply forwards calls to ContentResolver.
+ * Note that SyncContentResolverDelegate is not an Android concept. In particular,
+ * it's not this class that will notify observers, Android will directly do that.
  */
 public class SystemSyncContentResolverDelegate implements SyncContentResolverDelegate {
     @Override

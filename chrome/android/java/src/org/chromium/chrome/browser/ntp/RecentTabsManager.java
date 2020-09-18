@@ -436,6 +436,8 @@ public class RecentTabsManager implements AndroidSyncSettingsObserver, SignInSta
     }
 
     private void update() {
+        // TODO(crbug.com/1129853): Re-evaluate whether it's necessary to post
+        // a task.
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             if (mIsDestroyed) return;
             updateForeignSessions();

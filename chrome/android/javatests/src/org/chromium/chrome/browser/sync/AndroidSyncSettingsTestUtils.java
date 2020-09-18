@@ -33,7 +33,7 @@ public class AndroidSyncSettingsTestUtils {
         // Explicitly pass null account to AndroidSyncSettings ctor. Normally, AndroidSyncSettings
         // ctor uses IdentityManager to get the sync account, but some native tests call this method
         // before profiles are initialized (when IdentityManager doesn't exist yet).
-        AndroidSyncSettings.overrideForTests(new AndroidSyncSettings(delegate, null, null));
+        AndroidSyncSettings.overrideForTests(new AndroidSyncSettings(delegate, null));
     }
 
     public static boolean getIsSyncEnabledOnUiThread() {

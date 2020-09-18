@@ -19,12 +19,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Fake implementation of the {@link SyncContentResolverDelegate}.
- *
- * This implementation only supports status change listeners for the type
- * SYNC_OBSERVER_TYPE_SETTINGS. Differently from the real implementation, it
- * doesn't allow calling the auto-sync methods (e.g. getIsSyncable()) with a null
- * account.
+ * Fake thread-safe implementation of {@link SyncContentResolverDelegate}, so tests can
+ * emulate certain auto-sync settings (e.g. mimic a user disabling the master sync toggle).
+ * Synchronously notifies observers every time a setter is called, even if the state didn't
+ * change. Differently from the actual android.os.ContentResolver APIs, it only supports
+ * observers for the SYNC_OBSERVER_TYPE_SETTINGS type and it doesn't allow querying
+ * settings for a null account.
  */
 public class MockSyncContentResolverDelegate implements SyncContentResolverDelegate {
     private final Set<String> mSyncAutomaticallySet;

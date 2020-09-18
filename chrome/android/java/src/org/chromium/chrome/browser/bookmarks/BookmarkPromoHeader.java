@@ -15,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
-import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -37,7 +36,6 @@ import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -240,11 +238,8 @@ class BookmarkPromoHeader implements AndroidSyncSettingsObserver, SignInStateObs
     // AndroidSyncSettingsObserver implementation.
     @Override
     public void androidSyncSettingsChanged() {
-        // AndroidSyncSettings calls this method from non-UI threads.
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            mPromoState = calculatePromoState();
-            triggerPromoUpdate();
-        });
+        mPromoState = calculatePromoState();
+        triggerPromoUpdate();
     }
 
     // SignInStateObserver implementation.

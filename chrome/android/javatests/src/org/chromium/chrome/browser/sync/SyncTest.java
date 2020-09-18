@@ -150,7 +150,7 @@ public class SyncTest {
         Account account = mSyncTestRule.setUpAccountAndSignInForTesting();
         String authority = AndroidSyncSettings.getContractAuthority();
 
-        Assert.assertTrue(getAndroidSyncSettings().isSyncEnabled());
+        Assert.assertTrue(AndroidSyncSettingsTestUtils.getIsSyncEnabledOnUiThread());
         Assert.assertTrue(SyncTestUtil.isSyncRequested());
 
         // Disabling Android sync should turn Chrome sync engine off.
@@ -170,7 +170,7 @@ public class SyncTest {
     public void testStopAndStartSyncThroughAndroidMasterSync() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
 
-        Assert.assertTrue(getAndroidSyncSettings().isSyncEnabled());
+        Assert.assertTrue(AndroidSyncSettingsTestUtils.getIsSyncEnabledOnUiThread());
         Assert.assertTrue(SyncTestUtil.isSyncRequested());
 
         // Disabling Android's master sync should turn Chrome sync engine off.
@@ -191,7 +191,7 @@ public class SyncTest {
         Account account = mSyncTestRule.setUpAccountAndSignInForTesting();
         String authority = AndroidSyncSettings.getContractAuthority();
 
-        Assert.assertTrue(getAndroidSyncSettings().isSyncEnabled());
+        Assert.assertTrue(AndroidSyncSettingsTestUtils.getIsSyncEnabledOnUiThread());
         Assert.assertTrue(SyncTestUtil.isSyncRequested());
         Assert.assertTrue(SyncTestUtil.canSyncFeatureStart());
 
@@ -224,7 +224,7 @@ public class SyncTest {
         Account account = mSyncTestRule.setUpAccountAndSignInForTesting();
         String authority = AndroidSyncSettings.getContractAuthority();
 
-        Assert.assertTrue(getAndroidSyncSettings().isSyncEnabled());
+        Assert.assertTrue(AndroidSyncSettingsTestUtils.getIsSyncEnabledOnUiThread());
         Assert.assertTrue(SyncTestUtil.isSyncRequested());
         Assert.assertTrue(SyncTestUtil.canSyncFeatureStart());
 
@@ -261,9 +261,5 @@ public class SyncTest {
         mSyncTestRule.getSyncContentResolver().setMasterSyncAutomatically(false);
         mSyncTestRule.startSync();
         Assert.assertFalse(SyncTestUtil.isSyncRequested());
-    }
-
-    private static AndroidSyncSettings getAndroidSyncSettings() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(AndroidSyncSettings::get);
     }
 }
