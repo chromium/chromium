@@ -161,7 +161,7 @@ static_library("metrics") {
     sources += [ "drive_metrics_provider_ios.mm" ]
   }
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     sources += [
       "drive_metrics_provider_linux.cc",
       "system_memory_stats_recorder_linux.cc",
