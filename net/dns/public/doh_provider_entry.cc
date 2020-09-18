@@ -79,11 +79,12 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           "" /* privacy_policy */, false /* display_globally */,
           {} /* display_countries */),
       new DohProviderEntry(
-          "Cznic", base::nullopt /* provider_id_for_histogram */,
+          "Cznic", DohProviderIdForHistogram::kCznic,
           {"185.43.135.1", "2001:148f:fffe::1"},
           {"odvr.nic.cz"} /* dns_over_tls_hostnames */,
-          "https://odvr.nic.cz/doh", "" /* ui_name */, "" /* privacy_policy */,
-          false /* display_globally */, {} /* display_countries */),
+          "https://odvr.nic.cz/doh", "CZ.NIC ODVR" /* ui_name */,
+          "https://www.nic.cz/odvr/" /* privacy_policy */,
+          false /* display_globally */, {"CZ"} /* display_countries */),
       // Note: DNS.SB has separate entries for autoupgrade and settings UI to
       // allow the extra |no_ecs| parameter for autoupgrade. This parameter
       // disables EDNS Client Subnet (ECS) handling in order to match the
