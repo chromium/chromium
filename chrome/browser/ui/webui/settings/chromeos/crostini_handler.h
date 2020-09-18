@@ -58,8 +58,9 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
                                    const std::string& path,
                                    bool result,
                                    const std::string& failure_reason);
-  // Returns a list of available USB devices.
-  void HandleGetCrostiniSharedUsbDevices(const base::ListValue* args);
+  // Called when the shared USB devices page is ready.
+  void HandleNotifyCrostiniSharedUsbDevicesPageReady(
+      const base::ListValue* args);
   // Set the share state of a USB device.
   void HandleSetCrostiniUsbDeviceShared(const base::ListValue* args);
   // chromeos::SharedUsbDeviceObserver.

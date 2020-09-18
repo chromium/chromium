@@ -74,9 +74,10 @@ void CrostiniHandler::RegisterMessages() {
       base::BindRepeating(&CrostiniHandler::HandleRemoveCrostiniSharedPath,
                           weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
-      "getCrostiniSharedUsbDevices",
-      base::BindRepeating(&CrostiniHandler::HandleGetCrostiniSharedUsbDevices,
-                          weak_ptr_factory_.GetWeakPtr()));
+      "notifyCrostiniSharedUsbDevicesPageReady",
+      base::BindRepeating(
+          &CrostiniHandler::HandleNotifyCrostiniSharedUsbDevicesPageReady,
+          weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "setCrostiniUsbDeviceShared",
       base::BindRepeating(&CrostiniHandler::HandleSetCrostiniUsbDeviceShared,
@@ -325,22 +326,10 @@ base::Value CrostiniDiskInfoToValue(
 }
 }  // namespace
 
-void CrostiniHandler::HandleGetCrostiniSharedUsbDevices(
+void CrostiniHandler::HandleNotifyCrostiniSharedUsbDevicesPageReady(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetList().size());
-
-  std::string callback_id = args->GetList()[0].GetString();
-
-  chromeos::CrosUsbDetector* detector = chromeos::CrosUsbDetector::Get();
-  if (!detector) {
-    ResolveJavascriptCallback(base::Value(callback_id), base::ListValue());
-    return;
-  }
-
-  ResolveJavascriptCallback(
-      base::Value(callback_id),
-      UsbDevicesToListValue(detector->GetDevicesSharableWithCrostini()));
+  OnUsbDevicesChanged();
 }
 
 void CrostiniHandler::HandleSetCrostiniUsbDeviceShared(

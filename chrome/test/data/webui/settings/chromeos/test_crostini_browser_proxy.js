@@ -9,7 +9,7 @@ class TestCrostiniBrowserProxy extends TestBrowserProxy {
       'requestCrostiniInstallerView',
       'requestRemoveCrostini',
       'getCrostiniSharedPathsDisplayText',
-      'getCrostiniSharedUsbDevices',
+      'notifyCrostiniSharedUsbDevicesPageReady',
       'setCrostiniUsbDeviceShared',
       'removeCrostiniSharedPath',
       'exportCrostiniContainer',
@@ -84,9 +84,10 @@ class TestCrostiniBrowserProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  getCrostiniSharedUsbDevices() {
-    this.methodCalled('getCrostiniSharedUsbDevices');
-    return Promise.resolve(this.sharedUsbDevices);
+  notifyCrostiniSharedUsbDevicesPageReady() {
+    this.methodCalled('notifyCrostiniSharedUsbDevicesPageReady');
+    cr.webUIListenerCallback(
+        'crostini-shared-usb-devices-changed', this.sharedUsbDevices);
   }
 
   /** @override */
