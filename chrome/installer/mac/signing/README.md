@@ -7,12 +7,20 @@ files.
 
 ## Invoking
 
+Signing requires a statically linked build (i.e. `is_component_build = false`),
+which you can set up in a new GN out directory with the following args:
+
+    is_debug = false
+    is_component_build = false
+
 The scripts are invoked using the driver located at
 `//chrome/installer/mac/sign_chrome.py`. In order to sign a binary, a signing
 identity is required. Googlers can use the [internal development
-identity](https://goto.google.com/macoscerts); otherwise you can create a
+identity](https://goto.google.com/macoscerts); otherwise you must supply your
+own. Note that a
 [self-signed](https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/Procedures/Procedures.html)
-identity.
+identity is incompatible with the _library validation_ signing option that
+Chrome uses.
 
 A sample invocation to use during development would be:
 
@@ -38,6 +46,22 @@ config](https://cs.chromium.org/chromium/src/chrome/installer/mac/signing/chromi
 only produces one Distribution to sign just the .app. An
 `is_chrome_build=true` build produces several Distributions for the official
 release system.
+
+### System Detached Signatures
+
+MacOS may itself sign Chromium build binaries when it needs to record a
+signature for certain OS operations. The signature is not attached to the
+application bundle, as the signing scripts do, but it is instead recorded in a
+_detached signature database_. This happens, e.g. when a network request
+is filtered by the Application Firewall.
+
+If you get errors saying the build is already signed, before signing the build
+yourself, this is likely the issue. To fix it:
+
+1. Disable the Application Firewall in **System Preferences > Security &
+    Privacy > Firewall > Turn Off Firewall**.
+2. `sudo rm /var/db/DetachedSignatures`
+3. Reboot
 
 ## Running Tests
 
