@@ -179,8 +179,6 @@ class CONTENT_EXPORT IndexedDBOriginState {
   void StartClosing();
   void StartPreCloseTasks();
 
-  void CloseAndDestruct();
-
   // Executes database operations, and if |true| is returned by this function,
   // then the current time will be written to the database as the last sweep
   // time.
