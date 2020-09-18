@@ -13,6 +13,7 @@
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/test/test_helpers.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -53,7 +54,10 @@ class MockQuickAnswersClient : public QuickAnswersClient {
 //// accesses resources.
 class QuickAnswersMenuObserverTest : public InProcessBrowserTest {
  public:
-  QuickAnswersMenuObserverTest() = default;
+  QuickAnswersMenuObserverTest() {
+    feature_list_.InitWithFeatures({chromeos::features::kQuickAnswers},
+                                   {chromeos::features::kQuickAnswersRichUi});
+  }
 
   QuickAnswersMenuObserverTest(const QuickAnswersMenuObserverTest&) = delete;
   QuickAnswersMenuObserverTest& operator=(const QuickAnswersMenuObserverTest&) =
@@ -114,6 +118,8 @@ class QuickAnswersMenuObserverTest : public InProcessBrowserTest {
     observer_->SetQuickAnswerClientForTesting(
         std::move(mock_quick_answers_cient_));
   }
+
+  base::test::ScopedFeatureList feature_list_;
 
   std::unique_ptr<QuickAnswersMenuObserver> observer_;
   std::unique_ptr<MockQuickAnswersClient> mock_quick_answers_cient_;

@@ -5901,6 +5901,23 @@
             ]
         }
     ],
+    "QuickAnswersLiveExperiment": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "QuickAnswers",
+                        "QuickAnswersRichUi",
+                        "QuickAnswersTextAnnotator"
+                    ]
+                }
+            ]
+        }
+    ],
     "QuietNotificationPrompts": [
         {
             "platforms": [
