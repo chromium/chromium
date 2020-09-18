@@ -63,7 +63,7 @@
         </template>
 
         <template is="dom-if" if="[[showPolicyIndicator_(activeNetworkState)]]">
-          <cr-policy-indicator
+          <cr-policy-indicator id="policyIndicator"
               icon-aria-label="[[getTitleText_(activeNetworkState)]]"
               indicator-type="[[getPolicyIndicatorType_(activeNetworkState)]]"
               on-click="doNothing_">

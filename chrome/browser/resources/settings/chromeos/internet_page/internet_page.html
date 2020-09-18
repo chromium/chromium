@@ -75,7 +75,7 @@
                   $i18n{internetAddVPN}
                 </div>
                 <template is="dom-if" if="[[!vpnIsEnabled_]]">
-                  <cr-policy-indicator
+                  <cr-policy-indicator id="vpnPolicyIndicator"
                       icon-aria-label="$i18n{networkVpnBuiltin}"
                       indicator-type="devicePolicy"
                       on-click="doNothing_">

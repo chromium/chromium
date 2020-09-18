@@ -150,40 +150,91 @@ suite('InternetPage', function() {
           'Toggle WiFi should be focused for settingId=4.');
     });
 
-    test('VpnProviders', function() {
-      const mojom = chromeos.networkConfig.mojom;
-      mojoApi_.setVpnProvidersForTest([
-        {
-          type: mojom.VpnType.kExtension,
-          providerId: 'extension_id1',
-          providerName: 'MyExtensionVPN1',
-          appId: 'extension_id1',
-          lastLaunchTime: {internalValue: 0},
-        },
-        {
-          type: mojom.VpnType.kArc,
-          providerId: 'vpn.app.package1',
-          providerName: 'MyArcVPN1',
-          appId: 'arcid1',
-          lastLaunchTime: {internalValue: 1},
-        },
-        {
-          type: mojom.VpnType.kArc,
-          providerId: 'vpn.app.package2',
-          providerName: 'MyArcVPN2',
-          appId: 'arcid2',
-          lastLaunchTime: {internalValue: 2},
-        }
-      ]);
-      return flushAsync().then(() => {
-        assertEquals(3, internetPage.vpnProviders_.length);
-        // Ensure providers are sorted by type and lastLaunchTime.
-        assertEquals('extension_id1', internetPage.vpnProviders_[0].providerId);
-        assertEquals(
-            'vpn.app.package2', internetPage.vpnProviders_[1].providerId);
-        assertEquals(
-            'vpn.app.package1', internetPage.vpnProviders_[2].providerId);
+    suite('VPN', function() {
+      test('VpnProviders', function() {
+        const mojom = chromeos.networkConfig.mojom;
+        mojoApi_.setVpnProvidersForTest([
+          {
+            type: mojom.VpnType.kExtension,
+            providerId: 'extension_id1',
+            providerName: 'MyExtensionVPN1',
+            appId: 'extension_id1',
+            lastLaunchTime: {internalValue: 0},
+          },
+          {
+            type: mojom.VpnType.kArc,
+            providerId: 'vpn.app.package1',
+            providerName: 'MyArcVPN1',
+            appId: 'arcid1',
+            lastLaunchTime: {internalValue: 1},
+          },
+          {
+            type: mojom.VpnType.kArc,
+            providerId: 'vpn.app.package2',
+            providerName: 'MyArcVPN2',
+            appId: 'arcid2',
+            lastLaunchTime: {internalValue: 2},
+          }
+        ]);
+        return flushAsync().then(() => {
+          assertEquals(3, internetPage.vpnProviders_.length);
+          // Ensure providers are sorted by type and lastLaunchTime.
+          assertEquals(
+              'extension_id1', internetPage.vpnProviders_[0].providerId);
+          assertEquals(
+              'vpn.app.package2', internetPage.vpnProviders_[1].providerId);
+          assertEquals(
+              'vpn.app.package1', internetPage.vpnProviders_[2].providerId);
+        });
       });
+
+      function clickAddConnectionsButton() {
+        const button = internetPage.$$('#expandAddConnections');
+        assertTrue(!!button);
+        button.expanded = true;
+      }
+
+      test('should show VPN policy indicator when VPN is disabled', function() {
+        clickAddConnectionsButton();
+
+        const mojom = chromeos.networkConfig.mojom;
+        setNetworksForTest([
+          OncMojo.getDefaultNetworkState(mojom.NetworkType.kVPN, 'vpn'),
+        ]);
+        mojoApi_.setDeviceStateForTest({
+          type: mojom.NetworkType.kVPN,
+          deviceState: mojom.DeviceStateType.kProhibited
+        });
+
+        return flushAsync().then(() => {
+          assertTrue(
+              test_util.isVisible(internetPage.$$('#vpnPolicyIndicator')));
+          assertTrue(test_util.isVisible(
+              networkSummary_.$$('#VPN').$$('#policyIndicator')));
+        });
+      });
+
+      test(
+          'should not show VPN policy indicator when VPN is enabled',
+          function() {
+            clickAddConnectionsButton();
+
+            const mojom = chromeos.networkConfig.mojom;
+            setNetworksForTest([
+              OncMojo.getDefaultNetworkState(mojom.NetworkType.kVPN, 'vpn'),
+            ]);
+            mojoApi_.setDeviceStateForTest({
+              type: mojom.NetworkType.kVPN,
+              deviceState: mojom.DeviceStateType.kEnabled
+            });
+
+            return flushAsync().then(() => {
+              assertFalse(
+                  test_util.isVisible(internetPage.$$('#vpnPolicyIndicator')));
+              assertFalse(test_util.isVisible(
+                  networkSummary_.$$('#VPN').$$('#policyIndicator')));
+            });
+          });
     });
 
     test('Deep link to mobile on/off toggle', async () => {
