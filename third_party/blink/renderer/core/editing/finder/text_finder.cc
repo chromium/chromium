@@ -104,6 +104,12 @@ static void ScrollToVisible(Range* match) {
     first_node.GetDocument().UpdateStyleAndLayoutForNode(
         &first_node, DocumentUpdateReason::kFindInPage);
   }
+
+  // We don't always have a LayoutObject for the node we're trying to scroll to
+  // after the async step: crbug.com/1129341
+  if (!first_node.GetLayoutObject())
+    return;
+
   Settings* settings = first_node.GetDocument().GetSettings();
   bool smooth_find_enabled =
       settings ? settings->GetSmoothScrollForFindEnabled() : false;
