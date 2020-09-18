@@ -2340,3 +2340,45 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldClear) {
   ASSERT_FALSE(
       passwordController_.sharedPasswordController.isPasswordGenerated);
 }
+
+TEST_F(PasswordControllerTest, SavingPasswordsOutsideTheFormTag) {
+  NSString* kHtml = @"<html><body>"
+                     "<input type='text' name='username'>"
+                     "<input type='password' name='pw'>"
+                     "</body></html>";
+
+  ON_CALL(*store_, GetLogins)
+      .WillByDefault(WithArg<1>(InvokeEmptyConsumerWithForms()));
+
+  LoadHtml(kHtml);
+  WaitForFormManagersCreation();
+
+  std::string main_frame_id = web::GetMainWebFrameId(web_state());
+  SimulateUserTyping("", FormRendererId(), "username", FieldRendererId(0),
+                     "user1", main_frame_id);
+  SimulateUserTyping("", FormRendererId(), "pw", FieldRendererId(1),
+                     "password1", main_frame_id);
+
+  __block std::unique_ptr<PasswordFormManagerForUI> form_manager;
+  EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePasswordPtr)
+      .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager)));
+
+  // Simulate a renderer initiated navigation.
+  web::FakeNavigationContext context;
+  context.SetHasCommitted(true);
+  context.SetIsRendererInitiated(true);
+  [passwordController_.sharedPasswordController webState:web_state()
+                                     didFinishNavigation:&context];
+
+  // Simulate a successful submission by loading the landing page without
+  // a form.
+  LoadHtml(@"<html><body>Login success page</body></html>");
+
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
+    return form_manager != nullptr;
+  }));
+  EXPECT_EQ(ASCIIToUTF16("user1"),
+            form_manager->GetPendingCredentials().username_value);
+  EXPECT_EQ(ASCIIToUTF16("password1"),
+            form_manager->GetPendingCredentials().password_value);
+}
