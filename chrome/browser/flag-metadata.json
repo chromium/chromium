@@ -2345,7 +2345,7 @@
   {
     "name": "enable-webgl2-compute-context",
     "owners": [ "webgl-team@google.com" ],
-    "expiry_milestone": 85
+    "expiry_milestone": 91
   },
   {
     "name": "enable-webrtc-capture-multi-channel-audio-processing",
