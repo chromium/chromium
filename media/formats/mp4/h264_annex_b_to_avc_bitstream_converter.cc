@@ -33,8 +33,8 @@ Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
   bool config_changed = false;
   H264NALU nalu;
   H264Parser::Result result;
-  const H264SPS* active_sps = nullptr;
-  const H264PPS* active_pps = nullptr;
+  int new_active_sps_id = -1;
+  int new_active_pps_id = -1;
   // Sets of SPS and PPS ids to be included into the decoder config.
   // They contain
   // - all SPS and PPS units encountered in the input chunk;
@@ -109,21 +109,23 @@ Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
                         "Could not parse slice header");
         }
 
-        active_pps = parser_.GetPPS(slice_hdr.pic_parameter_set_id);
-        if (!active_pps) {
+        const H264PPS* pps = parser_.GetPPS(slice_hdr.pic_parameter_set_id);
+        if (!pps) {
           return Status(StatusCode::kH264ParsingError,
                         "PPS requested by slice not found");
         }
 
-        active_sps = parser_.GetSPS(active_pps->seq_parameter_set_id);
-        if (!active_sps) {
+        const H264SPS* sps = parser_.GetSPS(pps->seq_parameter_set_id);
+        if (!sps) {
           return Status(StatusCode::kH264ParsingError,
                         "SPS requested by PPS not found");
         }
-        if (active_sps->seq_parameter_set_id != active_sps_id_ ||
-            active_pps->pic_parameter_set_id != active_pps_id_) {
-          pps_to_include.insert(active_pps->pic_parameter_set_id);
-          sps_to_include.insert(active_sps->seq_parameter_set_id);
+        new_active_pps_id = pps->pic_parameter_set_id;
+        new_active_sps_id = sps->seq_parameter_set_id;
+        if (new_active_sps_id != active_sps_id_ ||
+            new_active_pps_id != active_pps_id_) {
+          pps_to_include.insert(new_active_pps_id);
+          sps_to_include.insert(new_active_sps_id);
           config_changed = true;
         }
       }
@@ -162,19 +164,19 @@ Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
   // Now when we are sure that everything is written and fits nicely,
   // we can update parts of the |config_| that were changed by this data chunk.
   if (config_changed) {
-    if (active_sps) {
-      active_sps_id_ = active_sps->seq_parameter_set_id;
-    } else {
-      active_sps = parser_.GetSPS(active_sps_id_);
-      if (!active_sps) {
-        return Status(
-            StatusCode::kH264ParsingError,
-            "No slices referring to SPS. No way to know configuration");
-      }
+    if (new_active_sps_id < 0)
+      new_active_sps_id = active_sps_id_;
+    if (new_active_pps_id < 0)
+      new_active_pps_id = active_pps_id_;
+
+    const H264SPS* active_sps = parser_.GetSPS(new_active_sps_id);
+    if (!active_sps) {
+      return Status(StatusCode::kH264ParsingError,
+                    "No slices referring to SPS. No way to know configuration");
     }
 
-    if (active_pps)
-      active_pps_id_ = active_pps->pic_parameter_set_id;
+    active_pps_id_ = new_active_pps_id;
+    active_sps_id_ = new_active_sps_id;
 
     config_.sps_list.clear();
     config_.pps_list.clear();
