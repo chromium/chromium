@@ -1229,7 +1229,6 @@ crbug.com/6606 external/wpt/mathml/presentation-markup/fractions/frac-parameters
 crbug.com/6606 external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-005.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-006.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/mrow/inferred-mrow-stretchy.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/mrow/legacy-mfenced-element-001.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/mrow/legacy-mrow-like-elements-001.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/mrow/legacy-mrow-like-elements-002.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/embellished-operator-001.html [ Failure ]

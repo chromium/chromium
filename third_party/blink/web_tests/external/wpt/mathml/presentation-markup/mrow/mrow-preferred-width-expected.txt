@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Preferred width of mrow with mspace children assert_approx_equals: unknown expected 15 +/- 1 but got 30
-PASS Preferred width of mrow with mn and mo children
-Harness: the test ran to completion.
-

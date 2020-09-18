@@ -18,14 +18,21 @@ if (supportsEditableMathML) {
         'Check whether we have MathML or not');
 }
 
+function hasRedBackground(element) {
+  return window.getComputedStyle(element).
+    getPropertyValue("background-color") == "rgb(255, 0, 0)" ||
+    Array.from(element.children).some(hasRedBackground);
+}
+
 // crbug.com/1011950
 selection_test(
   '<div contenteditable>te|st</div>',
   selection => {
-    selection.setClipboardData('<math><xss style=display:block>t<style>X<a title="</style><img src onerror=alert(1)>">.<a>.');
+    selection.setClipboardData('<math><xss style=display:block>t<style>X<a title="</style><img src onerror=assert_unreached()>">.<a>.');
     selection.document.execCommand('paste');
+    assert_false(hasRedBackground(document.documentElement));
   },
-  '<div contenteditable>te<br>t<img src>">.<a>.|</a>st</div>',
+  '<div contenteditable>te<math><xss style="display:block"><style>X<a title="</style><img src onerror=assert_unreached()>">.<a></a></a></style></xss></math>t|st</div>',
   'Paste blocks script injection');
 
 // crbug.com/1017871
@@ -34,8 +41,9 @@ selection_test(
   selection => {
     selection.setClipboardData('<math><xss style=display:block>t<style>X<a title="</style><style>*{background:red}</style>">.<a>.');
     selection.document.execCommand('paste');
+    assert_false(hasRedBackground(document.documentElement));
   },
-  '<div contenteditable>te<br>t">.<a>.|</a>st</div>',
+  '<div contenteditable>te<math><xss style="display:block"><style>X<a title="</style><style>*{background:red}</style>">.<a></a></a></style></xss></math>t|st</div>',
   'Paste blocks HTML style injection');
 
 // crbug.com/1017871
@@ -44,9 +52,11 @@ selection_test(
   selection => {
     selection.setClipboardData('A<math>B<a style=display:block>C<title>D<a id="</title><svg><style>*{background:red}</style>">c');
     selection.document.execCommand('paste');
+    assert_false(hasRedBackground(document.documentElement));
   },
   supportsEditableMathML
-    ? '<div contenteditable>teA<br>C|<svg></svg>st</div>'
+    ? '<div contenteditable>teA<math>B<a style="display:block"><title>D<a id="</title><svg><style>*{background:red}</style>"></a></title></a></math>C|st</div>'
     : '<div contenteditable>teA<math>B<br></math>C|<svg></svg>st</div>',
   'Paste blocks SVG style injection');
+
 </script>

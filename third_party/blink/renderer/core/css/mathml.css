@@ -27,6 +27,11 @@
 
 @namespace "http://www.w3.org/1998/Math/MathML";
 
+/* Default display */
+* {
+    display: math;
+}
+
 /* By default, we only display the MathML formulas without any formatting other than the one specified by the display attribute. */
 math {
     display: inline-math;
@@ -45,11 +50,6 @@ math[display="block"] {
 
 :focus {
     outline: auto 1px -webkit-focus-ring-color;
-}
-
-maction, merror, mfrac, mi, mmultiscripts, mn, mo, mover, mpadded, mphantom, mprescripts, mroot, mrow, ms, msqrt, mspace, mstyle, msub, msup, msubsup, mtext, munder, munderover, none
-{
-    display: math;
 }
 
 mphantom {
