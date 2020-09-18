@@ -156,6 +156,7 @@ String GetWordsFromStart(String text, int word_num) {
 constexpr int kExactTextMaxChars = 300;
 constexpr int kNoContextMinChars = 20;
 constexpr int kMaxContextWords = 10;
+constexpr int kMaxRangeWords = 10;
 
 void TextFragmentSelectorGenerator::UpdateSelection(
     LocalFrame* selection_frame,
@@ -324,8 +325,73 @@ void TextFragmentSelectorGenerator::GenerateExactSelector() {
 }
 
 void TextFragmentSelectorGenerator::ExtendRangeSelector() {
-  // TODO(gayane): Generate range selector.
-  state_ = kFailure;
+  DCHECK_EQ(kRange, step_);
+  DCHECK_EQ(kNeedsNewCandidate, state_);
+
+  // Give up if range is already too long.
+  if (num_range_start_words_ == kMaxRangeWords ||
+      num_range_end_words_ == kMaxRangeWords) {
+    step_ = kContext;
+    return;
+  }
+
+  // Initialize range start and end, if needed.
+  if (max_available_range_start_.IsEmpty() &&
+      max_available_range_end_.IsEmpty()) {
+    EphemeralRangeInFlatTree ephemeral_range(selection_range_);
+
+    Node& start_first_block_ancestor =
+        FindBuffer::GetFirstBlockLevelAncestorInclusive(
+            *ephemeral_range.StartPosition().ComputeContainerNode());
+    Node& end_first_block_ancestor =
+        FindBuffer::GetFirstBlockLevelAncestorInclusive(
+            *ephemeral_range.EndPosition().ComputeContainerNode());
+
+    // If selection starts and ends in the same block, then split selected text
+    // roughly in the middle.
+    // TODO(gayane): Should also check that there are no nested blocks.
+    if (start_first_block_ancestor.isSameNode(&end_first_block_ancestor)) {
+      String selection_text = PlainText(ephemeral_range);
+      selection_text.Ensure16Bit();
+      int selection_length = selection_text.length();
+      int mid_point =
+          FindNextWordForward(selection_text.Characters16(), selection_length,
+                              selection_length / 2);
+      max_available_range_start_ = selection_text.Left(mid_point);
+
+      // If from middle till end of selection there is no word break, then we
+      // cannot use it for range end.
+      if (mid_point == selection_length) {
+        state_ = kFailure;
+        return;
+      }
+
+      max_available_range_end_ =
+          selection_text.Right(selection_text.length() - mid_point - 1);
+    } else {
+      // If not the same node, then we use first and last block of the selection
+      // range.
+      max_available_range_start_ =
+          GetNextTextBlock(selection_range_->StartPosition());
+      max_available_range_end_ =
+          GetPreviousTextBlock(selection_range_->EndPosition());
+    }
+  }
+
+  String start =
+      GetWordsFromStart(max_available_range_start_, ++num_range_start_words_);
+  String end =
+      GetWordsFromEnd(max_available_range_end_, ++num_range_end_words_);
+
+  // If the start and end didn't change, it means we exhausted the selected
+  // text and should try adding context.
+  if (selector_ && start == selector_->Start() && end == selector_->End()) {
+    step_ = kContext;
+    return;
+  }
+  selector_ = std::make_unique<TextFragmentSelector>(
+      TextFragmentSelector::SelectorType::kRange, start, end, "", "");
+  state_ = kTestCandidate;
 }
 
 void TextFragmentSelectorGenerator::ExtendContext() {
@@ -347,9 +413,8 @@ void TextFragmentSelectorGenerator::ExtendContext() {
   // Try initiating properties necessary for calculating prefix and suffix.
   if (max_available_prefix_.IsEmpty() && max_available_suffix_.IsEmpty()) {
     max_available_prefix_ =
-        GetAvailablePrefixAsText(selection_range_->StartPosition());
-    max_available_suffix_ =
-        GetAvailableSuffixAsText(selection_range_->EndPosition());
+        GetPreviousTextBlock(selection_range_->StartPosition());
+    max_available_suffix_ = GetNextTextBlock(selection_range_->EndPosition());
   }
 
   if (max_available_prefix_.IsEmpty() && max_available_suffix_.IsEmpty()) {
@@ -371,7 +436,7 @@ void TextFragmentSelectorGenerator::ExtendContext() {
   state_ = kTestCandidate;
 }
 
-String TextFragmentSelectorGenerator::GetAvailablePrefixAsText(
+String TextFragmentSelectorGenerator::GetPreviousTextBlock(
     const Position& prefix_end_position) {
   Node* prefix_end = prefix_end_position.ComputeContainerNode();
   unsigned prefix_end_offset =
@@ -399,7 +464,7 @@ String TextFragmentSelectorGenerator::GetAvailablePrefixAsText(
   return PlainText(EphemeralRange(range_start, range_end)).StripWhiteSpace();
 }
 
-String TextFragmentSelectorGenerator::GetAvailableSuffixAsText(
+String TextFragmentSelectorGenerator::GetNextTextBlock(
     const Position& suffix_start_position) {
   Node* suffix_start = suffix_start_position.ComputeContainerNode();
   unsigned suffix_start_offset =

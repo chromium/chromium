@@ -54,11 +54,11 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   void NotifySelectorReady(const TextFragmentSelector& selector);
 
   // Wrappers for tests.
-  String GetAvailablePrefixAsTextForTesting(const Position& position) {
-    return GetAvailablePrefixAsText(position);
+  String GetPreviousTextBlockForTesting(const Position& position) {
+    return GetPreviousTextBlock(position);
   }
-  String GetAvailableSuffixAsTextForTesting(const Position& position) {
-    return GetAvailableSuffixAsText(position);
+  String GetNextTextBlockForTesting(const Position& position) {
+    return GetNextTextBlock(position);
   }
 
   // Releases members if necessary.
@@ -94,11 +94,11 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
 
   // Returns max text preceding given position that doesn't cross block
   // boundaries.
-  String GetAvailablePrefixAsText(const Position& position);
+  String GetPreviousTextBlock(const Position& position);
 
   // Returns max text following given position that doesn't cross block
   // boundaries.
-  String GetAvailableSuffixAsText(const Position& position);
+  String GetNextTextBlock(const Position& position);
 
   void GenerateExactSelector();
   void ExtendRangeSelector();
@@ -124,10 +124,16 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   String max_available_prefix_;
   String max_available_suffix_;
 
+  String max_available_range_start_;
+  String max_available_range_end_;
+
   // Indicates a number of words used from |max_available_prefix_| and
   // |max_available_suffix_| for the current |selector_|.
   int num_prefix_words_ = 0;
   int num_suffix_words_ = 0;
+
+  int num_range_start_words_ = 0;
+  int num_range_end_words_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(TextFragmentSelectorGenerator);
 };
