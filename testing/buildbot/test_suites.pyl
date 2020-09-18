@@ -3805,6 +3805,7 @@
         'args': [
           '--browser-ui-tests-verify-pixels',
           '--enable-pixel-output-in-tests',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/pixel_browser_tests.filter',
         ],
         'test': 'browser_tests',
         'mixins': [

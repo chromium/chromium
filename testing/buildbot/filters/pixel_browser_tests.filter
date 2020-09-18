@@ -1,4 +1,6 @@
 # This is the filter for browser_tests that supports pixel tests.
+*EyeDropperBrowserTest.*
+*PasswordBubbleBrowserTest.*
 AppInfoDialogBrowserTest.*
 AskGoogleForSuggestionsDialogTest.*
 BookmarkBubbleViewBrowserTest.*
@@ -6,29 +8,25 @@ BookmarkEditorViewBrowserTest.*
 ContentSettingBubbleDialogTest.*
 ExtensionInstallDialogViewInteractiveBrowserTest.*
 ExtensionUninstallDialogViewInteractiveBrowserTest.*
-*EyeDropperBrowserTest.*
+FeaturePromoDialogTest.*
+GlobalErrorBubbleTest.*
+HatsBubbleTest.*
+HungRendererDialogViewBrowserTest.*
+ImportLockDialogViewBrowserTest.*
+NativeFileSystemUsageBubbleViewTest.*
 OutdatedUpgradeBubbleTest.*
+PageInfoBubbleViewBrowserTest.*
+PasswordReuseModalWarningTest.*
+ProfileSigninConfirmationDialogTest.*
+RelaunchRecommendedBubbleViewDialogTest.*
+RelaunchRequiredDialogViewDialogTest.*
+ReopenTabPromoControllerDialogBrowserTest.*
+ScreenCaptureNotificationUiBrowserTest.*
 SessionCrashedBubbleViewTest.*
-
-# TODO(crbug.com/1102894): Re-enable the following tests.
-# FeaturePromoDialogTest.*
-# GlobalErrorBubbleTest.*
-# HatsBubbleTest.*
-# HungRendererDialogViewBrowserTest.*
-# ImportLockDialogViewBrowserTest.*
-# NativeFileSystemUsageBubbleViewTest.*
-# PageInfoBubbleViewBrowserTest.*
-# *PasswordBubbleBrowserTest.*
-# PasswordReuseModalWarningTest.*
-# ProfileSigninConfirmationDialogTest.*
-# RelaunchRecommendedBubbleViewDialogTest.*
-# RelaunchRequiredDialogViewDialogTest.*
-# ReopenTabPromoControllerDialogBrowserTest.*
-# ScreenCaptureNotificationUiBrowserTest.*
-# TabGroupEditorBubbleViewDialogBrowserTest.*
-# TabHoverCardBubbleViewBrowserTest.*
-# UpdateRecommendedDialogTest.*
-# ZoomBubbleDialogTest.*
+TabGroupEditorBubbleViewDialogBrowserTest.*
+TabHoverCardBubbleViewBrowserTest.*
+UpdateRecommendedDialogTest.*
+ZoomBubbleDialogTest.*
 
 # This test uses random network port and shows it on ui.
 -ContentSettingBubbleDialogTest.InvokeUi_popups

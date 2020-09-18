@@ -53814,8 +53814,8 @@
         "args": [
           "--browser-ui-tests-verify-pixels",
           "--enable-pixel-output-in-tests",
-          "--git-revision=${got_revision}",
-          "--gtest_filter=*PasswordBubbleBrowserTest.*:FeaturePromoDialogTest.*:GlobalErrorBubbleTest.*:HatsBubbleTest.*:HungRendererDialogViewBrowserTest.*:ImportLockDialogViewBrowserTest.*:NativeFileSystemUsageBubbleViewTest.*:PageInfoBubbleViewBrowserTest.*:PasswordReuseModalWarningTest.*:ProfileSigninConfirmationDialogTest.*:RelaunchRecommendedBubbleViewDialogTest.*:RelaunchRequiredDialogViewDialogTest.*:ReopenTabPromoControllerDialogBrowserTest.*:ScreenCaptureNotificationUiBrowserTest.*:SessionCrashedBubbleViewTest.*:TabGroupEditorBubbleViewDialogBrowserTest.*:TabHoverCardBubbleViewBrowserTest.*:UpdateRecommendedDialogTest.*:ZoomBubbleDialogTest.*"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/pixel_browser_tests.filter",
+          "--git-revision=${got_revision}"
         ],
         "merge": {
           "args": [],

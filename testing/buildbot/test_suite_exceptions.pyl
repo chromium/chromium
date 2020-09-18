@@ -2190,11 +2190,6 @@
   },
   'pixel_browser_tests': {
     'modifications': {
-      'Win10 Tests x64': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/pixel_browser_tests.filter',
-        ],
-      },
       'win-pixel-tester-rel': {
         'non_precommit_args': [
           # Do not allow retry or it will break the bulk approval process.
@@ -2202,28 +2197,6 @@
           # seen flaky version on the trace. We can triage the image using the printed link,
           # but it will not show on the Skia Gold search page.
           '--test-launcher-retry-limit=0',
-        ],
-        'args': [
-          '--gtest_filter='
-          '*PasswordBubbleBrowserTest.*:'
-          'FeaturePromoDialogTest.*:'
-          'GlobalErrorBubbleTest.*:'
-          'HatsBubbleTest.*:'
-          'HungRendererDialogViewBrowserTest.*:'
-          'ImportLockDialogViewBrowserTest.*:'
-          'NativeFileSystemUsageBubbleViewTest.*:'
-          'PageInfoBubbleViewBrowserTest.*:'
-          'PasswordReuseModalWarningTest.*:'
-          'ProfileSigninConfirmationDialogTest.*:'
-          'RelaunchRecommendedBubbleViewDialogTest.*:'
-          'RelaunchRequiredDialogViewDialogTest.*:'
-          'ReopenTabPromoControllerDialogBrowserTest.*:'
-          'ScreenCaptureNotificationUiBrowserTest.*:'
-          'SessionCrashedBubbleViewTest.*:'
-          'TabGroupEditorBubbleViewDialogBrowserTest.*:'
-          'TabHoverCardBubbleViewBrowserTest.*:'
-          'UpdateRecommendedDialogTest.*:'
-          'ZoomBubbleDialogTest.*',
         ],
       },
     },
