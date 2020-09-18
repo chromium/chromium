@@ -46,7 +46,7 @@ const char kAnotherSwitch[] = "another-value";
     self.assertEqual(2, len(strings[1].comments.split('\n')))
 
   def testStringValues(self):
-    test_data = """
+    test_data = r"""
 // Single line string constants.
 const char kAString[] = "a-value";
 const char kNoComment[] = "no-comment";
@@ -67,13 +67,23 @@ const char kAStringWithAVeryLongNameThatWillHaveToWrap[] =
 const char kAStringWithAVeryLongNameThatWillHaveToWrap2[] =
     "a-string-with-a-very-long-name-that-will-have-to-wrap2";
 
-// This is erroneous and should be ignored.
+const char kStringWithEscapes[] = "tab\tquote\"newline\n";
+const char kStringWithEscapes2[] =
+    "tab\tquote\"newline\n";
+
+const char kEmptyString[] = "";
+
+// These are valid C++ but not currently supported by the script.
 const char kInvalidLineBreak[] =
 
     "invalid-line-break";
+
+const char kConcatenateMultipleStringLiterals[] =
+    "first line"
+    "second line";
 """.split('\n')
     strings = java_cpp_strings.StringFileParser(test_data).Parse()
-    self.assertEqual(6, len(strings))
+    self.assertEqual(9, len(strings))
     self.assertEqual('A_STRING', strings[0].name)
     self.assertEqual('"a-value"', strings[0].value)
     self.assertEqual('NO_COMMENT', strings[1].name)
@@ -90,6 +100,12 @@ const char kInvalidLineBreak[] =
                      strings[5].name)
     self.assertEqual('"a-string-with-a-very-long-name-that-will-have-to-wrap2"',
                      strings[5].value)
+    self.assertEqual('STRING_WITH_ESCAPES', strings[6].name)
+    self.assertEqual(r'"tab\tquote\"newline\n"', strings[6].value)
+    self.assertEqual('STRING_WITH_ESCAPES2', strings[7].name)
+    self.assertEqual(r'"tab\tquote\"newline\n"', strings[7].value)
+    self.assertEqual('EMPTY_STRING', strings[8].name)
+    self.assertEqual('""', strings[8].value)
 
   def testTreatWebViewLikeOneWord(self):
     test_data = """

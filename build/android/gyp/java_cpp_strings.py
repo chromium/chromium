@@ -14,18 +14,6 @@ from util import build_utils
 from util import java_cpp_utils
 
 
-def _ToUpper(match):
-  return match.group(1).upper()
-
-
-def _GetClassName(source_path):
-  name = os.path.basename(os.path.abspath(source_path))
-  (name, _) = os.path.splitext(name)
-  name = re.sub(r'_([a-z])', _ToUpper, name)
-  name = re.sub(r'^(.)', _ToUpper, name)
-  return name
-
-
 class _String(object):
 
   def __init__(self, name, value, comments):
@@ -61,8 +49,8 @@ def ParseTemplateFile(lines):
 # in the file to be parsed.
 class StringFileParser(object):
   SINGLE_LINE_COMMENT_RE = re.compile(r'\s*(// [^\n]*)')
-  STRING_RE = re.compile(r'\s*const char k(.*)\[\]\s*=\s*(?:(".*"))?')
-  VALUE_RE = re.compile(r'\s*("[^"]*")')
+  STRING_RE = re.compile(r'\s*const char k(.*)\[\]\s*=')
+  VALUE_RE = re.compile(r'\s*("(?:\"|[^"])*")\s*;')
 
   def __init__(self, lines, path=''):
     self._lines = lines
@@ -74,6 +62,14 @@ class StringFileParser(object):
     self._current_name = ''
     self._current_value = ''
     self._strings = []
+
+  def _ExtractVariable(self, line):
+    match = StringFileParser.STRING_RE.match(line)
+    return match.group(1) if match else None
+
+  def _ExtractValue(self, line):
+    match = StringFileParser.VALUE_RE.search(line)
+    return match.group(1) if match else None
 
   def _Reset(self):
     self._current_comments = []
@@ -89,9 +85,9 @@ class StringFileParser(object):
     self._Reset()
 
   def _ParseValue(self, line):
-    value_line = StringFileParser.VALUE_RE.match(line)
-    if value_line:
-      self._current_value = value_line.groups()[0]
+    current_value = self._ExtractValue(line)
+    if current_value is not None:
+      self._current_value = current_value
       self._AppendString()
     else:
       self._Reset()
@@ -108,11 +104,12 @@ class StringFileParser(object):
       return False
 
   def _ParseString(self, line):
-    string_line = StringFileParser.STRING_RE.match(line)
-    if string_line:
-      self._current_name = string_line.groups()[0]
-      if string_line.groups()[1]:
-        self._current_value = string_line.groups()[1]
+    current_name = self._ExtractVariable(line)
+    if current_name is not None:
+      self._current_name = current_name
+      current_value = self._ExtractValue(line)
+      if current_value is not None:
+        self._current_value = current_value
         self._AppendString()
       else:
         self._in_string = True
