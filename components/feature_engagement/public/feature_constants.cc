@@ -20,6 +20,8 @@ const base::Feature kIPHFocusModeFeature{"IPH_FocusMode",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHGlobalMediaControlsFeature{
     "IPH_GlobalMediaControls", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHLiveCaptionFeature{"IPH_LiveCaption",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHPasswordsAccountStorageFeature{
     "IPH_PasswordsAccountStorage", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHReopenTabFeature{"IPH_ReopenTab",

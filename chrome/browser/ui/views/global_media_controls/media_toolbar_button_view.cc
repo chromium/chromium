@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_controller.h"
 #include "chrome/browser/ui/in_product_help/global_media_controls_in_product_help.h"
 #include "chrome/browser/ui/in_product_help/global_media_controls_in_product_help_factory.h"
+#include "chrome/browser/ui/in_product_help/live_caption_in_product_help.h"
+#include "chrome/browser/ui/in_product_help/live_caption_in_product_help_factory.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 #include "chrome/browser/ui/views/in_product_help/global_media_controls_promo_controller.h"
 #include "chrome/grit/generated_resources.h"
@@ -31,11 +33,18 @@ MediaToolbarButtonView::MediaToolbarButtonView(const Browser* browser)
       service_(
           MediaNotificationServiceFactory::GetForProfile(browser->profile())),
       browser_(browser) {
-  GlobalMediaControlsInProductHelp* in_product_help =
+  GlobalMediaControlsInProductHelp* global_media_controls_in_product_help =
       GlobalMediaControlsInProductHelpFactory::GetForProfile(
           browser_->profile());
-  if (in_product_help)
-    AddObserver(in_product_help);
+  if (global_media_controls_in_product_help)
+    AddObserver(global_media_controls_in_product_help);
+
+  if (base::FeatureList::IsEnabled(media::kLiveCaption)) {
+    LiveCaptionInProductHelp* live_caption_in_product_help =
+        LiveCaptionInProductHelpFactory::GetForProfile(browser_->profile());
+    if (live_caption_in_product_help)
+      AddObserver(live_caption_in_product_help);
+  }
 
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);

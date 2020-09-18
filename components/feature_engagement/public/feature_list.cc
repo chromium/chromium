@@ -69,6 +69,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDesktopTabGroupsNewGroupFeature,
     &kIPHFocusModeFeature,
     &kIPHGlobalMediaControlsFeature,
+    &kIPHLiveCaptionFeature,
     &kIPHPasswordsAccountStorageFeature,
     &kIPHReopenTabFeature,
     &kIPHWebUITabStripFeature,
