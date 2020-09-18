@@ -120,6 +120,9 @@ class ASH_EXPORT DeskMiniView
 
   void OnDeskPreviewPressed();
 
+  // Layout |desk_name_view_| given the current bounds of the desk preview.
+  void LayoutDeskNameView(const gfx::Rect& preview_bounds);
+
   DesksBarView* const owner_bar_;
 
   // The root window on which this mini_view is created.

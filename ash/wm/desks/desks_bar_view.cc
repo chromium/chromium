@@ -42,7 +42,7 @@ constexpr int kUseCompactLayoutWidthThreshold = 600;
 
 // In the non-compact layout, this is the height allocated for elements other
 // than the desk preview (e.g. the DeskNameView, and the vertical paddings).
-constexpr int kNonPreviewAllocatedHeight = 47;
+constexpr int kNonPreviewAllocatedHeight = 55;
 
 // The local Y coordinate of the mini views in both non-compact and compact
 // layouts respectively.

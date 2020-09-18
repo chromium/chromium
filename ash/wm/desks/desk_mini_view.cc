@@ -22,6 +22,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -30,9 +31,11 @@ namespace ash {
 
 namespace {
 
-constexpr int kLabelPreviewSpacing = 4;
+constexpr int kLabelPreviewSpacing = 8;
 
 constexpr int kCloseButtonMargin = 8;
+
+constexpr int kMinDeskNameViewWidth = 20;
 
 constexpr SkColor kDarkModeActiveColor = SK_ColorWHITE;
 constexpr SkColor kLightModeActiveColor = SK_ColorBLACK;
@@ -71,6 +74,7 @@ DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
   auto desk_name_view = std::make_unique<DeskNameView>();
   desk_name_view->AddObserver(this);
   desk_name_view->set_controller(this);
+  desk_name_view->SetText(desk_->name());
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -158,19 +162,8 @@ void DeskMiniView::Layout() {
 
   desk_name_view_->SetVisible(!compact);
 
-  if (!compact) {
-    const int previous_width = desk_name_view_->width();
-    const gfx::Size desk_name_view_size = desk_name_view_->GetPreferredSize();
-    const gfx::Rect desk_name_view_bounds{
-        preview_bounds.x(), preview_bounds.bottom() + kLabelPreviewSpacing,
-        preview_bounds.width(), desk_name_view_size.height()};
-    desk_name_view_->SetBoundsRect(desk_name_view_bounds);
-
-    // A change in the DeskNameView's width might mean the need to elide the
-    // text differently.
-    if (previous_width != desk_name_view_bounds.width())
-      OnDeskNameChanged(desk_->name());
-  }
+  if (!compact)
+    LayoutDeskNameView(preview_bounds);
 
   close_desk_button_->SetBounds(
       preview_bounds.right() - CloseDeskButton::kCloseButtonSize -
@@ -188,7 +181,7 @@ gfx::Size DeskMiniView::CalculatePreferredSize() const {
   // The preferred size takes into account only the width of the preview
   // view.
   return gfx::Size{preview_bounds.width(),
-                   preview_bounds.height() + kLabelPreviewSpacing +
+                   preview_bounds.height() + 2 * kLabelPreviewSpacing +
                        desk_name_view_->GetPreferredSize().height()};
 }
 
@@ -258,6 +251,8 @@ void DeskMiniView::OnDeskNameChanged(const base::string16& new_name) {
 
   desk_name_view_->SetTextAndElideIfNeeded(new_name);
   desk_preview_->SetAccessibleName(new_name);
+
+  Layout();
 }
 
 views::View* DeskMiniView::GetView() {
@@ -306,6 +301,8 @@ void DeskMiniView::ContentsChanged(views::Textfield* sender,
       base::CollapseWhitespace(*new_text,
                                /*trim_sequences_with_line_breaks=*/false),
       /*set_by_user=*/true);
+
+  Layout();
 }
 
 bool DeskMiniView::HandleKeyEvent(views::Textfield* sender,
@@ -368,6 +365,7 @@ bool DeskMiniView::HandleMouseEvent(views::Textfield* sender,
 void DeskMiniView::OnViewFocused(views::View* observed_view) {
   DCHECK_EQ(observed_view, desk_name_view_);
   is_desk_name_being_modified_ = true;
+  desk_name_view_->UpdateViewAppearance();
 
   // Set the unelided desk name so that the full name shows up for the user to
   // be able to change it.
@@ -381,6 +379,7 @@ void DeskMiniView::OnViewBlurred(views::View* observed_view) {
   DCHECK_EQ(observed_view, desk_name_view_);
   is_desk_name_being_modified_ = false;
   defer_select_all_ = false;
+  desk_name_view_->UpdateViewAppearance();
 
   // When committing the name, do not allow an empty desk name. Revert back to
   // the default name.
@@ -434,6 +433,27 @@ void DeskMiniView::OnCloseButtonPressed() {
 void DeskMiniView::OnDeskPreviewPressed() {
   DesksController::Get()->ActivateDesk(desk_,
                                        DesksSwitchSource::kMiniViewButton);
+}
+
+void DeskMiniView::LayoutDeskNameView(const gfx::Rect& preview_bounds) {
+  const int previous_width = desk_name_view_->width();
+  const gfx::Size desk_name_view_size = desk_name_view_->GetPreferredSize();
+
+  const int text_width =
+      base::ClampToRange(desk_name_view_size.width(), kMinDeskNameViewWidth,
+                         preview_bounds.width());
+
+  const int desk_name_view_x =
+      preview_bounds.x() + (preview_bounds.width() - text_width) / 2;
+  gfx::Rect desk_name_view_bounds{
+      desk_name_view_x, preview_bounds.bottom() + kLabelPreviewSpacing,
+      text_width, desk_name_view_size.height()};
+  desk_name_view_->SetBoundsRect(desk_name_view_bounds);
+
+  // A change in the DeskNameView's width might mean the need
+  // to elide the text differently.
+  if (previous_width != desk_name_view_bounds.width())
+    OnDeskNameChanged(desk_->name());
 }
 
 }  // namespace ash

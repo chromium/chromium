@@ -15,10 +15,13 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/views/background.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+
+constexpr int kDeskNameViewBorderRadius = 4;
 
 namespace {
 
@@ -46,9 +49,16 @@ DeskNameView::DeskNameView() {
   border_ptr_ = border.get();
   SetBorder(std::move(border));
 
-  SetBackgroundColor(SK_ColorTRANSPARENT);
-  SetTextColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  const SkColor text_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary);
+  SetTextColor(text_color);
+  SetSelectionTextColor(text_color);
+
+  const SkColor selection_color =
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kFocusRingColor);
+  SetSelectionBackgroundColor(selection_color);
+
   SetCursorEnabled(true);
   SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
 }
@@ -70,9 +80,15 @@ void DeskNameView::CommitChanges(views::Widget* widget) {
 }
 
 void DeskNameView::SetTextAndElideIfNeeded(const base::string16& text) {
-  SetText(gfx::ElideText(text, GetFontList(), GetContentsBounds().width(),
+  SetText(gfx::ElideText(text, GetFontList(),
+                         parent()->GetPreferredSize().width(),
                          gfx::ELIDE_TAIL));
   full_text_ = text;
+}
+
+void DeskNameView::UpdateViewAppearance() {
+  background()->SetNativeControlColor(GetBackgroundColor());
+  UpdateBorderState();
 }
 
 const char* DeskNameView::GetClassName() const {
@@ -107,6 +123,20 @@ void DeskNameView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(full_text_);
 }
 
+void DeskNameView::OnMouseEntered(const ui::MouseEvent& event) {
+  UpdateViewAppearance();
+}
+
+void DeskNameView::OnMouseExited(const ui::MouseEvent& event) {
+  UpdateViewAppearance();
+}
+
+void DeskNameView::OnThemeChanged() {
+  Textfield::OnThemeChanged();
+  SetBackground(views::CreateRoundedRectBackground(GetBackgroundColor(),
+                                                   kDeskNameViewBorderRadius));
+}
+
 views::View* DeskNameView::GetView() {
   return this;
 }
@@ -126,8 +156,16 @@ void DeskNameView::OnViewUnhighlighted() {
 }
 
 void DeskNameView::UpdateBorderState() {
-  border_ptr_->SetFocused(IsViewHighlighted());
+  border_ptr_->SetFocused(IsViewHighlighted() || HasFocus());
   SchedulePaint();
+}
+
+SkColor DeskNameView::GetBackgroundColor() const {
+  return HasFocus() || IsMouseHovered()
+             ? AshColorProvider::Get()->GetControlsLayerColor(
+                   AshColorProvider::ControlsLayerType::
+                       kControlBackgroundColorInactive)
+             : SK_ColorTRANSPARENT;
 }
 
 }  // namespace ash
