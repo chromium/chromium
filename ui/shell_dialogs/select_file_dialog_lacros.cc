@@ -63,6 +63,7 @@ SelectedFileInfo ConvertSelectedFileInfo(
 
 // Returns the ID of the Wayland shell surface that contains |window|.
 std::string GetShellWindowUniqueId(aura::Window* window) {
+  DCHECK(window);
   // On desktop aura there is one WindowTreeHost per top-level window.
   aura::WindowTreeHost* window_tree_host = window->GetRootWindow()->GetHost();
   DCHECK(window_tree_host);
@@ -126,7 +127,9 @@ void SelectFileDialogLacros::SelectFileImpl(
     options->file_types->allowed_paths =
         GetMojoAllowedPaths(file_types->allowed_paths);
   }
-  options->owning_shell_window_id = GetShellWindowUniqueId(owning_window);
+  // Modeless file dialogs have no owning window.
+  if (owning_window)
+    options->owning_shell_window_id = GetShellWindowUniqueId(owning_window);
 
   // Send request to ash-chrome.
   chromeos::LacrosChromeServiceImpl::Get()->select_file_remote()->Select(

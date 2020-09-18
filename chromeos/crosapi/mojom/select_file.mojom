@@ -95,6 +95,8 @@ struct SelectFileOptions {
   SelectFileTypeInfo? file_types;
 
   // Internal window ID for the top-level shell window that owns the dialog.
+  // If provided, the dialog will be window-modal to that shell window.
+  // If empty, a modeless dialog will be opened on the default display.
   string owning_shell_window_id;
 };
 
