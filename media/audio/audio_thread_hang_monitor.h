@@ -21,7 +21,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/base/media_export.h"
-#include "media/base/media_switches.h"
 
 namespace base {
 class TickClock;

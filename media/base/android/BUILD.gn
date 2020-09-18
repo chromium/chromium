@@ -19,13 +19,6 @@ if (is_android) {
       "//media/filters",
     ]
 
-    if (is_android) {
-      visibility += [
-        "//gpu/command_buffer/service:gles2_sources",
-        "//gpu/command_buffer/service:android_texture_owner_unittests",
-      ]
-    }
-
     sources = [
       "android_cdm_factory.cc",
       "android_cdm_factory.h",

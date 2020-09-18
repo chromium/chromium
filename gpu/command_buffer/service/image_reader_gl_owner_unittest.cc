@@ -8,11 +8,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/android/android_image_reader_compat.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/command_buffer/service/image_reader_gl_owner.h"
 #include "gpu/command_buffer/service/mock_abstract_texture.h"
-#include "media/base/android/media_codec_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context_egl.h"
@@ -149,7 +149,9 @@ TEST_F(ImageReaderGLOwnerTest, MaxImageExpectation) {
     return;
   EXPECT_EQ(static_cast<ImageReaderGLOwner*>(image_reader_.get())
                 ->max_images_for_testing(),
-            media::MediaCodecUtil::LimitAImageReaderMaxSizeToOne() ? 1 : 2);
+            base::android::AndroidImageReader::LimitAImageReaderMaxSizeToOne()
+                ? 1
+                : 2);
 }
 
 class ImageReaderGLOwnerSecureSurfaceControlTest

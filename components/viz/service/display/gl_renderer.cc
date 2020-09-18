@@ -60,7 +60,6 @@
 #include "gpu/command_buffer/common/gpu_memory_allocation.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_feature_info.h"
-#include "media/base/media_switches.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorFilter.h"

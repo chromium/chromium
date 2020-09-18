@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/android/android_hardware_buffer_compat.h"
+#include "base/android/android_image_reader_compat.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/logging.h"
@@ -20,7 +21,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/ipc/common/android/android_image_reader_utils.h"
-#include "media/base/android/media_codec_util.h"
 #include "ui/gl/android/android_surface_control_compat.h"
 #include "ui/gl/gl_fence_android_native_fence_sync.h"
 #include "ui/gl/gl_utils.h"
@@ -62,10 +62,11 @@ bool IsSurfaceControl(TextureOwner::Mode mode) {
 uint32_t NumRequiredMaxImages(TextureOwner::Mode mode) {
   if (IsSurfaceControl(mode) ||
       mode == TextureOwner::Mode::kAImageReaderInsecureMultithreaded) {
-    DCHECK(!media::MediaCodecUtil::LimitAImageReaderMaxSizeToOne());
+    DCHECK(!base::android::AndroidImageReader::LimitAImageReaderMaxSizeToOne());
     return 3;
   }
-  return media::MediaCodecUtil::LimitAImageReaderMaxSizeToOne() ? 1 : 2;
+  return base::android::AndroidImageReader::LimitAImageReaderMaxSizeToOne() ? 1
+                                                                            : 2;
 }
 
 }  // namespace

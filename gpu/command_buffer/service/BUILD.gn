@@ -448,7 +448,7 @@ target(link_target_type, "gles2_sources") {
       "texture_owner.h",
     ]
 
-    deps += [ "//media/base/android:android" ]
+    deps += [ "//base" ]
 
     # TODO(cblume): http://crbug.com/911313
     # Abstract out the platform specific defines. Right now we need the android
@@ -515,8 +515,6 @@ if (is_android) {
       ":gles2",
       "//base/test:test_support",
       "//gpu:test_support",
-      "//media/base:base",
-      "//media/base/android:android",
       "//testing/gmock",
       "//testing/gtest",
       "//ui/gl",

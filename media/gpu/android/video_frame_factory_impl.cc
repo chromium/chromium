@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/android/android_image_reader_compat.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/callback.h"
@@ -19,7 +20,6 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/texture_owner.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "media/base/android/media_codec_util.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
@@ -45,7 +45,7 @@ base::Optional<VideoFrameMetadata::CopyMode> GetVideoFrameCopyMode(
 
   if (features::IsAImageReaderEnabled() &&
       base::FeatureList::IsEnabled(media::kWebViewZeroCopyVideo) &&
-      !media::MediaCodecUtil::LimitAImageReaderMaxSizeToOne()) {
+      !base::android::AndroidImageReader::LimitAImageReaderMaxSizeToOne()) {
     return VideoFrameMetadata::CopyMode::kCopyMailboxesOnly;
   } else {
     return VideoFrameMetadata::CopyMode::kCopyToNewTexture;
@@ -58,7 +58,7 @@ gpu::TextureOwner::Mode GetTextureOwnerMode(
   if (copy_mode == VideoFrameMetadata::kCopyMailboxesOnly) {
     DCHECK(features::IsAImageReaderEnabled() &&
            base::FeatureList::IsEnabled(media::kWebViewZeroCopyVideo) &&
-           !media::MediaCodecUtil::LimitAImageReaderMaxSizeToOne());
+           !base::android::AndroidImageReader::LimitAImageReaderMaxSizeToOne());
     return gpu::TextureOwner::Mode::kAImageReaderInsecureMultithreaded;
   }
 

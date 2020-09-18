@@ -131,11 +131,6 @@ class MEDIA_EXPORT MediaCodecUtil {
   // WARNING: This can't be used from the renderer process since it attempts to
   // create a MediaCodec (which requires permissions) to get the codec name.
   static bool CodecNeedsFlushWorkaround(MediaCodecBridge* codec);
-
-  // Some devices do not support more than 1 image to be acquired from the
-  // AImageReader.(crbug.com/1051705). This method returns true for those
-  // devices.
-  static bool LimitAImageReaderMaxSizeToOne();
 };
 
 }  // namespace media

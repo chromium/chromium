@@ -416,16 +416,4 @@ bool MediaCodecUtil::CodecNeedsFlushWorkaround(MediaCodecBridge* codec) {
           "OMX.Exynos.avc.dec.secure" == codec_name);
 }
 
-// static
-bool MediaCodecUtil::LimitAImageReaderMaxSizeToOne() {
-  // Using MIBOX for both MiBox 4k and MiBox S 4k devices.
-  std::string disabled_model = "MIBOX";
-  const std::string model(base::android::BuildInfo::GetInstance()->model());
-  if (base::StartsWith(model, disabled_model,
-                       base::CompareCase::INSENSITIVE_ASCII)) {
-    return true;
-  }
-  return false;
-}
-
 }  // namespace media

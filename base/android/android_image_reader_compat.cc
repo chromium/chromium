@@ -9,6 +9,7 @@
 #include "base/android/build_info.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 
 #define LOAD_FUNCTION(lib, func)                            \
   do {                                                      \
@@ -31,6 +32,18 @@ AndroidImageReader& AndroidImageReader::GetInstance() {
 
 bool AndroidImageReader::IsSupported() {
   return is_supported_;
+}
+
+// static
+bool AndroidImageReader::LimitAImageReaderMaxSizeToOne() {
+  // Using MIBOX for both MiBox 4k and MiBox S 4k devices.
+  std::string disabled_model = "MIBOX";
+  const std::string model(base::android::BuildInfo::GetInstance()->model());
+  if (base::StartsWith(model, disabled_model,
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+    return true;
+  }
+  return false;
 }
 
 AndroidImageReader::AndroidImageReader() {
