@@ -428,9 +428,11 @@ int AXPosition::MaxTextOffset() const {
     return container_object_->ComputedName().length();
   }
 
+  const LayoutObject* layout_object = container_node->GetLayoutObject();
+  if (!layout_object || !layout_object->IsText())
+    return container_object_->ComputedName().length();
   LayoutBlockFlow* formatting_context =
-      NGOffsetMapping::GetInlineFormattingContextOf(
-          *container_node->GetLayoutObject());
+      NGOffsetMapping::GetInlineFormattingContextOf(*layout_object);
   const NGOffsetMapping* container_offset_mapping =
       formatting_context ? NGInlineNode::GetOffsetMapping(formatting_context)
                          : nullptr;
@@ -482,11 +484,23 @@ bool AXPosition::IsValid(String* failure_reason) const {
     return false;
   }
 
+  const Document* document = container_object_->GetDocument();
+  DCHECK(document->IsActive());
+  DCHECK(!document->NeedsLayoutTreeUpdate());
+  if (!document->IsActive() || document->NeedsLayoutTreeUpdate()) {
+    if (failure_reason) {
+      *failure_reason =
+          "\nPosition invalid: document is either not active or it needs "
+          "layout tree update.";
+    }
+    return false;
+  }
+
   if (IsTextPosition()) {
     if (text_offset_or_child_index_ > MaxTextOffset()) {
       if (failure_reason) {
         *failure_reason = String::Format(
-            "\nPosition invalid: text offset too large.\n%d vs. %d",
+            "\nPosition invalid: text offset too large.\n%d vs. %d.",
             text_offset_or_child_index_, MaxTextOffset());
       }
       return false;
@@ -496,7 +510,7 @@ bool AXPosition::IsValid(String* failure_reason) const {
         container_object_->ChildCountIncludingIgnored()) {
       if (failure_reason) {
         *failure_reason = String::Format(
-            "\nPosition invalid: child index too large.\n%d vs. %d",
+            "\nPosition invalid: child index too large.\n%d vs. %d.",
             text_offset_or_child_index_,
             container_object_->ChildCountIncludingIgnored());
       }
@@ -504,8 +518,6 @@ bool AXPosition::IsValid(String* failure_reason) const {
     }
   }
 
-  DCHECK(container_object_->GetDocument()->IsActive());
-  DCHECK(!container_object_->GetDocument()->NeedsLayoutTreeUpdate());
 #if DCHECK_IS_ON()
   DCHECK_EQ(container_object_->GetDocument()->DomTreeVersion(),
             dom_tree_version_);
