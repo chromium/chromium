@@ -36,11 +36,9 @@
 
 namespace blink {
 
-class SliderTrackElement;
-
 class LayoutSliderTrack final : public LayoutBlockFlow {
  public:
-  explicit LayoutSliderTrack(SliderTrackElement*);
+  explicit LayoutSliderTrack(Element*);
 
  private:
   void UpdateLayout() override;

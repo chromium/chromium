@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_outside_list_marker.h"
+#include "third_party/blink/renderer/core/layout/layout_slider_track.h"
 #include "third_party/blink/renderer/core/layout/layout_table.h"
 #include "third_party/blink/renderer/core/layout/layout_table_caption.h"
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
@@ -262,6 +263,13 @@ LayoutBlockFlow* LayoutObjectFactory::CreateFileUploadControl(
     LegacyLayout legacy) {
   return CreateObject<LayoutBlockFlow, LayoutNGBlockFlow,
                       LayoutFileUploadControl>(node, style, legacy);
+}
+
+LayoutObject* LayoutObjectFactory::CreateSliderTrack(Node& node,
+                                                     const ComputedStyle& style,
+                                                     LegacyLayout legacy) {
+  return CreateObject<LayoutBlock, LayoutNGBlockFlow, LayoutSliderTrack>(
+      node, style, legacy);
 }
 
 LayoutText* LayoutObjectFactory::CreateText(Node* node,

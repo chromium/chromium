@@ -33,12 +33,11 @@
 
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
-#include "third_party/blink/renderer/core/html/forms/slider_track_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 
 namespace blink {
 
-LayoutSliderTrack::LayoutSliderTrack(SliderTrackElement* element)
+LayoutSliderTrack::LayoutSliderTrack(Element* element)
     : LayoutBlockFlow(element) {}
 
 void LayoutSliderTrack::UpdateLayout() {
