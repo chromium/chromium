@@ -136,6 +136,8 @@ static_library("router") {
       "providers/cast/cast_media_route_provider_metrics.h",
       "providers/cast/cast_session_client.cc",
       "providers/cast/cast_session_client.h",
+      "providers/cast/cast_session_client_impl.cc",
+      "providers/cast/cast_session_client_impl.h",
       "providers/cast/cast_session_tracker.cc",
       "providers/cast/cast_session_tracker.h",
       "providers/cast/chrome_cast_message_handler.cc",

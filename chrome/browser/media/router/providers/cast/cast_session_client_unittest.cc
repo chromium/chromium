@@ -16,6 +16,7 @@
 #include "chrome/browser/media/router/data_decoder_util.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
+#include "chrome/browser/media/router/providers/cast/cast_session_client_impl.h"
 #include "chrome/browser/media/router/providers/cast/mock_app_activity.h"
 #include "chrome/browser/media/router/providers/cast/test_util.h"
 #include "chrome/browser/media/router/providers/common/buffered_message_sender.h"
