@@ -22,7 +22,6 @@
 <translation id="1176932207622159128">ছবি সেভ করা যায়নি</translation>
 <translation id="1180526666083833456">বিভিন্ন ডিভাইস জুড়ে সিঙ্ক করুন এবং নিজের পছন্দ অনুযায়ী করে নিন।</translation>
 <translation id="1181037720776840403">সরান</translation>
-<translation id="1185569544548277362">নতুন: আপনি এখন Chrome-কে আপনার ডিফল্ট ব্রাউজার হিসেবে সেট করতে পারেন। <ph name="BEGIN_LINK" />'সেটিংস' বিকল্পে যান<ph name="END_LINK" /></translation>
 <translation id="1207113853726624428">নতুন সার্চ</translation>
 <translation id="1209206284964581585">এখনকার মতো লুকান</translation>
 <translation id="1219674500290482172">ইন্টারনেটের সাথে সংযোগ করতে অক্ষম৷</translation>
@@ -560,6 +559,7 @@
 <translation id="7189598951263744875">শেয়ার করুন...</translation>
 <translation id="7192050974311852563">লগ করা শুরু করুন</translation>
 <translation id="7203585745079012652">আবার উত্তরগুলি বলে</translation>
+<translation id="7207383424303353046">নতুন: Chrome-কে আপনার ডিফল্ট ব্রাউজার অ্যাপ হিসেবে সেট করে এতে অটোমেটিক সাইট খুলুন। <ph name="BEGIN_LINK" />সেটিংস খুলুন<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">কার্ডের বিশেষ নামটি সঠিক নয়</translation>
 <translation id="7265758999917665941">এই সাইটের জন্য কখনই নয়</translation>
 <translation id="7272437679830969316">আপনার পরিচয় যাচাই করা যাবে না। পাসওয়ার্ড কপি করা হয়নি।</translation>

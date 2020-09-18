@@ -22,7 +22,6 @@
 <translation id="1176932207622159128">Cannot Save Image</translation>
 <translation id="1180526666083833456">Sync and personalise across devices.</translation>
 <translation id="1181037720776840403">Remove</translation>
-<translation id="1185569544548277362">New: You can make Chrome your default. <ph name="BEGIN_LINK" />Open Settings<ph name="END_LINK" /></translation>
 <translation id="1207113853726624428">New Search</translation>
 <translation id="1209206284964581585">Hide for now</translation>
 <translation id="1219674500290482172">Unable to connect to the Internet.</translation>
@@ -559,6 +558,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="7189598951263744875">Share...</translation>
 <translation id="7192050974311852563">Start logging</translation>
 <translation id="7203585745079012652">Speak Answers Back</translation>
+<translation id="7207383424303353046">New: Open sites in Chrome automatically by making it your default browser app. <ph name="BEGIN_LINK" />Open settings<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Invalid card nickname</translation>
 <translation id="7265758999917665941">Never for this site</translation>
 <translation id="7272437679830969316">Can't verify your identity. Password not copied.</translation>

@@ -22,7 +22,6 @@
 <translation id="1176932207622159128">Billedet kan ikke gemmes</translation>
 <translation id="1180526666083833456">Synkroniser og tilpas på flere enheder.</translation>
 <translation id="1181037720776840403">Fjern</translation>
-<translation id="1185569544548277362">Nyhed: Du kan gøre Chrome til din standardbrowser. <ph name="BEGIN_LINK" />Åbn Indstillinger<ph name="END_LINK" /></translation>
 <translation id="1207113853726624428">Ny søgning</translation>
 <translation id="1209206284964581585">Skjul indtil videre</translation>
 <translation id="1219674500290482172">Der kunne ikke oprettes forbindelse til internettet.</translation>
@@ -559,6 +558,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="7189598951263744875">Del...</translation>
 <translation id="7192050974311852563">Start logføring</translation>
 <translation id="7203585745079012652">Giv talte svar</translation>
+<translation id="7207383424303353046">Nyt! Åbn automatisk websites i Chrome ved at gøre den til din standardbrowser. <ph name="BEGIN_LINK" />Åbn indstillinger<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Kortets kaldenavn er ugyldigt</translation>
 <translation id="7265758999917665941">Aldrig for dette website</translation>
 <translation id="7272437679830969316">Din identitet kunne ikke bekræftes. Adgangskoden blev ikke kopieret.</translation>

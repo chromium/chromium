@@ -22,7 +22,6 @@
 <translation id="1176932207622159128">छविलाई सुरक्षित गर्न सकिदैन</translation>
 <translation id="1180526666083833456">यन्त्रहरूभरि सिंक र वैयक्तीकृत गर्नुहोस्।</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
-<translation id="1185569544548277362">नयाँ: तपाईं Chrome लाई आफ्नो पूर्वनिर्धारित ब्राउजर बनाउन सक्नुहुन्छ। <ph name="BEGIN_LINK" />सेटिङ खोल्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="1207113853726624428">नयाँ खोज</translation>
 <translation id="1209206284964581585">अहिलेका लागि लुकाउनुहोस्</translation>
 <translation id="1219674500290482172">इन्टर्नेटमा जडान गर्न असमर्थ भयो।</translation>
@@ -559,6 +558,7 @@
 <translation id="7189598951263744875">सेयर गर्नुहोस्...</translation>
 <translation id="7192050974311852563">लग गर्न सुरु गर्नुहोस्</translation>
 <translation id="7203585745079012652">जवाफहरू पुन: भन्नुहोस्</translation>
+<translation id="7207383424303353046">नयाँ: Chrome लाई आफ्नो पूर्वनिर्धारित ब्राउजर एप बनाएर साइटहरू स्वतः Chrome मा खोल्नुहोस्। <ph name="BEGIN_LINK" />सेटिङ खोल्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">कार्डको उपनाम अवैध छ</translation>
 <translation id="7265758999917665941">यो साइटका हकमा कहिल्यै पनि नसम्झनुहोस्</translation>
 <translation id="7272437679830969316">तपाईंको पहिचान पुष्टि गर्न सकिएन। पासवर्डको प्रतिलिपि गरिएको छैन।</translation>

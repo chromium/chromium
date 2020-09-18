@@ -22,7 +22,6 @@
 <translation id="1176932207622159128">Error al guardar imagen</translation>
 <translation id="1180526666083833456">Sincroniza y personaliza todos tus dispositivos.</translation>
 <translation id="1181037720776840403">Quitar</translation>
-<translation id="1185569544548277362">Nuevo: Puedes establecer Chrome como navegador predeterminado. <ph name="BEGIN_LINK" />Abrir Configuración<ph name="END_LINK" /></translation>
 <translation id="1207113853726624428">Nueva búsqueda</translation>
 <translation id="1209206284964581585">Ocultar por el momento</translation>
 <translation id="1219674500290482172">No se puede establecer conexión con Internet.</translation>
@@ -559,6 +558,7 @@ Sin embargo, no pueden usar cookies para ver la actividad de navegación en dife
 <translation id="7189598951263744875">Compartir...</translation>
 <translation id="7192050974311852563">Iniciar registro</translation>
 <translation id="7203585745079012652">Decir las respuestas</translation>
+<translation id="7207383424303353046">Nueva función: Para que los sitios se abran de forma automática en Chrome, elígelo como App de navegador predeterminada. <ph name="BEGIN_LINK" />Abrir Configuración<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">El sobrenombre de la tarjeta no es válido</translation>
 <translation id="7265758999917665941">Nunca para este sitio</translation>
 <translation id="7272437679830969316">No se puede verificar tu identidad. La contraseña no se copió.</translation>

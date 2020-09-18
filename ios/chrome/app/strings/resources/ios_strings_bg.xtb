@@ -22,7 +22,6 @@
 <translation id="1176932207622159128">Изобр. не може да се запази</translation>
 <translation id="1180526666083833456">Синхронизиране и персонализиране на всички устройства.</translation>
 <translation id="1181037720776840403">Премахване</translation>
-<translation id="1185569544548277362">Ново: Можете да зададете Chrome като браузъра си по подразбиране. <ph name="BEGIN_LINK" />Отваряне на настройките<ph name="END_LINK" /></translation>
 <translation id="1207113853726624428">Ново търсене</translation>
 <translation id="1209206284964581585">Скриване засега</translation>
 <translation id="1219674500290482172">Не може да се установи връзка с интернет.</translation>
@@ -559,6 +558,7 @@
 <translation id="7189598951263744875">Споделяне...</translation>
 <translation id="7192050974311852563">Стартиране на регистрирането</translation>
 <translation id="7203585745079012652">Изговаряне на отговорите</translation>
+<translation id="7207383424303353046">Ново: Отваряйте сайтовете автоматично в Chrome, като го направите стандартното си приложение за браузър. <ph name="BEGIN_LINK" />Отворете настройките<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Псевдонимът на картата е невалиден</translation>
 <translation id="7265758999917665941">Никога за този сайт</translation>
 <translation id="7272437679830969316">Паролата не бе копирана поради неуспешно удостоверяване.</translation>

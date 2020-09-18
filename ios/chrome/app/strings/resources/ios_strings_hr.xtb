@@ -22,7 +22,6 @@
 <translation id="1176932207622159128">Nije moguće spremiti sliku</translation>
 <translation id="1180526666083833456">Sinkronizacija i prilagodba na svim uređajima.</translation>
 <translation id="1181037720776840403">Ukloni</translation>
-<translation id="1185569544548277362">Novo: možete postaviti Chrome kao zadani preglednik. <ph name="BEGIN_LINK" />Otvorite Postavke<ph name="END_LINK" /></translation>
 <translation id="1207113853726624428">Novo pretraživanje</translation>
 <translation id="1209206284964581585">Sakrij za sad</translation>
 <translation id="1219674500290482172">Povezivanje s internetom nije moguće.</translation>
@@ -559,6 +558,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="7189598951263744875">Dijeli...</translation>
 <translation id="7192050974311852563">Započni zapisivanje</translation>
 <translation id="7203585745079012652">Izgovaranje odgovora</translation>
+<translation id="7207383424303353046">Novo: automatski otvorite web-lokacije u Chromeu tako što ćete ga postaviti kao zadanu aplikaciju preglednika. <ph name="BEGIN_LINK" />Otvorite Postavke<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Nadimak kartice nije važeći</translation>
 <translation id="7265758999917665941">Nikad za ovu web lokaciju</translation>
 <translation id="7272437679830969316">Potvrda identiteta nije moguća. Zaporka nije kopirana.</translation>

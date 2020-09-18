@@ -22,7 +22,6 @@
 <translation id="1176932207622159128">Bilden sparades inte</translation>
 <translation id="1180526666083833456">Synkronisera och anpassa på alla enheter.</translation>
 <translation id="1181037720776840403">Ta bort</translation>
-<translation id="1185569544548277362">Nytt: Du kan använda Chrome som standard. <ph name="BEGIN_LINK" />Öppna Inställningar<ph name="END_LINK" /></translation>
 <translation id="1207113853726624428">Ny sökning</translation>
 <translation id="1209206284964581585">Dölj för tillfället</translation>
 <translation id="1219674500290482172">Det går inte att ansluta till internet.</translation>
@@ -559,6 +558,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="7189598951263744875">Dela ...</translation>
 <translation id="7192050974311852563">Starta loggning</translation>
 <translation id="7203585745079012652">Läs upp svaren</translation>
+<translation id="7207383424303353046">Nyhet! Öppna automatiskt webbplatser i Chrome genom att ställa in Chrome som standardwebbläsarapp. <ph name="BEGIN_LINK" />Öppna inställningarna<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Ogiltigt kortnamn</translation>
 <translation id="7265758999917665941">Aldrig på den här webbplatsen</translation>
 <translation id="7272437679830969316">Det gick inte att verifiera din identitet. Lösenordet har inte kopierats.</translation>

@@ -22,7 +22,6 @@
 <translation id="1176932207622159128">Αδύνατη αποθ.εικόνας</translation>
 <translation id="1180526666083833456">Συγχρονισμός και εξατομίκευση σε όλες τις συσκευές.</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
-<translation id="1185569544548277362">Νέο: Μπορείτε να κάνετε το Chrome το προεπιλεγμένο πρόγραμμα περιήγησής σας. <ph name="BEGIN_LINK" />Άνοιγμα ρυθμίσεων<ph name="END_LINK" /></translation>
 <translation id="1207113853726624428">Νέα αναζήτηση</translation>
 <translation id="1209206284964581585">Προσωρινή απόκρυψη</translation>
 <translation id="1219674500290482172">Δεν είναι δυνατή η σύνδεση στο διαδίκτυο.</translation>
@@ -560,6 +559,7 @@
 <translation id="7189598951263744875">Κοινοποίηση…</translation>
 <translation id="7192050974311852563">Έναρξη καταγραφής</translation>
 <translation id="7203585745079012652">Εκφώνηση απαντήσεων</translation>
+<translation id="7207383424303353046">Νέο: Ανοίξτε ιστοτόπους αυτόματα στο Chrome, ορίζοντάς το ως προεπιλεγμένη εφαρμογή προγράμματος περιήγησης. <ph name="BEGIN_LINK" />Άνοιγμα Ρυθμίσεων<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Μη έγκυρο ψευδώνυμο κάρτας</translation>
 <translation id="7265758999917665941">Ποτέ για αυτόν τον ιστότοπο</translation>
 <translation id="7272437679830969316">Δεν είναι δυνατή η επαλήθευση της ταυτότητας σας. Ο κωδικός πρόσβασης δεν αντιγράφηκε.</translation>

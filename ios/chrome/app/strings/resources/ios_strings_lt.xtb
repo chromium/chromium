@@ -22,7 +22,6 @@
 <translation id="1176932207622159128">Nepav. išs. vaizdo</translation>
 <translation id="1180526666083833456">Sinchronizuojama ir suasmeninama įvairiuose įrenginiuose.</translation>
 <translation id="1181037720776840403">Pašalinti</translation>
-<translation id="1185569544548277362">Naujiena: galite nustatyti „Chrome“ kaip numatytąją naršyklę. <ph name="BEGIN_LINK" />Atidaryti skiltį „Nustatymai“<ph name="END_LINK" /></translation>
 <translation id="1207113853726624428">Nauja paieška</translation>
 <translation id="1209206284964581585">Slėpti dabar</translation>
 <translation id="1219674500290482172">Nepavyksta prisijungti prie interneto.</translation>
@@ -559,6 +558,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="7189598951263744875">Bendrinti...</translation>
 <translation id="7192050974311852563">Pradėti registravimą</translation>
 <translation id="7203585745079012652">Sakyti atsakymus</translation>
+<translation id="7207383424303353046">Naujiena: automatiškai atidarykite svetaines naršyklėje „Chrome“, nustatę ją kaip numatytąją naršyklės programą. <ph name="BEGIN_LINK" />Atidarykite skiltį „Nustatymai“<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Netinkamas kortelės slapyvardis</translation>
 <translation id="7265758999917665941">Niekada šioje svetainėje</translation>
 <translation id="7272437679830969316">Nepavyko patvirtinti tapatybės. Slaptažodis nenukopijuotas.</translation>

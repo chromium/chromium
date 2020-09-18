@@ -22,7 +22,6 @@
 <translation id="1176932207622159128">Impossibile salvare l'immagine</translation>
 <translation id="1180526666083833456">Sincronizza e personalizza su tutti i dispositivi.</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
-<translation id="1185569544548277362">Novità: puoi impostare Chrome come browser predefinito. <ph name="BEGIN_LINK" />Apri le Impostazioni<ph name="END_LINK" /></translation>
 <translation id="1207113853726624428">Nuova ricerca</translation>
 <translation id="1209206284964581585">Nascondi per ora</translation>
 <translation id="1219674500290482172">Impossibile connettersi a Internet.</translation>
@@ -559,6 +558,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="7189598951263744875">Condividi...</translation>
 <translation id="7192050974311852563">Avvia logging</translation>
 <translation id="7203585745079012652">Pronuncia le risposte</translation>
+<translation id="7207383424303353046">Novità: apri automaticamente siti in Chrome impostandolo come App browser predefinita. <ph name="BEGIN_LINK" />Apri le Impostazioni<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Nickname carta non valido</translation>
 <translation id="7265758999917665941">Mai per questo sito</translation>
 <translation id="7272437679830969316">Impossibile verificare la tua identità. Password non copiata.</translation>

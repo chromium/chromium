@@ -22,7 +22,6 @@
 <translation id="1176932207622159128">Imposs. enreg. image</translation>
 <translation id="1180526666083833456">Synchroniser et personnaliser les données sur tous les appareils.</translation>
 <translation id="1181037720776840403">Supprimer</translation>
-<translation id="1185569544548277362">Nouveauté : vous pouvez définir Chrome comme votre navigateur par défaut. <ph name="BEGIN_LINK" />Accéder aux réglages<ph name="END_LINK" /></translation>
 <translation id="1207113853726624428">Nouvelle recherche</translation>
 <translation id="1209206284964581585">Masquer pour le moment</translation>
 <translation id="1219674500290482172">Impossible de se connecter à Internet.</translation>
@@ -559,6 +558,7 @@ En revanche, ils ne peuvent pas en utiliser pour voir votre activité de navigat
 <translation id="7189598951263744875">Partager…</translation>
 <translation id="7192050974311852563">Démarrer la journalisation</translation>
 <translation id="7203585745079012652">Énoncer les réponses</translation>
+<translation id="7207383424303353046">Nouveau : Ouvrez automatiquement les sites dans Chrome en le définissant comme appli de navigation par défaut. <ph name="BEGIN_LINK" />Accéder aux paramètres<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Pseudo incorrect associé à la carte</translation>
 <translation id="7265758999917665941">Jamais pour ce site</translation>
 <translation id="7272437679830969316">Impossible de confirmer votre identité. Mot de passe non copié.</translation>
