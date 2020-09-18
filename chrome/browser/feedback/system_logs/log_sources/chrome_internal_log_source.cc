@@ -59,6 +59,10 @@
 #include "ui/base/win/hidden_window.h"
 #endif
 
+#if defined(OS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace system_logs {
 
 namespace {
@@ -68,9 +72,11 @@ constexpr char kExtensionsListKey[] = "extensions";
 constexpr char kPowerApiListKey[] = "chrome.power extensions";
 constexpr char kDataReductionProxyKey[] = "data_reduction_proxy";
 constexpr char kChromeVersionTag[] = "CHROME VERSION";
+
 #if BUILDFLAG(IS_LACROS)
 constexpr char kLacrosChromeVersionPrefix[] = "Lacros ";
 #endif
+
 #if defined(OS_CHROMEOS)
 constexpr char kArcPolicyComplianceReportKey[] =
     "CHROMEOS_ARC_POLICY_COMPLIANCE_REPORT";
@@ -87,7 +93,8 @@ constexpr char kDemoModeConfigKey[] = "demo_mode_config";
 constexpr char kOnboardingTime[] = "ONBOARDING_TIME";
 #else
 constexpr char kOsVersionTag[] = "OS VERSION";
-#endif
+#endif  // OS_CHROMEOS
+
 #if defined(OS_WIN)
 constexpr char kUsbKeyboardDetected[] = "usb_keyboard_detected";
 constexpr char kIsEnrolledToDomain[] = "enrolled_to_domain";
@@ -98,6 +105,10 @@ constexpr char kUpdateHresult[] = "update_hresult";
 constexpr char kInstallResultCode[] = "install_result_code";
 constexpr char kInstallLocation[] = "install_location";
 #endif
+#endif  // OS_WIN
+
+#if defined(OS_MAC)
+constexpr char kCpuArch[] = "cpu_arch";
 #endif
 
 #if defined(OS_CHROMEOS)
@@ -250,6 +261,19 @@ std::string DetermineInstallLocation() {
 }
 #endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+#if defined(OS_MAC)
+std::string MacCpuArchAsString() {
+  switch (base::mac::GetCPUType()) {
+    case base::mac::CPUType::kIntel:
+      return "x86-64";
+    case base::mac::CPUType::kTranslatedIntel:
+      return "x86-64/translated";
+    case base::mac::CPUType::kArm:
+      return "arm64";
+  }
+}
+#endif
+
 }  // namespace
 
 ChromeInternalLogSource::ChromeInternalLogSource()
@@ -296,6 +320,10 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
   PopulateEnrolledToDomain(response.get());
   PopulateInstallerBrandCode(response.get());
   PopulateLastUpdateState(response.get());
+#endif
+
+#if defined(OS_MAC)
+  response->emplace(kCpuArch, MacCpuArchAsString());
 #endif
 
   if (ProfileManager::GetLastUsedProfile()->IsChild())
