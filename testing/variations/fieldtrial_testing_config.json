@@ -5195,6 +5195,21 @@
             ]
         }
     ],
+    "PaintPreviewShowOnStartup": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20200820",
+                    "enable_features": [
+                        "PaintPreviewShowOnStartup"
+                    ]
+                }
+            ]
+        }
+    ],
     "ParallelDownloadWithQUICAndHTTP2": [
         {
             "platforms": [
