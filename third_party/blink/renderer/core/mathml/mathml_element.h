@@ -52,10 +52,6 @@ class CORE_EXPORT MathMLElement : public Element {
 
   // https://mathml-refresh.github.io/mathml-core/#dfn-boolean
   base::Optional<bool> BooleanAttribute(const QualifiedName& name) const;
-
- private:
-  // Force NG layout as MathML elements don't have legacy layout implementation.
-  bool ShouldForceNGLayout() const final;
 };
 
 template <typename T>

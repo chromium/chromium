@@ -2082,6 +2082,12 @@ class ComputedStyle : public ComputedStyleBase,
            (Display() == EDisplay::kContents && IsInBlockifyingDisplay());
   }
 
+  // Return true if an element with this computed style requires LayoutNG
+  // (i.e. has no legacy layout implementation).
+  bool DisplayTypeRequiresLayoutNG() const {
+    return IsDisplayMathType() || IsDisplayLayoutCustomBox();
+  }
+
   // Isolation utility functions.
   bool HasIsolation() const { return Isolation() != EIsolation::kAuto; }
 

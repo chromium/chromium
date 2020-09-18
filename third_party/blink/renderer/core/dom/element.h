@@ -804,18 +804,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // legacy layout on the entire subtree, unless this is overridden by
   // ShouldForceNGLayout().
   bool ShouldForceLegacyLayout() const {
-    if (ShouldForceNGLayout())
-      return false;
     if (TypeShouldForceLegacyLayout())
       return true;
     if (!HasRareData())
       return false;
     return StyleShouldForceLegacyLayout() || ShouldForceLegacyLayoutForChild();
   }
-
-  // Return true if we should force NG layout on this element. This is needed
-  // for elements that don't have legacy implementation (i.e. MathML elements).
-  virtual bool ShouldForceNGLayout() const { return false; }
 
   virtual void BuildPendingResource() {}
 
@@ -1006,6 +1000,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // This function clears the "nonce" attribute whenever conditions (1) and (2)
   // are met.
   void HideNonce();
+
+  // Adjust the state of legacy layout forcing for this element (and its
+  // subtree). Input is the state inherited from the parent element. Output will
+  // be modified if required by this element.
+  void AdjustForceLegacyLayout(const ComputedStyle*,
+                               bool* should_force_legacy_layout);
 
  private:
   friend class AXObject;

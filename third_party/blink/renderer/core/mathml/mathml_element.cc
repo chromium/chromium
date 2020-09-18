@@ -145,8 +145,4 @@ bool MathMLElement::IsTokenElement() const {
          HasTagName(mathml_names::kMsTag);
 }
 
-bool MathMLElement::ShouldForceNGLayout() const {
-  return ComputedStyleRef().IsDisplayMathType();
-}
-
 }  // namespace blink

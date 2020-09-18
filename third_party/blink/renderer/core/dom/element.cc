@@ -340,8 +340,7 @@ bool CalculateStyleShouldForceLegacyLayout(const Element& element,
                                            const ComputedStyle& style) {
   Document& document = element.GetDocument();
 
-  if (style.Display() == EDisplay::kLayoutCustom ||
-      style.Display() == EDisplay::kInlineLayoutCustom)
+  if (style.DisplayTypeRequiresLayoutNG())
     return false;
 
   // TODO(layout-dev): Once LayoutNG handles inline content editable, we
@@ -2676,14 +2675,10 @@ void Element::AttachLayoutTree(AttachContext& context) {
   LayoutObject* layout_object = nullptr;
   if (CanParticipateInFlatTree()) {
     if (being_rendered) {
-      // If an element requires forced legacy layout, all descendants need it
-      // too.
-      if (ShouldForceLegacyLayout())
-        children_context.force_legacy_layout = true;
-      LegacyLayout legacy =
-          children_context.force_legacy_layout && !ShouldForceNGLayout()
-              ? LegacyLayout::kForce
-              : LegacyLayout::kAuto;
+      AdjustForceLegacyLayout(style, &children_context.force_legacy_layout);
+      LegacyLayout legacy = children_context.force_legacy_layout
+                                ? LegacyLayout::kForce
+                                : LegacyLayout::kAuto;
       LayoutTreeBuilderForElement builder(*this, context, style, legacy);
       builder.CreateLayoutObject();
 
@@ -4557,6 +4552,20 @@ void Element::HideNonce() {
           ->HasHeaderDeliveredPolicy()) {
     setAttribute(html_names::kNonceAttr, g_empty_atom);
   }
+}
+
+void Element::AdjustForceLegacyLayout(const ComputedStyle* style,
+                                      bool* should_force_legacy_layout) {
+  // If an element requires forced legacy layout, all descendants need it too
+  // (but see below):
+  if (ShouldForceLegacyLayout())
+    *should_force_legacy_layout = true;
+
+  // However, any forcing of legacy layout, by this element, or by an acestor,
+  // must be reset here, if the legacy layout engine doesn't support the display
+  // type.
+  if (style && style->DisplayTypeRequiresLayoutNG())
+    *should_force_legacy_layout = false;
 }
 
 ElementIntersectionObserverData* Element::IntersectionObserverData() const {
