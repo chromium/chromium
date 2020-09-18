@@ -14,10 +14,14 @@
 #include <tuple>
 
 #include "base/bind.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread.h"
@@ -31,6 +35,7 @@ namespace chromecast {
 namespace {
 
 using ::testing::Eq;
+using ::testing::Ne;
 
 using fuchsia::feedback::RebootReason;
 using StateControlRebootReason =
@@ -67,6 +72,21 @@ const RebootReasonParam kRebootReasonParams[] = {
      StateControlRebootReason::HIGH_TEMPERATURE},
     {RebootReason::SESSION_FAILURE, RebootShlib::RebootSource::SW_OTHER, true},
 };
+
+constexpr char kStartedOnce[] = "component-started-once";
+constexpr char kGracefulTeardown[] = "component-graceful-teardown";
+
+struct RestartReasonParam {
+  RebootShlib::RebootSource source;
+  bool graceful;
+  const char* file;
+};
+
+const RestartReasonParam kRestartReasonParams[] = {
+    {RebootShlib::RebootSource::UNGRACEFUL_RESTART, false, kStartedOnce},
+    {RebootShlib::RebootSource::GRACEFUL_RESTART, true, kGracefulTeardown},
+};
+
 
 class FakeAdmin
     : public fuchsia::hardware::power::statecontrol::testing::Admin_TestBase {
@@ -120,7 +140,7 @@ class FakeLastRebootInfoProvider
   fuchsia::feedback::LastReboot last_reboot_;
 };
 
-class RebootFuchsiaTest : public ::testing::TestWithParam<RebootReasonParam> {
+class RebootFuchsiaTest: public ::testing::Test {
  public:
   RebootFuchsiaTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
@@ -158,11 +178,8 @@ class RebootFuchsiaTest : public ::testing::TestWithParam<RebootReasonParam> {
     incoming_directory_ =
         std::make_unique<sys::ServiceDirectory>(std::move(directory));
     InitializeRebootShlib({}, incoming_directory_.get());
-  }
-
-  void TearDown() override {
-    RebootUtil::Finalize();
-    thread_.FlushForTesting();
+    EXPECT_TRUE(dir_.CreateUniqueTempDir());
+    full_path_ = InitializeFlagFileDirForTesting(dir_.GetPath());
   }
 
   StateControlRebootReason GetLastRebootReason() {
@@ -193,16 +210,16 @@ class RebootFuchsiaTest : public ::testing::TestWithParam<RebootReasonParam> {
   std::unique_ptr<sys::ServiceDirectory> incoming_directory_;
   base::SequenceBound<FakeAdmin> admin_;
   base::SequenceBound<FakeLastRebootInfoProvider> last_reboot_info_provider_;
+  base::ScopedTempDir dir_;
+  base::FilePath full_path_;
 
  protected:
+  base::FilePath GenerateFlagFilePath(const base::StringPiece& name) {
+    return  full_path_.Append(name);
+  }
+
   base::Thread thread_;
 };
-
-TEST_P(RebootFuchsiaTest, RebootNowSendsFidlRebootReason) {
-  EXPECT_TRUE(RebootShlib::RebootNow(GetParam().source));
-  thread_.FlushForTesting();
-  EXPECT_THAT(GetLastRebootReason(), Eq(GetParam().state_control_reason));
-}
 
 TEST_F(RebootFuchsiaTest, GetLastRebootSourceDefaultsToUnknown) {
   EXPECT_THAT(RebootUtil::GetLastRebootSource(),
@@ -219,7 +236,19 @@ TEST_F(RebootFuchsiaTest, GetLastRebootSourceWithoutGranularReason) {
               Eq(RebootShlib::RebootSource::SW_OTHER));
 }
 
-TEST_P(RebootFuchsiaTest, GetLastRebootSourceTranslatesReasonFromFuchsia) {
+class RebootFuchsiaParamTest : public RebootFuchsiaTest,
+                               public ::testing::WithParamInterface<RebootReasonParam> {
+ public:
+  RebootFuchsiaParamTest() = default;
+};
+
+TEST_P(RebootFuchsiaParamTest, RebootNowSendsFidlRebootReason) {
+  EXPECT_TRUE(RebootShlib::RebootNow(GetParam().source));
+  thread_.FlushForTesting();
+  EXPECT_THAT(GetLastRebootReason(), Eq(GetParam().state_control_reason));
+}
+
+TEST_P(RebootFuchsiaParamTest, GetLastRebootSourceTranslatesReasonFromFuchsia) {
   fuchsia::feedback::LastReboot last_reboot;
   last_reboot.set_graceful(GetParam().graceful);
   last_reboot.set_reason(GetParam().reason);
@@ -230,8 +259,76 @@ TEST_P(RebootFuchsiaTest, GetLastRebootSourceTranslatesReasonFromFuchsia) {
 }
 
 INSTANTIATE_TEST_SUITE_P(RebootReasonParamSweep,
-                         RebootFuchsiaTest,
+                         RebootFuchsiaParamTest,
                          ::testing::ValuesIn(kRebootReasonParams));
+
+class RestartFuchsiaParamTest : public RebootFuchsiaTest,
+                                public ::testing::WithParamInterface<RestartReasonParam> {
+ public:
+  RestartFuchsiaParamTest() = default;
+
+  void SetUp() override {
+    RebootFuchsiaTest::SetUp();
+    base::WriteFile(GenerateFlagFilePath(GetParam().file), "");
+  }
+};
+
+TEST_P(RestartFuchsiaParamTest, GetLastRestartReasons) {
+  fuchsia::feedback::LastReboot last_reboot;
+  last_reboot.set_graceful(true);
+  EXPECT_TRUE(last_reboot.has_graceful());
+  EXPECT_FALSE(last_reboot.has_reason());
+  SetLastReboot(std::move(last_reboot));
+
+  EXPECT_THAT(RebootUtil::GetLastRebootSource(),
+              Eq(GetParam().source));
+
+  EXPECT_TRUE(base::PathExists(GenerateFlagFilePath(kStartedOnce)));
+  EXPECT_FALSE(base::PathExists(GenerateFlagFilePath(kGracefulTeardown)));
+
+  base::WriteFile(GenerateFlagFilePath(kGracefulTeardown), "");
+  EXPECT_THAT(RebootUtil::GetLastRebootSource(),
+              Eq(GetParam().source));
+}
+
+INSTANTIATE_TEST_SUITE_P(RestartReasonParamSweep,
+                         RestartFuchsiaParamTest,
+                         ::testing::ValuesIn(kRestartReasonParams));
+
+TEST_F(RebootFuchsiaTest, ThoroughTestLastRestartReason) {
+  fuchsia::feedback::LastReboot last_reboot;
+  last_reboot.set_graceful(true);
+  EXPECT_TRUE(last_reboot.has_graceful());
+  EXPECT_FALSE(last_reboot.has_reason());
+  SetLastReboot(std::move(last_reboot));
+
+  EXPECT_FALSE(base::PathExists(GenerateFlagFilePath(kStartedOnce)));
+  EXPECT_FALSE(base::PathExists(GenerateFlagFilePath(kGracefulTeardown)));
+  EXPECT_THAT(RebootUtil::GetLastRebootSource(),
+              Ne(RebootShlib::RebootSource::GRACEFUL_RESTART));
+  EXPECT_THAT(RebootUtil::GetLastRebootSource(),
+              Ne(RebootShlib::RebootSource::UNGRACEFUL_RESTART));
+
+  //Check files are created/deleted as expected
+  const auto once =  GenerateFlagFilePath(kStartedOnce);
+  LOG(INFO) << "looking at file " << once << " " << base::PathExists(once);
+  EXPECT_TRUE(base::PathExists(once));
+  EXPECT_FALSE(base::PathExists(GenerateFlagFilePath(kGracefulTeardown)));
+
+  //Confirm reboot reason will not change after create files when check again
+  base::WriteFile(GenerateFlagFilePath(kStartedOnce), "");
+  base::WriteFile(GenerateFlagFilePath(kGracefulTeardown), "");
+  EXPECT_THAT(RebootUtil::GetLastRebootSource(),
+              Ne(RebootShlib::RebootSource::GRACEFUL_RESTART));
+  EXPECT_THAT(RebootUtil::GetLastRebootSource(),
+              Ne(RebootShlib::RebootSource::UNGRACEFUL_RESTART));
+
+  //Emulate Reboot
+  RebootUtil::Finalize();
+  InitializeRestartCheck();
+  EXPECT_THAT(RebootUtil::GetLastRebootSource(),
+              Eq(RebootShlib::RebootSource::GRACEFUL_RESTART));
+}
 
 }  // namespace
 }  // namespace chromecast

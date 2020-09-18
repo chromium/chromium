@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/string_piece.h"
+
 namespace sys {
 class ServiceDirectory;
 }  // namespace sys
@@ -17,6 +19,13 @@ namespace chromecast {
 // Injects a service directory for testing.
 void InitializeRebootShlib(const std::vector<std::string>& argv,
                            sys::ServiceDirectory* incoming_directory);
+
+// Initialize the restart check. Can be called to reset the values for testing
+// to simulate a restart.
+void InitializeRestartCheck();
+
+// Change tmp file directory for testing.
+base::FilePath InitializeFlagFileDirForTesting(const base::FilePath sub);
 
 }  // namespace chromecast
 

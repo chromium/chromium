@@ -9,10 +9,15 @@
 #include <zircon/status.h>
 #include <zircon/types.h>
 
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/no_destructor.h"
 #include "chromecast/public/reboot_shlib.h"
+#include "chromecast/system/reboot/fuchsia_component_restart_reason.h"
+#include "chromecast/system/reboot/reboot_fuchsia.h"
 #include "chromecast/system/reboot/reboot_util.h"
 
 using fuchsia::feedback::LastReboot;
@@ -24,6 +29,10 @@ using StateControlRebootReason =
     fuchsia::hardware::power::statecontrol::RebootReason;
 
 namespace chromecast {
+
+namespace {
+FuchsiaComponentRestartReason state_;
+}
 
 AdminPtr& GetAdminPtr() {
   static base::NoDestructor<AdminPtr> g_admin;
@@ -42,6 +51,15 @@ void InitializeRebootShlib(const std::vector<std::string>& argv,
   GetAdminPtr().set_error_handler([](zx_status_t status) {
     ZX_LOG(ERROR, status) << "AdminPtr disconnected";
   });
+  InitializeRestartCheck();
+}
+
+base::FilePath InitializeFlagFileDirForTesting(const base::FilePath sub) {
+  return state_.SetFlagFileDirForTesting(sub);
+}
+
+void InitializeRestartCheck() {
+  state_.ResetRestartCheck();
 }
 
 // RebootShlib implementation:
@@ -121,10 +139,15 @@ void RebootUtil::Initialize(const std::vector<std::string>& argv) {
 // static
 void RebootUtil::Finalize() {
   RebootShlib::Finalize();
+  state_.RegisterTeardown();
 }
 
 // static
 RebootShlib::RebootSource RebootUtil::GetLastRebootSource() {
+  RebootShlib::RebootSource last_restart;
+  if (state_.GetRestartReason(&last_restart))
+    return last_restart;
+
   LastReboot last_reboot;
   zx_status_t status = GetLastRebootInfoProviderSyncPtr()->Get(&last_reboot);
   if (status != ZX_OK || last_reboot.IsEmpty() || !last_reboot.has_graceful()) {

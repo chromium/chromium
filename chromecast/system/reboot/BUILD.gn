@@ -69,6 +69,8 @@ cast_shared_library("libcast_reboot_1.0") {
 if (is_fuchsia) {
   cast_source_set("fuchsia") {
     sources = [
+      "fuchsia_component_restart_reason.cc",
+      "fuchsia_component_restart_reason.h",
       "reboot_fuchsia.cc",
       "reboot_fuchsia.h",
       "reboot_util.h",
