@@ -170,7 +170,7 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
 
     // Add this as |aura::WindowObserver| for observing |kHideInOverviewKey|
     // property changes.
-    transient->AddObserver(this);
+    window_observer_.Add(transient);
 
     // Hide transient children which have been specified to be hidden in
     // overview mode.
@@ -218,12 +218,13 @@ ScopedOverviewTransformWindow::~ScopedOverviewTransformWindow() {
     transient->ClearProperty(kIsShowingInOverviewKey);
     DCHECK(event_targeting_blocker_map_.contains(transient));
     event_targeting_blocker_map_.erase(transient);
-    transient->RemoveObserver(this);
   }
 
   if (!IsMinimized())
     UpdateRoundedCorners(/*show=*/false);
   aura::client::GetTransientWindowClient()->RemoveObserver(this);
+
+  window_observer_.RemoveAll();
 }
 
 // static
@@ -525,7 +526,7 @@ void ScopedOverviewTransformWindow::OnTransientChildWindowAdded(
 
   // Add this as |aura::WindowObserver| for observing |kHideInOverviewKey|
   // property changes.
-  transient_child->AddObserver(this);
+  window_observer_.Add(transient_child);
 }
 
 void ScopedOverviewTransformWindow::OnWindowPropertyChanged(
@@ -566,7 +567,9 @@ void ScopedOverviewTransformWindow::OnTransientChildWindowRemoved(
   transient_child->ClearProperty(kIsShowingInOverviewKey);
   DCHECK(event_targeting_blocker_map_.contains(transient_child));
   event_targeting_blocker_map_.erase(transient_child);
-  transient_child->RemoveObserver(this);
+
+  if (window_observer_.IsObserving(transient_child))
+    window_observer_.Remove(transient_child);
 }
 
 // static
