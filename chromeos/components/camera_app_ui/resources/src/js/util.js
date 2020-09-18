@@ -417,3 +417,24 @@ export function bindElementAriaLabelWithState(
     element.setAttribute('aria-label', browserProxy.getI18nMessage(label));
   });
 }
+
+/**
+ * Sets inkdrop effect on button or label in setting menu.
+ * @param {!HTMLElement} el
+ */
+export function setInkdropEffect(el) {
+  el.addEventListener('click', (e) => {
+    const tRect =
+        assertInstanceof(e.target, HTMLElement).getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    const dropX = tRect.left + e.offsetX - elRect.left;
+    const dropY = tRect.top + e.offsetY - elRect.top;
+    const maxDx = Math.max(Math.abs(dropX), Math.abs(elRect.width - dropX));
+    const maxDy = Math.max(Math.abs(dropY), Math.abs(elRect.height - dropY));
+    const radius = Math.hypot(maxDx, maxDy);
+    el.style.setProperty('--drop-x', `${dropX}px`);
+    el.style.setProperty('--drop-y', `${dropY}px`);
+    el.style.setProperty('--drop-radius', `${radius}px`);
+    animateOnce(el);
+  });
+}

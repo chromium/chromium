@@ -102,6 +102,7 @@ export class App {
     document.title = browserProxy.getI18nMessage('name');
     util.setupI18nElements(document.body);
     this.setupToggles_();
+    this.setupSettingEffect_();
 
     const resolutionSettings = new ResolutionSettings(
         this.infoUpdater_, this.photoPreferrer_, this.videoPreferrer_);
@@ -172,6 +173,15 @@ export class App {
                     element, values[element.dataset['key']]));
       }
     });
+  }
+
+  /**
+   * Sets up inkdrop effect for settings view.
+   * @private
+   */
+  setupSettingEffect_() {
+    dom.getAll('button.menu-item, label.menu-item', HTMLElement)
+        .forEach((el) => util.setInkdropEffect(el));
   }
 
   /**

@@ -627,6 +627,8 @@ export class ResolutionSettings extends BaseSettings {
     resolutions.forEach((r) => {
       const item = /** @type {!HTMLElement} */ (
           document.importNode(this.resItemTempl_.content, true));
+      const label = dom.getFrom(item, 'label', HTMLLabelElement);
+      util.setInkdropEffect(label);
       const input = dom.getFrom(item, 'input', HTMLInputElement);
       item.querySelector('span').textContent = optTextTempl(r, resolutions);
       input.name = menu.dataset['name'];

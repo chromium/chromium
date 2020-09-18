@@ -23,7 +23,8 @@ body {
 }
 
 button,
-input {
+input,
+label {
   background-color: transparent;
   border-radius: 4px;
   border-style: none;
@@ -555,7 +556,6 @@ body.tab-navigation #switch-device:focus::after {
   background-color: rgba(24, 24, 24, 1);
   background-size: cover;
   height: var(--big-icon);
-  position: relative;
   width: var(--big-icon);
 }
 
@@ -1133,6 +1133,7 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
 
 .menu-header,
 .menu-item {
+  --hover-color: rgba(255, 255, 255, 0.06);
   --toggled-color: rgb(140, 180, 245);
 
   align-items: center;
@@ -1145,6 +1146,54 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
   justify-content: flex-start;
   padding: 0 20px 0 24px;
   text-align: left;
+}
+
+button.menu-item:hover,
+label.menu-item:hover {
+  background-color: var(--hover-color);
+}
+
+/* Inkdrop effect. */
+button.menu-item,
+label.menu-item {
+  overflow: hidden;
+}
+
+body.tab-navigation button.menu-item:focus::after,
+body.tab-navigation label.menu-item:focus::after {
+  bottom: 0;
+  top: 0;
+}
+
+button.menu-item::before,
+label.menu-item::before {
+  background: white;
+  border-radius: 50%;
+  content: '';
+  height: 0;
+  left: var(--drop-x);
+  position: absolute;
+  top: var(--drop-y);
+  transform: translate(-50%, -50%);
+  width: 0;
+}
+
+button.menu-item.animate::before,
+label.menu-item.animate::before {
+  animation: inkdrop 500ms ease-out;
+}
+
+@keyframes inkdrop {
+  0% {
+    height: 0;
+    opacity: 0.6;
+    width: 0;
+  }
+  100% {
+    height: calc(var(--drop-radius) * 2);
+    opacity: 0;
+    width: calc(var(--drop-radius) * 2);
+  }
 }
 
 .menu-item.resol-item {
@@ -1230,6 +1279,10 @@ body.tab-navigation button.menu-item:focus::after {
 
 .menu-header .icon {
   background-image: url(../images/settings_button_back.svg);
+}
+
+.menu-header .icon:hover {
+  background-color: var(--hover-color);
 }
 
 #settings-gridtype .icon {
