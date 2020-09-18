@@ -52,15 +52,14 @@ class ONCValidatorTest : public ::testing::Test {
     }
     validator->SetOncSource(onc_source);
     original_object_ = base::DictionaryValue::From(std::move(onc_object));
-    repaired_object_ = validator->ValidateAndRepairObject(signature,
-                                                          *original_object_,
-                                                          &validation_result_);
+    repaired_object_ = validator->ValidateAndRepairObject(
+        signature, *original_object_, &validation_result_);
   }
 
   void ExpectValid() {
     EXPECT_EQ(Validator::VALID, validation_result_);
-    EXPECT_TRUE(test_utils::Equals(original_object_.get(),
-                                   repaired_object_.get()));
+    EXPECT_TRUE(
+        test_utils::Equals(original_object_.get(), repaired_object_.get()));
   }
 
   void ExpectRepairWithWarnings(
@@ -92,8 +91,7 @@ struct OncParams {
       : location(location_of_object),
         signature(onc_signature),
         is_managed(is_managed_onc),
-        onc_source(onc_source) {
-  }
+        onc_source(onc_source) {}
 
   std::string location;
   const OncValueSignature* signature;
@@ -376,6 +374,14 @@ INSTANTIATE_TEST_SUITE_P(
                       &kNetworkConfigurationSignature,
                       false),
             ExpectBothNotValid("", "third-party-vpn-missing-extension-id")),
+        std::make_pair(OncParams("managed-network-invalid-vpn-type-third-party",
+                                 &kNetworkConfigurationSignature,
+                                 true),
+                       ExpectBothNotValid("", "")),
+        std::make_pair(OncParams("managed-network-invalid-vpn-type-arc",
+                                 &kNetworkConfigurationSignature,
+                                 true),
+                       ExpectBothNotValid("", "")),
         std::make_pair(OncParams("tether-missing-battery-percentage",
                                  &kNetworkWithStateSignature,
                                  true),

@@ -821,9 +821,17 @@ bool Validator::ValidateWiFi(base::DictionaryValue* result) {
 }
 
 bool Validator::ValidateVPN(base::DictionaryValue* result) {
-  const std::vector<const char*> valid_types = {
-      ::onc::vpn::kIPsec, ::onc::vpn::kTypeL2TP_IPsec, ::onc::vpn::kOpenVPN,
-      ::onc::vpn::kThirdPartyVpn, ::onc::vpn::kArcVpn};
+  std::vector<const char*> valid_types = {
+      ::onc::vpn::kIPsec,
+      ::onc::vpn::kTypeL2TP_IPsec,
+      ::onc::vpn::kOpenVPN,
+  };
+
+  if (!managed_onc_) {
+    valid_types.push_back(::onc::vpn::kThirdPartyVpn);
+    valid_types.push_back(::onc::vpn::kArcVpn);
+  }
+
   if (FieldExistsAndHasNoValidValue(*result, ::onc::vpn::kType, valid_types))
     return false;
 

@@ -472,6 +472,28 @@
         "ThirdPartyVPN": { }
       }
     },
+    "managed-network-invalid-vpn-type-third-party": {
+      "GUID": "guid",
+      "Name": "third-party VPN",
+      "Type": "VPN",
+      "VPN": {
+        "Type": "ThirdPartyVPN",
+        "ThirdPartyVPN": {
+          "ExtensionID": "deadbeefdeadbeefdeadbeefdeadbeef",
+        }
+      }
+    },
+    "managed-network-invalid-vpn-type-arc": {
+      "GUID": "guid",
+      "Name": "third-party VPN",
+      "Type": "VPN",
+      "VPN": {
+        "Type": "ARCVPN",
+        "ARCVPN": {
+          "TunnelChrome": "true"
+        }
+      }
+    },
     "toplevel-empty": {
         "Type": "UnencryptedConfiguration",
         "NetworkConfigurations": [ ]
