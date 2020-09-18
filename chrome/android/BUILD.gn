@@ -2058,13 +2058,13 @@ template("monochrome_public_apk_or_module_tmpl") {
   # of manually-instantiated manifests.
   split_manifest_template("${target_name}__android_manifest") {
     definitions_in_split = _enable_chrome_module
-    includes = [ "//chrome/android/java/AndroidManifest.xml" ]
-    split_input = "//chrome/android/java/AndroidManifest_split.xml"
+    includes = [ "java/AndroidManifest.xml" ]
+    split_input = "java/AndroidManifest_split.xml"
     split_output = _split_android_manifest
     variables = chrome_public_jinja_variables +
                 [ "include_arcore_manifest_flag=$enable_arcore" ]
     if (_is_trichrome) {
-      input = "//chrome/android/java/AndroidManifest_trichrome_chrome.xml"
+      input = "java/AndroidManifest_trichrome_chrome.xml"
       variables += trichrome_jinja_variables
 
       if (android_64bit_target_cpu) {
@@ -2089,7 +2089,7 @@ template("monochrome_public_apk_or_module_tmpl") {
       if (android_64bit_target_cpu && invoker.is_64_bit_browser) {
         _arch = "_64"
       }
-      input = "//chrome/android/java/AndroidManifest_monochrome.xml"
+      input = "java/AndroidManifest_monochrome.xml"
       includes += [ "//android_webview/nonembedded/java/AndroidManifest.xml" ]
       variables += monochrome_android_manifest_jinja_variables + [
                      "target_sdk_version=$android_sdk_version",

@@ -841,7 +841,8 @@ template("split_manifest_template") {
       includes += [ invoker.input ]
       input = invoker.split_input
       output = invoker.split_output
-      variables += [ "base_manifest=${invoker.input}" ]
+      _rebased_input = rebase_path(invoker.input, "//")
+      variables += [ "base_manifest=${_rebased_input}" ]
     }
   } else {
     not_needed(invoker,
