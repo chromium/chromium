@@ -362,9 +362,10 @@ bool SharedImageFactory::RegisterSysmemBufferCollection(
   VkDevice device =
       vulkan_context_provider_->GetDeviceQueue()->GetVulkanDevice();
   DCHECK(device != VK_NULL_HANDLE);
-  it->second = vulkan_context_provider_->GetVulkanImplementation()
-                   ->RegisterSysmemBufferCollection(
-                       device, id, std::move(token), format, usage);
+  it->second =
+      vulkan_context_provider_->GetVulkanImplementation()
+          ->RegisterSysmemBufferCollection(device, id, std::move(token), format,
+                                           usage, gfx::Size(), 0);
 
   return true;
 }

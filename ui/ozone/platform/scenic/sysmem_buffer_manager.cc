@@ -37,10 +37,11 @@ scoped_refptr<SysmemBufferCollection> SysmemBufferManager::CreateCollection(
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    size_t num_buffers) {
+    size_t min_buffer_count) {
   auto result = base::MakeRefCounted<SysmemBufferCollection>();
-  if (!result->Initialize(allocator_.get(), size, format, usage, vk_device,
-                          num_buffers)) {
+  if (!result->Initialize(allocator_.get(), /*token_channel=*/zx::channel(),
+                          size, format, usage, vk_device, min_buffer_count,
+                          /*force_protected=*/false)) {
     return nullptr;
   }
   RegisterCollection(result.get());
@@ -52,12 +53,15 @@ SysmemBufferManager::ImportSysmemBufferCollection(
     VkDevice vk_device,
     gfx::SysmemBufferCollectionId id,
     zx::channel token,
+    gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
+    size_t min_buffer_count,
     bool force_protected) {
   auto result = base::MakeRefCounted<SysmemBufferCollection>(id);
-  if (!result->Initialize(allocator_.get(), vk_device, std::move(token), format,
-                          usage, force_protected)) {
+  if (!result->Initialize(allocator_.get(), std::move(token), size, format,
+                          usage, vk_device, min_buffer_count,
+                          force_protected)) {
     return nullptr;
   }
   RegisterCollection(result.get());

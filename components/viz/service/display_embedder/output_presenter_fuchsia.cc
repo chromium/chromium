@@ -232,7 +232,7 @@ OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
 
   // Create buffer collection with 2 extra tokens: one for Vulkan and one for
   // the ImagePipe.
-  fuchsia::sysmem::BufferCollectionTokenPtr collection_token;
+  fuchsia::sysmem::BufferCollectionTokenSyncPtr collection_token;
   sysmem_allocator_->AllocateSharedCollection(collection_token.NewRequest());
 
   fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
@@ -240,16 +240,7 @@ OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
   collection_token->Duplicate(ZX_RIGHT_SAME_RIGHTS,
                               token_for_scenic.NewRequest());
 
-  fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
-      token_for_vulkan;
-  collection_token->Duplicate(ZX_RIGHT_SAME_RIGHTS,
-                              token_for_vulkan.NewRequest());
-
-  fuchsia::sysmem::BufferCollectionSyncPtr collection;
-  sysmem_allocator_->BindSharedCollection(std::move(collection_token),
-                                          collection.NewRequest());
-
-  zx_status_t status = collection->Sync();
+  zx_status_t status = collection_token->Sync();
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "fuchsia.sysmem.BufferCollection.Sync()";
     return {};
@@ -257,21 +248,6 @@ OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
 
   auto* vulkan =
       dependency_->GetVulkanContextProvider()->GetVulkanImplementation();
-
-  // Set constraints for the new collection.
-  fuchsia::sysmem::BufferCollectionConstraints constraints;
-  constraints.min_buffer_count = num_images;
-  constraints.usage.none = fuchsia::sysmem::noneUsage;
-  constraints.image_format_constraints_count = 1;
-  constraints.image_format_constraints[0].pixel_format.type =
-      fuchsia::sysmem::PixelFormatType::R8G8B8A8;
-  constraints.image_format_constraints[0].min_coded_width = frame_size_.width();
-  constraints.image_format_constraints[0].min_coded_height =
-      frame_size_.height();
-  constraints.image_format_constraints[0].color_spaces_count = 1;
-  constraints.image_format_constraints[0].color_space[0].type =
-      fuchsia::sysmem::ColorSpaceType::SRGB;
-  collection->SetConstraints(true, constraints);
 
   // Register the new buffer collection with the ImagePipe.
   last_buffer_collection_id_++;
@@ -286,30 +262,13 @@ OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
                            ->GetDeviceQueue()
                            ->GetVulkanDevice();
   buffer_collection_ = vulkan->RegisterSysmemBufferCollection(
-      vk_device, buffer_collection_id, token_for_vulkan.TakeChannel(),
-      buffer_format_, gfx::BufferUsage::SCANOUT);
+      vk_device, buffer_collection_id, collection_token.Unbind().TakeChannel(),
+      buffer_format_, gfx::BufferUsage::SCANOUT, frame_size_, num_images);
 
-  // Wait for the images to be allocated.
-  zx_status_t wait_status;
-  fuchsia::sysmem::BufferCollectionInfo_2 buffers_info;
-  status = collection->WaitForBuffersAllocated(&wait_status, &buffers_info);
-  if (status != ZX_OK) {
-    ZX_DLOG(ERROR, status) << "fuchsia.sysmem.BufferCollection failed";
+  if (!buffer_collection_) {
+    ZX_DLOG(ERROR, status) << "Failed to allocate sysmem buffer collection";
     return {};
   }
-
-  if (wait_status != ZX_OK) {
-    ZX_DLOG(ERROR, wait_status)
-        << "Sysmem buffer collection allocation failed.";
-    return {};
-  }
-
-  DCHECK_GE(buffers_info.buffer_count, num_images);
-
-  // We no longer need the BufferCollection connection. Close it to ensure
-  // ImagePipe can still use the collection after BufferCollection connection
-  // is dropped below.
-  collection->Close();
 
   // Create PresenterImageFuchsia for each buffer in the collection.
   uint32_t image_usage =
