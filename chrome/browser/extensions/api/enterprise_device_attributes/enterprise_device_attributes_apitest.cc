@@ -27,8 +27,10 @@ constexpr char kAnnotatedLocation[] = "annotated_location";
 constexpr char kHostname[] = "hostname";
 
 constexpr char kTestExtensionID[] = "nbiliclbejdndfpchgkbmfoppjplbdok";
-constexpr char kUpdateManifestPath[] =
-    "/extensions/api_test/enterprise_device_attributes/update_manifest.xml";
+constexpr char kExtensionPath[] =
+    "/extensions/api_test/enterprise_device_attributes/";
+constexpr char kExtensionPemPath[] =
+    "/extensions/api_test/enterprise_device_attributes.pem";
 
 base::Value BuildCustomArg(const std::string& expected_directory_device_id,
                            const std::string& expected_serial_number,
@@ -98,7 +100,7 @@ IN_PROC_BROWSER_TEST_P(EnterpriseDeviceAttributesTest, Success) {
                                ->IsAffiliated());
 
   const Extension* extension =
-      ForceInstallExtension(kTestExtensionID, kUpdateManifestPath);
+      ForceInstallExtension(kExtensionPath, kExtensionPemPath);
   const GURL test_url = extension->GetResourceURL("basic.html");
 
   // Device attributes are available only for affiliated user.

@@ -24,8 +24,10 @@ const char kErrorNetworkNotConnected[] =
     "Device is not connected to a network.";
 
 constexpr char kTestExtensionID[] = "pkhdjpcjgonhlomdjmnddhbfpgkdhgle";
-constexpr char kUpdateManifestPath[] =
-    "/extensions/api_test/enterprise_networking_attributes/update_manifest.xml";
+constexpr char kExtensionPath[] =
+    "/extensions/api_test/enterprise_networking_attributes/";
+constexpr char kExtensionPemPath[] =
+    "/extensions/api_test/enterprise_networking_attributes.pem";
 
 constexpr char kMacAddress[] = "0123456789AB";
 constexpr char kFormattedMacAddress[] = "01:23:45:67:89:AB";
@@ -157,7 +159,7 @@ IN_PROC_BROWSER_TEST_P(EnterpriseNetworkingAttributesTest, GetNetworkDetails) {
                                ->IsAffiliated());
 
   const Extension* extension =
-      ForceInstallExtension(kTestExtensionID, kUpdateManifestPath);
+      ForceInstallExtension(kExtensionPath, kExtensionPemPath);
   SetupDisconnectedNetwork();
   const GURL test_url = extension->GetResourceURL("test.html");
 

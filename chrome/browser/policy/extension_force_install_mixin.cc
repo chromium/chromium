@@ -29,6 +29,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/crx_file/id_util.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_creator.h"
@@ -325,8 +330,6 @@ bool ParseCrxInnerData(const base::FilePath& crx_path,
   return ParseExtensionManifestData(temp_dir.GetPath(), extension_version);
 }
 
-#if defined(OS_CHROMEOS)
-
 std::string MakeForceInstallPolicyItemValue(
     const extensions::ExtensionId& extension_id,
     const GURL& update_manifest_url) {
@@ -335,6 +338,35 @@ std::string MakeForceInstallPolicyItemValue(
   return base::StringPrintf("%s;%s", extension_id.c_str(),
                             update_manifest_url.spec().c_str());
 }
+
+void UpdatePolicyViaMockPolicyProvider(
+    const extensions::ExtensionId& extension_id,
+    const GURL& update_manifest_url,
+    policy::MockConfigurationPolicyProvider* mock_policy_provider) {
+  const std::string policy_item_value =
+      MakeForceInstallPolicyItemValue(extension_id, update_manifest_url);
+  policy::PolicyMap policy_map;
+  policy_map.CopyFrom(
+      mock_policy_provider->policies().Get(policy::PolicyNamespace(
+          policy::POLICY_DOMAIN_CHROME, /*component_id=*/std::string())));
+  policy::PolicyMap::Entry* const existing_entry =
+      policy_map.GetMutable(policy::key::kExtensionInstallForcelist);
+  if (existing_entry) {
+    // Append to the existing policy.
+    existing_entry->value()->Append(policy_item_value);
+  } else {
+    // Set the new policy value.
+    base::Value policy_value(base::Value::Type::LIST);
+    policy_value.Append(policy_item_value);
+    policy_map.Set(policy::key::kExtensionInstallForcelist,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                   policy::POLICY_SOURCE_CLOUD, std::move(policy_value),
+                   /*external_data_fetcher=*/nullptr);
+  }
+  mock_policy_provider->UpdateChromePolicy(policy_map);
+}
+
+#if defined(OS_CHROMEOS)
 
 void UpdatePolicyViaDeviceStateMixin(
     const extensions::ExtensionId& extension_id,
@@ -368,6 +400,17 @@ ExtensionForceInstallMixin::ExtensionForceInstallMixin(
     : InProcessBrowserTestMixin(host) {}
 
 ExtensionForceInstallMixin::~ExtensionForceInstallMixin() = default;
+
+void ExtensionForceInstallMixin::InitWithMockPolicyProvider(
+    Profile* profile,
+    policy::MockConfigurationPolicyProvider* mock_policy_provider) {
+  DCHECK(profile);
+  DCHECK(mock_policy_provider);
+  DCHECK(!profile_) << "Init already called";
+  DCHECK(!mock_policy_provider_);
+  profile_ = profile;
+  mock_policy_provider_ = mock_policy_provider;
+}
 
 #if defined(OS_CHROMEOS)
 
@@ -605,6 +648,11 @@ bool ExtensionForceInstallMixin::UpdatePolicy(
     const GURL& update_manifest_url) {
   DCHECK(profile_) << "Init not called";
 
+  if (mock_policy_provider_) {
+    UpdatePolicyViaMockPolicyProvider(extension_id, update_manifest_url,
+                                      mock_policy_provider_);
+    return true;
+  }
 #if defined(OS_CHROMEOS)
   if (device_state_mixin_) {
     UpdatePolicyViaDeviceStateMixin(extension_id, update_manifest_url,
