@@ -52,6 +52,19 @@ std::string MacFourCCToString(OSType fourcc) {
   return arr;
 }
 
+class CMSampleBufferScopedAccessPermission
+    : public media::VideoCaptureDevice::Client::Buffer::ScopedAccessPermission {
+ public:
+  CMSampleBufferScopedAccessPermission(CMSampleBufferRef buffer)
+      : buffer_(buffer, base::scoped_policy::RETAIN) {
+    buffer_.reset();
+  }
+  ~CMSampleBufferScopedAccessPermission() override {}
+
+ private:
+  base::ScopedCFTypeRef<CMSampleBufferRef> buffer_;
+};
+
 }  // anonymous namespace
 
 namespace media {
@@ -532,77 +545,75 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   }
 }
 
-- (void)processRamSample:(CMSampleBufferRef)sampleBuffer
-             baseAddress:(const void*)baseAddress
-               frameSize:(size_t)frameSize
-         pixelFormatType:(OSType)pixelFormat {
-  VLOG(3) << __func__ << ": format: " << MacFourCCToString(pixelFormat);
-  const CMFormatDescriptionRef formatDescription =
-      CMSampleBufferGetFormatDescription(sampleBuffer);
-  const CMVideoDimensions dimensions =
-      CMVideoFormatDescriptionGetDimensions(formatDescription);
-  const media::VideoCaptureFormat captureFormat(
-      gfx::Size(dimensions.width, dimensions.height), _frameRate,
-      [VideoCaptureDeviceAVFoundation FourCCToChromiumPixelFormat:pixelFormat]);
-  base::TimeDelta timestamp = GetCMSampleBufferTimestamp(sampleBuffer);
-  base::AutoLock lock(_lock);
-  if (_frameReceiver && baseAddress) {
-    gfx::ColorSpace colorSpace;
-    // TODO(julien.isorce): move GetImageBufferColorSpace(CVImageBufferRef)
-    // from media::VTVideoDecodeAccelerator to media/base/mac and call it
-    // here to get the color space. See https://crbug.com/959962.
-    // colorSpace = media::GetImageBufferColorSpace(videoFrame);
-    _frameReceiver->ReceiveFrame(reinterpret_cast<const uint8_t*>(baseAddress),
-                                 frameSize, captureFormat, colorSpace, 0, 0,
-                                 timestamp);
-  }
-}
-
-- (void)processRawSample:(CMSampleBufferRef)sampleBuffer {
+- (void)processSample:(CMSampleBufferRef)sampleBuffer
+        captureFormat:(const media::VideoCaptureFormat&)captureFormat
+           colorSpace:(const gfx::ColorSpace&)colorSpace
+            timestamp:(const base::TimeDelta)timestamp {
   VLOG(3) << __func__;
   // Trust |_frameReceiver| to do decompression.
   char* baseAddress = 0;
   size_t frameSize = 0;
   media::ExtractBaseAddressAndLength(&baseAddress, &frameSize, sampleBuffer);
-  [self processRamSample:sampleBuffer
-             baseAddress:baseAddress
-               frameSize:frameSize
-         pixelFormatType:CMFormatDescriptionGetMediaSubType(
-                             CMSampleBufferGetFormatDescription(sampleBuffer))];
+  _frameReceiver->ReceiveFrame(reinterpret_cast<const uint8_t*>(baseAddress),
+                               frameSize, captureFormat, colorSpace, 0, 0,
+                               timestamp);
 }
 
-- (void)processSample:(CMSampleBufferRef)sampleBuffer
-      withImageBuffer:(CVImageBufferRef)videoFrame {
-  if (CVPixelBufferLockBaseAddress(videoFrame, kCVPixelBufferLock_ReadOnly) !=
+- (BOOL)processPixelBuffer:(CVImageBufferRef)pixelBuffer
+             captureFormat:(const media::VideoCaptureFormat&)captureFormat
+                colorSpace:(const gfx::ColorSpace&)colorSpace
+                 timestamp:(const base::TimeDelta)timestamp {
+  VLOG(3) << __func__;
+  if (CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly) !=
       kCVReturnSuccess) {
-    return [self processRawSample:sampleBuffer];
+    return NO;
   }
   char* baseAddress = 0;
   size_t frameSize = 0;
-  if (!CVPixelBufferIsPlanar(videoFrame)) {
+  if (!CVPixelBufferIsPlanar(pixelBuffer)) {
     // For nonplanar buffers, CVPixelBufferGetBaseAddress returns a pointer
     // to (0,0). (For planar buffers, it returns something else.)
     // https://developer.apple.com/documentation/corevideo/1457115-cvpixelbuffergetbaseaddress?language=objc
-    baseAddress = static_cast<char*>(CVPixelBufferGetBaseAddress(videoFrame));
+    baseAddress = static_cast<char*>(CVPixelBufferGetBaseAddress(pixelBuffer));
   } else {
     // For planar buffers, CVPixelBufferGetBaseAddressOfPlane() is used. If
     // the buffer is contiguous (CHECK'd below) then we only need to know
     // the address of the first plane, regardless of
     // CVPixelBufferGetPlaneCount().
     baseAddress =
-        static_cast<char*>(CVPixelBufferGetBaseAddressOfPlane(videoFrame, 0));
+        static_cast<char*>(CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, 0));
   }
   // CVPixelBufferGetDataSize() works for both nonplanar and planar buffers
   // as long as they are contiguous in memory. If it is not contiguous, 0 is
   // returned.
-  frameSize = CVPixelBufferGetDataSize(videoFrame);
+  frameSize = CVPixelBufferGetDataSize(pixelBuffer);
   // Only contiguous buffers are supported.
   CHECK(frameSize);
-  [self processRamSample:sampleBuffer
-             baseAddress:baseAddress
-               frameSize:frameSize
-         pixelFormatType:CVPixelBufferGetPixelFormatType(videoFrame)];
-  CVPixelBufferUnlockBaseAddress(videoFrame, kCVPixelBufferLock_ReadOnly);
+  _frameReceiver->ReceiveFrame(reinterpret_cast<const uint8_t*>(baseAddress),
+                               frameSize, captureFormat, colorSpace, 0, 0,
+                               timestamp);
+  CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
+  return YES;
+}
+
+- (BOOL)processNV12IOSurface:(IOSurfaceRef)ioSurface
+                sampleBuffer:(CMSampleBufferRef)sampleBuffer
+               captureFormat:(const media::VideoCaptureFormat&)captureFormat
+                  colorSpace:(const gfx::ColorSpace&)colorSpace
+                   timestamp:(const base::TimeDelta)timestamp {
+  VLOG(3) << __func__;
+  DCHECK_EQ(captureFormat.pixel_format, media::PIXEL_FORMAT_NV12);
+  gfx::GpuMemoryBufferHandle handle;
+  handle.id.id = -1;
+  handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
+  handle.mach_port.reset(IOSurfaceCreateMachPort(ioSurface));
+  if (!handle.mach_port)
+    return NO;
+  _frameReceiver->ReceiveExternalGpuMemoryBufferFrame(
+      std::move(handle),
+      std::make_unique<CMSampleBufferScopedAccessPermission>(sampleBuffer),
+      captureFormat, colorSpace, timestamp);
+  return YES;
 }
 
 // |captureOutput| is called by the capture device to deliver a new frame.
@@ -612,7 +623,6 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
            fromConnection:(AVCaptureConnection*)connection {
   VLOG(3) << __func__;
-
   // We have certain format expectation for capture output:
   // For MJPEG, |sampleBuffer| is expected to always be a CVBlockBuffer.
   // For other formats, |sampleBuffer| may be either CVBlockBuffer or
@@ -620,12 +630,61 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // plugins/virtual cameras. In order to find out whether it is CVBlockBuffer
   // or CVImageBuffer we call CMSampleBufferGetImageBuffer() and check if the
   // return value is nil.
-  CVImageBufferRef videoFrame = CMSampleBufferGetImageBuffer(sampleBuffer);
-  if (videoFrame) {
-    [self processSample:sampleBuffer withImageBuffer:videoFrame];
-  } else {
-    [self processRawSample:sampleBuffer];
+  const CMFormatDescriptionRef formatDescription =
+      CMSampleBufferGetFormatDescription(sampleBuffer);
+  const CMVideoDimensions dimensions =
+      CMVideoFormatDescriptionGetDimensions(formatDescription);
+  OSType sampleBufferPixelFormat =
+      CMFormatDescriptionGetMediaSubType(formatDescription);
+  media::VideoPixelFormat videoPixelFormat = [VideoCaptureDeviceAVFoundation
+      FourCCToChromiumPixelFormat:sampleBufferPixelFormat];
+
+  // TODO(julien.isorce): move GetImageBufferColorSpace(CVImageBufferRef)
+  // from media::VTVideoDecodeAccelerator to media/base/mac and call it
+  // here to get the color space. See https://crbug.com/959962.
+  // colorSpace = media::GetImageBufferColorSpace(videoFrame);
+  gfx::ColorSpace colorSpace;
+  const media::VideoCaptureFormat captureFormat(
+      gfx::Size(dimensions.width, dimensions.height), _frameRate,
+      videoPixelFormat);
+  const base::TimeDelta timestamp = GetCMSampleBufferTimestamp(sampleBuffer);
+
+  if (CVPixelBufferRef pixelBuffer =
+          CMSampleBufferGetImageBuffer(sampleBuffer)) {
+    OSType pixelBufferPixelFormat =
+        CVPixelBufferGetPixelFormatType(pixelBuffer);
+    DCHECK_EQ(pixelBufferPixelFormat, sampleBufferPixelFormat);
+
+    // First preference is to use an NV12 IOSurface as a GpuMemoryBuffer.
+    // TODO(https://crbug.com/1125879): This path cannot be used in software
+    // mode yet, and so it cannot be enabled yet.
+    constexpr bool kEnableGpuMemoryBuffers = false;
+    if (kEnableGpuMemoryBuffers) {
+      IOSurfaceRef ioSurface = CVPixelBufferGetIOSurface(pixelBuffer);
+      if (ioSurface && videoPixelFormat == media::PIXEL_FORMAT_NV12) {
+        if ([self processNV12IOSurface:ioSurface
+                          sampleBuffer:sampleBuffer
+                         captureFormat:captureFormat
+                            colorSpace:colorSpace
+                             timestamp:timestamp]) {
+          return;
+        }
+      }
+    }
+
+    // Second preference is to read the CVPixelBuffer.
+    if ([self processPixelBuffer:pixelBuffer
+                   captureFormat:captureFormat
+                      colorSpace:colorSpace
+                       timestamp:timestamp]) {
+      return;
+    }
   }
+  // Last preference is to read the CMSampleBuffer.
+  [self processSample:sampleBuffer
+        captureFormat:captureFormat
+           colorSpace:colorSpace
+            timestamp:timestamp];
 }
 
 - (void)onVideoError:(NSNotification*)errorNotification {

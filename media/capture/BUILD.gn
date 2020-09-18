@@ -187,6 +187,7 @@ component("capture_lib") {
       "CoreMedia.framework",
       "CoreVideo.framework",
       "Foundation.framework",
+      "IOSurface.framework",
     ]
   }
 

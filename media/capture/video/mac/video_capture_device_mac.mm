@@ -461,6 +461,25 @@ void VideoCaptureDeviceMac::ReceiveFrame(const uint8_t* video_frame,
                                   timestamp);
 }
 
+void VideoCaptureDeviceMac::ReceiveExternalGpuMemoryBufferFrame(
+    gfx::GpuMemoryBufferHandle handle,
+    std::unique_ptr<VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
+        read_access_permission,
+    const VideoCaptureFormat& format,
+    const gfx::ColorSpace color_space,
+    base::TimeDelta timestamp) {
+  if (capture_format_.frame_size != format.frame_size) {
+    ReceiveError(VideoCaptureError::kMacReceivedFrameWithUnexpectedResolution,
+                 FROM_HERE,
+                 "Captured resolution " + format.frame_size.ToString() +
+                     ", and expected " + capture_format_.frame_size.ToString());
+    return;
+  }
+  client_->OnIncomingCapturedExternalBuffer(
+      std::move(handle), std::move(read_access_permission), format, color_space,
+      base::TimeTicks::Now(), timestamp);
+}
+
 void VideoCaptureDeviceMac::OnPhotoTaken(const uint8_t* image_data,
                                          size_t image_length,
                                          const std::string& mime_type) {

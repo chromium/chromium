@@ -72,8 +72,7 @@ class VideoCaptureDeviceMac
 
   bool Init(VideoCaptureApi capture_api_type);
 
-  // Called to deliver captured video frames.  It's safe to call this method
-  // from any thread, including those controlled by AVFoundation.
+  // VideoCaptureDeviceAVFoundationFrameReceiver:
   void ReceiveFrame(const uint8_t* video_frame,
                     int video_frame_length,
                     const VideoCaptureFormat& frame_format,
@@ -81,15 +80,18 @@ class VideoCaptureDeviceMac
                     int aspect_numerator,
                     int aspect_denominator,
                     base::TimeDelta timestamp) override;
-
-  // Callbacks with the result of a still image capture, or in case of error,
-  // respectively. It's safe to call these methods from any thread.
+  void ReceiveExternalGpuMemoryBufferFrame(
+      gfx::GpuMemoryBufferHandle handle,
+      std::unique_ptr<
+          VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
+          read_access_permission,
+      const VideoCaptureFormat& frame_format,
+      const gfx::ColorSpace color_space,
+      base::TimeDelta timestamp) override;
   void OnPhotoTaken(const uint8_t* image_data,
                     size_t image_length,
                     const std::string& mime_type) override;
   void OnPhotoError() override;
-
-  // Forwarder to VideoCaptureDevice::Client::OnError().
   void ReceiveError(VideoCaptureError error,
                     const base::Location& from_here,
                     const std::string& reason) override;

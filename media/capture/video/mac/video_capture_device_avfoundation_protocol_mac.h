@@ -21,6 +21,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceAVFoundationFrameReceiver {
  public:
   virtual ~VideoCaptureDeviceAVFoundationFrameReceiver() = default;
 
+  // Called to deliver captured video frames.  It's safe to call this method
+  // from any thread, including those controlled by AVFoundation.
   virtual void ReceiveFrame(const uint8_t* video_frame,
                             int video_frame_length,
                             const VideoCaptureFormat& frame_format,
@@ -28,10 +30,29 @@ class CAPTURE_EXPORT VideoCaptureDeviceAVFoundationFrameReceiver {
                             int aspect_numerator,
                             int aspect_denominator,
                             base::TimeDelta timestamp) = 0;
+
+  // Called to deliver GpuMemoryBuffer-wrapped captured video frames. This
+  // function may be called from any thread, including those controlled by
+  // AVFoundation.
+  virtual void ReceiveExternalGpuMemoryBufferFrame(
+      gfx::GpuMemoryBufferHandle handle,
+      std::unique_ptr<
+          VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
+          read_access_permission,
+      const VideoCaptureFormat& frame_format,
+      const gfx::ColorSpace color_space,
+      base::TimeDelta timestamp) = 0;
+
+  // Callbacks with the result of a still image capture, or in case of error,
+  // respectively. It's safe to call these methods from any thread.
   virtual void OnPhotoTaken(const uint8_t* image_data,
                             size_t image_length,
                             const std::string& mime_type) = 0;
+
+  // Callback when a call to takePhoto fails.
   virtual void OnPhotoError() = 0;
+
+  // Forwarder to VideoCaptureDevice::Client::OnError().
   virtual void ReceiveError(VideoCaptureError error,
                             const base::Location& from_here,
                             const std::string& reason) = 0;
