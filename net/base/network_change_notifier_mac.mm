@@ -15,6 +15,10 @@
 #include "base/task/task_traits.h"
 #include "net/dns/dns_config_service.h"
 
+#if defined(OS_IOS)
+#import <CoreTelephony/CTTelephonyNetworkInfo.h>
+#endif
+
 namespace net {
 
 static bool CalculateReachability(SCNetworkConnectionFlags flags) {
@@ -43,9 +47,8 @@ NetworkChangeNotifierMac::~NetworkChangeNotifierMac() {
   // Now that StartReachabilityNotifications() has either run to completion or
   // never run at all, unschedule reachability_ if it was previously scheduled.
   if (reachability_.get() && run_loop_.get()) {
-    SCNetworkReachabilityUnscheduleFromRunLoop(reachability_.get(),
-                                               run_loop_.get(),
-                                               kCFRunLoopCommonModes);
+    SCNetworkReachabilityUnscheduleFromRunLoop(
+        reachability_.get(), run_loop_.get(), kCFRunLoopCommonModes);
   }
 }
 
@@ -75,7 +78,7 @@ NetworkChangeNotifierMac::GetCurrentConnectionType() const {
   return connection_type_;
 }
 
-void NetworkChangeNotifierMac::Forwarder::Init()  {
+void NetworkChangeNotifierMac::Forwarder::Init() {
   net_config_watcher_->SetInitialConnectionType();
 }
 
@@ -88,8 +91,68 @@ NetworkChangeNotifierMac::CalculateConnectionType(
     return CONNECTION_NONE;
 
 #if defined(OS_IOS)
-  return (flags & kSCNetworkReachabilityFlagsIsWWAN) ? CONNECTION_3G
-                                                     : CONNECTION_WIFI;
+  if (!(flags & kSCNetworkReachabilityFlagsIsWWAN)) {
+    return CONNECTION_WIFI;
+  }
+  if (@available(iOS 12, *)) {
+    CTTelephonyNetworkInfo* info =
+        [[[CTTelephonyNetworkInfo alloc] init] autorelease];
+    NSDictionary<NSString*, NSString*>*
+        service_current_radio_access_technology =
+            [info serviceCurrentRadioAccessTechnology];
+    NSSet<NSString*>* technologies_2g = [NSSet
+        setWithObjects:CTRadioAccessTechnologyGPRS, CTRadioAccessTechnologyGPRS,
+                       CTRadioAccessTechnologyCDMA1x, nil];
+    NSSet<NSString*>* technologies_3g =
+        [NSSet setWithObjects:CTRadioAccessTechnologyWCDMA,
+                              CTRadioAccessTechnologyHSDPA,
+                              CTRadioAccessTechnologyHSUPA,
+                              CTRadioAccessTechnologyCDMAEVDORev0,
+                              CTRadioAccessTechnologyCDMAEVDORevA,
+                              CTRadioAccessTechnologyCDMAEVDORevB,
+                              CTRadioAccessTechnologyeHRPD, nil];
+    NSSet<NSString*>* technologies_4g =
+        [NSSet setWithObjects:CTRadioAccessTechnologyLTE, nil];
+    int best_network = 0;
+    for (NSString* service in service_current_radio_access_technology) {
+      if (!service_current_radio_access_technology[service]) {
+        continue;
+      }
+      int current_network = 0;
+
+      NSString* network_type = service_current_radio_access_technology[service];
+
+      if ([technologies_2g containsObject:network_type]) {
+        current_network = 2;
+      } else if ([technologies_3g containsObject:network_type]) {
+        current_network = 3;
+      } else if ([technologies_4g containsObject:network_type]) {
+        current_network = 4;
+      } else {
+        // New technology?
+        NOTREACHED();
+        return CONNECTION_UNKNOWN;
+      }
+      if (current_network > best_network) {
+        // iOS is supposed to use the best network available.
+        best_network = current_network;
+      }
+    }
+    switch (best_network) {
+      case 2:
+        return CONNECTION_2G;
+      case 3:
+        return CONNECTION_3G;
+      case 4:
+        return CONNECTION_4G;
+      default:
+        // Default to CONNECTION_3G to not change existing behavior.
+        return CONNECTION_3G;
+    }
+  } else {
+    return CONNECTION_3G;
+  }
+
 #else
   return ConnectionTypeFromInterfaces();
 #endif
@@ -100,12 +163,12 @@ void NetworkChangeNotifierMac::Forwarder::StartReachabilityNotifications() {
 }
 
 void NetworkChangeNotifierMac::Forwarder::SetDynamicStoreNotificationKeys(
-    SCDynamicStoreRef store)  {
+    SCDynamicStoreRef store) {
   net_config_watcher_->SetDynamicStoreNotificationKeys(store);
 }
 
 void NetworkChangeNotifierMac::Forwarder::OnNetworkConfigChange(
-    CFArrayRef changed_keys)  {
+    CFArrayRef changed_keys) {
   net_config_watcher_->OnNetworkConfigChange(changed_keys);
 }
 
@@ -147,20 +210,18 @@ void NetworkChangeNotifierMac::StartReachabilityNotifications() {
 
   DCHECK(reachability_);
   SCNetworkReachabilityContext reachability_context = {
-    0,     // version
-    this,  // user data
-    NULL,  // retain
-    NULL,  // release
-    NULL   // description
+      0,     // version
+      this,  // user data
+      NULL,  // retain
+      NULL,  // release
+      NULL   // description
   };
   if (!SCNetworkReachabilitySetCallback(
-          reachability_,
-          &NetworkChangeNotifierMac::ReachabilityCallback,
+          reachability_, &NetworkChangeNotifierMac::ReachabilityCallback,
           &reachability_context)) {
     LOG(DFATAL) << "Could not set network reachability callback";
     reachability_.reset();
-  } else if (!SCNetworkReachabilityScheduleWithRunLoop(reachability_,
-                                                       run_loop_,
+  } else if (!SCNetworkReachabilityScheduleWithRunLoop(reachability_, run_loop_,
                                                        kCFRunLoopCommonModes)) {
     LOG(DFATAL) << "Could not schedule network reachability on run loop";
     reachability_.reset();
@@ -187,8 +248,8 @@ void NetworkChangeNotifierMac::SetDynamicStoreNotificationKeys(
   CFArrayAppendValue(notification_keys.get(), key.get());
 
   // Set the notification keys.  This starts us receiving notifications.
-  bool ret = SCDynamicStoreSetNotificationKeys(
-      store, notification_keys.get(), NULL);
+  bool ret =
+      SCDynamicStoreSetNotificationKeys(store, notification_keys.get(), NULL);
   // TODO(willchan): Figure out a proper way to handle this rather than crash.
   CHECK(ret);
 #endif  // defined(OS_IOS)
@@ -202,8 +263,8 @@ void NetworkChangeNotifierMac::OnNetworkConfigChange(CFArrayRef changed_keys) {
   DCHECK_EQ(run_loop_.get(), CFRunLoopGetCurrent());
 
   for (CFIndex i = 0; i < CFArrayGetCount(changed_keys); ++i) {
-    CFStringRef key = static_cast<CFStringRef>(
-        CFArrayGetValueAtIndex(changed_keys, i));
+    CFStringRef key =
+        static_cast<CFStringRef>(CFArrayGetValueAtIndex(changed_keys, i));
     if (CFStringHasSuffix(key, kSCEntNetIPv4) ||
         CFStringHasSuffix(key, kSCEntNetIPv6)) {
       NotifyObserversOfIPAddressChange();

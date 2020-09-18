@@ -25,6 +25,7 @@ config("cronet_include_config") {
 config("cronet_static_config") {
   frameworks = [
     "Cronet.framework",
+    "CoreTelephony.framework",
     "UIKit.framework",
     "CFNetwork.framework",
     "MobileCoreServices.framework",

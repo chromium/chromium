@@ -1288,8 +1288,8 @@ component("net") {
       sources += [
         "base/mac/url_conversions.h",
         "base/mac/url_conversions.mm",
-        "base/network_change_notifier_mac.cc",
         "base/network_change_notifier_mac.h",
+        "base/network_change_notifier_mac.mm",
         "base/network_config_watcher_mac.cc",
         "base/network_config_watcher_mac.h",
         "base/platform_mime_util_mac.mm",
@@ -1510,6 +1510,7 @@ component("net") {
     libs = [ "resolv" ]
     frameworks = [
       "CFNetwork.framework",
+      "CoreTelephony.framework",
       "MobileCoreServices.framework",
       "Security.framework",
       "SystemConfiguration.framework",
