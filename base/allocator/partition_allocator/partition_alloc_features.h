@@ -40,7 +40,22 @@ ALWAYS_INLINE bool IsPartitionAllocGigaCageEnabled() {
   // when enabling GigaCage on Windows whose version is smaller than 8.1,
   // because PTEs for reserved memory counts against commit limit. See
   // https://crbug.com/1101421.
-  static bool recent_enough_windows_version = IsWindows8Point1OrGreater();
+  // TODO(tasak): this windows version check is the same as GetRandomPageBase()
+  // (address_space_randomization.cc). Refactor the code to avoid the
+  // duplication.
+  static bool is_windows_version_checked = false;
+  // Don't assign directly IsWindows8Point1OrGreater() to a static local
+  // variable, because the initial value is not trivial and the assignment needs
+  // thread-safe static-local initializer on Windows. (i.e. Init_thread_header)
+  // This causes issues when used on the allocation path (see
+  // crbug.com/1126432). As we don't use atomics here, this may end up querying
+  // the version multiple times, which is fine, as this operation is idempotent,
+  // with no side-effects.
+  static bool recent_enough_windows_version = false;
+  if (!is_windows_version_checked) {
+    recent_enough_windows_version = IsWindows8Point1OrGreater();
+    is_windows_version_checked = true;
+  }
   if (!recent_enough_windows_version)
     return false;
 #endif  // defined(OS_WIN)
