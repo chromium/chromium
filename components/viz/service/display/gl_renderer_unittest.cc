@@ -410,10 +410,10 @@ class GLRendererShaderPixelTest : public cc::PixelTest {
     UVTextureMode uv_modes[2] = {UV_TEXTURE_MODE_UV, UV_TEXTURE_MODE_U_V};
     YUVAlphaTextureMode a_modes[2] = {YUV_NO_ALPHA_TEXTURE,
                                       YUV_HAS_ALPHA_TEXTURE};
-    for (int j = 0; j < 2; j++) {
-      for (int k = 0; k < 2; k++) {
-        TestShader(ProgramKey::YUVVideo(precision, sampler, a_modes[j],
-                                        uv_modes[k], false, false));
+    for (auto uv_mode : uv_modes) {
+      for (auto a_mode : a_modes) {
+        TestShader(ProgramKey::YUVVideo(precision, sampler, a_mode, uv_mode,
+                                        false, false));
       }
     }
   }
@@ -498,8 +498,11 @@ class PrecisionSamplerShaderPixelTest
           std::tuple<TexCoordPrecision, SamplerType>> {};
 
 TEST_P(PrecisionSamplerShaderPixelTest, ShadersCompile) {
-  TestShadersWithPrecisionAndSampler(std::get<0>(GetParam()),
-                                     std::get<1>(GetParam()));
+  SamplerType sampler = std::get<1>(GetParam());
+  if (sampler != SAMPLER_TYPE_2D_RECT ||
+      context_provider()->ContextCapabilities().texture_rectangle) {
+    TestShadersWithPrecisionAndSampler(std::get<0>(GetParam()), sampler);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(PrecisionSamplerShadersCompile,
@@ -513,8 +516,12 @@ class MaskShaderPixelTest
           std::tuple<TexCoordPrecision, SamplerType, BlendMode, bool>> {};
 
 TEST_P(MaskShaderPixelTest, ShadersCompile) {
-  TestShadersWithMasks(std::get<0>(GetParam()), std::get<1>(GetParam()),
-                       std::get<2>(GetParam()), std::get<3>(GetParam()));
+  SamplerType sampler = std::get<1>(GetParam());
+  if (sampler != SAMPLER_TYPE_2D_RECT ||
+      context_provider()->ContextCapabilities().texture_rectangle) {
+    TestShadersWithMasks(std::get<0>(GetParam()), sampler,
+                         std::get<2>(GetParam()), std::get<3>(GetParam()));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(MaskShadersCompile,
