@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/unique_name_helper.h"
+#include "third_party/blink/public/common/unique_name/unique_name_helper.h"
 
 #include <algorithm>
 #include <utility>
@@ -16,7 +16,7 @@
 #include "base/unguessable_token.h"
 #include "crypto/sha2.h"
 
-namespace content {
+namespace blink {
 
 namespace {
 
@@ -320,4 +320,4 @@ std::string UniqueNameHelper::ExtractStableNameForTesting(
   return unique_name.substr(0, i).as_string();
 }
 
-}  // namespace content
+}  // namespace blink

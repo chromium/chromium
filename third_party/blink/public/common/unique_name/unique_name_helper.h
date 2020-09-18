@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_UNIQUE_NAME_HELPER_H_
-#define CONTENT_COMMON_UNIQUE_NAME_HELPER_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_UNIQUE_NAME_UNIQUE_NAME_HELPER_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_UNIQUE_NAME_UNIQUE_NAME_HELPER_H_
 
 #include <string>
 #include <vector>
 
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
-#include "content/common/content_export.h"
+#include "third_party/blink/public/common/common_export.h"
 
-namespace content {
+namespace blink {
 
 // Frame helper that manages the details of generating a quasi-stable unique
 // name for the frame. The name is unique within a page, and is used for:
@@ -65,11 +65,11 @@ namespace content {
 //                   [ framePosition-forParent? ]
 //
 // retryNumber ::= smallest non-negative integer resulting in unique name
-class CONTENT_EXPORT UniqueNameHelper {
+class BLINK_COMMON_EXPORT UniqueNameHelper {
  public:
   // Adapter class so UniqueNameHelper can be used with both RenderFrameImpl and
   // ExplodedFrameState.
-  class CONTENT_EXPORT FrameAdapter {
+  class BLINK_COMMON_EXPORT FrameAdapter {
    public:
     FrameAdapter() {}
     virtual ~FrameAdapter();
@@ -201,6 +201,6 @@ class CONTENT_EXPORT UniqueNameHelper {
   DISALLOW_COPY_AND_ASSIGN(UniqueNameHelper);
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_COMMON_UNIQUE_NAME_HELPER_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_UNIQUE_NAME_UNIQUE_NAME_HELPER_H_

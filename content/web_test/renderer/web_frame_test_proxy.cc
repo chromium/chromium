@@ -5,7 +5,6 @@
 #include "content/web_test/renderer/web_frame_test_proxy.h"
 
 #include "components/plugins/renderer/plugin_placeholder.h"
-#include "content/common/unique_name_helper.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/web_test/common/web_test_string_util.h"
 #include "content/web_test/renderer/blink_test_helpers.h"
@@ -18,6 +17,7 @@
 #include "content/web_test/renderer/web_view_test_proxy.h"
 #include "content/web_test/renderer/web_widget_test_proxy.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
+#include "third_party/blink/public/common/unique_name/unique_name_helper.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_testing_support.h"
@@ -283,7 +283,7 @@ std::string WebFrameTestProxy::GetFrameNameForWebTests() {
   // moved onto the provisional frame until swap because it may change in the
   // meantime, but this grabs the value it currently is, which is good enough
   // for tests.
-  return UniqueNameHelper::ExtractStableNameForTesting(
+  return blink::UniqueNameHelper::ExtractStableNameForTesting(
       in_frame_tree() ? unique_name() : GetPreviousFrameUniqueName());
 }
 

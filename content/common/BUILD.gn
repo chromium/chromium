@@ -183,8 +183,6 @@ source_set("common") {
     "thread_pool_util.h",
     "trace_utils.h",
     "unfreezable_frame_messages.h",
-    "unique_name_helper.cc",
-    "unique_name_helper.h",
     "url_schemes.cc",
     "url_schemes.h",
     "user_agent.cc",

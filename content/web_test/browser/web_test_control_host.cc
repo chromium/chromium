@@ -37,7 +37,6 @@
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "content/common/page_state_serialization.h"
-#include "content/common/unique_name_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/child_process_termination_info.h"
@@ -89,6 +88,7 @@
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/unique_name/unique_name_helper.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -123,7 +123,8 @@ std::string DumpFrameState(const ExplodedFrameState& frame_state,
   if (!frame_state.target->empty()) {
     std::string unique_name = base::UTF16ToUTF8(*frame_state.target);
     result.append(" (in frame \"");
-    result.append(UniqueNameHelper::ExtractStableNameForTesting(unique_name));
+    result.append(
+        blink::UniqueNameHelper::ExtractStableNameForTesting(unique_name));
     result.append("\")");
   }
   result.append("\n");
@@ -135,10 +136,12 @@ std::string DumpFrameState(const ExplodedFrameState& frame_state,
         // Child nodes should always have a target (aka unique name).
         DCHECK(lhs.target);
         DCHECK(rhs.target);
-        std::string lhs_name = UniqueNameHelper::ExtractStableNameForTesting(
-            base::UTF16ToUTF8(*lhs.target));
-        std::string rhs_name = UniqueNameHelper::ExtractStableNameForTesting(
-            base::UTF16ToUTF8(*rhs.target));
+        std::string lhs_name =
+            blink::UniqueNameHelper::ExtractStableNameForTesting(
+                base::UTF16ToUTF8(*lhs.target));
+        std::string rhs_name =
+            blink::UniqueNameHelper::ExtractStableNameForTesting(
+                base::UTF16ToUTF8(*rhs.target));
         if (!base::EqualsCaseInsensitiveASCII(lhs_name, rhs_name))
           return base::CompareCaseInsensitiveASCII(lhs_name, rhs_name) < 0;
 

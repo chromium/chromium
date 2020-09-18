@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/debug/debugger.h"
 #include "build/build_config.h"
-#include "content/common/unique_name_helper.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"
 #include "content/renderer/loader/web_worker_fetch_context_impl.h"
@@ -27,6 +26,7 @@
 #include "media/base/audio_latency.h"
 #include "media/base/mime_util.h"
 #include "media/media_buildflags.h"
+#include "third_party/blink/public/common/unique_name/unique_name_helper.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/blink.h"
@@ -76,7 +76,7 @@ WebTestContentRendererClient::WebTestContentRendererClient() {
   // For RenderWidgets, web tests only subclass the ones attached to frames.
   RenderWidget::InstallCreateForFrameHook(CreateWebWidgetTestProxy);
 
-  UniqueNameHelper::PreserveStableUniqueNameForTesting();
+  blink::UniqueNameHelper::PreserveStableUniqueNameForTesting();
   WebWorkerFetchContextImpl::InstallRewriteURLFunction(RewriteWebTestsURL);
 }
 

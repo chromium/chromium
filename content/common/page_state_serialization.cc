@@ -14,12 +14,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/common/page_state.mojom.h"
-#include "content/common/unique_name_helper.h"
 #include "content/public/common/referrer.h"
 #include "ipc/ipc_message_utils.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "third_party/blink/public/common/unique_name/unique_name_helper.h"
 #include "third_party/blink/public/platform/web_history_scroll_restoration_type.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -499,7 +499,7 @@ void WriteHttpBody(const ExplodedHttpBody& http_body, SerializeObject* obj) {
 void ReadFrameState(
     SerializeObject* obj,
     bool is_top,
-    std::vector<UniqueNameHelper::Replacement>* unique_name_replacements,
+    std::vector<blink::UniqueNameHelper::Replacement>* unique_name_replacements,
     ExplodedFrameState* state) {
   if (obj->version < 14 && !is_top)
     ReadInteger(obj);  // Skip over redundant version field.
@@ -511,8 +511,9 @@ void ReadFrameState(
 
   state->target = ReadString(obj);
   if (obj->version < 25 && state->target) {
-    state->target = base::UTF8ToUTF16(UniqueNameHelper::UpdateLegacyNameFromV24(
-        base::UTF16ToUTF8(*state->target), unique_name_replacements));
+    state->target =
+        base::UTF8ToUTF16(blink::UniqueNameHelper::UpdateLegacyNameFromV24(
+            base::UTF16ToUTF8(*state->target), unique_name_replacements));
   }
   if (obj->version < 15) {
     ReadString(obj);  // Skip obsolete parent field.
@@ -939,7 +940,7 @@ void ReadPageState(SerializeObject* obj, ExplodedPageState* state) {
   if (obj->version >= 14)
     ReadStringVector(obj, &state->referenced_files);
 
-  std::vector<UniqueNameHelper::Replacement> unique_name_replacements;
+  std::vector<blink::UniqueNameHelper::Replacement> unique_name_replacements;
   ReadFrameState(obj, true, &unique_name_replacements, &state->top);
 
   if (obj->version < 14)

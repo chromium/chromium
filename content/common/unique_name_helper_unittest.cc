@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/unique_name_helper.h"
+#include "third_party/blink/public/common/unique_name/unique_name_helper.h"
 
 #include <map>
 #include <memory>
@@ -22,7 +22,7 @@ namespace {
 // Requested names longer than this (that are unique) should be hashed.
 constexpr size_t kMaxSize = 80;
 
-class TestFrameAdapter : public UniqueNameHelper::FrameAdapter {
+class TestFrameAdapter : public blink::UniqueNameHelper::FrameAdapter {
  public:
   // |virtual_index_in_parent| is the virtual index of this frame in the
   // parent's list of children, as unique name generation should see it. Note
@@ -136,8 +136,8 @@ class TestFrameAdapter : public UniqueNameHelper::FrameAdapter {
     // UniqueNameHelper.
     if (!IsMainFrame()) {
       base::AutoReset<bool> enable_legacy_mode(&generate_legacy_name_, true);
-      legacy_name_ =
-          UniqueNameHelper::CalculateLegacyNameForTesting(this, requested_name);
+      legacy_name_ = blink::UniqueNameHelper::CalculateLegacyNameForTesting(
+          this, requested_name);
     }
   }
 
@@ -154,7 +154,7 @@ class TestFrameAdapter : public UniqueNameHelper::FrameAdapter {
   TestFrameAdapter* const parent_;
   std::vector<TestFrameAdapter*> children_;
   const int virtual_index_in_parent_;
-  UniqueNameHelper unique_name_helper_;
+  blink::UniqueNameHelper unique_name_helper_;
   std::string legacy_name_;
 };
 

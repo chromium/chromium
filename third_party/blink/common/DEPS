@@ -8,6 +8,7 @@ include_rules = [
     # It is allowed to depend on common chromium stuff (and itself).
     "+base",
     "+build",
+    "+crypto/sha2.h",
     "+cc/mojom/browser_controls_params.mojom.h",
     "+net",
     "+media",

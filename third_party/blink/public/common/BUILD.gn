@@ -179,6 +179,7 @@ source_set("headers") {
     "tokens/token_mojom_traits_helper.h",
     "tokens/tokens.h",
     "tokens/tokens_mojom_traits.h",
+    "unique_name/unique_name_helper.h",
     "user_agent/user_agent_metadata.h",
     "web_cache/web_cache_resource_type_stats.h",
     "web_package/signed_exchange_consts.h",

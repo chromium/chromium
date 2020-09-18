@@ -37,7 +37,6 @@
 #include "content/common/navigation_params.mojom.h"
 #include "content/common/render_accessibility.mojom.h"
 #include "content/common/renderer.mojom.h"
-#include "content/common/unique_name_helper.h"
 #include "content/common/web_ui.mojom.h"
 #include "content/public/common/browser_controls_state.h"
 #include "content/public/common/fullscreen_video_element.mojom.h"
@@ -78,6 +77,7 @@
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/navigation/triggering_event_info.h"
+#include "third_party/blink/public/common/unique_name/unique_name_helper.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom.h"
@@ -1259,7 +1259,7 @@ class CONTENT_EXPORT RenderFrameImpl
   // |frame_| has been invalidated.
   bool is_main_frame_;
 
-  class UniqueNameFrameAdapter : public UniqueNameHelper::FrameAdapter {
+  class UniqueNameFrameAdapter : public blink::UniqueNameHelper::FrameAdapter {
    public:
     explicit UniqueNameFrameAdapter(RenderFrameImpl* render_frame);
     ~UniqueNameFrameAdapter() override;
@@ -1280,7 +1280,7 @@ class CONTENT_EXPORT RenderFrameImpl
     RenderFrameImpl* render_frame_;
   };
   UniqueNameFrameAdapter unique_name_frame_adapter_;
-  UniqueNameHelper unique_name_helper_;
+  blink::UniqueNameHelper unique_name_helper_;
 
   // Indicates whether the frame has been inserted into the frame tree yet or
   // not.
