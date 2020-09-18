@@ -3368,6 +3368,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "min_os_version": "14.0.1"
+                    },
                     "enable_features": [
                         "DefaultBrowserFullscreenPromo"
                     ]
