@@ -485,6 +485,11 @@ base::string16 PowerStatus::GetInlinedStatusString() const {
   }
 }
 
+double PowerStatus::GetPreferredMinimumPower() const {
+  // TODO(b/160854398): Return the value from the proto once it's ready.
+  return 60.0;
+}
+
 PowerStatus::PowerStatus() {
   chromeos::PowerManagerClient::Get()->AddObserver(this);
   chromeos::PowerManagerClient::Get()->RequestStatusUpdate();

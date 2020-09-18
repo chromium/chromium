@@ -213,6 +213,9 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   // For example, "53% - 5:00 left".
   base::string16 GetInlinedStatusString() const;
 
+  // Returns the device's preferred minimum power input in watts (W).
+  double GetPreferredMinimumPower() const;
+
   // Updates |proto_|. Does not notify observers.
   void SetProtoForTesting(const power_manager::PowerSupplyProperties& proto);
 

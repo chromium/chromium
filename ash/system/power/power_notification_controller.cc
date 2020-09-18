@@ -11,6 +11,7 @@
 #include "ash/system/power/battery_notification.h"
 #include "ash/system/power/dual_role_notification.h"
 #include "base/command_line.h"
+#include "base/i18n/number_formatting.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -133,18 +134,28 @@ bool PowerNotificationController::MaybeShowUsbChargerNotification() {
 
   // Check if the notification needs to be created.
   if (show && !usb_charger_was_connected_ && !usb_notification_dismissed_) {
+    bool on_battery = PowerStatus::Get()->IsBatteryPresent();
     std::unique_ptr<Notification> notification = CreateSystemNotification(
         message_center::NOTIFICATION_TYPE_SIMPLE, kUsbNotificationId,
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LOW_POWER_CHARGER_TITLE),
-        ui::SubstituteChromeOSDeviceType(
-            IDS_ASH_STATUS_TRAY_LOW_POWER_CHARGER_MESSAGE_SHORT),
+        l10n_util::GetStringUTF16(
+            on_battery ? IDS_ASH_STATUS_TRAY_LOW_POWER_CHARGER_TITLE
+                       : IDS_ASH_STATUS_TRAY_LOW_POWER_ADAPTER_TITLE),
+        on_battery
+            ? ui::SubstituteChromeOSDeviceType(
+                  IDS_ASH_STATUS_TRAY_LOW_POWER_CHARGER_MESSAGE_SHORT)
+            : l10n_util::GetStringFUTF16(
+                  IDS_ASH_STATUS_TRAY_LOW_POWER_ADAPTER_MESSAGE_SHORT,
+                  ui::GetChromeOSDeviceName(),
+                  base::FormatDouble(
+                      PowerStatus::Get()->GetPreferredMinimumPower(), 0)),
         base::string16(), GURL(),
         message_center::NotifierId(
             message_center::NotifierType::SYSTEM_COMPONENT, kNotifierPower),
         message_center::RichNotificationData(),
         new UsbNotificationDelegate(this), kNotificationLowPowerChargerIcon,
         message_center::SystemNotificationWarningLevel::WARNING);
-    notification->set_pinned(true);
+    notification->set_pinned(on_battery);
+    notification->set_never_timeout(!on_battery);
     message_center_->AddNotification(std::move(notification));
     return true;
   }

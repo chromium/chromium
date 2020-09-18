@@ -1166,6 +1166,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_LOW_POWER_CHARGER_MESSAGE_SHORT" desc="The message body of a notification indicating that a low-current USB charger has been connected, short version.">
         Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> may not charge while it is turned on.
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_LOW_POWER_ADAPTER_TITLE" desc="The title of a notification indicating that a low-current USB adapter has been connected.">
+        Low-power adapter connected
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_LOW_POWER_ADAPTER_MESSAGE_SHORT" desc="The message body of a notification indicating that a low-current USB adapter has been connected on a device without a battery, short version.">
+        Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> may experience lower performance. Use a certified <ph name="PREFERRED_MINIMUM_POWER">$2<ex>60</ex></ph>W or higher USB-C power adapter.
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_CHARGING_FROM_DUAL_ROLE_TITLE" desc="The message title of a notification indicating that the device is being charged by a connected dual-role USB Type-C device.">
         Charging from <ph name="POWER_SOURCE">$1<ex>USB-C device (left port)</ex></ph>
       </message>

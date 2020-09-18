@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/test/ash_test_base.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "ui/message_center/fake_message_center.h"
 
@@ -259,6 +260,38 @@ TEST_F(PowerNotificationControllerTest,
   EXPECT_TRUE(MaybeShowUsbChargerNotification(full_proto));
   EXPECT_EQ(1, message_center()->add_count());
   EXPECT_EQ(1, message_center()->remove_count());
+}
+
+TEST_F(PowerNotificationControllerTest,
+       MaybeShowUsbChargerNotification_NoBattery) {
+  // Notification does not show when powered by AC (including high-power
+  // USB PD.
+  PowerSupplyProperties ac_connected = DefaultPowerSupplyProperties();
+  ac_connected.set_external_power(
+      power_manager::PowerSupplyProperties_ExternalPower_AC);
+  ac_connected.set_battery_state(
+      power_manager::PowerSupplyProperties_BatteryState_NOT_PRESENT);
+  EXPECT_FALSE(MaybeShowUsbChargerNotification(ac_connected));
+  EXPECT_EQ(0, message_center()->add_count());
+  EXPECT_EQ(0, message_center()->remove_count());
+
+  // Notification shows when powered by low-power USB.
+  PowerSupplyProperties usb_connected = DefaultPowerSupplyProperties();
+  usb_connected.set_external_power(
+      power_manager::PowerSupplyProperties_ExternalPower_USB);
+  usb_connected.set_battery_state(
+      power_manager::PowerSupplyProperties_BatteryState_NOT_PRESENT);
+  EXPECT_TRUE(MaybeShowUsbChargerNotification(usb_connected));
+  EXPECT_EQ(1, message_center()->add_count());
+  EXPECT_EQ(0, message_center()->remove_count());
+  auto* notification =
+      message_center()->FindVisibleNotificationById("usb-charger");
+  ASSERT_TRUE(notification);
+  EXPECT_TRUE(notification->never_timeout());
+  EXPECT_FALSE(notification->pinned());
+  EXPECT_NE(std::string::npos,
+            notification->message().find(base::ASCIIToUTF16("60W")))
+      << notification->message();
 }
 
 TEST_F(PowerNotificationControllerTest, MaybeShowDualRoleNotification) {
