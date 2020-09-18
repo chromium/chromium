@@ -22,6 +22,9 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/display/manager/display_manager.h"
+#include "ui/display/screen.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/views/view_observer.h"
 #include "ui/wm/core/window_util.h"
 
@@ -345,4 +348,65 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
 
   EXPECT_TRUE(window()->IsImmersiveModeEnabled());
   EXPECT_TRUE(window()->exclusive_access_bubble_);
+}
+
+// Tests the auto positioning logic of created windows does not apply to apps
+// which specify their own positions.
+IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
+                       UserGivenBoundsAreRespected) {
+  display::DisplayManager* display_manager =
+      ash::ShellTestApi().display_manager();
+  display::test::DisplayManagerTestApi(display_manager)
+      .UpdateDisplay("800x800");
+
+  const extensions::Extension* extension =
+      LoadAndLaunchPlatformApp("launch", "Launched");
+
+  // This is the default size apps are if no window or content specifications
+  // are given.
+  const gfx::Size default_size(512, 384);
+
+  // Create an app with no window or content specifications. Use no frame for
+  // simpler calculations.
+  extensions::AppWindow::CreateParams params;
+  params.frame = extensions::AppWindow::FRAME_NONE;
+  extensions::AppWindow* app_window =
+      CreateAppWindowFromParams(browser()->profile(), extension, params);
+
+  // Test that the window is centered within the work area.
+  gfx::Rect expected_bounds = display_manager->GetDisplayAt(0).work_area();
+  expected_bounds.ClampToCenteredSize(default_size);
+  EXPECT_EQ(expected_bounds,
+            app_window->GetNativeWindow()->GetBoundsInScreen());
+  CloseAppWindow(app_window);
+
+  // Create an app with content specifications. The window is placed where the
+  // user specified.
+  {
+    const gfx::Rect specified_bounds(10, 10, 600, 400);
+    extensions::AppWindow::BoundsSpecification content_spec;
+    content_spec.bounds = specified_bounds;
+    params.content_spec = content_spec;
+    app_window =
+        CreateAppWindowFromParams(browser()->profile(), extension, params);
+    EXPECT_EQ(specified_bounds,
+              app_window->GetNativeWindow()->GetBoundsInScreen());
+  }
+  CloseAppWindow(app_window);
+
+  // Create an app with content specifications on the secondary display. The
+  // window is placed where the user specified.
+  display::test::DisplayManagerTestApi(display_manager)
+      .UpdateDisplay("800x800,800+0-800x800");
+  {
+    const gfx::Rect specified_bounds(810, 10, 600, 400);
+    extensions::AppWindow::BoundsSpecification content_spec;
+    content_spec.bounds = specified_bounds;
+    params.content_spec = content_spec;
+    app_window =
+        CreateAppWindowFromParams(browser()->profile(), extension, params);
+    EXPECT_EQ(specified_bounds,
+              app_window->GetNativeWindow()->GetBoundsInScreen());
+  }
+  CloseAppWindow(app_window);
 }
