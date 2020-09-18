@@ -64,4 +64,23 @@ SkColor AppListColorProviderImpl::GetAppListItemTextColor() const {
       AshColorProvider::ContentLayerType::kTextColorPrimary);
 }
 
+SkColor AppListColorProviderImpl::GetPageSwitcherButtonColor() const {
+  return ash_color_provider_->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonIconColor);
+}
+
+SkColor AppListColorProviderImpl::GetPageSwitcherInkDropBaseColor() const {
+  AshColorProvider::RippleAttributes ripple_attributes =
+      ash_color_provider_->GetRippleAttributes(GetAppListBackgroundColor());
+  return SkColorSetA(ripple_attributes.base_color,
+                     ripple_attributes.inkdrop_opacity * 255);
+}
+
+SkColor AppListColorProviderImpl::GetPageSwitcherInkDropHighlightColor() const {
+  AshColorProvider::RippleAttributes ripple_attributes =
+      ash_color_provider_->GetRippleAttributes(GetAppListBackgroundColor());
+  return SkColorSetA(ripple_attributes.base_color,
+                     ripple_attributes.highlight_opacity * 255);
+}
+
 }  // namespace ash

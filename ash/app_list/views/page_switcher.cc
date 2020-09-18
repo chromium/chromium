@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "base/i18n/number_formatting.h"
 #include "base/macros.h"
@@ -41,28 +42,10 @@ constexpr SkScalar kStrokeWidth = SkIntToScalar(2);
 // Constants for the button strip that grows vertically.
 // The padding on top/bottom side of each button.
 constexpr int kVerticalButtonPadding = 0;
-// The selected button color.
-constexpr SkColor kDarkSelectedButtonColor = SkColorSetARGB(255, 232, 234, 237);
-// The normal button color for the page switcher shown in the app grid (54%
-// white).
-constexpr SkColor kDarkNormalColor = SkColorSetARGB(255, 232, 234, 237);
-constexpr SkColor kDarkInkDropBaseColor = SkColorSetRGB(241, 243, 244);
-constexpr SkColor kDarkInkDropRippleColor =
-    SkColorSetA(kDarkInkDropBaseColor, 15);
-constexpr SkColor kDarkInkDropHighlightColor =
-    SkColorSetA(kDarkInkDropBaseColor, 20);
 
 // Constants for the button strip that grows horizontally.
 // The padding on left/right side of each button.
 constexpr int kHorizontalButtonPadding = 0;
-
-// The normal button color for the page switcher shown in folders (54% black).
-constexpr SkColor kLightNormalColor = SkColorSetA(SK_ColorBLACK, 138);
-constexpr SkColor kLightInkDropBaseColor = SkColorSetARGB(255, 95, 99, 104);
-constexpr SkColor kLightInkDropRippleColor =
-    SkColorSetA(kLightInkDropBaseColor, 8);
-constexpr SkColor kLightInkDropHighlightColor =
-    SkColorSetA(kLightInkDropBaseColor, 24);
 
 class PageSwitcherButton : public views::Button {
  public:
@@ -119,17 +102,14 @@ class PageSwitcherButton : public views::Button {
     return std::make_unique<views::FloodFillInkDropRipple>(
         size(), GetLocalBounds().InsetsFrom(bounds),
         GetInkDropCenterBasedOnLastEvent(),
-        is_root_app_grid_page_switcher_ ? kDarkInkDropRippleColor
-                                        : kLightInkDropRippleColor,
-        1.0f);
+        AppListColorProvider::Get()->GetPageSwitcherInkDropBaseColor(), 1.0f);
   }
 
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override {
     auto highlight = std::make_unique<views::InkDropHighlight>(
-        gfx::SizeF(size()), is_root_app_grid_page_switcher_
-                                ? kDarkInkDropHighlightColor
-                                : kLightInkDropHighlightColor);
+        gfx::SizeF(size()),
+        AppListColorProvider::Get()->GetPageSwitcherInkDropHighlightColor());
     highlight->set_visible_opacity(1.f);
     return highlight;
   }
@@ -151,15 +131,12 @@ class PageSwitcherButton : public views::Button {
   // Returns the information of how to paint selected/normal button.
   PaintButtonInfo BuildPaintButtonInfo() {
     PaintButtonInfo info;
+    info.color = AppListColorProvider::Get()->GetPageSwitcherButtonColor();
     if (selected_) {
-      info.color = is_root_app_grid_page_switcher_ ? kDarkSelectedButtonColor
-                                                   : kLightNormalColor;
       info.style = cc::PaintFlags::kFill_Style;
       info.radius = SkIntToScalar(kSelectedButtonRadius);
       info.stroke_width = SkIntToScalar(0);
     } else {
-      info.color = is_root_app_grid_page_switcher_ ? kDarkNormalColor
-                                                   : kLightNormalColor;
       info.style = cc::PaintFlags::kStroke_Style;
       info.radius = SkIntToScalar(kNormalButtonRadius);
       info.stroke_width = kStrokeWidth;

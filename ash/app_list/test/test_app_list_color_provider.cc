@@ -48,4 +48,16 @@ SkColor TestAppListColorProvider::GetAppListItemTextColor() const {
   return gfx::kGoogleGrey900;
 }
 
+SkColor TestAppListColorProvider::GetPageSwitcherButtonColor() const {
+  return gfx::kGoogleGrey900;
+}
+
+SkColor TestAppListColorProvider::GetPageSwitcherInkDropBaseColor() const {
+  return SkColorSetA(SK_ColorBLACK, 0x0F);
+}
+
+SkColor TestAppListColorProvider::GetPageSwitcherInkDropHighlightColor() const {
+  return SkColorSetA(SK_ColorBLACK, 0x0F);
+}
+
 }  // namespace ash
