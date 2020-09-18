@@ -115,6 +115,13 @@ struct ProcessInfo {
   uint64 uptime_ticks;
   // State of the process.
   ProcessState state;
+  // Total memory allocated to the process, in KiB.
+  uint32 total_memory_kib;
+  // Amount of resident memory currently used by the process, in KiB.
+  uint32 resident_memory_kib;
+  // Unused memory available to the process, in KiB. This will always be
+  // |total_memory_kib| - |resident_memory_kib|.
+  uint32 free_memory_kib;
 };
 
 // Battery probe result. Can either be populated with the BatteryInfo or an
