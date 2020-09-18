@@ -50,22 +50,6 @@ UNTRUSTED_TEST('UntrustedCanSpawnWorkers', async () => {
   assertEquals(response, MESSAGE);
 });
 
-// Tests that TelemetryInfo throws an error if category is unknown.
-UNTRUSTED_TEST('UntrustedRequestTelemetryInfoUnknownCategory', async () => {
-  let caughtError = {};
-
-  try {
-    await chromeos.telemetry.probeTelemetryInfo(['unknown-category']);
-  } catch (error) {
-    caughtError = error;
-  }
-
-  assertEquals(caughtError.name, 'TypeError');
-  assertEquals(
-      caughtError.message,
-      'Telemetry category \'unknown-category\' is unknown.');
-});
-
 // Tests that array of available routines can be successfully
 // requested from chrome-untrusted://.
 UNTRUSTED_TEST('UntrustedRequestAvailableRoutines', async () => {
@@ -294,6 +278,22 @@ UNTRUSTED_TEST(
           await chromeos.diagnostics.runNvmeSelfTestRoutine('long-self-test');
       assertDeepEquals(response2, {id: 123456789, status: 'ready'});
     });
+
+// Tests that TelemetryInfo throws an error if category is unknown.
+UNTRUSTED_TEST('UntrustedRequestTelemetryInfoUnknownCategory', async () => {
+  let caughtError = {};
+
+  try {
+    await chromeos.telemetry.probeTelemetryInfo(['unknown-category']);
+  } catch (error) {
+    caughtError = error;
+  }
+
+  assertEquals(caughtError.name, 'TypeError');
+  assertEquals(
+      caughtError.message,
+      'Telemetry category \'unknown-category\' is unknown.');
+});
 
 // Tests that TelemetryInfo can be successfully requested from
 // from chrome-untrusted://.

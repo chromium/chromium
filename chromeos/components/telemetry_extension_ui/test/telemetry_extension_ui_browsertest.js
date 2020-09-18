@@ -338,155 +338,6 @@ TEST_F(
       testDone();
     });
 
-// Test cases injected into the untrusted context.
-// See implementations in untrusted_browsertest.js.
-
-TEST_F(
-    'TelemetryExtensionUIBrowserTest', 'UntrustedCanSpawnWorkers', async () => {
-      await runTestInUntrusted('UntrustedCanSpawnWorkers');
-      testDone();
-    });
-
-TEST_F(
-    'TelemetryExtensionUIBrowserTest', 'UntrustedRequestAvailableRoutines',
-    async () => {
-      await runTestInUntrusted('UntrustedRequestAvailableRoutines');
-      testDone();
-    });
-
-TEST_F(
-    'TelemetryExtensionUIBrowserTest',
-    'UntrustedDiagnosticsRequestRoutineUpdateUnknownArguments', async () => {
-      await runTestInUntrusted(
-          'UntrustedDiagnosticsRequestRoutineUpdateUnknownArguments');
-      testDone();
-    });
-
-TEST_F(
-    'TelemetryExtensionUIBrowserTest',
-    'UntrustedDiagnosticsRequestRunBatteryCapacityRoutine', async () => {
-      await runTestInUntrusted(
-          'UntrustedDiagnosticsRequestRunBatteryCapacityRoutine');
-      testDone();
-    });
-
-TEST_F(
-    'TelemetryExtensionUIBrowserTest',
-    'UntrustedDiagnosticsRequestRunBatteryHealthRoutine', async () => {
-      await runTestInUntrusted(
-          'UntrustedDiagnosticsRequestRunBatteryHealthRoutine');
-      testDone();
-    });
-
-TEST_F(
-    'TelemetryExtensionUIBrowserTest',
-    'UntrustedDiagnosticsRequestRunSmartctlCheckRoutine', async () => {
-      await runTestInUntrusted(
-          'UntrustedDiagnosticsRequestRunSmartctlCheckRoutine');
-      testDone();
-    });
-
-TEST_F(
-    'TelemetryExtensionUIBrowserTest',
-    'UntrustedDiagnosticsRequestRunAcPowerRoutineInvalidInput', async () => {
-      await runTestInUntrusted(
-          'UntrustedDiagnosticsRequestRunAcPowerRoutineInvalidInput');
-      testDone();
-    });
-
-TEST_F(
-    'TelemetryExtensionUIBrowserTest',
-    'UntrustedDiagnosticsRequestRunAcPowerRoutine', async () => {
-      await runTestInUntrusted('UntrustedDiagnosticsRequestRunAcPowerRoutine');
-      testDone();
-    });
-
-TEST_F(
-    'TelemetryExtensionUIBrowserTest',
-    'UntrustedDiagnosticsRequestRunCpuCacheRoutineInvalidInput', async () => {
-      await runTestInUntrusted(
-          'UntrustedDiagnosticsRequestRunCpuCacheRoutineInvalidInput');
-      testDone();
-    });
-
-TEST_F(
-    'TelemetryExtensionUIBrowserTest',
-    'UntrustedDiagnosticsRequestRunCpuCacheRoutine', async () => {
-      await runTestInUntrusted('UntrustedDiagnosticsRequestRunCpuCacheRoutine');
-      testDone();
-    });
-
-TEST_F(
-    'TelemetryExtensionUIBrowserTest',
-    'UntrustedDiagnosticsRequestRunCpuStressRoutineInvalidInput', async () => {
-      await runTestInUntrusted(
-          'UntrustedDiagnosticsRequestRunCpuStressRoutineInvalidInput');
-      testDone();
-    });
-
-TEST_F(
-    'TelemetryExtensionUIBrowserTest',
-    'UntrustedDiagnosticsRequestRunCpuStressRoutine', async () => {
-      await runTestInUntrusted(
-          'UntrustedDiagnosticsRequestRunCpuStressRoutine');
-      testDone();
-    });
-
-TEST_F(
-    'TelemetryExtensionUIBrowserTest',
-    'UntrustedDiagnosticsRequestRunFPAccuracyRoutineInvalidInput', async () => {
-      await runTestInUntrusted(
-          'UntrustedDiagnosticsRequestRunFPAccuracyRoutineInvalidInput');
-      testDone();
-    });
-
-TEST_F(
-    'TelemetryExtensionUIBrowserTest',
-    'UntrustedDiagnosticsRequestRunFPAccuracyRoutine', async () => {
-      await runTestInUntrusted(
-          'UntrustedDiagnosticsRequestRunFPAccuracyRoutine');
-      testDone();
-    });
-
-TEST_F(
-    'TelemetryExtensionUIBrowserTest',
-    'UntrustedDiagnosticsRequestRunNvmeWearLevelRoutine', async () => {
-      await runTestInUntrusted(
-          'UntrustedDiagnosticsRequestRunNvmeWearLevelRoutine');
-      testDone();
-    });
-
-TEST_F(
-    'TelemetryExtensionUIBrowserTest',
-    'UntrustedDiagnosticsRequestRunNvmeSelfTestRoutineInvalidInput',
-    async () => {
-      await runTestInUntrusted(
-          'UntrustedDiagnosticsRequestRunNvmeSelfTestRoutineInvalidInput');
-      testDone();
-    });
-
-TEST_F(
-    'TelemetryExtensionUIBrowserTest',
-    'UntrustedDiagnosticsRequestRunNvmeSelfTestRoutine', async () => {
-      await runTestInUntrusted(
-          'UntrustedDiagnosticsRequestRunNvmeSelfTestRoutine');
-      testDone();
-    });
-
-TEST_F(
-    'TelemetryExtensionUIBrowserTest',
-    'UntrustedRequestTelemetryInfoUnknownCategory', async () => {
-      await runTestInUntrusted('UntrustedRequestTelemetryInfoUnknownCategory');
-      testDone();
-    });
-
-TEST_F(
-    'TelemetryExtensionUIBrowserTest', 'UntrustedRequestTelemetryInfo',
-    async () => {
-      await runTestInUntrusted('UntrustedRequestTelemetryInfo');
-      testDone();
-    });
-
 var TelemetryExtensionUIWithInteractiveRoutineUpdateBrowserTest =
     class extends TelemetryExtensionUIBrowserTest {
   /** @override */
@@ -494,14 +345,6 @@ var TelemetryExtensionUIWithInteractiveRoutineUpdateBrowserTest =
     GEN('ConfigureDiagnosticsForInteractiveUpdate();');
   }
 }
-
-TEST_F(
-    'TelemetryExtensionUIWithInteractiveRoutineUpdateBrowserTest',
-    'UntrustedDiagnosticsRequestInteractiveRoutineUpdate', async () => {
-      await runTestInUntrusted(
-          'UntrustedDiagnosticsRequestInteractiveRoutineUpdate');
-      testDone();
-    });
 
 var TelemetryExtensionUIWithNonInteractiveRoutineUpdateBrowserTest =
     class extends TelemetryExtensionUIBrowserTest {
@@ -511,14 +354,6 @@ var TelemetryExtensionUIWithNonInteractiveRoutineUpdateBrowserTest =
   }
 }
 
-TEST_F(
-    'TelemetryExtensionUIWithNonInteractiveRoutineUpdateBrowserTest',
-    'UntrustedDiagnosticsRequestNonInteractiveRoutineUpdate', async () => {
-      await runTestInUntrusted(
-          'UntrustedDiagnosticsRequestNonInteractiveRoutineUpdate');
-      testDone();
-    });
-
 var TelemetryExtensionUIWithProbeServiceErrorsBrowserTest =
     class extends TelemetryExtensionUIBrowserTest {
   /** @override */
@@ -527,12 +362,63 @@ var TelemetryExtensionUIWithProbeServiceErrorsBrowserTest =
   }
 }
 
-TEST_F(
-    'TelemetryExtensionUIWithProbeServiceErrorsBrowserTest',
-    'UntrustedRequestTelemetryInfoWithErrors', async () => {
-      await runTestInUntrusted('UntrustedRequestTelemetryInfoWithErrors');
-      testDone();
-    });
+// Test cases injected into the untrusted context.
+// See implementations in untrusted_browsertest.js.
+//
+// To register a test with TelemetryExtensionUIBrowserTest class add an array
+// with the test name from untrusted_browsertest.js.
+// Example: ['UntrustedAwesomeTest']
+//
+// To register a test with a custom test class add an array with the test name
+// from untrusted_browsertest.js and test class name whose definition needs to
+// be above untrustedTests definition.
+// Example: ['UntrustedAwesomeTest', 'MyAwesomeTestClass']
+const untrustedTests = [
+  ['UntrustedCanSpawnWorkers'],
+  ['UntrustedRequestAvailableRoutines'],
+  ['UntrustedDiagnosticsRequestRoutineUpdateUnknownArguments'],
+  ['UntrustedDiagnosticsRequestRunBatteryCapacityRoutine'],
+  ['UntrustedDiagnosticsRequestRunBatteryHealthRoutine'],
+  ['UntrustedDiagnosticsRequestRunSmartctlCheckRoutine'],
+  ['UntrustedDiagnosticsRequestRunAcPowerRoutineInvalidInput'],
+  ['UntrustedDiagnosticsRequestRunAcPowerRoutine'],
+  ['UntrustedDiagnosticsRequestRunCpuCacheRoutineInvalidInput'],
+  ['UntrustedDiagnosticsRequestRunCpuCacheRoutine'],
+  ['UntrustedDiagnosticsRequestRunCpuStressRoutineInvalidInput'],
+  ['UntrustedDiagnosticsRequestRunCpuStressRoutine'],
+  ['UntrustedDiagnosticsRequestRunFPAccuracyRoutineInvalidInput'],
+  ['UntrustedDiagnosticsRequestRunFPAccuracyRoutine'],
+  ['UntrustedDiagnosticsRequestRunNvmeWearLevelRoutine'],
+  ['UntrustedDiagnosticsRequestRunNvmeSelfTestRoutineInvalidInput'],
+  ['UntrustedDiagnosticsRequestRunNvmeSelfTestRoutine'],
+  ['UntrustedRequestTelemetryInfoUnknownCategory'],
+  ['UntrustedRequestTelemetryInfo'],
+  [
+    'UntrustedDiagnosticsRequestInteractiveRoutineUpdate',
+    'TelemetryExtensionUIWithInteractiveRoutineUpdateBrowserTest'
+  ],
+  [
+    'UntrustedDiagnosticsRequestNonInteractiveRoutineUpdate',
+    'TelemetryExtensionUIWithNonInteractiveRoutineUpdateBrowserTest'
+  ],
+  [
+    'UntrustedRequestTelemetryInfoWithErrors',
+    'TelemetryExtensionUIWithProbeServiceErrorsBrowserTest'
+  ],
+].forEach(test => registerUntrustedTest(...test));
+
+/**
+ * Registers a test in chrome-untrusted://.
+ * @param {!string} testName
+ * @param {!string=} testClass
+ */
+function registerUntrustedTest(
+    testName, testClass = 'TelemetryExtensionUIBrowserTest') {
+  TEST_F(testClass, testName, async () => {
+    await runTestInUntrusted(testName);
+    testDone();
+  });
+}
 
 /**
  * @implements {chromeos.health.mojom.ProbeServiceInterface}
