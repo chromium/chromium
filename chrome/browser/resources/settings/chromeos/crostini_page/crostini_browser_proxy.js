@@ -28,7 +28,8 @@ let CrostiniSharedPath;
 /**
  * @typedef {{label: string,
  *            guid: string,
- *            shared: boolean}}
+ *            shared: boolean,
+ *            shareWillReassign: boolean}}
  */
 let CrostiniSharedUsbDevice;
 

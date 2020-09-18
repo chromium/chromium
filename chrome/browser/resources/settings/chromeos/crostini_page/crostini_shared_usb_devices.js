@@ -11,7 +11,7 @@
 Polymer({
   is: 'settings-crostini-shared-usb-devices',
 
-  behaviors: [WebUIListenerBehavior],
+  behaviors: [I18nBehavior, WebUIListenerBehavior],
 
   properties: {
     /**
@@ -19,6 +19,16 @@ Polymer({
      * @private {Array<!CrostiniSharedUsbDevice>}
      */
     sharedUsbDevices_: Array,
+
+    /**
+     * The USB device which was toggled to be shared, but is already shared
+     * with another VM. When non-null the reassign dialog is shown.
+     * @private {?CrostiniSharedUsbDevice}
+     */
+    reassignDevice_: {
+      type: Object,
+      value: null,
+    },
   },
 
   /** @private {settings.CrostiniBrowserProxy} */
@@ -46,9 +56,36 @@ Polymer({
    * @private
    */
   onDeviceSharedChange_(event) {
-    const deviceInfo = event.model.item;
+    const device = event.model.item;
+    // Show reassign dialog if device is already shared with another VM.
+    if (event.target.checked && device.shareWillReassign) {
+      event.target.checked = false;
+      this.reassignDevice_ = device;
+      return;
+    }
     this.browserProxy_.setCrostiniUsbDeviceShared(
-        deviceInfo.guid, event.target.checked);
+        device.guid, event.target.checked);
     settings.recordSettingChange();
+  },
+
+  /** @private */
+  onReassignCancelClick_() {
+    this.reassignDevice_ = null;
+  },
+
+  /** @private */
+  onReassignContinueClick_() {
+    this.browserProxy_.setCrostiniUsbDeviceShared(
+        this.reassignDevice_.guid, true);
+    this.reassignDevice_ = null;
+    settings.recordSettingChange();
+  },
+
+  /**
+   * @param {!CrostiniSharedUsbDevice} device USB device.
+   * @private
+   */
+  getReassignDialogText_(device) {
+    return this.i18n('crostiniSharedUsbDevicesReassign', device.label);
   },
 });

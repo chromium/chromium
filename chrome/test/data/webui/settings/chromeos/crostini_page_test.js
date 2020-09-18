@@ -1061,9 +1061,24 @@ suite('CrostiniPageTests', function() {
     setup(async function() {
       setCrostiniPrefs(true, {
         sharedUsbDevices: [
-          {shared: true, guid: '0001', name: 'usb_dev1'},
-          {shared: false, guid: '0002', name: 'usb_dev2'},
-          {shared: true, guid: '0003', name: 'usb_dev3'}
+          {
+            guid: '0001',
+            name: 'usb_dev1',
+            shared: false,
+            shareWillReassign: false
+          },
+          {
+            guid: '0002',
+            name: 'usb_dev2',
+            shared: true,
+            shareWillReassign: false
+          },
+          {
+            guid: '0003',
+            name: 'usb_dev3',
+            shared: false,
+            shareWillReassign: true
+          },
         ]
       });
 
@@ -1090,14 +1105,47 @@ suite('CrostiniPageTests', function() {
       const args =
           await crostiniBrowserProxy.whenCalled('setCrostiniUsbDeviceShared');
       assertEquals('0001', args[0]);
-      assertEquals(false, args[1]);
+      assertEquals(true, args[1]);
 
       // Simulate a change in the underlying model.
       cr.webUIListenerCallback('crostini-shared-usb-devices-changed', [
-        {shared: true, guid: '0001', name: 'usb_dev1'},
+        {
+          guid: '0001',
+          name: 'usb_dev1',
+          shared: true,
+          shareWillReassign: false
+        },
       ]);
       Polymer.dom.flush();
       assertEquals(1, subpage.shadowRoot.querySelectorAll('.toggle').length);
+    });
+
+    test('Show dialog for reassign', async function() {
+      const items = subpage.shadowRoot.querySelectorAll('.toggle');
+      assertEquals(3, items.length);
+
+      // Clicking on item[2] should show dialog.
+      assertFalse(!!subpage.$$('#reassignDialog'));
+      items[2].click();
+      Polymer.dom.flush();
+      assertTrue(subpage.$$('#reassignDialog').open);
+
+      // Clicking cancel will close the dialog.
+      subpage.$$('#cancel').click();
+      Polymer.dom.flush();
+      assertFalse(!!subpage.$$('#reassignDialog'));
+
+      // Clicking continue will call the proxy and close the dialog.
+      items[2].click();
+      Polymer.dom.flush();
+      assertTrue(subpage.$$('#reassignDialog').open);
+      subpage.$$('#continue').click();
+      Polymer.dom.flush();
+      assertFalse(!!subpage.$$('#reassignDialog'));
+      const args =
+          await crostiniBrowserProxy.whenCalled('setCrostiniUsbDeviceShared');
+      assertEquals('0003', args[0]);
+      assertEquals(true, args[1]);
     });
   });
 

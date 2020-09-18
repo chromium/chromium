@@ -33,6 +33,8 @@ js_library("plugin_vm_shared_paths") {
   deps = [
     ":plugin_vm_browser_proxy",
     "../../..:metrics_recorder",
+    "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js:web_ui_listener_behavior",
   ]
 }
 

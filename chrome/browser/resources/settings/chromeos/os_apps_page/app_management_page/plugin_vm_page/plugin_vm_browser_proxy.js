@@ -21,7 +21,8 @@ let PermissionSetting;
 /**
  * @typedef {{guid: string,
  *            label: string,
- *            shared: boolean}}
+ *            shared: boolean,
+ *            shareWillReassign: boolean}}
  */
 let PluginVmSharedUsbDevice;
 

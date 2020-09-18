@@ -38,6 +38,27 @@
         </div>
       </div>
     </template>
+    <template is="dom-if" if="[[reassignDevice_]]" restamp>
+      <cr-dialog id="reassignDialog" close-text="$i18n{close}"
+          show-on-attach>
+        <div slot="title">
+          $i18n{crostiniSharedUsbDevicesInUse}
+        </div>
+        <div slot="body">
+          [[getReassignDialogText_(reassignDevice_)]]
+        </div>
+        <div slot="button-container">
+          <cr-button id="cancel" class="cancel-button"
+              on-click="onReassignCancelClick_">
+            $i18n{cancel}
+          </cr-button>
+          <cr-button id="continue" class="action-button"
+              on-click="onReassignContinueClick_">
+            $i18n{continue}
+          </cr-button>
+        </div>
+      </cr-dialog>
+    </template>
   </template>
   <script src="crostini_shared_usb_devices.js"></script>
 </dom-module>
