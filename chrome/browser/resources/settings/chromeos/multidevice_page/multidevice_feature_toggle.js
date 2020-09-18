@@ -32,6 +32,11 @@ Polymer({
   // this.feature is defined by the time of the observer's first call.
   observers: ['resetChecked_(feature, pageContentData)'],
 
+  /** @override */
+  focus() {
+    this.$.toggle.focus();
+  },
+
   /**
    * Because MultiDevice prefs are only meant to be controlled via the
    * MultiDevice mojo service, we need the cr-toggle to appear not to change

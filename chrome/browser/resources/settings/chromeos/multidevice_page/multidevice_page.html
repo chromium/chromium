@@ -9,6 +9,7 @@
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="../../i18n_setup.html">
+<link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
 <link rel="import" href="../../controls/password_prompt_dialog.html">
@@ -76,7 +77,8 @@
             <settings-multidevice-feature-toggle
                 class="margin-matches-padding"
                 feature="[[MultiDeviceFeature.BETTER_TOGETHER_SUITE]]"
-                page-content-data="[[pageContentData]]">
+                page-content-data="[[pageContentData]]"
+                deep-link-focus-id$="[[Setting.kMultiDeviceOnOff]]">
             </settings-multidevice-feature-toggle>
           </template>
           <template is="dom-if"
@@ -89,7 +91,9 @@
               restamp>
             <cr-button class="margin-matches-padding"
                 on-click="handleButtonClick_"
-                aria-describedby="multideviceSubLabel">
+                aria-describedby="multideviceSubLabel"
+                deep-link-focus-id$="[[Setting.kSetUpMultiDevice]]
+                    [[Setting.kVerifyMultiDeviceSetup]]">
               [[getButtonText_(pageContentData)]]
             </cr-button>
           </template>
@@ -99,7 +103,8 @@
             <settings-multidevice-feature-toggle
                 class="margin-matches-padding"
                 feature="[[MultiDeviceFeature.BETTER_TOGETHER_SUITE]]"
-                page-content-data="[[pageContentData]]">
+                page-content-data="[[pageContentData]]"
+                deep-link-focus-id$="[[Setting.kMultiDeviceOnOff]]">
             </settings-multidevice-feature-toggle>
           </template>
         </div>
@@ -127,7 +132,8 @@
             </div>
             <div class="separator"></div>
             <settings-toggle-button id="nearbySharingToggleButton"
-                pref="{{prefs.nearby_sharing.enabled}}">
+                pref="{{prefs.nearby_sharing.enabled}}"
+                deep-link-focus-id$="[[Setting.kNearbyShareOnOff]]">
             </settings-toggle-button>
           </div>
         </template>

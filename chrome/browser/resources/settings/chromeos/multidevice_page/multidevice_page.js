@@ -6,6 +6,7 @@ Polymer({
   is: 'settings-multidevice-page',
 
   behaviors: [
+    DeepLinkingBehavior,
     settings.RouteObserverBehavior,
     MultiDeviceFeatureBehavior,
     WebUIListenerBehavior,
@@ -79,6 +80,20 @@ Polymer({
         return loadTimeData.getBoolean('nearbySharingFeatureFlag');
       }
     },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kSetUpMultiDevice,
+        chromeos.settings.mojom.Setting.kVerifyMultiDeviceSetup,
+        chromeos.settings.mojom.Setting.kMultiDeviceOnOff,
+        chromeos.settings.mojom.Setting.kNearbyShareOnOff,
+      ]),
+    },
   },
 
   listeners: {
@@ -104,10 +119,19 @@ Polymer({
 
   /**
    * Overridden from settings.RouteObserverBehavior.
+   * @param {!settings.Route} route
+   * @param {!settings.Route} oldRoute
    * @protected
    */
-  currentRouteChanged() {
+  currentRouteChanged(route, oldRoute) {
     this.leaveNestedPageIfNoHostIsSet_();
+
+    // Does not apply to this page.
+    if (route !== settings.routes.MULTIDEVICE) {
+      return;
+    }
+
+    this.attemptDeepLink();
   },
 
   /**

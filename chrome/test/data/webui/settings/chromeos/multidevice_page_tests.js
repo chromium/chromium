@@ -6,11 +6,13 @@
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
 // #import {TestLifetimeBrowserProxy} from './test_os_lifetime_browser_proxy.m.js';
-// #import {MultiDeviceSettingsMode, MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {MultiDeviceSettingsMode, MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {TestOsResetBrowserProxy} from './test_os_reset_browser_proxy.m.js';
 // #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {TestMultideviceBrowserProxy, createFakePageContentData, HOST_DEVICE} from './test_multidevice_browser_proxy.m.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // clang-format on
 
 suite('Multidevice', function() {
@@ -142,6 +144,7 @@ suite('Multidevice', function() {
 
   teardown(function() {
     multidevicePage.remove();
+    settings.Router.getInstance().resetRouteForTesting();
   });
 
   const getLabel = () => {
@@ -156,6 +159,26 @@ suite('Multidevice', function() {
     assertTrue(!!button);
     button.click();
     return browserProxy.whenCalled('showMultiDeviceSetupDialog');
+  });
+
+  test('Deep link to multidevice setup', async () => {
+    loadTimeData.overrideValues({
+      isDeepLinkingEnabled: true,
+    });
+    setHostData(settings.MultiDeviceSettingsMode.NO_HOST_SET);
+
+    const params = new URLSearchParams;
+    params.append('settingId', '200');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.MULTIDEVICE, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement = multidevicePage.$$('cr-button');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Setup multidevice button should be focused for settingId=200.');
   });
 
   test('headings render based on mode and host', function() {

@@ -9,6 +9,9 @@
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.m.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+// clang-format on
 
 suite('Multidevice', function() {
   let multideviceSubpage = null;
@@ -118,6 +121,7 @@ suite('Multidevice', function() {
 
   teardown(function() {
     multideviceSubpage.remove();
+    settings.Router.getInstance().resetRouteForTesting();
   });
 
   test('individual features appear only if host is verified', function() {
@@ -261,4 +265,70 @@ suite('Multidevice', function() {
         assertTrue(setUpButton.tagName.includes('BUTTON'));
         assertFalse(setUpButton.disabled);
       });
+
+  test('Deep link to setup messages', async () => {
+    loadTimeData.overrideValues({
+      isDeepLinkingEnabled: true,
+    });
+    setAndroidSmsPairingComplete(false);
+    Polymer.dom.flush();
+
+    const params = new URLSearchParams;
+    params.append('settingId', '205');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.MULTIDEVICE_FEATURES, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement =
+        multideviceSubpage.$$('#messagesItem > [slot=feature-controller]');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Setup messages button should be focused for settingId=205.');
+  });
+
+  test('Deep link to messages on/off', async () => {
+    loadTimeData.overrideValues({
+      isDeepLinkingEnabled: true,
+    });
+    setAndroidSmsPairingComplete(true);
+    Polymer.dom.flush();
+
+    const params = new URLSearchParams;
+    params.append('settingId', '206');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.MULTIDEVICE_FEATURES, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement = multideviceSubpage.$$('#messagesItem')
+                                .$$('settings-multidevice-feature-toggle')
+                                .$$('cr-toggle');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Messages on/off toggle should be focused for settingId=206.');
+  });
+
+  test('Deep link to phone hub on/off', async () => {
+    loadTimeData.overrideValues({
+      isDeepLinkingEnabled: true,
+    });
+
+    const params = new URLSearchParams;
+    params.append('settingId', '209');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.MULTIDEVICE_FEATURES, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement = multideviceSubpage.$$('#phoneHubItem')
+                                .$$('settings-multidevice-feature-toggle')
+                                .$$('cr-toggle');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Phone hub on/off toggle should be focused for settingId=209.');
+  });
 });

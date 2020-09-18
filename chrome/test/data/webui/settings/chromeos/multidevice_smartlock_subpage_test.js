@@ -5,12 +5,13 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDeviceBrowserProxyImpl, SmartLockSignInEnabledState} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDeviceBrowserProxyImpl, SmartLockSignInEnabledState, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {eventToPromise} from 'chrome://test/test_util.m.js';
+// #import {eventToPromise, waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.m.js';
+// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // clang-format on
 
 suite('Multidevice', function() {
@@ -77,6 +78,7 @@ suite('Multidevice', function() {
     smartLockSubPage.remove();
 
     browserProxy.reset();
+    settings.Router.getInstance().resetRouteForTesting();
   });
 
   test('Smart Lock enabled', function() {
@@ -184,6 +186,28 @@ suite('Multidevice', function() {
     return whenFeatureClicked.then(() => {
       assertFalse(toggleControl.checked);
     });
+  });
+
+  test('Deep link to smart lock on/off', async () => {
+    loadTimeData.overrideValues({
+      isDeepLinkingEnabled: true,
+    });
+    smartLockSubPage = createSmartLockSubPage();
+    setSuiteState(settings.MultiDeviceFeatureState.ENABLED_BY_USER);
+    setSmartLockFeatureState(settings.MultiDeviceFeatureState.DISABLED_BY_USER);
+
+    const params = new URLSearchParams;
+    params.append('settingId', '203');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.SMART_LOCK, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement = getSmartLockFeatureToggleControl();
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Smart lock on/off toggle should be focused for settingId=203.');
   });
 
   test('Smart Lock signin disabled by default', function() {

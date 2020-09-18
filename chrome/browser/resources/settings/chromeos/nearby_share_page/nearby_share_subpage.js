@@ -11,6 +11,7 @@ Polymer({
   is: 'settings-nearby-share-subpage',
 
   behaviors: [
+    DeepLinkingBehavior,
     I18nBehavior,
     PrefsBehavior,
     settings.RouteObserverBehavior,
@@ -51,6 +52,17 @@ Polymer({
     showReceiveDialog_: {
       type: Boolean,
       value: false,
+    },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kNearbyShareOnOff,
+      ]),
     },
   },
 
@@ -245,26 +257,31 @@ Polymer({
    * @param {!settings.Route} route
    */
   currentRouteChanged(route) {
-    const router = settings.Router.getInstance();
-    if (router.getCurrentRoute().path.endsWith('nearbyshare')) {
-      const queryParams = router.getQueryParameters();
-
-      if (queryParams.has('deviceName')) {
-        this.showDeviceNameDialog_ = true;
-      }
-
-      if (queryParams.has('receive')) {
-        this.showReceiveDialog_ = true;
-        Polymer.dom.flush();
-        this.$$('#receiveDialog').showHighVisibilityPage();
-      }
-
-      if (queryParams.has('confirm')) {
-        this.showReceiveDialog_ = true;
-        Polymer.dom.flush();
-        this.$$('#receiveDialog').showConfirmPage();
-      }
+    // Does not apply to this page.
+    if (route !== settings.routes.NEARBY_SHARE) {
+      return;
     }
+
+    const router = settings.Router.getInstance();
+    const queryParams = router.getQueryParameters();
+
+    if (queryParams.has('deviceName')) {
+      this.showDeviceNameDialog_ = true;
+    }
+
+    if (queryParams.has('receive')) {
+      this.showReceiveDialog_ = true;
+      Polymer.dom.flush();
+      this.$$('#receiveDialog').showHighVisibilityPage();
+    }
+
+    if (queryParams.has('confirm')) {
+      this.showReceiveDialog_ = true;
+      Polymer.dom.flush();
+      this.$$('#receiveDialog').showConfirmPage();
+    }
+
+    this.attemptDeepLink();
   },
 
   /**

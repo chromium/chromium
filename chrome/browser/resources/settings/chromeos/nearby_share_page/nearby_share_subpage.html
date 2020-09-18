@@ -8,6 +8,7 @@
 <link rel="import" href="../../router.html">
 <link rel="import" href="../../settings_shared_css.html">
 <link rel="import" href="../../shared/nearby_share_settings_behavior.html">
+<link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="nearby_account_manager_browser_proxy.html">
 <link rel="import" href="nearby_share_contact_visibility_dialog.html">
@@ -27,7 +28,8 @@
             '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]
       </div>
       <settings-toggle-button id="featureToggleButton" aria-describedby="onOff"
-          pref="{{prefs.nearby_sharing.enabled}}">
+          pref="{{prefs.nearby_sharing.enabled}}"
+          deep-link-focus-id$="[[Setting.kNearbyShareOnOff]]">
       </settings-toggle-button>
     </div>
     <div class="settings-box two-line">

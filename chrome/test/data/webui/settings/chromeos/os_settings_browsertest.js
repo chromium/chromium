@@ -17,6 +17,7 @@ GEN('#if defined(NDEBUG)');
 
 GEN('#include "ash/public/cpp/ash_features.h"');
 GEN('#include "build/branding_buildflags.h"');
+GEN('#include "chrome/browser/browser_features.h"');
 GEN('#include "chrome/common/chrome_features.h"');
 GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
@@ -1007,6 +1008,7 @@ var OSSettingsMultidevicePageTest = class extends OSSettingsBrowserTest {
   get extraLibraries() {
     return super.extraLibraries.concat([
       BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
+      BROWSER_SETTINGS_PATH + '../test_util.js',
       'test_multidevice_browser_proxy.js',
       'multidevice_page_tests.js',
     ]);
@@ -1019,7 +1021,7 @@ TEST_F('OSSettingsMultidevicePageTest', 'AllJsTests', () => {
 
 // Test fixture for the multidevice Smart Lock subpage.
 // eslint-disable-next-line no-var
-var OSSettingsMultideviceSmartLockSubpageTest =
+var OSSettingsMultideviceSmartLockSubPageTest =
     class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -1038,13 +1040,13 @@ var OSSettingsMultideviceSmartLockSubpageTest =
   }
 };
 
-TEST_F('OSSettingsMultideviceSmartLockSubpageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsMultideviceSmartLockSubPageTest', 'AllJsTests', () => {
   mocha.run();
 });
 
 // Test fixture for the multidevice settings subpage.
 // eslint-disable-next-line no-var
-var OSSettingsMultideviceSubpageTest = class extends OSSettingsBrowserTest {
+var OSSettingsMultideviceSubPageTest = class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return super.browsePreload +
@@ -1055,13 +1057,14 @@ var OSSettingsMultideviceSubpageTest = class extends OSSettingsBrowserTest {
   get extraLibraries() {
     return super.extraLibraries.concat([
       BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
+      BROWSER_SETTINGS_PATH + '../test_util.js',
       'test_multidevice_browser_proxy.js',
       'multidevice_subpage_tests.js',
     ]);
   }
 };
 
-TEST_F('OSSettingsMultideviceSubpageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsMultideviceSubPageTest', 'AllJsTests', () => {
   mocha.run();
 });
 
@@ -1100,9 +1103,15 @@ var OSSettingsNearbyShareSubPageTest = class extends OSSettingsBrowserTest {
   }
 
   /** @override */
+  get featureList() {
+    return {enabled: ['features::kNearbySharing']};
+  }
+
+  /** @override */
   get extraLibraries() {
     return super.extraLibraries.concat([
-      '../../test_browser_proxy.js',
+      BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
+      BROWSER_SETTINGS_PATH + '../test_util.js',
       '../../nearby_share/shared/fake_nearby_share_settings.js',
       '../../nearby_share/shared/fake_nearby_contact_manager.js',
       'fake_receive_manager.js',

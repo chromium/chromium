@@ -71,6 +71,11 @@ Polymer({
     this.updateTetherNetworkState_();
   },
 
+  /** @override */
+  focus() {
+    this.$$('settings-multidevice-feature-item').focus();
+  },
+
   /**
    * CrosNetworkConfigObserver impl
    * Note that any change to leading to a new active network will also trigger

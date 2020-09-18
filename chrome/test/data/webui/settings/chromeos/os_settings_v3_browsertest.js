@@ -9,6 +9,7 @@ GEN('#include "chrome/common/buildflags.h"');
 GEN('#include "build/branding_buildflags.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "chromeos/constants/chromeos_features.h"');
+GEN('#include "chrome/browser/browser_features.h"');
 
 /** Test fixture for shared Polymer 3 elements. */
 // eslint-disable-next-line no-var
@@ -72,6 +73,23 @@ var OSSettingsOsLanguagesPageV2V3Test = class extends OSSettingsV3BrowserTest {
 
 TEST_F('OSSettingsOsLanguagesPageV2V3Test', 'All', () => mocha.run());
 
+// eslint-disable-next-line no-var
+var OSSettingsNearbyShareSubPageV3Test = class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/nearby_share_subpage_tests.m.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: super.featureList.enabled.concat(['features::kNearbySharing'])
+    };
+  }
+};
+
+TEST_F('OSSettingsNearbyShareSubPageV3Test', 'All', () => mocha.run());
+
 [['AmbientModePage', 'ambient_mode_page_test.m.js'],
  ['BluetoothPage', 'bluetooth_page_tests.m.js'],
  ['DateTimePage', 'date_time_page_tests.m.js'],
@@ -85,7 +103,6 @@ TEST_F('OSSettingsOsLanguagesPageV2V3Test', 'All', () => mocha.run());
  ['OsEditDictionaryPage', 'os_edit_dictionary_page_test.m.js'],
  ['OsLanguagesPage', 'os_languages_page_tests.m.js'],
  ['NearbyShareReceiveDialog', 'nearby_share_receive_dialog_tests.m.js'],
- ['NearbyShareSubPage', 'nearby_share_subpage_tests.m.js'],
  ['ParentalControlsPage', 'parental_controls_page_test.m.js'],
  ['PeoplePage', 'os_people_page_test.m.js'],
  ['PeoplePageAccountManager', 'people_page_account_manager_test.m.js'],

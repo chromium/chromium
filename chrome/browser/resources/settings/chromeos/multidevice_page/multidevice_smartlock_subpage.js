@@ -8,7 +8,9 @@ Polymer({
   is: 'settings-multidevice-smartlock-subpage',
 
   behaviors: [
+    DeepLinkingBehavior,
     MultiDeviceFeatureBehavior,
+    settings.RouteObserverBehavior,
     WebUIListenerBehavior,
   ],
 
@@ -60,6 +62,18 @@ Polymer({
     authToken_: {
       type: Object,
     },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kSmartLockOnOff,
+        chromeos.settings.mojom.Setting.kSmartLockUnlockOrSignIn,
+      ]),
+    },
   },
 
   /** @private {?settings.MultiDeviceBrowserProxy} */
@@ -84,6 +98,19 @@ Polymer({
     this.browserProxy_.getSmartLockSignInAllowed().then(allowed => {
       this.updateSmartLockSignInAllowed_(allowed);
     });
+  },
+
+  /**
+   * @param {!settings.Route} route
+   * @param {!settings.Route} oldRoute
+   */
+  currentRouteChanged(route, oldRoute) {
+    // Does not apply to this page.
+    if (route !== settings.routes.SMART_LOCK) {
+      return;
+    }
+
+    this.attemptDeepLink();
   },
 
   /**

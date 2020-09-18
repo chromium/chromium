@@ -65,6 +65,7 @@ js_library("multidevice_page") {
     ":multidevice_constants",
     ":multidevice_feature_behavior",
     ":multidevice_notification_access_setup_dialog",
+    "..:deep_linking_behavior",
     "..:metrics_recorder",
     "..:os_route",
     "../..:router",
@@ -96,9 +97,11 @@ js_library("multidevice_smartlock_subpage") {
   deps = [
     ":multidevice_constants",
     ":multidevice_feature_behavior",
+    "..:deep_linking_behavior",
     "..:metrics_recorder",
     "..:os_route",
     "..:os_settings_routes",
+    "../..:router",
     "../../prefs:prefs_behavior",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button",
     "//ui/webui/resources/js:cr",
@@ -111,8 +114,10 @@ js_library("multidevice_subpage") {
     ":multidevice_browser_proxy",
     ":multidevice_constants",
     ":multidevice_feature_behavior",
+    "..:deep_linking_behavior",
     "..:os_route",
     "..:os_settings_routes",
+    "../..:router",
     "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior",
   ]
   externs_list = [ "$externs_path/networking_private.js" ]
@@ -206,6 +211,7 @@ js_library("multidevice_page.m") {
     ":multidevice_constants.m",
     ":multidevice_feature_behavior.m",
     ":multidevice_notification_access_setup_dialog.m",
+    "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
     "..:os_route.m",
     "../..:router.m",
@@ -243,9 +249,11 @@ js_library("multidevice_smartlock_subpage.m") {
   deps = [
     ":multidevice_constants.m",
     ":multidevice_feature_behavior.m",
+    "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
     "..:os_route.m",
     "..:os_settings_routes.m",
+    "../..:router.m",
     "../../prefs:prefs_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
@@ -260,8 +268,10 @@ js_library("multidevice_subpage.m") {
   deps = [
     ":multidevice_browser_proxy.m",
     ":multidevice_constants.m",
+    "..:deep_linking_behavior.m",
     "..:os_route.m",
     "..:os_settings_routes.m",
+    "../..:router.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior.m",
   ]
