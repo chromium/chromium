@@ -85,5 +85,5 @@ on the platform.
 
 # Test interfaces (defined in browser_test_interfaces.mojom)
 XRTestHook allows a test to control the behavior of a fake implementation of
-OpenVR, and potentially other runtimes.  This allows testing the entire stack
+OpenXR, and potentially other runtimes.  This allows testing the entire stack
 of Chromium WebXR code end-to-end.

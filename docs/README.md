@@ -391,10 +391,6 @@ used when committed.
 *   [Chrome Speed](speed/README.md) - Documentation for performance measurements and regressions in Chrome.
 *   [Chrome Speed Metrics](speed_metrics/README.md) - Documentation about user experience metrics in the web and their JavaScript APIs.
 
-### WebXR
-*   [Running OpenVR Without Headset](xr/run_openvr_without_headset.md) -
-    Instructions for running OpenVR on Windows without a headset
-
 ### Probably Obsolete
 *   [TPM Quick Reference](tpm_quick_ref.md) - Trusted Platform Module notes.
 *   [System Hardening Features](system_hardening_features.md) - A list of

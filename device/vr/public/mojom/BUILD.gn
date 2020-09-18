@@ -28,9 +28,6 @@ mojom_component("mojom") {
   if (enable_oculus_vr) {
     enabled_features += [ "enable_oculus_vr" ]
   }
-  if (enable_openvr) {
-    enabled_features += [ "enable_openvr" ]
-  }
   if (enable_windows_mr) {
     enabled_features += [ "enable_windows_mr" ]
   }

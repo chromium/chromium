@@ -125,37 +125,15 @@ if (enable_vr) {
       configs += [ "//third_party/gvr-android-sdk:libgvr_config" ]
     }
 
-    if (enable_openvr) {
-      if (!is_component_build) {
-        defines += [ "OPENVR_BUILD_STATIC" ]
-      }
-
-      deps += [ "//third_party/openvr:openvr" ]
+    if (enable_oculus_vr || enable_windows_mr || enable_openxr) {
       sources += [
-        "openvr/openvr_api_wrapper.cc",
-        "openvr/openvr_api_wrapper.h",
-        "openvr/openvr_device.cc",
-        "openvr/openvr_device.h",
-        "openvr/openvr_gamepad_helper.cc",
-        "openvr/openvr_gamepad_helper.h",
-        "openvr/openvr_render_loop.cc",
-        "openvr/openvr_render_loop.h",
-        "openvr/openvr_type_converters.cc",
-        "openvr/openvr_type_converters.h",
         "test/test_hook.h",
-      ]
-    }
-
-    if (enable_openvr || enable_oculus_vr || enable_windows_mr ||
-        enable_openxr) {
-      sources += [
         "windows/compositor_base.cc",
         "windows/compositor_base.h",
       ]
     }
 
-    if (is_win && (enable_openvr || enable_oculus_vr || enable_windows_mr ||
-                   enable_openxr)) {
+    if (is_win && (enable_oculus_vr || enable_windows_mr || enable_openxr)) {
       libs = [
         "d3d11.lib",
         "DXGI.lib",
@@ -335,35 +313,6 @@ if (enable_vr) {
     # We need to include an empty .cc file so that mac and windows don't fall over when trying to
     # compile this when webvr is disabled.
     sources = [ "empty.cc" ]
-  }
-}
-
-if (enable_openvr) {
-  shared_library("openvr_mock") {
-    testonly = true
-    output_name = "mock_vr_clients/bin/vrclient"
-    if (target_cpu == "x64" && is_win) {
-      output_name = "mock_vr_clients/bin/vrclient_x64"
-    }
-
-    sources = [
-      "openvr/test/fake_openvr_impl_api.cc",
-      "openvr/test/test_helper.cc",
-      "openvr/test/test_helper.h",
-      "test/test_hook.h",
-    ]
-
-    libs = [
-      "d3d11.lib",
-      "DXGI.lib",
-    ]
-
-    deps = [
-      ":directx_helpers",
-      "//base",
-      "//device/vr/public/mojom:test_mojom",
-      "//third_party/openvr:openvr_headers",
-    ]
   }
 }
 

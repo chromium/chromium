@@ -17,13 +17,12 @@ towards OpenXR being the only API used on desktops.
 | API                   | OS       | Supports | Enabled by Default |
 |-----------------------|:--------:|:--------:|:------------------:|
 | OpenXR                | Windows* | VR*      | Yes**              |
-| Windows Mixed Reality | Windows  | VR       | Yes                |
 | AR Core               | Android  | AR       | Yes                |
 | Google VR             | Android  | VR       | Yes                |
+| Windows Mixed Reality | Windows  | VR       | No                 |
 | Oculus                | Windows  | VR       | No                 |
-| OpenVR                | Windows  | VR       | No                 |
 
- - * OpenXR may support multiple OSes and AR use cases as well. Currently we
+ - \* OpenXR may support multiple OSes and AR use cases as well. Currently we
    only use it for VR on Windows since that's what the majority of existing
    runtimes support.
  - ** OpenXR runtimes are only enabled by default if they implement the

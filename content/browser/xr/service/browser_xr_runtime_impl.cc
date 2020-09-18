@@ -171,15 +171,6 @@ constexpr device::mojom::XRSessionFeature kARCoreDeviceFeatures[] = {
     device::mojom::XRSessionFeature::DEPTH,
 };
 
-#if BUILDFLAG(ENABLE_OPENVR)
-constexpr device::mojom::XRSessionFeature kOpenVRFeatures[] = {
-    device::mojom::XRSessionFeature::REF_SPACE_VIEWER,
-    device::mojom::XRSessionFeature::REF_SPACE_LOCAL,
-    device::mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR,
-    device::mojom::XRSessionFeature::REF_SPACE_BOUNDED_FLOOR,
-};
-#endif
-
 #if BUILDFLAG(ENABLE_WINDOWS_MR)
 constexpr device::mojom::XRSessionFeature kWindowsMixedRealityFeatures[] = {
     device::mojom::XRSessionFeature::REF_SPACE_VIEWER,
@@ -286,11 +277,6 @@ bool BrowserXRRuntimeImpl::SupportsFeature(
     case device::mojom::XRDeviceId::GVR_DEVICE_ID:
       return ContainsFeature(kGVRDeviceFeatures, feature);
 
-#if BUILDFLAG(ENABLE_OPENVR)
-    case device::mojom::XRDeviceId::OPENVR_DEVICE_ID:
-      return ContainsFeature(kOpenVRFeatures, feature);
-#endif
-
 #if BUILDFLAG(ENABLE_OCULUS_VR)
     case device::mojom::XRDeviceId::OCULUS_DEVICE_ID:
       return ContainsFeature(kOculusFeatures, feature);
@@ -328,10 +314,6 @@ bool BrowserXRRuntimeImpl::SupportsCustomIPD() const {
     case device::mojom::XRDeviceId::ORIENTATION_DEVICE_ID:
     case device::mojom::XRDeviceId::GVR_DEVICE_ID:
       return false;
-#if BUILDFLAG(ENABLE_OPENVR)
-    case device::mojom::XRDeviceId::OPENVR_DEVICE_ID:
-      return true;
-#endif
 #if BUILDFLAG(ENABLE_OCULUS_VR)
     case device::mojom::XRDeviceId::OCULUS_DEVICE_ID:
       return true;
@@ -357,9 +339,6 @@ bool BrowserXRRuntimeImpl::SupportsNonEmulatedHeight() const {
     case device::mojom::XRDeviceId::ORIENTATION_DEVICE_ID:
       return false;
     case device::mojom::XRDeviceId::GVR_DEVICE_ID:
-#if BUILDFLAG(ENABLE_OPENVR)
-    case device::mojom::XRDeviceId::OPENVR_DEVICE_ID:
-#endif
 #if BUILDFLAG(ENABLE_OCULUS_VR)
     case device::mojom::XRDeviceId::OCULUS_DEVICE_ID:
 #endif

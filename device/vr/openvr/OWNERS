@@ -1,5 +1,0 @@
-per-file *_type_converter*.*=set noparent
-per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS
-
-# TEAM: xr-dev@chromium.org
-# COMPONENT: Internals>XR>VR

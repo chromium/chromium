@@ -14,7 +14,6 @@
 namespace device {
 
 // Update this string whenever either interface changes.
-constexpr char kChromeOpenVRTestHookAPI[] = "ChromeTestHook_3";
 constexpr unsigned int kMaxTrackedDevices = 64;
 constexpr unsigned int kMaxNumAxes = 5;
 

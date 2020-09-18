@@ -661,10 +661,7 @@ if (!is_android) {
         ":vr_common",
         "//components/content_settings/core/browser",
         "//device/vr:directx_helpers",
-        "//third_party/openvr",
       ]
-
-      data_deps += [ "//device/vr:openvr_mock" ]
 
       if (enable_openxr) {
         deps += [ "//third_party/openxr" ]

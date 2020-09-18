@@ -198,12 +198,6 @@ BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetImmersiveVrRuntime() {
     return openxr;
 #endif
 
-#if BUILDFLAG(ENABLE_OPENVR)
-  auto* openvr = GetRuntime(device::mojom::XRDeviceId::OPENVR_DEVICE_ID);
-  if (openvr)
-    return openvr;
-#endif
-
 #if BUILDFLAG(ENABLE_OCULUS_VR)
   auto* oculus = GetRuntime(device::mojom::XRDeviceId::OCULUS_DEVICE_ID);
   if (oculus)

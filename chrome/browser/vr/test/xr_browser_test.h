@@ -47,14 +47,6 @@ class XrBrowserTestBase : public InProcessBrowserTest {
       base::TimeDelta::FromMilliseconds(5000);
   static constexpr base::TimeDelta kPollTimeoutLong =
       base::TimeDelta::FromMilliseconds(10000);
-  // Still considered XR-wide instead of VR-specific since OpenVR can be used
-  // for passthrough AR with certain headsets.
-  static constexpr char kVrOverrideEnvVar[] = "VR_OVERRIDE";
-  static constexpr char kVrOverrideVal[] = "./mock_vr_clients/";
-  static constexpr char kVrConfigPathEnvVar[] = "VR_CONFIG_PATH";
-  static constexpr char kVrConfigPathVal[] = "./";
-  static constexpr char kVrLogPathEnvVar[] = "VR_LOG_PATH";
-  static constexpr char kVrLogPathVal[] = "./";
   static constexpr char kOpenXrConfigPathEnvVar[] = "XR_RUNTIME_JSON";
   static constexpr char kOpenXrConfigPathVal[] =
       "./mock_vr_clients/bin/openxr/openxr.json";

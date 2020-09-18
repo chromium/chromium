@@ -143,7 +143,7 @@ void MyXRMock::WaitGetPresentingPose(
 }
 
 std::string GetMatrixAsString(const gfx::Transform& m) {
-  // Dump the transpose of the matrix due to openvr vs. webxr matrix format
+  // Dump the transpose of the matrix due to device vs. webxr matrix format
   // differences.
   return base::StringPrintf(
       "[%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f]",

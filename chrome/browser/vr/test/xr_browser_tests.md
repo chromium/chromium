@@ -107,7 +107,7 @@ You should consider using the standard IN_PROC_BROWSER_TEST_F macros instead.
 Small snippets of runtime-specific code are acceptable, but if it affects
 readability significantly, the tests should probably remain separate.
 
-Most tests simply use the standard `WebXrVrOpenVrBrowserTest` and
+Most tests simply use the standard `WebXrVrOpenXrBrowserTest` and
 `WebXrVrWmrBrowserTest` classes. In this case, you can instead use the
 `WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F` macro, which only needs to take the test
 name, further cutting down on boilerplate code.
@@ -128,9 +128,9 @@ functions are named in the following order:
 3. "BrowserTest"
 4. Optional Descriptor/special flags
 
-For example, `WebXrVrOpenVrBrowserTest` is meant for testing the WebXR for VR
-feature using the OpenVR runtime with standard flags enabled, i.e. the flags
-required for using WebXR and the OpenVR runtime with other runtimes disabled.
+For example, `WebXrVrOpenXrBrowserTest` is meant for testing the WebXR for VR
+feature using the OpenXR runtime with standard flags enabled, i.e. the flags
+required for using WebXR and the OpenXR runtime with other runtimes disabled.
 `WebXrVrRuntimelessBrowserTestSensorless` on the other hand would be for
 testing WebVR for VR without any runtimes and with the orientation sensor
 device explicitly disabled.
@@ -168,17 +168,3 @@ For real examples on how to use the input capabilities, look at the tests in
 [`//chrome/browser/vr/webxr_vr_input_browser_test.cc`][input test].
 
 [input test]: https://chromium.googlesource.com/chromium/src/+/master/chrome/browser/vr/webxr_vr_input_browser_test.cc
-
-### Assumptions
-
-There are currently several assumptions made that must be adhered to in order
-for input to work properly in both OpenVR and Windows Mixed Reality.
-
-#### WMR and Incomplete Gamepads
-
-OpenVR supports arbitrary controller mappings, but WMR only supports one actual
-controller type (+ voice input). What this means is that WMR will always report
-a certain set of buttons and axes when a controller is connected, regardless of
-which buttons and axes are set as supported. This means that tests involving
-things not supported by WMR (e.g. a third touchpad/joystick) must be restricted
-to OpenVR.

@@ -10,8 +10,6 @@ declare_args() {
   enable_gvr_services = is_android && !is_chromecast &&
                         (current_cpu == "arm" || current_cpu == "arm64")
 
-  enable_openvr = is_win
-
   enable_windows_mr = is_win
 
   use_command_buffer = is_win
@@ -30,8 +28,8 @@ declare_args() {
   # Enable VR device support whenever VR device SDK(s) are supported.
   # We enable VR on Linux even though VR features aren't usable because
   # the binary size impact is small and allows many VR tests to run on Linux
-  enable_vr = enable_gvr_services || enable_openvr || enable_oculus_vr ||
-              enable_windows_mr || enable_openxr ||
+  enable_vr = enable_gvr_services || enable_oculus_vr || enable_windows_mr ||
+              enable_openxr ||
               (is_desktop_linux &&
                (current_cpu == "x64" || current_cpu == "x86") && !is_chromecast)
 
