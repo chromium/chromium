@@ -138,14 +138,14 @@ SkBitmap CreateSquareBitmap(int size) {
 
 WebApplicationInfo CreateWebAppInfo(const char* title,
                                     const char* description,
-                                    const char* app_url,
+                                    const char* start_url,
                                     int size,
                                     bool create_with_shortcuts) {
   WebApplicationInfo web_app_info;
   web_app_info.title = base::UTF8ToUTF16(title);
   web_app_info.description = base::UTF8ToUTF16(description);
-  web_app_info.app_url = GURL(app_url);
-  web_app_info.scope = GURL(app_url);
+  web_app_info.start_url = GURL(start_url);
+  web_app_info.scope = GURL(start_url);
   web_app_info.icon_bitmaps_any[size] = CreateSquareBitmap(size);
   if (create_with_shortcuts) {
     WebApplicationShortcutsMenuItemInfo shortcut_item;

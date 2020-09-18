@@ -86,9 +86,9 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
  protected:
   Profile* profile() { return browser()->profile(); }
 
-  const AppId InstallWebApp(const GURL& app_url) {
+  const AppId InstallWebApp(const GURL& start_url) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->app_url = app_url;
+    web_app_info->start_url = start_url;
     web_app_info->open_as_window = true;
     return web_app::InstallWebApp(profile(), std::move(web_app_info));
   }

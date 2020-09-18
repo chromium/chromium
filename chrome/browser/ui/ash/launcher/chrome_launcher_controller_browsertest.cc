@@ -433,10 +433,10 @@ class ShelfWebAppBrowserTest
     return https_server()->GetURL("app.com", "/ssl/google.html");
   }
 
-  web_app::AppId InstallWebApp(const GURL& app_url) {
+  web_app::AppId InstallWebApp(const GURL& start_url) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->app_url = app_url;
-    web_app_info->scope = app_url.GetWithoutFilename();
+    web_app_info->start_url = start_url;
+    web_app_info->scope = start_url.GetWithoutFilename();
     return web_app::InstallWebApp(browser()->profile(),
                                   std::move(web_app_info));
   }

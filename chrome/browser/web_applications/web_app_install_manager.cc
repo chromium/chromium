@@ -232,7 +232,7 @@ void WebAppInstallManager::EnqueueInstallAppFromSync(
   // If sync_app_id is not installed enqueue full background installation
   // flow. This install may produce a web app or an extension-based bookmark
   // app, depending on the BMO flag.
-  GURL start_url = web_application_info->app_url;
+  GURL start_url = web_application_info->start_url;
 
   auto task = std::make_unique<WebAppInstallTask>(
       profile(), os_integration_manager(), finalizer(),
@@ -304,7 +304,7 @@ void WebAppInstallManager::InstallWebAppsAfterSync(
     DCHECK(web_app->is_in_sync_install());
 
     auto web_application_info = std::make_unique<WebApplicationInfo>();
-    web_application_info->app_url = web_app->start_url();
+    web_application_info->start_url = web_app->start_url();
     web_application_info->title =
         base::UTF8ToUTF16(web_app->sync_fallback_data().name);
     web_application_info->scope = web_app->sync_fallback_data().scope;

@@ -33,7 +33,7 @@ AppId InstallTestWebApp(Profile* profile) {
   const GURL example_url = GURL("http://example.org/");
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->app_url = example_url;
+  web_app_info->start_url = example_url;
   web_app_info->scope = example_url;
   web_app_info->open_as_window = true;
   return web_app::InstallWebApp(profile, std::move(web_app_info));

@@ -34,7 +34,7 @@ class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
   bool InstallAndLaunchWebApp(
       base::Optional<SkColor> theme_color = base::nullopt) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->app_url = GetAppURL();
+    web_app_info->start_url = GetAppURL();
     web_app_info->scope = GetAppURL().GetWithoutFilename();
     web_app_info->theme_color = theme_color;
 

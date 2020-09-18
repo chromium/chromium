@@ -98,10 +98,10 @@ void ParseWebAppFromWebDocument(WebLocalFrame* frame,
         app_info->description = content.Utf16();
       } else if (name == "application-url") {
         std::string url = content.Utf8();
-        app_info->app_url = document_url.is_valid() ?
-            document_url.Resolve(url) : GURL(url);
-        if (!app_info->app_url.is_valid())
-          app_info->app_url = GURL();
+        app_info->start_url =
+            document_url.is_valid() ? document_url.Resolve(url) : GURL(url);
+        if (!app_info->start_url.is_valid())
+          app_info->start_url = GURL();
       } else if (name == "mobile-web-app-capable" &&
                  base::LowerCaseEqualsASCII(content.Utf16(), "yes")) {
         app_info->mobile_capable = WebApplicationInfo::MOBILE_CAPABLE;

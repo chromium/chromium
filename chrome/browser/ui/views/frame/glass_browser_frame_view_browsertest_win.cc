@@ -25,7 +25,7 @@ class WebAppGlassBrowserFrameViewTest : public InProcessBrowserTest {
       const WebAppGlassBrowserFrameViewTest&) = delete;
   ~WebAppGlassBrowserFrameViewTest() override = default;
 
-  GURL GetAppURL() { return GURL("https://test.org"); }
+  GURL GetStartURL() { return GURL("https://test.org"); }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -39,14 +39,14 @@ class WebAppGlassBrowserFrameViewTest : public InProcessBrowserTest {
   // test.
   bool InstallAndLaunchWebApp() {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->app_url = GetAppURL();
-    web_app_info->scope = GetAppURL().GetWithoutFilename();
+    web_app_info->start_url = GetStartURL();
+    web_app_info->scope = GetStartURL().GetWithoutFilename();
     if (theme_color_)
       web_app_info->theme_color = *theme_color_;
 
     web_app::AppId app_id =
         web_app::InstallWebApp(browser()->profile(), std::move(web_app_info));
-    content::TestNavigationObserver navigation_observer(GetAppURL());
+    content::TestNavigationObserver navigation_observer(GetStartURL());
     navigation_observer.StartWatchingNewWebContents();
     app_browser_ = web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
     navigation_observer.WaitForNavigationFinished();

@@ -20,7 +20,7 @@ class WebAppMinimalUITest : public WebAppControllerBrowserTest {
 
   BrowserView* CreateBrowserView(blink::mojom::DisplayMode display_mode) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->app_url = GURL("https://example.org");
+    web_app_info->start_url = GURL("https://example.org");
     web_app_info->display_mode = display_mode;
     web_app_info->open_as_window = true;
     AppId app_id = InstallWebApp(std::move(web_app_info));

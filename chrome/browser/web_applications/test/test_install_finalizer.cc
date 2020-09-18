@@ -136,7 +136,7 @@ void TestInstallFinalizer::SimulateExternalAppUninstalledByUser(
 void TestInstallFinalizer::Finalize(const WebApplicationInfo& web_app_info,
                                     InstallResultCode code,
                                     InstallFinalizedCallback callback) {
-  AppId app_id = GetAppIdForUrl(web_app_info.app_url);
+  AppId app_id = GetAppIdForUrl(web_app_info.start_url);
   if (next_app_id_.has_value()) {
     app_id = next_app_id_.value();
     next_app_id_.reset();

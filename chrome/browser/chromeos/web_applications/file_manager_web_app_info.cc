@@ -15,12 +15,13 @@
 
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager() {
   auto info = std::make_unique<WebApplicationInfo>();
-  info->app_url = GURL(chromeos::file_manager::kChromeUIFileManagerURL);
+  info->start_url = GURL(chromeos::file_manager::kChromeUIFileManagerURL);
   info->scope = GURL(chromeos::file_manager::kChromeUIFileManagerURL);
   // TODO(majewski): Fetch from a resource.
   info->title = base::UTF8ToUTF16("File Manager");
   web_app::CreateIconInfoForSystemWebApp(
-      info->app_url, {{"icon192.png", 192, IDR_FILE_MANAGER_ICON_192}}, *info);
+      info->start_url, {{"icon192.png", 192, IDR_FILE_MANAGER_ICON_192}},
+      *info);
   info->theme_color = 0xFF4285F4;
   info->background_color = 0xFFFFFFFF;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;

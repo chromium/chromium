@@ -52,11 +52,12 @@ void WebAppDataRetriever::GetWebApplicationInfo(
   // Makes a copy of WebContents fields right after Commit but before a mojo
   // request to the renderer process.
   default_web_application_info_ = std::make_unique<WebApplicationInfo>();
-  default_web_application_info_->app_url = web_contents->GetLastCommittedURL();
+  default_web_application_info_->start_url =
+      web_contents->GetLastCommittedURL();
   default_web_application_info_->title = web_contents->GetTitle();
   if (default_web_application_info_->title.empty()) {
     default_web_application_info_->title =
-        base::UTF8ToUTF16(default_web_application_info_->app_url.spec());
+        base::UTF8ToUTF16(default_web_application_info_->start_url.spec());
   }
 
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
@@ -158,8 +159,8 @@ void WebAppDataRetriever::OnGetWebApplicationInfo(
   if (entry) {
     if (entry->GetUniqueID() == last_committed_nav_entry_unique_id) {
       info = std::make_unique<WebApplicationInfo>(web_app_info);
-      if (info->app_url.is_empty())
-        info->app_url = std::move(default_web_application_info_->app_url);
+      if (info->start_url.is_empty())
+        info->start_url = std::move(default_web_application_info_->start_url);
       if (info->title.empty())
         info->title = std::move(default_web_application_info_->title);
     } else {

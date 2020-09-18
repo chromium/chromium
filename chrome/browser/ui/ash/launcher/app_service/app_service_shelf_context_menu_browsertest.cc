@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_P(AppServiceShelfContextMenuWebAppBrowserTest,
   Profile* profile = browser()->profile();
 
   auto web_application_info = std::make_unique<WebApplicationInfo>();
-  web_application_info->app_url = GURL("https://example.org");
+  web_application_info->start_url = GURL("https://example.org");
   web_application_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
   web_app::AppId app_id =
       web_app::InstallWebApp(profile, std::move(web_application_info));
@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_P(AppServiceShelfContextMenuWebAppBrowserTest,
   Profile* profile = browser()->profile();
 
   auto web_application_info = std::make_unique<WebApplicationInfo>();
-  web_application_info->app_url = GURL("https://example.org");
+  web_application_info->start_url = GURL("https://example.org");
   web_application_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
   web_app::AppId app_id =
       web_app::InstallWebApp(profile, std::move(web_application_info));

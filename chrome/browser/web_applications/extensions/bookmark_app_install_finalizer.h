@@ -64,7 +64,7 @@ class BookmarkAppInstallFinalizer : public web_app::InstallFinalizer {
   void UninstallExtension(const web_app::AppId& app_id,
                           UninstallWebAppCallback);
 
-  void OnExtensionInstalled(const GURL& app_url,
+  void OnExtensionInstalled(const GURL& start_url,
                             LaunchType launch_type,
                             bool enable_experimental_tabbed_window,
                             bool is_locally_installed,

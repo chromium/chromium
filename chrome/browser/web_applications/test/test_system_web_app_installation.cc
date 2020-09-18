@@ -123,7 +123,7 @@ std::unique_ptr<WebApplicationInfo> GenerateWebApplicationInfoForTestApp() {
   // incorrectly as well, and it's a lot of work to fix it. App ids are
   // generated from this, and it's important to keep it stable across the
   // installation modes.
-  info->app_url = GURL("chrome://test-system-app/pwa.html");
+  info->start_url = GURL("chrome://test-system-app/pwa.html");
   info->scope = GURL("chrome://test-system-app/");
   info->title = base::UTF8ToUTF16("Test System App");
   info->theme_color = 0xFF00FF00;
@@ -135,7 +135,7 @@ std::unique_ptr<WebApplicationInfo> GenerateWebApplicationInfoForTestApp() {
 std::unique_ptr<WebApplicationInfo>
 GenerateWebApplicationInfoForTestAppUntrusted() {
   auto info = GenerateWebApplicationInfoForTestApp();
-  info->app_url = GURL("chrome-untrusted://test-system-app/pwa.html");
+  info->start_url = GURL("chrome-untrusted://test-system-app/pwa.html");
   info->scope = GURL("chrome-untrusted://test-system-app/");
   return info;
 }

@@ -40,10 +40,10 @@ WebAppProviderBase& WebAppControllerBrowserTestBase::provider() {
   return *provider;
 }
 
-AppId WebAppControllerBrowserTestBase::InstallPWA(const GURL& app_url) {
+AppId WebAppControllerBrowserTestBase::InstallPWA(const GURL& start_url) {
   auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->app_url = app_url;
-  web_app_info->scope = app_url.GetWithoutFilename();
+  web_app_info->start_url = start_url;
+  web_app_info->scope = start_url.GetWithoutFilename();
   web_app_info->open_as_window = true;
   web_app_info->title = base::ASCIIToUTF16("A Web App");
   return web_app::InstallWebApp(profile(), std::move(web_app_info));

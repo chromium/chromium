@@ -135,7 +135,7 @@ class WebAppDataRetrieverTest : public ChromeRenderViewHostTestHarness {
       base::Optional<SkColor> theme_color) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
 
-    web_app_info->app_url = url;
+    web_app_info->start_url = url;
     web_app_info->title = base::UTF8ToUTF16(name);
     web_app_info->description = base::UTF8ToUTF16(description);
     web_app_info->scope = scope;
@@ -183,7 +183,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_AppUrlAbsent) {
   web_contents_tester()->NavigateAndCommit(FooUrl());
 
   WebApplicationInfo original_web_app_info;
-  original_web_app_info.app_url = GURL();
+  original_web_app_info.start_url = GURL();
 
   SetRendererWebApplicationInfo(original_web_app_info);
 
@@ -197,7 +197,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_AppUrlAbsent) {
 
   // If the WebApplicationInfo has no URL, we fallback to the last committed
   // URL.
-  EXPECT_EQ(FooUrl(), web_app_info()->app_url);
+  EXPECT_EQ(FooUrl(), web_app_info()->start_url);
 }
 
 TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_AppUrlPresent) {
@@ -206,7 +206,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_AppUrlPresent) {
   web_contents_tester()->NavigateAndCommit(FooUrl());
 
   WebApplicationInfo original_web_app_info;
-  original_web_app_info.app_url = BarUrl();
+  original_web_app_info.start_url = BarUrl();
 
   SetRendererWebApplicationInfo(original_web_app_info);
 
@@ -218,7 +218,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_AppUrlPresent) {
                      base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
 
-  EXPECT_EQ(original_web_app_info.app_url, web_app_info()->app_url);
+  EXPECT_EQ(original_web_app_info.start_url, web_app_info()->start_url);
 }
 
 TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_TitleAbsentFromRenderer) {
@@ -269,8 +269,8 @@ TEST_F(WebAppDataRetrieverTest,
   run_loop.Run();
 
   // If the WebApplicationInfo has no title and the WebContents has no title,
-  // we fallback to app_url.
-  EXPECT_EQ(base::UTF8ToUTF16(web_app_info()->app_url.spec()),
+  // we fallback to start_url.
+  EXPECT_EQ(base::UTF8ToUTF16(web_app_info()->start_url.spec()),
             web_app_info()->title);
 }
 
@@ -372,7 +372,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_FrameNavigated) {
   web_contents_tester()->NavigateAndCommit(FooUrl2());
   run_loop.Run();
 
-  EXPECT_EQ(FooUrl(), web_app_info()->app_url);
+  EXPECT_EQ(FooUrl(), web_app_info()->start_url);
   EXPECT_EQ(web_contents_title, web_app_info()->title);
 }
 

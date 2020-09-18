@@ -112,7 +112,7 @@ class WebAppFileHandlingTestBase : public web_app::WebAppControllerBrowserTest {
     GURL url = GetSecureAppURL();
 
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->app_url = url;
+    web_app_info->start_url = url;
     web_app_info->scope = url.GetWithoutFilename();
     web_app_info->title = base::ASCIIToUTF16("A Hosted App");
 
@@ -502,7 +502,7 @@ class WebAppFileHandlingOriginTrialTest
   void TearDownOnMainThread() override { interceptor_.reset(); }
 
  protected:
-  web_app::AppId InstallFileHandlingWebApp(GURL* app_url_out = nullptr) {
+  web_app::AppId InstallFileHandlingWebApp(GURL* start_url_out = nullptr) {
     std::string origin = "https://file-handling-pwa";
 
     // We need to use URLLoaderInterceptor (rather than a EmbeddedTestServer),
@@ -512,15 +512,15 @@ class WebAppFileHandlingOriginTrialTest
         content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
             kBaseDataDir, GURL(origin));
 
-    GURL app_url = GURL(origin + "/index.html");
+    GURL start_url = GURL(origin + "/index.html");
 
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->app_url = app_url;
-    web_app_info->scope = app_url.GetWithoutFilename();
+    web_app_info->start_url = start_url;
+    web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->title = base::ASCIIToUTF16("A Web App");
 
     blink::Manifest::FileHandler entry1;
-    entry1.action = app_url;
+    entry1.action = start_url;
     entry1.name = base::ASCIIToUTF16("text");
     entry1.accept[base::ASCIIToUTF16("text/*")].push_back(
         base::ASCIIToUTF16(".txt"));
@@ -533,11 +533,11 @@ class WebAppFileHandlingOriginTrialTest
     // expiry time in prefs. This is needed because the above InstallWebApp
     // invocation bypassed the normal Web App install pipeline.
     content::WebContents* web_content =
-        LaunchApplication(profile(), app_id, app_url);
+        LaunchApplication(profile(), app_id, start_url);
     web_content->Close();
 
-    if (app_url_out)
-      *app_url_out = app_url;
+    if (start_url_out)
+      *start_url_out = start_url;
     return app_id;
   }
 
@@ -547,11 +547,11 @@ class WebAppFileHandlingOriginTrialTest
 
 IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialTest,
                        LaunchParamsArePassedCorrectly) {
-  GURL app_url;
-  const web_app::AppId app_id = InstallFileHandlingWebApp(&app_url);
+  GURL start_url;
+  const web_app::AppId app_id = InstallFileHandlingWebApp(&start_url);
   base::FilePath test_file_path = NewTestFilePath(FILE_PATH_LITERAL("txt"));
   content::WebContents* web_content = LaunchApplication(
-      profile(), app_id, app_url,
+      profile(), app_id, start_url,
       apps::mojom::LaunchContainer::kLaunchContainerWindow,
       apps::mojom::AppLaunchSource::kSourceFileHandler, {test_file_path});
   EXPECT_EQ(1,

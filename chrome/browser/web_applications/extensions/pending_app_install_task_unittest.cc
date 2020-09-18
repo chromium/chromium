@@ -141,7 +141,7 @@ class TestPendingAppInstallFinalizer : public InstallFinalizer {
                        const FinalizeOptions& options,
                        InstallFinalizedCallback callback) override {
     DCHECK(
-        base::Contains(next_finalize_install_results_, web_app_info.app_url));
+        base::Contains(next_finalize_install_results_, web_app_info.start_url));
 
     web_app_info_list_.push_back(web_app_info);
     finalize_options_list_.push_back(options);
@@ -149,9 +149,9 @@ class TestPendingAppInstallFinalizer : public InstallFinalizer {
     AppId app_id;
     InstallResultCode code;
     std::tie(app_id, code) =
-        next_finalize_install_results_[web_app_info.app_url];
-    next_finalize_install_results_.erase(web_app_info.app_url);
-    const GURL& url = web_app_info.app_url;
+        next_finalize_install_results_[web_app_info.start_url];
+    next_finalize_install_results_.erase(web_app_info.start_url);
+    const GURL& url = web_app_info.start_url;
 
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
@@ -646,7 +646,7 @@ TEST_F(PendingAppInstallTaskTest, InstallPlaceholder) {
             finalizer()->web_app_info_list().at(0);
 
         EXPECT_EQ(base::UTF8ToUTF16(WebAppUrl().spec()), web_app_info.title);
-        EXPECT_EQ(WebAppUrl(), web_app_info.app_url);
+        EXPECT_EQ(WebAppUrl(), web_app_info.start_url);
         EXPECT_TRUE(web_app_info.open_as_window);
         EXPECT_TRUE(web_app_info.icon_infos.empty());
         EXPECT_TRUE(web_app_info.icon_bitmaps_any.empty());
@@ -682,7 +682,7 @@ TEST_F(PendingAppInstallTaskTest, InstallPlaceholderNoCreateOsShorcuts) {
             finalizer()->web_app_info_list().at(0);
 
         EXPECT_EQ(base::UTF8ToUTF16(WebAppUrl().spec()), web_app_info.title);
-        EXPECT_EQ(WebAppUrl(), web_app_info.app_url);
+        EXPECT_EQ(WebAppUrl(), web_app_info.start_url);
         EXPECT_TRUE(web_app_info.open_as_window);
         EXPECT_TRUE(web_app_info.icon_infos.empty());
         EXPECT_TRUE(web_app_info.icon_bitmaps_any.empty());

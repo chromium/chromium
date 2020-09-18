@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_P(WebAppEngagementBrowserTest, AppInWindow) {
   const GURL example_url = GURL("http://example.org/");
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->app_url = example_url;
+  web_app_info->start_url = example_url;
   web_app_info->scope = example_url;
   web_app_info->open_as_window = true;
   AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppEngagementBrowserTest, AppInTab) {
   const GURL example_url = GURL("http://example.org/");
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->app_url = example_url;
+  web_app_info->start_url = example_url;
   web_app_info->scope = example_url;
   web_app_info->open_as_window = false;
   AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppEngagementBrowserTest, AppWithoutScope) {
   const GURL example_url = GURL("http://example.org/");
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->app_url = example_url;
+  web_app_info->start_url = example_url;
   // If app has no scope then UrlHandlers::GetUrlHandlers are empty. Therefore,
   // the app is counted as installed via the Create Shortcut button.
   web_app_info->scope = GURL();
@@ -322,13 +322,13 @@ IN_PROC_BROWSER_TEST_P(WebAppEngagementBrowserTest, TwoApps) {
   // Install two apps.
   {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->app_url = example_url1;
+    web_app_info->start_url = example_url1;
     web_app_info->scope = example_url1;
     app_id1 = InstallWebAppAndCountApps(std::move(web_app_info));
   }
   {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->app_url = example_url2;
+    web_app_info->start_url = example_url2;
     web_app_info->scope = example_url2;
     app_id2 = InstallWebAppAndCountApps(std::move(web_app_info));
   }
@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_P(WebAppEngagementBrowserTest, ManyUserApps) {
     const GURL url = GetUrlForSuffix(base_url, i);
 
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->app_url = url;
+    web_app_info->start_url = url;
     web_app_info->scope = url;
     AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
     app_ids.push_back(app_id);
@@ -429,19 +429,19 @@ IN_PROC_BROWSER_TEST_P(HostedAppEngagementBrowserTest, DefaultApp) {
 
 IN_PROC_BROWSER_TEST_P(HostedAppEngagementBrowserTest, NavigateAwayFromAppTab) {
   base::HistogramTester tester;
-  const GURL app_url = GURL("http://example.org/app/");
+  const GURL start_url = GURL("http://example.org/app/");
   const GURL outer_url = GURL("http://example.org/");
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->app_url = app_url;
-  web_app_info->scope = app_url;
+  web_app_info->start_url = start_url;
+  web_app_info->scope = start_url;
   web_app_info->open_as_window = false;
   AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
 
   Browser* browser = LaunchBrowserForWebAppInTab(app_id);
   EXPECT_FALSE(browser->app_controller());
 
-  NavigateToURLAndWait(browser, app_url);
+  NavigateToURLAndWait(browser, start_url);
   {
     Histograms histograms;
     histograms[kHistogramInTab] = true;

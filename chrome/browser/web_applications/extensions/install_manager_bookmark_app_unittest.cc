@@ -226,7 +226,7 @@ class InstallManagerBookmarkAppTest : public ExtensionServiceTestBase {
   }
 
   web_app::TestDataRetriever* AddDataRetrieverWithLaunchContainer(
-      const GURL& app_url,
+      const GURL& start_url,
       bool open_as_window,
       bool is_installable) {
     web_app::TestDataRetriever* data_retriever = AddEmptyDataRetriever();
@@ -236,7 +236,7 @@ class InstallManagerBookmarkAppTest : public ExtensionServiceTestBase {
     data_retriever->SetRendererWebApplicationInfo(std::move(web_app_info));
 
     auto manifest = std::make_unique<blink::Manifest>();
-    manifest->start_url = app_url;
+    manifest->start_url = start_url;
     manifest->name = base::ASCIIToUTF16(kAppTitle);
     manifest->scope = GURL(AppScope());
     data_retriever->SetManifest(std::move(manifest), is_installable);
@@ -315,7 +315,7 @@ class InstallManagerBookmarkAppTest : public ExtensionServiceTestBase {
 
 TEST_F(InstallManagerBookmarkAppTest, CreateBookmarkApp) {
   auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->app_url = AppUrl();
+  web_app_info->start_url = AppUrl();
   web_app_info->title = base::UTF8ToUTF16(kAppTitle);
   web_app_info->description = base::UTF8ToUTF16(kAppDescription);
   AddDataRetrieverWithRendererWebAppInfo(std::move(web_app_info),
@@ -343,7 +343,7 @@ TEST_F(InstallManagerBookmarkAppTest, CreateBookmarkApp) {
 
 TEST_F(InstallManagerBookmarkAppTest, CreateBookmarkAppDefaultApp) {
   auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->app_url = AppUrl();
+  web_app_info->start_url = AppUrl();
   web_app_info->title = base::UTF8ToUTF16(kAppTitle);
   web_app_info->description = base::UTF8ToUTF16(kAppDescription);
   AddDataRetrieverWithRendererWebAppInfo(std::move(web_app_info),
@@ -360,7 +360,7 @@ TEST_F(InstallManagerBookmarkAppTest, CreateBookmarkAppDefaultApp) {
 
 TEST_F(InstallManagerBookmarkAppTest, CreateBookmarkAppPolicyInstalled) {
   auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->app_url = AppUrl();
+  web_app_info->start_url = AppUrl();
   web_app_info->title = base::UTF8ToUTF16(kAppTitle);
   web_app_info->description = base::UTF8ToUTF16(kAppDescription);
   AddDataRetrieverWithRendererWebAppInfo(std::move(web_app_info),
@@ -520,8 +520,8 @@ TEST_F(InstallManagerBookmarkAppTest,
 TEST_F(InstallManagerBookmarkAppTest,
        CreateBookmarkAppForcedLauncherContainers) {
   {
-    const GURL app_url("https://www.example.org/");
-    AddDataRetrieverWithLaunchContainer(app_url,
+    const GURL start_url("https://www.example.org/");
+    AddDataRetrieverWithLaunchContainer(start_url,
                                         /*open_as_window=*/true,
                                         /*is_installable=*/true);
 
@@ -551,7 +551,7 @@ TEST_F(InstallManagerBookmarkAppTest,
 
 TEST_F(InstallManagerBookmarkAppTest, CreateBookmarkAppWithoutManifest) {
   auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->app_url = AppUrl();
+  web_app_info->start_url = AppUrl();
   web_app_info->title = base::UTF8ToUTF16(kAppTitle);
   web_app_info->description = base::UTF8ToUTF16(kAppDescription);
 
@@ -576,7 +576,7 @@ TEST_F(InstallManagerBookmarkAppTest, CreateWebAppFromInfo) {
   web_app::InstallManager::InstallParams params;
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->app_url = AppUrl();
+  web_app_info->start_url = AppUrl();
   web_app_info->title = base::UTF8ToUTF16(kAppTitle);
   web_app_info->description = base::UTF8ToUTF16(kAppDescription);
   web_app_info->scope = AppScope();
@@ -633,7 +633,7 @@ TEST_F(InstallManagerBookmarkAppTest, InstallBookmarkAppFromSync) {
   EXPECT_EQ(0u, registry()->enabled_extensions().size());
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->app_url = AppUrl();
+  web_app_info->start_url = AppUrl();
   web_app_info->title = base::UTF8ToUTF16(kAppTitle);
   web_app_info->description = base::UTF8ToUTF16(kAppDescription);
   web_app_info->scope = GURL(AppScope());
@@ -741,7 +741,7 @@ TEST_F(InstallManagerBookmarkAppTest, GetAppDetails) {
   const base::Optional<SkColor> theme_color = SK_ColorBLUE;  // 0xAABBCCDD;
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->app_url = AppUrl();
+  web_app_info->start_url = AppUrl();
   web_app_info->title = base::UTF8ToUTF16(kAppTitle);
   web_app_info->description = base::UTF8ToUTF16(kAppDescription);
   web_app_info->theme_color = theme_color;

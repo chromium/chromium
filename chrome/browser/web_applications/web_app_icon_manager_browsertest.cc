@@ -68,15 +68,15 @@ class WebAppIconManagerBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
   ASSERT_TRUE(https_server()->Start());
-  const GURL app_url =
+  const GURL start_url =
       https_server()->GetURL("/banners/manifest_test_page.html");
 
   AppId app_id;
   {
     std::unique_ptr<WebApplicationInfo> web_application_info =
         std::make_unique<WebApplicationInfo>();
-    web_application_info->app_url = app_url;
-    web_application_info->scope = app_url.GetWithoutFilename();
+    web_application_info->start_url = start_url;
+    web_application_info->scope = start_url.GetWithoutFilename();
     web_application_info->title = base::ASCIIToUTF16("App Name");
     web_application_info->open_as_window = true;
 

@@ -83,7 +83,7 @@ class WebAppInstallUtilsWithShortcutsMenu : public testing::Test {
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   WebApplicationInfo web_app_info;
   web_app_info.title = base::UTF8ToUTF16(kAlternativeAppTitle);
-  web_app_info.app_url = AlternativeAppUrl();
+  web_app_info.start_url = AlternativeAppUrl();
   WebApplicationIconInfo info;
   info.url = AppIcon1();
   web_app_info.icon_infos.push_back(info);
@@ -111,7 +111,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
 
   UpdateWebAppInfoFromManifest(manifest, &web_app_info);
   EXPECT_EQ(base::UTF8ToUTF16(kAppShortName), web_app_info.title);
-  EXPECT_EQ(AppUrl(), web_app_info.app_url);
+  EXPECT_EQ(AppUrl(), web_app_info.start_url);
   EXPECT_EQ(AppUrl().GetWithoutFilename(), web_app_info.scope);
   EXPECT_EQ(DisplayMode::kBrowser, web_app_info.display_mode);
   EXPECT_TRUE(web_app_info.display_override.empty());
@@ -208,7 +208,7 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
        UpdateWebAppInfoFromManifestWithShortcuts) {
   WebApplicationInfo web_app_info;
   web_app_info.title = base::UTF8ToUTF16(kAlternativeAppTitle);
-  web_app_info.app_url = AlternativeAppUrl();
+  web_app_info.start_url = AlternativeAppUrl();
   WebApplicationIconInfo info;
   info.url = AppIcon1();
   web_app_info.icon_infos.push_back(info);
@@ -250,7 +250,7 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
 
   UpdateWebAppInfoFromManifest(manifest, &web_app_info);
   EXPECT_EQ(base::UTF8ToUTF16(kAppShortName), web_app_info.title);
-  EXPECT_EQ(AppUrl(), web_app_info.app_url);
+  EXPECT_EQ(AppUrl(), web_app_info.start_url);
   EXPECT_EQ(AppUrl().GetWithoutFilename(), web_app_info.scope);
   EXPECT_EQ(DisplayMode::kBrowser, web_app_info.display_mode);
 

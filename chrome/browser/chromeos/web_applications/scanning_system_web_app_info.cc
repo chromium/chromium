@@ -17,13 +17,14 @@
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForScanningSystemWebApp() {
   std::unique_ptr<WebApplicationInfo> info =
       std::make_unique<WebApplicationInfo>();
-  info->app_url = GURL(chromeos::kChromeUIScanningAppUrl);
+  info->start_url = GURL(chromeos::kChromeUIScanningAppUrl);
   info->scope = GURL(chromeos::kChromeUIScanningAppUrl);
   // TODO(jschettler): |title| should come from a resource string once the
   // string is finalized.
   info->title = base::UTF8ToUTF16("Scan");
   web_app::CreateIconInfoForSystemWebApp(
-      info->app_url, {{"app_icon_192.png", 192, IDR_SCANNING_APP_ICON}}, *info);
+      info->start_url, {{"app_icon_192.png", 192, IDR_SCANNING_APP_ICON}},
+      *info);
   info->theme_color = 0xFFFFFFFF;
   info->background_color = 0xFFFFFFFF;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;

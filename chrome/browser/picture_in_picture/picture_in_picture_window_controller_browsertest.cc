@@ -2522,10 +2522,10 @@ class WebAppPictureInPictureWindowControllerBrowserTest
         "/extensions/auto_picture_in_picture/main.html");
   }
 
-  Browser* InstallAndLaunchPWA(const GURL& app_url) {
+  Browser* InstallAndLaunchPWA(const GURL& start_url) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->app_url = app_url;
-    web_app_info->scope = app_url.GetOrigin();
+    web_app_info->start_url = start_url;
+    web_app_info->scope = start_url.GetOrigin();
     web_app_info->open_as_window = true;
     const web_app::AppId app_id = InstallWebApp(std::move(web_app_info));
 

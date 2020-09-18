@@ -229,11 +229,11 @@ scoped_refptr<Extension> ConvertWebAppToExtension(
   // Create the manifest
   std::unique_ptr<base::DictionaryValue> root(new base::DictionaryValue);
   root->SetString(keys::kPublicKey,
-                  web_app::GenerateAppKeyFromURL(web_app.app_url));
+                  web_app::GenerateAppKeyFromURL(web_app.start_url));
   root->SetString(keys::kName, base::UTF16ToUTF8(web_app.title));
   root->SetString(keys::kVersion, ConvertTimeToExtensionVersion(create_time));
   root->SetString(keys::kDescription, base::UTF16ToUTF8(web_app.description));
-  root->SetString(keys::kLaunchWebURL, web_app.app_url.spec());
+  root->SetString(keys::kLaunchWebURL, web_app.start_url.spec());
   if (web_app.generated_icon_color != SK_ColorTRANSPARENT) {
     root->SetString(keys::kAppIconColor, image_util::GenerateHexColorString(
                                              web_app.generated_icon_color));
@@ -256,13 +256,13 @@ scoped_refptr<Extension> ConvertWebAppToExtension(
   // case of all SWAs today is equal to the scope they set. This DCHECK ensure
   // we notice if this changes.
   if (!web_app.scope.is_empty() &&
-      web_app.app_url.SchemeIs(content::kChromeUIUntrustedScheme)) {
-    DCHECK_EQ(web_app.app_url.GetWithoutFilename(), web_app.scope);
+      web_app.start_url.SchemeIs(content::kChromeUIUntrustedScheme)) {
+    DCHECK_EQ(web_app.start_url.GetWithoutFilename(), web_app.scope);
   }
 #endif  // DCHECK_IS_ON()
 
   if (!web_app.scope.is_empty() &&
-      !web_app.app_url.SchemeIs(content::kChromeUIUntrustedScheme)) {
+      !web_app.start_url.SchemeIs(content::kChromeUIUntrustedScheme)) {
     root->SetDictionary(keys::kUrlHandlers, CreateURLHandlersForBookmarkApp(
                                                 web_app.scope, web_app.title));
   }

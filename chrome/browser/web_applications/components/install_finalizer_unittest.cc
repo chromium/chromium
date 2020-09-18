@@ -143,7 +143,7 @@ class InstallFinalizerUnitTest
 
 TEST_P(InstallFinalizerUnitTest, BasicInstallSucceeds) {
   auto info = std::make_unique<WebApplicationInfo>();
-  info->app_url = GURL("https://foo.example");
+  info->start_url = GURL("https://foo.example");
   info->title = base::ASCIIToUTF16("Foo Title");
   InstallFinalizer::FinalizeOptions options;
   options.install_source = WebappInstallSource::INTERNAL_DEFAULT;
@@ -156,7 +156,7 @@ TEST_P(InstallFinalizerUnitTest, BasicInstallSucceeds) {
 
 TEST_P(InstallFinalizerUnitTest, InstallStoresLatestWebAppInstallSource) {
   auto info = std::make_unique<WebApplicationInfo>();
-  info->app_url = GURL("https://foo.example");
+  info->start_url = GURL("https://foo.example");
   info->title = base::ASCIIToUTF16("Foo Title");
   InstallFinalizer::FinalizeOptions options;
   options.install_source = WebappInstallSource::INTERNAL_DEFAULT;

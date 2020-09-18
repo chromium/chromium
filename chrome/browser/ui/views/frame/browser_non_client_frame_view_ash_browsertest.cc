@@ -871,7 +871,7 @@ class WebAppNonClientFrameViewAshTest
   // the Network Service process has been setup properly.
   void SetUpWebApp() {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->app_url = GetAppURL();
+    web_app_info->start_url = GetAppURL();
     web_app_info->scope = GetAppURL().GetWithoutFilename();
     web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
     web_app_info->theme_color = GetThemeColor();

@@ -66,7 +66,7 @@ class ApkWebAppInstaller {
                                     web_app::InstallResultCode code);
 
   // Callback method for installation completed response.
-  void OnWebAppCreated(const GURL& app_url,
+  void OnWebAppCreated(const GURL& start_url,
                        const web_app::AppId& app_id,
                        web_app::InstallResultCode code);
 

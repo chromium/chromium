@@ -141,10 +141,10 @@ class WebAppInstallTask : content::WebContentsObserver {
       std::unique_ptr<WebApplicationInfo> web_application_info,
       InstallManager::OnceInstallCallback callback);
 
-  // Obtains WebApplicationInfo about web app located at |app_url|, fallbacks to
-  // title/favicon if manifest is not present.
+  // Obtains WebApplicationInfo about web app located at |start_url|, fallbacks
+  // to title/favicon if manifest is not present.
   void LoadAndRetrieveWebApplicationInfoWithIcons(
-      const GURL& app_url,
+      const GURL& start_url,
       WebAppUrlLoader* url_loader,
       RetrieveWebApplicationInfoWithIconsCallback callback);
 

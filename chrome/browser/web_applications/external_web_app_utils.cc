@@ -368,8 +368,8 @@ WebApplicationInfoFactory ParseOfflineManifest(
                << kOfflineManifestStartUrl << " missing or invalid.";
     return {};
   }
-  app_info.app_url = GURL(*start_url_string);
-  if (!app_info.app_url.is_valid()) {
+  app_info.start_url = GURL(*start_url_string);
+  if (!app_info.start_url.is_valid()) {
     LOG(ERROR) << file << " " << kOfflineManifest << " "
                << kOfflineManifestStartUrl << " invalid: " << *start_url_string;
     return {};
@@ -389,10 +389,10 @@ WebApplicationInfoFactory ParseOfflineManifest(
                << kOfflineManifestScope << " invalid: " << *scope_string;
     return {};
   }
-  if (!base::StartsWith(app_info.app_url.path(), app_info.scope.path(),
+  if (!base::StartsWith(app_info.start_url.path(), app_info.scope.path(),
                         base::CompareCase::SENSITIVE)) {
     LOG(ERROR) << file << " " << kOfflineManifest << " "
-               << kOfflineManifestScope << " (" << app_info.app_url
+               << kOfflineManifestScope << " (" << app_info.start_url
                << ") not within " << kOfflineManifestScope << " ("
                << app_info.scope << ").";
     return {};

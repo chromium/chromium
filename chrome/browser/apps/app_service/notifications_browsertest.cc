@@ -279,7 +279,7 @@ class AppNotificationsWebNotificationTest
 
   std::string CreateWebApp(const GURL& url, const GURL& scope) const {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->app_url = url;
+    web_app_info->start_url = url;
     web_app_info->scope = scope;
     std::string app_id =
         web_app::InstallWebApp(browser()->profile(), std::move(web_app_info));

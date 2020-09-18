@@ -260,7 +260,7 @@ void WebAppInstallTask::UpdateWebAppFromInfo(
 }
 
 void WebAppInstallTask::LoadAndRetrieveWebApplicationInfoWithIcons(
-    const GURL& app_url,
+    const GURL& start_url,
     WebAppUrlLoader* url_loader,
     RetrieveWebApplicationInfoWithIconsCallback callback) {
   CheckInstallPreconditions();
@@ -274,7 +274,7 @@ void WebAppInstallTask::LoadAndRetrieveWebApplicationInfoWithIcons(
 
   DCHECK(url_loader);
   url_loader->LoadUrl(
-      app_url, web_contents(),
+      start_url, web_contents(),
       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
       base::BindOnce(&WebAppInstallTask::OnWebAppUrlLoadedGetWebApplicationInfo,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -434,10 +434,10 @@ void WebAppInstallTask::OnGetWebApplicationInfo(
   bool bypass_service_worker_check = false;
   if (install_params_) {
     bypass_service_worker_check = install_params_->bypass_service_worker_check;
-    // Set app_url to fallback_start_url as web_contents may have been
+    // Set start_url to fallback_start_url as web_contents may have been
     // redirected. Will be overridden by manifest values if present.
     DCHECK(install_params_->fallback_start_url.is_valid());
-    web_app_info->app_url = install_params_->fallback_start_url;
+    web_app_info->start_url = install_params_->fallback_start_url;
 
     if (install_params_->fallback_app_name.has_value())
       web_app_info->title = install_params_->fallback_app_name.value();
@@ -472,7 +472,7 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
 
   if (install_params_ && install_params_->require_manifest &&
       !valid_manifest_for_web_app) {
-    LOG(WARNING) << "Did not install " << web_app_info->app_url.spec()
+    LOG(WARNING) << "Did not install " << web_app_info->start_url.spec()
                  << " because it didn't have a manifest for web app";
     CallInstallCallback(AppId(), InstallResultCode::kNotValidManifestForWebApp);
     return;
@@ -485,7 +485,7 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
   if (manifest)
     UpdateWebAppInfoFromManifest(*manifest, web_app_info.get());
 
-  AppId app_id = GenerateAppIdFromURL(web_app_info->app_url);
+  AppId app_id = GenerateAppIdFromURL(web_app_info->start_url);
 
   // Do the app_id expectation check if requested.
   if (expected_app_id_.has_value() && *expected_app_id_ != app_id) {
@@ -770,7 +770,7 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
     return;
   }
 
-  RecordAppBanner(web_contents(), web_app_info->app_url);
+  RecordAppBanner(web_contents(), web_app_info->start_url);
   RecordWebAppInstallationTimestamp(profile_->GetPrefs(), app_id,
                                     install_source_);
 

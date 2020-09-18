@@ -126,7 +126,7 @@ void WebAppInstallFinalizer::FinalizeInstall(
   const auto source =
       InferSourceFromMetricsInstallSource(options.install_source);
 
-  const AppId app_id = GenerateAppIdFromURL(web_app_info.app_url);
+  const AppId app_id = GenerateAppIdFromURL(web_app_info.start_url);
   const WebApp* existing_web_app = GetWebAppRegistrar().GetAppById(app_id);
 
   std::unique_ptr<WebApp> web_app;
@@ -135,7 +135,7 @@ void WebAppInstallFinalizer::FinalizeInstall(
     // There is an existing app from other source(s). Preserve
     // |user_display_mode| and any user-controllable fields here, do not modify
     // them. Prepare copy-on-write:
-    DCHECK_EQ(web_app_info.app_url, existing_web_app->start_url());
+    DCHECK_EQ(web_app_info.start_url, existing_web_app->start_url());
     web_app = std::make_unique<WebApp>(*existing_web_app);
 
     // The UI may initiate a full install to overwrite the existing
@@ -146,7 +146,7 @@ void WebAppInstallFinalizer::FinalizeInstall(
   } else {
     // New app.
     web_app = std::make_unique<WebApp>(app_id);
-    web_app->SetStartUrl(web_app_info.app_url);
+    web_app->SetStartUrl(web_app_info.start_url);
     web_app->SetIsLocallyInstalled(options.locally_installed);
     web_app->SetUserDisplayMode(web_app_info.open_as_window
                                     ? DisplayMode::kStandalone
@@ -281,11 +281,11 @@ void WebAppInstallFinalizer::FinalizeUpdate(
     InstallFinalizedCallback callback) {
   CHECK(started_);
 
-  const AppId app_id = GenerateAppIdFromURL(web_app_info.app_url);
+  const AppId app_id = GenerateAppIdFromURL(web_app_info.start_url);
   const WebApp* existing_web_app = GetWebAppRegistrar().GetAppById(app_id);
 
   if (!existing_web_app || existing_web_app->is_in_sync_install() ||
-      web_app_info.app_url != existing_web_app->start_url()) {
+      web_app_info.start_url != existing_web_app->start_url()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), AppId(),
                                   InstallResultCode::kWebAppDisabled));

@@ -225,7 +225,7 @@ AppId WebAppNavigationBrowserTest::InstallTestWebApp(
   }
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->app_url = https_server_.GetURL(app_host, GetAppUrlPath());
+  web_app_info->start_url = https_server_.GetURL(app_host, GetAppUrlPath());
   web_app_info->scope = https_server_.GetURL(app_host, app_scope);
   web_app_info->title = base::UTF8ToUTF16(GetAppName());
   web_app_info->description = base::UTF8ToUTF16("Test description");

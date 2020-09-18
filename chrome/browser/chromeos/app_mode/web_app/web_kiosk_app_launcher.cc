@@ -79,10 +79,10 @@ void WebKioskAppLauncher::OnAppDataObtained(
     return;
   }
 
-  // When received |app_info->app_url| origin does not match the origin of
+  // When received |app_info->start_url| origin does not match the origin of
   // |install_url|, fail.
   if (url::Origin::Create(GetCurrentApp()->install_url()) !=
-      url::Origin::Create(app_info->app_url)) {
+      url::Origin::Create(app_info->start_url)) {
     VLOG(1) << "Origin of the app does not match the origin of install url";
     delegate_->OnLaunchFailed(KioskAppLaunchError::UNABLE_TO_LAUNCH);
     return;

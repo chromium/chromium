@@ -237,7 +237,7 @@ class ExtensionPolicyTest : public PolicyTest {
   const extensions::Extension* InstallBookmarkApp() {
     WebApplicationInfo web_app;
     web_app.title = base::ASCIIToUTF16("Bookmark App");
-    web_app.app_url = GURL("http://www.google.com");
+    web_app.start_url = GURL("http://www.google.com");
 
     scoped_refptr<extensions::CrxInstaller> installer =
         extensions::CrxInstaller::CreateSilent(extension_service());
@@ -261,7 +261,7 @@ class ExtensionPolicyTest : public PolicyTest {
     std::unique_ptr<WebApplicationInfo> web_application =
         std::make_unique<WebApplicationInfo>();
     web_application->title = base::ASCIIToUTF16("Web App");
-    web_application->app_url = GURL("http://www.google.com");
+    web_application->start_url = GURL("http://www.google.com");
     base::RunLoop loop;
     web_app::AppId return_app_id;
     web_app_provider_base()->install_manager().InstallWebAppFromInfo(
@@ -284,7 +284,7 @@ class ExtensionPolicyTest : public PolicyTest {
   const extensions::Extension* InstallOSSettings() {
     WebApplicationInfo web_app;
     web_app.title = base::ASCIIToUTF16("Settings");
-    web_app.app_url = GURL("chrome://os-settings/");
+    web_app.start_url = GURL("chrome://os-settings/");
 
     scoped_refptr<extensions::CrxInstaller> installer =
         extensions::CrxInstaller::CreateSilent(extension_service());

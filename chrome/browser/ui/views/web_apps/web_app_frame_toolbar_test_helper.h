@@ -20,7 +20,7 @@ class WebAppFrameToolbarTestHelper {
       delete;
   ~WebAppFrameToolbarTestHelper();
 
-  void InstallAndLaunchWebApp(Browser* browser, const GURL& app_url);
+  void InstallAndLaunchWebApp(Browser* browser, const GURL& start_url);
 
   Browser* app_browser() { return app_browser_; }
   BrowserView* browser_view() { return browser_view_; }

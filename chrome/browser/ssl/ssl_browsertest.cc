@@ -818,10 +818,10 @@ class SSLUITestBase : public InProcessBrowserTest,
                                  https_server_.GetURL(replacement_path));
   }
 
-  Browser* InstallAndOpenTestWebApp(const GURL& app_url) {
+  Browser* InstallAndOpenTestWebApp(const GURL& start_url) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->app_url = app_url;
-    web_app_info->scope = app_url.GetWithoutFilename();
+    web_app_info->start_url = start_url;
+    web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->title = base::UTF8ToUTF16("Test app");
     web_app_info->description = base::UTF8ToUTF16("Test description");
 

@@ -1135,7 +1135,7 @@ void AppLauncherHandler::OnFaviconForApp(
     const favicon_base::FaviconImageResult& image_result) {
   auto web_app = std::make_unique<WebApplicationInfo>();
   web_app->title = install_info->title;
-  web_app->app_url = install_info->app_url;
+  web_app->start_url = install_info->app_url;
 
   if (!image_result.image.IsEmpty()) {
     web_app->icon_bitmaps_any[image_result.image.Width()] =

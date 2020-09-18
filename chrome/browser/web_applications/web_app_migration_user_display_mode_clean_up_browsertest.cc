@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(WebAppMigrationUserDisplayModeCleanUpBrowserTest,
   {
     base::RunLoop run_loop;
     WebApplicationInfo info;
-    info.app_url = GURL(kStartUrl);
+    info.start_url = GURL(kStartUrl);
     info.title = base::UTF8ToUTF16(kAppName);
     info.open_as_window = true;
     bookmark_app_finalizer->FinalizeInstall(
@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(WebAppMigrationUserDisplayModeCleanUpBrowserTest,
 
     base::RunLoop run_loop;
     WebApplicationInfo info;
-    info.app_url = GURL(kStartUrl);
+    info.start_url = GURL(kStartUrl);
     info.title = base::UTF8ToUTF16(kAppName);
     info.open_as_window = false;
     web_app_finalizer.FinalizeInstall(

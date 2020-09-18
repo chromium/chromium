@@ -504,7 +504,7 @@ void ExtensionSyncService::ApplyBookmarkAppSyncData(
   }
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->app_url = bookmark_app_url;
+  web_app_info->start_url = bookmark_app_url;
   web_app_info->title = base::UTF8ToUTF16(extension_sync_data.name());
   web_app_info->description =
       base::UTF8ToUTF16(extension_sync_data.bookmark_app_description());

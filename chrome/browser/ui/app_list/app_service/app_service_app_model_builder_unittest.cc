@@ -316,7 +316,7 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
 
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->title = base::UTF8ToUTF16(app_name);
-    web_app_info->app_url = kAppUrl;
+    web_app_info->start_url = kAppUrl;
     web_app_info->scope = kAppUrl;
     web_app_info->open_as_window = true;
 

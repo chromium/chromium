@@ -228,7 +228,7 @@ void WebKioskAppData::UpdateFromWebAppInfo(
   DictionaryPrefUpdate dict_update(local_state, dictionary_name());
   SaveToDictionary(dict_update);
 
-  launch_url_ = GURL(app_info->app_url);
+  launch_url_ = GURL(app_info->start_url);
   dict_update->FindDictKey(KioskAppDataBase::kKeyApps)
       ->FindDictKey(app_id())
       ->SetStringKey(kKeyLaunchUrl, launch_url_.spec());

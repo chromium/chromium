@@ -50,7 +50,7 @@ class ImmersiveModeControllerAshWebAppBrowserTest
 
     const GURL app_url = GetAppUrl();
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->app_url = app_url;
+    web_app_info->start_url = app_url;
     web_app_info->scope = app_url.GetWithoutFilename();
     web_app_info->theme_color = SK_ColorBLUE;
 

@@ -15,12 +15,12 @@
 
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForTelemetryExtension() {
   auto info = std::make_unique<WebApplicationInfo>();
-  info->app_url = GURL(chromeos::kChromeUITelemetryExtensionURL);
+  info->start_url = GURL(chromeos::kChromeUITelemetryExtensionURL);
   info->scope = GURL(chromeos::kChromeUITelemetryExtensionURL);
   info->title = base::UTF8ToUTF16("Telemetry Extension");
   web_app::CreateIconInfoForSystemWebApp(
-      info->app_url, {{"app_icon_96.png", 96, IDR_TELEMETRY_EXTENSION_ICON_96}},
-      *info);
+      info->start_url,
+      {{"app_icon_96.png", 96, IDR_TELEMETRY_EXTENSION_ICON_96}}, *info);
   info->theme_color = 0xFF4285F4;
   info->background_color = 0xFFFFFFFF;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;

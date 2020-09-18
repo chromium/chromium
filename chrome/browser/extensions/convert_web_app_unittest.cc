@@ -283,14 +283,14 @@ TEST_F(ExtensionFromWebApp, Basic) {
   web_app.title = base::ASCIIToUTF16("Gearpad");
   web_app.description =
       base::ASCIIToUTF16("The best text editor in the universe!");
-  web_app.app_url = GURL("http://aaronboodman.com/gearpad/");
+  web_app.start_url = GURL("http://aaronboodman.com/gearpad/");
   web_app.scope = GURL("http://aaronboodman.com/gearpad/");
 
   const int sizes[] = {16, 48, 128};
   for (size_t i = 0; i < base::size(sizes); ++i) {
     WebApplicationIconInfo icon_info;
     icon_info.url =
-        web_app.app_url.Resolve(base::StringPrintf("%i.png", sizes[i]));
+        web_app.start_url.Resolve(base::StringPrintf("%i.png", sizes[i]));
     icon_info.square_size_px = sizes[i];
     web_app.icon_infos.push_back(std::move(icon_info));
     web_app.icon_bitmaps_any[sizes[i]] = GetIconBitmap(sizes[i]);
@@ -320,7 +320,8 @@ TEST_F(ExtensionFromWebApp, Basic) {
   EXPECT_EQ("1978.12.11.0", extension->version().GetString());
   EXPECT_EQ(base::UTF16ToUTF8(web_app.title), extension->name());
   EXPECT_EQ(base::UTF16ToUTF8(web_app.description), extension->description());
-  EXPECT_EQ(web_app.app_url, AppLaunchInfo::GetFullLaunchURL(extension.get()));
+  EXPECT_EQ(web_app.start_url,
+            AppLaunchInfo::GetFullLaunchURL(extension.get()));
   EXPECT_EQ(web_app.scope, GetScopeURLFromBookmarkApp(extension.get()));
   EXPECT_EQ(0u,
             extension->permissions_data()->active_permissions().apis().size());
@@ -353,7 +354,7 @@ TEST_F(ExtensionFromWebApp, Minimal) {
   StartExtensionService();
   WebApplicationInfo web_app;
   web_app.title = base::ASCIIToUTF16("Gearpad");
-  web_app.app_url = GURL("http://aaronboodman.com/gearpad/");
+  web_app.start_url = GURL("http://aaronboodman.com/gearpad/");
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
       web_app, GetTestTime(1978, 12, 11, 0, 0, 0, 0), ExtensionPath(),
@@ -379,7 +380,8 @@ TEST_F(ExtensionFromWebApp, Minimal) {
   EXPECT_EQ("1978.12.11.0", extension->version().GetString());
   EXPECT_EQ(base::UTF16ToUTF8(web_app.title), extension->name());
   EXPECT_EQ("", extension->description());
-  EXPECT_EQ(web_app.app_url, AppLaunchInfo::GetFullLaunchURL(extension.get()));
+  EXPECT_EQ(web_app.start_url,
+            AppLaunchInfo::GetFullLaunchURL(extension.get()));
   EXPECT_TRUE(GetScopeURLFromBookmarkApp(extension.get()).is_empty());
   EXPECT_EQ(0u, IconsInfo::GetIcons(extension.get()).map().size());
   EXPECT_EQ(0u,
@@ -391,7 +393,7 @@ TEST_F(ExtensionFromWebApp, ExtraInstallationFlags) {
   StartExtensionService();
   WebApplicationInfo web_app;
   web_app.title = base::ASCIIToUTF16("Gearpad");
-  web_app.app_url = GURL("http://aaronboodman.com/gearpad/");
+  web_app.start_url = GURL("http://aaronboodman.com/gearpad/");
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
       web_app, GetTestTime(1978, 12, 11, 0, 0, 0, 0), ExtensionPath(),
@@ -414,7 +416,7 @@ TEST_F(ExtensionFromWebApp, ExternalPolicyLocation) {
   StartExtensionService();
   WebApplicationInfo web_app;
   web_app.title = base::ASCIIToUTF16("Gearpad");
-  web_app.app_url = GURL("http://aaronboodman.com/gearpad/");
+  web_app.start_url = GURL("http://aaronboodman.com/gearpad/");
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
       web_app, GetTestTime(1978, 12, 11, 0, 0, 0, 0), ExtensionPath(),
@@ -438,7 +440,7 @@ TEST_F(ExtensionFromWebApp, ScopeDoesNotEndInSlash) {
   web_app.title = base::ASCIIToUTF16("Gearpad");
   web_app.description =
       base::ASCIIToUTF16("The best text editor in the universe!");
-  web_app.app_url = GURL("http://aaronboodman.com/gearpad/");
+  web_app.start_url = GURL("http://aaronboodman.com/gearpad/");
   web_app.scope = GURL("http://aaronboodman.com/gear");
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
@@ -455,7 +457,7 @@ TEST_F(ExtensionFromWebApp, FileHandlersAreCorrectlyConverted) {
   WebApplicationInfo web_app;
   web_app.title = base::ASCIIToUTF16("Graphr");
   web_app.description = base::ASCIIToUTF16("A magical graphy thing");
-  web_app.app_url = GURL("https://graphr.n/");
+  web_app.start_url = GURL("https://graphr.n/");
   web_app.scope = GURL("https://graphr.n/");
 
   {
@@ -517,7 +519,7 @@ TEST_F(ExtensionFromWebApp, WebAppFileHandlersAreCorrectlyConverted) {
   WebApplicationInfo web_app;
   web_app.title = base::ASCIIToUTF16("Graphr");
   web_app.description = base::ASCIIToUTF16("A magical graphy thing.");
-  web_app.app_url = GURL("https://graphr.n/");
+  web_app.start_url = GURL("https://graphr.n/");
   web_app.scope = GURL("https://graphr.n");
 
   {
@@ -580,7 +582,7 @@ TEST_F(ExtensionFromWebAppWithShortcutsMenu,
   std::map<SquareSizePx, SkBitmap> shortcut_icon_bitmaps;
   web_app.title = base::ASCIIToUTF16("Shortcut App");
   web_app.description = base::ASCIIToUTF16("We have shortcuts.");
-  web_app.app_url = GURL("https://shortcut-app.io/");
+  web_app.start_url = GURL("https://shortcut-app.io/");
   web_app.scope = GURL("https://shortcut-app.io");
 
   shortcut_item.name = base::ASCIIToUTF16("Shortcut 1");
@@ -589,8 +591,8 @@ TEST_F(ExtensionFromWebAppWithShortcutsMenu,
     const int sizes[] = {16, 128};
     for (const auto& size : sizes) {
       WebApplicationShortcutsMenuItemInfo::Icon icon_info;
-      icon_info.url =
-          web_app.app_url.Resolve(base::StringPrintf("shortcut1/%i.png", size));
+      icon_info.url = web_app.start_url.Resolve(
+          base::StringPrintf("shortcut1/%i.png", size));
       icon_info.square_size_px = size;
       shortcut_item.shortcut_icon_infos.push_back(std::move(icon_info));
       shortcut_icon_bitmaps[size] = GetIconBitmap(size);
@@ -607,7 +609,7 @@ TEST_F(ExtensionFromWebAppWithShortcutsMenu,
     for (const auto& size : sizes) {
       WebApplicationShortcutsMenuItemInfo::Icon icon_info;
       icon_info.url =
-          web_app.app_url.Resolve(base::StringPrintf("0/%i.png", size));
+          web_app.start_url.Resolve(base::StringPrintf("0/%i.png", size));
       icon_info.square_size_px = size;
       shortcut_item.shortcut_icon_infos.push_back(std::move(icon_info));
       shortcut_icon_bitmaps[size] = GetIconBitmap(size);

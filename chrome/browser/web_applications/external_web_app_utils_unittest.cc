@@ -186,7 +186,7 @@ TEST_F(ExternalWebAppUtilsTest, MAYBE_OfflineManifestValid) {
                                                      .Run();
   EXPECT_TRUE(app_info);
   EXPECT_EQ(app_info->title, base::UTF8ToUTF16("Test App"));
-  EXPECT_EQ(app_info->app_url, GURL("https://test.org/start.html"));
+  EXPECT_EQ(app_info->start_url, GURL("https://test.org/start.html"));
   EXPECT_EQ(app_info->scope, GURL("https://test.org/"));
   EXPECT_EQ(app_info->display_mode, DisplayMode::kStandalone);
   EXPECT_EQ(app_info->icon_bitmaps_any.size(), 1u);

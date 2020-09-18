@@ -161,7 +161,7 @@ class WebAppInstallTaskTest : public WebAppTest {
                              bool open_as_window) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
 
-    web_app_info->app_url = url;
+    web_app_info->start_url = url;
     web_app_info->title = base::UTF8ToUTF16(name);
     web_app_info->description = base::UTF8ToUTF16(description);
     web_app_info->scope = scope;
@@ -372,7 +372,7 @@ class WebAppInstallTaskWithRunOnOsLoginTest : public WebAppInstallTaskTest {
                              bool run_on_os_login) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
 
-    web_app_info->app_url = url;
+    web_app_info->start_url = url;
     web_app_info->title = base::UTF8ToUTF16(name);
     web_app_info->description = base::UTF8ToUTF16(description);
     web_app_info->scope = scope;
@@ -717,9 +717,9 @@ TEST_F(WebAppInstallTaskTest, WriteDataToDisk) {
 }
 
 TEST_F(WebAppInstallTaskTest, WriteDataToDiskFailed) {
-  const GURL app_url = GURL("https://example.com/path");
-  CreateDefaultDataToRetrieve(app_url);
-  CreateRendererAppInfo(app_url, "Name", "Description");
+  const GURL start_url = GURL("https://example.com/path");
+  CreateDefaultDataToRetrieve(start_url);
+  CreateRendererAppInfo(start_url, "Name", "Description");
 
   IconsMap icons_map;
   AddIconToIconsMap(GURL("https://example.com/app.ico"), icon_size::k512,
@@ -756,7 +756,7 @@ TEST_F(WebAppInstallTaskTest, WriteDataToDiskFailed) {
   EXPECT_TRUE(file_utils_->DirectoryExists(temp_dir));
   EXPECT_TRUE(file_utils_->IsDirectoryEmpty(temp_dir));
 
-  const AppId app_id = GenerateAppIdFromURL(app_url);
+  const AppId app_id = GenerateAppIdFromURL(start_url);
   const base::FilePath app_dir =
       manifest_resources_directory.AppendASCII(app_id);
   EXPECT_FALSE(file_utils_->DirectoryExists(app_dir));
@@ -860,7 +860,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromInfo_Success) {
   const AppId app_id = GenerateAppIdFromURL(url);
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->app_url = url;
+  web_app_info->start_url = url;
   web_app_info->open_as_window = true;
   web_app_info->title = base::ASCIIToUTF16("App Name");
 
@@ -888,7 +888,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromInfo_GenerateIcons) {
   SetInstallFinalizerForTesting();
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->app_url = GURL("https://example.com/path");
+  web_app_info->start_url = GURL("https://example.com/path");
   web_app_info->open_as_window = false;
   web_app_info->title = base::ASCIIToUTF16("App Name");
 
@@ -1008,9 +1008,9 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppWithParams_GuestProfile) {
   ASSERT_TRUE(profile_manager.SetUp());
   Profile* guest_profile = profile_manager.CreateGuestProfile();
 
-  const GURL app_url("https://example.com/path");
+  const GURL start_url("https://example.com/path");
   auto data_retriever = std::make_unique<TestDataRetriever>();
-  data_retriever->BuildDefaultDataToRetrieve(app_url,
+  data_retriever->BuildDefaultDataToRetrieve(start_url,
                                              /*scope=*/GURL{});
 
   auto install_task = std::make_unique<WebAppInstallTask>(
@@ -1173,7 +1173,7 @@ TEST_F(WebAppInstallTaskTest, LoadAndRetrieveWebApplicationInfoWithIcons) {
     std::unique_ptr<WebApplicationInfo> result =
         LoadAndRetrieveWebApplicationInfoWithIcons(url);
     EXPECT_TRUE(result);
-    EXPECT_EQ(result->app_url, start_url);
+    EXPECT_EQ(result->start_url, start_url);
     EXPECT_TRUE(result->icon_infos.empty());
     EXPECT_FALSE(result->icon_bitmaps_any.empty());
   }
@@ -1390,7 +1390,7 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
     const AppId app_id = GenerateAppIdFromURL(url);
 
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->app_url = url;
+    web_app_info->start_url = url;
     web_app_info->open_as_window = true;
     web_app_info->theme_color = theme_color;
     web_app_info->title = base::ASCIIToUTF16("App Name");

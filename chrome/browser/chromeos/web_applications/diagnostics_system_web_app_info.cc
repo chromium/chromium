@@ -18,13 +18,13 @@ std::unique_ptr<WebApplicationInfo>
 CreateWebAppInfoForDiagnosticsSystemWebApp() {
   std::unique_ptr<WebApplicationInfo> info =
       std::make_unique<WebApplicationInfo>();
-  info->app_url = GURL(chromeos::kChromeUIDiagnosticsAppUrl);
+  info->start_url = GURL(chromeos::kChromeUIDiagnosticsAppUrl);
   info->scope = GURL(chromeos::kChromeUIDiagnosticsAppUrl);
 
   // TODO(jimmyxgong): Update the title with finalized i18n copy.
   info->title = base::UTF8ToUTF16("Diagnostics");
   web_app::CreateIconInfoForSystemWebApp(
-      info->app_url, {{"app_icon_192.png", 192, IDR_DIAGNOSTICS_APP_ICON}},
+      info->start_url, {{"app_icon_192.png", 192, IDR_DIAGNOSTICS_APP_ICON}},
       *info);
   info->theme_color = 0xFFFFFFFF;
   info->background_color = 0xFFFFFFFF;

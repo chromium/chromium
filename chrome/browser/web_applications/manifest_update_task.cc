@@ -146,7 +146,7 @@ void ManifestUpdateTask::OnDidGetInstallableData(const InstallableData& data) {
 bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
   DCHECK(web_application_info_.has_value());
 
-  if (app_id_ != GenerateAppIdFromURL(web_application_info_->app_url))
+  if (app_id_ != GenerateAppIdFromURL(web_application_info_->start_url))
     return false;
 
   if (web_application_info_->theme_color !=

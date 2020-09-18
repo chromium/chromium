@@ -38,7 +38,7 @@ class PWAConfirmationBubbleViewBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<WebApplicationInfo> GetAppInfo() {
     auto app_info = std::make_unique<WebApplicationInfo>();
     app_info->title = base::UTF8ToUTF16("Test app 2");
-    app_info->app_url = GURL("https://example2.com");
+    app_info->start_url = GURL("https://example2.com");
     app_info->open_as_window = true;
     return app_info;
   }
@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
                        ShowBubbleInPWAWindow) {
   auto app_info = std::make_unique<WebApplicationInfo>();
   app_info->title = base::UTF8ToUTF16("Test app");
-  app_info->app_url = GURL("https://example.com");
+  app_info->start_url = GURL("https://example.com");
   Profile* profile = browser()->profile();
   web_app::AppId app_id = web_app::InstallWebApp(profile, std::move(app_info));
   Browser* browser = web_app::LaunchWebAppBrowser(profile, app_id);
@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
   // shown.
   app_info = std::make_unique<WebApplicationInfo>();
   app_info->title = base::UTF8ToUTF16("Test app 3");
-  app_info->app_url = GURL("https://example3.com");
+  app_info->start_url = GURL("https://example3.com");
   app_info->open_as_window = true;
   chrome::ShowPWAInstallBubble(
       browser->tab_strip_model()->GetActiveWebContents(), std::move(app_info),

@@ -142,7 +142,8 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
 
   labels->AddChildView(CreateNameLabel(web_app_info_->title).release());
   labels->AddChildView(
-      CreateOriginLabel(url::Origin::Create(web_app_info_->app_url)).release());
+      CreateOriginLabel(url::Origin::Create(web_app_info_->start_url))
+          .release());
 
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip)) {
     // This UI is only for prototyping and is not intended for shipping.

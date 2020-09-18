@@ -97,7 +97,7 @@ ExternalInstallOptions GetQuxInstallOptions() {
 std::unique_ptr<WebApplicationInfo> GetFooWebApplicationInfo() {
   std::unique_ptr<WebApplicationInfo> info =
       std::make_unique<WebApplicationInfo>();
-  info->app_url = FooWebAppUrl();
+  info->start_url = FooWebAppUrl();
   info->scope = FooWebAppUrl().GetWithoutFilename();
   info->title = base::UTF8ToUTF16("Foo Web App");
   return info;
@@ -285,7 +285,7 @@ class TestPendingAppManagerImpl : public PendingAppManagerImpl {
     void InstallFromInfo(ResultCallback callback) override {
       pending_app_manager_impl_->OnInstallCalled(install_options());
 
-      GURL install_url = install_options().app_info_factory.Run()->app_url;
+      GURL install_url = install_options().app_info_factory.Run()->start_url;
       DoInstall(install_url, install_options().install_source, false,
                 std::move(callback));
     }

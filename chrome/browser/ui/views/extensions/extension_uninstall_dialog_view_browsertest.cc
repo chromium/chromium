@@ -145,10 +145,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
       ->extension_service()
       ->AddExtension(extension.get());
 
-  const GURL app_url = GURL("https://test.com/");
+  const GURL start_url = GURL("https://test.com/");
   auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->app_url = app_url;
-  web_app_info->scope = app_url;
+  web_app_info->start_url = start_url;
+  web_app_info->scope = start_url;
   web_app_info->open_as_window = true;
   web_app::AppId app_id =
       web_app::InstallWebApp(browser()->profile(), std::move(web_app_info));

@@ -78,13 +78,13 @@ class BrowserNonClientFrameViewMacBrowserTest
 IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewMacBrowserTest, TitleUpdates) {
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 
-  const GURL app_url = GetInstallableAppURL();
-  const web_app::AppId app_id = InstallPWA(app_url);
+  const GURL start_url = GetInstallableAppURL();
+  const web_app::AppId app_id = InstallPWA(start_url);
   Browser* const browser = LaunchWebAppBrowser(app_id);
   content::WebContents* const web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   // Ensure the main page has loaded and is ready for ExecJs DOM manipulation.
-  ASSERT_TRUE(content::NavigateToURL(web_contents, app_url));
+  ASSERT_TRUE(content::NavigateToURL(web_contents, start_url));
 
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser);
@@ -124,8 +124,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewMacBrowserTest,
                        ToolbarLayoutFullscreenTransition) {
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 
-  const GURL app_url = GetInstallableAppURL();
-  const web_app::AppId app_id = InstallPWA(app_url);
+  const GURL start_url = GetInstallableAppURL();
+  const web_app::AppId app_id = InstallPWA(start_url);
   Browser* const browser = LaunchWebAppBrowser(app_id);
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);

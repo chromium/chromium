@@ -73,7 +73,7 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
                                       Profile* profile2) {
     WebApplicationInfo info = WebApplicationInfo();
     info.title = base::UTF8ToUTF16(url.spec());
-    info.app_url = url;
+    info.start_url = url;
     AppId dummy_app_id = InstallApp(info, profile1);
     EXPECT_EQ(
         WebAppInstallObserver::CreateInstallListener(profile2, {dummy_app_id})
@@ -93,11 +93,11 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
   AppId InstallAppAsUserInitiated(
       Profile* profile,
       WebappInstallSource source = WebappInstallSource::OMNIBOX_INSTALL_ICON,
-      GURL app_url = GURL()) {
+      GURL start_url = GURL()) {
     Browser* browser = CreateBrowser(profile);
-    if (!app_url.is_valid())
-      app_url = GetUserInitiatedAppURL();
-    ui_test_utils::NavigateToURL(browser, app_url);
+    if (!start_url.is_valid())
+      start_url = GetUserInitiatedAppURL();
+    ui_test_utils::NavigateToURL(browser, start_url);
 
     AppId app_id;
     base::RunLoop run_loop;
@@ -124,7 +124,7 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
   AppId InstallApp(const WebApplicationInfo& info,
                    Profile* profile,
                    WebappInstallSource source) {
-    DCHECK(info.app_url.is_valid());
+    DCHECK(info.start_url.is_valid());
 
     base::RunLoop run_loop;
     AppId app_id;
@@ -143,7 +143,7 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
 
     const AppRegistrar& registrar = GetRegistrar(profile);
     EXPECT_EQ(base::UTF8ToUTF16(registrar.GetAppShortName(app_id)), info.title);
-    EXPECT_EQ(registrar.GetAppLaunchURL(app_id), info.app_url);
+    EXPECT_EQ(registrar.GetAppLaunchURL(app_id), info.start_url);
 
     return app_id;
   }
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
   ASSERT_TRUE(SetupClients());
   WebApplicationInfo info;
   info.title = base::UTF8ToUTF16("Test name");
-  info.app_url = GURL("http://www.chromium.org/path");
+  info.start_url = GURL("http://www.chromium.org/path");
 
   // Install web app to both profiles.
   AppId app_id = InstallApp(info, GetProfile(0));
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
 
   WebApplicationInfo info;
   info.title = base::UTF8ToUTF16("Test name");
-  info.app_url = GURL("http://www.chromium.org/path");
+  info.start_url = GURL("http://www.chromium.org/path");
   info.open_as_window = true;
 
   // Install web app to both profiles.

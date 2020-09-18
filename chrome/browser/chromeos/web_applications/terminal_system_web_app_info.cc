@@ -21,12 +21,12 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForTerminalSystemWebApp() {
   std::unique_ptr<WebApplicationInfo> info =
       std::make_unique<WebApplicationInfo>();
   // URL used for crostini::kCrostiniTerminalSystemAppId.
-  info->app_url = GURL("chrome-untrusted://terminal/html/terminal.html");
+  info->start_url = GURL("chrome-untrusted://terminal/html/terminal.html");
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions))
     info->scope = GURL(chrome::kChromeUIUntrustedTerminalURL);
   info->title = l10n_util::GetStringUTF16(IDS_CROSTINI_TERMINAL_APP_NAME);
   web_app::CreateIconInfoForSystemWebApp(
-      info->app_url, {{"app_icon_192.png", 192, IDR_LOGO_CROSTINI_TERMINAL}},
+      info->start_url, {{"app_icon_192.png", 192, IDR_LOGO_CROSTINI_TERMINAL}},
       *info);
   info->background_color = 0xFF202124;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;

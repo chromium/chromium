@@ -99,8 +99,9 @@ struct WebApplicationInfo {
   // Description of the application.
   base::string16 description;
 
-  // The launch URL for the app.
-  GURL app_url;
+  // The start_url for the app.
+  // https://www.w3.org/TR/appmanifest/#start_url-member
+  GURL start_url;
 
   // Scope for the app. Dictates what URLs will be opened in the app.
   GURL scope;

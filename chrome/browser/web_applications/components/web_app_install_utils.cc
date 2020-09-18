@@ -138,7 +138,7 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
 
   // Set the url based on the manifest value, if any.
   if (manifest.start_url.is_valid())
-    web_app_info->app_url = manifest.start_url;
+    web_app_info->start_url = manifest.start_url;
 
   if (manifest.scope.is_valid())
     web_app_info->scope = manifest.scope;
@@ -314,7 +314,7 @@ void FilterAndResizeIconsGenerateMissing(WebApplicationInfo* web_app_info,
 
   base::char16 icon_letter =
       web_app_info->title.empty()
-          ? GenerateIconLetterFromUrl(web_app_info->app_url)
+          ? GenerateIconLetterFromUrl(web_app_info->start_url)
           : GenerateIconLetterFromAppName(web_app_info->title);
   web_app_info->generated_icon_color = SK_ColorTRANSPARENT;
   // Ensure that all top-level icons that are in web_app_info with  Purpose::ANY

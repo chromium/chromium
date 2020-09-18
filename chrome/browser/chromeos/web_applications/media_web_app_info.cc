@@ -20,12 +20,12 @@
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp() {
   std::unique_ptr<WebApplicationInfo> info =
       std::make_unique<WebApplicationInfo>();
-  info->app_url = GURL(chromeos::kChromeUIMediaAppURL);
+  info->start_url = GURL(chromeos::kChromeUIMediaAppURL);
   info->scope = GURL(chromeos::kChromeUIMediaAppURL);
 
   info->title = l10n_util::GetStringUTF16(IDS_MEDIA_APP_APP_NAME);
   web_app::CreateIconInfoForSystemWebApp(
-      info->app_url,
+      info->start_url,
       {
           {"app_icon_16.png", 16, IDR_MEDIA_APP_GALLERY_ICON_16_PNG},
           {"app_icon_32.png", 32, IDR_MEDIA_APP_GALLERY_ICON_32_PNG},

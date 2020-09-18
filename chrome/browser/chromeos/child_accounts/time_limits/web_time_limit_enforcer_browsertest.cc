@@ -188,7 +188,7 @@ content::WebContents* WebTimeLimitEnforcerThrottleTest::InstallAndLaunchWebApp(
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->title = base::UTF8ToUTF16(url.host());
   web_app_info->description = base::UTF8ToUTF16("Web app");
-  web_app_info->app_url = url;
+  web_app_info->start_url = url;
   web_app_info->scope = url;
   web_app_info->open_as_window = true;
   web_app::AppId app_id =

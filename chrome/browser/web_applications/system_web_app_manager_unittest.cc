@@ -89,7 +89,7 @@ struct SystemAppData {
 std::unique_ptr<WebApplicationInfo> GetApp1WebApplicationInfo() {
   std::unique_ptr<WebApplicationInfo> info =
       std::make_unique<WebApplicationInfo>();
-  info->app_url = AppUrl1();
+  info->start_url = AppUrl1();
   info->scope = AppUrl1().GetWithoutFilename();
   info->title = base::UTF8ToUTF16("Foo Web App");
   return info;

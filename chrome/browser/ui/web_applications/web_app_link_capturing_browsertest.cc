@@ -38,7 +38,7 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
   void SetUpOnMainThread() override {
     WebAppNavigationBrowserTest::SetUpOnMainThread();
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->app_url = app_url_;
+    web_app_info->start_url = start_url_;
     web_app_info->open_as_window = true;
     app_id_ = web_app::InstallWebApp(profile(), std::move(web_app_info));
     provider().registry_controller().SetExperimentalTabbedWindowMode(app_id_,
@@ -74,7 +74,7 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
 
  protected:
   AppId app_id_;
-  GURL app_url_{"https://example.org/dir/start.html"};
+  GURL start_url_{"https://example.org/dir/start.html"};
   GURL about_blank_{"about:blank"};
   GURL in_scope_1_{"https://example.org/dir/page1.html"};
   GURL in_scope_2_{"https://example.org/dir/page2.html"};

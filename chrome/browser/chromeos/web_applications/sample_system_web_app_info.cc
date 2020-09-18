@@ -17,13 +17,13 @@
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForSampleSystemWebApp() {
   std::unique_ptr<WebApplicationInfo> info =
       std::make_unique<WebApplicationInfo>();
-  info->app_url = GURL(chromeos::kChromeUISampleSystemWebAppURL);
+  info->start_url = GURL(chromeos::kChromeUISampleSystemWebAppURL);
   info->scope = GURL(chromeos::kChromeUISampleSystemWebAppURL);
   // |title| should come from a resource string, but this is the sample app, and
   // doesn't have one.
   info->title = base::UTF8ToUTF16("Sample System Web App");
   web_app::CreateIconInfoForSystemWebApp(
-      info->app_url,
+      info->start_url,
       {{"app_icon_192.png", 192, IDR_SAMPLE_SYSTEM_WEB_APP_ICON_192}}, *info);
   info->theme_color = 0xFF4285F4;
   info->background_color = 0xFFFFFFFF;

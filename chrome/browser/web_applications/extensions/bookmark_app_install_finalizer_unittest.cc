@@ -163,9 +163,9 @@ class BookmarkAppInstallFinalizerTest : public ChromeRenderViewHostTestHarness {
                               registry_controller_.get());
   }
 
-  web_app::AppId InstallExternalApp(const GURL& app_url) {
+  web_app::AppId InstallExternalApp(const GURL& start_url) {
     auto info = std::make_unique<WebApplicationInfo>();
-    info->app_url = app_url;
+    info->start_url = start_url;
     info->title = base::ASCIIToUTF16(kWebAppTitle);
 
     web_app::InstallFinalizer::FinalizeOptions options;
@@ -184,7 +184,7 @@ class BookmarkAppInstallFinalizerTest : public ChromeRenderViewHostTestHarness {
     run_loop.Run();
 
     web_app::ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
-        .Insert(app_url, app_id,
+        .Insert(start_url, app_id,
                 web_app::ExternalInstallSource::kExternalPolicy);
 
     return app_id;
@@ -228,7 +228,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, BasicInstallButExtensionIsDisabled) {
       }));
 
   auto info = std::make_unique<WebApplicationInfo>();
-  info->app_url = WebAppUrl();
+  info->start_url = WebAppUrl();
   info->title = base::ASCIIToUTF16(kWebAppTitle);
 
   web_app::InstallFinalizer::FinalizeOptions options;
@@ -265,7 +265,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, BasicInstallFails) {
       }));
 
   auto info = std::make_unique<WebApplicationInfo>();
-  info->app_url = WebAppUrl();
+  info->start_url = WebAppUrl();
   info->title = base::ASCIIToUTF16(kWebAppTitle);
 
   base::RunLoop run_loop;
@@ -308,7 +308,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, ConcurrentInstallSucceeds) {
   // Start install finalization for the 1st app
   {
     WebApplicationInfo web_application_info;
-    web_application_info.app_url = url1;
+    web_application_info.start_url = url1;
 
     finalizer().FinalizeInstall(
         web_application_info, options,
@@ -325,7 +325,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, ConcurrentInstallSucceeds) {
   // Start install finalization for the 2nd app
   {
     WebApplicationInfo web_application_info;
-    web_application_info.app_url = url2;
+    web_application_info.start_url = url2;
 
     finalizer().FinalizeInstall(
         web_application_info, options,
@@ -347,7 +347,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, ConcurrentInstallSucceeds) {
 
 TEST_F(BookmarkAppInstallFinalizerTest, DefaultInstalledSucceeds) {
   auto info = std::make_unique<WebApplicationInfo>();
-  info->app_url = WebAppUrl();
+  info->start_url = WebAppUrl();
   info->title = base::ASCIIToUTF16(kWebAppTitle);
 
   web_app::InstallFinalizer::FinalizeOptions options;
@@ -374,7 +374,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, DefaultInstalledSucceeds) {
 
 TEST_F(BookmarkAppInstallFinalizerTest, PolicyInstalledSucceeds) {
   auto info = std::make_unique<WebApplicationInfo>();
-  info->app_url = WebAppUrl();
+  info->start_url = WebAppUrl();
   info->title = base::ASCIIToUTF16(kWebAppTitle);
 
   web_app::InstallFinalizer::FinalizeOptions options;
@@ -401,7 +401,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, PolicyInstalledSucceeds) {
 TEST_F(BookmarkAppInstallFinalizerTest, SystemInstalledSucceeds) {
   base::HistogramTester histograms;
   auto info = std::make_unique<WebApplicationInfo>();
-  info->app_url = WebAppUrl();
+  info->start_url = WebAppUrl();
   info->title = base::ASCIIToUTF16(kWebAppTitle);
 
   web_app::InstallFinalizer::FinalizeOptions options;
@@ -445,7 +445,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, SystemInstalledButExtensionIsDisabled) {
       }));
 
   auto info = std::make_unique<WebApplicationInfo>();
-  info->app_url = WebAppUrl();
+  info->start_url = WebAppUrl();
   info->title = base::ASCIIToUTF16(kWebAppTitle);
 
   web_app::InstallFinalizer::FinalizeOptions options;
@@ -482,7 +482,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, SystemInstalledFails) {
       }));
 
   auto info = std::make_unique<WebApplicationInfo>();
-  info->app_url = WebAppUrl();
+  info->start_url = WebAppUrl();
   info->title = base::ASCIIToUTF16(kWebAppTitle);
 
   web_app::InstallFinalizer::FinalizeOptions options;
@@ -511,7 +511,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, SystemInstalledFails) {
 
 TEST_F(BookmarkAppInstallFinalizerTest, NoNetworkInstallForArc) {
   auto info = std::make_unique<WebApplicationInfo>();
-  info->app_url = WebAppUrl();
+  info->start_url = WebAppUrl();
 
   web_app::InstallFinalizer::FinalizeOptions options;
   options.install_source = WebappInstallSource::ARC;
@@ -641,7 +641,7 @@ TEST_F(BookmarkAppInstallFinalizerTest,
 
 TEST_F(BookmarkAppInstallFinalizerTest, NotLocallyInstalled) {
   auto info = std::make_unique<WebApplicationInfo>();
-  info->app_url = WebAppUrl();
+  info->start_url = WebAppUrl();
 
   web_app::InstallFinalizer::FinalizeOptions options;
   options.install_source = WebappInstallSource::INTERNAL_DEFAULT;

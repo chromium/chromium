@@ -195,10 +195,10 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
     return profile_manager->GetProfile(profile_path);
   }
 
-  AppId InstallTestWebApp(const GURL& app_url, bool open_as_window = true) {
+  AppId InstallTestWebApp(const GURL& start_url, bool open_as_window = true) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->app_url = app_url;
-    web_app_info->scope = app_url;
+    web_app_info->start_url = start_url;
+    web_app_info->scope = start_url;
     web_app_info->title = base::UTF8ToUTF16("Test app \xF0\x9F\x90\x90");
     web_app_info->description =
         base::UTF8ToUTF16("Test description \xF0\x9F\x90\x90");
@@ -895,12 +895,12 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenLinkInWebApp) {
       browser()->tab_strip_model()->GetActiveWebContents();
   const GURL initial_url = initial_tab->GetLastCommittedURL();
 
-  const GURL app_url(kAppUrl1);
+  const GURL start_url(kAppUrl1);
   ui_test_utils::UrlLoadObserver url_observer(
-      app_url, content::NotificationService::AllSources());
+      start_url, content::NotificationService::AllSources());
   content::ContextMenuParams params;
   params.page_url = GURL("https://www.example.com/");
-  params.link_url = app_url;
+  params.link_url = start_url;
   TestRenderViewContextMenu menu(initial_tab->GetMainFrame(), params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP,
@@ -912,9 +912,9 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenLinkInWebApp) {
   Browser* app_browser = chrome::FindLastActive();
   EXPECT_NE(browser(), app_browser);
   EXPECT_EQ(initial_url, initial_tab->GetLastCommittedURL());
-  EXPECT_EQ(app_url, app_browser->tab_strip_model()
-                         ->GetActiveWebContents()
-                         ->GetLastCommittedURL());
+  EXPECT_EQ(start_url, app_browser->tab_strip_model()
+                           ->GetActiveWebContents()
+                           ->GetLastCommittedURL());
 }
 
 // Check filename on clicking "Save Link As" via a "real" context menu.

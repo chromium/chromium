@@ -56,11 +56,11 @@ class WebAppTabStripBrowserTest : public InProcessBrowserTest {
 
   App InstallAndLaunch() {
     Profile* profile = browser()->profile();
-    GURL app_url = embedded_test_server()->GetURL(kAppPath);
+    GURL start_url = embedded_test_server()->GetURL(kAppPath);
 
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->app_url = app_url;
-    web_app_info->scope = app_url.GetWithoutFilename();
+    web_app_info->start_url = start_url;
+    web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->title = base::ASCIIToUTF16("Test app");
     web_app_info->background_color = kAppBackgroundColor;
     web_app_info->open_as_window = true;

@@ -42,15 +42,15 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
     cross_site_app_id_ = InstallPWA(cross_site_frame_url);
 
     // Note: The url for the cross site frame is embedded in the query string.
-    GURL app_url = https_server()->GetURL(
+    GURL start_url = https_server()->GetURL(
         "/web_app_badging/badging_with_frames_and_workers.html?url=" +
         cross_site_frame_url.spec());
-    main_app_id_ = InstallPWA(app_url);
+    main_app_id_ = InstallPWA(start_url);
 
-    GURL sub_app_url = https_server()->GetURL("/web_app_badging/blank.html");
+    GURL sub_start_url = https_server()->GetURL("/web_app_badging/blank.html");
     auto sub_app_info = std::make_unique<WebApplicationInfo>();
-    sub_app_info->app_url = sub_app_url;
-    sub_app_info->scope = sub_app_url;
+    sub_app_info->start_url = sub_start_url;
+    sub_app_info->scope = sub_start_url;
     sub_app_info->open_as_window = true;
     sub_app_id_ = InstallWebApp(std::move(sub_app_info));
 
@@ -65,7 +65,7 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
 
     main_frame_ = web_contents->GetMainFrame();
     for (auto* frame : frames) {
-      if (frame->GetLastCommittedURL() == sub_app_url) {
+      if (frame->GetLastCommittedURL() == sub_start_url) {
         sub_app_frame_ = frame;
       } else if (url::IsSameOriginWith(frame->GetLastCommittedURL(),
                                        main_frame_->GetLastCommittedURL())) {
@@ -84,12 +84,12 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
     // 1) A service worker with a scope that applies to both the main app and
     // the sub app.
     // 2) A service worker with a scope that applies to the sub app only.
-    app_service_worker_scope_ = app_url.GetWithoutFilename();
+    app_service_worker_scope_ = start_url.GetWithoutFilename();
     const std::string register_app_service_worker_script = content::JsReplace(
         kRegisterServiceWorkerScript, app_service_worker_scope_.spec());
     ASSERT_EQ("OK", EvalJs(main_frame_, register_app_service_worker_script));
 
-    sub_app_service_worker_scope_ = sub_app_url;
+    sub_app_service_worker_scope_ = sub_start_url;
     const std::string register_sub_app_service_worker_script =
         content::JsReplace(kRegisterServiceWorkerScript,
                            sub_app_service_worker_scope_.spec());
