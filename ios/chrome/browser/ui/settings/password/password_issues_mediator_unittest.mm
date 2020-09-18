@@ -85,10 +85,10 @@ CompromisedCredentials MakeCompromised(base::StringPiece signon_realm,
 @end
 
 // Tests for Password Issues mediator.
-class PasswordIssuesMediatorTest : public PlatformTest {
+class PasswordIssuesMediatorTest : public BlockCleanupTest {
  protected:
-  PasswordIssuesMediatorTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {
+  void SetUp() override {
+    BlockCleanupTest::SetUp();
     // Create BrowserState.
     TestChromeBrowserState::Builder test_cbs_builder;
     chrome_browser_state_ = test_cbs_builder.Build();
