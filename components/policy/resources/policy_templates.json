@@ -1200,19 +1200,15 @@
       'id': 1,
       'caption': '''Configure the home page URL''',
       'tags': [],
-      'desc': '''Configures the default home page URL in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and prevents users from changing it.
+      'desc': '''Setting the policy sets the default homepage URL in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. You open the homepage using the Home button. On desktop, the <ph name="RESTORE_ON_STARTUP_POLICY_NAME">RestoreOnStartup</ph> policies control the pages that open on startup.
 
-          The home page is the page opened by the Home button. On desktop, the pages that open on startup are controlled by the RestoreOnStartup policies.
+      If the homepage is set to the New Tab Page, by the user or <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME">HomepageIsNewTabPage</ph>, this policy has no effect.
 
-          The home page type can either be set to a URL you specify here or set to the New Tab Page. If you select the New Tab Page, then this policy does not take effect.
+       The URL needs a standard scheme, such as http://example.com or https://example.com. When this policy is set, users can't change their homepage URL in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
-          If you enable this setting, users cannot change their home page URL in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>, but they can still choose the New Tab Page as their home page.
+      Leaving both <ph name="HOMEPAGE_LOCATION_POLICY_NAME">HomepageLocation</ph> and <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME">HomepageIsNewTabPage</ph> unset lets users choose their homepage.
 
-          Leaving this policy not set will allow the user to choose their home page on their own if <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME">HomepageIsNewTabPage</ph> is not set too.
-
-          The URL must have a standard scheme, e.g. "http://example.com" or "https://example.com".
-
-          This policy is available only on Windows instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain. or Windows 10 Pro or Enterprise instances that enrolled for device management and macOS instances that are that are managed via MDM or joined to a domain via MCX.''',
+      On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this functionality is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain domain, running on Windows 10 Pro, or enrolled in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>. On <ph name="MAC_OS_NAME">macOS</ph>, this functionality is only available on instances that are managed via MDM, or joined to a domain via MCX.''',
       'label': '''Home page URL''',
     },
     {
@@ -1230,17 +1226,11 @@
       'id': 2,
       'caption': '''Use New Tab Page as homepage''',
       'tags': [],
-      'desc': '''Configures the type of the default home page in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and prevents users from changing home page preferences. The home page can either be set to a URL you specify or set to the New Tab Page.
+      'desc': '''Setting the policy to Enabled makes the New Tab page the user's homepage, ignoring any homepage URL location. Setting the policy to Disabled means that their homepage is never the New Tab page, unless the user's homepage URL is set to chrome://newtab.
 
-          If you enable this setting, the New Tab Page is always used for the home page, and the home page URL location is ignored.
+      If you set the policy, users can't change their homepage type in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. If not set, the user decides whether or not the New Tab page is their homepage.
 
-          If you disable this setting, the user's homepage will never be the New Tab Page, unless its URL is set to 'chrome://newtab'.
-
-          If you enable or disable this setting, users cannot change their homepage type in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
-
-          Leaving this policy not set will allow the user to choose whether the new tab page is their home page on their own.
-
-          This policy is available only on Windows instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain. or Windows 10 Pro or Enterprise instances that enrolled for device management and macOS instances that are that are managed via MDM or joined to a domain via MCX.''',
+      On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this functionality is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain domain, running on Windows 10 Pro, or enrolled in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>. On <ph name="MAC_OS_NAME">macOS</ph>, this functionality is only available on instances that are managed via MDM, or joined to a domain via MCX.''',
     },
     {
       'name': 'NewTabPageLocation',
@@ -1257,15 +1247,11 @@
       'id': 360,
       'caption': '''Configure the New Tab page URL''',
       'tags': [],
-      'desc': '''Configures the default New Tab page URL and prevents users from changing it.
+      'desc': '''Setting the policy sets the default New Tab page URL. The New Tab page opens with new tabs and windows. This policy doesn't decide which pages open on start up. Those are controlled by the <ph name="RESTORE_ON_STARTUP_POLICY_NAME">RestoreOnStartup</ph> policies. This policy does affect the homepage, if that's set to open the New Tab page, as well as the startup page if it's set to open the New Tab page.
 
-          The New Tab page is the page opened when new tabs are created (including the one opened in new windows).
+      Leaving the policy unset or empty puts the default New Tab page in use.
 
-          This policy does not decide which pages are to be opened on start up. Those are controlled by the <ph name="RESTORE_ON_STARTUP_POLICY_NAME">RestoreOnStartup</ph> policies. Yet this policy does affect the Home Page if that is set to open the New Tab page, as well as the startup page if that is set to open the New Tab page.
-
-          If the policy is not set or left empty the default new tab page is used.
-
-          This policy is available only on Windows instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain. or Windows 10 Pro or Enterprise instances that enrolled for device management and macOS instances that are that are managed via MDM or joined to a domain via MCX.''',
+      On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this functionality is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain domain, running on Windows 10 Pro, or enrolled in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>. On <ph name="MAC_OS_NAME">macOS</ph>, this functionality is only available on instances that are managed via MDM, or joined to a domain via MCX.''',
       'label': '''New Tab page URL''',
     },
     {
@@ -4771,15 +4757,9 @@
       'id': 35,
       'caption': '''Show Home button on toolbar''',
       'tags': [],
-      'desc': '''Shows the Home button on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s toolbar.
+      'desc': '''Setting the policy to Enabled shows the Home button on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s toolbar. Setting the policy to Disabled keeps the Home button from appearing.
 
-      If you enable this setting, the Home button is always shown.
-
-      If you disable this setting, the Home button is never shown.
-
-      If you enable or disable this setting, users cannot change or override this setting in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
-
-      Leaving this policy not set will allow the user to choose whether to show the home button.''',
+      If you set the policy, users can't change it in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. If not set, users chooses whether to show the Home button.''',
     },
     {
       'name': 'DeveloperToolsDisabled',
@@ -4881,20 +4861,13 @@
       'id': 37,
       'caption': '''Action on startup''',
       'tags': [],
-      'desc': '''Allows you to specify the behavior on startup.
+      'desc': '''Setting the policy lets you specify system behavior on startup. Turning this setting off amounts to leaving it unset as <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> must have specified start up behavior.
 
-          If you choose 'Open New Tab Page' the New Tab Page will always be opened when you start <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+      If you set the policy, users can't change it in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. If not set, users can change it.
 
-          If you choose 'Restore the last session', the URLs that were open last time <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> was closed will be reopened and the browsing session will be restored as it was left.
-          Choosing this option disables some settings that rely on sessions or that perform actions on exit (such as Clear browsing data on exit or session-only cookies).
+      Setting this policy to <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION">RestoreOnStartupIsLastSession</ph> turns off some settings that rely on sessions or that perform actions on exit, such as clearing browsing data on exit or session-only cookies.
 
-          If you choose 'Open a list of URLs', the list of 'URLs to open on startup' will be opened when a user starts <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
-
-          If you enable this setting, users cannot change or override it in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
-
-          Disabling this setting is equivalent to leaving it not configured. The user will still be able to change it in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
-
-          This policy is available only on Windows instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain. or Windows 10 Pro or Enterprise instances that enrolled for device management and macOS instances that are that are managed via MDM or joined to a domain via MCX.''',
+      On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this functionality is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain domain, running on Windows 10 Pro, or enrolled in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>. On <ph name="MAC_OS_NAME">macOS</ph>, this functionality is only available on instances that are managed via MDM, or joined to a domain via MCX.''',
     },
     {
       'name': 'RestoreOnStartupURLs',
@@ -4914,11 +4887,11 @@
       'id': 38,
       'caption': '''URLs to open on startup''',
       'tags': [],
-      'desc': '''If 'Open a list of URLs' is selected as the startup action, this allows you to specify the list of URLs that are opened. If left not set no URL will be opened on start up.
+      'desc': '''If <ph name="RESTORE_ON_STARTUP_POLICY_NAME">RestoreOnStartup</ph> is set to RestoreOnStartupIsURLs, then setting <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME">RestoreOnStartupURLs</ph> to a list of URLs specify which URLs open.
 
-          This policy only works if the 'RestoreOnStartup' policy is set to 'RestoreOnStartupIsURLs'.
+      If not set, the New Tab page opens on start up.
 
-          This policy is available only on Windows instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain. or Windows 10 Pro or Enterprise instances that enrolled for device management and macOS instances that are that are managed via MDM or joined to a domain via MCX.''',
+      On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this functionality is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain domain, running on Windows 10 Pro, or enrolled in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>. On <ph name="MAC_OS_NAME">macOS</ph>, this functionality is only available on instances that are managed via MDM, or joined to a domain via MCX.''',
     },
     {
       'name': 'BlockThirdPartyCookies',
