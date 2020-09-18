@@ -1,0 +1,50 @@
+Tests that isolation status is reported correctly
+https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?coep&corp=same-site&coop
+COEP status
+{
+    reportOnlyValue : None
+    value : RequireCorp
+}
+COOP status
+{
+    reportOnlyValue : UnsafeNone
+    value : SameOriginPlusCoep
+}
+https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?coep=require-corp;report-to=%22endpoint-1%22&corp=same-origin&coop=same-origin-allow-popups;report-to=%22endpoint-2%22
+COEP status
+{
+    reportOnlyValue : None
+    reportingEndpoint : endpoint-1
+    value : RequireCorp
+}
+COOP status
+{
+    reportOnlyValue : UnsafeNone
+    reportingEndpoint : endpoint-2
+    value : SameOriginAllowPopups
+}
+https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?coep-rpt&corp=same-site&coop-rpt
+COEP status
+{
+    reportOnlyValue : RequireCorp
+    value : None
+}
+COOP status
+{
+    reportOnlyValue : SameOriginPlusCoep
+    value : UnsafeNone
+}
+https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?coep-rpt=require-corp;report-to=%22endpoint-1%22&corp=same-origin&coop-rpt=same-origin-allow-popups;report-to=%22endpoint-2%22
+COEP status
+{
+    reportOnlyReportingEndpoint : endpoint-1
+    reportOnlyValue : RequireCorp
+    value : None
+}
+COOP status
+{
+    reportOnlyReportingEndpoint : endpoint-2
+    reportOnlyValue : SameOriginAllowPopups
+    value : UnsafeNone
+}
+

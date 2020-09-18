@@ -5349,6 +5349,9 @@ domain Network
   experimental type CrossOriginOpenerPolicyStatus extends object
     properties
       CrossOriginOpenerPolicyValue value
+      CrossOriginOpenerPolicyValue reportOnlyValue
+      optional string reportingEndpoint
+      optional string reportOnlyReportingEndpoint
 
   experimental type CrossOriginEmbedderPolicyValue extends string
     enum
@@ -5358,6 +5361,9 @@ domain Network
   experimental type CrossOriginEmbedderPolicyStatus extends object
     properties
       CrossOriginEmbedderPolicyValue value
+      CrossOriginEmbedderPolicyValue reportOnlyValue
+      optional string reportingEndpoint
+      optional string reportOnlyReportingEndpoint
 
   experimental type SecurityIsolationStatus extends object
     properties

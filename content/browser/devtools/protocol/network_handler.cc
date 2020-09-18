@@ -2183,6 +2183,42 @@ makeCrossOriginEmbedderPolicyValue(
       return protocol::Network::CrossOriginEmbedderPolicyValueEnum::RequireCorp;
   }
 }
+std::unique_ptr<protocol::Network::CrossOriginOpenerPolicyStatus>
+makeCrossOriginOpenerPolicyStatus(
+    const network::CrossOriginOpenerPolicy& coop) {
+  auto protocol_coop =
+      protocol::Network::CrossOriginOpenerPolicyStatus::Create()
+          .SetValue(makeCrossOriginOpenerPolicyValue(coop.value))
+          .SetReportOnlyValue(
+              makeCrossOriginOpenerPolicyValue(coop.report_only_value))
+          .Build();
+
+  if (coop.reporting_endpoint)
+    protocol_coop->SetReportingEndpoint(*coop.reporting_endpoint);
+  if (coop.report_only_reporting_endpoint) {
+    protocol_coop->SetReportOnlyReportingEndpoint(
+        *coop.report_only_reporting_endpoint);
+  }
+  return protocol_coop;
+}
+std::unique_ptr<protocol::Network::CrossOriginEmbedderPolicyStatus>
+makeCrossOriginOpenerEmbedderStatus(
+    const network::CrossOriginEmbedderPolicy& coep) {
+  auto protocol_coep =
+      protocol::Network::CrossOriginEmbedderPolicyStatus::Create()
+          .SetValue(makeCrossOriginEmbedderPolicyValue(coep.value))
+          .SetReportOnlyValue(
+              makeCrossOriginEmbedderPolicyValue(coep.report_only_value))
+          .Build();
+
+  if (coep.reporting_endpoint)
+    protocol_coep->SetReportingEndpoint(*coep.reporting_endpoint);
+  if (coep.report_only_reporting_endpoint) {
+    protocol_coep->SetReportOnlyReportingEndpoint(
+        *coep.report_only_reporting_endpoint);
+  }
+  return protocol_coep;
+}
 }  // namespace
 
 DispatchResponse NetworkHandler::GetSecurityIsolationStatus(
@@ -2199,15 +2235,10 @@ DispatchResponse NetworkHandler::GetSecurityIsolationStatus(
   }
   RenderFrameHostImpl* rfhi = frame_tree_node->current_frame_host();
 
-  const auto& frame_coep = rfhi->cross_origin_embedder_policy();
   auto coep =
-      protocol::Network::CrossOriginEmbedderPolicyStatus::Create()
-          .SetValue(makeCrossOriginEmbedderPolicyValue(frame_coep.value))
-          .Build();
-  const auto& frame_coop = rfhi->cross_origin_opener_policy();
-  auto coop = protocol::Network::CrossOriginOpenerPolicyStatus::Create()
-                  .SetValue(makeCrossOriginOpenerPolicyValue(frame_coop.value))
-                  .Build();
+      makeCrossOriginOpenerEmbedderStatus(rfhi->cross_origin_embedder_policy());
+  auto coop =
+      makeCrossOriginOpenerPolicyStatus(rfhi->cross_origin_opener_policy());
 
   *out_info = protocol::Network::SecurityIsolationStatus::Create()
                   .SetCoep(std::move(coep))
