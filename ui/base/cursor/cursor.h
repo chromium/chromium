@@ -12,9 +12,7 @@
 #include "ui/gfx/geometry/point.h"
 
 #if defined(OS_WIN)
-typedef struct HINSTANCE__* HINSTANCE;
-typedef struct HICON__* HICON;
-typedef HICON HCURSOR;
+#include "base/win/windows_types.h"
 #endif
 
 namespace ui {
