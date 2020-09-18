@@ -72,9 +72,12 @@
 #endif
 
 #if defined(OS_CHROMEOS)
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/components/scanning/url_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #endif  // defined(OS_CHROMEOS)
 
@@ -767,9 +770,13 @@ class ChromeContentSettingsRedirectTest
     : public ChromeContentBrowserClientTest {
  public:
   ChromeContentSettingsRedirectTest()
-      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {
+    scoped_feature_list_.InitWithFeatures({chromeos::features::kScanningUI},
+                                          {});
+  }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState testing_local_state_;
   TestingProfile profile_;
@@ -811,6 +818,23 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectSettingsURL) {
       policy::policy_prefs::kSystemFeaturesDisableList, std::move(list));
 
   dest_url = settings_url;
+  test_content_browser_client.HandleWebUI(&dest_url, &profile_);
+  EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
+}
+
+TEST_F(ChromeContentSettingsRedirectTest, RedirectScanningAppURL) {
+  TestChromeContentBrowserClient test_content_browser_client;
+  const GURL scanning_app_url(chromeos::kChromeUIScanningAppUrl);
+  GURL dest_url = scanning_app_url;
+  test_content_browser_client.HandleWebUI(&dest_url, &profile_);
+  EXPECT_EQ(scanning_app_url, dest_url);
+
+  base::Value list(base::Value::Type::LIST);
+  list.Append(policy::SystemFeature::SCANNING);
+  testing_local_state_.Get()->Set(
+      policy::policy_prefs::kSystemFeaturesDisableList, std::move(list));
+
+  dest_url = scanning_app_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
   EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
 }

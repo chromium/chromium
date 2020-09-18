@@ -10637,6 +10637,7 @@
             'browser_settings',
             'os_settings',
             'camera',
+            'scanning',
           ],
         },
       },
@@ -10656,6 +10657,11 @@
           'value': 'camera',
           'caption': '''Camera''',
         },
+        {
+          'name': 'scanning',
+          'value': 'scanning',
+          'caption': '''Scanning (supported since version 87)''',
+        },
       ],
       'supported_on': ['chrome_os:84-'],
       'features': {
@@ -10663,15 +10669,17 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
-      'example_value': ['camera', 'browser_settings', 'os_settings'],
+      'example_value': ['camera', 'browser_settings', 'os_settings', 'scanning'],
       'id': 689,
-      'caption': '''Configure the camera, browser settings, and os settings features to be disabled''',
+      'caption': '''Configure the camera, browser settings, os settings, and scanning features to be disabled''',
       'tags': [],
       'desc': '''Allows you to set a list of <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> features to be disabled.
 
       Disabling any of these features means that the user can't access it from the UI and will see it as "disabled by admin".
 
-      If the policy is left not set, all <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> features will be enabled by default and the user can use any of them.''',
+      If the policy is left not set, all <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> features will be enabled by default and the user can use any of them.
+
+      Note: The scanning feature is currently disabled by default via a feature flag. If the user enables the feature via the feature flag, the feature can still be disabled by this policy.''',
     },
     {
       'name': 'FloatingAccessibilityMenuEnabled',

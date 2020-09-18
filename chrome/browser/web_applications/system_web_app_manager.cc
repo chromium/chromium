@@ -277,6 +277,9 @@ std::set<SystemAppType> GetDisabledSystemWebApps() {
       case policy::SystemFeature::OS_SETTINGS:
         disabled_system_apps.insert(SystemAppType::SETTINGS);
         break;
+      case policy::SystemFeature::SCANNING:
+        disabled_system_apps.insert(SystemAppType::SCANNING);
+        break;
     }
   }
 #endif  // defined(OS_CHROMEOS)

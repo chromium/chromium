@@ -4072,7 +4072,7 @@
     "policy_pref_mapping_test": [
       {
         "policies": {
-          "SystemFeaturesDisableList": ["os_settings"]
+          "SystemFeaturesDisableList": ["os_settings", "scanning"]
         },
         "prefs": { "policy.system_features_disable_list": { "local_state": true },
                    "os_settings_enabled": { "local_state": true } }

@@ -17,6 +17,7 @@ namespace policy {
 const char kCameraFeature[] = "camera";
 const char kBrowserSettingsFeature[] = "browser_settings";
 const char kOsSettingsFeature[] = "os_settings";
+const char kScanningFeature[] = "scanning";
 
 const char kSystemFeaturesDisableListHistogram[] =
     "Enterprise.SystemFeaturesDisableList";
@@ -70,6 +71,8 @@ SystemFeature SystemFeaturesDisableListPolicyHandler::ConvertToEnum(
     return SystemFeature::OS_SETTINGS;
   if (system_feature == kBrowserSettingsFeature)
     return SystemFeature::BROWSER_SETTINGS;
+  if (system_feature == kScanningFeature)
+    return SystemFeature::SCANNING;
 
   LOG(ERROR) << "Unsupported system feature: " << system_feature;
   return UNKNOWN_SYSTEM_FEATURE;

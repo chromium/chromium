@@ -408,6 +408,7 @@
 #include "chrome/browser/speech/tts_chromeos.h"
 #include "chrome/browser/ui/ash/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chromeos/components/scanning/url_constants.h"
 #include "chromeos/constants/chromeos_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
@@ -4603,6 +4604,11 @@ bool IsSystemFeatureURLDisabled(const GURL& url) {
 
   if (url.DomainIs(chrome::kChromeUISettingsHost) &&
       IsSystemFeatureDisabled(policy::SystemFeature::BROWSER_SETTINGS)) {
+    return true;
+  }
+
+  if (url.DomainIs(chromeos::kChromeUIScanningAppHost) &&
+      IsSystemFeatureDisabled(policy::SystemFeature::SCANNING)) {
     return true;
   }
 

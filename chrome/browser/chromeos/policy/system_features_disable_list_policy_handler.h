@@ -23,12 +23,14 @@ enum SystemFeature {
   CAMERA = 1,            // The camera chrome app on Chrome OS.
   BROWSER_SETTINGS = 2,  // Browser settings.
   OS_SETTINGS = 3,       // The settings feature on Chrome OS.
-  kMaxValue = OS_SETTINGS
+  SCANNING = 4,          // The scan SWA on Chrome OS.
+  kMaxValue = SCANNING
 };
 
 extern const char kCameraFeature[];
 extern const char kBrowserSettingsFeature[];
 extern const char kOsSettingsFeature[];
+extern const char kScanningFeature[];
 
 extern const char kSystemFeaturesDisableListHistogram[];
 
