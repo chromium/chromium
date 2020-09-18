@@ -77924,12 +77924,6 @@ Called by update_scheduler_enums.py.-->
   <int value="3" label="Immersive AR"/>
 </enum>
 
-<enum name="XRSessionModeRequest">
-  <int value="0" label="Inline"/>
-  <int value="1" label="Immersive VR"/>
-  <int value="2" label="Immersive AR"/>
-</enum>
-
 <enum name="XRSessionRequestDialogAction">
   <obsolete>
     Removed as of 06/2020.

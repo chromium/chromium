@@ -13955,7 +13955,7 @@ be describing additional metrics about the same event.
       State of the 'viewer' feature request.
     </summary>
   </metric>
-  <metric name="Mode" enum="XRSessionModeRequest">
+  <metric name="Mode" enum="XRSessionMode">
     <summary>
       An enum value that indicates that the `requestSession` API was called to
       request session with this mode. See `device::SessionMode` for enum type
