@@ -103,7 +103,7 @@ class BackButtonNode extends SAChildNode {
         false /* show */);
 
     if (this.locationChangedHandler_) {
-      this.locationChangedHandler_.stopListening();
+      this.locationChangedHandler_.stop();
     }
   }
 

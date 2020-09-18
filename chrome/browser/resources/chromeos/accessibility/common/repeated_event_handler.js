@@ -58,11 +58,11 @@ class RepeatedEventHandler {
     /** @private {!function(!chrome.automation.AutomationEvent)} */
     this.handler_ = this.onEvent_.bind(this);
 
-    this.startListening();
+    this.start();
   }
 
   /** Starts listening or handling events. */
-  startListening() {
+  start() {
     if (this.listening_) {
       return;
     }
@@ -73,7 +73,7 @@ class RepeatedEventHandler {
   }
 
   /** Stops listening or handling future events. */
-  stopListening() {
+  stop() {
     if (!this.listening_) {
       return;
     }

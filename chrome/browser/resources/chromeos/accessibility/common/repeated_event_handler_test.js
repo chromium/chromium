@@ -46,7 +46,7 @@ TEST_F(
         repeatedHandler.onEvent_();
         repeatedHandler.onEvent_();
 
-        repeatedHandler.stopListening();
+        repeatedHandler.stop();
 
         // Yield before verifying how many times the handler was called.
         setTimeout(

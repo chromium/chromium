@@ -44,7 +44,7 @@ class ComboBoxNode extends BasicNode {
     super.onUnfocus();
 
     if (this.expandedChangedHandler_) {
-      this.expandedChangedHandler_.stopListening();
+      this.expandedChangedHandler_.stop();
       this.expandedChangedHandler_ = null;
     }
   }

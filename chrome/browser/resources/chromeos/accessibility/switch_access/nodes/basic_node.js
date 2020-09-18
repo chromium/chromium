@@ -133,7 +133,7 @@ class BasicNode extends SAChildNode {
   onUnfocus() {
     super.onUnfocus();
     if (this.locationChangedHandler_) {
-      this.locationChangedHandler_.stopListening();
+      this.locationChangedHandler_.stop();
     }
   }
 
@@ -293,7 +293,7 @@ class BasicRootNode extends SARootNode {
   onUnfocus() {
     super.onUnfocus();
     if (this.childrenChangedHandler_) {
-      this.childrenChangedHandler_.stopListening();
+      this.childrenChangedHandler_.stop();
     }
   }
 
