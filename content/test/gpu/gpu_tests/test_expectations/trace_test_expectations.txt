@@ -131,5 +131,7 @@ crbug.com/1058255 [ fuchsia ] TraceTest_WebGLGreenTriangle_AA_Alpha [ Skip ]
 [ fuchsia ] DeviceTraceTest_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
 [ fuchsia ] DeviceTraceTest_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
 
-# Cannot use a file in Chromium checkout for fake video capture device on Android
-crbug.com/1077211 [ android ] TraceTest_Video_Media_Stream_Incompatible_Stride [ Skip ]
+# Cannot use file in Chromium checkout for fake video capture device on Android
+# or ChromeOS.
+crbug.com/1129879 [ android ] TraceTest_Video_Media_Stream_Incompatible_Stride [ Skip ]
+crbug.com/1129879 [ chromeos ] TraceTest_Video_Media_Stream_Incompatible_Stride [ Skip ]
