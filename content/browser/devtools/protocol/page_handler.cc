@@ -957,14 +957,16 @@ void PageHandler::NotifyScreencastVisibility(bool visible) {
   frontend_->ScreencastVisibilityChanged(visible);
 }
 
+bool PageHandler::ShouldCaptureNextScreencastFrame() {
+  return frames_in_flight_ <= kMaxScreencastFramesInFlight &&
+         !(++frame_counter_ % capture_every_nth_frame_);
+}
+
 void PageHandler::InnerSwapCompositorFrame() {
   if (!host_)
     return;
 
-  if (frames_in_flight_ > kMaxScreencastFramesInFlight)
-    return;
-
-  if (++frame_counter_ % capture_every_nth_frame_)
+  if (!ShouldCaptureNextScreencastFrame())
     return;
 
   RenderWidgetHostViewBase* const view =
@@ -1007,6 +1009,9 @@ void PageHandler::OnFrameFromVideoConsumer(
   if (!host_)
     return;
 
+  if (!ShouldCaptureNextScreencastFrame())
+    return;
+
   RenderWidgetHostViewBase* const view =
       static_cast<RenderWidgetHostViewBase*>(host_->GetView());
   if (!view)
@@ -1038,6 +1043,7 @@ void PageHandler::OnFrameFromVideoConsumer(
   if (!page_metadata)
     return;
 
+  frames_in_flight_++;
   ScreencastFrameCaptured(std::move(page_metadata),
                           DevToolsVideoConsumer::GetSkBitmapFromFrame(frame));
 }

@@ -176,6 +176,7 @@ class PageHandler : public DevToolsDomainHandler,
  private:
   enum EncodingFormat { PNG, JPEG };
 
+  bool ShouldCaptureNextScreencastFrame();
   void NotifyScreencastVisibility(bool visible);
   void InnerSwapCompositorFrame();
   void OnFrameFromVideoConsumer(scoped_refptr<media::VideoFrame> frame);
