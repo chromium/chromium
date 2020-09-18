@@ -10,9 +10,13 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/no_destructor.h"
-#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
+
+#if defined(OS_LINUX) || defined(OS_ANDROID)
+#include "base/allocator/partition_allocator/spinning_futex_linux.h"
+#endif
 
 namespace base {
 namespace internal {
@@ -53,7 +57,6 @@ class SCOPED_LOCKABLE ScopedUnlockGuard {
   MaybeSpinLock<thread_safe>& lock_;
 };
 
-#if !DCHECK_IS_ON()
 // Spinlock. Do not use, to be removed. crbug.com/1061437.
 class BASE_EXPORT SpinLock {
  public:
@@ -80,7 +83,6 @@ class BASE_EXPORT SpinLock {
 
   std::atomic_int lock_{0};
 };
-#endif  // !DCHECK_IS_ON()
 
 template <>
 class LOCKABLE MaybeSpinLock<true> {
@@ -134,14 +136,9 @@ class LOCKABLE MaybeSpinLock<true> {
   }
 
  private:
-#if DCHECK_IS_ON()
-  // NoDestructor to avoid issues with the "static destruction order fiasco".
-  //
-  // This also means that we leak a lock when a partition is destructed. This
-  // will in practice only show in some tests, as partitions are not destructed
-  // in regular use. In addition, on most platforms, base::Lock doesn't allocate
-  // memory and neither does the OS library, and the destructor is a no-op.
-  base::NoDestructor<base::Lock> lock_;
+  // DCHECK_IS_ON() for now to check stability before performance.
+#if DCHECK_IS_ON() && (defined(OS_LINUX) || defined(OS_ANDROID))
+  base::NoDestructor<SpinningFutex> lock_;
 #else
   // base::Lock is slower on the fast path than SpinLock, hence we still use it
   // on non-DCHECK() builds. crbug.com/1125999

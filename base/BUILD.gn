@@ -1794,6 +1794,7 @@ component("base") {
         "allocator/partition_allocator/random.h",
         "allocator/partition_allocator/thread_cache.cc",
         "allocator/partition_allocator/thread_cache.h",
+        "allocator/partition_allocator/yield_processor.h",
       ]
       if (is_win) {
         sources +=
@@ -1804,6 +1805,13 @@ component("base") {
       } else if (is_fuchsia) {
         sources += [
           "allocator/partition_allocator/page_allocator_internals_fuchsia.h",
+        ]
+      }
+
+      if (is_linux || is_android) {
+        sources += [
+          "allocator/partition_allocator/spinning_futex_linux.cc",
+          "allocator/partition_allocator/spinning_futex_linux.h",
         ]
       }
     }
@@ -3217,6 +3225,7 @@ test("base_unittests") {
       "allocator/partition_allocator/memory_reclaimer_unittest.cc",
       "allocator/partition_allocator/page_allocator_unittest.cc",
       "allocator/partition_allocator/partition_alloc_unittest.cc",
+      "allocator/partition_allocator/partition_lock_unittest.cc",
       "allocator/partition_allocator/thread_cache_unittest.cc",
     ]
   }
