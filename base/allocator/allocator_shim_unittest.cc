@@ -78,6 +78,14 @@ class AllocatorShimTest : public testing::Test {
     return self->next->alloc_function(self->next, size, context);
   }
 
+  static void* MockAllocUnchecked(const AllocatorDispatch* self,
+                                  size_t size,
+                                  void* context) {
+    if (instance_ && size < kMaxSizeTracked)
+      ++(instance_->allocs_intercepted_by_size[size]);
+    return self->next->alloc_unchecked_function(self->next, size, context);
+  }
+
   static void* MockAllocZeroInit(const AllocatorDispatch* self,
                                  size_t n,
                                  size_t size,
@@ -308,7 +316,8 @@ class ThreadDelegateForNewHandlerTest : public PlatformThread::Delegate {
 AllocatorShimTest* AllocatorShimTest::instance_ = nullptr;
 
 AllocatorDispatch g_mock_dispatch = {
-    &AllocatorShimTest::MockAlloc,         /* alloc_function */
+    &AllocatorShimTest::MockAlloc,          /* alloc_function */
+    &AllocatorShimTest::MockAllocUnchecked, /* alloc_unchecked_function */
     &AllocatorShimTest::MockAllocZeroInit, /* alloc_zero_initialized_function */
     &AllocatorShimTest::MockAllocAligned,  /* alloc_aligned_function */
     &AllocatorShimTest::MockRealloc,       /* realloc_function */

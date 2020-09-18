@@ -16,6 +16,10 @@ void* TCMalloc(const AllocatorDispatch*, size_t size, void* context) {
   return tc_malloc(size);
 }
 
+void* TCMallocUnchecked(const AllocatorDispatch*, size_t size, void* context) {
+  return tc_malloc_skip_new_handler(size);
+}
+
 void* TCCalloc(const AllocatorDispatch*, size_t n, size_t size, void* context) {
   return tc_calloc(n, size);
 }
@@ -48,6 +52,7 @@ size_t TCGetSizeEstimate(const AllocatorDispatch*,
 
 const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &TCMalloc,          /* alloc_function */
+    &TCMallocUnchecked, /* alloc_unchecked_function */
     &TCCalloc,          /* alloc_zero_initialized_function */
     &TCMemalign,        /* alloc_aligned_function */
     &TCRealloc,         /* realloc_function */

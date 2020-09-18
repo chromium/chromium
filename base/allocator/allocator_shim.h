@@ -49,6 +49,9 @@ struct AllocatorDispatch {
   using AllocFn = void*(const AllocatorDispatch* self,
                         size_t size,
                         void* context);
+  using AllocUncheckedFn = void*(const AllocatorDispatch* self,
+                                 size_t size,
+                                 void* context);
   using AllocZeroInitializedFn = void*(const AllocatorDispatch* self,
                                        size_t n,
                                        size_t size,
@@ -98,6 +101,7 @@ struct AllocatorDispatch {
                              void* context);
 
   AllocFn* const alloc_function;
+  AllocUncheckedFn* const alloc_unchecked_function;
   AllocZeroInitializedFn* const alloc_zero_initialized_function;
   AllocAlignedFn* const alloc_aligned_function;
   ReallocFn* const realloc_function;

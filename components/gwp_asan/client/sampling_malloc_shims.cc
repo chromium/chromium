@@ -53,6 +53,16 @@ void* AllocFn(const AllocatorDispatch* self, size_t size, void* context) {
   return self->next->alloc_function(self->next, size, context);
 }
 
+void* AllocUncheckedFn(const AllocatorDispatch* self,
+                       size_t size,
+                       void* context) {
+  if (UNLIKELY(sampling_state.Sample()))
+    if (void* allocation = gpa->Allocate(size))
+      return allocation;
+
+  return self->next->alloc_unchecked_function(self->next, size, context);
+}
+
 void* AllocZeroInitializedFn(const AllocatorDispatch* self,
                              size_t n,
                              size_t size,
@@ -228,6 +238,7 @@ static void AlignedFreeFn(const AllocatorDispatch* self,
 
 AllocatorDispatch g_allocator_dispatch = {
     &AllocFn,
+    &AllocUncheckedFn,
     &AllocZeroInitializedFn,
     &AllocAlignedFn,
     &ReallocFn,

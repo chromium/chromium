@@ -90,6 +90,7 @@ void FreeDefiniteSizeImpl(const AllocatorDispatch* self,
 
 const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &MallocImpl,           /* alloc_function */
+    &MallocImpl,           /* alloc_unchecked_function */
     &CallocImpl,           /* alloc_zero_initialized_function */
     &MemalignImpl,         /* alloc_aligned_function */
     &ReallocImpl,          /* realloc_function */

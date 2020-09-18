@@ -73,6 +73,7 @@ size_t GlibcGetSizeEstimate(const AllocatorDispatch*,
 
 const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &GlibcMalloc,          /* alloc_function */
+    &GlibcMalloc,          /* alloc_unchecked_function */
     &GlibcCalloc,          /* alloc_zero_initialized_function */
     &GlibcMemalign,        /* alloc_aligned_function */
     &GlibcRealloc,         /* realloc_function */

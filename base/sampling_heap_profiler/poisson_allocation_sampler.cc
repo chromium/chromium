@@ -142,6 +142,19 @@ void* AllocFn(const AllocatorDispatch* self, size_t size, void* context) {
   return address;
 }
 
+void* AllocUncheckedFn(const AllocatorDispatch* self,
+                       size_t size,
+                       void* context) {
+  ReentryGuard guard;
+  void* address =
+      self->next->alloc_unchecked_function(self->next, size, context);
+  if (LIKELY(guard)) {
+    PoissonAllocationSampler::RecordAlloc(
+        address, size, PoissonAllocationSampler::kMalloc, nullptr);
+  }
+  return address;
+}
+
 void* AllocZeroInitializedFn(const AllocatorDispatch* self,
                              size_t n,
                              size_t size,
@@ -275,6 +288,7 @@ static void AlignedFreeFn(const AllocatorDispatch* self,
 }
 
 AllocatorDispatch g_allocator_dispatch = {&AllocFn,
+                                          &AllocUncheckedFn,
                                           &AllocZeroInitializedFn,
                                           &AllocAlignedFn,
                                           &ReallocFn,

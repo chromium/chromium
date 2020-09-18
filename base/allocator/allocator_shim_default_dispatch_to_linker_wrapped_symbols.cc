@@ -61,6 +61,7 @@ void RealFree(const AllocatorDispatch*, void* address, void* context) {
 
 const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &RealMalloc,   /* alloc_function */
+    &RealMalloc,   /* alloc_unchecked_function */
     &RealCalloc,   /* alloc_zero_initialized_function */
     &RealMemalign, /* alloc_aligned_function */
     &RealRealloc,  /* realloc_function */

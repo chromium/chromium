@@ -79,7 +79,7 @@ void SetCallNewHandlerOnMallocFailure(bool value) {
 
 void* UncheckedAlloc(size_t size) {
   const allocator::AllocatorDispatch* const chain_head = GetChainHead();
-  return chain_head->alloc_function(chain_head, size, nullptr);
+  return chain_head->alloc_unchecked_function(chain_head, size, nullptr);
 }
 
 void InsertAllocatorDispatch(AllocatorDispatch* dispatch) {

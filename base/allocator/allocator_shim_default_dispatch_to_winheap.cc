@@ -90,6 +90,7 @@ void DefaultWinHeapAlignedFreeImpl(const AllocatorDispatch*,
 // optimizations disabled).
 constexpr AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &DefaultWinHeapMallocImpl,
+    &DefaultWinHeapMallocImpl, /* alloc_unchecked_function */
     &DefaultWinHeapCallocImpl,
     &DefaultWinHeapMemalignImpl,
     &DefaultWinHeapReallocImpl,

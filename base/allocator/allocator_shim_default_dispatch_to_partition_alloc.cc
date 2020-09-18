@@ -90,6 +90,12 @@ void* PartitionMalloc(const AllocatorDispatch*, size_t size, void* context) {
   return Allocator().AllocFlagsNoHooks(0, size);
 }
 
+void* PartitionMallocUnchecked(const AllocatorDispatch*,
+                               size_t size,
+                               void* context) {
+  return Allocator().AllocFlagsNoHooks(base::PartitionAllocReturnNull, size);
+}
+
 void* PartitionCalloc(const AllocatorDispatch*,
                       size_t n,
                       size_t size,
@@ -179,6 +185,7 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
 
 constexpr AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &PartitionMalloc,          /* alloc_function */
+    &PartitionMallocUnchecked, /* alloc_unchecked_function */
     &PartitionCalloc,          /* alloc_zero_initialized_function */
     &PartitionMemalign,        /* alloc_aligned_function */
     &PartitionRealloc,         /* realloc_function */
