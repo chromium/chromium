@@ -107,8 +107,17 @@
     z-index: initial;
   }
 
+  /* #main and #scroller are intentionally different elements so that a
+   * ResizeObserver can be used on #main without triggering
+   * "ResizeObserver loop limit exceeded".
+   */
   #main {
     flex: 1;
+    overflow: hidden;
+  }
+
+  #scroller {
+    height: 100%;
     overflow: auto;
     position: relative;
   }
@@ -181,10 +190,12 @@
           on-navigate="onNavigate_">
       </viewer-pdf-sidenav>
     </div>
-    <div id="main" on-scroll="onScroll_">
-      <div id="sizer"></div>
-      <div id="content"></div>
-    </div>
+    <div id="main">
+      <div id="scroller" on-scroll="onScroll_">
+        <div id="sizer"></div>
+        <div id="content"></div>
+      </div>
+    <div>
   </div>
 </template>
 

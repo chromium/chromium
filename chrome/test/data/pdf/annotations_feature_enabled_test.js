@@ -62,7 +62,7 @@ chrome.test.runTests([
       const updateEnabled =
           document.documentElement.hasAttribute('pdf-viewer-update-enabled');
       const scrollingContainer =
-          updateEnabled ? viewer.shadowRoot.querySelector('#main') : window;
+          updateEnabled ? viewer.shadowRoot.querySelector('#scroller') : window;
       scrollingContainer.scrollTo(100, 100);
       await animationFrame();
 

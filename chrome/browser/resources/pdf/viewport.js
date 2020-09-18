@@ -188,19 +188,26 @@ export class Viewport {
     // Set to a default zoom manager - used in tests.
     this.setZoomManager(new InactiveZoomManager(this.getZoom.bind(this), 1));
 
-    if (this.window_ === document.documentElement) {
+    // Case where |chrome_pdf::features::kPDFViewerUpdate| is disabled.
+    if (this.window_ === document.documentElement ||
+        // Necessary check since during testing a fake DOM element is used.
+        !(this.window_ instanceof HTMLElement)) {
       window.addEventListener('scroll', this.updateViewport_.bind(this));
       // The following line is only used in tests, since they expect
       // |scrollCallback| to be called on the mock |window_| object (legacy).
       this.window_.scrollCallback = this.updateViewport_.bind(this);
+      window.addEventListener('resize', this.resizeWrapper_.bind(this));
+      // The following line is only used in tests, since they expect
+      // |resizeCallback| to be called on the mock |window_| object (legacy).
+      this.window_.resizeCallback = this.resizeWrapper_.bind(this);
     } else {
+      // Case where |chrome_pdf::features::kPDFViewerUpdate| is enabled.
       this.window_.addEventListener('scroll', this.updateViewport_.bind(this));
+      const resizeObserver = new ResizeObserver(_ => this.resizeWrapper_());
+      const target = this.window_.parentElement;
+      assert(target.id === 'main');
+      resizeObserver.observe(target);
     }
-
-    window.addEventListener('resize', this.resizeWrapper_.bind(this));
-    // The following line is only used in tests, since they expect
-    // |resizeCallback| to be called on the mock |window_| object (legacy).
-    this.window_.resizeCallback = this.resizeWrapper_.bind(this);
 
     document.body.addEventListener(
         'change-zoom', e => this.setZoom(e.detail.zoom));
