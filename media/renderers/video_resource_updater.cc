@@ -37,7 +37,6 @@
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -791,9 +790,7 @@ void VideoResourceUpdater::CopyHardwarePlane(
   DCHECK_EQ(hardware_resource->texture_target(),
             static_cast<GLenum>(GL_TEXTURE_2D));
 
-  auto* gl = raster_context_provider_ ? raster_context_provider_->ContextGL()
-                                      : context_provider_->ContextGL();
-
+  auto* gl = ContextGL();
   gl->WaitSyncTokenCHROMIUM(mailbox_holder.sync_token.GetConstData());
 
   // This is only used on Android where all video mailboxes already use shared
@@ -1070,10 +1067,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
             video_frame.get(), upload_pixels_.get(), bytes_per_row);
 
         // Copy pixels into texture.
-        auto* gl = raster_context_provider_
-                       ? raster_context_provider_->ContextGL()
-                       : context_provider_->ContextGL();
-
+        auto* gl = ContextGL();
         const gfx::Size& plane_size = hardware_resource->resource_size();
         {
           HardwarePlaneResource::ScopedTexture scope(gl, hardware_resource);
@@ -1100,9 +1094,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
       HardwarePlaneResource* hardware_resource = plane_resource->AsHardware();
       external_resources.type = VideoFrameResourceType::RGBA;
       gpu::SyncToken sync_token;
-      auto* gl = raster_context_provider_
-                     ? raster_context_provider_->ContextGL()
-                     : context_provider_->ContextGL();
+      auto* gl = ContextGL();
       GenerateCompositorSyncToken(gl, &sync_token);
       transferable_resource = viz::TransferableResource::MakeGL(
           hardware_resource->mailbox(), GL_LINEAR,
@@ -1139,6 +1131,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
     external_resources.offset = 0;
   }
 
+  auto* gl = ContextGL();
   // We need to transfer data from |video_frame| to the plane resources.
   for (size_t i = 0; i < plane_resources.size(); ++i) {
     HardwarePlaneResource* plane_resource = plane_resources[i]->AsHardware();
@@ -1244,8 +1237,6 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
 
     // Copy pixels into texture. TexSubImage2D() is applicable because
     // |yuv_resource_format| is LUMINANCE_F16, R16_EXT, LUMINANCE_8 or RED_8.
-    auto* gl = raster_context_provider_ ? raster_context_provider_->ContextGL()
-                                        : context_provider_->ContextGL();
     DCHECK(GLSupportsFormat(plane_resource_format));
     {
       HardwarePlaneResource::ScopedTexture scope(gl, plane_resource);
@@ -1268,8 +1259,6 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
 
   // Set the sync token otherwise resource is assumed to be synchronized.
   gpu::SyncToken sync_token;
-  auto* gl = raster_context_provider_ ? raster_context_provider_->ContextGL()
-                                      : context_provider_->ContextGL();
   GenerateCompositorSyncToken(gl, &sync_token);
 
   for (size_t i = 0; i < plane_resources.size(); ++i) {
@@ -1290,6 +1279,13 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
   return external_resources;
 }
 
+gpu::gles2::GLES2Interface* VideoResourceUpdater::ContextGL() {
+  auto* gl = raster_context_provider_ ? raster_context_provider_->ContextGL()
+                                      : context_provider_->ContextGL();
+  DCHECK(gl);
+  return gl;
+}
+
 void VideoResourceUpdater::ReturnTexture(scoped_refptr<VideoFrame> video_frame,
                                          const gpu::SyncToken& sync_token,
                                          bool lost_resource) {
@@ -1298,10 +1294,8 @@ void VideoResourceUpdater::ReturnTexture(scoped_refptr<VideoFrame> video_frame,
     return;
 
   // The video frame will insert a wait on the previous release sync token.
-  auto* gl = raster_context_provider_ ? raster_context_provider_->ContextGL()
-                                      : context_provider_->ContextGL();
-  SyncTokenClientImpl client(gl, nullptr /* gpu::SharedImageInterface* */,
-                             sync_token);
+  SyncTokenClientImpl client(
+      ContextGL(), nullptr /* gpu::SharedImageInterface* */, sync_token);
   video_frame->UpdateReleaseSyncToken(&client);
 }
 
@@ -1331,9 +1325,7 @@ void VideoResourceUpdater::RecycleResource(uint32_t plane_resource_id,
     return;
 
   if ((raster_context_provider_ || context_provider_) && sync_token.HasData()) {
-    auto* gl = raster_context_provider_ ? raster_context_provider_->ContextGL()
-                                        : context_provider_->ContextGL();
-    gl->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+    ContextGL()->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
   }
 
   if (lost_resource) {
