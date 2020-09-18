@@ -4440,6 +4440,7 @@
     "MixedFormWarnings": [
         {
             "platforms": [
+                "windows",
                 "android",
                 "chromeos",
                 "linux",
