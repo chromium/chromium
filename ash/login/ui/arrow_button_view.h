@@ -28,6 +28,7 @@ class ArrowButtonView : public LoginButton {
   // views::Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  const char* GetClassName() const override;
 
   // Set background color of the button.
   void SetBackgroundColor(SkColor color);

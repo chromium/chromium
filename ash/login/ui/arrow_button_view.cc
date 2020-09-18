@@ -15,12 +15,14 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/skia_util.h"
+#include "ui/views/controls/highlight_path_generator.h"
 
 namespace ash {
 namespace {
 
 // Arrow icon size.
 constexpr int kArrowIconSizeDp = 20;
+constexpr int kArrowIconBackroundRadius = 25;
 // An alpha value for disabled button.
 constexpr SkAlpha kButtonDisabledAlpha = 0x80;
 // How long does a single step of the loading animation take - i.e., the time it
@@ -64,6 +66,9 @@ ArrowButtonView::ArrowButtonView(views::ButtonListener* listener, int size)
       views::Button::STATE_DISABLED,
       gfx::CreateVectorIcon(kLockScreenArrowIcon, kArrowIconSizeDp,
                             SkColorSetA(SK_ColorWHITE, kButtonDisabledAlpha)));
+  focus_ring()->SetPathGenerator(
+      std::make_unique<views::FixedSizeCircleHighlightPathGenerator>(
+          kArrowIconBackroundRadius));
 }
 
 ArrowButtonView::~ArrowButtonView() = default;
@@ -91,6 +96,10 @@ void ArrowButtonView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // TODO(tbarzic): Fix this - https://crbug.com/961930.
   if (GetAccessibleName().empty())
     node_data->SetNameExplicitlyEmpty();
+}
+
+const char* ArrowButtonView::GetClassName() const {
+  return "ArrowButtonView";
 }
 
 void ArrowButtonView::SetBackgroundColor(SkColor color) {
