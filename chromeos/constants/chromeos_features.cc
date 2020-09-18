@@ -380,7 +380,7 @@ const base::Feature kNewOsSettingsSearch{"NewOsSettingsSearch",
 // Enables a unique URL for each path in CrOS settings.
 // This allows deep linking to individual settings, i.e. in settings search.
 const base::Feature kOsSettingsDeepLinking{"OsSettingsDeepLinking",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Flips chrome://os-settings to show Polymer 3 version
 const base::Feature kOsSettingsPolymer3{"OsSettingsPolymer3",
