@@ -689,10 +689,10 @@ def fyi_ios_builder(
         properties = None,
         **kwargs):
     # Default cache and properties sync
-    caches = caches or [builders.xcode_cache.x12a8189n]
+    caches = caches or [builders.xcode_cache.x12a7209]
 
     properties = properties or {}
-    properties.setdefault("xcode_build_version", "12a8189n")
+    properties.setdefault("xcode_build_version", "12a7209")
 
     return fyi_builder(
         name = name,
@@ -864,10 +864,10 @@ def mac_ios_builder(
         goma_backend = builders.goma.backend.RBE_PROD,
         properties = None,
         **kwargs):
-    caches = caches or [builders.xcode_cache.x12a8189n]
+    caches = caches or [builders.xcode_cache.x12a7209]
 
     properties = properties or {}
-    properties.setdefault("xcode_build_version", "12a8189n")
+    properties.setdefault("xcode_build_version", "12a7209")
 
     return mac_builder(
         name = name,

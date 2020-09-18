@@ -931,6 +931,7 @@
       },
     },
   },
+  # in use by ios-simulator-cronet
   'xcode_11e146': {
     '$mixin_append': {
       'args': [
@@ -947,6 +948,7 @@
       ],
     },
   },
+  # in use by ios-webkit-tot
   'xcode_11e608c': {
     '$mixin_append': {
       'args': [
@@ -963,18 +965,18 @@
       ],
     },
   },
-  # xcode 12 beta 6
-  'xcode_12a8189n': {
+  # (default) xcode 12 gm seed
+  'xcode_12a7209': {
     '$mixin_append': {
       'args': [
         '--xcode-build-version',
-        '12a8189n'
+        '12a7209'
       ],
     },
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_12a8189n',
+          'name': 'xcode_ios_12a7209',
           'path': 'Xcode.app',
         },
       ],

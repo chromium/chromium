@@ -1206,43 +1206,32 @@ try_.chromium_mac_builder(
 
 try_.chromium_mac_ios_builder(
     name = "ios-device",
-    executable = "recipe:chromium_trybot",
 )
 
 try_.chromium_mac_ios_builder(
     name = "ios-simulator",
     branch_selector = branches.STANDARD_RELEASES,
-    executable = "recipe:chromium_trybot",
     main_list_view = settings.main_list_view_name,
-    properties = {
-        "xcode_build_version": "12a8189n",
-    },
     tryjob = try_.job(),
 )
 
 try_.chromium_mac_ios_builder(
     name = "ios-simulator-code-coverage",
-    executable = "recipe:chromium_trybot",
     use_clang_coverage = True,
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["unit"],
     os = os.MAC_10_15,
-    properties = {
-        "xcode_build_version": "12a8189n",
-    },
     tryjob = try_.job(experiment_percentage = 3),
 )
 
 try_.chromium_mac_ios_builder(
     name = "ios-simulator-cr-recipe",
-    executable = "recipe:chromium_trybot",
 )
 
 try_.chromium_mac_ios_builder(
     name = "ios-simulator-cronet",
     branch_selector = branches.STANDARD_RELEASES,
     caches = [xcode_cache.x11e146],
-    executable = "recipe:chromium_trybot",
     main_list_view = settings.main_list_view_name,
     properties = {
         "xcode_build_version": "11e146",

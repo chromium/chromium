@@ -1489,7 +1489,7 @@ ci.clang_builder(
 ci.clang_builder(
     name = "ToTiOS",
     builderless = False,
-    caches = [xcode_cache.x12a8189n],
+    caches = [xcode_cache.x12a7209],
     console_view_entry = ci.console_view_entry(
         category = "iOS|public",
         short_name = "sim",
@@ -1497,7 +1497,7 @@ ci.clang_builder(
     cores = None,
     os = os.MAC_10_15,
     properties = {
-        "xcode_build_version": "12a8189n",
+        "xcode_build_version": "12a7209",
     },
     ssd = True,
 )
@@ -1505,7 +1505,7 @@ ci.clang_builder(
 ci.clang_builder(
     name = "ToTiOSDevice",
     builderless = False,
-    caches = [xcode_cache.x12a8189n],
+    caches = [xcode_cache.x12a7209],
     console_view_entry = ci.console_view_entry(
         category = "iOS|public",
         short_name = "dev",
@@ -1513,7 +1513,7 @@ ci.clang_builder(
     cores = None,
     os = os.MAC_10_15,
     properties = {
-        "xcode_build_version": "12a8189n",
+        "xcode_build_version": "12a7209",
     },
     ssd = True,
 )
@@ -2726,7 +2726,7 @@ ci.fyi_coverage_builder(
 
 ci.fyi_coverage_builder(
     name = "ios-simulator-code-coverage",
-    caches = [xcode_cache.x12a8189n],
+    caches = [xcode_cache.x12a7209],
     console_view_entry = ci.console_view_entry(
         category = "code_coverage",
         short_name = "ios",
@@ -2737,7 +2737,7 @@ ci.fyi_coverage_builder(
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
     properties = {
-        "xcode_build_version": "12a8189n",
+        "xcode_build_version": "12a7209",
     },
 )
 

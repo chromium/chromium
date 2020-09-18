@@ -135,8 +135,8 @@ xcode_cache = struct(
     x11e146 = xcode_enum("xcode_ios_11e146", "xcode_ios_11e146.app"),
     # in use by ios-webkit-tot
     x11e608cwk = xcode_enum("xcode_ios_11e608cwk", "xcode_ios_11e608cwk.app"),
-    # xc12 beta 6
-    x12a8189n = xcode_enum("xcode_ios_12a8189n", "xcode_ios_12a8189n.app"),
+    # (current default) xc12 gm seed
+    x12a7209 = xcode_enum("xcode_ios_12a7209", "xcode_ios_12a7209.app"),
 )
 
 ################################################################################

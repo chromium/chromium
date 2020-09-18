@@ -411,10 +411,10 @@ def chromium_mac_ios_builder(
         os = builders.os.MAC_10_15,
         properties = None,
         **kwargs):
-    caches = caches or [builders.xcode_cache.x12a8189n]
+    caches = caches or [builders.xcode_cache.x12a7209]
 
     properties = properties or {}
-    properties.setdefault("xcode_build_version", "12a8189n")
+    properties.setdefault("xcode_build_version", "12a7209")
 
     return try_builder(
         name = name,
