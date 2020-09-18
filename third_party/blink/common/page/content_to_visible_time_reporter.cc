@@ -82,6 +82,14 @@ ContentToVisibleTimeReporter::TabWasShown(
   DCHECK(!tab_switch_start_state_);
   DCHECK(widget_visibility_request_timestamp_.is_null());
 
+  // Invalidate previously issued callbacks, to avoid accessing a null
+  // |tab_switch_start_state_|.
+  //
+  // TODO(https://crbug.com/1121339): Make sure that TabWasShown() is never
+  // called twice without a call to TabWasHidden() in-between, and remove this
+  // mitigation.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   has_saved_frames_ = has_saved_frames;
   tab_switch_start_state_ = std::move(start_state);
   widget_visibility_request_timestamp_ = widget_visibility_request_timestamp;
