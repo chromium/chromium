@@ -1,0 +1,17 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_library("file_manager_js") {
+  sources = [
+    "browser_proxy.js",
+    "file_manager.js",
+  ]
+  deps = [ "//chromeos/components/file_manager:file_manager_mojom_js_library_for_compile" ]
+}
+
+js_type_check("closure_compile") {
+  deps = [ ":file_manager_js" ]
+}

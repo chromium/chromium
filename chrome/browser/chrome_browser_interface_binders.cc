@@ -151,8 +151,6 @@
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_ui.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_ui.h"
-#include "chrome/browser/ui/webui/chromeos/file_manager/file_manager.mojom.h"
-#include "chrome/browser/ui/webui/chromeos/file_manager/file_manager_ui.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
@@ -195,6 +193,8 @@
 #endif
 
 #if defined(OS_CHROMEOS) && !defined(OFFICIAL_BUILD)
+#include "chromeos/components/file_manager/file_manager.mojom.h"
+#include "chromeos/components/file_manager/file_manager_ui.h"
 #include "chromeos/components/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"  // nogncheck crbug.com/1125897
 #include "chromeos/components/telemetry_extension_ui/mojom/probe_service.mojom.h"  // nogncheck crbug.com/1125897
 #include "chromeos/components/telemetry_extension_ui/telemetry_extension_ui.h"
@@ -661,10 +661,6 @@ void PopulateChromeWebUIFrameBinders(
       chromeos::CrostiniUpgraderUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      chromeos::file_manager::mojom::PageHandlerFactory,
-      chromeos::file_manager::FileManagerUI>(map);
-
-  RegisterWebUIControllerInterfaceBinder<
       chromeos::machine_learning::mojom::PageHandler,
       chromeos::machine_learning::MachineLearningInternalsUI>(map);
 
@@ -712,6 +708,10 @@ void PopulateChromeWebUIFrameBinders(
 #endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_CHROMEOS) && !defined(OFFICIAL_BUILD)
+  RegisterWebUIControllerInterfaceBinder<
+      chromeos::file_manager::mojom::PageHandlerFactory,
+      chromeos::file_manager::FileManagerUI>(map);
+
   if (base::FeatureList::IsEnabled(chromeos::features::kTelemetryExtension)) {
     RegisterWebUIControllerInterfaceBinder<
         chromeos::health::mojom::DiagnosticsService,
