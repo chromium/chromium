@@ -471,8 +471,6 @@ Response InspectorOverlayAgent::disable() {
   resize_timer_active_ = false;
   frame_overlay_.reset();
   frame_resource_name_ = 0;
-  if (persistent_tool_)
-    persistent_tool_->Dispose();
   persistent_tool_ = nullptr;
   PickTheRightTool();
   SetNeedsUnbufferedInput(false);
@@ -722,8 +720,6 @@ Response InspectorOverlayAgent::highlightNode(
 Response InspectorOverlayAgent::setShowGridOverlays(
     std::unique_ptr<protocol::Array<protocol::Overlay::GridNodeHighlightConfig>>
         grid_node_highlight_configs) {
-  if (persistent_tool_)
-    persistent_tool_->Dispose();
   persistent_tool_ = nullptr;
 
   if (grid_node_highlight_configs->size()) {
@@ -1394,9 +1390,6 @@ void InspectorOverlayAgent::SetInspectTool(InspectTool* inspect_tool) {
   LocalFrame* frame = GetFrame();
   if (!view || !frame)
     return;
-
-  if (inspect_tool_ && inspect_tool_ != persistent_tool_)
-    inspect_tool_->Dispose();
 
   if (inspect_tool && enabled_.Get()) {
     inspect_tool_ = inspect_tool;

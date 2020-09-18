@@ -99,7 +99,6 @@ class CORE_EXPORT InspectTool : public GarbageCollected<InspectTool> {
   virtual void Draw(float scale) {}
   virtual void Dispatch(const String& message) {}
   virtual void Trace(Visitor* visitor) const;
-  virtual void Dispose() {}
   virtual bool HideOnHideHighlight();
   virtual bool HideOnMouseMove();
 
