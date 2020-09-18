@@ -8,20 +8,27 @@
 #include <memory>
 #include <string>
 
+#include "base/mac/scoped_nsobject.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
+
+@class UNNotificationCenterDelegate;
+@class UNUserNotificationCenter;
 
 namespace message_center {
 class Notification;
 }  // namespace message_center
 
 // This class is an implementation of NotificationPlatformBridge that will
-// send platform notifications to the the MacOSX notification center for devices
+// send platform notifications to the MacOS notification center for devices
 // running on macOS 10.14+.
-class NotificationPlatformBridgeMacUNNotification
+class API_AVAILABLE(macosx(10.14)) NotificationPlatformBridgeMacUNNotification
     : public NotificationPlatformBridge {
  public:
   NotificationPlatformBridgeMacUNNotification();
+
+  explicit NotificationPlatformBridgeMacUNNotification(
+      UNUserNotificationCenter* notification_center);
 
   NotificationPlatformBridgeMacUNNotification(
       const NotificationPlatformBridgeMacUNNotification&) = delete;
@@ -40,6 +47,17 @@ class NotificationPlatformBridgeMacUNNotification
                     GetDisplayedNotificationsCallback callback) const override;
   void SetReadyCallback(NotificationBridgeReadyCallback callback) override;
   void DisplayServiceShutDown(Profile* profile) override;
+
+  // Request permission to send notifications
+  void RequestPermission();
+
+ private:
+  // Cocoa class that receives callbacks from the UNUserNotificationCenter.
+  base::scoped_nsobject<UNNotificationCenterDelegate> delegate_;
+
+  // The notification center to use for local banner notifications,
+  // this can be overridden in tests.
+  base::scoped_nsobject<UNUserNotificationCenter> notification_center_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_UNNOTIFICATION_H_

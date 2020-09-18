@@ -225,8 +225,10 @@ NotificationPlatformBridgeMac::~NotificationPlatformBridgeMac() {
 // static
 std::unique_ptr<NotificationPlatformBridge>
 NotificationPlatformBridge::Create() {
-  if (base::FeatureList::IsEnabled(features::kNewMacNotificationAPI)) {
-    return std::make_unique<NotificationPlatformBridgeMacUNNotification>();
+  if (@available(macOS 10.14, *)) {
+    if (base::FeatureList::IsEnabled(features::kNewMacNotificationAPI)) {
+      return std::make_unique<NotificationPlatformBridgeMacUNNotification>();
+    }
   }
   base::scoped_nsobject<AlertDispatcherImpl> alert_dispatcher(
       [[AlertDispatcherImpl alloc] init]);

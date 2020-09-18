@@ -4715,6 +4715,7 @@ static_library("browser") {
       "QuartzCore.framework",
       "SafariServices.framework",
       "SecurityInterface.framework",
+      "UserNotifications.framework",
     ]
   }
 

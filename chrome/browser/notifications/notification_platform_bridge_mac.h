@@ -24,7 +24,7 @@ class Notification;
 }  // namespace message_center
 
 // This class is an implementation of NotificationPlatformBridge that will
-// send platform notifications to the the MacOSX notification center.
+// send platform notifications to the MacOS notification center.
 class NotificationPlatformBridgeMac : public NotificationPlatformBridge {
  public:
   NotificationPlatformBridgeMac(NSUserNotificationCenter* notification_center,
