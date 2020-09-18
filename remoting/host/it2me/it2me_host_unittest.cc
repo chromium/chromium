@@ -489,7 +489,8 @@ TEST_F(It2MeHostTest, RelayPolicy_Disabled) {
   ASSERT_EQ(It2MeHostState::kDisconnected, last_host_state_);
 }
 
-TEST_F(It2MeHostTest, RelayPolicy_DisabledTransitionCausesDisconnect) {
+// TODO(crbug.com/1126973): Flaky test.
+TEST_F(It2MeHostTest, DISABLED_RelayPolicy_DisabledTransitionCausesDisconnect) {
   StartHost();
   ASSERT_EQ(It2MeHostState::kReceivedAccessCode, last_host_state_);
 
