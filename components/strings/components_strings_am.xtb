@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">ከWi-Fi ጋር ዳግም በማገናኘት</translation>
 <translation id="1165039591588034296">ስህተት</translation>
 <translation id="1165174597379888365">ገጽ ተጎብኝቷል</translation>
+<translation id="1174723505405632867"><ph name="EMBEDDED_URL" /> ኩኪዎችን እና የጣቢያ ውሂብን በ<ph name="TOP_LEVEL_URL" /> ላይ መጠቀም እንዲችል መፍቀድ ይፈልጋሉ?
+
+አለበለዚያ ይህ በእርስዎ የግላዊነት ቅንብሮች ይታገዳል። ይህ እርስዎ መስተጋብር የፈጠሩበት ይዘት በትክክል እንዲሠራ ይፈቅድለታል፣ ነገር ግን <ph name="EMBEDDED_URL" /> የእርስዎን እንቅስቃሴ እንዲከታተል ሊፈቅድለት ይችላል።</translation>
 <translation id="1175364870820465910">&amp;አትም…</translation>
 <translation id="1175875016430184367">ሦስቴ በቀኝ በኩል ስቴፕለር ምታ</translation>
 <translation id="1178581264944972037">ለአፍታ አቁም</translation>
@@ -305,6 +308,7 @@
 <translation id="2181821976797666341">መምሪያዎች</translation>
 <translation id="2183608646556468874">ስልክ ቁጥር</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 አድራሻ}one{# አድራሻዎች}other{# አድራሻዎች}}</translation>
+<translation id="2187243482123994665">የተጠቃሚ ተገኝነት</translation>
 <translation id="2187317261103489799">አግኝ (ነባሪ)</translation>
 <translation id="2188375229972301266">በርካታ ብስ ግርጌ</translation>
 <translation id="2202020181578195191">ትክክለኛ የአገልግሎት ማብቂያ ዓመት ያስገቡ</translation>
@@ -526,6 +530,7 @@
 <translation id="3176929007561373547">ተኪ አገልጋዩ በአግባቡ እየሰራ መሆኑን ለማረጋገጥ የተኪ ቅንብሮችዎን ይፈትሹ ወይም የአውታረ
           መረብዎ አስተዳዳሪን ያግኙ። ተኪ አገልጋይ መጠቀም እንደሌለብዎት የሚያምኑ ከሆኑ፦
           <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> እርስዎ የሚገኙ በሚሆኑበት ጊዜ ማወቅ ይፈልጋሉ</translation>
 <translation id="3188393374551744535">የመለያ ቀሪ ሒሳብ</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ውሂብ እስከ መጨረሻው በእርስዎ መሣሪያ ላይ ማከማቸት ይፈልጋል</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> በ<ph name="SERVER_NAME" /> ላይ</translation>
@@ -1015,6 +1020,7 @@
 <translation id="5171689220826475070">ፋንፎልድ-አውሮፓ</translation>
 <translation id="5172758083709347301">ማሽን</translation>
 <translation id="5179510805599951267">በ<ph name="ORIGINAL_LANGUAGE" /> አይደለም? ይህን ስህተት ሪፖርት ያድርጉ</translation>
+<translation id="5179740473595559246">እርስዎ የሚገኙ በሚሆኑበት ጊዜ ይወቁ</translation>
 <translation id="5190835502935405962">የዕልባቶች አሞሌ</translation>
 <translation id="519422657042045905">ማብራሪያ አይገኝም</translation>
 <translation id="5201306358585911203">በዚህ ድረ-ገጽ ላይ ያለ የተካተተ ገጽ እንዲህ ይላል፦</translation>
@@ -1237,6 +1243,7 @@
 <translation id="6049488691372270142">ገጽ ማድረስ</translation>
 <translation id="6051221802930200923"><ph name="SITE" /> የዕውቅና ማረጋገጫ ሚስማር መሰካትን ስለሚጠቀም ድር ጣቢያውን አሁን መጎብኘት አይችሉም። የአውታረ መረብ ስህተቶች እና ጥቃቶች ብዙውን ጊዜ ጊዜያዊ ስለሆኑ ይህ ገጽ በኋላ ላይ ሊሠራ ይችላል።</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">የእርስዎ መገኘት ይጋራ?</translation>
 <translation id="6058977677006700226">በሁሉም የእርስዎ መሣሪያዎች ላይ የእርስዎ ኮርዶች ጥቅም ላይ ይዋሉ?</translation>
 <translation id="6059925163896151826">የዩኤስቢ መሣሪያዎች</translation>
 <translation id="6060009363608157444">ልክ ያልሆነ የDnsOverHttps ሁነታ።</translation>
@@ -1366,6 +1373,7 @@
 <translation id="6631202559048444592">ለመመሪያው ከአንድ በላይ ምንጭ ይገኛል፣ ነገር ግን እሴቶቹ ተመሳሳይ ናቸው።</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">አጽዳ</translation>
+<translation id="6645291930348198241">ኩኪዎችን እና የጣቢያ ውሂብን ይድረሱ።</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{ምንም}=1{ከ1 ጣቢያ (ከእርስዎ የGoogle መለያ ዘግተው እንዲወጡ አይደረጉም)}one{ከ# ጣቢያዎች (ከእርስዎ የGoogle መለያ ዘግተው እንዲወጡ አይደረጉም)}other{ከ# ጣቢያዎች (ከእርስዎ የGoogle መለያ ዘግተው እንዲወጡ አይደረጉም)}}</translation>
 <translation id="6648459603387803038">የእርስዎ አስተዳዳሪ በርቀት የአሳሽዎን ውቅረት መቀየር ይችላል። በዚህ መሣሪያ ላይ ያለ እንቅስቃሴ ከChrome ውጭም ሊስተዳደር ይችላል።</translation>
 <translation id="6652101503459149953">Windows Helloን ይጠቀሙ</translation>

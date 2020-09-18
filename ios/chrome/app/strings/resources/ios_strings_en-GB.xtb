@@ -293,6 +293,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="4277990410970811858">Safe Browsing</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
 <translation id="430793432425771671">Sync Everything</translation>
+<translation id="4309403553630140242">Double-tap for more information</translation>
 <translation id="430967081421617822">All time</translation>
 <translation id="4334428914252001502">One unread article.</translation>
 <translation id="4338650699862464074">Sends URLs of pages that you visit to Google.</translation>
@@ -561,6 +562,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="7189598951263744875">Share...</translation>
 <translation id="7192050974311852563">Start logging</translation>
 <translation id="7203585745079012652">Speak Answers Back</translation>
+<translation id="7207383424303353046">New: Open sites in Chrome automatically by making it your default browser app. <ph name="BEGIN_LINK" />Open settings<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Invalid card nickname</translation>
 <translation id="7265758999917665941">Never for this site</translation>
 <translation id="7272437679830969316">Can't verify your identity. Password not copied.</translation>
@@ -638,6 +640,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8073670137947914548">Download finished</translation>
 <translation id="8073872304774253879">Make searches and browsing better</translation>
 <translation id="8076014560081431679">Saved site settings will not be deleted and may reflect your browsing habits. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
+<translation id="8079602123447022758">This setting is managed; double-tap for more information</translation>
 <translation id="8105368624971345109">Turn Off</translation>
 <translation id="8114753159095730575">File download is available. Options available near bottom of screen.</translation>
 <translation id="8131740175452115882">Confirm</translation>

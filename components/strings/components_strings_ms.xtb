@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Menyambung semula kepada Wi-Fi</translation>
 <translation id="1165039591588034296">Ralat</translation>
 <translation id="1165174597379888365">Halaman dilawati</translation>
+<translation id="1174723505405632867">Adakah anda mahu membenarkan <ph name="EMBEDDED_URL" /> menggunakan kuki dan data tapak pada <ph name="TOP_LEVEL_URL" />?
+
+Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membolehkan kandungan yang mempunyai interaksi dengan anda berfungsi dengan betul, tetapi mungkin akan membenarkan <ph name="EMBEDDED_URL" /> menjejaki aktiviti anda.</translation>
 <translation id="1175364870820465910">&amp;Cetak...</translation>
 <translation id="1175875016430184367">Tiga kokot kanan</translation>
 <translation id="1178581264944972037">Jeda</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Dasar</translation>
 <translation id="2183608646556468874">Nombor Telefon</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 alamat}other{# alamat}}</translation>
+<translation id="2187243482123994665">Kehadiran pengguna</translation>
 <translation id="2187317261103489799">Kesan (lalai)</translation>
 <translation id="2188375229972301266">Berbilang tebukan bawah</translation>
 <translation id="2202020181578195191">Masukkan tahun tamat tempoh yang sah</translation>
@@ -533,6 +537,7 @@
       memastikan pelayan proksi berfungsi. Jika anda tidak percaya anda perlu 
       menggunakan pelayan proksi:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> ingin tahu waktu anda ada</translation>
 <translation id="3188393374551744535">Baki akaun</translation>
 <translation id="3194737229810486521"><ph name="URL" /> mahu menyimpan data pada peranti anda secara kekal</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> pada <ph name="SERVER_NAME" /></translation>
@@ -1026,6 +1031,7 @@
 <translation id="5171689220826475070">Fanfold-Eropah</translation>
 <translation id="5172758083709347301">Mesin</translation>
 <translation id="5179510805599951267">Bukan dalam <ph name="ORIGINAL_LANGUAGE" />? Laporkan ralat ini</translation>
+<translation id="5179740473595559246">Tahu waktu anda ada</translation>
 <translation id="5190835502935405962">Bar Penanda Halaman</translation>
 <translation id="519422657042045905">Anotasi tidak tersedia</translation>
 <translation id="5201306358585911203">Halaman terbenam pada halaman ini menyatakan</translation>
@@ -1248,6 +1254,7 @@
 <translation id="6049488691372270142">Penghantaran halaman</translation>
 <translation id="6051221802930200923">Anda tidak boleh melawati <ph name="SITE" /> sekarang kerana tapak web ini menggunakan penyematan sijil. Ralat dan serangan rangkaian biasanya bersifat sementara. Oleh sebab itu, halaman ini mungkin akan berfungsi semula kemudian.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Kongsi kehadiran anda?</translation>
 <translation id="6058977677006700226">Gunakan kad anda pada semua peranti anda?</translation>
 <translation id="6059925163896151826">Peranti USB</translation>
 <translation id="6060009363608157444">Mod DnsOverHttps tidak sah.</translation>
@@ -1377,6 +1384,7 @@
 <translation id="6631202559048444592">Lebih daripada satu sumber terdapat dalam dasar ini, tetapi nilainya sama.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Kosongkan</translation>
+<translation id="6645291930348198241">Akses kuki dan data tapak.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Tiada}=1{Daripada 1 tapak (anda tidak akan dilog keluar daripada Akaun Google anda)}other{Daripada # tapak (anda tidak akan dilog keluar daripada Akaun Google anda)}}</translation>
 <translation id="6648459603387803038">Pentadbir anda boleh menukar persediaan penyemak imbas anda dari jauh. Aktiviti pada peranti ini mungkin turut diurus di luar Chrome.</translation>
 <translation id="6652101503459149953">Gunakan Windows Hello</translation>

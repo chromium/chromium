@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Oldal újratöltése a gyorsítótárat figyelmen kívül hagyva</translation>
 <translation id="124678866338384709">Az aktuális lap bezárása</translation>
 <translation id="1258753120186372309">Google ünnepi embléma: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Olvasási lista</translation>
 <translation id="1266864766717917324">Nem sikerült a(z) <ph name="CONTENT_TYPE" /> megosztása</translation>
 <translation id="1283039547216852943">Koppintson a kibontáshoz</translation>
 <translation id="1291207594882862231">Előzmények, cookie-k, webhelyadatok és a gyorsítótár törlése…</translation>
@@ -218,7 +219,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="2744248271121720757">Az azonnali kereséshez koppintson a kívánt szóra, vagy tekintse meg a kapcsolódó műveleteket</translation>
 <translation id="2760989362628427051">Sötét téma bekapcsolása, amikor az eszköz sötét témája vagy Akkumulátorkímélő módja be van kapcsolva</translation>
 <translation id="2762000892062317888">éppen most</translation>
-<translation id="2771869497727323769">Nem lehet linket létrehozni a szöveghez. Ossza meg az oldal linkjét a kívánt alkalmazásban.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> másodperc van hátra</translation>
 <translation id="2779651927720337254">sikertelen</translation>
 <translation id="2781151931089541271">1 másodperc van hátra</translation>
@@ -467,7 +467,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 letöltés befejeződött.}other{# letöltés befejeződött.}}</translation>
 <translation id="4766678251456904326">Fiók hozzáadása az eszközhöz</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 ütemezett letöltés.}other{# ütemezett letöltés.}}</translation>
-<translation id="478981486571169252">Láthatja a(z) <ph name="SITE_NAME" /> bejelentkezési állapotát, a böngészőadatokat és a webhelyadatokat a Chrome-ban.</translation>
 <translation id="4802417911091824046">Az összetett jelszavas titkosítás nem tartalmazza a Google Payben megadott fizetési módokat és címeket.
 
 A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szinkronizálást<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5040262127954254034">Adatvédelem</translation>
 <translation id="5087580092889165836">Kártya hozzáadása</translation>
 <translation id="509429900233858213">Hiba történt.</translation>
-<translation id="5100748015044654621">Ossza meg a kiemelt szöveg linkjét a kívánt alkalmazásban</translation>
 <translation id="510275257476243843">1 óra van hátra</translation>
 <translation id="5123685120097942451">Inkognitó lap</translation>
 <translation id="5127805178023152808">Szinkronizálás kikapcsolva</translation>

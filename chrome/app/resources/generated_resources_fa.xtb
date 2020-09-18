@@ -374,6 +374,7 @@
 <translation id="143027896309062157">خواندن و تغییر همه داده‌ها در رایانه‌تان و وب‌سایت‌هایی که بازدید می‌کنید</translation>
 <translation id="1430915738399379752">چاپ</translation>
 <translation id="1431188203598586230">به‌روزرسانی نرم‌افزار نهایی</translation>
+<translation id="1431402976894535801">مسدود کردن سایت‌ها برای اطلاع از وضعیت حضور شما</translation>
 <translation id="1431432486300429272">‏Google ممکن است از سابقه مرورتان برای شخصی‌سازی جستجو و سایر سرویس‌های Google استفاده کند. شما یا ولی‌تان می‌توانید هرزمان که خواستید این مورد را در myaccount.google.com/activitycontrols/search تغییر دهید</translation>
 <translation id="1432581352905426595">مدیریت موتورهای جستجو</translation>
 <translation id="1433811987160647649">پیش از دسترسی سؤال شود</translation>
@@ -427,6 +428,7 @@
 <translation id="1500297251995790841">دستگاه نامشخص [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">این حساب مالک باید اولین حسابی باشد که در یک جلسه ورود به سیستم چندگانه به سیستم وارد می‌شود.</translation>
 <translation id="150411034776756821">حذف <ph name="SITE" /></translation>
+<translation id="1504311855864906891">دریافت زیرنویس ناشنوایان برای رسانه‌ها</translation>
 <translation id="1504551620756424144">‏پوشه‌های هم‌رسانی‌شده در Windows در <ph name="BASE_DIR" /> دردسترس هستند.</translation>
 <translation id="1506061864768559482">موتور جستجو</translation>
 <translation id="1507170440449692343">این صفحه از دسترسی به دوربین شما بازداشته شده است.</translation>
@@ -566,6 +568,7 @@
 <translation id="1651008383952180276">باید همان عبارت عبور را دو بار وارد کنید</translation>
 <translation id="1652326691684645429">فعال کردن «هم‌رسانی با اطراف»</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{‏چاپگر را به Google Cloud Print اضافه کنید تا بتوانید از هر کجا چاپ کنید.}one{‏# چاپگر را به Google Cloud Print اضافه کنید تا بتوانید از هر کجا چاپ کنید.}other{‏# چاپگر را به Google Cloud Print اضافه کنید تا بتوانید از هر کجا چاپ کنید.}}</translation>
+<translation id="1653575510930452864">کپی کردن پیوند به نوشتار</translation>
 <translation id="1656528038316521561">ماتی پس‌زمینه</translation>
 <translation id="1657406563541664238">‏با ارسال خودکار آمار استفاده و گزارش‌های خرابی به Google، به بهتر شدن <ph name="PRODUCT_NAME" /> کمک کنید.</translation>
 <translation id="1657937299377480641">برای ورود دوباره به سیستم به‌منظور دسترسی به منابع آموزشی، از ولی خود بخواهید به شما اجازه بدهد</translation>
@@ -999,6 +1002,7 @@
 <translation id="2178614541317717477">‏بی اعتبارشدن CA</translation>
 <translation id="2182058453334755893">در بریده‌دان کپی شد</translation>
 <translation id="2184515124301515068">‏Chrome انتخاب کند سایت‌ها چه موقع صدا پخش کنند (توصیه می‌شود)</translation>
+<translation id="2187243482123994665">حضور کاربر</translation>
 <translation id="2187675480456493911">با دستگاه‌های دیگر در حسابتان همگام‌سازی شده است. تنظیماتی که دیگر کاربران تغییر داده‌اند همگام‌سازی نخواهد شد. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">خطای وارد کردن مجوز سرور</translation>
 <translation id="2187906491731510095">افزونه‌ها به‌روزرسانی شدند</translation>
@@ -1187,7 +1191,6 @@
 <translation id="2396783860772170191">پین ۴ رقمی را وارد کنید (۹۹۹۹-۰۰۰۰)</translation>
 <translation id="2399939490305346086">داده‌های ورود به سیستم کلید امنیتی</translation>
 <translation id="2400664245143453337">به‌روزرسانی فوری الزامی است</translation>
-<translation id="2407481962792080328">‏وقتی به «حساب Google» خود وارد می‌شوید، این ویژگی روشن می‌شود</translation>
 <translation id="2408018932941436077">درحال ذخیره کارت</translation>
 <translation id="2408955596600435184">پین را وارد کنید</translation>
 <translation id="241082044617551207">افزایه ناشناس</translation>
@@ -1827,6 +1830,7 @@
 <translation id="3163201441334626963">محصول نامشخص <ph name="PRODUCT_ID" /> از فروشنده <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">سرویس‌های زیر به ایمن و محفوظ نگه داشتن داده‌هایتان کمک می‌کنند. هرزمان که بخواهید می‌توانید این ویژگی‌ها را خاموش کنید.</translation>
 <translation id="3164329792803560526">درحال هم‌رسانی این برگه با <ph name="APP_NAME" /></translation>
+<translation id="3165371858310906303">وقتی سایتی می‌خواهد از وضعیت حضور شما مطلع شود سؤال شود</translation>
 <translation id="3165390001037658081">برخی شرکت‌های مخابراتی ممکن است این قابلیت را مسدود کنند.</translation>
 <translation id="316652501498554287">‏حساب‌های G Suite for Education</translation>
 <translation id="3169472444629675720">کشف کردن</translation>
@@ -2944,6 +2948,7 @@
 <translation id="4527186207340858212">نمایه جدیدی برای کار ایجاد شود؟</translation>
 <translation id="452750746583162491">مرور داده‌های همگام‌سازی‌شده</translation>
 <translation id="4530494379350999373">مبدأ</translation>
+<translation id="4531924570968473143">چه شخصی را می‌خواهید به این <ph name="DEVICE_TYPE" /> اضافه کنید؟</translation>
 <translation id="4532646538815530781">این سایت از حسگرهای حرکتی استفاده می‌کند</translation>
 <translation id="4533846798469727141">‏اکنون بگویید «Hey Google»</translation>
 <translation id="4533985347672295764">‏زمان پردازش CPU</translation>
@@ -3063,6 +3068,7 @@
 <translation id="4657810666108475055">جستجوی برگه</translation>
 <translation id="465878909996028221">‏فقط پروتکل‌های فایل، http و https برای ویژگی هدایت کردن مرورگر پشتیبانی می‌شوند.</translation>
 <translation id="4659077111144409915">حساب اصلی</translation>
+<translation id="4659126640776004816">‏وقتی به «حساب Google» خود وارد می‌شوید، این ویژگی روشن می‌شود.</translation>
 <translation id="4660476621274971848">نسخه موردانتظار «<ph name="EXPECTED_VERSION" />» است، اما نسخه «<ph name="NEW_ID" />» بود</translation>
 <translation id="4660540330091848931">درحال تغییر اندازه</translation>
 <translation id="4661407454952063730">داده‌های برنامه می‌توانند هر داده‌ای باشند که برنامه (براساس تنظیمات برنامه‌نویس) ذخیره کرده است، ازجمله داده‌هایی مانند مخاطبین، پیام‌ها، و عکس‌ها.</translation>
@@ -3128,7 +3134,6 @@
 <translation id="4750394297954878236">پیشنهادات</translation>
 <translation id="475088594373173692">کاربر اول</translation>
 <translation id="4751476147751820511">حسگرهای نوری یا حرکتی</translation>
-<translation id="4752124003533492687">برای اتصال <ph name="USB_DEVICE_NAME" />، «تنظیمات» را باز کنید</translation>
 <translation id="4756378406049221019">توقف/تازه‌سازی</translation>
 <translation id="4756388243121344051">&amp;سابقه</translation>
 <translation id="4759238208242260848">بارگیری‌ها</translation>
@@ -3975,6 +3980,7 @@
 <translation id="5804241973901381774">مجوزها</translation>
 <translation id="5805697420284793859">مدیر پنجره</translation>
 <translation id="5806773519584576205">۰ درجه (پیش‌فرض)</translation>
+<translation id="5808664694611589238">{0,plural, =1{بستن پنجره مهمان}one{بستن پنجره مهمان}other{بستن پنجره‌های مهمان}}</translation>
 <translation id="5810809306422959727">این حساب برای کنترل‌های والدین واجد شرایط نیست</translation>
 <translation id="5812674658566766066">بزرگ کردن همه</translation>
 <translation id="5814126672212206791">نوع اتصال</translation>
@@ -4432,6 +4438,7 @@
 <translation id="6344170822609224263">فهرست دسترسی از اتصالات شبکه</translation>
 <translation id="6344576354370880196">چاپگرهای ذخیره‌شده</translation>
 <translation id="6345418402353744910">وارد کردن نام کاربری و گذرواژه برای پراکسی <ph name="PROXY" /> الزامی است تا سرپرست بتواند شبکه‌تان را پیکربندی کند</translation>
+<translation id="6345878117466430440">علامت‌گذاری به‌عنوان خوانده‌شده</translation>
 <translation id="6349101878882523185">نصب <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">همگام‌سازی کار نمی‌کند. از سیستم خارج شوید و دوباره به آن وارد شوید.</translation>
 <translation id="6351063337294363751">می‌توانید داده‌های مرور را از این منو پاک کنید</translation>
@@ -5018,6 +5025,7 @@
 <translation id="7075513071073410194">‏PKCS #1 MD5 با رمزگذاری RSA</translation>
 <translation id="7075625805486468288">‏مدیریت گواهی‌ها و تنظیمات HTTPS/SSL</translation>
 <translation id="7076293881109082629">در حال ورود به سیستم</translation>
+<translation id="7076878155205969899">بی‌صدا کردن</translation>
 <translation id="7077829361966535409">بارگیری صفحه ورود به سیستم با استفاده از تنظمیات کنونی پروکسی انجام نشد. لطفاً <ph name="GAIA_RELOAD_LINK_START" />دوباره به سیستم وارد شوید<ph name="GAIA_RELOAD_LINK_END" /> یا از <ph name="PROXY_SETTINGS_LINK_START" />تنظمیات پروکسی<ph name="PROXY_SETTINGS_LINK_END" /> متفاوتی استفاده نمایید.</translation>
 <translation id="7078120482318506217">تمام شبکه‌ها</translation>
 <translation id="708060913198414444">کپی آدرس صوت</translation>
@@ -5038,7 +5046,6 @@
 <translation id="7099337801055912064">‏فایل PPD بزرگ است و بار نمی‌شود. حداکثر اندازه ۲۵۰ کیلوبایت است.</translation>
 <translation id="7102687220333134671">به‌روزرسانی‌های خودکار روشن هستند</translation>
 <translation id="7102832101143475489">درنگ درخواست تمام شد</translation>
-<translation id="7105390788077117391">‏اولویت‌های USB</translation>
 <translation id="710640343305609397">بازکردن تنظیمات شبکه</translation>
 <translation id="7108338896283013870">عدم نمایش</translation>
 <translation id="7108668606237948702">Enter</translation>
@@ -5068,7 +5075,6 @@
 <translation id="7136694880210472378">پیش‌فرض قرار دادن</translation>
 <translation id="7136984461011502314">به <ph name="PRODUCT_NAME" /> خوش آمدید</translation>
 <translation id="7136993520339022828">خطایی روی داده است. لطفاً با انتخاب تصاویر دیگر دوباره امتحان کنید.</translation>
-<translation id="7138678301420049075">دیگر</translation>
 <translation id="713888829801648570">متأسفیم، گذرواژه‌تان قابل تأیید نیست، زیرا آفلاین هستید.</translation>
 <translation id="7140928199327930795">هیچ دستگاه دیگری در دسترس نیست.</translation>
 <translation id="7141105143012495934">به دلیل اینکه جزئيات حساب شما بازیابی نشد، ورود به سیستم ناموفق بود. لطفاً با سرپرستتان تماس بگیرید یا دوباره امتحان کنید.</translation>
@@ -5175,6 +5181,7 @@
 <translation id="7280649757394340890">تنظیمات صدای نوشتار به گفتار</translation>
 <translation id="7280877790564589615">مجوز درخواست شد</translation>
 <translation id="7282992757463864530">نوار اطلاعات</translation>
+<translation id="7284411326658527427">هر فرد می‌تواند حسابش را شخصی‌سازی کند و داده‌ها را خصوصی نگه دارد.</translation>
 <translation id="7287143125007575591">دسترسی رد شد.</translation>
 <translation id="7287411021188441799">بازیابی پس‌زمینه پیش‌فرض</translation>
 <translation id="7288013116963835700">‏برداشتن Linux در <ph name="DEVICE_TYPE" /></translation>
@@ -5751,6 +5758,7 @@
 <translation id="7963826112438303517">‏«دستیار» از این موارد ضبط‌شده و درخواست‌های گفتاری‌تان برای ایجاد و به‌روزرسانی مدل صوتی‌تان استفاده می‌کند؛ این مدل فقط در دستگاه‌هایی ذخیره می‌شود که Voice Match در آن‌ها روشن شده است. برای مشاهده یا آموزش مجدد فعالیت صوتی، به «تنظیمات دستیار» بروید.</translation>
 <translation id="7966241909927244760">کپی آدرس تصویر</translation>
 <translation id="7968072247663421402">گزینه‌های ارائه‌دهنده</translation>
+<translation id="7968198493605442410">کپی کردن پیوند به نوشتار</translation>
 <translation id="7968742106503422125">خواندن و اصلاح داده‌‌هایی که کپی و جای‌گذاری می‌کنید</translation>
 <translation id="7968833647796919681">فعال کردن جمع‌آوری داده‌های عملکرد</translation>
 <translation id="7968982339740310781">مشاهدهٔ جزئیات</translation>
@@ -6131,6 +6139,7 @@
 <translation id="8428213095426709021">تنظیمات</translation>
 <translation id="8428271547607112339">افزودن حساب محل تحصیل</translation>
 <translation id="8428628598981198790">نمی‌توان از کلید امنیتی‌تان در این سایت استفاده کرد.</translation>
+<translation id="8428634594422941299">متوجه شدم</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> دیگر از سیستم خارج می‌شوید</translation>
 <translation id="8431190899827883166">نمایش ضربه‌ها</translation>
 <translation id="8431909052837336408">تغییر پین سیم</translation>

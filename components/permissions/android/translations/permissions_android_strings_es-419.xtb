@@ -3,12 +3,10 @@
 <translationbundle lang="es-419">
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2416359993254398973">Chrome necesita permiso para acceder a tu cámara para este sitio.</translation>
-<translation id="4955546094786399712">Si quieres cambiar el permiso para este sitio, cierra la otra app y vuelve a intentarlo.\n\nSi no puedes cerrarla, desactiva su permiso para "Mostrar sobre otras apps" en la configuración de Android.</translation>
 <translation id="557283862590186398">Chrome necesita permiso para acceder a tu micrófono para este sitio.</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="6092062101542170135">Para continuar, activa NFC en la configuración de Android</translation>
 <translation id="6393863479814692971">Chrome necesita permiso para acceder a tu cámara y micrófono para este sitio.</translation>
 <translation id="6697947395630195233">Chrome necesita acceso a tu ubicación para compartirla con este sitio.</translation>
 <translation id="7134415045456331657">Chrome necesita permiso para acceder a la cámara a fin de crear un mapa 3D de tu entorno.</translation>
-<translation id="7681341492080683492">Se está mostrando otra app sobre <ph name="APP_NAME" /></translation>
 </translationbundle>

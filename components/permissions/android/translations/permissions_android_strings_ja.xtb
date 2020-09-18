@@ -3,12 +3,10 @@
 <translationbundle lang="ja">
 <translation id="2359808026110333948">続行</translation>
 <translation id="2416359993254398973">このサイトを利用するには、Chrome でカメラの使用を許可する必要があります。</translation>
-<translation id="4955546094786399712">このサイトの権限を変更するには、表示されている別のアプリを閉じてから、もう一度お試しください。\n\nアプリが閉じない場合は、Android 設定でアプリの「他のアプリの上に重ねて表示」の権限をオフにしてください。</translation>
 <translation id="557283862590186398">このサイトを利用するには、Chrome でマイクの使用を許可する必要があります。</translation>
 <translation id="5860491529813859533">オンにする</translation>
 <translation id="6092062101542170135">続行するには、Android の設定で NFC をオンにしてください。</translation>
 <translation id="6393863479814692971">このサイトを利用するには、Chrome でカメラとマイクの使用を許可する必要があります。</translation>
 <translation id="6697947395630195233">このサイトで現在地を共有するには、Chrome で位置情報の使用を許可する必要があります。</translation>
 <translation id="7134415045456331657">周囲の 3D マップを作成するには、Chrome にカメラの使用を許可する必要があります。</translation>
-<translation id="7681341492080683492">別のアプリが <ph name="APP_NAME" /> の上に表示されています</translation>
 </translationbundle>

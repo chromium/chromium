@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Det gick inte att öppna filen av säkerhetsskäl.</translation>
 <translation id="169515659049020177">Skift</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> objekt komprimeras ...</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> objekt har kopierats.</translation>
 <translation id="174173592514158117">Visa alla Play-mappar</translation>
 <translation id="174937106936716857">Totalt antal filer</translation>
 <translation id="1775381402323441512">Videoinformation</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Ogiltigt tecken: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Tangentbord för vietnamesiska (TCVN)</translation>
 <translation id="2168214441502403371">Tangentbord för persiska</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> har flyttats.</translation>
 <translation id="2198315389084035571">kinesiska (förenklad)</translation>
 <translation id="2208158072373999562">Zip-arkiv</translation>
 <translation id="2225536596944493418">Vill du ta bort <ph name="NUMBER_OF_ITEMS" /> objekt?</translation>
 <translation id="2230062665678605299">Det går inte att skapa mappen <ph name="FOLDER_NAME" />. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Flyttad.</translation>
 <translation id="2278988676849463018">Tangentbord för kannada (fonetiskt)</translation>
 <translation id="2288278176040912387">Skivspelare</translation>
 <translation id="2291538123825441971">Öppnar <ph name="NUMBER_OF_FILES" /> filer.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Allt har säkerhetskopierats!</translation>
 <translation id="3626281679859535460">Ljusstyrka</translation>
 <translation id="3644896802912593514">Bredd</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> objekt flyttades.</translation>
 <translation id="3645531960514756307">Lossa mapp</translation>
 <translation id="3678559383040232393">Maltesiskt tangentbord</translation>
 <translation id="3685122418104378273">Google Drive-synkronisering inaktiveras som standard när mobildata används.</translation>
@@ -395,6 +399,7 @@
     Oavsett vad som händer med din enhet förvaras filerna säkert i Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Dela, skapa och jobba<ph name="MARKUP_8" />
     med filer tillsammans med andra på ett och samma ställe.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Kopierad.</translation>
 <translation id="5275973617553375938">Återställda filer från Google Drive</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Spara</translation>
@@ -594,6 +599,7 @@
 <translation id="751507702149411736">vitryska</translation>
 <translation id="7544853251252956727">Blanda</translation>
 <translation id="7547811415869834682">nederländska</translation>
+<translation id="7551643184018910560">Fäst på hyllan</translation>
 <translation id="7576032389798113292">6:4</translation>
 <translation id="7589661784326793847">Ett ögonblick</translation>
 <translation id="7603724359189955920">Rutnät</translation>
@@ -677,6 +683,7 @@
 <translation id="8299269255470343364">japanska</translation>
 <translation id="8312871300878166382">Klistra in i mapp</translation>
 <translation id="8329978297633540474">Oformaterad text</translation>
+<translation id="8335587457941836791">Ta bort från hyllan</translation>
 <translation id="8336153091935557858">Igår kl. <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336579025507394412">Isländskt tangentbord</translation>
 <translation id="8342318071240498787">Det finns redan en fil eller en katalog med samma namn.</translation>
@@ -749,6 +756,7 @@
 <translation id="943972244133411984">Ändrades av</translation>
 <translation id="945522503751344254">Skicka feedback</translation>
 <translation id="947144732524271678"><ph name="ENTRY_COUNT" /> poster har markerats från och med <ph name="FROM_ENTRY_NAME" /> till och med <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> har kopierats.</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Det finns redan en fil med namnet <ph name="FILE_NAME" />. Vill du ersätta den?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

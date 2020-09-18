@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Reconnecting to Wi-Fi</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1165174597379888365">Page is visited</translation>
+<translation id="1174723505405632867">Do you want to allow <ph name="EMBEDDED_URL" /> to use cookies and site data on <ph name="TOP_LEVEL_URL" />?
+
+This will otherwise be blocked by your privacy settings. This will allow the content that you interacted with to work correctly, but may allow <ph name="EMBEDDED_URL" /> to track your activity.</translation>
 <translation id="1175364870820465910">&amp;Print...</translation>
 <translation id="1175875016430184367">Triple staple right</translation>
 <translation id="1178581264944972037">Pause</translation>
@@ -308,6 +311,7 @@
 <translation id="2181821976797666341">Policies</translation>
 <translation id="2183608646556468874">Phone Number</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 address}other{# addresses}}</translation>
+<translation id="2187243482123994665">User presence</translation>
 <translation id="2187317261103489799">Detect (default)</translation>
 <translation id="2188375229972301266">Multiple punch bottom</translation>
 <translation id="2202020181578195191">Enter a valid expiry year</translation>
@@ -532,6 +536,7 @@
       make sure that the proxy server is working. If you don't believe you should
       be using a proxy server:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> wants to know when you're present</translation>
 <translation id="3188393374551744535">Account balance</translation>
 <translation id="3194737229810486521"><ph name="URL" /> wants to permanently store data on your device</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> on <ph name="SERVER_NAME" /></translation>
@@ -1024,6 +1029,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Machine</translation>
 <translation id="5179510805599951267">Not in <ph name="ORIGINAL_LANGUAGE" />? Report this error</translation>
+<translation id="5179740473595559246">Know when you're present</translation>
 <translation id="5190835502935405962">Bookmarks Bar</translation>
 <translation id="519422657042045905">Annotation not available</translation>
 <translation id="5201306358585911203">An embedded page on this page says</translation>
@@ -1246,6 +1252,7 @@
 <translation id="6049488691372270142">Page delivery</translation>
 <translation id="6051221802930200923">You cannot visit <ph name="SITE" /> right now because the website uses certificate pinning. Network errors and attacks are usually temporary, so this page will probably work later.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Share your presence?</translation>
 <translation id="6058977677006700226">Use your cards on all your devices?</translation>
 <translation id="6059925163896151826">USB devices</translation>
 <translation id="6060009363608157444">Invalid DnsOverHttps mode.</translation>
@@ -1375,6 +1382,7 @@
 <translation id="6631202559048444592">More than one source is present for the policy, but the values are the same.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Clear</translation>
+<translation id="6645291930348198241">Access cookies and site data.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{None}=1{From 1 site (you won't be signed out of your Google Account)}other{From # sites (you won't be signed out of your Google Account)}}</translation>
 <translation id="6648459603387803038">Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome.</translation>
 <translation id="6652101503459149953">Use Windows Hello</translation>

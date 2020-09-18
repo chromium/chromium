@@ -293,6 +293,7 @@ En revanche, lorsque vous êtes en mode navigation privée, les sites ne peuvent
 <translation id="4277990410970811858">Navigation sécurisée</translation>
 <translation id="4281844954008187215">Conditions d'utilisation</translation>
 <translation id="430793432425771671">Tout synchroniser</translation>
+<translation id="4309403553630140242">Appuyez deux fois pour obtenir plus d'informations</translation>
 <translation id="430967081421617822">Toutes les données</translation>
 <translation id="4334428914252001502">1 article non lu.</translation>
 <translation id="4338650699862464074">Envoie à Google les URL des pages que vous consultez.</translation>
@@ -561,6 +562,7 @@ En revanche, ils ne peuvent pas en utiliser pour voir votre activité de navigat
 <translation id="7189598951263744875">Partager…</translation>
 <translation id="7192050974311852563">Démarrer la journalisation</translation>
 <translation id="7203585745079012652">Énoncer les réponses</translation>
+<translation id="7207383424303353046">Nouveau : Ouvrez automatiquement les sites dans Chrome en le définissant comme appli de navigation par défaut. <ph name="BEGIN_LINK" />Accéder aux paramètres<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Pseudo incorrect associé à la carte</translation>
 <translation id="7265758999917665941">Jamais pour ce site</translation>
 <translation id="7272437679830969316">Impossible de confirmer votre identité. Mot de passe non copié.</translation>
@@ -638,6 +640,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8073670137947914548">Téléchargement terminé</translation>
 <translation id="8073872304774253879">Améliorer les recherches et la navigation</translation>
 <translation id="8076014560081431679">Les paramètres de site enregistrés ne seront pas supprimés et peuvent donner des indications sur vos habitudes de navigation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="8079602123447022758">Il s'agit d'un paramètre géré, appuyez deux fois pour plus d'informations</translation>
 <translation id="8105368624971345109">Désactiver</translation>
 <translation id="8114753159095730575">Vous pouvez télécharger des fichiers. Différentes options sont disponibles au bas de l'écran.</translation>
 <translation id="8131740175452115882">Confirmer</translation>

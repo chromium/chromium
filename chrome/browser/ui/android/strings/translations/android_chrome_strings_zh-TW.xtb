@@ -39,6 +39,7 @@
 <translation id="123724288017357924">重新載入目前的網頁，略過已快取的內容</translation>
 <translation id="124678866338384709">關閉目前的分頁</translation>
 <translation id="1258753120186372309">Google Doodle：<ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">閱讀清單</translation>
 <translation id="1266864766717917324">無法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">輕觸即可展開</translation>
 <translation id="1291207594882862231">清除歷史記錄、Cookie、網站資料、快取…</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">只要輕觸字詞就能立即展開搜尋或查看相關的動作</translation>
 <translation id="2760989362628427051">當裝置開啟深色主題或節約耗電量功能時，啟用深色主題</translation>
 <translation id="2762000892062317888">剛剛</translation>
-<translation id="2771869497727323769">無法建立文字連結。請在應用程式中分享頁面連結。</translation>
 <translation id="2777555524387840389">還剩 <ph name="SECONDS" /> 秒</translation>
 <translation id="2779651927720337254">失敗</translation>
 <translation id="2781151931089541271">還剩 1 秒</translation>
@@ -467,7 +467,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{已完成 1 項下載作業。}other{已完成 # 項下載作業。}}</translation>
 <translation id="4766678251456904326">在裝置上新增帳戶</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{已排定 1 項下載作業。}other{已排定 # 項下載作業。}}</translation>
-<translation id="478981486571169252">你可以在 Chrome 中查看 <ph name="SITE_NAME" /> 登入狀態、瀏覽資料和網站資料。</translation>
 <translation id="4802417911091824046">通關密語加密保護的資料不包括 Google Pay 的付款方式和地址。
 
 如要變更這項設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@
 <translation id="5040262127954254034">隱私權</translation>
 <translation id="5087580092889165836">新增信用卡</translation>
 <translation id="509429900233858213">發生錯誤。</translation>
-<translation id="5100748015044654621">請在應用程式中分享已標示文字的連結</translation>
 <translation id="510275257476243843">還剩 1 小時</translation>
 <translation id="5123685120097942451">無痕式分頁</translation>
 <translation id="5127805178023152808">同步功能已停用</translation>
@@ -1001,6 +999,7 @@
 <translation id="8748850008226585750">內容已隱藏</translation>
 <translation id="8788265440806329501">瀏覽記錄已關閉</translation>
 <translation id="8788968922598763114">重新開啟最近關閉的分頁</translation>
+<translation id="8798449543960971550">讀取</translation>
 <translation id="8812260976093120287">在部分網站上，你可以在你的裝置上使用上述支援的付款應用程式付款。</translation>
 <translation id="8820817407110198400">書籤</translation>
 <translation id="883806473910249246">下載這項內容時發生錯誤。</translation>

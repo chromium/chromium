@@ -39,6 +39,7 @@
 <translation id="123724288017357924">કૅશ કરેલ કન્ટેન્ટને અવગણીને વર્તમાન પેજ ફરીથી લોડ કરો</translation>
 <translation id="124678866338384709">વર્તમાન ટૅબ બંધ કરો</translation>
 <translation id="1258753120186372309">Google ડૂડલ: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">વાચન સૂચિ</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> શેર કરી શકાયો નથી</translation>
 <translation id="1283039547216852943">વિસ્તૃત કરવા માટે ટૅપ કરો</translation>
 <translation id="1291207594882862231">ઇતિહાસ, કુકી, સાઇટ ડેટા, કૅશ સાફ કરો…</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">ઝટપટ શોધ કરવા માટે શબ્દ પર ટૅપ કરો અથવા સંબંધિત ક્રિયાઓ જુઓ</translation>
 <translation id="2760989362628427051">જ્યારે તમારા ડિવાઇસની ઘેરી થીમ અથવા બૅટરી સેવર ચાલુ હોય ત્યારે ઘેરી થીમ ચાલુ કરો</translation>
 <translation id="2762000892062317888">હમણાં જ</translation>
-<translation id="2771869497727323769">આ ટેક્સ્ટની લિંક બનાવી શકાતી નથી. કોઈ ઍપમાં આ પેજની લિંક શેર કરો.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> સેકંડ બાકી</translation>
 <translation id="2779651927720337254">નિષ્ફળ થયું</translation>
 <translation id="2781151931089541271">1 સેકંડ બાકી</translation>
@@ -467,7 +467,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 ડાઉનલોડ પૂર્ણ થયું.}one{# ડાઉનલોડ પૂર્ણ થયું.}other{# ડાઉનલોડ પૂર્ણ થયાં.}}</translation>
 <translation id="4766678251456904326">ડિવાઇસમાં એકાઉન્ટ ઉમેરો</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 ડાઉનલોડ શેડ્યૂલ થયું છે.}one{# ડાઉનલોડ શેડ્યૂલ થયાં છે.}other{# ડાઉનલોડ શેડ્યૂલ થયાં છે.}}</translation>
-<translation id="478981486571169252">તમને Chromeમાં તમારું <ph name="SITE_NAME" /> સાઇન ઇન સ્ટેટસ, બ્રાઉઝિંગ ડેટા અને સાઇટ ડેટા દેખાશે.</translation>
 <translation id="4802417911091824046">પાસફ્રેઝ એન્ક્રિપ્શનમાં Google Payની ચુકવણી પદ્ધતિઓ અને ઍડ્રેસ સામેલ હોતા નથી. 
 
 આ સેટિંગ બદલવા માટે, <ph name="BEGIN_LINK" />સિંકને રીસેટ કરો<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@
 <translation id="5040262127954254034">પ્રાઇવસી</translation>
 <translation id="5087580092889165836">કાર્ડ ઉમેરો</translation>
 <translation id="509429900233858213">કોઈ ભૂલ આવી છે.</translation>
-<translation id="5100748015044654621">હાઇલાઇટ કરેલી ટેક્સ્ટને કોઈ ઍપમાં લિંક બનાવીને શેર કરો</translation>
 <translation id="510275257476243843">1 કલાક બાકી</translation>
 <translation id="5123685120097942451">છૂપા મોડમાંની ટૅબ</translation>
 <translation id="5127805178023152808">સમન્વયન બંધ છે</translation>

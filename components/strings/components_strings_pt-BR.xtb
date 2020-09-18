@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Conectar à rede Wi-Fi novamente</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1165174597379888365">Uma página é acessada</translation>
+<translation id="1174723505405632867">Você quer permitir que <ph name="EMBEDDED_URL" /> use cookies e dados do site em <ph name="TOP_LEVEL_URL" />?
+
+Se não fizer isso, a permissão será bloqueada pelas configurações de privacidade. Se permitir, o conteúdo com que você interagiu funcionará corretamente, mas <ph name="EMBEDDED_URL" /> poderá rastrear suas atividades.</translation>
 <translation id="1175364870820465910">&amp;Imprimir...</translation>
 <translation id="1175875016430184367">Três grampos no lado direito</translation>
 <translation id="1178581264944972037">Pausar</translation>
@@ -305,6 +308,7 @@
 <translation id="2181821976797666341">Políticas</translation>
 <translation id="2183608646556468874">Número de telefone</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 endereço}one{# endereço}other{# endereços}}</translation>
+<translation id="2187243482123994665">Presença do usuário</translation>
 <translation id="2187317261103489799">Detectar (padrão)</translation>
 <translation id="2188375229972301266">Perfuração múltipla na parte inferior</translation>
 <translation id="2202020181578195191">Informe um ano de validade válido</translation>
@@ -527,6 +531,7 @@
       verificar se o servidor proxy está funcionando. Se você acredita que não deve
       usar um servidor proxy:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> quer saber quando você está presente</translation>
 <translation id="3188393374551744535">Saldo da conta</translation>
 <translation id="3194737229810486521"><ph name="URL" /> quer armazenar permanentemente os dados no seu dispositivo</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> em <ph name="SERVER_NAME" /></translation>
@@ -1014,6 +1019,7 @@
 <translation id="5171689220826475070">Fanfold European</translation>
 <translation id="5172758083709347301">Máquina</translation>
 <translation id="5179510805599951267">Não está em <ph name="ORIGINAL_LANGUAGE" />? Informe este erro</translation>
+<translation id="5179740473595559246">Saber quando você está presente</translation>
 <translation id="5190835502935405962">Barra de favoritos</translation>
 <translation id="519422657042045905">Anotação indisponível</translation>
 <translation id="5201306358585911203">Uma página incorporada nesta página diz</translation>
@@ -1236,6 +1242,7 @@
 <translation id="6049488691372270142">Entrega de página</translation>
 <translation id="6051221802930200923">Não é possível acessar <ph name="SITE" /> no momento, porque o site usa bloqueio de certificados. Como os ataques e erros de rede são geralmente temporários, esta pagina provavelmente funcionará mais tarde.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Compartilhar sua presença?</translation>
 <translation id="6058977677006700226">Usar seus cartões em todos os dispositivos?</translation>
 <translation id="6059925163896151826">Dispositivos USB</translation>
 <translation id="6060009363608157444">Modo DnsOverHttps inválido.</translation>
@@ -1365,6 +1372,7 @@
 <translation id="6631202559048444592">Há mais de uma fonte para esta política, mas os valores são os mesmos.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Limpar</translation>
+<translation id="6645291930348198241">Acesso a cookies e dados do site.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Nenhum}=1{De 1 site (você não será desconectado da sua Conta do Google)}one{De # site (você não será desconectado da sua Conta do Google)}other{De # sites (você não será desconectado da sua Conta do Google)}}</translation>
 <translation id="6648459603387803038">O administrador pode mudar as configurações do navegador remotamente. A atividade deste dispositivo também pode ser gerenciada fora do Chrome.</translation>
 <translation id="6652101503459149953">Usar Windows Hello</translation>

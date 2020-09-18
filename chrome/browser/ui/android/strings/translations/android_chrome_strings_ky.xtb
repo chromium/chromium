@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Кэшти колдонбой, учурдагы баракты кайра жүктөө</translation>
 <translation id="124678866338384709">Учурдагы өтмөктү жабуу</translation>
 <translation id="1258753120186372309">Google чиймелек: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Окуу тизмеси</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> менен бөлүшүлгөн жок</translation>
 <translation id="1283039547216852943">Жайып көрсөтүү үчүн таптап коюңуз</translation>
 <translation id="1291207594882862231">Таржымалды, кукилерди, сайт дайындарын, кешти тазалоо…</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">Сөздү ыкчам издөө же окшош аракеттерди көрүү үчүн таптап коюңуз</translation>
 <translation id="2760989362628427051">Түзмөгүңүз кубатты үнөмдөө режиминде иштегенде, Батареяны үнөмдөгүчтү күйгүзүңүз</translation>
 <translation id="2762000892062317888">жаңы эле</translation>
-<translation id="2771869497727323769">Текстке шилтеме түзүлгөн жок. Колдонмодогу барактын шилтемесин бөлүшүңүз.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> сек. калды</translation>
 <translation id="2779651927720337254">ката</translation>
 <translation id="2781151931089541271">1 сек. калды</translation>
@@ -467,7 +467,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 жүктөп алуу аяктады.}other{# жүктөп алуу аяктады.}}</translation>
 <translation id="4766678251456904326">Түзмөккө аккаунт кошуңуз</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 жүктөп алуу графикке киргизилди.}other{# жүктөп алуу графикке киргизилди.}}</translation>
-<translation id="478981486571169252"><ph name="SITE_NAME" /> сайтына кирип же кирбей турганыңызды, серептөө дайындарын жана сайттын дайындарын Chrome'дон көрөсүз.</translation>
 <translation id="4802417911091824046">Купуя сөз айкашы менен шифрлөө Google Pay'деги төлөм ыкмалары менен даректерине карата колдонулбайт.
 
 Бул жөндөөнү өзгөртүү үчүн <ph name="BEGIN_LINK" />шайкештирүүнү баштапкы абалга келтириңиз<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5040262127954254034">Купуялык</translation>
 <translation id="5087580092889165836">Карточка кошуу</translation>
 <translation id="509429900233858213">Ката кетти.</translation>
-<translation id="5100748015044654621">Колдонмодогу бөлүнүп көрсөтүлгөн тексттин шилтемесин бөлүшүңүз.</translation>
 <translation id="510275257476243843">1 саат калды</translation>
 <translation id="5123685120097942451">Жашыруун өтмөк</translation>
 <translation id="5127805178023152808">Шайкештештирүү өчүк</translation>

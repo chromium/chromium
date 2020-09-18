@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Tải lại trang hiện tại, bỏ qua nội dung được lưu trong bộ nhớ đệm</translation>
 <translation id="124678866338384709">Đóng thẻ hiện tại</translation>
 <translation id="1258753120186372309">Hình tượng trưng của Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Danh sách đọc</translation>
 <translation id="1266864766717917324">Không thể chia sẻ <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Nhấn để mở rộng</translation>
 <translation id="1291207594882862231">Xóa lịch sử, cookie, dữ liệu trang web, bộ nhớ đệm…</translation>
@@ -218,7 +219,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2744248271121720757">Hãy nhấn vào một từ để tìm kiếm ngay hoặc xem các hành động có liên quan</translation>
 <translation id="2760989362628427051">Bật giao diện tối khi Trình tiết kiệm pin hoặc giao diện tối trên thiết bị đang bật</translation>
 <translation id="2762000892062317888">vừa xong</translation>
-<translation id="2771869497727323769">Không thể tạo đường liên kết đến văn bản. Hãy chia sẻ đường liên kết đến trang trong một ứng dụng.</translation>
 <translation id="2777555524387840389">Còn <ph name="SECONDS" /> giây</translation>
 <translation id="2779651927720337254">không tải xuống được</translation>
 <translation id="2781151931089541271">Còn 1 giây</translation>
@@ -467,7 +467,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{Đã tải xong 1 tệp xuống.}other{Đã tải xong # tệp xuống.}}</translation>
 <translation id="4766678251456904326">Thêm tài khoản vào thiết bị</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{Đã lên lịch 1 quá trình tải xuống.}other{Đã lên lịch # quá trình tải xuống.}}</translation>
-<translation id="478981486571169252">Trong Chrome, bạn sẽ thấy trạng thái đăng nhập, dữ liệu duyệt web và dữ liệu trang web trên <ph name="SITE_NAME" />.</translation>
 <translation id="4802417911091824046">Việc mã hóa cụm mật khẩu không bao gồm địa chỉ và phương thức thanh toán từ Google Pay.
 
 Để thay đổi tùy chọn cài đặt này, hãy <ph name="BEGIN_LINK" />đặt lại tính năng đồng bộ hóa<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5040262127954254034">Quyền riêng tư</translation>
 <translation id="5087580092889165836">Thêm thẻ</translation>
 <translation id="509429900233858213">Đã xảy ra lỗi.</translation>
-<translation id="5100748015044654621">Chia sẻ đường liên kết đến văn bản được đánh dấu trong một ứng dụng</translation>
 <translation id="510275257476243843">Còn 1 giờ</translation>
 <translation id="5123685120097942451">Thẻ ẩn danh</translation>
 <translation id="5127805178023152808">Đồng bộ hóa đã tắt</translation>

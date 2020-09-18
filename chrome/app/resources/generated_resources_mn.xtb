@@ -374,6 +374,7 @@
 <translation id="143027896309062157">Компьютер болон өөрийнхөө ордог вэбсайтууд дээрх бүх мэдээллээ уншуулж, өөрчлөх</translation>
 <translation id="1430915738399379752">Хэвлэх</translation>
 <translation id="1431188203598586230">Программ хангамжийн хамгийн сүүлийн шинэчлэлт</translation>
+<translation id="1431402976894535801">Сайтуудыг таныг байгаа үед мэдэхийг нь блоклоно</translation>
 <translation id="1431432486300429272">Google нь Хайлт болон Google-н бусад үйлчилгээг хувийн болгохын тулд таны хөтчийн түүхийг ашиглаж болно. Та болон таны эцэг эх үүнийг myaccount.google.com/activitycontrols/search-д хүссэн үедээ өөрчлөх боломжтой.</translation>
 <translation id="1432581352905426595">Хайлтын системийг удирдах</translation>
 <translation id="1433811987160647649">Хандахаас өмнө асуух</translation>
@@ -427,6 +428,7 @@
 <translation id="1500297251995790841">Үл мэдэгдэх төхөөрөмж [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Эзэмшигчийн дансанд эхлээд олон нэвтрэх хэсэгт нэвтэрсэн байх шаардлагтай.</translation>
 <translation id="150411034776756821"><ph name="SITE" />-г устгах</translation>
+<translation id="1504311855864906891">Медиагаа хадмалтай болгох</translation>
 <translation id="1504551620756424144">Хуваалцсан фолдерууд нь Windows-д <ph name="BASE_DIR" /> дээр байна.</translation>
 <translation id="1506061864768559482">Хайлтын хэрэгсэл</translation>
 <translation id="1507170440449692343">Энэ хуудас нь таны камерт хандалт хийх эрхгүй.</translation>
@@ -565,6 +567,7 @@
 <translation id="1651008383952180276">Та нэвтрэх үгээ хоёр удаа зөв оруулах шаардлагатай</translation>
 <translation id="1652326691684645429">Ойролцоо хуваалцах онцлогийг идэвхжүүлэх</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Хаанаас ч хэвлэхийн тулд Google Cloud Print-д хэвлэгч машин нэмэх.}other{Хаанаас ч хэвлэхийн тулд Google Cloud Print-д # хэвлэгч машин нэмэх.}}</translation>
+<translation id="1653575510930452864">Холбоосыг текст рүү хуулах</translation>
 <translation id="1656528038316521561">Дэвсгэрийн бүдэгрэл</translation>
 <translation id="1657406563541664238"><ph name="PRODUCT_NAME" />-г сайжруулахад дэмжлэг үзүүлэх зорилгоор хэрэглээний статистик болон гэмтлийн тайланг автоматаар Google-д илгээх</translation>
 <translation id="1657937299377480641">Боловсролын нөөцөд хандахаар дахин нэвтрэхийн тулд эцэг эхээсээ танд зөвшөөрөл өгөхийг хүснэ үү</translation>
@@ -998,6 +1001,7 @@
 <translation id="2178614541317717477">CA Compromise</translation>
 <translation id="2182058453334755893">Түр санах ой руу хуулсан</translation>
 <translation id="2184515124301515068">Сайтуудад дуу тоглуулах боломжтой үеийг сонгох зөвшөөрлийг Chrome-д олгох (санал болгосон)</translation>
+<translation id="2187243482123994665">Хэрэглэгч байгаа эсэх</translation>
 <translation id="2187675480456493911">Таны бүртгэл дээрх бусад төхөөрөмжтэй синк хийдэг. Бусад хэрэглэгчийн өөрчилсөн тохиргоог синк хийхгүй. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Серверийн Гэрчилгээг Импортлох үеийн алдаа</translation>
 <translation id="2187906491731510095">Өргөтгөлийг шинэчилсэн</translation>
@@ -1186,7 +1190,6 @@
 <translation id="2396783860772170191">4 оронтой пинг (0000-9999) оруулна уу</translation>
 <translation id="2399939490305346086">Аюулгүй байдлын түлхүүрийн нэвтрэх өгөгдөл</translation>
 <translation id="2400664245143453337">Нэн даруй шинэчлэх шаардлагатай</translation>
-<translation id="2407481962792080328">Таныг Google Бүртгэлдээ нэвтрэхэд энэ онцлог асна</translation>
 <translation id="2408018932941436077">Картыг хадгалж байна</translation>
 <translation id="2408955596600435184">ПИН-ээ оруулна уу</translation>
 <translation id="241082044617551207">Үл мэдэх нэмэлт өргөтгөл</translation>
@@ -1825,6 +1828,7 @@
 <translation id="3163201441334626963"><ph name="PRODUCT_ID" /> үйлдвэрлэгчийн <ph name="VENDOR_ID" /> тодорхойгүй бүтээгдэхүүн</translation>
 <translation id="3163254451837720982">Дараах үйлчилгээнүүд нь таны өгөгдлийг аюулгүй, найдвартай байлгахад тусалдаг. Та эдгээр онцлогийг хүссэн үедээ унтраах боломжтой.</translation>
 <translation id="3164329792803560526">Энэ табыг <ph name="APP_NAME" />-тай хуваалцаж байна</translation>
+<translation id="3165371858310906303">Сайт таныг байгаа үед мэдэхийг хүссэн тохиолдолд асууна</translation>
 <translation id="3165390001037658081">Зарим оператор компани энэ онцлогийг блоклож болзошгүй.</translation>
 <translation id="316652501498554287">G Suite for Education бүртгэлүүд</translation>
 <translation id="3169472444629675720">Олох</translation>
@@ -2941,6 +2945,7 @@
 <translation id="4527186207340858212">Ажилдаа зориулж шинэ профайл үүсгэх үү?</translation>
 <translation id="452750746583162491">Синк хийсэн өгөгдлөө шалгах</translation>
 <translation id="4530494379350999373">Эх үүсвэр</translation>
+<translation id="4531924570968473143">Та энэ <ph name="DEVICE_TYPE" />-д хэнийг нэмэхийг хүсэж байна вэ?</translation>
 <translation id="4532646538815530781">Энэ сайт хөдөлгөөн мэдрэгч ашиглаж байна.</translation>
 <translation id="4533846798469727141">Одоо "Hey Google" гэж хэлнэ үү</translation>
 <translation id="4533985347672295764">CPU Цаг</translation>
@@ -3060,6 +3065,7 @@
 <translation id="4657810666108475055">Таб хайлт</translation>
 <translation id="465878909996028221">Хөтчийн дахин чиглүүлэлтэд зөвхөн http, https болон файлын протоколыг дэмждэг.</translation>
 <translation id="4659077111144409915">Үндсэн бүртгэл</translation>
+<translation id="4659126640776004816">Таныг Google Бүртгэлдээ нэвтрэхэд энэ онцлог асна.</translation>
 <translation id="4660476621274971848">"<ph name="EXPECTED_VERSION" />" хувилбарыг шаардсан хэдий ч "<ph name="NEW_ID" />" хувилбар байсан</translation>
 <translation id="4660540330091848931">Хэмжээг өөрчилж байна</translation>
 <translation id="4661407454952063730">Аппын өгөгдөл нь аппын хадгалсан (хөгжүүлэгчийн тохиргоонд үндэслэн) харилцагч, зурвас болон зураг зэрэг ямар ч өгөгдөл байж болно.</translation>
@@ -3125,7 +3131,6 @@
 <translation id="4750394297954878236">Санал зөвлөмж</translation>
 <translation id="475088594373173692">Анхны хэрэглэгч</translation>
 <translation id="4751476147751820511">Хөдөлгөөн эсвэл гэрэл мэдрэгч</translation>
-<translation id="4752124003533492687"><ph name="USB_DEVICE_NAME" />-г холбохын тулд Тохиргоог нээнэ үү</translation>
 <translation id="4756378406049221019">Зогсоох/Дахин ачааллах</translation>
 <translation id="4756388243121344051">&amp; Түүх</translation>
 <translation id="4759238208242260848">Таталтууд:</translation>
@@ -3973,6 +3978,7 @@
 <translation id="5804241973901381774">Зөвшөөрлүүд</translation>
 <translation id="5805697420284793859">Цонхны менежер</translation>
 <translation id="5806773519584576205">0° (өгөгдмөл)</translation>
+<translation id="5808664694611589238">{0,plural, =1{Зочны цонхыг хаах}other{Зочны цонхыг хаах}}</translation>
 <translation id="5810809306422959727">Энэ бүртгэл эцэг эхийн хяналтын эрхгүй</translation>
 <translation id="5812674658566766066">Бүгдийг дэлгэх</translation>
 <translation id="5814126672212206791">Холболтын төрөл</translation>
@@ -4429,6 +4435,7 @@
 <translation id="6344170822609224263">Сүлжээний холболтын жагсаалтанд хандах</translation>
 <translation id="6344576354370880196">Хадгалсан хэвлэгч</translation>
 <translation id="6345418402353744910"><ph name="PROXY" /> проксид таны хэрэглэгчийн нэр, нууц үг шаардлагатай, ингэснээр админ сүлжээг тань тохируулах боломжтой болно</translation>
+<translation id="6345878117466430440">Уншсан гэж тэмдэглэх</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" />-г суулгах</translation>
 <translation id="6349170655202535379">Синк ажиллахгүй байна. Гараад, дахин нэвтэрнэ үү.</translation>
 <translation id="6351063337294363751">Та энэ цэснээс хайлтын өгөгдлөө устгах боломжтой</translation>
@@ -5015,6 +5022,7 @@
 <translation id="7075513071073410194">RSA шифрлэлттэй PKCS# 1 MD5</translation>
 <translation id="7075625805486468288">HTTPS/SSL сертификат, тохиргоог удирдах</translation>
 <translation id="7076293881109082629">Нэвтэрч байна</translation>
+<translation id="7076878155205969899">Дууны дууг хаах</translation>
 <translation id="7077829361966535409">Прокси тохируулгыг ашигласан энэ үед нэвтрэх хуудас ачаалагдсангүй. <ph name="GAIA_RELOAD_LINK_START" />дахин нэвтрэх оролдлого<ph name="GAIA_RELOAD_LINK_END" /> хийнэ үү. Эсвэл өөр <ph name="PROXY_SETTINGS_LINK_START" />прокси тохируулга<ph name="PROXY_SETTINGS_LINK_END" /> ашиглана уу.</translation>
 <translation id="7078120482318506217">Бүх сүлжээ</translation>
 <translation id="708060913198414444">Аудио хаягийг хуулах</translation>
@@ -5035,7 +5043,6 @@
 <translation id="7099337801055912064">Том PPD-г ачааллах боломжгүй байна. Хамгийн дээд хэмжээ нь 250 kB болно.</translation>
 <translation id="7102687220333134671">Автомат шинэчлэлтийг асаасан</translation>
 <translation id="7102832101143475489">Хүсэлтийн хугацаа хэтэрлээ</translation>
-<translation id="7105390788077117391">USB-н сонголт</translation>
 <translation id="710640343305609397">Сүлжээний тохиргоог нээх</translation>
 <translation id="7108338896283013870">Нуух</translation>
 <translation id="7108668606237948702">оруулах</translation>
@@ -5065,7 +5072,6 @@
 <translation id="7136694880210472378">Байнга ашиглагдах болгох</translation>
 <translation id="7136984461011502314"><ph name="PRODUCT_NAME" /> руу тавтай морилно уу</translation>
 <translation id="7136993520339022828">Алдаа байна. Өөр зураг сонгож дахин оролдоно уу.</translation>
-<translation id="7138678301420049075">Бусад</translation>
 <translation id="713888829801648570">Та оффлайн байгаа учраас таны нууц үгийг баталгаажуулж чадсангүй.</translation>
 <translation id="7140928199327930795">Өөр ямар ч боломжит төхөөрөмжүүд байхгүй байна.</translation>
 <translation id="7141105143012495934">Таны бүртгэлийн мэдээллийг татаж чадсангүй тул нэвтрэх үйлдэл амжилтгүй боллоо. Та админтайгаа холбогдох, эсвэл дахин оролдох хэрэгтэй.</translation>
@@ -5172,6 +5178,7 @@
 <translation id="7280649757394340890">Текстийг яриа болгох дуу хоолойны тохиргоо</translation>
 <translation id="7280877790564589615">Зөвшөөрөл хүссэн</translation>
 <translation id="7282992757463864530">Мэдээллийн самбар</translation>
+<translation id="7284411326658527427">Хүн бүр бүртгэлээ хувийн болгож, өгөгдлөө хувьдаа хадгалж болно.</translation>
 <translation id="7287143125007575591">Хандалтыг зөвшөөрөөгүй.</translation>
 <translation id="7287411021188441799">Өгөгдмөл дэвсгэрийг сэргээх</translation>
 <translation id="7288013116963835700">Linux-г <ph name="DEVICE_TYPE" />-с хасах</translation>
@@ -5747,6 +5754,7 @@
 <translation id="7963826112438303517">Таны Туслах таны дуу хоолойн загварыг үүсгэх болон шинэчлэх зорилгоор эдгээр бичлэг болон таны хэлсэн хүсэлтийг ашигладаг бөгөөд эдгээрийг зөвхөн таны Voice Match-г асаасан төхөөрөмжүүдэд хадгална. Дуу хоолойн үйл ажиллагаагаа Туслахын тохиргооноос харж эсвэл дахин тохируулна уу.</translation>
 <translation id="7966241909927244760">Зургийн хаягийг хуулах</translation>
 <translation id="7968072247663421402">Үйлчилгээ үзүүлэгчийн сонголтууд</translation>
+<translation id="7968198493605442410">Холбоосыг текст рүү хуулах</translation>
 <translation id="7968742106503422125">Хуулж, буулгах өгөгдлөө уншиж, өөрчлөх</translation>
 <translation id="7968833647796919681">Гүйцэтгэлийн өгөгдөл цуглуулах ажиллагааг идэвхжүүлэх</translation>
 <translation id="7968982339740310781">Дэлгэрэнгүй мэдээлэл харах</translation>
@@ -6124,6 +6132,7 @@
 <translation id="8428213095426709021">Тохиргоо</translation>
 <translation id="8428271547607112339">Сургуулийн бүртгэл нэмэх</translation>
 <translation id="8428628598981198790">Таны аюулгүй байдлын түлхүүрийг энэ сайтад ашиглах боломжгүй</translation>
+<translation id="8428634594422941299">Ойлголоо</translation>
 <translation id="84297032718407999">Та <ph name="LOGOUT_TIME_LEFT" />-н дараа гарах болно</translation>
 <translation id="8431190899827883166">Товшилтыг харуулах</translation>
 <translation id="8431909052837336408">SIM-н ПИН-г өөрчлөх</translation>

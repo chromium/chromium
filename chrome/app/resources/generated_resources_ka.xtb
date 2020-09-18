@@ -427,6 +427,7 @@
 <translation id="1500297251995790841">უცნობი მოწყობილობა [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">მფლობელის ეს ანგარიში გახდეს პირველი შესული ანგარიში მრავალპროფილიან სესიაში.</translation>
 <translation id="150411034776756821"><ph name="SITE" />-ის ამოშლა</translation>
+<translation id="1504311855864906891">იხილეთ თქვენი მედიაფაილების სუბტიტრები</translation>
 <translation id="1504551620756424144">გაზიარებული საქაღალდეები Windows-ში ხელმისაწვდომია აქ: <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">საძიებო სისტემა</translation>
 <translation id="1507170440449692343">ამ გვერდზე უკვე დაბლოკილია თქვენს კამერაზე წვდომა.</translation>
@@ -1190,7 +1191,6 @@
 <translation id="2396783860772170191">შეიყვანეთ 4-ციფრიანი PIN-კოდი (0000-9999)</translation>
 <translation id="2399939490305346086">უსაფრთხოების გასაღების სისტემაში შესვლის მონაცემები</translation>
 <translation id="2400664245143453337">საჭიროა გადაუდებელი განახლება</translation>
-<translation id="2407481962792080328">თქვენს Google ანგარიშში შესვლისას ეს ფუნქცია ჩართული იქნება</translation>
 <translation id="2408018932941436077">მიმდინარეობს ბარათის შენახვა</translation>
 <translation id="2408955596600435184">შეიყვანეთ თქვენი PIN-კოდი</translation>
 <translation id="241082044617551207">უცნობი დანამატი</translation>
@@ -3065,6 +3065,7 @@
 <translation id="4657810666108475055">ჩანართებში ძიება</translation>
 <translation id="465878909996028221">ბრაუზერის გადამისამართებისთვის მხარდაჭერილია მხოლოდ http, https და ფაილების პროტოკოლები.</translation>
 <translation id="4659077111144409915">ძირითადი ანგარიში</translation>
+<translation id="4659126640776004816">თქვენს Google ანგარიშში შესვლისას ეს ფუნქცია ჩართული იქნება.</translation>
 <translation id="4660476621274971848">მოსალოდნელი ვერსია: „<ph name="EXPECTED_VERSION" />“, მიღებული ვერსია: „<ph name="NEW_ID" />“</translation>
 <translation id="4660540330091848931">მიმდინარეობს ზომის შეცვლა</translation>
 <translation id="4661407454952063730">აპების მონაცემებად შეიძლება ჩაითვალოს ამა თუ იმ აპის მიერ შენახული ნებისმიერი სახის მონაცემი (დეველოპერის პარამეტრების მიხედვით), მათ შორის, ისეთი მონაცემები, როგორიცაა კონტაქტები, შეტყობინებები და ფოტოები.</translation>
@@ -3130,7 +3131,6 @@
 <translation id="4750394297954878236">შემოთავაზებები</translation>
 <translation id="475088594373173692">პირველი მომხმარებელი</translation>
 <translation id="4751476147751820511">მოძრაობის ან განათების სენსორები</translation>
-<translation id="4752124003533492687">გახსენით პარამეტრები, <ph name="USB_DEVICE_NAME" /> რომ დააკავშიროთ</translation>
 <translation id="4756378406049221019">შეწყვეტა/გადატვირთვა</translation>
 <translation id="4756388243121344051">&amp;ისტორია</translation>
 <translation id="4759238208242260848">ჩამოტვირთვები</translation>
@@ -5020,6 +5020,7 @@
 <translation id="7075513071073410194">PKCS #1 MD5 RSA დაშიფვრით</translation>
 <translation id="7075625805486468288">HTTPS/SSL სერტიფიკატებისა და პარამეტრების მართვა</translation>
 <translation id="7076293881109082629">მიმდინარეობს სისტემაში შესვლა</translation>
+<translation id="7076878155205969899">ხმის დადუმება</translation>
 <translation id="7077829361966535409">ვერ მოხერხდა სისტემაში შესვლის გვერდის ჩამოტვირთვა არსებული პროქსი პარამეტრების გამოყენებით. გთხოვთ <ph name="GAIA_RELOAD_LINK_START" />სდაცეთ შესვლა კიდევ ერთხელ<ph name="GAIA_RELOAD_LINK_END" />, ან გამოიყენეთ სხვა <ph name="PROXY_SETTINGS_LINK_START" />პროქსის პარამეტრები<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">ყველა ქსელი</translation>
 <translation id="708060913198414444">აუდიოს მისამართის კ&amp;ოპირება</translation>
@@ -5040,7 +5041,6 @@
 <translation id="7099337801055912064">დიდი ზომის PPD-ის ჩატვირთვა ვერ მოხერხდება. მაქსიმალური ზომაა 250 კბაიტი.</translation>
 <translation id="7102687220333134671">ავტომატური განახლებები ჩართულია</translation>
 <translation id="7102832101143475489">მოთხოვნის დრო ამოიწურა</translation>
-<translation id="7105390788077117391">USB-ის პარამეტრები</translation>
 <translation id="710640343305609397">ქსელის პარამეტრების გახსნა</translation>
 <translation id="7108338896283013870">დამალვა</translation>
 <translation id="7108668606237948702">შეყვანა</translation>
@@ -5070,7 +5070,6 @@
 <translation id="7136694880210472378">აქციეთ ნაგულისხმევად</translation>
 <translation id="7136984461011502314">მოგესალმებათ <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">წარმოიქმნა შეცდომა. ცადეთ ხელახლა სხვა სურათების არჩევით.</translation>
-<translation id="7138678301420049075">სხვა</translation>
 <translation id="713888829801648570">სამწუხაროდ, თქვენი პაროლის გადამოწმება ვერ მოხერხდა, რადგან თქვენ ოფლაინში ხართ.</translation>
 <translation id="7140928199327930795">სხვა ხელმისაწვდომი მოწყობილობები არ არის.</translation>
 <translation id="7141105143012495934">შესვლა ვერ მოხერხდა, რადგან თქვენი ანგარიშის შესახებ დეტალების მიღება შეუძლებელია. გთხოვთ, დაუკავშირდეთ ადმინისტრატორს ან სცადოთ ხელახლა.</translation>
@@ -6131,6 +6130,7 @@
 <translation id="8428213095426709021">პარამეტრები</translation>
 <translation id="8428271547607112339">სასწავლებლის ანგარიშის დამატება</translation>
 <translation id="8428628598981198790">თქვენი უსაფრთხოების გასაღების ამ საიტზე გამოყენება ვერ მოხერხდება</translation>
+<translation id="8428634594422941299">გასაგებია</translation>
 <translation id="84297032718407999">სისტემიდან თქვენს გამოსვლამდე დარჩა <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">შეხებების ჩვენება</translation>
 <translation id="8431909052837336408">SIM ბარათის PIN-კოდის შეცვლა</translation>

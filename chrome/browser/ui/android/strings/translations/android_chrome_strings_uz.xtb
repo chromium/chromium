@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Keshga yuklangan ma’lumotlarsiz sahifani qayta yuklang.</translation>
 <translation id="124678866338384709">Joriy varaqni yopish</translation>
 <translation id="1258753120186372309">Google-dudl: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Mutolaa ro‘yxati</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> yuborilmadi</translation>
 <translation id="1283039547216852943">Bosib yoyish</translation>
 <translation id="1291207594882862231">Brauzer tarixi, cookie-fayllar, kesh va boshqa sayt ma’lumotlarini tozalash...</translation>
@@ -218,7 +219,6 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="2744248271121720757">Tegishli qidiruv natijalari va amallarni ko‘rish uchun so‘z ustiga bosing</translation>
 <translation id="2760989362628427051">Qurilmangizda tungi mavzu yoki Quvvat tejash rejimi yoqilganda tungi mavzu faollashadi</translation>
 <translation id="2762000892062317888">hozirgina</translation>
-<translation id="2771869497727323769">Matnga havola yaratilmadi. Havolani ilova ichidagi sahifada ulashing.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> soniya qoldi</translation>
 <translation id="2779651927720337254">xatolik:</translation>
 <translation id="2781151931089541271">1 soniya qoldi</translation>
@@ -467,7 +467,6 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 ta fayl yuklab olindi.}other{# ta fayl yuklab olindi.}}</translation>
 <translation id="4766678251456904326">Qurilmaga hisob kiritish</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 ta yuklanma rejalashtirildi.}other{# ta yuklanma rejalashtirildi.}}</translation>
-<translation id="478981486571169252"><ph name="SITE_NAME" /> saytiga kirish holati, brauzer va sayt maʼlumotlari Chromeda chiqadi.</translation>
 <translation id="4802417911091824046">Kodli ibora yordamida shifrlanganda Google Pay manzillari va toʻlov usullari shifrlanmaydi.
 
 Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklang<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5040262127954254034">Shaxsiy ma’lumotlar</translation>
 <translation id="5087580092889165836">Yangi karta qo‘shish</translation>
 <translation id="509429900233858213">Xatolik yuz berdi.</translation>
-<translation id="5100748015044654621">Havola ilova ichida ajratilgan matn sifatida ulashildi</translation>
 <translation id="510275257476243843">1 soat qoldi</translation>
 <translation id="5123685120097942451">Inkognito varaq</translation>
 <translation id="5127805178023152808">Sinxronizatsiya o‘chiq</translation>

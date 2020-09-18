@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">భద్రతా కారణాల దృష్ట్యా ఫైల్‌ను ప్రాప్యత చేయడం సాధ్యపడదు.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> అంశాలను జిప్ చేస్తోంది...</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ఐటమ్‌లు కాపీ చేయబడ్డాయి.</translation>
 <translation id="174173592514158117">అన్ని ప్లే ఫోల్డర్‌లను చూపు</translation>
 <translation id="174937106936716857">మొత్తం ఫైల్‌ల సంఖ్య</translation>
 <translation id="1775381402323441512">వీడియో సమాచారం</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">చెల్లని అక్షరం: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">వియత్నామీస్ కీబోర్డ్ (TCVN)</translation>
 <translation id="2168214441502403371">పర్షియన్ కీబోర్డ్</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" />ను తరలించడం జరిగింది.</translation>
 <translation id="2198315389084035571">సరళీకృత చైనీస్</translation>
 <translation id="2208158072373999562">జిప్ ఆర్కైవ్</translation>
 <translation id="2225536596944493418">మీరు <ph name="NUMBER_OF_ITEMS" /> అంశాలను ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ఫోల్డర్‌ను సృష్టించడం సాధ్యపడలేదు. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">తరలించబడింది.</translation>
 <translation id="2278988676849463018">కన్నడ కీబోర్డ్ (ఫొనెటిక్)</translation>
 <translation id="2288278176040912387">రికార్డ్ ప్లేయర్</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ఫైల్‌లను తెరుస్తోంది.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">అన్నీ బ్యాకప్ చేయబడ్డాయి!</translation>
 <translation id="3626281679859535460">ప్రకాశం</translation>
 <translation id="3644896802912593514">వెడల్పు</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లు తరలించబడ్డాయి.</translation>
 <translation id="3645531960514756307">ఫోల్డర్‌ను అన్‌పిన్ చేయి</translation>
 <translation id="3678559383040232393">మాల్టెసె కీబోర్డ్</translation>
 <translation id="3685122418104378273">మొబైల్ డేటాను ఉపయోగిస్తున్నప్పుడు Google డిస్క్ సింక్ డిఫాల్ట్‌గా నిలిపివేయబడుతుంది.</translation>
@@ -395,6 +399,7 @@
     మీ పరికరానికి ఏ విధమైన ఆపద సంభవించినా ఫర్వాలేదు, మీ ఫైల్‌లు Google డిస్క్‌లో సురక్షితంగా నిల్వ చేయబడి ఉంటాయి.<ph name="MARKUP_6" />
     అన్ని ఫైల్‌లు ఒకే చోట ఉంటాయి, కాబట్టి <ph name="MARKUP_7" />షేర్ చేయండి, సృష్టించండి,
     వాటిపై ఇతరులతో కలిసి పని చేయండి<ph name="MARKUP_8" />.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">కాపీ చేయబడింది.</translation>
 <translation id="5275973617553375938">Google డిస్క్ నుండి పునరుద్ధరించబడిన ఫైల్‌లు</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">సేవ్ చేయి</translation>
@@ -594,6 +599,7 @@
 <translation id="751507702149411736">బెలారుషియన్</translation>
 <translation id="7544853251252956727">షఫుల్ చేయి</translation>
 <translation id="7547811415869834682">డచ్</translation>
+<translation id="7551643184018910560">అరకు పిన్ చేయండి</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">ఒక క్షణం వేచి ఉండండి</translation>
 <translation id="7603724359189955920">గ్రిడ్‌లు</translation>
@@ -677,6 +683,7 @@
 <translation id="8299269255470343364">జపనీస్</translation>
 <translation id="8312871300878166382">ఫోల్డర్‌లోకి అతికించు</translation>
 <translation id="8329978297633540474">సాదా వచనం</translation>
+<translation id="8335587457941836791">అర నుండి అన్‌పిన్ చేయండి</translation>
 <translation id="8336153091935557858">నిన్న <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336579025507394412">ఐస్‌ల్యాండిక్ కీబోర్డ్</translation>
 <translation id="8342318071240498787">ఫైల్ లేదా డైరెక్టరీ అదే పేరుతో ఇప్పటికే ఉనికిలో ఉంది.</translation>
@@ -749,6 +756,7 @@
 <translation id="943972244133411984">వీరు సవరించారు</translation>
 <translation id="945522503751344254">ఫీడ్‌బ్యాక్ పంపండి</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> నుండి <ph name="TO_ENTRY_NAME" /> మధ్యలో ఉన్న <ph name="ENTRY_COUNT" /> నమోదులు ఎంపిక చేయబడ్డాయి.</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" />ను కాపీ చేయడం జరిగింది.</translation>
 <translation id="981121421437150478">ఆఫ్‌లైన్</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" పేరు గల ఫైల్ ఇప్పటికే వినియోగంలో ఉంది. మీరు దీనిని భర్తీ చేయాలనుకుంటున్నారా?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

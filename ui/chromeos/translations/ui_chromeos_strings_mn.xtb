@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Файлд аюулгүй байдлын үүднээс нэвтэрч чадсангүй.</translation>
 <translation id="169515659049020177">Солих</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> зүйлийг zip хийж байна...</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> зүйлийг хуулсан.</translation>
 <translation id="174173592514158117">Play-н бүх хавтсыг харуулах</translation>
 <translation id="174937106936716857">Нийт файлын тоо</translation>
 <translation id="1775381402323441512">Видеоны мэдээлэл</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Хүчингүй тэмдэгт: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Вьетнам хэлний гар (TCVN)</translation>
 <translation id="2168214441502403371">Перс хэлний гар</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" />-г зөөсөн.</translation>
 <translation id="2198315389084035571">Хялбаршуулсан Хятад хэл</translation>
 <translation id="2208158072373999562">Зип архив</translation>
 <translation id="2225536596944493418">Та <ph name="NUMBER_OF_ITEMS" /> зүйлийг устгахдаа итгэлтэй байна уу?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" /> ". <ph name="ERROR_MESSAGE" /> хавтас үүсгэх боломжгүй байна</translation>
+<translation id="2275059641601412272">Зөөсөн.</translation>
 <translation id="2278988676849463018">Каннада хэлний гар (дуудлагын)</translation>
 <translation id="2288278176040912387">Бичлэг тоглуулагч</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> файлыг нээж байна.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Бүгдийг хадгалсан болно!</translation>
 <translation id="3626281679859535460">Цайралт</translation>
 <translation id="3644896802912593514">Өргөн</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> зүйлийг зөөсөн.</translation>
 <translation id="3645531960514756307">Фолдерийг тогтоосныг болиулах</translation>
 <translation id="3678559383040232393">Мальти хэлний гар</translation>
 <translation id="3685122418104378273">Гар утасны мэдээллийг ашиглаж байх үед Google Drive синк нь автоматаар идэвхгүй болно.</translation>
@@ -393,6 +397,7 @@
     Таны төхөөрөмжид юу ч тохиолдсон санаа зовох хэрэггүй. Учир нь таны файлыг Google Драйвт аюулгүй хадгалсан байна.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Бусадтай бүх файлаа<ph name="MARKUP_8" />
     нэг газар үүсгэж, хуваалцаж, ажиллаарай.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Хуулсан.</translation>
 <translation id="5275973617553375938">Google Drive-аас файлуудыг сэргээлээ</translation>
 <translation id="5317780077021120954">Хадгалах</translation>
 <translation id="5318819489018851358">Linux-р хуваалцах</translation>
@@ -591,6 +596,7 @@
 <translation id="751507702149411736">Беларус</translation>
 <translation id="7544853251252956727">Тохиолдлоор тоглуулах</translation>
 <translation id="7547811415869834682">Голланд</translation>
+<translation id="7551643184018910560">Програмын жагсаалтын өмнө гаргах</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Түр хүлээнэ үү</translation>
 <translation id="7603724359189955920">Toрлол</translation>
@@ -674,6 +680,7 @@
 <translation id="8299269255470343364">Япон</translation>
 <translation id="8312871300878166382">Хавтас руу наах</translation>
 <translation id="8329978297633540474">Энгийн текст</translation>
+<translation id="8335587457941836791">Програмын жагсаалтын эхэнд байрлуулахыг болих</translation>
 <translation id="8336153091935557858">Өчигдөр <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336579025507394412">Исланд хэлний гар</translation>
 <translation id="8342318071240498787">Ийм нэртэй файл болон файлын хадгалалтын сан байна.</translation>
@@ -746,6 +753,7 @@
 <translation id="943972244133411984">Өөрчилсөн</translation>
 <translation id="945522503751344254">Санал хүсэлт илгээх</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />-с <ph name="TO_ENTRY_NAME" /> хүртэлх <ph name="ENTRY_COUNT" /> оролтын мужийг сонгосон.</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" />-г хуулсан.</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" нэртэй файл аль хэдийн байна. Та үүнийг солих уу?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> МБ</translation>

@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Презареждане на страницата (кешът се пренебрегва)</translation>
 <translation id="124678866338384709">Затваряне на текущия раздел</translation>
 <translation id="1258753120186372309">Драскулка на Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Списък за четене</translation>
 <translation id="1266864766717917324">Споделянето на <ph name="CONTENT_TYPE" /> не бе възможно</translation>
 <translation id="1283039547216852943">Докоснете за разгъване</translation>
 <translation id="1291207594882862231">Изчистване на историята, „бисквитките“, данните за сайтове и кеша…</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">Докоснете дума, за да извършите незабавно търсене, или вижте свързаните действия</translation>
 <translation id="2760989362628427051">Включване на тъмната тема, когато тъмната тема на устройството или режимът за запазване на батерията в него са включени</translation>
 <translation id="2762000892062317888">току-що</translation>
-<translation id="2771869497727323769">Не може да се създаде връзка към текста. Споделете връзка към страница в приложение.</translation>
 <translation id="2777555524387840389">Остават <ph name="SECONDS" /> сек</translation>
 <translation id="2779651927720337254">неуспешно</translation>
 <translation id="2781151931089541271">Остава 1 сек</translation>
@@ -387,6 +387,7 @@
 <translation id="4135200667068010335">Списъкът с устройства, с които да се сподели даден раздел, е затворен.</translation>
 <translation id="4149994727733219643">Опростен изглед на уеб страниците</translation>
 <translation id="4170011742729630528">Няма достъп до услугата. Опитайте отново по-късно.</translation>
+<translation id="4175173967354304331">Ще влезете в профила си в този сайт, в Chrome и в приложенията на Google</translation>
 <translation id="4179980317383591987">Използвани: <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Езици</translation>
 <translation id="4183868528246477015">Търсене с Google Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
@@ -467,7 +468,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 изтегляне завърши.}other{# изтегляния завършиха.}}</translation>
 <translation id="4766678251456904326">Добавяне на профил към устройството</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{Насрочено е 1 изтегляне.}other{Насрочени са # изтегляния.}}</translation>
-<translation id="478981486571169252">В Chrome ще виждате дали сте влезли в профила си в <ph name="SITE_NAME" />, както и съответните данни за сърфирането и сайта.</translation>
 <translation id="4802417911091824046">Шифроването с пропуск не включва начините на плащане и адресите от Google Pay.
 
 За да промените тази настройка, <ph name="BEGIN_LINK" />нулирайте синхронизирането<ph name="END_LINK" /></translation>
@@ -512,7 +512,6 @@
 <translation id="5040262127954254034">Поверителност</translation>
 <translation id="5087580092889165836">Добавяне на карта</translation>
 <translation id="509429900233858213">Възникна грешка.</translation>
-<translation id="5100748015044654621">Споделяне на връзка към откроения текст в приложение</translation>
 <translation id="510275257476243843">Остава 1 час</translation>
 <translation id="5123685120097942451">Раздел в режим „инкогнито“</translation>
 <translation id="5127805178023152808">Синхронизирането е изключено</translation>
@@ -679,6 +678,7 @@
 <translation id="6341580099087024258">Извеждане на запитване къде да се запазват файловете</translation>
 <translation id="6342069812937806050">Току-що</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
+<translation id="6345878117466430440">Означаване като прочетено</translation>
 <translation id="6364438453358674297">Предложението да се премахне ли от историята?</translation>
 <translation id="6366047038980456022">Браузърът <ph name="APP_NAME" /> е снабден с интелигентните функции и скоростта, нужни да изпълнявате задачите си, да създавате съдържание и да сърфирате онлайн по безопасен начин</translation>
 <translation id="6378173571450987352">Подробности: сортирани по количество използвани данни</translation>
@@ -994,6 +994,7 @@
 <translation id="8655129584991699539">Можете да изчистите данните в настройките на Chrome</translation>
 <translation id="8662811608048051533">Ще излезете от повечето сайтове.</translation>
 <translation id="8664979001105139458">Името на файла вече съществува</translation>
+<translation id="8683039184091909753">изображение</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Сила на сигнала: # чертичка}other{Сила на сигнала: # чертички}}</translation>
 <translation id="869891660844655955">Дата на валидност</translation>
 <translation id="8712637175834984815">Разбрах</translation>

@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Site <ph name="SITE_NAME" /> toegevoegd</translation>
 <translation id="1383876407941801731">Zoeken</translation>
 <translation id="1384959399684842514">Download onderbroken</translation>
+<translation id="1431402976894535801">Voorkomen dat sites weten wanneer je aanwezig bent</translation>
 <translation id="1446450296470737166">Volledig beheer van MIDI-apparaten toestaan</translation>
 <translation id="1509960214886564027">Functies op veel sites werken mogelijk niet meer</translation>
 <translation id="1620510694547887537">Camera</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">Instant-app openen</translation>
 <translation id="2148716181193084225">Vandaag</translation>
 <translation id="2182457891543959921">Vragen voordat sites een 3D-kaart van je omgeving mogen maken of de camerapositie mogen volgen (aanbevolen)</translation>
+<translation id="2187243482123994665">Aanwezigheid van gebruiker</translation>
 <translation id="2212565012507486665">Cookies toestaan</translation>
 <translation id="2228071138934252756">Als je <ph name="APP_NAME" /> toegang wilt geven tot je camera, moet je de camera ook inschakelen via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="2289270750774289114">Vragen wanneer een site Bluetooth-apparaten in de buurt wilt detecteren (aanbevolen)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">Videospeler</translation>
 <translation id="3115898365077584848">Informatie weergeven</translation>
 <translation id="3123473560110926937">Geblokkeerd op bepaalde sites</translation>
+<translation id="3165371858310906303">Vragen als een site wil weten wanneer je aanwezig bent</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> opgeslagen gegevens</translation>
 <translation id="321187648315454507">Als je wilt dat <ph name="APP_NAME" /> je meldingen stuurt, moet je meldingen ook inschakelen via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Microfoon</translation>
@@ -104,7 +107,6 @@
 <translation id="4165986682804962316">Site-instellingen</translation>
 <translation id="4200726100658658164">Locatie-instellingen openen</translation>
 <translation id="4226663524361240545">Het apparaat kan trillen bij meldingen</translation>
-<translation id="4242533952199664413">Instellingen openen</translation>
 <translation id="4259722352634471385">Navigatie is geblokkeerd: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Toegestaan</translation>
 <translation id="429312253194641664">Een site speelt media af</translation>
@@ -134,6 +136,7 @@
 <translation id="5197729504361054390">De contacten die je selecteert, worden gedeeld met <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Weergeven</translation>
 <translation id="5301954838959518834">OK, begrepen</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /></translation>
 <translation id="5313967007315987356">Site toevoegen</translation>
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5335288049665977812">Sites toestaan JavaScript uit te voeren (aanbevolen)</translation>
@@ -145,6 +148,7 @@
 <translation id="5403592356182871684">Namen</translation>
 <translation id="5489227211564503167">De verstreken tijd is <ph name="ELAPSED_TIME" /> van <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Advertenties blokkeren op sites die opdringerige of misleidende advertenties weergeven</translation>
+<translation id="5502860503640766021"><ph name="PERMISSION_1" /> toegestaan, <ph name="PERMISSION_2" /> geblokkeerd</translation>
 <translation id="5505264765875738116">Sites kunnen niet vragen of ze je meldingen mogen sturen</translation>
 <translation id="5516455585884385570">Instellingen voor meldingen openen</translation>
 <translation id="5527111080432883924">Vragen voordat sites toestemming krijgen om tekst en afbeeldingen vanaf het klembord te lezen (aanbevolen)</translation>
@@ -156,12 +160,15 @@
 <translation id="5690795753582697420">Camera is uitgeschakeld in de Android-instellingen</translation>
 <translation id="5710871682236653961">Vragen voordat sites informatie mogen sturen en ontvangen als je NFC-apparaten tegen elkaar houdt (aanbevolen)</translation>
 <translation id="5719847187258001597">Hiermee wis je alle gegevens en cookies die zijn opgeslagen door <ph name="ORIGIN" /> of de bijbehorende app op je startscherm.</translation>
+<translation id="5771720122942595109"><ph name="PERMISSION_1" /> geblokkeerd</translation>
 <translation id="5804241973901381774">Rechten</translation>
 <translation id="5860033963881614850">Uit</translation>
+<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> toegestaan</translation>
 <translation id="5876056640971328065">Video pauzeren</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5922853908706496913">Je scherm delen</translation>
 <translation id="5939518447894949180">Resetten</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">De toegang van deze site tot je apparaat beheren</translation>
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="6042308850641462728">Meer</translation>
@@ -173,6 +180,7 @@
 <translation id="6196640612572343990">Indirecte cookies blokkeren</translation>
 <translation id="6206551242102657620">De verbinding is beveiligd. Site-informatie</translation>
 <translation id="6216432067784365534">Opties voor <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6262279340360821358"><ph name="PERMISSION_1" /> en <ph name="PERMISSION_2" /> geblokkeerd</translation>
 <translation id="6270391203985052864">Sites kunnen vragen of ze je meldingen mogen sturen</translation>
 <translation id="6295158916970320988">Alle sites</translation>
 <translation id="6320088164292336938">Trillen</translation>
@@ -195,6 +203,7 @@
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="6818926723028410516">Items selecteren</translation>
 <translation id="6864395892908308021">Dit apparaat kan NFC niet lezen</translation>
+<translation id="6879016579615558281"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> geblokkeerd</translation>
 <translation id="6910211073230771657">Verwijderd</translation>
 <translation id="6912998170423641340">Voorkomen dat sites tekst en afbeeldingen vanaf het klembord kunnen lezen</translation>
 <translation id="6945221475159498467">Selecteren</translation>
@@ -212,6 +221,7 @@
 <translation id="723171743924126238">Afbeeldingen selecteren</translation>
 <translation id="7243308994586599757">Opties beschikbaar onder aan het scherm</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> geselecteerd</translation>
+<translation id="7260727271532453612"><ph name="PERMISSION_1" /> en <ph name="PERMISSION_2" /> toegestaan</translation>
 <translation id="7302486331832100261">Meestal blokkeer je meldingen. Tik op Details om meldingen toe te staan.</translation>
 <translation id="7423098979219808738">Eerst vragen</translation>
 <translation id="7423538860840206698">Lezen van het klembord geblokkeerd</translation>
@@ -243,6 +253,7 @@
 <translation id="8087000398470557479">Deze content is afkomstig van <ph name="DOMAIN_NAME" />, geleverd door Google.</translation>
 <translation id="8116925261070264013">Gedempt</translation>
 <translation id="8131740175452115882">Bevestigen</translation>
+<translation id="8197286292360124385"><ph name="PERMISSION_1" /> toegestaan</translation>
 <translation id="8200772114523450471">Doorgaan</translation>
 <translation id="8206354486702514201">Deze instelling wordt door je beheerder afgedwongen.</translation>
 <translation id="8249310407154411074">Bovenaan zetten</translation>

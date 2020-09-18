@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Läs in den aktuella sidan igen och ignorera cachelagrat innehåll</translation>
 <translation id="124678866338384709">Stäng den aktuella fliken</translation>
 <translation id="1258753120186372309">Googles doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Läslista</translation>
 <translation id="1266864766717917324">Det gick inte att dela <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Tryck och utöka</translation>
 <translation id="1291207594882862231">Rensa historiken, cookies, webbplatsdata, cacheminnet …</translation>
@@ -218,7 +219,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="2744248271121720757">Tryck på ett ord om du vill söka direkt eller visa relaterade åtgärder</translation>
 <translation id="2760989362628427051">Aktivera mörkt tema när batterisparläget eller mörkt tema aktiveras på enheten</translation>
 <translation id="2762000892062317888">nyss</translation>
-<translation id="2771869497727323769">Det gick inte att länka till text. Dela länk till en sida i en app.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekunder kvar</translation>
 <translation id="2779651927720337254">misslyckades</translation>
 <translation id="2781151931089541271">1 sekund kvar</translation>
@@ -387,6 +387,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="4135200667068010335">Listan över enheter som fliken kan delas med är stängd.</translation>
 <translation id="4149994727733219643">Förenklad vy för webbsidor</translation>
 <translation id="4170011742729630528">Tjänsten är inte tillgänglig, försök igen senare.</translation>
+<translation id="4175173967354304331">Du loggas in på den här webbplatsen, i Chrome och i Google-appar</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> har använts</translation>
 <translation id="4181841719683918333">Språk</translation>
 <translation id="4183868528246477015">Sök med Google Lens <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
@@ -467,7 +468,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 nedladdning har slutförts.}other{# nedladdningar har slutförts.}}</translation>
 <translation id="4766678251456904326">Lägg till konto på enheten</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 nedladdning har schemalagts.}other{# nedladdningar har schemalagts.}}</translation>
-<translation id="478981486571169252">Du kommer att se din inloggningsstatus, webbdata och webbplatsdata för <ph name="SITE_NAME" /> i Chrome.</translation>
 <translation id="4802417911091824046">Betalningsmetoder och adresser från Google Pay omfattas inte av kryptering med lösenfras.
 
 <ph name="BEGIN_LINK" />Återställ synkroniseringen<ph name="END_LINK" /> om du vill ändra den här inställningen.</translation>
@@ -512,7 +512,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5040262127954254034">Sekretess</translation>
 <translation id="5087580092889165836">Lägg till kort</translation>
 <translation id="509429900233858213">Det har uppstått ett fel.</translation>
-<translation id="5100748015044654621">Dela länk till markerad text i en app</translation>
 <translation id="510275257476243843">1 timme kvar</translation>
 <translation id="5123685120097942451">Inkognitoflik</translation>
 <translation id="5127805178023152808">Synkronisering är av</translation>
@@ -679,6 +678,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6341580099087024258">Fråga var filerna ska sparas</translation>
 <translation id="6342069812937806050">Alldeles nyss</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> till}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> till}}</translation>
+<translation id="6345878117466430440">Markera som läst</translation>
 <translation id="6364438453358674297">Vill du ta bort förslaget från historiken?</translation>
 <translation id="6366047038980456022"><ph name="APP_NAME" /> har de smarta verktygen och hastigheten du behöver för att göra, skapa och utforska på webben på ett säkert sätt</translation>
 <translation id="6378173571450987352">Mer information: Sorterad efter dataförbrukning</translation>
@@ -994,6 +994,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8655129584991699539">Du kan rensa data i Chrome-inställningarna</translation>
 <translation id="8662811608048051533">Du loggas ut från de flesta webbplatser.</translation>
 <translation id="8664979001105139458">Filnamnet finns redan</translation>
+<translation id="8683039184091909753">bild</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Signalstyrka: # streck}other{Signalstyrka: # streck}}</translation>
 <translation id="869891660844655955">Utgångsdatum</translation>
 <translation id="8712637175834984815">Uppfattat</translation>

@@ -427,6 +427,7 @@
 <translation id="1500297251995790841">Nepoznati uređaj [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Vlasnik ovog računa mora biti prvi prijavljeni račun u sesiji s višestrukom prijavom.</translation>
 <translation id="150411034776756821">Ukloni <ph name="SITE" /></translation>
+<translation id="1504311855864906891">Prikazivanje titlova za medijske podatke</translation>
 <translation id="1504551620756424144">Dijeljene mape dostupne su na Windowsima na <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Tražilica</translation>
 <translation id="1507170440449692343">Stranici je zabranjen pristup vašoj kameri.</translation>
@@ -1190,7 +1191,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2396783860772170191">Unesite četveroznamenkasti PIN (0000 – 9999)</translation>
 <translation id="2399939490305346086">Podaci za prijavu na sigurnosnom ključu</translation>
 <translation id="2400664245143453337">Odmah je potrebno ažuriranje</translation>
-<translation id="2407481962792080328">Kad se prijavite na svoj Google račun, ta je značajka uključena</translation>
 <translation id="2408018932941436077">Spremanje kartice</translation>
 <translation id="2408955596600435184">Unesite PIN</translation>
 <translation id="241082044617551207">Nepoznati dodatak</translation>
@@ -3066,6 +3066,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4657810666108475055">Pretraživanje kartice</translation>
 <translation id="465878909996028221">Za preusmjeravanja preglednika podržani su samo protokoli http i https te datotečni protokoli.</translation>
 <translation id="4659077111144409915">Primarni račun</translation>
+<translation id="4659126640776004816">Kad se prijavite na Google račun, ova je značajka uključena.</translation>
 <translation id="4660476621274971848">Očekivana je verzija "<ph name="EXPECTED_VERSION" />", no verzija je bila "<ph name="NEW_ID" />"</translation>
 <translation id="4660540330091848931">Promjena veličine</translation>
 <translation id="4661407454952063730">Podaci aplikacije mogu biti bilo koji podaci koje je aplikacija spremila (na temelju postavki razvojnog programera), uključujući podatke kao što su kontakti, poruke i fotografije.</translation>
@@ -3131,7 +3132,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4750394297954878236">Prijedlozi</translation>
 <translation id="475088594373173692">Prvi korisnik</translation>
 <translation id="4751476147751820511">Senzori pokreta ili osvjetljenja</translation>
-<translation id="4752124003533492687">Otvorite Postavke da biste povezali uređaj <ph name="USB_DEVICE_NAME" /></translation>
 <translation id="4756378406049221019">Zaustavi / ponovno učitaj</translation>
 <translation id="4756388243121344051">&amp;Povijest</translation>
 <translation id="4759238208242260848">Preuzimanje</translation>
@@ -5021,6 +5021,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7075513071073410194">PKCS br. 1 MD5 s RSA enkripcijom</translation>
 <translation id="7075625805486468288">Upravljanje HTTPS/SSL certifikatima i postavkama</translation>
 <translation id="7076293881109082629">Prijava</translation>
+<translation id="7076878155205969899">Isključivanje zvuka</translation>
 <translation id="7077829361966535409">Nije uspjelo učitavanje stranice za prijavu pomoću trenutačnih postavki proxy poslužitelja. <ph name="GAIA_RELOAD_LINK_START" />Pokušajte se ponovo prijaviti<ph name="GAIA_RELOAD_LINK_END" /> ili upotrijebite druge <ph name="PROXY_SETTINGS_LINK_START" />postavke proxy poslužitelja<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Sve mreže</translation>
 <translation id="708060913198414444">K&amp;opiraj adresu audiozapisa</translation>
@@ -5041,7 +5042,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7099337801055912064">Nije moguće učitati veliki PPD. Maksimalna veličina iznosi 250 KB.</translation>
 <translation id="7102687220333134671">Automatska su ažuriranja uključena</translation>
 <translation id="7102832101143475489">Zahtjev je istekao</translation>
-<translation id="7105390788077117391">Postavke USB-a</translation>
 <translation id="710640343305609397">Otvorite postavke mreže</translation>
 <translation id="7108338896283013870">Sakrij preglednik</translation>
 <translation id="7108668606237948702">enter</translation>
@@ -5071,7 +5071,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7136694880210472378">Postavi kao zadano</translation>
 <translation id="7136984461011502314">Dobro došli u <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Došlo je do pogreške. Pokušajte ponovo kasnije odabirom drugih slika.</translation>
-<translation id="7138678301420049075">Ostalo</translation>
 <translation id="713888829801648570">Nažalost, vašu zaporku nije moguće provjeriti jer ste offline.</translation>
 <translation id="7140928199327930795">Nema drugih dostupnih uređaja.</translation>
 <translation id="7141105143012495934">Prijava nije uspjela jer nisu dohvaćeni podaci o vašem računu. Obratite se administratoru ili pokušajte ponovo.</translation>
@@ -6134,6 +6133,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8428213095426709021">Postavke</translation>
 <translation id="8428271547607112339">Dodavanje školskog računa</translation>
 <translation id="8428628598981198790">Vaš sigurnosni ključ ne može se upotrebljavati s tom web-lokacijom</translation>
+<translation id="8428634594422941299">Shvaćam</translation>
 <translation id="84297032718407999">Odjavit ćete se za <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Prikaži dodire</translation>
 <translation id="8431909052837336408">Promjena PIN-a za SIM</translation>

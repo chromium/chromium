@@ -39,6 +39,7 @@
 <translation id="123724288017357924">کیش کردہ مواد نظر انداز کرکے موجودہ صفحہ پھر لوڈ کریں</translation>
 <translation id="124678866338384709">موجودہ ٹیب بند کریں</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">پڑھنے کی فہرست</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> کا اشتراک نہیں کیا جا سکا</translation>
 <translation id="1283039547216852943">پھیلانے کیلئے تھپتھپائیں</translation>
 <translation id="1291207594882862231">سرگزشت، کوکیز، سائٹ ڈیٹا، کیش کو صاف کریں…</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">فوری تلاش یا متعلقہ کارروائی کے لیے کسی لفظ پر تھپتھپائیں</translation>
 <translation id="2760989362628427051">اپنے آلہ کے بیٹری سیور یا گہری تھیم کے آن ہونے پر گہری تھیم آن کریں</translation>
 <translation id="2762000892062317888">ابھی ابھی</translation>
-<translation id="2771869497727323769">ٹیکسٹ کا لنک تخلیق نہیں کیا جا سکا۔ ایپ میں صفحہ کے لنک کا اشتراک کریں۔</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> سیکنڈ باقی</translation>
 <translation id="2779651927720337254">ناکام ہو گیا</translation>
 <translation id="2781151931089541271">1 سیکنڈ باقی</translation>
@@ -467,7 +467,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 ڈاؤن لوڈ مکمل ہو گیا۔}other{# ڈاؤن لوڈز مکمل ہو گئے۔}}</translation>
 <translation id="4766678251456904326">اکاؤنٹ کو آلہ میں شامل کریں</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 ڈاؤن لوڈ شیڈول کیا گیا۔}other{# ڈاؤن لوڈز شیڈول کیے گئے۔}}</translation>
-<translation id="478981486571169252">‏آپ Chrome میں اپنا <ph name="SITE_NAME" /> سائن ان اسٹیٹس، براؤزنگ ڈیٹا اور سائٹ کا ڈیٹا دیکھیں گے۔</translation>
 <translation id="4802417911091824046">‏پاس فریز کی مرموز کاری میں Google Pay سے ادائیگی کے طریقے اور پتے شامل نہیں ہوتے ہیں۔
 
 اس ترتیب کو تبدیل کرنے کیلئے، <ph name="BEGIN_LINK" />مطابقت پذیری کو دوبارہ ترتیب دیں<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@
 <translation id="5040262127954254034">رازداری</translation>
 <translation id="5087580092889165836">کارڈ شامل کریں</translation>
 <translation id="509429900233858213">ایک خرابی پیش آگئی۔</translation>
-<translation id="5100748015044654621">کسی ایپ میں نمایاں کردہ متن کے لنک کا اشتراک کریں</translation>
 <translation id="510275257476243843">1 گھنٹہ باقی</translation>
 <translation id="5123685120097942451">پوشیدگی ٹیب</translation>
 <translation id="5127805178023152808">‏Sync آف ہے</translation>

@@ -95,7 +95,6 @@
       Si no se asigna ningún valor a esta política, los GPO almacenados en la memoria caché pueden reutilizarse durante un periodo máximo de 25 horas.
 
       Si se le asigna el valor 0, se inhabilita el almacenamiento en caché de los GPO. Ten en cuenta que esto incrementa la carga de trabajo del servidor, ya que los GPO deberán descargarse cada vez que se recuperen datos de políticas, aunque no se hayan modificado.</translation>
-<translation id="1111470455889178048">Enviar subidas y descargas de usuario para analizarlas</translation>
 <translation id="1117462881884985156"><ph name="PRODUCT_NAME" /> omitirá cualquier proxy que se incluya en la lista de hosts especificada.
 
           Esta política solo tendrá validez si has seleccionado una configuración manual del proxy en la opción Seleccionar la forma de especificar la configuración del servidor proxy y si no se ha especificado la política <ph name="PROXY_SETTINGS_POLICY_NAME" />.
@@ -949,16 +948,6 @@ Si se le asigna el valor "False", la pantalla de privacidad siempre estará inha
 Si se asigna un valor a esta política, el usuario no podrá anularlo.
 
 Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará inicialmente, pero el usuario podrá controlarla.</translation>
-<translation id="2423038190900972331">Controla cómo comprueba <ph name="PRODUCT_NAME" /> si los datos subidos, descargados, pegados desde el portapapeles o arrastrados y soltados han infringido las normas de protección de datos sensibles.
-
-      Si no se define esta política o se le asigna el valor "Ninguno", <ph name="PRODUCT_NAME" /> no comprobará ningún dato para detectar si se ha infringido las normas de protección de datos sensibles.
-
-      Si se le asigna el valor "Check downloads" y el usuario intenta descargar un archivo de una URL incluida en la política <ph name="DOMAINS_TO_CHECK_COMPLIANCE_OF_DOWNLOADED_CONTENT_POLICTY_NAME" />, <ph name="PRODUCT_NAME" /> comprobará si los datos descargados cumplen las normas de empresa.
-
-      Si se le asigna el valor "Check uploads" y el usuario intenta subir un archivo a un dominio que no esté incluido en la política <ph name="DOMAINS_TO_NOT_CHECK_COMPLIANCE_OF_UPLOADED_CONTENT_POLICY_NAME" />, <ph name="PRODUCT_NAME" /> comprobará si el archivo subido o los datos pegados desde el portapapeles o arrastrados y soltados cumplen las normas empresariales.
-
-      Si se le asigna el valor "Check uploads and downloads", <ph name="PRODUCT_NAME" /> se comportará según las reglas descritas en los valores "Check downloads" y "Check uploads".
-      </translation>
 <translation id="2423255396068675416">Si se habilita la política o no se establece, los usuarios podrán ejecutar <ph name="PRODUCT_CROSTINI_NAME" />, siempre y cuando las políticas <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> y <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> estén habilitadas. Si se inhabilita la política, se desactivará <ph name="PRODUCT_CROSTINI_NAME" /> para el usuario. En caso de inhabilitar la política, esto se aplicará a los nuevos contenedores de <ph name="PRODUCT_CROSTINI_NAME" /> que se empiecen a usar, pero no a los que ya estén ejecutándose.</translation>
 <translation id="2424098959650060417">Controla qué impresoras de la política <ph name="BULK_PRINTERS_POLICY_NAME" /> están disponibles para los usuarios.
 
@@ -1073,7 +1062,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
           El valor de esta política debe especificarse en milisegundos. Los valores deben ser inferiores o iguales al retraso de inactividad.</translation>
 <translation id="2548572254685798999">Recoger información sobre Navegación Segura</translation>
 <translation id="2550593661567988768">Solo impresión por una cara</translation>
-<translation id="2551520365302988324">Enviar subidas de usuario para analizarlas</translation>
 <translation id="2552318891854145040">Si se establece esta política, se definirá una lista de marcadores en la que cada uno es un diccionario con las claves "<ph name="NAME" />" y "<ph name="URL_LABEL" />". Estas claves contienen el nombre y la URL de destino del marcador. Los administradores podrán configurar una subcarpeta definiendo un marcador sin una clave "<ph name="URL_LABEL" />", pero con una clave "<ph name="CHILDREN" />" adicional. Esta clave también contiene una lista de marcadores, algunos de los cuales también pueden ser carpetas. Chrome modifica las URL incompletas como si se enviasen mediante la barra de direcciones. Por ejemplo, "<ph name="GOOGLE_COM" />" se convierte en "<ph name="HTTPS_GOOGLE_COM" />".
 
       Los usuarios no podrán cambiar las carpetas en las que están colocados los marcadores, pero podrán ocultarlas de la barra de marcadores. El nombre predeterminado de la carpeta de marcadores administrados es "Marcadores administrados", pero se puede cambiar si se añade un nuevo subdiccionario a la política con una única clave llamada "<ph name="TOPLEVEL_NAME" />" que tenga asignado como valor el nombre que se quiera asignar a la carpeta. Los marcadores administrados no se sincronizan con la cuenta de usuario y las extensiones no pueden modificarlos.</translation>
@@ -1837,7 +1825,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Para consultar más información sobre <ph name="CORS" />, visita <ph name="CORS_HELP_URL" />.
 
       Ten en cuenta que se anunció que esta política se eliminaría en la versión 82 de <ph name="PRODUCT_NAME" />, pero se eliminará en la versión 84.</translation>
-<translation id="3624515566460517364">Comprueba si se ha producido una infracción de las normas de protección de datos sensibles en las subidas y descargas</translation>
 <translation id="3627678165642179114">Habilitar o inhabilitar el servicio web de corrección ortográfica</translation>
 <translation id="3628480121685794414">Habilitar impresión por una cara</translation>
 <translation id="3631099945620529777">Si se asigna el valor "False" a esta política, se inhabilita el botón Finalizar proceso en el administrador de tareas.
@@ -1994,7 +1981,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 
           Si esta política no se define o se le asigna una lista vacía, no habrá ningún modo de desbloqueo rápido disponible para los dispositivos administrados.</translation>
 <translation id="3877517141460819966">Modo de autenticación de dos factores integrado</translation>
-<translation id="3879196885908353077">Comprueba si se han infringido las normas de protección de datos sensibles en las descargas</translation>
 <translation id="3879208481373875102">Configurar lista de aplicaciones web de instalación forzada</translation>
 <translation id="388237772682176890">Esta política está obsoleta en M53 y se ha quitado de M54, ya que se ha retirado la compatibilidad con SPDY/3.1.
 
@@ -2424,7 +2410,6 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
       En dispositivos no administrados, la notificación se muestra siempre.</translation>
 <translation id="4510923771103268849">El usuario puede tener acceso root a los contenedores de Crostini</translation>
 <translation id="4515404363392014383">Habilitar Navegación Segura en fuentes de confianza</translation>
-<translation id="4517928394515633751">Analizar las descargas de los usuarios con Navegación Segura</translation>
 <translation id="4518251772179446575">Preguntar siempre que un sitio quiera hacer un seguimiento de la ubicación física de los usuarios</translation>
 <translation id="4529868888205510667">Si se asigna el valor "true" a esta política o no se le asigna ninguno, se permite a los usuarios utilizar ARC, a menos que ARC se haya desactivado de otra forma. Si se le asigna el valor "false", no se permite usar ARC a los usuarios no afiliados.
 
@@ -2600,15 +2585,6 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
           Si el valor de una lista de bloqueados es un asterisco (*), se bloquearán todos los hosts de mensajes nativos excepto los que estén incluidos explícitamente en la lista de permitidos.
 
           Si no se asigna ningún valor a esta política, <ph name="PRODUCT_NAME" /> cargará todos los hosts instalados de mensajes nativos.</translation>
-<translation id="4771144269610910963">Esta política controla el análisis profundo de las descargas de usuario con Navegación Segura. Si no se le asigna ningún valor o se le asigna el valor predeterminado "No analizar archivos", las descargas de usuario no se analizarán con Navegación Segura.
-
-      Si se le asigna el valor "Enviar descargas de usuario para analizarlas", las descargas de usuario se enviarán a Navegación Segura a través de la red para realizar un análisis de software malicioso.
-
-      Si se le asigna el valor "Enviar subidas de usuario para analizarlas", las subidas de usuario se enviarán a Navegación Segura a través de la red para realizar un análisis de software malicioso.
-
-      Si se le asigna el valor "Enviar subidas y descargas de usuario para analizarlas", seguirá las reglas de los valores "Enviar subidas de usuario para analizarlas" y "Enviar descargas de usuario para analizarlas" que hemos descrito.
-
-      Consulta las políticas <ph name="DELAY_DELIVER_UNTIL_VERDICT_POLICY_NAME" /> y <ph name="UNSAFE_EVENTS_REPORTING_ENABLED" /> para obtener más información sobre cómo se muestran los resultados del análisis al usuario y al administrador.</translation>
 <translation id="4787763197941188108">Anula el tamaño predeterminado de la página de impresión.
 
       <ph name="PAGE_SIZE_NAME" /> debe contener uno de los formatos incluidos en la lista, o "personalizado" si el tamaño del papel necesario no está en la lista. Si se proporciona un valor "personalizado", se debe especificar la propiedad <ph name="PAGE_SIZE_CUSTOM_SIZE" />. Describe el ancho y altura deseados en micrómetros. De lo contrario, no se debe especificar la propiedad <ph name="PAGE_SIZE_CUSTOM_SIZE" />. Se ignorará la política que infrinja estas reglas.
@@ -2825,7 +2801,6 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 <translation id="5148753489738115745">Te permite especificar los parámetros adicionales que se utilizan cuando <ph name="PRODUCT_FRAME_NAME" /> inicia <ph name="PRODUCT_NAME" />.
 
           Si no se establece esta política, se utilizará la línea de comandos predeterminada.</translation>
-<translation id="5150323673529584553">No analizar archivos</translation>
 <translation id="5152787786897382519">Tanto Chromium como Google Chrome cuentan con algunos grupos de políticas que tienen dependencia mutua para asumir el control de una función. Estos conjuntos están representados por los grupos de políticas que se indican a continuación. Dado que las políticas pueden tener varias fuentes, solo se aplicarán los valores procedentes de la fuente que tenga la mayor prioridad. Se ignorarán los valores procedentes de las fuentes del mismo grupo que tengan menor prioridad. El orden de prioridad se define en la página <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="515816885693899426">Esta política está obsoleta. Usa la política <ph name="URL_BLOCKLIST_POLICY_NAME" /> en su lugar.
 
@@ -3656,6 +3631,11 @@ Si esta opción no está establecida o está establecida en True, los dispositiv
 
           Si no se asigna ningún valor a esta política, <ph name="PRODUCT_NAME" /> cargará todos los hosts instalados de mensajes nativos.</translation>
 <translation id="6224304369267200483">Las URL y los dominios han permitido automáticamente la confirmación directa de la llave de seguridad</translation>
+<translation id="6230442621691161858">Esta función habilita sugerencias sobre contenido nuevo por descubrir. Incluye aplicaciones, páginas web y más.
+      Si se le asigna el valor "True" a esta política, se habilitarán las sugerencias sobre contenido nuevo por descubrir.
+      Si se le asigna el valor "False", se inhabilitarán las sugerencias sobre contenido nuevo por descubrir.
+      Si no se asigna ningún valor a esta política, las sugerencias sobre contenido nuevo por descubrir estarán inhabilitadas para los usuarios gestionados y habilitadas para el resto de usuarios.
+      </translation>
 <translation id="6233173491898450179">Establecer directorio de descargas</translation>
 <translation id="6234177445959386333">Configurar la lista de las URL de acceso de empresa en las que el servicio de protección de contraseñas debería capturar los hashes con salt de las contraseñas.</translation>
 <translation id="6242147107333796512">Proporciona información relacionada con los informes sobre fallos, como el ID remoto,
@@ -3771,7 +3751,6 @@ Si esta opción no está establecida o está establecida en True, los dispositiv
 <translation id="637934607141010488">Permite informar sobre la lista de usuarios de dispositivos que han iniciado sesión recientemente.
 
 Si la política está establecida en False, no se informará sobre los usuarios.</translation>
-<translation id="638668187106406971">Comprueba si se han infringido las normas de protección de datos sensibles en las subidas</translation>
 <translation id="6394350458541421998">Esta política no está disponible desde la versión 29 de <ph name="PRODUCT_OS_NAME" />. Utiliza la política PresentationScreenDimDelayScale en su lugar.</translation>
 <translation id="6401669939808766804">Cerrar la sesión del usuario</translation>
 <translation id="640244877779556713">Habilitar sugerencias de emojis</translation>
@@ -4956,7 +4935,6 @@ Si esta opción no está establecida o está establecida en True, los dispositiv
 
           El valor de esta política debe especificarse en milisegundos. Los valores deben ser inferiores o iguales al retraso de inactividad.</translation>
 <translation id="8001701200415781021">Restringir las cuentas de Google que se pueden establecer como cuentas principales de navegador en <ph name="PRODUCT_NAME" /></translation>
-<translation id="8003853057959146975">Envía archivos para inspeccionar si se han infringido las normas de protección de datos sensibles</translation>
 <translation id="8006219716745491366">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" />, se especificará una lista con URL alternativas para extraer términos de búsqueda del buscador. Las URL deben incluir la cadena <ph name="SEARCH_TERM_MARKER" />.
 
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" />, no se usará ninguna URL alternativa para extraer términos de búsqueda.</translation>
@@ -5364,7 +5342,6 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       Si se asigna el valor "False" a esta política o no se configura, el usuario podrá utilizar el navegador sin iniciar sesión en <ph name="PRODUCT_NAME" />.</translation>
 <translation id="858309738002328421">Bloquear las subidas de archivos grandes</translation>
 <translation id="8584279193368801689">Restringe el modo de impresión con PIN. Si no se establece esta política, no se aplicará ninguna restricción. Si el modo no está disponible, se ignorará esta política. Ten en cuenta que la función de impresión con PIN solo está habilitada en impresoras que utilizan uno de los protocolos IPPS, HTTPS, USB o IPP por USB.</translation>
-<translation id="8585558195682146109">Enviar descargas de usuario para analizarlas</translation>
 <translation id="8587229956764455752">Permitir la creación de nuevas cuentas de usuario</translation>
 <translation id="8591713876665299827">Ten en cuenta que esta política está obsoleta y se eliminará de la versión 85 de <ph name="PRODUCT_OS_NAME" />. Utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> en su lugar.
 
@@ -5624,7 +5601,6 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="8942616385591203339">Esta política controla si se muestra Sync Consent al usuario durante el primer inicio de sesión. Se le debería asignar el valor "False" si no es necesario mostrar Sync Consent al usuario en ningún caso.
       Si se le asigna el valor "False", Sync Consent no se mostrará.
       Si se le asigna el valor "True" o no se le asigna ningún valor, Sync Consent no se puede mostrar.</translation>
-<translation id="8943934315109955032">No comprueba si se infringen las normas de protección de datos sensibles</translation>
 <translation id="8947415621777543415">Informar de ubicación del dispositivo</translation>
 <translation id="8948062138228904066">Lista de permitidos de servidores de autenticación</translation>
 <translation id="8951350807133946005">Establecer directorio de caché de disco</translation>
@@ -5638,9 +5614,6 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 
       Esta política no se debe habilitar si la política <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> está habilitada, ya que esta función comparte la misma funcionalidad del cliente. En este caso, la sincronización alojada por Google está completamente inhabilitada.</translation>
 <translation id="8955719471735800169">Volver al principio</translation>
-<translation id="8956310900055843601">Si se le asigna el valor True a la política o no se le asigna ningún valor, en la pantalla de inicio de sesión del dispositivo aparecerá un reloj con formato de 24 horas. Las sesiones de usuario también se inician con este formato de forma predeterminada, pero el usuario puede cambiar el formato del reloj de una cuenta si lo desea.
-
-      Si se le asigna el valor False, el dispositivo utilizará el formato de reloj de 12 horas.</translation>
 <translation id="8959992920425111821">Configuración predeterminada</translation>
 <translation id="8970205333161758602">Eliminar el mensaje de desactivación de <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8976248126101463034">Permitir la autenticación gnubby para los hosts de acceso remoto</translation>

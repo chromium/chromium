@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">เชื่อมต่อ Wi-Fi ใหม่</translation>
 <translation id="1165039591588034296">ข้อผิดพลาด</translation>
 <translation id="1165174597379888365">มีการเข้าชมหน้าเว็บ</translation>
+<translation id="1174723505405632867">คุณต้องการอนุญาตให้ <ph name="EMBEDDED_URL" /> ใช้คุกกี้และข้อมูลเว็บไซต์ใน <ph name="TOP_LEVEL_URL" /> ไหม
+
+หากไม่ การตั้งค่าความเป็นส่วนตัวจะบล็อกการเข้าถึงนี้ การอนุญาตจะช่วยให้เนื้อหาที่คุณโต้ตอบด้วยทำงานอย่างถูกต้อง แต่ก็อาจอนุญาตให้ <ph name="EMBEDDED_URL" /> ติดตามกิจกรรมของคุณด้วย</translation>
 <translation id="1175364870820465910">&amp;พิมพ์...</translation>
 <translation id="1175875016430184367">เย็บด้วยลวดเย็บกระดาษด้านขวา 3 ครั้ง</translation>
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
@@ -305,6 +308,7 @@
 <translation id="2181821976797666341">นโยบาย</translation>
 <translation id="2183608646556468874">หมายเลขโทรศัพท์</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{ที่อยู่ 1 รายการ}other{ที่อยู่ # รายการ}}</translation>
+<translation id="2187243482123994665">การใช้งานอยู่ของผู้ใช้</translation>
 <translation id="2187317261103489799">ตรวจหา (ค่าเริ่มต้น)</translation>
 <translation id="2188375229972301266">เจาะรูด้านล่างหลายรู</translation>
 <translation id="2202020181578195191">ป้อนปีที่หมดอายุที่ถูกต้อง</translation>
@@ -527,6 +531,7 @@
       ตรวจสอบว่าพร็อกซีเซิร์ฟเวอร์ทำงานอยู่ หากคุณคิดว่าไม่ควร
       ใช้พร็อกซีเซิร์ฟเวอร์ ให้ดำเนินการดังนี้:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> ต้องการทราบเมื่อคุณมีการเคลื่อนไหว</translation>
 <translation id="3188393374551744535">เงินคงเหลือ</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ต้องการจัดเก็บข้อมูลอย่างถาวรในอุปกรณ์ของคุณ</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> ใน <ph name="SERVER_NAME" /></translation>
@@ -1013,6 +1018,7 @@
 <translation id="5171689220826475070">กระดาษต่อเนื่องแบบยุโรป</translation>
 <translation id="5172758083709347301">ผู้ใช้คอมพิวเตอร์นี้</translation>
 <translation id="5179510805599951267">หากไม่มีในภาษา <ph name="ORIGINAL_LANGUAGE" /> ให้รายงานข้อผิดพลาดนี้</translation>
+<translation id="5179740473595559246">ทราบเมื่อคุณใช้งานอยู่</translation>
 <translation id="5190835502935405962">แถบบุ๊กมาร์ก</translation>
 <translation id="519422657042045905">โหมดคำอธิบายประกอบไม่พร้อมใช้งาน</translation>
 <translation id="5201306358585911203">หน้าที่ฝังไว้ในหน้าเว็บนี้บอกว่า</translation>
@@ -1235,6 +1241,7 @@
 <translation id="6049488691372270142">หน้าที่แสดง</translation>
 <translation id="6051221802930200923">คุณไม่สามารถไปที่ <ph name="SITE" /> ได้ในขณะนี้เนื่องจากเว็บไซต์ใช้การตรึงใบรับรอง โดยปกติข้อผิดพลาดของเครือข่ายและการโจมตีจะเกิดขึ้นเพียงชั่วคราว หน้านี้จึงอาจใช้งานได้ในภายหลัง</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">แชร์การเคลื่อนไหวของคุณไหม</translation>
 <translation id="6058977677006700226">ต้องการใช้บัตรในอุปกรณ์ทุกเครื่องไหม</translation>
 <translation id="6059925163896151826">อุปกรณ์ USB</translation>
 <translation id="6060009363608157444">โหมด DnsOverHttps ไม่ถูกต้อง</translation>
@@ -1364,6 +1371,7 @@
 <translation id="6631202559048444592">นโยบายนี้มีแหล่งที่มามากกว่า 1 แห่งแต่มีค่าต่างๆ เหมือนกัน</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">ล้าง</translation>
+<translation id="6645291930348198241">เข้าถึงคุกกี้และข้อมูลเว็บไซต์</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{ไม่มี}=1{จาก 1 เว็บไซต์ (คุณจะไม่ออกจากระบบบัญชี Google)}other{จาก # เว็บไซต์ (คุณจะไม่ออกจากระบบบัญชี Google)}}</translation>
 <translation id="6648459603387803038">ผู้ดูแลระบบจะเปลี่ยนการตั้งค่าเบราว์เซอร์จากระยะไกลได้ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chrome ได้ด้วย</translation>
 <translation id="6652101503459149953">ใช้ Windows Hello</translation>

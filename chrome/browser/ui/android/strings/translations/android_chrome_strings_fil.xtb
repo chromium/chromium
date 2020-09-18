@@ -39,6 +39,7 @@
 <translation id="123724288017357924">I-reload ang page, balewalain ang cached content</translation>
 <translation id="124678866338384709">Isara ang kasalukuyang tab</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Listahan ng babasahin</translation>
 <translation id="1266864766717917324">Hindi maibahagi ang <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">I-tap upang palawakin</translation>
 <translation id="1291207594882862231">I-clear ang history, cookies, site data, cache…</translation>
@@ -218,7 +219,6 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="2744248271121720757">Mag-tap ng salita upang hanapin agad ito o tingnan ang mga nauugnay na pagkilos</translation>
 <translation id="2760989362628427051">I-on ang madilim na tema kapag naka-on ang madilim na tema o Pangtipid sa Baterya ng iyong device</translation>
 <translation id="2762000892062317888">ngayon lang</translation>
-<translation id="2771869497727323769">Hindi makagawa ng link sa text. Ibahagi sa isang app ang link sa page.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> (na) segundo na lang ang natitira</translation>
 <translation id="2779651927720337254">nabigo</translation>
 <translation id="2781151931089541271">1 segundo na lang ang natitira</translation>
@@ -467,7 +467,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{Tapos na ang 1 pag-download.}one{Tapos na ang # pag-download.}other{Tapos na ang # na pag-download.}}</translation>
 <translation id="4766678251456904326">Magdagdag ng account sa device</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 download ang nakaiskedyul.}one{# download ang nakaiskedyul.}other{# na download ang nakaiskedyul.}}</translation>
-<translation id="478981486571169252">Makikita mo sa Chrome ang iyong status ng pag-sign in sa <ph name="SITE_NAME" />, data mula sa pag-browse, at data ng site.</translation>
 <translation id="4802417911091824046">Hindi kasama sa pag-encrypt ng passphrase ang mga paraan ng pagbabayad at address mula sa Google Pay.
 
 Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5040262127954254034">Privacy</translation>
 <translation id="5087580092889165836">Magdagdag ng card</translation>
 <translation id="509429900233858213">May naganap na error.</translation>
-<translation id="5100748015044654621">Ibahagi sa isang app ang link sa naka-highlight na text</translation>
 <translation id="510275257476243843">1 oras na lang ang natitira</translation>
 <translation id="5123685120097942451">Tab na incognito</translation>
 <translation id="5127805178023152808">Naka-off ang pag-sync</translation>

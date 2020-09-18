@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Maak opnieuw verbinding met wifi</translation>
 <translation id="1165039591588034296">Fout</translation>
 <translation id="1165174597379888365">Pagina is bezocht</translation>
+<translation id="1174723505405632867">Wil je toestaan dat <ph name="EMBEDDED_URL" /> cookies en sitegegevens gebruikt op <ph name="TOP_LEVEL_URL" />?
+
+Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de content die je hebt gebruikt correct, maar kan <ph name="EMBEDDED_URL" /> mogelijk je activiteit bijhouden.</translation>
 <translation id="1175364870820465910">&amp;Afdrukken...</translation>
 <translation id="1175875016430184367">Drie nietjes rechts</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
@@ -306,6 +309,7 @@
 <translation id="2181821976797666341">Beleid</translation>
 <translation id="2183608646556468874">Telefoonnummer</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adres}other{# adressen}}</translation>
+<translation id="2187243482123994665">Aanwezigheid van gebruiker</translation>
 <translation id="2187317261103489799">Detecteren (standaard)</translation>
 <translation id="2188375229972301266">Meerdere perforaties onder</translation>
 <translation id="2202020181578195191">Geef een geldig vervaljaar op</translation>
@@ -424,7 +428,7 @@
 <translation id="2702801445560668637">Leeslijst</translation>
 <translation id="2704283930420550640">Waarde komt niet overeen met notatie.</translation>
 <translation id="2705137772291741111">De in het cachegeheugen opgeslagen versie van deze site is niet bereikbaar.</translation>
-<translation id="2709516037105925701">Automatisch aanvullen</translation>
+<translation id="2709516037105925701">Automatisch invullen</translation>
 <translation id="2713444072780614174">Wit</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en vervolgens op Enter om je betalingen en creditcardgegevens te beheren in de Chrome-instellingen.</translation>
 <translation id="2721148159707890343">Verzoek geslaagd</translation>
@@ -525,6 +529,7 @@
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174168572213147020">Eiland</translation>
 <translation id="3176929007561373547">Controleer je proxyinstellingen of neem contact op met je netwerkbeheerder om te controleren of de proxyserver werkt. Als je denkt dat je geen proxyserver zou moeten gebruiken: <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> wil weten wanneer je aanwezig bent</translation>
 <translation id="3188393374551744535">Accountsaldo</translation>
 <translation id="3194737229810486521"><ph name="URL" /> vraagt toestemming om gegevens permanent op je apparaat op te slaan</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> op <ph name="SERVER_NAME" /></translation>
@@ -845,7 +850,7 @@
 <translation id="4435702339979719576">Briefkaart</translation>
 <translation id="443673843213245140">Het gebruik van een proxy is uitgeschakeld, maar er is wel een expliciete proxyconfiguratie opgegeven.</translation>
 <translation id="4466881336512663640">Hiermee gaan formulierwijzigingen verloren. Weet je zeker dat je wilt doorgaan?</translation>
-<translation id="4476953670630786061">Dit formulier is niet beveiligd. Automatisch aanvullen is uitgeschakeld.</translation>
+<translation id="4476953670630786061">Dit formulier is niet beveiligd. Automatisch invullen is uitgeschakeld.</translation>
 <translation id="4477350412780666475">Volgend nummer</translation>
 <translation id="4482953324121162758">Deze site wordt niet vertaald.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1015,6 +1020,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Computer</translation>
 <translation id="5179510805599951267">Niet in het <ph name="ORIGINAL_LANGUAGE" />? Deze fout melden</translation>
+<translation id="5179740473595559246">Weten wanneer je aanwezig bent</translation>
 <translation id="5190835502935405962">Bookmarkbalk</translation>
 <translation id="519422657042045905">Annotatie niet beschikbaar</translation>
 <translation id="5201306358585911203">Een ingesloten pagina op deze pagina meldt het volgende</translation>
@@ -1237,6 +1243,7 @@
 <translation id="6049488691372270142">Pagina-uitvoer</translation>
 <translation id="6051221802930200923">Je kunt <ph name="SITE" /> momenteel niet bezoeken, omdat de website gebruikmaakt van certificaatpinning. Netwerkfouten en aanvallen zijn doorgaans tijdelijk, dus deze pagina werkt later waarschijnlijk correct.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Je aanwezigheid delen?</translation>
 <translation id="6058977677006700226">Je passen gebruiken op al je apparaten?</translation>
 <translation id="6059925163896151826">USB-apparaten</translation>
 <translation id="6060009363608157444">Ongeldige DnsOverHttps-modus.</translation>
@@ -1365,6 +1372,7 @@
 <translation id="6631202559048444592">Er zijn meerdere bronnen aanwezig voor het beleid, maar de waarden zijn gelijk.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Wissen</translation>
+<translation id="6645291930348198241">Toegang krijgen tot cookies en sitegegevens.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Geen}=1{Van 1 site (je wordt niet uitgelogd bij je Google-account)}other{Van # sites (je wordt niet uitgelogd bij je Google-account)}}</translation>
 <translation id="6648459603387803038">Je beheerder kan je browserinstellingen op afstand wijzigen. Activiteit op dit apparaat kan ook buiten Chrome worden beheerd.</translation>
 <translation id="6652101503459149953">Windows Hello gebruiken</translation>

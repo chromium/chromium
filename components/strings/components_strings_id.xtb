@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Menyambungkan ulang ke Wi-Fi</translation>
 <translation id="1165039591588034296">Kesalahan</translation>
 <translation id="1165174597379888365">Halaman dikunjungi</translation>
+<translation id="1174723505405632867">Anda ingin mengizinkan <ph name="EMBEDDED_URL" /> menggunakan cookie dan data situs di <ph name="TOP_LEVEL_URL" />?
+
+Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan konten yang berinteraksi dengan Anda berfungsi sebagaimana mestinya, tetapi mungkin mengizinkan <ph name="EMBEDDED_URL" /> melacak aktivitas Anda.</translation>
 <translation id="1175364870820465910">&amp;Cetak...</translation>
 <translation id="1175875016430184367">Tiga jepretan di kanan</translation>
 <translation id="1178581264944972037">Jeda</translation>
@@ -305,6 +308,7 @@
 <translation id="2181821976797666341">Kebijakan</translation>
 <translation id="2183608646556468874">Nomor Telepon</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 alamat}other{# alamat}}</translation>
+<translation id="2187243482123994665">Kehadiran pengguna</translation>
 <translation id="2187317261103489799">Deteksi (default)</translation>
 <translation id="2188375229972301266">Beberapa lubang di bawah</translation>
 <translation id="2202020181578195191">Masukkan tahun habis masa berlaku yang valid</translation>
@@ -529,6 +533,7 @@
       memastikan bahwa server proxy bekerja. Jika Anda tidak yakin harus
       menggunakan server proxy:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> ingin mengetahui status kehadiran Anda</translation>
 <translation id="3188393374551744535">Saldo rekening</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ingin menyimpan data di perangkat Anda secara permanen</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> di <ph name="SERVER_NAME" /></translation>
@@ -1015,6 +1020,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Mesin</translation>
 <translation id="5179510805599951267">Bukan <ph name="ORIGINAL_LANGUAGE" />? Laporkan kesalahan deteksi ini</translation>
+<translation id="5179740473595559246">Mengetahui status kehadiran Anda</translation>
 <translation id="5190835502935405962">Bilah Bookmark</translation>
 <translation id="519422657042045905">Anotasi tidak tersedia</translation>
 <translation id="5201306358585911203">Halaman tersemat di halaman ini menyatakan</translation>
@@ -1237,6 +1243,7 @@
 <translation id="6049488691372270142">Pengiriman halaman</translation>
 <translation id="6051221802930200923">Anda tidak dapat membuka <ph name="SITE" /> sekarang karena situs menggunakan penyematan sertifikat. Error jaringan dan serangan biasanya bersifat sementara, sehingga halaman ini mungkin akan berfungsi nanti.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Bagikan kehadiran Anda?</translation>
 <translation id="6058977677006700226">Gunakan kartu Anda di semua perangkat?</translation>
 <translation id="6059925163896151826">Perangkat USB</translation>
 <translation id="6060009363608157444">Mode DnsOverHttps tidak valid.</translation>
@@ -1366,6 +1373,7 @@
 <translation id="6631202559048444592">Ada beberapa sumber yang nilainya sama untuk kebijakan ini.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Hapus</translation>
+<translation id="6645291930348198241">Mengakses cookie dan data situs.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Tidak ada}=1{Dari 1 situs (Anda tidak akan logout dari Akun Google)}other{Dari # situs (Anda tidak akan logout dari Akun Google)}}</translation>
 <translation id="6648459603387803038">Administrator dapat mengubah penyiapan browser Anda dari jarak jauh. Aktivitas di perangkat ini juga dapat dikelola di luar Chrome.</translation>
 <translation id="6652101503459149953">Gunakan Windows Hello</translation>

@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Torna't a connectar a la xarxa Wi-Fi.</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1165174597379888365">Es visita una pàgina</translation>
+<translation id="1174723505405632867">Vols permetre que <ph name="EMBEDDED_URL" /> utilitzi les galetes i les dades del lloc web a <ph name="TOP_LEVEL_URL" />?
+
+En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà que el contingut amb què has interaccionat funcioni correctament, però pot ser que permeti que <ph name="EMBEDDED_URL" /> faci un seguiment de la teva activitat.</translation>
 <translation id="1175364870820465910">&amp;Imprimeix...</translation>
 <translation id="1175875016430184367">Grapat triple a la dreta</translation>
 <translation id="1178581264944972037">Posa en pausa</translation>
@@ -305,6 +308,7 @@
 <translation id="2181821976797666341">Polítiques</translation>
 <translation id="2183608646556468874">Número de telèfon</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adreça}other{# adreces}}</translation>
+<translation id="2187243482123994665">Presència d'usuari</translation>
 <translation id="2187317261103489799">Detecta (opció predeterminada)</translation>
 <translation id="2188375229972301266">Encunyació múltiple a la part inferior</translation>
 <translation id="2202020181578195191">Introdueix un any de caducitat vàlid</translation>
@@ -527,6 +531,7 @@
           assegurar-vos que el servidor intermediari funcioni correctament. Si  creieu que no és necessari
           utilitzar un servidor intermediari:
           <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> vol saber quan estàs present</translation>
 <translation id="3188393374551744535">Saldo del compte</translation>
 <translation id="3194737229810486521"><ph name="URL" /> vol emmagatzemar dades al dispositiu de manera permanent</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> a <ph name="SERVER_NAME" /></translation>
@@ -1014,6 +1019,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Automàtica</translation>
 <translation id="5179510805599951267">No està escrita en <ph name="ORIGINAL_LANGUAGE" />? Informa d'aquest error</translation>
+<translation id="5179740473595559246">Saber quan hi ets</translation>
 <translation id="5190835502935405962">Barra d'adreces d'interès</translation>
 <translation id="519422657042045905">L'anotació no està disponible</translation>
 <translation id="5201306358585911203">Una pàgina inserida en aquesta pàgina diu</translation>
@@ -1236,6 +1242,7 @@
 <translation id="6049488691372270142">Lliurament de les pàgines</translation>
 <translation id="6051221802930200923">En aquests moments no pots visitar <ph name="SITE" /> perquè el lloc web fa servir una fixació de certificat. Els atacs i els errors de xarxa acostumen a ser temporals, o sigui que probablement la pàgina funcionarà més endavant.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Vols compartir la presència?</translation>
 <translation id="6058977677006700226">Vols utilitzar les targetes en tots els dispositius?</translation>
 <translation id="6059925163896151826">Dispositius USB</translation>
 <translation id="6060009363608157444">El mode DnsOverHttps no és vàlid.</translation>
@@ -1365,6 +1372,7 @@
 <translation id="6631202559048444592">Hi ha més d'un origen en aquesta política, però els valors són els mateixos.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Esborra</translation>
+<translation id="6645291930348198241">Accedeix a les galetes i a les dades del lloc web.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Cap}=1{D'1 lloc web (no se't tancarà la sessió del Compte de Google)}other{De # llocs web (no se't tancarà la sessió del Compte de Google)}}</translation>
 <translation id="6648459603387803038">L'administrador pot modificar la configuració del navegador de manera remota. És possible que l'activitat d'aquest dispositiu també es gestioni fora de Chrome.</translation>
 <translation id="6652101503459149953">Utilitza Windows Hello</translation>

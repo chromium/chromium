@@ -137,7 +137,7 @@
 <translation id="4750550185319565338">Ota <ph name="PLUGIN_NAME" /> käyttöön käynnistämällä Chrome uudelleen.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (saapuva mDNS)</translation>
 <translation id="4771048833395599659">Tämä tiedosto voi olla vaarallinen, joten Chrome on estänyt sen.</translation>
-<translation id="479167709087336770">Tämä käyttää samaa oikeinkirjoituksen tarkistusta kuin Google Haku. Selaimeen kirjoittamasi teksti lähetetään Googlelle. Voit muuttaa tätä milloin tahansa asetuksista.</translation>
+<translation id="479167709087336770">Tämä käyttää samaa oikeinkirjoituksen tarkistusta kuin Google Haku. Selaimeen kirjoittamasi teksti lähetetään Googlelle. Voit vaihtaa valintasi milloin tahansa asetuksista.</translation>
 <translation id="4891791193823137474">Jätä Google Chrome käyntiin taustalle</translation>
 <translation id="489337168347244450">{NUM_DAYS,plural, =1{Chrome tarkistaa ei-toivotut ohjelmistot kerran viikossa. Tarkistettu viimeksi 1 päivä sitten.}other{Chrome tarkistaa ei-toivotut ohjelmistot kerran viikossa. Tarkistettu viimeksi {NUM_DAYS} päivää sitten.}}</translation>
 <translation id="4895437082222824641">Avaa linkki uudella Chromen välilehdellä</translation>

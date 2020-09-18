@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Перазагрузіць бягучую старонку, ігнаруючы змесціва кэша</translation>
 <translation id="124678866338384709">Закрыць бягучую ўкладку</translation>
 <translation id="1258753120186372309">Дудл Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Спіс чытання</translation>
 <translation id="1266864766717917324">Не ўдалося абагуліць змесціва наступнага тыпу: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Дакраніцеся, каб разгарнуць</translation>
 <translation id="1291207594882862231">Ачысціць гісторыю, файлы cookie, даныя сайта, кэш…</translation>
@@ -217,7 +218,6 @@
 <translation id="2744248271121720757">Каб выканаць імгненны пошук або паглядзець звязаныя са словам дзеянні, націсніце на яго</translation>
 <translation id="2760989362628427051">Выкарыстоўваць цёмную тэму, калі на прыладзе ўключаны рэжым эканоміі зараду або цёмная тэма</translation>
 <translation id="2762000892062317888">толькі што</translation>
-<translation id="2771869497727323769">Не ўдалося стварыць спасылку на тэкст. Абагульце спасылку на старонку ў праграме.</translation>
 <translation id="2777555524387840389">Засталося <ph name="SECONDS" /> с</translation>
 <translation id="2779651927720337254">не выканана</translation>
 <translation id="2781151931089541271">Засталася 1 секунда</translation>
@@ -466,7 +466,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 спампоўка завершана.}one{# спампоўка завершана.}few{# спампоўкі завершана.}many{# спамповак завершана.}other{# спампоўкі завершана.}}</translation>
 <translation id="4766678251456904326">Дадаць уліковы запіс на прыладу</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{Запланавана 1 спампоўка.}one{Запланавана # спампоўка.}few{Запланаваны # спампоўкі.}many{Запланаваны # спамповак.}other{Запланаваны # спампоўкі.}}</translation>
-<translation id="478981486571169252">Вы ўбачыце, ці выкананы ўваход на сайт <ph name="SITE_NAME" />, гісторыю праглядаў і даныя сайтаў у Chrome.</translation>
 <translation id="4802417911091824046">Шыфраванне фразы-пароля не распаўсюджваецца на спосабы аплаты і адрасы з Google Pay.
 
 Каб змяніць гэту наладу, <ph name="BEGIN_LINK" />скіньце налады сінхранізацыі<ph name="END_LINK" /></translation>
@@ -511,7 +510,6 @@
 <translation id="5040262127954254034">Прыватнасць</translation>
 <translation id="5087580092889165836">Дадаць картку</translation>
 <translation id="509429900233858213">Адбылася памылка.</translation>
-<translation id="5100748015044654621">Абагульце спасылку на вылучаны тэкст у праграме</translation>
 <translation id="510275257476243843">Засталася 1 гадзіна</translation>
 <translation id="5123685120097942451">Укладка інкогніта</translation>
 <translation id="5127805178023152808">Сінхранізацыя выключана</translation>

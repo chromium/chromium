@@ -16,6 +16,7 @@
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> సైట్ జోడించబడింది</translation>
 <translation id="1383876407941801731">సెర్చ్</translation>
 <translation id="1384959399684842514">డౌన్‌లోడ్ పాజ్ చేయబడింది</translation>
+<translation id="1431402976894535801">మీ ఉనికిని తెలుసుకోనివ్వకుండా సైట్‌లను బ్లాక్ చేయండి</translation>
 <translation id="1446450296470737166">MIDI పరికరాల పూర్తి నియం. అనుమ.</translation>
 <translation id="1509960214886564027">చాలా సైట్‌లలోని ఫీచర్‌లు పని చేయకుండాపోవచ్చు</translation>
 <translation id="1620510694547887537">కెమెరా</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">తక్షణ యాప్‌ను తెరువు</translation>
 <translation id="2148716181193084225">ఈ రోజు</translation>
 <translation id="2182457891543959921">మీ పరిసరాల 3D మ్యాప్‌ను రూపొందించడానికి లేదా కెమెరా పొజిషన్‌ను ట్రాక్ చేయడానికి సైట్‌లను అనుమతించే ముందు అడగాలి (సిఫార్సు చేయడమైనది)</translation>
+<translation id="2187243482123994665">యూజర్ ఉనికి</translation>
 <translation id="2212565012507486665">కుక్కీలను అనుమతించు</translation>
 <translation id="2228071138934252756">మీ కెమెరాను యాక్సెస్ చేయడానికి <ph name="APP_NAME" />ని అనుమతించడానికి, <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో కూడా కెమెరాను ఆన్ చేయండి.</translation>
 <translation id="2289270750774289114">ఏదైనా ఒక సైట్ సమీపంలోని బ్లూటూత్ పరికరాలను కనుగొనాలనుకున్నప్పుడు అనుమతి అడుగుతుంది (సిఫార్సు చేయడమైనది)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">వీడియో ప్లేయర్</translation>
 <translation id="3115898365077584848">సమాచారాన్ని చూపు</translation>
 <translation id="3123473560110926937">కొన్ని సైట్‌లలో బ్లాక్ చేయబడింది</translation>
+<translation id="3165371858310906303">ఒక సైట్ మీ ఉనికిని తెలుసుకోవాలనుకున్నప్పుడు అనుమతి అడగాలి</translation>
 <translation id="3198916472715691905">నిల్వ చేసిన డేటా <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">మీకు నోటిఫికేషన్‌లను పంపడానికి <ph name="APP_NAME" />ని అనుమతించేందుకు, <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో కూడా నోటిఫికేషన్‌లను ఆన్ చేయండి.</translation>
 <translation id="3227137524299004712">మైక్రోఫోన్</translation>
@@ -104,7 +107,6 @@
 <translation id="4165986682804962316">సైట్ సెట్టింగ్‌లు</translation>
 <translation id="4200726100658658164">లొకేషన్ సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="4226663524361240545">నోటిఫికేషన్‌లు పరికరాన్ని వైబ్రేట్ చేయవచ్చు</translation>
-<translation id="4242533952199664413">సెట్టింగ్‌లను తెరువు</translation>
 <translation id="4259722352634471385">నావిగేషన్ బ్లాక్ చేయబడింది: <ph name="URL" /></translation>
 <translation id="4278390842282768270">అనుమతించబడింది</translation>
 <translation id="429312253194641664">ఒక సైట్‌లో మీడియా ప్లే చేయబడుతోంది</translation>
@@ -134,6 +136,7 @@
 <translation id="5197729504361054390">మీరు ఎంచుకున్న పరిచయాలు <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />తో షేర్ చేయబడతాయి.</translation>
 <translation id="5300589172476337783">చూపించు</translation>
 <translation id="5301954838959518834">సరే, అర్థమైంది</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /></translation>
 <translation id="5313967007315987356">సైట్‌ను జోడించు</translation>
 <translation id="5317780077021120954">సేవ్ చేయి</translation>
 <translation id="5335288049665977812">సైట్‌లను జావాస్క్రిప్ట్ అమలు చేయడానికి అనుమతిస్తుంది (సిఫార్సు చేయబడింది)</translation>
@@ -145,6 +148,7 @@
 <translation id="5403592356182871684">పేర్లు</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" />లో <ph name="ELAPSED_TIME" /> సమయం గడిచిపోయింది.</translation>
 <translation id="5494752089476963479">అనుచితమైన లేదా తప్పుదారి పట్టించే ప్రకటనలను చూపించే సైట్‌లలో ప్రకటనలను బ్లాక్ చేస్తుంది</translation>
+<translation id="5502860503640766021"><ph name="PERMISSION_1" /> అనుమతించబడింది, <ph name="PERMISSION_2" /> బ్లాక్ చేయబడింది</translation>
 <translation id="5505264765875738116">నోటిఫికేషన్‌లను పంపడానికి సైట్‌లు అడగవు</translation>
 <translation id="5516455585884385570">నోటిఫికేషన్ సెట్టింగ్‌లను తెరువు</translation>
 <translation id="5527111080432883924">క్లిప్‌బోర్డ్ నుండి వచనం మరియు చిత్రాలను చదవడానికి అనుమతించే ముందు సమ్మతి అడగాలి (సిఫార్సు చేస్తున్నాము)</translation>
@@ -156,12 +160,15 @@
 <translation id="5690795753582697420">Android సెట్టింగ్‌లలో కెమెరా ఆఫ్ చేయబడింది</translation>
 <translation id="5710871682236653961">మీరు NFC పరికరాలను నొక్కినప్పుడు, సైట్‌లు సమాచారాన్ని పంపడానికి, అలాగే స్వీకరించడానికి ముందు అనుమతి కోసం అడుగుతాయి (సిఫార్సు చేయబడింది)</translation>
 <translation id="5719847187258001597">ఇది మీ హోమ్ స్క్రీన్‌లో <ph name="ORIGIN" /> లేదా దాని యాప్ ద్వారా స్టోర్ చేయబడిన మొత్తం డేటా, కుక్కీలను క్లియర్ చేస్తుంది.</translation>
+<translation id="5771720122942595109"><ph name="PERMISSION_1" /> బ్లాక్ చేయబడింది</translation>
 <translation id="5804241973901381774">అనుమతులు</translation>
 <translation id="5860033963881614850">ఆఫ్ అయ్యింది</translation>
+<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> అనుమతించబడ్డాయి</translation>
 <translation id="5876056640971328065">వీడియోను పాజ్ చేయి</translation>
 <translation id="5916664084637901428">ఆన్ చేయి</translation>
 <translation id="5922853908706496913">మీ స్క్రీన్‌ను షేర్ చేయడం</translation>
 <translation id="5939518447894949180">రీసెట్ చేయి</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">మీ పరికరానికి ఈ సైట్ యాక్సెస్‌ని నియంత్రించండి</translation>
 <translation id="6040143037577758943">మూసివేయి</translation>
 <translation id="6042308850641462728">మరింత చూపించు</translation>
@@ -173,6 +180,7 @@
 <translation id="6196640612572343990">మూడవ పక్షం కుక్కీలను బ్లాక్ చేయి</translation>
 <translation id="6206551242102657620">కనెక్షన్ సురక్షితం. సైట్ సమాచారం</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> ఎంపికలు</translation>
+<translation id="6262279340360821358"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="6270391203985052864">నోటిఫికేషన్‌లను పంపడానికి సైట్‌లు అడుగగలవు</translation>
 <translation id="6295158916970320988">అన్ని సైట్‌లు</translation>
 <translation id="6320088164292336938">వైబ్రేట్ చేయి</translation>
@@ -195,6 +203,7 @@
 <translation id="6790428901817661496">ప్లే చేయి</translation>
 <translation id="6818926723028410516">అంశాలను ఎంచుకోండి</translation>
 <translation id="6864395892908308021">ఈ పరికరం NFCని రీడ్ చేయదు</translation>
+<translation id="6879016579615558281"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="6910211073230771657">తొలగించబడింది</translation>
 <translation id="6912998170423641340">క్లిప్‌బోర్డ్ నుండి వచనం మరియు చిత్రాలను చదవకుండా సైట్‌లు బ్లాక్ చేయబడతాయి</translation>
 <translation id="6945221475159498467">ఎంచుకోండి</translation>
@@ -212,6 +221,7 @@
 <translation id="723171743924126238">చిత్రాలను ఎంచుకోండి</translation>
 <translation id="7243308994586599757">స్క్రీన్ దిగువభాగం సమీపంలో ఎంపికలు అందుబాటులో ఉంటాయి</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ఎంచుకోబడ్డాయి</translation>
+<translation id="7260727271532453612"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> అనుమతించబడ్డాయి</translation>
 <translation id="7302486331832100261">మీరు సాధారణంగా నోటిఫికేషన్‌లను బ్లాక్ చేస్తుంటారు. అనుమతించడానికి, 'వివరాలు'ను నొక్కండి.</translation>
 <translation id="7423098979219808738">ముందుగా అడుగుతుంది</translation>
 <translation id="7423538860840206698">క్లిప్‌బోర్డ్‌ని చదవకుండా బ్లాక్ చేసారు</translation>
@@ -243,6 +253,7 @@
 <translation id="8087000398470557479">ఈ కంటెంట్ Google ద్వారా డెలివర్ చేయబడిన <ph name="DOMAIN_NAME" />లోనిది.</translation>
 <translation id="8116925261070264013">మ్యూట్ చేసినవి</translation>
 <translation id="8131740175452115882">నిర్ధారించు</translation>
+<translation id="8197286292360124385"><ph name="PERMISSION_1" /> అనుమతించబడింది</translation>
 <translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించు</translation>
 <translation id="8206354486702514201">ఈ సెట్టింగ్ మీ నిర్వాహకుడి ద్వారా అమలు చేయబడింది.</translation>
 <translation id="8249310407154411074">ఎగువకు తరలించు</translation>

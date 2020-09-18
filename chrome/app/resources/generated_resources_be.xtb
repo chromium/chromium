@@ -427,6 +427,7 @@
 <translation id="1500297251995790841">Невядомая прылада [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">У сеансе з уваходам у некалькі ўліковых запісаў гэты ўліковы запіс уладальніка павінен быць першым.</translation>
 <translation id="150411034776756821">Выдаліць <ph name="SITE" /></translation>
+<translation id="1504311855864906891">Ствараць субцітры для медыязмесціва</translation>
 <translation id="1504551620756424144">Абагуленыя папкі даступныя ў сістэме Windows у каталозе "<ph name="BASE_DIR" />".</translation>
 <translation id="1506061864768559482">Пошукавая сістэма</translation>
 <translation id="1507170440449692343">Гэтай старонцы быў заблакіраваны доступ да вашай камеры.</translation>
@@ -1190,7 +1191,6 @@
 <translation id="2396783860772170191">Увядзіце 4-значны PIN-код (0000–9999)</translation>
 <translation id="2399939490305346086">Уліковыя даныя ключа бяспекі</translation>
 <translation id="2400664245143453337">Патрабуецца неадкладнае абнаўленне</translation>
-<translation id="2407481962792080328">Гэта функцыя будзе ўключацца пры ўваходзе ва Уліковы запіс Google</translation>
 <translation id="2408018932941436077">Ідзе захаванне даных карткі</translation>
 <translation id="2408955596600435184">Увядзіце PIN-код</translation>
 <translation id="241082044617551207">Невядомая ўбудова</translation>
@@ -3066,6 +3066,7 @@
 <translation id="4657810666108475055">Пошук укладак</translation>
 <translation id="465878909996028221">Для перанакіравання з браўзера падтрымліваюцца толькі пратаколы "http", "https" і "file".</translation>
 <translation id="4659077111144409915">Асноўны ўліковы запіс</translation>
+<translation id="4659126640776004816">Гэта функцыя будзе ўключацца пры ўваходзе ва Уліковы запіс Google.</translation>
 <translation id="4660476621274971848">Чакалася версія "<ph name="EXPECTED_VERSION" />", фактычная версія – "<ph name="NEW_ID" />"</translation>
 <translation id="4660540330091848931">Змяненне памеру</translation>
 <translation id="4661407454952063730">Даныя праграм – гэта любыя даныя, якія захоўваюцца праграмай (у залежнасці ад налад распрацоўшчыка), у тым ліку кантакты, паведамленні і фота.</translation>
@@ -3131,7 +3132,6 @@
 <translation id="4750394297954878236">Прапановы</translation>
 <translation id="475088594373173692">Першы карыстальнік</translation>
 <translation id="4751476147751820511">Датчыкі руху або святла</translation>
-<translation id="4752124003533492687">Каб падключыць прыладу "<ph name="USB_DEVICE_NAME" />", адкрыйце Налады</translation>
 <translation id="4756378406049221019">Спыніць/Перазагрузіць</translation>
 <translation id="4756388243121344051">&amp;Гісторыя</translation>
 <translation id="4759238208242260848">Спампоўкі</translation>
@@ -5021,6 +5021,7 @@
 <translation id="7075513071073410194">PKCS #1 MD5 з шыфраваннем RSA</translation>
 <translation id="7075625805486468288">Кіраванне наладамі і сертыфікатамі HTTPS/SSL</translation>
 <translation id="7076293881109082629">Уваход</translation>
+<translation id="7076878155205969899">Выключыць гук</translation>
 <translation id="7077829361966535409">Не ўдалося загрузіць старонку ўваходу пры бягучых наладах проксі-сервера. <ph name="GAIA_RELOAD_LINK_START" />Паўтарыце спробу ўваходу<ph name="GAIA_RELOAD_LINK_END" /> або скарыстайце іншыя <ph name="PROXY_SETTINGS_LINK_START" />налады проксі-сервера<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Усе сеткі</translation>
 <translation id="708060913198414444">К&amp;апіраваць адрас аўдыя</translation>
@@ -5041,7 +5042,6 @@
 <translation id="7099337801055912064">Не ўдалося загрузіць вялікі файл PPD. Максімальны памер – 250 КБ.</translation>
 <translation id="7102687220333134671">Аўтаматычныя абнаўленні ўключаны</translation>
 <translation id="7102832101143475489">Запыт пратэрмінаваны</translation>
-<translation id="7105390788077117391">Параметры USB</translation>
 <translation id="710640343305609397">Адкрыць налады сеткі</translation>
 <translation id="7108338896283013870">Схаваць</translation>
 <translation id="7108668606237948702">Enter</translation>
@@ -5071,7 +5071,6 @@
 <translation id="7136694880210472378">Зрабіць стандартнай пошукавай сістэмай</translation>
 <translation id="7136984461011502314">Вітаем у <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Адбылася памылка. Выберыце іншы відарыс і паўтарыце спробу.</translation>
-<translation id="7138678301420049075">Іншыя</translation>
 <translation id="713888829801648570">На жаль пароль спраўдзіць не ўдалося: вы па-за сеткай.</translation>
 <translation id="7140928199327930795">Няма іншых даступных прылад.</translation>
 <translation id="7141105143012495934">Уваход не выкананы: не ўдалося атрымаць даныя ўліковага запісу. Звярніцеся да адміністратара або паўтарыце спробу.</translation>

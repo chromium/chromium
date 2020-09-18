@@ -293,6 +293,7 @@
 <translation id="4277990410970811858">גלישה בטוחה</translation>
 <translation id="4281844954008187215">תנאי שירות</translation>
 <translation id="430793432425771671">סנכרון הכל</translation>
+<translation id="4309403553630140242">לחיצה פעמיים תציג מידע נוסף</translation>
 <translation id="430967081421617822">משחר ההיסטוריה</translation>
 <translation id="4334428914252001502">מאמר אחד שלא נקרא.</translation>
 <translation id="4338650699862464074">‏שליחת כתובות URL של דפים שנכנסת אליהם אל Google.</translation>
@@ -561,6 +562,7 @@
 <translation id="7189598951263744875">שיתוף...</translation>
 <translation id="7192050974311852563">התחלת רישום ביומן</translation>
 <translation id="7203585745079012652">משוב לתשובות על-ידי דיבור</translation>
+<translation id="7207383424303353046">‏חדש: אם Chrome יוגדר כאפליקציית הדפדפן בברירת מחדל, אתרים ייפתחו בו באופן אוטומטי. <ph name="BEGIN_LINK" />לפתיחת ההגדרות<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">כינוי הכרטיס לא חוקי</translation>
 <translation id="7265758999917665941">אף פעם עבור אתר זה</translation>
 <translation id="7272437679830969316">לא ניתן לאמת את הזהות שלך. הסיסמה לא הועתקה.</translation>
@@ -638,6 +640,7 @@
 <translation id="8073670137947914548">ההורדה הסתיימה</translation>
 <translation id="8073872304774253879">שיפור החיפושים והגלישה</translation>
 <translation id="8076014560081431679">הגדרות אתרים שנשמרו לא יימחקו ועשויות לשקף את הרגלי הגלישה שלך. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
+<translation id="8079602123447022758">ההגדרה הזו מנוהלת. יש ללחוץ פעמיים לקבלת מידע נוסף</translation>
 <translation id="8105368624971345109">כבה</translation>
 <translation id="8114753159095730575">יש קובץ זמין להורדה. האפשרויות זמינות בחלק התחתון של המסך.</translation>
 <translation id="8131740175452115882">אישור</translation>

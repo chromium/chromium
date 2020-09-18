@@ -71,6 +71,7 @@
 <translation id="1673103856845176271">Για λόγους ασφαλείας, η πρόσβαση στο αρχείο δεν ήταν δυνατή.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">Συμπίεση <ph name="NUMBER_OF_ITEMS" /> στοιχείων...</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> στοιχεία αντιγράφηκαν.</translation>
 <translation id="174173592514158117">Εμφάνιση όλων των φακέλων του Play</translation>
 <translation id="174937106936716857">Συνολικός αριθμός αρχείων</translation>
 <translation id="1775381402323441512">Πληροφορίες βίντεο</translation>
@@ -112,10 +113,12 @@
 <translation id="2163152940313951844">Μη έγκυρος χαρακτήρας: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Πληκτρολόγιο Βιετναμικών (TCVN)</translation>
 <translation id="2168214441502403371">Πληκτρολόγιο Περσικών</translation>
+<translation id="2197363559908958454">Το <ph name="NUMBER_OF_ITEMS" /> μετακινήθηκε.</translation>
 <translation id="2198315389084035571">Απλοποιημένα Κινεζικά</translation>
 <translation id="2208158072373999562">Αρχείο Zip</translation>
 <translation id="2225536596944493418">Είστε βέβαιοι ότι θέλετε να διαγράψετε <ph name="NUMBER_OF_ITEMS" /> στοιχεία;</translation>
 <translation id="2230062665678605299">Δεν είναι δυνατή η δημιουργία του φακέλου "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Μετακινήθηκε.</translation>
 <translation id="2278988676849463018">Πληκτρολόγιο Κανάντα (Φωνητικό)</translation>
 <translation id="2288278176040912387">Πικάπ</translation>
 <translation id="2291538123825441971">Άνοιγμα <ph name="NUMBER_OF_FILES" /> αρχείων.</translation>
@@ -242,6 +245,7 @@
 <translation id="3620292326130836921">Δημιουργήθηκαν αντίγραφα ασφαλείας για όλα τα αρχεία!</translation>
 <translation id="3626281679859535460">Φωτεινότητα</translation>
 <translation id="3644896802912593514">Πλάτος</translation>
+<translation id="3645233063072417428">Μετακινήθηκαν <ph name="NUMBER_OF_ITEMS" /> στοιχεία.</translation>
 <translation id="3645531960514756307">Ξεκαρφίτσωμα φακέλου</translation>
 <translation id="3678559383040232393">Πληκτρολόγιο Μάλτας</translation>
 <translation id="3685122418104378273">Ο συγχρονισμός του Google Drive είναι απενεργοποιημένος από προεπιλογή όταν χρησιμοποιούνται δεδομένα κινητής τηλεφωνίας.</translation>
@@ -407,6 +411,7 @@
     Ό,τι και να συμβεί στη συσκευή σας, τα αρχεία σας αποθηκεύονται με ασφάλεια στο Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Κοινή χρήση, δημιουργία και συνεργασία<ph name="MARKUP_8" />
     σε αρχεία με άλλους χρήστες σε ένα μέρος.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Αντιγράφηκε.</translation>
 <translation id="5275973617553375938">Ανακτημένα αρχεία από το Google Drive</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
@@ -611,6 +616,7 @@
 <translation id="7544853251252956727">Τυχαία αναπαραγωγή</translation>
 <translation id="7547811415869834682">Ολλανδικά
 </translation>
+<translation id="7551643184018910560">Καρφίτσωμα στο ράφι</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Περιμένετε λίγο</translation>
 <translation id="7603724359189955920">Πλέγματα</translation>
@@ -696,6 +702,7 @@
 </translation>
 <translation id="8312871300878166382">Επικόλληση στο φάκελο</translation>
 <translation id="8329978297633540474">Απλό κείμενο</translation>
+<translation id="8335587457941836791">Ξεκαρφίτσωμα από το ράφι</translation>
 <translation id="8336153091935557858">Χθες <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336579025507394412">Ισλανδικό πληκτρολόγιο</translation>
 <translation id="8342318071240498787">Υπάρχει ήδη αρχείο ή κατάλογος με το ίδιο όνομα.</translation>
@@ -772,6 +779,7 @@
 <translation id="943972244133411984">Τροποποιήθηκε από</translation>
 <translation id="945522503751344254">Αποστολή σχολίων</translation>
 <translation id="947144732524271678">Επιλέχθηκε ένα εύρος <ph name="ENTRY_COUNT" /> καταχωρίσεων από το <ph name="FROM_ENTRY_NAME" /> έως το <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="949308258121608615">Το <ph name="NUMBER_OF_ITEMS" /> αντιγράφηκε.</translation>
 <translation id="981121421437150478">Εκτός σύνδεσης</translation>
 <translation id="988685240266037636">Υπάρχει ήδη ένα αρχείο με την ονομασία "<ph name="FILE_NAME" />". Θέλετε να το αντικαταστήσετε;</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

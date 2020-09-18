@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">От съображения за сигурност не можа да бъде осъществен достъп до файла.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> елемента се компресират...</translation>
+<translation id="1731889557567069540">Копирахте <ph name="NUMBER_OF_ITEMS" /> елемента.</translation>
 <translation id="174173592514158117">Показване на всички папки от Google Play</translation>
 <translation id="174937106936716857">Общ брой файлове</translation>
 <translation id="1775381402323441512">Информация за видеофайла</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Невалиден знак: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Виетнамска клавиатура (TCVN)</translation>
 <translation id="2168214441502403371">Персийска клавиатура</translation>
+<translation id="2197363559908958454">Преместихте <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">опростен китайски</translation>
 <translation id="2208158072373999562">Компресиран архивен файл</translation>
 <translation id="2225536596944493418">Наистина ли искате да изтриете <ph name="NUMBER_OF_ITEMS" /> елемента?</translation>
 <translation id="2230062665678605299">Не можем да създадем папката „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Преместено.</translation>
 <translation id="2278988676849463018">Каннада клавиатура (фонетична)</translation>
 <translation id="2288278176040912387">Грамофон</translation>
 <translation id="2291538123825441971">Отварят се <ph name="NUMBER_OF_FILES" /> файла.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">На всичко бе създадено резервно копие!</translation>
 <translation id="3626281679859535460">Яркост</translation>
 <translation id="3644896802912593514">Ширина</translation>
+<translation id="3645233063072417428">Преместихте <ph name="NUMBER_OF_ITEMS" /> елемента.</translation>
 <translation id="3645531960514756307">Освобождаване на папката</translation>
 <translation id="3678559383040232393">Малтийска клавиатура</translation>
 <translation id="3685122418104378273">Синхронизирането на Google Диск е деактивирано по подразбиране, когато се използват мобилни данни.</translation>
@@ -395,6 +399,7 @@
 Каквото и да се случи с устройството ви, те ще се съхраняват надеждно в Google Диск.<ph name="MARKUP_6" />
 <ph name="MARKUP_7" />Споделяйте, създавайте и работете съвместно<ph name="MARKUP_8" />
 по файлове с други хора – всичко от едно място.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Копирано.</translation>
 <translation id="5275973617553375938">Възстановени от Google Диск файлове</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Запазване</translation>
@@ -594,6 +599,7 @@
 <translation id="751507702149411736">белоруски</translation>
 <translation id="7544853251252956727">Разбъркване</translation>
 <translation id="7547811415869834682">нидерландски</translation>
+<translation id="7551643184018910560">Фиксиране в лавицата</translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Изчакайте само секунда</translation>
 <translation id="7603724359189955920">Решетки</translation>
@@ -677,6 +683,7 @@
 <translation id="8299269255470343364">японски</translation>
 <translation id="8312871300878166382">Поставяне в папка</translation>
 <translation id="8329978297633540474">Неформатиран текст</translation>
+<translation id="8335587457941836791">Освобождаване от лавицата</translation>
 <translation id="8336153091935557858">Вчера, <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336579025507394412">Исландска клавиатура</translation>
 <translation id="8342318071240498787">Вече съществува файл или директория със същото име.</translation>
@@ -749,6 +756,7 @@
 <translation id="943972244133411984">Променено от</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>
 <translation id="947144732524271678">Избрахте <ph name="ENTRY_COUNT" /> елемента – от <ph name="FROM_ENTRY_NAME" /> до <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="949308258121608615">Копирахте <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="988685240266037636">Вече съществува файл с име „<ph name="FILE_NAME" />“. Искате ли да го замените?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> МБ</translation>

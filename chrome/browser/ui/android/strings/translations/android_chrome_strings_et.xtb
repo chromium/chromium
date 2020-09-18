@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Praeguse lehe uuesti laadimine, eirates vahemälus olevat sisu</translation>
 <translation id="124678866338384709">Aktiivse vahelehe sulgemine</translation>
 <translation id="1258753120186372309">Google'i Doodle'i vigurlogo: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Lugemisloend</translation>
 <translation id="1266864766717917324">Üksust <ph name="CONTENT_TYPE" /> ei õnnestunud jagada</translation>
 <translation id="1283039547216852943">Laiendamiseks puudutage</translation>
 <translation id="1291207594882862231">Ajaloo, küpsiste, saidiandmete, vahemälu kustutamine …</translation>
@@ -218,7 +219,6 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="2744248271121720757">Puudutage sõna, et kohe otsida või seotud toiminguid näha</translation>
 <translation id="2760989362628427051">Aktiveeri tume teema, kui tume teema või akusäästja on seadmes sisse lülitatud</translation>
 <translation id="2762000892062317888">just praegu</translation>
-<translation id="2771869497727323769">Teksti jaoks ei saa linki luua. Jagage rakenduses lehe linki.</translation>
 <translation id="2777555524387840389">Jäänud on <ph name="SECONDS" /> sekundit</translation>
 <translation id="2779651927720337254">ebaõnnestus</translation>
 <translation id="2781151931089541271">Jäänud on 1 sekund</translation>
@@ -467,7 +467,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 allalaadimine on lõpule viidud.}other{# allalaadimist on lõpule viidud.}}</translation>
 <translation id="4766678251456904326">Konto lisamine seadmesse</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 allalaadimine on ajastatud.}other{# allalaadimist on ajastatud.}}</translation>
-<translation id="478981486571169252">Näete Chrome'is oma saidi <ph name="SITE_NAME" /> sisselogimise olekut, sirvimisandmeid ja saidi andmeid.</translation>
 <translation id="4802417911091824046">Parooli krüpteerimine ei hõlma Google Pay makseviise ja aadresse.
 
 Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5040262127954254034">Privaatsus</translation>
 <translation id="5087580092889165836">Lisa kaart</translation>
 <translation id="509429900233858213">Tekkis viga.</translation>
-<translation id="5100748015044654621">Jagage esiletõstetud teksti linki rakenduses</translation>
 <translation id="510275257476243843">Jäänud on 1 tund</translation>
 <translation id="5123685120097942451">Inkognito vaheleht</translation>
 <translation id="5127805178023152808">Sünkroonimine on välja lülitatud</translation>

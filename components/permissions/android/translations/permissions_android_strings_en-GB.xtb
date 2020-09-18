@@ -3,12 +3,10 @@
 <translationbundle lang="en-GB">
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2416359993254398973">Chrome needs permission to access your camera for this site.</translation>
-<translation id="4955546094786399712">To change the permission for this site, close the other app and try again.\n\nIf you can’t close the app, turn off the app’s permission to 'Display over other apps' in Android settings.</translation>
 <translation id="557283862590186398">Chrome needs permission to access your microphone for this site.</translation>
 <translation id="5860491529813859533">Turn on</translation>
 <translation id="6092062101542170135">To continue, turn on NFC in Android settings</translation>
 <translation id="6393863479814692971">Chrome needs permission to access your camera and microphone for this site.</translation>
 <translation id="6697947395630195233">Chrome needs access to your location to share your location with this site.</translation>
 <translation id="7134415045456331657">Chrome needs permission to access your camera to create a 3D map of your surroundings.</translation>
-<translation id="7681341492080683492">Another app is displaying over <ph name="APP_NAME" /></translation>
 </translationbundle>

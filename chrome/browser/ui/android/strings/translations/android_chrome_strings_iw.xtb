@@ -39,6 +39,7 @@
 <translation id="123724288017357924">טען מחדש את הדף הנוכחי, תוך התעלמות מתוכן שמאוחסן בקובץ השמור</translation>
 <translation id="124678866338384709">סגור את הכרטיסייה הנוכחית</translation>
 <translation id="1258753120186372309">‏דודל של Google‏: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">רשימת קריאה</translation>
 <translation id="1266864766717917324">לא ניתן היה לשתף את ה<ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">הקש כדי להרחיב</translation>
 <translation id="1291207594882862231">‏ניקוי ההיסטוריה, קובצי ה-Cookie, נתוני האתרים, המטמון…</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">כדי לחפש באופן מיידי או לראות פעולות קשורות, צריך להקיש על מילה</translation>
 <translation id="2760989362628427051">עיצוב כהה מופעל כשבמכשיר פועלת האפשרות 'עיצוב כהה' או 'חיסכון בסוללה'</translation>
 <translation id="2762000892062317888">ברגע זה</translation>
-<translation id="2771869497727323769">לא ניתן ליצור קישור לטקסט. יש לשתף קישור לדף באפליקציה.</translation>
 <translation id="2777555524387840389">נותרו <ph name="SECONDS" /> שניות</translation>
 <translation id="2779651927720337254">נכשל</translation>
 <translation id="2781151931089541271">נותרה שניה אחת</translation>
@@ -387,6 +387,7 @@
 <translation id="4135200667068010335">רשימת המכשירים שאפשר לשתף איתם כרטיסייה נסגרה.</translation>
 <translation id="4149994727733219643">תצוגה פשוטה של דפי אינטרנט</translation>
 <translation id="4170011742729630528">השירות אינו זמין. נסה שוב מאוחר יותר.</translation>
+<translation id="4175173967354304331">‏החשבון יחובר לאתר הזה, ל-Chrome ולאפליקציות של Google</translation>
 <translation id="4179980317383591987">נעשה שימוש ב-<ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">שפות</translation>
 <translation id="4183868528246477015">‏חיפוש בעזרת Google Lens <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
@@ -467,7 +468,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{הורדה אחת הושלמה.}two{# הורדות הושלמו.}many{# הורדות הושלמו.}other{# הורדות הושלמו.}}</translation>
 <translation id="4766678251456904326">הוספת חשבון למכשיר</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{תוזמנה הורדה אחת.}two{תוזמנו # הורדות.}many{תוזמנו # הורדות.}other{תוזמנו # הורדות.}}</translation>
-<translation id="478981486571169252">‏ב-Chrome יוצגו סטטוס הכניסה שלך ל-<ph name="SITE_NAME" />, נתוני הגלישה ונתוני האתר.</translation>
 <translation id="4802417911091824046">‏הצפנה באמצעות ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות מ-Google Pay
 
 כדי לשנות את ההגדרה הזו צריך <ph name="BEGIN_LINK" />לאפס את הסנכרון<ph name="END_LINK" /></translation>
@@ -512,7 +512,6 @@
 <translation id="5040262127954254034">פרטיות</translation>
 <translation id="5087580092889165836">הוסף כרטיס</translation>
 <translation id="509429900233858213">אירעה שגיאה.</translation>
-<translation id="5100748015044654621">יש לשתף את הקישור לטקסט המודגש באפליקציה</translation>
 <translation id="510275257476243843">נותרה שעה אחת</translation>
 <translation id="5123685120097942451">כרטיסיית גלישה בסתר</translation>
 <translation id="5127805178023152808">סנכרון כבוי</translation>
@@ -679,6 +678,7 @@
 <translation id="6341580099087024258">לשאול איפה לשמור קבצים</translation>
 <translation id="6342069812937806050">זה עתה</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> נוספת}two{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> נוספות}many{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> נוספות}other{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> נוספות}}</translation>
+<translation id="6345878117466430440">סימון כפריט שנקרא</translation>
 <translation id="6364438453358674297">האם להסיר את ההצעה מההיסטוריה?</translation>
 <translation id="6366047038980456022"><ph name="APP_NAME" /> מציע את הכלים החכמים, את המהירות ואת ההגנה שאתם צריכים כדי לבצע פעולות, ליצור ולמצוא תוכן חדש באינטרנט</translation>
 <translation id="6378173571450987352">פרטים: מיון לפי נפח הנתונים שנצרכו</translation>
@@ -994,6 +994,7 @@
 <translation id="8655129584991699539">‏אפשר לנקות את הנתונים דרך הגדרות Chrome.</translation>
 <translation id="8662811608048051533">תבוצע יציאה שלך מרוב האתרים.</translation>
 <translation id="8664979001105139458">שם הקובץ כבר קיים</translation>
+<translation id="8683039184091909753">תמונה</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{רמת עוצמת אות: עמודה אחת}two{רמת עוצמת אות: שתי עמודות}many{רמת עוצמת אות: # עמודות}other{רמת עוצמת אות: # עמודות}}</translation>
 <translation id="869891660844655955">תאריך תפוגה</translation>
 <translation id="8712637175834984815">הבנתי</translation>
@@ -1001,6 +1002,7 @@
 <translation id="8748850008226585750">התוכן מוסתר</translation>
 <translation id="8788265440806329501">היסטוריית הניווט סגורה</translation>
 <translation id="8788968922598763114">פתח מחדש את הכרטיסייה האחרונה שנסגרה</translation>
+<translation id="8798449543960971550">נקראו</translation>
 <translation id="8812260976093120287">באתרים מסוימים ניתן לשלם דרך המכשיר באמצעות אפליקציות התשלום הנתמכות שמופיעות למעלה.</translation>
 <translation id="8820817407110198400">סימניות</translation>
 <translation id="883806473910249246">אירעה שגיאה בזמן הורדת התוכן.</translation>

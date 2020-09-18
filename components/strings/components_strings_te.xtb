@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Wi-Fiకి మళ్లీ కనెక్ట్ చేయడం</translation>
 <translation id="1165039591588034296">ఎర్రర్</translation>
 <translation id="1165174597379888365">పేజీని సందర్శించినప్పుడు</translation>
+<translation id="1174723505405632867"><ph name="TOP_LEVEL_URL" />లోని కుక్కీలను, సైట్ డేటాను ఉపయోగించడానికి మీరు <ph name="EMBEDDED_URL" />ను అనుమతించాలనుకుంటున్నారా?
+
+లేదంటే, దీనిని మీ గోప్యతా సెట్టింగ్‌లు బ్లాక్ చేయవచ్చు. ఇది మీరు ఇంటరాక్ట్ అయిన కంటెంట్ సక్రమంగా పని చేసేలా అనుమతిస్తుంది, కానీ మీ యాక్టివిటీని ట్రాక్ చేయడానికి <ph name="EMBEDDED_URL" />ను అనుమతించవచ్చు.</translation>
 <translation id="1175364870820465910">&amp;ముద్రించు...</translation>
 <translation id="1175875016430184367">కుడివైపు ట్రిపుల్ స్టేపుల్</translation>
 <translation id="1178581264944972037">పాజ్ చేయి</translation>
@@ -311,6 +314,7 @@
 <translation id="2181821976797666341">విధానాలు</translation>
 <translation id="2183608646556468874">ఫోన్ నంబర్</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 చిరునామా}other{# చిరునామాలు}}</translation>
+<translation id="2187243482123994665">యూజర్ ఉనికి</translation>
 <translation id="2187317261103489799">గుర్తించు (డిఫాల్ట్)</translation>
 <translation id="2188375229972301266">దిగువ భాగంలో అనేక రంధ్రాలు</translation>
 <translation id="2202020181578195191">చెల్లుబాటు అయ్యే గడువు ముగింపు సంవత్సరాన్ని నమోదు చేయండి</translation>
@@ -533,6 +537,7 @@
       మీ నెట్‌వర్క్ నిర్వాహకుడిని సంప్రదించండి. మీరు ప్రాక్సీ సర్వర్‌నే ఉపయోగిస్తున్నట్లు మీకు
       నమ్మకంగా లేకుంటే:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" />, మీ ఉనికిని తెలుసుకోవాలనుకుంటోంది</translation>
 <translation id="3188393374551744535">ఖాతా బ్యాలెన్స్</translation>
 <translation id="3194737229810486521"><ph name="URL" /> శాశ్వతంగా డేటాను మీ పరికరంలో నిల్వ చేయాలనుకుంటోంది</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" />లో <ph name="PRINTER_NAME" /></translation>
@@ -1025,6 +1030,7 @@
 <translation id="5171689220826475070">ఫ్యాన్‌ఫోల్డ్-యూరోపియన్</translation>
 <translation id="5172758083709347301">మెషీన్</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />లో లేదా? ఈ ఎర్రర్‌ను నివేదించండి</translation>
+<translation id="5179740473595559246">మీ ఉనికిని తెలుసుకోవాలనుకుంటోంది</translation>
 <translation id="5190835502935405962">బుక్‌మార్క్‌ల బార్</translation>
 <translation id="519422657042045905">అదనపు గమనిక అందుబాటులో లేదు</translation>
 <translation id="5201306358585911203">ఈ పేజీలోని పొందుపరిచిన పేజీ ఇలా చెబుతోంది</translation>
@@ -1247,6 +1253,7 @@
 <translation id="6049488691372270142">పేజీ డెలివరీ</translation>
 <translation id="6051221802930200923">స‌ర్టిఫికెట్‌ను పిన్ చేసే పద్ధతిని వెబ్‌సైట్ ఉపయోగిస్తుంది. కనుక మీరు ప్రస్తుతానికి <ph name="SITE" />‌ను సందర్శించలేరు. నెట్‌వర్క్ ఎర్ర‌ర్‌లు మరియు దాడులు సాధారణంగా తాత్కాలికమే, కనుక ఈ పేజీ తర్వాత పని చేయవచ్చు.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">మీ ఉనికిని షేర్ చేయాలా?</translation>
 <translation id="6058977677006700226">మీ కార్డ్‌లను మీ అన్ని పరికరాలలో ఉపయోగించాలా?</translation>
 <translation id="6059925163896151826">USB పరికరాలు</translation>
 <translation id="6060009363608157444">చెల్లని DnsOverHttps మోడ్.</translation>
@@ -1376,6 +1383,7 @@
 <translation id="6631202559048444592">ఈ విధానంలో ఒకటి కంటే ఎక్కువ మూలాధారాలు ఉన్నాయి, కానీ విలువలు ఒకటే విధంగా ఉన్నాయి.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">క్లియర్ చేయి</translation>
+<translation id="6645291930348198241">కుక్కీలను, సైట్ డేటాను యాక్సెస్ చేయాలనుకుంటోంది.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{ఏవీ లేవు}=1{1 సైట్ నుండి (మీరు మీ Google ఖాతా నుండి సైన్ అవుట్ చేయబడరు)}other{# సైట్‌ల నుండి (మీరు మీ Google ఖాతా నుండి సైన్ అవుట్ చేయబడరు)}}</translation>
 <translation id="6648459603387803038">మీ అడ్మినిస్ట్రేట‌ర్ మీ బ్రౌజర్ సెటప్‌ను రిమోట్ విధానంలో మార్చవచ్చు. ఈ పరికరంలోని యాక్టివిటీని Chrome వెలుపల కూడా మేనేజ్ చేయవచ్చు.</translation>
 <translation id="6652101503459149953">Windows Helloను ఉపయోగించండి</translation>

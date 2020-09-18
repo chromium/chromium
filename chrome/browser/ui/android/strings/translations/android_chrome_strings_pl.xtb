@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Ponowie załaduj stronę, bez pamięci podręcznej</translation>
 <translation id="124678866338384709">Zamknij bieżącą kartę</translation>
 <translation id="1258753120186372309">Doodle Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Do przeczytania</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> – nie udało się udostępnić</translation>
 <translation id="1283039547216852943">Kliknij, by rozwinąć</translation>
 <translation id="1291207594882862231">Wyczyść historię, pliki cookie, dane witryn, pamięć podręczną…</translation>
@@ -218,7 +219,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2744248271121720757">Kliknij słowo, by szybko je wyszukać lub wyświetlić powiązane czynności</translation>
 <translation id="2760989362628427051">Włącz tryb ciemny, gdy urządzenie ma włączony tryb ciemny lub oszczędzanie baterii</translation>
 <translation id="2762000892062317888">przed chwilą</translation>
-<translation id="2771869497727323769">Nie udało się utworzyć linku do tekstu. Udostępnij link do strony w aplikacji.</translation>
 <translation id="2777555524387840389">Pozostało: <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">Nie pobrano</translation>
 <translation id="2781151931089541271">Pozostała sekunda</translation>
@@ -387,6 +387,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="4135200667068010335">Lista urządzeń, którym udostępnisz kartę, jest zamknięta.</translation>
 <translation id="4149994727733219643">Uproszczony widok stron internetowych</translation>
 <translation id="4170011742729630528">Usługa jest niedostępna. Spróbuj ponownie później.</translation>
+<translation id="4175173967354304331">Zalogujesz się na tej stronie, w Chrome i w aplikacjach Google</translation>
 <translation id="4179980317383591987">Wykorzystano <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Języki</translation>
 <translation id="4183868528246477015">Szukaj z Obiektywem Google <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
@@ -467,7 +468,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{Ukończono pobieranie 1 pliku.}few{Ukończono pobieranie # plików.}many{Ukończono pobieranie # plików.}other{Ukończono pobieranie # pliku.}}</translation>
 <translation id="4766678251456904326">Dodaj konto do urządzenia</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{Zaplanowano pobranie 1 pliku.}few{Zaplanowano pobranie # plików.}many{Zaplanowano pobranie # plików.}other{Zaplanowano pobranie # pliku.}}</translation>
-<translation id="478981486571169252">Będziesz mieć dostęp do stanu logowania, danych przeglądania oraz danych witryny w Chrome dotyczących Twojej strony <ph name="SITE_NAME" />.</translation>
 <translation id="4802417911091824046">Szyfrowanie hasłem nie obejmuje form płatności ani adresów w Google Pay.
 
 Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph name="END_LINK" />.</translation>
@@ -512,7 +512,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5040262127954254034">Prywatność</translation>
 <translation id="5087580092889165836">Dodaj kartę</translation>
 <translation id="509429900233858213">Wystąpił błąd.</translation>
-<translation id="5100748015044654621">Udostępnij link do podświetlonego tekstu w aplikacji</translation>
 <translation id="510275257476243843">Pozostała godzina</translation>
 <translation id="5123685120097942451">Karta incognito</translation>
 <translation id="5127805178023152808">Synchronizacja jest wyłączona</translation>
@@ -679,6 +678,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6341580099087024258">Pytaj, gdzie zapisać pliki</translation>
 <translation id="6342069812937806050">Przed momentem</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}many{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
+<translation id="6345878117466430440">Oznacz jako przeczytane</translation>
 <translation id="6364438453358674297">Usunąć sugestię z historii?</translation>
 <translation id="6366047038980456022">Technologia i szybkość działania <ph name="APP_NAME" /> pozwolą Ci bezpiecznie tworzyć i poruszać się w internecie</translation>
 <translation id="6378173571450987352">Szczegóły: posortowane według wykorzystanych danych</translation>
@@ -994,6 +994,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8655129584991699539">Dane możesz usunąć w Ustawieniach Chrome</translation>
 <translation id="8662811608048051533">Wylogowuje z większości stron internetowych.</translation>
 <translation id="8664979001105139458">Ta nazwa pliku już istnieje</translation>
+<translation id="8683039184091909753">obraz</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Poziom siły sygnału: # słupek}few{Poziom siły sygnału: # słupki}many{Poziom siły sygnału: # słupków}other{Poziom siły sygnału: # słupka}}</translation>
 <translation id="869891660844655955">Data wygaśnięcia</translation>
 <translation id="8712637175834984815">Rozumiem</translation>

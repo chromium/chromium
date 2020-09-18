@@ -427,6 +427,7 @@
 <translation id="1500297251995790841">Ismeretlen eszköz [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Ennek a tulajdonosi fióknak kell lennie az első bejelentkezett fióknak a többfiókos bejelentkezés munkamenete során.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> eltávolítása</translation>
+<translation id="1504311855864906891">Feliratokat jeleníthet meg a médiatartalmakhoz</translation>
 <translation id="1504551620756424144">A megosztott mappák a következő helyen találhatók a Windows rendszerben: <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Keresőmotor</translation>
 <translation id="1507170440449692343">Az oldal nem férhet hozzá az Ön kamerájához.</translation>
@@ -1190,7 +1191,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2396783860772170191">Adjon meg egy négyjegyű PIN-kódot (0000–9999)</translation>
 <translation id="2399939490305346086">Biztonsági hardverkulcs bejelentkezési adatai</translation>
 <translation id="2400664245143453337">Azonnali frissítés szükséges</translation>
-<translation id="2407481962792080328">Amikor bejelentkezik Google-fiókjába, a rendszer bekapcsolja ezt a funkciót</translation>
 <translation id="2408018932941436077">Kártya mentése folyamatban</translation>
 <translation id="2408955596600435184">PIN-kód megadása</translation>
 <translation id="241082044617551207">Ismeretlen beépülő modul</translation>
@@ -3065,6 +3065,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4657810666108475055">Keresés a lapok között</translation>
 <translation id="465878909996028221">A böngészőátirányítások esetén csak a http-, https- és fájlprotokollok támogatottak.</translation>
 <translation id="4659077111144409915">Elsődleges fiók</translation>
+<translation id="4659126640776004816">Amikor bejelentkezik Google-fiókjába, a rendszer bekapcsolja ezt a funkciót.</translation>
 <translation id="4660476621274971848">A várt verzió „<ph name="EXPECTED_VERSION" />”, de a kapott verzió „<ph name="NEW_ID" />”</translation>
 <translation id="4660540330091848931">Átméretezés</translation>
 <translation id="4661407454952063730">Alkalmazásadat lehet az alkalmazás által mentett bármilyen adat (a fejlesztő által megadott beállításoktól függően) – például névjegy, üzenet vagy fotó is.</translation>
@@ -3130,7 +3131,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4750394297954878236">Javaslatok</translation>
 <translation id="475088594373173692">Első felhasználó</translation>
 <translation id="4751476147751820511">Mozgás- és fényérzékelők</translation>
-<translation id="4752124003533492687">Nyissa meg a Beállításokat a(z) <ph name="USB_DEVICE_NAME" /> csatlakoztatásához</translation>
 <translation id="4756378406049221019">Leállítás/Újratöltés</translation>
 <translation id="4756388243121344051">&amp;Előzmények</translation>
 <translation id="4759238208242260848">Letöltések</translation>
@@ -5022,6 +5022,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 RSA titkosítással</translation>
 <translation id="7075625805486468288">HTTPS/SSL-tanúsítványok és -beállítások kezelése</translation>
 <translation id="7076293881109082629">Bejelentkezés</translation>
+<translation id="7076878155205969899">Hang némítása</translation>
 <translation id="7077829361966535409">A bejelentkezési oldalt a jelenlegi proxybeállítások mellett nem lehetett betölteni. Kérjük, <ph name="GAIA_RELOAD_LINK_START" />próbáljon újra bejelentkezni<ph name="GAIA_RELOAD_LINK_END" />, vagy használjon más <ph name="PROXY_SETTINGS_LINK_START" />proxybeállításokat<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Minden hálózat</translation>
 <translation id="708060913198414444">Audi&amp;ocím másolása</translation>
@@ -5042,7 +5043,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7099337801055912064">Nem használható túl nagy PPD. A maximális méret 250 kB.</translation>
 <translation id="7102687220333134671">Az automatikus frissítések be vannak kapcsolva</translation>
 <translation id="7102832101143475489">A kérelem lejárt</translation>
-<translation id="7105390788077117391">USB-beállítások</translation>
 <translation id="710640343305609397">Hálózati beállítások megnyitása</translation>
 <translation id="7108338896283013870">Elrejtés</translation>
 <translation id="7108668606237948702">enter</translation>
@@ -5072,7 +5072,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7136694880210472378">Legyen alapértelmezett</translation>
 <translation id="7136984461011502314">Üdvözli a <ph name="PRODUCT_NAME" />!</translation>
 <translation id="7136993520339022828">Hiba történt. Próbálkozzon újra úgy, hogy más képeket választ.</translation>
-<translation id="7138678301420049075">Egyéb</translation>
 <translation id="713888829801648570">Jelszavát nem tudtuk ellenőrizni, mert offline állapotban van.</translation>
 <translation id="7140928199327930795">Nincs más elérhető eszköz.</translation>
 <translation id="7141105143012495934">A bejelentkezés nem sikerült, mert a fiókadatokat nem sikerült lekérni. Kérjük, forduljon rendszergazdájához, vagy próbálja újra.</translation>
@@ -6135,6 +6134,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8428213095426709021">Beállítások</translation>
 <translation id="8428271547607112339">Iskolai fiók felvétele</translation>
 <translation id="8428628598981198790">Biztonsági hardverkulcsa nem használható ezzel a webhellyel</translation>
+<translation id="8428634594422941299">Értem</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> múlva kijelentkezteti a rendszer</translation>
 <translation id="8431190899827883166">Koppintások megjelenítése</translation>
 <translation id="8431909052837336408">SIM-kártya PIN-kódjának módosítása</translation>

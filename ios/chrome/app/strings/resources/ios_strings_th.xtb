@@ -293,6 +293,7 @@
 <translation id="4277990410970811858">Google Safe Browsing</translation>
 <translation id="4281844954008187215">ข้อกำหนดในการให้บริการ</translation>
 <translation id="430793432425771671">ซิงค์ทุกอย่าง</translation>
+<translation id="4309403553630140242">แตะสองครั้งเพื่อดูข้อมูลเพิ่มเติม</translation>
 <translation id="430967081421617822">ตั้งแต่ต้น</translation>
 <translation id="4334428914252001502">บทความที่ยังไม่ได้อ่าน 1 รายการ</translation>
 <translation id="4338650699862464074">ส่ง URL ของหน้าที่คุณเข้าชมไปยัง Google</translation>
@@ -561,6 +562,7 @@
 <translation id="7189598951263744875">แชร์...</translation>
 <translation id="7192050974311852563">เริ่มต้นการบันทึก</translation>
 <translation id="7203585745079012652">พูดคำตอบกลับ</translation>
+<translation id="7207383424303353046">ใหม่: เปิดเว็บไซต์ใน Chrome โดยอัตโนมัติด้วยการตั้งเป็นแอปเบราว์เซอร์เริ่มต้น <ph name="BEGIN_LINK" />เปิดการตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">ชื่อเล่นของบัตรไม่ถูกต้อง</translation>
 <translation id="7265758999917665941">ไม่จดจำสำหรับเว็บไซต์นี้</translation>
 <translation id="7272437679830969316">ยืนยันตัวตนของคุณไม่ได้ คัดลอกรหัสผ่านไม่สำเร็จ</translation>
@@ -638,6 +640,7 @@
 <translation id="8073670137947914548">ดาวน์โหลดเสร็จแล้ว</translation>
 <translation id="8073872304774253879">ปรับปรุงการค้นหาและการท่องเว็บให้ดียิ่งขึ้น</translation>
 <translation id="8076014560081431679">การตั้งค่าเว็บไซต์ที่บันทึกไว้จะไม่ถูกลบและอาจส่งผลกับลักษณะการท่องเว็บของคุณ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
+<translation id="8079602123447022758">การตั้งค่านี้ได้รับการจัดการ แตะสองครั้งเพื่อดูข้อมูลเพิ่มเติม</translation>
 <translation id="8105368624971345109">ปิด</translation>
 <translation id="8114753159095730575">การดาวน์โหลดไฟล์พร้อมใช้งาน มีตัวเลือกอยู่ทางด้านล่างของหน้าจอ</translation>
 <translation id="8131740175452115882">ยืนยัน</translation>

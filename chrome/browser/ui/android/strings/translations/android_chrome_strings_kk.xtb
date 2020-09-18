@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Кэштелген мазмұнды елемей, ағымдағы бетті жаңарту</translation>
 <translation id="124678866338384709">Ағымдағы қойындыны жабу</translation>
 <translation id="1258753120186372309">Google Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Оқу тізімі</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> бөлісу мүмкін болмады.</translation>
 <translation id="1283039547216852943">Жаю үшін түртіңіз</translation>
 <translation id="1291207594882862231">Тарихты, cookie файлдарын, сайт деректерін, кэшті жою…</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">Бірден іздеу үшін сөзді түртіңіз не ұқсас әрекеттерді қараңыз</translation>
 <translation id="2760989362628427051">Құрылғыдағы қараңғы тақырып немесе Battery saver режимі қосылып тұрғанда, қараңғы тақырыпты қосу</translation>
 <translation id="2762000892062317888">жаңа ғана</translation>
-<translation id="2771869497727323769">Мәтіннің сілтемесін жасау мүмкін емес. Қолданбада беттің сілтемесін бөлісіңіз.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> сек қалды</translation>
 <translation id="2779651927720337254">қате шықты</translation>
 <translation id="2781151931089541271">1 сек қалды</translation>
@@ -467,7 +467,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 файл жүктеп алынды.}other{# файл жүктеп алынды.}}</translation>
 <translation id="4766678251456904326">Құрылғыға есептік жазба енгізу</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 жүктеп алу жоспарланды.}other{# жүктеп алу жоспарланды.}}</translation>
-<translation id="478981486571169252"><ph name="SITE_NAME" /> сайтына кіру күйін, браузерді пайдалану деректерін және Chrome-дағы сайт деректерін көресіз.</translation>
 <translation id="4802417911091824046">Google Pay қызметіндегі төлеу әдістері мен мекенжайлар құпия фразамен шифрланбайды.
 
 Бұл параметрді өзгерту үшін <ph name="BEGIN_LINK" />синхрондауды бастапқы күйіне қайтарыңыз<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="5040262127954254034">Құпиялылық</translation>
 <translation id="5087580092889165836">Несие картасын қосу</translation>
 <translation id="509429900233858213">Қате орын алды.</translation>
-<translation id="5100748015044654621">Қолданбада бөлектелген мәтіннің сілтемесін бөлісіңіз.</translation>
 <translation id="510275257476243843">1 сағат қалды</translation>
 <translation id="5123685120097942451">Инкогнито қойындысы</translation>
 <translation id="5127805178023152808">Синхрондау өшірулі</translation>

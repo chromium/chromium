@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Se ha añadido el sitio <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384959399684842514">Descarga en pausa</translation>
+<translation id="1431402976894535801">Impedir que los sitios web para impedir que sepan cuándo estás activo</translation>
 <translation id="1446450296470737166">Control total dispositivos MIDI</translation>
 <translation id="1509960214886564027">Es posible que las funciones de muchos sitios web no funcionen correctamente.</translation>
 <translation id="1620510694547887537">Cámara</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">Abrir aplicación instantánea</translation>
 <translation id="2148716181193084225">Hoy</translation>
 <translation id="2182457891543959921">Preguntar antes de permitir que los sitios web creen un mapa 3D de tu entorno o hagan un seguimiento de la posición de la cámara (recomendado)</translation>
+<translation id="2187243482123994665">Presencia del usuario</translation>
 <translation id="2212565012507486665">Permitir cookies</translation>
 <translation id="2228071138934252756">Para que <ph name="APP_NAME" /> pueda acceder a tu cámara, activa la cámara también en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="2289270750774289114">Preguntar cuando un sitio web quiera buscar dispositivos Bluetooth cercanos (recomendado)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">Reproductor de vídeo</translation>
 <translation id="3115898365077584848">Mostrar información</translation>
 <translation id="3123473560110926937">Bloqueados en algunos sitios web</translation>
+<translation id="3165371858310906303">Preguntar cuando un sitio web quiera saber si estás activo</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de datos almacenados</translation>
 <translation id="321187648315454507">Para que <ph name="APP_NAME" /> pueda enviarte notificaciones, actívalas también en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
@@ -104,7 +107,6 @@
 <translation id="4165986682804962316">Configuración de sitios web</translation>
 <translation id="4200726100658658164">Abrir Ajustes de ubicación</translation>
 <translation id="4226663524361240545">Es posible que las notificaciones hagan que el dispositivo vibre</translation>
-<translation id="4242533952199664413">Abrir Configuración</translation>
 <translation id="4259722352634471385">Se ha bloqueado la navegación: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Permitido</translation>
 <translation id="429312253194641664">Un sitio web está reproduciendo elementos multimedia</translation>
@@ -134,6 +136,7 @@
 <translation id="5197729504361054390">Los contactos que selecciones se compartirán con <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5301954838959518834">Entendido</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más</translation>
 <translation id="5313967007315987356">Añadir sitio</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5335288049665977812">Permitir que los sitios web utilicen JavaScript (recomendado)</translation>
@@ -145,6 +148,7 @@
 <translation id="5403592356182871684">Nombres</translation>
 <translation id="5489227211564503167">Tiempo transcurrido: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Bloquea anuncios invasivos o engañosos en los sitios web que los muestran</translation>
+<translation id="5502860503640766021"><ph name="PERMISSION_1" /> permitido; <ph name="PERMISSION_2" /> bloqueado</translation>
 <translation id="5505264765875738116">Los sitios web no pueden preguntarte si quieres que te envíen notificaciones</translation>
 <translation id="5516455585884385570">Abrir ajustes de notificaciones</translation>
 <translation id="5527111080432883924">Preguntar antes de permitir que los sitios web lean texto e imágenes del portapapeles (recomendado)</translation>
@@ -156,12 +160,15 @@
 <translation id="5690795753582697420">La cámara está desactivada en los ajustes de Android</translation>
 <translation id="5710871682236653961">Pregunta antes de permitir que los sitios web envíen y reciban información cuando toques dispositivos NFC (recomendado)</translation>
 <translation id="5719847187258001597">Esta acción borrará todos los datos y cookies almacenados por <ph name="ORIGIN" /> y su aplicación en tu pantalla de inicio.</translation>
+<translation id="5771720122942595109"><ph name="PERMISSION_1" /> bloqueado</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5860033963881614850">Desactivado</translation>
+<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más permitidos</translation>
 <translation id="5876056640971328065">Pausar vídeo</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5922853908706496913">Compartiendo tu pantalla</translation>
 <translation id="5939518447894949180">Restablecer</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Controla el acceso de este sitio web a tu dispositivo</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6042308850641462728">Más</translation>
@@ -173,6 +180,7 @@
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
 <translation id="6206551242102657620">La conexión es segura. Información del sitio web</translation>
 <translation id="6216432067784365534">Opciones de <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6262279340360821358"><ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" /> bloqueados</translation>
 <translation id="6270391203985052864">Los sitios web pueden preguntarte si quieres que te envíen notificaciones</translation>
 <translation id="6295158916970320988">Todos los sitios</translation>
 <translation id="6320088164292336938">Vibrar</translation>
@@ -195,6 +203,7 @@
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6818926723028410516">Seleccionar elementos</translation>
 <translation id="6864395892908308021">Este dispositivo no puede leer NFC</translation>
+<translation id="6879016579615558281"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más bloqueados</translation>
 <translation id="6910211073230771657">Eliminado</translation>
 <translation id="6912998170423641340">Evitar que los sitios web lean texto e imágenes del portapapeles</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
@@ -212,6 +221,7 @@
 <translation id="723171743924126238">Seleccionar imágenes</translation>
 <translation id="7243308994586599757">Opciones disponibles cerca de la parte inferior de la pantalla</translation>
 <translation id="7250468141469952378">Elementos seleccionados: <ph name="ITEM_COUNT" /></translation>
+<translation id="7260727271532453612"><ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" /> permitidos</translation>
 <translation id="7302486331832100261">Sueles bloquear las notificaciones. Para permitirlas, toca Detalles.</translation>
 <translation id="7423098979219808738">Preguntar antes</translation>
 <translation id="7423538860840206698">Se ha bloqueado la lectura del portapapeles</translation>
@@ -243,6 +253,7 @@
 <translation id="8087000398470557479">Este contenido procede de <ph name="DOMAIN_NAME" />, publicado por Google.</translation>
 <translation id="8116925261070264013">Silenciados</translation>
 <translation id="8131740175452115882">Confirmar</translation>
+<translation id="8197286292360124385"><ph name="PERMISSION_1" /> permitido</translation>
 <translation id="8200772114523450471">Reanudar</translation>
 <translation id="8206354486702514201">El administrador aplica esta opción.</translation>
 <translation id="8249310407154411074">Mover al principio</translation>

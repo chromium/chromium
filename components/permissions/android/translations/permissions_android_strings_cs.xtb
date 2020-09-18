@@ -3,12 +3,10 @@
 <translationbundle lang="cs">
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2416359993254398973">Chrome pro tento web potřebuje oprávnění k přístupu k fotoaparátu.</translation>
-<translation id="4955546094786399712">Chcete-li změnit oprávnění pro tento web, zavřete druhou aplikaci a zkuste to znovu.\n\nPokud aplikaci zavřít nelze, v nastavení Androidu jí odeberte oprávnění Zobrazit přes ostatní aplikace.</translation>
 <translation id="557283862590186398">Chrome pro tento web potřebuje oprávnění k přístupu k mikrofonu.</translation>
 <translation id="5860491529813859533">Zapnout</translation>
 <translation id="6092062101542170135">Chcete-li pokračovat, zapněte NFC v nastavení zařízení Android</translation>
 <translation id="6393863479814692971">Chrome pro tento web potřebuje oprávnění k přístupu k fotoaparátu a mikrofonu.</translation>
 <translation id="6697947395630195233">Chrome potřebuje přístup k vaší poloze, aby ji mohl sdílet s tímto webem.</translation>
 <translation id="7134415045456331657">Chrome potřebuje oprávnění k přístupu k fotoaparátu, aby mohl vytvořit 3D mapu vašeho okolí.</translation>
-<translation id="7681341492080683492">Přes aplikaci <ph name="APP_NAME" /> se zobrazuje jiná aplikace</translation>
 </translationbundle>

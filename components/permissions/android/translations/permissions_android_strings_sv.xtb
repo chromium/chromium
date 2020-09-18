@@ -3,12 +3,10 @@
 <translationbundle lang="sv">
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2416359993254398973">Du behöver ge Chrome behörighet att använda kameran på den här webbplatsen.</translation>
-<translation id="4955546094786399712">Om du vill ändra behörighet för den här webbplatsen stänger du den andra appen och försöker igen.\n\nOm det inte går att stänga appen inaktiverar du appens behörighet att ”Visa ovanpå andra appar” i inställningarna för Android.</translation>
 <translation id="557283862590186398">Du behöver ge Chrome behörighet att använda mikrofonen på den här webbplatsen.</translation>
 <translation id="5860491529813859533">Aktivera</translation>
 <translation id="6092062101542170135">Fortsätt genom att aktivera NFC i Android-inställningarna</translation>
 <translation id="6393863479814692971">Du behöver ge Chrome behörighet att använda kameran och mikrofonen på den här webbplatsen.</translation>
 <translation id="6697947395630195233">Du behöver ge Chrome åtkomstbehörighet till din plats om den ska kunna delas med webbplatsen.</translation>
 <translation id="7134415045456331657">Du behöver ge Chrome behörighet att använda kameran om du vill skapa en 3D-karta över dina omgivningar.</translation>
-<translation id="7681341492080683492">En annan app visas över <ph name="APP_NAME" /></translation>
 </translationbundle>

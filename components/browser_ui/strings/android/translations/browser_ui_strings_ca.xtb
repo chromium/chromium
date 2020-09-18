@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">El lloc <ph name="SITE_NAME" /> s'ha afegit</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1384959399684842514">La baixada s'ha posat en pausa</translation>
+<translation id="1431402976894535801">Bloqueja els llocs web perquè no sàpiguen quan estàs present</translation>
 <translation id="1446450296470737166">Permet control total disp. MIDI</translation>
 <translation id="1509960214886564027">Pot ser que les funcions de molts llocs web no funcionin</translation>
 <translation id="1620510694547887537">Càmera</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">Obre l'aplicació instantània</translation>
 <translation id="2148716181193084225">Avui</translation>
 <translation id="2182457891543959921">Pregunta abans de permetre que els llocs web creïn un mapa en 3D del teu entorn o facin un seguiment de la posició de la càmera (opció recomanada)</translation>
+<translation id="2187243482123994665">Presència d'usuari</translation>
 <translation id="2212565012507486665">Permet les galetes</translation>
 <translation id="2228071138934252756">Perquè <ph name="APP_NAME" /> pugui accedir a la càmera, també has d'activar-la a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="2289270750774289114">Pregunta'm quan un lloc web vulgui descobrir dispositius Bluetooth propers (opció recomanada)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">Reproductor de vídeo</translation>
 <translation id="3115898365077584848">Mostra la informació</translation>
 <translation id="3123473560110926937">Bloquejat en alguns llocs web</translation>
+<translation id="3165371858310906303">Pregunta'm quan un lloc web vulgui saber quan estic present</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de dades desades</translation>
 <translation id="321187648315454507">Perquè <ph name="APP_NAME" /> et pugui enviar notificacions, també has d'activar-les a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Micròfon</translation>
@@ -104,7 +107,6 @@
 <translation id="4165986682804962316">Configuració del lloc web</translation>
 <translation id="4200726100658658164">Obre la configuració d'ubicació</translation>
 <translation id="4226663524361240545">És possible que les notificacions facin vibrar el dispositiu</translation>
-<translation id="4242533952199664413">Obre la configuració</translation>
 <translation id="4259722352634471385">S'ha bloquejat la navegació: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Permès</translation>
 <translation id="429312253194641664">Un lloc web està reproduint contingut multimèdia</translation>
@@ -134,6 +136,7 @@
 <translation id="5197729504361054390">Els contactes que seleccionis es compartiran amb <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5301954838959518834">D'acord</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més</translation>
 <translation id="5313967007315987356">Afegeix un lloc web</translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5335288049665977812">Permet que els llocs web executin JavaScript (opció recomanada)</translation>
@@ -145,6 +148,7 @@
 <translation id="5403592356182871684">Noms</translation>
 <translation id="5489227211564503167">Temps transcorregut: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Bloqueja els anuncis als llocs web que mostren publicitat intrusiva o enganyosa</translation>
+<translation id="5502860503640766021">S'ha permès <ph name="PERMISSION_1" />. S'ha bloquejat <ph name="PERMISSION_2" />.</translation>
 <translation id="5505264765875738116">Els llocs web no poden demanar-te permís per enviar-te notificacions</translation>
 <translation id="5516455585884385570">Obre la configuració de notificacions</translation>
 <translation id="5527111080432883924">Pregunta abans de permetre que els llocs web llegeixin el text i les imatges del porta-retalls (opció recomanada)</translation>
@@ -156,12 +160,15 @@
 <translation id="5690795753582697420">La càmera està desactivada a la configuració d'Android</translation>
 <translation id="5710871682236653961">Pregunta abans de permetre que els llocs web enviïn i rebin informació quan toquis dispositius amb NFC (opció recomanada)</translation>
 <translation id="5719847187258001597">Amb aquesta acció s'esborraran totes les dades i galetes emmagatzemades per <ph name="ORIGIN" /> o per la seva aplicació de la pantalla d'inici.</translation>
+<translation id="5771720122942595109">S'ha bloquejat <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5860033963881614850">Desactivat</translation>
+<translation id="5863245810240683687">S'han permès <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més</translation>
 <translation id="5876056640971328065">Posa en pausa el vídeo</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5922853908706496913">S'està compartint la pantalla</translation>
 <translation id="5939518447894949180">Restableix</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Controla l'accés al teu dispositiu d'aquest lloc web</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6042308850641462728">Més</translation>
@@ -173,6 +180,7 @@
 <translation id="6196640612572343990">Bloqueja les galetes de tercers</translation>
 <translation id="6206551242102657620">La connexió és segura. Informació del lloc web</translation>
 <translation id="6216432067784365534">Opcions per a <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6262279340360821358">S'han bloquejat <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Els llocs web poden demanar-te permís per enviar-te notificacions</translation>
 <translation id="6295158916970320988">Tots els llocs web</translation>
 <translation id="6320088164292336938">Vibració</translation>
@@ -195,6 +203,7 @@
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="6818926723028410516">Selecciona elements</translation>
 <translation id="6864395892908308021">Aquest dispositiu no pot llegir NFC</translation>
+<translation id="6879016579615558281">S'han bloquejat <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més</translation>
 <translation id="6910211073230771657">Suprimit</translation>
 <translation id="6912998170423641340">Impedeix que els llocs web llegeixin el text i les imatges del porta-retalls</translation>
 <translation id="6945221475159498467">Selecciona</translation>
@@ -212,6 +221,7 @@
 <translation id="723171743924126238">Selecciona imatges</translation>
 <translation id="7243308994586599757">Opcions disponibles a la part inferior de la pantalla</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> elements seleccionats</translation>
+<translation id="7260727271532453612">S'han permès <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="7302486331832100261">Normalment bloqueges les notificacions. Per permetre-les, toca Detalls.</translation>
 <translation id="7423098979219808738">Pregunta abans</translation>
 <translation id="7423538860840206698">L'accés de lectura al porta-retalls està bloquejat</translation>
@@ -243,6 +253,7 @@
 <translation id="8087000398470557479">Aquest contingut és del domini <ph name="DOMAIN_NAME" />, oferit per Google.</translation>
 <translation id="8116925261070264013">Silenciats</translation>
 <translation id="8131740175452115882">Confirma</translation>
+<translation id="8197286292360124385">S'ha permès <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Reprèn</translation>
 <translation id="8206354486702514201">L'administrador aplica aquesta opció de configuració.</translation>
 <translation id="8249310407154411074">Mou a la part superior</translation>

@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">знову під’єднати пристрій до мережі Wi-Fi</translation>
 <translation id="1165039591588034296">Помилка</translation>
 <translation id="1165174597379888365">Відвідано сторінку</translation>
+<translation id="1174723505405632867">Надати сайту <ph name="EMBEDDED_URL" /> доступ до файлів cookie й даних на сайті <ph name="TOP_LEVEL_URL" />?
+
+Інакше доступ буде заблоковано відповідно до ваших налаштувань конфіденційності. Якщо ви надасте доступ, контент, з яким ви взаємодіяли, працюватиме належним чином, але сайт <ph name="EMBEDDED_URL" /> зможе відстежувати ваші дії.</translation>
 <translation id="1175364870820465910">&amp;Друк...</translation>
 <translation id="1175875016430184367">Тричі скріпити праворуч</translation>
 <translation id="1178581264944972037">Пауза</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Правила</translation>
 <translation id="2183608646556468874">Номер телефону</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 адреса}one{# адреса}few{# адреси}many{# адрес}other{# адреси}}</translation>
+<translation id="2187243482123994665">Дані про те, чи ви активні</translation>
 <translation id="2187317261103489799">Визначати (за умовчанням)</translation>
 <translation id="2188375229972301266">Пробити кілька отворів унизу</translation>
 <translation id="2202020181578195191">Введіть дійсний рік закінчення терміну дії</translation>
@@ -531,6 +535,7 @@
       щоб переконатися, що проксі-сервер працює. Якщо ви вважаєте, що не потрібно
       використовувати проксі-сервер, виконайте вказані нижче дії.
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456">Сайт <ph name="URL" /> хоче отримати доступ до даних про те, чи ви активні</translation>
 <translation id="3188393374551744535">Баланс рахунку</translation>
 <translation id="3194737229810486521">Сайт <ph name="URL" /> хоче постійно зберігати дані на вашому пристрої</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на сервері <ph name="SERVER_NAME" /></translation>
@@ -1023,6 +1028,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Комп’ютер</translation>
 <translation id="5179510805599951267">Це не <ph name="ORIGINAL_LANGUAGE" />? Повідомте про помилку</translation>
+<translation id="5179740473595559246">Отримати доступ до даних про те, чи ви активні</translation>
 <translation id="5190835502935405962">Панель закладок</translation>
 <translation id="519422657042045905">Анотація недоступна</translation>
 <translation id="5201306358585911203">Повідомлення з вбудованої сторінки на цій сторінці</translation>
@@ -1245,6 +1251,7 @@
 <translation id="6049488691372270142">Подача сторінки</translation>
 <translation id="6051221802930200923">Зараз не можна перейти на сторінку <ph name="SITE" />, оскільки цей веб-сайт використовує закріплення сертифікатів. Помилки мережі й атаки зазвичай тимчасові, тому ця сторінка, скоріш за все, запрацює пізніше.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Надати доступ до даних про те, чи ви активні?</translation>
 <translation id="6058977677006700226">Використовувати картки на всіх ваших пристроях?</translation>
 <translation id="6059925163896151826">Пристрої USB</translation>
 <translation id="6060009363608157444">Недійсний режим DnsOverHttps.</translation>
@@ -1374,6 +1381,7 @@
 <translation id="6631202559048444592">У правилі є кілька джерел з однаковими значеннями.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Очистити</translation>
+<translation id="6645291930348198241">Отримати доступ до файлів cookie й даних сайту.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Немає}=1{З 1 сайту (ви не вийдете з облікового запису Google)}one{З # сайту (ви не вийдете з облікового запису Google)}few{З # сайтів (ви не вийдете з облікового запису Google)}many{З # сайтів (ви не вийдете з облікового запису Google)}other{З # сайту (ви не вийдете з облікового запису Google)}}</translation>
 <translation id="6648459603387803038">Адміністратор може змінити налаштування веб-переглядача віддалено. Діями на цьому пристрої можна керувати за межами Chrome.</translation>
 <translation id="6652101503459149953">Використовувати Windows Hello</translation>

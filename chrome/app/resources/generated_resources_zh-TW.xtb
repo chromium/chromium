@@ -427,6 +427,7 @@
 <translation id="1500297251995790841">不明裝置 [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">擁有者帳戶必須是多重登入工作階段中第一個登入的帳戶。</translation>
 <translation id="150411034776756821">移除 <ph name="SITE" /></translation>
+<translation id="1504311855864906891">取得媒體字幕</translation>
 <translation id="1504551620756424144">在 Windows 中，你可以前往 <ph name="BASE_DIR" /> 存取共用資料夾。</translation>
 <translation id="1506061864768559482">搜尋引擎</translation>
 <translation id="1507170440449692343">系統已封鎖這個網頁存取你的攝影機。</translation>
@@ -1190,7 +1191,6 @@
 <translation id="2396783860772170191">輸入 4 位數 PIN 碼 (0000-9999)</translation>
 <translation id="2399939490305346086">安全金鑰登入資料</translation>
 <translation id="2400664245143453337">必須立即更新</translation>
-<translation id="2407481962792080328">登入 Google 帳戶時，系統會啟用這項功能</translation>
 <translation id="2408018932941436077">正在儲存信用卡</translation>
 <translation id="2408955596600435184">請輸入你的 PIN 碼</translation>
 <translation id="241082044617551207">不明的外掛程式</translation>
@@ -3064,6 +3064,7 @@
 <translation id="4657810666108475055">分頁搜尋</translation>
 <translation id="465878909996028221">瀏覽器重新導向僅支援 http、https 和 file 通訊協定。</translation>
 <translation id="4659077111144409915">主要帳戶</translation>
+<translation id="4659126640776004816">當你登入 Google 帳戶時，系統會啟用這項功能。</translation>
 <translation id="4660476621274971848">預期的版本為「<ph name="EXPECTED_VERSION" />」，但實際的版本為「<ph name="NEW_ID" />」</translation>
 <translation id="4660540330091848931">正在調整大小</translation>
 <translation id="4661407454952063730">應用程式資料泛指應用程式依據開發人員設定所儲存的任何資料，包括聯絡人、訊息和相片等。</translation>
@@ -3129,7 +3130,6 @@
 <translation id="4750394297954878236">建議</translation>
 <translation id="475088594373173692">第一位使用者</translation>
 <translation id="4751476147751820511">動作或光源感應器</translation>
-<translation id="4752124003533492687">開啟「設定」頁面即可連接「<ph name="USB_DEVICE_NAME" />」</translation>
 <translation id="4756378406049221019">停止/重新載入</translation>
 <translation id="4756388243121344051">記錄(&amp;H)</translation>
 <translation id="4759238208242260848">下載</translation>
@@ -4090,7 +4090,7 @@
 <translation id="5941153596444580863">新增使用者...</translation>
 <translation id="5941343993301164315">請登入 <ph name="TOKEN_NAME" />。</translation>
 <translation id="5941711191222866238">最小化</translation>
-<translation id="5942779427914696408">裝置瀏覽權限</translation>
+<translation id="5942779427914696408">裝置分享設定</translation>
 <translation id="5942964813783878922">完成更新後，你的 <ph name="DEVICE_TYPE" /> 將會重新啟動。日後系統會自動安裝新版軟體和安全性更新。</translation>
 <translation id="5944869793365969636">掃描 QR 圖碼</translation>
 <translation id="5946591249682680882">報表 ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -5019,6 +5019,7 @@
 <translation id="7075513071073410194">PKCS #1 MD5 (使用 RSA 加密)</translation>
 <translation id="7075625805486468288">管理 HTTPS/SSL 憑證和設定</translation>
 <translation id="7076293881109082629">登入中</translation>
+<translation id="7076878155205969899">關閉音效</translation>
 <translation id="7077829361966535409">無法使用目前的 Proxy 設定載入登入頁面。請<ph name="GAIA_RELOAD_LINK_START" />重新登入<ph name="GAIA_RELOAD_LINK_END" />或使用其他 <ph name="PROXY_SETTINGS_LINK_START" />Proxy 設定<ph name="PROXY_SETTINGS_LINK_END" />。</translation>
 <translation id="7078120482318506217">所有網路</translation>
 <translation id="708060913198414444">複製音訊位址(&amp;O)</translation>
@@ -5039,7 +5040,6 @@
 <translation id="7099337801055912064">無法載入大型 PPD。大小上限為 250 KB。</translation>
 <translation id="7102687220333134671">自動更新功能已開啟</translation>
 <translation id="7102832101143475489">要求逾時</translation>
-<translation id="7105390788077117391">USB 偏好設定</translation>
 <translation id="710640343305609397">開啟網路設定</translation>
 <translation id="7108338896283013870">隱藏</translation>
 <translation id="7108668606237948702">輸入</translation>
@@ -5069,7 +5069,6 @@
 <translation id="7136694880210472378">設為預設</translation>
 <translation id="7136984461011502314">歡迎使用 <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">發生錯誤，請選擇其他圖片，然後再試一次。</translation>
-<translation id="7138678301420049075">其他</translation>
 <translation id="713888829801648570">很抱歉，你目前處於離線狀態，因此無法驗證密碼。</translation>
 <translation id="7140928199327930795">沒有其他可用裝置。</translation>
 <translation id="7141105143012495934">無法擷取您的帳戶詳細資料，導致登入失敗。請與您的管理員聯絡或再試一次。</translation>
@@ -6131,6 +6130,7 @@
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428271547607112339">新增學校帳戶</translation>
 <translation id="8428628598981198790">無法在此網站上使用你的安全金鑰</translation>
+<translation id="8428634594422941299">我知道了</translation>
 <translation id="84297032718407999">你將於 <ph name="LOGOUT_TIME_LEFT" />後登出</translation>
 <translation id="8431190899827883166">顯示觸控回應</translation>
 <translation id="8431909052837336408">變更 SIM 卡的 PIN 碼</translation>

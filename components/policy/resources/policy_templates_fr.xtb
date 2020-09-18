@@ -95,7 +95,6 @@
       Si cette règle n'est pas définie, les GPO mis en cache peuvent être réutilisés dans un délai maximal de 25 heures.
 
       Si cette règle est définie sur 0, la mise en cache des GPO est désactivée. Notez que cela augmente la charge du serveur, car les GPO sont de nouveau téléchargés à chaque récupération de règle, même s'ils ne sont pas modifiés.</translation>
-<translation id="1111470455889178048">Envoyer les importations et les téléchargements des utilisateurs pour analyse</translation>
 <translation id="1117462881884985156"><ph name="PRODUCT_NAME" /> ignore tout serveur proxy pour la liste d'hôtes spécifiée ici.
 
           Cette règle ne prend effet que si vous avez sélectionné les paramètres de proxy manuels dans l'option "Sélectionner le mode de spécification des paramètres de serveur proxy", et si la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> n'a pas été spécifiée.
@@ -956,16 +955,6 @@ Si cette règle est définie sur "False", l'écran de confidentialité sera touj
 Lorsque cette règle est définie, l'utilisateur ne peut pas remplacer la valeur.
 
 Si elle n'est pas définie, l'écran de confidentialité est désactivé initialement, mais l'utilisateur peut le modifier.</translation>
-<translation id="2423038190900972331">Contrôle la manière dont <ph name="PRODUCT_NAME" /> vérifie si les données importées, téléchargées, collées à partir du presse-papiers, ou glissées-déposées respectent les règles de protection des données sensibles.
-
-      Si cette règle n'est pas définie, ou si elle est définie sur "Aucune", <ph name="PRODUCT_NAME" /> ne vérifie pas si des règles de protection des données sensibles sont enfreintes.
-
-      Si cette règle est définie sur "Vérifier les téléchargements" et que l'utilisateur tente de télécharger un fichier à partir d'une URL indiquée dans la règle <ph name="DOMAINS_TO_CHECK_COMPLIANCE_OF_DOWNLOADED_CONTENT_POLICTY_NAME" />, <ph name="PRODUCT_NAME" /> vérifie que les données téléchargées sont conformes aux règles de l'entreprise.
-
-      Si cette règle est définie sur "Vérifier les importations" et que l'utilisateur tente d'importer un fichier sur un domaine qui n'est pas indiqué dans la règle <ph name="DOMAINS_TO_NOT_CHECK_COMPLIANCE_OF_UPLOADED_CONTENT_POLICY_NAME" />, <ph name="PRODUCT_NAME" /> vérifie que le fichier importé, les données collées à partir du presse-papiers et les données glissées-déposées sont conformes aux règles de l'entreprise.
-
-      Si cette règle est définie sur "Vérifier les importations et les téléchargements", <ph name="PRODUCT_NAME" /> se comporte conformément aux règles indiquées sous "Vérifier les téléchargements" et "Vérifier les importations".
-      </translation>
 <translation id="2423255396068675416">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs sont autorisés à exécuter<ph name="PRODUCT_CROSTINI_NAME" />, tant que les règles <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> et <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> sont activées. Si cette règle est désactivée, <ph name="PRODUCT_CROSTINI_NAME" /> est désactivé pour l'utilisateur. Si vous la désactivez, elle est appliquée aux conteneurs <ph name="PRODUCT_CROSTINI_NAME" /> qui vont être lancés, mais pas à ceux qui le sont déjà.</translation>
 <translation id="2424098959650060417">Permet de déterminer quelles imprimantes soumises à la règle <ph name="BULK_PRINTERS_POLICY_NAME" /> sont accessibles aux utilisateurs.
 
@@ -1080,7 +1069,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
           La valeur de la règle doit être indiquée en millisecondes. Elle doit également être inférieure ou égale au délai d'inactivité.</translation>
 <translation id="2548572254685798999">Enregistrer les informations de navigation sécurisée</translation>
 <translation id="2550593661567988768">Impression recto seulement</translation>
-<translation id="2551520365302988324">Envoyer les importations des utilisateurs pour analyse</translation>
 <translation id="2552318891854145040">Permet d'établir une liste des favoris où chacun d'eux est un dictionnaire comprenant les clés "<ph name="NAME" />" et "<ph name="URL_LABEL" />". Ces clés contiennent le nom et la cible du favori. Les administrateurs peuvent configurer un sous-dossier en définissant un favori sans clé "<ph name="URL_LABEL" />", mais avec une clé "<ph name="CHILDREN" />" supplémentaire. Cette clé contient également une liste de favoris, dont certains peuvent être aussi des dossiers. Chrome modifie les URL incomplètes comme si elles avaient été soumises via la barre d'adresse. Par exemple, "<ph name="GOOGLE_COM" />" devient "<ph name="HTTPS_GOOGLE_COM" />".
 
       Les utilisateurs ne peuvent pas modifier les dossiers dans lesquels les favoris sont placés (bien qu'ils puissent les masquer dans la barre de favoris). Le nom du dossier par défaut est "Favoris gérés", mais vous pouvez le modifier en ajoutant à la règle un sous-dictionnaire contenant la clé unique "<ph name="TOPLEVEL_NAME" />" avec le nom de dossier souhaité comme valeur. Les favoris gérés ne sont pas synchronisés avec le compte utilisateur, et les extensions ne peuvent pas les modifier.</translation>
@@ -1838,7 +1826,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Pour en savoir plus sur <ph name="CORS" />, consultez la page <ph name="CORS_HELP_URL" />.
 
       La suppression de cette règle avait été annoncée pour la version 82 de <ph name="PRODUCT_NAME" />, mais elle a eu lieu à la version 84.</translation>
-<translation id="3624515566460517364">Vérifier si les importations et les téléchargements respectent les règles de protection des données sensibles</translation>
 <translation id="3627678165642179114">Activer ou désactiver le service Web de correction orthographique</translation>
 <translation id="3628480121685794414">Activer l'impression recto</translation>
 <translation id="3631099945620529777">Si cette règle est définie sur "false", le bouton "Arrêter le processus" est désactivé dans le gestionnaire de tâches.
@@ -1995,7 +1982,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
           Si cette règle n'est pas configurée ou qu'aucun mode de déverrouillage rapide ne figure dans la liste, aucun de ces modes n'est disponible pour les appareils gérés.</translation>
 <translation id="3877517141460819966">Mode d'authentification à deux facteurs intégré</translation>
-<translation id="3879196885908353077">Vérifier que les téléchargements respectent les règles de protection des données sensibles</translation>
 <translation id="3879208481373875102">Configurer la liste des applications Web installées d'office</translation>
 <translation id="388237772682176890">Cette règle a été abandonnée dans la version M53 et supprimée dans la version M54, car le protocole SPDY 3.1 n'est plus pris en charge.
 
@@ -2426,7 +2412,6 @@ Si cette règle n'est pas configurée, l'utilisateur peut décider d'afficher ou
       La notification est toujours affichée sur les appareils non gérés.</translation>
 <translation id="4510923771103268849">L'utilisateur est autorisé à accéder à la racine des conteneurs Crostini</translation>
 <translation id="4515404363392014383">Activer la navigation sécurisée pour les sources fiables</translation>
-<translation id="4517928394515633751">Analyser les téléchargements des utilisateurs avec la navigation sécurisée</translation>
 <translation id="4518251772179446575">Demander chaque fois qu'un site veut suivre la position géographique des utilisateurs</translation>
 <translation id="4529868888205510667">Si cette règle est définie sur "True" ou n'est pas définie, les utilisateurs peuvent utiliser ARC, sauf si celui-ci est désactivé par un autre moyen. Si elle est définie sur "False", les utilisateurs non affiliés ne peuvent pas utiliser ARC.
 
@@ -2601,15 +2586,6 @@ Si cette règle n'est pas configurée, l'utilisateur peut décider d'afficher ou
           Si vous saisissez la valeur "*" dans la liste de blocage, tous les hôtes de messagerie native sont bloqués, sauf ceux spécifiquement répertoriés dans la liste d'autorisation.
 
           Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> charge alors tous les hôtes de messagerie native installés.</translation>
-<translation id="4771144269610910963">Cette règle permet de contrôler l'analyse approfondie des téléchargements des utilisateurs à l'aide de la navigation sécurisée. Si cette règle n'est pas configurée ou si elle est définie sur le paramètre par défaut ("Ne pas analyser les fichiers"), les téléchargements des utilisateurs ne sont pas analysés par la navigation sécurisée.
-
-      Si cette règle est définie sur "Envoyer les téléchargements des utilisateurs pour analyse", les téléchargements des utilisateurs sont envoyés sur le réseau à la navigation sécurisée afin d'y être analysés pour détecter les éventuels logiciels malveillants.
-
-      Si cette règle est définie sur "Envoyer les importations des utilisateurs pour analyse", les importations des utilisateurs sont envoyées sur le réseau à la navigation sécurisée afin d'y être analysées pour détecter les éventuels logiciels malveillants.
-
-      Si cette règle est définie sur "Envoyer les importations et les téléchargements des utilisateurs pour analyse", le produit se comporte conformément aux règles indiquées sous "Envoyer les importations des utilisateurs pour analyse" et "Envoyer les téléchargements des utilisateurs pour analyse".
-
-      Pour savoir comment les utilisateurs et les administrateurs peuvent consulter les résultats de l'analyse, reportez-vous aux règles <ph name="DELAY_DELIVER_UNTIL_VERDICT_POLICY_NAME" /> et <ph name="UNSAFE_EVENTS_REPORTING_ENABLED" />.</translation>
 <translation id="4787763197941188108">Cette règle permet d'ignorer le format de la page d'impression par défaut.
 
       La propriété <ph name="PAGE_SIZE_NAME" /> doit contenir l'un des formats répertoriés ou être définie sur "Personnalisé" si le format du papier requis ne figure pas dans la liste. Si elle est définie sur "Personnalisé", il est obligatoire de spécifier également la propriété <ph name="PAGE_SIZE_CUSTOM_SIZE" />. La hauteur et la largeur souhaitées sont exprimées en micromètres. Dans le cas contraire, la propriété <ph name="PAGE_SIZE_CUSTOM_SIZE" /> ne doit pas être renseignée. Toute règle qui ne respecte pas ces consignes sera ignorée.
@@ -2818,7 +2794,6 @@ Si cette règle n'est pas configurée, l'utilisateur peut décider d'afficher ou
 <translation id="5148753489738115745">Permet de spécifier les paramètres supplémentaires utilisés lorsque <ph name="PRODUCT_FRAME_NAME" /> lance <ph name="PRODUCT_NAME" />.
 
           Si cette règle n'est pas configurée, la ligne de commande par défaut est utilisée.</translation>
-<translation id="5150323673529584553">Ne pas analyser les fichiers</translation>
 <translation id="5152787786897382519">Chromium et Google Chrome possèdent tous deux des groupes de règles interdépendantes pour contrôler une fonctionnalité. Ces ensembles sont représentés par les groupes de règles suivants. Les règles pouvant avoir plusieurs sources, seules les valeurs issues de la source ayant la priorité la plus haute sont appliquées. Les valeurs provenant d'une source ayant une priorité inférieure dans le même groupe sont ignorées. L'ordre de priorité est défini à la page <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="515816885693899426">Cette règle est obsolète (veuillez utiliser la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> à la place).
 
@@ -3651,6 +3626,11 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
           Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> charge alors tous les hôtes de messagerie native installés.</translation>
 <translation id="6224304369267200483">URL/domaines automatiquement autorisés à recevoir une attestation de clé de sécurité</translation>
+<translation id="6230442621691161858">Cette fonctionnalité affiche des suggestions de nouveaux contenus à explorer. Les suggestions de contenu concernent des applications, des pages Web et bien plus.
+      Si cette règle est définie sur "True", les suggestions de nouveaux contenus à explorer sont activées.
+      Si cette règle est définie sur "False", les suggestions de nouveaux contenus à explorer sont désactivées.
+      Si cette règle n'est pas définie, les suggestions de nouveaux contenus à explorer sont désactivées pour les utilisateurs gérés et activées pour les autres.
+      </translation>
 <translation id="6233173491898450179">Définir le répertoire de téléchargement</translation>
 <translation id="6234177445959386333">Configurez la liste des URL de connexion d'entreprise pour lesquelles le service de protection par mot de passe doit enregistrer une copie hachée et salée des mots de passe.</translation>
 <translation id="6242147107333796512">Transmettre les informations liées aux rapports d'erreur, comme l'ID distant, la cause et l'horodatage du problème relevé.
@@ -3763,7 +3743,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="637934607141010488">Générer une liste des utilisateurs qui se sont récemment connectés à l'appareil.
 
       Si cette règle est définie sur "False", aucune liste d'utilisateurs n'est générée.</translation>
-<translation id="638668187106406971">Vérifier que les importations respectent les règles de protection des données sensibles</translation>
 <translation id="6394350458541421998">Cette règle a été supprimée à partir de la version 29 de <ph name="PRODUCT_OS_NAME" />. Veuillez utiliser la règle PresentationScreenDimDelayScale à la place.</translation>
 <translation id="6401669939808766804">Déconnecter l'utilisateur</translation>
 <translation id="640244877779556713">Activer la suggestion d'emoji</translation>
@@ -4943,7 +4922,6 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
 
           La valeur de la règle doit être indiquée en millisecondes. Elle doit également être inférieure ou égale au délai d'inactivité.</translation>
 <translation id="8001701200415781021">Restreindre les comptes Google autorisés à être définis comme comptes de navigation principaux dans <ph name="PRODUCT_NAME" /></translation>
-<translation id="8003853057959146975">Envoyer des fichiers pour l'analyse du respect des règles de protection des données sensibles</translation>
 <translation id="8006219716745491366">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> vous permet d'établir la liste des URL alternatives pour extraire des termes de recherche du moteur de recherche. Ces URL doivent inclure la chaîne <ph name="SEARCH_TERM_MARKER" />.
 
       Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> n'est pas configurée, aucune URL alternative n'est utilisée pour extraire les termes de recherche.</translation>
@@ -5349,7 +5327,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Si cette règle est définie sur "False" ou si elle n'est pas configurée, l'utilisateur peut se servir du navigateur sans se connecter à <ph name="PRODUCT_NAME" />.</translation>
 <translation id="858309738002328421">Bloquer l'importation de fichiers volumineux</translation>
 <translation id="8584279193368801689">Limite le mode d'impression par code. Si cette règle n'est pas définie, aucune limite ne s'applique. Si le mode est indisponible, cette règle est ignorée. Notez que la fonctionnalité d'impression par code n'est activée que pour les imprimantes utilisant l'un des protocoles IPPS, HTTPS, USB ou IPP sur USB.</translation>
-<translation id="8585558195682146109">Envoyer les téléchargements des utilisateurs pour analyse</translation>
 <translation id="8587229956764455752">Autoriser la création de comptes utilisateur</translation>
 <translation id="8591713876665299827">Cette règle étant obsolète, elle sera supprimée dans la version 85 de <ph name="PRODUCT_OS_NAME" />. (Veuillez utiliser la règle <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.)
 
@@ -5606,7 +5583,6 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> et les applications AR
 <translation id="8942616385591203339">Permet d'activer l'affichage de l'autorisation de synchronisation lors de la première connexion de l'utilisateur. Si cette autorisation n'a jamais besoin d'être montrée à l'utilisateur, cette règle doit être définie sur False.
       Si cette règle est définie sur False, l'autorisation de synchronisation n'est pas affichée.
       Si cette règle est définie sur True ou si elle n'est pas configurée, l'autorisation de synchronisation peut être affichée.</translation>
-<translation id="8943934315109955032">Ne pas vérifier si les règles de protection des données sensibles sont respectées</translation>
 <translation id="8947415621777543415">Indiquer l'emplacement de l'appareil</translation>
 <translation id="8948062138228904066">Liste d'autorisation des serveurs d'authentification</translation>
 <translation id="8951350807133946005">Définir le répertoire du cache disque</translation>
@@ -5620,9 +5596,6 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> et les applications AR
 
       Cette règle ne doit pas être activée si la règle <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> l'est également, car elles partagent la même fonctionnalité côté client. Dans ce cas, le service de synchronisation hébergé par Google est totalement désactivé.</translation>
 <translation id="8955719471735800169">Haut de page</translation>
-<translation id="8956310900055843601">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, le format 24 heures est utilisé sur l'écran de connexion de l'appareil. Les utilisateurs peuvent modifier ce format dans leur compte, même si celui-ci est défini par défaut.
-
-      Si cette règle est définie sur "False", le format 12 heures est utilisé sur l'appareil.</translation>
 <translation id="8959992920425111821">Configuration par défaut</translation>
 <translation id="8970205333161758602">Supprimer l'invite de fermeture de <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8976248126101463034">Autoriser l'authentification gnubby pour les hôtes d'accès à distance</translation>

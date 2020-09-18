@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Atualizar página atual e ignorar conteúdo em cache</translation>
 <translation id="124678866338384709">Fechar o separador atual</translation>
 <translation id="1258753120186372309">Doodle da Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Lista de leitura</translation>
 <translation id="1266864766717917324">Não foi possível partilhar <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Toque para expandir</translation>
 <translation id="1291207594882862231">Limpar histórico, cookies, dados de sites, cache…</translation>
@@ -218,7 +219,6 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="2744248271121720757">Toque numa palavra para pesquisar instantaneamente ou ver as ações relacionadas.</translation>
 <translation id="2760989362628427051">Ative o tema escuro quando a Poupança de bateria ou o tema escuro do dispositivo estiver ativado(a).</translation>
 <translation id="2762000892062317888">agora mesmo</translation>
-<translation id="2771869497727323769">Não é possível criar o link para o texto. Partilhe o link para a página numa app.</translation>
 <translation id="2777555524387840389">Faltam <ph name="SECONDS" /> segundos</translation>
 <translation id="2779651927720337254">falhou</translation>
 <translation id="2781151931089541271">Falta 1 segundo</translation>
@@ -387,6 +387,7 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="4135200667068010335">A lista de dispositivos com os quais pretende partilhar um separador está fechada.</translation>
 <translation id="4149994727733219643">Vista simplificada de páginas Web</translation>
 <translation id="4170011742729630528">O serviço não está disponível. Tente novamente mais tarde.</translation>
+<translation id="4175173967354304331">Vai iniciar sessão neste site, no Chrome e nas apps Google.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> utilizado(s)</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4183868528246477015">Pesquisar com Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -467,7 +468,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 transferência concluída.}other{# transferências concluídas.}}</translation>
 <translation id="4766678251456904326">Adicionar conta ao dispositivo</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 transferência programada.}other{# transferências programadas.}}</translation>
-<translation id="478981486571169252">Pode ver o seu estado de início de sessão em <ph name="SITE_NAME" />, os dados de navegação e dados do site no Chrome.</translation>
 <translation id="4802417911091824046">A encriptação da frase de acesso não inclui métodos de pagamento nem endereços do Google Pay.
 
 Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização<ph name="END_LINK" />.</translation>
@@ -512,7 +512,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5040262127954254034">Privacidade</translation>
 <translation id="5087580092889165836">Adicionar cartão</translation>
 <translation id="509429900233858213">Ocorreu um erro.</translation>
-<translation id="5100748015044654621">Partilhe o link para o texto destacado numa app</translation>
 <translation id="510275257476243843">Falta 1 hora</translation>
 <translation id="5123685120097942451">Separador de navegação anónima</translation>
 <translation id="5127805178023152808">A sincronização está desativada</translation>
@@ -679,6 +678,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6341580099087024258">Perguntar onde guardar os ficheiros</translation>
 <translation id="6342069812937806050">Mesmo agora</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
+<translation id="6345878117466430440">Marcar como lido</translation>
 <translation id="6364438453358674297">Remover a sugestão do histórico?</translation>
 <translation id="6366047038980456022">A app <ph name="APP_NAME" /> tem as funcionalidades inteligentes e a rapidez de que necessita para realizar tarefas, criar e explorar online em segurança.</translation>
 <translation id="6378173571450987352">Detalhes: ordenado por quantidade de dados utilizados</translation>
@@ -994,6 +994,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8655129584991699539">Pode limpar os dados nas Definições do Chrome.</translation>
 <translation id="8662811608048051533">A sua sessão é terminada na maioria dos sites.</translation>
 <translation id="8664979001105139458">O nome do ficheiro já existe</translation>
+<translation id="8683039184091909753">imagem</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Nível de intensidade do sinal: # barra}other{Nível de intensidade do sinal: # barras}}</translation>
 <translation id="869891660844655955">Data de expiração</translation>
 <translation id="8712637175834984815">Entendido</translation>

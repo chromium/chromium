@@ -39,6 +39,7 @@
 <translation id="123724288017357924">क्यास गरिएको सामग्रीको बेवास्ता गर्दै हालको पृष्ठलाई पुनःलोड गर्नुहोस्</translation>
 <translation id="124678866338384709">हालको ट्याब बन्द गर्नुहोस्</translation>
 <translation id="1258753120186372309">Google केरकार: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">पाठ्य सूची</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> आदान प्रदान गर्न सकिएन</translation>
 <translation id="1283039547216852943">विस्तृत गर्न ट्याप गर्नुहोस्</translation>
 <translation id="1291207594882862231">इतिहास, कुकी, साइट सम्बन्धी डेटा, क्यासलाई खाली गर्नुहोस्…</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">तत्कालै खोज्नका लागि कुनै शब्दमा ट्याप गर्नुहोस् वा सम्बन्धित कारबाहीहरू हेर्नुहोस्</translation>
 <translation id="2760989362628427051">तपाईंको यन्त्रमा अँध्यारो थिम वा ब्याट्री सेभर मोड सक्रिय हुँदा अँध्यारो थिम सक्रिय गर्नुहोस्</translation>
 <translation id="2762000892062317888">भर्खरै</translation>
-<translation id="2771869497727323769">हाइलाइट गरिएको पाठको लिंक बनाउन सकिँदैन। कुनै एपमार्फत पृष्ठको लिंक सेयर गर्नुहोस्।</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> सेकेन्ड बाँकी छ</translation>
 <translation id="2779651927720337254">डाउनलोड गर्न सकिएन</translation>
 <translation id="2781151931089541271">१ सेकेन्ड बाँकी छ</translation>
@@ -466,7 +466,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{१ डाउनलोड सम्पन्न भयो।}other{# डाउनलोडहरू सम्पन्न भए।}}</translation>
 <translation id="4766678251456904326">यन्त्रमा खाता जोड्नुहोस्</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{एउटा डाउनलोडको समयतालिका निर्धारण गरियो।}other{# वटा डाउनलोडको समयतालिका निर्धारण गरियो।}}</translation>
-<translation id="478981486571169252">तपाईं Chrome मा आफ्नो <ph name="SITE_NAME" /> को साइन इनसम्बन्धी अवस्था, ब्राउजिङ डेटा र साइट डेटा देख्नु हुने छ।</translation>
 <translation id="4802417911091824046">पासफ्रेजमार्फत इन्क्रिप्सन गर्ने कार्यअन्तर्गत Google Pay का भुक्तानी विधि र ठेगानाहरू समावेश हुँदैनन्।
 
 यो सेटिङ परिवर्तन गर्न <ph name="BEGIN_LINK" />सिंक रिसेट गर्नुहोस्<ph name="END_LINK" /></translation>
@@ -511,7 +510,6 @@
 <translation id="5040262127954254034">गोपनीयता</translation>
 <translation id="5087580092889165836">कार्ड थप्नुहोस्</translation>
 <translation id="509429900233858213">त्रुटि भयो।</translation>
-<translation id="5100748015044654621">हाइलाइट गरिएको पाठको लिंक कुनै एपमार्फत सेयर गर्नुहोस्</translation>
 <translation id="510275257476243843">१ घन्टा बाँकी छ</translation>
 <translation id="5123685120097942451">इन्कोग्निटो ट्याब</translation>
 <translation id="5127805178023152808">सिंक बन्द छ</translation>

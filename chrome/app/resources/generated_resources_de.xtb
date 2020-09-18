@@ -427,6 +427,7 @@
 <translation id="1500297251995790841">Unbekanntes Gerät [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Dieses Inhaberkonto muss in einer Sitzung mit Mehrfachanmeldung das erste angemeldete Konto sein.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> entfernen</translation>
+<translation id="1504311855864906891">Untertitel für Ihre Medien</translation>
 <translation id="1504551620756424144">Freigegebene Ordner sind auf Windows-Geräten unter <ph name="BASE_DIR" /> verfügbar.</translation>
 <translation id="1506061864768559482">Suchmaschine</translation>
 <translation id="1507170440449692343">Diese Seite darf nicht auf Ihre Kamera zugreifen.</translation>
@@ -1187,7 +1188,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2396783860772170191">Geben Sie die 4-stellige PIN ein (0000–9999)</translation>
 <translation id="2399939490305346086">Anmeldedaten auf Sicherheitsschlüssel</translation>
 <translation id="2400664245143453337">Sofortiges Update erforderlich</translation>
-<translation id="2407481962792080328">Wenn Sie sich in Ihrem Google-Konto anmelden, ist diese Funktion eingeschaltet</translation>
 <translation id="2408018932941436077">Karte wird gespeichert</translation>
 <translation id="2408955596600435184">PIN eingeben</translation>
 <translation id="241082044617551207">Unbekanntes Plug-in</translation>
@@ -1283,6 +1283,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2505127913256479918">Dieses gemeinsam verwaltete Konto wird bald entfernt</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Bildschirm #}other{Bildschirm #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> von <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Geräte in der Nähe, wenn Nearby Share darauf geöffnet ist</translation>
 <translation id="250704661983564564">Displayanordnung</translation>
 <translation id="2507253002925770350">Ticket entfernt</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> pausiert</translation>
@@ -3061,6 +3062,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4657810666108475055">Tab-Suche</translation>
 <translation id="465878909996028221">Nur HTTP-, HTTPS- und Dateiprotokolle werden für Browserweiterleitungen unterstützt.</translation>
 <translation id="4659077111144409915">Primäres Konto</translation>
+<translation id="4659126640776004816">Wenn Sie sich in Ihrem Google-Konto anmelden, ist diese Funktion eingeschaltet.</translation>
 <translation id="4660476621274971848">Erwartete Version: "<ph name="EXPECTED_VERSION" />", tatsächliche Version "<ph name="NEW_ID" />"</translation>
 <translation id="4660540330091848931">Größenanpassung läuft</translation>
 <translation id="4661407454952063730">App-Daten können alle Daten sein, die eine App aufgrund der Einstellungen des Entwicklers gespeichert hat, wie z. B. Kontakte, Nachrichten und Fotos.</translation>
@@ -3126,7 +3128,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4750394297954878236">Vorschläge</translation>
 <translation id="475088594373173692">Erster Nutzer</translation>
 <translation id="4751476147751820511">Bewegungs- oder Lichtsensoren</translation>
-<translation id="4752124003533492687">Bitte die Einstellungen öffnen, um <ph name="USB_DEVICE_NAME" /> zu verbinden</translation>
 <translation id="4756378406049221019">Stopp/Neu laden</translation>
 <translation id="4756388243121344051">&amp;Verlauf</translation>
 <translation id="4759238208242260848">Downloads</translation>
@@ -3134,6 +3135,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4762718786438001384">Speicherplatz auf Gerät äußerst niedrig</translation>
 <translation id="4763408175235639573">Beim Anzeigen dieser Seite wurden die folgenden Cookies eingerichtet</translation>
 <translation id="4765582662863429759">Zulassen, dass Android Messages SMS von Ihrem Smartphone an Ihr Chromebook übermittelt</translation>
+<translation id="476598255842811483">Niemand, solange Nearby Share auf Ihrem Gerät nicht geöffnet ist</translation>
 <translation id="4768332406694066911">Ihre Zertifikate dieser Organisationen identifizieren Sie</translation>
 <translation id="477647109558161443">Desktopverknüpfung erstellen</translation>
 <translation id="4776917500594043016">Passwort für <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -5015,6 +5017,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 mit RSA-Verschlüsselung</translation>
 <translation id="7075625805486468288">HTTPS/SSL-Zertifikate und -Einstellungen verwalten</translation>
 <translation id="7076293881109082629">Anmeldung</translation>
+<translation id="7076878155205969899">Ton stummschalten</translation>
 <translation id="7077829361966535409">Die Anmeldeseite konnte mit den aktuellen Proxy-Einstellungen nicht geladen werden. <ph name="GAIA_RELOAD_LINK_START" />Versuchen Sie erneut, sich anzumelden<ph name="GAIA_RELOAD_LINK_END" />, oder verwenden Sie andere <ph name="PROXY_SETTINGS_LINK_START" />Proxy-Einstellungen<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Alle Netzwerke</translation>
 <translation id="708060913198414444">Audioadresse k&amp;opieren</translation>
@@ -5035,7 +5038,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7099337801055912064">Große PPD-Datei kann nicht geladen werden. Die Maximalgröße beträgt 250 KB.</translation>
 <translation id="7102687220333134671">Automatische Updates sind aktiviert</translation>
 <translation id="7102832101143475489">Zeitüberschreitung bei der Anfrage</translation>
-<translation id="7105390788077117391">USB-Einstellungen</translation>
 <translation id="710640343305609397">Netzwerkeinstellungen öffnen</translation>
 <translation id="7108338896283013870">Ausblenden</translation>
 <translation id="7108668606237948702">Eingabe</translation>
@@ -5065,7 +5067,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7136694880210472378">Als Standard festlegen</translation>
 <translation id="7136984461011502314">Herzlich willkommen bei <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Ein Fehler ist aufgetreten. Versuchen Sie es noch einmal mit anderen Bildern.</translation>
-<translation id="7138678301420049075">Sonstiges</translation>
 <translation id="713888829801648570">Ihr Passwort konnte nicht überprüft werden, da Sie offline sind.</translation>
 <translation id="7140928199327930795">Keine weiteren Geräte vorhanden</translation>
 <translation id="7141105143012495934">Sie konnten nicht angemeldet werden, weil Ihre Kontodetails nicht abgerufen werden konnten. Bitte wenden Sie sich an Ihren Administrator oder versuchen Sie es erneut.</translation>
@@ -5665,6 +5666,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="786073089922909430">Dienst: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Downloads</translation>
 <translation id="7864539943188674973">Bluetooth deaktivieren</translation>
+<translation id="7866352732146932341">Geräte in der Nähe, wenn Nearby Share auf Ihrem Gerät geöffnet ist</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – gekoppelt</translation>
 <translation id="7870730066603611552">Synchronisierungsoptionen nach der Einrichtung überprüfen</translation>
 <translation id="7870790288828963061">Es wurden keine Kiosk-Apps mit neuerer Version gefunden. Es sind keine Updates vorhanden. Bitte entfernen Sie den USB-Stick.</translation>
@@ -6126,6 +6128,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8428213095426709021">Einstellungen</translation>
 <translation id="8428271547607112339">Konto einer Bildungseinrichtung hinzufügen</translation>
 <translation id="8428628598981198790">Ihr Sicherheitsschlüssel kann bei dieser Website nicht verwendet werden</translation>
+<translation id="8428634594422941299">Ok</translation>
 <translation id="84297032718407999">Sie werden in <ph name="LOGOUT_TIME_LEFT" /> abgemeldet</translation>
 <translation id="8431190899827883166">Fingertipps anzeigen</translation>
 <translation id="8431909052837336408">PIN für SIM-Karte ändern</translation>

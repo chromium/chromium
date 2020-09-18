@@ -293,6 +293,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="4277990410970811858">Bezpieczne przeglądanie</translation>
 <translation id="4281844954008187215">Warunki korzystania z usługi</translation>
 <translation id="430793432425771671">Synchronizuj wszystko</translation>
+<translation id="4309403553630140242">Kliknij dwukrotnie, by dowiedzieć się więcej</translation>
 <translation id="430967081421617822">Od początku</translation>
 <translation id="4334428914252001502">Jeden nieprzeczytany artykuł.</translation>
 <translation id="4338650699862464074">Adresy URL odwiedzanych stron będą wysyłane do Google.</translation>
@@ -561,6 +562,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="7189598951263744875">Udostępnij...</translation>
 <translation id="7192050974311852563">Uruchom rejestrowanie</translation>
 <translation id="7203585745079012652">Odczytuj odpowiedzi</translation>
+<translation id="7207383424303353046">Nowość: ustaw aplikację Chrome jako przeglądarkę domyślną, by strony otwierały się w niej automatycznie. <ph name="BEGIN_LINK" />Otwórz ustawienia<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Nieprawidłowa nazwa karty</translation>
 <translation id="7265758999917665941">Nigdy dla tej witryny</translation>
 <translation id="7272437679830969316">Nie można zweryfikować Twojej tożsamości. Hasło nie zostało skopiowane.</translation>
@@ -638,6 +640,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8073670137947914548">Pobieranie zakończone</translation>
 <translation id="8073872304774253879">Ulepsz wyszukiwanie i przeglądanie</translation>
 <translation id="8076014560081431679">Zapisane ustawienia witryn nie zostaną usunięte i mogą zawierać informacje o Twoim korzystaniu z przeglądarki. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+<translation id="8079602123447022758">To ustawienie jest zarządzenie. Kliknij dwukrotnie, by dowiedzieć się więcej.</translation>
 <translation id="8105368624971345109">Wyłącz</translation>
 <translation id="8114753159095730575">Pobrany plik jest dostępny. Opcje są dostępne u dołu ekranu.</translation>
 <translation id="8131740175452115882">Potwierdź</translation>

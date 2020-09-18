@@ -39,6 +39,7 @@
 <translation id="123724288017357924">重新加载当前网页（忽略缓存的内容）</translation>
 <translation id="124678866338384709">关闭当前标签页</translation>
 <translation id="1258753120186372309">Google 涂鸦：<ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">阅读清单</translation>
 <translation id="1266864766717917324">无法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">点按即可展开</translation>
 <translation id="1291207594882862231">清除历史记录、Cookie、网站数据、缓存内容…</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">点按某个字词可立即开始搜索或查看相关操作</translation>
 <translation id="2760989362628427051">在设备开启深色主题背景或省电模式时启用深色主题背景</translation>
 <translation id="2762000892062317888">刚刚</translation>
-<translation id="2771869497727323769">无法为所选文本创建链接。请在应用中分享网页链接。</translation>
 <translation id="2777555524387840389">还剩 <ph name="SECONDS" /> 秒</translation>
 <translation id="2779651927720337254">失败</translation>
 <translation id="2781151931089541271">还剩 1 秒</translation>
@@ -467,7 +467,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{已完成 1 项下载。}other{已完成 # 项下载。}}</translation>
 <translation id="4766678251456904326">向设备添加帐号</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{已排定 1 项下载。}other{已排定 # 项下载。}}</translation>
-<translation id="478981486571169252">您会在 Chrome 中看到自己的 <ph name="SITE_NAME" /> 登录状态、浏览数据和网站数据。</translation>
 <translation id="4802417911091824046">密码加密不包括 Google Pay 中的付款方式和地址。
 
 要更改此设置，请<ph name="BEGIN_LINK" />重置同步设置<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@
 <translation id="5040262127954254034">隐私权</translation>
 <translation id="5087580092889165836">添加新卡</translation>
 <translation id="509429900233858213">出现错误。</translation>
-<translation id="5100748015044654621">请在应用中分享指向突出显示的文本的链接</translation>
 <translation id="510275257476243843">还剩 1 小时</translation>
 <translation id="5123685120097942451">无痕式标签页</translation>
 <translation id="5127805178023152808">同步功能已关闭</translation>
@@ -892,7 +890,7 @@
 <translation id="7930998711684428189">在密码遭遇数据泄露时向您发出警告。</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> 不是最新版本。</translation>
 <translation id="7947953824732555851">接受并登录</translation>
-<translation id="7961926449547174351">您已停用 Storage 的访问权限，请转到“设置”启用该访问权限。</translation>
+<translation id="7961926449547174351">您已停用存储空间的访问权限，请转到“设置”启用该访问权限。</translation>
 <translation id="7963646190083259054">供应商：</translation>
 <translation id="7967911570373677897">要扫描二维码，请更改您的设置以允许 Chrome 使用您的摄像头</translation>
 <translation id="7971136598759319605">1 天前曾有活动</translation>

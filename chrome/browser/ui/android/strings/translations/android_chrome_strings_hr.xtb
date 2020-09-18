@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Ponovno učitavanje trenutačne stranice uz zanemarivanje sadržaja iz predmemorije</translation>
 <translation id="124678866338384709">Zatvaranje trenutačne kartice</translation>
 <translation id="1258753120186372309">Googleov doodle logotip: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Popis za čitanje</translation>
 <translation id="1266864766717917324">Nije moguće podijeliti <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Dodirnite za proširivanje</translation>
 <translation id="1291207594882862231">Brisanje povijesti, kolačića, podataka web-lokacija, predmemorije...</translation>
@@ -218,7 +219,6 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="2744248271121720757">Dodirnite riječ da biste je odmah pretražili ili vidjeli povezane radnje</translation>
 <translation id="2760989362628427051">Uključite tamnu temu kada je na uređaju uključena tamna tema ili Štednja baterije</translation>
 <translation id="2762000892062317888">upravo sada</translation>
-<translation id="2771869497727323769">Izrada veze na tekst nije uspjela. Podijelite vezu na stranicu u aplikaciji.</translation>
 <translation id="2777555524387840389">Preostalo sekundi: <ph name="SECONDS" /></translation>
 <translation id="2779651927720337254">nije uspjelo</translation>
 <translation id="2781151931089541271">Još 1 s</translation>
@@ -467,7 +467,6 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 preuzimanje dovršeno.}one{# preuzimanje dovršeno.}few{# preuzimanja dovršena.}other{# preuzimanja dovršeno.}}</translation>
 <translation id="4766678251456904326">Dodajte račun uređaju</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{Zakazano je jedno preuzimanje.}one{Zakazano je # preuzimanje.}few{Zakazana su # preuzimanja.}other{Zakazano je # preuzimanja.}}</translation>
-<translation id="478981486571169252">Vidjet ćete svoj status prijave na <ph name="SITE_NAME" />, podatke o pregledavanju i podatke web-lokacija u Chromeu.</translation>
 <translation id="4802417911091824046">Enkripcija šifrom ne uključuje načine plaćanja i adrese s Google Paya.
 
 Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizaciju<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5040262127954254034">Privatnost</translation>
 <translation id="5087580092889165836">Dodaj karticu</translation>
 <translation id="509429900233858213">Došlo je do pogreške.</translation>
-<translation id="5100748015044654621">Podijelite vezu na istaknuti tekst u aplikaciji</translation>
 <translation id="510275257476243843">Još 1 sat</translation>
 <translation id="5123685120097942451">Anonimna kartica</translation>
 <translation id="5127805178023152808">Sinkronizacija je isključena</translation>

@@ -293,6 +293,7 @@
 <translation id="4277990410970811858">Безбедно прегледање</translation>
 <translation id="4281844954008187215">Услови коришћења услуге</translation>
 <translation id="430793432425771671">Синхронизуј све</translation>
+<translation id="4309403553630140242">Двапут додирните за више информација</translation>
 <translation id="430967081421617822">Одувек</translation>
 <translation id="4334428914252001502">1 непрочитан чланак.</translation>
 <translation id="4338650699862464074">Шаље URL-ове страница које посећујете Google-у.</translation>
@@ -561,6 +562,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7189598951263744875">Дели...</translation>
 <translation id="7192050974311852563">Покрени евидентирање</translation>
 <translation id="7203585745079012652">Изговарај одговоре</translation>
+<translation id="7207383424303353046">Ново: Отварајте сајтове у Chrome-у аутоматски тако што ћете га подесити као подразумевану апликацију за прегледач. <ph name="BEGIN_LINK" />Отворите Подешавања<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Неважећи надимак картице</translation>
 <translation id="7265758999917665941">Никада за овај сајт</translation>
 <translation id="7272437679830969316">Верификација идентитета није успела. Лозинка није копирана.</translation>
@@ -638,6 +640,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8073670137947914548">Преузимање је завршено</translation>
 <translation id="8073872304774253879">Побољшај претраге и прегледање</translation>
 <translation id="8076014560081431679">Нећемо избрисати сачувана подешавања сајтова и она могу да одражавају ваше навике при прегледању. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
+<translation id="8079602123447022758">Овим подешавањем се управља. Двапут додирните за више информација</translation>
 <translation id="8105368624971345109">Искључи</translation>
 <translation id="8114753159095730575">Преузимање датотеке није доступно. Опције су наведене у дну екрана.</translation>
 <translation id="8131740175452115882">Потврди</translation>

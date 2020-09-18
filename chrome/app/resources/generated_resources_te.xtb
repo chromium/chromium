@@ -374,6 +374,7 @@
 <translation id="143027896309062157">మీ కంప్యూటర్‌లో మరియు మీరు సందర్శించే వెబ్‌సైట్‌ల్లో మీ మొత్తం డేటాను చదవడం మరియు మార్చడం</translation>
 <translation id="1430915738399379752">ముద్రించు</translation>
 <translation id="1431188203598586230">చివరి సాఫ్ట్‌వేర్ అప్‌డేట్</translation>
+<translation id="1431402976894535801">మీ ఉనికిని తెలుసుకోనివ్వకుండా సైట్‌లను బ్లాక్ చేయండి</translation>
 <translation id="1431432486300429272">శోధన మరియు ఇతర Google సర్వీస్‌లను వ్యక్తిగతీకరించడం కోసం Google మీ బ్రౌజింగ్ చరిత్రను ఉపయోగించవచ్చు. మీరు లేదా మీ తల్లి/తండ్రి దీన్ని ఎప్పుడైనా myaccount.google.com/activitycontrols/searchలో మార్చవచ్చు</translation>
 <translation id="1432581352905426595">సెర్చ్ ఇంజిన్‌లను మేనేజ్ చేయండి</translation>
 <translation id="1433811987160647649">ప్రాప్యత చేసే ముందు అడగాలి</translation>
@@ -427,6 +428,7 @@
 <translation id="1500297251995790841">తెలియని పరికరం [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">ఈ యజమాని ఖాతానే బహుళ సైన్-ఇన్ సెషన్‌లో మొదటిగా సైన్-ఇన్ చేయాల్సిన ఖాతా.</translation>
 <translation id="150411034776756821"><ph name="SITE" />ని తీసివేయి</translation>
+<translation id="1504311855864906891">మీ మీడియా కోసం క్యాప్షన్‌లను పొందండి</translation>
 <translation id="1504551620756424144">Windowsలో <ph name="BASE_DIR" />లో షేర్ చేసిన ఫోల్డర్‌లు అందుబాటులో ఉన్నాయి.</translation>
 <translation id="1506061864768559482">సెర్చ్ ఇంజిన్</translation>
 <translation id="1507170440449692343">ఈ పేజీ మీ కెమెరాను ప్రాప్యత చేయకుండా బ్లాక్ చేయబడింది.</translation>
@@ -569,6 +571,7 @@
 <translation id="1651008383952180276">మీరు తప్పనిసరిగా ఒకే రహస్య పదబంధాన్ని రెండుసార్లు నమోదు చేయాలి</translation>
 <translation id="1652326691684645429">సమీప షేరింగ్‌ను ఎనేబుల్ చేయండి</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Add the printer to Google Cloud Print so you can print from anywhere.}other{Google క్లౌడ్ ప్రింట్‌కు # ప్రింటర్‌లను జోడించండి. అప్పుడు మీరు ఎక్కడి నుండైనా ముద్రించవచ్చు.}}</translation>
+<translation id="1653575510930452864">లింక్‌ను టెక్స్ట్‌కు కాపీ చేయండి</translation>
 <translation id="1656528038316521561">నేపథ్య అపారదర్శకత</translation>
 <translation id="1657406563541664238">Googleకు వినియోగ గ‌ణాంకాలు, క్రాష్ నివేదికలను ఆటోమేటిక్‌గా పంపడం ద్వారా <ph name="PRODUCT_NAME" />ను మరింత మెరుగుపరచడంలో సహాయపడండి</translation>
 <translation id="1657937299377480641">విద్యా సంబంధమైన వనరులకు యాక్సెస్ కోసం మళ్లీ సైన్ ఇన్ చేయడానికి, మీకు అనుమతి ఇవ్వాల్సిందిగా తల్లి/తండ్రిని అడగండి</translation>
@@ -1002,6 +1005,7 @@
 <translation id="2178614541317717477">CA రాజీ</translation>
 <translation id="2182058453334755893">మీ క్లిప్‌బోర్డ్‌కు కాపీ చేయబడింది</translation>
 <translation id="2184515124301515068">సైట్‌లు ధ్వనిని ఎప్పుడు ప్లే చేయాలనేది Chrome ఎంచుకునేలా సెట్ చేయండి (సిఫార్సు చేయబడింది)</translation>
+<translation id="2187243482123994665">యూజర్ ఉనికి</translation>
 <translation id="2187675480456493911">మీ ఖాతాలోని ఇతర పరికరాలతో సింక్ చేయబడింది. ఇతర యూజర్‌ల చేత మార్చబడిన సెట్టింగ్‌లు సింక్ చేయబడవు. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">సర్వర్ ప్రమాణపత్రం దిగుమతి లోపం</translation>
 <translation id="2187906491731510095">పొడిగింపులు నవీకరించబడ్డాయి</translation>
@@ -1190,7 +1194,6 @@
 <translation id="2396783860772170191">4 అంకెల పిన్ (0000-9999) నమోదు చేయండి</translation>
 <translation id="2399939490305346086">'సెక్యూరిటీ కీ' సైన్-ఇన్ డేటా</translation>
 <translation id="2400664245143453337">వెంటనే అప్‌డేట్ చేయడం అవసరం</translation>
-<translation id="2407481962792080328">మీ Google ఖాతాకు మీరు సైన్ ఇన్ చేసినప్పుడు, ఈ ఫీచర్ ఆన్ చేయబడుతుంది</translation>
 <translation id="2408018932941436077">కార్డ్ సేవ్ అవుతోంది</translation>
 <translation id="2408955596600435184">మీ PINని నమోదు చేయండి</translation>
 <translation id="241082044617551207">తెలియని ప్లగ్ఇన్‌</translation>
@@ -1830,6 +1833,7 @@
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> నుండి <ph name="PRODUCT_ID" /> తెలియని ఉత్పత్తి</translation>
 <translation id="3163254451837720982">మీ డేటాను సురక్షితంగా, భద్రంగా ఉంచడానికి కింది సర్వీస్‌లు సహాయపడతాయి. మీరు ఏ సమయంలో అయినా ఈ ఫీచర్‌లను ఆఫ్ చేయవచ్చు.</translation>
 <translation id="3164329792803560526">ఈ ట్యాబ్‌ను <ph name="APP_NAME" />తో షేర్ చేస్తోంది</translation>
+<translation id="3165371858310906303">ఒక సైట్ మీ ఉనికిని తెలుసుకోవాలనుకున్నప్పుడు అనుమతి అడగాలి</translation>
 <translation id="3165390001037658081">కొన్ని క్యారియర్‌లు ఈ లక్షణాన్ని బ్లాక్ చేయవచ్చు.</translation>
 <translation id="316652501498554287">'విద్య కోసం G Suite' ఖాతాలు</translation>
 <translation id="3169472444629675720">కనుగొను</translation>
@@ -2947,6 +2951,7 @@
 <translation id="4527186207340858212">ఆఫీస్ కోసం కొత్త ప్రొఫైల్ క్రియేట్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="452750746583162491">సింక్ చేసిన మీ డేటాను రివ్యూ చేయండి</translation>
 <translation id="4530494379350999373">మూలం</translation>
+<translation id="4531924570968473143">మీరు ఎవరిని ఈ <ph name="DEVICE_TYPE" />కు జోడించాలనుకుంటున్నారు?</translation>
 <translation id="4532646538815530781">ఈ సైట్ మోషన్ సెన్సార్‌లను ఉపయోగిస్తోంది.</translation>
 <translation id="4533846798469727141">ఇప్పుడు "Hey Google" అని చెప్పండి</translation>
 <translation id="4533985347672295764">CPU సమయం</translation>
@@ -3066,6 +3071,7 @@
 <translation id="4657810666108475055">ట్యాబ్ సెర్చ్</translation>
 <translation id="465878909996028221">కేవలం http, https, ఫైల్ ప్రోటోకాల్‌లు మాత్రమే బ్రౌజర్ మళ్లింపులకు మద్దతిస్తాయి.</translation>
 <translation id="4659077111144409915">ప్రాథమిక ఖాతా</translation>
+<translation id="4659126640776004816">మీ Google ఖాతాకు మీరు సైన్ ఇన్ చేసినప్పుడు, ఈ ఫీచర్ ఆన్ చేయబడుతుంది.</translation>
 <translation id="4660476621274971848">ఆశించిన వెర్షన్ "<ph name="EXPECTED_VERSION" />", కానీ ఉన్న వెర్షన్ "<ph name="NEW_ID" />"</translation>
 <translation id="4660540330091848931">పరిమాణాన్ని మారుస్తోంది</translation>
 <translation id="4661407454952063730">కాంటాక్ట్‌లు, మెసేజ్‌లు, ఫోటోలు లాంటి డేటాతో సహా యాప్ సేవ్ చేసిన (డెవలపర్ సెట్టింగ్‌ల ఆధారంగా) ఎలాంటి డేటా అయినా యాప్ డేటా లాగా పరిగణించబడుతుంది.</translation>
@@ -3131,7 +3137,6 @@
 <translation id="4750394297954878236">సూచనలు</translation>
 <translation id="475088594373173692">మొదటి వినియోగదారు</translation>
 <translation id="4751476147751820511">కదలిక లేదా కాంతి సెన్సార్‌లు</translation>
-<translation id="4752124003533492687"><ph name="USB_DEVICE_NAME" />కు కనెక్ట్ చేయడానికి సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="4756378406049221019">ఆపండి/మళ్లీ లోడ్ చేయండి</translation>
 <translation id="4756388243121344051">&amp;చరిత్ర</translation>
 <translation id="4759238208242260848">డౌన్‌లోడ్‌లు</translation>
@@ -3978,6 +3983,7 @@
 <translation id="5804241973901381774">అనుమతులు</translation>
 <translation id="5805697420284793859">విండో మేనేజర్</translation>
 <translation id="5806773519584576205">0° (డిఫాల్ట్)</translation>
+<translation id="5808664694611589238">{0,plural, =1{గెస్ట్ విండోను మూసివేయి}other{గెస్ట్ విండోను మూసివేయి}}</translation>
 <translation id="5810809306422959727">తల్లిదండ్రుల నియంత్రణల కోసం ఈ ఖాతాకు అర్హత లేదు</translation>
 <translation id="5812674658566766066">అన్నీ విస్తరించు</translation>
 <translation id="5814126672212206791">కనెక్షన్ రకం</translation>
@@ -4435,6 +4441,7 @@
 <translation id="6344170822609224263">నెట్‌వర్క్ కనెక్షన్‌ల జాబితాను యాక్సెస్ చేయండి</translation>
 <translation id="6344576354370880196">సేవ్ చేయబడిన ప్రింటర్‌లు</translation>
 <translation id="6345418402353744910">మీ నెట్‌వర్క్‌ను అడ్మిన్ కాన్ఫిగర్ చేయడానికి, ప్రాక్సీ <ph name="PROXY" /> కోసం మీ యూజర్‌నేమ్, పాస్‌వర్డ్ అవసరం</translation>
+<translation id="6345878117466430440">చదివినట్లుగా గుర్తించు</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" />‌ను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="6349170655202535379">సింక్‌ పని చేయడం లేదు. సైన్ అవుట్ చేసి, తిరిగి మళ్లీ సైన్ ఇన్ చేయండి.</translation>
 <translation id="6351063337294363751">మీరు ఈ మెనూ నుండి మీ బ్రౌజింగ్ డేటాను తీసివేయవచ్చు</translation>
@@ -5021,6 +5028,7 @@
 <translation id="7075513071073410194">RSA ఎన్‌క్రిప్షన్‌తో PKCS #1 MD5</translation>
 <translation id="7075625805486468288">HTTPS/SSLసర్టిఫికెట్లు మరియు సెట్టింగ్‌లను నిర్వహించండి</translation>
 <translation id="7076293881109082629">సైన్ ఇన్ చేస్తోంది</translation>
+<translation id="7076878155205969899">ధ్వనిని మ్యూట్ చేస్తుంది</translation>
 <translation id="7077829361966535409">సైన్ ఇన్ పేజీ ప్రస్తుత ప్రాక్సీ సెట్టింగ్‌లను ఉపయోగించి లోడ్ కావడంలో విఫలమైంది. దయచేసి <ph name="GAIA_RELOAD_LINK_START" />మళ్లీ సైన్ ఇన్ చేయడానికి ప్రయత్నించండి<ph name="GAIA_RELOAD_LINK_END" /> లేదా విభిన్న <ph name="PROXY_SETTINGS_LINK_START" />ప్రాక్సీ సెట్టింగ్‌ల<ph name="PROXY_SETTINGS_LINK_END" />ను ఉపయోగించండి.</translation>
 <translation id="7078120482318506217">అన్ని నెట్‌వర్క్‌లు</translation>
 <translation id="708060913198414444">ఆడియో చిరునామాను కా&amp;పీ చేయి</translation>
@@ -5041,7 +5049,6 @@
 <translation id="7099337801055912064">పెద్ద PPDని లోడ్ చేయడం సాధ్యం కాదు. గరిష్ట పరిమాణం 250 kB.</translation>
 <translation id="7102687220333134671">స్వయంచాలక నవీకరణలు ఆన్ చేయబడ్డాయి</translation>
 <translation id="7102832101143475489">అభ్యర్థన సమయం ముగిసింది</translation>
-<translation id="7105390788077117391">USB ప్రాధాన్యతలు</translation>
 <translation id="710640343305609397">నెట్‌వర్క్ సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="7108338896283013870">దాచిపెట్టు</translation>
 <translation id="7108668606237948702">ఎంటర్</translation>
@@ -5071,7 +5078,6 @@
 <translation id="7136694880210472378">డిఫాల్ట్‌గా చేయి</translation>
 <translation id="7136984461011502314"><ph name="PRODUCT_NAME" />కు స్వాగతం</translation>
 <translation id="7136993520339022828">ఎర్రర్ ఏర్పడింది. ఇతర చిత్రాలను ఎంచుకోవడం ద్వారా దయచేసి మళ్లీ ప్రయత్నించండి.</translation>
-<translation id="7138678301420049075">ఇతర</translation>
 <translation id="713888829801648570">క్షమించండి, మీరు ఆఫ్‌లైన్‌లో ఉన్నందున మీ పాస్‌వర్డ్‌ను ధ్రువీక‌రించ‌డం సాధ్య‌ప‌డ‌దు.</translation>
 <translation id="7140928199327930795">అందుబాటులో ఉన్న ఇతర పరికరాలు ఏవీ లేవు.</translation>
 <translation id="7141105143012495934">మీ ఖాతా వివరాలను తిరిగి పొందలేనందున సైన్-ఇన్ విఫలమైంది. దయచేసి మీ నిర్వాహకుడిని సంప్రదించండి లేదా మళ్లీ ప్రయత్నించండి.</translation>
@@ -5178,6 +5184,7 @@
 <translation id="7280649757394340890">వచనం-నుండి-ప్రసంగం వాయిస్ సెట్టింగ్‌లు</translation>
 <translation id="7280877790564589615">అనుమతి అభ్యర్థించబడింది</translation>
 <translation id="7282992757463864530">సమాచార బార్</translation>
+<translation id="7284411326658527427">ప్రతి వ్యక్తి వారి ఖాతాను వ్యక్తిగతీకరించుకోవచ్చు, అలాగే వారి డేటాను ప్రైవేట్‌గా ఉంచుకోవచ్చు.</translation>
 <translation id="7287143125007575591">యాక్సెస్ నిరాకరించబడింది.</translation>
 <translation id="7287411021188441799">డిఫాల్ట్ నేపథ్యాన్ని పునరుద్ధరించండి</translation>
 <translation id="7288013116963835700"><ph name="DEVICE_TYPE" />కు Linuxను తీసివేయండి</translation>
@@ -5753,6 +5760,7 @@
 <translation id="7963826112438303517">మీ వాయిస్ నమూనాను సృష్టించడానికి, అప్‌డేట్ చేయడానికి మీ అసిస్టెంట్ ఈ రికార్డింగ్‌లను, మీ ప్రసంగ అభ్యర్థనలను ఉపయోగిస్తుంది, ఈ వాయిస్ నమూనా మీరు Voice Match ఆన్ చేసిన పరికరాలలో మాత్రమే నిల్వ చేయబడుతుంది. అసిస్టెంట్ సెట్టింగ్‌లలో వాయిస్ కార్యకలాపం చూడండి లేదా దానికి తిరిగి శిక్షణను ఇవ్వండి.</translation>
 <translation id="7966241909927244760">చిత్రం చిరునామాను కా&amp;పీ చేయండి</translation>
 <translation id="7968072247663421402">ప్రొవైడర్ ఆప్షన్‌లు</translation>
+<translation id="7968198493605442410">లింక్‌ను టెక్స్ట్‌కు కాపీ చేయండి</translation>
 <translation id="7968742106503422125">మీరు కాపీ చేసి, అతికించే డేటాను చదవడం మరియు సవరించడం</translation>
 <translation id="7968833647796919681">పనితీరు డేటా సేకరణను ప్రారంభించు</translation>
 <translation id="7968982339740310781">వివరాలను వీక్షించండి</translation>
@@ -6130,6 +6138,7 @@
 <translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
 <translation id="8428271547607112339">పాఠశాల ఖాతాను జోడించండి</translation>
 <translation id="8428628598981198790">మీ సెక్యూరిటీ కీని ఈ సైట్‌తో ఉపయోగించలేరు</translation>
+<translation id="8428634594422941299">అర్థమైంది</translation>
 <translation id="84297032718407999">మీరు <ph name="LOGOUT_TIME_LEFT" />లో సైన్ అవుట్ అవుతారు</translation>
 <translation id="8431190899827883166">నొక్కినవి చూపు</translation>
 <translation id="8431909052837336408">SIM PINను మార్చండి</translation>

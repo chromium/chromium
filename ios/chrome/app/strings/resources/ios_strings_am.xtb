@@ -293,6 +293,7 @@
 <translation id="4277990410970811858">የጥንቃቄ አሰሳ</translation>
 <translation id="4281844954008187215">የአግልግሎት ውል</translation>
 <translation id="430793432425771671">ሁሉንም ያመሳስሉ</translation>
+<translation id="4309403553630140242">ለተጨማሪ መረጃ ሁለቴ መታ ያድርጉ</translation>
 <translation id="430967081421617822">የምንጊዜም</translation>
 <translation id="4334428914252001502">1 ያልተነበበ ጽሑፍ።</translation>
 <translation id="4338650699862464074">የሚጎበኟቸው የገጾች ዩአርኤሎችን ወደ Google ይላኩ።</translation>
@@ -561,6 +562,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7189598951263744875">አጋራ...</translation>
 <translation id="7192050974311852563">መግባት ይጀምሩ</translation>
 <translation id="7203585745079012652">መልሶችን ተመልሰህ ተናገር</translation>
+<translation id="7207383424303353046">አዲስ፦ Chrome የእርስዎን ነባሪ የአሳሽ መተግበሪያ በማድረግ ጣቢያዎችን በራስ-ሰር በChrome ውስጥ ይክፈቱ። <ph name="BEGIN_LINK" />ቅንብሮችን ይክፈቱ<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">ልክ ያልሆነ ቅጽል ስም</translation>
 <translation id="7265758999917665941">ለዚህ ጣቢያ በጭራሽ</translation>
 <translation id="7272437679830969316">የእርስዎን ማንነት ማረጋገጥ አልተቻለም። የይለፍ ቃል አልተቀዳም።</translation>
@@ -638,6 +640,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8073670137947914548">ማውረድ ተጠናቅቋል</translation>
 <translation id="8073872304774253879">ፍለጋዎችን እና አሰሳን የተሻለ ያድርጉ</translation>
 <translation id="8076014560081431679">የተቀመጡ ጣቢያ ቅንብሮች አይሰረዙም፣ እና የእርስዎን የአሰሳ ልማዶች ሊያንጸባርቁ ይችሉ ይሆናል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
+<translation id="8079602123447022758">ይህ ቅንብር የሚተዳደር ነው፣ ለተጨማሪ መረጃ ሁለቴ መታ ያድርጉ</translation>
 <translation id="8105368624971345109">አጥፋ</translation>
 <translation id="8114753159095730575">ፋይል ለመውረድ ይገኛል። አማራጮች ከማያ ገጹ ግርጌ አጠገብ ይገኛሉ።</translation>
 <translation id="8131740175452115882">አረጋግጥ</translation>

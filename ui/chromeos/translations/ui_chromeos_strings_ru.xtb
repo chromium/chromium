@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Доступ к файлу ограничен по соображениям безопасности.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">Архивирование объектов (<ph name="NUMBER_OF_ITEMS" />)…</translation>
+<translation id="1731889557567069540">Скопировано объектов: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="174173592514158117">Показать все папки Google Play</translation>
 <translation id="174937106936716857">Общее количество файлов</translation>
 <translation id="1775381402323441512">Информация о видео</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Недопустимый символ: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Вьетнамская раскладка (TCVN)</translation>
 <translation id="2168214441502403371">Персидская раскладка</translation>
+<translation id="2197363559908958454">Перемещено: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">Китайский (упрощенный)</translation>
 <translation id="2208158072373999562">ZIP-архив</translation>
 <translation id="2225536596944493418">Вы действительно хотите удалить объекты (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Не удалось создать папку "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Перемещено.</translation>
 <translation id="2278988676849463018">Раскладка каннада (фонетическая)</translation>
 <translation id="2288278176040912387">Патефон</translation>
 <translation id="2291538123825441971">Открываются файлы (<ph name="NUMBER_OF_FILES" />).</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Данные сохранены!</translation>
 <translation id="3626281679859535460">Яркость</translation>
 <translation id="3644896802912593514">Ширина</translation>
+<translation id="3645233063072417428">Перемещено объектов: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="3645531960514756307">Открепить папку</translation>
 <translation id="3678559383040232393">Мальтийская раскладка</translation>
 <translation id="3685122418104378273">Синхронизация Google Диска по мобильной сети отключена по умолчанию.</translation>
@@ -395,6 +399,7 @@
     Даже если с устройством что-то произойдет, резервная копия ваших данных хранится на Google Диске.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Вы можете создавать файлы, предоставлять к ним общий доступ и работать над ними<ph name="MARKUP_8" />
     вместе с коллегами в одном удобном сервисе.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Скопировано.</translation>
 <translation id="5275973617553375938">Восстановленные файлы с Google Диска</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Сохранить</translation>
@@ -594,6 +599,7 @@
 <translation id="751507702149411736">Белорусский</translation>
 <translation id="7544853251252956727">Перемешать</translation>
 <translation id="7547811415869834682">Нидерландская</translation>
+<translation id="7551643184018910560">Закрепить на панели запуска</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Подождите…</translation>
 <translation id="7603724359189955920">Сетка</translation>
@@ -677,6 +683,7 @@
 <translation id="8299269255470343364">Японский</translation>
 <translation id="8312871300878166382">Вставить в папку</translation>
 <translation id="8329978297633540474">Обычный текст</translation>
+<translation id="8335587457941836791">Открепить от панели запуска</translation>
 <translation id="8336153091935557858">Вчера, <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336579025507394412">Исландская раскладка клавиатуры</translation>
 <translation id="8342318071240498787">Такой файл или каталог уже существуют.</translation>
@@ -749,6 +756,7 @@
 <translation id="943972244133411984">Кем изменено</translation>
 <translation id="945522503751344254">Отправить отзыв</translation>
 <translation id="947144732524271678">Выбраны объекты от "<ph name="FROM_ENTRY_NAME" />" до "<ph name="TO_ENTRY_NAME" />" (всего <ph name="ENTRY_COUNT" />).</translation>
+<translation id="949308258121608615">Скопировано: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="988685240266037636">Файл "<ph name="FILE_NAME" />" уже существует. Заменить его?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> МБ</translation>

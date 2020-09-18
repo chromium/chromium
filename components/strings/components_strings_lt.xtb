@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Iš naujo prisijungti prie „Wi-Fi“</translation>
 <translation id="1165039591588034296">Klaida</translation>
 <translation id="1165174597379888365">Puslapyje apsilankyta</translation>
+<translation id="1174723505405632867">Ar norite leisti <ph name="EMBEDDED_URL" /> naudoti slapukus ir svetainės duomenis <ph name="TOP_LEVEL_URL" />?
+
+Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys, su kuriuo sąveikaujate, veiks tinkamai, bet gali būti leidžiama <ph name="EMBEDDED_URL" /> stebėti jūsų veiklą.</translation>
 <translation id="1175364870820465910">&amp;Spausdinti...</translation>
 <translation id="1175875016430184367">Trys sankabėlės dešinėje</translation>
 <translation id="1178581264944972037">Pristabdyti</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Politika</translation>
 <translation id="2183608646556468874">Telefono numeris</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresas}one{# adresas}few{# adresai}many{# adreso}other{# adresų}}</translation>
+<translation id="2187243482123994665">Naudotojo buvimas</translation>
 <translation id="2187317261103489799">Aptikti (numatytoji parinktis)</translation>
 <translation id="2188375229972301266">Kelios skylės apačioje</translation>
 <translation id="2202020181578195191">Įveskite tinkamus galiojimo laiko pabaigos metus</translation>
@@ -534,6 +538,7 @@
           serveris veikia. Jei manote, kad tarpinio serverio
           naudoti nereikia:
           <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> nori žinoti, kada esate</translation>
 <translation id="3188393374551744535">Sąskaitos balansas</translation>
 <translation id="3194737229810486521"><ph name="URL" /> prašo leidimo nuolat saugoti duomenis jūsų įrenginyje</translation>
 <translation id="3195213714973468956">„<ph name="PRINTER_NAME" />“ serveryje „<ph name="SERVER_NAME" />“</translation>
@@ -1026,6 +1031,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Įrenginys</translation>
 <translation id="5179510805599951267">Ne <ph name="ORIGINAL_LANGUAGE" /> k.? Pranešti apie šią klaidą</translation>
+<translation id="5179740473595559246">Žinoti, kada esate</translation>
 <translation id="5190835502935405962">Žymių juosta</translation>
 <translation id="519422657042045905">Komentaras nepasiekiamas</translation>
 <translation id="5201306358585911203">Šiame puslapyje įterptame puslapyje nurodyta:</translation>
@@ -1248,6 +1254,7 @@
 <translation id="6049488691372270142">Puslapių teikimas</translation>
 <translation id="6051221802930200923">Šiuo metu negalite apsilankyti <ph name="SITE" />, nes svetainėje naudojamas sertifikatų prisegimas. Tinklo klaidos ir užpuolimai dažniausiai yra laikini, todėl šis puslapis vėliau tikriausiai veiks.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Bendrinti informaciją apie jūsų buvimą?</translation>
 <translation id="6058977677006700226">Naudojate korteles visuose įrenginiuose?</translation>
 <translation id="6059925163896151826">USB įrenginiai</translation>
 <translation id="6060009363608157444">Netinkamas „DnsOverHttps“ režimas.</translation>
@@ -1377,6 +1384,7 @@
 <translation id="6631202559048444592">Pateiktas daugiau nei vienas politikos šaltinis, bet vertės vienodos.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Išvalyti</translation>
+<translation id="6645291930348198241">Pasiekti slapukus ir svetainės duomenis.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Nėra}=1{Iš 1 svetainės (nebūsite atjungti nuo „Google“ paskyros)}one{Iš # svetainės (nebūsite atjungti nuo „Google“ paskyros)}few{Iš # svetainių (nebūsite atjungti nuo „Google“ paskyros)}many{Iš # svetainės (nebūsite atjungti nuo „Google“ paskyros)}other{Iš # svetainių (nebūsite atjungti nuo „Google“ paskyros)}}</translation>
 <translation id="6648459603387803038">Administratorius gali nuotoliniu būdu keisti naršyklės sąranką. Veiklą šiame įrenginyje taip pat galima tvarkyti ne naršyklėje „Chrome“.</translation>
 <translation id="6652101503459149953">Naudoti „Windows Hello“</translation>

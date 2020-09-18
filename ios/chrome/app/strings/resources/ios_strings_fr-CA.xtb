@@ -293,6 +293,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="4277990410970811858">Navigation sécurisée</translation>
 <translation id="4281844954008187215">Conditions d'utilisation</translation>
 <translation id="430793432425771671">Tout synchroniser</translation>
+<translation id="4309403553630140242">Touchez l'écran deux fois pour en savoir plus.</translation>
 <translation id="430967081421617822">Toujours</translation>
 <translation id="4334428914252001502">1 article non lu.</translation>
 <translation id="4338650699862464074">Envoie les URL des pages que vous consultez à Google.</translation>
@@ -561,6 +562,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="7189598951263744875">Partager…</translation>
 <translation id="7192050974311852563">Commencer la journalisation</translation>
 <translation id="7203585745079012652">Réponses vocales</translation>
+<translation id="7207383424303353046">Nouveau : Ouvrez automatiquement les sites dans Chrome en le définissant comme application de navigation par défaut.<ph name="BEGIN_LINK" />Accéder aux paramètres<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Pseudo de carte incorrect</translation>
 <translation id="7265758999917665941">Jamais pour ce site</translation>
 <translation id="7272437679830969316">Impossible de vérifier votre identité. Le mot de passe n'a pas été copié.</translation>
@@ -638,6 +640,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8073670137947914548">Téléchargement terminé</translation>
 <translation id="8073872304774253879">Améliorer les recherches et de la navigation</translation>
 <translation id="8076014560081431679">Les paramètres de site sauvegardés ne seront pas supprimés et peuvent donner des indications sur vos habitudes de navigation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="8079602123447022758">Ce paramètre est géré; touchez deux fois pour en savoir plus</translation>
 <translation id="8105368624971345109">Désactiver</translation>
 <translation id="8114753159095730575">Le téléchargement du fichier est disponible. Options présentées vers le bas de l’écran.</translation>
 <translation id="8131740175452115882">Confirmer</translation>

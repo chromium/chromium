@@ -39,6 +39,7 @@
 <translation id="123724288017357924">ক্যাশে করা কন্টেন্ট এড়িয়ে বর্তমান পৃষ্ঠা আবার লোড করুন</translation>
 <translation id="124678866338384709">বর্তমান ট্যাব বন্ধ করুন</translation>
 <translation id="1258753120186372309">Google ডুডল: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">পড়ার তালিকা</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> শেয়ার করা যায়নি</translation>
 <translation id="1283039547216852943">প্রসারিত করতে আলতো চাপুন</translation>
 <translation id="1291207594882862231">ইতিহাস, কুকিজ, সাইট ডেটা, ক্যাশে সাফ করে...</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">ঝটপট সার্চ এবং সম্পর্কিত অ্যাকশন দেখতে একটি শব্দ ট্যাপ করুন</translation>
 <translation id="2760989362628427051">আপনার ডিভাইসে গাঢ় থিম বা ব্যাটারি সেভার চালু থাকলে, গাঢ় থিম চালু করুন</translation>
 <translation id="2762000892062317888">এখনই</translation>
-<translation id="2771869497727323769">টেক্সটের লিঙ্ক তৈরি করা যাচ্ছে না। কোনও অ্যাপে পৃষ্ঠার লিঙ্ক শেয়ার করুন।</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> সেকেন্ড বাকি আছে</translation>
 <translation id="2779651927720337254">করা যায়নি</translation>
 <translation id="2781151931089541271">১ সেকেন্ড বাকি আছে</translation>
@@ -469,7 +469,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{১টি ডাউনলোড হয়ে গেছে।}one{#টি ডাউনলোড হয়ে গেছে।}other{#টি ডাউনলোড হয়ে গেছে।}}</translation>
 <translation id="4766678251456904326">ডিভাইসে অ্যাকাউন্ট যোগ করুন</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{১টি ডাউনলোড শিডিউল করা হয়েছে।}one{#টি ডাউনলোড শিডিউল করা হয়েছে।}other{#টি ডাউনলোড শিডিউল করা হয়েছে।}}</translation>
-<translation id="478981486571169252">আপনি Chrome-এ <ph name="SITE_NAME" /> সাইটে নিজের সাইন-ইন স্ট্যাটাস, ব্রাউজিং ডেটা এবং সাইট ডেটা দেখতে পাবেন।</translation>
 <translation id="4802417911091824046">পাসফ্রেজ এনক্রিপশনে Google Pay-এর পেমেন্ট পদ্ধতি ও ঠিকানা অন্তর্ভুক্ত থাকে না।
 
 <ph name="BEGIN_LINK" />রিসেট সিঙ্ক<ph name="END_LINK" /> থেকে এই সেটিং পরিবর্তন করুন</translation>
@@ -514,7 +513,6 @@
 <translation id="5040262127954254034">গোপনীয়তা</translation>
 <translation id="5087580092889165836">কার্ড জুড়ুন</translation>
 <translation id="509429900233858213">একটি ত্রুটি ঘটেছে৷</translation>
-<translation id="5100748015044654621">হাইলাইট করা টেক্সটের লিঙ্ক কোনও অ্যাপে শেয়ার করুন</translation>
 <translation id="510275257476243843">১ ঘণ্টা বাকি আছে</translation>
 <translation id="5123685120097942451">ছদ্মবেশী ট্যাব</translation>
 <translation id="5127805178023152808">সিঙ্ক বন্ধ রয়েছে</translation>

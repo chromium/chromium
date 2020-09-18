@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">De vous reconnecter au réseau Wi-Fi</translation>
 <translation id="1165039591588034296">Erreur</translation>
 <translation id="1165174597379888365">La page est visitée</translation>
+<translation id="1174723505405632867">Souhaitez-vous autoriser <ph name="EMBEDDED_URL" /> à utiliser les témoins et les données relatives aux sites sur <ph name="TOP_LEVEL_URL" />?
+
+À moins que vous accordiez l'autorisation, cet accès sera bloqué par vos paramètres de confidentialité. Cela permettra au contenu avec lequel vous avez interagi de fonctionner correctement, mais pourrait autoriser <ph name="EMBEDDED_URL" /> à faire le suivi de votre activité.</translation>
 <translation id="1175364870820465910">Im&amp;primer...</translation>
 <translation id="1175875016430184367">Triple agrafe à droite</translation>
 <translation id="1178581264944972037">Interrompre</translation>
@@ -305,6 +308,7 @@
 <translation id="2181821976797666341">Règles</translation>
 <translation id="2183608646556468874">Numéro de téléphone</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresse}one{# adresse}other{# adresses}}</translation>
+<translation id="2187243482123994665">Présence de l'utilisateur</translation>
 <translation id="2187317261103489799">Détecter (par défaut)</translation>
 <translation id="2188375229972301266">Perforation multiple en bas</translation>
 <translation id="2202020181578195191">Entrez une année d'expiration valide</translation>
@@ -527,6 +531,7 @@
       réseau pour vous assurer que le serveur mandataire fonctionne. Si vous
       ne pensez pas devoir utiliser de serveur mandataire, procédez comme suit :
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> souhaite savoir lorsque vous êtes présent</translation>
 <translation id="3188393374551744535">Solde du compte</translation>
 <translation id="3194737229810486521">L'URL <ph name="URL" /> veut stocker de façon permanente des données sur votre appareil</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> sur <ph name="SERVER_NAME" /></translation>
@@ -1014,6 +1019,7 @@
 <translation id="5171689220826475070">Pli en éventail, Europe</translation>
 <translation id="5172758083709347301">Machine</translation>
 <translation id="5179510805599951267">Cette page n'est pas rédigée en <ph name="ORIGINAL_LANGUAGE" />? Signaler l'erreur.</translation>
+<translation id="5179740473595559246">Savoir quand vous êtes présent</translation>
 <translation id="5190835502935405962">Barre de favoris</translation>
 <translation id="519422657042045905">Le mode d'annotation n'est pas accessible</translation>
 <translation id="5201306358585911203">Une page intégrée de cette page indique</translation>
@@ -1236,6 +1242,7 @@
 <translation id="6049488691372270142">Livraison de la page</translation>
 <translation id="6051221802930200923">Vous ne pouvez pas consulter le site <ph name="SITE" /> pour le moment, car le site Web utilise l'épinglage de certificat. Les erreurs réseau et les attaques sont généralement temporaires. Vous devriez donc pouvoir accéder à cette page plus tard.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Partager votre présence?</translation>
 <translation id="6058977677006700226">Utiliser vos cartes sur tous vos appareils?</translation>
 <translation id="6059925163896151826">Appareils USB</translation>
 <translation id="6060009363608157444">Mode DnsOverHttps incorrect.</translation>
@@ -1365,6 +1372,7 @@
 <translation id="6631202559048444592">Il existe plusieurs sources pour cette politique, mais les valeurs sont identiques.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Effacer</translation>
+<translation id="6645291930348198241">Accéder aux témoins et aux données relatives aux sites.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Aucun}=1{De 1 site (vous ne serez pas déconnecté de votre compte Google)}one{De # site (vous ne serez pas déconnecté de votre compte Google)}other{De # sites (vous ne serez pas déconnecté de votre compte Google)}}</translation>
 <translation id="6648459603387803038">Votre administrateur peut modifier la configuration de votre navigateur à distance. L'activité sur cet appareil peut aussi être gérée à l'extérieur de Chrome.</translation>
 <translation id="6652101503459149953">Utiliser Windows Hello</translation>

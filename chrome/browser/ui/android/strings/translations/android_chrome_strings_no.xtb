@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Last inn siden på nytt, men ignorer bufret innhold</translation>
 <translation id="124678866338384709">Lukk den aktive fanen</translation>
 <translation id="1258753120186372309">Google-doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Leseliste</translation>
 <translation id="1266864766717917324">Kunne ikke dele <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Trykk for å vise</translation>
 <translation id="1291207594882862231">Slett loggoppføringer, informasjonskapsler, nettstedsdata, bufferen …</translation>
@@ -218,7 +219,6 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2744248271121720757">Trykk på et ord for å søke umiddelbart eller se relaterte handlinger</translation>
 <translation id="2760989362628427051">Slå på mørkt tema når batterisparing eller enhetsinnstillingen for mørkt tema er på</translation>
 <translation id="2762000892062317888">akkurat nå</translation>
-<translation id="2771869497727323769">Kan ikke opprette noen link til teksten. Del en link til siden i en app.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekunder igjen</translation>
 <translation id="2779651927720337254">mislyktes</translation>
 <translation id="2781151931089541271">1 sekund igjen</translation>
@@ -387,6 +387,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="4135200667068010335">Listen over enheter du kan dele faner med, er lukket.</translation>
 <translation id="4149994727733219643">Forenklet visning av nettsider</translation>
 <translation id="4170011742729630528">Tjenesten er ikke tilgjengelig. Prøv på nytt senere.</translation>
+<translation id="4175173967354304331">Du blir logget på dette nettstedet, Chrome og Google-apper</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> brukt</translation>
 <translation id="4181841719683918333">Språk</translation>
 <translation id="4183868528246477015">Søk med Google Lens <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
@@ -467,7 +468,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 nedlasting er fullført.}other{# nedlastinger er fullført.}}</translation>
 <translation id="4766678251456904326">Legg til en konto på enheten</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 nedlasting er planlagt.}other{# nedlastinger er planlagt.}}</translation>
-<translation id="478981486571169252">Du kommer til å se påloggingsstatus, nettlesingsdata og nettstedsdata for <ph name="SITE_NAME" /> i Chrome.</translation>
 <translation id="4802417911091824046">Kryptering av passordfraser inkluderer ikke betalingsmåter og adresser fra Google Pay.
 
 For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkroniseringen<ph name="END_LINK" /></translation>
@@ -512,7 +512,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5040262127954254034">Personvern</translation>
 <translation id="5087580092889165836">Legg til et kort</translation>
 <translation id="509429900233858213">Det oppsto en feil.</translation>
-<translation id="5100748015044654621">Del en link til den merkede teksten i en app</translation>
 <translation id="510275257476243843">1 time igjen</translation>
 <translation id="5123685120097942451">Inkognitofane</translation>
 <translation id="5127805178023152808">Synkronisering er slått av</translation>
@@ -679,6 +678,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6341580099087024258">Spør hvor filer skal lagres</translation>
 <translation id="6342069812937806050">Akkurat nå</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> til}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> til}}</translation>
+<translation id="6345878117466430440">Merk som lest</translation>
 <translation id="6364438453358674297">Vil du fjerne forslaget fra loggen?</translation>
 <translation id="6366047038980456022"><ph name="APP_NAME" /> har funksjonene og hastigheten du trenger for å utforske og utfolde deg på nettet på en trygg måte</translation>
 <translation id="6378173571450987352">Informasjon: Sortert etter mengden data som er brukt</translation>
@@ -994,6 +994,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8655129584991699539">Du kan slette dataene i Chrome-innstillingene</translation>
 <translation id="8662811608048051533">Logger deg av de fleste nettsteder.</translation>
 <translation id="8664979001105139458">Filnavnet finnes allerede</translation>
+<translation id="8683039184091909753">bilde</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Signalstyrkenivå: # stolpe}other{Signalstyrkenivå: # stolper}}</translation>
 <translation id="869891660844655955">Utløpsdato</translation>
 <translation id="8712637175834984815">Skjønner</translation>

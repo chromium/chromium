@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">ไม่สามารถเข้าถึงไฟล์เนื่องจากเหตุผลด้านความปลอดภัย</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">กำลังซิป <ph name="NUMBER_OF_ITEMS" /> รายการ...</translation>
+<translation id="1731889557567069540">คัดลอก <ph name="NUMBER_OF_ITEMS" /> รายการแล้ว</translation>
 <translation id="174173592514158117">แสดงโฟลเดอร์ Play ทั้งหมด</translation>
 <translation id="174937106936716857">จำนวนไฟล์ทั้งหมด</translation>
 <translation id="1775381402323441512">ข้อมูลวิดีโอ</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">อักขระไม่ถูกต้อง: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">แป้นพิมพ์ภาษาเวียดนาม (TCVN)</translation>
 <translation id="2168214441502403371">แป้นพิมพ์ภาษาเปอร์เซีย</translation>
+<translation id="2197363559908958454">ย้าย <ph name="NUMBER_OF_ITEMS" /> รายการแล้ว</translation>
 <translation id="2198315389084035571">จีนตัวย่อ</translation>
 <translation id="2208158072373999562">การเก็บถาวรแบบ Zip</translation>
 <translation id="2225536596944493418">แน่ใจไหมว่าต้องการลบ <ph name="NUMBER_OF_ITEMS" /> รายการ</translation>
 <translation id="2230062665678605299">ไม่สามารถสร้างโฟลเดอร์ "<ph name="FOLDER_NAME" />" <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">ย้ายแล้ว</translation>
 <translation id="2278988676849463018">แป้นพิมพ์ภาษากันนาดา (คำที่ใช้ออกเสียง)</translation>
 <translation id="2288278176040912387">เครื่องเล่นแผ่นเสียง</translation>
 <translation id="2291538123825441971">กำลังเปิด <ph name="NUMBER_OF_FILES" /> ไฟล์</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">สำรองข้อมูลทั้งหมดแล้ว!</translation>
 <translation id="3626281679859535460">ความสว่าง</translation>
 <translation id="3644896802912593514">ความกว้าง</translation>
+<translation id="3645233063072417428">ย้าย <ph name="NUMBER_OF_ITEMS" /> รายการแล้ว</translation>
 <translation id="3645531960514756307">เลิกตรึงโฟลเดอร์</translation>
 <translation id="3678559383040232393">แป้นพิมพ์มอลตา</translation>
 <translation id="3685122418104378273">เมื่อใช้ข้อมูลมือถือ การซิงค์ Google ไดรฟ์จะปิดใช้อยู่เป็นค่าเริ่มต้น</translation>
@@ -395,6 +399,7 @@
     ไม่ว่าจะเกิดอะไรขึ้นกับอุปกรณ์ของคุณ ไฟล์จะได้รับการจัดเก็บไว้อย่างปลอดภัยใน Google ไดรฟ์<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />แชร์ สร้าง และทำงานร่วมกัน<ph name="MARKUP_8" />
     กับผู้อื่นบนไฟล์ได้ทั้งหมดในที่เดียว<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">คัดลอกแล้ว</translation>
 <translation id="5275973617553375938">ไฟล์ที่กู้คืนจาก Google ไดรฟ์</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">บันทึก</translation>
@@ -594,6 +599,7 @@
 <translation id="751507702149411736">เบลารุส</translation>
 <translation id="7544853251252956727">สุ่มเพลง</translation>
 <translation id="7547811415869834682">ดัตช์</translation>
+<translation id="7551643184018910560">ตรึงที่ชั้นวาง</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">รอสักครู่</translation>
 <translation id="7603724359189955920">ตารางกริด</translation>
@@ -677,6 +683,7 @@
 <translation id="8299269255470343364">ญี่ปุ่น</translation>
 <translation id="8312871300878166382">วางลงในโฟลเดอร์</translation>
 <translation id="8329978297633540474">ข้อความล้วน</translation>
+<translation id="8335587457941836791">เลิกตรึงในชั้นวาง</translation>
 <translation id="8336153091935557858">เมื่อวานนี้ <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336579025507394412">แป้นพิมพ์ไอซ์แลนด์</translation>
 <translation id="8342318071240498787">มีไฟล์หรือไดเรกทอรีที่มีชื่อเดียวกันนี้อยู่แล้ว</translation>
@@ -749,6 +756,7 @@
 <translation id="943972244133411984">แก้ไขโดย</translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
 <translation id="947144732524271678">เลือกรายการทั้งหมด <ph name="ENTRY_COUNT" /> รายการตั้งแต่ <ph name="FROM_ENTRY_NAME" /> จนถึง <ph name="TO_ENTRY_NAME" /></translation>
+<translation id="949308258121608615">คัดลอก <ph name="NUMBER_OF_ITEMS" /> แล้ว</translation>
 <translation id="981121421437150478">ออฟไลน์</translation>
 <translation id="988685240266037636">มีไฟล์ชื่อ "<ph name="FILE_NAME" />" อยู่แล้ว คุณต้องการแทนที่ไฟล์ดังกล่าวไหม</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

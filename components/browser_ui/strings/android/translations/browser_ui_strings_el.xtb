@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Προστέθηκε ο ιστότοπος <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">Αναζήτηση</translation>
 <translation id="1384959399684842514">Η λήψη διακόπηκε προσωρινά.</translation>
+<translation id="1431402976894535801">Να μην επιτρέπεται σε ιστοτόπους να γνωρίζουν πότε είστε ενεργοί.</translation>
 <translation id="1446450296470737166">Να επιτρέπεται πλήρης έλεγχος σε MIDI</translation>
 <translation id="1509960214886564027">Μπορεί να παρουσιαστούν προβλήματα στις λειτουργίες πολλών ιστοτόπων.</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">Άνοιγμα Instant Εφαρμογής</translation>
 <translation id="2148716181193084225">Σήμερα</translation>
 <translation id="2182457891543959921">Να γίνεται ερώτηση προτού επιτραπεί σε ιστοτόπους η δημιουργία τρισδιάστατου χάρτη του περιβάλλοντα χώρου σας και η παρακολούθηση της θέσης της κάμερας (συνιστάται)</translation>
+<translation id="2187243482123994665">Παρουσία χρήστη</translation>
 <translation id="2212565012507486665">Αποδοχή cookie</translation>
 <translation id="2228071138934252756">Για να επιτρέψετε στην εφαρμογή <ph name="APP_NAME" /> να αποκτήσει πρόσβαση στην κάμερά σας, ενεργοποιήστε επίσης την κάμερα στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
 <translation id="2289270750774289114">Να γίνεται ερώτηση όταν ένας ιστότοπος επιθυμεί να εντοπίσει κοντινές συσκευες Bluetooth (συνιστάται)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">Πρόγραμμα αναπαραγωγής βίντεο</translation>
 <translation id="3115898365077584848">Πληροφορίες εκπομπής</translation>
 <translation id="3123473560110926937">Αποκλεισμός σε ορισμένους ιστοτόπους</translation>
+<translation id="3165371858310906303">Να γίνεται ερώτηση όταν ένας ιστότοπος θέλει να γνωρίζει πότε είστε ενεργοί.</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> αποθηκευμένα δεδομένα</translation>
 <translation id="321187648315454507">Για να επιτρέψετε στην εφαρμογή <ph name="APP_NAME" /> να σας στέλνει ειδοποιήσεις, ενεργοποιήστε επίσης τις ειδοποιήσεις στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Μικρόφωνο</translation>
@@ -104,7 +107,6 @@
 <translation id="4165986682804962316">Ρυθμίσεις ιστότοπου</translation>
 <translation id="4200726100658658164">Άνοιγμα ρυθμίσεων τοποθεσίας</translation>
 <translation id="4226663524361240545">Κατά τη λήψη ειδοποιήσεων ενδέχεται να δονείται η συσκευή</translation>
-<translation id="4242533952199664413">Ανοίξτε τις ρυθμίσεις</translation>
 <translation id="4259722352634471385">Αποκλείστηκε η μετάβαση στη διεύθυνση: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Επιτρέπεται</translation>
 <translation id="429312253194641664">Ένας ιστότοπος κάνει αναπαραγωγή μέσων</translation>
@@ -134,6 +136,7 @@
 <translation id="5197729504361054390">Οι επαφές που επιλέγετε θα κοινοποιηθούν στον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Εμφάνιση</translation>
 <translation id="5301954838959518834">OK, το κατάλαβα</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη</translation>
 <translation id="5313967007315987356">Προσθήκη ιστότοπου</translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5335288049665977812">Να επιτρέπεται στους ιστότοπους να εκτελούν JavaScript (συνιστάται)</translation>
@@ -145,6 +148,7 @@
 <translation id="5403592356182871684">Ονόματα</translation>
 <translation id="5489227211564503167">Έχουν περάσει <ph name="ELAPSED_TIME" /> από <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Αποκλεισμός διαφημίσεων σε ιστοτόπους που εμφανίζουν παρεμβατικές ή παραπλανητικές διαφημίσεις</translation>
+<translation id="5502860503640766021">Αποδοχή <ph name="PERMISSION_1" />, αποκλεισμός <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Οι ιστότοποι δεν μπορούν να ζητούν να στέλνουν ειδοποιήσεις.</translation>
 <translation id="5516455585884385570">Άνοιγμα ρυθμίσεων ειδοποιήσεων</translation>
 <translation id="5527111080432883924">Να γίνεται ερώτηση προτού επιτραπεί σε ιστοτόπους η ανάγνωση κειμένου και εικόνων από το πρόχειρο (συνιστάται)</translation>
@@ -156,12 +160,15 @@
 <translation id="5690795753582697420">Η κάμερα απενεργοποιήθηκε στις ρυθμίσεις Android.</translation>
 <translation id="5710871682236653961">Να γίνεται ερώτηση προτού επιτραπεί σε ιστοτόπους η αποστολή ή η λήψη πληροφοριών κατά το πάτημα συσκευών NFC (συνιστάται).</translation>
 <translation id="5719847187258001597">Αυτή η ενέργεια θα διαγράψει όλα τα δεδομένα και τα cookie που έχουν αποθηκευτεί από <ph name="ORIGIN" /> ή από αυτήν την εφαρμογή στην αρχική οθόνη σας.</translation>
+<translation id="5771720122942595109">Η άδεια <ph name="PERMISSION_1" /> αποκλείστηκε.</translation>
 <translation id="5804241973901381774">Άδειες</translation>
 <translation id="5860033963881614850">Απενεργοποιημένη</translation>
+<translation id="5863245810240683687">Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη επιτράπηκαν.</translation>
 <translation id="5876056640971328065">Παύση βίντεο</translation>
 <translation id="5916664084637901428">Ενεργό</translation>
 <translation id="5922853908706496913">Κοινή χρήση της οθόνης σας</translation>
 <translation id="5939518447894949180">Επαναφορά</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Έλεγχος της πρόσβασης αυτού του ιστοτόπου στη συσκευή σας</translation>
 <translation id="6040143037577758943">Κλείσιμο</translation>
 <translation id="6042308850641462728">Περισσότερα</translation>
@@ -173,6 +180,7 @@
 <translation id="6196640612572343990">Αποκλεισμός cookie τρίτων</translation>
 <translation id="6206551242102657620">Η σύνδεση είναι ασφαλής. Πληροφορίες ιστοτόπου</translation>
 <translation id="6216432067784365534">Επιλογές <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6262279340360821358">Οι άδειες <ph name="PERMISSION_1" /> και <ph name="PERMISSION_2" /> αποκλείστηκαν.</translation>
 <translation id="6270391203985052864">Οι ιστότοποι μπορούν να ζητούν να στέλνουν ειδοποιήσεις.</translation>
 <translation id="6295158916970320988">Όλοι οι ιστότοποι</translation>
 <translation id="6320088164292336938">Δόνηση</translation>
@@ -195,6 +203,7 @@
 <translation id="6790428901817661496">Αναπαραγωγή</translation>
 <translation id="6818926723028410516">Επιλέξτε στοιχεία</translation>
 <translation id="6864395892908308021">Αυτή η συσκευή δεν μπορεί να διαβάσει NFC</translation>
+<translation id="6879016579615558281">Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη αποκλείστηκαν.</translation>
 <translation id="6910211073230771657">Διαγράφηκε</translation>
 <translation id="6912998170423641340">Αποκλεισμός ιστοτόπων από ανάγνωση κειμένου και εικόνων από το πρόχειρο</translation>
 <translation id="6945221475159498467">Επιλογή</translation>
@@ -212,6 +221,7 @@
 <translation id="723171743924126238">Επιλέξτε εικόνες</translation>
 <translation id="7243308994586599757">Διαθέσιμες επιλογές κοντά κάτω μέρος της οθόνης</translation>
 <translation id="7250468141469952378">Επιλέχθηκαν <ph name="ITEM_COUNT" /></translation>
+<translation id="7260727271532453612">Οι άδειες <ph name="PERMISSION_1" /> και <ph name="PERMISSION_2" /> επιτράπηκαν.</translation>
 <translation id="7302486331832100261">Συνήθως αποκλείετε τις ειδοποιήσεις. Για να τις επιτρέψετε, πατήστε Λεπτομέρειες.</translation>
 <translation id="7423098979219808738">Να γίνεται ερώτηση πρώτα</translation>
 <translation id="7423538860840206698">Αποκλεισμός από ανάγνωση πρόχειρου</translation>
@@ -243,6 +253,7 @@
 <translation id="8087000398470557479">Αυτό το περιεχόμενο προέρχεται από το <ph name="DOMAIN_NAME" /> και παρέχεται από την Google.</translation>
 <translation id="8116925261070264013">Σε σίγαση</translation>
 <translation id="8131740175452115882">Επιβεβαίωση</translation>
+<translation id="8197286292360124385">H άδεια <ph name="PERMISSION_1" /> επιτράπηκε.</translation>
 <translation id="8200772114523450471">Συνέχιση</translation>
 <translation id="8206354486702514201">Η ρύθμιση αυτή επιβάλλεται από τον διαχειριστή σας.</translation>
 <translation id="8249310407154411074">Μετακίνηση επάνω</translation>

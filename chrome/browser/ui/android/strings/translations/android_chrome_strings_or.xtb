@@ -39,6 +39,7 @@
 <translation id="123724288017357924">କ୍ୟାଶ୍ ବିଷୟବସ୍ତୁ ଏଡ଼ାଇ ବର୍ତ୍ତମାନ ପୃଷ୍ଠା ପୁନଃଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="124678866338384709">ସାମ୍ପ୍ରତିକ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1258753120186372309">Google ଡୁଡଲ୍: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">ପଢ଼ିବା ତାଲିକା</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" />ସେୟାର୍ କରିହେଲା ନାହିଁ</translation>
 <translation id="1283039547216852943">ପ୍ରସାରଣ କରିବା ପାଇଁ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="1291207594882862231">ଇତିବୃତ୍ତି, କୁକୀ, ସାଇଟ୍ ଡାଟା, କ୍ୟାଚିକୁ ଖାଲି କରନ୍ତୁ…</translation>
@@ -217,7 +218,6 @@
 <translation id="2744248271121720757">ତତ୍‍କ୍ଷଣାତ୍‍ ସର୍ଚ୍ଚ କରିବାକୁ କିମ୍ବା ସେହି ସମ୍ବନ୍ଧିତ କାର୍ଯ୍ୟ ଦେଖିବାକୁ ଏକ ଶଦ୍ଦ ଟାପ୍‍ କରନ୍ତୁ</translation>
 <translation id="2760989362628427051">ଆପଣଙ୍କ ଡିଭାଇସ୍‌ର ଗାଢା ଥିମ୍ ବା ବ୍ୟାଟେରୀ ସେଭର୍ ଚାଲୁଥିବା ସମୟରେ ଗାଢା ଥିମ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="2762000892062317888">ଏହିକ୍ଷଣି</translation>
-<translation id="2771869497727323769">ଟେକ୍ସଟର ଲିଙ୍କ୍ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ। ଆପରେ ପୃଷ୍ଠାର ଲିଙ୍କ୍ ସେୟାର୍ କରନ୍ତୁ।</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> ସେକେଣ୍ଡ ଅବଶିଷ୍ଟ ଅଛି</translation>
 <translation id="2779651927720337254">ବିଫଳ ହେଲା</translation>
 <translation id="2781151931089541271">1 ସେକେଣ୍ଡ ବାକି ଅଛି</translation>
@@ -466,7 +466,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1ଟି ଡାଉନ୍‍‍‍ଲୋଡ୍ ସମୂର୍ଣ୍ଣ ହେଲା।}other{# ଟି ଡାଉନ୍‍‍‍ଲୋଡ୍ ସମୂର୍ଣ୍ଣ ହେଲା।}}</translation>
 <translation id="4766678251456904326">ଡିଭାଇସରେ ଆକାଉଣ୍ଟ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1ଟି ଡାଉନଲୋଡ୍ ସିଡୁଲ୍ କରାଯାଇଛି।}other{#ଟି ଡାଉନଲୋଡ୍ ସିଡୁଲ୍ କରାଯାଇଛି।}}</translation>
-<translation id="478981486571169252">Chromeରେ ଆପଣ ଆପଣଙ୍କ <ph name="SITE_NAME" />ର ସାଇନ୍-ଇନ୍ ସ୍ଥିତି, ବ୍ରାଉଜିଂ ଡାଟା ଏବଂ ସାଇଟ୍ ଡାଟା, ଦେଖିବେ।</translation>
 <translation id="4802417911091824046">ପାସଫ୍ରେଜ୍ ଏନକ୍ରିପ୍ସନ୍, Google Payରୁ ପେମେଣ୍ଟ ପଦ୍ଧତି ଓ ଠିକଣାଗୁଡ଼ିକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରେ ନାହିଁ।
 
 ଏହି ସେଟିଂ ପରିବର୍ତ୍ତନ କରିବାକୁ, <ph name="BEGIN_LINK" />ସିଙ୍କ୍‌ ରିସେଟ୍‍ କରନ୍ତୁ<ph name="END_LINK" /></translation>
@@ -511,7 +510,6 @@
 <translation id="5040262127954254034">ଗୋପନୀୟତା</translation>
 <translation id="5087580092889165836">କାର୍ଡ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="509429900233858213">ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା।</translation>
-<translation id="5100748015044654621">ଆପରେ ହାଇଲାଇଟ୍ କରାଯାଇଥିବା ଟେକ୍ସଟ୍ ସହିତ ଲିଙ୍କ୍ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="510275257476243843">1 ଘଣ୍ଟା ବାକି ଅଛି</translation>
 <translation id="5123685120097942451">ଇନ୍‌କଗ୍ନିଟୋ ଟାବ୍</translation>
 <translation id="5127805178023152808">ସିଙ୍କ୍‌ ବନ୍ଦ ଅଛି</translation>

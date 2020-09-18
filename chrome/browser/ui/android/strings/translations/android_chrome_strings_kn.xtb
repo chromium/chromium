@@ -39,6 +39,7 @@
 <translation id="123724288017357924">ಸಂಗ್ರಹ ಮಾಡಿದ ವಿಷಯವನ್ನು ನಿರ್ಲಕ್ಷಿಸಿ, ಪ್ರಸ್ತುತ ಪುಟ ಮರುಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="124678866338384709">ಪ್ರಸ್ತುತ ಟ್ಯಾಬ್ ಮುಚ್ಚಿ</translation>
 <translation id="1258753120186372309">Google ಡೂಡಲ್‌: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">ಓದುವ ಪಟ್ಟಿ</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="1283039547216852943">ವಿಸ್ತರಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="1291207594882862231">ಇತಿಹಾಸ, ಕುಕೀಗಳು, ಸೈಟ್‌ ಡೇಟಾ, ಕ್ಯಾಷ್ ಅನ್ನು ತೆರವುಗೊಳಿಸಿ…</translation>
@@ -219,7 +220,6 @@
 <translation id="2744248271121720757">ತತ್‌ಕ್ಷಣ ಹುಡುಕಲು ಅಥವಾ ಸಂಬಂಧಿತ ಕ್ರಿಯೆಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಪದವನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="2760989362628427051">ನಿಮ್ಮ ಸಾಧನದ ಡಾರ್ಕ್ ಥೀಮ್ ಅಥವಾ ಬ್ಯಾಟರಿ ಸೇವರ್ ಆನ್ ಆಗಿರುವಾಗ, ಡಾರ್ಕ್ ಥೀಮ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="2762000892062317888">ಈಗತಾನೇ</translation>
-<translation id="2771869497727323769">ಪಠ್ಯಕ್ಕೆ ಲಿಂಕ್ ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಆ್ಯಪ್‌ನಲ್ಲಿ ಪುಟದ ಲಿಂಕ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> ಸೆಕೆಂಡುಗಳು ಉಳಿದಿವೆ</translation>
 <translation id="2779651927720337254">ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="2781151931089541271">1 ಸೆಕೆಂಡು ಉಳಿದಿದೆ</translation>
@@ -467,7 +467,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 ಡೌನ್‌ಲೋಡ್‌‌ ಪೂರ್ಣಗೊಂಡಿದೆ.}one{# ಡೌನ್‌ಲೋಡ್‌ಗಳು ಪೂರ್ಣಗೊಂಡಿವೆ.}other{# ಡೌನ್‌ಲೋಡ್‌ಗಳು ಪೂರ್ಣಗೊಂಡಿವೆ.}}</translation>
 <translation id="4766678251456904326">ಸಾಧನಕ್ಕೆ ಖಾತೆಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 ಡೌನ್‌ಲೋಡ್ ಅನ್ನು ನಿಗದಿಪಡಿಸಲಾಗಿದೆ.}one{# ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ನಿಗದಿಪಡಿಸಲಾಗಿದೆ.}other{# ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ನಿಗದಿಪಡಿಸಲಾಗಿದೆ.}}</translation>
-<translation id="478981486571169252">ನಿಮ್ಮ <ph name="SITE_NAME" /> ಸೈನ್-ಇನ್ ಸ್ಥಿತಿ, ಬ್ರೌಸಿಂಗ್ ಡೇಟಾ ಮತ್ತು ಸೈಟ್ ಡೇಟಾವನ್ನು Chrome ನಲ್ಲಿ ನೋಡುವಿರಿ.</translation>
 <translation id="4802417911091824046">ಪಾಸ್‌ಫ್ರೇಸ್ ಎನ್‌ಕ್ರಿಪ್ಶನ್, Google Pay ನಿಂದ ಪಾವತಿ ವಿಧಾನಗಳು ಮತ್ತು ವಿಳಾಸಗಳನ್ನು ಒಳಗೊಂಡಿರುವುದಿಲ್ಲ.
 
 ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಬದಲಾಯಿಸಲು, <ph name="BEGIN_LINK" />ಸಿಂಕ್ ಅನ್ನು ಮರುಹೊಂದಿಸಿ<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@
 <translation id="5040262127954254034">ಗೌಪ್ಯತೆ</translation>
 <translation id="5087580092889165836">ಕಾರ್ಡ್ ಸೇರಿಸಿ</translation>
 <translation id="509429900233858213">ದೋಷವೊಂದು ಕಾಣಿಸಿಕೊಂಡಿದೆ.</translation>
-<translation id="5100748015044654621">ಆ್ಯಪ್‌ನಲ್ಲಿ ಹೈಲೈಟ್ ಮಾಡಿದ ಪಠ್ಯದ ಲಿಂಕ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="510275257476243843">1 ಗಂಟೆ ಉಳಿದಿದೆ</translation>
 <translation id="5123685120097942451">ಅದೃಶ್ಯ ಟ್ಯಾಬ್‌</translation>
 <translation id="5127805178023152808">ಸಿಂಕ್‌ ಆಫ್‌ ಆಗಿದೆ</translation>

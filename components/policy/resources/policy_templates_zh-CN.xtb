@@ -95,7 +95,6 @@
       如果此政策未设置，已缓存的 GPO 最多可被重复使用 25 小时。
 
       如果此政策设为 0，系统就会关闭 GPO 缓存。请注意，这样设置会增加服务器负载，因为系统在每次提取政策时都要重新下载 GPO（即使版本未变也是如此）。</translation>
-<translation id="1111470455889178048">发送用户上传内容和下载内容进行扫描</translation>
 <translation id="1117462881884985156"><ph name="PRODUCT_NAME" /> 会绕过在此处指定的主机列表中的任何代理。
 
           只有当您在“选择如何指定代理服务器设置”中选择了手动代理设置且未指定 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策时，该政策才会生效。
@@ -919,16 +918,6 @@
 如果您设置了此政策，用户将无法覆盖相应值。
 
 如果您未设置此政策，那么隐私保护屏最初会处于停用状态，但用户可以控制该功能。</translation>
-<translation id="2423038190900972331">控制 <ph name="PRODUCT_NAME" /> 如何检查上传、下载、拖放或从剪贴板粘贴的数据是否违反敏感数据保护规则。
-
-      如果此政策未设置或设为“无”，<ph name="PRODUCT_NAME" /> 将不会检查任何数据是否违反敏感数据保护规则。
-
-      如果此政策设为“检查下载内容”，并且用户尝试通过 <ph name="DOMAINS_TO_CHECK_COMPLIANCE_OF_DOWNLOADED_CONTENT_POLICTY_NAME" /> 政策中的网址下载文件，则 <ph name="PRODUCT_NAME" /> 将会检查下载的数据是否符合企业规则。
-
-      如果此政策设为“检查上传内容”，并且用户尝试将文件上传至 <ph name="DOMAINS_TO_NOT_CHECK_COMPLIANCE_OF_UPLOADED_CONTENT_POLICY_NAME" /> 中未包含的网域，则 <ph name="PRODUCT_NAME" /> 将会检查上传的文件、从剪贴板粘贴的数据或者拖放的数据是否符合企业规则。
-
-      如果此政策设为“检查上传内容和下载内容”，<ph name="PRODUCT_NAME" /> 将根据“检查下载内容”和“检查上传内容”所述的规则操作。
-      </translation>
 <translation id="2423255396068675416">如果此政策已启用或未设置，系统会允许用户运行 <ph name="PRODUCT_CROSTINI_NAME" />（前提是 <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> 和 <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> 均已启用）。如果此政策已停用，系统会关闭 <ph name="PRODUCT_CROSTINI_NAME" />，不允许用户使用。如果将此政策的状态改为已停用，此政策将开始应用于新启动的 <ph name="PRODUCT_CROSTINI_NAME" /> 容器，而非应用于已在运行的容器。</translation>
 <translation id="2424098959650060417">控制用户可以使用 <ph name="BULK_PRINTERS_POLICY_NAME" /> 中的哪些打印机。
 
@@ -1043,7 +1032,6 @@
           指定的政策值应以毫秒为单位，且不得大于闲置延迟时间。</translation>
 <translation id="2548572254685798999">报告安全浏览信息</translation>
 <translation id="2550593661567988768">仅限单面打印</translation>
-<translation id="2551520365302988324">发送用户上传内容进行扫描</translation>
 <translation id="2552318891854145040">设置此政策可创建一个书签列表，其中的每个书签都是一个包含“<ph name="NAME" />”和“<ph name="URL_LABEL" />”键的字典条目。这些键分别指定书签的名称和目标网址。管理员可以创建一个子文件夹，方法是：定义一个不含“<ph name="URL_LABEL" />”键但含一个额外“<ph name="CHILDREN" />”键的书签。这个额外键也会包含一个书签列表，其中的部分书签也可以是文件夹。Chrome 会修正不完整的网址，就像是修正通过地址栏提交的不完整网址一样。例如，将“<ph name="GOOGLE_COM" />”改为“<ph name="HTTPS_GOOGLE_COM" />”。
 
       用户无法更改用于放置书签的文件夹，但可从书签栏中将其隐藏。受管理书签的默认文件夹名称为“受管理的书签”，但用户可以更改该名称，方法是：向此政策中添加一个新的仅包含“<ph name="TOPLEVEL_NAME" />”键的子字典条目，并将键值设为所需的文件夹名称。受管理的书签不会同步到用户帐号中，且无法由扩展程序修改。</translation>
@@ -1801,7 +1789,6 @@
       如需详细了解 <ph name="CORS" />，请访问：<ph name="CORS_HELP_URL" />。
 
       请注意，我们曾宣布将在 <ph name="PRODUCT_NAME" /> 82 版中移除此政策，但已改为在 84 版中移除。</translation>
-<translation id="3624515566460517364">检查上传内容和下载内容是否违反敏感数据保护规则</translation>
 <translation id="3627678165642179114">启用或停用拼写检查网络服务</translation>
 <translation id="3628480121685794414">启用单面打印</translation>
 <translation id="3631099945620529777">如果设为 false，则任务管理器中的“结束进程”按钮会处于停用状态。
@@ -1955,7 +1942,6 @@
 
           如果此政策未设置或设为一个空列表，用户将无法在受管理的设备上使用任何快速解锁模式</translation>
 <translation id="3877517141460819966">集成的双重身份验证模式</translation>
-<translation id="3879196885908353077">检查下载内容是否违反敏感数据保护规则</translation>
 <translation id="3879208481373875102">配置强制安装的 Web 应用的列表</translation>
 <translation id="388237772682176890">我们在 M53 中弃用了此政策，并在 M54 中移除了此政策（因为 SPDY/3.1 已不再受支持）。
 
@@ -2377,7 +2363,6 @@
       在不受管理的设备上，系统始终都会显示通知。</translation>
 <translation id="4510923771103268849">允许用户拥有 Crostini 容器的 root 权限</translation>
 <translation id="4515404363392014383">针对可信来源启用安全浏览功能</translation>
-<translation id="4517928394515633751">使用安全浏览功能扫描用户下载内容</translation>
 <translation id="4518251772179446575">每次网站尝试跟踪用户的地理位置时都询问我</translation>
 <translation id="4529868888205510667">除非已通过其他方式关闭 ARC，否则将此政策设为 True 或不设置时，用户可使用 ARC。将此政策设为 False 意味着禁止独立用户使用 ARC。
 
@@ -2552,15 +2537,6 @@
           屏蔽名单值“*”表示所有本地消息传递主机都已被屏蔽，除非是许可名单中明确列出的本地消息传递主机。
 
           如果此政策未设置，<ph name="PRODUCT_NAME" /> 将会加载所有已安装的本地消息传递主机。</translation>
-<translation id="4771144269610910963">此政策用于控制安全浏览功能对用户下载内容的深度扫描。如果此政策未设置，或设为默认的“不扫描文件”，安全浏览功能将不会扫描用户下载内容。
-
-      如果此政策设为“发送用户下载内容进行扫描”，系统就会将用户下载内容通过网络发送给安全浏览功能，以进行恶意软件扫描。
-
-      如果此政策设为“发送用户上传内容进行扫描”，系统就会将用户上传内容通过网络发送给安全浏览功能，以进行恶意软件扫描。
-
-      如果此政策设为“发送用户上传内容和下载内容进行扫描”，则系统将根据“发送用户上传内容进行扫描”和“发送用户下载内容进行扫描”所述的规则操作。
-
-      若想详细了解系统会如何向用户和管理员显示扫描结果，请参阅 <ph name="DELAY_DELIVER_UNTIL_VERDICT_POLICY_NAME" /> 和 <ph name="UNSAFE_EVENTS_REPORTING_ENABLED" /> 政策。</translation>
 <translation id="4787763197941188108">替换默认打印页面大小。
 
       <ph name="PAGE_SIZE_NAME" /> 应包含所列格式之一，如果所需页面大小不在列表中，则应包含“custom”值。如果提供了“custom”值，则应指定 <ph name="PAGE_SIZE_CUSTOM_SIZE" /> 属性，用于指定所需的高度和宽度（以微米为单位）。如果未提供“custom”值，便不应指定 <ph name="PAGE_SIZE_CUSTOM_SIZE" /> 属性。系统会忽略违反这些规则的政策。
@@ -2766,7 +2742,6 @@
 <translation id="5148753489738115745">可让您指定在 <ph name="PRODUCT_FRAME_NAME" />启动 <ph name="PRODUCT_NAME" />时所使用的其他参数。
 
           如果未设置此政策，系统将会使用默认命令行。</translation>
-<translation id="5150323673529584553">不扫描文件</translation>
 <translation id="5152787786897382519">Chromium 和 Google Chrome 均有一些政策组，其中的政策以相互依赖的方式来控制某项功能。这些集合由以下政策组表示。如果相关政策有多个来源，系统仅会应用来源优先级最高的值。同一组中来源优先级较低的值会被忽略。<ph name="POLICY_PRIORITY_DOC_URL" /> 中定义了优先级顺序。</translation>
 <translation id="515816885693899426">此政策已被弃用，请改用“<ph name="URL_BLOCKLIST_POLICY_NAME" />”政策。
 
@@ -3703,7 +3678,6 @@
 <translation id="637934607141010488">报告最近登录过的设备用户列表。
 
       如果此政策设为False，则不报告这些用户。</translation>
-<translation id="638668187106406971">检查上传内容是否违反敏感数据保护规则</translation>
 <translation id="6394350458541421998">此政策从 <ph name="PRODUCT_OS_NAME" />版本 29 起开始弃用。请改用 PresentationScreenDimDelayScale 政策。</translation>
 <translation id="6401669939808766804">使用户退出</translation>
 <translation id="640244877779556713">启用表情符号建议</translation>
@@ -4512,9 +4486,9 @@
       如果此政策未设置，则意味着 <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> 政策适用，但用户可以更改此设置。</translation>
 <translation id="7471828226549672843">默认情况下，当 CCT 首次运行时，系统会显示《服务条款》。如果此政策已停用，《服务条款》对话框在首次运行体验或后续运行期间就不会出现。如果此政策已启用或未设置，《服务条款》对话框会在首次运行体验期间出现。其他注意事项：
 
-      - 此政策仅适用于可由统一端点管理供应商配置的全代管式 Android 设备。
+      - 此政策仅适用于可由统一端点管理 (Unified Endpoint Management) 供应商配置的全代管式 Android 设备。
 
-      - 如果此政策已停用，BrowserSignin 政策将不会产生任何效力。
+      - 如果此政策已停用，BrowserSignin 政策将没有任何效力。
 
       - 如果此政策已停用，系统不会将指标发送给服务器。
 
@@ -4877,7 +4851,6 @@
 
           指定的政策值应以毫秒为单位，且不得大于闲置延迟时间。</translation>
 <translation id="8001701200415781021">限制哪些 Google 帐号可以设置为 <ph name="PRODUCT_NAME" /> 中的浏览器主帐号</translation>
-<translation id="8003853057959146975">发送文件以检查是否违反敏感数据保护规则</translation>
 <translation id="8006219716745491366">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> 来指定用于从搜索引擎提取搜索字词的备用网址列表。网址应包含字符串<ph name="SEARCH_TERM_MARKER" />。
 
       如果您不设置 <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" />，系统将不会使用任何备用网址提取搜索字词。</translation>
@@ -5281,7 +5254,6 @@
       如果此政策设为 false 或未配置，用户无需登录 <ph name="PRODUCT_NAME" /> 即可使用该浏览器。</translation>
 <translation id="858309738002328421">禁止上传大型文件</translation>
 <translation id="8584279193368801689">限制 PIN 码打印模式。如果此政策未设置，则会被视为无限制。如果所设的模式不适用，系统会忽略此政策。请注意，PIN 码打印功能仅针对使用 IPPS、HTTPS、USB 或 IPP-over-USB 协议之一的打印机启用。</translation>
-<translation id="8585558195682146109">发送用户下载内容进行扫描</translation>
 <translation id="8587229956764455752">允许创建新的用户帐号</translation>
 <translation id="8591713876665299827">请注意，此政策已被弃用，并将在 <ph name="PRODUCT_OS_NAME" />版本 85 中移除。请改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
 
@@ -5521,7 +5493,6 @@
 <translation id="8942616385591203339">此政策控制是否可在用户首次登录时向其显示同步同意声明。如果用户从不需要查看同步同意声明，则应将此政策设为 false。
       如果此政策设为 false，系统将不会显示同步同意声明。
       如果此政策设为 true 或未设置，则可以显示同步同意声明。</translation>
-<translation id="8943934315109955032">不检查是否违反敏感数据保护规则</translation>
 <translation id="8947415621777543415">报告设备位置</translation>
 <translation id="8948062138228904066">身份验证服务器许可名单</translation>
 <translation id="8951350807133946005">设置磁盘缓存目录</translation>
@@ -5535,9 +5506,6 @@
 
       当 <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> 政策已被启用时，请勿启用此政策，因为这两种政策具有相同的客户端功能。在此种情况下，由 Google 托管的同步服务亦会被完全停用。</translation>
 <translation id="8955719471735800169">返回页首</translation>
-<translation id="8956310900055843601">如果此政策设为 True 或未设置，设备的登录屏幕将使用 24 小时制的时钟格式。用户会话也会默认使用此格式，但用户可以更改相应帐号的时钟格式。
-
-      如果此政策设为 False，设备将使用 12 小时制的时钟格式。</translation>
 <translation id="8959992920425111821">默认配置</translation>
 <translation id="8970205333161758602">阻止显示 <ph name="PRODUCT_FRAME_NAME" />停止支持的提示</translation>
 <translation id="8976248126101463034">允许针对远程访问主机进行 gnubby 身份验证</translation>

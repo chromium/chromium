@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Të rilidhesh me Wi-Fi</translation>
 <translation id="1165039591588034296">Gabim</translation>
 <translation id="1165174597379888365">Faqja është vizituar</translation>
+<translation id="1174723505405632867">Dëshiron ta lejosh <ph name="EMBEDDED_URL" /> të përdorë kukit dhe të dhënat e sajtit në <ph name="TOP_LEVEL_URL" />?
+
+Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta lejojë përmbajtjen me të cilën ndërveprove që të funksionojë në rregull, por mund të lejojë që <ph name="EMBEDDED_URL" /> të monitorojë aktivitetin tënd.</translation>
 <translation id="1175364870820465910">&amp;Printo...</translation>
 <translation id="1175875016430184367">Tri kapje me tel djathtas</translation>
 <translation id="1178581264944972037">Pauzë</translation>
@@ -308,6 +311,7 @@
 <translation id="2181821976797666341">Politikat</translation>
 <translation id="2183608646556468874">Numri i telefonit</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresë}other{# adresa}}</translation>
+<translation id="2187243482123994665">Prania e përdoruesit</translation>
 <translation id="2187317261103489799">Zbulo (parazgjedhja)</translation>
 <translation id="2188375229972301266">Shumë shpime poshtë</translation>
 <translation id="2202020181578195191">Fut një vit të vlefshëm skadimi</translation>
@@ -530,6 +534,7 @@
           për t'u siguruar që serveri përfaqësues po punon. Nëse nuk beson
           se duhet të përdorësh një server përfaqësues:
           <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> dëshiron të dijë kur je i pranishëm</translation>
 <translation id="3188393374551744535">Balanca e llogarisë</translation>
 <translation id="3194737229810486521"><ph name="URL" /> kërkon të ruajë në mënyrë të përhershme të dhëna në pajisjen tënde</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> në <ph name="SERVER_NAME" /></translation>
@@ -1020,6 +1025,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Pajisja</translation>
 <translation id="5179510805599951267">Jo në <ph name="ORIGINAL_LANGUAGE" />? Raportoje këtë gabim</translation>
+<translation id="5179740473595559246">Të dijë se kur je i pranishëm</translation>
 <translation id="5190835502935405962">Shiriti i faqeshënuesve</translation>
 <translation id="519422657042045905">Shënimi nuk ofrohet</translation>
 <translation id="5201306358585911203">Një faqe e integruar në këtë faqe thotë</translation>
@@ -1242,6 +1248,7 @@
 <translation id="6049488691372270142">Dorëzimi i faqes</translation>
 <translation id="6051221802930200923">Nuk mund ta vizitosh <ph name="SITE" /> në këtë moment sepse sajti i uebit përdor gozhdimin e certifikatës. Gabimet dhe sulmet e rrjetit janë zakonisht të përkohshme, prandaj kjo faqe ndoshta do të funksionojë më vonë.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Të ndahet prania jote?</translation>
 <translation id="6058977677006700226">Dëshiron t'i përdorësh kartat në të gjitha pajisjet e tua?</translation>
 <translation id="6059925163896151826">Pajisjet USB</translation>
 <translation id="6060009363608157444">Modalitet i pavlefshëm DnsOverHttps.</translation>
@@ -1370,6 +1377,7 @@
 <translation id="6631202559048444592">Është i pranishëm më shumë se një burim për politikën, por vlerat janë të njëjta.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Pastro</translation>
+<translation id="6645291930348198241">Të ketë qasje te kukit dhe të dhënat e sajtit.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Asnjë}=1{Nga 1 sajt (nuk do të dalësh nga llogaria jote e Google)}other{Nga # sajte (nuk do të dalësh nga llogaria jote e Google)}}</translation>
 <translation id="6648459603387803038">Administratori yt mund të ndryshojë konfigurimin e shfletuesit në distancë. Aktiviteti në këtë pajisje mund të menaxhohet edhe jashtë Chrome.</translation>
 <translation id="6652101503459149953">Përdor Windows Hello</translation>

@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">‏להתחבר מחדש אל ה-Wi-Fi</translation>
 <translation id="1165039591588034296">שגיאה</translation>
 <translation id="1165174597379888365">ביקור בדף</translation>
+<translation id="1174723505405632867">‏האם ברצונך לאפשר ל-<ph name="EMBEDDED_URL" /> להשתמש בקובצי Cookie ובנתונים שב-<ph name="TOP_LEVEL_URL" />?
+
+ללא הרשאה מפורשת ממך, האפשרות הזו תישאר חסומה בהתאם להגדרות הפרטיות. הרשאה זו תאפשר פעולה תקינה של תוכן שתתקיים איתו אינטראקציה, אבל היא עשויה גם לאפשר ל-<ph name="EMBEDDED_URL" /> לעקוב אחרי הפעילות שלך.</translation>
 <translation id="1175364870820465910">הדפסה…</translation>
 <translation id="1175875016430184367">3 סיכות הידוק בצד ימין</translation>
 <translation id="1178581264944972037">השהה</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">מדיניות</translation>
 <translation id="2183608646556468874">מספר טלפון</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{כתובת אחת}two{שתי כתובות}many{# כתובות}other{# כתובות}}</translation>
+<translation id="2187243482123994665">נוכחות משתמש</translation>
 <translation id="2187317261103489799">זהה (ברירת מחדל)</translation>
 <translation id="2188375229972301266">ניקובים מרובים בחלק התחתון</translation>
 <translation id="2202020181578195191">עליך להזין שנת תפוגה חוקית</translation>
@@ -533,6 +537,7 @@
    כדי לוודא ששרת ה-proxy פועל.  אם אינך סבור שעליך
    להשתמש בשרת proxy:
    <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> רוצה לדעת על זמני הנוכחות שלך</translation>
 <translation id="3188393374551744535">יתרה בחשבון</translation>
 <translation id="3194737229810486521"><ph name="URL" /> רוצה לאחסן נתונים במכשיר שלך באופן קבוע</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> בשרת <ph name="SERVER_NAME" /></translation>
@@ -1027,6 +1032,7 @@ Del</translation>
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">מכונה</translation>
 <translation id="5179510805599951267">לא ב<ph name="ORIGINAL_LANGUAGE" />? דיווח על שגיאה זו</translation>
+<translation id="5179740473595559246">לדעת על זמני הנוכחות שלך</translation>
 <translation id="5190835502935405962">סרגל הסימניות</translation>
 <translation id="519422657042045905">ההערה לא זמינה</translation>
 <translation id="5201306358585911203">דף מוטמע בדף הזה אומר</translation>
@@ -1250,6 +1256,7 @@ Del</translation>
 <translation id="6049488691372270142">מסירת דף</translation>
 <translation id="6051221802930200923">נכון לעכשיו אי אפשר לבקר באתר <ph name="SITE" />, מאחר שבאתר הזה נעשה שימוש בנעיצת אישורים. שגיאות רשת ומתקפות הן בדרך כלל זמניות, כך שהדף הזה יחזור כנראה לפעול מאוחר יותר.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">לשתף את הנוכחות שלך?</translation>
 <translation id="6058977677006700226">רוצה להשתמש בכרטיסים בכל המכשירים שברשותך?</translation>
 <translation id="6059925163896151826">‏מכשירי USB</translation>
 <translation id="6060009363608157444">‏מצב DnsOverHttps לא חוקי.</translation>
@@ -1379,6 +1386,7 @@ Del</translation>
 <translation id="6631202559048444592">במדיניות הזו קיים יותר ממקור אחד, אבל הערכים זהים.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">ניקוי</translation>
+<translation id="6645291930348198241">‏לקבל גישה לקובצי Cookie ולנתוני אתרים.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{ללא}=1{‏מאתר אחד (לא תבוצע יציאה מחשבון Google שלך.)}two{‏מ-# אתרים (לא תבוצע יציאה מחשבון Google שלך.)}many{‏מ-# אתרים (לא תבוצע יציאה מחשבון Google שלך.)}other{‏מ-# אתרים (לא תבוצע יציאה מחשבון Google שלך.)}}</translation>
 <translation id="6648459603387803038">‏מנהל המערכת יכול לשנות את הגדרת הדפדפן שלך מרחוק. בנוסף, ניתן לנהל את הפעילות במכשיר הזה מחוץ ל-Chrome.</translation>
 <translation id="6652101503459149953">‏שימוש ב-Windows Hello</translation>

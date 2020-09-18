@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Нөөцөлсөн агуулгыг алгасч одоогийн хуудсыг дахин ачаалах</translation>
 <translation id="124678866338384709">Үндсэн чихтэй хуудсыг хаах</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Унших жагсаалт</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" />-г хуваалцаж чадсангүй</translation>
 <translation id="1283039547216852943">Дэлгэхийн тулд товших</translation>
 <translation id="1291207594882862231">Түүх, күүки, сайтын өгөгдөл, нөөцийг устгах...</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">Шууд хайх эсвэл холбоотой үйлдлийг харахын тулд үгийг товшино уу</translation>
 <translation id="2760989362628427051">Таны төхөөрөмжийн бараан загвар эсвэл Батарей хэмнэгч асаалттай үед бараан загварыг асаах</translation>
 <translation id="2762000892062317888">дөнгөж сая</translation>
-<translation id="2771869497727323769">Текст рүү очих холбоосыг үүсгэж чадсангүй. Хуудасны холбоосыг аппад хуваалцана уу.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> секунд үлдсэн</translation>
 <translation id="2779651927720337254">татаж чадсангүй</translation>
 <translation id="2781151931089541271">1 секунд үлдсэн</translation>
@@ -387,6 +387,7 @@
 <translation id="4135200667068010335">Таб хуваалцах төхөөрөмжийн жагсаалтыг хаалаа.</translation>
 <translation id="4149994727733219643">Вэб хуудасны хялбаршуулсан харагдац</translation>
 <translation id="4170011742729630528">Энэ үйлчилгээг авах боломжгүй байна; Та дараа дахин оролдоно уу.</translation>
+<translation id="4175173967354304331">Таныг энэ сайт, Chrome болон Google аппад нэвтрүүлнэ</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" />-г ашигласан</translation>
 <translation id="4181841719683918333">Хэл</translation>
 <translation id="4183868528246477015">Google дуран <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" />-р хайх</translation>
@@ -467,7 +468,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 таталт дууссан.}other{# таталт дууссан.}}</translation>
 <translation id="4766678251456904326">Төхөөрөмжид бүртгэл нэмэх</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 таталт товлосон.}other{# таталт товлосон.}}</translation>
-<translation id="478981486571169252">Та Chrome-с өөрийн <ph name="SITE_NAME" />-н нэвтрэлтийн төлөв, интернэтээр үзсэн өгөгдөл болон сайтын өгөгдлийг харна.</translation>
 <translation id="4802417911091824046">Нэвтрэх үгийн шифрлэлтэд Google Pay-н төлбөрийн хэрэгслүүд болон хаягуудыг агуулдаггүй.
 Энэ тохиргоог өөрчлөхийн тулд <ph name="BEGIN_LINK" />синкийг шинэчилнэ үү<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Картан дээрх нэр</translation>
@@ -511,7 +511,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5040262127954254034">Нууцлал</translation>
 <translation id="5087580092889165836">Карт нэмэх</translation>
 <translation id="509429900233858213">Алдаа гарлаа.</translation>
-<translation id="5100748015044654621">Тодруулсан текстийн холбоосыг аппад хуваалцах</translation>
 <translation id="510275257476243843">1 цаг үлдсэн</translation>
 <translation id="5123685120097942451">Нууцлалтай чихтэй хуудас</translation>
 <translation id="5127805178023152808">Тохиргоог унтраасан байна</translation>
@@ -678,6 +677,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6341580099087024258">Файлыг хаана хадгалахыг асуух</translation>
 <translation id="6342069812937806050">Яг одоо</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
+<translation id="6345878117466430440">Уншсан гэж тэмдэглэх</translation>
 <translation id="6364438453358674297">Түүхээс зөвлөмж устгах уу?</translation>
 <translation id="6366047038980456022"><ph name="APP_NAME" />-д танд шаардлагатай онлайнаар аюулгүй үйлдэл хийх, үүсгэх болон судлахад шаардлагатай ухаалаг технологи, хурд бий</translation>
 <translation id="6378173571450987352">Дэлгэрэнгүй: Ашигласан датаны хэмжээгээр эрэмбэлсэн</translation>
@@ -993,6 +993,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8655129584991699539">Та өгөгдлийг Chrome тохиргоонд устгаж болно</translation>
 <translation id="8662811608048051533">Ихэнх сайтаас гаргах болно.</translation>
 <translation id="8664979001105139458">Файлын нэр ашиглалтад байна</translation>
+<translation id="8683039184091909753">зураг</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Дохионы хүчний түвшин: # мөр}other{Дохионы хүчний түвшин: # мөр}}</translation>
 <translation id="869891660844655955">Дуусах хугацаа</translation>
 <translation id="8712637175834984815">Ойлголоо</translation>

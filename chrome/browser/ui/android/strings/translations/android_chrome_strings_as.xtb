@@ -39,6 +39,7 @@
 <translation id="123724288017357924">কেশ্ব কৰা সমল অৱজ্ঞা কৰি বর্তমানৰ পৃষ্ঠাটো পুনৰ ল'ড কৰক</translation>
 <translation id="124678866338384709">বর্তমানৰ টেবটো বন্ধ কৰক</translation>
 <translation id="1258753120186372309">Google ডুডল্‌: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">পঢ়াৰ সূচী</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> শ্বেয়াৰ কৰিব পৰা নগ’ল</translation>
 <translation id="1283039547216852943">বিস্তাৰ কৰিবলৈ টিপক</translation>
 <translation id="1291207594882862231">সন্ধান ইতিহাস, কুকি, ছাইটৰ ডেটা, কেশ্ব মচক…</translation>
@@ -217,7 +218,6 @@
 <translation id="2744248271121720757">ক্ষিপ্ৰভাৱে সন্ধান কৰিবলৈ আৰু প্ৰাসংগিক কার্যসমূহ চাবলৈ কোনো এটা শব্দত টিপক</translation>
 <translation id="2760989362628427051">আপোনাৰ ডিভাইচত গাঢ় থীম অথবা বেটাৰী সঞ্চয়কাৰী অন থাকিলে গাঢ় ৰঙৰ থীম অন কৰক</translation>
 <translation id="2762000892062317888">এইমাত্ৰ</translation>
-<translation id="2771869497727323769">পাঠৰ লিংক সৃষ্টি কৰিব নোৱাৰি। পৃষ্ঠাৰ লিংক এটা এপত শ্বেয়াৰ কৰক।</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> ছেকেণ্ড বাকী আছে</translation>
 <translation id="2779651927720337254">ডাউনল'ড কৰিব পৰা নগ'ল</translation>
 <translation id="2781151931089541271">১ ছেকেণ্ড বাকী আছে</translation>
@@ -466,7 +466,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{১টা ডাউনল'ড সম্পূর্ণ হ'ল।}one{#টা ডাউনল'ড সম্পূর্ণ হ'ল।}other{#টা ডাউনল'ড সম্পূর্ণ হ'ল।}}</translation>
 <translation id="4766678251456904326">ডিভাইচত একাউণ্ট যোগ দিয়ক</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{১ টা ডাউনল’ডৰ সময়সূচী নিৰ্ধাৰণ কৰা হৈছে।}one{# টা ডাউনল’ডৰ সময়সূচী নিৰ্ধাৰণ কৰা হৈছে।}other{# টা ডাউনল’ডৰ সময়সূচী নিৰ্ধাৰণ কৰা হৈছে।}}</translation>
-<translation id="478981486571169252">আপুনি আপোনাৰ <ph name="SITE_NAME" />ৰ ছাইন ইনৰ স্থিতি, ব্ৰাউজ কৰা ডেটা আৰু ছাইটৰ ডেটা Chromeত দেখা পাব।</translation>
 <translation id="4802417911091824046">পাছফ্ৰেজ এনক্ৰিপশ্বনত Google Payৰ পৰিশোধ পদ্ধতি আৰু ঠিকনা অন্তৰ্ভুক্ত নহয়।
 
 এই ছেটিংটো সলনি কৰিবলৈ <ph name="BEGIN_LINK" />ছিংক ৰিছেট কৰক<ph name="END_LINK" /></translation>
@@ -511,7 +510,6 @@
 <translation id="5040262127954254034">গোপনীয়তা</translation>
 <translation id="5087580092889165836">কাৰ্ড যোগ কৰক</translation>
 <translation id="509429900233858213">কোনো আসোঁৱাহ হৈছে।</translation>
-<translation id="5100748015044654621">হাইলাইট কৰা পাঠৰ লিংক এটা এপত শ্বেয়াৰ কৰক</translation>
 <translation id="510275257476243843">১ঘণ্টা বাকী আছে</translation>
 <translation id="5123685120097942451">ইনক’গনিট’ টেব</translation>
 <translation id="5127805178023152808">ছিংক অফ কৰা আছে</translation>

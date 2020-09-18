@@ -425,6 +425,7 @@
 <translation id="1500297251995790841">Naməlum cihaz [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Bu sahib hesabı çoxsaylı giriş sessiyasında ilk girilmiş hesab olmalıdır.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> saytını silin</translation>
+<translation id="1504311855864906891">Medianız üçün altyazılar əldə edin</translation>
 <translation id="1504551620756424144">Paylaşılmış qovluqlar <ph name="BASE_DIR" /> ünvanındakı Windows'da əlçatandır.</translation>
 <translation id="1506061864768559482">Axtarış mühərriki</translation>
 <translation id="1507170440449692343">Bu səhifə ilə kameranıza daxil olma bloklandı.</translation>
@@ -1186,7 +1187,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2396783860772170191">4 rəqəmli kodu daxil edin (0000-9999)</translation>
 <translation id="2399939490305346086">Təhlükəsizlik açarının giriş datası</translation>
 <translation id="2400664245143453337">Dərhal güncəlləmə tələb edilir</translation>
-<translation id="2407481962792080328">Google Hesabınıza daxil olduqda, bu xüsusiyyət aktivləşir</translation>
 <translation id="2408018932941436077">Kart yadda saxlanılır</translation>
 <translation id="2408955596600435184">PİN kodunuzu daxil edin</translation>
 <translation id="241082044617551207">Naməlum plaqin</translation>
@@ -3059,6 +3059,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4657810666108475055">Tab axtarışı</translation>
 <translation id="465878909996028221">Yalnız http, https və fayl protokolları brauzer yönləndirməsini dəstəkləyir.</translation>
 <translation id="4659077111144409915">Əsas hesab</translation>
+<translation id="4659126640776004816">Google Hesabınıza daxil olduqda, bu xüsusiyyət aktivləşir.</translation>
 <translation id="4660476621274971848">Gözlənilən versiya "<ph name="EXPECTED_VERSION" />" olsa da, versiya "<ph name="NEW_ID" />" idi.</translation>
 <translation id="4660540330091848931">Ölçüsü dəyişilir</translation>
 <translation id="4661407454952063730">Tətbiq datası kontaktlar, mesajlar və fotolar daxil olmaqla, tətbiq tərəfindən yadda saxlanılan (developer ayarlarından asılı olaraq) istənilən data ola bilər.</translation>
@@ -3124,7 +3125,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4750394297954878236">Təkliflər</translation>
 <translation id="475088594373173692">İlk istifadəçi</translation>
 <translation id="4751476147751820511">Hərəkət və ışıq sensorları</translation>
-<translation id="4752124003533492687"><ph name="USB_DEVICE_NAME" /> cihazını qoşmaq üçün Ayarları açın</translation>
 <translation id="4756378406049221019">Dayandırın/Yenidən yükləyin</translation>
 <translation id="4756388243121344051">&amp;Tarixçə</translation>
 <translation id="4759238208242260848">Endirmələr</translation>
@@ -5012,6 +5012,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7075513071073410194">PKCS #1 MD5 RSA Şifrələmə ilə</translation>
 <translation id="7075625805486468288">HTTPS/SSL sertifikatları və ayarlarınızı idarə edin</translation>
 <translation id="7076293881109082629">Hesaba giriş</translation>
+<translation id="7076878155205969899">Səsləri səssiz rejimə keçirin</translation>
 <translation id="7077829361966535409">Hesaba giriş səhifəsi cari proksi ayarlarını istifadə edərək yüklənə bilmədi. <ph name="GAIA_RELOAD_LINK_START" />Yenidən hesaba girin<ph name="GAIA_RELOAD_LINK_END" />, və ya fərqli <ph name="PROXY_SETTINGS_LINK_START" />proksi ayarları<ph name="PROXY_SETTINGS_LINK_END" /> istifadə edin.</translation>
 <translation id="7078120482318506217">Bütün şəbəkələr</translation>
 <translation id="708060913198414444">Audio ünvanını kopyalayın</translation>
@@ -5032,7 +5033,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7099337801055912064">Böyük PPD əlavə etmək mümkün deyil. Maksimum ölçü 250kB-dır.</translation>
 <translation id="7102687220333134671">Avtomatik yeniliklər aktiv edildi</translation>
 <translation id="7102832101143475489">Sorğunun vaxtı bitib</translation>
-<translation id="7105390788077117391">USB tərcihləri</translation>
 <translation id="710640343305609397">Şəbəkə ayarlarını açın</translation>
 <translation id="7108338896283013870">Gizlədin</translation>
 <translation id="7108668606237948702">enter</translation>
@@ -5062,7 +5062,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7136694880210472378">Defolt edin</translation>
 <translation id="7136984461011502314"><ph name="PRODUCT_NAME" /> məhsuluna xoş gəlmisiniz</translation>
 <translation id="7136993520339022828">Xəta baş verdi. Fərqli şəkil seçin və yenidən cəhd edin.</translation>
-<translation id="7138678301420049075">Digər</translation>
 <translation id="713888829801648570">Üzr istəyirik, oflayn olduğunuz üçün parolunuz doğrulana bilməz.</translation>
 <translation id="7140928199327930795">Başqa əlçatan cihaz yoxdur.</translation>
 <translation id="7141105143012495934">Sign-sizin hesab ayrıntıları alına bilməz, çünki uğursuz oldu. Sizin administratoru ilə əlaqə və ya yenidən cəhd edin.</translation>
@@ -6123,6 +6122,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8428271547607112339">Məktəb hesabı əlavə edin</translation>
 <translation id="8428628598981198790">Təhlükəsizlik açarından bu saytda istifadə edə bilməzsiniz</translation>
+<translation id="8428634594422941299">Anladım</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> ərzində çıxış edəcəksiniz</translation>
 <translation id="8431190899827883166">Tabları göstərin</translation>
 <translation id="8431909052837336408">SIM PIN kodu dəyişin</translation>

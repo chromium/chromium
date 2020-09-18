@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Genindlæs aktuel side, og ignorer indhold gemt i cache</translation>
 <translation id="124678866338384709">Luk aktuel fane</translation>
 <translation id="1258753120186372309">Google-doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Læseliste</translation>
 <translation id="1266864766717917324">Det var ikke muligt at dele <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Tryk for at udvide</translation>
 <translation id="1291207594882862231">Ryd historik, cookies, websitedata, cache...</translation>
@@ -218,7 +219,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2744248271121720757">Tryk på et ord for at søge øjeblikkeligt eller se relaterede handlinger</translation>
 <translation id="2760989362628427051">Aktivér mørkt tema, når enhedens mørke tema eller batterisparefunktion er aktiveret</translation>
 <translation id="2762000892062317888">lige nu</translation>
-<translation id="2771869497727323769">Der kan ikke oprettes et link til teksten. Del link til en side i en app.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekunder tilbage</translation>
 <translation id="2779651927720337254">mislykkedes</translation>
 <translation id="2781151931089541271">1 sekund tilbage</translation>
@@ -467,7 +467,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 download er fuldført.}one{# download er fuldført.}other{# downloads er fuldført.}}</translation>
 <translation id="4766678251456904326">Føj konto til enhed</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 planlagt download.}one{# planlagt download.}other{# planlagte downloads.}}</translation>
-<translation id="478981486571169252">Du kan se loginstatus, browserdata og websiteoplysninger for <ph name="SITE_NAME" /> i Chrome.</translation>
 <translation id="4802417911091824046">Kryptering med adgangssætning omfatter ikke betalingsmetoder og adresser fra Google Pay.
 
 Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkronisering<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5040262127954254034">Privatliv</translation>
 <translation id="5087580092889165836">Tilføj kort</translation>
 <translation id="509429900233858213">Der opstod en fejl.</translation>
-<translation id="5100748015044654621">Del link til fremhævet tekst i en app</translation>
 <translation id="510275257476243843">1 time tilbage</translation>
 <translation id="5123685120097942451">Inkognitofane</translation>
 <translation id="5127805178023152808">Synkronisering er slået fra</translation>
@@ -1001,6 +999,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8748850008226585750">Indholdet er skjult</translation>
 <translation id="8788265440806329501">Navigationsoversigt er lukket</translation>
 <translation id="8788968922598763114">Åbn den senest lukkede fane igen</translation>
+<translation id="8798449543960971550">Læst</translation>
 <translation id="8812260976093120287">På nogle websites kan du betale med ovenstående understøttede betalingsapps på din enhed.</translation>
 <translation id="8820817407110198400">Bogmærker</translation>
 <translation id="883806473910249246">Der opstod en fejl under download af indholdet.</translation>

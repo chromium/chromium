@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Επανασυνδεθείτε στο Wi-Fi</translation>
 <translation id="1165039591588034296">Σφάλμα</translation>
 <translation id="1165174597379888365">Επίσκεψη σελίδας</translation>
+<translation id="1174723505405632867">Θέλετε να επιτρέψετε στο <ph name="EMBEDDED_URL" /> να χρησιμοποιεί cookie και δεδομένα ιστοτόπου στο <ph name="TOP_LEVEL_URL" />;
+
+Σε αντίθετη περίπτωση, θα αποκλειστεί από τις ρυθμίσεις απορρήτου σας. Με αυτήν την ενέργεια, το περιεχόμενο με το οποίο αλληλεπιδράσατε θα λειτουργεί σωστά, αλλά ενδέχεται να επιτραπεί στο <ph name="EMBEDDED_URL" /> να παρακολουθεί τη δραστηριότητά σας.</translation>
 <translation id="1175364870820465910">&amp;Εκτύπωση...</translation>
 <translation id="1175875016430184367">Τριπλή συρραφή στα δεξιά</translation>
 <translation id="1178581264944972037">Παύση</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Πολιτικές</translation>
 <translation id="2183608646556468874">Αριθμός τηλεφώνου</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 διεύθυνση}other{# διευθύνσεις}}</translation>
+<translation id="2187243482123994665">Παρουσία χρήστη</translation>
 <translation id="2187317261103489799">Εντοπισμός (προεπιλογή)</translation>
 <translation id="2188375229972301266">Πολλαπλό τρύπημα στο κάτω μέρος</translation>
 <translation id="2202020181578195191">Εισαγάγετε ένα έγκυρο έτος λήξης</translation>
@@ -533,6 +537,7 @@
       να βεβαιωθείτε ότι ο διακομιστής μεσολάβησης λειτουργεί. Εάν δεν πιστεύετε ότι
       απαιτείται η χρήση διακομιστή μεσολάβησης:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456">Το <ph name="URL" /> θέλει να γνωρίζει πότε είστε ενεργοί.</translation>
 <translation id="3188393374551744535">Υπόλοιπο λογαριασμού</translation>
 <translation id="3194737229810486521">Ο ιστότοπος <ph name="URL" /> θέλει να αποθηκεύσει μόνιμα δεδομένα στη συσκευή σας</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> στο <ph name="SERVER_NAME" /></translation>
@@ -1026,6 +1031,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Υπολογιστής</translation>
 <translation id="5179510805599951267">Δεν είναι στα <ph name="ORIGINAL_LANGUAGE" />; Αναφέρετε αυτό το σφάλμα</translation>
+<translation id="5179740473595559246">Να γνωρίζει πότε είστε ενεργοί</translation>
 <translation id="5190835502935405962">Γραμμή σελιδοδεικτών</translation>
 <translation id="519422657042045905">Ο σχολιασμός δεν διατίθεται</translation>
 <translation id="5201306358585911203">Μια ενσωματωμένη σελίδα σε αυτήν τη σελίδα λέει</translation>
@@ -1248,6 +1254,7 @@
 <translation id="6049488691372270142">Παράδοση σελίδας</translation>
 <translation id="6051221802930200923">Δεν μπορείτε να επισκεφτείτε το <ph name="SITE" /> αυτήν τη στιγμή επειδή ο ιστότοπος χρησιμοποιεί certificate pinning (κλείδωμα πιστοποιητικών). Τα σφάλματα δικτύου και οι επιθέσεις είναι συνήθως προσωρινά, συνεπώς αυτή η σελίδα πιθανότατα θα λειτουργήσει αργότερα.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Κοινοποίηση της παρουσίας σας;</translation>
 <translation id="6058977677006700226">Χρήση των καρτών σας σε όλες τις συσκευές σας;</translation>
 <translation id="6059925163896151826">Συσκευές USB</translation>
 <translation id="6060009363608157444">Μη έγκυρη λειτουργία DnsOverHttps.</translation>
@@ -1377,6 +1384,7 @@
 <translation id="6631202559048444592">Υπάρχουν πάνω από μία πηγές για την πολιτική, αλλά οι τιμές είναι ίδιες.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Διαγραφή</translation>
+<translation id="6645291930348198241">Πρόσβαση σε cookie και δεδομένα ιστοτόπου.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Κανένας}=1{Από 1 ιστότοπο (δεν θα αποσυνδεθείτε από τον Λογαριασμό σας Google)}other{Από # ιστοτόπους (δεν θα αποσυνδεθείτε από τον Λογαριασμό σας Google)}}</translation>
 <translation id="6648459603387803038">Ο διαχειριστής σας μπορεί να αλλάξει τη ρύθμιση του προγράμματος περιήγησής σας απομακρυσμένα. Η διαχείριση της δραστηριότητας σε αυτήν τη συσκευή μπορεί επίσης να πραγματοποιηθεί εκτός Chrome.</translation>
 <translation id="6652101503459149953">Χρήση Windows Hello</translation>

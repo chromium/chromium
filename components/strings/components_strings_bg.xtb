@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Свържете се отново с Wi-Fi.</translation>
 <translation id="1165039591588034296">Грешка</translation>
 <translation id="1165174597379888365">Страницата е посетена</translation>
+<translation id="1174723505405632867">Искате ли да разрешите на <ph name="EMBEDDED_URL" /> да използва „бисквитки“ и данни за сайтове на <ph name="TOP_LEVEL_URL" />?
+
+Ако не го направите, това ще бъде блокирано от настройките ви за поверителност. Разрешението ще позволи правилната работа на съдържанието, с което взаимодействахте, но също така може да позволи на <ph name="EMBEDDED_URL" /> да проследява активността ви.</translation>
 <translation id="1175364870820465910">&amp;Печат...</translation>
 <translation id="1175875016430184367">Триточково телбодиране отдясно</translation>
 <translation id="1178581264944972037">Пауза</translation>
@@ -307,6 +310,7 @@
 <translation id="2181821976797666341">Правила</translation>
 <translation id="2183608646556468874">Телефонен номер</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 адрес}other{# адреса}}</translation>
+<translation id="2187243482123994665">Присъствие на потребителя</translation>
 <translation id="2187317261103489799">Откриване (по подразбиране)</translation>
 <translation id="2188375229972301266">Няколко перфорации в долната част</translation>
 <translation id="2202020181578195191">Въведете валидна година на изтичане</translation>
@@ -529,6 +533,7 @@
 проверете настройките му или се свържете със системния си администратор. Ако смятате, че не трябва
 да използвате прокси сървър:
 <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> иска да знае кога присъствате</translation>
 <translation id="3188393374551744535">Салдо по сметката</translation>
 <translation id="3194737229810486521"><ph name="URL" /> иска да съхранява за постоянно данни на устройството ви</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на <ph name="SERVER_NAME" /></translation>
@@ -1021,6 +1026,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Машината</translation>
 <translation id="5179510805599951267">Не е на <ph name="ORIGINAL_LANGUAGE" />? Подайте сигнал за тази грешка</translation>
+<translation id="5179740473595559246">Знае кога присъствате</translation>
 <translation id="5190835502935405962">Лента на отметките</translation>
 <translation id="519422657042045905">Няма достъп до режима за пояснения</translation>
 <translation id="5201306358585911203">Страница, вградена в тази страница, изпраща съобщение</translation>
@@ -1243,6 +1249,7 @@
 <translation id="6049488691372270142">Извеждане на страниците</translation>
 <translation id="6051221802930200923">В момента не можете да посетите <ph name="SITE" />, защото уебсайтът използва метод за допълнително потвърждаване на сертификатите. Обикновено грешките в мрежата и атаките срещу нея са временни, така че тази страница вероятно ще работи по-късно.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Да се споделя ли информация за присъствието ви?</translation>
 <translation id="6058977677006700226">Искате ли да използвате картите си на всичките си устройства?</translation>
 <translation id="6059925163896151826">USB устройства</translation>
 <translation id="6060009363608157444">Невалиден режим за DnsOverHttps.</translation>
@@ -1372,6 +1379,7 @@
 <translation id="6631202559048444592">За правилото има повече от един източник, но стойностите са еднакви.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Изчистване</translation>
+<translation id="6645291930348198241">Осъществява достъп до „бисквитки“ и данни за сайтове.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Няма}=1{От 1 сайт (няма да излезете от профила си в Google)}other{От # сайта (няма да излезете от профила си в Google)}}</translation>
 <translation id="6648459603387803038">Администраторът ви може отдалечено да променя настройките на браузъра. Възможно е активността на това устройство да се управлява и извън Chrome.</translation>
 <translation id="6652101503459149953">Използване на Windows Hello</translation>

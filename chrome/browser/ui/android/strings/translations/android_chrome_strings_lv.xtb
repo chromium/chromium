@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Atkārtoti ielādēt lapu, ignorējot saturu kešatmiņā</translation>
 <translation id="124678866338384709">Aizvērt pašreizējo cilni</translation>
 <translation id="1258753120186372309">Google svētku logotips: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Lasīšanas saraksts</translation>
 <translation id="1266864766717917324">Nevarēja kopīgot: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Pieskarties, lai izvērstu</translation>
 <translation id="1291207594882862231">Dzēst vēsturi, sīkfailus, vietnes datus, kešatmiņu…</translation>
@@ -218,7 +219,6 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="2744248271121720757">Pieskarieties vārdam, lai meklētu tūlīt vai skatītu saistītas darbības.</translation>
 <translation id="2760989362628427051">Ieslēgt tumšo motīvu, kad ierīcē ir ieslēgts tumšais motīvs vai akumulatora enerģijas taupīšanas režīms</translation>
 <translation id="2762000892062317888">tikko</translation>
-<translation id="2771869497727323769">Nevar izveidot saiti uz tekstu. Kopīgojiet lapas saiti lietotnē.</translation>
 <translation id="2777555524387840389">Atlikušas <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">neizdevās</translation>
 <translation id="2781151931089541271">Atlikusi 1 s</translation>
@@ -467,7 +467,6 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 lejupielāde ir pabeigta.}zero{# lejupielādes ir pabeigtas.}one{# lejupielāde ir pabeigta.}other{# lejupielādes ir pabeigtas.}}</translation>
 <translation id="4766678251456904326">Pievienot kontu ierīcei</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{Ir ieplānota viena lejupielāde.}zero{Ir ieplānotas # lejupielādes.}one{Ir ieplānota # lejupielāde.}other{Ir ieplānotas # lejupielādes.}}</translation>
-<translation id="478981486571169252">Tiks rādīts jūsu pierakstīšanās statuss vietnē <ph name="SITE_NAME" />, pārlūkošanas dati un vietnes dati pārlūkā Chrome.</translation>
 <translation id="4802417911091824046">Ieejas frāzes šifrējumā nav iekļauti maksājumu veidi un adreses no pakalpojuma Google Pay.
 
 Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāciju<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5040262127954254034">Konfidencialitāte</translation>
 <translation id="5087580092889165836">Pievienot karti</translation>
 <translation id="509429900233858213">Radās kļūda.</translation>
-<translation id="5100748015044654621">Kopīgot saiti uz atzīmēto tekstu lietotnē</translation>
 <translation id="510275257476243843">Atlikusi 1 h</translation>
 <translation id="5123685120097942451">Inkognito cilne</translation>
 <translation id="5127805178023152808">Sinhronizācija izslēgta</translation>

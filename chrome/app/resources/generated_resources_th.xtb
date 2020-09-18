@@ -374,6 +374,7 @@
 <translation id="143027896309062157">อ่านและเปลี่ยนข้อมูลทั้งหมดของคุณบนคอมพิวเตอร์และเว็บไซต์ที่คุณเข้าชม</translation>
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1431188203598586230">การอัปเดตซอฟต์แวร์ครั้งสุดท้าย</translation>
+<translation id="1431402976894535801">บล็อกเว็บไซต์ไม่ให้ทราบว่าคุณใช้งานอยู่</translation>
 <translation id="1431432486300429272">Google อาจใช้ประวัติการท่องเว็บของคุณเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ของ Google ในแบบของคุณ คุณหรือผู้ปกครองจะเปลี่ยนการตั้งค่านี้ได้ทุกเมื่อที่ myaccount.google.com/activitycontrols/search</translation>
 <translation id="1432581352905426595">จัดการเครื่องมือค้นหา</translation>
 <translation id="1433811987160647649">ถามก่อนที่จะเข้าถึง</translation>
@@ -427,6 +428,7 @@
 <translation id="1500297251995790841">อุปกรณ์ที่ไม่รู้จัก [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">บัญชีเจ้าของนี้ต้องเป็นบัญชีที่ลงชื่อเข้าใช้บัญชีแรกในเซสชันการลงชื่อเข้าใช้พร้อมกัน</translation>
 <translation id="150411034776756821">นำ <ph name="SITE" /> ออก</translation>
+<translation id="1504311855864906891">รับคำบรรยายสำหรับสื่อ</translation>
 <translation id="1504551620756424144">โฟลเดอร์ที่แชร์จะอยู่ใน Windows ที่ <ph name="BASE_DIR" /></translation>
 <translation id="1506061864768559482">เครื่องมือค้นหา</translation>
 <translation id="1507170440449692343">หน้านี้ถูกบล็อกไม่ให้เข้าถึงกล้องของคุณ</translation>
@@ -569,6 +571,7 @@
 <translation id="1651008383952180276">คุณต้องป้อนรหัสผ่านเดียวกัน 2 ครั้ง</translation>
 <translation id="1652326691684645429">เปิดใช้การแชร์ใกล้เคียง</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{เพิ่มเครื่องพิมพ์ลงใน Google Cloud Print เพื่อให้คุณสามารถพิมพ์ได้จากทุกที่}other{เพิ่มเครื่องพิมพ์ # เครื่องลงใน Google Cloud Print เพื่อให้คุณสามารถพิมพ์ได้จากทุกที่}}</translation>
+<translation id="1653575510930452864">คัดลอกลิงก์ไปยังข้อความ</translation>
 <translation id="1656528038316521561">ความทึบแสงของพื้นหลัง</translation>
 <translation id="1657406563541664238">ช่วยปรับปรุง <ph name="PRODUCT_NAME" /> ให้ดีขึ้นโดยการส่งสถิติการใช้งานและรายงานปัญหาไปยัง Google โดยอัตโนมัติ</translation>
 <translation id="1657937299377480641">หากต้องการลงชื่อเข้าใช้อีกครั้งเพื่อเข้าถึงทรัพยากรทางการศึกษา ให้ขออนุญาตจากผู้ปกครอง</translation>
@@ -1002,6 +1005,7 @@
 <translation id="2178614541317717477">ผู้มีสิทธิ์ออกใบรับรองไม่สมบูรณ์</translation>
 <translation id="2182058453334755893">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>
 <translation id="2184515124301515068">ให้ Chrome เลือกว่าเว็บไซต์จะเล่นเสียงได้เมื่อใด (แนะนำ)</translation>
+<translation id="2187243482123994665">การใช้งานอยู่ของผู้ใช้</translation>
 <translation id="2187675480456493911">ซิงค์กับอุปกรณ์อื่นในบัญชีของคุณแล้ว ระบบจะไม่ซิงค์การตั้งค่าที่ผู้ใช้คนอื่นๆ แก้ไข <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">ข้อผิดพลาดในการนำเข้าใบรับรองเซิร์ฟเวอร์</translation>
 <translation id="2187906491731510095">อัปเดตส่วนขยายแล้ว</translation>
@@ -1190,7 +1194,6 @@
 <translation id="2396783860772170191">ป้อน PIN 4 หลัก (0000-9999)</translation>
 <translation id="2399939490305346086">ข้อมูลการลงชื่อเข้าใช้ในคีย์ความปลอดภัย</translation>
 <translation id="2400664245143453337">ต้องอัปเดตทันที</translation>
-<translation id="2407481962792080328">ฟีเจอร์นี้จะเปิดเมื่อคุณลงชื่อเข้าใช้บัญชี Google</translation>
 <translation id="2408018932941436077">กำลังบันทึกบัตร</translation>
 <translation id="2408955596600435184">ป้อน PIN ของคุณ</translation>
 <translation id="241082044617551207">ปลั๊กอินที่ไม่รู้จัก</translation>
@@ -1830,6 +1833,7 @@
 <translation id="3163201441334626963">ผลิตภัณฑ์ที่ไม่รู้จัก <ph name="PRODUCT_ID" /> จากผู้ขาย <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">บริการต่อไปนี้ช่วยให้ข้อมูลของคุณปลอดภัยและมั่นใจได้ โดยคุณปิดฟีเจอร์เหล่านี้ได้ทุกเมื่อ</translation>
 <translation id="3164329792803560526">กำลังแชร์แท็บนี้กับ <ph name="APP_NAME" /></translation>
+<translation id="3165371858310906303">ถามเมื่อเว็บไซต์ต้องการทราบเมื่อคุณใช้งานอยู่</translation>
 <translation id="3165390001037658081">ผู้ให้บริการบางรายอาจบล็อกฟีเจอร์นี้</translation>
 <translation id="316652501498554287">บัญชี G Suite for Education</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2947,6 +2951,7 @@
 <translation id="4527186207340858212">ต้องการสร้างโปรไฟล์ใหม่สำหรับทำงานไหม</translation>
 <translation id="452750746583162491">ตรวจสอบข้อมูลที่ซิงค์</translation>
 <translation id="4530494379350999373">ต้นทาง</translation>
+<translation id="4531924570968473143">คุณต้องการเพิ่มใครใน <ph name="DEVICE_TYPE" /> เครื่องนี้</translation>
 <translation id="4532646538815530781">เว็บไซต์นี้ใช้เซ็นเซอร์ตรวจจับความเคลื่อนไหวอยู่</translation>
 <translation id="4533846798469727141">ตอนนี้ให้พูดว่า "Hey Google"</translation>
 <translation id="4533985347672295764">เวลา CPU</translation>
@@ -3066,6 +3071,7 @@
 <translation id="4657810666108475055">การค้นหาแท็บ</translation>
 <translation id="465878909996028221">การเปลี่ยนเส้นทางเบราว์เซอร์รองรับเฉพาะ http, https และโปรโตคอลไฟล์เท่านั้น</translation>
 <translation id="4659077111144409915">บัญชีหลัก</translation>
+<translation id="4659126640776004816">ฟีเจอร์นี้จะเปิดเมื่อคุณลงชื่อเข้าใช้บัญชี Google</translation>
 <translation id="4660476621274971848">เวอร์ชันที่คาดการณ์ "<ph name="EXPECTED_VERSION" />" แต่เวอร์ชันที่แจ้งคือ "<ph name="NEW_ID" />"</translation>
 <translation id="4660540330091848931">กำลังปรับขนาด</translation>
 <translation id="4661407454952063730">ข้อมูลแอปอาจเป็นข้อมูลใดก็ตามที่แอปบันทึกไว้ (ขึ้นอยู่กับการตั้งค่าของนักพัฒนาซอฟต์แวร์) ซึ่งรวมถึงข้อมูลอย่างเช่นรายชื่อติดต่อ ข้อความ และรูปภาพ</translation>
@@ -3131,7 +3137,6 @@
 <translation id="4750394297954878236">คำแนะนำ</translation>
 <translation id="475088594373173692">ผู้ใช้แรก</translation>
 <translation id="4751476147751820511">เซ็นเซอร์จับความเคลื่อนไหวหรือเซ็นเซอร์แสง</translation>
-<translation id="4752124003533492687">เปิดการตั้งค่าเพื่อเชื่อมต่อ <ph name="USB_DEVICE_NAME" /></translation>
 <translation id="4756378406049221019">หยุด/โหลดซ้ำ</translation>
 <translation id="4756388243121344051">&amp;ประวัติการเข้าชม</translation>
 <translation id="4759238208242260848">ดาวน์โหลด</translation>
@@ -3978,6 +3983,7 @@
 <translation id="5804241973901381774">การอนุญาต</translation>
 <translation id="5805697420284793859">ตัวจัดการหน้าต่าง</translation>
 <translation id="5806773519584576205">0° (ค่าเริ่มต้น)</translation>
+<translation id="5808664694611589238">{0,plural, =1{ปิดหน้าต่างสำหรับผู้มาเยือน}other{ปิดหน้าต่างสำหรับผู้มาเยือน}}</translation>
 <translation id="5810809306422959727">บัญชีนี้ไม่มีสิทธิ์ใช้การควบคุมโดยผู้ปกครอง</translation>
 <translation id="5812674658566766066">ขยายทั้งหมด</translation>
 <translation id="5814126672212206791">ประเภทการเชื่อมต่อ</translation>
@@ -4435,6 +4441,7 @@
 <translation id="6344170822609224263">เข้าถึงรายการเชื่อมต่อเครือข่าย</translation>
 <translation id="6344576354370880196">เครื่องพิมพ์ที่บันทึกไว้</translation>
 <translation id="6345418402353744910">ชื่อผู้ใช้และรหัสผ่านของคุณจำเป็นสำหรับพร็อกซี <ph name="PROXY" /> เพื่อให้ผู้ดูแลระบบกำหนดค่าเครือข่ายได้</translation>
+<translation id="6345878117466430440">ทำเครื่องหมายว่าอ่านแล้ว</translation>
 <translation id="6349101878882523185">ติดตั้ง <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">การซิงค์ไม่ทำงาน ลองออกจากระบบแล้วลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="6351063337294363751">คุณสามารถล้างข้อมูลการท่องเว็บจากเมนูนี้ได้</translation>
@@ -5021,6 +5028,7 @@
 <translation id="7075513071073410194">PKCS #1 MD5 พร้อมการเข้ารหัส RSA</translation>
 <translation id="7075625805486468288">จัดการใบรับรอง HTTPS/SSL และการตั้งค่า</translation>
 <translation id="7076293881109082629">กำลังลงชื่อเข้าใช้</translation>
+<translation id="7076878155205969899">ปิดเสียง</translation>
 <translation id="7077829361966535409">หน้าลงชื่อเข้าใช้ไม่สามารถโหลดโดยใช้การตั้งค่าพร็อกซีในปัจจุบัน โปรด <ph name="GAIA_RELOAD_LINK_START" />ลองลงชื่อเข้าใช้อีกครั้ง<ph name="GAIA_RELOAD_LINK_END" /> หรือใช้<ph name="PROXY_SETTINGS_LINK_START" />การตั้งค่าพร็อกซี<ph name="PROXY_SETTINGS_LINK_END" />อื่นๆ</translation>
 <translation id="7078120482318506217">ทุกเครือข่าย</translation>
 <translation id="708060913198414444">คัด&amp;ลอกที่อยู่ของเสียง</translation>
@@ -5041,7 +5049,6 @@
 <translation id="7099337801055912064">โหลด PPD ขนาดใหญ่ไม่ได้ ขนาดต้องไม่เกิน 250 KB</translation>
 <translation id="7102687220333134671">การอัปเดตอัตโนมัติเปิดอยู่</translation>
 <translation id="7102832101143475489">คำขอหมดเวลาแล้ว</translation>
-<translation id="7105390788077117391">ค่ากำหนด USB</translation>
 <translation id="710640343305609397">เปิดการตั้งค่าเครือข่าย</translation>
 <translation id="7108338896283013870">ซ่อน</translation>
 <translation id="7108668606237948702">Enter</translation>
@@ -5071,7 +5078,6 @@
 <translation id="7136694880210472378">ทำให้เป็นค่าเริ่มต้น</translation>
 <translation id="7136984461011502314">ยินดีต้อนรับสู่ <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">เกิดข้อผิดพลาด โปรดลองอีกครั้งโดยเลือกภาพอื่น</translation>
-<translation id="7138678301420049075">อื่นๆ</translation>
 <translation id="713888829801648570">ขออภัย ไม่สามารถยืนยันรหัสผ่านของคุณได้เพราะคุณออฟไลน์อยู่</translation>
 <translation id="7140928199327930795">ไม่มีอุปกรณ์อื่นๆ ที่พร้อมใช้งาน</translation>
 <translation id="7141105143012495934">การลงชื่อเข้าใช้ล้มเหลวเนื่องจากไม่สามารถเรียกคืนรายละเอียดบัญชีของคุณได้ โปรดติดต่อผู้ดูแลระบบของคุณหรือลองอีกครั้ง</translation>
@@ -5178,6 +5184,7 @@
 <translation id="7280649757394340890">การตั้งค่าเสียงของการอ่านออกเสียงข้อความ</translation>
 <translation id="7280877790564589615">ขอสิทธิ์แล้ว</translation>
 <translation id="7282992757463864530">แถบข้อมูล</translation>
+<translation id="7284411326658527427">โดยแต่ละคนจะปรับเปลี่ยนการตั้งค่าบัญชีในแบบของตนและเก็บเป็นข้อมูลส่วนตัวได้</translation>
 <translation id="7287143125007575591">ปฏิเสธการเข้าถึง</translation>
 <translation id="7287411021188441799">คืนค่าพื้นหลังเริ่มต้น</translation>
 <translation id="7288013116963835700">นำ Linux ออกจาก <ph name="DEVICE_TYPE" /></translation>
@@ -5754,6 +5761,7 @@
 <translation id="7963826112438303517">Assistant จะใช้ไฟล์เสียงและเสียงคำขอของคุณในการสร้างและอัปเดตรูปแบบเสียง ซึ่งจะจัดเก็บไว้ในอุปกรณ์ที่คุณเปิด Voice Match เท่านั้น ดูหรือฝึกกิจกรรมเสียงอีกครั้งในการตั้งค่า Assistant</translation>
 <translation id="7966241909927244760">คัด&amp;ลอกที่อยู่รูปภาพ</translation>
 <translation id="7968072247663421402">ตัวเลือกผู้ให้บริการ</translation>
+<translation id="7968198493605442410">คัดลอกลิงก์ไปยังข้อความ</translation>
 <translation id="7968742106503422125">อ่านและแก้ไขข้อมูลที่คุณคัดลอกและวาง</translation>
 <translation id="7968833647796919681">เปิดใช้งานการเก็บรวบรวมข้อมูลผลการปฏิบัติงาน</translation>
 <translation id="7968982339740310781">ดูรายละเอียด</translation>
@@ -6134,6 +6142,7 @@
 <translation id="8428213095426709021">การตั้งค่า</translation>
 <translation id="8428271547607112339">เพิ่มบัญชีโรงเรียน</translation>
 <translation id="8428628598981198790">คีย์ความปลอดภัยของคุณใช้กับเว็บไซต์นี้ไม่ได้</translation>
+<translation id="8428634594422941299">รับทราบ</translation>
 <translation id="84297032718407999">คุณจะออกจากระบบใน <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">แสดงการแตะ</translation>
 <translation id="8431909052837336408">เปลี่ยน PIN ของซิม</translation>

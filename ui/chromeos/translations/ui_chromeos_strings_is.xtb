@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Af öryggisástæðum var ekki hægt að opna skrána.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">Zip-þjappar <ph name="NUMBER_OF_ITEMS" /> atriði...</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> atriði afrituð.</translation>
 <translation id="174173592514158117">Sýna allar Play möppur</translation>
 <translation id="174937106936716857">Heildarfjöldi skráa</translation>
 <translation id="1775381402323441512">Upplýsingar um myndskeið</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Ógildur stafur: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Víetnamskt lyklaborð (TCVN)</translation>
 <translation id="2168214441502403371">Persneskt lyklaborð</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> flutt.</translation>
 <translation id="2198315389084035571">Kínverska (einfölduð)</translation>
 <translation id="2208158072373999562">ZIP-safnskrá</translation>
 <translation id="2225536596944493418">Ertu viss um að þú viljir eyða <ph name="NUMBER_OF_ITEMS" /> atriðum?</translation>
 <translation id="2230062665678605299">Ekki er hægt að búa til möppuna „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Flutt.</translation>
 <translation id="2278988676849463018">Kannada-lyklaborð (hljóðritun)</translation>
 <translation id="2288278176040912387">Grammófónn</translation>
 <translation id="2291538123825441971">Opnar <ph name="NUMBER_OF_FILES" /> skrár.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Allt afritað!</translation>
 <translation id="3626281679859535460">Birtustig</translation>
 <translation id="3644896802912593514">Breidd</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> atriði færð.</translation>
 <translation id="3645531960514756307">Losa möppu</translation>
 <translation id="3678559383040232393">Maltneskt lyklaborð</translation>
 <translation id="3685122418104378273">Sjálfgefið er slökkt á Google Drive samstillingu þegar farsímagögn eru notuð.</translation>
@@ -395,6 +399,7 @@
     Jafnvel þótt eitthvað komi fyrir tækið þitt eru skrárnar þínar öruggar á Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Þú getur deilt, búið til og<ph name="MARKUP_8" />
     unnið í skrám ásamt öðrum, allt á einum stað.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Afritað.</translation>
 <translation id="5275973617553375938">Endurheimtar skrár af Google Drive</translation>
 <translation id="5317780077021120954">Vista</translation>
 <translation id="5318819489018851358">Deila með Linux</translation>
@@ -593,6 +598,7 @@
 <translation id="751507702149411736">Hvítrússneskt</translation>
 <translation id="7544853251252956727">Stokka</translation>
 <translation id="7547811415869834682">Hollenskt</translation>
+<translation id="7551643184018910560">Festa á hillu</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Hinkraðu augnablik</translation>
 <translation id="7603724359189955920">Grind</translation>
@@ -676,6 +682,7 @@
 <translation id="8299269255470343364">Japanskt</translation>
 <translation id="8312871300878166382">Líma inn í möppu</translation>
 <translation id="8329978297633540474">Ósniðinn texti</translation>
+<translation id="8335587457941836791">Losa úr hillu</translation>
 <translation id="8336153091935557858">Í gær <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336579025507394412">Íslenskt lyklaborð</translation>
 <translation id="8342318071240498787">Skrá eða mappa með sama heiti er þegar til.</translation>
@@ -748,6 +755,7 @@
 <translation id="943972244133411984">Breytt af</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>
 <translation id="947144732524271678">Valdi <ph name="ENTRY_COUNT" /> færslur, <ph name="FROM_ENTRY_NAME" />–<ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> afritað.</translation>
 <translation id="981121421437150478">Ónettengt</translation>
 <translation id="988685240266037636">Skrá með heitið „<ph name="FILE_NAME" />“ er þegar fyrir hendi. Viltu skipta henni út?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

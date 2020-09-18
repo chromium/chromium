@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Добавлен сайт <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">Поиск</translation>
 <translation id="1384959399684842514">Скачивание приостановлено.</translation>
+<translation id="1431402976894535801">Блокировать передачу на сайты информации о вашем присутствии</translation>
 <translation id="1446450296470737166">Полный доступ к управлению MIDI-устройствами</translation>
 <translation id="1509960214886564027">Многие функции на сайтах могут работать некорректно</translation>
 <translation id="1620510694547887537">Камера</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">Открыть приложение с мгновенным запуском</translation>
 <translation id="2148716181193084225">Сегодня</translation>
 <translation id="2182457891543959921">Запрашивать для сайтов разрешение на создание 3D-карты места, в котором вы находитесь, и отслеживание положения камеры (рекомендуется)</translation>
+<translation id="2187243482123994665">Присутствие пользователя</translation>
 <translation id="2212565012507486665">Разрешить файлы cookie</translation>
 <translation id="2228071138934252756">Чтобы у приложения "<ph name="APP_NAME" />" был доступ к камере, включите ее в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="2289270750774289114">Запрашивать для сайтов разрешение на поиск Bluetooth-устройств поблизости (рекомендуется)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">Видеопроигрыватель</translation>
 <translation id="3115898365077584848">Показать информацию</translation>
 <translation id="3123473560110926937">Заблокировано на некоторых сайтах</translation>
+<translation id="3165371858310906303">Спрашивать перед передачей на сайт информации о вашем присутствии</translation>
 <translation id="3198916472715691905">В памяти занято: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">Чтобы получать уведомления из приложения "<ph name="APP_NAME" />", включите их в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
@@ -104,7 +107,6 @@
 <translation id="4165986682804962316">Настройки сайтов</translation>
 <translation id="4200726100658658164">Открыть настройки геолокации</translation>
 <translation id="4226663524361240545">Вибрация при получении уведомлений</translation>
-<translation id="4242533952199664413">Открыть настройки</translation>
 <translation id="4259722352634471385">Навигация заблокирована: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Разрешено</translation>
 <translation id="429312253194641664">На сайте воспроизводятся медиафайлы</translation>
@@ -134,6 +136,7 @@
 <translation id="5197729504361054390">Сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> получит доступ к выбранным контактам.</translation>
 <translation id="5300589172476337783">Показать</translation>
 <translation id="5301954838959518834">ОК</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" /></translation>
 <translation id="5313967007315987356">Добавить сайт</translation>
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5335288049665977812">Разрешить сайтам использовать JavaScript (рекомендуется)</translation>
@@ -145,6 +148,7 @@
 <translation id="5403592356182871684">Имена</translation>
 <translation id="5489227211564503167">Просмотрено <ph name="ELAPSED_TIME" /> из <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Блокировать объявления на сайтах, которые показывают навязчивую или вводящую в заблуждение рекламу</translation>
+<translation id="5502860503640766021">Разрешено: <ph name="PERMISSION_1" />, заблокировано: <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Сайты не могут запрашивать разрешения на отправку уведомлений</translation>
 <translation id="5516455585884385570">Перейти в настройки уведомлений</translation>
 <translation id="5527111080432883924">Запрашивать мое разрешение на доступ сайтов к тексту и изображениям, скопированным в буфер обмена (рекомендуется)</translation>
@@ -156,12 +160,15 @@
 <translation id="5690795753582697420">Камера выключена в настройках Android.</translation>
 <translation id="5710871682236653961">Запрашивать для сайтов разрешение на обмен информацией через NFC (рекомендуется).</translation>
 <translation id="5719847187258001597">Будут удалены все данные и файлы cookie, которые сохранены сайтом <ph name="ORIGIN" /> или его приложением, добавленным на главный экран.</translation>
+<translation id="5771720122942595109">Заблокировано: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Разрешения</translation>
 <translation id="5860033963881614850">ВЫКЛ</translation>
+<translation id="5863245810240683687">Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" /></translation>
 <translation id="5876056640971328065">Приостановить видео</translation>
 <translation id="5916664084637901428">ВКЛ</translation>
 <translation id="5922853908706496913">Предоставлен доступ к вашему экрану</translation>
 <translation id="5939518447894949180">Сбросить</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" />–<ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Управляйте доступом сайта к данным на устройстве.</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6042308850641462728">Ещё</translation>
@@ -173,6 +180,7 @@
 <translation id="6196640612572343990">Блокировать сторонние файлы cookie</translation>
 <translation id="6206551242102657620">Подключение защищено. Информация о сайте</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />: параметры</translation>
+<translation id="6262279340360821358">Заблокировано: <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Сайты могут запрашивать разрешения на отправку уведомлений</translation>
 <translation id="6295158916970320988">Все сайты</translation>
 <translation id="6320088164292336938">Вибросигнал</translation>
@@ -195,6 +203,7 @@
 <translation id="6790428901817661496">Воспроизвести</translation>
 <translation id="6818926723028410516">Выберите объекты</translation>
 <translation id="6864395892908308021">Это устройство не поддерживает NFC.</translation>
+<translation id="6879016579615558281">Заблокировано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" /></translation>
 <translation id="6910211073230771657">Удалено</translation>
 <translation id="6912998170423641340">Блокировать сайтам доступ к тексту и изображениям, скопированным в буфер обмена</translation>
 <translation id="6945221475159498467">Выбрать</translation>
@@ -212,6 +221,7 @@
 <translation id="723171743924126238">Выберите изображения</translation>
 <translation id="7243308994586599757">Доступные параметры указаны в нижней части экрана</translation>
 <translation id="7250468141469952378">Выбрано: <ph name="ITEM_COUNT" /></translation>
+<translation id="7260727271532453612">Разрешено: <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /></translation>
 <translation id="7302486331832100261">Обычно вы блокируете уведомления. Чтобы разрешить их показ, нажмите "Подробнее".</translation>
 <translation id="7423098979219808738">Всегда спрашивать</translation>
 <translation id="7423538860840206698">Доступ к данным в буфере обмена заблокирован</translation>
@@ -243,6 +253,7 @@
 <translation id="8087000398470557479">Контент с сайта <ph name="DOMAIN_NAME" />. Получен с помощью Google.</translation>
 <translation id="8116925261070264013">Сайты с отключенным звуком</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
+<translation id="8197286292360124385">Разрешено: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Возобновить</translation>
 <translation id="8206354486702514201">Этот параметр включен администратором.</translation>
 <translation id="8249310407154411074">Переместить в начало</translation>

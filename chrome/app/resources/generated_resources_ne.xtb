@@ -425,6 +425,7 @@
 <translation id="1500297251995790841">अज्ञात यन्त्र [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">यो मालिक खाता मल्टिपल साइन-इन सत्रमा पहिलो पटक साइन-इन गरिएको खाता हुनुपर्दछ।</translation>
 <translation id="150411034776756821"><ph name="SITE" /> हटाउनुहोस्</translation>
+<translation id="1504311855864906891">आफ्नो मिडियाका लागि क्याप्सन सिर्जना गर्नुहोस्</translation>
 <translation id="1504551620756424144">साझा फोल्डरहरू Windows को <ph name="BASE_DIR" /> मा उपलब्ध हुन्छन्।</translation>
 <translation id="1506061864768559482">खोज इन्जिन</translation>
 <translation id="1507170440449692343">यो पृष्ठलाई तपाईंको क्यामेरा पहुँच गर्नबाट ब्लक गरिएको छ।</translation>
@@ -1186,7 +1187,6 @@
 <translation id="2396783860772170191">चार अङ्कको पिन (००००-९९९९) प्रविष्टि गर्नुहोस्</translation>
 <translation id="2399939490305346086">सुरक्षा साँचोको साइन इनसम्बन्धी डेटा</translation>
 <translation id="2400664245143453337">तत्काल अद्यावधिक गर्न आवश्यक छ</translation>
-<translation id="2407481962792080328">तपाईंले आफ्नो Google खातामा साइन इन गर्दा यो सुविधा सक्रिय हुन्छ</translation>
 <translation id="2408018932941436077">कार्ड सुरक्षित गर्दै</translation>
 <translation id="2408955596600435184">आफ्नो PIN प्रविष्टि गर्नुहोस्</translation>
 <translation id="241082044617551207">अज्ञात प्लगइन</translation>
@@ -1283,6 +1283,7 @@
 <translation id="2505127913256479918">सुपरिवेक्षण गरिएको यो खाता चाँडै नै हटाइने छ</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{स्क्रिन #}other{स्क्रिन #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> को <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">'नजिकैका यन्त्रसँग सेयर गर्ने सुविधा' अन गरेका तपाईंको नजिकै भएका यन्त्रहरू</translation>
 <translation id="250704661983564564">डिस्प्लेका सेटिङ</translation>
 <translation id="2507253002925770350">टिकट हटाइयो</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> पज गरिएको छ</translation>
@@ -3061,6 +3062,7 @@
 <translation id="4657810666108475055">ट्याबको खोजी</translation>
 <translation id="465878909996028221">ब्राउजर रिडिरेक्ट गर्न http, https तथा फाइल प्रोटोकललाई मात्र समर्थन गरिन्छ।</translation>
 <translation id="4659077111144409915">प्राथमिक खाता</translation>
+<translation id="4659126640776004816">तपाईंले आफ्नो Google खातामा साइन इन गर्दा यो सुविधा सक्रिय गरिन्छ।</translation>
 <translation id="4660476621274971848">अपेक्षित संस्करण "<ph name="EXPECTED_VERSION" />" हो, तर भएको संस्करण भने "<ph name="NEW_ID" />" छ</translation>
 <translation id="4660540330091848931">आकार बदल्दै</translation>
 <translation id="4661407454952063730">एपको डेटा भनेको सम्पर्क ठेगाना, सन्देश र तस्बिरहरू जस्ता डेटालगायत कुनै अनुप्रयोगले (विकासकर्ताका सेटिङहरूमा आधारित भएर) सुरक्षित गरेको कुनै पनि डेटा हुन सक्छ।</translation>
@@ -3126,7 +3128,6 @@
 <translation id="4750394297954878236">सुझावहरू</translation>
 <translation id="475088594373173692">पहिलो प्रयोगकर्ता</translation>
 <translation id="4751476147751820511">गति वा प्रकाशसम्बन्धी सेन्सरहरू</translation>
-<translation id="4752124003533492687"><ph name="USB_DEVICE_NAME" /> कनेक्ट गर्न सेटिङ खोल्नुहोस्</translation>
 <translation id="4756378406049221019">रोक्नुहोस्/पुनः लोड गर्नुहोस्</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
 <translation id="4759238208242260848">डाउनलोडहरू</translation>
@@ -3134,6 +3135,7 @@
 <translation id="4762718786438001384">यन्त्रको डिस्कमा खाली ठाउँ अत्यन्त कम छ</translation>
 <translation id="4763408175235639573">तपाईंले यस पृष्ठ हेर्दा निम्न कुकीहरू सेट गरिए</translation>
 <translation id="4765582662863429759">यसले Android Messages लाई तपाईंको फोनबाट तपाईंको Chromebook मा पाठ प्रसारण गर्न दिन्छ</translation>
+<translation id="476598255842811483">तपाईंले आफ्नो यन्त्रमा 'नजिकैका यन्त्रसँग सेयर गर्ने सुविधा' अन नगरेसम्म कोही पनि तपाईंसँग सेयर गर्न सक्दैनन्</translation>
 <translation id="4768332406694066911">तपाईँसँग यी संगठनहरूका तपाईँको पहिचान गर्ने प्रमाणपत्रहरू छन्</translation>
 <translation id="477647109558161443">एउटा डेस्कटप सर्टकट सिर्जना गर्नुहोस्</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> को लागि लागि पासवर्ड</translation>
@@ -5014,6 +5016,7 @@
 <translation id="7075513071073410194">PKCS #1 MD2 सँग RSA गुप्तलेखन</translation>
 <translation id="7075625805486468288">HTTPS/SSL सम्बन्धी प्रमाणपत्र र सेटिङहरूको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="7076293881109082629">साइनइन गर्दै</translation>
+<translation id="7076878155205969899">आवाज म्युट गर्नुहोस्</translation>
 <translation id="7077829361966535409">साइन पृष्ठ हालको प्रोक्सी सेटिङहरू प्रयोग गरेर लोड हुन असफल भयो। कृपया <ph name="GAIA_RELOAD_LINK_START" />पुन: साइन इन गर्ने प्रयास गर्नुहोस्<ph name="GAIA_RELOAD_LINK_END" />, वा फरक <ph name="PROXY_SETTINGS_LINK_START" />प्रोक्सी सेटिङहरू<ph name="PROXY_SETTINGS_LINK_END" /> प्रयोग गर्नुहोस</translation>
 <translation id="7078120482318506217">सबै नेटवर्कहरू</translation>
 <translation id="708060913198414444">अडियो ठेगानाको प्रतिलिपि बनाउनुहोस्</translation>
@@ -5034,7 +5037,6 @@
 <translation id="7099337801055912064">ठुलो आकारको PPD लोड गर्न सकिँदैन। लोड गर्न सकिने अधिकतम आकार २५० के.बि. हो।</translation>
 <translation id="7102687220333134671">स्वतःअद्यावधिकहरू सक्रिय गरिएका छन्</translation>
 <translation id="7102832101143475489">यो अनुरोधको समयावधि सकियो</translation>
-<translation id="7105390788077117391">USB का प्राथमिकताहरू</translation>
 <translation id="710640343305609397">नेटवर्कका सेटिङहरू खोल्नुहोस्</translation>
 <translation id="7108338896283013870">लुकाउनुहोस्</translation>
 <translation id="7108668606237948702">प्रविष्टि गर्नुहोस्</translation>
@@ -5064,7 +5066,6 @@
 <translation id="7136694880210472378">पूर्वनिर्धारित बनाउनुहोस्</translation>
 <translation id="7136984461011502314"><ph name="PRODUCT_NAME" /> मा स्वागत छ</translation>
 <translation id="7136993520339022828">त्यहाँ कुनै त्रुटि छ। अन्य छविहरू छनौट गरी कृपया फेरि प्रयास गर्नुहोस्‌।</translation>
-<translation id="7138678301420049075">अन्य</translation>
 <translation id="713888829801648570">माफ गर्नुहोस्, तपाइँको पासवर्ड रुजू गर्न सकिएन किनभने तपाइँ अफलाइन हुनुहुन्छ।</translation>
 <translation id="7140928199327930795">अरू कुनै यन्त्रहरू उपलब्ध छैनन्।</translation>
 <translation id="7141105143012495934">साइन इन असफल भयो किनभने तपाईँका खाता विवरणहरू पुनःप्राप्त गर्न सकेन। कृपया तपाईँको प्रशासकसँग सम्पर्क गर्नुहोस् वा फेरि प्रयास गर्नुहोस्।</translation>
@@ -5664,6 +5665,7 @@
 <translation id="786073089922909430">सेवा: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;डाउनलोडहरू</translation>
 <translation id="7864539943188674973">ब्लुटुथ अक्षम बनाउनुहोस्</translation>
+<translation id="7866352732146932341">तपाईंको यन्त्रमा 'नजिकैका यन्त्रसँग सेयर गर्ने सुविधा' अन भएका बेला तपाईंको नजिकै भएका यन्त्रहरू</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - जोडा बनाइयो</translation>
 <translation id="7870730066603611552">सेटअप गरेपश्चात् सिंकसम्बन्धी विकल्पहरूको समीक्षा गर्नुहोस्</translation>
 <translation id="7870790288828963061">नयाँ संस्करणका कुनै पनि Kiosk एपहरू भेटिएन। अद्यावधिक गर्न कुनै चिज वाँकि छैन। कृपया USB स्टिक हटाउनुहोस्।</translation>
@@ -6125,6 +6127,7 @@
 <translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="8428271547607112339">विद्यालयको खाता थप्नुहोस्</translation>
 <translation id="8428628598981198790">तपाईंको सुरक्षा साँचो यस साइटमा प्रयोग गर्न सकिँदैन</translation>
+<translation id="8428634594422941299">बुझेँ</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> मा तपाईंलाई साइन आउट गरिने छ</translation>
 <translation id="8431190899827883166">ट्यापहरू देखाउनुहोस्</translation>
 <translation id="8431909052837336408">SIM को PIN परिवर्तन गर्नुहोस्</translation>

@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Ringarko faqen aktuale, duke shpërfillur përmbajtjen në memorien specifike</translation>
 <translation id="124678866338384709">Mbyll skedën aktuale</translation>
 <translation id="1258753120186372309">Logoja alternative e Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Lista e leximit</translation>
 <translation id="1266864766717917324">Nuk mund të ndahet <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Trokit për të zgjeruar</translation>
 <translation id="1291207594882862231">Pastro historikun, kukit, të dhënat e sajtit, memorien specifike…</translation>
@@ -218,7 +219,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="2744248271121720757">Trokit një fjalë për të kërkuar në çast ose për të parë veprimet e lidhura</translation>
 <translation id="2760989362628427051">Aktivizo temën e errët kur tema e errët ose "Kursyesi i baterisë" i pajisjes është aktiv</translation>
 <translation id="2762000892062317888">pikërisht tani</translation>
-<translation id="2771869497727323769">Lidhja për te teksti nuk mund të krijohet. Ndaje lidhjen për te faqja në një aplikacion.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekonda të mbetura</translation>
 <translation id="2779651927720337254">dështoi</translation>
 <translation id="2781151931089541271">1 sekondë e mbetur</translation>
@@ -387,6 +387,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="4135200667068010335">Lista e pajisjeve për të ndarë një skedë është e mbyllur.</translation>
 <translation id="4149994727733219643">Pamje e thjeshtuar për faqet e uebit</translation>
 <translation id="4170011742729630528">Shërbimi nuk ofrohet. Provo përsëri më vonë.</translation>
+<translation id="4175173967354304331">Do të identifikohesh në këtë sajt, Chrome dhe aplikacionet e Google</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> të përdorura</translation>
 <translation id="4181841719683918333">Gjuhët</translation>
 <translation id="4183868528246477015">Kërko me "Lenten e Google" <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
@@ -467,7 +468,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 shkarkim përfundoi.}other{# shkarkime përfunduan.}}</translation>
 <translation id="4766678251456904326">Shto llogari në pajisje</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 shkarkim i planifikuar.}other{# shkarkime të planifikuara.}}</translation>
-<translation id="478981486571169252">Do të shikosh statusin e identifikimit për <ph name="SITE_NAME" />, të dhënat e shfletimit dhe të dhënat e sajtit në Chrome.</translation>
 <translation id="4802417911091824046">Enkriptimi me frazën e kalimit nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay.
 
 Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizimin<ph name="END_LINK" /></translation>
@@ -512,7 +512,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5040262127954254034">Privatësia</translation>
 <translation id="5087580092889165836">Shto kartë</translation>
 <translation id="509429900233858213">Ndodhi një gabim.</translation>
-<translation id="5100748015044654621">Ndaj lidhjen për te teksti i theksuar në një aplikacion</translation>
 <translation id="510275257476243843">1 orë e mbetur</translation>
 <translation id="5123685120097942451">Skeda "e fshehtë"</translation>
 <translation id="5127805178023152808">Sinkronizimi është joaktiv</translation>
@@ -679,6 +678,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6341580099087024258">Pyet ku të ruhen skedarët</translation>
 <translation id="6342069812937806050">Vetëm tani</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> tjetër}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> të tjera}}</translation>
+<translation id="6345878117466430440">Shëno si të lexuar</translation>
 <translation id="6364438453358674297">Të hiqet sugjerimi nga historiku?</translation>
 <translation id="6366047038980456022"><ph name="APP_NAME" /> ka gjithçka që të nevojitet për të bërë, krijuar dhe eksploruar në mënyrë të sigurt në linjë</translation>
 <translation id="6378173571450987352">Detajet: Renditur sipas sasisë së të dhënave të përdorura</translation>
@@ -994,6 +994,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8655129584991699539">Mund t'i pastrosh të dhënat në "Cilësimet" e Chrome</translation>
 <translation id="8662811608048051533">Të nxjerr nga shumica e sajteve.</translation>
 <translation id="8664979001105139458">Emri i skedarit ekziston tashmë</translation>
+<translation id="8683039184091909753">imazhi</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Niveli i forcës së sinjalit: # shirit}other{Niveli i forcës së sinjalit: # shirita}}</translation>
 <translation id="869891660844655955">Data e skadimit</translation>
 <translation id="8712637175834984815">E kuptova</translation>

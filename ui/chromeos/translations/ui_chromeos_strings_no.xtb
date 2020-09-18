@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Filen kunne ikke åpnes av sikkerhetsårsaker.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">Zipper <ph name="NUMBER_OF_ITEMS" /> elementer …</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elementer er kopiert.</translation>
 <translation id="174173592514158117">Vis alle Play-mapper</translation>
 <translation id="174937106936716857">Totalt antall filer</translation>
 <translation id="1775381402323441512">Videoinformasjon</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Ugyldig tegn: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Vietnamesisk tastatur (TCVN)</translation>
 <translation id="2168214441502403371">Persisk tastatur</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> er flyttet.</translation>
 <translation id="2198315389084035571">Kinesisk (forenklet)</translation>
 <translation id="2208158072373999562">.zip-arkiv</translation>
 <translation id="2225536596944493418">Er du sikker på at du vil slette <ph name="NUMBER_OF_ITEMS" /> elementer?</translation>
 <translation id="2230062665678605299">Kunne ikke opprette mappen «<ph name="FOLDER_NAME" />». <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Flyttet.</translation>
 <translation id="2278988676849463018">Kannada-tastatur (fonetisk)</translation>
 <translation id="2288278176040912387">Platespiller</translation>
 <translation id="2291538123825441971">Åpner <ph name="NUMBER_OF_FILES" /> filer.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Alt er sikkerhetskopiert!</translation>
 <translation id="3626281679859535460">Lysstyrke</translation>
 <translation id="3644896802912593514">Bredde</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementer er flyttet.</translation>
 <translation id="3645531960514756307">Løsne mappen</translation>
 <translation id="3678559383040232393">Maltesisk tastatur</translation>
 <translation id="3685122418104378273">Google Disk-synkronisering er deaktivert som standard ved bruk av mobile data.</translation>
@@ -395,6 +399,7 @@
         Uansett hva som skjer med enheten din, er filene dine trygt lagret i Google Disk.<ph name="MARKUP_6" />
         <ph name="MARKUP_7" />Del, skap og samarbeid<ph name="MARKUP_8" />
         med andre om filer – alt på ett sted.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Kopiert.</translation>
 <translation id="5275973617553375938">Gjenopprettede filer fra Google Disk</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Lagre</translation>
@@ -594,6 +599,7 @@
 <translation id="751507702149411736">Hviterussisk</translation>
 <translation id="7544853251252956727">Spill i tilfeldig rekkefølge</translation>
 <translation id="7547811415869834682">Nederlandsk</translation>
+<translation id="7551643184018910560">Fest til hyllen</translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Vent et øyeblikk</translation>
 <translation id="7603724359189955920">Rutenett</translation>
@@ -677,6 +683,7 @@
 <translation id="8299269255470343364">Japansk</translation>
 <translation id="8312871300878166382">Lim inn i mappen</translation>
 <translation id="8329978297633540474">Ren tekst</translation>
+<translation id="8335587457941836791">Løsne fra hyllen</translation>
 <translation id="8336153091935557858">I går kl. <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336579025507394412">Islandsk tastatur</translation>
 <translation id="8342318071240498787">Det finnes allerede en fil eller en katalog med det samme navnet.</translation>
@@ -749,6 +756,7 @@
 <translation id="943972244133411984">Endret av</translation>
 <translation id="945522503751344254">Send tilbakemelding</translation>
 <translation id="947144732524271678">Valgte et område med <ph name="ENTRY_COUNT" /> oppføringer – fra <ph name="FROM_ENTRY_NAME" /> til <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> er kopiert.</translation>
 <translation id="981121421437150478">Uten nett</translation>
 <translation id="988685240266037636">Filnavnet «<ph name="FILE_NAME" />» finnes allerede. Vil du erstatte filen med dette navnet?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

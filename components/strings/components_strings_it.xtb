@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Riconnessione alla rete Wi-Fi</translation>
 <translation id="1165039591588034296">Errore</translation>
 <translation id="1165174597379888365">Pagina visitata</translation>
+<translation id="1174723505405632867">Vuoi consentire al sito <ph name="EMBEDDED_URL" /> di usare cookie e dati del sito su <ph name="TOP_LEVEL_URL" />?
+
+In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I contenuti con cui hai interagito funzioneranno correttamente, ma il sito <ph name="EMBEDDED_URL" /> potrebbe monitorare la tua attività.</translation>
 <translation id="1175364870820465910">&amp;Stampa...</translation>
 <translation id="1175875016430184367">Tripla pinzatura a destra</translation>
 <translation id="1178581264944972037">Pausa</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Criteri</translation>
 <translation id="2183608646556468874">Numero di telefono</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 indirizzo}other{# indirizzi}}</translation>
+<translation id="2187243482123994665">Presenza dell'utente</translation>
 <translation id="2187317261103489799">Rileva (predefinita)</translation>
 <translation id="2188375229972301266">Perforatura multipla in basso</translation>
 <translation id="2202020181578195191">Inserisci un anno di scadenza valido</translation>
@@ -530,6 +534,7 @@
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174168572213147020">Isola</translation>
 <translation id="3176929007561373547">Controlla le impostazioni del proxy o contatta il tuo amministratore di rete per verificare che il server proxy funzioni. Se non ritieni di dover utilizzare un server proxy: <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> vuole sapere quando sei presente</translation>
 <translation id="3188393374551744535">Saldo dell'account</translation>
 <translation id="3194737229810486521"><ph name="URL" /> vuole memorizzare in modo definitivo i dati sul dispositivo</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> su <ph name="SERVER_NAME" /></translation>
@@ -1022,6 +1027,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Computer</translation>
 <translation id="5179510805599951267">Non in <ph name="ORIGINAL_LANGUAGE" />? Segnala questo errore</translation>
+<translation id="5179740473595559246">sapere quando sei presente</translation>
 <translation id="5190835502935405962">Barra dei Preferiti</translation>
 <translation id="519422657042045905">Annotazione non disponibile</translation>
 <translation id="5201306358585911203">Una pagina incorporata in questa pagina dice</translation>
@@ -1244,6 +1250,7 @@
 <translation id="6049488691372270142">Consegna pagina</translation>
 <translation id="6051221802930200923">Al momento non puoi visitare il sito web <ph name="SITE" /> perché utilizza il blocco dei certificati. In genere gli errori di rete e gli attacchi sono temporanei, pertanto questa pagina potrebbe funzionare più tardi.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Condividere la tua presenza?</translation>
 <translation id="6058977677006700226">Utilizzare le carte su tutti i tuoi dispositivi?</translation>
 <translation id="6059925163896151826">Dispositivi USB</translation>
 <translation id="6060009363608157444">Modalità DnsOverHttps non valida.</translation>
@@ -1372,6 +1379,7 @@
 <translation id="6631202559048444592">È presente più di un'origine per questo criterio, ma i valori sono gli stessi.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Cancella</translation>
+<translation id="6645291930348198241">Accedere a cookie e dati del sito.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Nessuno}=1{Da 1 sito (non verrai disconnesso dal tuo Account Google)}other{Da # siti (non verrai disconnesso dal tuo Account Google)}}</translation>
 <translation id="6648459603387803038">L'amministratore può modificare da remoto la configurazione del browser. L'attività svolta su questo dispositivo potrebbe essere gestita anche al di fuori di Chrome.</translation>
 <translation id="6652101503459149953">Usa Windows Hello</translation>

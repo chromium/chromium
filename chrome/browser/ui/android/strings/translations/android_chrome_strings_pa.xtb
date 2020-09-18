@@ -39,6 +39,7 @@
 <translation id="123724288017357924">ਕੈਸ਼ੇ ਕੀਤੀ ਸਮੱਗਰੀ ਨੂੰ ਅਣਡਿੱਠ ਕਰਕੇ ਮੌਜੂਦਾ ਪੰਨਾ ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="124678866338384709">ਮੌਜੂਦਾ ਟੈਬ ਬੰਦ ਕਰੋ</translation>
 <translation id="1258753120186372309">Google ਡੂਡਲ: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">ਪੜ੍ਹਤ ਸੂਚੀ</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ਨਾਲ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="1283039547216852943">ਵਿਸਤਾਰ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="1291207594882862231">ਇਤਿਹਾਸ, ਕੁਕੀਜ਼, ਸਾਈਟ ਡਾਟਾ, ਕੈਸ਼ੇ ਸਾਫ਼ ਕਰੋ…</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">ਤਤਕਾਲ ਖੋਜ ਲਈ ਕਿਸੇ ਸ਼ਬਦ 'ਤੇ ਟੈਪ ਕਰੋ ਜਾਂ ਸੰਬੰਧਿਤ ਕਾਰਵਾਈਆਂ ਦੇਖੋ</translation>
 <translation id="2760989362628427051">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦਾ ਗੂੜ੍ਹਾ ਥੀਮ ਜਾਂ ਬੈਟਰੀ ਸੇਵਰ ਮੋਡ ਚਾਲੂ ਹੋਣ 'ਤੇ ਗੂੜ੍ਹੇ ਥੀਮ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2762000892062317888">ਹੁਣੇ ਹੀ</translation>
-<translation id="2771869497727323769">ਲਿਖਤ ਲਈ ਲਿੰਕ ਨਹੀਂ ਬਣਾਇਆ ਜਾ ਸਕਦਾ। ਇੱਕ ਐਪ ਵਿੱਚ ਪੰਨੇ ਲਈ ਲਿੰਕ ਸਾਂਝਾ ਕਰੋ।</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> ਸਕਿੰਟ ਬਾਕੀ</translation>
 <translation id="2779651927720337254">ਅਸਫਲ</translation>
 <translation id="2781151931089541271">1 ਸਕਿੰਟ ਬਾਕੀ</translation>
@@ -467,7 +467,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 ਡਾਊਨਲੋਡ ਪੂਰਾ ਹੋਇਆ।}one{# ਡਾਊਨਲੋਡ ਪੂਰਾ ਹੋਇਆ।}other{# ਡਾਊਨਲੋਡ ਪੂਰੇ ਹੋਏ।}}</translation>
 <translation id="4766678251456904326">ਡੀਵਾਈਸ ਵਿੱਚ ਖਾਤਾ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 ਡਾਊਨਲੋਡ ਨੂੰ ਨਿਯਤ ਕੀਤਾ ਗਿਆ।}one{# ਡਾਊਨਲੋਡ ਨੂੰ ਨਿਯਤ ਕੀਤਾ ਗਿਆ।}other{# ਡਾਊਨਲੋਡਾਂ ਨੂੰ ਨਿਯਤ ਕੀਤਾ ਗਿਆ।}}</translation>
-<translation id="478981486571169252">ਤੁਸੀਂ Chrome ਵਿੱਚ ਆਪਣੀ <ph name="SITE_NAME" /> ਸਾਈਨ-ਇਨ ਸਥਿਤੀ, ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਅਤੇ ਸਾਈਟ ਡਾਟਾ ਦੇਖੋਗੇ।</translation>
 <translation id="4802417911091824046">ਪਾਸਫਰੇਜ਼ ਇਨਕ੍ਰਿਪਸ਼ਨ ਵਿੱਚ Google Pay ਦੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਅਤੇ ਪਤੇ ਸ਼ਾਮਲ ਨਹੀਂ ਹਨ।
 
 ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣ ਲਈ, <ph name="BEGIN_LINK" />ਸਮਕਾਲੀਕਰਨ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@
 <translation id="5040262127954254034">ਪ੍ਰਾਈਵੇਸੀ</translation>
 <translation id="5087580092889165836">ਕਾਰਡ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="509429900233858213">ਇੱਕ ਗੜਬੜ ਹੋਈ</translation>
-<translation id="5100748015044654621">ਐਪ ਵਿੱਚ ਉਜਾਗਰ ਕੀਤੀ ਲਿਖਤ ਨਾਲ ਲਿੰਕ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="510275257476243843">1 ਘੰਟਾ ਬਾਕੀ</translation>
 <translation id="5123685120097942451">ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="5127805178023152808">ਸਿੰਕ ਬੰਦ ਹੈ</translation>

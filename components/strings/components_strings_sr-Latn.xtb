@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">ponovo da se povežete sa Wi-Fi mrežom</translation>
 <translation id="1165039591588034296">Greška</translation>
 <translation id="1165174597379888365">Stranica je posećena</translation>
+<translation id="1174723505405632867">Želite li da dozvolite da <ph name="EMBEDDED_URL" /> koristi kolačiće i podatke o sajtovima na <ph name="TOP_LEVEL_URL" />?
+
+To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa kojim ste imali interakciju ispravno radi, ali može da omogući i da <ph name="EMBEDDED_URL" /> prati vaše aktivnosti.</translation>
 <translation id="1175364870820465910">&amp;Odštampaj...</translation>
 <translation id="1175875016430184367">Trostruko spajanje na desnoj strani</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Smernice</translation>
 <translation id="2183608646556468874">Broj telefona</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresa}one{# adresa}few{# adrese}other{# adresa}}</translation>
+<translation id="2187243482123994665">Prisustvo korisnika</translation>
 <translation id="2187317261103489799">Otkrij (podrazumevano)</translation>
 <translation id="2188375229972301266">Višestruko bušenje na dnu</translation>
 <translation id="2202020181578195191">Unesite važeću godinu isteka</translation>
@@ -533,6 +537,7 @@
           biste se uverili da proksi server funkcioniše. Ako mislite da ne
           treba da koristite proksi server:
           <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> želi da zna kada ste prisutni</translation>
 <translation id="3188393374551744535">Stanje na računu</translation>
 <translation id="3194737229810486521"><ph name="URL" /> želi da trajno skladišti podatke na uređaju</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> na: <ph name="SERVER_NAME" /></translation>
@@ -1025,6 +1030,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Računar</translation>
 <translation id="5179510805599951267">Nije <ph name="ORIGINAL_LANGUAGE" />? Prijavite ovu grešku</translation>
+<translation id="5179740473595559246">da zna kada ste prisutni</translation>
 <translation id="5190835502935405962">Traka sa obeleživačima</translation>
 <translation id="519422657042045905">Napomena nije dostupna</translation>
 <translation id="5201306358585911203">Ugrađena stranica na ovoj veb-stranici navodi:</translation>
@@ -1247,6 +1253,7 @@
 <translation id="6049488691372270142">Isporuka stranica</translation>
 <translation id="6051221802930200923">Trenutno ne možete da posetite <ph name="SITE" /> jer veb-sajt koristi proveru sertifikata. Greške i napadi na mreži su obično privremeni, pa će ova stranica verovatno funkcionisati kasnije.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Želite li da delite prisustvo?</translation>
 <translation id="6058977677006700226">Želite li da koristite kartice na svim uređajima?</translation>
 <translation id="6059925163896151826">USB uređaji</translation>
 <translation id="6060009363608157444">Režim DnsOverHttps je nevažeći.</translation>
@@ -1375,6 +1382,7 @@
 <translation id="6631202559048444592">Prisutno je više izvora sa istim vrednostima za ove smernice.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Obriši</translation>
+<translation id="6645291930348198241">da pristupa kolačićima i podacima o sajtovima.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{None}=1{Sa 1 sajta (nećemo vas odjaviti sa Google naloga)}one{Sa # sajta (nećemo vas odjaviti sa Google naloga)}few{Sa # sajta (nećemo vas odjaviti sa Google naloga)}other{Sa # sajtova (nećemo vas odjaviti sa Google naloga)}}</translation>
 <translation id="6648459603387803038">Administrator može daljinski da promeni podešavanje pregledača. Aktivnostima na ovom uređaju može da se upravlja i van Chrome-a.</translation>
 <translation id="6652101503459149953">Koristi Windows Hello</translation>

@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Fail tidak boleh diakses atas sebab keselamatan.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">Mengezip <ph name="NUMBER_OF_ITEMS" /> item...</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> item disalin.</translation>
 <translation id="174173592514158117">Tunjukkan semua folder Play</translation>
 <translation id="174937106936716857">Jumlah kiraan fail</translation>
 <translation id="1775381402323441512">Maklumat video</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Aksara tidak sah: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Papan kekunci bahasa Vietnam (TCVN)</translation>
 <translation id="2168214441502403371">Papan kekunci bahasa Parsi</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> dialihkan.</translation>
 <translation id="2198315389084035571">Bahasa Cina Mudah</translation>
 <translation id="2208158072373999562">Arkib zip</translation>
 <translation id="2225536596944493418">Adakah anda pasti anda mahu memadamkan <ph name="NUMBER_OF_ITEMS" /> item?</translation>
 <translation id="2230062665678605299">Tidak dapat membuat folder "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Dialihkan.</translation>
 <translation id="2278988676849463018">Papan kekunci bahasa Kannada (Fonetik)</translation>
 <translation id="2288278176040912387">Pemain Piring Hitam</translation>
 <translation id="2291538123825441971">Membuka <ph name="NUMBER_OF_FILES" /> fail.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Semua disandarkan!</translation>
 <translation id="3626281679859535460">Kecerahan</translation>
 <translation id="3644896802912593514">Lebar</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> item dialihkan.</translation>
 <translation id="3645531960514756307">Nyahsemat folder</translation>
 <translation id="3678559383040232393">Papan kekunci Malta</translation>
 <translation id="3685122418104378273">Penyegerakan Google Drive dilumpuhkan secara lalai, apabila menggunakan data mudah alih.</translation>
@@ -395,6 +399,7 @@
     Tidak kira apa yang berlaku kepada peranti anda, fail anda disimpan dengan selamat dalam Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Kongsi, buat dan bekerjasama<ph name="MARKUP_8" />
     pada fail dengan orang lain, semuanya pada satu tempat.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Disalin.</translation>
 <translation id="5275973617553375938">Fail yang diperoleh semula dari Google Drive</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Simpan</translation>
@@ -594,6 +599,7 @@
 <translation id="751507702149411736">Bahasa Belarus</translation>
 <translation id="7544853251252956727">Rombak</translation>
 <translation id="7547811415869834682">Bahasa Belanda</translation>
+<translation id="7551643184018910560">Sematkan pada rak</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Sila tunggu sebentar</translation>
 <translation id="7603724359189955920">Grid</translation>
@@ -677,6 +683,7 @@
 <translation id="8299269255470343364">Bahasa Jepun</translation>
 <translation id="8312871300878166382">Tampal ke folder</translation>
 <translation id="8329978297633540474">Teks biasa</translation>
+<translation id="8335587457941836791">Nyahsemat dari rak</translation>
 <translation id="8336153091935557858">Semalam <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336579025507394412">Papan kekunci Iceland</translation>
 <translation id="8342318071240498787">Fail atau direktori dengan nama yang sama telah wujud.</translation>
@@ -749,6 +756,7 @@
 <translation id="943972244133411984">Diubah suai oleh</translation>
 <translation id="945522503751344254">Hantar maklum balas</translation>
 <translation id="947144732524271678">Memilih <ph name="ENTRY_COUNT" /> masukan daripada <ph name="FROM_ENTRY_NAME" /> hingga <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> disalin.</translation>
 <translation id="981121421437150478">Luar talian</translation>
 <translation id="988685240266037636">Fail bernama "<ph name="FILE_NAME" />" sudah wujud. Adakah anda mahu menggantikannya?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

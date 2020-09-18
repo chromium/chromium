@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Weens sekuriteitsredes kon daar nie by die lêer ingegaan word nie.</translation>
 <translation id="169515659049020177">Skuifsleutel</translation>
 <translation id="1722487484194605434">Kompakteer tans <ph name="NUMBER_OF_ITEMS" /> items …</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> items is gekopieer.</translation>
 <translation id="174173592514158117">Wys alle Play-vouers</translation>
 <translation id="174937106936716857">Totale aantal lêers</translation>
 <translation id="1775381402323441512">Video-inligting</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Ongeldige karakter: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Viëtnamese sleutelbord (TCVN)</translation>
 <translation id="2168214441502403371">Persiese sleutelbord</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> is geskuif.</translation>
 <translation id="2198315389084035571">Vereenvoudigde Chinees</translation>
 <translation id="2208158072373999562">Zip-argief</translation>
 <translation id="2225536596944493418">Is jy seker jy wil <ph name="NUMBER_OF_ITEMS" /> items uitvee?</translation>
 <translation id="2230062665678605299">Kon nie vouer "<ph name="FOLDER_NAME" />" skep nie. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Geskuif.</translation>
 <translation id="2278988676849463018">Kannada-sleutelbord (foneties)</translation>
 <translation id="2288278176040912387">Platespeler</translation>
 <translation id="2291538123825441971">Maak tans <ph name="NUMBER_OF_FILES" /> lêers oop.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Alles is gerugsteun!</translation>
 <translation id="3626281679859535460">Helderheid</translation>
 <translation id="3644896802912593514">Breedte</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> items is geskuif.</translation>
 <translation id="3645531960514756307">Ontspeld vouer</translation>
 <translation id="3678559383040232393">Maltese sleutelbord</translation>
 <translation id="3685122418104378273">Google Drive-sinkronisering is by verstek afgeskakel wanneer dit mobiele data gebruik.</translation>
@@ -395,6 +399,7 @@
     Maak nie saak wat met jou toestel gebeur nie, jou lêers is veilig geberg in Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Deel, skep en werk saam met ander<ph name="MARKUP_8" />
     aan lêers op een plek.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Gekopieer.</translation>
 <translation id="5275973617553375938">Het lêers van Google Drive herwin</translation>
 <translation id="5317780077021120954">Berg</translation>
 <translation id="5318819489018851358">Deel met Linux</translation>
@@ -593,6 +598,7 @@
 <translation id="751507702149411736">Wit Russies</translation>
 <translation id="7544853251252956727">Skommel</translation>
 <translation id="7547811415869834682">Nederlands</translation>
+<translation id="7551643184018910560">Speld aan rak vas</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Wag net 'n oomblik</translation>
 <translation id="7603724359189955920">Roosters</translation>
@@ -676,6 +682,7 @@
 <translation id="8299269255470343364">Japannees</translation>
 <translation id="8312871300878166382">Plak in vouer</translation>
 <translation id="8329978297633540474">Gewone teks</translation>
+<translation id="8335587457941836791">Ontspeld van rak af</translation>
 <translation id="8336153091935557858">Gister <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336579025507394412">Yslandse sleutelbord</translation>
 <translation id="8342318071240498787">'n Lêer of gids met dieselfde naam bestaan reeds.</translation>
@@ -748,6 +755,7 @@
 <translation id="943972244133411984">Gewysig deur</translation>
 <translation id="945522503751344254">Stuur terugvoer</translation>
 <translation id="947144732524271678">Kies 'n reeks van <ph name="ENTRY_COUNT" /> inskrywings van <ph name="FROM_ENTRY_NAME" /> tot <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> is gekopieer.</translation>
 <translation id="981121421437150478">Vanlyn</translation>
 <translation id="988685240266037636">'n Lêer met die naam "<ph name="FILE_NAME" />" bestaan reeds. Wil jy dit vervang?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

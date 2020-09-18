@@ -39,6 +39,7 @@
 <translation id="123724288017357924">လက်ရှိစာမျက်နှာကို ပြန်ဖွင့်ပြီး ကက်ရှ်ကို ပယ်ရန်</translation>
 <translation id="124678866338384709">လက်ရှိတဘ်ကို ပိတ်ရန်</translation>
 <translation id="1258753120186372309">Google doodle- <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">ဖတ်ရန် စာရင်း</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ကို မျှဝေ၍မရပါ။</translation>
 <translation id="1283039547216852943">ချဲ့ရန် တို့ပါ</translation>
 <translation id="1291207594882862231">မှတ်တမ်း၊ ကွတ်ကီး၊ ဆိုက်ဒေတာ၊ ကက်ရှ်များကို ရှင်းလင်းပါ...</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">ချက်ချင်းရှာဖွေရန် သို့မဟုတ် သက်ဆိုင်သည့် လုပ်ဆောင်ချက်များကို ကြည့်ရန် စာလုံးတစ်လုံးကို တို့ပါ</translation>
 <translation id="2760989362628427051">သင့်စက်၏ မှောင်သည့်အပြင်အဆင် သို့မဟုတ် ဘက်ထရီအားထိန်းကို ဖွင့်ထားသည့်အခါ မှောင်သည့် အပြင်အဆင်ကို ဖွင့်ပါ</translation>
 <translation id="2762000892062317888">ယခုလေးတင်</translation>
-<translation id="2771869497727323769">စာသားသို့ လင့်ခ်ကို ပြုလုပ်၍မရပါ။ အက်ပ်အတွင်းတွင် လင့်ခ်ကို စာမျက်နှာသို့ မျှဝေပါ။</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> စက္ကန့် ကျန်သည်</translation>
 <translation id="2779651927720337254">ဒေါင်းလုဒ် မပြီးဆုံးပါ</translation>
 <translation id="2781151931089541271">၁ စက္ကန့် ကျန်သည်</translation>
@@ -387,6 +387,7 @@
 <translation id="4135200667068010335">တဘ်မျှဝေရန် စက်ပစ္စည်းစာရင်းကို ပိတ်ထားသည်။</translation>
 <translation id="4149994727733219643">ဝဘ်စာမျက်နှာများအတွက် ရိုးရှင်းသည့်မြင်ကွင်း</translation>
 <translation id="4170011742729630528">ဝန်ဆောင်မှု မရနိုင်ပါ; နောက်မှထပ်မံကြိုးစားပါ။</translation>
+<translation id="4175173967354304331">ဤဝဘ်ဆိုက်၊ Chrome နှင့် Google အက်ပ်များသို့ လက်မှတ်ထိုးဝင်သွားပါမည်</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> ကို အသုံးပြုထားသည်</translation>
 <translation id="4181841719683918333">ဘာသာစကားများ</translation>
 <translation id="4183868528246477015">Google Lens <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /> ဖြင့်ရှာခြင်း</translation>
@@ -467,7 +468,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{ဒေါင်းလုဒ် ၁ ခု လုပ်ပြီးပါပြီ။}other{ဒေါင်းလုဒ် # ခု လုပ်ပြီးပါပြီ။}}</translation>
 <translation id="4766678251456904326">စက်သို့ အကောင့်ထည့်ရန်</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{ဒေါင်းလုဒ် 1 ခု စီစဉ်ထားသည်။}other{ဒေါင်းလုဒ် # ခု စီစဉ်ထားသည်။}}</translation>
-<translation id="478981486571169252">သင်၏ <ph name="SITE_NAME" /> လက်မှတ်ထိုးဝင်မှု အခြေအနေ၊ ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာနှင့် ဝဘ်ဆိုက်ဒေတာများကို Chrome တွင် မြင်ရပါမည်။</translation>
 <translation id="4802417911091824046">စကားဝှက်စာ အသွင်ဝှက်ခြင်းတွင် ငွေပေးချေနည်းလမ်းများနှင့် Google Pay မှ လိပ်စာများ မပါဝင်ပါ။
 
 ဤဆက်တင်ကို ပြောင်းရန် <ph name="BEGIN_LINK" />စင့်ခ်လုပ်ခြင်းကို ပြင်ဆင်သတ်မှတ်ပါ<ph name="END_LINK" /></translation>
@@ -512,7 +512,6 @@
 <translation id="5040262127954254034">ကိုယ်ရေး</translation>
 <translation id="5087580092889165836">ကတ်ကိုထည့်ရန်</translation>
 <translation id="509429900233858213">အမှား တစ်ခု ကြုံခဲ့ရသည်။</translation>
-<translation id="5100748015044654621">အက်ပ်အတွင်းတွင် အထူးအသားပေးစာသားသို့ လင့်ခ် မျှဝေရန်</translation>
 <translation id="510275257476243843">၁ နာရီ ကျန်သည်</translation>
 <translation id="5123685120097942451">ရုပ်ဖျက်တဘ်</translation>
 <translation id="5127805178023152808">စင့် ပိတ်ထား၏</translation>
@@ -678,6 +677,7 @@
 <translation id="6341580099087024258">ဖိုင်များ သိမ်းရန် နေရာကို မေးမြန်းပါ</translation>
 <translation id="6342069812937806050">ယခုပင်</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ခု}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ခု}}</translation>
+<translation id="6345878117466430440">ဖတ်ပြီးဟု မှတ်သားရန်</translation>
 <translation id="6364438453358674297">အကြံပေးချက်ကို မှတ်တမ်း ထဲမှ ဖယ်ရှားမလား?</translation>
 <translation id="6366047038980456022">အွန်လိုင်းတွင် လုံခြုံစွာ အသုံးပြုရန်၊ ပြုလုပ်ရန်နှင့် စူးစမ်းရန်အတွက် သင်လိုအပ်သည့် ချက်ခြာပါးနပ်သည့်စနစ်နှင့် အမြန်နှုန်းတို့ <ph name="APP_NAME" /> တွင် ရှိသည်</translation>
 <translation id="6378173571450987352">အသေးစိတ်များ− အသုံးပြုသည့် ဒေတာပမာဏအလိုက် စီထားသည်</translation>
@@ -993,6 +993,7 @@
 <translation id="8655129584991699539">ဒေတာများကို 'Chrome ဆက်တင်များ' တွင် ရှင်းထုတ်နိုင်သည်</translation>
 <translation id="8662811608048051533">သင့်ကို ဝက်ဆိုက်အများစုမှ ထွက်သွားစေပါမည်။</translation>
 <translation id="8664979001105139458">ဖိုင်အမည် ရှိပြီးသားဖြစ်သည်</translation>
+<translation id="8683039184091909753">ပုံ</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{လိုင်းဆွဲအားအဆင့်- # ဘား}other{လိုင်းဆွဲအားအဆင့်- # ဘား}}</translation>
 <translation id="869891660844655955">သက်တမ်း ကုန်ဆုံးရက်</translation>
 <translation id="8712637175834984815">ရပါပြီ!</translation>

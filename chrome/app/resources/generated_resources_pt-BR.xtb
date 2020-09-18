@@ -374,6 +374,7 @@
 <translation id="143027896309062157">Ler e modificar todos os dados no seu computador e nos sites que você visitar</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1431188203598586230">Atualização de software final</translation>
+<translation id="1431402976894535801">Impedir que sites saibam quando você está presente</translation>
 <translation id="1431432486300429272">O Google pode usar seu histórico de navegação para personalizar a Pesquisa e outros Serviços do Google Você ou seu pai/mãe pode mudar essa configuração a qualquer momento em myaccount.google.com/activitycontrols/search</translation>
 <translation id="1432581352905426595">Gerenciar mecanismos de pesquisa</translation>
 <translation id="1433811987160647649">Perguntar antes de acessar</translation>
@@ -427,6 +428,7 @@
 <translation id="1500297251995790841">Dispositivo desconhecido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Esta conta de proprietário precisa ser a primeira conta a fazer login em uma sessão de login múltiplo.</translation>
 <translation id="150411034776756821">Remover <ph name="SITE" /></translation>
+<translation id="1504311855864906891">Usar legendas na sua mídia</translation>
 <translation id="1504551620756424144">As pastas compartilhadas estão disponíveis no Windows em <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Mecanismo de pesquisa</translation>
 <translation id="1507170440449692343">Esta página foi impedida de acessar sua câmera.</translation>
@@ -569,6 +571,7 @@
 <translation id="1651008383952180276">Informe a mesma senha longa duas vezes</translation>
 <translation id="1652326691684645429">Ativar o "Compartilhar por proximidade"</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Adicionar a impressora ao Google Cloud Print para poder imprimir de qualquer lugar.}one{Adicionar # impressoras ao Google Cloud Print para poder imprimir de qualquer lugar.}other{Adicionar # impressoras ao Google Cloud Print para poder imprimir de qualquer lugar.}}</translation>
+<translation id="1653575510930452864">Copiar link para texto</translation>
 <translation id="1656528038316521561">Opacidade do plano de fundo</translation>
 <translation id="1657406563541664238">Ajudar a tornar o <ph name="PRODUCT_NAME" /> melhor enviando automaticamente estatísticas de uso e relatórios de problemas ao Google.</translation>
 <translation id="1657937299377480641">Para fazer login novamente e ter acesso a recursos educacionais, peça permissão a um dos responsáveis</translation>
@@ -1002,6 +1005,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2178614541317717477">Compromisso da autoridade de certificação</translation>
 <translation id="2182058453334755893">Copiado para a área de transferência</translation>
 <translation id="2184515124301515068">Permitir que Chrome defina quando os sites podem reproduzir sons (recomendado)</translation>
+<translation id="2187243482123994665">Presença do usuário</translation>
 <translation id="2187675480456493911">Sincronizada com outros dispositivos na sua conta. As configurações modificadas por outros usuários não serão sincronizadas. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Erro de importação do certificado de servidor</translation>
 <translation id="2187906491731510095">Extensões atualizadas</translation>
@@ -1190,7 +1194,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2396783860772170191">Insira o PIN de quatro dígitos (0000-9999)</translation>
 <translation id="2399939490305346086">Dados de login da chave de segurança</translation>
 <translation id="2400664245143453337">Atualização imediata necessária</translation>
-<translation id="2407481962792080328">Quando você faz login na sua Conta do Google, este recurso é ativado</translation>
 <translation id="2408018932941436077">Salvando cartão</translation>
 <translation id="2408955596600435184">Informe seu PIN</translation>
 <translation id="241082044617551207">Plug-in desconhecido</translation>
@@ -1830,6 +1833,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3163201441334626963">Produto <ph name="PRODUCT_ID" /> desconhecido do fornecedor <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Os serviços a seguir ajudam a proteger seus dados. Esses recursos podem ser desativados a qualquer momento.</translation>
 <translation id="3164329792803560526">Compartilhando esta guia com <ph name="APP_NAME" /></translation>
+<translation id="3165371858310906303">Perguntar quando um site quiser saber quando você está presente</translation>
 <translation id="3165390001037658081">Algumas operadoras podem bloquear esse recurso.</translation>
 <translation id="316652501498554287">Contas do G Suite for Education</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2948,6 +2952,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4527186207340858212">Criar um novo perfil de trabalho?</translation>
 <translation id="452750746583162491">Revisar seus dados sincronizados</translation>
 <translation id="4530494379350999373">Origem</translation>
+<translation id="4531924570968473143">Quem você quer adicionar a este <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4532646538815530781">Este site está usando os sensores de movimento.</translation>
 <translation id="4533846798469727141">Agora diga "Ei Google"</translation>
 <translation id="4533985347672295764">Tempo de CPU</translation>
@@ -3067,6 +3072,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4657810666108475055">Pesquisa de guias</translation>
 <translation id="465878909996028221">Apenas os protocolos http, https e file são compatíveis com redirecionamentos do navegador.</translation>
 <translation id="4659077111144409915">Conta principal</translation>
+<translation id="4659126640776004816">Quando você faz login na sua Conta do Google, este recurso é ativado.</translation>
 <translation id="4660476621274971848">A versão esperada era "<ph name="EXPECTED_VERSION" />", mas a instalada foi a "<ph name="NEW_ID" />"</translation>
 <translation id="4660540330091848931">Redimensionando</translation>
 <translation id="4661407454952063730">Os dados de apps podem ser quaisquer dados que um app tenha salvo (com base nas configurações do desenvolvedor), incluindo dados como contatos, mensagens e fotos.</translation>
@@ -3132,7 +3138,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4750394297954878236">Sugestões</translation>
 <translation id="475088594373173692">Primeiro usuário</translation>
 <translation id="4751476147751820511">Sensores de luz ou movimento</translation>
-<translation id="4752124003533492687">Abra as configurações para conectar o <ph name="USB_DEVICE_NAME" /></translation>
 <translation id="4756378406049221019">Parar/Recarregar</translation>
 <translation id="4756388243121344051">&amp;Histórico</translation>
 <translation id="4759238208242260848">Downloads</translation>
@@ -3980,6 +3985,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5805697420284793859">Gerenciador de janelas</translation>
 <translation id="5806773519584576205">0° (Padrão)</translation>
+<translation id="5808664694611589238">{0,plural, =1{Fechar modo visitante}one{Fechar modo visitante}other{Fechar modo visitante}}</translation>
 <translation id="5810809306422959727">Esta conta não está qualificada para o controle dos pais</translation>
 <translation id="5812674658566766066">Expandir tudo</translation>
 <translation id="5814126672212206791">Tipo de conexão</translation>
@@ -4438,6 +4444,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6344170822609224263">Acessar lista de conexões de rede</translation>
 <translation id="6344576354370880196">Impressoras salvas</translation>
 <translation id="6345418402353744910">É preciso inserir seu nome de usuário e sua senha para o proxy <ph name="PROXY" />. Assim, o administrador poderá configurar sua rede.</translation>
+<translation id="6345878117466430440">Marcar como lido</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">A sincronização não está funcionando. Tente sair e fazer login novamente.</translation>
 <translation id="6351063337294363751">É possível limpar seus dados de navegação desse menu</translation>
@@ -5024,6 +5031,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7075513071073410194">PKCS #1 MD5 com criptografia RSA</translation>
 <translation id="7075625805486468288">Gerencia configurações e certificados HTTPS/SSL</translation>
 <translation id="7076293881109082629">Como fazer login</translation>
+<translation id="7076878155205969899">Desativar som</translation>
 <translation id="7077829361966535409">Houve uma falha no carregamento da página de login usando as configurações de proxy atuais. <ph name="GAIA_RELOAD_LINK_START" />Tente fazer login novamente<ph name="GAIA_RELOAD_LINK_END" /> ou use <ph name="PROXY_SETTINGS_LINK_START" />configurações de proxy<ph name="PROXY_SETTINGS_LINK_END" /> diferentes.</translation>
 <translation id="7078120482318506217">Todas as redes</translation>
 <translation id="708060913198414444">C&amp;opiar endereço do áudio</translation>
@@ -5044,7 +5052,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7099337801055912064">Não é possível carregar um PPD grande. O tamanho máximo é 250 KB.</translation>
 <translation id="7102687220333134671">As atualizações automáticas estão ativadas</translation>
 <translation id="7102832101143475489">A solicitação expirou</translation>
-<translation id="7105390788077117391">Preferências de USB</translation>
 <translation id="710640343305609397">Abrir configurações de rede</translation>
 <translation id="7108338896283013870">Ocultar</translation>
 <translation id="7108668606237948702">enter</translation>
@@ -5074,7 +5081,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7136694880210472378">Tornar padrão</translation>
 <translation id="7136984461011502314">Bem-vindo ao <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Ocorreu um erro. Tente novamente escolhendo outras imagens.</translation>
-<translation id="7138678301420049075">Outro</translation>
 <translation id="713888829801648570">Sua senha não pôde ser confirmada porque você está off-line.</translation>
 <translation id="7140928199327930795">Nenhum outro dispositivo disponível.</translation>
 <translation id="7141105143012495934">O login falhou porque não foi possível recuperar detalhes da sua conta. Entre em contato com o administrador ou tente novamente.</translation>
@@ -5181,6 +5187,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7280649757394340890">Configurações da conversão de texto em voz</translation>
 <translation id="7280877790564589615">Permissão solicitada</translation>
 <translation id="7282992757463864530">Barra de informações</translation>
+<translation id="7284411326658527427">Cada pessoa pode personalizar a própria conta e manter os dados privados.</translation>
 <translation id="7287143125007575591">Acesso negado.</translation>
 <translation id="7287411021188441799">Restaurar plano de fundo padrão</translation>
 <translation id="7288013116963835700">Remover Linux para <ph name="DEVICE_TYPE" /></translation>
@@ -5757,6 +5764,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7963826112438303517">O Assistente usa essas gravações e as solicitações por voz para criar e atualizar seu modelo de voz, que é armazenado apenas em dispositivos com o Voice Match ativado. Veja ou altere as atividades de voz nas configurações do Assistente.</translation>
 <translation id="7966241909927244760">C&amp;opiar endereço da imagem</translation>
 <translation id="7968072247663421402">Opções do provedor</translation>
+<translation id="7968198493605442410">Copiar link para texto</translation>
 <translation id="7968742106503422125">Ler e modificar os dados que você copia e cola</translation>
 <translation id="7968833647796919681">Ativar coleta de dados de desempenho</translation>
 <translation id="7968982339740310781">Visualizar detalhes</translation>
@@ -6137,6 +6145,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8428213095426709021">Configurações</translation>
 <translation id="8428271547607112339">Adicionar conta escolar</translation>
 <translation id="8428628598981198790">Sua chave de segurança não pode ser usada com este site</translation>
+<translation id="8428634594422941299">Entendi</translation>
 <translation id="84297032718407999">Você será desconectado em <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Mostrar toques</translation>
 <translation id="8431909052837336408">Alterar PIN do chip</translation>

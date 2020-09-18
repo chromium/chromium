@@ -39,6 +39,7 @@
 <translation id="123724288017357924">കാഷെ ചെയ്‌ത ഉള്ളടക്കം ഒഴിവാക്കി കൊണ്ട്, നിലവിലെ പേജ് റീലോഡ് ചെയ്യുക</translation>
 <translation id="124678866338384709">നിലവിലെ ടാബ് അടയ്‌ക്കുക</translation>
 <translation id="1258753120186372309">Google ഡൂഡിൽ: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">വായനാ ലിസ്റ്റ്</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> പങ്കിടാനായില്ല</translation>
 <translation id="1283039547216852943">വികസിപ്പിക്കാൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="1291207594882862231">ചരിത്രവും കുക്കികളും സൈറ്റ് വിവരവും കാഷെയും മായ്‌ക്കുക...</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">പെട്ടെന്ന് തിരയാനോ ബന്ധപ്പെട്ട പ്രവർത്തനങ്ങൾ കാണാനോ ഒരു വാക്കിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="2760989362628427051">നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഇരുണ്ട തീമോ ബാറ്ററി ലാഭിക്കലോ ഓണായിരിക്കുമ്പോൾ ഇരുണ്ട തീം ഓണാക്കുക</translation>
 <translation id="2762000892062317888">ഇപ്പോൾ</translation>
-<translation id="2771869497727323769">ടെക്സ്റ്റിലേക്കുള്ള ലിങ്ക് സൃഷ്ടിക്കാനാകില്ല. പേജിലേക്കുള്ള ലിങ്ക് ആപ്പിൽ പങ്കിടുക.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> സെക്കൻഡ് ശേഷിക്കുന്നു</translation>
 <translation id="2779651927720337254">പരാജയപ്പെട്ടു</translation>
 <translation id="2781151931089541271">ഒരു സെക്കൻഡ് ശേഷിക്കുന്നു</translation>
@@ -467,7 +467,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{ഒരു ഡൗൺലോഡ് പൂർത്തിയായി.}other{# ഡൗൺലോഡുകൾ പൂർത്തിയായി.}}</translation>
 <translation id="4766678251456904326">ഉപകരണത്തിലേക്ക് ഒരു അക്കൗണ്ട് ചേർക്കുക</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{ഒരു ഡൗൺലോഡ് ഷെഡ്യൂൾ ചെയ്‌തു.}other{# ഡൗൺലോഡുകൾ ഷെഡ്യൂൾ ചെയ്‌തു.}}</translation>
-<translation id="478981486571169252">നിങ്ങളുടെ <ph name="SITE_NAME" />-ന്റെ സൈൻ ഇൻ സ്‌റ്റാറ്റസ്, ബ്രൗസിംഗ് ഡാറ്റ, സൈറ്റ് ഡാറ്റ എന്നിവ Chrome-ൽ കാണാനാകും.</translation>
 <translation id="4802417911091824046">പാസ്‌ഫ്രെയ്‌സ് എൻക്രി‌പ്ഷനിൽ, Google Pay-ൽ നിന്നുള്ള പേയ്മെന്‍റ് രീതികളും വിലാസങ്ങളും ഉൾപ്പെടുന്നില്ല.
 
 ഈ ക്രമീകരണം മാറ്റാൻ, <ph name="BEGIN_LINK" />സമന്വയം പുനഃക്രമീകരിക്കുക<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@
 <translation id="5040262127954254034">സ്വകാര്യത</translation>
 <translation id="5087580092889165836">കാർഡ് ചേർക്കുക</translation>
 <translation id="509429900233858213">ഒരു പിശക് സംഭവിച്ചു.</translation>
-<translation id="5100748015044654621">ഹൈലൈറ്റ് ചെയ്ത ടെക്സ്റ്റിലേക്കുള്ള ലിങ്ക് ആപ്പിൽ പങ്കിടുക</translation>
 <translation id="510275257476243843">ഒരു മണിക്കൂർ ശേഷിക്കുന്നു</translation>
 <translation id="5123685120097942451">അദൃശ്യ ടാബ്</translation>
 <translation id="5127805178023152808">സമന്വയം ഓഫാണ്</translation>

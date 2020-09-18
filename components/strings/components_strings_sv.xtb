@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">återansluta till Wi-Fi</translation>
 <translation id="1165039591588034296">Fel</translation>
 <translation id="1165174597379888365">En sida besöks</translation>
+<translation id="1174723505405632867">Vill du tillåta att <ph name="EMBEDDED_URL" /> använder cookies och webbplatsdata på <ph name="TOP_LEVEL_URL" />?
+
+Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan innehållet du öppnade fungera korrekt, men det kan hända att <ph name="EMBEDDED_URL" /> kan registrera din aktivitet.</translation>
 <translation id="1175364870820465910">Skriv &amp;ut...</translation>
 <translation id="1175875016430184367">Tre häftklamrar till höger</translation>
 <translation id="1178581264944972037">Paus</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Policyer</translation>
 <translation id="2183608646556468874">Telefonnummer</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adress}other{# adresser}}</translation>
+<translation id="2187243482123994665">Användarens närvaro</translation>
 <translation id="2187317261103489799">Identifiera (standard)</translation>
 <translation id="2188375229972301266">Flera hål längst ned</translation>
 <translation id="2202020181578195191">Ange ett giltigt utgångsår</translation>
@@ -533,6 +537,7 @@
       kontrollera att proxyservern fungerar. Om du inte tror att du ska
       använda en proxyserver:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> vill registrera om du är närvarande</translation>
 <translation id="3188393374551744535">Kontosaldo</translation>
 <translation id="3194737229810486521"><ph name="URL" /> vill lagra data permanent på din enhet</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> på <ph name="SERVER_NAME" /></translation>
@@ -1025,6 +1030,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Dator</translation>
 <translation id="5179510805599951267">Inte på <ph name="ORIGINAL_LANGUAGE" />? Rapportera felet</translation>
+<translation id="5179740473595559246">Registrera om du är närvarande</translation>
 <translation id="5190835502935405962">Bokmärkesfältet</translation>
 <translation id="519422657042045905">Kommentering är inte tillgängligt</translation>
 <translation id="5201306358585911203">På en inbäddad sida på den här sidan står det</translation>
@@ -1247,6 +1253,7 @@
 <translation id="6049488691372270142">Sidvisning</translation>
 <translation id="6051221802930200923">Du kan inte besöka <ph name="SITE" /> just nu eftersom tekniken att fästa certifikat används på webbplatsen. Nätverksfel och attacker är ofta tillfälliga, så sidan kommer förmodligen att fungera senare.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Vill du dela information om din närvaro?</translation>
 <translation id="6058977677006700226">Vill du använda dina kort på alla enheter?</translation>
 <translation id="6059925163896151826">USB-enheter</translation>
 <translation id="6060009363608157444">Ogiltigt läge för DnsOverHttps.</translation>
@@ -1376,6 +1383,7 @@
 <translation id="6631202559048444592">Den här principen har fler än en källa, men med samma värden.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Rensa</translation>
+<translation id="6645291930348198241">få åtkomst till cookies och webbplatsdata.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Ingen}=1{Från 1 webbplats (du loggas inte ut från Google-kontot)}other{Från # webbplatser (du loggas inte ut från Google-kontot)}}</translation>
 <translation id="6648459603387803038">Administratören kan ändra webbläsarinställningarna på distans. Aktivitet på den här enheten kan hanteras även utanför Chrome.</translation>
 <translation id="6652101503459149953">Använd Windows Hello</translation>

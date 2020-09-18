@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Znovu sa pripojiť k sieti Wi‑Fi</translation>
 <translation id="1165039591588034296">Chyba</translation>
 <translation id="1165174597379888365">Navštívenie stránky</translation>
+<translation id="1174723505405632867">Chcete povoliť webu <ph name="EMBEDDED_URL" /> používať súbory cookie a údaje webu na <ph name="TOP_LEVEL_URL" />?
+
+Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia. Umožníte tak správne fungovanie používaného obsahu, ale zároveň tým môžete umožniť webu <ph name="EMBEDDED_URL" /> sledovať vašu aktivitu.</translation>
 <translation id="1175364870820465910">&amp;Tlačiť...</translation>
 <translation id="1175875016430184367">Tri spinky vpravo</translation>
 <translation id="1178581264944972037">Pozastaviť</translation>
@@ -305,6 +308,7 @@
 <translation id="2181821976797666341">Pravidlá</translation>
 <translation id="2183608646556468874">Telefónne číslo</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresa}few{# adresy}many{# adresy}other{# adries}}</translation>
+<translation id="2187243482123994665">Prítomnosť používateľa</translation>
 <translation id="2187317261103489799">Rozpoznávať (predvolené)</translation>
 <translation id="2188375229972301266">Viacero dierok dole</translation>
 <translation id="2202020181578195191">Zadajte platný rok vypršania platnosti</translation>
@@ -524,6 +528,7 @@
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174168572213147020">Ostrov</translation>
 <translation id="3176929007561373547">Skontrolujte nastavenia proxy servera alebo kontaktujte správcu siete a požiadajte ho, aby skontroloval, či proxy server funguje. Ak sa domnievate, že by ste nemali používať proxy server: <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> chce vedieť, kedy ste prítomný/-á</translation>
 <translation id="3188393374551744535">Zostatok na účte</translation>
 <translation id="3194737229810486521"><ph name="URL" /> chce natrvalo ukladať dáta vo vašom zariadení</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> na serveri <ph name="SERVER_NAME" /></translation>
@@ -1010,6 +1015,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Počítač</translation>
 <translation id="5179510805599951267">Text sa nezobrazil v jazyku <ph name="ORIGINAL_LANGUAGE" />? Nahláste túto chybu</translation>
+<translation id="5179740473595559246">Vedieť, kedy ste prítomný/-á</translation>
 <translation id="5190835502935405962">Panel so záložkami</translation>
 <translation id="519422657042045905">Anotácia nie je k dispozícii</translation>
 <translation id="5201306358585911203">Vložená stránka na tejto stránke hovorí</translation>
@@ -1232,6 +1238,7 @@
 <translation id="6049488691372270142">Doručenie strany</translation>
 <translation id="6051221802930200923">Web <ph name="SITE" /> momentálne nemôžete navštíviť, pretože používa pripínanie certifikátov. Chyby siete a útoky sú zvyčajne dočasné, takže by táto stránka mala neskôr pravdepodobne fungovať.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Chcete informovať o svojej prítomnosti?</translation>
 <translation id="6058977677006700226">Chcete použiť svoje karty vo všetkých zariadeniach?</translation>
 <translation id="6059925163896151826">Zariadenia USB</translation>
 <translation id="6060009363608157444">Neplatný režim DnsOverHttps.</translation>
@@ -1360,6 +1367,7 @@
 <translation id="6631202559048444592">V rámci tohto pravidla je k dispozícii viacero zdrojov, ale ich hodnoty sú rovnaké.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Vymazať</translation>
+<translation id="6645291930348198241">Používať súbory cookie a údaje webov.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Žiadne}=1{Z 1 webu (neodhlásime vás z účtu Google)}few{Z # webov (neodhlásime vás z účtu Google)}many{From # sites (you won't be signed out of your Google Account)}other{Z # webov (neodhlásime vás z účtu Google)}}</translation>
 <translation id="6648459603387803038">Nastavenia prehliadača môže vzdialene zmeniť správca. Aktivita v tomto zariadení môže byť tiež spravovaná mimo Chromu.</translation>
 <translation id="6652101503459149953">Použiť Windows Hello</translation>

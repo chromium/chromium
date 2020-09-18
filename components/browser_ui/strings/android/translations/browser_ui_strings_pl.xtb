@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Strona <ph name="SITE_NAME" /> została dodana</translation>
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="1384959399684842514">Pobieranie wstrzymane</translation>
+<translation id="1431402976894535801">Nie pozwalaj stronom sprawdzać, czy aktualnie używasz urządzenia</translation>
 <translation id="1446450296470737166">Pełne sterowanie urządzeniami MIDI</translation>
 <translation id="1509960214886564027">Funkcje wielu stron mogą nie działać prawidłowo</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">Otwórz aplikację błyskawiczną</translation>
 <translation id="2148716181193084225">Dzisiaj</translation>
 <translation id="2182457891543959921">Pytaj, zanim zezwolisz stronom na tworzenie mapy 3D Twojego otoczenia lub śledzenie pozycji kamery (zalecane)</translation>
+<translation id="2187243482123994665">Obecność użytkownika</translation>
 <translation id="2212565012507486665">Zezwalaj na pliki cookie</translation>
 <translation id="2228071138934252756">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do aparatu, musisz go też włączyć w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="2289270750774289114">Pytaj, gdy strona chce wykryć urządzenia Bluetooth w pobliżu (zalecane)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">Odtwarzacz</translation>
 <translation id="3115898365077584848">Pokaż informacje</translation>
 <translation id="3123473560110926937">Blokowane na niektórych stronach</translation>
+<translation id="3165371858310906303">Pytaj, gdy strona chce wiedzieć, kiedy używasz urządzenia</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> zapisanych danych</translation>
 <translation id="321187648315454507">Aby zezwolić aplikacji <ph name="APP_NAME" /> na wysyłanie do Ciebie powiadomień, musisz je też włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -104,7 +107,6 @@
 <translation id="4165986682804962316">Ustawienia witryn</translation>
 <translation id="4200726100658658164">Otwórz ustawienia lokalizacji</translation>
 <translation id="4226663524361240545">Powiadomienia będą sygnalizowane wibracjami</translation>
-<translation id="4242533952199664413">Otwórz ustawienia</translation>
 <translation id="4259722352634471385">Adres zablokowany: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Dopuszczone</translation>
 <translation id="429312253194641664">Strona odtwarza multimedia</translation>
@@ -134,6 +136,7 @@
 <translation id="5197729504361054390">Wybrane kontakty zostaną udostępnione witrynie <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Pokaż</translation>
 <translation id="5301954838959518834">Rozumiem</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" /></translation>
 <translation id="5313967007315987356">Dodaj stronę</translation>
 <translation id="5317780077021120954">Zapisz</translation>
 <translation id="5335288049665977812">Zezwalaj na wykonywanie kodu JavaScript w witrynach (zalecane)</translation>
@@ -145,6 +148,7 @@
 <translation id="5403592356182871684">Nazwy</translation>
 <translation id="5489227211564503167">Upłynęło: <ph name="ELAPSED_TIME" /> z <ph name="TOTAL_TIME" /></translation>
 <translation id="5494752089476963479">Blokuj reklamy na stronach, które wyświetlają reklamy uciążliwe lub wprowadzające w błąd</translation>
+<translation id="5502860503640766021">Dozwolone: <ph name="PERMISSION_1" />, zablokowane: <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Strony nie mogą prosić o zgodę na wysyłanie powiadomień</translation>
 <translation id="5516455585884385570">Otwórz ustawienia powiadomień</translation>
 <translation id="5527111080432883924">Pytaj, czy zezwolić stronom na odczytywanie tekstu i obrazów ze schowka (zalecane)</translation>
@@ -156,12 +160,15 @@
 <translation id="5690795753582697420">Kamera jest wyłączona w ustawieniach Androida</translation>
 <translation id="5710871682236653961">Pytaj, zanim zezwolisz stronom na wysyłanie i odbieranie informacji po dotknięciu urządzeń z funkcją NFC (zalecane)</translation>
 <translation id="5719847187258001597">Spowoduje to usunięcie wszystkich danych i plików cookie zapisanych przez stronę <ph name="ORIGIN" /> lub jej aplikację na ekranie głównym.</translation>
+<translation id="5771720122942595109">Zablokowane: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Uprawnienia</translation>
 <translation id="5860033963881614850">Wyłączone</translation>
+<translation id="5863245810240683687">Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" /></translation>
 <translation id="5876056640971328065">Wstrzymaj film</translation>
 <translation id="5916664084637901428">Włączone</translation>
 <translation id="5922853908706496913">Udostępnianie ekranu</translation>
 <translation id="5939518447894949180">Resetuj</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Zarządzaj dostępem tej strony do Twojego urządzenia</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6042308850641462728">Więcej</translation>
@@ -173,6 +180,7 @@
 <translation id="6196640612572343990">Blokuj pliki cookie innych firm</translation>
 <translation id="6206551242102657620">Połączenie jest bezpieczne. Informacje o witrynie</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> – opcje</translation>
+<translation id="6262279340360821358">Zablokowane: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Strony mogą prosić o zgodę na wysyłanie powiadomień</translation>
 <translation id="6295158916970320988">Wszystkie witryny</translation>
 <translation id="6320088164292336938">Wibracje</translation>
@@ -195,6 +203,7 @@
 <translation id="6790428901817661496">Odtwórz</translation>
 <translation id="6818926723028410516">Wybierz elementy</translation>
 <translation id="6864395892908308021">To urządzenie nie obsługuje NFC</translation>
+<translation id="6879016579615558281">Zablokowane: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" /></translation>
 <translation id="6910211073230771657">Usunięto</translation>
 <translation id="6912998170423641340">Zablokuj stronom możliwość odczytywania tekstu i obrazów ze schowka</translation>
 <translation id="6945221475159498467">Wybierz</translation>
@@ -212,6 +221,7 @@
 <translation id="723171743924126238">Wybierz zdjęcia</translation>
 <translation id="7243308994586599757">Opcje dostępne u dołu ekranu</translation>
 <translation id="7250468141469952378">Wybrano <ph name="ITEM_COUNT" /></translation>
+<translation id="7260727271532453612">Dozwolone: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="7302486331832100261">Zazwyczaj blokujesz powiadomienia. Aby na nie zezwolić, kliknij Szczegóły.</translation>
 <translation id="7423098979219808738">Najpierw zapytaj</translation>
 <translation id="7423538860840206698">Zablokowano odczytywanie schowka</translation>
@@ -243,6 +253,7 @@
 <translation id="8087000398470557479">Treść z <ph name="DOMAIN_NAME" /> dostarczana przez Google.</translation>
 <translation id="8116925261070264013">Wyciszone</translation>
 <translation id="8131740175452115882">Potwierdź</translation>
+<translation id="8197286292360124385">Dozwolone: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Wznów</translation>
 <translation id="8206354486702514201">O tym ustawieniu decyduje administrator.</translation>
 <translation id="8249310407154411074">Przenieś na początek</translation>

@@ -3,12 +3,10 @@
 <translationbundle lang="fi">
 <translation id="2359808026110333948">Jatka</translation>
 <translation id="2416359993254398973">Chrome tarvitsee oikeuden käyttää kameraasi tällä sivustolla.</translation>
-<translation id="4955546094786399712">Jos haluat muuttaa tämän sivuston käyttölupia, sulje toinen sovellus ja yritä uudelleen.\n\nJos et voi sulkea sovellusta, mene Androidin asetuksiin ja poista sovelluksen lupa näkyä muiden päällä.</translation>
 <translation id="557283862590186398">Chrome tarvitsee oikeuden käyttää mikrofoniasi tällä sivustolla.</translation>
 <translation id="5860491529813859533">Ota käyttöön</translation>
 <translation id="6092062101542170135">Laita NFC päälle Android-laitteella jatkaaksesi</translation>
 <translation id="6393863479814692971">Chrome tarvitsee oikeuden käyttää kameraasi ja mikrofoniasi tällä sivustolla.</translation>
 <translation id="6697947395630195233">Chrome tarvitsee oikeuden käyttää sijaintiasi, jotta se voidaan jakaa tämän sivuston kanssa.</translation>
 <translation id="7134415045456331657">Chrome tarvitsee luvan käyttää kameraasi ympäristön 3D-kartoittamiseen.</translation>
-<translation id="7681341492080683492">Toinen sovellus näkyy tämän päällä: <ph name="APP_NAME" /></translation>
 </translationbundle>

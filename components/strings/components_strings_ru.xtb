@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Подключитесь к сети Wi-Fi ещё раз.</translation>
 <translation id="1165039591588034296">Ошибка</translation>
 <translation id="1165174597379888365">Посещена страница</translation>
+<translation id="1174723505405632867">Разрешить сайту <ph name="EMBEDDED_URL" /> использовать файлы cookie и данные сайта <ph name="TOP_LEVEL_URL" />?
+
+Если вы не предоставите разрешение, доступ будет заблокирован настройками конфиденциальности. Если вы предоставите разрешение, контент, с которым вы взаимодействуете, будет отображаться корректно, однако сайт <ph name="EMBEDDED_URL" /> получит доступ к сведениям о ваших действиях.</translation>
 <translation id="1175364870820465910">&amp;Печать...</translation>
 <translation id="1175875016430184367">Три скобы справа</translation>
 <translation id="1178581264944972037">Пауза</translation>
@@ -305,6 +308,7 @@
 <translation id="2181821976797666341">Правила</translation>
 <translation id="2183608646556468874">Номер телефона</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 адрес}one{# адрес}few{# адреса}many{# адресов}other{# адреса}}</translation>
+<translation id="2187243482123994665">Присутствие пользователя</translation>
 <translation id="2187317261103489799">Определять (по умолчанию)</translation>
 <translation id="2188375229972301266">Несколько отверстий снизу</translation>
 <translation id="2202020181578195191">Недопустимый формат года.</translation>
@@ -526,6 +530,7 @@
 <translation id="3176929007561373547">Проверьте настройки прокси-сервера или попросите администратора
           задать верные параметры. В противном случае^
           <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456">Сайт <ph name="URL" /> запрашивает информацию о вашем присутствии.</translation>
 <translation id="3188393374551744535">Баланс</translation>
 <translation id="3194737229810486521">Сайт <ph name="URL" /> запрашивает разрешение на постоянное хранение данных на вашем устройстве.</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на <ph name="SERVER_NAME" /></translation>
@@ -1013,6 +1018,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Локальный компьютер</translation>
 <translation id="5179510805599951267">Это не <ph name="ORIGINAL_LANGUAGE" />? Сообщите об ошибке</translation>
+<translation id="5179740473595559246">Сообщать о вашем присутствии.</translation>
 <translation id="5190835502935405962">Панель закладок</translation>
 <translation id="519422657042045905">В этот PDF-файл нельзя добавлять заметки</translation>
 <translation id="5201306358585911203">Подтвердите действие</translation>
@@ -1235,6 +1241,7 @@
 <translation id="6049488691372270142">Выдача страниц</translation>
 <translation id="6051221802930200923">Веб-сайт <ph name="SITE" /> использует механизм Certificate Pinning, поэтому на нем могла произойти подмена сертификата. Открыть сайт в настоящее время нельзя. Сбой мог быть вызван сетевой ошибкой или действиями злоумышленников. Скорее всего, сайт заработает через некоторое время.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Передавать информацию о вашем присутствии?</translation>
 <translation id="6058977677006700226">Хотите использовать карты на всех устройствах?</translation>
 <translation id="6059925163896151826">USB-устройства</translation>
 <translation id="6060009363608157444">Недопустимый режим DnsOverHttps.</translation>
@@ -1364,6 +1371,7 @@
 <translation id="6631202559048444592">Для этого правила существует более одного источника с одинаковыми значениями.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Удалить</translation>
+<translation id="6645291930348198241">Доступ к файлам cookie и данным сайта.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Нет}=1{С 1 сайта (вы останетесь в аккаунте Google)}one{С # сайта (вы останетесь в аккаунте Google)}few{С # сайтов (вы останетесь в аккаунте Google)}many{С # сайтов (вы останетесь в аккаунте Google)}other{С # сайта (вы останетесь в аккаунте Google)}}</translation>
 <translation id="6648459603387803038">Администратор может удаленно менять настройки браузера и управлять действиями вне браузера Chrome на этом устройстве.</translation>
 <translation id="6652101503459149953">Использовать Windows Hello</translation>

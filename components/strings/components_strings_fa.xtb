@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">‏اتصال مجدد به Wi-Fi</translation>
 <translation id="1165039591588034296">خطا</translation>
 <translation id="1165174597379888365">صفحه بازدید شده است</translation>
+<translation id="1174723505405632867">می‌خواهید به <ph name="EMBEDDED_URL" /> اجازه دهید از کوکی‌ها و داده‌های سایت در <ph name="TOP_LEVEL_URL" /> استفاده کند؟
+
+اگر اجازه ندهید، تنظیمات حریم‌خصوصی مانع از این دسترسی می‌شود. این اجازه کمک می‌کند محتوایی که با آن تعامل داشته‌اید درست کار کند، اما می‌تواند به <ph name="EMBEDDED_URL" /> هم اجازه دهد فعالیت شما را ردیابی کند.</translation>
 <translation id="1175364870820465910">&amp;چاپ...</translation>
 <translation id="1175875016430184367">سه منگنه در راست</translation>
 <translation id="1178581264944972037">مکث</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">خط‌ مشی‌ها</translation>
 <translation id="2183608646556468874">شماره تلفن</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{۱ نشانی}one{# نشانی}other{# نشانی}}</translation>
+<translation id="2187243482123994665">حضور کاربر</translation>
 <translation id="2187317261103489799">تشخیص (پیش‌فرض)</translation>
 <translation id="2188375229972301266">چندین سوراخ در پایین</translation>
 <translation id="2202020181578195191">سال انقضای معتبری وارد کنید</translation>
@@ -531,6 +535,7 @@
       مطمئن شوید سرور پروکسی کار می‌کند. اگر مطمئن نیستید که باید از سرور
       پروکسی استفاده کنید:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> می‌خواهد از وضعیت حضور شما مطلع شود</translation>
 <translation id="3188393374551744535">موجودی حساب</translation>
 <translation id="3194737229810486521"><ph name="URL" /> می‌خواهد داده‌ها را برای همیشه در دستگاهتان ذخیره کند</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> در <ph name="SERVER_NAME" /></translation>
@@ -1023,6 +1028,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">دستگاه</translation>
 <translation id="5179510805599951267">به زبان <ph name="ORIGINAL_LANGUAGE" /> نیست؟ گزارش این خطا</translation>
+<translation id="5179740473595559246">از وضعیت حضور شما مطلع شود</translation>
 <translation id="5190835502935405962">نوار نشانک‌ها</translation>
 <translation id="519422657042045905">حاشیه‌نویسی دردسترس نیست</translation>
 <translation id="5201306358585911203">صفحه جاسازی‌شده‌ای در این صفحه می‌گوید</translation>
@@ -1245,6 +1251,7 @@
 <translation id="6049488691372270142">ارائه صفحه</translation>
 <translation id="6051221802930200923">درحال‌حاضر نمی‌توانید از <ph name="SITE" /> دیدن کنید، زیرا وب‌سایت از پین کردن گواهینامه استفاده می‌کند. خطاهای شبکه و حمله‌ها موقتی هستند، بنابراین احتمالاً این صفحه بعداً کار خواهد کرد.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">وضعیت حضورتان هم‌رسانی شود؟</translation>
 <translation id="6058977677006700226">از کارت‌ها در همه دستگاه‌هایتان استفاده شود؟</translation>
 <translation id="6059925163896151826">‏دستگاه‌های USB</translation>
 <translation id="6060009363608157444">‏حالت DnsOverHttps نامعتبر است.</translation>
@@ -1374,6 +1381,7 @@
 <translation id="6631202559048444592">بیش از یک منبع برای این خط‌مشی وجود دارد، اما مقادیر یکسانی دارند.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">پاک کردن</translation>
+<translation id="6645291930348198241">به کوکی‌ها و داده‌های سایت دسترسی داشته باشد.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{هیچ‌کدام}=1{‏از ۱ سایت (از سیستم حساب Google خود خارج نخواهید شد)}one{‏از # سایت (از سیستم حساب Google خود خارج نخواهید شد)}other{‏از # سایت (از سیستم حساب Google خود خارج نخواهید شد)}}</translation>
 <translation id="6648459603387803038">‏سرپرستتان می‌تواند تنظیم مرورگرتان را ازراه‌دور تغییر دهد. فعالیت انجام‌شده در این دستگاه می‌تواند از خارج از Chrome هم مدیریت شود.</translation>
 <translation id="6652101503459149953">‏استفاده از Windows Hello</translation>

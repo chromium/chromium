@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Повторно да се поврзете на Wi-Fi</translation>
 <translation id="1165039591588034296">Грешка</translation>
 <translation id="1165174597379888365">Посетена е страница</translation>
+<translation id="1174723505405632867">Дали сакате да дозволите <ph name="EMBEDDED_URL" /> да користи колачиња и податоци за сајтот на <ph name="TOP_LEVEL_URL" />?
+
+Во спротивно, ова ќе биде блокирано од вашите поставки за приватност. Ова ќе овозможи правилно функционирање на содржините со кои сте имале некаква интеракција, а можеби ќе му овозможи на сајтот <ph name="EMBEDDED_URL" /> да ја следи вашата активност.</translation>
 <translation id="1175364870820465910">&amp;Печати...</translation>
 <translation id="1175875016430184367">Тројно спојување десно</translation>
 <translation id="1178581264944972037">Пауза</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Политики</translation>
 <translation id="2183608646556468874">Телефонски број</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 адреса}one{# адреса}other{# адреси}}</translation>
+<translation id="2187243482123994665">Присуство на корисник</translation>
 <translation id="2187317261103489799">Откриј (стандардно)</translation>
 <translation id="2188375229972301266">Повеќе дупки долу</translation>
 <translation id="2202020181578195191">Внесете важечка година на истекување</translation>
@@ -533,6 +537,7 @@
           на мрежата за да проверите дали работи прокси-серверот. Ако
           сметате дека не треба да користите прокси-сервер:
           <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> сака да знае кога сте присутни</translation>
 <translation id="3188393374551744535">Состојба на сметката</translation>
 <translation id="3194737229810486521"><ph name="URL" /> сака трајно да складира податоци на вашиот уред</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на <ph name="SERVER_NAME" /></translation>
@@ -1025,6 +1030,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Машина</translation>
 <translation id="5179510805599951267">Не е на <ph name="ORIGINAL_LANGUAGE" />? Пријави ја грешката.</translation>
+<translation id="5179740473595559246">да знае кога сте присутни</translation>
 <translation id="5190835502935405962">Лента со обележувачи</translation>
 <translation id="519422657042045905">Прибелешката не е достапна</translation>
 <translation id="5201306358585911203">Вметнатата страница во страницава вели</translation>
@@ -1247,6 +1253,7 @@
 <translation id="6049488691372270142">Испечатена страница</translation>
 <translation id="6051221802930200923">Не може да го посетите <ph name="SITE" /> во моментов затоа што веб-сајтот користи закачување сертификати. Грешките на мрежата и нападите обично се привремени, така што страницава веројатно ќе работи подоцна.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Да се сподели вашето присуство?</translation>
 <translation id="6058977677006700226">Дали сакате да ги користите картичките на сите ваши уреди?</translation>
 <translation id="6059925163896151826">USB-уреди</translation>
 <translation id="6060009363608157444">Погрешен режим на DnsOverHttps</translation>
@@ -1376,6 +1383,7 @@
 <translation id="6631202559048444592">Има повеќе извори за правилото, но вредностите се исти.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Исчисти</translation>
+<translation id="6645291930348198241">да пристапува до колачиња и податоци за сајтот.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Ниту еден}=1{Од 1 сајт (нема да ве одјавиме од сметката на Google)}one{Од # сајт (нема да ве одјавиме од сметката на Google)}other{Од # сајтови (нема да ве одјавиме од сметката на Google)}}</translation>
 <translation id="6648459603387803038">Администраторот може далечински да го менува поставувањето на прелистувачот. Со активноста на уредов може да се управува и надвор од Chrome.</translation>
 <translation id="6652101503459149953">Користи Windows Hello</translation>

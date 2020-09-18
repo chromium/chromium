@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Ifayela alikwazanga ukufinyelelwa ngenxa yezizathu zokuvikela.</translation>
 <translation id="169515659049020177">U-Shift</translation>
 <translation id="1722487484194605434">Izipha izinto ezingu-<ph name="NUMBER_OF_ITEMS" />...</translation>
+<translation id="1731889557567069540">izinto ezingu-<ph name="NUMBER_OF_ITEMS" /> zikopishiwe.</translation>
 <translation id="174173592514158117">Bonisa onke amafolda e-Google Play</translation>
 <translation id="174937106936716857">Inani lokubalwa kwefayela</translation>
 <translation id="1775381402323441512">Ulwazi lwevidiyo</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Inhlamvu engavumelekile: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Ikhibhodi ye-Vietnamese (TCVN)</translation>
 <translation id="2168214441502403371">Ikhibhodi ye-Persian</translation>
+<translation id="2197363559908958454">kuhanjiswe okungu-<ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">isi-Sipmlified Chinese</translation>
 <translation id="2208158072373999562">Ingobo yomlando yeziphu</translation>
 <translation id="2225536596944493418">Ingabe ufuna ukususa izinto ze-<ph name="NUMBER_OF_ITEMS" />?</translation>
 <translation id="2230062665678605299">Ayikwazi ukudala ifolda le-"<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Kuhanjisiwe.</translation>
 <translation id="2278988676849463018">Ikhibhodi ye-Kannada (Ifonetiki)</translation>
 <translation id="2288278176040912387">Isidlali serekhodi</translation>
 <translation id="2291538123825441971">Ukuvula amafayela e-<ph name="NUMBER_OF_FILES" />.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Konke kwenziwe isipele!</translation>
 <translation id="3626281679859535460">Ukukhanya</translation>
 <translation id="3644896802912593514">Ububanzi</translation>
+<translation id="3645233063072417428">izinto ezihanjisiwe ezingu-<ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="3645531960514756307">Susa ukuphina ifolda</translation>
 <translation id="3678559383040232393">Ikhibhodi ye-Maltese</translation>
 <translation id="3685122418104378273">Ukuvumelanisa kwe-Google Drayivu kukhutshaziwe ngokuzenzakalela, uma kusetshenziswa idatha yeselula.</translation>
@@ -395,6 +399,7 @@
     Noma ngabe kwenzakalani kudivayisi yakho, amafayela wakho agcinwa ngokuvikelekile ku-Google Drayivu.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Yabelana, dala futhi hlanganyela<ph name="MARKUP_8" />
     kumafayela nabanye endaweni eyodwa.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Kukopishiwe.</translation>
 <translation id="5275973617553375938">Amafayela atholiwe kusuka ku-Google Drayivu</translation>
 <translation id="5317780077021120954">Londoloza</translation>
 <translation id="5318819489018851358">Yabelana ne-Linux</translation>
@@ -593,6 +598,7 @@
 <translation id="751507702149411736">Isi-Belarusian</translation>
 <translation id="7544853251252956727">Shova</translation>
 <translation id="7547811415869834682">Isi-Dutch</translation>
+<translation id="7551643184018910560">Phina kushelufu</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Linda isekhondi nje</translation>
 <translation id="7603724359189955920">Ama-grid</translation>
@@ -676,6 +682,7 @@
 <translation id="8299269255470343364">Isi-Japanese</translation>
 <translation id="8312871300878166382">Namathisela kufolda</translation>
 <translation id="8329978297633540474">Umbhalo osobala</translation>
+<translation id="8335587457941836791">Khipha ukuphina kusuka kushelufu</translation>
 <translation id="8336153091935557858">Izolo ngo-<ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336579025507394412">Ikhibhodi ye-Icelandic</translation>
 <translation id="8342318071240498787">Ifayela noma uhla lwemibhalo olunegama elifanayo seluvele likhona</translation>
@@ -748,6 +755,7 @@
 <translation id="943972244133411984">Kushintshwe ngu-</translation>
 <translation id="945522503751344254">Thumela impendulo</translation>
 <translation id="947144732524271678">Ibanga elikhethiwe lokungenayo kwe-<ph name="ENTRY_COUNT" /> kusuka ku-<ph name="FROM_ENTRY_NAME" /> kuya ku-<ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="949308258121608615">kukopishwe okungu-<ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="981121421437150478">Ayixhunyiwe ku-inthanethi</translation>
 <translation id="988685240266037636">Ifayela elinegama "<ph name="FILE_NAME" />" selivele likhona. Ingabe ufuna ukuyimiselela?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

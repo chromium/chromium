@@ -3,12 +3,10 @@
 <translationbundle lang="no">
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2416359993254398973">Chrome trenger tilgang til kameraet ditt for dette nettstedet.</translation>
-<translation id="4955546094786399712">For å endre tillatelsen for dette nettstedet, lukk den andre appen og prøv på nytt.\n\nHvis du ikke får lukket appen, slår du av tillatelsen «Vis over andre apper» for appen i Android-innstillingene.</translation>
 <translation id="557283862590186398">Chrome trenger tilgang til mikrofonen din for dette nettstedet.</translation>
 <translation id="5860491529813859533">Slå på</translation>
 <translation id="6092062101542170135">For å fortsette, slå på NFC i Android-innstillingene</translation>
 <translation id="6393863479814692971">Chrome trenger tilgang til kameraet ditt og mikrofonen din for dette nettstedet.</translation>
 <translation id="6697947395630195233">Chrome trenger tilgang til posisjonen din for å kunne dele den med dette nettstedet.</translation>
 <translation id="7134415045456331657">Chrome trenger tilgang til kameraet for å lage et 3D-kart av omgivelsene.</translation>
-<translation id="7681341492080683492">En annen app vises over <ph name="APP_NAME" /></translation>
 </translationbundle>

@@ -3,12 +3,10 @@
 <translationbundle lang="it">
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2416359993254398973">Per questo sito Chrome ha bisogno dell'autorizzazione ad accedere alla fotocamera.</translation>
-<translation id="4955546094786399712">Per cambiare l'autorizzazione di questo sito, chiudi l'altra app e riprova.\n\nSe non riesci a chiudere l'app, disattiva la relativa autorizzazione "Mostra sopra altre app" nelle impostazioni Android.</translation>
 <translation id="557283862590186398">Per questo sito Chrome ha bisogno dell'autorizzazione ad accedere al microfono.</translation>
 <translation id="5860491529813859533">Attiva</translation>
 <translation id="6092062101542170135">Per continuare, attiva NFC nelle impostazioni di Android</translation>
 <translation id="6393863479814692971">Per questo sito Chrome ha bisogno dell'autorizzazione ad accedere alla fotocamera e al microfono.</translation>
 <translation id="6697947395630195233">Chrome deve poter accedere alla tua posizione per condividerla con questo sito.</translation>
 <translation id="7134415045456331657">Chrome ha bisogno dell'autorizzazione ad accedere alla fotocamera per creare una mappa 3D dell'ambiente circostante.</translation>
-<translation id="7681341492080683492">C'è un'altra app visualizzata sopra <ph name="APP_NAME" /></translation>
 </translationbundle>

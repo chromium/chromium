@@ -97,7 +97,7 @@
 <translation id="1965935827552890526">Жасап жаткан нерсени Chrome'дун ачык терезесинде улантыңыз.</translation>
 <translation id="1974060860693918893">Өркүндөтүлгөн</translation>
 <translation id="1989112275319619282">Серептөө</translation>
-<translation id="1992734845128748707">Демейки серепчи өзгөрүү…</translation>
+<translation id="1992734845128748707">Демейки серепчини өзгөртүү…</translation>
 <translation id="2015722694326466240">Сырсөздөрдү көрүү үчүн, адегенде, түзмөгүңүздөгү өткөрүүчү кодду жөндөп алышыңыз керек.</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> күн мурун жигердүү болгон</translation>
 <translation id="2074131957428911366">Эмнени шайкештирүү керек экенин <ph name="BEGIN_LINK" />жөндөөлөрдөн<ph name="END_LINK" /> ар дайым тандай аласыз.</translation>
@@ -561,6 +561,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="7189598951263744875">Бөлүшүү…</translation>
 <translation id="7192050974311852563">Таржымалын жыйнап баштоо</translation>
 <translation id="7203585745079012652">Жоопторду айтуу</translation>
+<translation id="7207383424303353046">Жаңы: Chrome'ду демейки серепчи колдонмоңуз кылып алып, анда сайттарды автоматтык түрдө ачыңыз. <ph name="BEGIN_LINK" />Жөндөөлөрдү ачуу<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Картанын ылакап аты туура эмес</translation>
 <translation id="7265758999917665941">Бул сайт үчүн эч качан</translation>
 <translation id="7272437679830969316">Аныктыгыңыз тастыкталган жок. Сырсөз көчүрүлгөн жок.</translation>

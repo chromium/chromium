@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Επαναφ. τρέχ.σελ. αγνοώντας το περιεχ. κρυφ.μνήμης</translation>
 <translation id="124678866338384709">Κλείσιμο τρέχουσας καρτέλας</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Λίστα ανάγνωσης</translation>
 <translation id="1266864766717917324">Δεν ήταν δυνατή η κοινοποίηση <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Πατήστε για ανάπτυξη</translation>
 <translation id="1291207594882862231">Διαγραφή ιστορικού, cookie, δεδομένων ιστότοπου, κρυφής μνήμης…</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">Πατήστε μια λέξη για άμεση αναζήτηση ή για να δείτε τις σχετικές ενέργειες</translation>
 <translation id="2760989362628427051">Να ενεργοποιείται το σκούρο θέμα όταν το σκούρο θέμα ή η Εξοικονόμηση μπαταρίας της συσκευής σας έχουν ενεργοποιηθεί.</translation>
 <translation id="2762000892062317888">μόλις τώρα</translation>
-<translation id="2771869497727323769">Δεν είναι δυνατή η δημιουργία συνδέσμου στο κείμενο. Κοινοποιήστε τον σύνδεσμο στη σελίδα σε μια εφαρμογή.</translation>
 <translation id="2777555524387840389">Απομένουν <ph name="SECONDS" /> δευτερόλεπτα</translation>
 <translation id="2779651927720337254">απέτυχε</translation>
 <translation id="2781151931089541271">Απομένει 1 δευτερόλεπτο</translation>
@@ -387,6 +387,7 @@
 <translation id="4135200667068010335">Η λίστα συσκευών στις οποίες θα κοινοποιηθεί μια καρτέλα είναι κλειστή.</translation>
 <translation id="4149994727733219643">Απλοποιημένη προβολή για ιστοσελίδες</translation>
 <translation id="4170011742729630528">Η υπηρεσία δεν είναι διαθέσιμη. Δοκιμάστε ξανά αργότερα.</translation>
+<translation id="4175173967354304331">Θα συνδεθείτε σε αυτόν τον ιστότοπο, στο Chrome και σε εφαρμογές Google</translation>
 <translation id="4179980317383591987">Χρησιμοποιήθηκαν <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Γλώσσες</translation>
 <translation id="4183868528246477015">Αναζήτηση με Google Lens <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
@@ -467,7 +468,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 ολοκληρωμένη λήψη.}other{# ολοκληρωμένες λήψεις.}}</translation>
 <translation id="4766678251456904326">Προσθήκη λογαριασμού στη συσκευή</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{Προγραμματίστηκε 1 λήψη.}other{Προγραμματίστηκαν # λήψεις.}}</translation>
-<translation id="478981486571169252">Θα δείτε την κατάσταση σύνδεσης στον ιστότοπο <ph name="SITE_NAME" />, τα δεδομένα περιήγησης και τα δεδομένα ιστοτόπων στο Chrome.</translation>
 <translation id="4802417911091824046">Η κρυπτογράφηση φράσης πρόσβασης δεν περιλαμβάνει τρόπους πληρωμής και διευθύνσεις από το Google Pay.
 
 Για να αλλάξετε αυτήν τη ρύθμιση, <ph name="BEGIN_LINK" />επαναφέρετε τον συγχρονισμό<ph name="END_LINK" /></translation>
@@ -512,7 +512,6 @@
 <translation id="5040262127954254034">Απόρρητο</translation>
 <translation id="5087580092889165836">Προσθήκη κάρτας</translation>
 <translation id="509429900233858213">Παρουσιάστηκε σφάλμα.</translation>
-<translation id="5100748015044654621">Κοινοποιήστε τον σύνδεσμο στο επισημασμένο κείμενο σε μια εφαρμογή.</translation>
 <translation id="510275257476243843">Απομένει 1 ώρα</translation>
 <translation id="5123685120097942451">Καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="5127805178023152808">Ο συγχρονισμός είναι απενεργοποιημένος</translation>
@@ -679,6 +678,7 @@
 <translation id="6341580099087024258">Να γίνεται ερώτηση σχετικά με την τοποθεσία αποθήκευσης των αρχείων</translation>
 <translation id="6342069812937806050">Πριν λίγο</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}}</translation>
+<translation id="6345878117466430440">Επισήμανση ως αναγνωσμένο</translation>
 <translation id="6364438453358674297">Κατάργηση πρότασης από το ιστορικό;</translation>
 <translation id="6366047038980456022">Η εφαρμογή <ph name="APP_NAME" /> σας προσφέρει τις έξυπνες λειτουργίες και την ταχύτητα που χρειάζεστε για να κάνετε αυτό που θέλετε, να δημιουργήσετε και να εξερευνήσετε στο διαδίκτυο.</translation>
 <translation id="6378173571450987352">Λεπτομέρειες: Ταξινομήθηκαν βάσει του όγκου των δεδομένων που χρησιμοποιήθηκαν</translation>
@@ -994,6 +994,7 @@
 <translation id="8655129584991699539">Μπορείτε να διαγράψετε τα δεδομένα στις ρυθμίσεις του Chrome</translation>
 <translation id="8662811608048051533">Θα αποσυνδεθείτε από τους περισσότερους ιστοτόπους.</translation>
 <translation id="8664979001105139458">Το αρχείο υπάρχει ήδη</translation>
+<translation id="8683039184091909753">εικόνα</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Επίπεδο ισχύος σήματος: # γραμμή}other{Επίπεδο ισχύος σήματος: # γραμμές}}</translation>
 <translation id="869891660844655955">Ημερομηνία λήξης</translation>
 <translation id="8712637175834984815">Κατάλαβα!</translation>

@@ -293,6 +293,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, kad sužin
 <translation id="4277990410970811858">Saugus naršymas</translation>
 <translation id="4281844954008187215">Paslaugų teikimo sąlygos</translation>
 <translation id="430793432425771671">Sinchronizuoti viską</translation>
+<translation id="4309403553630140242">Norėdami gauti daugiau informacijos, dukart palieskite.</translation>
 <translation id="430967081421617822">Visas laikotarpis</translation>
 <translation id="4334428914252001502">1 neskaitytas straipsnis.</translation>
 <translation id="4338650699862464074">Siunčiami „Google“ puslapių, kuriuose lankotės, URL.</translation>
@@ -561,6 +562,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="7189598951263744875">Bendrinti...</translation>
 <translation id="7192050974311852563">Pradėti registravimą</translation>
 <translation id="7203585745079012652">Sakyti atsakymus</translation>
+<translation id="7207383424303353046">Naujiena: automatiškai atidarykite svetaines naršyklėje „Chrome“, nustatę ją kaip numatytąją naršyklės programą. <ph name="BEGIN_LINK" />Atidarykite skiltį „Nustatymai“<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Netinkamas kortelės slapyvardis</translation>
 <translation id="7265758999917665941">Niekada šioje svetainėje</translation>
 <translation id="7272437679830969316">Nepavyko patvirtinti tapatybės. Slaptažodis nenukopijuotas.</translation>
@@ -638,6 +640,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8073670137947914548">Atsisiuntimas užbaigtas</translation>
 <translation id="8073872304774253879">Tobulinti paieškas ir naršymą</translation>
 <translation id="8076014560081431679">Išsaugoti svetainių nustatymai nebus ištrinti ir gali nurodyti naršymo įpročius. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
+<translation id="8079602123447022758">Šis nustatymas tvarkomas, norėdami gauti daugiau informacijos dukart palieskite</translation>
 <translation id="8105368624971345109">Išjungti</translation>
 <translation id="8114753159095730575">Galima atsisiųsti failą. Parinktys pasiekiamos netoli ekrano apačios.</translation>
 <translation id="8131740175452115882">Patvirtinti</translation>

@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Tengist aftur Wi-Fi</translation>
 <translation id="1165039591588034296">Villa</translation>
 <translation id="1165174597379888365">Síða var opnuð</translation>
+<translation id="1174723505405632867">Viltu leyfa <ph name="EMBEDDED_URL" /> að nota fótspor og vefsvæðisgögn á <ph name="TOP_LEVEL_URL" />?
+
+Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðgang. Þetta gerir vefsvæðinu kleift að bjóða upp á rétta virkni efnisins sem þú valdir en kann að gera <ph name="EMBEDDED_URL" /> kleift að rekja aðgerðir þínar.</translation>
 <translation id="1175364870820465910">&amp;Prenta...</translation>
 <translation id="1175875016430184367">Þrjú hefti hægra megin</translation>
 <translation id="1178581264944972037">Gera hlé</translation>
@@ -310,6 +313,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="2181821976797666341">Reglur</translation>
 <translation id="2183608646556468874">Símanúmer</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{Eitt heimilisfang}one{# heimilisfang}other{# heimilisföng}}</translation>
+<translation id="2187243482123994665">Viðvera notanda</translation>
 <translation id="2187317261103489799">Greina (sjálfgefið)</translation>
 <translation id="2188375229972301266">Mörg göt neðst</translation>
 <translation id="2202020181578195191">Færðu inn gilt lokaár</translation>
@@ -534,6 +538,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
       ganga úr skugga um að staðgengilsþjónninn starfi rétt. Ef þú heldur að þú ættir
       ekki að nota staðgengilsþjón:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> vill vita af því þegar þú ert á staðnum</translation>
 <translation id="3188393374551744535">Reikningsstaða</translation>
 <translation id="3194737229810486521"><ph name="URL" /> vill fá að geyma gögn varanlega í tækinu þínu</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> á <ph name="SERVER_NAME" /></translation>
@@ -1026,6 +1031,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Vél</translation>
 <translation id="5179510805599951267">Ekki <ph name="ORIGINAL_LANGUAGE" />? Tilkynna þessa villu</translation>
+<translation id="5179740473595559246">Vita af því þegar þú ert á staðnum</translation>
 <translation id="5190835502935405962">Bókamerkjastika</translation>
 <translation id="519422657042045905">Athugasemdir eru ekki tiltækar</translation>
 <translation id="5201306358585911203">Innfelld síða á þessari síðu segir</translation>
@@ -1248,6 +1254,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="6049488691372270142">Síðuafhending</translation>
 <translation id="6051221802930200923">Þú getur ekki heimsótt <ph name="SITE" /> að svo stöddu þar sem vefsvæðið notast við vottorðafestingu. Netvillur og árásir eru yfirleitt tímabundnar og því mun þessi síða líklega virka síðar.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Deila viðveru þinni?</translation>
 <translation id="6058977677006700226">Viltu nota kortin þín í öllum tækjum?</translation>
 <translation id="6059925163896151826">USB-tæki</translation>
 <translation id="6060009363608157444">Ógild DnsOverHttps-stilling.</translation>
@@ -1377,6 +1384,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="6631202559048444592">Fleiri en einn uppruni eru til staðar fyrir regluna en gildin eru þau sömu.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Hreinsa</translation>
+<translation id="6645291930348198241">Fá aðgang að fótsporum og gögnum vefsvæða.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Ekkert}=1{Frá einu vefsvæði (þú verður ekki skráð(ur) út af Google reikningnum þínum)}one{Frá # vefsvæði (þú verður ekki skráð(ur) út af Google reikningnum þínum)}other{Frá # vefsvæðum (þú verður ekki skráð(ur) út af Google reikningnum þínum)}}</translation>
 <translation id="6648459603387803038">Kerfisstjórinn þinn getur breytt uppsetningu vafrans með fjartengingu. Virkni þinni í þessu tæki er einnig hægt að stjórna utan Chrome.</translation>
 <translation id="6652101503459149953">Nota Windows Hello</translation>

@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Sajt <ph name="SITE_NAME" /> je dodat</translation>
 <translation id="1383876407941801731">Pretraži</translation>
 <translation id="1384959399684842514">Preuzimanje je pauzirano</translation>
+<translation id="1431402976894535801">Ne dozvolite sajtovima da znaju kada ste prisutni</translation>
 <translation id="1446450296470737166">Puna kontrola nad MIDI uređajima</translation>
 <translation id="1509960214886564027">Funkcije na mnogim sajtovima mogu da prestanu sa radom</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">Otvori instant aplikaciju</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="2182457891543959921">Pre nego što dozvolite sajtovima da prave 3D mapu okruženja ili prate položaj kamere prikazuje se upit (preporučeno)</translation>
+<translation id="2187243482123994665">Prisustvo korisnika</translation>
 <translation id="2212565012507486665">Dozvoli kolačiće</translation>
 <translation id="2228071138934252756">Da biste dozvolili da <ph name="APP_NAME" /> pristupa kameri, uključite kameru i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="2289270750774289114">Pitaj kada sajt želi da otkrije Bluetooth uređaje u blizini (preporučeno)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">Video plejer</translation>
 <translation id="3115898365077584848">Prikaži informacije</translation>
 <translation id="3123473560110926937">Blokirano na nekim sajtovima</translation>
+<translation id="3165371858310906303">Pitaj kada sajt želi informacije o prisustvu</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> sačuvanih podataka</translation>
 <translation id="321187648315454507">Da biste dozvolili da vam <ph name="APP_NAME" /> šalje obaveštenja, uključite obaveštenja i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -104,7 +107,6 @@
 <translation id="4165986682804962316">Podešavanja sajta</translation>
 <translation id="4200726100658658164">Otvorite podešavanja lokacije</translation>
 <translation id="4226663524361240545">Uređaj će vibrirati kada primate obaveštenja</translation>
-<translation id="4242533952199664413">Otvori podešavanja</translation>
 <translation id="4259722352634471385">Navigacija je blokirana: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Dozvoljeno</translation>
 <translation id="429312253194641664">Sajt pušta medijski sadržaj</translation>
@@ -134,6 +136,7 @@
 <translation id="5197729504361054390">Kontakti koje izaberete će se deliti sa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5301954838959518834">Važi</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" /></translation>
 <translation id="5313967007315987356">Dodajte sajt</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5335288049665977812">Dozvoli sajtovima da pokreću JavaScript (preporučeno)</translation>
@@ -145,6 +148,7 @@
 <translation id="5403592356182871684">Imena</translation>
 <translation id="5489227211564503167">Proteklo vreme: <ph name="ELAPSED_TIME" /> od <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokiraj oglase na sajtovima koji prikazuju oglase koji ometaju aktivnosti ili obmanjujuće oglase</translation>
+<translation id="5502860503640766021"><ph name="PERMISSION_1" />: dozvoljeno. <ph name="PERMISSION_2" />: blokirano</translation>
 <translation id="5505264765875738116">Sajtovi ne mogu da traže da šalju obaveštenja</translation>
 <translation id="5516455585884385570">Otvorite podešavanja obaveštenja</translation>
 <translation id="5527111080432883924">Pitaj pre nego što dozvoliš sajtovima da čitaju tekst i slike iz privremene memorije (preporučeno)</translation>
@@ -156,12 +160,15 @@
 <translation id="5690795753582697420">Kamera je isključena u Android podešavanjima</translation>
 <translation id="5710871682236653961">Pre nego što dozvolite sajtovima da šalju i dobijaju informacije kada dodirnete NFC uređaje prikazuje se upit (preporučeno)</translation>
 <translation id="5719847187258001597">Ovim brišete sve podatke i kolačiće koje čuva sajt <ph name="ORIGIN" /> ili njegova aplikacija na početnom ekranu.</translation>
+<translation id="5771720122942595109">Dozvola <ph name="PERMISSION_1" /> je blokirana</translation>
 <translation id="5804241973901381774">Dozvole</translation>
 <translation id="5860033963881614850">Isključeno</translation>
+<translation id="5863245810240683687">Odobrene su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" /></translation>
 <translation id="5876056640971328065">Pauziraj video</translation>
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5922853908706496913">Deli se ekran</translation>
 <translation id="5939518447894949180">Resetuj</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Kontrolišite pristup ovog sajta uređaju</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6042308850641462728">Još</translation>
@@ -173,6 +180,7 @@
 <translation id="6196640612572343990">Blokiraj kolačiće treće strane</translation>
 <translation id="6206551242102657620">Veza je bezbedna. Informacije o sajtu</translation>
 <translation id="6216432067784365534">Opcije stavke <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6262279340360821358">Dozvole <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /> su blokirane</translation>
 <translation id="6270391203985052864">Sajtovi mogu da traže da šalju obaveštenja</translation>
 <translation id="6295158916970320988">Svi sajtovi</translation>
 <translation id="6320088164292336938">Vibracija</translation>
@@ -195,6 +203,7 @@
 <translation id="6790428901817661496">Pusti</translation>
 <translation id="6818926723028410516">Izaberite stavke</translation>
 <translation id="6864395892908308021">Ovaj uređaj ne može da čita NFC</translation>
+<translation id="6879016579615558281">Blokirane su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" /></translation>
 <translation id="6910211073230771657">Izbrisano</translation>
 <translation id="6912998170423641340">Blokiraj sajtove tako da ne čitaju tekst i slike iz privremene memorije</translation>
 <translation id="6945221475159498467">Izaberi</translation>
@@ -212,6 +221,7 @@
 <translation id="723171743924126238">Izaberite slike</translation>
 <translation id="7243308994586599757">Opcije su dostupne u dnu ekrana</translation>
 <translation id="7250468141469952378">Izabrali ste <ph name="ITEM_COUNT" /></translation>
+<translation id="7260727271532453612">Odobrene su dozvole <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="7302486331832100261">Obično blokirate obaveštenja. Da biste ih dozvolili, dodirnite Detalji.</translation>
 <translation id="7423098979219808738">Prvo pitaj</translation>
 <translation id="7423538860840206698">Čitanje privremene memorije je blokirano</translation>
@@ -243,6 +253,7 @@
 <translation id="8087000398470557479">Ovaj sadržaj je sa <ph name="DOMAIN_NAME" />, prikazuje Google.</translation>
 <translation id="8116925261070264013">Zvuk je isključen</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
+<translation id="8197286292360124385">Odobrena je dozvola <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Nastavi</translation>
 <translation id="8206354486702514201">Ovo podešavanje primenjuje administrator.</translation>
 <translation id="8249310407154411074">Premesti na vrh</translation>

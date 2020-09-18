@@ -427,6 +427,7 @@
 <translation id="1500297251995790841">ಅಪರಿಚಿತ ಸಾಧನ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">ಬಹು ಸೈನ್-ಇನ್ ಸೆಷನ್‌ನಲ್ಲಿ ಈ ಮಾಲೀಕರ ಖಾತೆಯೇ ಮೊದಲ ಸೈನ್-ಇನ್ ಮಾಡಿದ ಖಾತೆ ಆಗಿರಬೇಕು.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> ತೆಗೆದುಹಾಕಿ</translation>
+<translation id="1504311855864906891">ನಿಮ್ಮ ಮಾಧ್ಯಮಕ್ಕಾಗಿ ಶೀರ್ಷಿಕೆಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="1504551620756424144">ಹಂಚಿಕೊಂಡ ಫೋಲ್ಡರ್‌ಗಳು Windows ನಲ್ಲಿ <ph name="BASE_DIR" /> ಆಯ್ಕೆಯ ಅಡಿಯಲ್ಲಿ ಲಭ್ಯವಿರುತ್ತವೆ.</translation>
 <translation id="1506061864768559482">ಹುಡುಕಾಟ ಇಂಜಿನ್</translation>
 <translation id="1507170440449692343">ನಿಮ್ಮ ಕ್ಯಾಮೆರಾವನ್ನು ಪ್ರವೇಶಿಸುವುದರಿಂದ ಈ ಪುಟವನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
@@ -1191,7 +1192,6 @@
 <translation id="2396783860772170191">4 ಅಂಕಿಯ ಪಿನ್ (0000-9999) ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="2399939490305346086">ಭದ್ರತೆ ಕೀ ಸೈನ್-ಇನ್ ಡೇಟಾ</translation>
 <translation id="2400664245143453337">ಕೂಡಲೇ ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕಿದೆ</translation>
-<translation id="2407481962792080328">ನಿಮ್ಮ Google ಖಾತೆಗೆ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, ಈ ವೈಶಿಷ್ಟ್ಯವು ಆನ್ ಆಗುತ್ತದೆ</translation>
 <translation id="2408018932941436077">ಕಾರ್ಡ್ ಅನ್ನು ಉಳಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2408955596600435184">ನಿಮ್ಮ ಪಿನ್ ನಮೂದಿಸಿ</translation>
 <translation id="241082044617551207">ಅಪರಿಚಿತ ಪ್ಲಗ್-ಇನ್</translation>
@@ -3066,6 +3066,7 @@
 <translation id="4657810666108475055">ಟ್ಯಾಬ್ ಹುಡುಕಾಟ</translation>
 <translation id="465878909996028221">http, https ಮತ್ತು ಫೈಲ್ ಪ್ರೊಟೊಕಾಲ್‌ಗಳು ಮಾತ್ರವೇ ಬ್ರೌಸರ್ ಮರುನಿರ್ದೇಶನಗಳಿಗೆ ಬೆಂಬಲಿತವಾಗಿವೆ.</translation>
 <translation id="4659077111144409915">ಪ್ರಾಥಮಿಕ ಖಾತೆ</translation>
+<translation id="4659126640776004816">ನಿಮ್ಮ Google ಖಾತೆಗೆ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, ಈ ವೈಶಿಷ್ಟ್ಯವು ಆನ್ ಆಗುತ್ತದೆ.</translation>
 <translation id="4660476621274971848">ನಿರೀಕ್ಷಿತ ಆವೃತ್ತಿ "<ph name="EXPECTED_VERSION" />", ಆದರೆ ಆವೃತ್ತಿಯು "<ph name="NEW_ID" />" ಆಗಿದೆ</translation>
 <translation id="4660540330091848931">ಮರುಗಾತ್ರಗೊಳಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4661407454952063730">ಆ್ಯಪ್ ಡೇಟಾವು ಸಂಪರ್ಕಗಳು, ಸಂದೇಶಗಳು ಮತ್ತು ಫೋಟೋಗಳ ಡೇಟಾವನ್ನು ಒಳಗೊಂಡ ಹಾಗೆ, ಆ್ಯಪ್‌ನಲ್ಲಿ ಉಳಿಸಿದ ಯಾವುದೇ ಡೇಟಾ (ಡೆವಲಪರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಆಧರಿಸಿ) ಆಗಿರಬಹುದು.</translation>
@@ -3131,7 +3132,6 @@
 <translation id="4750394297954878236">ಸಲಹೆಗಳು</translation>
 <translation id="475088594373173692">ಮೊದಲ ಬಳಕೆದಾರ</translation>
 <translation id="4751476147751820511">ಚಲನೆ ಅಥವಾ ಬೆಳಕಿನ ಸೆನ್ಸರ್‌ಗಳು</translation>
-<translation id="4752124003533492687"><ph name="USB_DEVICE_NAME" /> ಅನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಲು ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="4756378406049221019">ನಿಲ್ಲಿಸಿ/ಪುನಃ ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="4756388243121344051">&amp;ಇತಿಹಾಸ</translation>
 <translation id="4759238208242260848">ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
@@ -5024,6 +5024,7 @@
 <translation id="7075513071073410194">RSA ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನೊಂದಿಗೆ PKCS #1 MD5</translation>
 <translation id="7075625805486468288">HTTPS/SSL ಪ್ರಮಾಣಪತ್ರಗಳು ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="7076293881109082629">ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
+<translation id="7076878155205969899">ಧ್ವನಿಯನ್ನು ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
 <translation id="7077829361966535409">ಪ್ರಸ್ತುತ ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬಳಸಿಕೊಂಡು ಲೋಡ್ ಮಾಡುವಲ್ಲಿ ಸೈನ್-ಇನ್ ಪುಟವು ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು <ph name="GAIA_RELOAD_LINK_START" />ಮತ್ತೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ<ph name="GAIA_RELOAD_LINK_END" />, ಅಥವಾ ಬೇರೆಯ <ph name="PROXY_SETTINGS_LINK_START" />ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು<ph name="PROXY_SETTINGS_LINK_END" /> ಬಳಸಿ.</translation>
 <translation id="7078120482318506217">ಎಲ್ಲಾ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
 <translation id="708060913198414444">ಆಡಿಯೋ ವಿಳಾಸವನ್ನು ನ&amp;ಕಲಿಸಿ</translation>
@@ -5044,7 +5045,6 @@
 <translation id="7099337801055912064">ದೊಡ್ಡ ಗಾತ್ರದ PPD ಅನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಗರಿಷ್ಠ ಗಾತ್ರ 250 kB ಆಗಿದೆ.</translation>
 <translation id="7102687220333134671">ಸ್ವಯಂಚಾಲಿತ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಆನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7102832101143475489">ವಿನಂತಿಯ ಅವಧಿ ಮೀರಿದೆ</translation>
-<translation id="7105390788077117391">USB ಆದ್ಯತೆಗಳು</translation>
 <translation id="710640343305609397">ನೆಟ್‌ವರ್ಕ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="7108338896283013870">ಮರೆಮಾಡಿ</translation>
 <translation id="7108668606237948702">ನಮೂದಿಸಿ</translation>
@@ -5074,7 +5074,6 @@
 <translation id="7136694880210472378">ಡಿಫಾಲ್ಟ್ ಮಾಡಿ</translation>
 <translation id="7136984461011502314"><ph name="PRODUCT_NAME" /> ಗೆ ಸ್ವಾಗತ</translation>
 <translation id="7136993520339022828">ದೋಷವಿದೆ. ಇತರ ಚಿತ್ರಗಳನ್ನು ಆಯ್ಕೆಮಾಡುವ ಮೂಲಕ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="7138678301420049075">ಇತರೆ</translation>
 <translation id="713888829801648570">ಕ್ಷಮಿಸಿ, ನೀವು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿರುವ ಕಾರಣ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="7140928199327930795">ಇತರ ಯಾವುದೇ ಲಭ್ಯ ಸಾಧನಗಳಿಲ್ಲ.</translation>
 <translation id="7141105143012495934">ನಿಮ್ಮ ಖಾತೆ ವಿವರಗಳನ್ನು ಹಿಂಪಡೆಯಲು ಸಾಧ್ಯವಾಗದಿರುವುದರಿಂದ ಸೈನ್ ಇನ್ ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ ಅಥವಾ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -6133,6 +6132,7 @@
 <translation id="8428213095426709021">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8428271547607112339">ಶಾಲೆಯ ಖಾತೆಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="8428628598981198790">ನಿಮ್ಮ ಭದ್ರತೆ ಕೀ ಅನ್ನು ಈ ಸೈಟ್ ಜೊತೆಗೆ ಬಳಸಲಾಗುವುದಿಲ್ಲ</translation>
+<translation id="8428634594422941299">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="84297032718407999">ಇಷ್ಟು ಸಮಯ ಆದ ಮೇಲೆ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ: <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">ಟ್ಯಾಪ್‌ ಪಾಯಿಂಟ್‌‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="8431909052837336408">ಸಿಮ್‌ ಪಿನ್‌ ಬದಲಾಯಿಸು</translation>

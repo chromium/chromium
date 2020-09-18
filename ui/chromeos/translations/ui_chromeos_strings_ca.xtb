@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">No s'ha pogut accedir al fitxer per qüestions de seguretat.</translation>
 <translation id="169515659049020177">Maj</translation>
 <translation id="1722487484194605434">S'estan comprimint <ph name="NUMBER_OF_ITEMS" /> elements...</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elements copiats.</translation>
 <translation id="174173592514158117">Mostra totes les carpetes de Play</translation>
 <translation id="174937106936716857">Total de fitxers</translation>
 <translation id="1775381402323441512">Informació del vídeo</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Caràcter no vàlid: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Teclat vietnamita (TCVN)</translation>
 <translation id="2168214441502403371">Teclat persa</translation>
+<translation id="2197363559908958454">S'han mogut <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">Xinès simplificat</translation>
 <translation id="2208158072373999562">Fitxer zip</translation>
 <translation id="2225536596944493418">Confirmes que vols suprimir <ph name="NUMBER_OF_ITEMS" /> elements?</translation>
 <translation id="2230062665678605299">No es pot crear la carpeta "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">S'ha mogut.</translation>
 <translation id="2278988676849463018">Teclat kannada (fonètic)</translation>
 <translation id="2288278176040912387">Tocadiscos</translation>
 <translation id="2291538123825441971">S'estan obrint <ph name="NUMBER_OF_FILES" /> fitxers.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Tots els elements tenen una còpia de seguretat.</translation>
 <translation id="3626281679859535460">Brillantor</translation>
 <translation id="3644896802912593514">Amplada</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elements moguts.</translation>
 <translation id="3645531960514756307">Deixa de fixar la carpeta</translation>
 <translation id="3678559383040232393">Teclat maltès</translation>
 <translation id="3685122418104378273">La sincronització amb Google Drive està desactivada de manera predeterminada en utilitzar les dades mòbils.</translation>
@@ -395,6 +399,7 @@
     Passi el que passi amb el vostre dispositiu, els fitxers s'emmagatzemen amb tota seguretat a Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Compartiu, creeu fitxers i col·laboreu-hi<ph name="MARKUP_8" />
     amb altres persones; tot en un sol lloc.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">S'ha copiat.</translation>
 <translation id="5275973617553375938">Fitxers recuperats de Google Drive</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Desa</translation>
@@ -594,6 +599,7 @@
 <translation id="751507702149411736">Bielorús</translation>
 <translation id="7544853251252956727">Aleatori</translation>
 <translation id="7547811415869834682">Neerlandès</translation>
+<translation id="7551643184018910560">Fixa al prestatge</translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Espereu un moment.</translation>
 <translation id="7603724359189955920">Quadrícules</translation>
@@ -677,6 +683,7 @@
 <translation id="8299269255470343364">Japonès</translation>
 <translation id="8312871300878166382">Enganxa a la carpeta</translation>
 <translation id="8329978297633540474">Text sense format</translation>
+<translation id="8335587457941836791">No el fixis al prestatge</translation>
 <translation id="8336153091935557858">Ahir a les <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336579025507394412">Teclat islandès</translation>
 <translation id="8342318071240498787">Ja existeix un fitxer o un directori amb aquest nom.</translation>
@@ -749,6 +756,7 @@
 <translation id="943972244133411984">Modificat per</translation>
 <translation id="945522503751344254">Envia suggeriments</translation>
 <translation id="947144732524271678">S'ha seleccionat un interval de <ph name="ENTRY_COUNT" /> entrades, de l'entrada <ph name="FROM_ENTRY_NAME" /> a <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="949308258121608615">S'ha copiat <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="981121421437150478">Sense connexió</translation>
 <translation id="988685240266037636">El nom de fitxer "<ph name="FILE_NAME" />" ja existeix. El vols substituir?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

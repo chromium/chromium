@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Не можеше да се пристапи до датотеката поради безбедносни причини.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">Се пакуваат <ph name="NUMBER_OF_ITEMS" /> ставки…</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ставки се копирани.</translation>
 <translation id="174173592514158117">Прикажи ги сите папки на Play</translation>
 <translation id="174937106936716857">Вкупен број датотеки</translation>
 <translation id="1775381402323441512">Информации за видеото</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Неважечки знак: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">виетнамска тастатура (TCVN)</translation>
 <translation id="2168214441502403371">персиска тастатура</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> е преместена.</translation>
 <translation id="2198315389084035571">поедноставен кинески</translation>
 <translation id="2208158072373999562">Архива Zip</translation>
 <translation id="2225536596944493418">Дали сигурно сакате да избришете <ph name="NUMBER_OF_ITEMS" /> ставки?</translation>
 <translation id="2230062665678605299">Не може да се создаде папка „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Преместено.</translation>
 <translation id="2278988676849463018">канада тастатура (фонетска)</translation>
 <translation id="2288278176040912387">Грамофон</translation>
 <translation id="2291538123825441971">Се отвораат <ph name="NUMBER_OF_FILES" /> датотеки.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Сѐ е ископирано!</translation>
 <translation id="3626281679859535460">Осветленост</translation>
 <translation id="3644896802912593514">Ширина</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ставки се преместени.</translation>
 <translation id="3645531960514756307">Откачете ја папката</translation>
 <translation id="3678559383040232393">Малтешка тастатура</translation>
 <translation id="3685122418104378273">Кога се користат мобилни податоци, синхронизацијата со Google Drive стандардно е оневозможена.</translation>
@@ -395,6 +399,7 @@
     Што и да се случува со уредот, вашите датотеки се безбедно складирани во Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Споделувајте, создавајте и соработувајте<ph name="MARKUP_8" />
     на датотеки со други, сѐ на едно место.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Копирано.</translation>
 <translation id="5275973617553375938">Повратени датотеки од Google Диск</translation>
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5318819489018851358">Споделете со Linux</translation>
@@ -593,6 +598,7 @@
 <translation id="751507702149411736">белоруска</translation>
 <translation id="7544853251252956727">Измешај</translation>
 <translation id="7547811415869834682">Холандски</translation>
+<translation id="7551643184018910560">Прикачи на полицата</translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Почекајте малку</translation>
 <translation id="7603724359189955920">Мрежи</translation>
@@ -676,6 +682,7 @@
 <translation id="8299269255470343364">јапонски</translation>
 <translation id="8312871300878166382">Залепи во папка</translation>
 <translation id="8329978297633540474">Обичен текст</translation>
+<translation id="8335587457941836791">Откачи од полица</translation>
 <translation id="8336153091935557858">Вчера <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336579025507394412">исландска тастатура</translation>
 <translation id="8342318071240498787">Веќе постои датотека или директориум со истото име.</translation>
@@ -748,6 +755,7 @@
 <translation id="943972244133411984">Изменето од</translation>
 <translation id="945522503751344254">Испратете повратни информации</translation>
 <translation id="947144732524271678">Избравте опсег од <ph name="ENTRY_COUNT" /> записи од <ph name="FROM_ENTRY_NAME" /> до <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> е копирана.</translation>
 <translation id="981121421437150478">Без мрежа</translation>
 <translation id="988685240266037636">Веќе постои датотека со име „<ph name="FILE_NAME" />“. Дали сакате да ја замените?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

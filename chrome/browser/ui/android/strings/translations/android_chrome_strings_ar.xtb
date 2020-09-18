@@ -39,6 +39,7 @@
 <translation id="123724288017357924">إعادة تحميل الصفحة الحالية مع تجاهل المحتوى المُخزَّن مؤقتًا</translation>
 <translation id="124678866338384709">إغلاق علامة التبويب الحالية</translation>
 <translation id="1258753120186372309">‏رسم الشعار المبتكر من Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">قائمة القراءة</translation>
 <translation id="1266864766717917324">تعذَّرت مشاركة <ph name="CONTENT_TYPE" />.</translation>
 <translation id="1283039547216852943">النقر للتوسيع</translation>
 <translation id="1291207594882862231">محو السجل وملفات تعريف الارتباط وبيانات المواقع وذاكرة التخزين المؤقت...</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">النقر على الكلمة للبحث عنها فورًا أو الاطلاع على الإجراءات ذات الصلة</translation>
 <translation id="2760989362628427051">تفعيل المظهر الداكن عند تفعيل المظهر الداكن للجهاز أو ميزة "توفير شحن البطارية"</translation>
 <translation id="2762000892062317888">الآن</translation>
-<translation id="2771869497727323769">يتعذَّر إنشاء رابط للنص. يمكنك مشاركة رابط الصفحة في تطبيق.</translation>
 <translation id="2777555524387840389">عدد الثواني المتبقية: <ph name="SECONDS" /></translation>
 <translation id="2779651927720337254">تعذَّر التنزيل</translation>
 <translation id="2781151931089541271">يتبقى ثانية واحدة</translation>
@@ -467,7 +467,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{اكتملت عملية تنزيل واحدة.}zero{اكتملت # عملية تنزيل.}two{اكتملت عمليتا تنزيل (#).}few{اكتملت # عمليات تنزيل.}many{اكتملت # عملية تنزيل.}other{اكتملت # عملية تنزيل.}}</translation>
 <translation id="4766678251456904326">إضافة حساب إلى الجهاز</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{تمّت جدوَلة عملية تنزيل واحدة}zero{تمّت جدوَلة # عملية تنزيل}two{تمّت جدوَلة عمليتَي تنزيل}few{تمّت جدوَلة # عمليات تنزيل}many{تمّت جدوَلة # عملية تنزيل}other{تمّت جدوَلة # عملية تنزيل}}</translation>
-<translation id="478981486571169252">‏ستظهر لك حالة تسجيل الدخول <ph name="SITE_NAME" />، وبيانات التصفُّح وبيانات الموقع الإلكتروني في متصفِّح Chrome.</translation>
 <translation id="4802417911091824046">‏لا يتضمّن التشفير باستخدام عبارة المرور طرق الدفع والعناوين من Google Pay.
 
 لتغيير هذا الإعداد، يُرجى <ph name="BEGIN_LINK" />إعادة ضبط المزامنة<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@
 <translation id="5040262127954254034">الخصوصية</translation>
 <translation id="5087580092889165836">إضافة بطاقة</translation>
 <translation id="509429900233858213">حدث خطأ.</translation>
-<translation id="5100748015044654621">يمكنك مشاركة رابط للنص المحدَّد في تطبيق.</translation>
 <translation id="510275257476243843">يتبقى ساعة واحدة</translation>
 <translation id="5123685120097942451">علامة تبويب "التصفُّح المتخفي"</translation>
 <translation id="5127805178023152808">المزامنة غير مفعّلة</translation>

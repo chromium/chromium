@@ -97,6 +97,7 @@
 <translation id="1965935827552890526">Sie können zu Ihrem offenem Chrome-Fenster zurückkehren, um Ihre vorherige Aktion abzuschließen.</translation>
 <translation id="1974060860693918893">Erweitert</translation>
 <translation id="1989112275319619282">Durchsuchen</translation>
+<translation id="1992734845128748707">Standardbrowser ändern…</translation>
 <translation id="2015722694326466240">Um die Passwörter zu sehen, müssen Sie zuerst einen Passcode auf Ihrem Gerät einrichten.</translation>
 <translation id="2073572773299281212">Vor <ph name="DAYS" /> Tagen aktiv</translation>
 <translation id="2074131957428911366">Sie können in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> auswählen, was Sie synchronisieren möchten.</translation>
@@ -560,6 +561,7 @@ Websites können Cookies nicht verwenden, um Ihre Browseraktivitäten auf andere
 <translation id="7189598951263744875">Teilen...</translation>
 <translation id="7192050974311852563">Protokollierung starten</translation>
 <translation id="7203585745079012652">Gesprochene Antworten</translation>
+<translation id="7207383424303353046">Neu: Websites werden automatisch in Chrome geöffnet, wenn Sie es als Standard-Browser-App festlegen. <ph name="BEGIN_LINK" />Zu den Einstellungen<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Ungültiger Kartenalias</translation>
 <translation id="7265758999917665941">Für diese Website niemals</translation>
 <translation id="7272437679830969316">Ihre Identität konnte nicht bestätigt werden. Das Passwort wurde nicht kopiert.</translation>

@@ -3,12 +3,10 @@
 <translationbundle lang="sl">
 <translation id="2359808026110333948">Naprej</translation>
 <translation id="2416359993254398973">Chrome potrebuje dovoljenje za dostop do fotoaparata za to spletno mesto.</translation>
-<translation id="4955546094786399712">Če želite spremeniti dovoljenje za to spletno mesto, zaprite drugo aplikacijo.\n\nČe aplikacije ni mogoče zapreti, v nastavitvah za Android aplikaciji onemogočite dovoljenje za »Prekrivanje drugih aplikacij«.</translation>
 <translation id="557283862590186398">Chrome potrebuje dovoljenje za dostop do mikrofona za to spletno mesto.</translation>
 <translation id="5860491529813859533">Vklopi</translation>
 <translation id="6092062101542170135">Če želite nadaljevati, v nastavitvah za Android vklopite tehnologijo NFC</translation>
 <translation id="6393863479814692971">Chrome potrebuje dovoljenje za dostop do fotoaparata in mikrofona za to spletno mesto.</translation>
 <translation id="6697947395630195233">Chrome potrebuje dostop do vaše lokacije, da jo bo lahko delil s tem spletnim mestom.</translation>
 <translation id="7134415045456331657">Chrome potrebuje dovoljenje za dostop do fotoaparata zaradi ustvarjanja tridimenzionalnega zemljevida okolice.</translation>
-<translation id="7681341492080683492">Prek aplikacije <ph name="APP_NAME" /> je prikazana druga aplikacija</translation>
 </translationbundle>

@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Cargar a páxina, ignorando o contido da caché</translation>
 <translation id="124678866338384709">Pechar a pestana actual</translation>
 <translation id="1258753120186372309">Doodle de Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1266864766717917324">Non se puido compartir este contido: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Toca para despregar</translation>
 <translation id="1291207594882862231">Borrar o historial, as cookies, os datos dos sitios, a memoria caché…</translation>
@@ -218,7 +219,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2744248271121720757">Toca unha palabra para realizar buscas de forma instantánea ou ver accións relacionadas</translation>
 <translation id="2760989362628427051">Activa o tema escuro cando o teu dispositivo teña activado o tema escuro ou a función Aforro de batería</translation>
 <translation id="2762000892062317888">agora</translation>
-<translation id="2771869497727323769">Non se puido crear unha ligazón ao texto. Comparte a ligazón á páxina a través dunha aplicación.</translation>
 <translation id="2777555524387840389">Quedan <ph name="SECONDS" /> segundos</translation>
 <translation id="2779651927720337254">produciuse un erro</translation>
 <translation id="2781151931089541271">Queda 1 segundo</translation>
@@ -467,7 +467,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 descarga completada.}other{# descargas completadas.}}</translation>
 <translation id="4766678251456904326">Engadir conta ao dispositivo</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{Hai 1 descarga programada.}other{Hai # descargas programadas.}}</translation>
-<translation id="478981486571169252">Poderás ver o teu estado de inicio de sesión en <ph name="SITE_NAME" />, os teus datos de navegación e os datos do sitio en Chrome.</translation>
 <translation id="4802417911091824046">A encriptación mediante frase de acceso non inclúe métodos de pago nin enderezos de Google Pay.
 
 Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />restablecer a sincronización<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5040262127954254034">Privacidade</translation>
 <translation id="5087580092889165836">Engadir tarxeta</translation>
 <translation id="509429900233858213">Produciuse un erro.</translation>
-<translation id="5100748015044654621">Comparte a ligazón ao texto destacado a través dunha aplicación</translation>
 <translation id="510275257476243843">Queda 1 hora</translation>
 <translation id="5123685120097942451">Pestana do modo de incógnito</translation>
 <translation id="5127805178023152808">A sincronización está desactivada</translation>

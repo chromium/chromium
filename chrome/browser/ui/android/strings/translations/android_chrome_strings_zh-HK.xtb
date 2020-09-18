@@ -39,6 +39,7 @@
 <translation id="123724288017357924">重新載入目前的網頁，忽略之前快取的內容</translation>
 <translation id="124678866338384709">關閉目前分頁</translation>
 <translation id="1258753120186372309">Google Doodle：<ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">閱讀清單</translation>
 <translation id="1266864766717917324">無法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">輕按即可展開</translation>
 <translation id="1291207594882862231">清除記錄、Cookie、網站資料、快取…</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">輕按字詞即可搜尋，或查看相關操作</translation>
 <translation id="2760989362628427051">在裝置啟用深色主題背景或開啟「省電模式」後啟用深色主題背景</translation>
 <translation id="2762000892062317888">剛剛</translation>
-<translation id="2771869497727323769">無法建立文字連結。請在應用程式中分享頁面連結。</translation>
 <translation id="2777555524387840389">尚餘 <ph name="SECONDS" /> 秒</translation>
 <translation id="2779651927720337254">失敗</translation>
 <translation id="2781151931089541271">尚餘 1 秒</translation>
@@ -467,7 +467,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{已完成 1 項下載。}other{已完成 # 項下載。}}</translation>
 <translation id="4766678251456904326">將帳戶新增至裝置</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{已預定 1 項下載。}other{已預定 # 項下載。}}</translation>
-<translation id="478981486571169252">您可在 Chrome 中查看 <ph name="SITE_NAME" /> 登入狀態、瀏覽資料和網站資料。</translation>
 <translation id="4802417911091824046">密碼短語加密的資料並不包括 Google Pay 上的付款方法和地址。
 
 如要變更此設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@
 <translation id="5040262127954254034">私隱權</translation>
 <translation id="5087580092889165836">加入新卡</translation>
 <translation id="509429900233858213">發生錯誤。</translation>
-<translation id="5100748015044654621">請在應用程式中分享突顯文字的連結</translation>
 <translation id="510275257476243843">尚餘 1 小時</translation>
 <translation id="5123685120097942451">無痕式分頁</translation>
 <translation id="5127805178023152808">同步處理已停用</translation>
@@ -1001,6 +999,7 @@
 <translation id="8748850008226585750">內容已隱藏</translation>
 <translation id="8788265440806329501">導覽記錄閂咗</translation>
 <translation id="8788968922598763114">重新開啟最近關閉的分頁</translation>
+<translation id="8798449543960971550">讀取</translation>
 <translation id="8812260976093120287">在部分網站上，您可以透過裝置使用上述支援的付款應用程式付款。</translation>
 <translation id="8820817407110198400">書籤</translation>
 <translation id="883806473910249246">下載內容時發生錯誤。</translation>

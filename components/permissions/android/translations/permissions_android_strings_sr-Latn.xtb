@@ -3,12 +3,10 @@
 <translationbundle lang="sr-Latn">
 <translation id="2359808026110333948">Nastavite</translation>
 <translation id="2416359993254398973">Chrome traži dozvolu da pristupi kameri za ovaj sajt.</translation>
-<translation id="4955546094786399712">Da biste promenili dozvolu za ovaj sajt, zatvorite drugu aplikaciju i probajte ponovo.\n\nAko ne možete da zatvorite tu aplikaciju, isključite njenu dozvolu „Prikaz preko drugih aplikacija“ u Android podešavanjima.</translation>
 <translation id="557283862590186398">Chrome traži dozvolu da pristupi mikrofonu za ovaj sajt.</translation>
 <translation id="5860491529813859533">Uključi</translation>
 <translation id="6092062101542170135">Da biste nastavili, uključite NFC u Android podešavanjima</translation>
 <translation id="6393863479814692971">Chrome traži dozvolu da pristupi kameri i mikrofonu za ovaj sajt.</translation>
 <translation id="6697947395630195233">Chrome traži pristup vašoj lokaciji da biste je delili sa ovim sajtom.</translation>
 <translation id="7134415045456331657">Chrome traži dozvolu da pristupi kameri da bi napravio 3D mapu okruženja.</translation>
-<translation id="7681341492080683492">Jedna druga aplikacija se prikazuje preko aplikacije <ph name="APP_NAME" /></translation>
 </translationbundle>

@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Weer aan Wi-Fi koppel</translation>
 <translation id="1165039591588034296">Fout</translation>
 <translation id="1165174597379888365">Bladsy is besoek</translation>
+<translation id="1174723505405632867">Wil jy <ph name="EMBEDDED_URL" /> toelaat om webkoekies en werfdata te gebruik op <ph name="TOP_LEVEL_URL" />?
+
+Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die inhoud waarmee jy interaksie gehad het, in staat stel om reg te werk, maar kan <ph name="EMBEDDED_URL" /> toelaat om jou aktiwiteit na te spoor.</translation>
 <translation id="1175364870820465910">Druk uit …</translation>
 <translation id="1175875016430184367">Tripelkram regs</translation>
 <translation id="1178581264944972037">Laat wag</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Beleide</translation>
 <translation id="2183608646556468874">Foonnommer</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adres}other{# adresse}}</translation>
+<translation id="2187243482123994665">Gebruikerteenwoordigheid</translation>
 <translation id="2187317261103489799">Bespeur (verstek)</translation>
 <translation id="2188375229972301266">Veelvuldige pons onder</translation>
 <translation id="2202020181578195191">Voer 'n geldige vervaljaar in</translation>
@@ -533,6 +537,7 @@
       seker te maak dat jou instaanbediener werk. As jy dink jy moenie
       'n instaanbediener gebruik nie:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> wil weet wanneer jy teenwoordig is</translation>
 <translation id="3188393374551744535">Rekeningsaldo</translation>
 <translation id="3194737229810486521"><ph name="URL" /> wil data permanent op jou toestel berg</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> op <ph name="SERVER_NAME" /></translation>
@@ -1025,6 +1030,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Masjien</translation>
 <translation id="5179510805599951267">Nie in <ph name="ORIGINAL_LANGUAGE" /> nie? Meld hierdie fout aan</translation>
+<translation id="5179740473595559246">Weet wanneer jy teenwoordig is</translation>
 <translation id="5190835502935405962">Boekmerkebalk</translation>
 <translation id="519422657042045905">Annotasie is nie beskikbaar nie</translation>
 <translation id="5201306358585911203">'n Ingebedde bladsy op hierdie bladsy sê</translation>
@@ -1247,6 +1253,7 @@
 <translation id="6049488691372270142">Bladsylewering</translation>
 <translation id="6051221802930200923">Jy kan nie <ph name="SITE" /> nou onmiddellik besoek nie omdat die webwerf sertifikaatvasspelding gebruik. Netwerkfoute en -aanvalle is gewoonlik tydelik en daarom sal hierdie bladsy waarskynlik later werk.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Deel jou teenwoordigheid?</translation>
 <translation id="6058977677006700226">Gebruik jou kaarte op al jou toestelle?</translation>
 <translation id="6059925163896151826">USB-toestelle</translation>
 <translation id="6060009363608157444">Ongeldige DnsOverHttps-modus.</translation>
@@ -1376,6 +1383,7 @@
 <translation id="6631202559048444592">Daar is meer as een bron vir die beleid teenwoordig, maar die waardes is dieselfde.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Vee uit</translation>
+<translation id="6645291930348198241">Kry toegang tot webkoekies en werfdata.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Geen}=1{Vanaf 1 werf (jy sal nie uit jou Google-rekening afgemeld word nie)}other{Vanaf # werwe (jy sal nie uit jou Google-rekening afgemeld word nie)}}</translation>
 <translation id="6648459603387803038">Jou administrateur kan jou blaaieropstelling oor 'n afstand verander. Aktiwiteit op hierdie toestel kan ook buite Chrome bestuur word.</translation>
 <translation id="6652101503459149953">Gebruik Windows Hello</translation>

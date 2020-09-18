@@ -293,6 +293,7 @@
 <translation id="4277990410970811858">Аюулгүй үзэх</translation>
 <translation id="4281844954008187215">Үйлчилгээний нөхцөл</translation>
 <translation id="430793432425771671">Бүгдийг синк хийх</translation>
+<translation id="4309403553630140242">Дэлгэрэнгүй мэдээлэл авахын тулд хоёр товшино уу</translation>
 <translation id="430967081421617822">Бүх цаг</translation>
 <translation id="4334428914252001502">Уншаагүй 1 нийтлэл.</translation>
 <translation id="4338650699862464074">Таны зочилсон хуудасны URL-г Google-д илгээдэг.</translation>
@@ -560,6 +561,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7189598951263744875">Хуваалцах...</translation>
 <translation id="7192050974311852563">Лог хийж эхлэх</translation>
 <translation id="7203585745079012652">Хариултыг буцааж хэлэх</translation>
+<translation id="7207383424303353046">Шинэ: Chrome-г өгөгдмөл хөтчийн аппаа болгоод, сайтуудыг үүн дээр автоматаар нээгээрэй. <ph name="BEGIN_LINK" />Тохиргоог нээх<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Картын буруу хоч</translation>
 <translation id="7265758999917665941">Энэ сайтад хэзээ ч хадгалахгүй</translation>
 <translation id="7272437679830969316">Таныг баталгаажуулж чадсангүй. Нууц үгийг хуулаагүй байна.</translation>
@@ -637,6 +639,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8073670137947914548">Татаж дууслаа</translation>
 <translation id="8073872304774253879">Хайлт болон хөтлөх явцыг сайжруулах</translation>
 <translation id="8076014560081431679">Сайтын хадгалсан тохиргоо устахгүй бөгөөд таны хайлтын тохиргоонд нөлөөлж болзошгүй. <ph name="BEGIN_LINK" />Дэлгэрэнгүй үзэх<ph name="END_LINK" /></translation>
+<translation id="8079602123447022758">Энэ тохиргоог удирддаг. Дэлгэрэнгүй мэдээлэл авахын тулд хоёр товшино уу</translation>
 <translation id="8105368624971345109">Унтраах</translation>
 <translation id="8114753159095730575">Файл татаж авах боломжтой. Дэлгэцийн доод хэсгийн сонголтууд боломжтой.</translation>
 <translation id="8131740175452115882">Батлах</translation>

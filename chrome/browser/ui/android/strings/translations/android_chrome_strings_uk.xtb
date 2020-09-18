@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Оновити цю сторінку, ігноруючи кешований вміст</translation>
 <translation id="124678866338384709">Закрити поточну вкладку</translation>
 <translation id="1258753120186372309">Дудл Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Список читання</translation>
 <translation id="1266864766717917324">Не вдалося надіслати: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Торкніться, щоб розгорнути</translation>
 <translation id="1291207594882862231">Очистити історію, файли cookie, дані сайтів, кеш…</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">Торкніться слова для миттєвого пошуку або перегляду схожих дій</translation>
 <translation id="2760989362628427051">Активувати нічний режим, якщо його налаштовано або ввімкнено режим енергозбереження</translation>
 <translation id="2762000892062317888">щойно</translation>
-<translation id="2771869497727323769">Не вдається створити посилання на текст. Надішліть посилання на сторінку в додатку.</translation>
 <translation id="2777555524387840389">Залишилося <ph name="SECONDS" /> с</translation>
 <translation id="2779651927720337254">не завантажено</translation>
 <translation id="2781151931089541271">Залишилась 1 с</translation>
@@ -387,6 +387,7 @@
 <translation id="4135200667068010335">Список пристроїв, на які можна надіслати вкладку, закрито.</translation>
 <translation id="4149994727733219643">Спрощений перегляд веб-сторінок</translation>
 <translation id="4170011742729630528">Служба не доступна. Повторіть спробу пізніше.</translation>
+<translation id="4175173967354304331">Ви ввійдете у свій обліковий запис на цьому сайті, у Chrome і додатках Google</translation>
 <translation id="4179980317383591987">Використано <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Мови</translation>
 <translation id="4183868528246477015">Пошук з Об'єктивом <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
@@ -467,7 +468,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 файл завантажено.}one{# файл завантажено.}few{# файли завантажено.}many{# файлів завантажено.}other{# файлу завантажено.}}</translation>
 <translation id="4766678251456904326">Додати обліковий запис на пристрій</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{Заплановано 1 завантаження.}one{Заплановано # завантаження.}few{Заплановано # завантаження.}many{Заплановано # завантажень.}other{Заплановано # завантаження.}}</translation>
-<translation id="478981486571169252">Ви зможете переглядати статус входу на сайті <ph name="SITE_NAME" />, дані веб-перегляду й сайтів у Chrome.</translation>
 <translation id="4802417911091824046">Парольна фраза не стосується способів оплати й адрес із Google Pay.
 
 Щоб змінити це налаштування, <ph name="BEGIN_LINK" />скиньте параметри синхронізації<ph name="END_LINK" /></translation>
@@ -512,7 +512,6 @@
 <translation id="5040262127954254034">Конфіденційність</translation>
 <translation id="5087580092889165836">Додати картку</translation>
 <translation id="509429900233858213">Сталася помилка.</translation>
-<translation id="5100748015044654621">Надіслати посилання на виділений текст у додатку</translation>
 <translation id="510275257476243843">Залишилась 1 година</translation>
 <translation id="5123685120097942451">Анонімна вкладка</translation>
 <translation id="5127805178023152808">Синхронізацію вимкнено</translation>
@@ -679,6 +678,7 @@
 <translation id="6341580099087024258">Запитувати, де зберігати файли</translation>
 <translation id="6342069812937806050">Лише зараз</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}many{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
+<translation id="6345878117466430440">Позначити як прочитане</translation>
 <translation id="6364438453358674297">Вилучити пропозицію з історії?</translation>
 <translation id="6366047038980456022">У <ph name="APP_NAME" /> є все, що потрібно, щоб працювати, творити й досліджувати в Інтернеті</translation>
 <translation id="6378173571450987352">Деталі: відсортовано за кількістю використаного трафіку</translation>
@@ -994,6 +994,7 @@
 <translation id="8655129584991699539">Ви можете очистити дані в налаштуваннях Chrome</translation>
 <translation id="8662811608048051533">Ви вийдете з більшості сайтів.</translation>
 <translation id="8664979001105139458">Файл із такою назвою вже існує</translation>
+<translation id="8683039184091909753">зображення</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Рівень сигналу: # поділка}one{Рівень сигналу: # поділка}few{Рівень сигналу: # поділки}many{Рівень сигналу: # поділок}other{Рівень сигналу: # поділки}}</translation>
 <translation id="869891660844655955">Діє до</translation>
 <translation id="8712637175834984815">Виконано</translation>

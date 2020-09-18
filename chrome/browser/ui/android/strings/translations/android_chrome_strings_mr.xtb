@@ -39,6 +39,7 @@
 <translation id="123724288017357924">कॅशे केलेला आशय दुर्लक्षित करून, सद्य पेज रीलोड करा</translation>
 <translation id="124678866338384709">वर्तमान टॅब बंद करा</translation>
 <translation id="1258753120186372309">Google डूडल: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">वाचन सूची</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> शेअर करू शकलो नाही</translation>
 <translation id="1283039547216852943">विस्तृत करण्यासाठी टॅप करा</translation>
 <translation id="1291207594882862231">इतिहास, कुकी, साइट डेटा, कॅशे  साफ करा…</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">झटपट शोधण्यासाठी किंवा संबंधित ॲक्‍शन पाहण्यासाठी एखाद्या शब्दावर टॅप करा</translation>
 <translation id="2760989362628427051">तुमच्या डिव्हाइसची गडद थीम किंवा बॅटरी सेव्हर सुरू असताना गडद थीम सुरू करा</translation>
 <translation id="2762000892062317888">आत्ताच</translation>
-<translation id="2771869497727323769">मजकुराची लिंक तयार करता आली नाही. पेजची लिंक अ‍ॅपमध्ये शेअर करा.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> सेकंद शिल्लक</translation>
 <translation id="2779651927720337254">अयशस्वी झाले</translation>
 <translation id="2781151931089541271">1 सेकंद शिल्लक</translation>
@@ -467,7 +467,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{एक डाउनलोड पूर्ण झाला आहे.}other{# डाउनलोड पूर्ण झाले आहेत.}}</translation>
 <translation id="4766678251456904326">डिव्हाइसवर खाते जोडा</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{एक डाउनलोड शेड्युल केलेले आहे.}other{# डाउनलोड शेड्युल केलेली आहेत.}}</translation>
-<translation id="478981486571169252">तुम्हाला Chrome मध्ये तुमची <ph name="SITE_NAME" /> साइन इन स्थिती, ब्राउझिंग डेटा आणि साइट डेटा दिसेल.</translation>
 <translation id="4802417911091824046">पासफ्रेज एंक्रिप्शनमध्ये Google Pay वरील पेमेंट पद्धतींचा आणि पत्त्यांचा समावेश नसतो.
 
 हे सेटिंग बदलण्यासाठी, <ph name="BEGIN_LINK" />सिंक रीसेट करा<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@
 <translation id="5040262127954254034">गोपनीयता</translation>
 <translation id="5087580092889165836">कार्ड जोडा</translation>
 <translation id="509429900233858213">एक एरर आली आहे.</translation>
-<translation id="5100748015044654621">हायलाइट केलेल्या मजकुराची लिंक अ‍ॅपमध्ये शेअर करा</translation>
 <translation id="510275257476243843">1 तास शिल्लक</translation>
 <translation id="5123685120097942451">गुप्त टॅब</translation>
 <translation id="5127805178023152808">संकालन बंद आहे</translation>

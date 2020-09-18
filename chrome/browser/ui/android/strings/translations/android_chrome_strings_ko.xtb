@@ -39,6 +39,7 @@
 <translation id="123724288017357924">캐시된 콘텐츠를 무시하고 현재 페이지 새로고침</translation>
 <translation id="124678866338384709">현재 탭 닫기</translation>
 <translation id="1258753120186372309">Google 기념일 로고: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">읽기 목록</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> 공유할 수 없음</translation>
 <translation id="1283039547216852943">탭하여 펼치기</translation>
 <translation id="1291207594882862231">방문 기록, 쿠키, 사이트 데이터, 캐시 삭제…</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">단어를 탭하여 즉시 검색하거나 관련 작업을 확인하세요</translation>
 <translation id="2760989362628427051">기기의 어두운 테마 또는 절전 모드가 켜지면 어두운 테마를 사용 설정합니다.</translation>
 <translation id="2762000892062317888">방금 전</translation>
-<translation id="2771869497727323769">텍스트 링크를 생성할 수 없습니다. 앱에서 페이지 링크를 공유하세요.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" />초 남음</translation>
 <translation id="2779651927720337254">실패</translation>
 <translation id="2781151931089541271">1초 남음</translation>
@@ -467,7 +467,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{다운로드 1개 완료}other{다운로드 #개 완료}}</translation>
 <translation id="4766678251456904326">기기에 계정 추가</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{다운로드 1개가 예약되었습니다.}other{다운로드 #개가 예약되었습니다.}}</translation>
-<translation id="478981486571169252">Chrome에서의 <ph name="SITE_NAME" /> 로그인 상태, 인터넷 사용 기록, 사이트 데이터를 볼 수 있습니다.</translation>
 <translation id="4802417911091824046">Google Pay 결제 수단 및 주소는 암호로 암호화되지 않습니다.
 
 이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />하세요.</translation>
@@ -512,7 +511,6 @@
 <translation id="5040262127954254034">개인정보 보호</translation>
 <translation id="5087580092889165836">카드 추가</translation>
 <translation id="509429900233858213">오류가 발생했습니다.</translation>
-<translation id="5100748015044654621">앱에서 강조표시된 텍스트 링크를 공유하세요.</translation>
 <translation id="510275257476243843">1시간 남음</translation>
 <translation id="5123685120097942451">시크릿 탭</translation>
 <translation id="5127805178023152808">동기화 사용 안함</translation>

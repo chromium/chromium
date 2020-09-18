@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Aktuelle Seite neu laden, Cache-Inhalte ignorieren</translation>
 <translation id="124678866338384709">Aktuellen Tab schließen</translation>
 <translation id="1258753120186372309">Google-Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Leseliste</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> konnte nicht geteilt werden</translation>
 <translation id="1283039547216852943">Zum Maximieren tippen</translation>
 <translation id="1291207594882862231">Verlauf, Cookies, Websitedaten, Cache leeren…</translation>
@@ -218,7 +219,6 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2744248271121720757">Tippen Sie auf ein Wort, um eine Sofortsuche zu starten oder weitere Aktionen anzuzeigen</translation>
 <translation id="2760989362628427051">Dunkles Design verwenden, wenn beim Gerät das dunkle Design oder der Energiesparmodus aktiviert ist</translation>
 <translation id="2762000892062317888">gerade eben</translation>
-<translation id="2771869497727323769">Link zu Text kann nicht erstellt werden. Teilen Sie den Link zur Seite in einer App.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> Sekunden übrig</translation>
 <translation id="2779651927720337254">fehlgeschlagen</translation>
 <translation id="2781151931089541271">1 Sekunde übrig</translation>
@@ -467,7 +467,6 @@ Eventuell finden Sie unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 Download abgeschlossen.}other{# Downloads abgeschlossen.}}</translation>
 <translation id="4766678251456904326">Konto zum Gerät hinzufügen</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 Download geplant.}other{# Downloads geplant.}}</translation>
-<translation id="478981486571169252">Sie können Ihren Anmeldestatus für <ph name="SITE_NAME" />, Browserdaten und Websitedaten in Chrome einsehen.</translation>
 <translation id="4802417911091824046">Die Passphrasenverschlüsselung enthält keine Zahlungsmethoden oder Adressen von Google Pay.
 
 Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie die Synchronisierung zurück<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5040262127954254034">Datenschutz</translation>
 <translation id="5087580092889165836">Karte hinzufügen</translation>
 <translation id="509429900233858213">Ein Fehler ist aufgetreten.</translation>
-<translation id="5100748015044654621">Teilen Sie den Link zum markierten Text in einer App</translation>
 <translation id="510275257476243843">1 Stunde übrig</translation>
 <translation id="5123685120097942451">Inkognitotab</translation>
 <translation id="5127805178023152808">Synchronisierung ist deaktiviert</translation>

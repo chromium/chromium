@@ -39,6 +39,7 @@
 <translation id="123724288017357924">कैश सामग्री को अनदेखा कर, मौजूदा पेज फिर लोड करें</translation>
 <translation id="124678866338384709">वर्तमान टैब को बंद करें</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">पठन सूची</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> शेयर नहीं किया जा सका</translation>
 <translation id="1283039547216852943">पूरा खोलने के लिए टैप करें</translation>
 <translation id="1291207594882862231">इतिहास, कुकी, साइट डेटा, कैश साफ़ करें…</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">इंस्टैंट सर्च या मिलती-जुलती कार्रवाई देखने के लिए किसी शब्द पर टैप करें</translation>
 <translation id="2760989362628427051">अपने डिवाइस की गहरे रंग वाली थीम या 'बैटरी सेवर' चालू होने पर गहरे रंग वाली थीम चालू करें</translation>
 <translation id="2762000892062317888">अभी-अभी</translation>
-<translation id="2771869497727323769">हाइलाइट किए गए टेक्स्ट का लिंक नहीं बनाया जा सकता. पेज के लिंक को किसी ऐप्लिकेशन में शेयर करें.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> सेकंड शेष</translation>
 <translation id="2779651927720337254">डाउनलोड नहीं हो सका</translation>
 <translation id="2781151931089541271">1 सेकंड शेष</translation>
@@ -467,7 +467,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 डाउनलोड पूरा हुआ.}one{# डाउनलोड पूरे हुए.}other{# डाउनलोड पूरे हुए.}}</translation>
 <translation id="4766678251456904326">डिवाइस पर खाता जोड़ें</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 डाउनलोड शेड्यूल किया गया.}one{# डाउनलोड शेड्यूल किया गया.}other{# डाउनलोड शेड्यूल किए गए.}}</translation>
-<translation id="478981486571169252">आप Chrome में अपनी <ph name="SITE_NAME" /> की साइन इन स्थिति, ब्राउज़िंग डेटा, और साइट डेटा देख पाएंगे.</translation>
 <translation id="4802417911091824046">लंबा पासवर्ड सुरक्षित करने में Google Pay से भुगतान करने के तरीके और पते शामिल नहीं हैं.
 
 यह सेटिंग बदलने के लिए, <ph name="BEGIN_LINK" />सिंक रीसेट करें<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@
 <translation id="5040262127954254034">निजता</translation>
 <translation id="5087580092889165836">कार्ड जोड़ें</translation>
 <translation id="509429900233858213">कोई गड़बड़ी हुई.</translation>
-<translation id="5100748015044654621">हाइलाइट किए गए टेक्स्ट के लिंक को किसी ऐप्लिकेशन में शेयर करें</translation>
 <translation id="510275257476243843">1 घंटा शेष</translation>
 <translation id="5123685120097942451">गुप्त टैब</translation>
 <translation id="5127805178023152808">समन्वयन बंद है</translation>

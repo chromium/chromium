@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Spletno mesto <ph name="SITE_NAME" /> je bilo dodano</translation>
 <translation id="1383876407941801731">Išči</translation>
 <translation id="1384959399684842514">Prenos je zaustavljen</translation>
+<translation id="1431402976894535801">Preprečevanje, da bi spletna mesta vedela, da ste prisotni</translation>
 <translation id="1446450296470737166">Dovolitev popolnega nadzora nad napravami MIDI</translation>
 <translation id="1509960214886564027">Funkcije na številnih spletnih mestih morda ne bodo delovale</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">Odpri nenamestljivo aplikacijo</translation>
 <translation id="2148716181193084225">Danes</translation>
 <translation id="2182457891543959921">Vprašaj, preden se spletnim mestom dovoli ustvarjanje 3D-zemljevida vaše okolice ali spremljanje položaja kamere (priporočljivo)</translation>
+<translation id="2187243482123994665">Prisotnost uporabnika</translation>
 <translation id="2212565012507486665">Dovoli piškotke</translation>
 <translation id="2228071138934252756">Če želite aplikaciji <ph name="APP_NAME" /> omogočiti dostop do fotoaparata, fotoaparat vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="2289270750774289114">Vprašaj, ko želi spletno mesto odkrivati naprave Bluetooth v bližini (priporočljivo)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">Videopredvajalnik</translation>
 <translation id="3115898365077584848">Pokaži informacije</translation>
 <translation id="3123473560110926937">Blokirano na nekaterih spletnih mestih</translation>
+<translation id="3165371858310906303">Vprašaj, ko spletno mesto želi vedeti, ali ste prisotni</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> shranjenih podatkov</translation>
 <translation id="321187648315454507">Če želite, da vam aplikacija <ph name="APP_NAME" /> pošilja obvestila, obvestila vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -104,7 +107,6 @@
 <translation id="4165986682804962316">Nastavitve spletnega mesta</translation>
 <translation id="4200726100658658164">Odpri nastavitve lokacije</translation>
 <translation id="4226663524361240545">Ob prejemanju obvestil naprava morda vibrira</translation>
-<translation id="4242533952199664413">Odpri nastavitve</translation>
 <translation id="4259722352634471385">Krmarjenje je blokirano: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Dovoljeno</translation>
 <translation id="429312253194641664">Spletno mesto predvaja predstavnost</translation>
@@ -134,6 +136,7 @@
 <translation id="5197729504361054390">Izbrani stiki bodo v skupni rabi s spletnim mestom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Pokaži</translation>
 <translation id="5301954838959518834">V redu, razumem</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" /></translation>
 <translation id="5313967007315987356">Dodajanje mesta</translation>
 <translation id="5317780077021120954">Shrani</translation>
 <translation id="5335288049665977812">Spletnim mestom dovoli izvajanje JavaScripta (priporočeno)</translation>
@@ -145,6 +148,7 @@
 <translation id="5403592356182871684">Imena</translation>
 <translation id="5489227211564503167">Pretečeni čas: <ph name="ELAPSED_TIME" /> od <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokiranje oglasov na spletnih mestih, ki prikazujejo vsiljive ali zavajajoče oglase</translation>
+<translation id="5502860503640766021">Dovoljeno: <ph name="PERMISSION_1" />, blokirano: <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Spletna mesta vas ne smejo vprašati, ali želite, da vam pošiljajo obvestila</translation>
 <translation id="5516455585884385570">Odpiranje nastavitev obvestil</translation>
 <translation id="5527111080432883924">Prikaži poziv, preden se spletnim mestom dovoli branje besedila in slik v odložišču (priporočeno)</translation>
@@ -156,12 +160,15 @@
 <translation id="5690795753582697420">Fotoaparat je izklopljen v nastavitvah za Android</translation>
 <translation id="5710871682236653961">Poziv, preden se spletnim mestom dovoli pošiljanje in prejemanje podatkov, ko se dotaknete naprav s tehnologijo NFC (priporočeno)</translation>
 <translation id="5719847187258001597">S tem boste izbrisali vse podatke in piškotke, ki jih je shranilo spletno mesto <ph name="ORIGIN" /> ali njegova aplikacija na vašem začetnem zaslonu.</translation>
+<translation id="5771720122942595109">Blokirano: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Dovoljenja</translation>
 <translation id="5860033963881614850">Izklopljeno</translation>
+<translation id="5863245810240683687">Dovoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" /></translation>
 <translation id="5876056640971328065">Začasna zaustavitev videa</translation>
 <translation id="5916664084637901428">Vklopljeno</translation>
 <translation id="5922853908706496913">Deljenje zaslona</translation>
 <translation id="5939518447894949180">Ponastavi</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Nadziranje dostopa spletnega mesta do naprave</translation>
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6042308850641462728">Več</translation>
@@ -173,6 +180,7 @@
 <translation id="6196640612572343990">Blokiraj piškotke drugih spletnih mest</translation>
 <translation id="6206551242102657620">Povezava je varna. Podatki o spletnem mestu.</translation>
 <translation id="6216432067784365534">Možnosti za <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6262279340360821358">Blokirano: <ph name="PERMISSION_1" /> in <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Spletna mesta vas lahko vprašajo, ali želite, da vam pošiljajo obvestila</translation>
 <translation id="6295158916970320988">Vsa spletna mesta</translation>
 <translation id="6320088164292336938">Vibriranje</translation>
@@ -195,6 +203,7 @@
 <translation id="6790428901817661496">Predvajanje</translation>
 <translation id="6818926723028410516">Izberite elemente</translation>
 <translation id="6864395892908308021">Ta naprava ne podpira NFC-ja</translation>
+<translation id="6879016579615558281">Blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" /></translation>
 <translation id="6910211073230771657">Izbrisano</translation>
 <translation id="6912998170423641340">Spletnim mestom prepreči branje besedila in slik v odložišču</translation>
 <translation id="6945221475159498467">Izberi</translation>
@@ -212,6 +221,7 @@
 <translation id="723171743924126238">Izberite slike</translation>
 <translation id="7243308994586599757">Možnosti so na voljo pri dnu zaslona</translation>
 <translation id="7250468141469952378">Št. izbranih: <ph name="ITEM_COUNT" /></translation>
+<translation id="7260727271532453612">Dovoljeno: <ph name="PERMISSION_1" /> in <ph name="PERMISSION_2" /></translation>
 <translation id="7302486331832100261">Obvestila običajno blokirate. Če želite to omogočiti, se dotaknite Podrobnosti.</translation>
 <translation id="7423098979219808738">Najprej vprašaj</translation>
 <translation id="7423538860840206698">Blokirano branje vsebine odložišča</translation>
@@ -243,6 +253,7 @@
 <translation id="8087000398470557479">Ta vsebina je iz domene <ph name="DOMAIN_NAME" /> in jo prikazuje Google.</translation>
 <translation id="8116925261070264013">Prezrto</translation>
 <translation id="8131740175452115882">Potrdi</translation>
+<translation id="8197286292360124385">Dovoljeno: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Nadaljuj</translation>
 <translation id="8206354486702514201">To nastavitev je uveljavil skrbnik.</translation>
 <translation id="8249310407154411074">Na vrh</translation>

@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Сайтът <ph name="SITE_NAME" /> е добавен</translation>
 <translation id="1383876407941801731">Търсене</translation>
 <translation id="1384959399684842514">Изтеглянето е на пауза</translation>
+<translation id="1431402976894535801">Блокиране на сайтовете, така че да не знаят дали присъствате</translation>
 <translation id="1446450296470737166">Разр. на пълния контрол над MIDI</translation>
 <translation id="1509960214886564027">Функциите в много сайтове може да не работят правилно</translation>
 <translation id="1620510694547887537">Камера</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">Отваряне на мигновеното приложение</translation>
 <translation id="2148716181193084225">Днес</translation>
 <translation id="2182457891543959921">Извеждане на запитване, преди да се разреши на сайтовете да създават триизмерна карта на заобикалящата ви среда или да следят позицията на камерата (препоръчително)</translation>
+<translation id="2187243482123994665">Присъствие на потребителя</translation>
 <translation id="2212565012507486665">Разрешаване на „бисквитките“</translation>
 <translation id="2228071138934252756">За да разрешите на <ph name="APP_NAME" /> да осъществява достъп до камерата ви, тя трябва да бъде включена и от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="2289270750774289114">Извеждане на запитване, когато сайт иска да открива устройства с Bluetooth в близост (препоръчително)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">Видеоплейър</translation>
 <translation id="3115898365077584848">Показване на информацията</translation>
 <translation id="3123473560110926937">Блокиране на някои сайтове</translation>
+<translation id="3165371858310906303">Извеждане на запитване, когато сайт иска да знае дали присъствате</translation>
 <translation id="3198916472715691905">Съхранявани данни: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">За да разрешите на <ph name="APP_NAME" /> да ви изпраща известия, те трябва да бъдат включени и от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
@@ -104,7 +107,6 @@
 <translation id="4165986682804962316">Настройки за сайта</translation>
 <translation id="4200726100658658164">Отваряне на настройките за местоположението</translation>
 <translation id="4226663524361240545">Възможно е устройството да вибрира при известия</translation>
-<translation id="4242533952199664413">Отваряне на настройките</translation>
 <translation id="4259722352634471385">Навигирането е блокирано: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Разрешено</translation>
 <translation id="429312253194641664">Сайт възпроизвежда мултимедийно съдържание</translation>
@@ -134,6 +136,7 @@
 <translation id="5197729504361054390">Избраните от вас контакти ще бъдат споделени със сайта <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Показване</translation>
 <translation id="5301954838959518834">Добре, разбрах</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /></translation>
 <translation id="5313967007315987356">Добавяне на сайт</translation>
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5335288049665977812">Разрешаване на сайтовете да изпълняват JavaScript (препоръчително)</translation>
@@ -145,6 +148,7 @@
 <translation id="5403592356182871684">Имена</translation>
 <translation id="5489227211564503167">Изминало време: <ph name="ELAPSED_TIME" /> от <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Блокиране на рекламите от сайтове, на които се показват натрапчиви или подвеждащи реклами</translation>
+<translation id="5502860503640766021">Достъпът до <ph name="PERMISSION_1" /> е разрешен, а до <ph name="PERMISSION_2" /> е блокиран</translation>
 <translation id="5505264765875738116">Сайтовете не могат да извеждат подкани за изпращане на известия</translation>
 <translation id="5516455585884385570">Отваряне на настройките за известия</translation>
 <translation id="5527111080432883924">Извеждане на запитване, преди да се разреши на сайтовете да четат текста и изображенията от буферната памет (препоръчително)</translation>
@@ -156,12 +160,15 @@
 <translation id="5690795753582697420">Камерата е изключена от настройките на Android</translation>
 <translation id="5710871682236653961">Извеждане на запитване преди разрешаване на сайтовете да изпращат и получават информация при допиране на устройства с NFC (препоръчително)</translation>
 <translation id="5719847187258001597">Всички съхранявани от <ph name="ORIGIN" /> или от съответното приложение на началния екран данни и „бисквитки“ ще бъдат изчистени.</translation>
+<translation id="5771720122942595109">Достъпът до <ph name="PERMISSION_1" /> е блокиран</translation>
 <translation id="5804241973901381774">Разрешения</translation>
 <translation id="5860033963881614850">Изключено</translation>
+<translation id="5863245810240683687">Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е разрешен</translation>
 <translation id="5876056640971328065">Поставяне на видеоклипа на пауза</translation>
 <translation id="5916664084637901428">Включено</translation>
 <translation id="5922853908706496913">Екранът ви се споделя</translation>
 <translation id="5939518447894949180">Нулиране</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Контролирайте достъпа на този сайт до устройството ви</translation>
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6042308850641462728">Още</translation>
@@ -173,6 +180,7 @@
 <translation id="6196640612572343990">Блокиране на „бисквитките“ на трети страни</translation>
 <translation id="6206551242102657620">Връзката е защитена. Информация за сайта</translation>
 <translation id="6216432067784365534">Опции за <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6262279340360821358"><ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /> са блокирани</translation>
 <translation id="6270391203985052864">Сайтовете могат да извеждат подкани за изпращане на известия</translation>
 <translation id="6295158916970320988">Всички сайтове</translation>
 <translation id="6320088164292336938">Вибриране</translation>
@@ -195,6 +203,7 @@
 <translation id="6790428901817661496">Пускане</translation>
 <translation id="6818926723028410516">Избор на елементи</translation>
 <translation id="6864395892908308021">Това устройство не може да чете NFC</translation>
+<translation id="6879016579615558281"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> са блокирани</translation>
 <translation id="6910211073230771657">Изтрито</translation>
 <translation id="6912998170423641340">Забраняване на сайтовете да четат текста и изображенията от буферната памет</translation>
 <translation id="6945221475159498467">Избиране</translation>
@@ -212,6 +221,7 @@
 <translation id="723171743924126238">Избиране на изображения</translation>
 <translation id="7243308994586599757">Опциите са в долната част на екрана</translation>
 <translation id="7250468141469952378">Избрани: <ph name="ITEM_COUNT" /></translation>
+<translation id="7260727271532453612">Достъпът до <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /> е разрешен</translation>
 <translation id="7302486331832100261">Обикновено блокирате известията. За да разрешите, докоснете „Подробности“.</translation>
 <translation id="7423098979219808738">Първо ще се извежда запитване</translation>
 <translation id="7423538860840206698">Достъпът за четене до буферната памет е блокиран</translation>
@@ -243,6 +253,7 @@
 <translation id="8087000398470557479">Това съдържание се показва от Google, а източникът му е <ph name="DOMAIN_NAME" />.</translation>
 <translation id="8116925261070264013">Заглушени</translation>
 <translation id="8131740175452115882">Потвърждаване</translation>
+<translation id="8197286292360124385">Достъпът до <ph name="PERMISSION_1" /> е разрешен</translation>
 <translation id="8200772114523450471">Възобновяване</translation>
 <translation id="8206354486702514201">Тази настройка е наложена от администратора ви.</translation>
 <translation id="8249310407154411074">Преместване най-горе</translation>

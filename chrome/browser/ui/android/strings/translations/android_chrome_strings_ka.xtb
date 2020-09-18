@@ -39,6 +39,7 @@
 <translation id="123724288017357924">გვერდის გადატვირთვა ქეშირ. კონტენტის იგნორირებით</translation>
 <translation id="124678866338384709">მიმდინარე ჩანართის დახურვა</translation>
 <translation id="1258753120186372309">Google Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">საკითხავი სია</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ვერ გაზიარდა</translation>
 <translation id="1283039547216852943">შეეხეთ გასაშლელად</translation>
 <translation id="1291207594882862231">ისტორიის, ქუქი-ჩანაწერების, საიტის მონაცემების, ქეშის გასუფთავება…</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">შეეხეთ სიტყვას მყისიერი ძიებისთვის ან დაკავშირებული ქმედებების სანახავად</translation>
 <translation id="2760989362628427051">მუქი თემის ჩართვა მოწყობილობაზე მუქი თემის ან ბატარეის დამზოგის გააქტიურებისას</translation>
 <translation id="2762000892062317888">ახლახან</translation>
-<translation id="2771869497727323769">ტექსტის ბმული ვერ შეიქმნა. გააზიარეთ გვერდის ბმული აპის მეშვეობით.</translation>
 <translation id="2777555524387840389">დარჩენილია <ph name="SECONDS" /> წმ</translation>
 <translation id="2779651927720337254">ვერ მოხერხდა</translation>
 <translation id="2781151931089541271">დარჩენილია 1 წმ</translation>
@@ -467,7 +467,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 ჩამოტვირთვა დასრულდა.}other{# ჩამოტვირთვა დასრულდა.}}</translation>
 <translation id="4766678251456904326">ანგარიშის დამატება მოწყობილობაზე</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{დაგეგმილია 1 ჩამოტვირთვა.}other{დაგეგმილია # ჩამოტვირთვა.}}</translation>
-<translation id="478981486571169252">Chrome-ში იხილავთ როგორც <ph name="SITE_NAME" />-ში შესვლის სტატუსს, ისე დათვალიერების/საიტის მონაცემებს.</translation>
 <translation id="4802417911091824046">საიდუმლო ფრაზით დაშიფვრა არ მოიცავს Google Pay-ში შენახულ გადახდის მეთოდებსა და მისამართებს.
 
 ამ პარამეტრის შესაცვლელად საჭიროა <ph name="BEGIN_LINK" />სინქრონიზაციის გადაყენება<ph name="END_LINK" /></translation>
@@ -512,7 +511,6 @@
 <translation id="5040262127954254034">კონფიდენციალურობა</translation>
 <translation id="5087580092889165836">ბარათის დამატება</translation>
 <translation id="509429900233858213">შეცდომა მოხდა.</translation>
-<translation id="5100748015044654621">გააზიარეთ გამოყოფილი ტექსტის ბმული აპის მეშვეობით</translation>
 <translation id="510275257476243843">დარჩენილია 1 საათი</translation>
 <translation id="5123685120097942451">ინკოგნიტო ჩანართი</translation>
 <translation id="5127805178023152808">სინქრონიზაცია გამორთულია</translation>

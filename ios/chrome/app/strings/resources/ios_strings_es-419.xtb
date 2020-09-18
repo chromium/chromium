@@ -293,6 +293,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="4277990410970811858">Navegación segura</translation>
 <translation id="4281844954008187215">Condiciones del Servicio</translation>
 <translation id="430793432425771671">Sincronizar todo</translation>
+<translation id="4309403553630140242">Presiona dos veces para obtener más información</translation>
 <translation id="430967081421617822">Todo el tiempo</translation>
 <translation id="4334428914252001502">1 artículo sin leer.</translation>
 <translation id="4338650699862464074">Envía a Google las URL de las páginas que visitas.</translation>
@@ -561,6 +562,7 @@ Sin embargo, no pueden usar cookies para ver la actividad de navegación en dife
 <translation id="7189598951263744875">Compartir...</translation>
 <translation id="7192050974311852563">Iniciar registro</translation>
 <translation id="7203585745079012652">Decir las respuestas</translation>
+<translation id="7207383424303353046">Nueva función: Para que los sitios se abran de forma automática en la app de Chrome, elígela como predeterminada. <ph name="BEGIN_LINK" />Abrir Configuración<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">El sobrenombre de la tarjeta no es válido</translation>
 <translation id="7265758999917665941">Nunca para este sitio</translation>
 <translation id="7272437679830969316">No se puede verificar tu identidad. La contraseña no se copió.</translation>
@@ -638,6 +640,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8073670137947914548">Descarga completa</translation>
 <translation id="8073872304774253879">Mejorar las búsquedas y la navegación</translation>
 <translation id="8076014560081431679">Las opciones de configuración de sitios guardadas no se borrarán y es posible que reflejen tus hábitos de navegación. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="8079602123447022758">Esta configuración está administrada; presiona dos veces para obtener más información</translation>
 <translation id="8105368624971345109">Desactivar</translation>
 <translation id="8114753159095730575">El archivo ya se puede descargar. Las opciones disponibles se muestran junto a la parte inferior de la pantalla.</translation>
 <translation id="8131740175452115882">Confirmar</translation>

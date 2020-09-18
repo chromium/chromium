@@ -3,12 +3,10 @@
 <translationbundle lang="pt-PT">
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2416359993254398973">O Chrome necessita de autorização de acesso à câmara para este site.</translation>
-<translation id="4955546094786399712">Para alterar a autorização para este site, feche a outra app e tente novamente.\n\nSe não conseguir fechar a app, desative a autorização da app para "Sobrepor-se a outras apps" nas definições do Android.</translation>
 <translation id="557283862590186398">O Chrome necessita de autorização de acesso ao microfone para este site.</translation>
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="6092062101542170135">Para continuar, ative o NFC nas definições do Android.</translation>
 <translation id="6393863479814692971">O Chrome necessita de autorização de acesso à câmara e ao microfone para este site.</translation>
 <translation id="6697947395630195233">O Chrome precisa de acesso à sua localização para a partilhar com este site.</translation>
 <translation id="7134415045456331657">O Chrome necessita de autorização de acesso à câmara para criar um mapa 3D do ambiente à sua volta.</translation>
-<translation id="7681341492080683492">Outra app está a sobrepor-se a <ph name="APP_NAME" /></translation>
 </translationbundle>

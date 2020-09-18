@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Kuunganisha tena kwenye Wi-Fi</translation>
 <translation id="1165039591588034296">Hitilafu</translation>
 <translation id="1165174597379888365">Ukurasa unatembelewa</translation>
+<translation id="1174723505405632867">Ungependa kuruhusu <ph name="EMBEDDED_URL" /> itumie data ya tovuti na vidakuzi kwenye <ph name="TOP_LEVEL_URL" />?
+
+Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui ambayo umetumia yafanye kazi ipasavyo, lakini huenda ikaruhusu <ph name="EMBEDDED_URL" /> ifuatilie shughuli zako.</translation>
 <translation id="1175364870820465910">&amp;Chapisha...</translation>
 <translation id="1175875016430184367">Bana mara tatu kulia</translation>
 <translation id="1178581264944972037">Sitisha</translation>
@@ -308,6 +311,7 @@
 <translation id="2181821976797666341">Sera</translation>
 <translation id="2183608646556468874">Nambari ya Simu</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{Anwani 1}other{Anwani #}}</translation>
+<translation id="2187243482123994665">Upatikanaji wa mtumiaji</translation>
 <translation id="2187317261103489799">Gundua (chaguomsingi)</translation>
 <translation id="2188375229972301266">Toboa mara kadhaa chini</translation>
 <translation id="2202020181578195191">Andika mwaka sahihi wa kuisha kwa muda wa matumizi</translation>
@@ -532,6 +536,7 @@
           kuhakikisha kuwa seva mbadala inafanya kazi. Ikiwa huamini kwamba unapaswa kuwa
           ukitumia seva mbadala:
           <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> ingependa kujua unapopatikana</translation>
 <translation id="3188393374551744535">Salio la akaunti</translation>
 <translation id="3194737229810486521"><ph name="URL" /> inataka kuhifadhi data kwenye kifaa chako kwa muda mrefu</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> kwenye <ph name="SERVER_NAME" /></translation>
@@ -1024,6 +1029,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Mashine</translation>
 <translation id="5179510805599951267">Haiko katika <ph name="ORIGINAL_LANGUAGE" />? Ripoti hitilafu hii</translation>
+<translation id="5179740473595559246">Kujua unapopatikana</translation>
 <translation id="5190835502935405962">Sehemu ya Alamisho</translation>
 <translation id="519422657042045905">Vidokezi havipatikani</translation>
 <translation id="5201306358585911203">Ukurasa uliopachikwa kwenye ukurasa huu unasema</translation>
@@ -1246,6 +1252,7 @@
 <translation id="6049488691372270142">Utumaji wa ukurasa</translation>
 <translation id="6051221802930200923">Huwezi kutembelea <ph name="SITE" /> sasa hivi kwa sababu tovuti hii inatumia ubandikaji cheti. Hitilafu na uvamizi wa mtandao kwa kawaida huwa vya muda, kwa hivyo ukurasa huu huenda utafanya kazi baadaye.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Ungependa kushiriki maelezo ya wakati unapatikana?</translation>
 <translation id="6058977677006700226">Ungependa kutumia kadi zako kwenye vifaa vyako vyote?</translation>
 <translation id="6059925163896151826">Vifaa vya USB</translation>
 <translation id="6060009363608157444">Hali ya DnsOverHttps isiyo sahihi.</translation>
@@ -1375,6 +1382,7 @@
 <translation id="6631202559048444592">Sera hii ina zaidi ya chanzo kimoja, lakini thamani zinafanana.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Futa</translation>
+<translation id="6645291930348198241">Kufikia data ya tovuti na vidakuzi.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Hamna}=1{Kutoka tovuti 1 (hutaondolewa kwenye Akaunti ya Google)}other{Kutoka tovuti # (hutaondolewa kwenye Akaunti ya Google)}}</translation>
 <translation id="6648459603387803038">Msimamizi wako anaweza kubadilisha mipangilio ya kivinjari chako kwa mbali. Huenda shughuli kwenye kifaa hiki zikadhibitiwa nje ya Chrome.</translation>
 <translation id="6652101503459149953">Tumia Windows Hello</translation>

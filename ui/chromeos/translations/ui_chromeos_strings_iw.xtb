@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">לא היתה אפשרות לגשת לקובץ מסיבות אבטחה.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">מכווץ <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
+<translation id="1731889557567069540">הועתקו <ph name="NUMBER_OF_ITEMS" /> פריטים.</translation>
 <translation id="174173592514158117">‏הצגת כל תיקיות Play</translation>
 <translation id="174937106936716857">מספר הקבצים הכולל</translation>
 <translation id="1775381402323441512">פרטי הסרטון</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">תו לא חוקי: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">‏מקלדת וייטנאמית (TCVN)</translation>
 <translation id="2168214441502403371">מקלדת פרסית</translation>
+<translation id="2197363559908958454">ההעברה של <ph name="NUMBER_OF_ITEMS" /> הסתיימה.</translation>
 <translation id="2198315389084035571">סינית פשוטה</translation>
 <translation id="2208158072373999562">‏ארכיון Zip</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> פריטים יימחקו. להמשיך?</translation>
 <translation id="2230062665678605299">לא ניתן ליצור את התיקיה "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">ההעברה הסתיימה.</translation>
 <translation id="2278988676849463018">מקלדת קנאדה (פונטית)</translation>
 <translation id="2288278176040912387">פטיפון</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> קבצים נפתחים.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">הכל מגובה!</translation>
 <translation id="3626281679859535460">בהירות</translation>
 <translation id="3644896802912593514">רוחב</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> פריטים הועברו.</translation>
 <translation id="3645531960514756307">ביטול הצמדת התיקייה</translation>
 <translation id="3678559383040232393">מקלדת מלטית</translation>
 <translation id="3685122418104378273">‏הסנכרון של Google Drive מושבת כברירת מחדל בעת שימוש בנתונים לנייד.</translation>
@@ -396,6 +400,7 @@
 ב-Google Drive‏.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />שתף, צור ועבוד במשותף<ph name="MARKUP_8" />
     על קבצים עם אנשים נוספים - הכל במקום אחד.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">ההעתקה הסתיימה.</translation>
 <translation id="5275973617553375938">‏קבצים ששוחזרו מ-Google Drive</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">שמור</translation>
@@ -595,6 +600,7 @@
 <translation id="751507702149411736">ביילורוסית</translation>
 <translation id="7544853251252956727">ערבוב</translation>
 <translation id="7547811415869834682">הולנדית</translation>
+<translation id="7551643184018910560">הצמד למדף</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">המתן מספר רגעים</translation>
 <translation id="7603724359189955920">רשתות</translation>
@@ -678,6 +684,7 @@
 <translation id="8299269255470343364">יפנית</translation>
 <translation id="8312871300878166382">הדבק בתיקייה</translation>
 <translation id="8329978297633540474">טקסט רגיל</translation>
+<translation id="8335587457941836791">ביטול הצמדה למדף</translation>
 <translation id="8336153091935557858">אתמול <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336579025507394412">מקלדת איסלנדית</translation>
 <translation id="8342318071240498787">קובץ או ספריה עם אותו שם כבר קיימים.</translation>
@@ -750,6 +757,7 @@
 <translation id="943972244133411984">שונה על ידי</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="947144732524271678">בחרת טווח של <ph name="ENTRY_COUNT" /> פריטים, מ-<ph name="FROM_ENTRY_NAME" /> עד <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="949308258121608615">ההעתקה של <ph name="NUMBER_OF_ITEMS" /> הסתיימה.</translation>
 <translation id="981121421437150478">לא מקוון</translation>
 <translation id="988685240266037636">כבר קיים קובץ בשם "<ph name="FILE_NAME" />". רוצה להחליף אותו?</translation>
 <translation id="996903396648773764">‎<ph name="NUMBER_OF_MB" /> MB</translation>

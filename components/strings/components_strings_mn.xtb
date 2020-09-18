@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Wi-Fi-д дахин холбогдож байна</translation>
 <translation id="1165039591588034296">Алдаа</translation>
 <translation id="1165174597379888365">Хуудсанд зочилдог</translation>
+<translation id="1174723505405632867">Та <ph name="EMBEDDED_URL" />-д <ph name="TOP_LEVEL_URL" /> дээрх күүки болон сайтын өгөгдлийг ашиглахыг зөвшөөрөх үү?
+
+Үгүй бол таны нууцлалын тохиргооны дагуу үүнийг блоклоно. Энэ нь таны харилцан үйлдэл хийсэн контентод зохистой ажиллах боломжийг олгох боловч <ph name="EMBEDDED_URL" />-д таны үйл ажиллагааг хянахыг зөвшөөрч болзошгүй.</translation>
 <translation id="1175364870820465910">&amp;Хэвлэх ...</translation>
 <translation id="1175875016430184367">Баруун талд гурван удаа үдэх</translation>
 <translation id="1178581264944972037">Түр зогсоох</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Тохиргоонууд</translation>
 <translation id="2183608646556468874">Утасны дугаар</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 хаяг}other{# хаяг}}</translation>
+<translation id="2187243482123994665">Хэрэглэгч байгаа эсэх</translation>
 <translation id="2187317261103489799">Илрүүлэх (өгөгдмөл)</translation>
 <translation id="2188375229972301266">Доод буланд олон нүх цоолох</translation>
 <translation id="2202020181578195191">Дуусах оныг зөв оруулна уу</translation>
@@ -533,6 +537,7 @@
           прокси сервер ажиллаж байгаа эсэхийг шалгана уу. 
           Хэрэв та прокси сервер ашиглаж байгаадаа итгэлгүй байвал:
           <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> таныг байгаа үед мэдэхийг хүсэж байна</translation>
 <translation id="3188393374551744535">Дансны үлдэгдэл</translation>
 <translation id="3194737229810486521"><ph name="URL" /> таны төхөөрөмжид өгөгдлийг бүрмөсөн хадгалах хүсэлтэй байна</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> дээрх <ph name="PRINTER_NAME" /></translation>
@@ -1026,6 +1031,7 @@
 <translation id="5171689220826475070">Фанфолд-Европ</translation>
 <translation id="5172758083709347301">Машин</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> хэлээр байхгүй байна уу? Энэ алдааг мэдэгдэнэ үү.</translation>
+<translation id="5179740473595559246">Таныг байгаа үед мэдэх</translation>
 <translation id="5190835502935405962">Хайлтын жагсаалтын цонх</translation>
 <translation id="519422657042045905">Тэмдэглэгээ боломжгүй байна</translation>
 <translation id="5201306358585911203">Энэ хуудсанд оруулсан хуудас хэлэхдээ</translation>
@@ -1248,6 +1254,7 @@
 <translation id="6049488691372270142">Цаасны гаралт</translation>
 <translation id="6051221802930200923"><ph name="SITE" /> нь сертификат баталгаажуулалтыг ашигладаг тул тус вэбсайтад одоогоор зочлох боломжгүй байна. Сүлжээний алдаа, халдлага нь ихэвчлэн түр зуурынх байдаг тул энэ хуудас удахгүй хэвийн ажиллана.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Байгаа эсэхээ хуваалцах уу?</translation>
 <translation id="6058977677006700226">Картаа бүх төхөөрөмж дээрээ ашиглах уу?</translation>
 <translation id="6059925163896151826">USB төхөөрөмж</translation>
 <translation id="6060009363608157444">DnsOverHttps горим буруу байна.</translation>
@@ -1376,6 +1383,7 @@
 <translation id="6631202559048444592">Удирдамжид нэгээс олон эх сурвалж байгаа хэдий ч утгууд нь ижил байна.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Цэвэрлэх</translation>
+<translation id="6645291930348198241">Күүки болон сайтын өгөгдөлд хандах.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Байхгүй}=1{1 сайтаас (таныг Google Бүртгэлээс тань гаргахгүй)}other{# сайтаас (таныг Google Бүртгэлээс тань гаргахгүй)}}</translation>
 <translation id="6648459603387803038">Танай администратор хөтчийн тань тохируулгыг алсаас өөрчлөх боломжтой. Энэ төхөөрөмж дээрх үйл ажиллагааг мөн Chrome-с гадуур удирддаг байж болно.</translation>
 <translation id="6652101503459149953">Windows Hello-г ашиглах</translation>

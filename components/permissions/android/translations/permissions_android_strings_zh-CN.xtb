@@ -3,12 +3,10 @@
 <translationbundle lang="zh-CN">
 <translation id="2359808026110333948">继续</translation>
 <translation id="2416359993254398973">Chrome 需要获得相应权限，才能允许此网站使用您的摄像头。</translation>
-<translation id="4955546094786399712">若要为此网站更改权限，请关闭另一个应用并重试。\n\n如果您无法关闭该应用，请在 Android 设置中关闭该应用的“显示在其他应用的上层”权限。</translation>
 <translation id="557283862590186398">Chrome 需要获得相应权限，才能允许此网站使用您的麦克风。</translation>
 <translation id="5860491529813859533">启用</translation>
 <translation id="6092062101542170135">要继续，请在 Android 设置中开启 NFC</translation>
 <translation id="6393863479814692971">Chrome 需要获得相应权限，才能允许此网站使用您的摄像头和麦克风。</translation>
 <translation id="6697947395630195233">Chrome 需要获得位置权限，才能将您的位置信息共享给此网站。</translation>
 <translation id="7134415045456331657">Chrome 需要获得相应权限，才能使用您的摄像头为您的周边环境创建 3D 地图。</translation>
-<translation id="7681341492080683492">另一个应用正显示在 <ph name="APP_NAME" /> 的上层</translation>
 </translationbundle>

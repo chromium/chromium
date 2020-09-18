@@ -95,7 +95,6 @@ Wenn die Richtlinie nicht festgelegt ist, gilt die Standardeinstellung: Vom Unte
       Wird diese Richtlinie nicht konfiguriert, können im Cache gespeicherte GPOs für maximal 25 Stunden wiederverwendet werden.
 
       Ist die Richtlinie auf 0 gesetzt, so ist die GPO-Speicherung deaktiviert. Dies erhöht die Serverlast, da GPOs bei jedem Richtlinienabruf heruntergeladen werden, auch wenn sie unverändert sind.</translation>
-<translation id="1111470455889178048">Nutzeruploads und -downloads zum Scannen senden</translation>
 <translation id="1117462881884985156">Für die hier angegebenen Hosts umgeht <ph name="PRODUCT_NAME" /> alle Proxys.
 
           Diese Richtlinie tritt nur dann in Kraft, wenn Sie bei "Auswählen, wie Proxyserver-Einstellungen angegeben werden" die Option für manuelle Proxyeinstellungen ausgewählt haben und die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />" nicht konfiguriert wurde.
@@ -926,16 +925,6 @@ Wird die Richtlinie auf "False" gesetzt ist, wird der Datenschutzbildschirm imme
 Ist diese Richtlinie konfiguriert, können Nutzer den Wert nicht überschreiben.
 
 Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, Nutzer können ihn jedoch steuern.</translation>
-<translation id="2423038190900972331">Mit dieser Richtlinie legen Sie fest, wie Daten, die hochgeladen, heruntergeladen oder aus der Zwischenablage bzw. per Drag-and-drop eingefügt werden, in <ph name="PRODUCT_NAME" /> auf Verstöße gegen die Richtlinie zum Schutz von sensiblen Daten geprüft werden.
-
-      Wenn diese Richtlinie auf "Keine" gesetzt ist, wird <ph name="PRODUCT_NAME" /> keine Inhalte auf Verstöße gegen die Richtlinie zum Schutz von sensiblen Daten prüfen.
-
-      Ist sie auf "Inhaltscompliance von Downloads prüfen" gesetzt und der Nutzer versucht, eine Datei von einer URL herunterzuladen, die in der Richtlinie "<ph name="DOMAINS_TO_CHECK_COMPLIANCE_OF_DOWNLOADED_CONTENT_POLICTY_NAME" />" enthalten ist, werden die Daten in <ph name="PRODUCT_NAME" /> auf Einhaltung von Unternehmensregeln geprüft.
-
-      Wenn die Richtlinie auf "Inhaltscompliance von Uploads prüfen" gesetzt ist und der Nutzer versucht, eine Datei auf eine Domain hochzuladen, die nicht in der Richtlinie "<ph name="DOMAINS_TO_NOT_CHECK_COMPLIANCE_OF_UPLOADED_CONTENT_POLICY_NAME" />" enthalten ist, werden die hochgeladene Datei oder die Daten, die aus der Zwischenablage bzw. per Drag-and-drop eingefügt wurden, in <ph name="PRODUCT_NAME" /> auf Einhaltung von Unternehmensregeln geprüft.
-
-      Ist sie auf "Inhaltscompliance von Uploads und Downloads prüfen" gesetzt, werden in <ph name="PRODUCT_NAME" /> die Regeln verwendet, die unter "Inhaltscompliance von Downloads prüfen" und "Inhaltscompliance von Uploads prüfen" beschrieben sind.
-      </translation>
 <translation id="2423255396068675416">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer <ph name="PRODUCT_CROSTINI_NAME" /> ausführen, solange <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> und <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> aktiviert sind. Ist die Richtlinie deaktiviert, ist auch <ph name="PRODUCT_CROSTINI_NAME" /> für Nutzer deaktiviert. Wenn sie deaktiviert wird, wird die Richtlinie beim Starten neuer <ph name="PRODUCT_CROSTINI_NAME" />-Container angewandt. Die bereits ausgeführten sind nicht betroffen.</translation>
 <translation id="2424098959650060417">Legt fest, welche Drucker aus "<ph name="BULK_PRINTERS_POLICY_NAME" />" Nutzern zur Verfügung stehen.
 
@@ -1050,7 +1039,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
           Der Wert für die Richtlinie muss in Millisekunden angegeben werden. Werte müssen kleiner oder gleich dem Wert für die Inaktivitätsverzögerung sein.</translation>
 <translation id="2548572254685798999">Safe Browsing-Daten erfassen</translation>
 <translation id="2550593661567988768">Nur Simplexdruck</translation>
-<translation id="2551520365302988324">Nutzeruploads zum Scannen senden</translation>
 <translation id="2552318891854145040">Wenn die Richtlinie konfiguriert ist, wird eine Lesezeichenliste erstellt, bei der jedes Lesezeichen ein Wörterbuch mit den Schlüsseln "<ph name="NAME" />" und "<ph name="URL_LABEL" />" ist. Diese Schlüssel enthalten den Namen und das Ziel des jeweiligen Lesezeichens. Administratoren können einen Unterordner konfigurieren, indem ein Lesezeichen ohne den Schlüssel "<ph name="URL_LABEL" />", dafür aber mit dem zusätzlichen Schlüssel "<ph name="CHILDREN" />" festgelegt wird. Dieser Schlüssel enthält wiederum eine Lesezeichenliste. Einige davon können auch Ordner sein. Chrome ergänzt unvollständige URLs, als würden sie über die Adressleiste eingegeben werden. Beispielsweise wird aus "<ph name="GOOGLE_COM" />" dann "<ph name="HTTPS_GOOGLE_COM" />".
 
       Nutzer können nicht ändern, in welchem Ordner die Lesezeichen abgelegt werden. Aber sie haben die Möglichkeit, den Ordner in der Lesezeichenleiste auszublenden. Der Standardname des Ordners für verwaltete Lesezeichen lautet "Verwaltete Lesezeichen", kann jedoch angepasst werden. Dazu muss der Richtlinie ein neues untergeordnetes Wörterbuch mit einem einfachen Schlüssel namens "<ph name="TOPLEVEL_NAME" />" hinzugefügt werden, wobei der gewünschte Ordnername der Wert ist. Verwaltete Lesezeichen werden nicht mit dem Nutzerkonto synchronisiert und können nicht von Erweiterungen geändert werden.</translation>
@@ -1814,7 +1802,6 @@ Wird die Richtlinie auf "False" gesetzt , verwendet <ph name="PRODUCT_NAME" /> k
       Details zu <ph name="CORS" /> erhalten Sie unter <ph name="CORS_HELP_URL" />.
 
       Hinweis: Diese Richtlinie sollte ursprünglich planmäßig in <ph name="PRODUCT_NAME" />-Version 82 entfernt werden, wurde aber erst in Version 84 entfernt.</translation>
-<translation id="3624515566460517364">Uploads und Downloads auf Verstöße gegen die Richtlinie zum Schutz von sensiblen Daten prüfen</translation>
 <translation id="3627678165642179114">Webdienst für die Rechtschreibprüfung aktivieren oder deaktivieren</translation>
 <translation id="3628480121685794414">Simplexdruck aktivieren</translation>
 <translation id="3631099945620529777">Wenn diese Richtlinie auf "false" gesetzt ist, ist die Schaltfläche "Prozess beenden" im Task-Manager deaktiviert.
@@ -1966,7 +1953,6 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 
           Wenn diese Richtlinie nicht konfiguriert oder eine leere Liste festgelegt ist, stehen auf verwalteten Geräten keine Modi für das schnelle Entsperren zur Verfügung.</translation>
 <translation id="3877517141460819966">Integrierter Zwei-Faktor-Authentifizierungsmodus</translation>
-<translation id="3879196885908353077">Heruntergeladene Inhalte auf Verstöße gegen die Richtlinie zum Schutz von sensiblen Daten überprüfen</translation>
 <translation id="3879208481373875102">Liste der Web-Apps konfigurieren, deren Installation erzwungen wurde</translation>
 <translation id="388237772682176890">Da SPDY/3.1 nicht mehr unterstützt wird, wurde diese Richtlinie in M53 eingestellt und in M54 entfernt.
 
@@ -2391,7 +2377,6 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
       Auf nicht verwalteten Geräten wird die Benachrichtigung immer angezeigt.</translation>
 <translation id="4510923771103268849">Nutzer hat Root-Zugriff auf Crostini-Container</translation>
 <translation id="4515404363392014383">Safe Browsing für vertrauenswürdige Quellen aktivieren</translation>
-<translation id="4517928394515633751">Nutzerdownloads mit Safe Browsing scannen</translation>
 <translation id="4518251772179446575">Nachfragen, wenn eine Website den physischen Standort der Nutzer verfolgen möchte</translation>
 <translation id="4529868888205510667">Wenn diese Richtlinie auf "True" festgelegt ist oder keine Einstellung gewählt wird, können Nutzer ARC verwenden, es sei denn die Funktion wurde an anderer Stelle deaktiviert. Wenn die Richtlinie auf "False" festgelegt ist, können nicht verknüpfte Nutzer ARC nicht verwenden.
 
@@ -2566,15 +2551,6 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
           Der Wert "*" in der Sperrliste gibt an, dass alle Hosts für natives Messaging gesperrt sind, sofern sie nicht ausdrücklich auf die Zulassungsliste gesetzt wurden.
 
           Wenn diese Richtlinie nicht konfiguriert ist, wird <ph name="PRODUCT_NAME" /> alle installierten Hosts für natives Messaging laden.</translation>
-<translation id="4771144269610910963">Mit dieser Richtlinie können Sie den Tiefenscan von Nutzerdownloads mit Safe Browsing verwalten. Wenn sie nicht konfiguriert oder auf die Standardeinstellung "Dateien nicht scannen" festgelegt wird, werden Downloads von Nutzern nicht von Safe Browsing gescannt.
-
-      Ist "Nutzerdownloads zum Scannen senden" festgelegt, werden die Downloads von Nutzern über das Netzwerk zum Scannen auf Malware an Safe Browsing gesendet.
-
-      Wenn "Nutzeruploads zum Scannen senden" festgelegt ist, werden die Uploads von Nutzern über das Netzwerk zum Scannen auf Malware an Safe Browsing gesendet.
-
-      Ist "Nutzeruploads und -downloads zum Scannen senden" festgelegt, gelten die unter "Nutzeruploads zum Scannen senden" und "Nutzerdownloads zum Scannen senden" beschriebenen Regeln.
-
-      Weitere Informationen dazu, wie die Ergebnisse der Scans Nutzern und Administratoren angezeigt werden, finden Sie in den Richtlinien "<ph name="DELAY_DELIVER_UNTIL_VERDICT_POLICY_NAME" />" und "<ph name="UNSAFE_EVENTS_REPORTING_ENABLED" />".</translation>
 <translation id="4787763197941188108">Überschreibt die standardmäßige Druckseitengröße.
 
       <ph name="PAGE_SIZE_NAME" /> sollte eines der aufgelisteten Formate oder "custom" enthalten, wenn sich die erforderliche Papiergröße nicht in der Liste befindet. Wenn der Wert "custom" angegeben wird, sollte die Property "<ph name="PAGE_SIZE_CUSTOM_SIZE" />" festgelegt werden. Sie beschreibt die gewünschte Höhe und Breite in Mikrometern. In anderen Fällen sollte die Property "<ph name="PAGE_SIZE_CUSTOM_SIZE" />" nicht verwendet werden. Richtlinien, die gegen diese Regeln verstoßen, werden ignoriert.
@@ -2786,7 +2762,6 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
 <translation id="5148753489738115745">Ermöglicht die Verwendung zusätzlicher Parameter, die beim Start von <ph name="PRODUCT_NAME" /> durch <ph name="PRODUCT_FRAME_NAME" /> eingesetzt werden.
 
           Wenn diese Richtlinie nicht festgelegt wird, wird die Standardbefehlszeile verwendet.</translation>
-<translation id="5150323673529584553">Dateien nicht scannen</translation>
 <translation id="5152787786897382519">Sowohl in Chromium als auch in Google Chrome gibt es Richtliniengruppen, die in Abhängigkeit voneinander die Steuerung einer Funktion ermöglichen. Diese Richtliniensätze werden durch die folgenden Richtliniengruppen repräsentiert. Aufgrund der Tatsache, dass Richtlinien mehrere Quellen haben können, werden nur Werte, die aus der Quelle mit der höchsten Priorität stammen, angewendet. Werte aus einer Quelle mit niedrigerer Priorität in derselben Gruppe werden ignoriert. Die Hierarchie wird unter <ph name="POLICY_PRIORITY_DOC_URL" /> definiert.</translation>
 <translation id="515816885693899426">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen <ph name="URL_BLOCKLIST_POLICY_NAME" />.
 
@@ -2913,6 +2888,7 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
 <translation id="5293044154216294358">Wenn die Richtlinie auf "True" gesetzt ist, können Nutzer das Dinosaurierspiel spielen. Ist sie auf "False" gesetzt, können Nutzer das Easter-Egg-Dinosaurierspiel nicht spielen, wenn das Gerät offline ist.
 
       Wenn die Richtlinie nicht konfiguriert ist, können Nutzer das Dinosaurierspiel nicht auf registrierten <ph name="PRODUCT_OS_NAME" />-Geräten spielen, auf anderen aber schon.</translation>
+<translation id="529457411593078576">Nutzungsbedingungen während der ersten Ausführung für CCT aktivieren</translation>
 <translation id="5306186200045823863">Der veralteten Symantec-PKI vertrauen</translation>
 <translation id="5307432759655324440">Inkognitomodus - Verfügbarkeit</translation>
 <translation id="5311275381462687162">Einstellung für das alte Standardverhalten des "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Cookies</translation>
@@ -3731,7 +3707,6 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 <translation id="637934607141010488">Meldet eine Liste der Gerätenutzer, die sich kürzlich angemeldet haben
 
       Wird die Richtlinie auf "False" gesetzt, werden die Nutzer nicht gemeldet.</translation>
-<translation id="638668187106406971">Hochgeladene Inhalte auf Verstöße gegen die Richtlinie zum Schutz von sensiblen Daten überprüfen</translation>
 <translation id="6394350458541421998">Diese Richtlinie ist ab <ph name="PRODUCT_OS_NAME" />-Version 29 nicht mehr vorhanden. Verwenden Sie stattdessen die Richtlinie "PresentationScreenDimDelayScale".</translation>
 <translation id="6401669939808766804">Nutzer abmelden</translation>
 <translation id="640244877779556713">Emoji-Vorschläge aktivieren</translation>
@@ -4540,6 +4515,17 @@ Wenn die Richtlinie "<ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />" k
 <translation id="747014869399137701">Wenn die Richtlinie auf "1" gesetzt ist, können Websites Desktop-Benachrichtigungen anzeigen. Wenn die Richtlinie auf "2" gesetzt ist, werden Desktop-Benachrichtigungen blockiert.
 
       Wenn sie nicht konfiguriert ist, gilt die Richtlinie <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, aber Nutzer können diese Einstellung ändern.</translation>
+<translation id="7471828226549672843">Standardmäßig werden die Nutzungsbedingungen bei der ersten Ausführung von CCT angezeigt. Wenn diese Richtlinie deaktiviert ist, wird das Dialogfeld mit den Nutzungsbedingungen weder bei der ersten Ausführung noch bei weiteren angezeigt. Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird das Dialogfeld mit den Nutzungsbedingungen bei der ersten Ausführung angezeigt. Beachten Sie Folgendes:
+
+     – Diese Richtlinie funktioniert nur bei vollständig verwalteten Android-Geräten, die von Unified Endpoint Management-Anbietern konfiguriert werden können.
+
+      – Wenn die Richtlinie deaktiviert ist, hat die BrowserSignin-Richtlinie keine Auswirkungen.
+
+      – Wenn die Richtlinie deaktiviert ist, werden keine Messwerte an den Server gesendet.
+
+      – Wenn die Richtlinie deaktiviert ist, sind die Browserfunktionen eingeschränkt.
+
+      – Wenn die Richtlinie deaktiviert ist, müssen Administratoren Endnutzer dieses Geräts darüber informieren.</translation>
 <translation id="747275827471712187">Auf diesen Websites das alte "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Verhalten für Cookies wiederherstellen</translation>
 <translation id="7477231245051133709">Bedienungshilfe "Mono-Audio" aktivieren</translation>
 <translation id="7477239290070847560">Zeroconf-basierte (mDNS + DNS-SD) Protokollziele</translation>
@@ -4896,7 +4882,6 @@ Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen
 
           Der Wert für die Richtlinie muss in Millisekunden angegeben werden. Werte müssen kleiner oder gleich dem Wert für die Inaktivitätsverzögerung sein.</translation>
 <translation id="8001701200415781021">Einschränken, welche Google-Konten als primäre Browserkonten in <ph name="PRODUCT_NAME" /> festgelegt werden können</translation>
-<translation id="8003853057959146975">Dateien zur Überprüfung auf Verstöße gegen die Richtlinie zum Schutz von sensiblen Daten senden</translation>
 <translation id="8006219716745491366">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" />" eine Liste alternativer URLs an, die verwendet werden, um Suchbegriffe aus der Suchmaschine zu extrahieren. Die URLs sollten den String <ph name="SEARCH_TERM_MARKER" /> enthalten.
 
       Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" />" nicht konfiguriert ist, werden keine alternativen URLs verwendet, um Suchbegriffe aus der Suchmaschine zu extrahieren.</translation>
@@ -5300,7 +5285,6 @@ Wenn diese Richtlinie auf "true" gesetzt ist, muss sich der Nutzer mit seinem Pr
 Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer den Browser verwenden, ohne sich in <ph name="PRODUCT_NAME" /> anzumelden.</translation>
 <translation id="858309738002328421">Große Dateiuploads blockieren</translation>
 <translation id="8584279193368801689">Schränkt den PIN-Druckmodus ein. Ist die Richtlinie nicht konfiguriert, gelten keine Einschränkungen. Ist der Modus nicht verfügbar, wird diese Richtlinie ignoriert. Der PIN-Druckmodus wird nur für Drucker angewendet, die das IPPS-, HTTPS- oder USB-Protokoll bzw. IPP über USB verwenden.</translation>
-<translation id="8585558195682146109">Nutzerdownloads zum Scannen senden</translation>
 <translation id="8587229956764455752">Erstellung neuer Nutzerkonten erlauben</translation>
 <translation id="8591713876665299827">Diese Richtlinie ist veraltet und wird in Version 85 von <ph name="PRODUCT_OS_NAME" /> entfernt. Bitte verwenden Sie stattdessen die Richtlinie "<ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />".
 
@@ -5559,7 +5543,6 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="8942616385591203339">Mit dieser Richtlinie wird festgelegt, ob die Einwilligung zur Synchronisierung dem Nutzer bei der ersten Anmeldung angezeigt werden kann. Sie sollte auf "false" gesetzt werden, wenn vom Nutzer keine Einwilligung zur Synchronisierung eingeholt werden muss.
       Wenn diese Richtlinie auf "false" gesetzt ist, wird die Einwilligung zur Synchronisierung nicht angezeigt.
       Falls die Richtlinie auf "true" festgelegt oder nicht konfiguriert ist, kann die Einwilligung zur Synchronisierung angezeigt werden.</translation>
-<translation id="8943934315109955032">Nicht auf Verstöße gegen die Richtlinie zum Schutz von sensiblen Daten prüfen</translation>
 <translation id="8947415621777543415">Gerätestandort melden</translation>
 <translation id="8948062138228904066">Zulassungsliste für Authentifizierungsserver</translation>
 <translation id="8951350807133946005">Datenträger-Cache-Verzeichnis festlegen</translation>
@@ -5573,9 +5556,6 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
       Diese Richtlinie sollte nicht aktiviert werden, wenn die Richtlinie <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> bereits aktiviert ist, da die Funktion über dieselbe clientseitige Funktion verfügt. Die von Google gehostete Synchronisierung ist in diesem Fall vollständig deaktiviert.</translation>
 <translation id="8955719471735800169">Zurück nach oben</translation>
-<translation id="8956310900055843601">Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, wird auf dem Gerät das 24-Stunden-Uhrzeitformat verwendet. Für Nutzersitzungen wird dieses Format standardmäßig verwendet, Nutzer haben aber die Möglichkeit, es für ihr Konto zu ändern.
-
-      Ist die Richtlinie auf "False" gesetzt, wird auf dem Gerät das 12-Stunden- Uhrzeitformat verwendet.</translation>
 <translation id="8959992920425111821">Standardkonfiguration</translation>
 <translation id="8970205333161758602">Hinweis auf Einstellung von <ph name="PRODUCT_FRAME_NAME" /> unterdrücken</translation>
 <translation id="8976248126101463034">Gnubby-Authentifizierung für Remotezugriff-Hosts zulassen</translation>

@@ -427,6 +427,7 @@
 <translation id="1500297251995790841">Thiết bị không xác định [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Tài khoản của chủ sở hữu này phải là tài khoản đăng nhập đầu tiên trong phiên đăng nhập nhiều tài khoản.</translation>
 <translation id="150411034776756821">Xóa <ph name="SITE" /></translation>
+<translation id="1504311855864906891">Tạo phụ đề cho nội dung nghe nhìn</translation>
 <translation id="1504551620756424144">Bạn có thể truy cập thư mục dùng chung trong Windows tại <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Công cụ tìm kiếm</translation>
 <translation id="1507170440449692343">Trang này đã bị chặn truy cập máy ảnh của bạn.</translation>
@@ -744,7 +745,7 @@
 <translation id="1854180393107901205">Dừng truyền</translation>
 <translation id="1856715684130786728">Thêm vị trí...</translation>
 <translation id="1858585891038687145">Tin tưởng chứng chỉ này khi nhận dạng nhà sản xuất phần mềm</translation>
-<translation id="1860346308203060432">Xem tùy chọn hiển thị thiết bị</translation>
+<translation id="1860346308203060432">Xem phạm vi hiển thị của thiết bị</translation>
 <translation id="1861262398884155592">Thư mục này trống</translation>
 <translation id="1863182668524159459">Không tìm thấy cổng nối tiếp nào</translation>
 <translation id="1863316578636157783">"<ph name="EXTENSION_NAME" />" đã bị vô hiệu hóa vì chứa phần mềm độc hại</translation>
@@ -1190,7 +1191,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2396783860772170191">Nhập mã pin có 4 chữ số (0000-9999)</translation>
 <translation id="2399939490305346086">Dữ liệu đăng nhập trên khóa bảo mật</translation>
 <translation id="2400664245143453337">Bạn cần cập nhật ngay</translation>
-<translation id="2407481962792080328">Khi bạn đăng nhập vào Tài khoản Google của mình, tính năng này sẽ được bật</translation>
 <translation id="2408018932941436077">Đang lưu thẻ</translation>
 <translation id="2408955596600435184">Nhập mã PIN của bạn</translation>
 <translation id="241082044617551207">Plugin không rõ</translation>
@@ -3066,6 +3066,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4657810666108475055">Tìm kiếm thẻ</translation>
 <translation id="465878909996028221">Chỉ hỗ trợ chuyển hướng trình duyệt cho các giao thức http, https và tệp.</translation>
 <translation id="4659077111144409915">Tài khoản chính</translation>
+<translation id="4659126640776004816">Khi bạn đăng nhập vào Tài khoản Google của mình, tính năng này sẽ được bật.</translation>
 <translation id="4660476621274971848">Phiên bản mong muốn là "<ph name="EXPECTED_VERSION" />", nhưng phiên bản phát hiện là "<ph name="NEW_ID" />"</translation>
 <translation id="4660540330091848931">Đang thay đổi dung lượng</translation>
 <translation id="4661407454952063730">Dữ liệu ứng dụng có thể là bất kỳ dữ liệu nào mà một ứng dụng đã lưu (dựa trên các tùy chọn cài đặt của nhà phát triển), bao gồm các dữ liệu như danh bạ, tin nhắn và ảnh.</translation>
@@ -3131,7 +3132,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4750394297954878236">Đề xuất</translation>
 <translation id="475088594373173692">Người dùng đầu tiên</translation>
 <translation id="4751476147751820511">Cảm biến chuyển động hoặc ánh sáng</translation>
-<translation id="4752124003533492687">Mở phần Cài đặt để kết nối <ph name="USB_DEVICE_NAME" /></translation>
 <translation id="4756378406049221019">Dừng/Tải lại</translation>
 <translation id="4756388243121344051">&amp;Lịch sử</translation>
 <translation id="4759238208242260848">Tệp đã tải xuống</translation>
@@ -4092,7 +4092,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5941153596444580863">Thêm người...</translation>
 <translation id="5941343993301164315">Vui lòng đăng nhập vào <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Thu nhỏ</translation>
-<translation id="5942779427914696408">Tùy chọn hiển thị thiết bị</translation>
+<translation id="5942779427914696408">Phạm vi hiển thị của thiết bị</translation>
 <translation id="5942964813783878922"><ph name="DEVICE_TYPE" /> sẽ khởi động lại sau quá trình cập nhật này. Các bản cập nhật bảo mật và phần mềm trong tương lai sẽ tự động cài đặt.</translation>
 <translation id="5944869793365969636">Quét mã QR</translation>
 <translation id="5946591249682680882">ID báo cáo <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -5021,6 +5021,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7075513071073410194">PKCS #1 MD5 Với Mã hóa RSA</translation>
 <translation id="7075625805486468288">Quản lý cài đặt và chứng chỉ HTTPS/SSL</translation>
 <translation id="7076293881109082629">Đăng nhập</translation>
+<translation id="7076878155205969899">Tắt tiếng</translation>
 <translation id="7077829361966535409">Không thể tải trang đăng nhập bằng cài đặt proxy hiện tại. Vui lòng <ph name="GAIA_RELOAD_LINK_START" />thử đăng nhập lại<ph name="GAIA_RELOAD_LINK_END" /> hoặc sử dụng <ph name="PROXY_SETTINGS_LINK_START" />cài đặt proxy<ph name="PROXY_SETTINGS_LINK_END" /> khác.</translation>
 <translation id="7078120482318506217">Tất cả các mạng</translation>
 <translation id="708060913198414444">S&amp;ao chép địa chỉ âm thanh</translation>
@@ -5041,7 +5042,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7099337801055912064">Không thể tải PPD có kích cỡ lớn. Kích cỡ tối đa là 250 kB.</translation>
 <translation id="7102687220333134671">Tính năng tự động cập nhật đã được bật</translation>
 <translation id="7102832101143475489">Yêu cầu đã hết giờ</translation>
-<translation id="7105390788077117391">Tùy chọn USB</translation>
 <translation id="710640343305609397">Mở tùy chọn cài đặt mạng</translation>
 <translation id="7108338896283013870">Ẩn</translation>
 <translation id="7108668606237948702">nhập</translation>
@@ -5071,7 +5071,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7136694880210472378">Đặt làm mặc định</translation>
 <translation id="7136984461011502314">Chào mừng bạn đến với <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Đã xảy ra lỗi. Vui lòng thử lại bằng cách chọn các hình ảnh khác.</translation>
-<translation id="7138678301420049075">Khác</translation>
 <translation id="713888829801648570">Rất tiếc, không thể xác minh mật khẩu của bạn vì bạn hiện ngoại tuyến.</translation>
 <translation id="7140928199327930795">Hiện không có thiết bị nào khác.</translation>
 <translation id="7141105143012495934">Đăng nhập không thành công vì không thể truy xuất chi tiết tài khoản của bạn. Vui lòng liên hệ với quản trị viên của bạn hoặc thử lại.</translation>
@@ -6134,6 +6133,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8428213095426709021">Cài đặt</translation>
 <translation id="8428271547607112339">Thêm tài khoản trường học</translation>
 <translation id="8428628598981198790">Bạn không thể sử dụng khóa bảo mật với trang web này</translation>
+<translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">Bạn sẽ bị đăng xuất sau <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Hiển thị điểm khi nhấn</translation>
 <translation id="8431909052837336408">Thay đổi mã PIN của SIM</translation>
@@ -6504,7 +6504,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8859402192569844210">Không thể tải Điều khoản dịch vụ</translation>
 <translation id="8859662783913000679">Tài khoản của cha mẹ</translation>
 <translation id="8862003515646449717">Chuyển sang một trình duyệt nhanh</translation>
-<translation id="8863140399813345099">Chế độ hiển thị thiết bị của bạn sẽ quyết định người có thể chia sẻ với bạn khi màn hình của bạn đang mở khóa</translation>
+<translation id="8863140399813345099">Phạm vi hiển thị của thiết bị sẽ quyết định người có thể chia sẻ với bạn khi màn hình của bạn đang mở khóa</translation>
 <translation id="8863753581171631212">Mở liên kết trong <ph name="APP" /> mới</translation>
 <translation id="8864055848767439877">Đang chia sẻ <ph name="TAB_NAME" /> với <ph name="APP_NAME" /></translation>
 <translation id="8864458770072227512">Đã xóa <ph name="EMAIL" /> khỏi thiết bị này</translation>

@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Kablosuz ağa yeniden bağlanma</translation>
 <translation id="1165039591588034296">Hata</translation>
 <translation id="1165174597379888365">Sayfa ziyaret edildi</translation>
+<translation id="1174723505405632867"><ph name="EMBEDDED_URL" /> sitesinin, <ph name="TOP_LEVEL_URL" /> üzerinde çerezleri ve site verilerini kullanmasına izin vermek istiyor musunuz?
+
+Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin vermek etkileşimde bulunduğunuz içeriğin doğru çalışmasını sağlar, ancak <ph name="EMBEDDED_URL" /> sitesinin etkinliğinizi izlemesine de imkan verebilir.</translation>
 <translation id="1175364870820465910">Ya&amp;zdır...</translation>
 <translation id="1175875016430184367">Sağda üçlü zımba</translation>
 <translation id="1178581264944972037">Duraklat</translation>
@@ -306,6 +309,7 @@
 <translation id="2181821976797666341">Politikalar</translation>
 <translation id="2183608646556468874">Telefon Numarası</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adres}other{# adres}}</translation>
+<translation id="2187243482123994665">Kullanıcı etkinliği</translation>
 <translation id="2187317261103489799">Algıla (varsayılan)</translation>
 <translation id="2188375229972301266">Altta çoklu zımba</translation>
 <translation id="2202020181578195191">Geçerli bir son kullanma yılı girin</translation>
@@ -528,6 +532,7 @@
     proxy ayarlarınızı kontrol edin veya ağ yöneticinize danışın. Proxy sunucu
     kullanmamanız gerektiğini düşünüyorsanız:
     <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> sitesi, etkin olduğunuzda bilmek istiyor</translation>
 <translation id="3188393374551744535">Hesap bakiyesi</translation>
 <translation id="3194737229810486521"><ph name="URL" />, cihazınıza kalıcı olarak veri depolamak istiyor</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> üzerinde <ph name="PRINTER_NAME" /></translation>
@@ -1016,6 +1021,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Makine</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> dilinde değil mi? Bu hatayı bildirin</translation>
+<translation id="5179740473595559246">Etkin olduğunuzda bilmek</translation>
 <translation id="5190835502935405962">Yer İşareti Çubuğu</translation>
 <translation id="519422657042045905">Ek açıklama kullanılamıyor</translation>
 <translation id="5201306358585911203">Bu sayfadaki yerleşik bir sayfanın mesajı</translation>
@@ -1238,6 +1244,7 @@
 <translation id="6049488691372270142">Sayfa teslimi</translation>
 <translation id="6051221802930200923"><ph name="SITE" /> sitesi sertifika sabitleme yöntemi kullandığından siteyi şu anda ziyaret edemezsiniz. Ağ hataları ve saldırılar genellikle geçici olduğundan bu sayfa muhtemelen daha sonra çalışacaktır.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Etkin olduğunuz paylaşılsın mı?</translation>
 <translation id="6058977677006700226">Kartlarınızı tüm cihazlarınızda kullanmak istiyor musunuz?</translation>
 <translation id="6059925163896151826">USB cihazları</translation>
 <translation id="6060009363608157444">Geçersiz DnsOverHttps modu.</translation>
@@ -1367,6 +1374,7 @@
 <translation id="6631202559048444592">Bu politikada birden fazla kaynak var, ancak değerler aynı.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Temizle</translation>
+<translation id="6645291930348198241">Çerezlere ve site verilerine erişmek.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Yok}=1{1 siteden (Google Hesabınızdan çıkış yapılmaz)}other{# siteden (Google Hesabınızdan çıkış yapılmaz)}}</translation>
 <translation id="6648459603387803038">Yöneticiniz, tarayıcınızın kurulumunu uzaktan değiştirebilir. Bu cihazdaki etkinlikler Chrome dışında da yönetilebilir.</translation>
 <translation id="6652101503459149953">Windows Hello'yu kullan</translation>

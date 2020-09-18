@@ -3,12 +3,10 @@
 <translationbundle lang="fr">
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2416359993254398973">Chrome a besoin de votre autorisation pour accéder à votre appareil photo pour ce site.</translation>
-<translation id="4955546094786399712">Afin de modifier l'autorisation pour ce site, fermez l'autre application, puis réessayez.\n\nSi vous ne pouvez pas fermer l'application, désactivez l'autorisation "Superposition sur d'autres applis" pour celle-ci dans les paramètres Android.</translation>
 <translation id="557283862590186398">Chrome a besoin de votre autorisation pour accéder à votre micro pour ce site.</translation>
 <translation id="5860491529813859533">Activer</translation>
 <translation id="6092062101542170135">Pour continuer, activez la fonctionnalité NFC dans les paramètres Android</translation>
 <translation id="6393863479814692971">Chrome a besoin de votre autorisation pour accéder à votre appareil photo et à votre micro pour ce site.</translation>
 <translation id="6697947395630195233">Chrome a besoin d'accéder à votre position pour la partager avec ce site.</translation>
 <translation id="7134415045456331657">Chrome a besoin de votre autorisation pour accéder à votre appareil photo afin de créer un plan 3D de votre environnement.</translation>
-<translation id="7681341492080683492">Une autre application se superpose à <ph name="APP_NAME" /></translation>
 </translationbundle>

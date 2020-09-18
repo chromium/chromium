@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Nie można uzyskać dostępu do pliku ze względów bezpieczeństwa.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">Pakuję elementy (<ph name="NUMBER_OF_ITEMS" />)...</translation>
+<translation id="1731889557567069540">Liczba skopiowanych elementów: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="174173592514158117">Pokaż wszystkie foldery Play</translation>
 <translation id="174937106936716857">Łączna liczba plików</translation>
 <translation id="1775381402323441512">Informacje o pliku wideo</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Nieprawidłowy znak: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Klawiatura wietnamska (TCVN)</translation>
 <translation id="2168214441502403371">Klawiatura perska</translation>
+<translation id="2197363559908958454">Przeniesiono <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">chiński uproszczony</translation>
 <translation id="2208158072373999562">Archiwum ZIP</translation>
 <translation id="2225536596944493418">Czy na pewno chcesz usunąć te elementy (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Nie można utworzyć folderu „<ph name="FOLDER_NAME" />”. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Przeniesiono.</translation>
 <translation id="2278988676849463018">Klawiatura kannada (fonetyczna)</translation>
 <translation id="2288278176040912387">Gramofon</translation>
 <translation id="2291538123825441971">Otwieram pliki (<ph name="NUMBER_OF_FILES" />).</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Wszystko ma już kopię zapasową.</translation>
 <translation id="3626281679859535460">Jasność</translation>
 <translation id="3644896802912593514">Szerokość</translation>
+<translation id="3645233063072417428">Liczba przeniesionych elementów: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="3645531960514756307">Odepnij folder</translation>
 <translation id="3678559383040232393">Klawiatura maltańska</translation>
 <translation id="3685122418104378273">Gdy komórkowa transmisja danych jest włączona, synchronizacja z Dyskiem Google jest domyślnie wyłączona.</translation>
@@ -395,6 +399,7 @@
     Niezależnie od tego, co stanie się z Twoim urządzeniem, pliki będą bezpiecznie zapisane na Dysku Google.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Udostępniaj i twórz pliki oraz edytuj<ph name="MARKUP_8" />
     je z innymi użytkownikami – wszystko w jednym miejscu.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Skopiowano.</translation>
 <translation id="5275973617553375938">Pliki odzyskane z Dysku Google</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Zapisz</translation>
@@ -594,6 +599,7 @@
 <translation id="751507702149411736">Białoruski</translation>
 <translation id="7544853251252956727">Odtwarzaj losowo</translation>
 <translation id="7547811415869834682">Niderlandzki</translation>
+<translation id="7551643184018910560">Przypnij do półki</translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Chwileczkę</translation>
 <translation id="7603724359189955920">Siatki</translation>
@@ -677,6 +683,7 @@
 <translation id="8299269255470343364">Japoński</translation>
 <translation id="8312871300878166382">Wklej do folderu</translation>
 <translation id="8329978297633540474">Zwykły tekst</translation>
+<translation id="8335587457941836791">Odepnij z półki</translation>
 <translation id="8336153091935557858">Wczoraj, <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336579025507394412">Klawiatura islandzka</translation>
 <translation id="8342318071240498787">Plik lub katalog o tej nazwie już istnieje.</translation>
@@ -749,6 +756,7 @@
 <translation id="943972244133411984">Zmodyfikowany przez:</translation>
 <translation id="945522503751344254">Prześlij opinię</translation>
 <translation id="947144732524271678">Wybrano zakres <ph name="ENTRY_COUNT" /> elementów. Od: <ph name="FROM_ENTRY_NAME" /> do: <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="949308258121608615">Skopiowano <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Istnieje już plik „<ph name="FILE_NAME" />”. Czy chcesz go zastąpić?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

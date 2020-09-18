@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Reconnectez-vous au réseau Wi-Fi</translation>
 <translation id="1165039591588034296">Erreur</translation>
 <translation id="1165174597379888365">Page consultée</translation>
+<translation id="1174723505405632867">Souhaitez-vous autoriser le site <ph name="EMBEDDED_URL" /> à utiliser les cookies et les données de site sur <ph name="TOP_LEVEL_URL" /> ?
+
+Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialité. Si vous l'autorisez, les contenus avec lesquels vous avez interagi fonctionneront correctement, mais il se pourrait que le site <ph name="EMBEDDED_URL" /> puisse suivre votre activité.</translation>
 <translation id="1175364870820465910">Im&amp;primer...</translation>
 <translation id="1175875016430184367">Triple agrafe à droite</translation>
 <translation id="1178581264944972037">Suspendre</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Règles</translation>
 <translation id="2183608646556468874">Numéro de téléphone</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresse}one{# adresse}other{# adresses}}</translation>
+<translation id="2187243482123994665">Présence de l'utilisateur</translation>
 <translation id="2187317261103489799">Détecter (par défaut)</translation>
 <translation id="2188375229972301266">Multiple perforation en bas</translation>
 <translation id="2202020181578195191">Saisissez une année d'expiration valide</translation>
@@ -531,6 +535,7 @@
       vous assurer que le serveur proxy fonctionne. Si vous
       ne pensez pas devoir utiliser de serveur proxy, procédez comme suit :
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> souhaite savoir quand vous êtes là</translation>
 <translation id="3188393374551744535">Solde du compte</translation>
 <translation id="3194737229810486521"><ph name="URL" /> souhaite stocker des données de façon permanente sur votre appareil</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> sur <ph name="SERVER_NAME" /></translation>
@@ -1023,6 +1028,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Ordinateur</translation>
 <translation id="5179510805599951267">Cette page n'est pas rédigée en <ph name="ORIGINAL_LANGUAGE" /> ? Signaler l'erreur</translation>
+<translation id="5179740473595559246">Savoir quand vous êtes là</translation>
 <translation id="5190835502935405962">Barre de favoris</translation>
 <translation id="519422657042045905">Annotation indisponible</translation>
 <translation id="5201306358585911203">Une page intégrée à cette page Web indique</translation>
@@ -1245,6 +1251,7 @@
 <translation id="6049488691372270142">Livraison de la page</translation>
 <translation id="6051221802930200923">Le site <ph name="SITE" /> est actuellement inaccessible, car il utilise l'épinglage des certificats. Les erreurs réseau et les attaques sont généralement temporaires. Vous devriez donc pouvoir accéder à cette page plus tard.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Indiquer que vous êtes là ?</translation>
 <translation id="6058977677006700226">Vous utilisez vos cartes sur tous vos appareils ?</translation>
 <translation id="6059925163896151826">Appareils USB</translation>
 <translation id="6060009363608157444">Mode DnsOverHttps non valide.</translation>
@@ -1374,6 +1381,7 @@
 <translation id="6631202559048444592">Il existe plusieurs sources pour cette règle, mais les valeurs sont identiques.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Effacer</translation>
+<translation id="6645291930348198241">Accéder aux cookies et aux données de site.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Aucun}=1{De 1 site (vous ne serez pas déconnecté de votre compte Google)}one{De # site (vous ne serez pas déconnecté de votre compte Google)}other{De # sites (vous ne serez pas déconnecté de votre compte Google)}}</translation>
 <translation id="6648459603387803038">Votre administrateur peut modifier à distance la configuration de votre navigateur. Il se peut que l'activité sur cet appareil soit gérée en dehors de Chrome.</translation>
 <translation id="6652101503459149953">Utiliser Windows Hello</translation>

@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Webbplatsen <ph name="SITE_NAME" /> har lagts till</translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="1384959399684842514">Nedladdningen har pausats</translation>
+<translation id="1431402976894535801">Blockera webbplatser från att registrera om du är närvarande</translation>
 <translation id="1446450296470737166">Tillåt fullst. kontroll av MIDI</translation>
 <translation id="1509960214886564027">Funktioner kan sluta att fungera på många webbplatser</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">Öppna snabbappen</translation>
 <translation id="2148716181193084225">Idag</translation>
 <translation id="2182457891543959921">Fråga innan webbplatser tillåts att skapa en 3D-karta över dina omgivningar eller registrera kamerans position (rekommenderas)</translation>
+<translation id="2187243482123994665">Användarens närvaro</translation>
 <translation id="2212565012507486665">Tillåt cookies</translation>
 <translation id="2228071138934252756">Om du vill ge <ph name="APP_NAME" /> åtkomst till kameran måste du även aktivera kameran i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="2289270750774289114">Fråga när en webbplats försöker söka efter Bluetooth-enheter i närheten (rekommenderas)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">Videospelare</translation>
 <translation id="3115898365077584848">Visa info</translation>
 <translation id="3123473560110926937">Blockeras på vissa webbplatser</translation>
+<translation id="3165371858310906303">Fråga när en webbplats vill registrera om du är närvarande</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> sparad data</translation>
 <translation id="321187648315454507">Om du vill få aviseringar från <ph name="APP_NAME" /> måste du även aktivera aviseringar i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -104,7 +107,6 @@
 <translation id="4165986682804962316">Platsinställningar</translation>
 <translation id="4200726100658658164">Öppna platsinställningarna</translation>
 <translation id="4226663524361240545">Aviseringar kan göra att enheten vibrerar</translation>
-<translation id="4242533952199664413">Öppna Inställningar</translation>
 <translation id="4259722352634471385">Webbadressen har blockerats: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Tillåts</translation>
 <translation id="429312253194641664">Media spelas upp på en webbplats</translation>
@@ -134,6 +136,7 @@
 <translation id="5197729504361054390">Kontakterna du väljer delas med <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Visa</translation>
 <translation id="5301954838959518834">Ok, jag förstår</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till</translation>
 <translation id="5313967007315987356">Lägg till webbplats</translation>
 <translation id="5317780077021120954">Spara</translation>
 <translation id="5335288049665977812">Tillåt att JavaScript körs på webbplatser (rekommenderas)</translation>
@@ -145,6 +148,7 @@
 <translation id="5403592356182871684">Namn</translation>
 <translation id="5489227211564503167">Förfluten tid: <ph name="ELAPSED_TIME" /> av <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blockera annonser på webbplatser där påträngande eller vilseledande annonser visas</translation>
+<translation id="5502860503640766021"><ph name="PERMISSION_1" /> tillåts, <ph name="PERMISSION_2" /> blockeras</translation>
 <translation id="5505264765875738116">Webbplatser får inte be om tillåtelse att skicka aviseringar</translation>
 <translation id="5516455585884385570">Öppna aviseringsinställningar</translation>
 <translation id="5527111080432883924">Fråga innan en webbplats ges läsbehörighet till text och bilder i Urklipp (rekommenderas)</translation>
@@ -156,12 +160,15 @@
 <translation id="5690795753582697420">Kameran har inaktiverats i inställningarna för Android</translation>
 <translation id="5710871682236653961">Fråga innan webbplatser tillåts att skicka och ta emot uppgifter när du snuddar vid NFC-enheter (rekommenderas)</translation>
 <translation id="5719847187258001597">All data och alla cookies som har sparats av <ph name="ORIGIN" /> eller motsvarande app på startskärmen rensas.</translation>
+<translation id="5771720122942595109"><ph name="PERMISSION_1" /> blockeras</translation>
 <translation id="5804241973901381774">Behörigheter</translation>
 <translation id="5860033963881614850">Av</translation>
+<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till tillåts</translation>
 <translation id="5876056640971328065">Pausa video</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5922853908706496913">Delar skärmen</translation>
 <translation id="5939518447894949180">Återställ</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Styr webbplatsens åtkomst till enheten</translation>
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="6042308850641462728">Mer</translation>
@@ -173,6 +180,7 @@
 <translation id="6196640612572343990">Blockera cookies från tredje part</translation>
 <translation id="6206551242102657620">Anslutningen är säker. Webbplatsinformation</translation>
 <translation id="6216432067784365534">Alternativ för <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6262279340360821358"><ph name="PERMISSION_1" /> och <ph name="PERMISSION_2" /> blockeras</translation>
 <translation id="6270391203985052864">Webbplatser får be om tillåtelse att skicka aviseringar</translation>
 <translation id="6295158916970320988">Alla webbplatser</translation>
 <translation id="6320088164292336938">Vibration</translation>
@@ -195,6 +203,7 @@
 <translation id="6790428901817661496">Spela</translation>
 <translation id="6818926723028410516">Välj objekt</translation>
 <translation id="6864395892908308021">Enheten kan inte läsa NFC</translation>
+<translation id="6879016579615558281"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till blockeras</translation>
 <translation id="6910211073230771657">Borttagen</translation>
 <translation id="6912998170423641340">Webbplatser ges inte tillgång till text och bilder i Urklipp</translation>
 <translation id="6945221475159498467">Välj</translation>
@@ -212,6 +221,7 @@
 <translation id="723171743924126238">Välj bilder</translation>
 <translation id="7243308994586599757">Alternativ visas nära skärmens nedre kant</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> har valts</translation>
+<translation id="7260727271532453612"><ph name="PERMISSION_1" /> och <ph name="PERMISSION_2" /> tillåts</translation>
 <translation id="7302486331832100261">Du brukar blockera aviseringar. Tryck på Info om du vill tillåta dem.</translation>
 <translation id="7423098979219808738">Fråga först</translation>
 <translation id="7423538860840206698">Läsbehörighet till Urklipp har nekats</translation>
@@ -243,6 +253,7 @@
 <translation id="8087000398470557479">Innehållet kommer från <ph name="DOMAIN_NAME" /> via Google.</translation>
 <translation id="8116925261070264013">Ljudet avstängt</translation>
 <translation id="8131740175452115882">Bekräfta</translation>
+<translation id="8197286292360124385"><ph name="PERMISSION_1" /> tillåts</translation>
 <translation id="8200772114523450471">Återuppta</translation>
 <translation id="8206354486702514201">Administratören har gjort den här inställningen obligatorisk.</translation>
 <translation id="8249310407154411074">Flytta högst upp</translation>

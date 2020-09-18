@@ -39,6 +39,7 @@
 <translation id="123724288017357924">キャッシュ コンテンツを無視して現在のページを再読み込みする</translation>
 <translation id="124678866338384709">現在のタブを閉じる</translation>
 <translation id="1258753120186372309">Google Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">リーディング リスト</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> を共有できませんでした</translation>
 <translation id="1283039547216852943">タップして展開</translation>
 <translation id="1291207594882862231">履歴、Cookie、サイトデータ、キャッシュを削除…</translation>
@@ -218,7 +219,6 @@
 <translation id="2744248271121720757">単語をタップすると、検索をすばやく実行したり、関連する操作メニューを確認したりできます</translation>
 <translation id="2760989362628427051">デバイスのダークテーマまたはバッテリー セーバーがオンのときにダークテーマをオンにする</translation>
 <translation id="2762000892062317888">たった今</translation>
-<translation id="2771869497727323769">テキストへのリンクを作成できません。ページへのリンクをアプリで共有してください。</translation>
 <translation id="2777555524387840389">残り <ph name="SECONDS" /> 秒</translation>
 <translation id="2779651927720337254">失敗</translation>
 <translation id="2781151931089541271">残り 1 秒</translation>
@@ -467,7 +467,6 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 件のダウンロードが完了しました。}other{# 件のダウンロードが完了しました。}}</translation>
 <translation id="4766678251456904326">デバイスへのアカウントの追加</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 件のダウンロードがスケジュール設定されました。}other{# 件のダウンロードがスケジュール設定されました。}}</translation>
-<translation id="478981486571169252">Chrome での <ph name="SITE_NAME" /> のログイン ステータス、閲覧データ、サイトデータが表示されます。</translation>
 <translation id="4802417911091824046">パスフレーズ暗号化の対象に Google Pay のお支払い方法と住所は含まれません。
 
 この設定を変更する場合は<ph name="BEGIN_LINK" />同期をリセット<ph name="END_LINK" />してください</translation>
@@ -512,7 +511,6 @@
 <translation id="5040262127954254034">プライバシー</translation>
 <translation id="5087580092889165836">カードを追加</translation>
 <translation id="509429900233858213">エラーが発生しました。</translation>
-<translation id="5100748015044654621">ハイライト表示したテキストへのリンクをアプリで共有してください</translation>
 <translation id="510275257476243843">残り 1 時間</translation>
 <translation id="5123685120097942451">シークレット タブ</translation>
 <translation id="5127805178023152808">同期は無効です</translation>

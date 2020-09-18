@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Byl přidán web <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1384959399684842514">Stahování pozastaveno</translation>
+<translation id="1431402976894535801">Nedovolit webům zjistit, kdy jste aktivní</translation>
 <translation id="1446450296470737166">Povolit úplné ovládání zařízení MIDI</translation>
 <translation id="1509960214886564027">Mnoho webů může přestat fungovat</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">Otevřít okamžitou aplikaci</translation>
 <translation id="2148716181193084225">Dnes</translation>
 <translation id="2182457891543959921">Předtím, než webům bude povoleno vytvořit 3D mapu vašeho okolí nebo sledovat polohu kamery, se zeptat (doporučeno)</translation>
+<translation id="2187243482123994665">Aktivita uživatele</translation>
 <translation id="2212565012507486665">Povolit cookies</translation>
 <translation id="2228071138934252756">Pokud aplikaci <ph name="APP_NAME" /> chcete umožnit přístup k fotoaparátu, zapněte fotoaparát také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="2289270750774289114">Zeptat se, když chce web objevit zařízení Bluetooth v okolí (doporučeno)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">Přehrávač videa</translation>
 <translation id="3115898365077584848">Zobrazit informace</translation>
 <translation id="3123473560110926937">Na některých webech blokováno</translation>
+<translation id="3165371858310906303">Zeptat se, když chce web vědět, kdy jste aktivní</translation>
 <translation id="3198916472715691905">Uložená data: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">Pokud aplikaci <ph name="APP_NAME" /> chcete povolit, aby vám zasílala oznámení, zapněte oznámení také v <ph name="BEGIN_LINK" />Natavení Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -104,7 +107,6 @@
 <translation id="4165986682804962316">Nastavení webu</translation>
 <translation id="4200726100658658164">Otevřít nastavení polohy</translation>
 <translation id="4226663524361240545">Oznámení mohou aktivovat vibraci</translation>
-<translation id="4242533952199664413">Otevřít Nastavení</translation>
 <translation id="4259722352634471385">Navigace je blokována: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Povoleno</translation>
 <translation id="429312253194641664">Web přehrává média</translation>
@@ -134,6 +136,7 @@
 <translation id="5197729504361054390">Vybrané kontakty budou sdíleny s webem <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Zobrazit</translation>
 <translation id="5301954838959518834">Dobře, rozumím</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)</translation>
 <translation id="5313967007315987356">Přidat web</translation>
 <translation id="5317780077021120954">Uložit</translation>
 <translation id="5335288049665977812">Povolit webům spouštět JavaScript (doporučeno)</translation>
@@ -145,6 +148,7 @@
 <translation id="5403592356182871684">Názvy</translation>
 <translation id="5489227211564503167">Uplynulá doba: <ph name="ELAPSED_TIME" /> z <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokovat reklamy na webech, které zobrazují obtěžující nebo zavádějící reklamy</translation>
+<translation id="5502860503640766021">Oprávnění <ph name="PERMISSION_1" /> je povoleno, oprávnění <ph name="PERMISSION_2" /> je blokováno</translation>
 <translation id="5505264765875738116">Weby nemohou žádat o oprávnění zasílat vám oznámení</translation>
 <translation id="5516455585884385570">Otevřít nastavení oznámení</translation>
 <translation id="5527111080432883924">Zeptat se, než bude webům povolen přístup k textu a obrázkům zkopírovaným do schránky (doporučeno)</translation>
@@ -156,12 +160,15 @@
 <translation id="5690795753582697420">Fotoaparát je vypnutý v nastavení zařízení Android</translation>
 <translation id="5710871682236653961">Když se dotknete zařízení NFC, nejdříve se zeptat a teprve poté webu případně povolit odesílání a příjem informací (doporučeno)</translation>
 <translation id="5719847187258001597">Tímto vymažete veškerá data a soubory cookie, které uložil web <ph name="ORIGIN" /> nebo jeho aplikace na ploše.</translation>
+<translation id="5771720122942595109">Oprávnění <ph name="PERMISSION_1" /> je zablokováno</translation>
 <translation id="5804241973901381774">Oprávnění</translation>
 <translation id="5860033963881614850">Vypnuto</translation>
+<translation id="5863245810240683687">Povolená oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)</translation>
 <translation id="5876056640971328065">Pozastavit video</translation>
 <translation id="5916664084637901428">Zapnuto</translation>
 <translation id="5922853908706496913">Sdílíte obrazovku</translation>
 <translation id="5939518447894949180">Resetovat</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Spravujte přístup tohoto webu k vašemu zařízení</translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="6042308850641462728">Více</translation>
@@ -173,6 +180,7 @@
 <translation id="6196640612572343990">Blokovat soubory cookie třetích stran</translation>
 <translation id="6206551242102657620">Připojení je zabezpečené. Informace o webu</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> – možnosti</translation>
+<translation id="6262279340360821358">Oprávnění <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /> jsou zablokována</translation>
 <translation id="6270391203985052864">Weby mohou žádat o oprávnění zasílat vám oznámení</translation>
 <translation id="6295158916970320988">Všechny weby</translation>
 <translation id="6320088164292336938">Vibrovat</translation>
@@ -195,6 +203,7 @@
 <translation id="6790428901817661496">Přehrát</translation>
 <translation id="6818926723028410516">Výběr položek</translation>
 <translation id="6864395892908308021">Toto zařízení neumí číst NFC</translation>
+<translation id="6879016579615558281">Blokovaná oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)</translation>
 <translation id="6910211073230771657">Smazáno</translation>
 <translation id="6912998170423641340">Blokovat webům přístup k textu a obrázkům zkopírovaným do schránky</translation>
 <translation id="6945221475159498467">Vybrat</translation>
@@ -212,6 +221,7 @@
 <translation id="723171743924126238">Vyberte fotky</translation>
 <translation id="7243308994586599757">Možnosti jsou k dispozici ve spodní části obrazovky</translation>
 <translation id="7250468141469952378">Vybráno: <ph name="ITEM_COUNT" /></translation>
+<translation id="7260727271532453612">Oprávnění <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /> jsou povolena</translation>
 <translation id="7302486331832100261">Obvykle oznámení blokujete. Chcete-li je povolit, klepněte na Podrobnosti.</translation>
 <translation id="7423098979219808738">Nejprve se dotázat</translation>
 <translation id="7423538860840206698">Čtení schránky je blokováno</translation>
@@ -243,6 +253,7 @@
 <translation id="8087000398470557479">Tento obsah pochází z domény <ph name="DOMAIN_NAME" />. Poskytováno společností Google.</translation>
 <translation id="8116925261070264013">Ztlumeno</translation>
 <translation id="8131740175452115882">Potvrdit</translation>
+<translation id="8197286292360124385">Oprávnění <ph name="PERMISSION_1" /> je povoleno</translation>
 <translation id="8200772114523450471">Pokračovat</translation>
 <translation id="8206354486702514201">Toto nastavení je vyžadováno administrátorem.</translation>
 <translation id="8249310407154411074">Přesunout na začátek</translation>

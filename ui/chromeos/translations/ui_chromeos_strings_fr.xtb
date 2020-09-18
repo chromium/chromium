@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">Impossible d'accéder au fichier pour des raisons de sécurité.</translation>
 <translation id="169515659049020177">Maj</translation>
 <translation id="1722487484194605434">Compression de <ph name="NUMBER_OF_ITEMS" /> éléments…</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> éléments copiés.</translation>
 <translation id="174173592514158117">Afficher tous les dossiers Play</translation>
 <translation id="174937106936716857">Nombre total de fichiers</translation>
 <translation id="1775381402323441512">Informations sur le fichier vidéo</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Caractère non valide : <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Clavier vietnamien (TCVN)</translation>
 <translation id="2168214441502403371">Clavier persan</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> éléments déplacés.</translation>
 <translation id="2198315389084035571">Chinois simplifié</translation>
 <translation id="2208158072373999562">Archive ZIP</translation>
 <translation id="2225536596944493418">Voulez-vous vraiment supprimer <ph name="NUMBER_OF_ITEMS" /> éléments ?</translation>
 <translation id="2230062665678605299">Impossible de créer le dossier "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Déplacé.</translation>
 <translation id="2278988676849463018">Clavier kannada (phonétique)</translation>
 <translation id="2288278176040912387">Tourne-disque</translation>
 <translation id="2291538123825441971">Ouverture de <ph name="NUMBER_OF_FILES" /> fichiers.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Tout le contenu a été sauvegardé</translation>
 <translation id="3626281679859535460">Luminosité</translation>
 <translation id="3644896802912593514">Largeur</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> éléments déplacés.</translation>
 <translation id="3645531960514756307">Retirer le dossier</translation>
 <translation id="3678559383040232393">Clavier maltais</translation>
 <translation id="3685122418104378273">Par défaut, la synchronisation Google Drive est désactivée lors de l'utilisation des données mobiles.</translation>
@@ -395,6 +399,7 @@
     Peu importe ce qui se passe sur votre appareil, vos fichiers sont stockés en toute sécurité dans Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Travaillez en groupe, et créez et partagez<ph name="MARKUP_8" />
     des fichiers depuis une seule et même interface.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Copié.</translation>
 <translation id="5275973617553375938">Fichiers récupérés sur Google Drive</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Enregistrer</translation>
@@ -594,6 +599,7 @@
 <translation id="751507702149411736">Biélorusse</translation>
 <translation id="7544853251252956727">Aléatoire</translation>
 <translation id="7547811415869834682">Néerlandais</translation>
+<translation id="7551643184018910560">Épingler sur l'étagère</translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Veuillez patienter un court instant.</translation>
 <translation id="7603724359189955920">Grilles</translation>
@@ -677,6 +683,7 @@
 <translation id="8299269255470343364">Japonais</translation>
 <translation id="8312871300878166382">Coller dans le dossier</translation>
 <translation id="8329978297633540474">Texte brut</translation>
+<translation id="8335587457941836791">Retirer de l'étagère</translation>
 <translation id="8336153091935557858">Hier à <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336579025507394412">Clavier islandais</translation>
 <translation id="8342318071240498787">Un fichier ou un répertoire du même nom existe déjà.</translation>
@@ -749,6 +756,7 @@
 <translation id="943972244133411984">Modifié par</translation>
 <translation id="945522503751344254">Envoyer un commentaire</translation>
 <translation id="947144732524271678"><ph name="ENTRY_COUNT" /> éléments sélectionnés, de <ph name="FROM_ENTRY_NAME" /> à <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> éléments copiés.</translation>
 <translation id="981121421437150478">Hors connexion</translation>
 <translation id="988685240266037636">Un fichier intitulé "<ph name="FILE_NAME" />" existe déjà. Voulez-vous le remplacer ?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> Mo</translation>

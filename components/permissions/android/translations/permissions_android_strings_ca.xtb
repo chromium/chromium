@@ -3,12 +3,10 @@
 <translationbundle lang="ca">
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2416359993254398973">Per visitar aquest lloc web, Chrome necessita permís per accedir a la teva càmera.</translation>
-<translation id="4955546094786399712">Per canviar el permís d'aquest lloc web, tanca l'altra aplicació i torna-ho a provar.\n\nSi no pots tancar l'aplicació, desactiva'n el permís "Mostra sobre altres aplicacions" a la configuració d'Android.</translation>
 <translation id="557283862590186398">Per visitar aquest lloc web, Chrome necessita permís per accedir al teu micròfon.</translation>
 <translation id="5860491529813859533">Activa</translation>
 <translation id="6092062101542170135">Per continuar, activa l'NFC a la configuració d'Android</translation>
 <translation id="6393863479814692971">Per visitar aquest lloc web, Chrome necessita permís per accedir a la teva càmera i al teu micròfon.</translation>
 <translation id="6697947395630195233">Chrome necessita accedir a la teva ubicació per compartir-la amb aquest lloc web.</translation>
 <translation id="7134415045456331657">Chrome necessita permís per accedir a la càmera i poder crear un mapa 3D del teu entorn.</translation>
-<translation id="7681341492080683492">S'està mostrant una altra aplicació sobre <ph name="APP_NAME" /></translation>
 </translationbundle>

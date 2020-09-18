@@ -39,6 +39,7 @@
 <translation id="123724288017357924">Kargatu orria, cacheko edukiari ez ikusi eginda</translation>
 <translation id="124678866338384709">Itxi uneko fitxa</translation>
 <translation id="1258753120186372309">Google doodle-a: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Irakurketa-zerrenda</translation>
 <translation id="1266864766717917324">Ezin izan da partekatu <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Sakatu zabaltzeko</translation>
 <translation id="1291207594882862231">Garbitu historia, cookieak, webguneen datuak, cachea…</translation>
@@ -218,7 +219,6 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="2744248271121720757">Sakatu hitz bat bilaketa egiteko edo lotutako ekintzak ikusteko</translation>
 <translation id="2760989362628427051">Aktibatu gai iluna gailuaren gai iluna edo bateria-aurrezlea aktibatuta dagoenean</translation>
 <translation id="2762000892062317888">oraintxe</translation>
-<translation id="2771869497727323769">Ezin da sortu testurako esteka. Partekatu orrirako esteka aplikazio batean.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> segundo gelditzen dira</translation>
 <translation id="2779651927720337254">huts egin du</translation>
 <translation id="2781151931089541271">Segundo bat gelditzen da</translation>
@@ -467,7 +467,6 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 deskarga amaitu da.}other{# deskarga amaitu dira.}}</translation>
 <translation id="4766678251456904326">Gehitu kontu bat gailuan</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 deskarga programatu.}other{# deskarga programatu.}}</translation>
-<translation id="478981486571169252"><ph name="SITE_NAME" /> webgunean saioa hasi duzun ala ez, arakatze-datuak, eta webguneko datuak ikusiko dituzu Chrome-n.</translation>
 <translation id="4802417911091824046">Pasaesaldi bidezko enkriptatzeak ez ditu hartzen barne Google Pay-ko ordainketa-metodoak eta helbideak.
 
 Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="END_LINK" />.</translation>
@@ -512,7 +511,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5040262127954254034">Pribatutasuna</translation>
 <translation id="5087580092889165836">Gehitu txartel bat</translation>
 <translation id="509429900233858213">Errore bat gertatu da.</translation>
-<translation id="5100748015044654621">Partekatu nabarmendutako testurako esteka aplikazio batean</translation>
 <translation id="510275257476243843">Ordubete gelditzen da</translation>
 <translation id="5123685120097942451">Ezkutuko moduko fitxa</translation>
 <translation id="5127805178023152808">Sinkronizazioa desaktibatuta dago</translation>

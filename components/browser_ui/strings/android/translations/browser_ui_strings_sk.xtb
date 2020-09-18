@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Boli pridané stránky <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">Vyhľadávanie</translation>
 <translation id="1384959399684842514">Sťahovanie bolo pozastavené</translation>
+<translation id="1431402976894535801">Neumožniť webom zistiť, či ste prítomný/-á</translation>
 <translation id="1446450296470737166">Povoliť úplné ovlád. zar. MIDI</translation>
 <translation id="1509960214886564027">Funkcie na mnohých weboch môžu zlyhávať</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -43,6 +44,7 @@
 <translation id="2146738493024040262">Otvoriť okamžitú aplikáciu</translation>
 <translation id="2148716181193084225">Dnes</translation>
 <translation id="2182457891543959921">Opýtať sa, či chcete povoliť webom vytvoriť 3D mapu vášho okolia alebo sledovať umiestnenie kamier (odporúčané)</translation>
+<translation id="2187243482123994665">Prítomnosť používateľa</translation>
 <translation id="2212565012507486665">Povoliť súbory cookie</translation>
 <translation id="2228071138934252756">Ak chcete povoliť aplikácii <ph name="APP_NAME" /> používať váš fotoaparát, zapnite ho aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="2289270750774289114">Opýtať sa, keď chce web objavovať zariadenia Bluetooth v okolí (odporúčané)</translation>
@@ -77,6 +79,7 @@
 <translation id="3114012059975132928">Prehrávač videa</translation>
 <translation id="3115898365077584848">Zobraziť informácie</translation>
 <translation id="3123473560110926937">Blokované na niektorých weboch</translation>
+<translation id="3165371858310906303">Opýtať sa, keď chce web vedieť, či ste prítomný/-á</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> uložených dát</translation>
 <translation id="321187648315454507">Ak chcete povoliť aplikácii <ph name="APP_NAME" /> odosielať vám upozornenia, zapnite ich aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofón</translation>
@@ -104,7 +107,6 @@
 <translation id="4165986682804962316">Nastavenia webu</translation>
 <translation id="4200726100658658164">Otvoriť nastavenia polohy</translation>
 <translation id="4226663524361240545">Upozornenia môžu pri prijatí na zariadení spustiť vibrovanie</translation>
-<translation id="4242533952199664413">Otvoriť nastavenia</translation>
 <translation id="4259722352634471385">Navigácia je zablokovaná: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Povolené</translation>
 <translation id="429312253194641664">Web prehráva médiá</translation>
@@ -134,6 +136,7 @@
 <translation id="5197729504361054390">Vybrané kontakty budú zdieľané s webom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Zobraziť</translation>
 <translation id="5301954838959518834">Dobre</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a ďalšie (<ph name="NUM_MORE" />)</translation>
 <translation id="5313967007315987356">Pridať web</translation>
 <translation id="5317780077021120954">Uložiť</translation>
 <translation id="5335288049665977812">Povoliť webom spúšťať JavaScript (odporúča sa)</translation>
@@ -145,6 +148,7 @@
 <translation id="5403592356182871684">Názvy</translation>
 <translation id="5489227211564503167">Uplynutý čas: <ph name="ELAPSED_TIME" /> z <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokovať reklamy webov, ktoré zobrazujú obťažujúce alebo zavádzajúce reklamy</translation>
+<translation id="5502860503640766021">Povolené: <ph name="PERMISSION_1" />, blokované: <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Weby nemôžu žiadať o odosielanie upozornení</translation>
 <translation id="5516455585884385570">Otvoriť nastavenia upozornení</translation>
 <translation id="5527111080432883924">Pýtať sa, či chcete povoliť webu čítať text a obrázky v schránke (odporúčané)</translation>
@@ -156,12 +160,15 @@
 <translation id="5690795753582697420">Fotoaparát je vypnutý v nastaveniach Androidu</translation>
 <translation id="5710871682236653961">Pýtať sa, či chcete povoliť webom odosielať a prijímať informácie, keď priložíte zariadenia NFC (odporúčané)</translation>
 <translation id="5719847187258001597">Týmto vymažete všetky dáta a súbory cookie uložené webom <ph name="ORIGIN" /> alebo jeho aplikáciou na ploche.</translation>
+<translation id="5771720122942595109">Blokované: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Povolenia</translation>
 <translation id="5860033963881614850">Vypnuté</translation>
+<translation id="5863245810240683687">Povolené: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a ďalšie (<ph name="NUM_MORE" />)</translation>
 <translation id="5876056640971328065">Pozastaviť video</translation>
 <translation id="5916664084637901428">Zapnuté</translation>
 <translation id="5922853908706496913">Zdieľate obrazovku</translation>
 <translation id="5939518447894949180">Resetovať</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Ovládajte prístup tohto webu do vášho zariadenia</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="6042308850641462728">Viac</translation>
@@ -173,6 +180,7 @@
 <translation id="6196640612572343990">Blokovať súbory cookie tretích strán</translation>
 <translation id="6206551242102657620">Spojenie je zabezpečené. Informácie o webe</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> – možnosti</translation>
+<translation id="6262279340360821358">Blokované: <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Weby môžu žiadať o odosielanie upozornení</translation>
 <translation id="6295158916970320988">Všetky stránky</translation>
 <translation id="6320088164292336938">Vibrovanie</translation>
@@ -195,6 +203,7 @@
 <translation id="6790428901817661496">Prehrať</translation>
 <translation id="6818926723028410516">Vyberte položky</translation>
 <translation id="6864395892908308021">Toto zariadenie nedokáže čítať NFC</translation>
+<translation id="6879016579615558281">Blokované: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a ďalšie (<ph name="NUM_MORE" />)</translation>
 <translation id="6910211073230771657">Odstránené</translation>
 <translation id="6912998170423641340">Zakázať webom čítať text a obrázky v schránke</translation>
 <translation id="6945221475159498467">Vybrať</translation>
@@ -212,6 +221,7 @@
 <translation id="723171743924126238">Výber obrázkov</translation>
 <translation id="7243308994586599757">Možnosti sú k dispozícii v dolnej časti obrazovky</translation>
 <translation id="7250468141469952378">Vybrané: <ph name="ITEM_COUNT" /></translation>
+<translation id="7260727271532453612">Povolené: <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /></translation>
 <translation id="7302486331832100261">Zvyčajne blokujete upozornenia. Ak ich chcete povoliť, klepnite na Podrobnosti.</translation>
 <translation id="7423098979219808738">Najprv sa opýtať</translation>
 <translation id="7423538860840206698">Blokovať čítanie schránky</translation>
@@ -243,6 +253,7 @@
 <translation id="8087000398470557479">Tento obsah pochádza z domény <ph name="DOMAIN_NAME" /> a bol doručený Googlom.</translation>
 <translation id="8116925261070264013">Zvuk bol vypnutý</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>
+<translation id="8197286292360124385">Povolené: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Pokračovať</translation>
 <translation id="8206354486702514201">Toto nastavenie je vynútené správcom.</translation>
 <translation id="8249310407154411074">Presunúť na začiatok</translation>

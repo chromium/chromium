@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">File tidak dapat diakses karena alasan keamanan.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">Membuat file zip <ph name="NUMBER_OF_ITEMS" /> item...</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> item disalin.</translation>
 <translation id="174173592514158117">Tampilkan semua folder Play</translation>
 <translation id="174937106936716857">Jumlah file total</translation>
 <translation id="1775381402323441512">Info video</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">Karakter tidak valid: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Keyboard Vietnam (TCVN)</translation>
 <translation id="2168214441502403371">Keyboard Persia</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> dipindahkan.</translation>
 <translation id="2198315389084035571">China Aksara Sederhana</translation>
 <translation id="2208158072373999562">Arsip Zip</translation>
 <translation id="2225536596944493418">Yakin ingin menghapus <ph name="NUMBER_OF_ITEMS" /> item?</translation>
 <translation id="2230062665678605299">Tidak dapat membuat folder "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">Dipindahkan.</translation>
 <translation id="2278988676849463018">Keyboard Kannada (Fonetik)</translation>
 <translation id="2288278176040912387">Pemutar piringan hitam</translation>
 <translation id="2291538123825441971">Membuka <ph name="NUMBER_OF_FILES" /> file.</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">Semua dicadangkan!</translation>
 <translation id="3626281679859535460">Kecerahan</translation>
 <translation id="3644896802912593514">Lebar</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> item dipindahkan.</translation>
 <translation id="3645531960514756307">Lepas pin pada folder</translation>
 <translation id="3678559383040232393">Keyboard Malta</translation>
 <translation id="3685122418104378273">Sinkronisasi Google Drive dinonaktifkan secara default saat menggunakan data seluler.</translation>
@@ -395,6 +399,7 @@
     Apa pun yang terjadi pada perangkat, file Anda tersimpan dengan aman di Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Berbagi, membuat, dan berkolaborasi<ph name="MARKUP_8" />
     dalam file bersama orang lain, semuanya di satu tempat.<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">Disalin.</translation>
 <translation id="5275973617553375938">File yang dipulihkan dari Google Drive</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Simpan</translation>
@@ -594,6 +599,7 @@
 <translation id="751507702149411736">Belarusian</translation>
 <translation id="7544853251252956727">Acak</translation>
 <translation id="7547811415869834682">Belanda</translation>
+<translation id="7551643184018910560">Pin ke rak</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Tunggu sebentar</translation>
 <translation id="7603724359189955920">Petak</translation>
@@ -677,6 +683,7 @@
 <translation id="8299269255470343364">Jepang</translation>
 <translation id="8312871300878166382">Tempelkan ke folder</translation>
 <translation id="8329978297633540474">Teks biasa</translation>
+<translation id="8335587457941836791">Lepaskan pin dari rak</translation>
 <translation id="8336153091935557858"><ph name="YESTERDAY_DAYTIME" /> kemarin</translation>
 <translation id="8336579025507394412">Keyboard Islandia</translation>
 <translation id="8342318071240498787">Sudah ada file atau direktori dengan nama yang sama.</translation>
@@ -749,6 +756,7 @@
 <translation id="943972244133411984">Diubah oleh</translation>
 <translation id="945522503751344254">Kirim masukan</translation>
 <translation id="947144732524271678">Rentang <ph name="ENTRY_COUNT" /> entri dari <ph name="FROM_ENTRY_NAME" /> ke <ph name="TO_ENTRY_NAME" /> dipilih.</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> disalin.</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">File bernama "<ph name="FILE_NAME" />" sudah ada. Ingin menggantinya?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

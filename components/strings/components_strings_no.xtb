@@ -47,6 +47,9 @@
 <translation id="1161325031994447685">Koble til Wi-Fi på nytt</translation>
 <translation id="1165039591588034296">Feil</translation>
 <translation id="1165174597379888365">En nettside besøkes</translation>
+<translation id="1174723505405632867">Vil du gi <ph name="EMBEDDED_URL" /> tillatelse til å bruke informasjonskapsler og nettstedsdata på <ph name="TOP_LEVEL_URL" />?
+
+I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at innholdet du brukte, får lov til å fungere som det skal, men det kan også gjøre det mulig for <ph name="EMBEDDED_URL" /> å spore aktiviteten din.</translation>
 <translation id="1175364870820465910">&amp;Skriv ut...</translation>
 <translation id="1175875016430184367">Tre stifter høyre</translation>
 <translation id="1178581264944972037">Stans midlertidig</translation>
@@ -309,6 +312,7 @@
 <translation id="2181821976797666341">Retningslinjer</translation>
 <translation id="2183608646556468874">Telefonnummer</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresse}other{# adresser}}</translation>
+<translation id="2187243482123994665">Brukertilstedeværelse</translation>
 <translation id="2187317261103489799">Oppdag (standard)</translation>
 <translation id="2188375229972301266">Flere hull bunn</translation>
 <translation id="2202020181578195191">Angi et gyldig utløpsår</translation>
@@ -533,6 +537,7 @@ brukere av denne nettleseren.</translation>
       for å forsikre deg om at den fungerer. Følg disse instruksjonene hvis du
       ikke tror du trenger å bruke noen proxy-tjener:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3184534047932533456"><ph name="URL" /> vil vite når du er til stede</translation>
 <translation id="3188393374551744535">Kontosaldo</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ber om å lagre data permanent på enheten din</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> på <ph name="SERVER_NAME" /></translation>
@@ -1025,6 +1030,7 @@ brukere av denne nettleseren.</translation>
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Datamaskin</translation>
 <translation id="5179510805599951267">Er ikke dette <ph name="ORIGINAL_LANGUAGE" />? Rapportér denne feilen</translation>
+<translation id="5179740473595559246">vite når du er til stede</translation>
 <translation id="5190835502935405962">Bokmerkerad</translation>
 <translation id="519422657042045905">Annotering er ikke tilgjengelig</translation>
 <translation id="5201306358585911203">På en innebygd side på denne siden står det</translation>
@@ -1247,6 +1253,7 @@ brukere av denne nettleseren.</translation>
 <translation id="6049488691372270142">Sidelevering</translation>
 <translation id="6051221802930200923">Du kan ikke gå til <ph name="SITE" /> akkurat nå, siden nettstedet bruker sertifikatfesting. Nettverksfeil og -angrep er vanligvis midlertidige, så denne siden fungerer sannsynligvis senere.</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053328359599022071">Vil du dele tilstedeværelsen din?</translation>
 <translation id="6058977677006700226">Vil du bruke kortene på alle enhetene dine?</translation>
 <translation id="6059925163896151826">USB-enheter</translation>
 <translation id="6060009363608157444">Ugyldig DnsOverHttps-modus.</translation>
@@ -1376,6 +1383,7 @@ brukere av denne nettleseren.</translation>
 <translation id="6631202559048444592">Regelen har mer enn én kilde, men verdiene er like.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Tøm</translation>
+<translation id="6645291930348198241">få tilgang til informasjonskapsler og nettstedsdata</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Ingen}=1{Fra 1 nettsted (du blir ikke logget av Google-kontoen din)}other{Fra # nettsteder (du blir ikke logget av Google-kontoen din)}}</translation>
 <translation id="6648459603387803038">Administratoren kan endre nettleseroppsettet eksternt. Aktiviteten på denne enheten kan også administreres utenfor Chrome.</translation>
 <translation id="6652101503459149953">Bruk Windows Hello</translation>
