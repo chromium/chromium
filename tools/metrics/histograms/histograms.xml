@@ -115602,7 +115602,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NQE.CellularSignalStrength.ECTReduction"
-    units="ECT level reduction" expires_after="2020-01-26">
+    units="ECT level reduction" expires_after="2021-01-26">
   <owner>tbansal@chromium.org</owner>
   <summary>
     Number of buckets by which effective connection type was reduced or capped
@@ -115624,6 +115624,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NQE.CellularSignalStrength.LevelDifference"
     units="Signal Strength Level" expires_after="2020-01-26">
+  <obsolete>
+    Obsoleted.
+  </obsolete>
   <owner>tbansal@chromium.org</owner>
   <owner>bengr@chromium.org</owner>
   <summary>
@@ -116211,6 +116214,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     RTT observations at the URLRequest layer made by network quality estimator,
     recorded on every request.
+  </summary>
+</histogram>
+
+<histogram base="true" name="NQE.SignalStrengthQueried" enum="Boolean"
+    expires_after="2021-09-14">
+  <owner>tbansal@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Recorded as true when the signal strength of the current network is queried.
   </summary>
 </histogram>
 
@@ -212533,6 +212545,12 @@ regressions. -->
       label="Synthetic transport layer observation"/>
   <affected-histogram name="NQE.Kbps.RawObservation"/>
   <affected-histogram name="NQE.RTT.RawObservation"/>
+</histogram_suffixes>
+
+<histogram_suffixes name="NQE.SignalStrengthQueried" separator=".">
+  <suffix name="Cellular" label="On cellular network."/>
+  <suffix name="WiFi" label="On WiFi network."/>
+  <affected-histogram name="NQE.SignalStrengthQueried"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="NumLayersBucket" separator=".">

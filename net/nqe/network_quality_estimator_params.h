@@ -261,6 +261,12 @@ class NET_EXPORT NetworkQualityEstimatorParams {
     return get_signal_strength_and_detailed_network_id_;
   }
 
+  // Returns the minimum duration between two consecutuve calls for querying the
+  // current WiFi network's signal strength.
+  base::TimeDelta wifi_signal_strength_query_interval() const {
+    return wifi_signal_strength_query_interval_;
+  }
+
   // Sets the forced effective connection type as |type|.
   void SetForcedEffectiveConnectionTypeForTesting(EffectiveConnectionType type);
 
@@ -295,6 +301,7 @@ class NET_EXPORT NetworkQualityEstimatorParams {
   const bool cap_ect_based_on_signal_strength_;
   const double upper_bound_typical_kbps_multiplier_;
   const bool get_signal_strength_and_detailed_network_id_;
+  const base::TimeDelta wifi_signal_strength_query_interval_;
 
   bool use_small_responses_;
 
