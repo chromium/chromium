@@ -8,7 +8,7 @@
                 "abridged": false
             },
             "blink_perf.css": {
-                "end": 1,
+                "end": 19,
                 "abridged": false
             }
         },
@@ -25,7 +25,7 @@
     "1": {
         "benchmarks": {
             "blink_perf.css": {
-                "begin": 1,
+                "begin": 19,
                 "abridged": false
             },
             "blink_perf.dom": {
@@ -38,17 +38,12 @@
                 "abridged": false
             },
             "blink_perf.layout": {
-                "end": 65,
                 "abridged": false
             }
         }
     },
     "2": {
         "benchmarks": {
-            "blink_perf.layout": {
-                "begin": 65,
-                "abridged": false
-            },
             "blink_perf.owp_storage": {
                 "abridged": false
             },
@@ -75,14 +70,14 @@
             },
             "dummy_benchmark.stable_benchmark_1": {
                 "abridged": false
+            },
+            "jetstream": {
+                "abridged": false
             }
         }
     },
     "3": {
         "benchmarks": {
-            "jetstream": {
-                "abridged": false
-            },
             "jetstream2": {
                 "abridged": false
             },
@@ -90,7 +85,7 @@
                 "abridged": false
             },
             "loading.desktop": {
-                "end": 23,
+                "end": 24,
                 "abridged": false
             }
         },
@@ -103,8 +98,8 @@
     "4": {
         "benchmarks": {
             "loading.desktop": {
-                "begin": 23,
-                "end": 55,
+                "begin": 24,
+                "end": 51,
                 "abridged": false
             }
         }
@@ -112,8 +107,8 @@
     "5": {
         "benchmarks": {
             "loading.desktop": {
-                "begin": 55,
-                "end": 87,
+                "begin": 51,
+                "end": 77,
                 "abridged": false
             }
         }
@@ -121,14 +116,23 @@
     "6": {
         "benchmarks": {
             "loading.desktop": {
-                "begin": 87,
+                "begin": 77,
                 "abridged": false
             },
             "media.desktop": {
+                "end": 2,
+                "abridged": false
+            }
+        }
+    },
+    "7": {
+        "benchmarks": {
+            "media.desktop": {
+                "begin": 2,
                 "abridged": false
             },
             "memory.desktop": {
-                "end": 1,
+                "end": 7,
                 "abridged": false
             }
         },
@@ -143,13 +147,17 @@
             }
         }
     },
-    "7": {
+    "8": {
         "benchmarks": {
             "memory.desktop": {
-                "begin": 1,
+                "begin": 7,
                 "abridged": false
             },
             "octane": {
+                "abridged": false
+            },
+            "power.desktop": {
+                "end": 11,
                 "abridged": false
             }
         },
@@ -171,25 +179,17 @@
             }
         }
     },
-    "8": {
+    "9": {
         "benchmarks": {
             "power.desktop": {
+                "begin": 11,
                 "abridged": false
             },
             "rasterize_and_record_micro.top_25": {
-                "end": 22,
-                "abridged": false
-            }
-        }
-    },
-    "9": {
-        "benchmarks": {
-            "rasterize_and_record_micro.top_25": {
-                "begin": 22,
                 "abridged": false
             },
             "rendering.desktop": {
-                "end": 37,
+                "end": 21,
                 "abridged": false
             }
         }
@@ -197,8 +197,8 @@
     "10": {
         "benchmarks": {
             "rendering.desktop": {
-                "begin": 37,
-                "end": 84,
+                "begin": 21,
+                "end": 73,
                 "abridged": false
             }
         }
@@ -206,8 +206,8 @@
     "11": {
         "benchmarks": {
             "rendering.desktop": {
-                "begin": 84,
-                "end": 137,
+                "begin": 73,
+                "end": 131,
                 "abridged": false
             }
         }
@@ -215,8 +215,8 @@
     "12": {
         "benchmarks": {
             "rendering.desktop": {
-                "begin": 137,
-                "end": 191,
+                "begin": 131,
+                "end": 185,
                 "abridged": false
             }
         }
@@ -224,7 +224,7 @@
     "13": {
         "benchmarks": {
             "rendering.desktop": {
-                "begin": 191,
+                "begin": 185,
                 "end": 254,
                 "abridged": false
             }
@@ -249,7 +249,7 @@
                 "abridged": false
             },
             "system_health.common_desktop": {
-                "end": 14,
+                "end": 5,
                 "abridged": false
             }
         }
@@ -257,8 +257,8 @@
     "15": {
         "benchmarks": {
             "system_health.common_desktop": {
-                "begin": 14,
-                "end": 56,
+                "begin": 5,
+                "end": 34,
                 "abridged": false
             }
         }
@@ -266,15 +266,20 @@
     "16": {
         "benchmarks": {
             "system_health.common_desktop": {
-                "begin": 56,
+                "begin": 34,
+                "end": 70,
                 "abridged": false
             }
         }
     },
     "17": {
         "benchmarks": {
+            "system_health.common_desktop": {
+                "begin": 70,
+                "abridged": false
+            },
             "system_health.memory_desktop": {
-                "end": 11,
+                "end": 10,
                 "abridged": false
             }
         }
@@ -282,8 +287,8 @@
     "18": {
         "benchmarks": {
             "system_health.memory_desktop": {
-                "begin": 11,
-                "end": 18,
+                "begin": 10,
+                "end": 23,
                 "abridged": false
             }
         }
@@ -291,8 +296,8 @@
     "19": {
         "benchmarks": {
             "system_health.memory_desktop": {
-                "begin": 18,
-                "end": 35,
+                "begin": 23,
+                "end": 41,
                 "abridged": false
             }
         }
@@ -300,8 +305,8 @@
     "20": {
         "benchmarks": {
             "system_health.memory_desktop": {
-                "begin": 35,
-                "end": 52,
+                "begin": 41,
+                "end": 62,
                 "abridged": false
             }
         }
@@ -309,8 +314,8 @@
     "21": {
         "benchmarks": {
             "system_health.memory_desktop": {
-                "begin": 52,
-                "end": 65,
+                "begin": 62,
+                "end": 74,
                 "abridged": false
             }
         }
@@ -318,7 +323,7 @@
     "22": {
         "benchmarks": {
             "system_health.memory_desktop": {
-                "begin": 65,
+                "begin": 74,
                 "abridged": false
             },
             "tab_switching.typical_25": {
@@ -342,7 +347,7 @@
         "benchmarks": {
             "v8.browsing_desktop": {
                 "begin": 1,
-                "end": 17,
+                "end": 22,
                 "abridged": false
             }
         }
@@ -350,11 +355,11 @@
     "24": {
         "benchmarks": {
             "v8.browsing_desktop": {
-                "begin": 17,
+                "begin": 22,
                 "abridged": false
             },
             "v8.browsing_desktop-future": {
-                "end": 10,
+                "end": 14,
                 "abridged": false
             }
         }
@@ -362,7 +367,7 @@
     "25": {
         "benchmarks": {
             "v8.browsing_desktop-future": {
-                "begin": 10,
+                "begin": 14,
                 "abridged": false
             },
             "webrtc": {
@@ -371,36 +376,36 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1023,
-        "predicted_min_shard_time": 2772.0,
-        "predicted_min_shard_index": 18,
-        "predicted_max_shard_time": 3056.0,
-        "predicted_max_shard_index": 22,
-        "shard #0": 2892.0,
-        "shard #1": 2892.0,
-        "shard #2": 2904.0,
-        "shard #3": 2930.0,
-        "shard #4": 2864.0,
-        "shard #5": 2872.0,
-        "shard #6": 2892.0,
-        "shard #7": 2962.0,
-        "shard #8": 2856.0,
-        "shard #9": 2920.0,
-        "shard #10": 2872.0,
-        "shard #11": 2892.0,
-        "shard #12": 2904.0,
-        "shard #13": 2884.0,
-        "shard #14": 2832.0,
-        "shard #15": 2988.0,
-        "shard #16": 2972.0,
-        "shard #17": 2988.0,
-        "shard #18": 2772.0,
-        "shard #19": 2904.0,
-        "shard #20": 2772.0,
-        "shard #21": 2784.0,
-        "shard #22": 3056.0,
-        "shard #23": 2944.0,
-        "shard #24": 2876.0,
-        "shard #25": 2872.0
+        "num_stories": 1062,
+        "predicted_min_shard_time": 1452.0,
+        "predicted_min_shard_index": 19,
+        "predicted_max_shard_time": 1732.0,
+        "predicted_max_shard_index": 2,
+        "shard #0": 1596.0,
+        "shard #1": 1602.0,
+        "shard #2": 1732.0,
+        "shard #3": 1460.0,
+        "shard #4": 1600.0,
+        "shard #5": 1616.0,
+        "shard #6": 1600.0,
+        "shard #7": 1650.0,
+        "shard #8": 1588.0,
+        "shard #9": 1572.0,
+        "shard #10": 1588.0,
+        "shard #11": 1616.0,
+        "shard #12": 1596.0,
+        "shard #13": 1596.0,
+        "shard #14": 1590.0,
+        "shard #15": 1630.0,
+        "shard #16": 1606.0,
+        "shard #17": 1694.0,
+        "shard #18": 1608.0,
+        "shard #19": 1452.0,
+        "shard #20": 1662.0,
+        "shard #21": 1542.0,
+        "shard #22": 1720.0,
+        "shard #23": 1480.0,
+        "shard #24": 1662.0,
+        "shard #25": 1572.0
     }
 }
