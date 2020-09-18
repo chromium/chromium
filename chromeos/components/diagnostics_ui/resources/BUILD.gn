@@ -12,6 +12,8 @@ js_type_check("closure_compile_module") {
   deps = [
     ":diagnostics_app",
     ":diagnostics_card",
+    ":diagnostics_types",
+    ":mojo_interface_provider",
   ]
 }
 
@@ -26,6 +28,13 @@ js_library("diagnostics_card") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
+}
+
+js_library("diagnostics_types") {
+}
+
+js_library("mojo_interface_provider") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 html_to_js("web_components") {

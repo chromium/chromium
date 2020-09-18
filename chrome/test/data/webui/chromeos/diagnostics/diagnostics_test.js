@@ -6,6 +6,9 @@
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://diagnostics/diagnostics_app.js';
 
+import {SystemDataProviderInterface} from 'chrome://diagnostics/diagnostics_types.js';
+import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+
 suite('DiagnosticsAppTest', () => {
   /** @type {?DiagnosticsApp} */
   let page = null;
@@ -25,5 +28,15 @@ suite('DiagnosticsAppTest', () => {
     // TODO(jimmyxgong): Remove this stub test once the page has more
     // capabilities to test.
     assertEquals('Diagnostics', page.$$('#header').textContent);
+  });
+});
+
+suite('FakeMojoProviderTest', () => {
+  test('SettingGettingTestProvider', () => {
+    // TODO(zentaro): Replace with fake when built.
+    let fake_provider =
+        /** @type {SystemDataProviderInterface} */ (new Object());
+    setSystemDataProviderForTesting(fake_provider);
+    assertEquals(fake_provider, getSystemDataProvider());
   });
 });
