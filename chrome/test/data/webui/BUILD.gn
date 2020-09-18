@@ -222,12 +222,6 @@ if (include_js_tests) {
       "$root_gen_dir/chrome/test/data/webui/find_shortcut_behavior_test.m.js",
       "$root_gen_dir/chrome/test/data/webui/mock_controller.m.js",
       "$root_gen_dir/chrome/test/data/webui/mock_timer.m.js",
-      "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/fake_nearby_contact_manager.m.js",
-      "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/fake_nearby_share_settings.m.js",
-      "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_contact_visibility_test.m.js",
-      "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_onboarding_page_test.m.js",
-      "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_page_template_test.m.js",
-      "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_visibility_page_test.m.js",
       "$root_gen_dir/chrome/test/data/webui/resources/list_property_update_behavior_tests.m.js",
       "$root_gen_dir/chrome/test/data/webui/settings/fake_input_method_private.m.js",
       "$root_gen_dir/chrome/test/data/webui/settings/fake_language_settings_private.m.js",
@@ -281,6 +275,12 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/network/network_select_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/network/network_siminfo_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_searchable_drop_down_tests.m.js",
+        "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/fake_nearby_contact_manager.m.js",
+        "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/fake_nearby_share_settings.m.js",
+        "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_contact_visibility_test.m.js",
+        "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_onboarding_page_test.m.js",
+        "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_page_template_test.m.js",
+        "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_visibility_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/ambient_mode_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/bluetooth_page_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/date_time_page_tests.m.js",
@@ -427,10 +427,13 @@ group("modulize") {
     "./cr_components:modulize",
     "./cr_components/chromeos:modulize",
     "./cr_elements:modulize",
-    "./nearby_share/shared:modulize",
     "./resources:modulize",
     "./settings:modulize",
   ]
+
+  if (is_chromeos) {
+    deps += [ "./nearby_share/shared:modulize" ]
+  }
 }
 
 js_modulizer("modulize_local") {
@@ -453,8 +456,6 @@ group("closure_compile") {
     "cr_components:closure_compile",
     "cr_elements:closure_compile",
     "inline_login:closure_compile",
-    "nearby_share:closure_compile",
-    "nearby_share/shared:closure_compile",
     "new_tab_page:closure_compile",
     "print_preview:closure_compile",
     "read_later:closure_compile",
@@ -468,6 +469,8 @@ group("closure_compile") {
     deps += [
       "chromeos/account_manager:closure_compile",
       "chromeos/gaia_action_buttons:closure_compile",
+      "nearby_share:closure_compile",
+      "nearby_share/shared:closure_compile",
     ]
   }
   if (enable_tab_search) {

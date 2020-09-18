@@ -4,6 +4,8 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+assert(is_chromeos, "Nearby Share is CrOS only")
+
 mojom("mojom") {
   sources = [ "nearby_share.mojom" ]
 
