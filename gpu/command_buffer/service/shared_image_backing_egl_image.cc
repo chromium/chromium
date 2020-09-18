@@ -355,7 +355,7 @@ void SharedImageBackingEglImage::MarkForDestruction() {
   AutoLock auto_lock(this);
   DCHECK(!have_context() || created_on_context_ == gl::g_current_gl_context);
 
-  if (!have_context())
+  if (source_texture_holder_ && !have_context())
     source_texture_holder_->MarkContextLost();
   source_texture_holder_.reset();
 }
