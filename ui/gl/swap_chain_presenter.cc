@@ -133,7 +133,7 @@ const char* DxgiFormatToString(DXGI_FORMAT format) {
       return "NV12";
     default:
       NOTREACHED();
-      return nullptr;
+      return "UNKNOWN";
   }
 }
 
