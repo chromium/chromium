@@ -4,14 +4,20 @@
 
 #include "pdf/ppapi_migration/url_loader.h"
 
+#include <stddef.h>
+
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/test/mock_callback.h"
 #include "net/base/net_errors.h"
 #include "pdf/ppapi_migration/callback.h"
@@ -19,6 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
+#include "third_party/blink/public/platform/web_http_header_visitor.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
@@ -39,8 +46,23 @@ using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::ReturnNull;
 using ::testing::SaveArg;
+using ::testing::UnorderedElementsAreArray;
 
 constexpr base::span<const char> kFakeData = "fake data";
+
+size_t GetRequestHeaderCount(const blink::WebURLRequest& request) {
+  struct : public blink::WebHTTPHeaderVisitor {
+    void VisitHeader(const blink::WebString& name,
+                     const blink::WebString& value) override {
+      ++count;
+    }
+
+    size_t count = 0;
+  } counting_header_visitor;
+
+  request.VisitHttpHeaderFields(&counting_header_visitor);
+  return counting_header_visitor.count;
+}
 
 blink::WebURLError MakeWebURLError(int reason) {
   return blink::WebURLError(reason, GURL());
@@ -143,6 +165,7 @@ TEST_F(BlinkUrlLoaderTest, Open) {
   EXPECT_FALSE(saved_options_.grant_universal_access);
   EXPECT_EQ(GURL("http://example.com/fake.pdf"), GURL(saved_request_.Url()));
   EXPECT_EQ("FAKE", saved_request_.HttpMethod().Ascii());
+  EXPECT_EQ(0u, GetRequestHeaderCount(saved_request_));
   EXPECT_EQ(blink::mojom::RequestContextType::PLUGIN,
             saved_request_.GetRequestContext());
   EXPECT_EQ(network::mojom::RequestDestination::kEmbed,
@@ -167,6 +190,24 @@ TEST_F(BlinkUrlLoaderTest, OpenWithFailingCreateAssociatedURLLoader) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
 }
 
+TEST_F(BlinkUrlLoaderTest, OpenWithHeaders) {
+  UrlRequest request;
+  request.headers = base::JoinString(
+      {
+          "Content-Length: 123",
+          "Content-Type: application/pdf",
+          "Non-ASCII-Value: 🙃",
+      },
+      "\n");
+  loader_->Open(request, mock_callback_.Get());
+
+  EXPECT_EQ(3u, GetRequestHeaderCount(saved_request_));
+  EXPECT_EQ("123", saved_request_.HttpHeaderField("Content-Length").Utf8());
+  EXPECT_EQ("application/pdf",
+            saved_request_.HttpHeaderField("Content-Type").Utf8());
+  EXPECT_EQ("🙃", saved_request_.HttpHeaderField("Non-ASCII-Value").Utf8());
+}
+
 TEST_F(BlinkUrlLoaderTest, DidReceiveResponse) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
   EXPECT_CALL(mock_callback_, Run(PP_OK));
@@ -176,6 +217,26 @@ TEST_F(BlinkUrlLoaderTest, DidReceiveResponse) {
   loader_->DidReceiveResponse(response);
 
   EXPECT_EQ(204, loader_->response().status_code);
+  EXPECT_EQ("", loader_->response().headers);
+}
+
+TEST_F(BlinkUrlLoaderTest, DidReceiveResponseWithHeaders) {
+  loader_->Open(UrlRequest(), mock_callback_.Get());
+
+  blink::WebURLResponse response;
+  response.AddHttpHeaderField("Content-Length", "123");
+  response.AddHttpHeaderField("Content-Type", "application/pdf");
+  response.AddHttpHeaderField("Non-ASCII-Value", "🙃");
+  loader_->DidReceiveResponse(response);
+
+  std::vector<std::string> split_headers =
+      base::SplitString(loader_->response().headers, "\n",
+                        base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  EXPECT_THAT(split_headers, UnorderedElementsAreArray({
+                                 "Content-Length: 123",
+                                 "Content-Type: application/pdf",
+                                 "Non-ASCII-Value: 🙃",
+                             }));
 }
 
 TEST_F(BlinkUrlLoaderTest, DidReceiveData) {

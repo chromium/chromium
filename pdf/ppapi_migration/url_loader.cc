@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -16,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_util.h"
 #include "pdf/ppapi_migration/callback.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/trusted/ppb_url_loader_trusted.h"
@@ -27,6 +29,7 @@
 #include "ppapi/cpp/url_response_info.h"
 #include "ppapi/cpp/var.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
+#include "third_party/blink/public/platform/web_http_header_visitor.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
@@ -37,6 +40,29 @@
 #include "url/gurl.h"
 
 namespace chrome_pdf {
+
+namespace {
+
+// Taken from `content/renderer/pepper/url_response_info_util.cc`.
+class HeadersToString final : public blink::WebHTTPHeaderVisitor {
+ public:
+  explicit HeadersToString(std::string& buffer_ref) : buffer_ref_(buffer_ref) {}
+
+  void VisitHeader(const blink::WebString& name,
+                   const blink::WebString& value) override {
+    if (!buffer_ref_.empty())
+      buffer_ref_.append("\n");
+    buffer_ref_.append(name.Utf8());
+    buffer_ref_.append(": ");
+    buffer_ref_.append(value.Utf8());
+  }
+
+ private:
+  // Reference allows writing directly into `UrlResponse::headers`.
+  std::string& buffer_ref_;
+};
+
+}  // namespace
 
 UrlRequest::UrlRequest() = default;
 UrlRequest::UrlRequest(const UrlRequest& other) = default;
@@ -82,6 +108,15 @@ void BlinkUrlLoader::Open(const UrlRequest& request, ResultCallback callback) {
   blink::WebURLRequest blink_request;
   blink_request.SetUrl(GURL(request.url));
   blink_request.SetHttpMethod(blink::WebString::FromASCII(request.method));
+
+  if (!request.headers.empty()) {
+    net::HttpUtil::HeadersIterator it(request.headers.begin(),
+                                      request.headers.end(), "\n\r");
+    while (it.GetNext()) {
+      blink_request.AddHttpHeaderField(blink::WebString::FromUTF8(it.name()),
+                                       blink::WebString::FromUTF8(it.values()));
+    }
+  }
 
   blink_request.SetRequestContext(blink::mojom::RequestContextType::PLUGIN);
   blink_request.SetRequestDestination(
@@ -150,7 +185,11 @@ void BlinkUrlLoader::DidSendData(uint64_t bytes_sent,
 void BlinkUrlLoader::DidReceiveResponse(const blink::WebURLResponse& response) {
   DCHECK_EQ(state_, LoadingState::kOpening);
 
+  // Modeled on `content::DataFromWebURLResponse()`.
   mutable_response().status_code = response.HttpStatusCode();
+
+  HeadersToString headers_to_string(mutable_response().headers);
+  response.VisitHttpHeaderFields(&headers_to_string);
 
   state_ = LoadingState::kStreamingData;
   std::move(open_callback_).Run(PP_OK);
@@ -278,11 +317,11 @@ void PepperUrlLoader::Open(const UrlRequest& request, ResultCallback callback) {
   if (request.ignore_redirects)
     pp_request.SetFollowRedirects(false);
 
-  if (request.custom_referrer_url.has_value())
-    pp_request.SetCustomReferrerURL(request.custom_referrer_url.value());
+  if (!request.custom_referrer_url.empty())
+    pp_request.SetCustomReferrerURL(request.custom_referrer_url);
 
-  if (request.headers.has_value())
-    pp_request.SetHeaders(request.headers.value());
+  if (!request.headers.empty())
+    pp_request.SetHeaders(request.headers);
 
   if (!request.body.empty())
     pp_request.AppendDataToBody(request.body.data(), request.body.size());
@@ -324,7 +363,7 @@ void PepperUrlLoader::DidOpen(ResultCallback callback, int32_t result) {
   if (headers_var.is_string()) {
     mutable_response().headers = headers_var.AsString();
   } else {
-    mutable_response().headers.reset();
+    mutable_response().headers.clear();
   }
 
   std::move(callback).Run(result);

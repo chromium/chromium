@@ -14,7 +14,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "pdf/ppapi_migration/callback.h"
 #include "ppapi/cpp/instance_handle.h"
 #include "ppapi/cpp/url_loader.h"
@@ -47,10 +46,10 @@ struct UrlRequest final {
   bool ignore_redirects = false;
 
   // Custom referrer URL.
-  base::Optional<std::string> custom_referrer_url;
+  std::string custom_referrer_url;
 
   // HTTP headers as a single string of `\n`-delimited key-value pairs.
-  base::Optional<std::string> headers;
+  std::string headers;
 
   // Request body.
   std::string body;
@@ -69,7 +68,7 @@ struct UrlResponse final {
   int32_t status_code = 0;
 
   // HTTP headers as a single string of `\n`-delimited key-value pairs.
-  base::Optional<std::string> headers;
+  std::string headers;
 };
 
 // Abstraction for a Blink or Pepper URL loader.

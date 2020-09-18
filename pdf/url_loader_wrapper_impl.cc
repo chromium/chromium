@@ -294,7 +294,7 @@ void URLLoaderWrapperImpl::DidRead(ResultCallback callback, int32_t result) {
 }
 
 void URLLoaderWrapperImpl::SetHeadersFromLoader() {
-  SetResponseHeaders(url_loader_->response().headers.value_or(""));
+  SetResponseHeaders(url_loader_->response().headers);
 }
 
 }  // namespace chrome_pdf
