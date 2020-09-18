@@ -4,7 +4,6 @@
 
 package org.chromium.weblayer;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.RemoteException;
@@ -422,16 +421,6 @@ public class Profile {
         public void downloadFailed(IClientDownload download) {
             StrictModeWorkaround.apply();
             mCallback.onDownloadFailed((Download) download);
-        }
-
-        @Override
-        // Deprecated, implementations past 83 call IWebLayerClient.createIntent instead.
-        public Intent createIntent() {
-            StrictModeWorkaround.apply();
-            // Intent objects need to be created in the client library so they can refer to the
-            // broadcast receiver that will handle them. The broadcast receiver needs to be in the
-            // client library because it's referenced in the manifest.
-            return new Intent(WebLayer.getAppContext(), BroadcastReceiver.class);
         }
     }
 }

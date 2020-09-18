@@ -296,13 +296,7 @@ public final class DownloadImpl extends IDownload.Stub {
     private Intent createIntent() {
         // Because the intent is using classes from the implementation's class loader,
         // we need to use the constructor which doesn't take the app's context.
-        if (WebLayerFactoryImpl.getClientMajorVersion() >= 83) return WebLayerImpl.createIntent();
-
-        try {
-            return mClient.createIntent();
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
+        return WebLayerImpl.createIntent();
     }
 
     public void downloadStarted() {
