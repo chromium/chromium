@@ -116,14 +116,14 @@
           <template is="dom-if" if="[[pdfAnnotationsEnabled]]">
             <cr-icon-button id="annotate" iron-icon="pdf:create"
                 disabled="[[!annotationAvailable]]" on-click="toggleAnnotation"
-                aria-label$="$i18n{tooltipAnnotate}"
+                aria-label="$i18n{tooltipAnnotate}"
                 title="$i18n{tooltipAnnotate}"></cr-icon-button>
           </template>
 </if>
 
           <cr-icon-button id="rotate-right" iron-icon="pdf:rotate-right"
               disabled="[[annotationMode]]" on-click="rotateRight"
-              aria-label$="$i18n{tooltipRotateCW}"
+              aria-label="$i18n{tooltipRotateCW}"
               title="$i18n{tooltipRotateCW}"></cr-icon-button>
           <viewer-download-controls id="downloads"
               has-edits="[[hasEdits]]"
@@ -134,7 +134,7 @@
 
           <cr-icon-button id="print" iron-icon="cr:print" on-click="print"
               hidden="[[!printingEnabled]]" title="$i18n{tooltipPrint}"
-              aria-label$="$i18n{tooltipPrint}"></cr-icon-button>
+              aria-label="$i18n{tooltipPrint}"></cr-icon-button>
 
           <viewer-toolbar-dropdown id="bookmarks"
                                    selected

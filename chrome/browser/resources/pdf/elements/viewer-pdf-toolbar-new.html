@@ -164,10 +164,10 @@
     width: 16px;
   }
 </style>
-<!-- TODO(dpapad): Add aria-label and title for all buttons -->
 <div id="toolbar">
   <div id="start">
     <cr-icon-button id="sidenavToggle" iron-icon="cr20:menu"
+        title="$i18n{menu}" aria-label="$i18n{menu}"
 <if expr="chromeos">
         disabled="[[annotationMode]]"
 </if>
@@ -180,27 +180,30 @@
     </viewer-page-selector>
     <span id="zoom-controls">
       <cr-icon-button iron-icon="pdf:remove" title="$i18n{tooltipZoomOut}"
-          on-click="onZoomOutClick_">
+          aria-label="$i18n{tooltipZoomOut}" on-click="onZoomOutClick_">
       </cr-icon-button>
       <input type="text" value="100%" on-input="onZoomInput_"
           on-pointerup="onZoomInputPointerup_"
           on-blur="onZoomInputBlur_">
       </input>
       <cr-icon-button iron-icon="pdf:add" title="$i18n{tooltipZoomIn}"
-          on-click="onZoomInClick_">
+          aria-label="$i18n{tooltipZoomIn}" on-click="onZoomInClick_">
       </cr-icon-button>
     </span>
     <cr-icon-button id="fit" iron-icon="[[fitToButtonIcon_]]"
         title="[[getFitToButtonTooltip_('$i18nPolymer{tooltipFitToPage}',
                                         '$i18nPolymer{tooltipFitToWidth}',
                                         fittingType_)]]"
+        aria-label="[[getFitToButtonTooltip_('$i18nPolymer{tooltipFitToPage}',
+                                             '$i18nPolymer{tooltipFitToWidth}',
+                                             fittingType_)]]"
         on-click="onFitToButtonClick_">
     </cr-icon-button>
     <cr-icon-button iron-icon="pdf:rotate-left"
 <if expr="chromeos">
         disabled="[[annotationMode]]"
 </if>
-        aria-label$="$i18n{tooltipRotateCCW}" title="$i18n{tooltipRotateCCW}"
+        aria-label="$i18n{tooltipRotateCCW}" title="$i18n{tooltipRotateCCW}"
         on-click="onRotateClick_">
     </cr-icon-button>
   </div>
@@ -209,7 +212,7 @@
     <template is="dom-if" if="[[pdfAnnotationsEnabled]]">
       <cr-icon-button id="annotate" iron-icon="pdf:create"
           disabled="[[!annotationAvailable]]" on-click="toggleAnnotation"
-          aria-label$="$i18n{tooltipAnnotate}"
+          aria-label="$i18n{tooltipAnnotate}"
           title="$i18n{tooltipAnnotate}"></cr-icon-button>
     </template>
   </if>
@@ -220,10 +223,12 @@
         pdf-form-save-enabled="[[pdfFormSaveEnabled]]">
     </viewer-download-controls>
     <cr-icon-button id="print" iron-icon="cr:print"
-        aria-label$="$i18n{tooltipPrint}" hidden="[[!printingEnabled]]"
-        title="$i18n{tooltipPrint}" on-click="onPrintClick_"></cr-icon-button>
-    <cr-icon-button id="more"
-        iron-icon="cr:more-vert" on-click="onMoreClick_"></cr-icon-button>
+        hidden="[[!printingEnabled]]" title="$i18n{tooltipPrint}"
+        aria-label="$i18n{tooltipPrint}" on-click="onPrintClick_">
+    </cr-icon-button>
+    <cr-icon-button id="more" iron-icon="cr:more-vert"
+        title="$i18n{moreActions}" aria-label="$i18n{moreActions}"
+        on-click="onMoreClick_"></cr-icon-button>
   </div>
 </div>
 <paper-progress id="progress" value="[[loadProgress]]" hidden="[[!loading_]]">

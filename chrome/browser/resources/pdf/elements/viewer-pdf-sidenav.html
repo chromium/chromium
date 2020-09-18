@@ -69,14 +69,17 @@
 <div id="icons" hidden$="[[!bookmarks.length]]">
   <div class$="button-wrapper [[thumbnailButtonClass_(thumbnailView_)]]">
     <cr-icon-button iron-icon="pdf:thumbnails" role="tab"
+        title="$i18n{tooltipThumbnails}" aria-label="$i18n{tooltipThumbnails}"
         aria-selected$="[[getAriaSelectedThumbnails_(thumbnailView_)]]"
-        title="$i18n{tooltipThumbnails}" on-click="onThumbnailClick_">
+        on-click="onThumbnailClick_">
     </cr-icon-button>
   </div>
   <div class$="button-wrapper [[outlineButtonClass_(thumbnailView_)]]">
     <cr-icon-button iron-icon="pdf:doc-outline" role="tab"
+        title="$i18n{tooltipDocumentOutline}"
+        aria-label="$i18n{tooltipDocumentOutline}"
         aria-selected$="[[getAriaSelectedOutline_(thumbnailView_)]]"
-        title="$i18n{tooltipDocumentOutline}" on-click="onOutlineClick_">
+        on-click="onOutlineClick_">
     </cr-icon-button>
   </div>
 </div>
