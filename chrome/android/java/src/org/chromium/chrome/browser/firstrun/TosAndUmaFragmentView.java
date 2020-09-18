@@ -76,7 +76,10 @@ public class TosAndUmaFragmentView extends FrameLayout {
         mShadow = findViewById(R.id.shadow);
 
         // Set up shadow.
+        // Needed when scrolling to/away from the bottom of the ScrollView.
         mScrollView.getViewTreeObserver().addOnScrollChangedListener(this::updateShadowVisibility);
+        // Needed when other elements are added / removed from ScrollView.
+        mScrollView.getViewTreeObserver().addOnGlobalLayoutListener(this::updateShadowVisibility);
 
         // Cache resource dimensions that used in #onMeasure.
         mImageBottomMargin = getResources().getDimensionPixelSize(R.dimen.fre_image_bottom_margin);
