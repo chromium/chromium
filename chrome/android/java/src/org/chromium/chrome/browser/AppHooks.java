@@ -262,13 +262,6 @@ public abstract class AppHooks {
                 new AppRestrictionsProvider(ContextUtils.getApplicationContext()));
     }
 
-    // TODO(zmin): Delete once the internal code is migrated.
-    public void registerPolicyProviders(
-            org.chromium.policy.CombinedPolicyProvider combinedProvider) {
-        combinedProvider.registerProvider(
-                new AppRestrictionsProvider(ContextUtils.getApplicationContext()));
-    }
-
     /**
      * TODO(crbug.com/1102812) : Remove this method after updating the downstream to use the new
      * method {@link getOfflinePagesCctAllowlist} instead.

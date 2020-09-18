@@ -27,9 +27,6 @@ android_library("policy_java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   sources = _jni_sources + [
-              "java/src/org/chromium/policy/AppRestrictionsProvider.java",
-              "java/src/org/chromium/policy/CombinedPolicyProvider.java",
-              "java/src/org/chromium/policy/PolicyProvider.java",
               "java/src/org/chromium/components/policy/AbstractAppRestrictionsProvider.java",
               "java/src/org/chromium/components/policy/AppRestrictionsProvider.java",
               "java/src/org/chromium/components/policy/PolicyProvider.java",
