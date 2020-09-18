@@ -494,12 +494,13 @@ PhysicalRect NGPhysicalFragment::ScrollableOverflowForPropagation(
     const NGPhysicalBoxFragment& container,
     TextHeightType height_type) const {
   PhysicalRect overflow = ScrollableOverflow(container, height_type);
-  AdjustScrollableOverflowForPropagation(container, &overflow);
+  AdjustScrollableOverflowForPropagation(container, height_type, &overflow);
   return overflow;
 }
 
 void NGPhysicalFragment::AdjustScrollableOverflowForPropagation(
     const NGPhysicalBoxFragment& container,
+    TextHeightType height_type,
     PhysicalRect* overflow) const {
   DCHECK(!IsLineBox());
   if (!IsCSSBox())
@@ -508,6 +509,9 @@ void NGPhysicalFragment::AdjustScrollableOverflowForPropagation(
     NOTREACHED();
     return;
   }
+
+  if (height_type == TextHeightType::kNormalHeight)
+    overflow->Unite({{}, Size()});
 
   const LayoutObject* layout_object = GetLayoutObject();
   DCHECK(layout_object);

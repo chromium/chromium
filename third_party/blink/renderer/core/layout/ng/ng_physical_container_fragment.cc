@@ -245,7 +245,7 @@ void NGPhysicalContainerFragment::AddScrollableOverflowForInlineChild(
             container, container_style, line, has_hanging, descendants,
             height_type, &child_scroll_overflow);
         child_box->AdjustScrollableOverflowForPropagation(
-            container, &child_scroll_overflow);
+            container, height_type, &child_scroll_overflow);
       } else {
         child_scroll_overflow =
             child_box->ScrollableOverflowForPropagation(container, height_type);
