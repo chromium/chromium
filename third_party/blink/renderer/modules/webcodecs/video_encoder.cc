@@ -129,16 +129,19 @@ int32_t VideoEncoder::encodeQueueSize() {
 std::unique_ptr<VideoEncoder::ParsedConfig> VideoEncoder::ParseConfig(
     const VideoEncoderConfig* config,
     ExceptionState& exception_state) {
+  constexpr int kMaxSupportedFrameSize = 8000;
   auto parsed = std::make_unique<ParsedConfig>();
 
   parsed->options.height = config->height();
-  if (parsed->options.height == 0) {
+  if (parsed->options.height == 0 ||
+      parsed->options.height > kMaxSupportedFrameSize) {
     exception_state.ThrowTypeError("Invalid height.");
     return nullptr;
   }
 
   parsed->options.width = config->width();
-  if (parsed->options.width == 0) {
+  if (parsed->options.width == 0 ||
+      parsed->options.width > kMaxSupportedFrameSize) {
     exception_state.ThrowTypeError("Invalid width.");
     return nullptr;
   }
