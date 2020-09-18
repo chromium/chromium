@@ -3688,10 +3688,6 @@ void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
   DCHECK(!IsOutOfProcessNetworkService() ||
          network_service_disconnect_handler_holder_.is_bound());
 
-  // We use the last committed Origin and ClientSecurityState. If the caller
-  // wanted a factory associated to a navigation about to commit, the params
-  // generated won't be correct. There is no good way of fixing this before
-  // RenderDocumentHost (ie swapping RenderFrameHost on each navigation).
   mojo::PendingRemote<network::mojom::URLLoaderFactory> default_factory_remote;
   bool bypass_redirect_checks = false;
   if (recreate_default_url_loader_factory_after_network_service_crash_) {
