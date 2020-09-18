@@ -55,7 +55,7 @@ source_set("restoration_agent") {
     "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
-    "//ios/chrome/browser/metrics",
+    "//ios/chrome/browser/metrics:previous_session_info",
     "//ios/chrome/browser/ui/util:multiwindow_util",
     "//ios/chrome/browser/web:page_placeholder",
     "//ios/chrome/browser/web_state_list",

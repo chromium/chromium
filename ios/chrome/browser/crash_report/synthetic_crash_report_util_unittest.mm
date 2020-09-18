@@ -15,6 +15,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
+#import "ios/chrome/browser/metrics/previous_session_info_private.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -26,6 +27,12 @@ typedef PlatformTest SyntheticCrashReportUtilTest;
 // Tests that CreateSyntheticCrashReportForUte correctly generates config and
 // minidump files.
 TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+  const NSInteger kAvailableStorage = 256;
+  PreviousSessionInfo* previous_session = [PreviousSessionInfo sharedInstance];
+  previous_session.availableDeviceStorage = kAvailableStorage;
+  previous_session.didSeeMemoryWarningShortlyBeforeTerminating = YES;
+
   // Create crash report.
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -81,7 +88,7 @@ TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
 
   // Verify config file content. Config file has the following format:
   // Key1\nValue1Length\nValue1\n...KeyN\nValueNLength\nValueN
-  ASSERT_EQ(27U, config_lines.size())
+  ASSERT_EQ(33U, config_lines.size())
       << "<content>" << config_content << "</content>";
 
   EXPECT_EQ("MinidumpDir", config_lines[0]);
@@ -120,10 +127,22 @@ TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
             config_lines[22]);
   EXPECT_EQ(temp_dir.GetPath().value(), config_lines[23]);
 
-  EXPECT_EQ("BreakpadServerParameterPrefix_platform", config_lines[24]);
+  EXPECT_EQ("BreakpadServerParameterPrefix_free_disk_in_kb", config_lines[24]);
+  EXPECT_EQ(
+      base::NumberToString(base::NumberToString(kAvailableStorage).size()),
+      config_lines[25]);
+  EXPECT_EQ(base::NumberToString(kAvailableStorage), config_lines[26]);
+
+  EXPECT_EQ("BreakpadServerParameterPrefix_memory_warning_in_progress",
+            config_lines[27]);
+  const char kYesString[] = "yes";
+  EXPECT_EQ(base::NumberToString(strlen(kYesString)), config_lines[28]);
+  EXPECT_EQ(kYesString, config_lines[29]);
+
+  EXPECT_EQ("BreakpadServerParameterPrefix_platform", config_lines[30]);
   EXPECT_EQ(base::NumberToString(base::SysInfo::HardwareModelName().size()),
-            config_lines[25]);
-  EXPECT_EQ(base::SysInfo::HardwareModelName(), config_lines[26]);
+            config_lines[31]);
+  EXPECT_EQ(base::SysInfo::HardwareModelName(), config_lines[32]);
 
   // Read minidump file. It must be empty as there is no stack trace, but
   // Breakpad will not upload config without minidump file.
