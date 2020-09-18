@@ -66,6 +66,10 @@ const char* kCommonWords[] = {"shop",  "jobs",     "live",   "info",  "study",
                               "ideal", "research", "france", "free",  "mobile",
                               "sky",   "ask"};
 
+// What separators can be used to separate tokens in target embedding spoofs?
+// e.g. www-google.com.example.com uses "-" (www-google) and "." (google.com).
+const char kTargetEmbeddingSeparators[] = "-.";
+
 bool SkeletonsMatch(const url_formatter::Skeletons& skeletons1,
                     const url_formatter::Skeletons& skeletons2) {
   DCHECK(!skeletons1.empty());
@@ -182,7 +186,8 @@ void RecordEvent(NavigationSuggestionEvent event) {
 // StringPieces.
 std::vector<base::StringPiece> SplitDomainWithouteTLDIntoTokens(
     const std::string& host_without_etld) {
-  return base::SplitStringPiece(host_without_etld, "-.", base::TRIM_WHITESPACE,
+  return base::SplitStringPiece(host_without_etld, kTargetEmbeddingSeparators,
+                                base::TRIM_WHITESPACE,
                                 base::SPLIT_WANT_NONEMPTY);
 }
 
@@ -595,11 +600,29 @@ TargetEmbeddingType GetTargetEmbeddingType(
     // This check happens first so that we can exclude invalid eTLD+1s next.
     std::string embedded_target = GetMatchingTopDomainWithoutSeparators(
         hostname_tokens_without_etld[end - 1]);
-    if (!embedded_target.empty() &&
-        !IsAllowedToBeEmbedded(etld_check_dominfo, etld_check_span,
-                               in_target_allowlist)) {
-      *safe_hostname = embedded_target;
-      return TargetEmbeddingType::kInterstitial;
+    if (!embedded_target.empty()) {
+      // Extract the full possibly-spoofed domain. To get this, we take the
+      // hostname up until this point, strip off the no-separator bit (e.g.
+      // googlecom) and then re-add the the separated version (e.g. google.com).
+      auto spoofed_domain =
+          etld_check_host.substr(
+              0, etld_check_host.length() -
+                     hostname_tokens_without_etld[end - 1].length()) +
+          embedded_target;
+      const auto no_separator_tokens = base::SplitStringPiece(
+          spoofed_domain, kTargetEmbeddingSeparators, base::TRIM_WHITESPACE,
+          base::SPLIT_WANT_NONEMPTY);
+      auto no_separator_dominfo = GetDomainInfo(embedded_target);
+
+      // Only flag on domains that are long enough, don't use common words, and
+      // aren't target-allowlisted.
+      if (no_separator_dominfo.domain_without_registry.length() >
+              kMinE2LDLengthForTargetEmbedding &&
+          !IsAllowedToBeEmbedded(no_separator_dominfo, no_separator_tokens,
+                                 in_target_allowlist)) {
+        *safe_hostname = embedded_target;
+        return TargetEmbeddingType::kInterstitial;
+      }
     }
 
     // Exclude otherwise-invalid eTLDs.
