@@ -77,6 +77,7 @@ class BASE_EXPORT ThreadCache {
   ALWAYS_INLINE void* GetFromCache(size_t bucket_index);
 
   // Empties the cache.
+  // The Partition lock must *not* be held when calling this.
   void Purge();
 
   size_t bucket_count_for_testing(size_t index) const {

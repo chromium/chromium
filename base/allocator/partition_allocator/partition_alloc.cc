@@ -623,14 +623,16 @@ static void PartitionPurgeBucket(
 
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
-  ScopedGuard guard{lock_};
-  if (flags & PartitionPurgeDecommitEmptyPages)
-    DecommitEmptyPages();
-  if (flags & PartitionPurgeDiscardUnusedSystemPages) {
-    for (size_t i = 0; i < kNumBuckets; ++i) {
-      Bucket* bucket = &buckets[i];
-      if (bucket->slot_size >= kSystemPageSize)
-        PartitionPurgeBucket(bucket);
+  {
+    ScopedGuard guard{lock_};
+    if (flags & PartitionPurgeDecommitEmptyPages)
+      DecommitEmptyPages();
+    if (flags & PartitionPurgeDiscardUnusedSystemPages) {
+      for (size_t i = 0; i < kNumBuckets; ++i) {
+        Bucket* bucket = &buckets[i];
+        if (bucket->slot_size >= kSystemPageSize)
+          PartitionPurgeBucket(bucket);
+      }
     }
   }
 
