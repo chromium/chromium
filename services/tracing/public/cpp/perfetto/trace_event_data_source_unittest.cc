@@ -36,6 +36,7 @@
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_interned_data_index.h"
 #include "third_party/perfetto/protos/perfetto/trace/clock_snapshot.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
@@ -1988,6 +1989,46 @@ TEST_F(TraceEventDataSourceTest, UserActionEvent) {
   ASSERT_TRUE(e_packet->track_event().has_chrome_user_event());
   EXPECT_EQ(e_packet->track_event().chrome_user_event().action_hash(),
             base::HashMetricName("Test_Action"));
+}
+
+namespace {
+
+struct InternedLogMessageBody
+    : public perfetto::TrackEventInternedDataIndex<
+          InternedLogMessageBody,
+          perfetto::protos::pbzero::InternedData::kLogMessageBodyFieldNumber,
+          std::string> {
+  static void Add(perfetto::protos::pbzero::InternedData* interned_data,
+                  size_t iid,
+                  const std::string& body) {
+    auto* msg = interned_data->add_log_message_body();
+    msg->set_iid(iid);
+    msg->set_body(body);
+  }
+};
+
+}  // namespace
+
+TEST_F(TraceEventDataSourceTest, TypedEventInterning) {
+  CreateTraceEventDataSource();
+
+  {
+    TRACE_EVENT("browser", "bar", [&](perfetto::EventContext ctx) {
+      size_t iid = InternedLogMessageBody::Get(&ctx, "Hello interned world!");
+      ctx.event()->set_log_message()->set_body_iid(iid);
+    });
+  }
+  size_t packet_index = ExpectStandardPreamble();
+  auto* e_packet = producer_client()->GetFinalizedPacket(packet_index++);
+
+  ExpectEventCategories(e_packet, {{1u, "browser"}});
+  ExpectEventNames(e_packet, {{1u, "bar"}});
+  ASSERT_TRUE(e_packet->track_event().has_log_message());
+  ASSERT_TRUE(e_packet->has_interned_data());
+  EXPECT_EQ(e_packet->track_event().log_message().body_iid(),
+            e_packet->interned_data().log_message_body()[0].iid());
+  ASSERT_EQ("Hello interned world!",
+            e_packet->interned_data().log_message_body()[0].body());
 }
 
 // TODO(eseckler): Add startup tracing unittests.

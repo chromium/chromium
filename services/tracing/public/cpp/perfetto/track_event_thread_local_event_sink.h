@@ -152,6 +152,10 @@ class COMPONENT_EXPORT(TRACING_CPP) TrackEventThreadLocalEventSink
       interned_log_message_bodies_;
   InternedIndexesUpdates pending_interning_updates_;
 
+  // Track event interning state.
+  // TODO(skyostil): Merge the above interning indices into this.
+  perfetto::internal::TrackEventIncrementalState incremental_state_;
+
   std::vector<uint64_t> extra_emitted_track_descriptor_uuids_;
 
   static std::atomic<uint32_t> incremental_state_reset_id_;

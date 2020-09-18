@@ -271,14 +271,37 @@ TrackEventThreadLocalEventSink::AddTypedTraceEvent(
 
   // |pending_trace_packet_| will be finalized in OnTrackEventCompleted() after
   // the code in //base ran the typed trace point's argument function.
-  return base::trace_event::TrackEventHandle(track_event, this);
+  return base::trace_event::TrackEventHandle(track_event, &incremental_state_,
+                                             this);
 }
 
 void TrackEventThreadLocalEventSink::OnTrackEventCompleted() {
   DCHECK(pending_trace_packet_);
 
+  auto& serialized_interned_data = incremental_state_.serialized_interned_data;
   if (!pending_interning_updates_.empty()) {
-    EmitStoredInternedData(pending_trace_packet_->set_interned_data());
+    // TODO(skyostil): Combine |pending_interning_updates_| and
+    // |serialized_interned_data| so we don't need to merge the two here.
+    if (!serialized_interned_data.empty()) {
+      EmitStoredInternedData(serialized_interned_data.get());
+    } else {
+      EmitStoredInternedData(pending_trace_packet_->set_interned_data());
+    }
+  }
+
+  // When the track event is finalized (i.e., the context is destroyed), we
+  // should flush any newly seen interned data to the trace. The data has
+  // earlier been written to a heap allocated protobuf message
+  // (|serialized_interned_data|). Here we just need to flush it to the main
+  // trace.
+  if (!serialized_interned_data.empty()) {
+    auto ranges = serialized_interned_data.GetRanges();
+    pending_trace_packet_->AppendScatteredBytes(
+        perfetto::protos::pbzero::TracePacket::kInternedDataFieldNumber,
+        &ranges[0], ranges.size());
+
+    // Reset the message but keep one buffer allocated for future use.
+    serialized_interned_data.Reset();
   }
 
   pending_trace_packet_ = perfetto::TraceWriter::TracePacketHandle();
@@ -932,6 +955,8 @@ void TrackEventThreadLocalEventSink::DoResetIncrementalState(
   interned_source_locations_.ResetEmittedState();
   interned_log_message_bodies_.ResetEmittedState();
   extra_emitted_track_descriptor_uuids_.clear();
+  incremental_state_.interned_data_indices = {};
+  incremental_state_.seen_tracks.clear();
 
   // Reset the reference timestamp.
   base::TimeTicks timestamp;

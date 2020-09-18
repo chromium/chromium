@@ -3377,6 +3377,12 @@ test("base_unittests") {
         "trace_event/trace_event_android_unittest.cc",
       ]
     }
+
+    deps += [
+      "//third_party/perfetto/protos/perfetto/trace:lite",
+      "//third_party/perfetto/protos/perfetto/trace/interned_data:lite",
+      "//third_party/perfetto/protos/perfetto/trace/track_event:lite",
+    ]
   }
 
   # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.

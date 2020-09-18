@@ -7,6 +7,7 @@
 
 #include "base/base_export.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/internal/track_event_internal.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/track_event.pbzero.h"
 
 namespace base {
@@ -15,6 +16,7 @@ namespace trace_event {
 class BASE_EXPORT TrackEventHandle {
  public:
   using TrackEvent = perfetto::protos::pbzero::TrackEvent;
+  using IncrementalState = perfetto::internal::TrackEventIncrementalState;
 
   class BASE_EXPORT CompletionListener {
    public:
@@ -28,11 +30,15 @@ class BASE_EXPORT TrackEventHandle {
   // into the event. Note that |listener| must outlive the TRACE_EVENT call,
   // i.e. cannot be destroyed until OnTrackEventCompleted() is called. Ownership
   // of both TrackEvent and the listener remains with the caller.
-  TrackEventHandle(TrackEvent* event, CompletionListener* listener)
-      : event_(event), listener_(listener) {}
+  TrackEventHandle(TrackEvent* event,
+                   IncrementalState* incremental_state,
+                   CompletionListener* listener)
+      : event_(event),
+        incremental_state_(incremental_state),
+        listener_(listener) {}
 
   // Creates an invalid handle.
-  TrackEventHandle() : TrackEventHandle(nullptr, nullptr) {}
+  TrackEventHandle() : TrackEventHandle(nullptr, nullptr, nullptr) {}
 
   ~TrackEventHandle() {
     if (listener_)
@@ -44,8 +50,11 @@ class BASE_EXPORT TrackEventHandle {
   TrackEvent* operator->() const { return event_; }
   TrackEvent* get() const { return event_; }
 
+  IncrementalState* incremental_state() const { return incremental_state_; }
+
  private:
   TrackEvent* event_;
+  IncrementalState* incremental_state_;
   CompletionListener* listener_;
 };
 

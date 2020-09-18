@@ -113,7 +113,8 @@ static inline void AddTraceEvent(char phase,
   if (track)
     track_event->set_track_uuid(track.uuid);
 
-  argument_func(perfetto::EventContext(track_event.get()));
+  argument_func(perfetto::EventContext(track_event.get(),
+                                       track_event.incremental_state()));
 }
 
 template <
