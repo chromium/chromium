@@ -42,7 +42,11 @@ constexpr const multidevice::SoftwareFeature kAllSoftareFeatures[] = {
     multidevice::SoftwareFeature::kInstantTetheringHost,
     multidevice::SoftwareFeature::kInstantTetheringClient,
     multidevice::SoftwareFeature::kMessagesForWebHost,
-    multidevice::SoftwareFeature::kMessagesForWebClient};
+    multidevice::SoftwareFeature::kMessagesForWebClient,
+    multidevice::SoftwareFeature::kPhoneHubHost,
+    multidevice::SoftwareFeature::kPhoneHubClient,
+    multidevice::SoftwareFeature::kWifiSyncHost,
+    multidevice::SoftwareFeature::kWifiSyncClient};
 
 // Keys in the JSON representation of a log message.
 const char kLogMessageTextKey[] = "text";
