@@ -51,7 +51,8 @@
     style$="--theme-frame-color:[[profileThemeInfo.themeFrameColor]];
             --theme-text-color:[[profileThemeInfo.themeFrameTextColor]];">
   <cr-icon-button id="backButton" class="icon-arrow-back"
-      on-click="onClickBack_" aria-label="$i18n{backButtonLabel}">
+      on-click="onClickBack_" aria-label="$i18n{backButtonLabel}"
+      disabled="[[loadSigninInProgess_]]">
   </cr-icon-button>
   <div id="signinPromoBanner" class="banner"></div>
   <img class="avatar" src="[[profileThemeInfo.themeGenericAvatar]]">
@@ -62,11 +63,11 @@
 </div>
 <div id="actionContainer">
   <cr-button id="signInButton" class="action-button fade-in"
-      on-click="onSignInClick_">
+      on-click="onSignInClick_" disabled="[[loadSigninInProgess_]]">
     $i18n{signInButtonLabel}
   </cr-button>
   <button id="notNowButton" class="action-link fade-in"
-      on-click="onNotNowClick_">
+      on-click="onNotNowClick_" disabled="[[loadSigninInProgess_]]">
     $i18n{notNowButtonLabel}
   </button>
 </div>

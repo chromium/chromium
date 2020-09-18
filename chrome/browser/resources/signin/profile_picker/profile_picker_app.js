@@ -63,7 +63,8 @@ Polymer({
     }
 
     if (step == ProfileCreationSteps.LOAD_SIGNIN) {
-      this.manageProfilesBrowserProxy_.loadSignInProfileCreationFlow();
+      this.manageProfilesBrowserProxy_.loadSignInProfileCreationFlow(
+          this.newProfileThemeInfo.color);
       return;
     }
 

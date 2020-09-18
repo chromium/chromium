@@ -104,8 +104,12 @@ export class ManageProfilesBrowserProxy {
    */
   removeProfile(profilePath) {}
 
-  /** Loads Google sign in page.*/
-  loadSignInProfileCreationFlow() {}
+  /**
+   * Loads Google sign in page (and silently creates a profile with the
+   * specified color).
+   * @param {number} profileColor
+   */
+  loadSignInProfileCreationFlow(profileColor) {}
 
   /**
    * Creates local profile
@@ -167,8 +171,8 @@ export class ManageProfilesBrowserProxyImpl {
   }
 
   /** @override */
-  loadSignInProfileCreationFlow() {
-    chrome.send('loadSignInProfileCreationFlow');
+  loadSignInProfileCreationFlow(profileColor) {
+    chrome.send('loadSignInProfileCreationFlow', [profileColor]);
   }
 
   /** @override */

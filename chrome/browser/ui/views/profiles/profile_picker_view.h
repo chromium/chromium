@@ -46,6 +46,14 @@ class ProfilePickerView : public views::DialogDelegateView,
   // Creates and shows the dialog.
   void Init(ProfilePicker::EntryPoint entry_point, Profile* system_profile);
 
+  // Switches the layout to the sign-in flow (and creates a new profile)
+  void SwitchToSignIn(SkColor profile_color,
+                      base::OnceClosure switch_failure_callback);
+  // On creation success for the sign-in profile, it rebuilds the view.
+  void OnProfileForSigninCreated(SkColor profile_color,
+                                 Profile* new_profile,
+                                 Profile::CreateStatus status);
+
   // views::DialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
   void WindowClosing() override;
@@ -60,6 +68,10 @@ class ProfilePickerView : public views::DialogDelegateView,
   ScopedKeepAlive keep_alive_;
   views::WebView* web_view_ = nullptr;
   InitState initialized_ = InitState::kNotInitialized;
+
+  // Not null iff switching to sign-in is in progress.
+  base::OnceClosure switch_failure_callback_;
+
   base::WeakPtrFactory<ProfilePickerView> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProfilePickerView);

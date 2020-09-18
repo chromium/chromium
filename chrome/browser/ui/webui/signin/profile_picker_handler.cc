@@ -483,7 +483,16 @@ void ProfilePickerHandler::OnProfileStatisticsReceived(
 
 void ProfilePickerHandler::HandleLoadSignInProfileCreationFlow(
     const base::ListValue* args) {
-  // TODO(crbug.com/1063856): Add implementation.
+  DCHECK(args->GetList()[0].is_int());
+  SkColor profile_color = args->GetList()[0].GetInt();
+  ProfilePicker::SwitchToSignIn(
+      profile_color, base::BindOnce(&ProfilePickerHandler::OnLoadSigninFailed,
+                                    weak_factory_.GetWeakPtr()));
+}
+
+void ProfilePickerHandler::OnLoadSigninFailed() {
+  if (IsJavascriptAllowed())
+    FireWebUIListener("load-signin-failed", base::Value());
 }
 
 void ProfilePickerHandler::OnSwitchToProfileComplete(

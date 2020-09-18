@@ -24,7 +24,9 @@ suite('ProfilePickerAppTest', function() {
     browserProxy = new TestManageProfilesBrowserProxy();
     ManageProfilesBrowserProxyImpl.instance_ = browserProxy;
 
+    // Reset state of the test element.
     document.body.innerHTML = '';
+    navigateTo(Routes.MAIN);
     app = /** @type {!ProfilePickerAppElement} */ (
         document.createElement('profile-picker-app'));
     document.body.appendChild(app);
@@ -52,6 +54,8 @@ suite('ProfilePickerAppTest', function() {
               app.$$('profile-type-choice'));
           assertTrue(!!choice);
           choice.$$('#signInButton').click();
+          assertTrue(choice.$$('#signInButton').disabled);
+          assertTrue(choice.$$('#notNowButton').disabled);
           return browserProxy.whenCalled('loadSignInProfileCreationFlow');
         });
   });
