@@ -31,7 +31,8 @@ cr.define('settings', function() {
     DISPLAY_OFF_SLEEP: 0,
     DISPLAY_OFF: 1,
     DISPLAY_ON: 2,
-    OTHER: 3,
+    SHUT_DOWN: 3,
+    STOP_SESSION: 4,
   };
 
   /**

@@ -39,7 +39,8 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
     DISPLAY_OFF_SLEEP = 0,
     DISPLAY_OFF = 1,
     DISPLAY_ON = 2,
-    OTHER = 3,
+    SHUT_DOWN = 3,
+    STOP_SESSION = 4,
   };
 
   // WebUI message name and dictionary keys. Shared with tests.

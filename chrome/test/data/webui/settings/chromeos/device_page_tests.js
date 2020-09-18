@@ -1362,7 +1362,111 @@ cr.define('device_page_tests', function() {
           sendLid(settings.LidClosedBehavior.SUSPEND);
           expectTrue(lidClosedToggle.checked);
         });
-
+        test('display idle behavior for shut_down/stop_session', function() {
+          return new Promise(function(resolve) {
+                   // Send power management settings first.
+                   sendPowerManagementSettings(
+                       [
+                         settings.IdleBehavior.DISPLAY_OFF_SLEEP,
+                         settings.IdleBehavior.DISPLAY_OFF,
+                         settings.IdleBehavior.DISPLAY_ON,
+                         settings.IdleBehavior.SHUT_DOWN,
+                         settings.IdleBehavior.STOP_SESSION,
+                       ],
+                       [
+                         settings.IdleBehavior.DISPLAY_OFF_SLEEP,
+                         settings.IdleBehavior.DISPLAY_OFF,
+                         settings.IdleBehavior.DISPLAY_ON,
+                         settings.IdleBehavior.SHUT_DOWN,
+                         settings.IdleBehavior.STOP_SESSION,
+                       ],
+                       settings.IdleBehavior.SHUT_DOWN,
+                       settings.IdleBehavior.SHUT_DOWN,
+                       true /* acIdleManaged */, true /* batteryIdleManaged */,
+                       settings.LidClosedBehavior.DO_NOTHING,
+                       false /* lidClosedControlled */, true /* hasLid */);
+                   powerPage.async(resolve);
+                 })
+              .then(function() {
+                // Indicate battery presence so that battery idle settings
+                // box becomes visible. Default option should be selected
+                // properly even when battery idle settings box is stamped
+                // later.
+                const batteryStatus = {
+                  present: true,
+                  charging: false,
+                  calculating: false,
+                  percent: 50,
+                  statusText: '5 hours left',
+                };
+                cr.webUIListenerCallback(
+                    'battery-status-changed', Object.assign({}, batteryStatus));
+                return new Promise(function(resolve) {
+                  powerPage.async(resolve);
+                });
+              })
+              .then(function() {
+                const batteryIdleSelect =
+                    assert(powerPage.$$('#batteryIdleSelect'));
+                expectEquals(
+                    settings.IdleBehavior.SHUT_DOWN.toString(),
+                    batteryIdleSelect.value);
+                expectFalse(batteryIdleSelect.disabled);
+                const acIdleSelect = assert(powerPage.$$('#acIdleSelect'));
+                expectEquals(
+                    settings.IdleBehavior.SHUT_DOWN.toString(),
+                    acIdleSelect.value);
+                expectFalse(acIdleSelect.disabled);
+                expectEquals(
+                    loadTimeData.getString('powerLidSleepLabel'),
+                    lidClosedToggle.label);
+                expectFalse(lidClosedToggle.checked);
+                expectFalse(lidClosedToggle.isPrefEnforced());
+              })
+              .then(function() {
+                sendPowerManagementSettings(
+                    [
+                      settings.IdleBehavior.DISPLAY_OFF_SLEEP,
+                      settings.IdleBehavior.DISPLAY_OFF,
+                      settings.IdleBehavior.DISPLAY_ON,
+                      settings.IdleBehavior.SHUT_DOWN,
+                      settings.IdleBehavior.STOP_SESSION,
+                    ],
+                    [
+                      settings.IdleBehavior.DISPLAY_OFF_SLEEP,
+                      settings.IdleBehavior.DISPLAY_OFF,
+                      settings.IdleBehavior.DISPLAY_ON,
+                      settings.IdleBehavior.SHUT_DOWN,
+                      settings.IdleBehavior.STOP_SESSION,
+                    ],
+                    settings.IdleBehavior.SHUT_DOWN,
+                    settings.IdleBehavior.SHUT_DOWN, true /* acIdleManaged */,
+                    true /* batteryIdleManaged */,
+                    settings.LidClosedBehavior.DO_NOTHING,
+                    false /* lidClosedControlled */, true /* hasLid */);
+                return new Promise(function(resolve) {
+                  powerPage.async(resolve);
+                });
+              })
+              .then(function() {
+                const batteryIdleSelect =
+                    assert(powerPage.$$('#batteryIdleSelect'));
+                expectEquals(
+                    settings.IdleBehavior.SHUT_DOWN.toString(),
+                    batteryIdleSelect.value);
+                expectFalse(batteryIdleSelect.disabled);
+                const acIdleSelect = assert(powerPage.$$('#acIdleSelect'));
+                expectEquals(
+                    settings.IdleBehavior.SHUT_DOWN.toString(),
+                    acIdleSelect.value);
+                expectFalse(acIdleSelect.disabled);
+                expectEquals(
+                    loadTimeData.getString('powerLidSleepLabel'),
+                    lidClosedToggle.label);
+                expectFalse(lidClosedToggle.checked);
+                expectFalse(lidClosedToggle.isPrefEnforced());
+              });
+        });
         test('display idle and lid behavior', function() {
           return new Promise(function(resolve) {
                    // Send power management settings first.
@@ -1480,9 +1584,10 @@ cr.define('device_page_tests', function() {
                        'battery-status-changed',
                        Object.assign({}, batteryStatus));
                    sendPowerManagementSettings(
-                       [settings.IdleBehavior.OTHER],
-                       [settings.IdleBehavior.OTHER],
-                       settings.IdleBehavior.OTHER, settings.IdleBehavior.OTHER,
+                       [settings.IdleBehavior.SHUT_DOWN],
+                       [settings.IdleBehavior.SHUT_DOWN],
+                       settings.IdleBehavior.SHUT_DOWN,
+                       settings.IdleBehavior.SHUT_DOWN,
                        true /* acIdleManaged */, true /* batteryIdleManaged */,
                        settings.LidClosedBehavior.SHUT_DOWN,
                        true /* lidClosedControlled */, true /* hasLid */);
@@ -1492,9 +1597,10 @@ cr.define('device_page_tests', function() {
                 const batteryIdleSelect =
                     assert(powerPage.$$('#batteryIdleSelect'));
                 expectEquals(
-                    settings.IdleBehavior.OTHER.toString(), acIdleSelect.value);
+                    settings.IdleBehavior.SHUT_DOWN.toString(),
+                    acIdleSelect.value);
                 expectEquals(
-                    settings.IdleBehavior.OTHER.toString(),
+                    settings.IdleBehavior.SHUT_DOWN.toString(),
                     batteryIdleSelect.value);
                 expectTrue(acIdleSelect.disabled);
                 expectTrue(batteryIdleSelect.disabled);

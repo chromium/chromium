@@ -2577,8 +2577,11 @@
   <message name="IDS_SETTINGS_POWER_IDLE_DISPLAY_ON" desc="In Device Settings > Power, menu item for idle behavior that prevents the screen from turning off and prevents the device from sleeping. String must be short enough to fit in a drop-down menu.">
     Keep display on
   </message>
-  <message name="IDS_SETTINGS_POWER_IDLE_OTHER" desc="In Device Settings > Power, menu item for custom idle behavior.">
-    Other
+  <message name="IDS_SETTINGS_POWER_IDLE_SHUT_DOWN" desc="In Device Settings > Power, menu item for idle behavior that shuts the device down when idle.">
+    Shut down
+  </message>
+  <message name="IDS_SETTINGS_POWER_IDLE_STOP_SESSION" desc="In Device Settings > Power, menu item for idle behavior that stops the session when idle.">
+    Sign out
   </message>
   <message name="IDS_SETTINGS_POWER_LID_CLOSED_SLEEP_LABEL" desc="In Device Settings > Power, label for suspending when cover is closed.">
     Sleep when cover is closed

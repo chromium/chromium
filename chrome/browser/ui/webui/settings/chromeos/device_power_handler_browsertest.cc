@@ -269,15 +269,6 @@ IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SendIdleSettingForPrefChanges) {
   // Current battery idle behavior should be DISPLAY_ON.
   settings.current_battery_behavior = PowerHandler::IdleBehavior::DISPLAY_ON;
   EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
-
-  // Other idle actions should result in an "other" setting.
-  GetPrefs()->Set(ash::prefs::kPowerAcIdleAction,
-                  base::Value(PowerPolicyController::ACTION_STOP_SESSION));
-  // Current AC idle behavior should be OTHER.
-  settings.current_ac_behavior = PowerHandler::IdleBehavior::OTHER;
-  // Possible AC idle behaviors should include OTHER too.
-  settings.possible_ac_behaviors.insert(PowerHandler::IdleBehavior::OTHER);
-  EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
 }
 
 // Verifies that idle-related prefs when managed by enterpise policy are
@@ -298,15 +289,15 @@ IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SendManagedIdleSettingForPrefChanges) {
   EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
 
   // Set Enterpise policy that forces battery idle action to Shutdown. Only
-  // possible battery idle option visible to the user then should be OTHER and
-  // the default should also be set to same.
+  // possible battery idle option visible to the user then should be SHUT_DOWN
+  // and the default should also be set to same.
   SetPolicyForPolicyKey(
       &policy_map, policy::key::kIdleActionBattery,
       base::Value(chromeos::PowerPolicyController::ACTION_SHUT_DOWN));
   behaviors.clear();
-  behaviors.insert(PowerHandler::IdleBehavior::OTHER);
+  behaviors.insert(PowerHandler::IdleBehavior::SHUT_DOWN);
   settings.possible_battery_behaviors = behaviors;
-  settings.current_battery_behavior = PowerHandler::IdleBehavior::OTHER;
+  settings.current_battery_behavior = PowerHandler::IdleBehavior::SHUT_DOWN;
   settings.battery_idle_managed = true;
   EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
   // Erase battery idle action.

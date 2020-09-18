@@ -271,7 +271,7 @@ void PowerHandler::HandleSetIdleBehavior(const base::ListValue* args) {
       prefs_->SetInteger(screen_off_delay_pref, 0);
       prefs_->SetInteger(screen_lock_delay_pref, 0);
       break;
-    case IdleBehavior::OTHER:
+    default:
       NOTREACHED() << "Invalid idle behavior " << value;
   }
 }
@@ -440,15 +440,24 @@ PowerHandler::IdleBehaviorInfo PowerHandler::GetAllowedIdleBehaviors(
                             IsIdleManaged(power_source));
   }
 
-  // If idle action is managed and set to SHUT_DOWN/STOP_SESSION, only
-  // possible idle behaviour is other.
+  // If idle action is managed and set to STOP_SESSION, STOP_SESSION is the only
+  // possibility.
   if (prefs_->IsManagedPreference(idle_pref) &&
       (prefs_->GetInteger(idle_pref) ==
-           PowerPolicyController::ACTION_STOP_SESSION ||
-       prefs_->GetInteger(idle_pref) ==
-           PowerPolicyController::ACTION_SHUT_DOWN)) {
-    current_idle_behavior = IdleBehavior::OTHER;
-    possible_behaviors.insert(IdleBehavior::OTHER);
+       PowerPolicyController::ACTION_STOP_SESSION)) {
+    current_idle_behavior = IdleBehavior::STOP_SESSION;
+    possible_behaviors.insert(IdleBehavior::STOP_SESSION);
+    return IdleBehaviorInfo(possible_behaviors, current_idle_behavior,
+                            IsIdleManaged(power_source));
+  }
+
+  // If idle action is managed and set to SHUT_DOWN, SHUT_DOWN is the only
+  // possibility.
+  if (prefs_->IsManagedPreference(idle_pref) &&
+      (prefs_->GetInteger(idle_pref) ==
+       PowerPolicyController::ACTION_SHUT_DOWN)) {
+    current_idle_behavior = IdleBehavior::SHUT_DOWN;
+    possible_behaviors.insert(IdleBehavior::SHUT_DOWN);
     return IdleBehaviorInfo(possible_behaviors, current_idle_behavior,
                             IsIdleManaged(power_source));
   }
@@ -543,8 +552,10 @@ PowerHandler::IdleBehaviorInfo PowerHandler::GetAllowedIdleBehaviors(
                                  ? IdleBehavior::DISPLAY_OFF
                                  : IdleBehavior::DISPLAY_ON);
   } else {
-    current_idle_behavior = IdleBehavior::OTHER;
-    possible_behaviors.insert(IdleBehavior::OTHER);
+    NOTREACHED() << "Idle behavior is set to a enterprise-only value, but "
+                 << "the setting is not enterprise managed. Defaulting to "
+                 << "DISPLAY_OFF_SLEEP behavior.";
+    current_idle_behavior = IdleBehavior::DISPLAY_OFF_SLEEP;
   }
 
   return IdleBehaviorInfo(possible_behaviors, current_idle_behavior,

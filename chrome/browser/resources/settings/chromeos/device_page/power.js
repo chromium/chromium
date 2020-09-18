@@ -341,10 +341,16 @@ Polymer({
           name: loadTimeData.getString('powerIdleDisplayOn'),
           selected: selected
         };
-      case settings.IdleBehavior.OTHER:
+      case settings.IdleBehavior.SHUT_DOWN:
         return {
           value: idleBehavior,
-          name: loadTimeData.getString('powerIdleOther'),
+          name: loadTimeData.getString('powerIdleDisplayShutDown'),
+          selected: selected
+        };
+      case settings.IdleBehavior.STOP_SESSION:
+        return {
+          value: idleBehavior,
+          name: loadTimeData.getString('powerIdleDisplayStopSession'),
           selected: selected
         };
       default:
