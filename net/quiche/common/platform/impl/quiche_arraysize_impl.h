@@ -5,8 +5,8 @@
 #ifndef NET_QUICHE_COMMON_PLATFORM_IMPL_QUICHE_ARRAYSIZE_IMPL_H_
 #define NET_QUICHE_COMMON_PLATFORM_IMPL_QUICHE_ARRAYSIZE_IMPL_H_
 
-#include "base/stl_util.h"
+#include "third_party/abseil-cpp/absl/base/macros.h"
 
-#define QUICHE_ARRAYSIZE_IMPL(x) base::size(x)
+#define QUICHE_ARRAYSIZE_IMPL(x) ABSL_ARRAYSIZE(x)
 
 #endif  // NET_QUICHE_COMMON_PLATFORM_IMPL_QUICHE_ARRAYSIZE_IMPL_H_

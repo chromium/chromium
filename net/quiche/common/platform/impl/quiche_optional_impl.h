@@ -5,14 +5,14 @@
 #ifndef NET_QUICHE_COMMON_PLATFORM_IMPL_QUICHE_OPTIONAL_IMPL_H_
 #define NET_QUICHE_COMMON_PLATFORM_IMPL_QUICHE_OPTIONAL_IMPL_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace quiche {
 
 template <typename T>
-using QuicheOptionalImpl = base::Optional<T>;
+using QuicheOptionalImpl = absl::optional<T>;
 
-#define QUICHE_NULLOPT_IMPL base::nullopt
+#define QUICHE_NULLOPT_IMPL absl::nullopt
 
 }  // namespace quiche
 

@@ -13,38 +13,29 @@
 #include "base/containers/small_map.h"
 #include "net/third_party/quiche/src/common/simple_linked_hash_map.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
+#include "third_party/abseil-cpp/absl/container/node_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/node_hash_set.h"
 
 namespace quic {
 
 // The default hasher used by hash tables.
 template <typename Key>
-using QuicDefaultHasherImpl = std::hash<Key>;
-
-// TODO(mpw): s/std::unordered_map/gtl::node_hash_map/ once node_hash_map is
-//   PG3-compatible.
-template <typename Key,
-          typename Value,
-          typename Hash,
-          typename Eq =
-              typename std::unordered_map<Key, Value, Hash>::key_equal,
-          typename Alloc =
-              typename std::unordered_map<Key, Value, Hash>::allocator_type>
-using QuicUnorderedMapImpl = std::unordered_map<Key, Value, Hash, Eq, Alloc>;
+using QuicDefaultHasherImpl = absl::Hash<Key>;
 
 template <typename Key, typename Value, typename Hash>
-using QuicHashMapImpl = std::unordered_map<Key, Value, Hash>;
+using QuicUnorderedMapImpl = absl::node_hash_map<Key, Value, Hash>;
 
-// TODO(mpw): s/std::unordered_set/gtl::node_hash_set/ once node_hash_set is
-//   PG3-compatible.
-template <typename Key,
-          typename Hash,
-          typename Eq = typename std::unordered_set<Key, Hash>::key_equal,
-          typename Alloc =
-              typename std::unordered_set<Key, Hash>::allocator_type>
-using QuicUnorderedSetImpl = std::unordered_set<Key, Hash, Eq, Alloc>;
+template <typename Key, typename Value, typename Hash>
+using QuicHashMapImpl = absl::flat_hash_map<Key, Value, Hash>;
 
 template <typename Key, typename Hash>
-using QuicHashSetImpl = std::unordered_set<Key, Hash>;
+using QuicUnorderedSetImpl = absl::node_hash_set<Key, Hash>;
+
+template <typename Key, typename Hash>
+using QuicHashSetImpl = absl::flat_hash_set<Key, Hash>;
 
 // A map which offers insertion-ordered iteration.
 template <typename Key, typename Value, typename Hash>
