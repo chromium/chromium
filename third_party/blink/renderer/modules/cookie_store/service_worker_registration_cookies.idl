@@ -10,5 +10,5 @@
   RuntimeEnabled=CookieStoreWorker,
   ImplementedAs=ServiceWorkerRegistrationCookies
 ] partial interface ServiceWorkerRegistration {
-  readonly attribute CookieStoreManager cookies;
+  [SameObject] readonly attribute CookieStoreManager cookies;
 };
