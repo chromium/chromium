@@ -142,3 +142,51 @@ TEST_F('ChromeVoxTutorialTest', 'LessonSetTest', function() {
         .replay();
   });
 });
+
+// Tests that a static lesson does not show the 'Practice area' button.
+TEST_F('ChromeVoxTutorialTest', 'NoPracticeAreaTest', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    const Panel = this.getPanel();
+    assertTrue(Panel.iTutorialEnabled_);
+    new PanelCommand(PanelCommandType.TUTORIAL).send();
+    await this.waitForTutorial();
+    const tutorial = Panel.iTutorial;
+    mockFeedback.expectSpeech('Choose your tutorial experience')
+        .call(doCmd('nextObject'))
+        .expectSpeech('New user', 'Button')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech('New User Tutorial, 8 Lessons')
+        .call(() => {
+          tutorial.showLesson(0);
+        })
+        .expectSpeech('On, Off, and Stop', 'Heading 1')
+        .call(doCmd('nextButton'))
+        .expectSpeech('Next lesson')
+        .replay();
+  });
+});
+
+// Tests that an interactive lesson shows the 'Practice area' button.
+TEST_F('ChromeVoxTutorialTest', 'HasPracticeAreaTest', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    const Panel = this.getPanel();
+    assertTrue(Panel.iTutorialEnabled_);
+    new PanelCommand(PanelCommandType.TUTORIAL).send();
+    await this.waitForTutorial();
+    const tutorial = Panel.iTutorial;
+    mockFeedback.expectSpeech('Choose your tutorial experience')
+        .call(doCmd('nextObject'))
+        .expectSpeech('New user', 'Button')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech('New User Tutorial, 8 Lessons')
+        .call(() => {
+          tutorial.showLesson(2);
+        })
+        .expectSpeech('Basic Navigation', 'Heading 1')
+        .call(doCmd('nextButton'))
+        .expectSpeech('Practice Area')
+        .replay();
+  });
+});
