@@ -5328,13 +5328,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the user's interaction with crashes in the developer UI's crash
-    list. Specifically, this tracks how the user interacts with the &quot;upload
-    this crash report&quot; or the &quot;file bug report&quot; buttons and
-    possible subsequent dialogs. Since these two buttons are connected (the user
-    must upload a crash before they can file a bug report), we track interaction
-    with both in the same histogram. This is recorded for each button press in
-    the crash list and is not recorded if the user does not interact with any
-    crashes.
+    list. Specifically, this tracks how the user interacts with the &quot;hide
+    crash&quot;, &quot;upload this crash report&quot; or the &quot;file bug
+    report&quot; buttons and possible subsequent dialogs. Since the latter two
+    buttons are connected (the user must upload a crash before they can file a
+    bug report), we track interaction with both in the same histogram. This is
+    recorded for each button press in the crash list and is not recorded if the
+    user does not interact with any crashes.
   </summary>
 </histogram>
 

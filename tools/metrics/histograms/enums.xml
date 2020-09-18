@@ -2067,6 +2067,9 @@ Unknown properties are collapsed to zero. -->
     button. The user responded by dismissing the dialog and did not file a bug
     report.
   </int>
+  <int value="7" label="HIDE_CRASH_BUTTON">
+    The user tapped the &quot;hide crash&quot; button.
+  </int>
 </enum>
 
 <enum name="AndroidWebViewDevUiFragments">

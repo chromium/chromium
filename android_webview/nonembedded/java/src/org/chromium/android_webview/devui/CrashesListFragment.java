@@ -112,7 +112,7 @@ public class CrashesListFragment extends DevUiBaseFragment {
             CrashInteraction.FORCE_UPLOAD_DIALOG_METERED_NETWORK,
             CrashInteraction.FORCE_UPLOAD_DIALOG_CANCEL, CrashInteraction.FILE_BUG_REPORT_BUTTON,
             CrashInteraction.FILE_BUG_REPORT_DIALOG_PROCEED,
-            CrashInteraction.FILE_BUG_REPORT_DIALOG_DISMISS})
+            CrashInteraction.FILE_BUG_REPORT_DIALOG_DISMISS, CrashInteraction.HIDE_CRASH_BUTTON})
     private @interface CrashInteraction {
         int FORCE_UPLOAD_BUTTON = 0;
         int FORCE_UPLOAD_NO_DIALOG = 1;
@@ -121,7 +121,8 @@ public class CrashesListFragment extends DevUiBaseFragment {
         int FILE_BUG_REPORT_BUTTON = 4;
         int FILE_BUG_REPORT_DIALOG_PROCEED = 5;
         int FILE_BUG_REPORT_DIALOG_DISMISS = 6;
-        int COUNT = 7;
+        int HIDE_CRASH_BUTTON = 7;
+        int COUNT = 8;
     }
 
     private static void logCrashInteraction(@CrashInteraction int action) {
@@ -315,6 +316,7 @@ public class CrashesListFragment extends DevUiBaseFragment {
 
             ImageButton hideButton = view.findViewById(R.id.crash_hide_button);
             hideButton.setOnClickListener(v -> {
+                logCrashInteraction(CrashInteraction.HIDE_CRASH_BUTTON);
                 crashInfo.isHidden = true;
                 WebViewCrashInfoCollector.updateCrashLogFileWithNewCrashInfo(crashInfo);
                 updateCrashes();
