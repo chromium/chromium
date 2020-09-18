@@ -91,8 +91,8 @@ class QuicTransport::Stream final {
         incoming_(stream),
         readable_(std::move(readable)),
         writable_(std::move(writable)),
-        readable_watcher_(FROM_HERE, ArmingPolicy::AUTOMATIC),
-        writable_watcher_(FROM_HERE, ArmingPolicy::AUTOMATIC) {
+        readable_watcher_(FROM_HERE, ArmingPolicy::MANUAL),
+        writable_watcher_(FROM_HERE, ArmingPolicy::MANUAL) {
     DCHECK(outgoing_);
     DCHECK(incoming_);
     DCHECK(readable_);
@@ -108,8 +108,8 @@ class QuicTransport::Stream final {
         id_(outgoing->id()),
         outgoing_(outgoing),
         readable_(std::move(readable)),
-        readable_watcher_(FROM_HERE, ArmingPolicy::AUTOMATIC),
-        writable_watcher_(FROM_HERE, ArmingPolicy::AUTOMATIC) {
+        readable_watcher_(FROM_HERE, ArmingPolicy::MANUAL),
+        writable_watcher_(FROM_HERE, ArmingPolicy::MANUAL) {
     DCHECK(outgoing_);
     DCHECK(readable_);
     Init();
@@ -123,8 +123,8 @@ class QuicTransport::Stream final {
         id_(incoming->id()),
         incoming_(incoming),
         writable_(std::move(writable)),
-        readable_watcher_(FROM_HERE, ArmingPolicy::AUTOMATIC),
-        writable_watcher_(FROM_HERE, ArmingPolicy::AUTOMATIC) {
+        readable_watcher_(FROM_HERE, ArmingPolicy::MANUAL),
+        writable_watcher_(FROM_HERE, ArmingPolicy::MANUAL) {
     DCHECK(incoming_);
     DCHECK(writable_);
     Init();
@@ -165,6 +165,7 @@ class QuicTransport::Stream final {
           MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
           MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
           base::BindRepeating(&Stream::OnReadable, base::Unretained(this)));
+      readable_watcher_.ArmOrNotify();
     }
 
     if (incoming_) {
@@ -176,6 +177,7 @@ class QuicTransport::Stream final {
           writable_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
           MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
           base::BindRepeating(&Stream::OnWritable, base::Unretained(this)));
+      writable_watcher_.ArmOrNotify();
     }
   }
 
@@ -192,6 +194,7 @@ class QuicTransport::Stream final {
       MojoResult result = readable_->BeginReadData(
           &data, &available, MOJO_BEGIN_READ_DATA_FLAG_NONE);
       if (result == MOJO_RESULT_SHOULD_WAIT) {
+        readable_watcher_.Arm();
         return;
       }
       if (result == MOJO_RESULT_FAILED_PRECONDITION) {
@@ -241,6 +244,7 @@ class QuicTransport::Stream final {
       MojoResult result = writable_->BeginWriteData(
           &buffer, &available, MOJO_BEGIN_WRITE_DATA_FLAG_NONE);
       if (result == MOJO_RESULT_SHOULD_WAIT) {
+        writable_watcher_.Arm();
         return;
       }
       if (result == MOJO_RESULT_FAILED_PRECONDITION) {
