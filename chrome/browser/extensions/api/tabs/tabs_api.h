@@ -162,7 +162,6 @@ class TabsMoveFunction : public ExtensionFunction {
   ResponseAction Run() override;
   bool MoveTab(int tab_id,
                int* new_index,
-               int iteration,
                base::ListValue* tab_values,
                int* window_id,
                std::string* error);

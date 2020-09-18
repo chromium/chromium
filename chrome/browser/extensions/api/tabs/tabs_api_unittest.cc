@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -419,6 +420,124 @@ TEST_F(TabsApiUnitTest, TabsUpdateJavaScriptUrlNotAllowed) {
   browser()->tab_strip_model()->CloseAllTabs();
 }
 
+// Test that the tabs.move() function correctly rearranges sets of tabs within a
+// single window.
+TEST_F(TabsApiUnitTest, TabsMoveWithinWindow) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("MoveWithinWindowTest").Build();
+
+  // Add several web contents to the browser and get their tab IDs.
+  constexpr int kNumTabs = 5;
+  std::vector<int> tab_ids;
+  std::vector<content::WebContents*> web_contentses;
+  for (int i = 0; i < kNumTabs; ++i) {
+    std::unique_ptr<content::WebContents> contents(
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+
+    CreateSessionServiceTabHelper(contents.get());
+    tab_ids.push_back(
+        sessions::SessionTabHelper::IdForTab(contents.get()).id());
+    web_contentses.push_back(contents.get());
+
+    browser()->tab_strip_model()->AppendWebContents(std::move(contents),
+                                                    /* foreground */ true);
+  }
+  ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
+
+  // Use the TabsMoveFunction to move tabs 0, 2, and 4 to index 1.
+  auto function = base::MakeRefCounted<TabsMoveFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([[%d, %d, %d], {"index": 1}])";
+  const std::string args =
+      base::StringPrintf(kFormatArgs, tab_ids[0], tab_ids[2], tab_ids[4]);
+  ASSERT_TRUE(extension_function_test_utils::RunFunction(
+      function.get(), args, browser(), api_test_utils::NONE));
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(0), web_contentses[1]);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(1), web_contentses[0]);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(2), web_contentses[2]);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(3), web_contentses[4]);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(4), web_contentses[3]);
+
+  // Clean up.
+  browser()->tab_strip_model()->CloseAllTabs();
+}
+
+// Test that the tabs.move() function correctly rearranges sets of tabs across
+// windows.
+TEST_F(TabsApiUnitTest, TabsMoveAcrossWindows) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("MoveAcrossWindowTest").Build();
+
+  // Add several web contents to the original browser and get their tab IDs.
+  constexpr int kNumTabs = 5;
+  std::vector<int> tab_ids;
+  std::vector<content::WebContents*> web_contentses;
+  for (int i = 0; i < kNumTabs; ++i) {
+    std::unique_ptr<content::WebContents> contents(
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+
+    CreateSessionServiceTabHelper(contents.get());
+    tab_ids.push_back(
+        sessions::SessionTabHelper::IdForTab(contents.get()).id());
+    web_contentses.push_back(contents.get());
+
+    browser()->tab_strip_model()->AppendWebContents(std::move(contents),
+                                                    /* foreground */ true);
+  }
+  ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
+
+  // Create a new window and add a few tabs, getting the ID of the last tab.
+  TestBrowserWindow* window2 = new TestBrowserWindow;
+  // TestBrowserWindowOwner handles its own lifetime, and also cleans up
+  // |window2|.
+  new TestBrowserWindowOwner(window2);
+  Browser::CreateParams params(profile(), /* user_gesture */ true);
+  params.type = Browser::TYPE_NORMAL;
+  params.window = window2;
+  std::unique_ptr<Browser> browser2 = std::make_unique<Browser>(params);
+  BrowserList::SetLastActive(browser2.get());
+  int window_id2 = ExtensionTabUtil::GetWindowId(browser2.get());
+
+  constexpr int kNumTabs2 = 3;
+  for (int i = 0; i < kNumTabs2; ++i) {
+    std::unique_ptr<content::WebContents> contents(
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+    CreateSessionServiceTabHelper(contents.get());
+    browser2->tab_strip_model()->AppendWebContents(std::move(contents),
+                                                   /* foreground */ true);
+  }
+  ASSERT_EQ(kNumTabs2, browser2->tab_strip_model()->count());
+
+  content::WebContents* web_contents2 =
+      browser2->tab_strip_model()->GetWebContentsAt(2);
+  int tab_id2 = sessions::SessionTabHelper::IdForTab(web_contents2).id();
+
+  // Use the TabsMoveFunction to move tab 2 from browser2 and tabs 0, 2, and 4
+  // from the original browser to index 1 of browser2.
+  constexpr int kNumTabsMovedAcrossWindows = 3;
+  auto function = base::MakeRefCounted<TabsMoveFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] =
+      R"([[%d, %d, %d, %d], {"windowId": %d, "index": 1}])";
+  const std::string args = base::StringPrintf(
+      kFormatArgs, tab_id2, tab_ids[0], tab_ids[2], tab_ids[4], window_id2);
+  ASSERT_TRUE(extension_function_test_utils::RunFunction(
+      function.get(), args, browser(), api_test_utils::NONE));
+
+  TabStripModel* tab_strip_model2 = browser2->tab_strip_model();
+  ASSERT_EQ(kNumTabs2 + kNumTabsMovedAcrossWindows, tab_strip_model2->count());
+  EXPECT_EQ(tab_strip_model2->GetWebContentsAt(1), web_contents2);
+  EXPECT_EQ(tab_strip_model2->GetWebContentsAt(2), web_contentses[0]);
+  EXPECT_EQ(tab_strip_model2->GetWebContentsAt(3), web_contentses[2]);
+  EXPECT_EQ(tab_strip_model2->GetWebContentsAt(4), web_contentses[4]);
+
+  // Clean up.
+  browser()->tab_strip_model()->CloseAllTabs();
+  browser2->tab_strip_model()->CloseAllTabs();
+}
+
 TEST_F(TabsApiUnitTest, TabsGoForwardNoSelectedTabError) {
   scoped_refptr<const Extension> extension = CreateTabsExtension();
   auto function = base::MakeRefCounted<TabsGoForwardFunction>();
@@ -446,7 +565,7 @@ TEST_F(TabsApiUnitTest, TabsGoForwardAndBack) {
   const int tab_id =
       sessions::SessionTabHelper::IdForTab(raw_web_contents).id();
   browser()->tab_strip_model()->AppendWebContents(std::move(web_contents),
-                                                  true);
+                                                  /* foreground */ true);
   // Go back with chrome.tabs.goBack.
   auto goback_function = base::MakeRefCounted<TabsGoBackFunction>();
   goback_function->set_extension(extension_with_tabs_permission.get());
