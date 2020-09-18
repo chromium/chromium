@@ -37,6 +37,13 @@ void ControlServiceInProcess::Run(base::OnceClosure callback) {
   MaybeCheckForUpdates(std::move(callback));
 }
 
+void ControlServiceInProcess::InitializeUpdateService(
+    base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+  std::move(callback).Run();
+}
+
 void ControlServiceInProcess::MaybeCheckForUpdates(base::OnceClosure callback) {
   const base::Time lastUpdateTime =
       config_->GetPrefService()->GetTime(kPrefUpdateTime);

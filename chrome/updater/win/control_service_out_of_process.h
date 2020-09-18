@@ -24,6 +24,7 @@ class ControlServiceOutOfProcess : public ControlService {
 
   // Overrides for ControlService.
   void Run(base::OnceClosure callback) override;
+  void InitializeUpdateService(base::OnceClosure callback) override;
   void Uninitialize() override;
 
  private:

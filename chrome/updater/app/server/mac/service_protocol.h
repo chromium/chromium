@@ -54,6 +54,10 @@
 // that is relevant to the state of the Updater.
 - (void)performControlTasksWithReply:(void (^_Nullable)(void))reply;
 
+// Performs the control task that is relevant to the state of the Updater.
+// Does not perform an UpdateCheck.
+- (void)performInitializeUpdateServiceWithReply:(void (^_Nullable)(void))reply;
+
 @end
 
 namespace updater {

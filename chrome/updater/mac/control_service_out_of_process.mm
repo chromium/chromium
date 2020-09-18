@@ -73,6 +73,17 @@
       performControlTasksWithReply:reply];
 }
 
+- (void)performInitializeUpdateServiceWithReply:(void (^)(void))reply {
+  auto errorHandler = ^(NSError* xpcError) {
+    LOG(ERROR) << "XPC connection failed: "
+               << base::SysNSStringToUTF8([xpcError description]);
+    reply();
+  };
+
+  [[_controlXPCConnection remoteObjectProxyWithErrorHandler:errorHandler]
+      performInitializeUpdateServiceWithReply:reply];
+}
+
 @end
 
 namespace updater {
@@ -99,6 +110,19 @@ void ControlServiceOutOfProcess::Run(base::OnceClosure callback) {
   };
 
   [client_ performControlTasksWithReply:reply];
+}
+
+void ControlServiceOutOfProcess::InitializeUpdateService(
+    base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  __block base::OnceClosure block_callback = std::move(callback);
+  auto reply = ^() {
+    callback_runner_->PostTask(FROM_HERE,
+                               base::BindOnce(std::move(block_callback)));
+  };
+
+  [client_ performInitializeUpdateServiceWithReply:reply];
 }
 
 void ControlServiceOutOfProcess::Uninitialize() {

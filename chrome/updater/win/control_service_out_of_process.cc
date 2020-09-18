@@ -158,6 +158,13 @@ void ControlServiceOutOfProcess::Run(base::OnceClosure callback) {
               base::SequencedTaskRunnerHandle::Get(), std::move(callback))));
 }
 
+void ControlServiceOutOfProcess::InitializeUpdateService(
+    base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(crbug.com/1128397): Implement.
+}
+
 void ControlServiceOutOfProcess::RunOnSTA(base::OnceClosure callback) {
   DCHECK(com_task_runner_->BelongsToCurrentThread());
 

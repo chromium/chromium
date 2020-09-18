@@ -159,7 +159,7 @@ void AppRegister::WakeCandidate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ResetControlService();
   control_service_ = CreateControlService();
-  control_service_->Run(
+  control_service_->InitializeUpdateService(
       base::BindOnce(&AppRegister::ControlServiceRunDone, this, 0));
 }
 

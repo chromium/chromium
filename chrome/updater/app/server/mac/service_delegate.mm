@@ -236,6 +236,21 @@
       base::BindOnce(&updater::ControlService::Run, _service, std::move(cb)));
 }
 
+- (void)performInitializeUpdateServiceWithReply:(void (^)(void))reply {
+  auto cb = base::BindOnce(base::RetainBlock(^(void) {
+    if (reply)
+      reply();
+
+    _appServer->TaskCompleted();
+  }));
+
+  _appServer->TaskStarted();
+  _callbackRunner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&updater::ControlService::InitializeUpdateService,
+                     _service, std::move(cb)));
+}
+
 @end
 
 @implementation CRUUpdateCheckServiceXPCDelegate {

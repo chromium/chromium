@@ -26,6 +26,7 @@ class ControlServiceInProcess : public ControlService {
 
   // Overrides for updater::ControlService.
   void Run(base::OnceClosure callback) override;
+  void InitializeUpdateService(base::OnceClosure callback) override;
 
   void Uninitialize() override;
 

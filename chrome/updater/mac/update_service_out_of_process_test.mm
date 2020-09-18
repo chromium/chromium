@@ -280,7 +280,7 @@ class MacUpdateServiceOutOfProcessTest : public ::testing::Test {
 
   // Create an UpdateServiceOutOfProcess and store in service_. Must be
   // called only on the task_environment_ sequence. SetUp() posts it.
-  void InitializeService();
+  void InitializeUpdateService();
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
