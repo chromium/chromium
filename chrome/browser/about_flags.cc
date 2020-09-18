@@ -6433,6 +6433,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(printing::features::kEnableOopPrintDrivers)},
 #endif
 
+#if defined(OS_WIN)
+    {"use-serial-bus-enumerator",
+     flag_descriptions::kUseSerialBusEnumeratorName,
+     flag_descriptions::kUseSerialBusEnumeratorDescription, kOsWin,
+     FEATURE_VALUE_TYPE(features::kUseSerialBusEnumerator)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
