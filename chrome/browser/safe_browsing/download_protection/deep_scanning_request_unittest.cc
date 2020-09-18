@@ -410,8 +410,7 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
     download_protection_service_.GetFakeBinaryUploadService()
         ->SetAuthForTesting(true);
 
-    TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
-        prefs::kUnsafeEventsReportingEnabled, true);
+    SetOnSecurityEventReporting(true);
     EnableAllFeatures();
   }
 

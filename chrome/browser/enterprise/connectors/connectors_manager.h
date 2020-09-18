@@ -49,8 +49,8 @@ class ConnectorsManager {
   static ConnectorsManager* GetInstance();
 
   // Validates which settings should be applied to a reporting event
-  // against cached policies. This function will prioritize new connector
-  // policies over legacy ones if they are set.
+  // against cached policies. Cache the policy value the first time this is
+  // called for every different connector.
   base::Optional<ReportingSettings> GetReportingSettings(
       ReportingConnector connector);
 
@@ -123,16 +123,6 @@ class ConnectorsManager {
   bool MatchURLAgainstLegacyMalwarePolicies(const GURL& url, bool upload) const;
   std::set<std::string> MatchURLAgainstLegacyPolicies(const GURL& url,
                                                       bool upload) const;
-
-  // Validates which settings should be applied to an analysis connector event
-  // against connector policies. Cache the policy value the first time this is
-  // called for every different connector.
-  base::Optional<ReportingSettings> GetReportingSettingsFromConnectorPolicy(
-      ReportingConnector connector);
-
-  // Returns reporting settings based on legacy policies.
-  base::Optional<ReportingSettings> GetReportingSettingsFromLegacyPolicies(
-      ReportingConnector connector) const;
 
   // Cached values of available service providers. This information validates
   // the Connector policies have a valid provider.

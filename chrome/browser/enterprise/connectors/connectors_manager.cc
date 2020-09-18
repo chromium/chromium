@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
@@ -162,11 +163,20 @@ bool ConnectorsManager::IsConnectorEnabled(ReportingConnector connector) const {
 
 base::Optional<ReportingSettings> ConnectorsManager::GetReportingSettings(
     ReportingConnector connector) {
-  // Prioritize new Connector policies over legacy ones.
-  if (IsConnectorEnabled(connector))
-    return GetReportingSettingsFromConnectorPolicy(connector);
+  if (!IsConnectorEnabled(connector))
+    return base::nullopt;
 
-  return GetReportingSettingsFromLegacyPolicies(connector);
+  if (reporting_connector_settings_.count(connector) == 0)
+    CacheReportingConnectorPolicy(connector);
+
+  // If the connector is still not in memory, it means the pref is set to an
+  // empty list or that it is not a list.
+  if (reporting_connector_settings_.count(connector) == 0)
+    return base::nullopt;
+
+  // While multiple services can be set by the connector policies, only the
+  // first one is considered for now.
+  return reporting_connector_settings_[connector][0].GetReportingSettings();
 }
 
 base::Optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
@@ -374,35 +384,6 @@ std::set<std::string> ConnectorsManager::MatchURLAgainstLegacyPolicies(
     tags.emplace("malware");
 
   return tags;
-}
-
-base::Optional<ReportingSettings>
-ConnectorsManager::GetReportingSettingsFromConnectorPolicy(
-    ReportingConnector connector) {
-  if (reporting_connector_settings_.count(connector) == 0)
-    CacheReportingConnectorPolicy(connector);
-
-  // If the connector is still not in memory, it means the pref is set to an
-  // empty list or that it is not a list.
-  if (reporting_connector_settings_.count(connector) == 0)
-    return base::nullopt;
-
-  // While multiple services can be set by the connector policies, only the
-  // first one is considered for now.
-  return reporting_connector_settings_[connector][0].GetReportingSettings();
-}
-
-base::Optional<ReportingSettings>
-ConnectorsManager::GetReportingSettingsFromLegacyPolicies(
-    ReportingConnector connector) const {
-  if (!g_browser_process || !g_browser_process->local_state() ||
-      !g_browser_process->local_state()->GetBoolean(
-          prefs::kUnsafeEventsReportingEnabled)) {
-    return base::nullopt;
-  }
-
-  return ReportingSettings(
-      GURL("https://chromereporting-pa.googleapis.com/v1/events"));
 }
 
 void ConnectorsManager::StartObservingPrefs() {

@@ -96,14 +96,9 @@ void DeepScanningBrowserTestBase::TearDownOnMainThread() {
       BlockUnsupportedFiletypesValues::BLOCK_UNSUPPORTED_FILETYPES_NONE);
   SetBlockLargeFileTransferPolicyForConnectors(
       BlockLargeFileTransferValues::BLOCK_NONE);
-  SetUnsafeEventsReportingPolicy(false);
+  SetOnSecurityEventReporting(false);
   ClearUrlsToCheckComplianceOfDownloadsForConnectors();
   ClearUrlsToCheckForMalwareOfUploadsForConnectors();
-}
-
-void DeepScanningBrowserTestBase::SetUnsafeEventsReportingPolicy(bool report) {
-  g_browser_process->local_state()->SetBoolean(
-      prefs::kUnsafeEventsReportingEnabled, report);
 }
 
 void DeepScanningBrowserTestBase::SetUpDelegate() {

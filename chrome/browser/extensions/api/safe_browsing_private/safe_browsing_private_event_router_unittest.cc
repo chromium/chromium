@@ -18,6 +18,7 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/safe_browsing_private.h"
@@ -221,8 +222,7 @@ class SafeBrowsingPrivateEventRouterTest : public testing::Test {
   }
 
   void SetReportingPolicy(bool enabled) {
-    TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
-        prefs::kUnsafeEventsReportingEnabled, enabled);
+    safe_browsing::SetOnSecurityEventReporting(enabled);
 
     // If we are not enabling reporting, or if the client has already been
     // set for testing, just return.
@@ -937,38 +937,23 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestProfileUsername) {
 class SafeBrowsingIsRealtimeReportingEnabledTest
     : public SafeBrowsingPrivateEventRouterTest,
       public testing::WithParamInterface<
-          testing::tuple<bool, bool, bool, bool, bool>> {
+          testing::tuple<bool, bool, bool, bool>> {
  public:
   SafeBrowsingIsRealtimeReportingEnabledTest()
       : is_feature_flag_enabled_(testing::get<0>(GetParam())),
         is_manageable_(testing::get<1>(GetParam())),
         is_policy_enabled_(testing::get<2>(GetParam())),
-        is_authorized_(testing::get<3>(GetParam())),
-        use_new_connectors_(testing::get<4>(GetParam())) {
-    if (use_new_connectors_) {
-      if (is_feature_flag_enabled_) {
-        scoped_feature_list_.InitWithFeatures(
-            {enterprise_connectors::kEnterpriseConnectorsEnabled},
-            {extensions::SafeBrowsingPrivateEventRouter::
-                 kRealtimeReportingFeature});
-      } else {
-        scoped_feature_list_.InitWithFeatures(
-            {}, {enterprise_connectors::kEnterpriseConnectorsEnabled,
-                 extensions::SafeBrowsingPrivateEventRouter::
-                     kRealtimeReportingFeature});
-      }
+        is_authorized_(testing::get<3>(GetParam())) {
+    if (is_feature_flag_enabled_) {
+      scoped_feature_list_.InitWithFeatures(
+          {enterprise_connectors::kEnterpriseConnectorsEnabled},
+          {extensions::SafeBrowsingPrivateEventRouter::
+               kRealtimeReportingFeature});
     } else {
-      if (is_feature_flag_enabled_) {
-        scoped_feature_list_.InitWithFeatures(
-            {extensions::SafeBrowsingPrivateEventRouter::
-                 kRealtimeReportingFeature},
-            {enterprise_connectors::kEnterpriseConnectorsEnabled});
-      } else {
-        scoped_feature_list_.InitWithFeatures(
-            {}, {enterprise_connectors::kEnterpriseConnectorsEnabled,
-                 extensions::SafeBrowsingPrivateEventRouter::
-                     kRealtimeReportingFeature});
-      }
+      scoped_feature_list_.InitWithFeatures(
+          {}, {enterprise_connectors::kEnterpriseConnectorsEnabled,
+               extensions::SafeBrowsingPrivateEventRouter::
+                   kRealtimeReportingFeature});
     }
 
     // In chrome branded desktop builds, the browser is always manageable.
@@ -979,16 +964,11 @@ class SafeBrowsingIsRealtimeReportingEnabledTest
     }
 #endif
 
-    if (use_new_connectors_) {
-      if (is_policy_enabled_) {
-        scoped_connector_pref_ = std::make_unique<ScopedConnectorPref>(
-            ConnectorPref(
-                enterprise_connectors::ReportingConnector::SECURITY_EVENT),
-            kConnectorsPrefValue);
-      }
-    } else {
-      TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
-          prefs::kUnsafeEventsReportingEnabled, is_policy_enabled_);
+    if (is_policy_enabled_) {
+      scoped_connector_pref_ = std::make_unique<ScopedConnectorPref>(
+          ConnectorPref(
+              enterprise_connectors::ReportingConnector::SECURITY_EVENT),
+          kConnectorsPrefValue);
     }
 
 #if defined(OS_CHROMEOS)
@@ -1053,7 +1033,6 @@ class SafeBrowsingIsRealtimeReportingEnabledTest
   const bool is_manageable_;
   const bool is_policy_enabled_;
   const bool is_authorized_;
-  const bool use_new_connectors_;
 
 #if defined(OS_CHROMEOS)
  private:
@@ -1109,7 +1088,6 @@ TEST_P(SafeBrowsingIsRealtimeReportingEnabledTest, CheckRealtimeReport) {
 INSTANTIATE_TEST_SUITE_P(All,
                          SafeBrowsingIsRealtimeReportingEnabledTest,
                          testing::Combine(testing::Bool(),
-                                          testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));

@@ -98,8 +98,6 @@ const char kAdvancedProtectionLastRefreshInUs[] =
     "safebrowsing.advanced_protection_last_refresh";
 const char kSafeBrowsingSendFilesForMalwareCheck[] =
     "safebrowsing.send_files_for_malware_check";
-const char kUnsafeEventsReportingEnabled[] =
-    "safebrowsing.unsafe_events_reporting";
 const char kBlockLargeFileTransfer[] =
     "safebrowsing.block_large_file_transfers";
 const char kDelayDeliveryUntilVerdict[] =
@@ -234,7 +232,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kSafeBrowsingTriggerEventTimestamps);
-  registry->RegisterBooleanPref(prefs::kUnsafeEventsReportingEnabled, false);
   registry->RegisterIntegerPref(prefs::kBlockLargeFileTransfer, 0);
   registry->RegisterIntegerPref(prefs::kDelayDeliveryUntilVerdict, DELAY_NONE);
   registry->RegisterIntegerPref(
