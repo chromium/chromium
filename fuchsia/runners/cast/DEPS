@@ -1,3 +1,5 @@
 include_rules = [
+  "+components/cast/named_message_port_connector",
   "+content/public/test",
+  "+mojo/core/embedder",
 ]

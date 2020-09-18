@@ -16,6 +16,7 @@
 
 #include "base/base_paths_fuchsia.h"
 #include "base/callback_helpers.h"
+#include "base/files/file_util.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/filtered_service_directory.h"
 #include "base/fuchsia/fuchsia_logging.h"
@@ -42,6 +43,7 @@
 #include "fuchsia/runners/cast/cast_runner.h"
 #include "fuchsia/runners/cast/fake_application_config_manager.h"
 #include "fuchsia/runners/cast/test_api_bindings.h"
+#include "mojo/core/embedder/embedder.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -223,6 +225,8 @@ class CastRunnerIntegrationTest : public testing::Test {
   CastRunnerIntegrationTest(const CastRunnerIntegrationTest&) = delete;
   CastRunnerIntegrationTest& operator=(const CastRunnerIntegrationTest&) =
       delete;
+
+  void SetUp() override { mojo::core::Init(); }
 
   void TearDown() override {
     if (component_controller_)

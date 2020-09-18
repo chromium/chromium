@@ -29,6 +29,21 @@ blink::WebMessagePort BlinkMessagePortFromFidl(
 fidl::InterfaceHandle<fuchsia::web::MessagePort> FidlMessagePortFromBlink(
     blink::WebMessagePort blink_port);
 
+// Specifies the location of the MessagePort FIDL service that handles messages
+// sent over the Transferable.
+enum class TransferableHostType {
+  // The MessagePort FIDL service is hosted in-process.
+  kLocal,
+
+  // The MessagePort FIDL service is hosted remotely.
+  kRemote,
+};
+
+// Converts a BlinkMessage to a fuchsia::web::WebMessage.
+base::Optional<fuchsia::web::WebMessage> FidlWebMessageFromBlink(
+    blink::WebMessagePort::Message blink_message,
+    TransferableHostType port_type);
+
 }  // namespace cr_fuchsia
 
 #endif  // FUCHSIA_BASE_MESSAGE_PORT_H_

@@ -9,6 +9,7 @@
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/optional.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/values.h"
@@ -18,6 +19,7 @@
 #include "fuchsia/base/init_logging.h"
 #include "fuchsia/base/inspect.h"
 #include "fuchsia/runners/cast/cast_runner.h"
+#include "mojo/core/embedder/embedder.h"
 
 namespace {
 
@@ -58,6 +60,8 @@ int main(int argc, char** argv) {
   CHECK(cr_fuchsia::InitLoggingFromCommandLine(
       *base::CommandLine::ForCurrentProcess()))
       << "Failed to initialize logging.";
+
+  mojo::core::Init();
 
   cr_fuchsia::RegisterFuchsiaDirScheme();
 

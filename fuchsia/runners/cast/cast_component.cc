@@ -7,6 +7,7 @@
 #include <lib/fidl/cpp/binding.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -17,6 +18,7 @@
 #include "base/task/current_thread.h"
 #include "fuchsia/base/agent_manager.h"
 #include "fuchsia/base/mem_buffer_util.h"
+#include "fuchsia/base/message_port.h"
 #include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
 #include "fuchsia/runners/cast/cast_runner.h"
 #include "fuchsia/runners/cast/cast_streaming.h"
@@ -78,7 +80,7 @@ void CastComponent::StartComponent() {
 
   WebComponent::StartComponent();
 
-  connector_ = std::make_unique<NamedMessagePortConnector>(frame());
+  connector_ = std::make_unique<NamedMessagePortConnectorFuchsia>(frame());
 
   url_rewrite_rules_provider_.set_error_handler([this](zx_status_t status) {
     ZX_LOG_IF(ERROR, status != ZX_OK, status)
@@ -115,8 +117,9 @@ void CastComponent::StartComponent() {
                              fuchsia::sys::TerminationReason::INTERNAL_ERROR);
           }
         });
-    api_bindings_client_->OnPortConnected(kCastStreamingMessagePortName,
-                                          std::move(message_port));
+    api_bindings_client_->OnPortConnected(
+        kCastStreamingMessagePortName,
+        cr_fuchsia::BlinkMessagePortFromFidl(std::move(message_port)));
   }
 
   api_bindings_client_->AttachToFrame(
@@ -166,6 +169,7 @@ void CastComponent::DestroyComponent(int64_t exit_code,
   // frame() is about to be destroyed, so there is no need to perform cleanup
   // such as removing before-load JavaScripts.
   api_bindings_client_->DetachFromFrame(frame());
+  connector_->DetachFromFrame();
 
   WebComponent::DestroyComponent(exit_code, reason);
 }
@@ -181,8 +185,18 @@ void CastComponent::OnRewriteRulesReceived(
 void CastComponent::OnNavigationStateChanged(
     fuchsia::web::NavigationState change,
     OnNavigationStateChangedCallback callback) {
-  if (change.has_is_main_document_loaded() && change.is_main_document_loaded())
-    connector_->OnPageLoad();
+  if (change.has_is_main_document_loaded() &&
+      change.is_main_document_loaded()) {
+    // Send the NamedMessagePortConnector handshake to the page.
+    frame()->PostMessage("*",
+                         *cr_fuchsia::FidlWebMessageFromBlink(
+                             connector_->GetConnectMessage(),
+                             cr_fuchsia::TransferableHostType::kRemote),
+                         [](fuchsia::web::Frame_PostMessage_Result result) {
+                           DCHECK(result.is_response());
+                         });
+  }
+
   WebComponent::OnNavigationStateChanged(std::move(change),
                                          std::move(callback));
 }
