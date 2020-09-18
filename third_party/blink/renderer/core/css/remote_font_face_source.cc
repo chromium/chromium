@@ -147,9 +147,9 @@ RemoteFontFaceSource::RemoteFontFaceSource(CSSFontFace* css_font_face,
       font_selector_(font_selector),
       // No need to report the violation here since the font is not loaded yet
       display_(
-          GetFontDisplayWithFeaturePolicyCheck(display,
-                                               font_selector,
-                                               ReportOptions::kDoNotReport)),
+          GetFontDisplayWithDocumentPolicyCheck(display,
+                                                font_selector,
+                                                ReportOptions::kDoNotReport)),
       phase_(kNoLimitExceeded),
       is_intervention_triggered_(ShouldTriggerWebFontsIntervention()),
       finished_before_document_rendering_begin_(false),
@@ -266,7 +266,7 @@ void RemoteFontFaceSource::SetDisplay(FontDisplay display) {
   // using the loaded font.
   if (IsLoaded())
     return;
-  display_ = GetFontDisplayWithFeaturePolicyCheck(
+  display_ = GetFontDisplayWithDocumentPolicyCheck(
       display, font_selector_, ReportOptions::kReportOnFailure);
   UpdatePeriod();
 }
@@ -290,7 +290,7 @@ bool RemoteFontFaceSource::UpdatePeriod() {
   return changed;
 }
 
-FontDisplay RemoteFontFaceSource::GetFontDisplayWithFeaturePolicyCheck(
+FontDisplay RemoteFontFaceSource::GetFontDisplayWithDocumentPolicyCheck(
     FontDisplay display,
     const FontSelector* font_selector,
     ReportOptions report_option) const {
