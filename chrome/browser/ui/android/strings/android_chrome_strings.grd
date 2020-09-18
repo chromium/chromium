@@ -3877,12 +3877,8 @@ Cookies and other data may be used across open Incognito tabs.
         chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS">%1$s<ex>1582667748515</ex></ph>
       </message>
 
-      <message name="IDS_LINK_TO_TEXT_SUCCESS_MESSAGE" desc="Message displayed when link to highlighted text is successfully created.">
-        Share link to the highlighted text in an app
-      </message>
-
-      <message name="IDS_LINK_TO_TEXT_FAILURE_MESSAGE" desc="Message displayed when link to highlighted text was not possible to create.">
-        Can't create link to text. Share link to page in an app.
+      <message name="IDS_LINK_TO_TEXT_FAILURE_TOAST_MESSAGE" desc="Toast displayed when link to highlighted text was not possible to create.">
+        Can't create link to text. Share link to page.
       </message>
 
       <!-- Share Screenshot strings -->

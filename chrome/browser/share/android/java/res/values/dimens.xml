@@ -11,8 +11,11 @@
     <dimen name="overlay_text_top_padding">14dp</dimen>
 
     <!-- URL formatting in QR code bitmap -->
-    <dimen name="url_box_top_padding">70dp</dimen>    
+    <dimen name="url_box_top_padding">70dp</dimen>
     <dimen name="url_box_bottom_padding">25dp</dimen>
     <dimen name="side_padding">50dp</dimen>
     <dimen name="qrcode_size">200dp</dimen>
+
+    <!-- Toast for Link to Text -->
+    <dimen name="y_offset">250dp</dimen>
 </resources>

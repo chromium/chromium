@@ -16,12 +16,12 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.services.service_manager.InterfaceProvider;
+import org.chromium.ui.widget.Toast;
 
 /**
  * Handles the Link To Text action in the Sharing Hub.
  */
 public class LinkToTextCoordinator extends EmptyTabObserver {
-    private static final String SHARE_TEXT_TEMPLATE = "\"%s\"\n%s";
     private static final String TEXT_FRAGMENT_PREFIX = ":~:text=";
     private static final String INVALID_SELECTOR = "";
     private final Context mContext;
@@ -50,23 +50,22 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     public void onSelectorReady(String selector) {
         if (mCancelRequest) return;
 
-        String successMessage =
-                mContext.getResources().getString(R.string.link_to_text_success_message);
-        String failureMessage =
-                mContext.getResources().getString(R.string.link_to_text_failure_message);
-
-        // TODO(1102382): Consider creating SharedParams on sharesheet side. In that case there will
-        // be no need to keep the WindowAndroid in this class.
-        String textToShare = getTextToShare(selector);
         ShareParams params =
-                new ShareParams.Builder(mTab.getWindowAndroid(), /*title=*/"", /*url=*/"")
-                        .setText(textToShare)
+                new ShareParams
+                        .Builder(mTab.getWindowAndroid(), /*title=*/"", getUrlToShare(selector))
+                        .setText(mSelectedText)
                         .build();
+        mChromeOptionShareCallback.showThirdPartyShareSheet(
+                params, new ChromeShareExtras.Builder().build(), System.currentTimeMillis());
 
-        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
-        mChromeOptionShareCallback.showThirdPartyShareSheetWithMessage(
-                !selector.isEmpty() ? successMessage : failureMessage, params, chromeShareExtras,
-                System.currentTimeMillis());
+        if (selector.isEmpty()) {
+            String toastMessage =
+                    mContext.getResources().getString(R.string.link_to_text_failure_toast_message);
+            Toast toast = Toast.makeText(mContext, toastMessage, Toast.LENGTH_SHORT);
+            toast.setGravity(toast.getGravity(), toast.getXOffset(),
+                    mContext.getResources().getDimensionPixelSize(R.dimen.y_offset));
+            toast.show();
+        }
     }
 
     public void requestSelector() {
@@ -86,14 +85,14 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         });
     }
 
-    public String getTextToShare(String selector) {
+    public String getUrlToShare(String selector) {
         String url = mVisibleUrl;
         if (!selector.isEmpty()) {
             // Set the fragment which will also remove existing fragment, including text fragments.
             Uri uri = Uri.parse(url);
             url = uri.buildUpon().encodedFragment(TEXT_FRAGMENT_PREFIX + selector).toString();
         }
-        return String.format(SHARE_TEXT_TEMPLATE, mSelectedText, url);
+        return url;
     }
 
     // Discard results if tab is not on foreground anymore.

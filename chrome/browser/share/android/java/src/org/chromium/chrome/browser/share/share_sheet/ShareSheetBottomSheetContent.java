@@ -88,23 +88,10 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
      * @param firstPartyModels The PropertyModels used to build the top row.
      * @param thirdPartyModels The PropertyModels used to build the bottom row.
      * @param contentTypes The {@link Set} of {@link ContentType}s to build the preview.
-     * @param message The message to show on top of the share sheet.
      */
     void createRecyclerViews(List<PropertyModel> firstPartyModels,
-            List<PropertyModel> thirdPartyModels, Set<Integer> contentTypes, String message) {
-        // A success/failure message can be shown for features such as LinkToText.
-        if (!message.isEmpty()) {
-            TextView messageView = this.getContentView().findViewById(R.id.message);
-            messageView.setVisibility(View.VISIBLE);
-            messageView.setText(message);
-            View preview = this.getContentView().findViewById(R.id.preview_header);
-            preview.setVisibility(View.GONE);
-        }
-        // If there's no message to be shown, show a preview of the content to be shared.
-        else {
-            createPreview(contentTypes);
-        }
-
+            List<PropertyModel> thirdPartyModels, Set<Integer> contentTypes) {
+        createPreview(contentTypes);
         createFirstPartyRecyclerViews(firstPartyModels);
 
         RecyclerView thirdParty = this.getContentView().findViewById(R.id.share_sheet_other_apps);

@@ -21,13 +21,4 @@ public interface ChromeOptionShareCallback {
      */
     public void showThirdPartyShareSheet(
             ShareParams params, ChromeShareExtras chromeShareExtras, long shareStartTime);
-
-    /**
-     * Used to show only the bottom bar of the share sheet with a message.
-     * @param message The message to show along with bottom bar.
-     * @param params The share parameters.
-     * @param chromeShareExtras The extras not contained in {@code params}.
-     */
-    public void showThirdPartyShareSheetWithMessage(String message, ShareParams params,
-            ChromeShareExtras chromeShareExtras, long shareStartTime);
 }
