@@ -16,3 +16,32 @@
  * @typedef {!Object}
  */
 export let SystemDataProviderInterface;
+
+/**
+ * Type alias for DeviceCapabilities.
+ * @typedef {{
+ *   has_battery: boolean,
+ * }}
+ */
+export let DeviceCapabilities;
+
+/**
+ * Type alias for VersionInfo.
+ * @typedef {{
+ *   milestone_version: string,
+ * }}
+ */
+export let VersionInfo;
+
+/**
+ * Type alias for SystemInfo.
+ * @typedef {{
+ *   board_name: string,
+ *   cpu_model_name: string,
+ *   cpu_threads_count: number,
+ *   device_capabilities: DeviceCapabilities,
+ *   total_memory_kib: number,
+ *   version: VersionInfo,
+ * }}
+ */
+export let SystemInfo;

@@ -8,6 +8,7 @@ import 'chrome://diagnostics/diagnostics_app.js';
 
 import {SystemDataProviderInterface} from 'chrome://diagnostics/diagnostics_types.js';
 import {FakeMethodResolver} from 'chrome://diagnostics/fake_method_resolver.js';
+import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
 suite('DiagnosticsFakeMethodResolver', () => {
@@ -78,5 +79,45 @@ suite('FakeMojoProviderTest', () => {
         /** @type {SystemDataProviderInterface} */ (new Object());
     setSystemDataProviderForTesting(fake_provider);
     assertEquals(fake_provider, getSystemDataProvider());
+  });
+});
+
+suite('FakeSystemDataProviderTest', () => {
+  /** @type {?FakeSystemDataProvider} */
+  let provider = null;
+
+  setup(function() {
+    provider = new FakeSystemDataProvider();
+  });
+
+  teardown(function() {
+    provider = null;
+  });
+
+  test('GetSystemInfo', () => {
+    /** @type {!DeviceCapabilities} */
+    const capabilities = {
+      has_battery: true,
+    };
+
+    /** @type {!VersionInfo} */
+    const version = {
+      milestone_version: 'M97',
+    };
+
+    /** @type {!SystemInfo} */
+    const expected = {
+      board_name: 'BestBoard',
+      cpu_model: 'SuperFast CPU',
+      total_memory_kib: 9999,
+      cores_number: 4,
+      version_info: version,
+      device_capabilities: capabilities,
+    };
+
+    provider.setFakeSystemInfo(expected);
+    return provider.getSystemInfo().then((systemInfo) => {
+      assertDeepEquals(expected, systemInfo);
+    });
   });
 });
