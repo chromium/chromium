@@ -195,6 +195,10 @@ CSSValue* ConsumeFontMetricOverride(CSSParserTokenRange& range,
                                     const CSSParserContext& context) {
   if (!RuntimeEnabledFeatures::CSSFontMetricsOverrideEnabled())
     return nullptr;
+  if (CSSIdentifierValue* normal =
+          css_parsing_utils::ConsumeIdent<CSSValueID::kNormal>(range)) {
+    return normal;
+  }
   return css_parsing_utils::ConsumePercent(range, context,
                                            kValueRangeNonNegative);
 }

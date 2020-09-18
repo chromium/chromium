@@ -100,6 +100,16 @@ CSSFontFace* CreateCSSFontFace(FontFace* font_face,
   return MakeGarbageCollected<CSSFontFace>(font_face, ranges);
 }
 
+const CSSValue* ConvertFontMetricOverrideValue(const CSSValue* parsed_value) {
+  if (parsed_value && parsed_value->IsIdentifierValue()) {
+    // We store the "normal" keyword value as nullptr
+    DCHECK_EQ(CSSValueID::kNormal,
+              To<CSSIdentifierValue>(parsed_value)->GetValueID());
+    return nullptr;
+  }
+  return parsed_value;
+}
+
 }  // namespace
 
 FontFace* FontFace::Create(ExecutionContext* context,
@@ -362,13 +372,13 @@ bool FontFace::SetPropertyValue(const CSSValue* value,
         css_font_face_->SetDisplay(CSSValueToFontDisplay(display_.Get()));
       break;
     case AtRuleDescriptorID::AscentOverride:
-      ascent_override_ = value;
+      ascent_override_ = ConvertFontMetricOverrideValue(value);
       break;
     case AtRuleDescriptorID::DescentOverride:
-      descent_override_ = value;
+      descent_override_ = ConvertFontMetricOverrideValue(value);
       break;
     case AtRuleDescriptorID::LineGapOverride:
-      line_gap_override_ = value;
+      line_gap_override_ = ConvertFontMetricOverrideValue(value);
       break;
     case AtRuleDescriptorID::AdvanceOverride:
       advance_override_ = value;
