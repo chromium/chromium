@@ -415,6 +415,10 @@ TEST_F(SystemWebAppManagerTestBookmarkApps, InstallResultHistogram) {
   const std::string profile_install_result_histogram =
       std::string(SystemWebAppManager::kInstallResultHistogramName) +
       ".Profiles.Other";
+
+  system_web_app_manager()->SetUpdatePolicy(
+      SystemWebAppManager::UpdatePolicy::kAlwaysUpdate);
+
   {
     base::flat_map<SystemAppType, SystemAppInfo> system_apps;
     system_apps.emplace(SystemAppType::SETTINGS,

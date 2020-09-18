@@ -188632,6 +188632,10 @@ regressions. -->
 
 <histogram name="Webapp.InstallDuration.System" units="ms"
     expires_after="2021-03-07">
+  <obsolete>
+    Replaced by Webapp.SystemApps.FreshInstallDuration in 09/2020, issue
+    https://crbug.com/1129275.
+  </obsolete>
   <owner>calamity@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <summary>
@@ -188819,6 +188823,19 @@ regressions. -->
   <summary>
     Records uninstallation result for sync initiated uninstalls in the new
     USS-based web applications system.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.SystemApps.FreshInstallDuration" units="ms"
+    expires_after="2021-03-07">
+  <owner>calamity@chromium.org</owner>
+  <owner>ortuno@chromium.org</owner>
+  <summary>
+    Records the time taken to perform a fresh install of all system web apps. It
+    measures the time from when we dispatch a call to install them, until we get
+    all the installation results. This intentionally excludes the scenario where
+    we don't request to install all the apps for consistency. Recorded in
+    milliseconds, from 1 millisecond to 3 minutes.
   </summary>
 </histogram>
 

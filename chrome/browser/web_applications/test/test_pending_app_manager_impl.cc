@@ -15,11 +15,11 @@ TestPendingAppManagerImpl::~TestPendingAppManagerImpl() = default;
 
 void TestPendingAppManagerImpl::Install(ExternalInstallOptions install_options,
                                         OnceInstallCallback callback) {
-  if (pre_install_callback_ && !pre_install_callback_.Run(install_options)) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+  if (handle_install_request_callback_) {
+    base::ThreadTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
         FROM_HERE,
-        base::BindOnce(std::move(callback), install_options.install_url,
-                       InstallResultCode::kWebAppDisabled));
+        base::BindOnce(handle_install_request_callback_, install_options),
+        base::BindOnce(std::move(callback), install_options.install_url));
     return;
   }
 
@@ -30,7 +30,7 @@ void TestPendingAppManagerImpl::Install(ExternalInstallOptions install_options,
 void TestPendingAppManagerImpl::InstallApps(
     std::vector<ExternalInstallOptions> install_options_list,
     const RepeatingInstallCallback& callback) {
-  if (pre_install_callback_) {
+  if (handle_install_request_callback_) {
     for (auto& install_options : install_options_list)
       Install(std::move(install_options), callback);
     return;
@@ -54,9 +54,9 @@ void TestPendingAppManagerImpl::UninstallApps(
                                        std::move(callback));
 }
 
-void TestPendingAppManagerImpl::SetPreInstallCallback(
-    PreInstallCallback callback) {
-  pre_install_callback_ = std::move(callback);
+void TestPendingAppManagerImpl::SetHandleInstallRequestCallback(
+    HandleInstallRequestCallback callback) {
+  handle_install_request_callback_ = std::move(callback);
 }
 
 }  // namespace web_app

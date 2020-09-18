@@ -45,8 +45,8 @@
 namespace web_app {
 
 namespace {
-const char kSettingsAppNameForLogging[] = "OSSettings";
-const char kDiscoverAppNameForLogging[] = "Discover";
+const char kSettingsAppInternalName[] = "OSSettings";
+const char kDiscoverAppInternalName[] = "Discover";
 
 GURL AppUrl1() {
   return GURL(content::GetWebUIURL("system-app1"));
@@ -392,7 +392,7 @@ TEST_F(SystemWebAppManagerTest, Disabled) {
 
   base::flat_map<SystemAppType, SystemAppInfo> system_apps;
   system_apps.emplace(SystemAppType::SETTINGS,
-                      SystemAppInfo(kSettingsAppNameForLogging, AppUrl1()));
+                      SystemAppInfo(kSettingsAppInternalName, AppUrl1()));
 
   system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
   StartAndWaitForAppsToSynchronize();
@@ -415,9 +415,9 @@ TEST_F(SystemWebAppManagerTest, Enabled) {
 
   base::flat_map<SystemAppType, SystemAppInfo> system_apps;
   system_apps.emplace(SystemAppType::SETTINGS,
-                      SystemAppInfo(kSettingsAppNameForLogging, AppUrl1()));
+                      SystemAppInfo(kSettingsAppInternalName, AppUrl1()));
   system_apps.emplace(SystemAppType::DISCOVER,
-                      SystemAppInfo(kDiscoverAppNameForLogging, AppUrl2()));
+                      SystemAppInfo(kDiscoverAppInternalName, AppUrl2()));
 
   system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
   StartAndWaitForAppsToSynchronize();
@@ -436,10 +436,10 @@ TEST_F(SystemWebAppManagerTest, InstallFromWebAppInfo) {
   base::flat_map<SystemAppType, SystemAppInfo> system_apps;
   system_apps.emplace(
       SystemAppType::SETTINGS,
-      SystemAppInfo(kSettingsAppNameForLogging, AppUrl1(),
+      SystemAppInfo(kSettingsAppInternalName, AppUrl1(),
                     base::BindRepeating(&GetApp1WebApplicationInfo)));
   system_apps.emplace(SystemAppType::DISCOVER,
-                      SystemAppInfo(kDiscoverAppNameForLogging, AppUrl2()));
+                      SystemAppInfo(kDiscoverAppInternalName, AppUrl2()));
 
   system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
   StartAndWaitForAppsToSynchronize();
@@ -463,7 +463,7 @@ TEST_F(SystemWebAppManagerTest, UninstallAppInstalledInPreviousSession) {
 
   base::flat_map<SystemAppType, SystemAppInfo> system_apps;
   system_apps.emplace(SystemAppType::SETTINGS,
-                      SystemAppInfo(kSettingsAppNameForLogging, AppUrl1()));
+                      SystemAppInfo(kSettingsAppInternalName, AppUrl1()));
 
   system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
   StartAndWaitForAppsToSynchronize();
@@ -490,7 +490,7 @@ TEST_F(SystemWebAppManagerTest, AlwaysUpdate) {
   PrepareLoadUrlResults({AppUrl1()});
   base::flat_map<SystemAppType, SystemAppInfo> system_apps;
   system_apps.emplace(SystemAppType::SETTINGS,
-                      SystemAppInfo(kSettingsAppNameForLogging, AppUrl1()));
+                      SystemAppInfo(kSettingsAppInternalName, AppUrl1()));
   system_web_app_manager().SetSystemAppsForTesting(system_apps);
 
   system_web_app_manager().set_current_version(base::Version("1.0.0.0"));
@@ -504,7 +504,7 @@ TEST_F(SystemWebAppManagerTest, AlwaysUpdate) {
       {{AppUrl1(), AppIconUrl1()}, {AppUrl2(), AppIconUrl2()}});
   PrepareLoadUrlResults({AppUrl1(), AppUrl2()});
   system_apps.emplace(SystemAppType::DISCOVER,
-                      SystemAppInfo(kDiscoverAppNameForLogging, AppUrl2()));
+                      SystemAppInfo(kDiscoverAppInternalName, AppUrl2()));
   system_web_app_manager().SetSystemAppsForTesting(system_apps);
 
   // This one returns because on_apps_synchronized runs immediately.
@@ -544,7 +544,7 @@ TEST_F(SystemWebAppManagerTest, UpdateOnVersionChange) {
   PrepareLoadUrlResults({AppUrl1()});
   base::flat_map<SystemAppType, SystemAppInfo> system_apps;
   system_apps.emplace(SystemAppType::SETTINGS,
-                      SystemAppInfo(kSettingsAppNameForLogging, AppUrl1()));
+                      SystemAppInfo(kSettingsAppInternalName, AppUrl1()));
   system_web_app_manager().SetSystemAppsForTesting(system_apps);
 
   system_web_app_manager().set_current_version(base::Version("1.0.0.0"));
@@ -560,7 +560,7 @@ TEST_F(SystemWebAppManagerTest, UpdateOnVersionChange) {
   PrepareSystemAppDataToRetrieve({{AppUrl2(), AppIconUrl2()}});
   PrepareLoadUrlResults({AppUrl2()});
   system_apps.emplace(SystemAppType::DISCOVER,
-                      SystemAppInfo(kDiscoverAppNameForLogging, AppUrl2()));
+                      SystemAppInfo(kDiscoverAppInternalName, AppUrl2()));
   system_web_app_manager().SetSystemAppsForTesting(system_apps);
   StartAndWaitForAppsToSynchronize();
 
@@ -637,7 +637,7 @@ TEST_F(SystemWebAppManagerTest, UpdateOnLocaleChange) {
   PrepareLoadUrlResults({AppUrl1()});
   base::flat_map<SystemAppType, SystemAppInfo> system_apps;
   system_apps.emplace(SystemAppType::SETTINGS,
-                      SystemAppInfo(kSettingsAppNameForLogging, AppUrl1()));
+                      SystemAppInfo(kSettingsAppInternalName, AppUrl1()));
   system_web_app_manager().SetSystemAppsForTesting(system_apps);
 
   // First execution.
@@ -668,16 +668,18 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
   base::HistogramTester histograms;
   const std::string settings_app_install_result_histogram =
       std::string(SystemWebAppManager::kInstallResultHistogramName) + ".Apps." +
-      kSettingsAppNameForLogging;
+      kSettingsAppInternalName;
   const std::string discover_app_install_result_histogram =
       std::string(SystemWebAppManager::kInstallResultHistogramName) + ".Apps." +
-      kDiscoverAppNameForLogging;
+      kDiscoverAppInternalName;
   // Profile category for Chrome OS testing environment is "Other".
   const std::string profile_install_result_histogram =
       std::string(SystemWebAppManager::kInstallResultHistogramName) +
       ".Profiles.Other";
 
   InitEmptyRegistrar();
+  system_web_app_manager().SetUpdatePolicy(
+      SystemWebAppManager::UpdatePolicy::kAlwaysUpdate);
 
   {
     PrepareSystemAppDataToRetrieve({{AppUrl1(), AppIconUrl1()}});
@@ -685,7 +687,7 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
 
     base::flat_map<SystemAppType, SystemAppInfo> system_apps;
     system_apps.emplace(SystemAppType::SETTINGS,
-                        SystemAppInfo(kSettingsAppNameForLogging, AppUrl1()));
+                        SystemAppInfo(kSettingsAppInternalName, AppUrl1()));
     system_web_app_manager().SetSystemAppsForTesting(system_apps);
 
     histograms.ExpectTotalCount(
@@ -712,15 +714,17 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
         SystemWebAppManager::kInstallDurationHistogramName, 1);
   }
 
-  pending_app_manager().SetPreInstallCallback(base::BindLambdaForTesting(
-      [](const ExternalInstallOptions&) { return false; }));
+  pending_app_manager().SetHandleInstallRequestCallback(
+      base::BindLambdaForTesting([](const ExternalInstallOptions&) {
+        return InstallResultCode::kWebAppDisabled;
+      }));
 
   {
     base::flat_map<SystemAppType, SystemAppInfo> system_apps;
     system_apps.emplace(SystemAppType::SETTINGS,
-                        SystemAppInfo(kSettingsAppNameForLogging, AppUrl1()));
+                        SystemAppInfo(kSettingsAppInternalName, AppUrl1()));
     system_apps.emplace(SystemAppType::DISCOVER,
-                        SystemAppInfo(kDiscoverAppNameForLogging, AppUrl2()));
+                        SystemAppInfo(kDiscoverAppInternalName, AppUrl2()));
     system_web_app_manager().SetSystemAppsForTesting(system_apps);
 
     StartAndWaitForAppsToSynchronize();
@@ -736,10 +740,11 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
     histograms.ExpectBucketCount(discover_app_install_result_histogram,
                                  InstallResultCode::kWebAppDisabled, 1);
   }
+
   {
     base::flat_map<SystemAppType, SystemAppInfo> system_apps;
     system_apps.emplace(SystemAppType::SETTINGS,
-                        SystemAppInfo(kSettingsAppNameForLogging, AppUrl1()));
+                        SystemAppInfo(kSettingsAppInternalName, AppUrl1()));
     system_web_app_manager().SetSystemAppsForTesting(system_apps);
 
     histograms.ExpectTotalCount(
@@ -777,6 +782,91 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
   }
 }
 
+TEST_F(SystemWebAppManagerTest,
+       InstallResultHistogram_ExcludeAlreadyInstalled) {
+  base::HistogramTester histograms;
+  const std::string settings_app_install_result_histogram =
+      std::string(SystemWebAppManager::kInstallResultHistogramName) + ".Apps." +
+      kSettingsAppInternalName;
+  const std::string discover_app_install_result_histogram =
+      std::string(SystemWebAppManager::kInstallResultHistogramName) + ".Apps." +
+      kDiscoverAppInternalName;
+  // Profile category for Chrome OS testing environment is "Other".
+  const std::string profile_install_result_histogram =
+      std::string(SystemWebAppManager::kInstallResultHistogramName) +
+      ".Profiles.Other";
+
+  InitEmptyRegistrar();
+  base::flat_map<SystemAppType, SystemAppInfo> system_apps;
+  system_apps.emplace(SystemAppType::SETTINGS,
+                      SystemAppInfo(kSettingsAppInternalName, AppUrl1()));
+  system_apps.emplace(SystemAppType::DISCOVER,
+                      SystemAppInfo(kDiscoverAppInternalName, AppUrl2()));
+  system_web_app_manager().SetSystemAppsForTesting(system_apps);
+
+  pending_app_manager().SetHandleInstallRequestCallback(
+      base::BindLambdaForTesting([](const ExternalInstallOptions& opts) {
+        if (opts.install_url == AppUrl1())
+          return InstallResultCode::kSuccessAlreadyInstalled;
+        return InstallResultCode::kSuccessNewInstall;
+      }));
+
+  StartAndWaitForAppsToSynchronize();
+
+  // Record results that aren't kSuccessAlreadyInstalled.
+  histograms.ExpectTotalCount(SystemWebAppManager::kInstallResultHistogramName,
+                              1);
+  histograms.ExpectTotalCount(settings_app_install_result_histogram, 0);
+  histograms.ExpectTotalCount(discover_app_install_result_histogram, 1);
+  histograms.ExpectTotalCount(profile_install_result_histogram, 1);
+}
+
+TEST_F(SystemWebAppManagerTest,
+       InstallDurationHistogram_ExcludeNonForceInstall) {
+  base::HistogramTester histograms;
+
+  InitEmptyRegistrar();
+  base::flat_map<SystemAppType, SystemAppInfo> system_apps;
+  system_apps.emplace(SystemAppType::SETTINGS,
+                      SystemAppInfo(kSettingsAppInternalName, AppUrl1()));
+  system_apps.emplace(SystemAppType::DISCOVER,
+                      SystemAppInfo(kDiscoverAppInternalName, AppUrl2()));
+  system_web_app_manager().SetSystemAppsForTesting(system_apps);
+  system_web_app_manager().SetUpdatePolicy(
+      SystemWebAppManager::UpdatePolicy::kOnVersionChange);
+
+  {
+    pending_app_manager().SetHandleInstallRequestCallback(
+        base::BindLambdaForTesting([](const ExternalInstallOptions& opts) {
+          if (opts.install_url == AppUrl1())
+            return InstallResultCode::kWriteDataFailed;
+          return InstallResultCode::kSuccessNewInstall;
+        }));
+
+    StartAndWaitForAppsToSynchronize();
+
+    // The install duration histogram should be recorded, because the first
+    // install happens on a clean profile.
+    histograms.ExpectTotalCount(
+        SystemWebAppManager::kInstallDurationHistogramName, 1);
+  }
+
+  {
+    pending_app_manager().SetHandleInstallRequestCallback(
+        base::BindLambdaForTesting([](const ExternalInstallOptions& opts) {
+          if (opts.install_url == AppUrl1())
+            return InstallResultCode::kSuccessNewInstall;
+          return InstallResultCode::kSuccessAlreadyInstalled;
+        }));
+    StartAndWaitForAppsToSynchronize();
+
+    // Don't record install duration histogram, because this time we don't ask
+    // to force install all apps.
+    histograms.ExpectTotalCount(
+        SystemWebAppManager::kInstallDurationHistogramName, 1);
+  }
+}
+
 TEST_F(SystemWebAppManagerTest, AbandonFailedInstalls) {
   const std::vector<ExternalInstallOptions>& install_requests =
       pending_app_manager().install_requests();
@@ -790,7 +880,7 @@ TEST_F(SystemWebAppManagerTest, AbandonFailedInstalls) {
   PrepareLoadUrlResults({AppUrl1()});
   base::flat_map<SystemAppType, SystemAppInfo> system_apps;
   system_apps.emplace(SystemAppType::SETTINGS,
-                      SystemAppInfo(kSettingsAppNameForLogging, AppUrl1()));
+                      SystemAppInfo(kSettingsAppInternalName, AppUrl1()));
   system_web_app_manager().SetSystemAppsForTesting(system_apps);
 
   system_web_app_manager().set_current_version(base::Version("1.0.0.0"));
@@ -863,7 +953,7 @@ TEST_F(SystemWebAppManagerTest, AbandonFailedInstallsLocaleChange) {
   PrepareLoadUrlResults({AppUrl1()});
   base::flat_map<SystemAppType, SystemAppInfo> system_apps;
   system_apps.emplace(SystemAppType::SETTINGS,
-                      SystemAppInfo(kSettingsAppNameForLogging, AppUrl1()));
+                      SystemAppInfo(kSettingsAppInternalName, AppUrl1()));
   system_web_app_manager().SetSystemAppsForTesting(system_apps);
 
   system_web_app_manager().set_current_version(base::Version("1.0.0.0"));
@@ -934,7 +1024,7 @@ TEST_F(SystemWebAppManagerTest, SucceedsAfterOneRetry) {
   // Set up and install a baseline
   base::flat_map<SystemAppType, SystemAppInfo> system_apps;
   system_apps.emplace(SystemAppType::SETTINGS,
-                      SystemAppInfo(kSettingsAppNameForLogging, AppUrl1()));
+                      SystemAppInfo(kSettingsAppInternalName, AppUrl1()));
   system_web_app_manager().SetSystemAppsForTesting(system_apps);
 
   system_web_app_manager().set_current_version(base::Version("1.0.0.0"));
@@ -1009,7 +1099,7 @@ TEST_F(SystemWebAppManagerTest, ForceReinstallFeature) {
   // Register a test system app.
   base::flat_map<SystemAppType, SystemAppInfo> system_apps;
   system_apps.emplace(SystemAppType::SETTINGS,
-                      SystemAppInfo(kSettingsAppNameForLogging, AppUrl1()));
+                      SystemAppInfo(kSettingsAppInternalName, AppUrl1()));
   system_web_app_manager().SetSystemAppsForTesting(system_apps);
 
   // Install the App normally.

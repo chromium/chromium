@@ -146,7 +146,7 @@ class SystemWebAppManager {
   static constexpr char kInstallResultHistogramName[] =
       "Webapp.InstallResult.System";
   static constexpr char kInstallDurationHistogramName[] =
-      "Webapp.InstallDuration.System";
+      "Webapp.SystemApps.FreshInstallDuration";
 
   // Returns whether the given app type is enabled.
   static bool IsAppEnabled(SystemAppType type);
@@ -256,18 +256,21 @@ class SystemWebAppManager {
 
   bool AppHasFileHandlingOriginTrial(SystemAppType type);
 
-  void OnAppsSynchronized(const base::TimeTicks& install_start_time,
+  void OnAppsSynchronized(bool did_force_install_apps,
+                          const base::TimeTicks& install_start_time,
                           std::map<GURL, InstallResultCode> install_results,
                           std::map<GURL, bool> uninstall_results);
-  bool NeedsUpdate() const;
+  bool ShouldForceInstallApps() const;
   void UpdateLastAttemptedInfo();
   // Returns if we have exceeded the number of retry attempts allowed for this
   // version.
   bool CheckAndIncrementRetryAttempts();
 
-  void RecordSystemWebAppInstallMetrics(
-      const std::map<GURL, InstallResultCode>& install_results,
-      const base::TimeDelta& install_duration) const;
+  void RecordSystemWebAppInstallResults(
+      const std::map<GURL, InstallResultCode>& install_results) const;
+
+  void RecordSystemWebAppInstallDuration(
+      const base::TimeDelta& time_duration) const;
 
   Profile* profile_;
 

@@ -37,16 +37,19 @@ class TestPendingAppManagerImpl : public PendingAppManagerImpl {
     drop_requests_for_testing_ = drop_requests_for_testing;
   }
 
-  using PreInstallCallback =
-      base::RepeatingCallback<bool(const ExternalInstallOptions&)>;
+  using HandleInstallRequestCallback =
+      base::RepeatingCallback<InstallResultCode(const ExternalInstallOptions&)>;
 
-  void SetPreInstallCallback(PreInstallCallback callback);
+  // Set a callback to handle install requests. If set, this callback will be
+  // used in place of the real installation process. The callback takes a const
+  // ExternalInstallOptions& and should return a InstallResultCode.
+  void SetHandleInstallRequestCallback(HandleInstallRequestCallback callback);
 
  private:
   std::vector<ExternalInstallOptions> install_requests_;
   std::vector<GURL> uninstall_requests_;
   bool drop_requests_for_testing_ = false;
-  PreInstallCallback pre_install_callback_;
+  HandleInstallRequestCallback handle_install_request_callback_;
 };
 
 }  // namespace web_app
