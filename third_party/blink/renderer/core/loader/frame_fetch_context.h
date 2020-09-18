@@ -42,6 +42,7 @@ n * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
+#include "third_party/blink/renderer/platform/loader/fetch/loading_behavior_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
@@ -60,7 +61,8 @@ class LocalFrameClient;
 class Settings;
 class WebContentSettingsClient;
 
-class CORE_EXPORT FrameFetchContext final : public BaseFetchContext {
+class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
+                                            public LoadingBehaviorObserver {
  public:
   static ResourceFetcher* CreateFetcherForCommittedDocument(DocumentLoader&,
                                                             Document&);
@@ -118,6 +120,9 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext {
 
   mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
   TakePendingWorkerTimingReceiver(int request_id) override;
+
+  // LoadingBehaviorObserver overrides:
+  void DidObserveLoadingBehavior(LoadingBehaviorFlag) override;
 
   mojom::blink::ContentSecurityNotifier& GetContentSecurityNotifier() const;
 

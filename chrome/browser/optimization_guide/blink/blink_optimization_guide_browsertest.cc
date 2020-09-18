@@ -48,15 +48,6 @@ class BlinkOptimizationGuideBrowserTestBase : public InProcessBrowserTest {
     return GetObserverForActiveWebContents()->current_inquirer();
   }
 
-  void CloseWebContentsAndWait() {
-    int active_index = browser()->tab_strip_model()->active_index();
-    content::WebContentsDestroyedWatcher destroyed_watcher(
-        browser()->tab_strip_model()->GetWebContentsAt(active_index));
-    browser()->tab_strip_model()->CloseWebContentsAt(
-        active_index, TabStripModel::CLOSE_USER_GESTURE);
-    destroyed_watcher.Wait();
-  }
-
   GURL GetURLWithMockHost(const std::string& relative_url) const {
     // The optimization guide service doesn't work with the localhost. Instead,
     // resolve the relative url with the mock host.
@@ -147,7 +138,7 @@ class BlinkOptimizationGuideBrowserTest
         metadata.set_delay_type(
             proto::PerfectHeuristicsDelayType::DELAY_TYPE_FIRST_PAINT);
         metadata.set_priority_threshold(
-            proto::PriorityThreshold::PRIORITY_THRESHOLD_HIGH);
+            proto::PriorityThreshold::PRIORITY_THRESHOLD_MEDIUM);
         optimization_guide_metadata.SetAnyMetadataForTesting(metadata);
         break;
       }
@@ -186,7 +177,7 @@ class BlinkOptimizationGuideBrowserTest
           EXPECT_EQ(
               DelayCompetingLowPriorityRequestsDelayType::kFirstPaint,
               hints.delay_competing_low_priority_requests_hints->delay_type);
-          EXPECT_EQ(DelayCompetingLowPriorityRequestsPriorityThreshold::kHigh,
+          EXPECT_EQ(DelayCompetingLowPriorityRequestsPriorityThreshold::kMedium,
                     hints.delay_competing_low_priority_requests_hints
                         ->priority_threshold);
         }
@@ -203,12 +194,8 @@ class BlinkOptimizationGuideBrowserTest
         return GetURLWithMockHost(
             "/optimization_guide/delay-async-script-execution.html");
       case proto::OptimizationType::DELAY_COMPETING_LOW_PRIORITY_REQUESTS:
-        // Use the URL for DelayAsyncScriptExecution to avoid test failures
-        // because of unimplemented UKM.
-        // TODO(https://crbug.com/1112515): Add UKM for
-        // DelayCompetingLowPriorityRequests and test it.
         return GetURLWithMockHost(
-            "/optimization_guide/delay-async-script-execution.html");
+            "/optimization_guide/delay-competing-low-priority-requests.html");
       default:
         NOTREACHED();
         return GURL();
@@ -229,8 +216,12 @@ class BlinkOptimizationGuideBrowserTest
               1u);
           break;
         case proto::OptimizationType::DELAY_COMPETING_LOW_PRIORITY_REQUESTS:
-          // TODO(https://crbug.com/1112515): Add UKM for
-          // DelayCompetingLowPriorityRequests and test it.
+          EXPECT_EQ(1u, entries.size());
+          test_ukm_recorder_->ExpectEntryMetric(
+              entries.front(),
+              ukm::builders::PerfectHeuristics::
+                  kDelayCompetingLowPriorityRequestsName,
+              1u);
           break;
         default:
           NOTREACHED();
@@ -331,10 +322,10 @@ IN_PROC_BROWSER_TEST_P(BlinkOptimizationGuideBrowserTest, Ukm) {
     EXPECT_FALSE(CheckIfHintsAvailable(*hints));
   }
 
-  // Close the WebContents (and wait for it to be closed) as to force the
-  // renderer to send the page load metadata to the browser process, where the
-  // Perfect Heuristics Ukm event is logged.
-  CloseWebContentsAndWait();
+  // Force navigation to another page, which should force logging of histograms
+  // persisted at the end of the page load lifetime.
+  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+
   CheckUkmEntryForOptimization();
 }
 

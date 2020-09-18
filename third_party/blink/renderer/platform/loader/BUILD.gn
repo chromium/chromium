@@ -53,6 +53,7 @@ blink_platform_sources("loader") {
     "fetch/integrity_metadata.cc",
     "fetch/integrity_metadata.h",
     "fetch/loading_attribute_value.h",
+    "fetch/loading_behavior_observer.h",
     "fetch/memory_cache.cc",
     "fetch/memory_cache.h",
     "fetch/null_resource_fetcher_properties.cc",

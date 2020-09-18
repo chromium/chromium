@@ -25,6 +25,7 @@ namespace blink {
 
 class DetachableConsoleLogger;
 class DetachableResourceFetcherProperties;
+class LoadingBehaviorObserver;
 
 // Client interface to use the throttling/scheduling functionality that
 // ResourceLoadScheduler provides.
@@ -173,7 +174,8 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
                         ThrottleOptionOverride throttle_option_override,
                         const DetachableResourceFetcherProperties&,
                         FrameOrWorkerScheduler*,
-                        DetachableConsoleLogger& console_logger);
+                        DetachableConsoleLogger& console_logger,
+                        LoadingBehaviorObserver* loading_behavior_observer);
   ~ResourceLoadScheduler() override;
 
   void Trace(Visitor*) const;
@@ -391,6 +393,8 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
   bool delay_milestone_reached_ = false;
 
   ThrottleOptionOverride throttle_option_override_;
+
+  Member<LoadingBehaviorObserver> loading_behavior_observer_;
 
   // Hints for the DelayCompetingLowPriorityRequests optimization. See
   // https://crbug.com/1112515 for details.

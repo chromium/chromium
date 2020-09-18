@@ -237,9 +237,10 @@ ResourceFetcher* FrameFetchContext::CreateFetcherForCommittedDocument(
       *MakeGarbageCollected<FrameResourceFetcherProperties>(loader, document));
   LocalFrame* frame = document.GetFrame();
   DCHECK(frame);
+  auto* frame_fetch_context =
+      MakeGarbageCollected<FrameFetchContext>(loader, document, properties);
   ResourceFetcherInit init(
-      properties,
-      MakeGarbageCollected<FrameFetchContext>(loader, document, properties),
+      properties, frame_fetch_context,
       frame->GetTaskRunner(TaskType::kNetworking),
       MakeGarbageCollected<LoaderFactoryForFrame>(loader, *frame->DomWindow()),
       frame->DomWindow());
@@ -253,6 +254,7 @@ ResourceFetcher* FrameFetchContext::CreateFetcherForCommittedDocument(
       ResourceLoadScheduler::ThrottlingPolicy::kTight;
   init.frame_or_worker_scheduler = frame->GetFrameScheduler();
   init.archive = loader.Archive();
+  init.loading_behavior_observer = frame_fetch_context;
   ResourceFetcher* fetcher = MakeGarbageCollected<ResourceFetcher>(init);
   fetcher->SetResourceLoadObserver(
       MakeGarbageCollected<ResourceLoadObserverForFrame>(
@@ -1096,6 +1098,13 @@ mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
 FrameFetchContext::TakePendingWorkerTimingReceiver(int request_id) {
   DCHECK(!GetResourceFetcherProperties().IsDetached());
   return document_loader_->TakePendingWorkerTimingReceiver(request_id);
+}
+
+void FrameFetchContext::DidObserveLoadingBehavior(
+    LoadingBehaviorFlag behavior) {
+  if (GetResourceFetcherProperties().IsDetached())
+    return;
+  GetFrame()->Loader().GetDocumentLoader()->DidObserveLoadingBehavior(behavior);
 }
 
 mojom::blink::ContentSecurityNotifier&

@@ -594,7 +594,8 @@ ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
           init.throttle_option_override,
           *properties_,
           init.frame_or_worker_scheduler,
-          *console_logger_)),
+          *console_logger_,
+          init.loading_behavior_observer)),
       archive_(init.archive),
       resource_timing_report_timer_(
           task_runner_,

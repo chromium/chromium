@@ -43,6 +43,9 @@ enum LoadingBehaviorFlag {
   // Indicates that an async script was ready to execute before the script
   // element's node document has finished parsing.
   kLoadingBehaviorAsyncScriptReadyBeforeDocumentFinishedParsing = 1 << 9,
+  // Indicates that competing low priority requests were delayed. See
+  // https://crbug.com/1112515 for details.
+  kLoadingBehaviorCompetingLowPriorityRequestsDelayed = 1 << 10,
 };
 
 }  // namespace blink

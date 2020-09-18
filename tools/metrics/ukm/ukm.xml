@@ -9879,6 +9879,12 @@ be describing additional metrics about the same event.
       associated document has finished parsing.
     </summary>
   </metric>
+  <metric name="DelayCompetingLowPriorityRequests" enum="Boolean">
+    <summary>
+      Set to 1 when blink::ResourceLoadScheduler delays competing low priority
+      requests. See https://crbug.com/1112515 for details.
+    </summary>
+  </metric>
 </event>
 
 <event name="PeriodicBackgroundSyncEventCompleted">

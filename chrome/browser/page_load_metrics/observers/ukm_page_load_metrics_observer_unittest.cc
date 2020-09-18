@@ -1484,6 +1484,27 @@ TEST_F(UkmPageLoadMetricsObserverTest,
       1);
 }
 
+TEST_F(UkmPageLoadMetricsObserverTest,
+       PerfectHeuristicsDelayaCompetingLowPriorityRequests) {
+  NavigateAndCommit(GURL(kTestUrl1));
+
+  page_load_metrics::mojom::FrameMetadata metadata;
+  metadata.behavior_flags |= blink::LoadingBehaviorFlag::
+      kLoadingBehaviorCompetingLowPriorityRequestsDelayed;
+  tester()->SimulateMetadataUpdate(metadata, web_contents()->GetMainFrame());
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  auto entries = tester()->test_ukm_recorder().GetEntriesByName(
+      ukm::builders::PerfectHeuristics::kEntryName);
+  EXPECT_EQ(1ul, entries.size());
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entries.front(),
+      ukm::builders::PerfectHeuristics::kDelayCompetingLowPriorityRequestsName,
+      1);
+}
+
 TEST_F(UkmPageLoadMetricsObserverTest, MHTMLNotTracked) {
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
       GURL(kTestUrl1), web_contents());

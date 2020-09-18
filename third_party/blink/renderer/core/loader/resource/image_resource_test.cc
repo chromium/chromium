@@ -930,7 +930,8 @@ TEST_F(ImageResourceTest, PeriodicFlushTest) {
   auto* scheduler = MakeGarbageCollected<ResourceLoadScheduler>(
       ResourceLoadScheduler::ThrottlingPolicy::kNormal,
       ResourceLoadScheduler::ThrottleOptionOverride::kNone, properties,
-      frame_scheduler.get(), *MakeGarbageCollected<DetachableConsoleLogger>());
+      frame_scheduler.get(), *MakeGarbageCollected<DetachableConsoleLogger>(),
+      /*loading_behavior_observer=*/nullptr);
   ImageResource* image_resource = ImageResource::CreateForTest(test_url);
 
   // Ensure that |image_resource| has a loader.

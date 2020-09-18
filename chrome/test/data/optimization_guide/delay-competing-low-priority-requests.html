@@ -1,0 +1,37 @@
+<html>
+  <head>
+    <title>
+      DelayCompetingLowPriorityRequests Perfect Heuristics Optimization
+    </title>
+
+    <script>
+      let resolve_promise, reject_promise;
+      const promise = new Promise((resolve, reject) => {
+        resolve_promise = resolve;
+        reject_promise = reject;
+      });
+
+      // This is called from the C++ browser test code.
+      async function WaitForOptimizationToFinish() {
+        try {
+          await promise;
+          return "DONE";
+        } catch (error) {
+          return "ERROR";
+        }
+      }
+    </script>
+
+    <!-- This script is requested with the medium priority that is considered as
+         important before the competing low priority requests delay milestone,
+         so this request delays subsequent async script request whose priority
+         is low. -->
+    <script src="/optimization_guide/non-existent-script.js"></script>
+
+    <!-- This script is requested with the low priority, so it should be delayed
+         until the milestone. When this script executes, it will resolve the
+         promise, and continue the browser test. -->
+    <script async src="/optimization_guide/async-script.js"
+            onerror="reject_promise()"></script>
+  </head>
+</html>

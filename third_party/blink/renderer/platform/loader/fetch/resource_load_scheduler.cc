@@ -18,6 +18,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
+#include "third_party/blink/renderer/platform/loader/fetch/loading_behavior_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/aggregated_metric_reporter.h"
@@ -80,14 +81,16 @@ ResourceLoadScheduler::ResourceLoadScheduler(
     ThrottleOptionOverride throttle_option_override,
     const DetachableResourceFetcherProperties& resource_fetcher_properties,
     FrameOrWorkerScheduler* frame_or_worker_scheduler,
-    DetachableConsoleLogger& console_logger)
+    DetachableConsoleLogger& console_logger,
+    LoadingBehaviorObserver* loading_behavior_observer)
     : resource_fetcher_properties_(resource_fetcher_properties),
       policy_(initial_throttling_policy),
       outstanding_limit_for_throttled_frame_scheduler_(
           resource_fetcher_properties_->GetOutstandingThrottledLimit()),
       console_logger_(console_logger),
       clock_(base::DefaultClock::GetInstance()),
-      throttle_option_override_(throttle_option_override) {
+      throttle_option_override_(throttle_option_override),
+      loading_behavior_observer_(loading_behavior_observer) {
   if (!frame_or_worker_scheduler)
     return;
 
@@ -110,6 +113,7 @@ void ResourceLoadScheduler::Trace(Visitor* visitor) const {
   visitor->Trace(pending_request_map_);
   visitor->Trace(resource_fetcher_properties_);
   visitor->Trace(console_logger_);
+  visitor->Trace(loading_behavior_observer_);
 }
 
 void ResourceLoadScheduler::LoosenThrottlingPolicy() {
@@ -492,6 +496,13 @@ bool ResourceLoadScheduler::ShouldDelay(
         mojom::blink::DelayCompetingLowPriorityRequestsDelayType::kUnknown) {
       return false;
     }
+  }
+
+  // We get a chance to delay competing low priority requests. Record the fact
+  // in UKM to measure the application ratio of the optimization.
+  if (loading_behavior_observer_) {
+    loading_behavior_observer_->DidObserveLoadingBehavior(
+        kLoadingBehaviorCompetingLowPriorityRequestsDelayed);
   }
 
   return true;

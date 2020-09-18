@@ -530,6 +530,7 @@ struct PLATFORM_EXPORT ResourceFetcherInit final {
   FrameOrWorkerScheduler* frame_or_worker_scheduler = nullptr;
   ResourceLoadScheduler::ThrottleOptionOverride throttle_option_override =
       ResourceLoadScheduler::ThrottleOptionOverride::kNone;
+  LoadingBehaviorObserver* loading_behavior_observer = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ResourceFetcherInit);
 };

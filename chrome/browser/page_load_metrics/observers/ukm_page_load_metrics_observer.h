@@ -252,8 +252,9 @@ class UkmPageLoadMetricsObserver
   // Unique across the lifetime of the browser process.
   int main_document_sequence_number_ = -1;
 
-  // This is to capture observed LoadingBehaviorFlags.
+  // These are to capture observed LoadingBehaviorFlags.
   bool delay_async_script_execution_before_finished_parsing_seen_ = false;
+  bool delay_competing_low_priority_requests_seen_ = false;
 
   bool currently_in_foreground_ = false;
   // The last time the page became foregrounded, or navigation start if the page

@@ -829,12 +829,17 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
 }
 
 void UkmPageLoadMetricsObserver::ReportPerfectHeuristicsMetrics() {
-  ukm::builders::PerfectHeuristics builder(GetDelegate().GetPageUkmSourceId());
-  if (!delay_async_script_execution_before_finished_parsing_seen_)
+  if (!delay_async_script_execution_before_finished_parsing_seen_ &&
+      !delay_competing_low_priority_requests_seen_) {
     return;
+  }
 
-  builder.Setdelay_async_script_execution_before_finished_parsing(1).Record(
-      ukm::UkmRecorder::Get());
+  ukm::builders::PerfectHeuristics builder(GetDelegate().GetPageUkmSourceId());
+  if (delay_async_script_execution_before_finished_parsing_seen_)
+    builder.Setdelay_async_script_execution_before_finished_parsing(1);
+  if (delay_competing_low_priority_requests_seen_)
+    builder.SetDelayCompetingLowPriorityRequests(1);
+  builder.Record(ukm::UkmRecorder::Get());
 }
 
 void UkmPageLoadMetricsObserver::RecordAbortMetrics(
@@ -1110,5 +1115,10 @@ void UkmPageLoadMetricsObserver::OnLoadingBehaviorObserved(
       blink::LoadingBehaviorFlag::
           kLoadingBehaviorAsyncScriptReadyBeforeDocumentFinishedParsing) {
     delay_async_script_execution_before_finished_parsing_seen_ = true;
+  }
+
+  if (behavior_flag & blink::LoadingBehaviorFlag::
+                          kLoadingBehaviorCompetingLowPriorityRequestsDelayed) {
+    delay_competing_low_priority_requests_seen_ = true;
   }
 }
