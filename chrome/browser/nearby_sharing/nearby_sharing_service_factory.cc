@@ -27,7 +27,10 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
-#endif
+#include "chrome/browser/nearby_sharing/power_client_chromeos.h"
+#else  // !defined(OS_CHROMEOS)
+#include "chrome/browser/nearby_sharing/power_client.h"
+#endif  // defined(OS_CHROMEOS)
 
 namespace {
 
@@ -96,7 +99,12 @@ KeyedService* NearbySharingServiceFactory::BuildServiceInstanceFor(
 
   return new NearbySharingServiceImpl(
       pref_service, notification_display_service, profile,
-      std::move(nearby_connections_manager), &process_manager);
+      std::move(nearby_connections_manager), &process_manager,
+#if defined(OS_CHROMEOS)
+      std::make_unique<PowerClientChromeos>());
+#else   // !defined(OS_CHROMEOS)
+      std::make_unique<PowerClient>());
+#endif  // defined(OS_CHROMEOS)
 }
 
 content::BrowserContext* NearbySharingServiceFactory::GetBrowserContextToUse(

@@ -34,6 +34,7 @@
 #include "chrome/browser/nearby_sharing/nearby_share_settings.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/outgoing_share_target_info.h"
+#include "chrome/browser/nearby_sharing/power_client.h"
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
@@ -59,14 +60,16 @@ class NearbySharingServiceImpl
       public device::BluetoothAdapter::Observer,
       public NearbyConnectionsManager::IncomingConnectionListener,
       public NearbyConnectionsManager::DiscoveryListener,
-      public ash::SessionObserver {
+      public ash::SessionObserver,
+      public PowerClient::Observer {
  public:
   explicit NearbySharingServiceImpl(
       PrefService* prefs,
       NotificationDisplayService* notification_display_service,
       Profile* profile,
       std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
-      NearbyProcessManager* process_manager);
+      NearbyProcessManager* process_manager,
+      std::unique_ptr<PowerClient> power_client);
   ~NearbySharingServiceImpl() override;
 
   // NearbySharingService:
@@ -142,6 +145,10 @@ class NearbySharingServiceImpl
                              bool present) override;
   void AdapterPoweredChanged(device::BluetoothAdapter* adapter,
                              bool powered) override;
+
+  // PowerClient::Observer:
+  void SuspendImminent() override;
+  void SuspendDone() override;
 
   base::ObserverList<TransferUpdateCallback>& GetReceiveCallbacksFromState(
       ReceiveSurfaceState state);
@@ -311,6 +318,7 @@ class NearbySharingServiceImpl
   Profile* profile_;
   std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager_;
   NearbyProcessManager* process_manager_;
+  std::unique_ptr<PowerClient> power_client_;
   ScopedObserver<NearbyProcessManager, NearbyProcessManager::Observer>
       nearby_process_observer_{this};
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;

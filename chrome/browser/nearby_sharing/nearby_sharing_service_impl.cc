@@ -216,10 +216,12 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
     NotificationDisplayService* notification_display_service,
     Profile* profile,
     std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
-    NearbyProcessManager* process_manager)
+    NearbyProcessManager* process_manager,
+    std::unique_ptr<PowerClient> power_client)
     : profile_(profile),
       nearby_connections_manager_(std::move(nearby_connections_manager)),
       process_manager_(process_manager),
+      power_client_(std::move(power_client)),
       http_client_factory_(std::make_unique<NearbyShareClientFactoryImpl>(
           IdentityManagerFactory::GetForProfile(profile),
           profile->GetURLLoaderFactory(),
@@ -243,6 +245,7 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
       settings_(prefs, local_device_data_manager_.get()) {
   DCHECK(profile_);
   DCHECK(nearby_connections_manager_);
+  DCHECK(power_client_);
 
 #if defined(OS_CHROMEOS)
   auto* session_controller = ash::SessionController::Get();
@@ -253,6 +256,7 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
 #endif  // OS_CHROMEOS
 
   nearby_process_observer_.Add(process_manager_);
+  power_client_->AddObserver(this);
 
   settings_.AddSettingsObserver(settings_receiver_.BindNewPipeAndPassRemote());
 
@@ -298,6 +302,8 @@ void NearbySharingServiceImpl::Shutdown() {
   nearby_process_observer_.Remove(process_manager_);
   if (process_manager_->IsActiveProfile(profile_))
     process_manager_->StopProcess(profile_);
+
+  power_client_->RemoveObserver(this);
 
   StopFastInitiationAdvertising();
 
@@ -931,6 +937,16 @@ void NearbySharingServiceImpl::AdapterPoweredChanged(
     StopFastInitiationAdvertising();
 }
 
+void NearbySharingServiceImpl::SuspendImminent() {
+  NS_LOG(VERBOSE) << __func__ << ": Suspend imminent.";
+  InvalidateSurfaceState();
+}
+
+void NearbySharingServiceImpl::SuspendDone() {
+  NS_LOG(VERBOSE) << __func__ << ": Suspend done.";
+  InvalidateSurfaceState();
+}
+
 base::ObserverList<TransferUpdateCallback>&
 NearbySharingServiceImpl::GetReceiveCallbacksFromState(
     ReceiveSurfaceState state) {
@@ -1216,6 +1232,13 @@ void NearbySharingServiceImpl::InvalidateScanningState() {
   if (!profile_)
     return;
 
+  if (power_client_->IsSuspended()) {
+    StopScanning();
+    NS_LOG(VERBOSE) << __func__
+                    << ": Stopping discovery because the system is suspended.";
+    return;
+  }
+
   if (!process_manager_->IsActiveProfile(profile_)) {
     NS_LOG(VERBOSE) << __func__
                     << ": Stopping discovery because profile was not active: "
@@ -1282,6 +1305,14 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
   // Nothing to do if we're shutting down the profile.
   if (!profile_)
     return;
+
+  if (power_client_->IsSuspended()) {
+    StopAdvertising();
+    NS_LOG(VERBOSE)
+        << __func__
+        << ": Stopping advertising because the system is suspended.";
+    return;
+  }
 
   if (!process_manager_->IsActiveProfile(profile_)) {
     NS_LOG(VERBOSE) << __func__
@@ -1429,35 +1460,15 @@ void NearbySharingServiceImpl::StopAdvertising() {
 
 void NearbySharingServiceImpl::StartScanning() {
   DCHECK(profile_);
-
-  if (!settings_.GetEnabled()) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": Failed to scan because we're not enabled.";
-    return;
-  }
-
-  if (is_screen_locked_) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": Failed to scan because the user's screen is locked.";
-    return;
-  }
-
-  if (!HasAvailableConnectionMediums()) {
-    NS_LOG(VERBOSE) << __func__ << ": Failed to scan because Bluetooth is off.";
-    return;
-  }
+  DCHECK(!power_client_->IsSuspended());
+  DCHECK(settings_.GetEnabled());
+  DCHECK(!is_screen_locked_);
+  DCHECK(HasAvailableConnectionMediums());
+  DCHECK(foreground_send_transfer_callbacks_.might_have_observers());
 
   if (is_scanning_) {
     NS_LOG(VERBOSE) << __func__
                     << ": Failed to scan because we're currently scanning.";
-    return;
-  }
-
-  if (!foreground_send_transfer_callbacks_.might_have_observers()) {
-    NS_LOG(VERBOSE)
-        << __func__
-        << ": Failed to scan because there's no scanning send surface "
-           "registered.";
     return;
   }
 

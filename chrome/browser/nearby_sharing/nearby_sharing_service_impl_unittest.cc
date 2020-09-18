@@ -40,6 +40,7 @@
 #include "chrome/browser/nearby_sharing/mock_nearby_sharing_decoder.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_share_default_device_name.h"
+#include "chrome/browser/nearby_sharing/power_client.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -183,6 +184,12 @@ class MockShareTargetDiscoveredCallback : public ShareTargetDiscoveredCallback {
               (ShareTarget shareTarget),
               (override));
   MOCK_METHOD(void, OnShareTargetLost, (ShareTarget shareTarget), (override));
+};
+
+class FakePowerClient : public PowerClient {
+ public:
+  // Make SetSuspended() public for testing.
+  using PowerClient::SetSuspended;
 };
 
 namespace {
@@ -421,10 +428,12 @@ class NearbySharingServiceImplTest : public testing::Test {
         std::make_unique<NotificationDisplayServiceTester>(profile_);
     NotificationDisplayService* notification_display_service =
         NotificationDisplayServiceFactory::GetForProfile(profile_);
+    auto power_client = std::make_unique<FakePowerClient>();
+    power_client_ = power_client.get();
     auto service = std::make_unique<NearbySharingServiceImpl>(
         &prefs_, notification_display_service, profile_,
         base::WrapUnique(fake_nearby_connections_manager_),
-        &mock_nearby_process_manager_);
+        &mock_nearby_process_manager_, std::move(power_client));
     ON_CALL(mock_nearby_process_manager_, IsActiveProfile(profile_))
         .WillByDefault(Return(true));
 
@@ -869,6 +878,7 @@ class NearbySharingServiceImplTest : public testing::Test {
 #endif  // defined(OS_CHROMEOS)
   sync_preferences::TestingPrefServiceSyncable prefs_;
   FakeNearbyConnectionsManager* fake_nearby_connections_manager_ = nullptr;
+  FakePowerClient* power_client_ = nullptr;
   FakeNearbyShareLocalDeviceDataManager::Factory
       local_device_data_manager_factory_;
   FakeNearbyShareContactManager::Factory contact_manager_factory_;
@@ -1632,6 +1642,33 @@ TEST_F(NearbySharingServiceImplTest, ScreenLocksDuringAdvertising) {
 }
 #endif  // OS_CHROMEOS
 
+TEST_F(NearbySharingServiceImplTest,
+       SuspendedRegisterReceiveSurfaceNotAdvertising) {
+  power_client_->SetSuspended(true);
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
+  MockTransferUpdateCallback callback;
+  NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
+      &callback, NearbySharingService::ReceiveSurfaceState::kForeground);
+  EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
+  EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
+  EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
+}
+
+TEST_F(NearbySharingServiceImplTest, SuspendDuringAdvertising) {
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
+  MockTransferUpdateCallback transfer_callback;
+  MockShareTargetDiscoveredCallback discovery_callback;
+  EXPECT_EQ(
+      NearbySharingService::StatusCodes::kOk,
+      service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
+                                    SendSurfaceState::kForeground));
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
+
+  power_client_->SetSuspended(true);
+  EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
+  power_client_->SetSuspended(false);
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
+}
 TEST_F(NearbySharingServiceImplTest,
        DataUsageChangedRegisterReceiveSurfaceRestartsAdvertising) {
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
