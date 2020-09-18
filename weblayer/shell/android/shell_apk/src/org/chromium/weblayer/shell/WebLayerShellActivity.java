@@ -33,6 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
@@ -396,6 +397,10 @@ public class WebLayerShellActivity extends AppCompatActivity {
             @Override
             public void onActiveTabChanged(Tab activeTab) {
                 mUrlViewContainer.setDisplayedChild(NONEDITABLE_URL_TEXT_VIEW);
+
+                // This callback is fired with null as the param on removal of the active tab.
+                if (activeTab == null) return;
+
                 updateFavicon(activeTab);
             }
             @Override
@@ -663,7 +668,7 @@ public class WebLayerShellActivity extends AppCompatActivity {
         System.exit(0);
     }
 
-    private void updateFavicon(Tab tab) {
+    private void updateFavicon(@NonNull Tab tab) {
         if (tab == mBrowser.getActiveTab()) {
             assert mTabToFaviconFetcher.containsKey(tab);
             ((ImageView) findViewById(R.id.favicon_image_view))
