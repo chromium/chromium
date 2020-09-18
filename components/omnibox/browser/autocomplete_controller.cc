@@ -825,7 +825,7 @@ void AutocompleteController::UpdateHeaderInfoFromZeroSuggestProvider(
 
       const base::string16 header = result->GetHeaderForGroupId(group_id);
       if (!header.empty()) {
-        match.RecordAdditionalInfo("header string", base::UTF16ToUTF8(header));
+        match.RecordAdditionalInfo("header string", header);
       } else {
         // Strip all match group IDs that don't have a header string. Otherwise,
         // these matches will be shown at the bottom with an empty header row.

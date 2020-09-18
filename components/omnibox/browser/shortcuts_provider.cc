@@ -266,8 +266,7 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
   match.keyword = shortcut.match_core.keyword;
   match.RecordAdditionalInfo("number of hits", shortcut.number_of_hits);
   match.RecordAdditionalInfo("last access time", shortcut.last_access_time);
-  match.RecordAdditionalInfo("original input text",
-                             base::UTF16ToUTF8(shortcut.text));
+  match.RecordAdditionalInfo("original input text", shortcut.text);
 
   // Set |inline_autocompletion| and |allowed_to_be_default_match| if possible.
   // If the input is in keyword mode, navigation matches cannot be the default

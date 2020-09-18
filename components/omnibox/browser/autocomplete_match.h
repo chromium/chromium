@@ -352,6 +352,8 @@ struct AutocompleteMatch {
   // Adds optional information to the |additional_info| dictionary.
   void RecordAdditionalInfo(const std::string& property,
                             const std::string& value);
+  void RecordAdditionalInfo(const std::string& property,
+                            const base::string16& value);
   void RecordAdditionalInfo(const std::string& property, int value);
   void RecordAdditionalInfo(const std::string& property, base::Time value);
 

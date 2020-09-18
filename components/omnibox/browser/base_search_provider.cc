@@ -312,10 +312,9 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   match.subtypes = suggestion.subtypes();
   if (suggestion.type() == AutocompleteMatchType::SEARCH_SUGGEST_TAIL) {
     match.RecordAdditionalInfo(kACMatchPropertySuggestionText,
-                               base::UTF16ToUTF8(suggestion.suggestion()));
-    match.RecordAdditionalInfo(
-        kACMatchPropertyContentsPrefix,
-        base::UTF16ToUTF8(suggestion.match_contents_prefix()));
+                               suggestion.suggestion());
+    match.RecordAdditionalInfo(kACMatchPropertyContentsPrefix,
+                               suggestion.match_contents_prefix());
     match.RecordAdditionalInfo(
         kACMatchPropertyContentsStartIndex,
         static_cast<int>(

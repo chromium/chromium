@@ -900,6 +900,11 @@ void AutocompleteMatch::RecordAdditionalInfo(const std::string& property,
 }
 
 void AutocompleteMatch::RecordAdditionalInfo(const std::string& property,
+                                             const base::string16& value) {
+  RecordAdditionalInfo(property, base::UTF16ToUTF8(value));
+}
+
+void AutocompleteMatch::RecordAdditionalInfo(const std::string& property,
                                              int value) {
   RecordAdditionalInfo(property, base::NumberToString(value));
 }

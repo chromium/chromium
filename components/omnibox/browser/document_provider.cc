@@ -852,9 +852,8 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
       AutocompleteMatch::AddLastClassificationIfNecessary(
           &match.description_class_for_shortcuts, 0,
           ACMatchClassification::DIM);
-      match.RecordAdditionalInfo(
-          "description_for_shortcuts",
-          base::UTF16ToUTF8(match.description_for_shortcuts));
+      match.RecordAdditionalInfo("description_for_shortcuts",
+                                 match.description_for_shortcuts);
     }
 
     if (!match.TryRichAutocompletion(
