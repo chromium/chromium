@@ -96,6 +96,7 @@
 <translation id="1952728750904661634">Log masuk dengan akaun terurus</translation>
 <translation id="1974060860693918893">Lanjutan</translation>
 <translation id="1989112275319619282">Semak Imbas</translation>
+<translation id="1992734845128748707">Tukar Penyemak Imbas Lalai…</translation>
 <translation id="2015722694326466240">Untuk melihat kata laluan, mula-mula anda mesti menetapkan kod laluan pada peranti anda.</translation>
 <translation id="2073572773299281212">Aktif <ph name="DAYS" /> Hari Yang Lalu</translation>
 <translation id="2074131957428911366">Anda boleh memilih item yang hendak disegerakkan dalam <ph name="BEGIN_LINK" />tetapan<ph name="END_LINK" /> pada bila-bila masa.</translation>
@@ -380,7 +381,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5388358297987318779">Buka Imej</translation>
 <translation id="5407969256130905701">Buang Perubahan</translation>
 <translation id="5409365236829784218">Tiada aplikasi dipasang yang boleh membuka fail ini.</translation>
-<translation id="5416022985862681400">7 Hari Terakhir</translation>
+<translation id="5416022985862681400">7 Hari Lalu</translation>
 <translation id="543338862236136125">Edit kata laluan</translation>
 <translation id="5433691172869980887">Nama pengguna disalin</translation>
 <translation id="54401264925851789">Maklumat Halaman Keselamatan</translation>
