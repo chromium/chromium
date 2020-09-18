@@ -72,12 +72,12 @@ Polymer({
 
     titleKey_: {
       type: String,
-      value: '',
+      value: 'userCreationTitle',
     },
 
     subtitleKey_: {
       type: String,
-      value: '',
+      value: 'userCreationSubtitle',
     },
 
   },
