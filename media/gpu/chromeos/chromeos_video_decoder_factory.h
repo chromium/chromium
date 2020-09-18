@@ -15,6 +15,10 @@ namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
+namespace gpu {
+class GpuDriverBugWorkarounds;
+}
+
 namespace media {
 
 class DmabufVideoFramePool;
@@ -24,7 +28,8 @@ class VideoFrameConverter;
 
 class MEDIA_GPU_EXPORT ChromeosVideoDecoderFactory {
  public:
-  static SupportedVideoDecoderConfigs GetSupportedConfigs();
+  static SupportedVideoDecoderConfigs GetSupportedConfigs(
+      const gpu::GpuDriverBugWorkarounds& workarounds);
 
   // Create VideoDecoder instance that allocates VideoFrame from |frame_pool|
   // and converts the output VideoFrame |frame_converter|.

@@ -189,16 +189,7 @@ GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
   if (ShouldUseChromeOSDirectVideoDecoder(gpu_preferences_)) {
     if (!cros_supported_configs_) {
       cros_supported_configs_ =
-          ChromeosVideoDecoderFactory::GetSupportedConfigs();
-    }
-
-    if (cros_supported_configs_.has_value() &&
-        gpu_workarounds_.disable_accelerated_vp8_decode) {
-      base::EraseIf(*cros_supported_configs_,
-                    [](const SupportedVideoDecoderConfig& config) {
-                      return VP8PROFILE_MIN <= config.profile_min &&
-                             config.profile_max <= VP8PROFILE_MAX;
-                    });
+          ChromeosVideoDecoderFactory::GetSupportedConfigs(gpu_workarounds_);
     }
 
     supported_config_map[VideoDecoderImplementation::kDefault] =

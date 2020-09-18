@@ -45,13 +45,13 @@ VideoDecoderPipeline::CreateDecoderFunctions GetCreateDecoderFunctions() {
 }  // namespace
 
 // static
-SupportedVideoDecoderConfigs
-ChromeosVideoDecoderFactory::GetSupportedConfigs() {
+SupportedVideoDecoderConfigs ChromeosVideoDecoderFactory::GetSupportedConfigs(
+    const gpu::GpuDriverBugWorkarounds& workarounds) {
   SupportedVideoDecoderConfigs supported_configs;
   SupportedVideoDecoderConfigs configs;
 
 #if BUILDFLAG(USE_VAAPI)
-  configs = VaapiVideoDecoder::GetSupportedConfigs();
+  configs = VaapiVideoDecoder::GetSupportedConfigs(workarounds);
   supported_configs.insert(supported_configs.end(), configs.begin(),
                            configs.end());
 #endif  // BUILDFLAG(USE_VAAPI)
