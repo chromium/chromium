@@ -36,6 +36,8 @@ class CastDialogSinkButton : public HoverButton {
 
   const UIMediaSink& sink() const { return sink_; }
 
+  static const gfx::VectorIcon* GetVectorIcon(SinkIconType icon_type);
+
  private:
   friend class MediaRouterUiForTest;
   FRIEND_TEST_ALL_PREFIXES(CastDialogSinkButtonTest, OverrideStatusText);

@@ -6,91 +6,74 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/button/label_button.h"
-#include "ui/views/layout/box_layout.h"
+#include "ui/views/controls/styled_label.h"
 
 namespace {
 
-constexpr gfx::Insets kIconContainerInsets{10, 15};
-constexpr int kDeviceIconSize = 18;
-constexpr gfx::Insets kLabelsContainerInsets{18, 0};
+constexpr int kDeviceIconSize = 20;
+constexpr auto kDeviceIconBorder = gfx::Insets(6);
 constexpr gfx::Size kDeviceEntryViewSize{400, 30};
 constexpr int kEntryHighlightOpacity = 45;
 
+void ChangeEntryColor(views::ImageView* image_view,
+                      views::StyledLabel* title_view,
+                      views::Label* subtitle_view,
+                      const gfx::VectorIcon* icon,
+                      SkColor foreground_color,
+                      SkColor background_color) {
+  image_view->SetImage(
+      gfx::CreateVectorIcon(*icon, kDeviceIconSize, foreground_color));
+
+  title_view->SetDisplayedOnBackgroundColor(background_color);
+  if (!title_view->GetText().empty()) {
+    views::StyledLabel::RangeStyleInfo style_info;
+    style_info.text_style = views::style::STYLE_PRIMARY;
+    style_info.override_color = foreground_color;
+    title_view->ClearStyleRanges();
+    title_view->AddStyleRange(gfx::Range(0, title_view->GetText().length()),
+                              style_info);
+    title_view->SizeToFit(0);
+  }
+
+  if (subtitle_view) {
+    subtitle_view->SetEnabledColor(foreground_color);
+    subtitle_view->SetBackgroundColor(background_color);
+  }
+}
+
+std::unique_ptr<views::ImageView> GetAudioDeviceIcon() {
+  auto icon_view = std::make_unique<views::ImageView>();
+  icon_view->SetImage(gfx::CreateVectorIcon(
+      vector_icons::kHeadsetIcon, kDeviceIconSize, gfx::kPlaceholderColor));
+  icon_view->SetBorder(views::CreateEmptyBorder(kDeviceIconBorder));
+  return icon_view;
+}
+
 }  // namespace
 
-DeviceEntryUI::DeviceEntryUI(SkColor foreground_color,
-                             SkColor background_color,
-                             const std::string& raw_device_id,
+DeviceEntryUI::DeviceEntryUI(const std::string& raw_device_id,
                              const std::string& device_name,
                              const gfx::VectorIcon* icon,
                              const std::string& subtext)
-    : foreground_color_(foreground_color),
-      background_color_(background_color),
-      raw_device_id_(raw_device_id),
-      device_name_(device_name),
-      icon_(icon) {}
+    : raw_device_id_(raw_device_id), device_name_(device_name), icon_(icon) {}
 
-std::string DeviceEntryUI::GetEntryLabelForTesting() {
-  return base::UTF16ToUTF8(device_name_label_->GetText());
-}
-
-AudioDeviceEntryView::AudioDeviceEntryView(SkColor foreground_color,
-                                           SkColor background_color,
-                                           const std::string& raw_device_id,
-                                           const std::string& device_name,
-                                           const std::string& subtext)
-    : DeviceEntryUI(foreground_color,
-                    background_color,
-                    raw_device_id,
-                    device_name,
-                    &vector_icons::kHeadsetIcon) {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal));
-
-  icon_container_ = AddChildView(std::make_unique<views::View>());
-  auto* icon_container_layout =
-      icon_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, kIconContainerInsets));
-  icon_container_layout->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kCenter);
-  icon_container_layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-  device_icon_ =
-      icon_container_->AddChildView(std::make_unique<views::ImageView>());
-  device_icon_->SetImage(
-      gfx::CreateVectorIcon(*icon_, kDeviceIconSize, foreground_color));
-
-  labels_container_ = AddChildView(std::make_unique<views::View>());
-  auto* labels_container_layout =
-      labels_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical, kLabelsContainerInsets));
-  labels_container_layout->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kCenter);
-  labels_container_layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
-
-  views::Label::CustomFont device_name_label_font{
-      views::Label::GetDefaultFontList().DeriveWithSizeDelta(1)};
-  device_name_label_ =
-      labels_container_->AddChildView(std::make_unique<views::Label>(
-          base::UTF8ToUTF16(device_name_), device_name_label_font));
-  device_name_label_->SetEnabledColor(foreground_color);
-  device_name_label_->SetBackgroundColor(background_color);
-
-  if (!subtext.empty()) {
-    device_subtext_label_ = labels_container_->AddChildView(
-        std::make_unique<views::Label>(base::UTF8ToUTF16(subtext)));
-    device_subtext_label_->SetTextStyle(
-        views::style::TextStyle::STYLE_SECONDARY);
-    device_subtext_label_->SetEnabledColor(foreground_color);
-    device_subtext_label_->SetBackgroundColor(background_color);
-  }
-
-  // Ensures that hovering over these items also hovers this view.
-  icon_container_->set_can_process_events_within_subtree(false);
-  labels_container_->set_can_process_events_within_subtree(false);
+AudioDeviceEntryView::AudioDeviceEntryView(
+    views::ButtonListener* button_listener,
+    SkColor foreground_color,
+    SkColor background_color,
+    const std::string& raw_device_id,
+    const std::string& device_name,
+    const std::string& subtext)
+    : DeviceEntryUI(raw_device_id, device_name, &vector_icons::kHeadsetIcon),
+      HoverButton(button_listener,
+                  GetAudioDeviceIcon(),
+                  base::UTF8ToUTF16(device_name),
+                  base::UTF8ToUTF16(subtext)) {
+  ChangeEntryColor(static_cast<views::ImageView*>(icon_view()), title(),
+                   subtitle(), icon_, foreground_color, background_color);
 
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetInkDropMode(Button::InkDropMode::ON);
@@ -115,46 +98,55 @@ void AudioDeviceEntryView::SetHighlighted(bool highlighted) {
 
 void AudioDeviceEntryView::OnColorsChanged(SkColor foreground_color,
                                            SkColor background_color) {
-  foreground_color_ = foreground_color;
-  background_color_ = background_color;
-  set_ink_drop_base_color(foreground_color_);
+  set_ink_drop_base_color(foreground_color);
 
-  device_icon_->SetImage(
-      gfx::CreateVectorIcon(*icon_, kDeviceIconSize, foreground_color_));
-
-  device_name_label_->SetEnabledColor(foreground_color_);
-  device_name_label_->SetBackgroundColor(background_color_);
-
-  if (device_subtext_label_) {
-    device_subtext_label_->SetEnabledColor(foreground_color_);
-    device_subtext_label_->SetBackgroundColor(background_color_);
-  }
+  ChangeEntryColor(static_cast<views::ImageView*>(icon_view()), title(),
+                   subtitle(), icon_, foreground_color, background_color);
 
   // Reapply highlight formatting as some effects rely on these colors.
   SetHighlighted(is_highlighted_);
+}
+
+SkColor AudioDeviceEntryView::GetInkDropBaseColor() const {
+  return views::Button::GetInkDropBaseColor();
 }
 
 DeviceEntryUIType AudioDeviceEntryView::GetType() const {
   return DeviceEntryUIType::kAudio;
 }
 
-CastDeviceEntryView::CastDeviceEntryView(SkColor foreground_color,
+CastDeviceEntryView::CastDeviceEntryView(views::ButtonListener* button_listener,
+                                         SkColor foreground_color,
                                          SkColor background_color,
                                          const media_router::UIMediaSink& sink)
-    : DeviceEntryUI(foreground_color,
-                    background_color,
-                    sink.id,
+    : DeviceEntryUI(sink.id,
                     base::UTF16ToUTF8(sink.friendly_name),
-                    // TODO(muyaoxu): change device icon
-                    &vector_icons::kHeadsetIcon),
-      CastDialogSinkButton(nullptr,
+                    CastDialogSinkButton::GetVectorIcon(sink.icon_type)),
+      CastDialogSinkButton(button_listener,
                            sink,
-                           /* TODO(muyaoxu): change this to button_tag */ 0) {}
+                           /* TODO(muyaoxu): button tag */ -1) {
+  // TODO(muyaoxu): change the sink's style based on its UIMediaSinkState
+  ChangeEntryColor(static_cast<views::ImageView*>(icon_view()), title(),
+                   subtitle(), icon_, foreground_color, background_color);
 
-// TODO(muyaoxu): Implement this function
+  SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  SetInkDropMode(Button::InkDropMode::ON);
+  set_ink_drop_base_color(foreground_color);
+  set_has_ink_drop_action_on_click(true);
+  SetPreferredSize(kDeviceEntryViewSize);
+}
+
 void CastDeviceEntryView::OnColorsChanged(SkColor foreground_color,
-                                          SkColor background_color) {}
+                                          SkColor background_color) {
+  set_ink_drop_base_color(foreground_color);
+  ChangeEntryColor(static_cast<views::ImageView*>(icon_view()), title(),
+                   subtitle(), icon_, foreground_color, background_color);
+}
 
 DeviceEntryUIType CastDeviceEntryView::GetType() const {
   return DeviceEntryUIType::kCast;
+}
+
+SkColor CastDeviceEntryView::GetInkDropBaseColor() const {
+  return views::Button::GetInkDropBaseColor();
 }

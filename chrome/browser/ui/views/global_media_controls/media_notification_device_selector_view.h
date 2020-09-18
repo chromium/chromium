@@ -11,9 +11,6 @@
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "media/audio/audio_device_description.h"
-#include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/button/md_text_button.h"
-#include "ui/views/layout/box_layout.h"
 
 namespace {
 class ExpandDeviceSelectorButton;
@@ -73,13 +70,13 @@ class MediaNotificationDeviceSelectorView
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
                            ExpandButtonOpensEntryContainer);
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
-                           DeviceButtonClickNotifiesContainer);
+                           AudioDeviceButtonClickNotifiesContainer);
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
-                           CurrentDeviceHighlighted);
+                           CurrentAudioDeviceHighlighted);
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
-                           DeviceHighlightedOnChange);
+                           AudioDeviceHighlightedOnChange);
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
-                           DeviceButtonsChange);
+                           AudioDeviceButtonsChange);
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
                            AudioDevicesCountHistogramRecorded);
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,

@@ -184,9 +184,8 @@ void MediaNotificationDeviceSelectorView::UpdateAvailableAudioDevices(
   bool current_device_still_exists = false;
   for (auto description : device_descriptions) {
     auto device_entry_view = std::make_unique<AudioDeviceEntryView>(
-        foreground_color_, background_color_, description.unique_id,
+        this, foreground_color_, background_color_, description.unique_id,
         description.device_name, "");
-    device_entry_view->set_listener(this);
     device_entry_view->set_tag(next_tag_++);
     device_entry_ui_map_[device_entry_view->tag()] = device_entry_view.get();
     device_entry_views_container_->AddChildView(std::move(device_entry_view));
@@ -354,13 +353,14 @@ void MediaNotificationDeviceSelectorView::OnModelUpdated(
   RemoveDevicesOfType(DeviceEntryUIType::kCast);
   for (auto sink : model.media_sinks()) {
     auto device_entry_view = std::make_unique<CastDeviceEntryView>(
-        foreground_color_, background_color_, sink);
+        this, foreground_color_, background_color_, sink);
     device_entry_view->set_tag(next_tag_++);
     device_entry_ui_map_[device_entry_view->tag()] = device_entry_view.get();
     device_entry_views_container_->AddChildView(std::move(device_entry_view));
   }
   SetVisible(true);
   delegate_->OnDeviceSelectorViewSizeChanged();
+  Layout();
 }
 
 void MediaNotificationDeviceSelectorView::OnControllerInvalidated() {

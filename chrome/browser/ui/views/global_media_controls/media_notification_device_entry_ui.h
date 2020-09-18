@@ -6,14 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_DEVICE_ENTRY_UI_H_
 
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
-#include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/vector_icon_types.h"
-#include "ui/views/controls/button/button.h"
-
-namespace views {
-class ImageView;
-class Label;
-}  // namespace views
 
 enum class DeviceEntryUIType {
   kAudio = 0,
@@ -23,9 +15,7 @@ enum class DeviceEntryUIType {
 
 class DeviceEntryUI {
  public:
-  DeviceEntryUI(SkColor foreground_color,
-                SkColor background_color,
-                const std::string& raw_device_id,
+  DeviceEntryUI(const std::string& raw_device_id,
                 const std::string& device_name,
                 const gfx::VectorIcon* icon_,
                 const std::string& subtext = "");
@@ -41,45 +31,41 @@ class DeviceEntryUI {
                                SkColor background_color) = 0;
   virtual DeviceEntryUIType GetType() const = 0;
 
-  std::string GetEntryLabelForTesting();
   bool GetEntryIsHighlightedForTesting() const { return is_highlighted_; }
 
  protected:
-  SkColor foreground_color_, background_color_;
   const std::string raw_device_id_;
   const std::string device_name_;
   bool is_highlighted_ = false;
   const gfx::VectorIcon* const icon_;
-  views::Label* device_name_label_ = nullptr;
 };
 
-class AudioDeviceEntryView : public views::Button, public DeviceEntryUI {
+class AudioDeviceEntryView : public DeviceEntryUI, public HoverButton {
  public:
-  AudioDeviceEntryView(SkColor foreground_color,
+  AudioDeviceEntryView(views::ButtonListener* button_listener,
+                       SkColor foreground_color,
                        SkColor background_color,
                        const std::string& raw_device_id,
                        const std::string& name,
                        const std::string& subtext = "");
   ~AudioDeviceEntryView() override = default;
 
-  void SetHighlighted(bool highlighted);
-
   // DeviceEntryUI
   void OnColorsChanged(SkColor foreground_color,
                        SkColor background_color) override;
   DeviceEntryUIType GetType() const override;
 
- private:
-  views::View* icon_container_ = nullptr;
-  views::ImageView* device_icon_ = nullptr;
-  views::View* labels_container_ = nullptr;
-  views::Label* device_subtext_label_ = nullptr;
+  // HoverButton
+  SkColor GetInkDropBaseColor() const override;
+
+  void SetHighlighted(bool highlighted);
 };
 
 class CastDeviceEntryView : public DeviceEntryUI,
                             public media_router::CastDialogSinkButton {
  public:
-  CastDeviceEntryView(SkColor foreground_color,
+  CastDeviceEntryView(views::ButtonListener* button_listener,
+                      SkColor foreground_color,
                       SkColor background_color,
                       const media_router::UIMediaSink& sink);
   ~CastDeviceEntryView() override = default;
@@ -88,6 +74,9 @@ class CastDeviceEntryView : public DeviceEntryUI,
   void OnColorsChanged(SkColor foreground_color,
                        SkColor background_color) override;
   DeviceEntryUIType GetType() const override;
+
+  // HoverButton
+  SkColor GetInkDropBaseColor() const override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_DEVICE_ENTRY_UI_H_
