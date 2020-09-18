@@ -29,7 +29,9 @@ function pollResultAndCheck(t, id, expected) {
 
 
       if (res !== "NONE") {
-        t.step(() => assert_equals(res, expected));
+        if (res !== expected) {
+          t.step(() => assert_unreached('Stash result does not equal expected result.'));
+        }
         t.done();
         resolve();
       } else {
