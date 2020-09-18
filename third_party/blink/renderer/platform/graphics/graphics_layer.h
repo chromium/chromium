@@ -374,4 +374,9 @@ void ForAllPaintingGraphicsLayers(GraphicsLayerType& layer,
 
 }  // namespace blink
 
+#if DCHECK_IS_ON()
+// Outside the blink namespace for ease of invocation from gdb.
+PLATFORM_EXPORT void showGraphicsLayerTree(const blink::GraphicsLayer*);
+#endif
+
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRAPHICS_LAYER_H_

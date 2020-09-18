@@ -42,7 +42,6 @@ void VisualRectPerfTest::RunPerfTest(unsigned iteration_count,
 
   LOG(ERROR)
       << "  Time to run MapToVisualRectInAncestorSpace w/GeometryMapper: "
-
       << (base::TimeTicks::Now() - start).InMilliseconds() << "ms";
 }
 

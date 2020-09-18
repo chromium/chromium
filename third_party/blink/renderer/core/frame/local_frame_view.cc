@@ -121,7 +121,6 @@
 #include "third_party/blink/renderer/core/paint/block_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_inputs_updater.h"
-#include "third_party/blink/renderer/core/paint/compositing/graphics_layer_tree_as_text.h"
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/frame_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -2891,15 +2890,6 @@ static void UpdateLayerDebugInfoRecursively(const GraphicsLayer& root) {
       });
 }
 
-static void PaintGraphicsLayerRecursively(
-    GraphicsLayer* layer,
-    HashSet<const GraphicsLayer*>& repainted_layers) {
-  layer->PaintRecursively(repainted_layers);
-#if DCHECK_IS_ON()
-  VerboseLogGraphicsLayerTree(layer);
-#endif
-}
-
 void LocalFrameView::PaintTree(
     HashSet<const GraphicsLayer*>& repainted_layers) {
   SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
@@ -2986,7 +2976,7 @@ void LocalFrameView::PaintTree(
     // the host page and will be painted during painting of the host page.
     if (GraphicsLayer* root_graphics_layer =
             layout_view->Compositor()->PaintRootGraphicsLayer()) {
-      PaintGraphicsLayerRecursively(root_graphics_layer, repainted_layers);
+      root_graphics_layer->PaintRecursively(repainted_layers);
       if (!repainted_layers.IsEmpty()) {
         // If the painted result changed, the recorded hit test data may have
         // changed which will affect the mapped hit test geometry.

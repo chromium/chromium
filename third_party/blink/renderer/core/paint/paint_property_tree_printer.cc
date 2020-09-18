@@ -224,22 +224,20 @@ CORE_EXPORT void showAllPropertyTrees(const blink::LocalFrameView& rootFrame) {
 }
 
 void showTransformPropertyTree(const blink::LocalFrameView& rootFrame) {
-  LOG(ERROR) << "Transform tree:\n"
-             << transformPropertyTreeAsString(rootFrame).Utf8();
+  LOG(INFO) << "Transform tree:\n"
+            << transformPropertyTreeAsString(rootFrame).Utf8();
 }
 
 void showClipPropertyTree(const blink::LocalFrameView& rootFrame) {
-  LOG(ERROR) << "Clip tree:\n" << clipPropertyTreeAsString(rootFrame).Utf8();
+  LOG(INFO) << "Clip tree:\n" << clipPropertyTreeAsString(rootFrame).Utf8();
 }
 
 void showEffectPropertyTree(const blink::LocalFrameView& rootFrame) {
-  LOG(ERROR) << "Effect tree:\n"
-             << effectPropertyTreeAsString(rootFrame).Utf8();
+  LOG(INFO) << "Effect tree:\n" << effectPropertyTreeAsString(rootFrame).Utf8();
 }
 
 void showScrollPropertyTree(const blink::LocalFrameView& rootFrame) {
-  LOG(ERROR) << "Scroll tree:\n"
-             << scrollPropertyTreeAsString(rootFrame).Utf8();
+  LOG(INFO) << "Scroll tree:\n" << scrollPropertyTreeAsString(rootFrame).Utf8();
 }
 
 String transformPropertyTreeAsString(const blink::LocalFrameView& rootFrame) {

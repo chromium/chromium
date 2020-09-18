@@ -981,6 +981,8 @@ component("platform") {
     "graphics/graphics_layer.cc",
     "graphics/graphics_layer.h",
     "graphics/graphics_layer_client.h",
+    "graphics/graphics_layer_tree_as_text.cc",
+    "graphics/graphics_layer_tree_as_text.h",
     "graphics/graphics_types.cc",
     "graphics/graphics_types.h",
     "graphics/graphics_types_3d.h",

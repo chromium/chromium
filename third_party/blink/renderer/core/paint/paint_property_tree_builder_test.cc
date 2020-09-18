@@ -299,8 +299,6 @@ TEST_P(PaintPropertyTreeBuilderTest, OverlapNoPaintOffsetTranslation) {
     <div id=target style='margin-top: -50px; position: relative; opacity: 0.5'></div>
   )HTML");
   CHECK(GetDocument().GetPage()->GetScrollbarTheme().UsesOverlayScrollbars());
-  Element* abs_pos = GetDocument().getElementById("target");
-  LOG(ERROR) << "obj: " << abs_pos->GetLayoutObject();
   const auto* properties = PaintPropertiesForElement("target");
   EXPECT_EQ(nullptr, properties->PaintOffsetTranslation());
 }
@@ -315,8 +313,6 @@ TEST_P(PaintPropertyTreeBuilderTest, AssumeOverlapNoPaintOffsetTranslation) {
     <div style="height: 1000px"></div>
   )HTML");
   CHECK(GetDocument().GetPage()->GetScrollbarTheme().UsesOverlayScrollbars());
-  Element* abs_pos = GetDocument().getElementById("target");
-  LOG(ERROR) << "obj: " << abs_pos->GetLayoutObject();
   const auto* properties = PaintPropertiesForElement("target");
   EXPECT_EQ(nullptr, properties->PaintOffsetTranslation());
 }

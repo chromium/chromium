@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/paint/compositing/graphics_layer_tree_as_text.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_layer_tree_as_text.h"
 
 #include "cc/layers/picture_layer.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
@@ -72,34 +72,4 @@ String GraphicsLayerTreeAsTextForTesting(const GraphicsLayer* layer,
   return GraphicsLayerTreeAsJSON(layer, flags)->ToPrettyJSONString();
 }
 
-#if DCHECK_IS_ON()
-void VerboseLogGraphicsLayerTree(const GraphicsLayer* root) {
-  if (!VLOG_IS_ON(2))
-    return;
-
-  using GraphicsLayerTreeMap = HashMap<const GraphicsLayer*, String>;
-  DEFINE_STATIC_LOCAL(GraphicsLayerTreeMap, s_previous_trees, ());
-  LayerTreeFlags flags = VLOG_IS_ON(3) ? 0xffffffff : kOutputAsLayerTree;
-  String new_tree = GraphicsLayerTreeAsTextForTesting(root, flags);
-  auto it = s_previous_trees.find(root);
-  if (it == s_previous_trees.end() || it->value != new_tree) {
-    VLOG(2) << "GraphicsLayer tree:\n" << new_tree.Utf8();
-    s_previous_trees.Set(root, new_tree);
-    // For simplification, we don't remove deleted GraphicsLayers from the
-    // map.
-  }
-}
-#endif
-
 }  // namespace blink
-#if DCHECK_IS_ON()
-void showGraphicsLayerTree(const blink::GraphicsLayer* layer) {
-  if (!layer) {
-    LOG(ERROR) << "Cannot showGraphicsLayerTree for (nil).";
-    return;
-  }
-
-  String output = blink::GraphicsLayerTreeAsTextForTesting(layer, 0xffffffff);
-  LOG(ERROR) << output.Utf8();
-}
-#endif

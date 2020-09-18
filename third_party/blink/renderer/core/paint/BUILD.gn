@@ -54,8 +54,6 @@ blink_core_sources("paint") {
     "compositing/compositing_requirements_updater.h",
     "compositing/compositing_state.h",
     "compositing/compositing_update_type.h",
-    "compositing/graphics_layer_tree_as_text.cc",
-    "compositing/graphics_layer_tree_as_text.h",
     "compositing/graphics_layer_tree_builder.cc",
     "compositing/graphics_layer_tree_builder.h",
     "compositing/graphics_layer_updater.cc",

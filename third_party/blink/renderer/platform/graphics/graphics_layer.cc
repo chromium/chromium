@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_chunks_to_cc_layer.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_layer_tree_as_text.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/logging_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -271,6 +272,15 @@ void GraphicsLayer::PaintRecursively(
                                  if (layer.Paint())
                                    repainted_layers.insert(&layer);
                                });
+
+#if DCHECK_IS_ON()
+  if (!repainted_layers.IsEmpty()) {
+    VLOG(2) << "GraphicsLayer tree:\n"
+            << GraphicsLayerTreeAsTextForTesting(
+                   this, VLOG_IS_ON(3) ? 0xffffffff : kOutputAsLayerTree)
+                   .Utf8();
+  }
+#endif
 }
 
 bool GraphicsLayer::Paint() {
@@ -292,12 +302,8 @@ bool GraphicsLayer::Paint() {
     return false;
   }
 
-#if DCHECK_IS_ON()
-  if (VLOG_IS_ON(2)) {
-    LOG(ERROR) << "Painted GraphicsLayer: " << DebugName()
-               << " interest_rect=" << InterestRect().ToString();
-  }
-#endif
+  DVLOG(2) << "Painted GraphicsLayer: " << DebugName()
+           << " interest_rect=" << InterestRect().ToString();
 
   DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
   // Generate raster invalidations for SPv1.
@@ -741,3 +747,15 @@ size_t GraphicsLayer::GetApproximateUnsharedMemoryUsage() const {
 }
 
 }  // namespace blink
+
+#if DCHECK_IS_ON()
+void showGraphicsLayerTree(const blink::GraphicsLayer* layer) {
+  if (!layer) {
+    LOG(ERROR) << "Cannot showGraphicsLayerTree for (nil).";
+    return;
+  }
+
+  String output = blink::GraphicsLayerTreeAsTextForTesting(layer, 0xffffffff);
+  LOG(INFO) << output.Utf8();
+}
+#endif

@@ -23,8 +23,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 
-#include "third_party/blink/renderer/core/paint/compositing/graphics_layer_tree_as_text.h"
-
 namespace blink {
 
 // TODO(wangxianzhu): Though these tests don't directly apply in

@@ -1401,19 +1401,11 @@ void PaintArtifactCompositor::Update(
 
   g_s_property_tree_sequence_number++;
 
-#if DCHECK_IS_ON()
-  if (VLOG_IS_ON(2)) {
-    static String s_previous_output;
-    LayerTreeFlags flags = VLOG_IS_ON(3) ? 0xffffffff : 0;
-    String new_output = GetLayersAsJSON(flags)->ToPrettyJSONString();
-    if (new_output != s_previous_output) {
-      LOG(ERROR) << "PaintArtifactCompositor::Update() done\n"
-                 << "Composited layers:\n"
-                 << new_output.Utf8();
-      s_previous_output = new_output;
-    }
-  }
-#endif
+  DVLOG(2) << "PaintArtifactCompositor::Update() done\n"
+           << "Composited layers:\n"
+           << GetLayersAsJSON(VLOG_IS_ON(3) ? 0xffffffff : 0)
+                  ->ToPrettyJSONString()
+                  .Utf8();
 }
 
 void PaintArtifactCompositor::UpdateRepaintedLayerProperties(
@@ -1707,10 +1699,10 @@ cc::LayerList LayerListBuilder::Finalize() {
 
 #if DCHECK_IS_ON()
 void PaintArtifactCompositor::ShowDebugData() {
-  LOG(ERROR) << GetLayersAsJSON(kLayerTreeIncludesDebugInfo |
-                                kLayerTreeIncludesDetailedInvalidations)
-                    ->ToPrettyJSONString()
-                    .Utf8();
+  LOG(INFO) << GetLayersAsJSON(kLayerTreeIncludesDebugInfo |
+                               kLayerTreeIncludesDetailedInvalidations)
+                   ->ToPrettyJSONString()
+                   .Utf8();
 }
 #endif
 

@@ -619,17 +619,17 @@ void PaintController::FinishCycle() {
 
   current_paint_artifact_->FinishCycle();
 
-  if (VLOG_IS_ON(1)) {
-    LOG(ERROR) << "PaintController::FinishCycle() completed";
 #if DCHECK_IS_ON()
+  if (VLOG_IS_ON(1)) {
+    VLOG(1) << "PaintController::FinishCycle() completed";
     if (VLOG_IS_ON(3))
       ShowDebugDataWithPaintRecords();
     else if (VLOG_IS_ON(2))
       ShowDebugData();
     else if (VLOG_IS_ON(1))
       ShowCompactDebugData();
-#endif
   }
+#endif
 }
 
 void PaintController::ClearPropertyTreeChangedStateTo(

@@ -141,22 +141,22 @@ void PaintController::ShowDebugDataInternal(
   // The clients in the current list are known to be alive before FinishCycle().
   if (committed_)
     current_list_flags |= DisplayItemList::kClientKnownToBeAlive;
-  LOG(ERROR) << "current display item list: "
-             << DisplayItemListAsJSON(
-                    current_paint_artifact_->GetDisplayItemList(),
-                    current_cached_subsequences_,
-                    current_paint_artifact_->PaintChunks(), current_list_flags)
-                    .ToString()
-                    .Utf8();
+  LOG(INFO) << "current display item list: "
+            << DisplayItemListAsJSON(
+                   current_paint_artifact_->GetDisplayItemList(),
+                   current_cached_subsequences_,
+                   current_paint_artifact_->PaintChunks(), current_list_flags)
+                   .ToString()
+                   .Utf8();
 
-  LOG(ERROR) << "new display item list: "
-             << DisplayItemListAsJSON(
-                    new_display_item_list_, new_cached_subsequences_,
-                    new_paint_chunks_.PaintChunks(),
-                    // The clients in new_display_item_list_ are all alive.
-                    flags | DisplayItemList::kClientKnownToBeAlive)
-                    .ToString()
-                    .Utf8();
+  LOG(INFO) << "new display item list: "
+            << DisplayItemListAsJSON(
+                   new_display_item_list_, new_cached_subsequences_,
+                   new_paint_chunks_.PaintChunks(),
+                   // The clients in new_display_item_list_ are all alive.
+                   flags | DisplayItemList::kClientKnownToBeAlive)
+                   .ToString()
+                   .Utf8();
 }
 
 void PaintController::ShowCompactDebugData() const {
