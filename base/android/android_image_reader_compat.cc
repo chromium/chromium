@@ -37,18 +37,12 @@ bool AndroidImageReader::IsSupported() {
 // static
 bool AndroidImageReader::LimitAImageReaderMaxSizeToOne() {
   // Using MIBOX for both MiBox 4k and MiBox S 4k devices.
-  std::string disabled_model = "MIBOX";
-  const std::string model(base::android::BuildInfo::GetInstance()->model());
-  if (base::StartsWith(model, disabled_model,
-                       base::CompareCase::INSENSITIVE_ASCII)) {
-    return true;
-  }
-  return false;
+  constexpr char kDisabledModel[] = "MIBOX";
+  return StartsWith(BuildInfo::GetInstance()->model(), kDisabledModel,
+                    CompareCase::INSENSITIVE_ASCII);
 }
 
-AndroidImageReader::AndroidImageReader() {
-  is_supported_ = LoadFunctions();
-}
+AndroidImageReader::AndroidImageReader() : is_supported_(LoadFunctions()) {}
 
 bool AndroidImageReader::LoadFunctions() {
   // If the Chromium build requires __ANDROID_API__ >= 26 at some

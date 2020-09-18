@@ -69,7 +69,7 @@ class BASE_EXPORT AndroidImageReader {
   AndroidImageReader();
   bool LoadFunctions();
 
-  bool is_supported_;
+  const bool is_supported_;
   pAImage_delete AImage_delete_;
   pAImage_deleteAsync AImage_deleteAsync_;
   pAImage_getHardwareBuffer AImage_getHardwareBuffer_;
