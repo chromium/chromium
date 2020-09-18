@@ -47,7 +47,6 @@ const char kFlags8[] = "flag8";
 const char kFlags9[] = "flag9";
 const char kFlags10[] = "flag10";
 const char kFlags11[] = "flag11";
-const char kFlags12[] = "flag12";
 
 const char kSwitch1[] = "switch";
 const char kSwitch2[] = "switch2";
@@ -80,28 +79,16 @@ const base::Feature kTestFeature1{"FeatureName1",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kTestFeature2{"FeatureName2",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kTestFeature3{"FeatureName3",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
 const FeatureEntry::FeatureParam kTestVariationOther1[] = {
     {kTestParam1, kTestParamValue}};
 const FeatureEntry::FeatureParam kTestVariationOther2[] = {
     {kTestParam2, kTestParamValue}};
-const FeatureEntry::FeatureParam kTestVariationOther3[] = {
-    {kTestParam1, kTestParamValue},
-    {kTestParam2, kTestParamValue},
-};
 
 const FeatureEntry::FeatureVariation kTestVariations1[] = {
     {"dummy description 1", kTestVariationOther1, 1, nullptr}};
 const FeatureEntry::FeatureVariation kTestVariations2[] = {
     {"dummy description 2", kTestVariationOther2, 1, nullptr}};
-const FeatureEntry::FeatureVariation kTestVariations3[] = {
-    {"dummy description 1", kTestVariationOther1, 1, nullptr},
-    {"dummy description 2", kTestVariationOther2, 1, nullptr},
-    {"dummy description 3", kTestVariationOther3, 2, nullptr}};
-
-const char kTestVariation3Cmdline[] = "FeatureName3:param1/value/param2/value";
 
 const char kDummyName[] = "";
 const char kDummyDescription[] = "";
@@ -161,12 +148,7 @@ static FeatureEntry kEntries[] = {
                                     kTestTrial)},
     {kFlags11, kDummyName, kDummyDescription,
      0,  // Ends up being mapped to the current platform.
-     ORIGIN_LIST_VALUE_TYPE(kStringSwitch, kValueForStringSwitch)},
-    {kFlags12, kDummyName, kDummyDescription,
-     0,  // Ends up being mapped to the current platform.
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kTestFeature3,
-                                    kTestVariations3,
-                                    kTestTrial)}};
+     ORIGIN_LIST_VALUE_TYPE(kStringSwitch, kValueForStringSwitch)}};
 
 class FlagsStateTest : public ::testing::Test,
                        public flags_ui::FlagsState::Delegate {
@@ -311,19 +293,6 @@ TEST_F(FlagsStateTest, ConvertFlagsToSwitches) {
   EXPECT_TRUE(command_line2.HasSwitch(kSwitch1));
   EXPECT_FALSE(command_line2.HasSwitch(switches::kFlagSwitchesBegin));
   EXPECT_FALSE(command_line2.HasSwitch(switches::kFlagSwitchesEnd));
-
-  base::CommandLine command_line3(base::CommandLine::NO_PROGRAM);
-  // Enable 3rd variation (@4 since 0 is enable).
-  flags_state_->SetFeatureEntryEnabled(
-      &flags_storage_, std::string(kFlags12).append("@4"), true);
-
-  flags_state_->ConvertFlagsToSwitches(&flags_storage_, &command_line3,
-                                       kNoSentinels, kEnableFeatures,
-                                       kDisableFeatures);
-
-  EXPECT_TRUE(command_line3.HasSwitch(kEnableFeatures));
-  EXPECT_EQ(command_line3.GetSwitchValueASCII(kEnableFeatures),
-            kTestVariation3Cmdline);
 }
 
 TEST_F(FlagsStateTest, RegisterAllFeatureVariationParameters) {
@@ -944,7 +913,7 @@ TEST_F(FlagsStateTest, GetFlagFeatureEntries) {
                                       &supported_entries, &unsupported_entries,
                                       base::BindRepeating(&SkipFeatureEntry));
   // All |kEntries| except for |kFlags3| should be supported.
-  EXPECT_EQ(11u, supported_entries.GetSize());
+  EXPECT_EQ(10u, supported_entries.GetSize());
   EXPECT_EQ(1u, unsupported_entries.GetSize());
   EXPECT_EQ(base::size(kEntries),
             supported_entries.GetSize() + unsupported_entries.GetSize());
