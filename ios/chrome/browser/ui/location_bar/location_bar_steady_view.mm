@@ -47,6 +47,10 @@ const CGFloat kLocationLabelVerticalOffset = -1;
 // The image view displaying the current location icon (i.e. http[s] status).
 @property(nonatomic, strong) UIImageView* locationIconImageView;
 
+// The view containing the location label, and (sometimes) the location image
+// view.
+@property(nonatomic, strong) UIView* locationContainerView;
+
 // Leading constraint for locationContainerView when there is no BadgeView to
 // its left.
 @property(nonatomic, strong)

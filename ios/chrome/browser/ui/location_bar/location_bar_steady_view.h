@@ -49,9 +49,6 @@
 // appropriately.
 - (void)enableTrailingButton:(BOOL)enabled;
 
-// The view containing the location label, and (sometimes) the location image
-// view.
-@property(nonatomic, strong) UIView* locationContainerView;
 // The tappable button representing the location bar.
 @property(nonatomic, strong) UIButton* locationButton;
 // The label displaying the current location URL.
