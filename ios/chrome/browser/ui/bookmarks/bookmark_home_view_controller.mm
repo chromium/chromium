@@ -886,6 +886,13 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   return (self.navigationController.topViewController == self);
 }
 
+// Returns whether a given node has been deleted or not.
+- (BOOL)isNodeDeleted:(const BookmarkNode*)node {
+  // When deleted, a BookmarkNode is detached from its parent node, making it
+  // a root node.
+  return node->is_root();
+}
+
 #pragma mark - BookmarkTableCellTitleEditDelegate
 
 - (void)textDidChangeTo:(NSString*)newName {
@@ -2217,7 +2224,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       [self isEditBookmarksEnabled] && [self isNodeEditableByUser:node];
   UIContextMenuActionProvider actionProvider;
 
-  // TODO (crbug.com/1093302): Add more actions for Bookmark URL and Folder.
   if (node->is_url()) {
     actionProvider = ^(NSArray<UIMenuElement*>* suggestedActions) {
       // Record that this context menu was shown to the user.
@@ -2253,6 +2259,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       [menuElements addObject:[actionFactory actionToCopyURL:node->url()]];
 
       UIAction* editAction = [actionFactory actionToEditWithBlock:^{
+        if ([self isNodeDeleted:node]) {
+          // If the node has been deleted via sync or another window while the
+          // context menu was open, ignore the action.
+          return;
+        }
         [self editNode:node];
       }];
       [menuElements addObject:editAction];
@@ -2265,6 +2276,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
           }]];
 
       UIAction* deleteAction = [actionFactory actionToDeleteWithBlock:^{
+        if ([self isNodeDeleted:node]) {
+          // If the node has been deleted via sync or another window while the
+          // context menu was open, ignore the action.
+          return;
+        }
         std::set<const BookmarkNode*> nodes;
         nodes.insert(node);
         [self handleSelectNodesForDeletion:nodes];
@@ -2293,9 +2309,19 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
           [[NSMutableArray alloc] init];
 
       UIAction* editAction = [actionFactory actionToEditWithBlock:^{
+        if ([self isNodeDeleted:node]) {
+          // If the node has been deleted via sync or another window while the
+          // context menu was open, ignore the action.
+          return;
+        }
         [self editNode:node];
       }];
       UIAction* moveAction = [actionFactory actionToMoveFolderWithBlock:^{
+        if ([self isNodeDeleted:node]) {
+          // If the node has been deleted via sync or another window while the
+          // context menu was open, ignore the action.
+          return;
+        }
         std::set<const BookmarkNode*> nodes;
         nodes.insert(node);
         [self moveNodes:nodes];

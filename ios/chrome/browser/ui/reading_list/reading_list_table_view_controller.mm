@@ -430,6 +430,12 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 - (void)markItemRead:(id<ReadingListListItem>)item {
   TableViewModel* model = self.tableViewModel;
+  if (![model hasSectionForSectionIdentifier:SectionIdentifierUnread]) {
+    // Prevent trying to access this section if it has been concurrently
+    // deleted (via another window or Sync).
+    return;
+  }
+
   TableViewItem* tableViewItem = base::mac::ObjCCastStrict<TableViewItem>(item);
   if ([model hasItem:tableViewItem
           inSectionWithIdentifier:SectionIdentifierUnread]) {
@@ -440,6 +446,12 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 - (void)markItemUnread:(id<ReadingListListItem>)item {
   TableViewModel* model = self.tableViewModel;
+  if (![model hasSectionForSectionIdentifier:SectionIdentifierRead]) {
+    // Prevent trying to access this section if it has been concurrently
+    // deleted (via another window or Sync).
+    return;
+  }
+
   TableViewItem* tableViewItem = base::mac::ObjCCastStrict<TableViewItem>(item);
   if ([model hasItem:tableViewItem
           inSectionWithIdentifier:SectionIdentifierRead]) {
