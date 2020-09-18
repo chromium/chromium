@@ -4,6 +4,7 @@
 
 # Fuzzers for content/ components.
 
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//mojo/public/tools/fuzzers/mojolpm.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -279,5 +280,74 @@ if (is_linux) {
     ]
 
     proto_deps = [ "//media/capture/mojom:video_capture_mojolpm" ]
+  }
+}
+
+mojolpm_fuzzer_test("presentation_service_mojolpm_fuzzer") {
+  sources = [ "presentation_service_mojolpm_fuzzer.cc" ]
+
+  proto_source = "presentation_service_mojolpm_fuzzer.proto"
+
+  deps = [
+    ":controller_presentation_service_delegate_for_fuzzing",
+    "//base/test:test_support",
+    "//content/browser:for_content_tests",
+    "//content/public/browser:browser",
+    "//content/test:content_unittests",
+    "//content/test:test_support",
+    "//services/network:test_support",
+    "//storage/browser:test_support",
+    "//ui/events/devices:devices",
+  ]
+
+  proto_deps = [
+    ":controller_presentation_service_delegate_for_fuzzing_proto",
+    "//third_party/blink/public/mojom:mojom_platform_mojolpm",
+  ]
+}
+
+if (enable_mojom_fuzzer) {
+  static_library("controller_presentation_service_delegate_for_fuzzing") {
+    # Should only be used in the fuzzer this was made for
+    visibility = [ ":presentation_service_mojolpm_fuzzer" ]
+
+    sources = [
+      "controller_presentation_service_delegate_for_fuzzing.cc",
+      "controller_presentation_service_delegate_for_fuzzing.h",
+    ]
+
+    deps = [
+      ":controller_presentation_service_delegate_for_fuzzing_proto",
+      "//base",
+      "//content/public/browser:browser",
+      "//media:test_support",
+      "//third_party/blink/public/mojom:mojom_platform_mojolpm",
+      "//url/mojom:url_mojom_gurl_mojolpm",
+    ]
+
+    testonly = true
+  }
+
+  proto_library("controller_presentation_service_delegate_for_fuzzing_proto") {
+    # Should only be used in the fuzzer this was made for, and its
+    # generated rules
+    visibility = [ "//content/test/fuzzer:*" ]
+
+    proto_in_dir = "//"
+
+    sources = [ "controller_presentation_service_delegate_for_fuzzing.proto" ]
+    generate_python = false
+
+    proto_deps = [
+      "//third_party/blink/public/mojom:mojom_platform_mojolpm",
+      "//url/mojom:url_mojom_gurl_mojolpm",
+    ]
+    link_deps = [
+      "//third_party/blink/public/mojom:mojom_platform_mojolpm",
+      "//url/mojom:url_mojom_gurl_mojolpm",
+    ]
+
+    import_dirs = [ root_gen_dir ]
+    testonly = true
   }
 }
