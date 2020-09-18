@@ -140,6 +140,10 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   void Flush() final;
   void SetDecoder(std::unique_ptr<TextResourceDecoder>) final;
 
+  void SetMaxTokenizationBudgetForTesting(int budget) {
+    max_tokenization_budget_ = budget;
+  }
+
  protected:
   void insert(const String&) final;
   void Append(const String&) override;
@@ -278,6 +282,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   // would require keeping track of token positions of preload requests.
   CompactHTMLToken* pending_csp_meta_token_;
 
+  int max_tokenization_budget_;
   bool can_parse_asynchronously_;
   bool end_was_delayed_;
   bool have_background_parser_;

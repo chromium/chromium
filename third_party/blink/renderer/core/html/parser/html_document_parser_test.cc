@@ -31,27 +31,31 @@ class MockPrerendererClient : public PrerendererClient {
 
 class HTMLDocumentParserTest
     : public PageTestBase,
-      public testing::WithParamInterface<ParserSynchronizationPolicy> {
+      public testing::WithParamInterface<
+          testing::tuple<ParserSynchronizationPolicy, int>> {
  protected:
   void SetUp() override {
     PageTestBase::SetUp();
     GetDocument().SetURL(KURL("https://example.test"));
-    if (GetParam() == ParserSynchronizationPolicy::kForceSynchronousParsing) {
+
+    ParserSynchronizationPolicy policy = testing::get<0>(GetParam());
+    if (policy == ParserSynchronizationPolicy::kForceSynchronousParsing) {
       Document::SetThreadedParsingEnabledForTesting(false);
     } else {
       Document::SetThreadedParsingEnabledForTesting(true);
     }
-    if (GetParam() == ParserSynchronizationPolicy::kAllowDeferredParsing) {
+    if (policy == ParserSynchronizationPolicy::kAllowDeferredParsing) {
       RuntimeEnabledFeatures::SetForceSynchronousHTMLParsingEnabled(true);
-    } else if (GetParam() ==
+    } else if (policy ==
                ParserSynchronizationPolicy::kAllowAsynchronousParsing) {
       RuntimeEnabledFeatures::SetForceSynchronousHTMLParsingEnabled(false);
     }
   }
 
   HTMLDocumentParser* CreateParser(HTMLDocument& document) {
-    auto* parser =
-        MakeGarbageCollected<HTMLDocumentParser>(document, GetParam());
+    auto* parser = MakeGarbageCollected<HTMLDocumentParser>(
+        document, testing::get<0>(GetParam()));
+    parser->SetMaxTokenizationBudgetForTesting(testing::get<1>(GetParam()));
     std::unique_ptr<TextResourceDecoder> decoder(
         BuildTextResourceDecoderFor(&document, "text/html", g_null_atom));
     parser->SetDecoder(std::move(decoder));
@@ -61,10 +65,12 @@ class HTMLDocumentParserTest
 
 }  // namespace
 
-INSTANTIATE_TEST_SUITE_P(HTMLDocumentParserTest,
-                         HTMLDocumentParserTest,
-                         testing::Values(kForceSynchronousParsing,
-                                         kAllowDeferredParsing));
+INSTANTIATE_TEST_SUITE_P(
+    HTMLDocumentParserTest,
+    HTMLDocumentParserTest,
+    testing::Combine(testing::Values(kForceSynchronousParsing,
+                                     kAllowDeferredParsing),
+                     testing::Values(250, 500, 1000)));
 
 TEST_P(HTMLDocumentParserTest, StopThenPrepareToStopShouldNotCrash) {
   auto& document = To<HTMLDocument>(GetDocument());

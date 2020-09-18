@@ -80,12 +80,12 @@ size_t GetDiscardedTokenCountForTesting() {
   return g_discarded_token_count_for_testing;
 }
 
-// This sets the maximum number of tokens which the foreground HTML parser
-// should try to process in one go. Lower values generally mean faster first
-// paints, larger values delay first paint, but make sure it's closer to the
-// final page. This value gives a good speedup, but may need to be tuned
-// further.
-constexpr int kMaxTokenizationBudget = 500;
+// This sets the (default) maximum number of tokens which the foreground HTML
+// parser should try to process in one go. Lower values generally mean faster
+// first paints, larger values delay first paint, but make sure it's closer to
+// the final page. This is the default value to use, if no Finch-provided
+// value exists.
+constexpr int kDefaultMaxTokenizationBudget = 500;
 
 // This class encapsulates the internal state needed for synchronous foreground
 // HTML parsing (e.g. if HTMLDocumentParser::PumpTokenizer yields, this class
@@ -318,6 +318,10 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
     metrics_reporter_ = std::make_unique<HTMLParserMetrics>(
         document.UkmSourceID(), document.UkmRecorder());
   }
+
+  max_tokenization_budget_ = base::GetFieldTrialParamByFeatureAsInt(
+      features::kForceSynchronousHTMLParsing, "MaxTokenizationBudget",
+      kDefaultMaxTokenizationBudget);
 
   // Don't create preloader for parsing clipboard content.
   if (content_policy == kDisallowScriptingAndPluginContent)
@@ -889,7 +893,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
   probe::ParseHTML probe(GetDocument(), this);
 
   bool should_yield = false;
-  int budget = kMaxTokenizationBudget;
+  int budget = max_tokenization_budget_;
 
   while (CanTakeNextToken() && !should_yield) {
     {
