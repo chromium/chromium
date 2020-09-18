@@ -455,11 +455,8 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
     PageInfoClosingCallback closing_callback) {
   gfx::NativeView parent_view = platform_util::GetViewForWindow(parent_window);
 
-  if (url.SchemeIs(content::kChromeUIScheme) ||
-      url.SchemeIs(content::kChromeDevToolsScheme) ||
+  if (PageInfo::IsFileOrInternalPage(url) ||
       url.SchemeIs(extensions::kExtensionScheme) ||
-      url.SchemeIs(content::kViewSourceScheme) ||
-      url.SchemeIs(url::kFileScheme) ||
       url.SchemeIs(dom_distiller::kDomDistillerScheme)) {
     return new InternalPageInfoBubbleView(anchor_view, anchor_rect, parent_view,
                                           web_contents, url);
@@ -571,7 +568,7 @@ void PageInfoBubbleView::WebContentsDestroyed() {
 }
 
 void PageInfoBubbleView::OnPermissionChanged(
-    const PageInfoUI::PermissionInfo& permission) {
+    const PageInfo::PermissionInfo& permission) {
   presenter_->OnSitePermissionChanged(permission.type, permission.setting);
   // The menu buttons for the permissions might have longer strings now, so we
   // need to layout and size the whole bubble.
@@ -662,7 +659,7 @@ void PageInfoBubbleView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
   // part and just update the text.
   if (cookie_button_ == nullptr) {
     // Get the icon.
-    PageInfoUI::PermissionInfo info;
+    PageInfo::PermissionInfo info;
     info.type = ContentSettingsType::COOKIES;
     info.setting = CONTENT_SETTING_ALLOW;
     info.is_incognito =

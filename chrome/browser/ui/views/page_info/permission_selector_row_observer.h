@@ -11,7 +11,7 @@ class PermissionSelectorRowObserver {
  public:
   // This method is called whenever the permission setting is changed.
   virtual void OnPermissionChanged(
-      const PageInfoUI::PermissionInfo& permission) = 0;
+      const PageInfo::PermissionInfo& permission) = 0;
 
  protected:
   virtual ~PermissionSelectorRowObserver() {}

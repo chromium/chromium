@@ -44,7 +44,7 @@ class PermissionSelectorRow {
   // The |PermissionSelectorRow|'s constituent views are added to |layout|.
   PermissionSelectorRow(Profile* profile,
                         const GURL& url,
-                        const PageInfoUI::PermissionInfo& permission,
+                        const PageInfo::PermissionInfo& permission,
                         views::GridLayout* layout);
   virtual ~PermissionSelectorRow();
 
@@ -57,7 +57,7 @@ class PermissionSelectorRow {
 
   void AddObserver(PermissionSelectorRowObserver* observer);
 
-  void PermissionChanged(const PageInfoUI::PermissionInfo& permission);
+  void PermissionChanged(const PageInfo::PermissionInfo& permission);
 
   // Returns the preferred width for the currently selected combobox option
   // (unchanged by any minimum width set using SetMinComboboxWidth()).
@@ -70,7 +70,7 @@ class PermissionSelectorRow {
   friend class test::PageInfoBubbleViewTestApi;
 
   void InitializeComboboxView(views::GridLayout* layout,
-                              const PageInfoUI::PermissionInfo& permission);
+                              const PageInfo::PermissionInfo& permission);
 
   Profile* profile_;
 

@@ -14,6 +14,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/page_info/android/jni_headers/PageInfoController_jni.h"
 #include "components/page_info/android/page_info_client.h"
+#include "components/page_info/features.h"
 #include "components/page_info/page_info.h"
 #include "components/page_info/page_info_ui.h"
 #include "components/security_state/core/security_state.h"
@@ -106,9 +107,15 @@ void PageInfoControllerAndroid::SetPermissionInfo(
     ChosenObjectInfoList chosen_object_info_list) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  // On Android, we only want to display a subset of the available options in a
-  // particular order, but only if their value is different from the default.
-  // This order comes from https://crbug.com/610358.
+  // Exit without permissions if it is an internal page.
+  if (PageInfo::IsFileOrInternalPage(url_)) {
+    Java_PageInfoController_updatePermissionDisplay(env, controller_jobject_);
+    return;
+  }
+
+  // On Android, we only want to display a subset of the available options in
+  // a particular order, but only if their value is different from the
+  // default. This order comes from https://crbug.com/610358.
   std::vector<ContentSettingsType> permissions_to_display;
   permissions_to_display.push_back(ContentSettingsType::GEOLOCATION);
   permissions_to_display.push_back(ContentSettingsType::MEDIASTREAM_CAMERA);
@@ -172,7 +179,7 @@ void PageInfoControllerAndroid::SetPermissionInfo(
 }
 
 base::Optional<ContentSetting> PageInfoControllerAndroid::GetSettingToDisplay(
-    const PermissionInfo& permission) {
+    const PageInfo::PermissionInfo& permission) {
   // All permissions should be displayed if they are non-default.
   if (permission.setting != CONTENT_SETTING_DEFAULT &&
       permission.setting != permission.default_setting) {
@@ -193,5 +200,11 @@ base::Optional<ContentSetting> PageInfoControllerAndroid::GetSettingToDisplay(
     if (web_contents_->WasEverAudible())
       return permission.default_setting;
   }
+
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoV2) &&
+      !PageInfo::IsPermissionFactoryDefault(permission)) {
+    return permission.default_setting;
+  }
+
   return base::Optional<ContentSetting>();
 }

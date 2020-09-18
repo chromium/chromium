@@ -122,8 +122,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   void WebContentsDestroyed() override;
 
   // PermissionSelectorRowObserver:
-  void OnPermissionChanged(
-      const PageInfoUI::PermissionInfo& permission) override;
+  void OnPermissionChanged(const PageInfo::PermissionInfo& permission) override;
 
   // ChosenObjectViewObserver:
   void OnChosenObjectDeleted(const PageInfoUI::ChosenObjectInfo& info) override;

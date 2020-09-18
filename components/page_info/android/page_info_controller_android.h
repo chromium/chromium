@@ -43,7 +43,7 @@ class PageInfoControllerAndroid : public PageInfoUI {
   // set to some non-default value, but there are some permissions which require
   // customized behavior.
   base::Optional<ContentSetting> GetSettingToDisplay(
-      const PermissionInfo& permission);
+      const PageInfo::PermissionInfo& permission);
 
   // The presenter that controlls the Page Info UI.
   std::unique_ptr<PageInfo> presenter_;

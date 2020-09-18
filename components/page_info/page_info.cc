@@ -125,34 +125,9 @@ ContentSettingsType kPermissionType[] = {
     ContentSettingsType::IDLE_DETECTION,
 };
 
-// Checks whether this permission is currently the factory default, as set by
-// Chrome. Specifically, that the following three conditions are true:
-//   - The current active setting comes from the default or pref provider.
-//   - The setting is the factory default setting (as opposed to a global
-//     default setting set by the user).
-//   - The setting is a wildcard setting applying to all origins (which can only
-//     be set from the default provider).
-bool IsPermissionFactoryDefault(HostContentSettingsMap* content_settings,
-                                const PageInfoUI::PermissionInfo& info) {
-  const ContentSetting factory_default_setting =
-      content_settings::ContentSettingsRegistry::GetInstance()
-          ->Get(info.type)
-          ->GetInitialDefaultSetting();
-
-  // Settings that are granted in regular mode get reduced to ASK in incognito
-  // mode. These settings should not be displayed either.
-  const bool is_incognito_default =
-      info.is_incognito && info.setting == CONTENT_SETTING_ASK &&
-      factory_default_setting == CONTENT_SETTING_ASK;
-
-  return info.source == content_settings::SETTING_SOURCE_USER &&
-         factory_default_setting == info.default_setting &&
-         (info.setting == CONTENT_SETTING_DEFAULT || is_incognito_default);
-}
-
 // Determines whether to show permission |type| in the Page Info UI. Only
 // applies to permissions listed in |kPermissionType|.
-bool ShouldShowPermission(const PageInfoUI::PermissionInfo& info,
+bool ShouldShowPermission(const PageInfo::PermissionInfo& info,
                           const GURL& site_url,
                           HostContentSettingsMap* content_settings,
                           content::WebContents* web_contents,
@@ -240,12 +215,12 @@ bool ShouldShowPermission(const PageInfoUI::PermissionInfo& info,
   if (info.type == ContentSettingsType::BLUETOOTH_GUARD &&
       base::FeatureList::IsEnabled(
           features::kWebBluetoothNewPermissionsBackend) &&
-      !IsPermissionFactoryDefault(content_settings, info)) {
+      !PageInfo::IsPermissionFactoryDefault(info)) {
     return true;
   }
 
   // Show the content setting when it has a non-default value.
-  if (!IsPermissionFactoryDefault(content_settings, info))
+  if (!PageInfo::IsPermissionFactoryDefault(info))
     return true;
 
   return false;
@@ -427,6 +402,32 @@ PageInfo::~PageInfo() {
         base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromHours(1),
         100);
   }
+}
+
+// static
+bool PageInfo::IsPermissionFactoryDefault(const PermissionInfo& info) {
+  const ContentSetting factory_default_setting =
+      content_settings::ContentSettingsRegistry::GetInstance()
+          ->Get(info.type)
+          ->GetInitialDefaultSetting();
+
+  // Settings that are granted in regular mode get reduced to ASK in incognito
+  // mode. These settings should not be displayed either.
+  const bool is_incognito_default =
+      info.is_incognito && info.setting == CONTENT_SETTING_ASK &&
+      factory_default_setting == CONTENT_SETTING_ASK;
+
+  return info.source == content_settings::SETTING_SOURCE_USER &&
+         factory_default_setting == info.default_setting &&
+         (info.setting == CONTENT_SETTING_DEFAULT || is_incognito_default);
+}
+
+// static
+bool PageInfo::IsFileOrInternalPage(const GURL& url) {
+  return url.SchemeIs(content::kChromeUIScheme) ||
+         url.SchemeIs(content::kChromeDevToolsScheme) ||
+         url.SchemeIs(content::kViewSourceScheme) ||
+         url.SchemeIs(url::kFileScheme);
 }
 
 void PageInfo::InitializeUiState(PageInfoUI* ui) {
@@ -916,7 +917,7 @@ void PageInfo::PresentSitePermissions() {
   PermissionInfoList permission_info_list;
   ChosenObjectInfoList chosen_object_info_list;
 
-  PageInfoUI::PermissionInfo permission_info;
+  PermissionInfo permission_info;
   HostContentSettingsMap* content_settings = GetContentSettings();
   for (const ContentSettingsType type : kPermissionType) {
     permission_info.type = type;

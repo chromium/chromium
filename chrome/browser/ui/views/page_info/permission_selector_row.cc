@@ -157,7 +157,7 @@ void PermissionCombobox::OnPerformAction(Combobox* combobox) {
 PermissionSelectorRow::PermissionSelectorRow(
     Profile* profile,
     const GURL& url,
-    const PageInfoUI::PermissionInfo& permission,
+    const PageInfo::PermissionInfo& permission,
     views::GridLayout* layout)
     : profile_(profile) {
   const int list_item_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -265,7 +265,7 @@ void PermissionSelectorRow::AddObserver(
 
 void PermissionSelectorRow::InitializeComboboxView(
     views::GridLayout* layout,
-    const PageInfoUI::PermissionInfo& permission) {
+    const PageInfo::PermissionInfo& permission) {
   bool button_enabled =
       permission.source == content_settings::SETTING_SOURCE_USER;
   combobox_model_adapter_.reset(
@@ -280,7 +280,7 @@ void PermissionSelectorRow::InitializeComboboxView(
 }
 
 void PermissionSelectorRow::PermissionChanged(
-    const PageInfoUI::PermissionInfo& permission) {
+    const PageInfo::PermissionInfo& permission) {
   // Change the permission icon to reflect the selected setting.
   icon_->OnPermissionChanged(permission);
 

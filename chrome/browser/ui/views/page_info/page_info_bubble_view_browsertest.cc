@@ -251,7 +251,7 @@ class PageInfoBubbleViewBrowserTest : public DialogBrowserTest {
       PermissionInfoList permissions_list;
       for (ContentSettingsType content_type :
            PageInfo::GetAllPermissionsForTesting()) {
-        PageInfoUI::PermissionInfo info;
+        PageInfo::PermissionInfo info;
         info.type = content_type;
         info.setting = (name == kAllowAllPermissions) ? CONTENT_SETTING_ALLOW
                                                       : CONTENT_SETTING_BLOCK;
@@ -339,7 +339,7 @@ class PageInfoBubbleViewBrowserTest : public DialogBrowserTest {
 
     // Set some dummy non-default permissions. This will trigger a reload prompt
     // when the bubble is closed.
-    PageInfoUI::PermissionInfo permission;
+    PageInfo::PermissionInfo permission;
     permission.type = ContentSettingsType::NOTIFICATIONS;
     permission.setting = ContentSetting::CONTENT_SETTING_BLOCK;
     permission.default_setting = ContentSetting::CONTENT_SETTING_ASK;

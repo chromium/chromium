@@ -146,12 +146,41 @@ class PageInfo : public content::WebContentsObserver {
     int delete_tooltip_string_id;
   };
 
+  // |PermissionInfo| contains information about a single permission |type| for
+  // the current website.
+  struct PermissionInfo {
+    PermissionInfo() = default;
+    // Site permission |type|.
+    ContentSettingsType type = ContentSettingsType::DEFAULT;
+    // The current value for the permission |type| (e.g. ALLOW or BLOCK).
+    ContentSetting setting = CONTENT_SETTING_DEFAULT;
+    // The global default settings for this permission |type|.
+    ContentSetting default_setting = CONTENT_SETTING_DEFAULT;
+    // The settings source e.g. user, extensions, policy, ... .
+    content_settings::SettingSource source =
+        content_settings::SETTING_SOURCE_NONE;
+    // Whether we're in incognito mode.
+    bool is_incognito = false;
+  };
+
   // Creates a PageInfo for the passed |url| using the given |ssl| status
   // object to determine the status of the site's connection.
   PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
            content::WebContents* web_contents,
            const GURL& url);
   ~PageInfo() override;
+
+  // Checks whether this permission is currently the factory default, as set by
+  // Chrome. Specifically, that the following three conditions are true:
+  //   - The current active setting comes from the default or pref provider.
+  //   - The setting is the factory default setting (as opposed to a global
+  //     default setting set by the user).
+  //   - The setting is a wildcard setting applying to all origins (which can
+  //     only be set from the default provider).
+  static bool IsPermissionFactoryDefault(const PermissionInfo& info);
+
+  // Returns whether this page info is for an internal page.
+  static bool IsFileOrInternalPage(const GURL& url);
 
   // Initializes UI state that is dependent on having access to the PageInfoUI
   // object associated with this object. This explicit post-construction
@@ -220,6 +249,7 @@ class PageInfo : public content::WebContentsObserver {
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest, IncognitoPermissionsEmptyByDefault);
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest, IncognitoPermissionsDontShowAsk);
   friend class PageInfoBubbleViewBrowserTest;
+
   // Populates this object's UI state with provided security context. This
   // function does not update visible UI-- that's part of Present*().
   void ComputeUIInputs(const GURL& url);

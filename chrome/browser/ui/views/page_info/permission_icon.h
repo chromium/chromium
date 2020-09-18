@@ -11,14 +11,14 @@
 
 class PermissionIcon : public NonAccessibleImageView {
  public:
-  explicit PermissionIcon(const PageInfoUI::PermissionInfo& permission_info);
+  explicit PermissionIcon(const PageInfo::PermissionInfo& permission_info);
 
   PermissionIcon(const PermissionIcon&) = delete;
   PermissionIcon& operator=(const PermissionIcon&) = delete;
 
   ~PermissionIcon() override = default;
 
-  void OnPermissionChanged(const PageInfoUI::PermissionInfo& permission_info);
+  void OnPermissionChanged(const PageInfo::PermissionInfo& permission_info);
 
   // NonAccessibleImageView:
   void OnThemeChanged() override;
@@ -28,7 +28,7 @@ class PermissionIcon : public NonAccessibleImageView {
 
   void UpdateImage();
 
-  PageInfoUI::PermissionInfo permission_info_;
+  PageInfo::PermissionInfo permission_info_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PERMISSION_ICON_H_

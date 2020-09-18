@@ -129,7 +129,7 @@ class PageInfoBubbleViewTestApi {
 
   // Simulates recreating the dialog with a new PermissionInfoList.
   void SetPermissionInfo(const PermissionInfoList& list) {
-    for (const PageInfoBubbleView::PermissionInfo& info : list) {
+    for (const PageInfo::PermissionInfo& info : list) {
       view_->presenter_->OnSitePermissionChanged(info.type, info.setting);
     }
     CreateView();

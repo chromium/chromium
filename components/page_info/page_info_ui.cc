@@ -248,13 +248,6 @@ ContentSetting GetEffectiveSetting(ContentSettingsType type,
 
 PageInfoUI::CookieInfo::CookieInfo() : allowed(-1), blocked(-1) {}
 
-PageInfoUI::PermissionInfo::PermissionInfo()
-    : type(ContentSettingsType::DEFAULT),
-      setting(CONTENT_SETTING_DEFAULT),
-      default_setting(CONTENT_SETTING_DEFAULT),
-      source(content_settings::SETTING_SOURCE_NONE),
-      is_incognito(false) {}
-
 PageInfoUI::ChosenObjectInfo::ChosenObjectInfo(
     const PageInfo::ChooserUIInfo& ui_info,
     std::unique_ptr<permissions::ChooserContextBase::Object> chooser_object)
@@ -451,7 +444,7 @@ base::string16 PageInfoUI::PermissionActionToUIString(
 // static
 base::string16 PageInfoUI::PermissionDecisionReasonToUIString(
     PageInfoUiDelegate* delegate,
-    const PageInfoUI::PermissionInfo& permission,
+    const PageInfo::PermissionInfo& permission,
     const GURL& url) {
   ContentSetting effective_setting = GetEffectiveSetting(
       permission.type, permission.setting, permission.default_setting);
@@ -467,7 +460,7 @@ base::string16 PageInfoUI::PermissionDecisionReasonToUIString(
       break;
   }
 
-  // TODO(crbug.com/1063023): PermissionInfo should be modified
+  // TODO(crbug.com/1063023): PageInfo::PermissionInfo should be modified
   // to contain all needed information regarding Automatically Blocked flag.
   if (permission.setting == CONTENT_SETTING_BLOCK &&
       permissions::PermissionUtil::IsPermission(permission.type)) {
@@ -556,8 +549,9 @@ int PageInfoUI::GetConnectionIconID(PageInfo::SiteConnectionStatus status) {
 }
 #else  // !defined(OS_ANDROID)
 // static
-const gfx::ImageSkia PageInfoUI::GetPermissionIcon(const PermissionInfo& info,
-                                                   SkColor related_text_color) {
+const gfx::ImageSkia PageInfoUI::GetPermissionIcon(
+    const PageInfo::PermissionInfo& info,
+    SkColor related_text_color) {
   const gfx::VectorIcon* icon = &gfx::kNoneIcon;
   switch (info.type) {
     case ContentSettingsType::COOKIES:

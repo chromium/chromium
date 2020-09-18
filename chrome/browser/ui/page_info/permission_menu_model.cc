@@ -15,7 +15,7 @@
 
 PermissionMenuModel::PermissionMenuModel(Profile* profile,
                                          const GURL& url,
-                                         const PageInfoUI::PermissionInfo& info,
+                                         const PageInfo::PermissionInfo& info,
                                          const ChangeCallback& callback)
     : ui::SimpleMenuModel(this),
       host_content_settings_map_(

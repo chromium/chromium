@@ -6,12 +6,11 @@
 
 #include "chrome/browser/ui/views/chrome_typography.h"
 
-PermissionIcon::PermissionIcon(
-    const PageInfoUI::PermissionInfo& permission_info)
+PermissionIcon::PermissionIcon(const PageInfo::PermissionInfo& permission_info)
     : permission_info_(permission_info) {}
 
 void PermissionIcon::OnPermissionChanged(
-    const PageInfoUI::PermissionInfo& permission_info) {
+    const PageInfo::PermissionInfo& permission_info) {
   permission_info_ = permission_info;
   UpdateImage();
 }
