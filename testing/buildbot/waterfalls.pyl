@@ -750,8 +750,7 @@
         ],
         'os_type': 'android',
         'test_suites': {
-          'gtest_tests': 'android_marshmallow_wpr_gtests',
-          'isolated_scripts': 'marshmallow_nougat_pie_isolated_scripts_with_proguard',
+          'gtest_tests': 'android_marshmallow_emulator_gtests',
         }
       },
       'android-marshmallow-x86-rel-non-cq': {
@@ -763,7 +762,8 @@
         ],
         'os_type': 'android',
         'test_suites': {
-          'gtest_tests': 'android_marshmallow_emulator_backlog_gtests',
+          'gtest_tests': 'android_marshmallow_wpr_gtests',
+          'isolated_scripts': 'marshmallow_nougat_pie_isolated_scripts_with_proguard',
         }
       },
       'android-nougat-arm64-rel': {

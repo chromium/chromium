@@ -55,7 +55,7 @@
     # crbug/1060399: only enable wpr tests on marshmallow CI bot
     # due to the restriction that render test only works on marshamllow.
     'modifications': {
-      'android-marshmallow-x86-rel': {
+      'android-marshmallow-x86-rel-non-cq': {
         'experiment_percentage': 100, # https://crbug.com/1060399
       },
     },
@@ -648,7 +648,7 @@
           'shards': 3,
         },
       },
-      'android-marshmallow-x86-rel': {
+      'android-marshmallow-x86-rel-non-cq': {
         # https://crbug.com/1039860
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.cc_unittests.filter',
@@ -733,14 +733,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.chrome_public_test_apk.filter',
         ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              # Use 8-cores to shorten test runtime.
-              'machine_type': 'n1-standard-8',
-            },
-          ],
-        },
       },
       'android-pie-arm64-rel': {
         'args': [
@@ -781,7 +773,7 @@
     'remove_from': [
       'Lollipop Tablet Tester',
       'Marshmallow Tablet Tester',
-      'android-marshmallow-x86-rel',
+      'android-marshmallow-x86-rel-non-cq',
       'android-pie-x86-rel',
       'android-pie-arm64-rel', # https://crbug.com/1010211
       'ToTAndroid',
@@ -960,7 +952,7 @@
           'shards': 16,
         },
       },
-      'android-marshmallow-x86-rel': {
+      'android-marshmallow-x86-rel-non-cq': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.content_browsertests.filter',
         ],
@@ -1040,7 +1032,7 @@
   },
   'content_shell_crash_test': {
     'remove_from': [
-      'android-marshmallow-x86-rel', # crbug.com/1084353
+      'android-marshmallow-x86-rel-non-cq', # crbug.com/1084353
     ],
     'modifications': {
       'Win10 Tests x64 (dbg)': {
@@ -1054,7 +1046,7 @@
       'android-code-coverage-native', # crbug/1018434
     ],
     'modifications': {
-      'android-marshmallow-x86-rel': {
+      'android-marshmallow-x86-rel-non-cq': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.content_shell_test_apk.filter',
         ],
@@ -1317,7 +1309,7 @@
           ],
         },
       },
-      'android-marshmallow-x86-rel': {
+      'android-marshmallow-x86-rel-non-cq': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.gl_tests.filter',
         ],
@@ -1572,7 +1564,7 @@
   },
   'media_unittests': {
     'modifications': {
-      'android-marshmallow-x86-rel': {
+      'android-marshmallow-x86-rel-non-cq': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.media_unittests.filter',
         ],
@@ -1765,7 +1757,7 @@
           'shards': 4,
         }
       },
-      'android-marshmallow-x86-rel': {
+      'android-marshmallow-x86-rel-non-cq': {
         # crbug.com/1046060
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.net_unittests.filter',
@@ -1935,7 +1927,6 @@
       'Lollipop Tablet Tester',
       'Marshmallow Tablet Tester',
       'android-code-coverage-native', # https://crbug.com/1018780
-      'android-marshmallow-x86-rel', # crbug.com/1098111
     ],
     'modifications': {
       'Android CFI': {
@@ -2004,7 +1995,6 @@
       'Lollipop Tablet Tester',
       'Marshmallow Tablet Tester',
       'android-code-coverage-native', # crbug/1018434
-      'android-marshmallow-x86-rel', # crbug.com/1098111
     ],
     'modifications': {
       'Lollipop Phone Tester': {
@@ -2050,7 +2040,7 @@
       'android-code-coverage-native', # crbug/1018434
     ],
     'modifications': {
-      'android-marshmallow-x86-rel': {
+      'android-marshmallow-x86-rel-non-cq': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.content_shell_test_apk.filter',
         ],
@@ -2075,7 +2065,6 @@
       'ToTAndroid',
       'ToTAndroidCFI',
       'android-code-coverage-native', # https://crbug.com/1018431
-      'android-marshmallow-x86-rel', # crbug.com/1098111
     ],
     'modifications': {
       'android-marshmallow-x86-rel-non-cq': {
@@ -2157,7 +2146,7 @@
       'android-code-coverage-native',
       'android-lollipop-arm-rel',
       'android-marshmallow-arm64-rel',
-      'android-marshmallow-x86-rel',
+      'android-marshmallow-x86-rel-non-cq',
       'android-nougat-arm64-rel',
       'android-pie-arm64-rel',
       'android-pie-x86-rel',
@@ -2343,7 +2332,7 @@
           '--shard-timeout=300',
         ],
       },
-      'android-marshmallow-x86-rel': {
+      'android-marshmallow-x86-rel-non-cq': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.sandbox_linux_unittests.filter',
         ]
@@ -2530,14 +2519,14 @@
   },
   'telemetry_chromium_minidump_unittests': {
     'remove_from': [
-      'android-marshmallow-x86-rel', # crbug.com/1084352
+      'android-marshmallow-x86-rel-non-cq', # crbug.com/1084352
     ],
   },
   'telemetry_monochrome_minidump_unittests': {
     'remove_from': [
       # Monochrome isn't supported on M.
       'android-marshmallow-arm64-rel',
-      'android-marshmallow-x86-rel',
+      'android-marshmallow-x86-rel-non-cq',
     ],
   },
   'telemetry_perf_unittests': {
@@ -2593,7 +2582,7 @@
       },
     },
     'remove_from': [
-      'android-marshmallow-x86-rel', # crbug.com/1084352
+      'android-marshmallow-x86-rel-non-cq', # crbug.com/1084352
       # There's no need to run telemetry_perf_unittests on both lollipop and
       # marshmallow on the CQ. https://crbug.com/1026487.
       'android-marshmallow-arm64-rel',
@@ -2771,7 +2760,7 @@
   },
   'viz_unittests': {
     'modifications': {
-      'android-marshmallow-x86-rel': {
+      'android-marshmallow-x86-rel-non-cq': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.viz_unittests.filter',
         ],
@@ -2785,21 +2774,21 @@
   },
   'vr_android_unittests': {
     'remove_from': [
-      'android-marshmallow-x86-rel',
+      'android-marshmallow-x86-rel-non-cq',
       'android-pie-x86-rel',
       'android-code-coverage-native', # crbug/1018434
     ],
   },
   'vr_common_unittests': {
     'remove_from': [
-      'android-marshmallow-x86-rel',
+      'android-marshmallow-x86-rel-non-cq',
       'android-pie-x86-rel',
       'android-code-coverage-native', # crbug/1018431
     ],
   },
   'vr_pixeltests': {
     'remove_from': [
-      'android-marshmallow-x86-rel',
+      'android-marshmallow-x86-rel-non-cq',
       'android-pie-x86-rel',
       'VR Linux',
       'android-code-coverage-native', # crbug/1018431
@@ -2921,12 +2910,12 @@
   },
   'weblayer_bundle_test': {
     'remove_from': [
-      'android-marshmallow-x86-rel', # crbug.com/1088013
+      'android-marshmallow-x86-rel-non-cq', # crbug.com/1088013
     ],
   },
   'weblayer_instrumentation_test_apk': {
     'remove_from': [
-      'android-marshmallow-x86-rel', # crbug.com/1088013
+      'android-marshmallow-x86-rel-non-cq', # crbug.com/1088013
     ],
   },
   'webview_instrumentation_test_apk': {

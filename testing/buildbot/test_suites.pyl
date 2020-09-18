@@ -94,45 +94,18 @@
       },
     },
 
-    # List gtests that are removed in marshmallow emulator builder due to:
-    #  - GCE capacity limitation
-    #  - or timeout issue (crbug.com/1093602)
-    # They will be run in a marshmallow emulator FYI builder to keep test
-    # coverage or debug the timeout issue.
-    'android_marshmallow_emulator_backlog_gtests': {
-      'network_service_out_of_process_chrome_public_test_apk': {
+    # List gtests that run on android-marshmallow-x86-rel builder.
+    # Test suites will be gradually moved from android_marshmallow_wpr_gtests
+    # to this one, when there are more GCE capacity.
+    'android_marshmallow_emulator_gtests': {
+      'chrome_public_test_apk': {
         'swarming': {
           'shards': 20,
         },
-        'args': [
-          '--disable-features=NetworkServiceInProcess',
-        ],
         'mixins': [
           'chrome-gold-service-account',
           'skia_gold_test',
         ],
-        'test': 'chrome_public_test_apk',
-      },
-      'network_service_out_of_process_content_browsertests': {
-        'args': [
-          '--disable-features=NetworkServiceInProcess',
-        ],
-        'swarming': {
-          'shards': 5,
-        },
-        'test': 'content_browsertests',
-      },
-      'network_service_webview_instrumentation_test_apk': {
-        'swarming': {
-          'shards': 20,
-        },
-        'args': [
-          # TODO(crbug.com/882650): WebView currently does not support running network
-          # service OOP.
-          '--enable-features=NetworkService,NetworkServiceInProcess',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/mojo.fyi.network_webview_instrumentation_test_apk.filter',
-        ],
-        'test': 'webview_instrumentation_test_apk',
       },
     },
 
