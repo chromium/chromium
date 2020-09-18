@@ -264,6 +264,14 @@ public class WebLayerShellActivity extends FragmentActivity {
                 restartShell(false);
             }
 
+            if (item.getItemId() == R.id.set_translate_target_lang_menu_id) {
+                mBrowser.getActiveTab().setTranslateTargetLanguage("de");
+            }
+
+            if (item.getItemId() == R.id.clear_translate_target_lang_menu_id) {
+                mBrowser.getActiveTab().setTranslateTargetLanguage("");
+            }
+
             return false;
         });
         popup.show();

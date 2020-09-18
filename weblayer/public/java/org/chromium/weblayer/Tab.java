@@ -190,6 +190,27 @@ public class Tab {
     }
 
     /**
+     * Sets the target language for translation such that whenever the translate UI shows in this
+     * Tab, the target language will be |targetLanguage|. Notes:
+     * - |targetLanguage| should be specified as the language code (e.g., "de" for German).
+     * - Passing an empty string causes behavior to revert to default.
+     * - Even with the target language specified, the translate UI will not trigger for pages in the
+     *   user's locale.
+     * @since 86
+     */
+    public void setTranslateTargetLanguage(@NonNull String targetLanguage) {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 86) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            mImpl.setTranslateTargetLanguage(targetLanguage);
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
      * Executes the script, and returns the result as a JSON object to the callback if provided. The
      * object passed to the callback will have a single key SCRIPT_RESULT_KEY which will hold the
      * result of running the script.

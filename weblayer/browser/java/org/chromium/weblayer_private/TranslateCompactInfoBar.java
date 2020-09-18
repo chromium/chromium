@@ -471,6 +471,13 @@ public class TranslateCompactInfoBar extends InfoBar
         return this.isTabSelectedForTesting(TARGET_TAB_INDEX);
     }
 
+    /**
+     * Returns the name of the target language. This is only used for automation testing.
+     */
+    public String getTargetLanguageForTesting() {
+        return mOptions.targetLanguageName();
+    }
+
     private void createAndShowSnackbar(int actionId) {
         // NOTE: WebLayer doesn't have snackbars, so the relevant action is just taken directly.
         // TODO(blundell): If WebLayer ends up staying with this implementation long-term, update
