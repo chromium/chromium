@@ -5521,7 +5521,7 @@
   {
     'project': 'chrome',
     'bucket': 'ci',
-    'name': 'internal.chrome.fyi',
+    'name': 'internal.chromeos.fyi',
     'mixins': ['chrome-tester-service-account'],
     'machines': {
       'chromeos-betty-arc-r-chrome': {
