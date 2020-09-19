@@ -202,10 +202,10 @@ class PageAllocator : public v8::PageAllocator {
   ~PageAllocator() override = default;
 
   size_t AllocatePageSize() override {
-    return base::kPageAllocationGranularity;
+    return base::PageAllocationGranularity();
   }
 
-  size_t CommitPageSize() override { return base::kSystemPageSize; }
+  size_t CommitPageSize() override { return base::SystemPageSize(); }
 
   void SetRandomMmapSeed(int64_t seed) override {
     base::SetMmapSeedForTesting(seed);

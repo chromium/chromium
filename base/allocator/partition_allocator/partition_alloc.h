@@ -95,7 +95,7 @@
 // We use this to make MEMORY_TOOL_REPLACES_ALLOCATOR behave the same for max
 // size as other alloc code.
 #define CHECK_MAX_SIZE_OR_RETURN_NULLPTR(size, flags) \
-  if (size > kMaxDirectMapped) {                      \
+  if (size > MaxDirectMapped()) {                     \
     if (flags & PartitionAllocReturnNull) {           \
       return nullptr;                                 \
     }                                                 \
@@ -740,7 +740,7 @@ template <bool thread_safe>
 ALWAYS_INLINE PartitionRoot<thread_safe>* PartitionRoot<thread_safe>::FromPage(
     Page* page) {
   auto* extent_entry = reinterpret_cast<SuperPageExtentEntry*>(
-      reinterpret_cast<uintptr_t>(page) & kSystemPageBaseMask);
+      reinterpret_cast<uintptr_t>(page) & SystemPageBaseMask());
   return extent_entry->root;
 }
 
@@ -1116,7 +1116,7 @@ ALWAYS_INLINE size_t PartitionRoot<thread_safe>::ActualSize(size_t size) {
   auto* bucket = SizeToBucket(size);
   if (LIKELY(!bucket->is_direct_mapped())) {
     size = bucket->slot_size;
-  } else if (size > kMaxDirectMapped) {
+  } else if (size > MaxDirectMapped()) {
     // Too large to allocate => return the size unchanged.
   } else {
     size = Bucket::get_direct_map_size(size);

@@ -76,9 +76,15 @@ constexpr size_t kBlinkPagesPerRegion = 10;
 // size is kBlinkPageSize = 2^17 = 128 KiB). So we don't use guard pages in
 // NaCl.
 // The same issue holds for ppc64 systems, which use a 64k page size.
-constexpr size_t kBlinkGuardPageSize = 0;
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+BlinkGuardPageSize() {
+  return 0;
+}
 #else
-constexpr size_t kBlinkGuardPageSize = base::kSystemPageSize;
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+BlinkGuardPageSize() {
+  return base::SystemPageSize();
+}
 #endif
 
 // Double precision floats are more efficient when 8-byte aligned, so we 8-byte
@@ -371,8 +377,9 @@ class FreeList {
 };
 
 // Blink heap pages are set up with a guard page before and after the payload.
-constexpr size_t BlinkPagePayloadSize() {
-  return kBlinkPageSize - 2 * kBlinkGuardPageSize;
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+BlinkPagePayloadSize() {
+  return kBlinkPageSize - 2 * BlinkGuardPageSize();
 }
 
 // Blink heap pages are aligned to the Blink heap page size. Therefore, the
@@ -405,7 +412,7 @@ inline bool VTableInitialized(const void* object_pointer) {
 // be 1 OS page size away from being Blink page size-aligned.
 inline bool IsPageHeaderAddress(Address address) {
   return !((reinterpret_cast<uintptr_t>(address) & kBlinkPageOffsetMask) -
-           kBlinkGuardPageSize);
+           BlinkGuardPageSize());
 }
 
 #endif
@@ -684,7 +691,8 @@ class PLATFORM_EXPORT NormalPage final : public BasePage {
   ~NormalPage() override;
 
   Address Payload() const { return GetAddress() + PageHeaderSize(); }
-  static constexpr size_t PayloadSize() {
+  static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+  PayloadSize() {
     return (BlinkPagePayloadSize() - PageHeaderSize()) & ~kAllocationMask;
   }
   Address PayloadEnd() const { return Payload() + PayloadSize(); }
@@ -832,11 +840,13 @@ class PLATFORM_EXPORT NormalPage final : public BasePage {
     void Clear() { std::fill(table_.begin(), table_.end(), 0); }
 
    private:
-    static constexpr size_t FirstPayloadCard() {
-      return (kBlinkGuardPageSize + NormalPage::PageHeaderSize()) / kCardSize;
+    static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+    FirstPayloadCard() {
+      return (BlinkGuardPageSize() + NormalPage::PageHeaderSize()) / kCardSize;
     }
-    static constexpr size_t LastPayloadCard() {
-      return (kBlinkGuardPageSize + BlinkPagePayloadSize()) / kCardSize;
+    static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+    LastPayloadCard() {
+      return (BlinkGuardPageSize() + BlinkPagePayloadSize()) / kCardSize;
     }
 
     std::array<uint8_t, kBlinkPageSize / kCardSize> table_{};
@@ -1171,7 +1181,7 @@ class LargeObjectArena final : public BaseArena {
 PLATFORM_EXPORT ALWAYS_INLINE BasePage* PageFromObject(const void* object) {
   Address address = reinterpret_cast<Address>(const_cast<void*>(object));
   BasePage* page = reinterpret_cast<BasePage*>(BlinkPageAddress(address) +
-                                               kBlinkGuardPageSize);
+                                               BlinkGuardPageSize());
 #if DCHECK_IS_ON()
   DCHECK(page->Contains(address));
 #endif

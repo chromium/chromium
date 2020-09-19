@@ -41,9 +41,9 @@ enum class PageTag {
 //
 // The requested |address| is just a hint; the actual address returned may
 // differ. The returned address will be aligned at least to |align| bytes.
-// |length| is in bytes, and must be a multiple of |kPageAllocationGranularity|.
-// |align| is in bytes, and must be a power-of-two multiple of
-// |kPageAllocationGranularity|.
+// |length| is in bytes, and must be a multiple of
+// |PageAllocationGranularity()|. |align| is in bytes, and must be a
+// power-of-two multiple of |PageAllocationGranularity()|.
 //
 // If |address| is null, then a suitable and randomized address will be chosen
 // automatically.
@@ -64,12 +64,13 @@ BASE_EXPORT void* AllocPages(void* address,
 // bytes.
 //
 // |address| and |length| must match a previous call to |AllocPages|. Therefore,
-// |address| must be aligned to |kPageAllocationGranularity| bytes, and |length|
-// must be a multiple of |kPageAllocationGranularity|.
+// |address| must be aligned to |PageAllocationGranularity()| bytes, and
+// |length| must be a multiple of |PageAllocationGranularity()|.
 BASE_EXPORT void FreePages(void* address, size_t length);
 
 // Mark one or more system pages, starting at |address| with the given
-// |page_accessibility|. |length| must be a multiple of |kSystemPageSize| bytes.
+// |page_accessibility|. |length| must be a multiple of |SystemPageSize()|
+// bytes.
 //
 // Returns true if the permission change succeeded. In most cases you must
 // |CHECK| the result.
@@ -79,7 +80,8 @@ BASE_EXPORT WARN_UNUSED_RESULT bool TrySetSystemPagesAccess(
     PageAccessibilityConfiguration page_accessibility);
 
 // Mark one or more system pages, starting at |address| with the given
-// |page_accessibility|. |length| must be a multiple of |kSystemPageSize| bytes.
+// |page_accessibility|. |length| must be a multiple of |SystemPageSize()|
+// bytes.
 //
 // Performs a CHECK that the operation succeeds.
 BASE_EXPORT void SetSystemPagesAccess(
@@ -88,7 +90,7 @@ BASE_EXPORT void SetSystemPagesAccess(
     PageAccessibilityConfiguration page_accessibility);
 
 // Decommit one or more system pages starting at |address| and continuing for
-// |length| bytes. |length| must be a multiple of |kSystemPageSize|.
+// |length| bytes. |length| must be a multiple of |SystemPageSize()|.
 //
 // Decommitted means that physical resources (RAM or swap) backing the allocated
 // virtual address range are released back to the system, but the address space
@@ -112,7 +114,7 @@ BASE_EXPORT void DecommitSystemPages(void* address, size_t length);
 
 // Recommit one or more system pages, starting at |address| and continuing for
 // |length| bytes with the given |page_accessibility|. |length| must be a
-// multiple of |kSystemPageSize|.
+// multiple of |SystemPageSize()|.
 //
 // Decommitted system pages must be recommitted with their original permissions
 // before they are used again.
@@ -125,7 +127,7 @@ BASE_EXPORT WARN_UNUSED_RESULT bool RecommitSystemPages(
     PageAccessibilityConfiguration page_accessibility);
 
 // Discard one or more system pages starting at |address| and continuing for
-// |length| bytes. |length| must be a multiple of |kSystemPageSize|.
+// |length| bytes. |length| must be a multiple of |SystemPageSize()|.
 //
 // Discarding is a hint to the system that the page is no longer required. The
 // hint may:
@@ -147,35 +149,37 @@ BASE_EXPORT WARN_UNUSED_RESULT bool RecommitSystemPages(
 // based on the original page content, or a page of zeroes.
 BASE_EXPORT void DiscardSystemPages(void* address, size_t length);
 
-// Rounds up |address| to the next multiple of |kSystemPageSize|. Returns
+// Rounds up |address| to the next multiple of |SystemPageSize()|. Returns
 // 0 for an |address| of 0.
-constexpr ALWAYS_INLINE uintptr_t RoundUpToSystemPage(uintptr_t address) {
-  return (address + kSystemPageOffsetMask) & kSystemPageBaseMask;
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE uintptr_t
+RoundUpToSystemPage(uintptr_t address) {
+  return (address + SystemPageOffsetMask()) & SystemPageBaseMask();
 }
 
-// Rounds down |address| to the previous multiple of |kSystemPageSize|. Returns
+// Rounds down |address| to the previous multiple of |SystemPageSize()|. Returns
 // 0 for an |address| of 0.
-constexpr ALWAYS_INLINE uintptr_t RoundDownToSystemPage(uintptr_t address) {
-  return address & kSystemPageBaseMask;
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE uintptr_t
+RoundDownToSystemPage(uintptr_t address) {
+  return address & SystemPageBaseMask();
 }
 
-// Rounds up |address| to the next multiple of |kPageAllocationGranularity|.
+// Rounds up |address| to the next multiple of |PageAllocationGranularity()|.
 // Returns 0 for an |address| of 0.
-constexpr ALWAYS_INLINE uintptr_t
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE uintptr_t
 RoundUpToPageAllocationGranularity(uintptr_t address) {
-  return (address + kPageAllocationGranularityOffsetMask) &
-         kPageAllocationGranularityBaseMask;
+  return (address + PageAllocationGranularityOffsetMask()) &
+         PageAllocationGranularityBaseMask();
 }
 
 // Rounds down |address| to the previous multiple of
-// |kPageAllocationGranularity|. Returns 0 for an |address| of 0.
-constexpr ALWAYS_INLINE uintptr_t
+// |PageAllocationGranularity()|. Returns 0 for an |address| of 0.
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE uintptr_t
 RoundDownToPageAllocationGranularity(uintptr_t address) {
-  return address & kPageAllocationGranularityBaseMask;
+  return address & PageAllocationGranularityBaseMask();
 }
 
 // Reserves (at least) |size| bytes of address space, aligned to
-// |kPageAllocationGranularity|. This can be called early on to make it more
+// |PageAllocationGranularity()|. This can be called early on to make it more
 // likely that large allocations will succeed. Returns true if the reservation
 // succeeded, false if the reservation failed or a reservation was already made.
 BASE_EXPORT bool ReserveAddressSpace(size_t size);

@@ -6,13 +6,17 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONSTANTS_H_
 
 #include <limits.h>
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 
 #include "base/allocator/partition_allocator/checked_ptr_support.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
-
 #include "build/build_config.h"
+
+#if defined(OS_APPLE)
+#include <mach/vm_page_size.h>
+#endif
 
 namespace base {
 
@@ -44,17 +48,38 @@ static_assert(sizeof(void*) != 8, "");
 // up against the end of a system page.
 
 #if defined(_MIPS_ARCH_LOONGSON)
-static const size_t kPartitionPageShift = 16;  // 64 KiB
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE int
+PartitionPageShift() {
+  return 16;  // 64 KiB
+}
 #elif defined(ARCH_CPU_PPC64)
-static const size_t kPartitionPageShift = 18;  // 256 KiB
-#elif defined(OS_APPLE) && defined(ARCH_CPU_ARM64)
-static const size_t kPartitionPageShift = 16;  // 64 KiB
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE int
+PartitionPageShift() {
+  return 18;  // 256 KiB
+}
+#elif defined(OS_APPLE)
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE int
+PartitionPageShift() {
+  return vm_page_shift + 2;
+}
 #else
-static const size_t kPartitionPageShift = 14;  // 16 KiB
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE int
+PartitionPageShift() {
+  return 14;  // 16 KiB
+}
 #endif
-static const size_t kPartitionPageSize = 1 << kPartitionPageShift;
-static const size_t kPartitionPageOffsetMask = kPartitionPageSize - 1;
-static const size_t kPartitionPageBaseMask = ~kPartitionPageOffsetMask;
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+PartitionPageSize() {
+  return 1 << PartitionPageShift();
+}
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+PartitionPageOffsetMask() {
+  return PartitionPageSize() - 1;
+}
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+PartitionPageBaseMask() {
+  return ~PartitionPageOffsetMask();
+}
 // TODO: Should this be 1 if defined(_MIPS_ARCH_LOONGSON)?
 static const size_t kMaxPartitionPagesPerSlotSpan = 4;
 
@@ -65,10 +90,15 @@ static const size_t kMaxPartitionPagesPerSlotSpan = 4;
 // dirty a private page, which is very wasteful if we never actually store
 // objects there.
 
-static const size_t kNumSystemPagesPerPartitionPage =
-    kPartitionPageSize / kSystemPageSize;
-static const size_t kMaxSystemPagesPerSlotSpan =
-    kNumSystemPagesPerPartitionPage * kMaxPartitionPagesPerSlotSpan;
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+NumSystemPagesPerPartitionPage() {
+  return PartitionPageSize() / SystemPageSize();
+}
+
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+MaxSystemPagesPerSlotSpan() {
+  return NumSystemPagesPerPartitionPage() * kMaxPartitionPagesPerSlotSpan;
+}
 
 // We reserve virtual address space in 2 MiB chunks (aligned to 2 MiB as well).
 // These chunks are called *super pages*. We do this so that we can store
@@ -147,8 +177,10 @@ static const size_t kSuperPageShift = 21;  // 2 MiB
 static const size_t kSuperPageSize = 1 << kSuperPageShift;
 static const size_t kSuperPageOffsetMask = kSuperPageSize - 1;
 static const size_t kSuperPageBaseMask = ~kSuperPageOffsetMask;
-static const size_t kNumPartitionPagesPerSuperPage =
-    kSuperPageSize / kPartitionPageSize;
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+NumPartitionPagesPerSuperPage() {
+  return kSuperPageSize / PartitionPageSize();
+}
 
 // Alignment has two constraints:
 // - Alignment requirement for scalar types: alignof(std::max_align_t)
@@ -216,7 +248,10 @@ static const size_t kMinDirectMappedDownsize = kMaxBucketed + 1;
 //
 // There are matching limits in other allocators, such as tcmalloc. See
 // crbug.com/998048 for details.
-static const size_t kMaxDirectMapped = (1UL << 31) - kPageAllocationGranularity;
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+MaxDirectMapped() {
+  return (1UL << 31) - PageAllocationGranularity();
+}
 static const size_t kBitsPerSizeT = sizeof(void*) * CHAR_BIT;
 
 // Constant for the memory reclaim logic.

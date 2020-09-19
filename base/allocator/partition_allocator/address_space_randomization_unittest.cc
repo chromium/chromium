@@ -24,12 +24,12 @@ namespace base {
 namespace {
 
 uintptr_t GetMask() {
-  uintptr_t mask = internal::kASLRMask;
+  uintptr_t mask = internal::ASLRMask();
 #if defined(ARCH_CPU_64_BITS)
-// Sanitizers use their own kASLRMask constant.
+// Sanitizers use their own ASLR mask constant.
 #if defined(OS_WIN) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
   if (!IsWindows8Point1OrGreater()) {
-    mask = internal::kASLRMaskBefore8_10;
+    mask = internal::ASLRMaskBefore8_10();
   }
 #endif  // defined(OS_WIN) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR))
 #elif defined(ARCH_CPU_32_BITS)
@@ -52,7 +52,7 @@ uintptr_t GetAddressBits() {
 }
 
 uintptr_t GetRandomBits() {
-  return GetAddressBits() - internal::kASLROffset;
+  return GetAddressBits() - internal::ASLROffset();
 }
 
 }  // namespace
@@ -78,7 +78,7 @@ TEST(AddressSpaceRandomizationTest, Alignment) {
 
   for (size_t i = 0; i < kSamples; ++i) {
     uintptr_t address = GetAddressBits();
-    EXPECT_EQ(0ULL, (address & kPageAllocationGranularityOffsetMask));
+    EXPECT_EQ(0ULL, (address & PageAllocationGranularityOffsetMask()));
   }
 }
 
@@ -87,8 +87,8 @@ TEST(AddressSpaceRandomizationTest, Range) {
   if (!mask)
     return;
 
-  uintptr_t min = internal::kASLROffset;
-  uintptr_t max = internal::kASLROffset + internal::kASLRMask;
+  uintptr_t min = internal::ASLROffset();
+  uintptr_t max = internal::ASLROffset() + internal::ASLRMask();
   for (size_t i = 0; i < kSamples; ++i) {
     uintptr_t address = GetAddressBits();
     EXPECT_LE(min, address);

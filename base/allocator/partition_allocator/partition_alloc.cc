@@ -48,35 +48,6 @@ void PartitionRoot<thread_safe>::DecommitEmptyPages() {
   }
 }
 
-// Two partition pages are used as guard / metadata page so make sure the super
-// page size is bigger.
-static_assert(kPartitionPageSize * 4 <= kSuperPageSize, "ok super page size");
-static_assert(!(kSuperPageSize % kPartitionPageSize), "ok super page multiple");
-// Four system pages gives us room to hack out a still-guard-paged piece
-// of metadata in the middle of a guard partition page.
-static_assert(kSystemPageSize * 4 <= kPartitionPageSize,
-              "ok partition page size");
-static_assert(!(kPartitionPageSize % kSystemPageSize),
-              "ok partition page multiple");
-static_assert(sizeof(internal::PartitionPage<internal::ThreadSafe>) <=
-                  kPageMetadataSize,
-              "PartitionPage should not be too big");
-static_assert(kPageMetadataSize * kNumPartitionPagesPerSuperPage <=
-                  kSystemPageSize,
-              "page metadata fits in hole");
-// Limit to prevent callers accidentally overflowing an int size.
-static_assert(kMaxDirectMapped <= (1UL << 31) + kPageAllocationGranularity,
-              "maximum direct mapped allocation");
-// Check that some of our zanier calculations worked out as expected.
-#if ENABLE_TAG_FOR_MTE_CHECKED_PTR
-static_assert(kSmallestBucket >= kAlignment, "generic smallest bucket");
-#else
-static_assert(kSmallestBucket == kAlignment, "generic smallest bucket");
-#endif
-static_assert(kMaxBucketed == 983040, "generic max bucketed");
-static_assert(kMaxSystemPagesPerSlotSpan < (1 << 8),
-              "System pages per slot span must be less than 128.");
-
 #if ENABLE_TAG_FOR_SINGLE_TAG_CHECKED_PTR
 namespace internal {
 BASE_EXPORT PartitionTagWrapper g_checked_ptr_single_tag = {{},
@@ -188,6 +159,47 @@ bool PartitionAllocHooks::ReallocOverrideHookIfEnabled(size_t* out,
 }
 
 void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
+  // This is from page_allocator_constants.h and doesn't really fit here, but
+  // there isn't a centralized initialization function in page_allocator.cc, so
+  // there's no good place in that file to do a STATIC_ASSERT_OR_PA_CHECK.
+  STATIC_ASSERT_OR_PA_CHECK((SystemPageSize() & (SystemPageSize() - 1)) == 0,
+                            "SystemPageSize() must be power of 2");
+
+  // Two partition pages are used as guard / metadata page so make sure the
+  // super page size is bigger.
+  STATIC_ASSERT_OR_PA_CHECK(PartitionPageSize() * 4 <= kSuperPageSize,
+                            "ok super page size");
+  STATIC_ASSERT_OR_PA_CHECK(!(kSuperPageSize % PartitionPageSize()),
+                            "ok super page multiple");
+  // Four system pages gives us room to hack out a still-guard-paged piece
+  // of metadata in the middle of a guard partition page.
+  STATIC_ASSERT_OR_PA_CHECK(SystemPageSize() * 4 <= PartitionPageSize(),
+                            "ok partition page size");
+  STATIC_ASSERT_OR_PA_CHECK(!(PartitionPageSize() % SystemPageSize()),
+                            "ok partition page multiple");
+  static_assert(sizeof(internal::PartitionPage<internal::ThreadSafe>) <=
+                    kPageMetadataSize,
+                "PartitionPage should not be too big");
+  STATIC_ASSERT_OR_PA_CHECK(
+      kPageMetadataSize * NumPartitionPagesPerSuperPage() <= SystemPageSize(),
+      "page metadata fits in hole");
+
+  // Limit to prevent callers accidentally overflowing an int size.
+  STATIC_ASSERT_OR_PA_CHECK(
+      MaxDirectMapped() <= (1UL << 31) + PageAllocationGranularity(),
+      "maximum direct mapped allocation");
+
+  // Check that some of our zanier calculations worked out as expected.
+#if ENABLE_TAG_FOR_MTE_CHECKED_PTR
+  static_assert(kSmallestBucket >= kAlignment, "generic smallest bucket");
+#else
+  static_assert(kSmallestBucket == kAlignment, "generic smallest bucket");
+#endif
+  static_assert(kMaxBucketed == 983040, "generic max bucketed");
+  STATIC_ASSERT_OR_PA_CHECK(
+      MaxSystemPagesPerSlotSpan() < (1 << 8),
+      "System pages per slot span must be less than 128.");
+
   PA_DCHECK(on_out_of_memory);
   internal::g_oom_handling_function = on_out_of_memory;
 }
@@ -317,7 +329,7 @@ bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
 
     // Don't reallocate in-place if new size is less than 80 % of the full
     // map size, to avoid holding on to too much unused address space.
-    if ((new_size / kSystemPageSize) * 5 < (map_size / kSystemPageSize) * 4)
+    if ((new_size / SystemPageSize()) * 5 < (map_size / SystemPageSize()) * 4)
       return false;
 
     // Shrink by decommitting unneeded pages and making them inaccessible.
@@ -377,7 +389,7 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
     return nullptr;
   }
 
-  if (new_size > kMaxDirectMapped) {
+  if (new_size > MaxDirectMapped()) {
     if (flags & PartitionAllocReturnNull)
       return nullptr;
     internal::PartitionExcessiveAllocationSize(new_size);
@@ -462,7 +474,7 @@ static size_t PartitionPurgePage(internal::PartitionPage<thread_safe>* page,
                                  bool discard) {
   const internal::PartitionBucket<thread_safe>* bucket = page->bucket;
   size_t slot_size = bucket->slot_size;
-  if (slot_size < kSystemPageSize || !page->num_allocated_slots)
+  if (slot_size < SystemPageSize() || !page->num_allocated_slots)
     return 0;
 
   size_t bucket_num_slots = bucket->get_slots_per_span();
@@ -481,8 +493,19 @@ static size_t PartitionPurgePage(internal::PartitionPage<thread_safe>* page,
     return discardable_bytes;
   }
 
+#if defined(PAGE_ALLOCATOR_CONSTANTS_ARE_CONSTEXPR)
   constexpr size_t kMaxSlotCount =
-      (kPartitionPageSize * kMaxPartitionPagesPerSlotSpan) / kSystemPageSize;
+      (PartitionPageSize() * kMaxPartitionPagesPerSlotSpan) / SystemPageSize();
+#elif defined(OS_APPLE)
+  // It's better for slot_usage to be stack-allocated and fixed-size, which
+  // demands that its size be constexpr. On OS_APPLE, PartitionPageSize() is
+  // always SystemPageSize() << 2, so regardless of what the run time page size
+  // is, kMaxSlotCount can always be simplified to this expression.
+  constexpr size_t kMaxSlotCount = 4 * kMaxPartitionPagesPerSlotSpan;
+  PA_CHECK(kMaxSlotCount ==
+           (PartitionPageSize() * kMaxPartitionPagesPerSlotSpan) /
+               SystemPageSize());
+#endif
   PA_DCHECK(bucket_num_slots <= kMaxSlotCount);
   PA_DCHECK(page->num_unprovisioned_slots < bucket_num_slots);
   size_t num_slots = bucket_num_slots - page->num_unprovisioned_slots;
@@ -630,7 +653,7 @@ void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
     if (flags & PartitionPurgeDiscardUnusedSystemPages) {
       for (size_t i = 0; i < kNumBuckets; ++i) {
         Bucket* bucket = &buckets[i];
-        if (bucket->slot_size >= kSystemPageSize)
+        if (bucket->slot_size >= SystemPageSize())
           PartitionPurgeBucket(bucket);
       }
     }

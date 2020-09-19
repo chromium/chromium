@@ -97,9 +97,9 @@ void* SystemAllocPages(void* hint,
                        PageAccessibilityConfiguration accessibility,
                        PageTag page_tag,
                        bool commit) {
-  PA_DCHECK(!(length & kPageAllocationGranularityOffsetMask));
+  PA_DCHECK(!(length & PageAllocationGranularityOffsetMask()));
   PA_DCHECK(!(reinterpret_cast<uintptr_t>(hint) &
-              kPageAllocationGranularityOffsetMask));
+              PageAllocationGranularityOffsetMask()));
   PA_DCHECK(commit || accessibility == PageInaccessible);
   void* ptr =
       SystemAllocPagesInternal(hint, length, accessibility, page_tag, commit);
@@ -115,13 +115,13 @@ void* AllocPages(void* address,
                  PageAccessibilityConfiguration accessibility,
                  PageTag page_tag,
                  bool commit) {
-  PA_DCHECK(length >= kPageAllocationGranularity);
-  PA_DCHECK(!(length & kPageAllocationGranularityOffsetMask));
-  PA_DCHECK(align >= kPageAllocationGranularity);
+  PA_DCHECK(length >= PageAllocationGranularity());
+  PA_DCHECK(!(length & PageAllocationGranularityOffsetMask()));
+  PA_DCHECK(align >= PageAllocationGranularity());
   // Alignment must be power of 2 for masking math to work.
   PA_DCHECK(base::bits::IsPowerOfTwo(align));
   PA_DCHECK(!(reinterpret_cast<uintptr_t>(address) &
-              kPageAllocationGranularityOffsetMask));
+              PageAllocationGranularityOffsetMask()));
   uintptr_t align_offset_mask = align - 1;
   uintptr_t align_base_mask = ~align_offset_mask;
   PA_DCHECK(!(reinterpret_cast<uintptr_t>(address) & align_offset_mask));
@@ -173,7 +173,7 @@ void* AllocPages(void* address,
   }
 
   // Make a larger allocation so we can force alignment.
-  size_t try_length = length + (align - kPageAllocationGranularity);
+  size_t try_length = length + (align - PageAllocationGranularity());
   PA_CHECK(try_length >= length);
   void* ret;
 
@@ -193,8 +193,8 @@ void* AllocPages(void* address,
 
 void FreePages(void* address, size_t length) {
   PA_DCHECK(!(reinterpret_cast<uintptr_t>(address) &
-              kPageAllocationGranularityOffsetMask));
-  PA_DCHECK(!(length & kPageAllocationGranularityOffsetMask));
+              PageAllocationGranularityOffsetMask()));
+  PA_DCHECK(!(length & PageAllocationGranularityOffsetMask()));
   FreePagesInternal(address, length);
   PA_DCHECK(g_total_mapped_address_space.load(std::memory_order_relaxed) > 0);
   g_total_mapped_address_space.fetch_sub(length, std::memory_order_relaxed);
@@ -203,32 +203,32 @@ void FreePages(void* address, size_t length) {
 bool TrySetSystemPagesAccess(void* address,
                              size_t length,
                              PageAccessibilityConfiguration accessibility) {
-  PA_DCHECK(!(length & kSystemPageOffsetMask));
+  PA_DCHECK(!(length & SystemPageOffsetMask()));
   return TrySetSystemPagesAccessInternal(address, length, accessibility);
 }
 
 void SetSystemPagesAccess(void* address,
                           size_t length,
                           PageAccessibilityConfiguration accessibility) {
-  PA_DCHECK(!(length & kSystemPageOffsetMask));
+  PA_DCHECK(!(length & SystemPageOffsetMask()));
   SetSystemPagesAccessInternal(address, length, accessibility);
 }
 
 void DecommitSystemPages(void* address, size_t length) {
-  PA_DCHECK(!(length & kSystemPageOffsetMask));
+  PA_DCHECK(!(length & SystemPageOffsetMask()));
   DecommitSystemPagesInternal(address, length);
 }
 
 bool RecommitSystemPages(void* address,
                          size_t length,
                          PageAccessibilityConfiguration accessibility) {
-  PA_DCHECK(!(length & kSystemPageOffsetMask));
+  PA_DCHECK(!(length & SystemPageOffsetMask()));
   PA_DCHECK(accessibility != PageInaccessible);
   return RecommitSystemPagesInternal(address, length, accessibility);
 }
 
 void DiscardSystemPages(void* address, size_t length) {
-  PA_DCHECK(!(length & kSystemPageOffsetMask));
+  PA_DCHECK(!(length & SystemPageOffsetMask()));
   DiscardSystemPagesInternal(address, length);
 }
 
@@ -241,7 +241,7 @@ bool ReserveAddressSpace(size_t size) {
     if (mem != nullptr) {
       // We guarantee this alignment when reserving address space.
       PA_DCHECK(!(reinterpret_cast<uintptr_t>(mem) &
-                  kPageAllocationGranularityOffsetMask));
+                  PageAllocationGranularityOffsetMask()));
       s_reservation_address = mem;
       s_reservation_size = size;
       return true;

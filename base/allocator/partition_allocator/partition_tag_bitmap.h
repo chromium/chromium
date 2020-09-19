@@ -18,13 +18,13 @@ namespace internal {
 // +----------------+ super_page_base
 // | PartitionPage  |
 // | (Meta+Guard)   |
-// +----------------+ super_page_base + kPartitionPageSize (=bitmap_base)
+// +----------------+ super_page_base + PartitionPageSize() (=bitmap_base)
 // |  TagBitmap     |
 // ....
 // +- - - - - - - - + bitmap_base + kActualTagBitmapSize
-// | guard pages(*) | (kActualTagBitmapSize is kSystemPageSize-aligned.)
+// | guard pages(*) | (kActualTagBitmapSize is SystemPageSize()-aligned.)
 // +----------------+ bitmap_base + kReservedTagBitmapSize
-// |   Slot Span    | (kReservedTagBitmapSize is kPartitionPageSize-aligned.)
+// |   Slot Span    | (kReservedTagBitmapSize is PartitionPageSize()-aligned.)
 // ....
 // ....
 // +----------------+
@@ -79,56 +79,58 @@ constexpr size_t CeilCountOfUnits(size_t size, size_t unit_size) {
 }  // namespace tag_bitmap
 
 // kTagBitmapSize is calculated in the following way:
-// (1) kSuperPageSize - 2 * kPartitionPageSize = kTagBitmapSize + kSlotSpanSize
+// (1) kSuperPageSize - 2 * PartitionPageSize() = kTagBitmapSize + kSlotSpanSize
 // (2) kTagBitmapSize >= kSlotSpanSize / kBytesPerPartitionTag *
 // sizeof(PartitionTag)
 //--
-// (1)' kSlotSpanSize = kSuperPageSize - 2 * kPartitionPageSize - kTagBitmapSize
+// (1)' kSlotSpanSize = kSuperPageSize - 2 * PartitionPageSize() -
+// kTagBitmapSize
 // (2)' kSlotSpanSize <= kTagBitmapSize * Y
 // (3)' Y = kBytesPerPartitionTag / sizeof(PartitionTag) =
 // kBytesPerPartitionTagRatio
 //
-//   kTagBitmapSize * Y >= kSuperPageSize - 2 * kPartitionPageSize -
+//   kTagBitmapSize * Y >= kSuperPageSize - 2 * PartitionPageSize() -
 //   kTagBitmapSize (1 + Y) * kTagBimapSize >= kSuperPageSize - 2 *
-//   kPartitionPageSize
+//   PartitionPageSize()
 // Finally,
-//   kTagBitmapSize >= (kSuperPageSize - 2 * kPartitionPageSize) / (1 + Y)
+//   kTagBitmapSize >= (kSuperPageSize - 2 * PartitionPageSize()) / (1 + Y)
 static constexpr size_t kNumPartitionPagesPerTagBitmap =
-    tag_bitmap::CeilCountOfUnits(kSuperPageSize / kPartitionPageSize - 2,
+    tag_bitmap::CeilCountOfUnits(kSuperPageSize / PartitionPageSize() - 2,
                                  tag_bitmap::kBytesPerPartitionTagRatio + 1);
 
 // To make guard pages between the tag bitmap and the slot span, calculate the
 // number of SystemPages of TagBitmap. If kNumSystemPagesPerTagBitmap *
-// kSystemPageSize < kTagBitmapSize, guard pages will be created. (c.f. no guard
-// pages if sizeof(PartitionTag) == 2.)
+// SystemPageSize() < kTagBitmapSize, guard pages will be created. (c.f. no
+// guard pages if sizeof(PartitionTag) == 2.)
 static constexpr size_t kNumSystemPagesPerTagBitmap =
-    tag_bitmap::CeilCountOfUnits(kSuperPageSize / kSystemPageSize -
-                                     2 * kPartitionPageSize / kSystemPageSize,
+    tag_bitmap::CeilCountOfUnits(kSuperPageSize / SystemPageSize() -
+                                     2 * PartitionPageSize() / SystemPageSize(),
                                  tag_bitmap::kBytesPerPartitionTagRatio + 1);
 
 static constexpr size_t kActualTagBitmapSize =
-    kNumSystemPagesPerTagBitmap * kSystemPageSize;
+    kNumSystemPagesPerTagBitmap * SystemPageSize();
 
 // PartitionPageSize-aligned tag bitmap size.
 static constexpr size_t kReservedTagBitmapSize =
-    kPartitionPageSize * kNumPartitionPagesPerTagBitmap;
+    PartitionPageSize() * kNumPartitionPagesPerTagBitmap;
 
 static_assert(kActualTagBitmapSize <= kReservedTagBitmapSize,
               "kActualTagBitmapSize should be smaller than or equal to "
               "kReservedTagBitmapSize.");
-static_assert(
-    kReservedTagBitmapSize - kActualTagBitmapSize < kPartitionPageSize,
-    "Unused space in the tag bitmap should be smaller than kPartitionPageSize");
+static_assert(kReservedTagBitmapSize - kActualTagBitmapSize <
+                  PartitionPageSize(),
+              "Unused space in the tag bitmap should be smaller than "
+              "PartitionPageSize()");
 
 // The region available for slot spans is the reminder of the super page, after
 // taking away the first and last partition page (for metadata and guard pages)
 // and partition pages reserved for the tag bitmap.
 static constexpr size_t kSlotSpansSize =
-    kSuperPageSize - 2 * kPartitionPageSize - kReservedTagBitmapSize;
+    kSuperPageSize - 2 * PartitionPageSize() - kReservedTagBitmapSize;
 static_assert(kActualTagBitmapSize * tag_bitmap::kBytesPerPartitionTagRatio >=
                   kSlotSpansSize,
               "bitmap is large enough to cover slot spans");
-static_assert((kActualTagBitmapSize - kPartitionPageSize) *
+static_assert((kActualTagBitmapSize - PartitionPageSize()) *
                       tag_bitmap::kBytesPerPartitionTagRatio <
                   kSlotSpansSize,
               "any smaller bitmap wouldn't suffice to cover slots spans");

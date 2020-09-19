@@ -38,13 +38,13 @@ ALWAYS_INLINE PartitionPage<thread_safe>* PartitionDirectMap(
   // page sized clump.
   // - We add a trailing guard page on 32-bit (on 64-bit we rely on the
   // massive address space plus randomization instead).
-  size_t map_size = size + kPartitionPageSize;
+  size_t map_size = size + PartitionPageSize();
 #if !defined(ARCH_CPU_64_BITS)
-  map_size += kSystemPageSize;
+  map_size += SystemPageSize();
 #endif
   // Round up to the allocation granularity.
-  map_size += kPageAllocationGranularityOffsetMask;
-  map_size &= kPageAllocationGranularityBaseMask;
+  map_size += PageAllocationGranularityOffsetMask();
+  map_size &= PageAllocationGranularityBaseMask();
 
   char* ptr = nullptr;
   // Allocate from GigaCage, if enabled. However, the exception to this is when
@@ -65,17 +65,17 @@ ALWAYS_INLINE PartitionPage<thread_safe>* PartitionDirectMap(
   if (UNLIKELY(!ptr))
     return nullptr;
 
-  size_t committed_page_size = size + kSystemPageSize;
+  size_t committed_page_size = size + SystemPageSize();
   root->total_size_of_direct_mapped_pages += committed_page_size;
   root->IncreaseCommittedPages(committed_page_size);
 
-  char* slot = ptr + kPartitionPageSize;
-  SetSystemPagesAccess(ptr + (kSystemPageSize * 2),
-                       kPartitionPageSize - (kSystemPageSize * 2),
+  char* slot = ptr + PartitionPageSize();
+  SetSystemPagesAccess(ptr + (SystemPageSize() * 2),
+                       PartitionPageSize() - (SystemPageSize() * 2),
                        PageInaccessible);
 #if !defined(ARCH_CPU_64_BITS)
-  SetSystemPagesAccess(ptr, kSystemPageSize, PageInaccessible);
-  SetSystemPagesAccess(slot + size, kSystemPageSize, PageInaccessible);
+  SetSystemPagesAccess(ptr, SystemPageSize(), PageInaccessible);
+  SetSystemPagesAccess(slot + size, SystemPageSize(), PageInaccessible);
 #endif
 
   auto* metadata = reinterpret_cast<PartitionDirectMapMetadata<thread_safe>*>(
@@ -109,7 +109,7 @@ ALWAYS_INLINE PartitionPage<thread_safe>* PartitionDirectMap(
   metadata->bucket.slot_size = size;
 
   auto* map_extent = &metadata->direct_map_extent;
-  map_extent->map_size = map_size - kPartitionPageSize - kSystemPageSize;
+  map_extent->map_size = map_size - PartitionPageSize() - SystemPageSize();
   map_extent->bucket = &metadata->bucket;
 
   // Maintain the doubly-linked list of all direct mappings.
@@ -136,7 +136,7 @@ PartitionBucket<thread_safe>::get_sentinel_bucket() {
 
 // TODO(ajwong): This seems to interact badly with
 // get_pages_per_slot_span() which rounds the value from this up to a
-// multiple of kNumSystemPagesPerPartitionPage (aka 4) anyways.
+// multiple of NumSystemPagesPerPartitionPage() (aka 4) anyways.
 // http://crbug.com/776537
 //
 // TODO(ajwong): The waste calculation seems wrong. The PTE usage should cover
@@ -156,21 +156,21 @@ uint8_t PartitionBucket<thread_safe>::get_system_pages_per_slot_span() {
   // to using fewer system pages.
   double best_waste_ratio = 1.0f;
   uint16_t best_pages = 0;
-  if (slot_size > kMaxSystemPagesPerSlotSpan * kSystemPageSize) {
+  if (slot_size > MaxSystemPagesPerSlotSpan() * SystemPageSize()) {
     // TODO(ajwong): Why is there a DCHECK here for this?
     // http://crbug.com/776537
-    PA_DCHECK(!(slot_size % kSystemPageSize));
-    best_pages = static_cast<uint16_t>(slot_size / kSystemPageSize);
+    PA_DCHECK(!(slot_size % SystemPageSize()));
+    best_pages = static_cast<uint16_t>(slot_size / SystemPageSize());
     // TODO(ajwong): Should this be checking against
-    // kMaxSystemPagesPerSlotSpan or numeric_limits<uint8_t>::max?
+    // MaxSystemPagesPerSlotSpan() or numeric_limits<uint8_t>::max?
     // http://crbug.com/776537
     PA_CHECK(best_pages < (1 << 8));
     return static_cast<uint8_t>(best_pages);
   }
-  PA_DCHECK(slot_size <= kMaxSystemPagesPerSlotSpan * kSystemPageSize);
-  for (uint16_t i = kNumSystemPagesPerPartitionPage - 1;
-       i <= kMaxSystemPagesPerSlotSpan; ++i) {
-    size_t page_size = kSystemPageSize * i;
+  PA_DCHECK(slot_size <= MaxSystemPagesPerSlotSpan() * SystemPageSize());
+  for (uint16_t i = NumSystemPagesPerPartitionPage() - 1;
+       i <= MaxSystemPagesPerSlotSpan(); ++i) {
+    size_t page_size = SystemPageSize() * i;
     size_t num_slots = page_size / slot_size;
     size_t waste = page_size - (num_slots * slot_size);
     // Leaving a page unfaulted is not free; the page will occupy an empty page
@@ -180,10 +180,10 @@ uint8_t PartitionBucket<thread_safe>::get_system_pages_per_slot_span() {
     // regardless of whether or not they are wasted. Should it just
     // be waste += i * sizeof(void*)?
     // http://crbug.com/776537
-    size_t num_remainder_pages = i & (kNumSystemPagesPerPartitionPage - 1);
+    size_t num_remainder_pages = i & (NumSystemPagesPerPartitionPage() - 1);
     size_t num_unfaulted_pages =
         num_remainder_pages
-            ? (kNumSystemPagesPerPartitionPage - num_remainder_pages)
+            ? (NumSystemPagesPerPartitionPage() - num_remainder_pages)
             : 0;
     waste += sizeof(void*) * num_unfaulted_pages;
     double waste_ratio =
@@ -194,7 +194,7 @@ uint8_t PartitionBucket<thread_safe>::get_system_pages_per_slot_span() {
     }
   }
   PA_DCHECK(best_pages > 0);
-  PA_CHECK(best_pages <= kMaxSystemPagesPerSlotSpan);
+  PA_CHECK(best_pages <= MaxSystemPagesPerSlotSpan());
   return static_cast<uint8_t>(best_pages);
 }
 
@@ -220,14 +220,14 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
     int flags,
     uint16_t num_partition_pages) {
   PA_DCHECK(!(reinterpret_cast<uintptr_t>(root->next_partition_page) %
-              kPartitionPageSize));
+              PartitionPageSize()));
   PA_DCHECK(!(reinterpret_cast<uintptr_t>(root->next_partition_page_end) %
-              kPartitionPageSize));
-  PA_DCHECK(num_partition_pages <= kNumPartitionPagesPerSuperPage);
-  size_t total_size = kPartitionPageSize * num_partition_pages;
+              PartitionPageSize()));
+  PA_DCHECK(num_partition_pages <= NumPartitionPagesPerSuperPage());
+  size_t total_size = PartitionPageSize() * num_partition_pages;
   size_t num_partition_pages_left =
       (root->next_partition_page_end - root->next_partition_page) >>
-      kPartitionPageShift;
+      PartitionPageShift();
   if (LIKELY(num_partition_pages_left >= num_partition_pages)) {
     // In this case, we can still hand out pages from the current super page
     // allocation.
@@ -245,12 +245,12 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
     char* next_tag_bitmap_page = reinterpret_cast<char*>(
         bits::Align(reinterpret_cast<uintptr_t>(
                         PartitionTagPointer(root->next_partition_page)),
-                    kSystemPageSize));
+                    SystemPageSize()));
     if (root->next_tag_bitmap_page < next_tag_bitmap_page) {
 #if DCHECK_IS_ON()
       char* super_page = reinterpret_cast<char*>(
           reinterpret_cast<uintptr_t>(ret) & kSuperPageBaseMask);
-      char* tag_bitmap = super_page + kPartitionPageSize;
+      char* tag_bitmap = super_page + PartitionPageSize();
       PA_DCHECK(next_tag_bitmap_page <= tag_bitmap + kActualTagBitmapSize);
       PA_DCHECK(next_tag_bitmap_page > tag_bitmap);
 #endif
@@ -294,7 +294,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   root->total_size_of_super_pages += kSuperPageSize;
   root->IncreaseCommittedPages(total_size);
 
-  // |total_size| MUST be less than kSuperPageSize - (kPartitionPageSize*2).
+  // |total_size| MUST be less than kSuperPageSize - (PartitionPageSize()*2).
   // This is a trustworthy value because num_partition_pages is not user
   // controlled.
   //
@@ -302,17 +302,17 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   root->next_super_page = super_page + kSuperPageSize;
   // TODO(tasak): Consider starting the bitmap right after metadata to save
   // space.
-  char* tag_bitmap = super_page + kPartitionPageSize;
+  char* tag_bitmap = super_page + PartitionPageSize();
   char* ret = tag_bitmap + kReservedTagBitmapSize;
   root->next_partition_page = ret + total_size;
-  root->next_partition_page_end = root->next_super_page - kPartitionPageSize;
+  root->next_partition_page_end = root->next_super_page - PartitionPageSize();
   // Make the first partition page in the super page a guard page, but leave a
   // hole in the middle.
   // This is where we put page metadata and also a tiny amount of extent
   // metadata.
-  SetSystemPagesAccess(super_page, kSystemPageSize, PageInaccessible);
-  SetSystemPagesAccess(super_page + (kSystemPageSize * 2),
-                       kPartitionPageSize - (kSystemPageSize * 2),
+  SetSystemPagesAccess(super_page, SystemPageSize(), PageInaccessible);
+  SetSystemPagesAccess(super_page + (SystemPageSize() * 2),
+                       PartitionPageSize() - (SystemPageSize() * 2),
                        PageInaccessible);
 #if ENABLE_TAG_FOR_MTE_CHECKED_PTR
   // Make the first |total_size| region of the tag bitmap accessible.
@@ -320,7 +320,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   char* next_tag_bitmap_page = reinterpret_cast<char*>(
       bits::Align(reinterpret_cast<uintptr_t>(
                       PartitionTagPointer(root->next_partition_page)),
-                  kSystemPageSize));
+                  SystemPageSize()));
   PA_DCHECK(next_tag_bitmap_page <= tag_bitmap + kActualTagBitmapSize);
   PA_DCHECK(next_tag_bitmap_page > tag_bitmap);
   // |ret| points at the end of the tag bitmap.
@@ -335,8 +335,8 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
 #endif
 
   //  SetSystemPagesAccess(super_page + (kSuperPageSize -
-  //  kPartitionPageSize),
-  //                             kPartitionPageSize, PageInaccessible);
+  //  PartitionPageSize()),
+  //                             PartitionPageSize(), PageInaccessible);
   // All remaining slotspans for the unallocated PartitionPages inside the
   // SuperPage are conceptually decommitted. Correctly set the state here
   // so they do not occupy resources.
@@ -344,8 +344,8 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   // TODO(ajwong): Refactor Page Allocator API so the SuperPage comes in
   // decommited initially.
   SetSystemPagesAccess(
-      super_page + kPartitionPageSize + kReservedTagBitmapSize + total_size,
-      (kSuperPageSize - kPartitionPageSize - kReservedTagBitmapSize -
+      super_page + PartitionPageSize() + kReservedTagBitmapSize + total_size,
+      (kSuperPageSize - PartitionPageSize() - kReservedTagBitmapSize -
        total_size),
       PageInaccessible);
 
@@ -400,10 +400,10 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
 
 template <bool thread_safe>
 ALWAYS_INLINE uint16_t PartitionBucket<thread_safe>::get_pages_per_slot_span() {
-  // Rounds up to nearest multiple of kNumSystemPagesPerPartitionPage.
+  // Rounds up to nearest multiple of NumSystemPagesPerPartitionPage().
   return (num_system_pages_per_slot_span +
-          (kNumSystemPagesPerPartitionPage - 1)) /
-         kNumSystemPagesPerPartitionPage;
+          (NumSystemPagesPerPartitionPage() - 1)) /
+         NumSystemPagesPerPartitionPage();
 }
 
 template <bool thread_safe>
@@ -574,7 +574,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
     PA_DCHECK(this == get_sentinel_bucket());
     PA_DCHECK(active_pages_head ==
               PartitionPage<thread_safe>::get_sentinel_page());
-    if (size > kMaxDirectMapped) {
+    if (size > MaxDirectMapped()) {
       if (return_null)
         return nullptr;
       // The lock is here to protect PA from:

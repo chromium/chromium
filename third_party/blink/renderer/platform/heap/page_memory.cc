@@ -112,7 +112,7 @@ PageMemory* PageMemory::SetupPageMemoryInRegion(PageMemoryRegion* region,
                                                 size_t page_offset,
                                                 size_t payload_size) {
   // Setup the payload one guard page into the page memory.
-  Address payload_address = region->Base() + page_offset + kBlinkGuardPageSize;
+  Address payload_address = region->Base() + page_offset + BlinkGuardPageSize();
   return new PageMemory(region, MemoryRegion(payload_address, payload_size));
 }
 
@@ -125,7 +125,7 @@ PageMemory* PageMemory::Allocate(size_t payload_size, RegionTree* region_tree) {
 
   // Overallocate by 2 times OS page size to have space for a
   // guard page at the beginning and end of blink heap page.
-  size_t allocation_size = payload_size + 2 * kBlinkGuardPageSize;
+  size_t allocation_size = payload_size + 2 * BlinkGuardPageSize();
   PageMemoryRegion* page_memory_region =
       PageMemoryRegion::AllocateLargePage(allocation_size, region_tree);
   PageMemory* storage =

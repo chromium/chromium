@@ -42,20 +42,20 @@ PartitionDirectUnmap(PartitionPage<thread_safe>* page) {
 
   // Add on the size of the trailing guard page and preceeding partition
   // page.
-  unmap_size += kPartitionPageSize + kSystemPageSize;
+  unmap_size += PartitionPageSize() + SystemPageSize();
 
-  size_t uncommitted_page_size = page->bucket->slot_size + kSystemPageSize;
+  size_t uncommitted_page_size = page->bucket->slot_size + SystemPageSize();
   root->DecreaseCommittedPages(uncommitted_page_size);
   PA_DCHECK(root->total_size_of_direct_mapped_pages >= uncommitted_page_size);
   root->total_size_of_direct_mapped_pages -= uncommitted_page_size;
 
-  PA_DCHECK(!(unmap_size & kPageAllocationGranularityOffsetMask));
+  PA_DCHECK(!(unmap_size & PageAllocationGranularityOffsetMask()));
 
   char* ptr =
       reinterpret_cast<char*>(PartitionPage<thread_safe>::ToPointer(page));
   // Account for the mapping starting a partition page before the actual
   // allocation address.
-  ptr -= kPartitionPageSize;
+  ptr -= PartitionPageSize();
   return {ptr, unmap_size};
 }
 

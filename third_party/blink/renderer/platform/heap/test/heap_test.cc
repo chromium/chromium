@@ -2370,7 +2370,7 @@ TEST_F(HeapTest, HeapVectorOnStackLargeObjectPageSized) {
   using Container = HeapVector<Member<IntWrapper>>;
   Container vector;
   wtf_size_t size =
-      (kLargeObjectSizeThreshold + kBlinkGuardPageSize -
+      (kLargeObjectSizeThreshold + BlinkGuardPageSize() -
        static_cast<wtf_size_t>(LargeObjectPage::PageHeaderSize()) -
        sizeof(HeapObjectHeader)) /
       sizeof(Container::ValueType);

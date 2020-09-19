@@ -6,6 +6,7 @@
 
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/bits.h"
+#include "build/build_config.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
@@ -15,15 +16,7 @@ namespace {
 
 constexpr size_t kEntrySize = sizeof(GCInfo*);
 
-// Allocation and resizing are built around the following invariants.
-static_assert(base::bits::IsPowerOfTwo(kEntrySize),
-              "GCInfoTable entries size must be power of "
-              "two");
-static_assert(
-    0 == base::kPageAllocationGranularity % base::kSystemPageSize,
-    "System page size must be a multiple of page page allocation granularity");
-
-constexpr size_t ComputeInitialTableLimit() {
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t ComputeInitialTableLimit() {
   // (Light) experimentation suggests that Blink doesn't need more than this
   // while handling content on popular web properties.
   constexpr size_t kInitialWantedLimit = 512;
@@ -34,10 +27,9 @@ constexpr size_t ComputeInitialTableLimit() {
   return base::RoundUpToPageAllocationGranularity(memory_wanted) / kEntrySize;
 }
 
-constexpr size_t MaxTableSize() {
-  constexpr size_t kMaxTableSize = base::RoundUpToPageAllocationGranularity(
-      GCInfoTable::kMaxIndex * kEntrySize);
-  return kMaxTableSize;
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t MaxTableSize() {
+  return base::RoundUpToPageAllocationGranularity(GCInfoTable::kMaxIndex *
+                                                  kEntrySize);
 }
 
 }  // namespace
@@ -47,6 +39,27 @@ constexpr GCInfoIndex GCInfoTable::kMaxIndex;
 constexpr GCInfoIndex GCInfoTable::kMinIndex;
 
 void GCInfoTable::CreateGlobalTable() {
+  // Allocation and resizing are built around the following invariants.
+  static_assert(base::bits::IsPowerOfTwo(kEntrySize),
+                "GCInfoTable entries size must be power of "
+                "two");
+
+#if defined(PAGE_ALLOCATOR_CONSTANTS_ARE_CONSTEXPR)
+#define STATIC_ASSERT_OR_CHECK(condition, message) \
+  static_assert(condition, message)
+#else
+#define STATIC_ASSERT_OR_CHECK(condition, message) \
+  do {                                             \
+    CHECK(condition) << (message);                 \
+  } while (false)
+#endif
+
+  STATIC_ASSERT_OR_CHECK(
+      0 == base::PageAllocationGranularity() % base::SystemPageSize(),
+      "System page size must be a multiple of page allocation granularity");
+
+#undef STATIC_ASSERT_OR_CHECK
+
   DEFINE_STATIC_LOCAL(GCInfoTable, table, ());
   global_table_ = &table;
 }
@@ -86,7 +99,7 @@ void GCInfoTable::Resize() {
   const size_t old_committed_size = limit_ * kEntrySize;
   const size_t new_committed_size = new_limit * kEntrySize;
   CHECK(table_);
-  CHECK_EQ(0u, new_committed_size % base::kPageAllocationGranularity);
+  CHECK_EQ(0u, new_committed_size % base::PageAllocationGranularity());
   CHECK_GE(MaxTableSize(), limit_ * kEntrySize);
 
   // Recommitting and zapping assumes byte-addressable storage.
@@ -115,7 +128,7 @@ void GCInfoTable::Resize() {
 
 GCInfoTable::GCInfoTable() {
   table_ = reinterpret_cast<GCInfo const**>(base::AllocPages(
-      nullptr, MaxTableSize(), base::kPageAllocationGranularity,
+      nullptr, MaxTableSize(), base::PageAllocationGranularity(),
       base::PageInaccessible, base::PageTag::kBlinkGC));
   CHECK(table_);
   Resize();

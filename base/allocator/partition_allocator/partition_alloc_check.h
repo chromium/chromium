@@ -6,6 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CHECK_H_
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/check.h"
 
 // When PartitionAlloc is used as the default allocator, we cannot use the
@@ -32,5 +33,26 @@
 #define PA_CHECK(condition) CHECK(condition)
 #define PA_DCHECK(condition) DCHECK(condition)
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+#if defined(PAGE_ALLOCATOR_CONSTANTS_ARE_CONSTEXPR)
+
+// Use this macro to assert on things that are conditionally constexpr as
+// determined by PAGE_ALLOCATOR_CONSTANTS_ARE_CONSTEXPR or
+// PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR. Where fixed at compile time, this
+// is a static_assert. Where determined at run time, this is a PA_CHECK.
+// Therefore, this macro must only be used where both a static_assert and a
+// PA_CHECK would be viable, that is, within a function, and ideally a function
+// that executes only once, early in the program, such as during initialization.
+#define STATIC_ASSERT_OR_PA_CHECK(condition, message) \
+  static_assert(condition, message)
+
+#else
+
+#define STATIC_ASSERT_OR_PA_CHECK(condition, message) \
+  do {                                                \
+    PA_CHECK(condition) << (message);                 \
+  } while (false)
+
+#endif
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CHECK_H_

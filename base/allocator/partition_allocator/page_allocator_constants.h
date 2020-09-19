@@ -7,42 +7,96 @@
 
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 
-namespace base {
-#if defined(OS_WIN) || defined(ARCH_CPU_PPC64)
-static constexpr size_t kPageAllocationGranularityShift = 16;  // 64KB
-#elif defined(_MIPS_ARCH_LOONGSON)
-static constexpr size_t kPageAllocationGranularityShift = 14;  // 16KB
-#elif defined(OS_APPLE) && defined(ARCH_CPU_ARM64)
-static constexpr size_t kPageAllocationGranularityShift = 14;  // 16KB
-#else
-static constexpr size_t kPageAllocationGranularityShift = 12;  // 4KB
-#endif
-static constexpr size_t kPageAllocationGranularity =
-    1 << kPageAllocationGranularityShift;
-static constexpr size_t kPageAllocationGranularityOffsetMask =
-    kPageAllocationGranularity - 1;
-static constexpr size_t kPageAllocationGranularityBaseMask =
-    ~kPageAllocationGranularityOffsetMask;
+#if defined(OS_APPLE)
 
-#if defined(_MIPS_ARCH_LOONGSON)
-static constexpr size_t kSystemPageSize = 16384;
-#elif defined(ARCH_CPU_PPC64)
-// Modern ppc64 systems support 4KB and 64KB page sizes.
-// Since 64KB is the de-facto standard on the platform
-// and binaries compiled for 64KB are likely to work on 4KB systems,
-// 64KB is a good choice here.
-static constexpr size_t kSystemPageSize = 65536;
-#elif defined(OS_APPLE) && defined(ARCH_CPU_ARM64)
-static constexpr size_t kSystemPageSize = 16384;
+#include <mach/vm_page_size.h>
+
+// Although page allocator constants are not constexpr, they are run-time
+// constant. Because the underlying variables they access, such as vm_page_size,
+// are not marked const, the compiler normally has no way to know that they
+// don’t change and must obtain their values whenever it can't prove that they
+// haven't been modified, even if they had already been obtained previously.
+// Attaching __attribute__((const)) to these declarations allows these redundant
+// accesses to be omitted under optimization such as common subexpression
+// elimination.
+#define PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR __attribute__((const))
+
 #else
-static constexpr size_t kSystemPageSize = 4096;
+
+// When defined, page size constants are fixed at compile time. When not
+// defined, they may vary at run time.
+#define PAGE_ALLOCATOR_CONSTANTS_ARE_CONSTEXPR 1
+
+// Use this macro to declare a function as constexpr or not based on whether
+// PAGE_ALLOCATOR_CONSTANTS_ARE_CONSTEXPR is defined.
+#define PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR constexpr
+
 #endif
-static constexpr size_t kSystemPageOffsetMask = kSystemPageSize - 1;
-static_assert((kSystemPageSize & (kSystemPageSize - 1)) == 0,
-              "kSystemPageSize must be power of 2");
-static constexpr size_t kSystemPageBaseMask = ~kSystemPageOffsetMask;
+
+namespace {
+
+#if !defined(OS_APPLE)
+
+constexpr ALWAYS_INLINE int PageAllocationGranularityShift() {
+#if defined(OS_WIN) || defined(ARCH_CPU_PPC64)
+  // Modern ppc64 systems support 4kB (shift = 12) and 64kB (shift = 16) page
+  // sizes.  Since 64kB is the de facto standard on the platform and binaries
+  // compiled for 64kB are likely to work on 4kB systems, 64kB is a good choice
+  // here.
+  return 16;  // 64kB
+#elif defined(_MIPS_ARCH_LOONGSON)
+  return 14;  // 16kB
+#else
+  return 12;  // 4kB
+#endif
+}
+
+#endif
+
+}  // namespace
+
+namespace base {
+
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+PageAllocationGranularity() {
+#if defined(OS_APPLE)
+  return vm_page_size;
+#else
+  return 1 << PageAllocationGranularityShift();
+#endif
+}
+
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+PageAllocationGranularityOffsetMask() {
+  return PageAllocationGranularity() - 1;
+}
+
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+PageAllocationGranularityBaseMask() {
+  return ~PageAllocationGranularityOffsetMask();
+}
+
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+SystemPageSize() {
+#if defined(OS_WIN)
+  return 4096;
+#else
+  return PageAllocationGranularity();
+#endif
+}
+
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+SystemPageOffsetMask() {
+  return SystemPageSize() - 1;
+}
+
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+SystemPageBaseMask() {
+  return ~SystemPageOffsetMask();
+}
 
 static constexpr size_t kPageMetadataShift = 5;  // 32 bytes per partition page.
 static constexpr size_t kPageMetadataSize = 1 << kPageMetadataShift;

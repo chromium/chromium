@@ -70,7 +70,7 @@ struct PartitionBucket {
   ALWAYS_INLINE size_t get_bytes_per_span() const {
     // TODO(ajwong): Change to CheckedMul. https://crbug.com/787153
     // https://crbug.com/680657
-    return num_system_pages_per_slot_span * kSystemPageSize;
+    return num_system_pages_per_slot_span * SystemPageSize();
   }
   ALWAYS_INLINE uint16_t get_slots_per_span() const {
     // TODO(ajwong): Change to CheckedMul. https://crbug.com/787153
@@ -79,11 +79,11 @@ struct PartitionBucket {
   }
 
   static ALWAYS_INLINE size_t get_direct_map_size(size_t size) {
-    // Caller must check that the size is not above the kMaxDirectMapped
+    // Caller must check that the size is not above the MaxDirectMapped()
     // limit before calling. This also guards against integer overflow in the
     // calculation here.
-    PA_DCHECK(size <= kMaxDirectMapped);
-    return (size + kSystemPageOffsetMask) & kSystemPageBaseMask;
+    PA_DCHECK(size <= MaxDirectMapped());
+    return (size + SystemPageOffsetMask()) & SystemPageBaseMask();
   }
 
   BASE_EXPORT static PartitionBucket* get_sentinel_bucket();
