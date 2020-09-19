@@ -24,4 +24,9 @@ bool ShouldThrottleLiteVideoMissingContentLength() {
       ::features::kLiteVideo, "throttle_missing_content_length", false);
 }
 
+size_t GetMaxActiveThrottles() {
+  return base::GetFieldTrialParamByFeatureAsInt(::features::kLiteVideo,
+                                                "max_active_throttles", 50);
+}
+
 }  // namespace lite_video

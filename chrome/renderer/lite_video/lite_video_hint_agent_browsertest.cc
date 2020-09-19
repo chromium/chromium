@@ -305,4 +305,52 @@ TEST_F(LiteVideoHintAgentTest, StopThrottlingResumesResponsesImmediately) {
   EXPECT_TRUE(GetActiveThrottledResponses().empty());
 }
 
+TEST_F(LiteVideoHintAgentTest, RespectsMaxActiveThrottlesLimit) {
+  histogram_tester().ExpectUniqueSample("LiteVideo.HintAgent.HasHint", true, 1);
+
+  // Initial k media bytes will not be throttled.
+  auto throttle_info =
+      CreateThrottleAndSendResponse(net::HTTP_OK, "video/mp4", 11000);
+  EXPECT_FALSE(throttle_info->is_throttled());
+  histogram_tester().ExpectTotalCount("LiteVideo.URLLoader.ThrottleLatency", 0);
+  EXPECT_TRUE(GetActiveThrottledResponses().empty());
+
+  // First 50 responses will be throttled.
+  std::deque<std::unique_ptr<MediaLoaderThrottleInfo>> throttles;
+  for (int i = 0; i < 50; i++) {
+    throttle_info =
+        CreateThrottleAndSendResponse(net::HTTP_OK, "video/mp4", 11000);
+    histogram_tester().ExpectTotalCount("LiteVideo.URLLoader.ThrottleLatency",
+                                        i + 1);
+    EXPECT_TRUE(throttle_info->is_throttled());
+    throttles.push_back(std::move(throttle_info));
+  }
+
+  // The next response hits the MaxActiveThrottles limit and won't be throttled.
+  throttle_info =
+      CreateThrottleAndSendResponse(net::HTTP_OK, "video/mp4", 11000);
+  histogram_tester().ExpectTotalCount("LiteVideo.URLLoader.ThrottleLatency",
+                                      50);
+  EXPECT_FALSE(throttle_info->is_throttled());
+
+  // Release a response from throttling.
+  throttles.front().reset();
+  throttles.pop_front();
+  base::RunLoop().RunUntilIdle();
+
+  // The next response is below the MaxActiveThrottles limit and gets throttled.
+  throttle_info =
+      CreateThrottleAndSendResponse(net::HTTP_OK, "video/mp4", 11000);
+  histogram_tester().ExpectTotalCount("LiteVideo.URLLoader.ThrottleLatency",
+                                      51);
+  EXPECT_TRUE(throttle_info->is_throttled());
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(50));
+  base::RunLoop().RunUntilIdle();
+  for (const auto& throttle : throttles) {
+    EXPECT_FALSE(throttle->is_throttled());
+  }
+  EXPECT_FALSE(throttle_info->is_throttled());
+}
+
 }  // namespace lite_video

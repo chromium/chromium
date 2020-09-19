@@ -38,6 +38,9 @@ base::TimeDelta LiteVideoHintAgent::CalculateLatencyForResourceResponse(
   if (!HasLiteVideoHint())
     return base::TimeDelta();
 
+  if (active_throttles_.size() >= GetMaxActiveThrottles())
+    return base::TimeDelta();
+
   if (ShouldDisableLiteVideoForCacheControlNoTransform() &&
       response_head.headers &&
       response_head.headers->HasHeaderValue("cache-control", "no-transform")) {
