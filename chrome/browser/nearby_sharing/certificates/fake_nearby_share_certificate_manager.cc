@@ -50,13 +50,6 @@ FakeNearbyShareCertificateManager::FakeNearbyShareCertificateManager() =
 FakeNearbyShareCertificateManager::~FakeNearbyShareCertificateManager() =
     default;
 
-NearbySharePrivateCertificate
-FakeNearbyShareCertificateManager::GetValidPrivateCertificate(
-    nearby_share::mojom::Visibility visibility) {
-  ++num_get_valid_private_certificate_calls_;
-  return GetNearbyShareTestPrivateCertificate(visibility);
-}
-
 std::vector<nearbyshare::proto::PublicCertificate>
 FakeNearbyShareCertificateManager::GetPrivateCertificatesAsPublicCertificates(
     nearby_share::mojom::Visibility visibility) {
@@ -78,3 +71,12 @@ void FakeNearbyShareCertificateManager::DownloadPublicCertificates() {
 void FakeNearbyShareCertificateManager::OnStart() {}
 
 void FakeNearbyShareCertificateManager::OnStop() {}
+
+base::Optional<NearbySharePrivateCertificate>
+FakeNearbyShareCertificateManager::GetValidPrivateCertificate(
+    nearby_share::mojom::Visibility visibility) const {
+  return GetNearbyShareTestPrivateCertificate(visibility);
+}
+
+void FakeNearbyShareCertificateManager::UpdatePrivateCertificateInStorage(
+    const NearbySharePrivateCertificate& private_certificate) {}

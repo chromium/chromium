@@ -126,11 +126,6 @@ class PairedKeyVerificationRunnerTest : public testing::Test {
           run_loop.Quit();
         }));
     run_loop.Run();
-
-    // The private certificate is at least always immediately retrieved in order
-    // to create the signature for the sent PairedKeyEncryptionFrame.
-    EXPECT_GE(certificate_manager_.num_get_valid_private_certificate_calls(),
-              1u);
   }
 
   void SetUpPairedKeyEncryptionFrame(ReturnFrameType frame_type) {
@@ -140,20 +135,11 @@ class PairedKeyVerificationRunnerTest : public testing::Test {
             testing::Eq(sharing::mojom::V1Frame::Tag::PAIRED_KEY_ENCRYPTION),
             testing::_, testing::Eq(kTimeout)))
         .WillOnce(testing::WithArg<1>(testing::Invoke(
-            [frame_type,
-             this](base::OnceCallback<void(
-                       base::Optional<sharing::mojom::V1FramePtr>)> callback) {
-              // A private certificate retrieval will only be necessary if we
-              // receive a frame that needs verification.
-              size_t initial_num_private_cert_gets =
-                  certificate_manager_
-                      .num_get_valid_private_certificate_calls();
-
+            [frame_type](
+                base::OnceCallback<void(
+                    base::Optional<sharing::mojom::V1FramePtr>)> callback) {
               if (frame_type == ReturnFrameType::kNull) {
                 std::move(callback).Run(base::nullopt);
-                EXPECT_EQ(initial_num_private_cert_gets,
-                          certificate_manager_
-                              .num_get_valid_private_certificate_calls());
                 return;
               }
 
@@ -171,9 +157,6 @@ class PairedKeyVerificationRunnerTest : public testing::Test {
               }
 
               std::move(callback).Run(std::move(mojo_v1frame));
-              EXPECT_EQ(initial_num_private_cert_gets + 1,
-                        certificate_manager_
-                            .num_get_valid_private_certificate_calls());
             })));
   }
 

@@ -976,8 +976,7 @@ NearbySharingServiceImpl::CreateEndpointInfo(
   if (visibility == Visibility::kAllContacts ||
       visibility == Visibility::kSelectedContacts) {
     base::Optional<NearbyShareEncryptedMetadataKey> encrypted_metadata_key =
-        certificate_manager_->GetValidPrivateCertificate(visibility)
-            .EncryptMetadataKey();
+        certificate_manager_->EncryptPrivateCertificateMetadataKey(visibility);
     if (encrypted_metadata_key) {
       salt = encrypted_metadata_key->salt();
       encrypted_key = encrypted_metadata_key->encrypted_key();

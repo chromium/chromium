@@ -278,28 +278,6 @@ NearbyShareCertificateManagerImpl::~NearbyShareCertificateManagerImpl() {
   contact_manager_->RemoveObserver(this);
 }
 
-NearbySharePrivateCertificate
-NearbyShareCertificateManagerImpl::GetValidPrivateCertificate(
-    nearby_share::mojom::Visibility visibility) {
-  std::vector<NearbySharePrivateCertificate> certs =
-      *certificate_storage_->GetPrivateCertificates();
-  for (auto& cert : certs) {
-    if (IsNearbyShareCertificateWithinValidityPeriod(
-            clock_->Now(), cert.not_before(), cert.not_after(),
-            /*use_public_certificate_tolerance=*/false) &&
-        cert.visibility() == visibility) {
-      return std::move(cert);
-    }
-  }
-  NOTREACHED();
-  NS_LOG(ERROR) << __func__
-                << ": No valid private certificate found with visibility "
-                << static_cast<int>(visibility);
-  return NearbySharePrivateCertificate(nearby_share::mojom::Visibility::kNoOne,
-                                       /*not_before=*/base::Time(),
-                                       nearbyshare::proto::EncryptedMetadata());
-}
-
 std::vector<nearbyshare::proto::PublicCertificate>
 NearbyShareCertificateManagerImpl::GetPrivateCertificatesAsPublicCertificates(
     nearby_share::mojom::Visibility visibility) {
@@ -331,6 +309,31 @@ void NearbyShareCertificateManagerImpl::OnStop() {
   public_certificate_expiration_scheduler_->Stop();
   upload_local_device_certificates_scheduler_->Stop();
   download_public_certificates_scheduler_->Stop();
+}
+
+base::Optional<NearbySharePrivateCertificate>
+NearbyShareCertificateManagerImpl::GetValidPrivateCertificate(
+    nearby_share::mojom::Visibility visibility) const {
+  base::Optional<std::vector<NearbySharePrivateCertificate>> certs =
+      *certificate_storage_->GetPrivateCertificates();
+  for (auto& cert : *certs) {
+    if (IsNearbyShareCertificateWithinValidityPeriod(
+            clock_->Now(), cert.not_before(), cert.not_after(),
+            /*use_public_certificate_tolerance=*/false) &&
+        cert.visibility() == visibility) {
+      return std::move(cert);
+    }
+  }
+
+  NS_LOG(WARNING) << __func__
+                  << ": No valid private certificate found with visibility "
+                  << visibility;
+  return base::nullopt;
+}
+
+void NearbyShareCertificateManagerImpl::UpdatePrivateCertificateInStorage(
+    const NearbySharePrivateCertificate& private_certificate) {
+  certificate_storage_->UpdatePrivateCertificate(private_certificate);
 }
 
 void NearbyShareCertificateManagerImpl::OnAllowlistChanged(

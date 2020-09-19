@@ -72,8 +72,6 @@ class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
   ~FakeNearbyShareCertificateManager() override;
 
   // NearbyShareCertificateManager:
-  NearbySharePrivateCertificate GetValidPrivateCertificate(
-      nearby_share::mojom::Visibility visibility) override;
   std::vector<nearbyshare::proto::PublicCertificate>
   GetPrivateCertificatesAsPublicCertificates(
       nearby_share::mojom::Visibility visibility) override;
@@ -85,10 +83,6 @@ class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
   // Make protected methods from base class public in this fake class.
   using NearbyShareCertificateManager::NotifyPrivateCertificatesChanged;
   using NearbyShareCertificateManager::NotifyPublicCertificatesDownloaded;
-
-  size_t num_get_valid_private_certificate_calls() {
-    return num_get_valid_private_certificate_calls_;
-  }
 
   size_t num_get_private_certificates_as_public_certificates_calls() {
     return num_get_private_certificates_as_public_certificates_calls_;
@@ -107,8 +101,11 @@ class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
   // NearbyShareCertificateManager:
   void OnStart() override;
   void OnStop() override;
+  base::Optional<NearbySharePrivateCertificate> GetValidPrivateCertificate(
+      nearby_share::mojom::Visibility visibility) const override;
+  void UpdatePrivateCertificateInStorage(
+      const NearbySharePrivateCertificate& private_certificate) override;
 
-  size_t num_get_valid_private_certificate_calls_ = 0;
   size_t num_get_private_certificates_as_public_certificates_calls_ = 0;
   size_t num_download_public_certificates_calls_ = 0;
   std::vector<GetDecryptedPublicCertificateCall>

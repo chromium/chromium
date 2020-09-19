@@ -410,15 +410,92 @@ class NearbyShareCertificateManagerImplTest
   std::unique_ptr<NearbyShareCertificateManager> cert_manager_;
 };
 
-TEST_F(NearbyShareCertificateManagerImplTest, GetValidPrivateCertificate) {
-  cert_store_->ReplacePrivateCertificates(private_certificates_);
-  FastForward(kNearbyShareCertificateValidityPeriod * 1.5);
-  auto cert = cert_manager_->GetValidPrivateCertificate(
-      nearby_share::mojom::Visibility::kAllContacts);
+TEST_F(NearbyShareCertificateManagerImplTest,
+       EncryptPrivateCertificateMetadataKey) {
+  // No valid certificates exist.
+  cert_store_->ReplacePrivateCertificates(
+      std::vector<NearbySharePrivateCertificate>());
+  EXPECT_FALSE(cert_manager_->EncryptPrivateCertificateMetadataKey(
+      nearby_share::mojom::Visibility::kAllContacts));
+  EXPECT_FALSE(cert_manager_->EncryptPrivateCertificateMetadataKey(
+      nearby_share::mojom::Visibility::kSelectedContacts));
 
-  EXPECT_EQ(nearby_share::mojom::Visibility::kAllContacts, cert.visibility());
-  EXPECT_LE(cert.not_before(), Now());
-  EXPECT_LT(Now(), cert.not_after());
+  // Set up valid all-contacts visibility certificate.
+  NearbySharePrivateCertificate private_certificate =
+      GetNearbyShareTestPrivateCertificate(
+          nearby_share::mojom::Visibility::kAllContacts);
+  cert_store_->ReplacePrivateCertificates({private_certificate});
+  FastForward(GetNearbyShareTestNotBefore() +
+              kNearbyShareCertificateValidityPeriod * 0.5 - Now());
+
+  // Sanity check that the cert storage is as expected.
+  base::Optional<std::vector<NearbySharePrivateCertificate>> stored_certs =
+      cert_store_->GetPrivateCertificates();
+  EXPECT_EQ(stored_certs->at(0).ToDictionary(),
+            private_certificate.ToDictionary());
+
+  base::Optional<NearbyShareEncryptedMetadataKey> encrypted_metadata_key =
+      cert_manager_->EncryptPrivateCertificateMetadataKey(
+          nearby_share::mojom::Visibility::kAllContacts);
+  EXPECT_EQ(GetNearbyShareTestEncryptedMetadataKey().encrypted_key(),
+            encrypted_metadata_key->encrypted_key());
+  EXPECT_EQ(GetNearbyShareTestEncryptedMetadataKey().salt(),
+            encrypted_metadata_key->salt());
+  EXPECT_FALSE(cert_manager_->EncryptPrivateCertificateMetadataKey(
+      nearby_share::mojom::Visibility::kSelectedContacts));
+
+  // Verify that storage is updated when salts are consumed during encryption.
+  EXPECT_NE(cert_store_->GetPrivateCertificates()->at(0).ToDictionary(),
+            private_certificate.ToDictionary());
+
+  // No valid certificates exist.
+  FastForward(kNearbyShareCertificateValidityPeriod);
+  EXPECT_FALSE(cert_manager_->EncryptPrivateCertificateMetadataKey(
+      nearby_share::mojom::Visibility::kAllContacts));
+  EXPECT_FALSE(cert_manager_->EncryptPrivateCertificateMetadataKey(
+      nearby_share::mojom::Visibility::kSelectedContacts));
+}
+
+TEST_F(NearbyShareCertificateManagerImplTest, SignWithPrivateCertificate) {
+  NearbySharePrivateCertificate private_certificate =
+      GetNearbyShareTestPrivateCertificate(
+          nearby_share::mojom::Visibility::kAllContacts);
+  cert_store_->ReplacePrivateCertificates({private_certificate});
+  FastForward(GetNearbyShareTestNotBefore() +
+              kNearbyShareCertificateValidityPeriod * 0.5 - Now());
+
+  // Perform sign/verify roundtrip.
+  EXPECT_TRUE(GetNearbyShareTestDecryptedPublicCertificate().VerifySignature(
+      GetNearbyShareTestPayloadToSign(),
+      *cert_manager_->SignWithPrivateCertificate(
+          nearby_share::mojom::Visibility::kAllContacts,
+          GetNearbyShareTestPayloadToSign())));
+
+  // No selected-contact visibility certificate in storage.
+  EXPECT_FALSE(cert_manager_->SignWithPrivateCertificate(
+      nearby_share::mojom::Visibility::kSelectedContacts,
+      GetNearbyShareTestPayloadToSign()));
+}
+
+TEST_F(NearbyShareCertificateManagerImplTest,
+       HashAuthenticationTokenWithPrivateCertificate) {
+  NearbySharePrivateCertificate private_certificate =
+      GetNearbyShareTestPrivateCertificate(
+          nearby_share::mojom::Visibility::kAllContacts);
+  cert_store_->ReplacePrivateCertificates({private_certificate});
+  FastForward(GetNearbyShareTestNotBefore() +
+              kNearbyShareCertificateValidityPeriod * 0.5 - Now());
+
+  EXPECT_EQ(private_certificate.HashAuthenticationToken(
+                GetNearbyShareTestPayloadToSign()),
+            cert_manager_->HashAuthenticationTokenWithPrivateCertificate(
+                nearby_share::mojom::Visibility::kAllContacts,
+                GetNearbyShareTestPayloadToSign()));
+
+  // No selected-contact visibility certificate in storage.
+  EXPECT_FALSE(cert_manager_->HashAuthenticationTokenWithPrivateCertificate(
+      nearby_share::mojom::Visibility::kSelectedContacts,
+      GetNearbyShareTestPayloadToSign()));
 }
 
 TEST_F(NearbyShareCertificateManagerImplTest,

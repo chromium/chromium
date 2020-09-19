@@ -232,9 +232,6 @@ void PairedKeyVerificationRunner::SendCertificateInfo() {
 }
 
 void PairedKeyVerificationRunner::SendPairedKeyEncryptionFrame() {
-  NearbySharePrivateCertificate private_certificate =
-      certificate_manager_->GetValidPrivateCertificate(visibility_);
-
   sharing::nearby::Frame frame;
   frame.set_version(sharing::nearby::Frame::V1);
   sharing::nearby::V1Frame* v1_frame = frame.mutable_v1();
@@ -243,7 +240,8 @@ void PairedKeyVerificationRunner::SendPairedKeyEncryptionFrame() {
       v1_frame->mutable_paired_key_encryption();
 
   base::Optional<std::vector<uint8_t>> signature =
-      private_certificate.Sign(PadPrefix(local_prefix_, raw_token_));
+      certificate_manager_->SignWithPrivateCertificate(
+          visibility_, PadPrefix(local_prefix_, raw_token_));
   if (signature) {
     std::vector<uint8_t> certificate_id_hash;
     if (certificate_)
@@ -268,11 +266,10 @@ void PairedKeyVerificationRunner::SendPairedKeyEncryptionFrame() {
 PairedKeyVerificationRunner::PairedKeyVerificationResult
 PairedKeyVerificationRunner::VerifyRemotePublicCertificate(
     const sharing::mojom::V1FramePtr& frame) {
-  NearbySharePrivateCertificate private_certificate =
-      certificate_manager_->GetValidPrivateCertificate(visibility_);
-
-  if (private_certificate.HashAuthenticationToken(raw_token_) ==
-      frame->get_paired_key_encryption()->secret_id_hash) {
+  base::Optional<std::vector<uint8_t>> hash =
+      certificate_manager_->HashAuthenticationTokenWithPrivateCertificate(
+          visibility_, raw_token_);
+  if (hash && *hash == frame->get_paired_key_encryption()->secret_id_hash) {
     NS_LOG(VERBOSE) << __func__
                     << ": Successfully verified remote public certificate.";
     return PairedKeyVerificationResult::kSuccess;

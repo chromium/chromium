@@ -56,13 +56,6 @@ class ListPublicCertificatesResponse;
 //   a) the user's contact list has changed, or
 //   b) contacts are removed from the allowlist--relevant to selected-contacts
 //      visibility mode.
-// TODO(b/168022980): Only destroy the private certificates of the relevant
-// visiblity: all-contacts and selected-contacts visibility, respectively.
-//
-// TODO(https://crbug.com/1121443): Add the following if we remove
-// GetValidPrivateCertificate() and perform all private certificate crypto
-// operations internally: "This implementation also provides the high-level
-// interface for performing cryptographic operations related to certificates."
 class NearbyShareCertificateManagerImpl
     : public NearbyShareCertificateManager,
       public NearbyShareContactManager::Observer,
@@ -108,8 +101,6 @@ class NearbyShareCertificateManagerImpl
       const base::Clock* clock);
 
   // NearbyShareCertificateManager:
-  NearbySharePrivateCertificate GetValidPrivateCertificate(
-      nearby_share::mojom::Visibility visibility) override;
   std::vector<nearbyshare::proto::PublicCertificate>
   GetPrivateCertificatesAsPublicCertificates(
       nearby_share::mojom::Visibility visibility) override;
@@ -119,6 +110,10 @@ class NearbyShareCertificateManagerImpl
   void DownloadPublicCertificates() override;
   void OnStart() override;
   void OnStop() override;
+  base::Optional<NearbySharePrivateCertificate> GetValidPrivateCertificate(
+      nearby_share::mojom::Visibility visibility) const override;
+  void UpdatePrivateCertificateInStorage(
+      const NearbySharePrivateCertificate& private_certificate) override;
 
   // NearbyShareContactManager::Observer:
   void OnAllowlistChanged(bool were_contacts_added_to_allowlist,
