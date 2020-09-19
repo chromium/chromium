@@ -113,6 +113,9 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
     kButtonLabelColor,
     kButtonLabelColorPrimary,
 
+    // Color for blue button labels, e.g, 'Retry' button of the system toast.
+    kButtonLabelColorBlue,
+
     kButtonIconColor,
     kButtonIconColorPrimary,
 

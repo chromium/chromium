@@ -242,6 +242,8 @@ SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
     case ContentLayerType::kButtonLabelColor:
     case ContentLayerType::kButtonIconColor:
       return is_dark_mode ? gfx::kGoogleGrey200 : gfx::kGoogleGrey700;
+    case ContentLayerType::kButtonLabelColorBlue:
+      return is_dark_mode ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600;
     case ContentLayerType::kButtonLabelColorPrimary:
     case ContentLayerType::kButtonIconColorPrimary:
       return is_dark_mode ? gfx::kGoogleGrey200 : gfx::kGoogleGrey900;
