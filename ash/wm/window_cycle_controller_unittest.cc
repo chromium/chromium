@@ -1046,6 +1046,49 @@ TEST_F(InteractiveWindowCycleControllerTest, TapSelect) {
   EXPECT_TRUE(wm::IsActiveWindow(w2.get()));
 }
 
+// When a user has the window cycle list open and clicks outside of it, it
+// should cancel cycling.
+TEST_F(InteractiveWindowCycleControllerTest,
+       MousePressOutsideOfListCancelsCycling) {
+  std::unique_ptr<Window> w0 = CreateTestWindow();
+  std::unique_ptr<Window> w1 = CreateTestWindow();
+  std::unique_ptr<Window> w2 = CreateTestWindow();
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  WindowCycleController* controller = Shell::Get()->window_cycle_controller();
+
+  // Cycle to second item, move to above the window cycle list, and click.
+  controller->StartCycling();
+  controller->HandleCycleWindow(WindowCycleController::FORWARD);
+  gfx::Point above_window_cycle_list =
+      GetWindowCycleListWidget()->GetWindowBoundsInScreen().top_center();
+  above_window_cycle_list.Offset(0, 100);
+  generator->MoveMouseTo(above_window_cycle_list);
+  generator->ClickLeftButton();
+  EXPECT_FALSE(controller->IsCycling());
+  EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
+}
+
+// When the user has one window open, the window cycle view isn't shown. In this
+// case we should not eat mouse events.
+TEST_F(InteractiveWindowCycleControllerTest,
+       MouseEventsNotEatenWhenCycleViewNotVisible) {
+  std::unique_ptr<Window> w0 = CreateTestWindow();
+  EventCounter event_count;
+  w0->AddPreTargetHandler(&event_count);
+  ui::test::EventGenerator* generator = GetEventGenerator();
+
+  // Start cycling. Since there's only one window the cycle view shouldn't be
+  // visible.
+  WindowCycleController* controller = Shell::Get()->window_cycle_controller();
+  controller->HandleCycleWindow(WindowCycleController::FORWARD);
+  ASSERT_TRUE(controller->IsCycling());
+  ASSERT_FALSE(controller->IsWindowListVisible());
+
+  generator->MoveMouseToCenterOf(w0.get());
+  generator->ClickLeftButton();
+  EXPECT_LT(0, event_count.GetMouseEventCountAndReset());
+}
+
 // Tests that frame throttling starts and ends accordingly when window cycling
 // starts and ends.
 TEST_F(WindowCycleControllerTest, FrameThrottling) {

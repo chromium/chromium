@@ -103,9 +103,18 @@ WindowCycleController::Direction WindowCycleEventFilter::GetDirection(
 }
 
 void WindowCycleEventFilter::OnMouseEvent(ui::MouseEvent* event) {
-  if (features::IsInteractiveWindowCycleListEnabled() &&
-      Shell::Get()->window_cycle_controller()->IsEventInCycleView(event)) {
-    return;
+  if (features::IsInteractiveWindowCycleListEnabled()) {
+    WindowCycleController* window_cycle_controller =
+        Shell::Get()->window_cycle_controller();
+    const bool cycle_list_is_visible =
+        window_cycle_controller->IsWindowListVisible();
+    if (window_cycle_controller->IsEventInCycleView(event) ||
+        !cycle_list_is_visible) {
+      return;
+    } else if (event->type() == ui::ET_MOUSE_PRESSED && cycle_list_is_visible) {
+      // Close the window cycle list if a user clicks outside of it.
+      window_cycle_controller->CancelCycling();
+    }
   }
 
   // Prevent mouse clicks from doing anything while the Alt+Tab UI is active

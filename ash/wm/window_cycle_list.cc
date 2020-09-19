@@ -541,6 +541,10 @@ bool WindowCycleList::IsEventInCycleView(ui::LocatedEvent* event) {
   return cycle_view_->GetBoundsInScreen().Contains(event_screen_point);
 }
 
+bool WindowCycleList::ShouldShowUi() {
+  return windows_.size() > 1u;
+}
+
 // static
 void WindowCycleList::DisableInitialDelayForTesting() {
   g_disable_initial_delay = true;
@@ -583,10 +587,6 @@ void WindowCycleList::OnDisplayMetricsChanged(const display::Display& display,
     // |this| is deleted.
     return;
   }
-}
-
-bool WindowCycleList::ShouldShowUi() {
-  return windows_.size() > 1u;
 }
 
 void WindowCycleList::InitWindowCycleView() {

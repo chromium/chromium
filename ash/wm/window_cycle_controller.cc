@@ -133,6 +133,10 @@ bool WindowCycleController::IsEventInCycleView(ui::LocatedEvent* event) {
   return window_cycle_list_ && window_cycle_list_->IsEventInCycleView(event);
 }
 
+bool WindowCycleController::IsWindowListVisible() {
+  return window_cycle_list_ && window_cycle_list_->ShouldShowUi();
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // WindowCycleController, private:
 

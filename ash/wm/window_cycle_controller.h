@@ -66,6 +66,9 @@ class ASH_EXPORT WindowCycleController {
   // Checks whether |event| occurs within the cycle view.
   bool IsEventInCycleView(ui::LocatedEvent* event);
 
+  // Returns whether or not the window cycle view is visible.
+  bool IsWindowListVisible();
+
   // Returns the WindowCycleList.
   const WindowCycleList* window_cycle_list() const {
     return window_cycle_list_.get();

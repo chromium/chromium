@@ -54,6 +54,9 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // |cycle_view_| does not exist.
   bool IsEventInCycleView(ui::LocatedEvent* event);
 
+  // Returns true if the window list overlay should be shown.
+  bool ShouldShowUi();
+
   void set_user_did_accept(bool user_did_accept) {
     user_did_accept_ = user_did_accept;
   }
@@ -76,9 +79,6 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
-
-  // Returns true if the window list overlay should be shown.
-  bool ShouldShowUi();
 
   // Initializes and shows |cycle_view_|.
   void InitWindowCycleView();
