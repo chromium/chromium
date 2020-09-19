@@ -95,15 +95,18 @@ bool AllowLocalHistoryZeroSuggestSuggestions(const AutocompleteInput& input) {
 }
 
 // Helper function for calculating frecency of a visit based on this formula:
-// frecency = (frequency ^ 1.15 + 60) / (recency_in_seconds + 60)
+//            (frequency ^ frequency_exponent) * recency_decay_unit_in_seconds
+// frecency = ————————————————————————————————————————————————————————————————
+//                   recency_in_seconds + recency_decay_unit_in_seconds
 // a frecency score combines frequency and recency of occurrences favoring ones
 // that are more frequent and more recent (see go/local-zps-frecency-ranking).
 double CalculateFrecency(const history::NormalizedKeywordSearchTermVisit& visit,
                          base::Time now) {
-  double recency_in_secs =
+  const double recency_sec =
       base::TimeDelta(now - visit.most_recent_visit_time).InSeconds();
-  double frequency_powered = pow(visit.visits, 1.15);
-  return (frequency_powered + 60) / (recency_in_secs + 60);
+  const double recency_decayed = 60 / (recency_sec + 60);
+  const double frequency_powered = pow(visit.visits, 1.15);
+  return frequency_powered * recency_decayed;
 }
 
 }  // namespace
