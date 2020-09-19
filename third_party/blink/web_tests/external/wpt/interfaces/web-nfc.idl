@@ -47,7 +47,8 @@ typedef (DOMString or BufferSource or NDEFMessageInit) NDEFMessageSource;
 interface NDEFWriter {
   constructor();
 
-  Promise<undefined> write(NDEFMessageSource message, optional NDEFWriteOptions options={});
+  Promise<undefined> write(NDEFMessageSource message,
+                                 optional NDEFWriteOptions options={});
 };
 
 [SecureContext, Exposed=Window]
@@ -79,8 +80,5 @@ dictionary NDEFWriteOptions {
 };
 
 dictionary NDEFScanOptions {
-  USVString id;
-  USVString recordType;
-  USVString mediaType;
-  AbortSignal? signal;
+  AbortSignal signal;
 };
