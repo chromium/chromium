@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './battery_health_card.js';
 import './cpu_card.js';
 import './diagnostics_shared_css.js';
 import './memory_card.js';

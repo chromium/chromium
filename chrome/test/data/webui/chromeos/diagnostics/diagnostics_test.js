@@ -84,6 +84,54 @@ suite('DiagnosticsAppTest', () => {
     // Verify the CPU card is in the page.
     const cpu = page.$$('#cpuCard');
     assertTrue(!!cpu);
+
+    // Verify the battery health card is in the page.
+    const batteryHealth = page.$$('#batteryHealthCard');
+    assertTrue(!!batteryHealth);
+  });
+});
+
+suite('BatteryHealthCardTest', () => {
+  /** @type {?HTMLElement} */
+  let batteryHealthElement = null;
+
+  /** @type {?FakeSystemDataProvider} */
+  let provider = null;
+
+  suiteSetup(() => {
+    provider = new FakeSystemDataProvider();
+    setSystemDataProviderForTesting(provider);
+  });
+
+  setup(function() {
+    PolymerTest.clearBody();
+  });
+
+  teardown(function() {
+    if (batteryHealthElement) {
+      batteryHealthElement.remove();
+    }
+    batteryHealthElement = null;
+    provider = null;
+  });
+
+  function initializeBatteryHealthCard() {
+    assertFalse(!!batteryHealthElement);
+
+    // Add the battery health card to the DOM.
+    batteryHealthElement = document.createElement('battery-health-card');
+    assertTrue(!!batteryHealthElement);
+    document.body.appendChild(batteryHealthElement);
+
+    return flushTasks();
+  }
+
+  test('BatteryHealthCardPopulated', () => {
+    return initializeBatteryHealthCard().then(() => {
+      // TODO(zentaro): Update when strings are finalized.
+      assertEquals(
+          'Battery Health', batteryHealthElement.$$('#cardTitle').textContent);
+    });
   });
 });
 

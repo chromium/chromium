@@ -10,6 +10,7 @@ import("//tools/polymer/html_to_js.gni")
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
+    ":battery_health_card",
     ":cpu_card",
     ":diagnostics_app",
     ":diagnostics_card",
@@ -23,6 +24,12 @@ js_type_check("closure_compile_module") {
   ]
 }
 
+js_library("battery_health_card") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("cpu_card") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -31,6 +38,7 @@ js_library("cpu_card") {
 
 js_library("diagnostics_app") {
   deps = [
+    ":battery_health_card",
     ":cpu_card",
     ":diagnostics_card",
     ":memory_card",
@@ -84,6 +92,7 @@ js_library("overview_card") {
 
 html_to_js("web_components") {
   js_files = [
+    "battery_health_card.js",
     "cpu_card.js",
     "diagnostics_app.js",
     "diagnostics_card.js",
