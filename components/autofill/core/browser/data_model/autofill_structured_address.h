@@ -15,6 +15,23 @@ using autofill::structured_address::AddressComponent;
 namespace autofill {
 namespace structured_address {
 
+// This class reimplements the ValueForComparison method to apply a
+// country-specific rewriter to the normalized value.
+class AddressComponentWithRewriter : public AddressComponent {
+ public:
+  using AddressComponent::AddressComponent;
+
+ protected:
+  // Apply a country-specific rewriter to the normalized value.
+  base::string16 ValueForComparison() const override;
+
+  // Tries to retrieve the |ADDRESS_HOME_COUNTRY| node from the structure tree
+  // to apply a country-specific rewriter to the normalized value.
+  // If the country value cannot be retrieved or is empty, the method returns
+  // the normalized values without further processing.
+  base::string16 RewriteValue(const base::string16&) const;
+};
+
 // The name of the street.
 class StreetName : public AddressComponent {
  public:
@@ -83,7 +100,9 @@ class SubPremise : public AddressComponent {
 
 // The StreetAddress incorporates the StreetAndDependentStreetName, the
 // HouseNumber, the PremiseName and SubPremise.
-class StreetAddress : public AddressComponent {
+// This class inherits from AddressComponentWithRewriter to implement rewriting
+// values for comparison.
+class StreetAddress : public AddressComponentWithRewriter {
  public:
   explicit StreetAddress(AddressComponent* parent);
   ~StreetAddress() override;
@@ -156,17 +175,26 @@ class City : public AddressComponent {
 };
 
 // Stores the state of an address.
-class State : public AddressComponent {
+// This class inherits from AddressComponentWithRewriter to implement rewriting
+// values for comparison.
+class State : public AddressComponentWithRewriter {
  public:
   explicit State(AddressComponent* parent);
   ~State() override;
 };
 
 // Stores the postal code of an address.
-class PostalCode : public AddressComponent {
+// This class inherits from AddressComponentWithRewriter to implement rewriting
+// values for comparison.
+class PostalCode : public AddressComponentWithRewriter {
  public:
   explicit PostalCode(AddressComponent* parent);
   ~PostalCode() override;
+
+ protected:
+  // In contrast to the base class, the normalization removes all white spaces
+  // from the value.
+  base::string16 NormalizedValue() const override;
 };
 
 // Stores the sorting code.

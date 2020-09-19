@@ -22,6 +22,21 @@ struct AddressComponentTestValue {
   VerificationStatus status;
 };
 
+// Test the merging of two AddressComponents. |older_component| is considered to
+// be older and |newer_component| is the newer one. In terms of the resulting
+// AddressComponent, the expectation is defined by |merge_expectation| while
+// |is_mergeable| defines the expectation if the two components can be merged at
+// all. With |merge_mode|, the applied merge strategies are defined and
+// |newer_was_more_recently_used| defines if the newer component is also the
+// most recently used one.
+void TestMerging(
+    AddressComponent* older_component,
+    AddressComponent* newer_component,
+    const std::vector<AddressComponentTestValue>& merge_expectation,
+    bool is_mergeable = true,
+    int merge_modes = MergeMode::kRecursivelyMergeTokenEquivalentValues,
+    bool newer_was_more_recently_used = true);
+
 // Sets the supplied test values.
 void SetTestValues(AddressComponent* component,
                    const std::vector<AddressComponentTestValue>& test_values,

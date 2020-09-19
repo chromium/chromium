@@ -12,6 +12,8 @@
 namespace autofill {
 namespace structured_address {
 
+using AddressComponentTestValues = std::vector<AddressComponentTestValue>;
+
 std::ostream& operator<<(std::ostream& out, const AddressComponent& component) {
   out << "type=" << component.GetStorageTypeName()
       << ", value=" << base::UTF16ToUTF8(component.GetValue())
@@ -23,7 +25,26 @@ std::ostream& operator<<(std::ostream& out, const AddressComponent& component) {
   return out;
 }
 
-using AddressComponentTestValues = std::vector<AddressComponentTestValue>;
+void TestMerging(
+    AddressComponent* older_component,
+    AddressComponent* newer_component,
+    const std::vector<AddressComponentTestValue>& merge_expectation,
+    bool is_mergeable,
+    int merge_modes,
+    bool newer_was_more_recently_used) {
+  older_component->SetMergeModeForTesting(merge_modes);
+
+  SCOPED_TRACE(is_mergeable);
+  SCOPED_TRACE(merge_modes);
+  SCOPED_TRACE(*older_component);
+  SCOPED_TRACE(*newer_component);
+
+  EXPECT_EQ(is_mergeable,
+            older_component->IsMergeableWithComponent(*newer_component));
+  EXPECT_EQ(is_mergeable, older_component->MergeWithComponent(
+                              *newer_component, newer_was_more_recently_used));
+  VerifyTestValues(older_component, merge_expectation);
+}
 
 void SetTestValues(AddressComponent* component,
                    const AddressComponentTestValues& test_values,

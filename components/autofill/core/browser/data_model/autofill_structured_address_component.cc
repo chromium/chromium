@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 
 #include <algorithm>
+#include <iostream>
 #include <map>
 #include <string>
 #include <utility>
@@ -26,20 +27,16 @@
 namespace autofill {
 
 namespace structured_address {
-AddressComponent::AddressComponent(ServerFieldType storage_type)
-    : AddressComponent(storage_type, nullptr, {}) {}
-
-AddressComponent::AddressComponent(ServerFieldType storage_type,
-                                   AddressComponent* parent)
-    : AddressComponent(storage_type, parent, {}) {}
 
 AddressComponent::AddressComponent(ServerFieldType storage_type,
                                    AddressComponent* parent,
-                                   std::vector<AddressComponent*> subcomponents)
+                                   std::vector<AddressComponent*> subcomponents,
+                                   unsigned int merge_mode)
     : value_verification_status_(VerificationStatus::kNoStatus),
       storage_type_(storage_type),
       subcomponents_(subcomponents),
-      parent_(parent) {}
+      parent_(parent),
+      merge_mode_(merge_mode) {}
 
 AddressComponent::~AddressComponent() = default;
 
@@ -156,13 +153,12 @@ void AddressComponent::SetValue(base::string16 value,
                                 VerificationStatus status) {
   value_ = std::move(value);
   value_verification_status_ = status;
-  sorted_normalized_tokens_ = TokenizeValue(value_.value());
 }
 
 void AddressComponent::UnsetValue() {
   value_.reset();
   value_verification_status_ = VerificationStatus::kNoStatus;
-  sorted_normalized_tokens_.clear();
+  sorted_normalized_tokens_.reset();
 }
 
 void AddressComponent::GetSupportedTypes(
@@ -704,49 +700,197 @@ void AddressComponent::MergeVerificationStatuses(
   }
 }
 
+const std::vector<AddressToken> AddressComponent::GetSortedTokens() const {
+  return TokenizeValue(GetValue());
+}
+
 bool AddressComponent::IsMergeableWithComponent(
     const AddressComponent& newer_component) const {
+  const base::string16 value = ValueForComparison();
+  const base::string16 value_newer = newer_component.ValueForComparison();
+
   // If both components are the same, there is nothing to do.
   if (*this == newer_component)
     return true;
 
-  SortedTokenComparisonResult token_comparison_result =
-      CompareSortedTokens(GetSortedTokens(), newer_component.GetSortedTokens());
-
-  if (token_comparison_result.status == MATCH)
+  if ((merge_mode_ & kReplaceEmpty) &&
+      (ValueForComparison().empty() || value_newer.empty())) {
     return true;
-
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForMergingSubsetNames)) {
-    if (token_comparison_result.status == SINGLE_TOKEN_SUPERSET)
-      return true;
   }
 
+  if (merge_mode_ & kUseBetterOrNewerForSameValue) {
+    if (base::ToUpperASCII(ValueForComparison()) ==
+        base::ToUpperASCII(value_newer)) {
+      return true;
+    }
+  }
+
+  SortedTokenComparisonResult token_comparison_result =
+      CompareSortedTokens(value, value_newer);
+
+  SortedTokenComparisonStatus status = token_comparison_result.status;
+
+  if ((merge_mode_ & (kRecursivelyMergeTokenEquivalentValues |
+                      kRecursivelyMergeSingleTokenSubset)) &&
+      status == MATCH) {
+    return true;
+  }
+
+  if ((merge_mode_ & (kReplaceSubset | kReplaceSuperset)) &&
+      (token_comparison_result.OneIsSubset() ||
+       token_comparison_result.status == MATCH)) {
+    return true;
+  }
+
+  if ((merge_mode_ & kRecursivelyMergeSingleTokenSubset) &&
+      token_comparison_result.IsSingleTokenSuperset()) {
+    return true;
+  }
+
+  if (merge_mode_ == kUseNewerIfDifferent)
+    return true;
+
+  // If the one value is a substring of the other, use the substring of the
+  // corresponding mode is active.
+  if ((merge_mode_ & kUseMostRecentSubstring) &&
+      (ValueForComparison().find(value_newer) != base::string16::npos ||
+       value_newer.find(ValueForComparison()) != base::string16::npos)) {
+    return true;
+  }
+
+  if ((merge_mode_ & kPickShorterIfOneContainsTheOther) &&
+      token_comparison_result.ContainEachOther()) {
+    return true;
+  }
+
+  if (merge_mode_ == kMergeChildrenAndReformat) {
+    bool is_mergeable = true;
+    DCHECK(newer_component.subcomponents_.size() == subcomponents_.size());
+    for (size_t i = 0; i < newer_component.subcomponents_.size(); i++) {
+      if (!subcomponents_[i]->IsMergeableWithComponent(
+              *newer_component.subcomponents_[i])) {
+        is_mergeable = false;
+        break;
+      }
+    }
+    if (is_mergeable)
+      return true;
+  }
   return false;
 }
 
 bool AddressComponent::MergeWithComponent(
-    const AddressComponent& newer_component) {
+    const AddressComponent& newer_component,
+    bool newer_was_more_recently_used) {
   // If both components are the same, there is nothing to do.
+
+  const base::string16 value = ValueForComparison();
+  const base::string16 value_newer = newer_component.ValueForComparison();
+
   if (*this == newer_component)
     return true;
 
+  // Now, it is guaranteed that both values are not identical.
+  // Use the non empty one if the corresponding mode is active.
+  if (merge_mode_ & kReplaceEmpty) {
+    if (value.empty()) {
+      *this = newer_component;
+      return true;
+    }
+    if (value_newer.empty())
+      return true;
+  }
+
+  // If the normalized values are the same, optimize the verification status.
+  if ((merge_mode_ & kUseBetterOrNewerForSameValue) && (value == value_newer)) {
+    if (newer_component.GetVerificationStatus() >= GetVerificationStatus()) {
+      *this = newer_component;
+    }
+    return true;
+  }
+
+  // Compare the tokens of both values.
   SortedTokenComparisonResult token_comparison_result =
-      CompareSortedTokens(GetSortedTokens(), newer_component.GetSortedTokens());
+      CompareSortedTokens(value, value_newer);
 
-  switch (token_comparison_result.status) {
-    case MATCH:
-      return MergeTokenEquivalentComponent(newer_component);
+  // Use the recursive merge strategy for token equivalent values if the
+  // corresponding mode is active.
+  if ((merge_mode_ & kRecursivelyMergeTokenEquivalentValues) &&
+      (token_comparison_result.status == MATCH)) {
+    return MergeTokenEquivalentComponent(newer_component);
+    return true;
+  }
 
-    case SINGLE_TOKEN_SUPERSET:
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableSupportForMergingSubsetNames)) {
-        return MergeSubsetComponent(newer_component, token_comparison_result);
-      }
-      break;
+  // Replace the subset with the superset if the corresponding mode is active.
+  if ((merge_mode_ & kReplaceSubset) && token_comparison_result.OneIsSubset()) {
+    if (token_comparison_result.status == SUBSET)
+      *this = newer_component;
+    return true;
+  }
 
-    default:
-      return false;
+  // Replace the superset with the subset if the corresponding mode is active.
+  if ((merge_mode_ & kReplaceSuperset) &&
+      token_comparison_result.OneIsSubset()) {
+    if (token_comparison_result.status == SUPERSET)
+      *this = newer_component;
+    return true;
+  }
+
+  // If the tokens are already equivalent, use the more recently used one.
+  if ((merge_mode_ & (kReplaceSuperset | kReplaceSubset)) &&
+      token_comparison_result.status == MATCH) {
+    if (newer_was_more_recently_used)
+      *this = newer_component;
+    return true;
+  }
+
+  // Recursively merge a single-token subset if the corresponding mode is
+  // active.
+  if ((merge_mode_ & kRecursivelyMergeSingleTokenSubset) &&
+      token_comparison_result.IsSingleTokenSuperset()) {
+    // For the merging of subset token, the tokenization must be done without
+    // prior normalization of the values.
+    SortedTokenComparisonResult token_comparison_result =
+        CompareSortedTokens(GetValue(), newer_component.GetValue());
+    return MergeSubsetComponent(newer_component, token_comparison_result);
+  }
+
+  // Replace the older value with the newer one if the corresponding mode is
+  // active.
+  if (merge_mode_ & kUseNewerIfDifferent) {
+    *this = newer_component;
+    return true;
+  }
+
+  // If the one value is a substring of the other, use the substring of the
+  // corresponding mode is active.
+  if ((merge_mode_ & kUseMostRecentSubstring) &&
+      (value.find(value_newer) != base::string16::npos ||
+       value_newer.find(value) != base::string16::npos)) {
+    if (newer_was_more_recently_used)
+      *this = newer_component;
+    return true;
+  }
+
+  if ((merge_mode_ & kPickShorterIfOneContainsTheOther) &&
+      token_comparison_result.ContainEachOther()) {
+    if (newer_component.GetValue().size() < GetValue().size())
+      *this = newer_component;
+    return true;
+  }
+
+  // If the corresponding mode is active, ignore this mode and pair-wise merge
+  // the child tokens. Reformat this nodes from its children after the merge.
+  if (merge_mode_ & kMergeChildrenAndReformat) {
+    DCHECK(newer_component.subcomponents_.size() == subcomponents_.size());
+    for (size_t i = 0; i < newer_component.subcomponents_.size(); i++) {
+      bool success = subcomponents_[i]->MergeWithComponent(
+          *newer_component.subcomponents_[i], newer_was_more_recently_used);
+      if (!success)
+        return false;
+    }
+    FormatValueFromSubcomponents();
+    return true;
   }
   return false;
 }
@@ -871,7 +1015,7 @@ void AddressComponent::ConsumeAdditionalToken(
 bool AddressComponent::MergeSubsetComponent(
     const AddressComponent& subset_component,
     const SortedTokenComparisonResult& token_comparison_result) {
-  DCHECK(token_comparison_result.status == SINGLE_TOKEN_SUPERSET);
+  DCHECK(token_comparison_result.IsSingleTokenSuperset());
   DCHECK(token_comparison_result.additional_tokens.size() == 1);
 
   base::string16 token_to_consume =
@@ -912,7 +1056,7 @@ bool AddressComponent::MergeSubsetComponent(
 
     // Recursive case.
     if (!found_subset_component &&
-        subtoken_comparison_result.status == SINGLE_TOKEN_SUPERSET) {
+        subtoken_comparison_result.IsSingleTokenSuperset()) {
       found_subset_component = true;
       subcomponent->MergeSubsetComponent(*subset_subcomponent,
                                          subtoken_comparison_result);
@@ -969,6 +1113,14 @@ int AddressComponent::GetStructureVerificationScore() const {
     result += component->GetStructureVerificationScore();
 
   return result;
+}
+
+base::string16 AddressComponent::NormalizedValue() const {
+  return NormalizeValue(GetValue());
+}
+
+base::string16 AddressComponent::ValueForComparison() const {
+  return NormalizedValue();
 }
 
 }  // namespace structured_address

@@ -9,8 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/char_iterator.h"
+#include "base/i18n/unicodestring.h"
 #include "base/strings/utf_string_conversions.h"
-
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -238,6 +239,15 @@ TEST(AutofillStructuredAddressUtils, TokenizeValue) {
 TEST(AutofillStructuredAddressUtils, NormalizeValue) {
   EXPECT_EQ(NormalizeValue(base::UTF8ToUTF16(" MÜLLeR   Örber")),
             base::UTF8ToUTF16("muller orber"));
+}
+
+TEST(AutofillStructuredAddressUtils, TestGetRewriter) {
+  EXPECT_EQ(RewriterCache::Rewrite(base::UTF8ToUTF16("us"),
+                                   base::UTF8ToUTF16("unit #3")),
+            base::UTF8ToUTF16("unit 3"));
+  EXPECT_EQ(RewriterCache::Rewrite(base::UTF8ToUTF16("us"),
+                                   base::UTF8ToUTF16("california")),
+            base::UTF8ToUTF16("ca"));
 }
 
 }  // namespace structured_address

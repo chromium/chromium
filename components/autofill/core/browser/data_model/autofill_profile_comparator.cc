@@ -262,7 +262,7 @@ bool AutofillProfileComparator::HasOnlySkippableCharacters(
 
 base::string16 AutofillProfileComparator::NormalizeForComparison(
     base::StringPiece16 text,
-    AutofillProfileComparator::WhitespaceSpec whitespace_spec) const {
+    AutofillProfileComparator::WhitespaceSpec whitespace_spec) {
   // This algorithm is not designed to be perfect, we could get arbitrarily
   // fancy here trying to canonicalize address lines. Instead, this is designed
   // to handle common cases for all types of data (addresses and names) without

@@ -4,13 +4,14 @@
 
 #include "components/autofill/core/browser/data_model/autofill_structured_address.h"
 
+#include <iostream>
 #include <utility>
-
 #include "base/i18n/case_conversion.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/address_rewriter.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_regex_provider.h"
@@ -21,13 +22,33 @@ namespace autofill {
 
 namespace structured_address {
 
+base::string16 AddressComponentWithRewriter::RewriteValue(
+    const base::string16& value) const {
+  // Retrieve the country name from the structured tree the node resides in.
+  base::string16 country = GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY);
+  if (!country.empty())
+    return RewriterCache::Rewrite(country, value);
+  // Without a county the value can not be rewritten.
+  return value;
+}
+
+base::string16 AddressComponentWithRewriter::ValueForComparison() const {
+  return RewriteValue(NormalizedValue());
+}
+
 StreetName::StreetName(AddressComponent* parent)
-    : AddressComponent(ADDRESS_HOME_STREET_NAME, parent) {}
+    : AddressComponent(ADDRESS_HOME_STREET_NAME,
+                       parent,
+                       {},
+                       MergeMode::kDefault) {}
 
 StreetName::~StreetName() = default;
 
 DependentStreetName::DependentStreetName(AddressComponent* parent)
-    : AddressComponent(ADDRESS_HOME_DEPENDENT_STREET_NAME, parent) {}
+    : AddressComponent(ADDRESS_HOME_DEPENDENT_STREET_NAME,
+                       parent,
+                       {},
+                       MergeMode::kDefault) {}
 
 DependentStreetName::~DependentStreetName() = default;
 
@@ -35,41 +56,54 @@ StreetAndDependentStreetName::StreetAndDependentStreetName(
     AddressComponent* parent)
     : AddressComponent(ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME,
                        parent,
-                       {&thoroughfare_name_, &dependent_thoroughfare_name_}) {}
+                       {&thoroughfare_name_, &dependent_thoroughfare_name_},
+                       MergeMode::kDefault) {}
 
 StreetAndDependentStreetName::~StreetAndDependentStreetName() = default;
 
 HouseNumber::HouseNumber(AddressComponent* parent)
-    : AddressComponent(ADDRESS_HOME_HOUSE_NUMBER, parent) {}
+    : AddressComponent(ADDRESS_HOME_HOUSE_NUMBER,
+                       parent,
+                       {},
+                       MergeMode::kDefault) {}
 
 HouseNumber::~HouseNumber() = default;
 
 Premise::Premise(AddressComponent* parent)
-    : AddressComponent(ADDRESS_HOME_PREMISE_NAME, parent) {}
+    : AddressComponent(ADDRESS_HOME_PREMISE_NAME,
+                       parent,
+                       {},
+                       MergeMode::kDefault) {}
 
 Premise::~Premise() = default;
 
 Floor::Floor(AddressComponent* parent)
-    : AddressComponent(ADDRESS_HOME_FLOOR, parent) {}
+    : AddressComponent(ADDRESS_HOME_FLOOR, parent, {}, MergeMode::kDefault) {}
 
 Floor::~Floor() = default;
 
 Apartment::Apartment(AddressComponent* parent)
-    : AddressComponent(ADDRESS_HOME_APT_NUM, parent) {}
+    : AddressComponent(ADDRESS_HOME_APT_NUM, parent, {}, MergeMode::kDefault) {}
 
 Apartment::~Apartment() = default;
 
 SubPremise::SubPremise(AddressComponent* parent)
     : AddressComponent(ADDRESS_HOME_SUBPREMISE,
                        parent,
-                       {&floor_, &apartment_}) {}
+                       {&floor_, &apartment_},
+                       MergeMode::kDefault) {}
 
 SubPremise::~SubPremise() = default;
 
+// Address are mergeable if one is a subset of the other one.
+// Take the longer one. If both addresses have the same tokens apply a recursive
+// strategy to merge the substructure.
 StreetAddress::StreetAddress(AddressComponent* parent)
-    : AddressComponent(ADDRESS_HOME_STREET_ADDRESS,
-                       parent,
-                       {&streets_, &number_, &premise_, &sub_premise_}) {}
+    : AddressComponentWithRewriter(
+          ADDRESS_HOME_STREET_ADDRESS,
+          parent,
+          {&streets_, &number_, &premise_, &sub_premise_},
+          MergeMode::kReplaceSubset | MergeMode::kDefault) {}
 
 StreetAddress::~StreetAddress() = default;
 
@@ -214,33 +248,68 @@ void StreetAddress::GetAdditionalSupportedFieldTypes(
   supported_types->insert(ADDRESS_HOME_LINE3);
 }
 
+// Country codes are mergeable if they are the same of if one is empty.
+// For merging, pick the non-empty one.
 CountryCode::CountryCode(AddressComponent* parent)
-    : AddressComponent(ADDRESS_HOME_COUNTRY, parent) {}
+    : AddressComponent(ADDRESS_HOME_COUNTRY,
+                       parent,
+                       {},
+                       MergeMode::kReplaceEmpty |
+                           MergeMode::kUseBetterOrNewerForSameValue) {}
 
 CountryCode::~CountryCode() = default;
 
+// DependentLocalities are mergeable when the tokens of one is a subset of the
+// other one. Take the longer one.
 DependentLocality::DependentLocality(AddressComponent* parent)
-    : AddressComponent(ADDRESS_HOME_DEPENDENT_LOCALITY, parent) {}
+    : AddressComponent(ADDRESS_HOME_DEPENDENT_LOCALITY,
+                       parent,
+                       {},
+                       MergeMode::kReplaceSubset) {}
 
 DependentLocality::~DependentLocality() = default;
 
+// Cities are mergeable when the tokens of one is a subset of the other one.
+// Take the shorter non-empty one.
 City::City(AddressComponent* parent)
-    : AddressComponent(ADDRESS_HOME_CITY, parent) {}
+    : AddressComponent(ADDRESS_HOME_CITY,
+                       parent,
+                       {},
+                       MergeMode::kReplaceSubset | MergeMode::kReplaceEmpty) {}
 
 City::~City() = default;
 
+// States are mergeable when the tokens of one is a subset of the other one.
+// Take the shorter non-empty one.
 State::State(AddressComponent* parent)
-    : AddressComponent(ADDRESS_HOME_STATE, parent) {}
+    : AddressComponentWithRewriter(
+          ADDRESS_HOME_STATE,
+          parent,
+          {},
+          MergeMode::kPickShorterIfOneContainsTheOther | kReplaceEmpty) {}
 
 State::~State() = default;
 
+// Zips are mergeable when one is a substring of the other one.
+// For merging, the shorter substring is taken.
 PostalCode::PostalCode(AddressComponent* parent)
-    : AddressComponent(ADDRESS_HOME_ZIP, parent) {}
+    : AddressComponentWithRewriter(
+          ADDRESS_HOME_ZIP,
+          parent,
+          {},
+          MergeMode::kUseMostRecentSubstring | kReplaceEmpty) {}
 
 PostalCode::~PostalCode() = default;
 
+base::string16 PostalCode::NormalizedValue() const {
+  return NormalizeValue(GetValue(), /*keep_white_space=*/false);
+}
+
 SortingCode::SortingCode(AddressComponent* parent)
-    : AddressComponent(ADDRESS_HOME_SORTING_CODE, parent) {}
+    : AddressComponent(ADDRESS_HOME_SORTING_CODE,
+                       parent,
+                       {},
+                       MergeMode::kReplaceEmpty) {}
 
 SortingCode::~SortingCode() = default;
 
@@ -250,12 +319,14 @@ Address::Address(const Address& other) : Address() {
   *this = other;
 }
 
+// Addresses are mergeable when all of their children are mergeable.
+// Reformat the address from their children after merge.
 Address::Address(AddressComponent* parent)
-    : AddressComponent(
-          ADDRESS_HOME_ADDRESS,
-          parent,
-          {&street_address_, &postal_code_, &sorting_code_,
-           &dependent_locality_, &city_, &state_, &country_code_}) {}
+    : AddressComponent(ADDRESS_HOME_ADDRESS,
+                       parent,
+                       {&street_address_, &postal_code_, &sorting_code_,
+                        &dependent_locality_, &city_, &state_, &country_code_},
+                       MergeMode::kMergeChildrenAndReformat) {}
 
 Address::~Address() = default;
 

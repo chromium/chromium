@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
+#include "components/autofill/core/browser/address_rewriter.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -50,18 +51,10 @@ enum SortedTokenComparisonStatus {
   DISTINCT,
   // The token exactly match.
   MATCH,
-  // The first tokens are a superset of the second with only one additional
-  // element.
-  SINGLE_TOKEN_SUPERSET,
-  // The second tokens are a subset of the second with only one additional
-  // element.
-  SINGLE_TOKEN_SUBSET,
-  // The first tokens are a superset of the second with multiple additional
-  // elements.
-  MULTI_TOKEN_SUPERSET,
-  // The second tokens are a subset of the second with multiple additional
-  // elements.
-  MULTI_TOKEN_SUBSET
+  // The first value is a subset of the second.
+  SUBSET,
+  // The first value is a superset of the other.
+  SUPERSET
 };
 
 // The result from comparing two sets of sorted tokens containing the status and
@@ -76,6 +69,14 @@ struct SortedTokenComparisonResult {
   SortedTokenComparisonStatus status = DISTINCT;
   // The additional elements in the super/subsets.
   std::vector<AddressToken> additional_tokens{};
+  // Returns true if the first is a subset of the second;
+  bool IsSingleTokenSubset() const;
+  // Return true if the first is a superset of the second;
+  bool IsSingleTokenSuperset() const;
+  // Return true if one is a subset of the other.
+  bool OneIsSubset() const;
+  // Returns true if one contains the other.
+  bool ContainEachOther() const;
 };
 
 // Options for capturing a named group using the
@@ -132,6 +133,38 @@ class Re2RegExCache {
   base::Lock lock_;
 };
 
+// A cache for address rewriter for different countries.
+class RewriterCache {
+ public:
+  RewriterCache& operator=(const RewriterCache&) = delete;
+  RewriterCache(const RewriterCache&) = delete;
+  ~RewriterCache() = delete;
+
+  // Returns a singleton instance.
+  static RewriterCache* GetInstance();
+
+  // Applies the rewriter to |text| for a specific county given by
+  // |country_code|.
+  static base::string16 Rewrite(const base::string16& country_code,
+                                const base::string16& text);
+
+ private:
+  RewriterCache();
+
+  // Returns the Rewriter for |country_code|.
+  const AddressRewriter& GetRewriter(const base::string16& country_code);
+
+  // Since the constructor is private, |base::NoDestructor| must be friend to be
+  // allowed to construct the cache.
+  friend class base::NoDestructor<RewriterCache>;
+
+  // Stores a country-specific Rewriter keyed by its corresponding |pattern|.
+  std::map<base::string16, const AddressRewriter> rewriter_map_;
+
+  // A lock to prevent concurrent access to the map.
+  base::Lock lock_;
+};
+
 // Returns true if |name| has the characteristics of a Chinese, Japanese or
 // Korean name:
 // * It must only contain CJK characters with at most one separator in between.
@@ -153,6 +186,7 @@ bool HasMiddleNameInitialsCharacteristics(const std::string& middle_name);
 // Reduces a name to the initials in upper case.
 // Example: George walker -> GW, Hans-Peter -> HP
 base::string16 ReduceToInitials(const base::string16& value);
+
 // Parses |value| with an regular expression defined by |pattern|.
 // Returns true on success meaning that the expressions is fully matched.
 // The matching results are written into the supplied |result_map|, keyed by the
@@ -241,7 +275,10 @@ std::string CaptureTypeWithPattern(
 
 // Collapses white spaces and line breaks, converts the string to lower case and
 // removes diacritics.
-base::string16 NormalizeValue(const base::string16& value);
+// If |keep_white_spaces| is true, white spaces are collapsed. Otherwise,
+// white spaces are completely removed.
+base::string16 NormalizeValue(const base::StringPiece16 value,
+                              bool keep_white_space = true);
 
 // Returns true of both vectors contain the same tokens in the same order.
 bool AreSortedTokensEqual(const std::vector<AddressToken>& first,
@@ -261,6 +298,10 @@ std::vector<AddressToken> TokenizeValue(const base::string16 value);
 SortedTokenComparisonResult CompareSortedTokens(
     const std::vector<AddressToken>& first,
     const std::vector<AddressToken>& second);
+
+// Convenience wrapper to supply untokenized strings.
+SortedTokenComparisonResult CompareSortedTokens(const base::string16& first,
+                                                const base::string16& second);
 
 }  // namespace structured_address
 

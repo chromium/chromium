@@ -673,55 +673,54 @@ TEST(AutofillStructuredName, MigrationFromLegacyStructure_WithoutFullName) {
 }
 
 TEST(AutofillStructuredName, MergeSubsetLastname) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMergingSubsetNames);
   NameFull name;
   NameFull subset_name;
+  name.SetMergeModeForTesting(kRecursivelyMergeSingleTokenSubset |
+                              kRecursivelyMergeTokenEquivalentValues);
 
   AddressComponentTestValues name_values = {
-              {.type = NAME_FIRST,
-               .value = "Thomas",
-               .status = VerificationStatus::kObserved},
-              {.type = NAME_MIDDLE,
-               .value = "Neo",
-               .status = VerificationStatus::kObserved},
-              {.type = NAME_LAST,
-               .value = "Anderson y Smith",
-               .status = VerificationStatus::kObserved},
+      {.type = NAME_FIRST,
+       .value = "Thomas",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_MIDDLE,
+       .value = "Neo",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST,
+       .value = "Anderson y Smith",
+       .status = VerificationStatus::kObserved},
   };
 
   AddressComponentTestValues subset_name_values = {
-              {.type = NAME_FIRST,
-               .value = "Thomas",
-               .status = VerificationStatus::kObserved},
-              {.type = NAME_MIDDLE,
-               .value = "Neo",
-               .status = VerificationStatus::kObserved},
-              {.type = NAME_LAST_FIRST,
-               .value = "Anderson",
-               .status = VerificationStatus::kObserved},
-              {.type = NAME_LAST_SECOND,
-               .value = "Smith",
-               .status = VerificationStatus::kObserved},
+      {.type = NAME_FIRST,
+       .value = "Thomas",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_MIDDLE,
+       .value = "Neo",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_FIRST,
+       .value = "Anderson",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_SECOND,
+       .value = "Smith",
+       .status = VerificationStatus::kObserved},
   };
 
   AddressComponentTestValues expectation = {
-              {.type = NAME_FIRST,
-               .value = "Thomas",
-               .status = VerificationStatus::kObserved},
-              {.type = NAME_MIDDLE,
-               .value = "Neo",
-               .status = VerificationStatus::kObserved},
-              {.type = NAME_LAST_FIRST,
-               .value = "Anderson",
-               .status = VerificationStatus::kObserved},
-              {.type = NAME_LAST_CONJUNCTION,
-               .value = "y",
-               .status = VerificationStatus::kObserved},
-              {.type = NAME_LAST_SECOND,
-               .value = "Smith",
-               .status = VerificationStatus::kObserved},
+      {.type = NAME_FIRST,
+       .value = "Thomas",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_MIDDLE,
+       .value = "Neo",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_FIRST,
+       .value = "Anderson",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_CONJUNCTION,
+       .value = "y",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_SECOND,
+       .value = "Smith",
+       .status = VerificationStatus::kObserved},
   };
 
   SetTestValues(&name, name_values);
@@ -734,11 +733,10 @@ TEST(AutofillStructuredName, MergeSubsetLastname) {
 }
 
 TEST(AutofillStructuredName, MergeSubsetLastname2) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMergingSubsetNames);
   NameFull name;
   NameFull subset_name;
+  name.SetMergeModeForTesting(kRecursivelyMergeSingleTokenSubset |
+                              kRecursivelyMergeTokenEquivalentValues);
 
   AddressComponentTestValues name_values = {
       {.type = NAME_FIRST,

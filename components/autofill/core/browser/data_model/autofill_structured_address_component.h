@@ -39,6 +39,36 @@ enum class VerificationStatus {
   kUserVerified = 4,
 };
 
+// The merge mode defines if and how two components are merged.
+enum MergeMode {
+  // If one component has an empty value, use the non-empty one.
+  kReplaceEmpty = 1,
+  // Recursively merge two components that have the same tokens in arbitrary
+  // order. This is used as the default merge mode.
+  kRecursivelyMergeTokenEquivalentValues = 1 << 1,
+  // If both tokens have the same normalized value, use the one with the better
+  // verification status. If both statuses are the same, use the newer one.
+  kUseBetterOrNewerForSameValue = 1 << 2,
+  // If one component is a superset of the other, use the subset.
+  kReplaceSuperset = 1 << 3,
+  // If one component is a subset of the other, use the superset.
+  kReplaceSubset = 1 << 4,
+  // If both components have a different value, is the newer one.
+  kUseNewerIfDifferent = 1 << 5,
+  // If the newer component contains one token more, apply a recursive strategy
+  // to merge the tokens.
+  kRecursivelyMergeSingleTokenSubset =
+      1 << 6 | kRecursivelyMergeTokenEquivalentValues,
+  // If one is a substring use the most recent one.
+  kUseMostRecentSubstring = 1 << 7,
+  // Merge the child nodes and reformat the node from its children after merge.
+  kMergeChildrenAndReformat = 1 << 8,
+  // If the tokens match or one is a subset of the other, pick the shorter one.
+  kPickShorterIfOneContainsTheOther = 1 << 9,
+  // Defines the default merging behavior.
+  kDefault = kRecursivelyMergeTokenEquivalentValues
+};
+
 // An AddressComponent is a tree structure that represents a semi-structured
 // address token. Such an address token can either be an atomic leaf node or
 // have a set of children, each representing a more granular subtoken of the
@@ -80,17 +110,11 @@ enum class VerificationStatus {
 //  NAME_LAST values but only a formatted NAME_FULL value.
 class AddressComponent {
  public:
-  // Constructor for an atomic root node.
-  explicit AddressComponent(ServerFieldType storage_type);
-
-  // Constructor for an atomic leaf node.
-  explicit AddressComponent(ServerFieldType storage_type,
-                            AddressComponent* parent);
-
   // Constructor for a compound child node.
   AddressComponent(ServerFieldType storage_type,
                    AddressComponent* parent,
-                   std::vector<AddressComponent*> subcomponents);
+                   std::vector<AddressComponent*> subcomponents,
+                   unsigned int merge_mode);
 
   // Disallows copies since they are not needed in the current Autofill design.
   AddressComponent(const AddressComponent& other) = delete;
@@ -270,7 +294,10 @@ class AddressComponent {
   // Merge |newer_component| into this AddressComponent.
   // Returns false if the merging is not possible.
   // The state of the component is not altered by a failed merging attempt.
-  virtual bool MergeWithComponent(const AddressComponent& newer_component);
+  // |newer_was_more_recently_used| indicates that the newer component was also
+  // more recently used for filling a form.
+  virtual bool MergeWithComponent(const AddressComponent& newer_component,
+                                  bool newer_was_more_recently_used = true);
 
   // Merge |newer_component| into this AddressComponent.
   // The merging is possible iff the value of both root nodes is token
@@ -284,11 +311,9 @@ class AddressComponent {
     return subcomponents_;
   }
 
-  // Returns a constant reference to the sorted canonicalized tokens of the
-  // value of the component.
-  const std::vector<AddressToken>& GetSortedTokens() const {
-    return sorted_normalized_tokens_;
-  }
+  // Returns a vector containing sorted normalized tokens of the
+  // value of the component. The tokens are lazily calculated when first needed.
+  const std::vector<AddressToken> GetSortedTokens() const;
 
   // Recursively unsets all subcomponents.
   void RecursivelyUnsetSubcomponents();
@@ -341,6 +366,9 @@ class AddressComponent {
   std::vector<ServerFieldType> GetSubcomponentTypesForTesting() const {
     return GetSubcomponentTypes();
   }
+
+  // Sets the merge mode for testing purposes.
+  void SetMergeModeForTesting(int merge_mode) { merge_mode_ = merge_mode; }
 
 #endif
 
@@ -417,6 +445,18 @@ class AddressComponent {
   // Function to be called post assign to do sanitization.
   virtual void PostAssignSanitization() {}
 
+  // Returns a normalized value for comparison.
+  // In the default implementation, this converts the value to lower case and
+  // removes white spaces. This function may be reimplemented to perform
+  // different normalization operations.
+  virtual base::string16 NormalizedValue() const;
+
+  // Returns a value used for comparison.
+  // In the default implementation this is just the normalized value but this
+  // function can be overridden in subclasses to apply further operations on
+  // the normalized value.
+  virtual base::string16 ValueForComparison() const;
+
  private:
   // Unsets the node and all of its children.
   void UnsetAddressComponentAndItsSubcomponents();
@@ -462,11 +502,14 @@ class AddressComponent {
   // meaning that it was converted to lower case and diacritics have been
   // removed. |value_| is tokenized by splitting the string by white spaces and
   // commas. It is calculated when |value_| is set.
-  std::vector<AddressToken> sorted_normalized_tokens_;
+  base::Optional<std::vector<AddressToken>> sorted_normalized_tokens_;
 
   // A pointer to the parent node. It is set to nullptr if the node is the root
   // node of the AddressComponent tree.
   AddressComponent* const parent_;
+
+  // Defines if and how two components can be merged.
+  int merge_mode_;
 };
 
 }  // namespace structured_address

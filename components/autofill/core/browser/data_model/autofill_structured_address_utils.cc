@@ -14,11 +14,14 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
+#include "base/i18n/char_iterator.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_regex_provider.h"
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -35,6 +38,22 @@ SortedTokenComparisonResult::~SortedTokenComparisonResult() = default;
 
 SortedTokenComparisonResult::SortedTokenComparisonResult(
     const SortedTokenComparisonResult& other) = default;
+
+bool SortedTokenComparisonResult::IsSingleTokenSubset() const {
+  return status == SUBSET && additional_tokens.size() == 1;
+}
+
+bool SortedTokenComparisonResult::IsSingleTokenSuperset() const {
+  return status == SUPERSET && additional_tokens.size() == 1;
+}
+
+bool SortedTokenComparisonResult::OneIsSubset() const {
+  return status == SUBSET || status == SUPERSET;
+}
+
+bool SortedTokenComparisonResult::ContainEachOther() const {
+  return status != DISTINCT;
+}
 
 bool StructuredNamesEnabled() {
   return base::FeatureList::IsEnabled(
@@ -72,6 +91,39 @@ const RE2* Re2RegExCache::GetRegEx(const std::string& pattern) {
   auto result = regex_map_.emplace(pattern, std::move(regex_ptr));
   DCHECK(result.second);
   return result.first->second.get();
+}
+
+RewriterCache::RewriterCache() = default;
+
+// static
+RewriterCache* RewriterCache::GetInstance() {
+  static base::NoDestructor<RewriterCache> g_rewriter_cache;
+  return g_rewriter_cache.get();
+}
+
+// static
+base::string16 RewriterCache::Rewrite(const base::string16& country_code,
+                                      const base::string16& text) {
+  return GetInstance()->GetRewriter(country_code).Rewrite(NormalizeValue(text));
+}
+
+const AddressRewriter& RewriterCache::GetRewriter(
+    const base::string16& country_code) {
+  // For thread safety, acquire a lock to prevent concurrent access.
+  base::AutoLock lock(lock_);
+
+  auto it = rewriter_map_.find(country_code);
+  if (it != rewriter_map_.end()) {
+    const AddressRewriter& rewriter = it->second;
+    return rewriter;
+  }
+
+  // Insert the expression into the map, check the success and return the
+  // pointer.
+  auto result = rewriter_map_.emplace(
+      country_code, AddressRewriter::ForCountryCode(country_code));
+  DCHECK(result.second);
+  return result.first->second;
 }
 
 std::unique_ptr<const RE2> BuildRegExFromPattern(const std::string& pattern) {
@@ -267,9 +319,11 @@ std::string CaptureTypeWithPattern(const ServerFieldType& type,
                                        std::string(), options);
 }
 
-base::string16 NormalizeValue(const base::string16& value) {
-  return RemoveDiacriticsAndConvertToLowerCase(
-      base::CollapseWhitespace(value, /*trim_sequence_with_line_breaks=*/true));
+base::string16 NormalizeValue(base::StringPiece16 value,
+                              bool keep_white_space) {
+  return AutofillProfileComparator::NormalizeForComparison(
+      value, keep_white_space ? AutofillProfileComparator::RETAIN_WHITESPACE
+                              : AutofillProfileComparator::DISCARD_WHITESPACE);
 }
 
 bool AreStringTokenEquivalent(const base::string16& one,
@@ -311,15 +365,15 @@ SortedTokenComparisonResult CompareSortedTokens(
       std::back_inserter(additional_tokens), cmp_normalized);
 
   if (is_supserset) {
-    return SortedTokenComparisonResult(additional_tokens.size() == 1
-                                           ? SINGLE_TOKEN_SUPERSET
-                                           : MULTI_TOKEN_SUPERSET,
-                                       additional_tokens);
+    return SortedTokenComparisonResult(SUPERSET, additional_tokens);
   }
 
-  return SortedTokenComparisonResult(
-      additional_tokens.size() == 1 ? SINGLE_TOKEN_SUBSET : MULTI_TOKEN_SUBSET,
-      additional_tokens);
+  return SortedTokenComparisonResult(SUBSET, additional_tokens);
+}
+
+SortedTokenComparisonResult CompareSortedTokens(const base::string16& first,
+                                                const base::string16& second) {
+  return CompareSortedTokens(TokenizeValue(first), TokenizeValue(second));
 }
 
 bool AreSortedTokensEqual(const std::vector<AddressToken>& first,
@@ -346,7 +400,7 @@ std::vector<AddressToken> TokenizeValue(const base::string16 value) {
   } else {
     // Split it by white spaces and commas into non-empty values.
     for (const auto& token :
-         base::SplitString(value, base::ASCIIToUTF16(", "),
+         base::SplitString(value, base::ASCIIToUTF16(", \n"),
                            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
       tokens.emplace_back(
           AddressToken{.value = token,
