@@ -41,6 +41,10 @@ bool DoesOriginContainAnyInstalledWebApp(
 #else
   auto* provider = web_app::WebAppProviderFactory::GetForProfile(
       Profile::FromBrowserContext(browser_context));
+  // TODO: Change this method to async, or document that the caller must know
+  // that WebAppProvider is started.
+  if (!provider || !provider->on_registry_ready().is_signaled())
+    return false;
   return provider->registrar().DoesScopeContainAnyApp(origin);
 #endif
 }
@@ -50,9 +54,13 @@ std::set<GURL> GetOriginsWithInstalledWebApps(
 #if defined(OS_ANDROID)
   return ShortcutHelper::GetOriginsWithInstalledWebApksOrTwas();
 #else
-  const web_app::AppRegistrar& registrar =
-      web_app::WebAppProvider::Get(Profile::FromBrowserContext(browser_context))
-          ->registrar();
+  auto* provider = web_app::WebAppProvider::Get(
+      Profile::FromBrowserContext(browser_context));
+  // TODO: Change this method to async, or document that the caller must know
+  // that WebAppProvider is started.
+  if (!provider || !provider->on_registry_ready().is_signaled())
+    return std::set<GURL>();
+  const web_app::AppRegistrar& registrar = provider->registrar();
   auto app_ids = registrar.GetAppIds();
   std::set<GURL> installed_origins;
   for (auto& app_id : app_ids) {
