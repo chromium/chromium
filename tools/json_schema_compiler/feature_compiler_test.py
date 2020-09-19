@@ -22,7 +22,7 @@ class FeatureCompilerTest(unittest.TestCase):
 
   def _createTestFeatureCompiler(self, feature_class):
     return feature_compiler.FeatureCompiler('chrome_root', [], feature_class,
-        'provider_class', 'out_root', 'out_base_filename')
+        'provider_class', 'out_root', 'gen', 'out_base_filename')
 
   def _hasError(self, f, error):
     """Asserts that |error| is present somewhere in the given feature's
@@ -349,7 +349,7 @@ class FeatureCompilerTest(unittest.TestCase):
 
   def testComplexParentWithoutDefaultParent(self):
     c = feature_compiler.FeatureCompiler(
-        None, None, 'APIFeature', None, None, None)
+        None, None, 'APIFeature', None, None, None, None)
     c._CompileFeature('bookmarks',
         [{
           'contexts': ['blessed_extension'],
@@ -382,7 +382,7 @@ class FeatureCompilerTest(unittest.TestCase):
 
   def testHostedAppsCantUseAllowlistedFeatures_ComplexFeature(self):
     c = feature_compiler.FeatureCompiler(
-        None, None, 'PermissionFeature', None, None, None)
+        None, None, 'PermissionFeature', None, None, None, None)
     c._CompileFeature('invalid_feature',
         [{
           'extension_types': ['extension'],
@@ -414,7 +414,7 @@ class FeatureCompilerTest(unittest.TestCase):
 
   def testHostedAppsCantUseAllowlistedFeatures_ChildFeature(self):
     c = feature_compiler.FeatureCompiler(
-        None, None, 'PermissionFeature', None, None, None)
+        None, None, 'PermissionFeature', None, None, None, None)
     c._CompileFeature('parent',
         {
           'extension_types': ['hosted_app'],

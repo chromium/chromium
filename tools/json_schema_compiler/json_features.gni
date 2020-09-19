@@ -42,6 +42,7 @@ template("json_features") {
              "$feature_type",
              "$method_name",
              rebase_path(target_gen_dir, root_build_dir),
+             rebase_path(root_gen_dir, root_build_dir),
              "$base_filename",
            ] + rebased
 
