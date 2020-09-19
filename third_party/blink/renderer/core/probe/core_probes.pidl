@@ -142,7 +142,7 @@ interface CoreProbes {
   void PseudoElementDestroyed([Keep] PseudoElement*);
   void DidCreateAnimation(Document*, unsigned);
   void AnimationPlayStateChanged(Document*, Animation*, Animation::AnimationPlayState old_play_state, Animation::AnimationPlayState new_play_state);
-  void WindowOpen([Keep] Document*, const String& url, const AtomicString& window_name, const WebWindowFeatures& window_features, bool user_gestrue);
+  void WindowOpen(ExecutionContext*, const KURL& url, const AtomicString& window_name, const WebWindowFeatures& window_features, bool user_gestrue);
   void ConsoleMessageAdded(ExecutionContext*, ConsoleMessage*);
   void InspectorIssueAdded(CoreProbeSink*, InspectorIssue*);
   void WillRunJavaScriptDialog(LocalFrame* frame);

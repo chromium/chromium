@@ -1051,13 +1051,11 @@ void InspectorPageAgent::PageLayoutInvalidated(bool resized) {
     client_->PageLayoutInvalidated(resized);
 }
 
-void InspectorPageAgent::WindowOpen(Document* document,
-                                    const String& url,
+void InspectorPageAgent::WindowOpen(const KURL& url,
                                     const AtomicString& window_name,
                                     const WebWindowFeatures& window_features,
                                     bool user_gesture) {
-  KURL completed_url = url.IsEmpty() ? BlankURL() : document->CompleteURL(url);
-  GetFrontend()->windowOpen(completed_url.GetString(), window_name,
+  GetFrontend()->windowOpen(url.IsEmpty() ? BlankURL() : url, window_name,
                             GetEnabledWindowFeatures(window_features),
                             user_gesture);
   GetFrontend()->flush();

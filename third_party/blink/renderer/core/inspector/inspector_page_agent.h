@@ -201,8 +201,7 @@ class CORE_EXPORT InspectorPageAgent final
   void Did(const probe::UpdateLayout&);
   void Will(const probe::RecalculateStyle&);
   void Did(const probe::RecalculateStyle&);
-  void WindowOpen(Document*,
-                  const String&,
+  void WindowOpen(const KURL&,
                   const AtomicString&,
                   const WebWindowFeatures&,
                   bool);
