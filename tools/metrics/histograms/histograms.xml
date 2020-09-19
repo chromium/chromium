@@ -200574,9 +200574,13 @@ regressions. -->
 
 <histogram_suffixes name="Availability.Prober.Clients" separator=".">
   <suffix name="IsolatedPrerenderCanaryCheck"
-      label="Canary check for Isolated Prerenders probing"/>
+      label="(M85 only) Canary check for Isolated Prerenders probing"/>
+  <suffix name="IsolatedPrerenderDNSCanaryCheck"
+      label="DNS canary check for Isolated Prerenders probing"/>
   <suffix name="IsolatedPrerenderOriginCheck"
       label="Origin check for Isolated Prerenders"/>
+  <suffix name="IsolatedPrerenderTLSCanaryCheck"
+      label="TLS canary check for Isolated Prerenders probing"/>
   <suffix name="Litepages" label="Lite page HTTPS Server Previews">
     <obsolete>
       Removed in M84.

@@ -83,9 +83,11 @@ class AvailabilityProber
     kIsolatedPrerenderOriginCheck = 2,
 
     // chrome/browser/prerender/isolated/isolated_prerender_origin_prober.h
-    kIsolatedPrerenderCanaryCheck = 3,
+    kIsolatedPrerenderCanaryCheck_DEPRECATED = 3,
+    kIsolatedPrerenderTLSCanaryCheck = 4,
+    kIsolatedPrerenderDNSCanaryCheck = 5,
 
-    kMaxValue = kIsolatedPrerenderCanaryCheck,
+    kMaxValue = kIsolatedPrerenderDNSCanaryCheck,
   };
 
   // This enum describes the different algorithms that can be used to calculate
