@@ -29,6 +29,9 @@ struct TileGroup {
   bool operator==(const TileGroup& other) const;
   bool operator!=(const TileGroup& other) const;
 
+  // Called when a tile was clicked, need to recalculate |tile_stats|.
+  void OnTileClicked(const std::string& tile_id);
+
   // Unique id for the group.
   std::string id;
 

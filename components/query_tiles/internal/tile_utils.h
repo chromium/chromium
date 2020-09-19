@@ -19,6 +19,10 @@ namespace query_tiles {
 void SortTiles(std::vector<std::unique_ptr<Tile>>* tiles,
                std::map<std::string, TileStats>* tile_stats);
 
+// Calculates the current tile score based on |current_time|. Tile score will
+// decay over time.
+double CalculateTileScore(const TileStats& tile_stats, base::Time current_time);
+
 }  // namespace query_tiles
 
 #endif  // COMPONENTS_QUERY_TILES_INTERNAL_TILE_UTILS_H_

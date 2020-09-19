@@ -69,6 +69,18 @@ TEST(TileGroupTest, MoveOperator) {
   EXPECT_TRUE(test::AreTileGroupsIdentical(expected, rhs));
 }
 
+TEST(TileGroupTest, OnTileClicked) {
+  base::Time now_time = base::Time::Now();
+  TileGroup group;
+  group.tile_stats["guid-1-1"] = TileStats(now_time, 0);
+  group.tile_stats["guid-1-2"] =
+      TileStats(now_time + base::TimeDelta::FromHours(1), 0.5);
+  group.OnTileClicked("guid-1-1");
+  EXPECT_EQ(group.tile_stats["guid-1-1"].score, 1);
+  group.OnTileClicked("guid-1-2");
+  EXPECT_EQ(group.tile_stats["guid-1-2"].score, 1.5);
+}
+
 }  // namespace
 
 }  // namespace query_tiles

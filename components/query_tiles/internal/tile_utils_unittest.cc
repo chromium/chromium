@@ -96,6 +96,18 @@ TEST(TileUtilsTest, SortWithNewTilesInTheMiddle) {
   EXPECT_EQ(group.tiles[1]->id, "guid-1-1");
   EXPECT_EQ(group.tiles[2]->id, "guid-1-2");
   EXPECT_EQ(tile_stats["guid-1-2"].score, 0.5);
+  EXPECT_EQ(tile_stats["guid-1-2"].last_clicked_time, group.last_updated_ts);
+}
+
+TEST(TileUtilsTest, CalculateTileScore) {
+  base::Time now_time = base::Time::Now();
+  EXPECT_EQ(CalculateTileScore(TileStats(now_time, 0.7), now_time), 0.7);
+  EXPECT_EQ(CalculateTileScore(TileStats(now_time, 1.0),
+                               now_time + base::TimeDelta::FromHours(18)),
+            1.0);
+  EXPECT_EQ(CalculateTileScore(TileStats(now_time, 1.0),
+                               now_time + base::TimeDelta::FromDays(1)),
+            exp(-0.099));
 }
 
 }  // namespace
