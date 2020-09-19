@@ -158,6 +158,30 @@ class TestRunnerTest(unittest.TestCase):
       mock_download.assert_called_with('793554')
       self.assertEqual(2, mock_popen.call_count)
 
+  @mock.patch.object(os,
+                     'listdir',
+                     return_value=['wayland-0', 'wayland-0.lock'])
+  @mock.patch.object(os.path, 'exists', return_value=True)
+  @mock.patch.object(os.path, 'isfile', return_value=True)
+  @mock.patch.object(test_runner, '_GetLatestVersionOfAshChrome')
+  @mock.patch.object(test_runner, '_DownloadAshChromeIfNecessary')
+  @mock.patch.object(subprocess, 'Popen', return_value=mock.Mock())
+  # Tests that when an ash-chrome path is specified, the test runner doesn't try
+  # to download prebuilt ash-chrome.
+  def test_specify_ash_chrome_path(self, mock_popen, mock_download,
+                                   mock_get_latest_version, *_):
+    args = [
+        'script_name',
+        'test',
+        'browser_tests',
+        '--ash-chrome-path',
+        '/ash/chrome',
+    ]
+    with mock.patch.object(sys, 'argv', args):
+      test_runner.Main()
+      self.assertFalse(mock_get_latest_version.called)
+      self.assertFalse(mock_download.called)
+
   @mock.patch.object(os.path, 'isfile', return_value=True)
   @mock.patch.object(test_runner, '_DownloadAshChromeIfNecessary')
   @mock.patch.object(subprocess, 'Popen', return_value=mock.Mock())

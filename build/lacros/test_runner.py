@@ -274,12 +274,16 @@ def _RunTestWithAshChrome(args, forward_args):
     args (dict): Args for this script.
     forward_args (dict): Args to be forwarded to the test command.
   """
-  ash_chrome_version = args.ash_chrome_version or _GetLatestVersionOfAshChrome()
-  _DownloadAshChromeIfNecessary(ash_chrome_version)
-  logging.info('Ash-chrome version: %s', ash_chrome_version)
+  if args.ash_chrome_path:
+    ash_chrome_file = args.ash_chrome_path
+  else:
+    ash_chrome_version = (args.ash_chrome_version
+                          or _GetLatestVersionOfAshChrome())
+    _DownloadAshChromeIfNecessary(ash_chrome_version)
+    logging.info('Ash-chrome version: %s', ash_chrome_version)
 
-  ash_chrome_file = os.path.join(_GetAshChromeDirPath(ash_chrome_version),
-                                 'chrome')
+    ash_chrome_file = os.path.join(_GetAshChromeDirPath(ash_chrome_version),
+                                   'chrome')
   try:
     # Starts Ash-Chrome.
     tmp_xdg_dir_name = tempfile.mkdtemp()
@@ -451,13 +455,18 @@ def Main():
       '"./url_unittests". Any argument unknown to this test runner script will '
       'be forwarded to the command, for example: "--gtest_filter=Suite.Test"')
 
-  test_parser.add_argument(
-      '-a',
+  version_group = test_parser.add_mutually_exclusive_group()
+  version_group.add_argument(
       '--ash-chrome-version',
       type=str,
-      help='Version of ash_chrome to use for testing, for example: "793554", '
-      'and the version corresponds to the commit position of commits on the '
-      'master branch. If not specified, will use the latest version available')
+      help='Version of an prebuilt ash-chrome to use for testing, for example: '
+      '"793554", and the version corresponds to the commit position of commits '
+      'on the main branch. If not specified, will use the latest version '
+      'available')
+  version_group.add_argument(
+      '--ash-chrome-path',
+      type=str,
+      help='Path to an locally built ash-chrome to use for testing.')
 
   args = arg_parser.parse_known_args()
   return args[0].func(args[0], args[1])
