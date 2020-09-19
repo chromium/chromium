@@ -583,6 +583,12 @@ void LocalWindowProxy::UpdateSecurityOrigin(const SecurityOrigin* origin) {
   SetSecurityToken(origin);
 }
 
+void LocalWindowProxy::SetAbortScriptExecution(
+    v8::Context::AbortScriptExecutionCallback callback) {
+  InitializeIfNeeded();
+  script_state_->GetContext()->SetAbortScriptExecution(callback);
+}
+
 LocalWindowProxy::LocalWindowProxy(v8::Isolate* isolate,
                                    LocalFrame& frame,
                                    scoped_refptr<DOMWrapperWorld> world)

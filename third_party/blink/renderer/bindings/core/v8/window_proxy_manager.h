@@ -104,6 +104,9 @@ class LocalWindowProxyManager
   // Sets the given security origin to the main world's context.  Also updates
   // the security origin of the context for each isolated world.
   void UpdateSecurityOrigin(const SecurityOrigin*);
+
+  void SetAbortScriptExecution(
+      v8::Context::AbortScriptExecutionCallback callback);
 };
 
 class RemoteWindowProxyManager

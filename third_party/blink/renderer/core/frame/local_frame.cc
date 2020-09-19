@@ -800,40 +800,22 @@ void LocalFrame::HookBackForwardCacheEviction() {
   // the frame must not be mutated e.g., by JavaScript execution, then the
   // frame must be evicted in such cases.
   DCHECK(RuntimeEnabledFeatures::BackForwardCacheEnabled());
-  Vector<scoped_refptr<DOMWrapperWorld>> worlds;
-  DOMWrapperWorld::AllWorldsInCurrentThread(worlds);
-  v8::HandleScope handle_scope(V8PerIsolateData::MainThreadIsolate());
-  for (const auto& world : worlds) {
-    if (!world->IsMainWorld() && !world->IsIsolatedWorld()) {
-      // Only main & isolated worlds can have ScriptStates.
-      continue;
-    }
-    ScriptState* script_state = ToScriptState(this, *world);
-    script_state->GetContext()->SetAbortScriptExecution(
-        [](v8::Isolate* isolate, v8::Local<v8::Context> context) {
-          ScriptState* script_state = ScriptState::From(context);
-          LocalDOMWindow* window = LocalDOMWindow::From(script_state);
-          DCHECK(window);
-          LocalFrame* frame = window->GetFrame();
-          if (frame)
-            frame->EvictFromBackForwardCache();
-        });
-  }
+  static_cast<LocalWindowProxyManager*>(GetWindowProxyManager())
+      ->SetAbortScriptExecution(
+          [](v8::Isolate* isolate, v8::Local<v8::Context> context) {
+            ScriptState* script_state = ScriptState::From(context);
+            LocalDOMWindow* window = LocalDOMWindow::From(script_state);
+            DCHECK(window);
+            LocalFrame* frame = window->GetFrame();
+            if (frame)
+              frame->EvictFromBackForwardCache();
+          });
 }
 
 void LocalFrame::RemoveBackForwardCacheEviction() {
   DCHECK(RuntimeEnabledFeatures::BackForwardCacheEnabled());
-  Vector<scoped_refptr<DOMWrapperWorld>> worlds;
-  DOMWrapperWorld::AllWorldsInCurrentThread(worlds);
-  v8::HandleScope handle_scope(V8PerIsolateData::MainThreadIsolate());
-  for (const auto& world : worlds) {
-    if (!world->IsMainWorld() && !world->IsIsolatedWorld()) {
-      // Only main & isolated worlds can have ScriptStates.
-      continue;
-    }
-    ScriptState* script_state = ToScriptState(this, *world);
-    script_state->GetContext()->SetAbortScriptExecution(nullptr);
-  }
+  static_cast<LocalWindowProxyManager*>(GetWindowProxyManager())
+      ->SetAbortScriptExecution(nullptr);
 }
 
 void LocalFrame::SetTextDirection(base::i18n::TextDirection direction) {

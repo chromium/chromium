@@ -120,4 +120,18 @@ void LocalWindowProxyManager::UpdateSecurityOrigin(
   }
 }
 
+void LocalWindowProxyManager::SetAbortScriptExecution(
+    v8::Context::AbortScriptExecutionCallback callback) {
+  v8::HandleScope handle_scope(GetIsolate());
+
+  static_cast<LocalWindowProxy*>(window_proxy_.Get())
+      ->SetAbortScriptExecution(callback);
+
+  for (auto& entry : isolated_worlds_) {
+    auto* isolated_window_proxy =
+        static_cast<LocalWindowProxy*>(entry.value.Get());
+    isolated_window_proxy->SetAbortScriptExecution(callback);
+  }
+}
+
 }  // namespace blink
