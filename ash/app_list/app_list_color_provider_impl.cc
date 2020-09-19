@@ -88,4 +88,23 @@ SkColor AppListColorProviderImpl::GetSearchBoxIconColor() const {
       AshColorProvider::ContentLayerType::kButtonIconColor);
 }
 
+SkColor AppListColorProviderImpl::GetFolderBackgroundColor() const {
+  return ash_color_provider_->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kTransparent80);
+}
+
+SkColor AppListColorProviderImpl::GetFolderTitleTextColor() const {
+  return ash_color_provider_->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary);
+}
+
+SkColor AppListColorProviderImpl::GetFolderHintTextColor() const {
+  return ash_color_provider_->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary);
+}
+
+float AppListColorProviderImpl::GetFolderBackgrounBlurSigma() const {
+  return static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault);
+}
+
 }  // namespace ash

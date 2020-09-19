@@ -9,6 +9,7 @@
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/views/app_list_folder_view.h"
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
@@ -29,13 +30,6 @@
 
 namespace ash {
 
-namespace {
-
-constexpr SkColor kFolderNameTextColor = gfx::kGoogleGrey700;
-constexpr SkColor kFolderTitleHintTextColor = gfx::kGoogleGrey600;
-
-}  // namespace
-
 class FolderHeaderView::FolderNameView : public views::Textfield,
                                          public views::ViewTargeterDelegate {
  public:
@@ -45,8 +39,9 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
     // Make folder name font size 14px.
     SetFontList(
         ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(2));
-    SetTextColor(kFolderNameTextColor);
-    set_placeholder_text_color(kFolderTitleHintTextColor);
+    SetTextColor(AppListColorProvider::Get()->GetFolderTitleTextColor());
+    set_placeholder_text_color(
+        AppListColorProvider::Get()->GetFolderHintTextColor());
     SetNameViewBorderAndBackground(/*is_active=*/false);
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   }

@@ -22,6 +22,7 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/top_icon_animation_view.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/metrics_util.h"
@@ -90,7 +91,7 @@ class BackgroundAnimation : public AppListFolderView::Animation,
                               : folder_view_->folder_item_icon_bounds();
     to_rect -= background_view_->bounds().OffsetFromOrigin();
     const SkColor background_color =
-        folder_view_->GetAppListConfig().folder_background_color();
+        AppListColorProvider::Get()->GetFolderBackgroundColor();
     const SkColor from_color =
         show_ ? folder_view_->GetAppListConfig().folder_bubble_color()
               : background_color;
@@ -99,6 +100,8 @@ class BackgroundAnimation : public AppListFolderView::Animation,
               : folder_view_->GetAppListConfig().folder_bubble_color();
 
     background_view_->layer()->SetColor(from_color);
+    background_view_->layer()->SetBackgroundBlur(
+        AppListColorProvider::Get()->GetFolderBackgrounBlurSigma());
     background_view_->layer()->SetClipRect(from_rect);
     background_view_->layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(from_radius));
@@ -146,10 +149,10 @@ class FolderItemTitleAnimation : public AppListFolderView::Animation,
         animation_(this),
         folder_view_(folder_view) {
     // Calculate the source and target states.
-    from_color_ = show_ ? folder_view_->GetAppListConfig().grid_title_color()
+    from_color_ = show_ ? AppListColorProvider::Get()->GetFolderTitleTextColor()
                         : SK_ColorTRANSPARENT;
     to_color_ = show_ ? SK_ColorTRANSPARENT
-                      : folder_view_->GetAppListConfig().grid_title_color();
+                      : AppListColorProvider::Get()->GetFolderTitleTextColor();
 
     animation_.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
     animation_.SetSlideDuration(
@@ -823,7 +826,7 @@ void AppListFolderView::HideViewImmediately() {
   if (activated_folder_item_view) {
     activated_folder_item_view->SetIconVisible(true);
     activated_folder_item_view->title()->SetEnabledColor(
-        GetAppListConfig().grid_title_color());
+        AppListColorProvider::Get()->GetFolderTitleTextColor());
     activated_folder_item_view->title()->SetVisible(true);
   }
 }
