@@ -7,6 +7,7 @@
 # tags: [ passthrough no-passthrough ]
 # tags: [ intel intel-0x3e92 intel-0x5912 intel-0xa2e
 #         amd amd-0x6613 amd-0x699f amd-0x679e amd-0x6821
+#         apple apple-apple-A12Z
 #         nvidia nvidia-0xf02 nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
 #         qualcomm qualcomm-adreno-(tm)-540 ]
 # tags: [ debug ]
@@ -696,6 +697,27 @@ crbug.com/1027605 [ mac amd-0x679e no-passthrough ] deqp/functional/gles3/transf
 crbug.com/1027605 [ mac amd-0x679e no-passthrough ] deqp/functional/gles3/transformfeedback/random_separate_lines.html [ Failure ]
 crbug.com/1027605 [ mac amd-0x679e no-passthrough ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
 crbug.com/1027605 [ mac amd-0x679e no-passthrough ] deqp/functional/gles3/transformfeedback/random_separate_triangles.html [ Failure ]
+
+# ARM-based Mac DTKs
+crbug.com/1130112 [ mac apple-apple-a12z passthrough opengl ] deqp/functional/gles3/texturefiltering/cube_combinations_00.html [ Failure ]
+crbug.com/1130112 [ mac apple-apple-a12z passthrough opengl ] deqp/functional/gles3/texturefiltering/cube_combinations_02.html [ Failure ]
+crbug.com/1130112 [ mac apple-apple-a12z passthrough opengl ] deqp/functional/gles3/texturefiltering/cube_combinations_04.html [ Failure ]
+crbug.com/1130112 [ mac apple-apple-a12z passthrough opengl ] deqp/functional/gles3/texturefiltering/cube_sizes_03.html [ Failure ]
+crbug.com/1130112 [ mac apple-apple-a12z passthrough opengl ] deqp/functional/gles3/texturefiltering/cube_sizes_04.html [ Failure ]
+crbug.com/1130114 [ mac apple-apple-a12z passthrough opengl ] conformance2/extensions/ext-color-buffer-float.html [ Failure ]
+crbug.com/1130117 [ mac apple-apple-a12z passthrough opengl ] deqp/functional/gles3/fbomultisample.2_samples.html [ Failure ]
+crbug.com/1130117 [ mac apple-apple-a12z passthrough opengl ] deqp/functional/gles3/fbomultisample.4_samples.html [ Failure ]
+crbug.com/1130117 [ mac apple-apple-a12z passthrough opengl no-asan ] deqp/functional/gles3/multisample.html [ Failure ]
+crbug.com/1130118 [ mac apple-apple-a12z passthrough opengl ] conformance2/rendering/blitframebuffer-filter-srgb.html [ Failure ]
+crbug.com/1130118 [ mac apple-apple-a12z passthrough opengl ] deqp/functional/gles3/framebufferblit/rect_03.html [ Failure ]
+crbug.com/1130118 [ mac apple-apple-a12z passthrough opengl ] deqp/functional/gles3/framebufferblit/rect_04.html [ Failure ]
+crbug.com/1130119 [ mac apple-apple-a12z passthrough opengl ] conformance2/glsl3/vector-dynamic-indexing.html [ Failure ]
+crbug.com/1130119 [ mac apple-apple-a12z passthrough opengl ] conformance2/textures/misc/tex-base-level-bug.html [ Failure ]
+crbug.com/1130119 [ mac apple-apple-a12z passthrough opengl ] conformance2/rendering/framebuffer-completeness-unaffected.html [ Failure ]
+crbug.com/1130119 [ mac apple-apple-a12z passthrough opengl ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
+crbug.com/1130119 [ mac apple-apple-a12z passthrough opengl ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
+crbug.com/1130119 [ mac apple-apple-a12z passthrough opengl ] deqp/functional/gles3/fbodepthbuffer.html [ Failure ]
+crbug.com/1130119 [ mac apple-apple-a12z passthrough opengl ] deqp/functional/gles3/shadertexturefunction/texturegrad.html [ Failure ]
 
 ####################
 # Linux failures   #
