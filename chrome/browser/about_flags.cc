@@ -4604,11 +4604,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityExposeARIAAnnotationsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kEnableAccessibilityExposeARIAAnnotations)},
 
-    {"enable-accessibility-expose-display-none",
-     flag_descriptions::kAccessibilityExposeDisplayNoneName,
-     flag_descriptions::kAccessibilityExposeDisplayNoneDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kEnableAccessibilityExposeDisplayNone)},
-
 #if !defined(OS_ANDROID)
     {"enable-accessibility-live-captions",
      flag_descriptions::kEnableAccessibilityLiveCaptionsName,

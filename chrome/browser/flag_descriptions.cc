@@ -28,12 +28,6 @@ const char kAccessibilityExposeARIAAnnotationsDescription[] =
     "Expose annotation- prefixed roles from ARIA Annotations draft "
     "specification at https://w3c.github.io/annotation-aria/.";
 
-const char kAccessibilityExposeDisplayNoneName[] =
-    "Expose 'display: none' nodes for accessibility";
-const char kAccessibilityExposeDisplayNoneDescription[] =
-    "Expose 'display: none' nodes that have an HTML ID to the browser process "
-    "accessibility tree.";
-
 #if BUILDFLAG(ENABLE_PLUGINS)
 const char kAccessiblePDFFormName[] = "Accessible PDF Forms";
 const char kAccessiblePDFFormDescription[] =
