@@ -2635,9 +2635,15 @@ const views::Widget* BrowserView::GetWidget() const {
 }
 
 void BrowserView::CreateTabSearchBubble() {
-  // Only log the open action if it resulted in creating a new instance of the
-  // Tab Search bubble.
-  if (tabstrip_->tab_search_button()->ShowTabSearchBubble()) {
+  // If kTabSearchFixedEntrypoint is enabled then the tab search button is
+  // defined in the tab strip region view.
+  // TODO(tluk): Consolidate these once Tab Scrolling successfully moves the
+  // tab controls container to the tab strip region view.
+  if ((base::FeatureList::IsEnabled(features::kTabSearchFixedEntrypoint) &&
+       tab_strip_region_view_->tab_search_button()->ShowTabSearchBubble()) ||
+      tabstrip_->tab_search_button()->ShowTabSearchBubble()) {
+    // Only log the open action if it resulted in creating a new instance of the
+    // Tab Search bubble.
     base::UmaHistogramEnumeration("Tabs.TabSearch.OpenAction",
                                   TabSearchOpenAction::kKeyboardShortcut);
   }

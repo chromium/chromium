@@ -5,7 +5,11 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 
 #include "base/bind.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/tabs/tab_search_button.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -13,12 +17,7 @@
 TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
   views::FlexLayout* layout_manager =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
-
-  layout_manager->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetDefault(
-          views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                   views::MaximumFlexSizeRule::kUnbounded));
+  layout_manager->SetOrientation(views::LayoutOrientation::kHorizontal);
 
   tab_strip_ = tab_strip.get();
   tab_strip->SetAvailableWidthCallback(
@@ -33,6 +32,42 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
     tab_strip_scroll_container->SetContents(std::move(tab_strip));
   } else {
     tab_strip_container_ = AddChildView(std::move(tab_strip));
+  }
+
+  // Allow the |tab_strip_container_| to grow into the free space available in
+  // the TabStripRegionView.
+  const views::FlexSpecification tab_strip_container_flex_spec =
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded)
+          .WithWeight(0);
+  tab_strip_container_->SetProperty(views::kFlexBehaviorKey,
+                                    tab_strip_container_flex_spec);
+
+  if (base::FeatureList::IsEnabled(features::kTabSearch) &&
+      base::FeatureList::IsEnabled(features::kTabSearchFixedEntrypoint)) {
+    // TODO(tluk): |tab_search_container| is only needed here so the tab search
+    // button can be vertically centered. This can be removed if FlexLayout is
+    // updated to support per-child cross-axis alignment.
+    auto* tab_search_container = AddChildView(std::make_unique<views::View>());
+    tab_search_container->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                                 views::MaximumFlexSizeRule::kPreferred));
+    auto* container_layout_manager = tab_search_container->SetLayoutManager(
+        std::make_unique<views::FlexLayout>());
+    container_layout_manager
+        ->SetOrientation(views::LayoutOrientation::kVertical)
+        .SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+
+    auto tab_search_button =
+        std::make_unique<TabSearchButton>(tab_strip_, tab_strip_);
+    tab_search_button->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_SEARCH));
+    tab_search_button->SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SEARCH));
+    tab_search_button_ =
+        tab_search_container->AddChildView(std::move(tab_search_button));
   }
 }
 
@@ -55,11 +90,27 @@ bool TabStripRegionView::IsRectInWindowCaption(const gfx::Rect& rect) {
   if (tab_strip_container_->HitTestRect(get_target_rect(tab_strip_container_)))
     return tab_strip_->IsRectInWindowCaption(get_target_rect(tab_strip_));
 
+  // Check to see if the rect intersects the non-button parts of the tab search
+  // button. The enclosed button has a non-rectangular shape, so if it's not in
+  // the visual portions of the buttons we treat it as a click to the caption.
+  if (tab_search_button_->GetLocalBounds().Intersects(
+          get_target_rect(tab_search_button_))) {
+    return !tab_search_button_->HitTestRect(
+        get_target_rect(tab_search_button_));
+  }
+
   return true;
 }
 
 bool TabStripRegionView::IsPositionInWindowCaption(const gfx::Point& point) {
   return IsRectInWindowCaption(gfx::Rect(point, gfx::Size(1, 1)));
+}
+
+void TabStripRegionView::FrameColorsChanged() {
+  if (tab_search_button_)
+    tab_search_button_->FrameColorsChanged();
+  tab_strip_->FrameColorsChanged();
+  SchedulePaint();
 }
 
 const char* TabStripRegionView::GetClassName() const {
@@ -78,6 +129,11 @@ gfx::Size TabStripRegionView::GetMinimumSize() const {
   tab_strip_min_size.set_width(
       std::min(max_min_width, tab_strip_min_size.width()));
   return tab_strip_min_size;
+}
+
+void TabStripRegionView::OnThemeChanged() {
+  View::OnThemeChanged();
+  FrameColorsChanged();
 }
 
 int TabStripRegionView::CalculateTabStripAvailableWidth() {

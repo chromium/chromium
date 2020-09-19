@@ -2128,6 +2128,7 @@ if (!is_android) {
         "../browser/ui/views/frame/browser_view_browsertest.cc",
         "../browser/ui/views/frame/glass_browser_frame_view_browsertest_win.cc",
         "../browser/ui/views/frame/system_web_app_non_client_frame_view_browsertest.cc",
+        "../browser/ui/views/frame/tab_strip_region_view_browsertest.cc",
         "../browser/ui/views/hung_renderer_view_browsertest.cc",
         "../browser/ui/views/importer/import_lock_dialog_view_browsertest.cc",
         "../browser/ui/views/in_product_help/feature_promo_dialog_browsertest.cc",

@@ -8,6 +8,8 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/views/view.h"
 
+class TabSearchButton;
+
 // Container for the tabstrip, new tab button, and reserved grab handle space.
 // TODO (https://crbug.com/949660) Under construction.
 class TabStripRegionView final : public views::View {
@@ -25,10 +27,16 @@ class TabStripRegionView final : public views::View {
   // of |this|.
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
+  // Called when the colors of the frame change.
+  void FrameColorsChanged();
+
+  TabSearchButton* tab_search_button() { return tab_search_button_; }
+
   // views::View overrides:
   const char* GetClassName() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
   gfx::Size GetMinimumSize() const override;
+  void OnThemeChanged() override;
 
   // TODO(958173): Override OnBoundsChanged to cancel tabstrip animations.
 
@@ -39,6 +47,7 @@ class TabStripRegionView final : public views::View {
 
   views::View* tab_strip_container_;
   TabStrip* tab_strip_;
+  TabSearchButton* tab_search_button_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_
