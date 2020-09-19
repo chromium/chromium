@@ -361,9 +361,10 @@ void AVIFImageDecoder::DecodeToYUV() {
   }
 
   const auto* image = decoder_->image;
-  // All frames must be the same size.
+  // Frame size must be equal to container size.
   if (Size() != IntSize(image->width, image->height)) {
-    DVLOG(1) << "All frames must be the same size";
+    DVLOG(1) << "Frame size " << IntSize(image->width, image->height)
+             << " differs from container size " << Size();
     SetFailed();
     return;
   }
@@ -528,9 +529,10 @@ void AVIFImageDecoder::Decode(size_t index) {
   }
 
   const auto* image = decoder_->image;
-  // All frames must be the same size.
+  // Frame size must be equal to container size.
   if (Size() != IntSize(image->width, image->height)) {
-    DVLOG(1) << "All frames must be the same size";
+    DVLOG(1) << "Frame size " << IntSize(image->width, image->height)
+             << " differs from container size " << Size();
     SetFailed();
     return;
   }
