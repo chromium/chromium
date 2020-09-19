@@ -502,7 +502,7 @@ cast_executable("cast_shell") {
 repack("cast_shell_pak") {
   sources = [
     "$root_gen_dir/chromecast/app/shell_resources.pak",
-    "$root_gen_dir/chromecast/bindings/bindings_resources.pak",
+    "$root_gen_dir/components/cast/named_message_port_connector/named_message_port_connector_resources.pak",
     "$root_gen_dir/content/app/resources/content_resources_100_percent.pak",
     "$root_gen_dir/content/content_resources.pak",
     "$root_gen_dir/content/dev_ui_content_resources.pak",
@@ -521,7 +521,7 @@ repack("cast_shell_pak") {
 
   deps = [
     "//chromecast/app:resources",
-    "//chromecast/bindings:bindings_resources_grit",
+    "//components/cast/named_message_port_connector:resources",
     "//content:content_resources",
     "//content:dev_ui_content_resources",
     "//content/app/resources",

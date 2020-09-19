@@ -9,7 +9,7 @@
   <translations />
   <release seq="1">
     <includes>
-      <include name="IDR_PORT_CONNECTOR_JS" file="resources\named_message_port_connector.js" type="BINDATA" />
+      <include name="IDR_PORT_CONNECTOR_JS" file="../../components/cast/named_message_port_connector/named_message_port_connector.js" type="BINDATA" />
     </includes>
   </release>
 </grit>

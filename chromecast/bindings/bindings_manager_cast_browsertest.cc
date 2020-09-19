@@ -112,7 +112,7 @@ class TitleChangeObserver : public CastWebContents::Observer {
 // Test class for communicating with connector.html.
 class TestBindingBackend : public blink::WebMessagePort::MessageReceiver {
  public:
-  TestBindingBackend(bindings::BindingsManager* bindings_manager)
+  TestBindingBackend(bindings::BindingsManagerCast* bindings_manager)
       : bindings_manager_(bindings_manager) {
     constexpr char kPortName[] = "hello";
     bindings_manager_->RegisterPortHandler(

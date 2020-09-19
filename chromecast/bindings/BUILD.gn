@@ -8,14 +8,15 @@ if (is_fuchsia) {
   import("//build/config/fuchsia/generate_runner_scripts.gni")
 }
 
+# TODO(crbug.com/1104369): Deprecated. Delete after off-tree clients
+# are migrated to use NamedMessagePortConnector directly.
 source_set("named_message_port_connector_resources") {
-  data = [
-    "resources/named_message_port_connector.js",
-    "${target_gen_dir}/bindings_resources.pak",
-  ]
+  data_deps = [ ":bindings_resources" ]
   deps = [ ":bindings_resources" ]
 }
 
+# TODO(crbug.com/1104369): Deprecated. Delete after off-tree clients
+# are migrated to use NamedMessagePortConnector directly.
 grit("bindings_resources") {
   source = "bindings_resources.grd"
   outputs = [
@@ -55,19 +56,19 @@ if (is_linux || is_chromeos || is_android) {
     sources = [
       "bindings_manager_cast.cc",
       "bindings_manager_cast.h",
+      "named_message_port_connector_cast.cc",
+      "named_message_port_connector_cast.h",
     ]
 
     deps = [
       ":bindings_manager",
-      ":bindings_resources",
       "//base",
       "//chromecast/browser:public",
+      "//components/cast/api_bindings:manager",
+      "//components/cast/named_message_port_connector",
       "//components/on_load_script_injector/browser",
-      "//mojo/public/cpp/system",
       "//third_party/blink/public/common",
     ]
-
-    data_deps = [ ":named_message_port_connector_resources" ]
   }
 
   source_set("browsertests_cast") {
@@ -84,9 +85,9 @@ if (is_linux || is_chromeos || is_android) {
       "//chromecast/base",
       "//chromecast/base:chromecast_switches",
       "//chromecast/bindings:bindings_manager_cast",
-      "//chromecast/bindings:named_message_port_connector_resources",
       "//chromecast/browser:browser",
       "//chromecast/browser:public",
+      "//components/cast/named_message_port_connector:resources",
       "//content/public/browser",
       "//content/test:test_support",
       "//net:test_support",

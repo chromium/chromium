@@ -1,6 +1,7 @@
 include_rules = [
   "+chromecast/browser",
   "+components/cast/api_bindings",
+  "+components/cast/named_message_port_connector",
   "+components/on_load_script_injector/browser",
   "+content/public/common",
   "+content/public/test",
