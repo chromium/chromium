@@ -46,4 +46,16 @@ void StructTraits<gfx::mojom::GpuFenceHandleDataView,
 #endif
 }
 
+bool StructTraits<gfx::mojom::GpuFenceHandleDataView,
+                  gfx::GpuFenceHandle>::IsNull(const gfx::GpuFenceHandle&
+                                                   handle) {
+  if (handle.type != gfx::GpuFenceHandleType::kEmpty)
+    return false;
+#if defined(OS_POSIX)
+  if (handle.owned_fd.is_valid())
+    return false;
+#endif
+  return true;
+}
+
 }  // namespace mojo

@@ -49,6 +49,7 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
   static bool Read(gfx::mojom::GpuFenceHandleDataView data,
                    gfx::GpuFenceHandle* handle);
   static void SetToNull(gfx::GpuFenceHandle* handle);
+  static bool IsNull(const gfx::GpuFenceHandle& handle);
 };
 
 }  // namespace mojo
