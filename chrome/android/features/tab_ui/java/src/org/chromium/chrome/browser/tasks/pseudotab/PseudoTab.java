@@ -213,6 +213,9 @@ public class PseudoTab {
     public long getTimestampMillis() {
         assert mTab != null
                 && mTab.get() != null : "getTimestampMillis can only be used with real tabs";
+        if (!mTab.get().isInitialized()) {
+            return CriticalPersistedTabData.INVALID_TIMESTAMP;
+        }
         return CriticalPersistedTabData.from(mTab.get()).getTimestampMillis();
     }
 

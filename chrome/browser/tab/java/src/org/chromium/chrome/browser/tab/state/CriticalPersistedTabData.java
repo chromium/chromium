@@ -37,7 +37,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
             CriticalPersistedTabData.class;
 
     private static final int UNSPECIFIED_THEME_COLOR = Color.TRANSPARENT;
-    private static final long INVALID_TIMESTAMP = -1;
+    public static final long INVALID_TIMESTAMP = -1;
 
     /**
      * Title of the ContentViews webpage.
