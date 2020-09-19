@@ -59939,6 +59939,32 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="168" label="SILENT_IDLE_TIMEOUT"/>
 </enum>
 
+<enum name="QuicFailToSerializePacketLocation">
+  <int value="0" label="kQuicFailToAppendPacketHeaderFastPath"/>
+  <int value="1" label="kQuicFailToAppendTypeFastPath"/>
+  <int value="2" label="kQuicFailToAppendStreamFrameFastPath"/>
+  <int value="3" label="kQuicFailToAddPaddingFastPath"/>
+  <int value="4" label="kQuicFailToWriteIetfLongHeaderLengthFastPath"/>
+  <int value="5" label="kQuicFailToEncryptPacketFastPath"/>
+  <int value="6" label="kQuicSerializePacketNonEmptyBuffer"/>
+  <int value="7" label="kQuicMissingInitialKey"/>
+  <int value="8" label="kQuicMissingHandshakeKey"/>
+  <int value="9" label="kQuicMissingZeroRttKey"/>
+  <int value="10" label="kQuicMissingOneRttKey"/>
+  <int value="11" label="kQuicFailToBuildPacketWithPaddingInitial"/>
+  <int value="12" label="kQuicFailToBuildPacketInitial"/>
+  <int value="13" label="kQuicFailToBuildPacketWithPaddingHandshake"/>
+  <int value="14" label="kQuicFailToBuildPacketHandshake"/>
+  <int value="15" label="kQuicFailToBuildPacketWithPaddingZeroRtt"/>
+  <int value="16" label="kQuicFailToBuildPacketZeroRtt"/>
+  <int value="17" label="kQuicFailToBuildPacketWithPaddingOneRtt"/>
+  <int value="18" label="kQuicFailToBuildPacketOneRtt"/>
+  <int value="19" label="kQuicFailToEncryptInitial"/>
+  <int value="20" label="kQuicFailToEncryptHandshake"/>
+  <int value="21" label="kQuicFailToEncryptZeroRtt"/>
+  <int value="22" label="kQuicFailToEncryptOneRtt"/>
+</enum>
+
 <enum name="QuicHandshakeFailureReason">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="BLACK_HOLE"/>

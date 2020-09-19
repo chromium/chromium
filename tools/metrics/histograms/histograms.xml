@@ -99486,6 +99486,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.FailToSerializePacketLocation"
+    enum="QuicFailToSerializePacketLocation" expires_after="2021-05-21">
+  <owner>renjietang@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Record where exactly packet serialization fails for investigation.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicSession.FinalTcpCwnd" units="units"
     expires_after="2021-05-11">
   <owner>dschinazi@chromium.org</owner>
