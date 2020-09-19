@@ -10868,14 +10868,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_MAC_SYSTEM_INFOBAR_TEXT_ARM"
                desc="Mac system-specific infobar text for Arm64-on-Arm64."
                translateable="false">
-        This is an Arm64 Chrome on Arm64, so things might not work quite right
-yet!
+        Chrome can’t play premium videos or music on this device yet. Chrome will update automatically when this issue is fixed.
       </message>
       <message name="IDS_MAC_SYSTEM_INFOBAR_TEXT_ROSETTA"
                desc="Mac system-specific infobar text for Intel-on-Arm64."
                translateable="false">
-        This is an x86-64 Chrome on Arm64, so things might not work quite right
-yet!
+        This is an x86-64 Chrome on Arm64, so things might not work quite right yet!
       </message>
       <message name="IDS_MAC_SYSTEM_INFOBAR_LINK_TEXT_ARM"
                desc="Mac system-specific infobar link text for Arm64-on-Arm64."

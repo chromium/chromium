@@ -444,8 +444,10 @@ class CdmInfobarServiceImpl final
     if (!web_contents)
       return;
 
-    MacSystemInfoBarDelegate::Create(
-        InfoBarService::FromWebContents(web_contents));
+    if (MacSystemInfoBarDelegate::ShouldShow()) {
+      MacSystemInfoBarDelegate::Create(
+          InfoBarService::FromWebContents(web_contents));
+    }
   }
 };
 
