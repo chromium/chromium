@@ -439,11 +439,13 @@ function initialize() {
         $('attach-file').hidden = true;
       }
 
-      // No URL and file attachment for login screen feedback.
+      // No URL, file attachment, or window minimizing for login screen
+      // feedback.
       if (feedbackInfo.flow == chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
         $('page-url').hidden = true;
         $('attach-file-container').hidden = true;
         $('attach-file-note').hidden = true;
+        $('minimize-button').hidden = true;
       }
 
       // <if expr="chromeos">
