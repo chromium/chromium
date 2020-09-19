@@ -46,7 +46,8 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   frame_info->site_instance->locked =
-      !policy->GetProcessLock(site_instance->GetProcess()->GetID()).is_empty();
+      policy->GetProcessLock(site_instance->GetProcess()->GetID())
+          .is_locked_to_site();
 
   frame_info->site_instance->site_url =
       site_instance->HasSite()

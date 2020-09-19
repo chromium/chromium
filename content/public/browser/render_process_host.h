@@ -473,9 +473,9 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void SetProcessLock(const IsolationContext& isolation_context,
                               const ProcessLock& process_lock) = 0;
 
-  // Returns true if this process is locked to a particular ProcessLock.  See
-  // the SetProcessLock() call above.
-  virtual bool IsProcessLockedForTesting() = 0;
+  // Returns true if this process is locked to a particular site-specific
+  // ProcessLock.  See the SetProcessLock() call above.
+  virtual bool IsProcessLockedToSiteForTesting() = 0;
 
   // The following several methods are for internal use only, and are only
   // exposed here to support MockRenderProcessHost usage in tests.

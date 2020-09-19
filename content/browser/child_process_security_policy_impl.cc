@@ -1170,7 +1170,7 @@ bool ChildProcessSecurityPolicyImpl::CanRequestURL(
             url.scheme());
     if (should_be_locked) {
       const ProcessLock lock = GetProcessLock(child_id);
-      if (lock.is_empty() || !lock.matches_scheme(url.scheme()))
+      if (!lock.is_locked_to_site() || !lock.matches_scheme(url.scheme()))
         return false;
     }
   }
@@ -2348,11 +2348,8 @@ std::string ChildProcessSecurityPolicyImpl::GetKilledProcessOriginLock(
   if (!security_state)
     return "(child id not found)";
 
-  if (security_state->process_lock().is_empty()) {
-    return security_state->GetBrowserOrResourceContext()
-               ? "(empty)"
-               : "(empty and null context)";
-  }
+  if (!security_state->GetBrowserOrResourceContext())
+    return "(empty and null context)";
 
   return security_state->process_lock().ToString();
 }

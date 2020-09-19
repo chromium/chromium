@@ -3187,10 +3187,10 @@ void RenderProcessHostImpl::SetProcessLock(
   NotifyRendererOfLockedStateUpdate();
 }
 
-bool RenderProcessHostImpl::IsProcessLockedForTesting() {
+bool RenderProcessHostImpl::IsProcessLockedToSiteForTesting() {
   ProcessLock lock =
       ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(GetID());
-  return !lock.is_empty();
+  return lock.is_locked_to_site();
 }
 
 void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
@@ -4145,7 +4145,7 @@ bool RenderProcessHostImpl::IsSuitableHost(
     // where this case can happen is when the spare RenderProcessHost gets
     // used.
     CHECK(!host_has_web_ui_bindings);
-    CHECK(process_lock.is_empty());
+    CHECK(process_lock.is_invalid());
   } else {
     // WebUI checks.
     bool url_requires_web_ui_bindings =

@@ -72,8 +72,7 @@ MockRenderProcessHost::MockRenderProcessHost(BrowserContext* browser_context,
       url_loader_factory_(std::make_unique<FakeNetworkURLLoaderFactory>()) {
   // Child process security operations can't be unit tested unless we add
   // ourselves as an existing child process.
-  ChildProcessSecurityPolicyImpl::GetInstance()->AddForTesting(GetID(),
-                                                               browser_context);
+  ChildProcessSecurityPolicyImpl::GetInstance()->Add(GetID(), browser_context);
 
   RenderProcessHostImpl::RegisterHost(GetID(), this);
 }
@@ -458,10 +457,10 @@ void MockRenderProcessHost::SetProcessLock(
     is_renderer_locked_to_site_ = true;
 }
 
-bool MockRenderProcessHost::IsProcessLockedForTesting() {
+bool MockRenderProcessHost::IsProcessLockedToSiteForTesting() {
   ProcessLock lock =
       ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(GetID());
-  return !lock.is_empty();
+  return lock.is_locked_to_site();
 }
 
 void MockRenderProcessHost::BindCacheStorage(

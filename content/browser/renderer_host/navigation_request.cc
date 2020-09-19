@@ -484,10 +484,10 @@ void RecordReadyToCommitMetrics(
     ProcessLock process_lock =
         policy->GetProcessLock(new_rfh->GetProcess()->GetID());
     UMA_HISTOGRAM_BOOLEAN("Navigation.IsLockedProcess",
-                          !process_lock.is_empty());
+                          process_lock.is_locked_to_site());
     if (common_params.url.SchemeIsHTTPOrHTTPS()) {
       UMA_HISTOGRAM_BOOLEAN("Navigation.IsLockedProcess.HTTPOrHTTPS",
-                            !process_lock.is_empty());
+                            process_lock.is_locked_to_site());
     }
   }
 

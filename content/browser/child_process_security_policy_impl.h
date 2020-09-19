@@ -93,13 +93,6 @@ class CONTENT_EXPORT ProcessLock {
 
   ~ProcessLock();
 
-  // An empty ProcessLock indicates that a process is not restricted to pages
-  // from a particular SiteInfo.
-  // Note: This method is deprecated and new callers should not be added.
-  // TODO(acolwell): Remove this method and update all callers to use
-  // is_invalid(), allows_any_site(), or is_locked_to_site() instead.
-  bool is_empty() const { return !is_locked_to_site(); }
-
   // Returns true if no information has been set on the lock.
   bool is_invalid() const { return !site_info_.has_value(); }
 

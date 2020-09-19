@@ -3245,12 +3245,11 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, OldProcessCanAccessCookies) {
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
 
-  // Since foo.com isn't isolated yet, its process shouldn't be locked to
-  // anything.
+  // Since foo.com isn't isolated yet, its process lock should allow any site.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   EXPECT_TRUE(
       policy->GetProcessLock(root->current_frame_host()->GetProcess()->GetID())
-          .is_empty());
+          .allows_any_site());
 
   // Start isolating foo.com.
   policy->AddIsolatedOrigins({url::Origin::Create(foo_url)},
@@ -3576,8 +3575,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, ForceBrowsingInstanceSwap) {
   EXPECT_EQ(root->current_frame_host()->GetProcess(),
             child->current_frame_host()->GetProcess());
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  EXPECT_TRUE(
-      policy->GetProcessLock(first_instance->GetProcess()->GetID()).is_empty());
+  EXPECT_TRUE(policy->GetProcessLock(first_instance->GetProcess()->GetID())
+                  .allows_any_site());
 
   // Start isolating foo.com.
   BrowserContext* context = shell()->web_contents()->GetBrowserContext();
@@ -3624,8 +3623,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
       root->current_frame_host()->GetSiteInstance();
   EXPECT_FALSE(first_instance->RequiresDedicatedProcess());
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  EXPECT_TRUE(
-      policy->GetProcessLock(first_instance->GetProcess()->GetID()).is_empty());
+  EXPECT_TRUE(policy->GetProcessLock(first_instance->GetProcess()->GetID())
+                  .allows_any_site());
 
   // Set a sessionStorage value, to sanity check that foo.com's session storage
   // will still be accessible after the BrowsingInstance swap.
@@ -3695,8 +3694,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
   // should still be able to communicate with the opener after the navigation.
   EXPECT_EQ(first_instance, root->current_frame_host()->GetSiteInstance());
   EXPECT_FALSE(first_instance->RequiresDedicatedProcess());
-  EXPECT_TRUE(
-      policy->GetProcessLock(first_instance->GetProcess()->GetID()).is_empty());
+  EXPECT_TRUE(policy->GetProcessLock(first_instance->GetProcess()->GetID())
+                  .allows_any_site());
 }
 
 // This test ensures that when a page becomes isolated in the middle of
@@ -3737,8 +3736,8 @@ IN_PROC_BROWSER_TEST_F(
   // opener after the navigation.
   EXPECT_EQ(first_instance, root->current_frame_host()->GetSiteInstance());
   EXPECT_FALSE(first_instance->RequiresDedicatedProcess());
-  EXPECT_TRUE(
-      policy->GetProcessLock(first_instance->GetProcess()->GetID()).is_empty());
+  EXPECT_TRUE(policy->GetProcessLock(first_instance->GetProcess()->GetID())
+                  .allows_any_site());
 }
 
 // Test that we're not tracking whether we did a proactive BrowsingInstance
@@ -3990,7 +3989,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
   EXPECT_EQ(host, child2->current_frame_host()->GetProcess());
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()
                   ->GetProcessLock(host->GetID())
-                  .is_empty());
+                  .allows_any_site());
 }
 
 // Creates a non-isolated main frame with an isolated child and non-isolated

@@ -1102,7 +1102,7 @@ public class AwContentsTest {
             // Until AW gets site isolation, ordinary web content should not be
             // locked to origin.
             boolean isLocked = TestThreadUtils.runOnUiThreadBlocking(
-                    () -> rendererProcess1.isProcessLockedForTesting());
+                    () -> rendererProcess1.isProcessLockedToSiteForTesting());
             Assert.assertFalse("Initial renderer process should not be locked", isLocked);
 
             mActivityTestRule.loadUrlSync(
@@ -1113,7 +1113,7 @@ public class AwContentsTest {
             Assert.assertNotEquals(rendererProcess1, webuiProcess);
             // WebUI pages should be locked to origin even on AW.
             isLocked = TestThreadUtils.runOnUiThreadBlocking(
-                    () -> webuiProcess.isProcessLockedForTesting());
+                    () -> webuiProcess.isProcessLockedToSiteForTesting());
             Assert.assertTrue("WebUI process should be locked", isLocked);
 
             mActivityTestRule.loadUrlSync(
@@ -1124,7 +1124,7 @@ public class AwContentsTest {
                     HELLO_WORLD_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
             Assert.assertNotEquals(rendererProcess2, webuiProcess);
             isLocked = TestThreadUtils.runOnUiThreadBlocking(
-                    () -> rendererProcess2.isProcessLockedForTesting());
+                    () -> rendererProcess2.isProcessLockedToSiteForTesting());
             Assert.assertFalse("Final renderer process should not be locked", isLocked);
         } finally {
             testServer.stopAndDestroyServer();

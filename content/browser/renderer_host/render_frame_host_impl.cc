@@ -8131,9 +8131,9 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
                                  navigation_request->common_params())) ||
       (is_same_document_navigation && IsLoadDataWithBaseURL(*params))) {
     // Allow bypass if the process isn't locked. Otherwise run normal checks.
-    bypass_checks_for_webview = ChildProcessSecurityPolicyImpl::GetInstance()
-                                    ->GetProcessLock(process->GetID())
-                                    .is_empty();
+    bypass_checks_for_webview = !ChildProcessSecurityPolicyImpl::GetInstance()
+                                     ->GetProcessLock(process->GetID())
+                                     .is_locked_to_site();
   }
 
   if (!bypass_checks_for_error_page && !bypass_checks_for_file_scheme &&

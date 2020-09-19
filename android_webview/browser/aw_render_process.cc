@@ -79,12 +79,12 @@ bool AwRenderProcess::TerminateChildProcess(
   return render_process_host_->Shutdown(0);
 }
 
-bool AwRenderProcess::IsProcessLockedForTesting(
+bool AwRenderProcess::IsProcessLockedToSiteForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  return render_process_host_->IsProcessLockedForTesting();
+  return render_process_host_->IsProcessLockedToSiteForTesting();  // IN-TEST
 }
 
 base::android::ScopedJavaLocalRef<jobject> AwRenderProcess::GetJavaObject() {

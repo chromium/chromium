@@ -61,10 +61,10 @@ base::Optional<GURL> GetSecondaryKeyForCodeCache(const GURL& resource_url,
       ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
           render_process_id);
 
-  // Case 1: If process lock is empty, it means the render process is not locked
-  // to any origin. It is safe to just use the |resource_url| of the requested
-  // resource as the key. Return an empty GURL as the second key.
-  if (process_lock.is_empty())
+  // Case 1: If process is not locked to a site, it is safe to just use the
+  // |resource_url| of the requested resource as the key. Return an empty GURL
+  // as the second key.
+  if (!process_lock.is_locked_to_site())
     return GURL::EmptyGURL();
 
   // Case 2: Don't cache the code corresponding to opaque origins. The same
