@@ -436,6 +436,9 @@ public class TabGroupModelFilter extends TabModelFilter {
      * @param originalGroupId The rootId before grouped.
      */
     public void undoGroupedTab(Tab tab, int originalIndex, int originalGroupId) {
+        if (!tab.isInitialized()) {
+            return;
+        }
         int currentIndex = TabModelUtils.getTabIndexById(getTabModel(), tab.getId());
         assert currentIndex != TabModel.INVALID_TAB_INDEX;
 

@@ -105,6 +105,7 @@ public class TabGroupModelFilterUnitTest {
 
     private TabImpl prepareTab(int tabId, int rootId, int parentTabId) {
         TabImpl tab = mock(TabImpl.class);
+        doReturn(true).when(tab).isInitialized();
         CriticalPersistedTabData criticalPersistedTabData = CriticalPersistedTabData.build(tab);
         UserDataHost userDataHost = new UserDataHost();
         userDataHost.setUserData(CriticalPersistedTabData.class, criticalPersistedTabData);
