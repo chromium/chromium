@@ -4,7 +4,10 @@
 ./LICENSE.md
 ./serve.py
 ./tools/__init__.py
+./tools/ci/__init__.py
 ./tools/ci/commands.json
+./tools/ci/tc/__init__.py
+./tools/ci/tc/github_checks_output.py
 ./tools/conftest.py
 ./tools/docker/commands.json
 ./tools/gitignore/__init__.py
