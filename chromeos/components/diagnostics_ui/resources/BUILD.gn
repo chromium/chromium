@@ -13,6 +13,7 @@ js_type_check("closure_compile_module") {
     ":diagnostics_app",
     ":diagnostics_card",
     ":diagnostics_types",
+    ":fake_data",
     ":fake_method_resolver",
     ":fake_system_data_provider",
     ":mojo_interface_provider",
@@ -37,6 +38,10 @@ js_library("diagnostics_card") {
 js_library("diagnostics_types") {
 }
 
+js_library("fake_data") {
+  deps = [ ":diagnostics_types" ]
+}
+
 js_library("fake_method_resolver") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
 }
@@ -46,12 +51,17 @@ js_library("fake_system_data_provider") {
 }
 
 js_library("mojo_interface_provider") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
+  deps = [
+    ":diagnostics_types",
+    ":fake_data",
+    "//ui/webui/resources/js:cr.m",
+  ]
 }
 
 js_library("overview_card") {
   deps = [
     ":diagnostics_card",
+    ":mojo_interface_provider",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

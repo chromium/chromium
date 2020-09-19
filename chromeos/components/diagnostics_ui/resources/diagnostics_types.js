@@ -13,7 +13,9 @@
 /**
  * Type alias for the SystemDataProviderInterface.
  * TODO(zentaro): Replace with a real mojo type when implemented.
- * @typedef {!Object}
+ * @typedef {{
+ *   getSystemInfo: !function(): !Promise<!SystemInfo>
+ * }}
  */
 export let SystemDataProviderInterface;
 
