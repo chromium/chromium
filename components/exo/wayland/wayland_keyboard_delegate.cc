@@ -14,10 +14,6 @@
 #include "components/exo/xkb_tracker.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
-#if defined(OS_CHROMEOS)
-#include "ash/shell.h"
-#endif
-
 namespace exo {
 namespace wayland {
 
@@ -27,20 +23,9 @@ WaylandKeyboardDelegate::WaylandKeyboardDelegate(wl_resource* keyboard_resource,
                                                  SerialTracker* serial_tracker)
     : keyboard_resource_(keyboard_resource),
       serial_tracker_(serial_tracker),
-      xkb_tracker_(std::make_unique<XkbTracker>()) {
-#if defined(OS_CHROMEOS)
-  ash::ImeControllerImpl* ime_controller = ash::Shell::Get()->ime_controller();
-  xkb_tracker_->UpdateKeyboardLayout(ime_controller->keyboard_layout_name());
-  ime_controller->AddObserver(this);
-#endif
-  SendLayout();
-}
+      xkb_tracker_(std::make_unique<XkbTracker>()) {}
 
-WaylandKeyboardDelegate::~WaylandKeyboardDelegate() {
-#if defined(OS_CHROMEOS)
-  ash::Shell::Get()->ime_controller()->RemoveObserver(this);
-#endif
-}
+WaylandKeyboardDelegate::~WaylandKeyboardDelegate() = default;
 
 bool WaylandKeyboardDelegate::CanAcceptKeyboardEventsForSurface(
     Surface* surface) const {
@@ -107,15 +92,11 @@ void WaylandKeyboardDelegate::OnKeyboardModifiers(int modifier_flags) {
   SendKeyboardModifiers();
 }
 
-#if defined(OS_CHROMEOS)
-void WaylandKeyboardDelegate::OnCapsLockChanged(bool enabled) {}
-
-void WaylandKeyboardDelegate::OnKeyboardLayoutNameChanged(
+void WaylandKeyboardDelegate::OnKeyboardLayoutUpdated(
     const std::string& layout_name) {
   xkb_tracker_->UpdateKeyboardLayout(layout_name);
   SendLayout();
 }
-#endif
 
 uint32_t WaylandKeyboardDelegate::DomCodeToKey(ui::DomCode code) const {
   // This assumes KeycodeConverter has been built with evdev/xkb codes.

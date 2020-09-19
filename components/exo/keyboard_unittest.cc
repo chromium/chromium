@@ -52,6 +52,7 @@ class MockKeyboardDelegate : public KeyboardDelegate {
   MOCK_METHOD(void,
               OnKeyRepeatSettingsChanged,
               (bool, base::TimeDelta, base::TimeDelta));
+  MOCK_METHOD(void, OnKeyboardLayoutUpdated, (const std::string&));
 };
 using NiceMockKeyboardDelegate = ::testing::NiceMock<MockKeyboardDelegate>;
 
@@ -605,8 +606,7 @@ constexpr base::TimeDelta kDelta1000Ms =
     base::TimeDelta::FromMilliseconds(1000);
 
 TEST_F(KeyboardTest, KeyRepeatSettingsLoadDefaults) {
-  auto delegate = std::make_unique<MockKeyboardDelegate>();
-  EXPECT_CALL(*delegate, OnKeyRepeatSettingsChanged).Times(0);
+  auto delegate = std::make_unique<NiceMockKeyboardDelegate>();
   EXPECT_CALL(*delegate,
               OnKeyRepeatSettingsChanged(true, kDelta500Ms, kDelta50Ms));
 
@@ -620,39 +620,44 @@ TEST_F(KeyboardTest, KeyRepeatSettingsLoadInitially) {
   SetUserPref(email, ash::prefs::kXkbAutoRepeatDelay, base::Value(1000));
   SetUserPref(email, ash::prefs::kXkbAutoRepeatInterval, base::Value(1000));
 
-  auto delegate = std::make_unique<MockKeyboardDelegate>();
-  EXPECT_CALL(*delegate, OnKeyRepeatSettingsChanged).Times(0);
-  EXPECT_CALL(*delegate,
+  auto delegate = std::make_unique<NiceMockKeyboardDelegate>();
+  auto* delegate_ptr = delegate.get();
+  EXPECT_CALL(*delegate_ptr,
               OnKeyRepeatSettingsChanged(true, kDelta1000Ms, kDelta1000Ms));
-
   Seat seat;
   Keyboard keyboard(std::move(delegate), &seat);
+  // Verify before destroying keyboard to make sure the expected call
+  // is made on the methods above, rather than in the destructor.
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 }
 
 TEST_F(KeyboardTest, KeyRepeatSettingsUpdateAtRuntime) {
-  auto delegate = std::make_unique<MockKeyboardDelegate>();
-  {
-    testing::InSequence s;
-
-    // Initially load defaults.
-    EXPECT_CALL(*delegate, OnKeyRepeatSettingsChanged)
-        .Times(testing::AtLeast(1));
-
-    // Respond to pref changes, in order
-    EXPECT_CALL(*delegate,
-                OnKeyRepeatSettingsChanged(false, testing::_, testing::_));
-    EXPECT_CALL(*delegate,
-                OnKeyRepeatSettingsChanged(false, kDelta1000Ms, testing::_));
-    EXPECT_CALL(*delegate,
-                OnKeyRepeatSettingsChanged(false, kDelta1000Ms, kDelta1000Ms));
-  }
+  auto delegate = std::make_unique<NiceMockKeyboardDelegate>();
+  auto* delegate_ptr = delegate.get();
+  // Initially load defaults.
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyRepeatSettingsChanged(testing::_, testing::_, testing::_));
   Seat seat;
   Keyboard keyboard(std::move(delegate), &seat);
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
-  std::string email = "user0@tray";
+  // Make sure that setting prefs triggers the corresponding delegate calls.
+  const std::string email = "user0@tray";
+
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyRepeatSettingsChanged(false, testing::_, testing::_));
   SetUserPref(email, ash::prefs::kXkbAutoRepeatEnabled, base::Value(false));
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyRepeatSettingsChanged(false, kDelta1000Ms, testing::_));
   SetUserPref(email, ash::prefs::kXkbAutoRepeatDelay, base::Value(1000));
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyRepeatSettingsChanged(false, kDelta1000Ms, kDelta1000Ms));
   SetUserPref(email, ash::prefs::kXkbAutoRepeatInterval, base::Value(1000));
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 }
 
 TEST_F(KeyboardTest, KeyRepeatSettingsIgnoredForNonActiveUser) {
@@ -660,18 +665,23 @@ TEST_F(KeyboardTest, KeyRepeatSettingsIgnoredForNonActiveUser) {
   CreateUserSessions(2);
 
   // Key repeat settings should be sent exactly once, for the default values.
-  auto delegate = std::make_unique<MockKeyboardDelegate>();
-  EXPECT_CALL(*delegate, OnKeyRepeatSettingsChanged).Times(0);
-  EXPECT_CALL(*delegate,
+  auto delegate = std::make_unique<NiceMockKeyboardDelegate>();
+  auto* delegate_ptr = delegate.get();
+  EXPECT_CALL(*delegate_ptr,
               OnKeyRepeatSettingsChanged(true, kDelta500Ms, kDelta50Ms));
   Seat seat;
   Keyboard keyboard(std::move(delegate), &seat);
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
   // Set prefs for non-active user; no calls should result.
-  std::string email = "user1@tray";
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyRepeatSettingsChanged(testing::_, testing::_, testing::_))
+      .Times(0);
+  const std::string email = "user1@tray";
   SetUserPref(email, ash::prefs::kXkbAutoRepeatEnabled, base::Value(true));
   SetUserPref(email, ash::prefs::kXkbAutoRepeatDelay, base::Value(1000));
   SetUserPref(email, ash::prefs::kXkbAutoRepeatInterval, base::Value(1000));
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 }
 
 TEST_F(KeyboardTest, KeyRepeatSettingsUpdateOnProfileChange) {
@@ -684,21 +694,35 @@ TEST_F(KeyboardTest, KeyRepeatSettingsUpdateOnProfileChange) {
   SetUserPref(email, ash::prefs::kXkbAutoRepeatDelay, base::Value(1000));
   SetUserPref(email, ash::prefs::kXkbAutoRepeatInterval, base::Value(1000));
 
-  auto delegate = std::make_unique<MockKeyboardDelegate>();
-  EXPECT_CALL(*delegate, OnKeyRepeatSettingsChanged).Times(0);
-  {
-    testing::InSequence s;
-    // Initially, load default prefs for first user.
-    EXPECT_CALL(*delegate,
-                OnKeyRepeatSettingsChanged(true, kDelta500Ms, kDelta50Ms));
-    // Switching user should load new prefs.
-    EXPECT_CALL(*delegate,
-                OnKeyRepeatSettingsChanged(true, kDelta1000Ms, kDelta1000Ms));
-  }
+  auto delegate = std::make_unique<NiceMockKeyboardDelegate>();
+  auto* delegate_ptr = delegate.get();
+  // Initially, load default prefs for first user.
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyRepeatSettingsChanged(true, kDelta500Ms, kDelta50Ms));
   Seat seat;
   Keyboard keyboard(std::move(delegate), &seat);
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
+  // Switching user should load new prefs.
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyRepeatSettingsChanged(true, kDelta1000Ms, kDelta1000Ms));
   SimulateUserLogin(email, user_manager::UserType::USER_TYPE_REGULAR);
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+}
+
+TEST_F(KeyboardTest, KeyboardLayout) {
+  auto delegate = std::make_unique<NiceMockKeyboardDelegate>();
+  auto* delegate_ptr = delegate.get();
+  // Initially, update to the current keyboard layout.
+  EXPECT_CALL(*delegate_ptr, OnKeyboardLayoutUpdated(testing::_));
+  Seat seat;
+  Keyboard keyboard(std::move(delegate), &seat);
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+
+  // Updating the keyboard layout should trigger the delegate call.
+  EXPECT_CALL(*delegate_ptr, OnKeyboardLayoutUpdated(testing::_));
+  keyboard.OnKeyboardLayoutNameChanged("ja-jp");
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 }
 
 TEST_F(KeyboardTest, KeyboardObserver) {

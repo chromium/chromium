@@ -80,6 +80,10 @@ class MockKeyboardDelegate : public exo::KeyboardDelegate {
               OnKeyRepeatSettingsChanged,
               (bool, base::TimeDelta, base::TimeDelta),
               (override));
+  MOCK_METHOD(void,
+              OnKeyboardLayoutUpdated,
+              (const std::string& layout_name),
+              (override));
 };
 
 class FakeNotificationSurface : public exo::NotificationSurface {

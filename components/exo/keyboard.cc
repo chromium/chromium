@@ -8,6 +8,7 @@
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
+#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/exo/input_trace.h"
@@ -173,7 +174,10 @@ Keyboard::Keyboard(std::unique_ptr<KeyboardDelegate> delegate, Seat* seat)
   AddEventHandler();
   seat_->AddObserver(this);
   ash::KeyboardController::Get()->AddObserver(this);
+  ash::ImeControllerImpl* ime_controller = ash::Shell::Get()->ime_controller();
+  ime_controller->AddObserver(this);
 
+  delegate_->OnKeyboardLayoutUpdated(ime_controller->keyboard_layout_name());
   OnSurfaceFocused(seat_->GetFocusedSurface());
   OnKeyRepeatSettingsChanged(
       ash::KeyboardController::Get()->GetKeyRepeatSettings());
@@ -184,9 +188,11 @@ Keyboard::~Keyboard() {
     observer.OnKeyboardDestroying(this);
   if (focus_)
     focus_->RemoveSurfaceObserver(this);
-  RemoveEventHandler();
-  seat_->RemoveObserver(this);
+
+  ash::Shell::Get()->ime_controller()->RemoveObserver(this);
   ash::KeyboardController::Get()->RemoveObserver(this);
+  seat_->RemoveObserver(this);
+  RemoveEventHandler();
 }
 
 bool Keyboard::HasDeviceConfigurationDelegate() const {
@@ -399,6 +405,15 @@ void Keyboard::OnKeyRepeatSettingsChanged(
     const ash::KeyRepeatSettings& settings) {
   delegate_->OnKeyRepeatSettingsChanged(settings.enabled, settings.delay,
                                         settings.interval);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// ash::ImeControllerImpl::Observer overrides:
+
+void Keyboard::OnCapsLockChanged(bool enabled) {}
+
+void Keyboard::OnKeyboardLayoutNameChanged(const std::string& layout_name) {
+  delegate_->OnKeyboardLayoutUpdated(layout_name);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/ime/ime_controller_impl.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -34,7 +35,8 @@ class Surface;
 class Keyboard : public ui::EventHandler,
                  public SurfaceObserver,
                  public SeatObserver,
-                 public ash::KeyboardControllerObserver {
+                 public ash::KeyboardControllerObserver,
+                 public ash::ImeControllerImpl::Observer {
  public:
   Keyboard(std::unique_ptr<KeyboardDelegate> delegate, Seat* seat);
   ~Keyboard() override;
@@ -69,6 +71,10 @@ class Keyboard : public ui::EventHandler,
   void OnKeyboardEnabledChanged(bool is_enabled) override;
   void OnKeyRepeatSettingsChanged(
       const ash::KeyRepeatSettings& settings) override;
+
+  // Overridden from ash::ImeControllerImpl::Observer
+  void OnCapsLockChanged(bool enabled) override;
+  void OnKeyboardLayoutNameChanged(const std::string& layout_name) override;
 
  private:
   // Change keyboard focus to |surface|.

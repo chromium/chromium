@@ -16,10 +16,6 @@
 #include "ui/base/buildflags.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
-#if defined(OS_CHROMEOS)
-#include "ash/ime/ime_controller_impl.h"
-#endif
-
 #if BUILDFLAG(USE_XKBCOMMON)
 #include <xkbcommon/xkbcommon.h>
 #include "ui/events/keycodes/scoped_xkb.h"  // nogncheck
@@ -38,12 +34,7 @@ class SerialTracker;
 // Keyboard delegate class that accepts events for surfaces owned by the same
 // client as a keyboard resource.
 class WaylandKeyboardDelegate : public WaylandInputDelegate,
-                                public KeyboardDelegate
-#if defined(OS_CHROMEOS)
-    ,
-                                public ash::ImeControllerImpl::Observer
-#endif
-{
+                                public KeyboardDelegate {
 #if BUILDFLAG(USE_XKBCOMMON)
  public:
   WaylandKeyboardDelegate(wl_resource* keyboard_resource,
@@ -63,12 +54,7 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
   void OnKeyRepeatSettingsChanged(bool enabled,
                                   base::TimeDelta delay,
                                   base::TimeDelta interval) override;
-
-#if defined(OS_CHROMEOS)
-  // Overridden from ImeControllerImpl::Observer:
-  void OnCapsLockChanged(bool enabled) override;
-  void OnKeyboardLayoutNameChanged(const std::string& layout_name) override;
-#endif
+  void OnKeyboardLayoutUpdated(const std::string& layout_name) override;
 
  private:
   // Returns the corresponding key given a dom code.

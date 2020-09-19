@@ -48,6 +48,11 @@ class KeyboardDelegate {
   virtual void OnKeyRepeatSettingsChanged(bool enabled,
                                           base::TimeDelta delay,
                                           base::TimeDelta interval) = 0;
+
+  // Called when keyboard layout is updated.
+  // TODO(hidehiko): Update the argument to pass the keymap
+  // when XkbTracker is moved out from WaylandKeyboardDelegate.
+  virtual void OnKeyboardLayoutUpdated(const std::string& layout_name) = 0;
 };
 
 }  // namespace exo
