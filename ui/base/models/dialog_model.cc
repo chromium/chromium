@@ -21,39 +21,6 @@ std::unique_ptr<DialogModel> DialogModel::Builder::Build() {
   return std::move(model_);
 }
 
-DialogModel::Builder& DialogModel::Builder::SetShowCloseButton(
-    bool show_close_button) {
-  model_->show_close_button_ = show_close_button;
-  return *this;
-}
-
-DialogModel::Builder& DialogModel::Builder::SetTitle(base::string16 title) {
-  model_->title_ = std::move(title);
-  return *this;
-}
-
-DialogModel::Builder& DialogModel::Builder::SetIsAlertDialog() {
-  model_->is_alert_dialog_ = true;
-  return *this;
-}
-
-DialogModel::Builder& DialogModel::Builder::DisableCloseOnDeactivate() {
-  model_->close_on_deactivate_ = false;
-  return *this;
-}
-
-DialogModel::Builder& DialogModel::Builder::SetCloseCallback(
-    base::OnceClosure callback) {
-  model_->close_callback_ = std::move(callback);
-  return *this;
-}
-
-DialogModel::Builder& DialogModel::Builder::SetWindowClosingCallback(
-    base::OnceClosure callback) {
-  model_->window_closing_callback_ = std::move(callback);
-  return *this;
-}
-
 DialogModel::Builder& DialogModel::Builder::AddOkButton(
     base::OnceClosure callback,
     base::string16 label,
@@ -92,35 +59,6 @@ DialogModel::Builder& DialogModel::Builder::AddDialogExtraButton(
     const DialogModelButton::Params& params) {
   model_->extra_button_.emplace(model_->GetPassKey(), model_.get(),
                                 std::move(callback), std::move(label), params);
-  return *this;
-}
-
-DialogModel::Builder& DialogModel::Builder::AddBodyText(
-    const DialogModelLabel& label) {
-  model_->AddBodyText(label);
-  return *this;
-}
-
-DialogModel::Builder& DialogModel::Builder::AddCheckbox(
-    int unique_id,
-    const DialogModelLabel& label) {
-  model_->AddCheckbox(unique_id, label);
-  return *this;
-}
-
-DialogModel::Builder& DialogModel::Builder::AddCombobox(
-    base::string16 label,
-    std::unique_ptr<ui::ComboboxModel> combobox_model,
-    const DialogModelCombobox::Params& params) {
-  model_->AddCombobox(std::move(label), std::move(combobox_model), params);
-  return *this;
-}
-
-DialogModel::Builder& DialogModel::Builder::AddTextfield(
-    base::string16 label,
-    base::string16 text,
-    const DialogModelTextfield::Params& params) {
-  model_->AddTextfield(std::move(label), std::move(text), params);
   return *this;
 }
 

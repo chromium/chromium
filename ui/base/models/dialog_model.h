@@ -90,25 +90,44 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
 
     std::unique_ptr<DialogModel> Build() WARN_UNUSED_RESULT;
 
-    Builder& SetShowCloseButton(bool show_close_button);
-    Builder& SetTitle(base::string16 title);
+    Builder& SetShowCloseButton(bool show_close_button) {
+      model_->show_close_button_ = show_close_button;
+      return *this;
+    }
+
+    Builder& SetTitle(base::string16 title) {
+      model_->title_ = std::move(title);
+      return *this;
+    }
 
     // Make screen readers announce the contents of the dialog as it appears.
     // See |ax::mojom::Role::kAlertDialog|.
-    Builder& SetIsAlertDialog();
+    Builder& SetIsAlertDialog() {
+      model_->is_alert_dialog_ = true;
+      return *this;
+    }
 
     // Disables the default behavior that the dialog closes when deactivated.
-    Builder& DisableCloseOnDeactivate();
+    Builder& DisableCloseOnDeactivate() {
+      model_->close_on_deactivate_ = false;
+      return *this;
+    }
 
     // Called when the dialog is explicitly closed (Esc, close-x). Not called
     // during accept/cancel.
-    Builder& SetCloseCallback(base::OnceClosure callback);
+    Builder& SetCloseCallback(base::OnceClosure callback) {
+      model_->close_callback_ = std::move(callback);
+      return *this;
+    }
 
     // TODO(pbos): Clarify and enforce (through tests) that this is called after
     // {accept,cancel,close} callbacks.
     // Unconditionally called when the dialog closes. Called on top of
     // {accept,cancel,close} callbacks.
-    Builder& SetWindowClosingCallback(base::OnceClosure callback);
+    Builder& SetWindowClosingCallback(base::OnceClosure callback) {
+      model_->window_closing_callback_ = std::move(callback);
+      return *this;
+    }
 
     // Adds a dialog button (ok, cancel) to the dialog. The |callback| is called
     // when the dialog is accepted or cancelled, before it closes. Use
@@ -134,22 +153,34 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
         const DialogModelButton::Params& params = DialogModelButton::Params());
 
     // Adds body text. See DialogModel::AddBodyText().
-    Builder& AddBodyText(const DialogModelLabel& label);
+    Builder& AddBodyText(const DialogModelLabel& label) {
+      model_->AddBodyText(label);
+      return *this;
+    }
 
     // Adds a checkbox. See DialogModel::AddCheckbox().
-    Builder& AddCheckbox(int unique_id, const DialogModelLabel& label);
+    Builder& AddCheckbox(int unique_id, const DialogModelLabel& label) {
+      model_->AddCheckbox(unique_id, label);
+      return *this;
+    }
 
     // Adds a combobox. See DialogModel::AddCombobox().
     Builder& AddCombobox(base::string16 label,
                          std::unique_ptr<ui::ComboboxModel> combobox_model,
                          const DialogModelCombobox::Params& params =
-                             DialogModelCombobox::Params());
+                             DialogModelCombobox::Params()) {
+      model_->AddCombobox(std::move(label), std::move(combobox_model), params);
+      return *this;
+    }
 
     // Adds a textfield. See DialogModel::AddTextfield().
     Builder& AddTextfield(base::string16 label,
                           base::string16 text,
                           const DialogModelTextfield::Params& params =
-                              DialogModelTextfield::Params());
+                              DialogModelTextfield::Params()) {
+      model_->AddTextfield(std::move(label), std::move(text), params);
+      return *this;
+    }
 
     // Sets which field should be initially focused in the dialog model. Must be
     // called after that field has been added. Can only be called once.
