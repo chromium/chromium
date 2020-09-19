@@ -53,6 +53,10 @@ std::string LiveTabContextBrowserAgent::GetAppName() const {
   return std::string();
 }
 
+std::string LiveTabContextBrowserAgent::GetUserTitle() const {
+  return std::string();
+}
+
 sessions::LiveTab* LiveTabContextBrowserAgent::GetLiveTabAt(int index) const {
   return nullptr;
 }

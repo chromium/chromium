@@ -70,6 +70,7 @@ static const SessionCommand::id_type kCommandSetTabGroupMetadata2 = 27;
 static const SessionCommand::id_type kCommandSetTabGuid = 28;
 static const SessionCommand::id_type kCommandSetTabUserAgentOverride2 = 29;
 static const SessionCommand::id_type kCommandSetTabData = 30;
+static const SessionCommand::id_type kCommandSetWindowUserTitle = 31;
 
 namespace {
 
@@ -834,6 +835,15 @@ bool CreateTabsAndWindows(
         break;
       }
 
+      case kCommandSetWindowUserTitle: {
+        SessionID window_id = SessionID::InvalidValue();
+        std::string title;
+        if (!RestoreSetWindowUserTitleCommand(*command, &window_id, &title))
+          return true;
+        GetWindow(window_id, windows)->user_title = title;
+        break;
+      }
+
       default:
         DVLOG(1) << "Failed reading an unknown command " << command->id();
         return true;
@@ -1038,6 +1048,13 @@ std::unique_ptr<SessionCommand> CreateSetWindowAppNameCommand(
     const std::string& app_name) {
   return CreateSetWindowAppNameCommand(kCommandSetWindowAppName, window_id,
                                        app_name);
+}
+
+std::unique_ptr<SessionCommand> CreateSetWindowUserTitleCommand(
+    const SessionID& window_id,
+    const std::string& user_title) {
+  return CreateSetWindowUserTitleCommand(kCommandSetWindowUserTitle, window_id,
+                                         user_title);
 }
 
 std::unique_ptr<SessionCommand> CreateSetTabGuidCommand(

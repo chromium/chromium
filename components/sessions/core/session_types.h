@@ -188,6 +188,9 @@ struct SESSIONS_EXPORT SessionWindow {
 
   std::string app_name;
 
+  // The user-configured title for this window, may be empty.
+  std::string user_title;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(SessionWindow);
 };

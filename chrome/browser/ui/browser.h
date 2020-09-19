@@ -241,6 +241,9 @@ class Browser : public TabStripModelObserver,
     // default. Intended for testing.
     BrowserWindow* window = nullptr;
 
+    // User-set title of this browser window, if there is one.
+    std::string user_title;
+
    private:
     friend class Browser;
     friend class WindowSizerChromeOSTest;
@@ -311,6 +314,7 @@ class Browser : public TabStripModelObserver,
   const CreateParams& create_params() const { return create_params_; }
   Type type() const { return type_; }
   const std::string& app_name() const { return app_name_; }
+  const std::string& user_title() const { return user_title_; }
   bool is_trusted_source() const { return is_trusted_source_; }
   Profile* profile() const { return profile_; }
   gfx::Rect override_bounds() const { return override_bounds_; }
@@ -663,6 +667,9 @@ class Browser : public TabStripModelObserver,
   // This information is used to decide if fast resize will be used during
   // dragging.
   void SetIsInTabDragging(bool is_in_tab_dragging);
+
+  // Sets the browser's user title. Setting it to an empty string clears it.
+  void SetWindowUserTitle(const std::string& user_title);
 
  private:
   friend class BrowserTest;
@@ -1193,6 +1200,8 @@ class Browser : public TabStripModelObserver,
 
   // True if the browser window has been shown at least once.
   bool window_has_shown_;
+
+  std::string user_title_;
 
   // Controls both signin and sync consent.
   SigninViewController signin_view_controller_;

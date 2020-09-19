@@ -130,6 +130,25 @@ std::unique_ptr<SessionCommand> CreateSetWindowAppNameCommand(
       new SessionCommand(command_id, pickle));
 }
 
+std::unique_ptr<SessionCommand> CreateSetWindowUserTitleCommand(
+    SessionCommand::id_type command_id,
+    SessionID window_id,
+    const std::string& user_title) {
+  // Use pickle to handle marshalling.
+  base::Pickle pickle;
+  pickle.WriteInt(window_id.id());
+
+  // Enforce a max for ids. They should never be anywhere near this size.
+  static const SessionCommand::size_type max_id_size =
+      std::numeric_limits<SessionCommand::size_type>::max() - 1024;
+
+  int bytes_written = 0;
+
+  WriteStringToPickle(pickle, &bytes_written, max_id_size, user_title);
+
+  return std::make_unique<SessionCommand>(command_id, pickle);
+}
+
 bool RestoreUpdateTabNavigationCommand(
     const SessionCommand& command,
     sessions::SerializedNavigationEntry* navigation,
@@ -207,6 +226,18 @@ bool RestoreSetWindowAppNameCommand(const SessionCommand& command,
   base::PickleIterator iterator(*pickle);
   return ReadSessionIdFromPickle(&iterator, window_id) &&
          iterator.ReadString(app_name);
+}
+
+bool RestoreSetWindowUserTitleCommand(const SessionCommand& command,
+                                      SessionID* window_id,
+                                      std::string* user_title) {
+  std::unique_ptr<base::Pickle> pickle(command.PayloadAsPickle());
+  if (!pickle)
+    return false;
+
+  base::PickleIterator iterator(*pickle);
+  return ReadSessionIdFromPickle(&iterator, window_id) &&
+         iterator.ReadString(user_title);
 }
 
 }  // namespace sessions

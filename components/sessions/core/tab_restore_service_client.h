@@ -48,7 +48,8 @@ class SESSIONS_EXPORT TabRestoreServiceClient {
       const std::string& app_name,
       const gfx::Rect& bounds,
       ui::WindowShowState show_state,
-      const std::string& workspace) = 0;
+      const std::string& workspace,
+      const std::string& user_title) = 0;
 
   // Returns the LiveTabContext instance that is associated with
   // |tab|, or null if there is no such instance.

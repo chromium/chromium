@@ -37,14 +37,15 @@ sessions::LiveTabContext* ChromeTabRestoreServiceClient::CreateLiveTabContext(
     const std::string& app_name,
     const gfx::Rect& bounds,
     ui::WindowShowState show_state,
-    const std::string& workspace) {
+    const std::string& workspace,
+    const std::string& user_title) {
 #if defined(OS_ANDROID)
   // Android does not support creating a LiveTabContext here.
   NOTREACHED();
   return nullptr;
 #else
   return BrowserLiveTabContext::Create(profile_, app_name, bounds, show_state,
-                                       workspace);
+                                       workspace, user_title);
 #endif
 }
 

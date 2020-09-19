@@ -410,6 +410,15 @@ void SessionService::SetWindowAppName(
   ScheduleCommand(sessions::CreateSetWindowAppNameCommand(window_id, app_name));
 }
 
+void SessionService::SetWindowUserTitle(const SessionID& window_id,
+                                        const std::string& user_title) {
+  if (!ShouldTrackChangesToWindow(window_id))
+    return;
+
+  ScheduleCommand(
+      sessions::CreateSetWindowUserTitleCommand(window_id, user_title));
+}
+
 void SessionService::TabRestored(WebContents* tab, bool pinned) {
   sessions::SessionTabHelper* session_tab_helper =
       sessions::SessionTabHelper::FromWebContents(tab);
@@ -758,6 +767,12 @@ void SessionService::BuildCommandsForBrowser(
     command_storage_manager_->AppendRebuildCommand(
         sessions::CreateSetWindowAppNameCommand(browser->session_id(),
                                                 browser->app_name()));
+  }
+
+  if (!browser->user_title().empty()) {
+    command_storage_manager_->AppendRebuildCommand(
+        sessions::CreateSetWindowUserTitleCommand(browser->session_id(),
+                                                  browser->user_title()));
   }
 
   sessions::CreateSetWindowWorkspaceCommand(

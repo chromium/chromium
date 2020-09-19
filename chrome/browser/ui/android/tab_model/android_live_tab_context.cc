@@ -42,6 +42,10 @@ std::string AndroidLiveTabContext::GetAppName() const {
   return std::string();
 }
 
+std::string AndroidLiveTabContext::GetUserTitle() const {
+  return std::string();
+}
+
 sessions::LiveTab* AndroidLiveTabContext::GetLiveTabAt(int index) const {
   TabAndroid* tab_android = tab_model_->GetTabAt(index);
   if (!tab_android || !tab_android->web_contents())

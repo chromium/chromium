@@ -46,6 +46,12 @@ std::unique_ptr<SessionCommand> CreateSetWindowAppNameCommand(
     SessionID window_id,
     const std::string& app_name);
 
+// Creates a SessionCommand storing a browser window's user title.
+std::unique_ptr<SessionCommand> CreateSetWindowUserTitleCommand(
+    SessionCommand::id_type command_id,
+    SessionID window_id,
+    const std::string& app_name);
+
 // Converts a SessionCommand previously created by
 // CreateUpdateTabNavigationCommand into a
 // SerializedNavigationEntry. Returns true on success. If
@@ -82,6 +88,12 @@ bool RestoreSetTabUserAgentOverrideCommand(const SessionCommand& command,
 bool RestoreSetWindowAppNameCommand(const SessionCommand& command,
                                     SessionID* window_id,
                                     std::string* app_name);
+
+// Extracts a SessionCommand as previously created by
+// CreateSetWindowUserTitleCommand into the window id and user title.
+bool RestoreSetWindowUserTitleCommand(const SessionCommand& command,
+                                      SessionID* window_id,
+                                      std::string* user_title);
 
 }  // namespace sessions
 

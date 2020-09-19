@@ -113,6 +113,7 @@ const SessionCommand::id_type kCommandSetTabUserAgentOverride = 8;
 const SessionCommand::id_type kCommandWindow = 9;
 const SessionCommand::id_type kCommandGroup = 10;
 const SessionCommand::id_type kCommandSetTabUserAgentOverride2 = 11;
+const SessionCommand::id_type kCommandSetWindowUserTitle = 12;
 
 // Number of entries (not commands) before we clobber the file and write
 // everything.
@@ -666,6 +667,11 @@ void TabRestoreServiceImpl::PersistenceDelegate::ScheduleCommandsForWindow(
         kCommandSetWindowAppName, window.id, window.app_name));
   }
 
+  if (!window.user_title.empty()) {
+    command_storage_manager_->ScheduleCommand(CreateSetWindowUserTitleCommand(
+        kCommandSetWindowUserTitle, window.id, window.user_title));
+  }
+
   for (size_t i = 0; i < window.tabs.size(); ++i) {
     int selected_index = GetSelectedNavigationIndexToPersist(*window.tabs[i]);
     if (selected_index != -1)
@@ -1056,6 +1062,22 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
             std::move(user_agent_override);
         current_tab->user_agent_override.opaque_ua_metadata_override =
             std::move(opaque_ua_metadata_override);
+        break;
+      }
+
+      case kCommandSetWindowUserTitle: {
+        if (!current_window) {
+          // We should have created a window already.
+          NOTREACHED();
+          return;
+        }
+
+        SessionID window_id = SessionID::InvalidValue();
+        std::string title;
+        if (!RestoreSetWindowUserTitleCommand(command, &window_id, &title))
+          return;
+
+        current_window->user_title.swap(title);
         break;
       }
 

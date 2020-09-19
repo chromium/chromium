@@ -39,6 +39,7 @@ class SESSIONS_EXPORT LiveTabContext {
   virtual int GetTabCount() const = 0;
   virtual int GetSelectedIndex() const = 0;
   virtual std::string GetAppName() const = 0;
+  virtual std::string GetUserTitle() const = 0;
   virtual LiveTab* GetLiveTabAt(int index) const = 0;
   virtual LiveTab* GetActiveLiveTab() const = 0;
   virtual bool IsTabPinned(int index) const = 0;

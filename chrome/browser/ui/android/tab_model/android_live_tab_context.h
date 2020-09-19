@@ -32,6 +32,7 @@ class AndroidLiveTabContext : public sessions::LiveTabContext {
   int GetTabCount() const override;
   int GetSelectedIndex() const override;
   std::string GetAppName() const override;
+  std::string GetUserTitle() const override;
   sessions::LiveTab* GetLiveTabAt(int index) const override;
   sessions::LiveTab* GetActiveLiveTab() const override;
   bool IsTabPinned(int index) const override;

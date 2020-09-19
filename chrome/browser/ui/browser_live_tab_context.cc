@@ -78,6 +78,10 @@ std::string BrowserLiveTabContext::GetAppName() const {
   return browser_->app_name();
 }
 
+std::string BrowserLiveTabContext::GetUserTitle() const {
+  return browser_->user_title();
+}
+
 sessions::LiveTab* BrowserLiveTabContext::GetLiveTabAt(int index) const {
   return sessions::ContentLiveTab::GetForWebContents(
       browser_->tab_strip_model()->GetWebContentsAt(index));
@@ -219,7 +223,8 @@ sessions::LiveTabContext* BrowserLiveTabContext::Create(
     const std::string& app_name,
     const gfx::Rect& bounds,
     ui::WindowShowState show_state,
-    const std::string& workspace) {
+    const std::string& workspace,
+    const std::string& user_title) {
   std::unique_ptr<Browser::CreateParams> create_params;
   if (ShouldCreateAppWindowForAppName(profile, app_name)) {
     // Only trusted app popup windows should ever be restored.
@@ -235,6 +240,7 @@ sessions::LiveTabContext* BrowserLiveTabContext::Create(
 
   create_params->initial_show_state = show_state;
   create_params->initial_workspace = workspace;
+  create_params->user_title = user_title;
   Browser* browser = new Browser(*create_params.get());
   return browser->live_tab_context();
 }

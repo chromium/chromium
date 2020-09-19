@@ -176,7 +176,7 @@ class SessionRestoreImpl : public BrowserListObserver {
     for (auto i = begin; i != end; ++i) {
       Browser* browser = CreateRestoredBrowser(
           BrowserTypeForWindowType((*i)->type), (*i)->bounds, (*i)->workspace,
-          (*i)->show_state, (*i)->app_name);
+          (*i)->show_state, (*i)->app_name, (*i)->user_title);
       browsers.push_back(browser);
 
       // Restore and show the browser.
@@ -412,9 +412,9 @@ class SessionRestoreImpl : public BrowserListObserver {
           show_state = ui::SHOW_STATE_NORMAL;
           has_visible_browser = true;
         }
-        browser = CreateRestoredBrowser(BrowserTypeForWindowType((*i)->type),
-                                        (*i)->bounds, (*i)->workspace,
-                                        show_state, (*i)->app_name);
+        browser = CreateRestoredBrowser(
+            BrowserTypeForWindowType((*i)->type), (*i)->bounds, (*i)->workspace,
+            show_state, (*i)->app_name, (*i)->user_title);
 #if defined(OS_CHROMEOS)
         chromeos::BootTimesRecorder::Get()->AddLoginTimeMarker(
             "SessionRestore-CreateRestoredBrowser-End", false);
@@ -641,9 +641,11 @@ class SessionRestoreImpl : public BrowserListObserver {
                                  gfx::Rect bounds,
                                  const std::string& workspace,
                                  ui::WindowShowState show_state,
-                                 const std::string& app_name) {
+                                 const std::string& app_name,
+                                 const std::string& user_title) {
     Browser::CreateParams params(type, profile_, false);
     params.initial_bounds = bounds;
+    params.user_title = user_title;
 
 #if defined(OS_CHROMEOS)
     // We only store trusted app windows, so we also create them as trusted.

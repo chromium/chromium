@@ -171,6 +171,9 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
   void SetWindowAppName(const SessionID& window_id,
                         const std::string& app_name);
 
+  void SetWindowUserTitle(const SessionID& window_id,
+                          const std::string& user_title);
+
   // Notification that a tab has restored its entries or a closed tab is being
   // reused.
   void TabRestored(content::WebContents* tab, bool pinned);

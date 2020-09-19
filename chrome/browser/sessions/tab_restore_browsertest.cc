@@ -915,6 +915,27 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, GetRestoreTabType) {
   EXPECT_EQ(sessions::TabRestoreService::TAB, service->entries().front()->type);
 }
 
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithName) {
+  AddSomeTabs(browser(), 1);
+  browser()->SetWindowUserTitle("foobar");
+
+  // Create a second browser.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabURL),
+      WindowOpenDisposition::NEW_WINDOW,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
+  EXPECT_EQ(2u, active_browser_list_->size());
+
+  // Close the first browser.
+  CloseBrowserSynchronously(browser());
+  EXPECT_EQ(1u, active_browser_list_->size());
+
+  // Restore the first browser.
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(1, 1));
+  Browser* browser = GetBrowser(1);
+  EXPECT_EQ("foobar", browser->user_title());
+}
+
 class TabRestoreTestWithTabGroupsEnabled : public TabRestoreTest {
  public:
   TabRestoreTestWithTabGroupsEnabled() {

@@ -81,6 +81,9 @@ CreateSetTabUserAgentOverrideCommand(
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetWindowAppNameCommand(
     const SessionID& window_id,
     const std::string& app_name);
+SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetWindowUserTitleCommand(
+    const SessionID& window_id,
+    const std::string& user_title);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateLastActiveTimeCommand(
     const SessionID& tab_id,
     base::TimeTicks last_active_time);

@@ -153,6 +153,9 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
     // If an application window, the name of the app.
     std::string app_name;
 
+    // User-set title of the window, if there is one.
+    std::string user_title;
+
     // Where and how the window is displayed.
     gfx::Rect bounds;
     ui::WindowShowState show_state;

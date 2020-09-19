@@ -120,6 +120,7 @@ void TabRestoreServiceHelper::BrowserClosing(LiveTabContext* context) {
   window->bounds = context->GetRestoredBounds();
   window->show_state = context->GetRestoredState();
   window->workspace = context->GetWorkspace();
+  window->user_title = context->GetUserTitle();
 
   base::flat_set<tab_groups::TabGroupId> seen_groups;
   for (int tab_index = 0; tab_index < context->GetTabCount(); ++tab_index) {
@@ -337,9 +338,9 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
       // single tab within it. If the entry's ID matches the one to restore,
       // then the entire window will be restored.
       if (!restoring_tab_in_window) {
-        context =
-            client_->CreateLiveTabContext(window.app_name, window.bounds,
-                                          window.show_state, window.workspace);
+        context = client_->CreateLiveTabContext(
+            window.app_name, window.bounds, window.show_state, window.workspace,
+            window.user_title);
         for (size_t tab_i = 0; tab_i < window.tabs.size(); ++tab_i) {
           const Tab& tab = *window.tabs[tab_i];
           LiveTab* restored_tab = context->AddRestoredTab(
@@ -645,8 +646,9 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTab(
     if (context && disposition != WindowOpenDisposition::NEW_WINDOW) {
       tab_index = tab.tabstrip_index;
     } else {
-      context = client_->CreateLiveTabContext(
-          std::string(), gfx::Rect(), ui::SHOW_STATE_NORMAL, std::string());
+      context = client_->CreateLiveTabContext(std::string(), gfx::Rect(),
+                                              ui::SHOW_STATE_NORMAL,
+                                              std::string(), std::string());
       if (tab.browser_id)
         UpdateTabBrowserIDs(tab.browser_id, context->GetSessionID());
     }
