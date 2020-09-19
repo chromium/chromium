@@ -42455,6 +42455,7 @@ from previous Chrome versions.
   <int value="-307260007" label="ExtensionsCheckup:disabled"/>
   <int value="-306935714" label="lite-video-force-override-decision"/>
   <int value="-304951461" label="TextSuggestionsTouchBar:enabled"/>
+  <int value="-304886342" label="QuickAnswersTranslation:disabled"/>
   <int value="-304777110" label="PreconnectToSearch:disabled"/>
   <int value="-300542825" label="ChromeShareQRCode:disabled"/>
   <int value="-300018686" label="disable-cloud-import"/>
@@ -44033,6 +44034,7 @@ from previous Chrome versions.
       label="AutofillDoNotUploadSaveUnsupportedCards:enabled"/>
   <int value="1353113954" label="EnableMDRoundedCornersOnDialogs:enabled"/>
   <int value="1353629763" label="MediaSessionAccelerators:enabled"/>
+  <int value="1353749554" label="QuickAnswersTranslation:enabled"/>
   <int value="1355656242"
       label="DesktopPWAsMigrationUserDisplayModeCleanUp:disabled"/>
   <int value="1355923367" label="CrOSContainer:disabled"/>

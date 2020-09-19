@@ -1998,6 +1998,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "enable-quick-answers-translation",
+    "owners": [ "croissant-eng" ],
+    "expiry_milestone": 88
+  },
+  {
     "name": "enable-reader-mode",
     "owners": [ "katie", "dmazzoni" ],
     "expiry_milestone": 90

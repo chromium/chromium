@@ -3983,6 +3983,11 @@ const char kEnableQuickAnswersTextAnnotatorName[] =
 const char kEnableQuickAnswersTextAnnotatorDescription[] =
     "Enable Quick Answers text annotator.";
 
+const char kEnableQuickAnswersTranslationName[] =
+    "Enable Quick Answers translation";
+const char kEnableQuickAnswersTranslationDescription[] =
+    "Enable Quick Answers translation.";
+
 const char kTrimOnFreezeName[] = "Trim Working Set on freeze";
 const char kTrimOnFreezeDescription[] = "Trim Working Set on all frames frozen";
 
