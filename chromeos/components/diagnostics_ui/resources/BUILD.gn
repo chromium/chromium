@@ -16,12 +16,14 @@ js_type_check("closure_compile_module") {
     ":fake_method_resolver",
     ":fake_system_data_provider",
     ":mojo_interface_provider",
+    ":overview_card",
   ]
 }
 
 js_library("diagnostics_app") {
   deps = [
     ":diagnostics_card",
+    ":overview_card",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -47,10 +49,18 @@ js_library("mojo_interface_provider") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
+js_library("overview_card") {
+  deps = [
+    ":diagnostics_card",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 html_to_js("web_components") {
   js_files = [
     "diagnostics_app.js",
     "diagnostics_card.js",
     "diagnostics_shared_css.js",
+    "overview_card.js",
   ]
 }

@@ -3,22 +3,17 @@
 // found in the LICENSE file.
 
 import './diagnostics_shared_css.js';
-import './overview_card.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @fileoverview
- * 'diagnostics-app' is the main page for viewing telemetric system information
- * and running diagnostic tests.
+ * 'overview-card' shows an overview of system information such
+ * as CPU type, version, board name, and memory.
  */
 Polymer({
-  is: 'diagnostics-app',
+  is: 'overview-card',
 
   _template: html`{__html_template__}`,
-
-  /** @override */
-  ready() {
-  },
 
 });

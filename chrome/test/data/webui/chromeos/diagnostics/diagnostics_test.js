@@ -66,9 +66,12 @@ suite('DiagnosticsAppTest', () => {
   });
 
   test('LandingPageLoaded', () => {
-    // TODO(jimmyxgong): Remove this stub test once the page has more
-    // capabilities to test.
+    // TODO(zentaro): Update when strings are finalized and localized.
     assertEquals('Diagnostics', page.$$('#header').textContent);
+
+    // Verify the overview card is in the page.
+    const overview = page.$$('#overviewCard');
+    assertTrue(!!overview);
   });
 });
 
