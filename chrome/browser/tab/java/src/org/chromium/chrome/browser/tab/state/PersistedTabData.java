@@ -14,7 +14,9 @@ import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -99,8 +101,8 @@ public abstract class PersistedTabData implements UserData {
         // TODO(crbug.com/1059602) cache callbacks
         T persistedTabDataFromTab = getUserData(tab, clazz);
         if (persistedTabDataFromTab != null) {
-            // TODO(crbug.com/1060181) post the task
-            callback.onResult(persistedTabDataFromTab);
+            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                    () -> { callback.onResult(persistedTabDataFromTab); });
             return;
         }
         String key = String.format(Locale.ENGLISH, "%d-%s", tab.getId(), clazz.toString());
