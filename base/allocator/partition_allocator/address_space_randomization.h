@@ -43,10 +43,12 @@ AslrMask(uintptr_t bits) {
     // hard-coded in those tools, bad things happen. This address range is
     // copied from TSAN source but works with all tools. See
     // https://crbug.com/539863.
-    constexpr ALWAYS_INLINE uintptr_t ASLRMask() {
+    PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE uintptr_t
+    ASLRMask() {
       return AslrAddress(0x007fffffffffULL);
     }
-    constexpr ALWAYS_INLINE uintptr_t ASLROffset() {
+    PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE uintptr_t
+    ASLROffset() {
       return AslrAddress(0x7e8000000000ULL);
     }
 
