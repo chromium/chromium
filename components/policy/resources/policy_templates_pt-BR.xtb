@@ -4541,7 +4541,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Se ela não for definida, a política <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> será aplicada, mas os usuários poderão mudar essa configuração.</translation>
 <translation id="7471828226549672843">Por padrão, os Termos de Serviço são mostrados quando o CCT é executado pela primeira vez. Definir esta política como "Desativada" fará com que a caixa de diálogo de Termos de Serviço não apareça na primeira execução e nas execuções subsequentes. Definir a política como "Ativada" ou deixá-la sem definição fará com que a caixa de diálogo de Termos de Serviço apareça na primeira execução. As outras ressalvas são as seguintes:
 
-      - Esta política só funciona em dispositivos Android totalmente gerenciados que podem ser configurados por fornecedores de Unified Endpoint Management.
+      - Esta política só funciona em dispositivos Android totalmente gerenciados que podem ser configurados por fornecedores de gerenciamento unificado de endpoints.
 
       - Se esta política for desativada, a BrowserSignin não terá efeito.
 
