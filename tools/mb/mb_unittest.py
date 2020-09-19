@@ -466,14 +466,13 @@ class UnitTest(unittest.TestCase):
 
   def test_gen_swarming(self):
     files = {
-      '/tmp/swarming_targets': 'base_unittests\n',
-      '/fake_src/testing/buildbot/gn_isolate_map.pyl': (
-          "{'base_unittests': {"
-          "  'label': '//base:base_unittests',"
-          "  'type': 'raw',"
-          "  'args': [],"
-          "}}\n"
-      ),
+        '/tmp/swarming_targets':
+        'base_unittests\n',
+        '/fake_src/testing/buildbot/gn_isolate_map.pyl':
+        ("{'base_unittests': {"
+         "  'label': '//base:base_unittests',"
+         "  'type': 'console_test_launcher',"
+         "}}\n"),
     }
 
     mbw = self.fake_mbw(files)
@@ -506,7 +505,6 @@ class UnitTest(unittest.TestCase):
           "  'label': '//cc:cc_perftests',"
           "  'type': 'script',"
           "  'script': '/fake_src/out/Default/test_script.py',"
-          "  'args': [],"
           "}}\n"
       ),
     }
@@ -536,21 +534,18 @@ class UnitTest(unittest.TestCase):
 
   def test_multiple_isolate_maps(self):
     files = {
-      '/tmp/swarming_targets': 'cc_perftests\n',
-      '/fake_src/testing/buildbot/gn_isolate_map.pyl': (
-          "{'cc_perftests': {"
-          "  'label': '//cc:cc_perftests',"
-          "  'type': 'raw',"
-          "  'args': [],"
-          "}}\n"
-      ),
-      '/fake_src/testing/buildbot/gn_isolate_map2.pyl': (
-          "{'cc_perftests2': {"
-          "  'label': '//cc:cc_perftests',"
-          "  'type': 'raw',"
-          "  'args': [],"
-          "}}\n"
-      ),
+        '/tmp/swarming_targets':
+        'cc_perftests\n',
+        '/fake_src/testing/buildbot/gn_isolate_map.pyl':
+        ("{'cc_perftests': {"
+         "  'label': '//cc:cc_perftests',"
+         "  'type': 'console_test_launcher',"
+         "}}\n"),
+        '/fake_src/testing/buildbot/gn_isolate_map2.pyl':
+        ("{'cc_perftests2': {"
+         "  'label': '//cc:cc_perftests',"
+         "  'type': 'console_test_launcher',"
+         "}}\n"),
     }
     mbw = self.fake_mbw(files=files)
 
@@ -581,24 +576,20 @@ class UnitTest(unittest.TestCase):
 
   def test_duplicate_isolate_maps(self):
     files = {
-      '/tmp/swarming_targets': 'cc_perftests\n',
-      '/fake_src/testing/buildbot/gn_isolate_map.pyl': (
-          "{'cc_perftests': {"
-          "  'label': '//cc:cc_perftests',"
-          "  'type': 'raw',"
-          "  'args': [],"
-          "}}\n"
-      ),
-      '/fake_src/testing/buildbot/gn_isolate_map2.pyl': (
-          "{'cc_perftests': {"
-          "  'label': '//cc:cc_perftests',"
-          "  'type': 'raw',"
-          "  'args': [],"
-          "}}\n"
-      ),
-      'c:\\fake_src\out\Default\cc_perftests.exe.runtime_deps': (
-          "cc_perftests\n"
-      ),
+        '/tmp/swarming_targets':
+        'cc_perftests\n',
+        '/fake_src/testing/buildbot/gn_isolate_map.pyl':
+        ("{'cc_perftests': {"
+         "  'label': '//cc:cc_perftests',"
+         "  'type': 'console_test_launcher',"
+         "}}\n"),
+        '/fake_src/testing/buildbot/gn_isolate_map2.pyl':
+        ("{'cc_perftests': {"
+         "  'label': '//cc:cc_perftests',"
+         "  'type': 'console_test_launcher',"
+         "}}\n"),
+        'c:\\fake_src\out\Default\cc_perftests.exe.runtime_deps':
+        ("cc_perftests\n"),
     }
     mbw = self.fake_mbw(files=files, win32=True)
     # Check that passing duplicate targets into mb fails.
@@ -614,17 +605,15 @@ class UnitTest(unittest.TestCase):
 
   def test_isolate(self):
     files = {
-      '/fake_src/out/Default/toolchain.ninja': "",
-      '/fake_src/testing/buildbot/gn_isolate_map.pyl': (
-          "{'base_unittests': {"
-          "  'label': '//base:base_unittests',"
-          "  'type': 'raw',"
-          "  'args': [],"
-          "}}\n"
-      ),
-      '/fake_src/out/Default/base_unittests.runtime_deps': (
-          "base_unittests\n"
-      ),
+        '/fake_src/out/Default/toolchain.ninja':
+        "",
+        '/fake_src/testing/buildbot/gn_isolate_map.pyl':
+        ("{'base_unittests': {"
+         "  'label': '//base:base_unittests',"
+         "  'type': 'console_test_launcher',"
+         "}}\n"),
+        '/fake_src/out/Default/base_unittests.runtime_deps':
+        ("base_unittests\n"),
     }
     self.check(['isolate', '-c', 'debug_goma', '//out/Default',
                 'base_unittests'], files=files, ret=0)
@@ -639,14 +628,13 @@ class UnitTest(unittest.TestCase):
 
   def test_isolate_dir(self):
     files = {
-      '/fake_src/out/Default/toolchain.ninja': "",
-      '/fake_src/testing/buildbot/gn_isolate_map.pyl': (
-          "{'base_unittests': {"
-          "  'label': '//base:base_unittests',"
-          "  'type': 'raw',"
-          "  'args': [],"
-          "}}\n"
-      ),
+        '/fake_src/out/Default/toolchain.ninja':
+        "",
+        '/fake_src/testing/buildbot/gn_isolate_map.pyl':
+        ("{'base_unittests': {"
+         "  'label': '//base:base_unittests',"
+         "  'type': 'console_test_launcher',"
+         "}}\n"),
     }
     mbw = self.fake_mbw(files=files)
     mbw.cmds.append((0, '', ''))  # Result of `gn gen`
@@ -659,14 +647,13 @@ class UnitTest(unittest.TestCase):
 
   def test_isolate_generated_dir(self):
     files = {
-      '/fake_src/out/Default/toolchain.ninja': "",
-      '/fake_src/testing/buildbot/gn_isolate_map.pyl': (
-          "{'base_unittests': {"
-          "  'label': '//base:base_unittests',"
-          "  'type': 'raw',"
-          "  'args': [],"
-          "}}\n"
-      ),
+        '/fake_src/out/Default/toolchain.ninja':
+        "",
+        '/fake_src/testing/buildbot/gn_isolate_map.pyl':
+        ("{'base_unittests': {"
+         "  'label': '//base:base_unittests',"
+         "  'type': 'console_test_launcher',"
+         "}}\n"),
     }
     mbw = self.fake_mbw(files=files)
     mbw.cmds.append((0, '', ''))  # Result of `gn gen`
@@ -684,16 +671,13 @@ class UnitTest(unittest.TestCase):
 
   def test_run(self):
     files = {
-      '/fake_src/testing/buildbot/gn_isolate_map.pyl': (
-          "{'base_unittests': {"
-          "  'label': '//base:base_unittests',"
-          "  'type': 'raw',"
-          "  'args': [],"
-          "}}\n"
-      ),
-      '/fake_src/out/Default/base_unittests.runtime_deps': (
-          "base_unittests\n"
-      ),
+        '/fake_src/testing/buildbot/gn_isolate_map.pyl':
+        ("{'base_unittests': {"
+         "  'label': '//base:base_unittests',"
+         "  'type': 'console_test_launcher',"
+         "}}\n"),
+        '/fake_src/out/Default/base_unittests.runtime_deps':
+        ("base_unittests\n"),
     }
     self.check(['run', '-c', 'debug_goma', '//out/Default',
                 'base_unittests'], files=files, ret=0)
@@ -703,8 +687,7 @@ class UnitTest(unittest.TestCase):
         '/fake_src/testing/buildbot/gn_isolate_map.pyl':
         ("{'base_unittests': {"
          "  'label': '//base:base_unittests',"
-         "  'type': 'raw',"
-         "  'args': [],"
+         "  'type': 'console_test_launcher',"
          "}}\n"),
         '/fake_src/out/Default/base_unittests.runtime_deps':
         ("base_unittests\n"),
@@ -823,13 +806,14 @@ class UnitTest(unittest.TestCase):
 
   def test_build_command_unix(self):
     files = {
-      '/fake_src/out/Default/toolchain.ninja': '',
-      '/fake_src/testing/buildbot/gn_isolate_map.pyl': (
-          '{"base_unittests": {'
-          '  "label": "//base:base_unittests",'
-          '  "type": "raw",'
-          '  "args": [],'
-          '}}\n')
+        '/fake_src/out/Default/toolchain.ninja':
+        '',
+        '/fake_src/testing/buildbot/gn_isolate_map.pyl':
+        ('{"base_unittests": {'
+         '  "label": "//base:base_unittests",'
+         '  "type": "console_test_launcher",'
+         '  "args": [],'
+         '}}\n')
     }
 
     mbw = self.fake_mbw(files)
@@ -839,13 +823,14 @@ class UnitTest(unittest.TestCase):
 
   def test_build_command_windows(self):
     files = {
-      'c:\\fake_src\\out\\Default\\toolchain.ninja': '',
-      'c:\\fake_src\\testing\\buildbot\\gn_isolate_map.pyl': (
-          '{"base_unittests": {'
-          '  "label": "//base:base_unittests",'
-          '  "type": "raw",'
-          '  "args": [],'
-          '}}\n')
+        'c:\\fake_src\\out\\Default\\toolchain.ninja':
+        '',
+        'c:\\fake_src\\testing\\buildbot\\gn_isolate_map.pyl':
+        ('{"base_unittests": {'
+         '  "label": "//base:base_unittests",'
+         '  "type": "console_test_launcher",'
+         '  "args": [],'
+         '}}\n')
     }
 
     mbw = self.fake_mbw(files, True)

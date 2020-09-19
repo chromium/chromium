@@ -38,10 +38,6 @@
 #    ninja target to the GN label in order to analyze it.
 #  "junit_test"
 #  : this is a JUnit test.
-#  "raw"
-#  : the test is a standalone executable; it may take an optional list of
-#    command line arguments in the "args" field, but otherwise needs no
-#    extra files or special handling.
 #  "script"
 #  : the test is a python script; the path to the script is specified in
 #    the "script" field.
@@ -418,11 +414,11 @@
     "type": "additional_compile_target",
   },
   "chrome_all_tast_tests": {
+    "label": "//chromeos:chrome_all_tast_tests",
+    "type": "generated_script",
     "args": [
       "--vm-logs-dir=${ISOLATED_OUTDIR}",
     ],
-    "label": "//chromeos:chrome_all_tast_tests",
-    "type": "raw",
   },
   "chrome_app_unittests": {
     "label": "//chrome/test:chrome_app_unittests",
@@ -751,11 +747,12 @@
     "type": "console_test_launcher",
   },
   "cros_browser_sanity_test": {
+    "label": "//chromeos:cros_browser_sanity_test",
+    "type": "generated_script",
     "args": [
       "--vm-logs-dir=${ISOLATED_OUTDIR}",
+      "cros_browser_sanity_test",
     ],
-    "label": "//chromeos:cros_browser_sanity_test",
-    "type": "raw",
   },
   "crypto_unittests": {
     "label": "//crypto:crypto_unittests",
@@ -763,7 +760,7 @@
   },
   "dawn_end2end_tests": {
     "label": "//third_party/dawn/src/tests:dawn_end2end_tests",
-    "type": "raw",
+    "type": "console_test_launcher",
   },
   "dawn_perf_tests": {
     "args": [
@@ -794,11 +791,11 @@
     "type": "console_test_launcher",
   },
   "disk_usage_tast_test": {
+    "label": "//chromeos:disk_usage_tast_test",
+    "type": "generated_script",
     "args": [
       "--vm-logs-dir=${ISOLATED_OUTDIR}",
     ],
-    "label": "//chromeos:disk_usage_tast_test",
-    "type": "raw",
   },
   "display_unittests": {
     "label": "//ui/display:display_unittests",
@@ -1300,9 +1297,8 @@
     "type": "additional_compile_target",
   },
   "nacl_helper_nonsfi_unittests": {
-    "args": [],
     "label": "//components/nacl/loader:nacl_helper_nonsfi_unittests",
-    "type": "raw",
+    "type": "console_test_launcher",
   },
   "nacl_loader_unittests": {
     "label": "//components/nacl/loader:nacl_loader_unittests",
@@ -1580,9 +1576,8 @@
     "type": "console_test_launcher",
   },
   "swiftshader_unittests": {
-    "args": [],
     "label": "//third_party/swiftshader/tests/GLESUnitTests:swiftshader_unittests",
-    "type": "raw",
+    "type": "console_test_launcher",
   },
   "symupload": {
     "label": "//third_party/breakpad:symupload",

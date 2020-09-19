@@ -1406,7 +1406,11 @@ class MetaBuildWrapper(object):
       else:
         default_script = 'bin/run_{}'.format(target)
       script = isolate_map[target].get('script', default_script)
-      cmdline += [script]
+
+      # TODO(crbug.com/816629): remove any use of 'args' from
+      # generated_scripts.
+      cmdline += [script] + isolate_map[target].get('args', [])
+
       return cmdline, []
 
 
@@ -1509,7 +1513,7 @@ class MetaBuildWrapper(object):
           '../../testing/test_env.py',
           '../../' + self.ToSrcRelPath(isolate_map[target]['script'])
       ]
-    elif test_type in ('raw', 'additional_compile_target'):
+    elif test_type == 'additional_compile_target':
       cmdline = [
           './' + str(target) + executable_suffix,
       ]

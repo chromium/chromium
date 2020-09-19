@@ -111,6 +111,8 @@ template("generate_runner_script") {
     }
 
     data = [
+      "//.vpython",
+
       # We use android test-runner's results libs to construct gtest output
       # json.
       "//build/android/pylib/__init__.py",
