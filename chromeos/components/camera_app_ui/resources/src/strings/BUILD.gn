@@ -127,8 +127,8 @@ grit("strings") {
 
   grit_flags = [
     "-E",
-    "out_camera_app_dir=" + rebase_path(out_camera_app_dir, root_build_dir),
+    "out_camera_app_dir=" + rebase_path(out_camera_app_dir, root_out_dir),
     "-E",
-    "gen_camera_app_dir=" + rebase_path(gen_camera_app_dir, root_build_dir),
+    "gen_camera_app_dir=" + rebase_path(gen_camera_app_dir, root_out_dir),
   ]
 }
