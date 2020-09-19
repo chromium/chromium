@@ -81,7 +81,8 @@ std::unique_ptr<test_server::HttpResponse> HandleRequest(
     const test_server::HttpRequest& request) {
   std::unique_ptr<test_server::BasicHttpResponse> http_response(
       new test_server::BasicHttpResponse());
-  std::string alpn = quic::AlpnForVersion(kDefaultSupportedQuicVersion);
+  std::string alpn =
+      quic::AlpnForVersion(DefaultSupportedQuicVersions().front());
   http_response->AddCustomHeader(
       "Alt-Svc", base::StringPrintf("%s=\"%s:%d\"", alpn.c_str(), kAltSvcHost,
                                     kAltSvcPort));

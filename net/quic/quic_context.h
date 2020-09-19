@@ -12,14 +12,10 @@
 
 namespace net {
 
-// Default QUIC version used in absence of any external configuration.
-constexpr quic::ParsedQuicVersion kDefaultSupportedQuicVersion =
-    quic::ParsedQuicVersion::Q050();
-
-// Returns a list containing only the current default version.
+// Default QUIC supprted versions used in absence of any external configuration.
 inline NET_EXPORT_PRIVATE quic::ParsedQuicVersionVector
 DefaultSupportedQuicVersions() {
-  return quic::ParsedQuicVersionVector{kDefaultSupportedQuicVersion};
+  return quic::ParsedQuicVersionVector{quic::ParsedQuicVersion::Q050()};
 }
 
 // When a connection is idle for 30 seconds it will be closed.

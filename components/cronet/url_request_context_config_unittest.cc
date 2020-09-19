@@ -448,9 +448,8 @@ TEST(URLRequestContextConfigTest, SetUnsupportedQuicVersion) {
           net::ProxyConfigWithAnnotation::CreateDirect()));
   std::unique_ptr<net::URLRequestContext> context(builder.Build());
   const net::QuicParams* quic_params = context->quic_context()->params();
-  EXPECT_EQ(quic_params->supported_versions.size(), 1u);
-  EXPECT_EQ(quic_params->supported_versions[0],
-            net::kDefaultSupportedQuicVersion);
+  EXPECT_EQ(quic_params->supported_versions,
+            net::DefaultSupportedQuicVersions());
 }
 
 TEST(URLRequestContextConfigTest, SetQuicServerMigrationOptions) {
