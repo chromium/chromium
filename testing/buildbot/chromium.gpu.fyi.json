@@ -20603,7 +20603,7 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--expected-vendor-id",
-          "0",
+          "106b",
           "--expected-device-id",
           "0"
         ],

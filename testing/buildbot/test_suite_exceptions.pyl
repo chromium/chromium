@@ -1395,7 +1395,15 @@
           # now since we are manually applying the expected device ID above.
           '$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId': None,
         },
-      }
+      },
+      'Mac FYI arm64 Release (Apple DTK)': {
+        'args': {
+          # The GPU information is not yet exposed in swarming, so we can't
+          # explicitly request it and have the JSON generation handle this
+          # automatically.
+          '--expected-vendor-id': '106b',
+        },
+      },
     },
   },
   'interactive_ui_tests': {
