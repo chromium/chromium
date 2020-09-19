@@ -1099,6 +1099,8 @@ component("ash") {
     "system/palette/tools/magnifier_mode.h",
     "system/palette/tools/metalayer_mode.cc",
     "system/palette/tools/metalayer_mode.h",
+    "system/phonehub/connection_error_view.cc",
+    "system/phonehub/connection_error_view.h",
     "system/phonehub/continue_browsing_chip.cc",
     "system/phonehub/continue_browsing_chip.h",
     "system/phonehub/initial_connecting_view.cc",

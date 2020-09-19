@@ -22,8 +22,9 @@ class ProgressBar;
 
 namespace ash {
 
-// A interstitial view for Phone Hub with a customized layout that can be shared
-// by the initial onboarding, connecting/disconnecting and error state UI.
+// A generic view to display interstitial pages for the Phone Hub feature with
+// image, text and buttons in a customized layout. It is reused by the
+// onboarding, loading, disconnected/reconnecting and error state UI.
 class ASH_EXPORT PhoneHubInterstitialView : public views::View {
  public:
   METADATA_HEADER(PhoneHubInterstitialView);

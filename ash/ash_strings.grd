@@ -1008,6 +1008,18 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_INITIAL_CONNECTING_DIALOG_CANCEL_BUTTON" desc="Cancel button on the initial connecting dialog to cancel the connection attempt to your phone.">
         Cancel
       </message>
+      <message name="IDS_ASH_PHONE_HUB_CONNECTION_ERROR_DIALOG_TITLE" desc="The title of the dialog that pops up when the Phone Hub feature is not available because there is currently no active connection to the phone.">
+        Uh Oh! Can’t find phone
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_CONNECTION_ERROR_DIALOG_DESCRIPTION" desc="The description of the dialog that pops up when the Phone Hub feature is not available because there is currently no active connection to the phone.">
+        Looks like your phone is not online and we are not able to get all the goodies from it for you now.
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_CONNECTION_ERROR_DIALOG_REFRESH_BUTTON" desc="Refresh button on the connection error dialog to retry the connection attempt to the phone.">
+        Refresh
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_CONNECTION_ERROR_DIALOG_LEARN_MORE_BUTTON" desc="Learn more button on the connection error dialog to show more related information.">
+        Learn more
+      </message>
 
       <message name="IDS_ASH_STYLUS_TOOLS_CAPTURE_REGION_ACTION" desc="Title of the capture region action in the stylus tools (a pop-up panel next to the status tray). This causes a partial screenshot to be taken (the user selects an area of the screen to take a screenshot of).">
         Capture region
