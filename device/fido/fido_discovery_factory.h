@@ -38,10 +38,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   FidoDiscoveryFactory();
   virtual ~FidoDiscoveryFactory();
 
-  // Instantiates a FidoDiscoveryBase for the given transport.
+  // Instantiates one or more FidoDiscoveryBases for the given transport.
   //
   // FidoTransportProtocol::kUsbHumanInterfaceDevice is not valid on Android.
-  virtual std::unique_ptr<FidoDiscoveryBase> Create(
+  virtual std::vector<std::unique_ptr<FidoDiscoveryBase>> Create(
       FidoTransportProtocol transport);
 
   // Returns whether the current instance is an override injected by the
@@ -49,8 +49,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   virtual bool IsTestOverride();
 
   // set_cable_data configures caBLE obtained via a WebAuthn extension.
-  void set_cable_data(std::vector<CableDiscoveryData> cable_data,
-                      base::Optional<QRGeneratorKey> qr_generator_key);
+  void set_cable_data(
+      std::vector<CableDiscoveryData> cable_data,
+      base::Optional<QRGeneratorKey> qr_generator_key,
+      std::vector<std::unique_ptr<cablev2::Pairing>> v2_pairings);
 
   void set_usb_device_manager(mojo::Remote<device::mojom::UsbDeviceManager>);
 
@@ -60,7 +62,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   // called when a QR handshake results in a phone wishing to pair with this
   // browser.
   void set_cable_pairing_callback(
-      base::RepeatingCallback<void(std::unique_ptr<CableDiscoveryData>)>);
+      base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)>);
 
   void set_hid_ignore_list(base::flat_set<VidPid> hid_ignore_list);
 
@@ -84,6 +86,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   WinWebAuthnApi* win_webauthn_api() const;
 #endif  // defined(OS_WIN)
 
+ protected:
+  static std::vector<std::unique_ptr<FidoDiscoveryBase>> SingleDiscovery(
+      std::unique_ptr<FidoDiscoveryBase> discovery);
+
  private:
 #if defined(OS_MAC) || defined(OS_CHROMEOS)
   std::unique_ptr<FidoDiscoveryBase> MaybeCreatePlatformDiscovery() const;
@@ -97,8 +103,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   network::mojom::NetworkContext* network_context_ = nullptr;
   base::Optional<std::vector<CableDiscoveryData>> cable_data_;
   base::Optional<QRGeneratorKey> qr_generator_key_;
+  std::vector<std::unique_ptr<cablev2::Pairing>> v2_pairings_;
   base::Optional<
-      base::RepeatingCallback<void(std::unique_ptr<CableDiscoveryData>)>>
+      base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)>>
       cable_pairing_callback_;
 #if defined(OS_WIN)
   WinWebAuthnApi* win_webauthn_api_ = nullptr;

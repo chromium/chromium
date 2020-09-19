@@ -46,7 +46,7 @@ class CONTENT_EXPORT VirtualFidoDiscoveryFactory
   ~VirtualFidoDiscoveryFactory() override;
 
   // device::FidoDiscoveryFactory:
-  std::unique_ptr<::device::FidoDiscoveryBase> Create(
+  std::vector<std::unique_ptr<::device::FidoDiscoveryBase>> Create(
       device::FidoTransportProtocol transport) override;
   bool IsTestOverride() override;
 

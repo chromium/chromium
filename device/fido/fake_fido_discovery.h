@@ -111,7 +111,7 @@ class FakeFidoDiscoveryFactory : public device::FidoDiscoveryFactory {
       StartMode mode = StartMode::kManual);
 
   // device::FidoDiscoveryFactory:
-  std::unique_ptr<FidoDiscoveryBase> Create(
+  std::vector<std::unique_ptr<FidoDiscoveryBase>> Create(
       FidoTransportProtocol transport) override;
 
  private:

@@ -711,9 +711,10 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
   // factory as one of the first steps. Here, the request should not have been
   // serviced at all, so the fake request should still be pending on the fake
   // factory.
-  auto hid_discovery = discovery_factory_->Create(
-      ::device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
-  ASSERT_TRUE(!!hid_discovery);
+  std::vector<std::unique_ptr<device::FidoDiscoveryBase>> discoveries =
+      discovery_factory_->Create(
+          ::device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
+  EXPECT_EQ(discoveries.size(), 1u);
 
   // The next active document should be able to successfully call
   // navigator.credentials.create({publicKey: ...}) again.

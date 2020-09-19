@@ -138,10 +138,11 @@ class ChromeAuthenticatorRequestDelegate
   bool ShouldPermitCableExtension(const url::Origin& origin);
 
   // GetCablePairings returns any known caBLE pairing data.
-  virtual std::vector<device::CableDiscoveryData> GetCablePairings();
+  virtual std::vector<std::unique_ptr<device::cablev2::Pairing>>
+  GetCablePairings();
 
   void StoreNewCablePairingInPrefs(
-      std::unique_ptr<device::CableDiscoveryData> discovery_data);
+      std::unique_ptr<device::cablev2::Pairing> pairing);
 
   content::RenderFrameHost* const render_frame_host_;
   // Holds ownership of AuthenticatorRequestDialogModel until

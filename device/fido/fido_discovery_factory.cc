@@ -8,6 +8,7 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/aoa/android_accessory_discovery.h"
 #include "device/fido/cable/fido_cable_discovery.h"
+#include "device/fido/cable/v2_discovery.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_discovery_base.h"
 
@@ -35,39 +36,60 @@ namespace device {
 FidoDiscoveryFactory::FidoDiscoveryFactory() = default;
 FidoDiscoveryFactory::~FidoDiscoveryFactory() = default;
 
-std::unique_ptr<FidoDiscoveryBase> FidoDiscoveryFactory::Create(
+std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
     FidoTransportProtocol transport) {
   switch (transport) {
     case FidoTransportProtocol::kUsbHumanInterfaceDevice:
-      return std::make_unique<FidoHidDiscovery>(hid_ignore_list_);
+      return SingleDiscovery(
+          std::make_unique<FidoHidDiscovery>(hid_ignore_list_));
     case FidoTransportProtocol::kBluetoothLowEnergy:
-      return nullptr;
+      return {};
     case FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy:
       if (device::BluetoothAdapterFactory::Get()->IsLowEnergySupported() &&
           (cable_data_.has_value() || qr_generator_key_.has_value())) {
-        return std::make_unique<FidoCableDiscovery>(
-            cable_data_.value_or(std::vector<CableDiscoveryData>()),
-            qr_generator_key_, cable_pairing_callback_, network_context_);
+        std::unique_ptr<cablev2::Discovery> v2_discovery;
+        if (qr_generator_key_.has_value()) {
+          v2_discovery = std::make_unique<cablev2::Discovery>(
+              network_context_, *qr_generator_key_, std::move(v2_pairings_),
+              std::move(cable_pairing_callback_));
+        }
+        std::unique_ptr<FidoDiscoveryBase> v1_discovery =
+            std::make_unique<FidoCableDiscovery>(
+                cable_data_.value_or(std::vector<CableDiscoveryData>()),
+                v2_discovery ? v2_discovery.get() : nullptr);
+
+        std::vector<std::unique_ptr<FidoDiscoveryBase>> ret;
+        if (v2_discovery) {
+          ret.emplace_back(std::move(v2_discovery));
+        }
+        ret.emplace_back(std::move(v1_discovery));
+        return ret;
       }
-      return nullptr;
+      return {};
     case FidoTransportProtocol::kNearFieldCommunication:
       // TODO(https://crbug.com/825949): Add NFC support.
-      return nullptr;
-    case FidoTransportProtocol::kInternal:
+      return {};
+    case FidoTransportProtocol::kInternal: {
 #if defined(OS_MAC) || defined(OS_CHROMEOS)
-      return MaybeCreatePlatformDiscovery();
+      std::unique_ptr<FidoDiscoveryBase> discovery =
+          MaybeCreatePlatformDiscovery();
+      if (discovery) {
+        return SingleDiscovery(std::move(discovery));
+      }
+      return {};
 #else
-      return nullptr;
+      return {};
 #endif
+    }
     case FidoTransportProtocol::kAndroidAccessory:
       if (usb_device_manager_) {
-        return std::make_unique<AndroidAccessoryDiscovery>(
-            std::move(usb_device_manager_.value()));
+        return SingleDiscovery(std::make_unique<AndroidAccessoryDiscovery>(
+            std::move(usb_device_manager_.value())));
       }
-      return nullptr;
+      return {};
   }
   NOTREACHED() << "Unhandled transport type";
-  return nullptr;
+  return {};
 }
 
 bool FidoDiscoveryFactory::IsTestOverride() {
@@ -76,9 +98,11 @@ bool FidoDiscoveryFactory::IsTestOverride() {
 
 void FidoDiscoveryFactory::set_cable_data(
     std::vector<CableDiscoveryData> cable_data,
-    base::Optional<QRGeneratorKey> qr_generator_key) {
+    base::Optional<QRGeneratorKey> qr_generator_key,
+    std::vector<std::unique_ptr<cablev2::Pairing>> v2_pairings) {
   cable_data_ = std::move(cable_data);
   qr_generator_key_ = std::move(qr_generator_key);
+  v2_pairings_ = std::move(v2_pairings);
 }
 
 void FidoDiscoveryFactory::set_usb_device_manager(
@@ -92,7 +116,7 @@ void FidoDiscoveryFactory::set_network_context(
 }
 
 void FidoDiscoveryFactory::set_cable_pairing_callback(
-    base::RepeatingCallback<void(std::unique_ptr<CableDiscoveryData>)>
+    base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)>
         pairing_callback) {
   cable_pairing_callback_.emplace(std::move(pairing_callback));
 }
@@ -100,6 +124,19 @@ void FidoDiscoveryFactory::set_cable_pairing_callback(
 void FidoDiscoveryFactory::set_hid_ignore_list(
     base::flat_set<VidPid> hid_ignore_list) {
   hid_ignore_list_ = std::move(hid_ignore_list);
+}
+
+// static
+std::vector<std::unique_ptr<FidoDiscoveryBase>>
+FidoDiscoveryFactory::SingleDiscovery(
+    std::unique_ptr<FidoDiscoveryBase> discovery) {
+  if (!discovery) {
+    return {};
+  }
+
+  std::vector<std::unique_ptr<FidoDiscoveryBase>> ret;
+  ret.emplace_back(std::move(discovery));
+  return ret;
 }
 
 #if defined(OS_WIN)

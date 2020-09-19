@@ -147,10 +147,11 @@ TEST_F(FakeFidoDiscoveryFactoryTest, ForgesUsbFactoryFunction) {
       fake_fido_discovery_factory_.ForgeNextHidDiscovery();
   ASSERT_EQ(FidoTransportProtocol::kUsbHumanInterfaceDevice,
             injected_fake_discovery->transport());
-  auto produced_discovery = fake_fido_discovery_factory_.Create(
-      FidoTransportProtocol::kUsbHumanInterfaceDevice);
-  EXPECT_TRUE(produced_discovery);
-  EXPECT_EQ(injected_fake_discovery, produced_discovery.get());
+  std::vector<std::unique_ptr<FidoDiscoveryBase>> produced_discoveries =
+      fake_fido_discovery_factory_.Create(
+          FidoTransportProtocol::kUsbHumanInterfaceDevice);
+  ASSERT_EQ(produced_discoveries.size(), 1u);
+  EXPECT_EQ(injected_fake_discovery, produced_discoveries[0].get());
 }
 #endif
 

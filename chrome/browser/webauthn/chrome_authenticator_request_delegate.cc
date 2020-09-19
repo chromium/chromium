@@ -70,21 +70,52 @@ std::string Base64(base::span<const uint8_t> in) {
   return ret;
 }
 
-template <size_t N>
-bool CopyBytestring(std::array<uint8_t, N>* out,
-                    const base::Value& dict,
-                    const char* key) {
+base::Optional<std::string> GetString(const base::Value& dict,
+                                      const char* key) {
   const base::Value* v = dict.FindKey(key);
   if (!v || !v->is_string()) {
+    return base::nullopt;
+  }
+  return v->GetString();
+}
+
+template <size_t N>
+bool CopyBytestring(std::array<uint8_t, N>* out,
+                    base::Optional<std::string> value) {
+  if (!value) {
     return false;
   }
 
   std::string bytes;
-  if (!base::Base64Decode(v->GetString(), &bytes) || bytes.size() != N) {
+  if (!base::Base64Decode(*value, &bytes) || bytes.size() != N) {
     return false;
   }
 
   std::copy(bytes.begin(), bytes.end(), out->begin());
+  return true;
+}
+
+bool CopyBytestring(std::vector<uint8_t>* out,
+                    base::Optional<std::string> value) {
+  if (!value) {
+    return false;
+  }
+
+  std::string bytes;
+  if (!base::Base64Decode(*value, &bytes)) {
+    return false;
+  }
+
+  out->clear();
+  out->insert(out->begin(), bytes.begin(), bytes.end());
+  return true;
+}
+
+bool CopyString(std::string* out, base::Optional<std::string> value) {
+  if (!value) {
+    return false;
+  }
+  *out = *value;
   return true;
 }
 
@@ -96,15 +127,17 @@ const char kWebAuthnTouchIdMetadataSecretPrefName[] =
 const char kWebAuthnLastTransportUsedPrefName[] =
     "webauthn.last_transport_used";
 
-const char kWebAuthnCablePairingsPrefName[] = "webauthn.cable_pairings";
+const char kWebAuthnCablePairingsPrefName[] = "webauthn.cablev2_pairings";
 
 // The |kWebAuthnCablePairingsPrefName| preference contains a list of dicts,
 // where each dict has these keys:
-const char kPairingPrefIdentity[] = "identity";
 const char kPairingPrefName[] = "name";
+const char kPairingPrefContactId[] = "contact_id";
+const char kPairingPrefTunnelServer[] = "tunnel_server";
+const char kPairingPrefId[] = "id";
+const char kPairingPrefSecret[] = "secret";
+const char kPairingPrefPublicKey[] = "pub_key";
 const char kPairingPrefTime[] = "time";
-const char kPairingPrefEIDGenKey[] = "eid_gen_key";
-const char kPairingPrefPSKGenKey[] = "psk_gen_key";
 
 }  // namespace
 
@@ -322,11 +355,11 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
 
   base::Optional<device::QRGeneratorKey> qr_generator_key;
   bool have_paired_phones = false;
+  std::vector<std::unique_ptr<device::cablev2::Pairing>> paired_phones;
   if (base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport)) {
     qr_generator_key.emplace(device::CableDiscoveryData::NewQRKey());
-    auto paired_phones = GetCablePairings();
+    paired_phones = GetCablePairings();
     have_paired_phones = !paired_phones.empty();
-    pairings.insert(pairings.end(), paired_phones.begin(), paired_phones.end());
 
     mojo::Remote<device::mojom::UsbDeviceManager> usb_device_manager;
     content::GetDeviceService().BindUsbDeviceManager(
@@ -342,7 +375,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
 
   weak_dialog_model_->set_cable_transport_info(
       cable_extension_provided, have_paired_phones, qr_generator_key);
-  discovery_factory->set_cable_data(std::move(pairings), qr_generator_key);
+  discovery_factory->set_cable_data(std::move(pairings), qr_generator_key,
+                                    std::move(paired_phones));
 
   discovery_factory->set_cable_pairing_callback(base::BindRepeating(
       &ChromeAuthenticatorRequestDelegate::StoreNewCablePairingInPrefs,
@@ -595,9 +629,9 @@ bool ChromeAuthenticatorRequestDelegate::ShouldPermitCableExtension(
   return origin.IsSameOriginWith(url::Origin::Create(test_site));
 }
 
-std::vector<device::CableDiscoveryData>
+std::vector<std::unique_ptr<device::cablev2::Pairing>>
 ChromeAuthenticatorRequestDelegate::GetCablePairings() {
-  std::vector<device::CableDiscoveryData> ret;
+  std::vector<std::unique_ptr<device::cablev2::Pairing>> ret;
   if (!base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport)) {
     NOTREACHED();
     return ret;
@@ -613,34 +647,31 @@ ChromeAuthenticatorRequestDelegate::GetCablePairings() {
       continue;
     }
 
-    device::CableDiscoveryData discovery;
-    discovery.version = device::CableDiscoveryData::Version::V2;
-    discovery.v2.emplace();
-    discovery.v2->peer_identity.emplace();
-
-    if (!CopyBytestring(&discovery.v2->peer_identity.value(), pairing,
-                        kPairingPrefIdentity) ||
-        !CopyBytestring(&discovery.v2->eid_gen_key, pairing,
-                        kPairingPrefEIDGenKey) ||
-        !CopyBytestring(&discovery.v2->psk_gen_key, pairing,
-                        kPairingPrefPSKGenKey)) {
+    auto out_pairing = std::make_unique<device::cablev2::Pairing>();
+    if (!CopyString(&out_pairing->name, GetString(pairing, kPairingPrefName)) ||
+        !CopyString(&out_pairing->tunnel_server_domain,
+                    GetString(pairing, kPairingPrefTunnelServer)) ||
+        !CopyBytestring(&out_pairing->contact_id,
+                        GetString(pairing, kPairingPrefContactId)) ||
+        !CopyBytestring(&out_pairing->id, GetString(pairing, kPairingPrefId)) ||
+        !CopyBytestring(&out_pairing->secret,
+                        GetString(pairing, kPairingPrefSecret)) ||
+        !CopyBytestring(&out_pairing->peer_public_key_x962,
+                        GetString(pairing, kPairingPrefPublicKey))) {
       continue;
     }
 
-    ret.push_back(discovery);
+    ret.emplace_back(std::move(out_pairing));
   }
 
   return ret;
 }
 
 void ChromeAuthenticatorRequestDelegate::StoreNewCablePairingInPrefs(
-    std::unique_ptr<device::CableDiscoveryData> discovery_data) {
+    std::unique_ptr<device::cablev2::Pairing> pairing) {
   // This is called when doing a QR-code pairing with a phone and the phone
   // sends long-term pairing information during the handshake. The pairing
   // information is saved in preferences for future operations.
-  DCHECK_EQ(device::CableDiscoveryData::Version::V2, discovery_data->version);
-  DCHECK(discovery_data->v2->peer_identity.has_value());
-  DCHECK(discovery_data->v2->peer_name.has_value());
   if (!base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport)) {
     NOTREACHED();
     return;
@@ -652,30 +683,29 @@ void ChromeAuthenticatorRequestDelegate::StoreNewCablePairingInPrefs(
   ListPrefUpdate update(
       Profile::FromBrowserContext(browser_context())->GetPrefs(),
       kWebAuthnCablePairingsPrefName);
-  const std::string identity_base64 =
-      Base64(*discovery_data->v2->peer_identity);
-  if (std::any_of(update->begin(), update->end(),
-                  [&identity_base64](const auto& value) {
-                    if (!value.is_dict()) {
-                      return false;
-                    }
-                    const base::Value* identity =
-                        value.FindKey(kPairingPrefIdentity);
-                    return identity && identity->is_string() &&
-                           identity->GetString() == identity_base64;
-                  })) {
-    // This phone is already known, don't add it again.
-    return;
-  }
+
+  // Find any existing entries with the same public key and replace them. The
+  // handshake protocol requires the phone to prove possession of the public key
+  // so it's not possible for an evil phone to displace another's pairing.
+  const std::string public_key_base64 = Base64(pairing->peer_public_key_x962);
+  update->EraseListValueIf([&public_key_base64](const auto& value) {
+    if (!value.is_dict()) {
+      return false;
+    }
+    const base::Value* pref_public_key = value.FindKey(kPairingPrefPublicKey);
+    return pref_public_key && pref_public_key->is_string() &&
+           pref_public_key->GetString() == public_key_base64;
+  });
 
   auto dict = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
-  dict->SetKey(kPairingPrefIdentity, base::Value(std::move(identity_base64)));
-  dict->SetKey(kPairingPrefName,
-               base::Value(std::move(*discovery_data->v2->peer_name)));
-  dict->SetKey(kPairingPrefEIDGenKey,
-               base::Value(Base64(discovery_data->v2->eid_gen_key)));
-  dict->SetKey(kPairingPrefPSKGenKey,
-               base::Value(Base64(discovery_data->v2->psk_gen_key)));
+  dict->SetKey(kPairingPrefPublicKey,
+               base::Value(std::move(public_key_base64)));
+  dict->SetKey(kPairingPrefTunnelServer,
+               base::Value(pairing->tunnel_server_domain));
+  dict->SetKey(kPairingPrefName, base::Value(std::move(pairing->name)));
+  dict->SetKey(kPairingPrefContactId, base::Value(Base64(pairing->contact_id)));
+  dict->SetKey(kPairingPrefId, base::Value(Base64(pairing->id)));
+  dict->SetKey(kPairingPrefSecret, base::Value(Base64(pairing->secret)));
 
   base::Time::Exploded now;
   base::Time::Now().UTCExplode(&now);

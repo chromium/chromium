@@ -80,13 +80,13 @@ VirtualFidoDevice::State* VirtualFidoDeviceFactory::mutable_state() {
   return state_.get();
 }
 
-std::unique_ptr<FidoDiscoveryBase> VirtualFidoDeviceFactory::Create(
-    FidoTransportProtocol transport) {
+std::vector<std::unique_ptr<FidoDiscoveryBase>>
+VirtualFidoDeviceFactory::Create(FidoTransportProtocol transport) {
   if (transport != transport_) {
-    return nullptr;
+    return {};
   }
-  return std::make_unique<VirtualFidoDeviceDiscovery>(
-      transport_, state_, supported_protocol_, ctap2_config_);
+  return SingleDiscovery(std::make_unique<VirtualFidoDeviceDiscovery>(
+      transport_, state_, supported_protocol_, ctap2_config_));
 }
 
 bool VirtualFidoDeviceFactory::IsTestOverride() {

@@ -27,7 +27,7 @@ VirtualFidoDiscoveryFactory::~VirtualFidoDiscoveryFactory() {
   }
 }
 
-std::unique_ptr<::device::FidoDiscoveryBase>
+std::vector<std::unique_ptr<::device::FidoDiscoveryBase>>
 VirtualFidoDiscoveryFactory::Create(device::FidoTransportProtocol transport) {
   auto discovery = std::make_unique<VirtualFidoDiscovery>(transport);
 
@@ -47,7 +47,7 @@ VirtualFidoDiscoveryFactory::Create(device::FidoTransportProtocol transport) {
   }
 
   discoveries_.insert(discovery.get());
-  return discovery;
+  return SingleDiscovery(std::move(discovery));
 }
 
 void VirtualFidoDiscoveryFactory::AuthenticatorAdded(

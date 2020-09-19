@@ -62,9 +62,9 @@ void FidoRequestHandlerBase::InitDiscoveries(
     const base::flat_set<FidoTransportProtocol>& available_transports) {
   transport_availability_info_.available_transports = available_transports;
   for (const auto transport : available_transports) {
-    std::unique_ptr<FidoDiscoveryBase> discovery =
+    std::vector<std::unique_ptr<FidoDiscoveryBase>> discoveries =
         fido_discovery_factory->Create(transport);
-    if (discovery == nullptr) {
+    if (discoveries.empty()) {
       // This can occur in tests when a ScopedVirtualU2fDevice is in effect and
       // HID transports are not configured or when caBLE discovery data isn't
       // available.
@@ -72,8 +72,10 @@ void FidoRequestHandlerBase::InitDiscoveries(
       continue;
     }
 
-    discovery->set_observer(this);
-    discoveries_.push_back(std::move(discovery));
+    for (auto& discovery : discoveries) {
+      discovery->set_observer(this);
+      discoveries_.emplace_back(std::move(discovery));
+    }
   }
 
   // Check if the platform supports BLE before trying to get a power manager.

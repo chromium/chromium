@@ -14,6 +14,7 @@
 
 namespace device {
 
+FidoDeviceDiscovery::BLEObserver::~BLEObserver() = default;
 FidoDeviceDiscovery::Observer::~Observer() = default;
 
 FidoDeviceDiscovery::FidoDeviceDiscovery(FidoTransportProtocol transport)

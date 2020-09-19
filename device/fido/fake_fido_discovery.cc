@@ -79,23 +79,23 @@ FakeFidoDiscovery* FakeFidoDiscoveryFactory::ForgeNextPlatformDiscovery(
   return next_platform_discovery_.get();
 }
 
-std::unique_ptr<FidoDiscoveryBase> FakeFidoDiscoveryFactory::Create(
-    FidoTransportProtocol transport) {
+std::vector<std::unique_ptr<FidoDiscoveryBase>>
+FakeFidoDiscoveryFactory::Create(FidoTransportProtocol transport) {
   switch (transport) {
     case FidoTransportProtocol::kUsbHumanInterfaceDevice:
-      return std::move(next_hid_discovery_);
+      return SingleDiscovery(std::move(next_hid_discovery_));
     case FidoTransportProtocol::kNearFieldCommunication:
-      return std::move(next_nfc_discovery_);
+      return SingleDiscovery(std::move(next_nfc_discovery_));
     case FidoTransportProtocol::kBluetoothLowEnergy:
     case FidoTransportProtocol::kAndroidAccessory:
-      return nullptr;
+      return {};
     case FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy:
-      return std::move(next_cable_discovery_);
+      return SingleDiscovery(std::move(next_cable_discovery_));
     case FidoTransportProtocol::kInternal:
-      return std::move(next_platform_discovery_);
+      return SingleDiscovery(std::move(next_platform_discovery_));
   }
   NOTREACHED();
-  return nullptr;
+  return {};
 }
 
 }  // namespace test
