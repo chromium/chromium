@@ -1830,7 +1830,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3163201441334626963">Ukjent produkt, <ph name="PRODUCT_ID" />, fra leverandøren <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Disse tjenestene bidrar til å holde dataene dine trygge og sikre. Du kan når som helst slå av disse funksjonene.</translation>
 <translation id="3164329792803560526">Deler denne fanen med <ph name="APP_NAME" /></translation>
-<translation id="3165371858310906303">Spør når nettsteder vil vite når du er til stede</translation>
+<translation id="3165371858310906303">Spør når et nettsted vil vite når du er til stede</translation>
 <translation id="3165390001037658081">Det kan hende at enkelte operatører blokkerer denne funksjonen.</translation>
 <translation id="316652501498554287">G Suite for utdanning-kontoer</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -3975,7 +3975,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5804241973901381774">Tillatelser</translation>
 <translation id="5805697420284793859">Window Manager</translation>
 <translation id="5806773519584576205">0° (standard)</translation>
-<translation id="5808664694611589238">{0,plural, =1{Lukk alle gjestevinduer}other{Lukk alle gjestevinduer}}</translation>
+<translation id="5808664694611589238">{0,plural, =1{Lukk gjestevindu}other{Lukk gjestevindu}}</translation>
 <translation id="5810809306422959727">Denne kontoen er ikke kvalifisert for foreldrekontroll</translation>
 <translation id="5812674658566766066">Vis alle</translation>
 <translation id="5814126672212206791">Tilkoblingstype</translation>
@@ -5174,7 +5174,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7280649757394340890">Stemmeinnstillinger for tekst til tale</translation>
 <translation id="7280877790564589615">Tillatelse forespurt</translation>
 <translation id="7282992757463864530">Informasjonsfelt</translation>
-<translation id="7284411326658527427">Hver person kan gi kontoen sin personlig preg og holde dataene sine private.</translation>
+<translation id="7284411326658527427">Hver person kan gi kontoen sin et personlig preg og holde dataene sine private.</translation>
 <translation id="7287143125007575591">Ingen tilgang.</translation>
 <translation id="7287411021188441799">Gjenopprett standardbakgrunnen</translation>
 <translation id="7288013116963835700">Fjern Linux for <ph name="DEVICE_TYPE" /></translation>

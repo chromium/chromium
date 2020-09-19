@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">सुरक्षाको कारणले यो फाइल पहुँच गर्न सकिएन।</translation>
 <translation id="169515659049020177">सिफ्ट</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू जिप गर्दै...</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> वटा वस्तु कपी गरिए।</translation>
 <translation id="174173592514158117">Play का सबै फोल्डरहरू देखाउनुहोस्</translation>
 <translation id="174937106936716857">फाइलको कुल संख्या</translation>
 <translation id="1775381402323441512">भिडियोको जानकारी</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">अमान्य वर्ण: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">भियतनामी किबोर्ड (TCVN)</translation>
 <translation id="2168214441502403371">फारसी किबोर्ड</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> वस्तु सारियो।</translation>
 <translation id="2198315389084035571">सरल गरिएको चिनीया</translation>
 <translation id="2208158072373999562">जिप सङ्ग्रह</translation>
 <translation id="2225536596944493418">तपाईंले <ph name="NUMBER_OF_ITEMS" /> वस्तुहरू मेटाउन खोज्नुभएकै हो?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /> फोल्डर सिर्जना गर्न सकिएन</translation>
+<translation id="2275059641601412272">सारिएको।</translation>
 <translation id="2278988676849463018">कन्नडा किबोर्ड (ध्वन्यात्मक)</translation>
 <translation id="2288278176040912387">रेकर्ड प्लेयर</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> फाइलहरू खोल्दै।</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">सबै जगेडा गरियो!</translation>
 <translation id="3626281679859535460">चम्किलोपना</translation>
 <translation id="3644896802912593514">चौडाइ</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> वटा वस्तु सारिए।</translation>
 <translation id="3645531960514756307">फोल्डर अनपिन गर्नुहोस्</translation>
 <translation id="3678559383040232393">माल्टिज किबोर्ड</translation>
 <translation id="3685122418104378273">Google ड्राइभ सिंक पूर्वनिर्धारित रूपमा अक्षम गरिएको हुन्छ, मोबाइल डेटाको प्रयोग गर्ने क्रममा।</translation>
@@ -395,6 +399,7 @@
     तपाईँको यन्त्रलाई जे भए पनि तपाईँका फाइलहरूलाई सुरक्षित रूपमा Google ड्राइभमा भण्डारण गरिन्छ।<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />फाइलहरूलाई साझेदारी, सिर्जना गर्नुहोस् र अन्यसँग मिलेर तिनीहरूमा सहकार्य गर्नुहोस्<ph name="MARKUP_8" />
     र यो सब एकै ठाउँमा गर्नुहोस्।<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">कपी गरिएको।</translation>
 <translation id="5275973617553375938">Google ड्राइभ फाइलहरू पुन: प्राप्त गरियो</translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5318819489018851358">Linux मार्फत सेयर गर्नुहोस्</translation>
@@ -750,6 +755,7 @@
 <translation id="943972244133411984">निम्नद्वारा परिमार्जित</translation>
 <translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> देखि <ph name="TO_ENTRY_NAME" /> सम्मका <ph name="ENTRY_COUNT" /> प्रविष्टिहरू चयन गरिए।</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> वस्तु कपी गरियो।</translation>
 <translation id="981121421437150478">अफलाइन</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" नाम गरेको फाइल पहिलेदेखि नै अवस्थित छ। तपाईं यसलाई प्रतिस्थापन गर्न चाहनुहुन्छ?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> एम.बि.</translation>

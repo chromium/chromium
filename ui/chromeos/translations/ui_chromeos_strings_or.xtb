@@ -70,6 +70,7 @@
 <translation id="1673103856845176271">ସୁରକ୍ଷା କାରଣରୁ ଏହି ଫାଇଲ୍‍କୁ ଆକ୍ସେସ୍ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ ଜିପ୍ ହେଉଛି...</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ କପି ହୋଇଛି।</translation>
 <translation id="174173592514158117">ସମସ୍ତ Play ଫୋଲ୍ଡର୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="174937106936716857">ସମୁଦାୟ ଫାଇଲ୍ ସଂଖ୍ୟା</translation>
 <translation id="1775381402323441512">ଭିଡିଓର ସୂଚନା</translation>
@@ -110,10 +111,12 @@
 <translation id="2163152940313951844">ଅବୈଧ ବର୍ଣ୍ଣ: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">ଭିଏତ୍‌ନାମିଜ୍ କୀବୋର୍ଡ (TCVN)</translation>
 <translation id="2168214441502403371">ପରସୀଆନ୍ କୀ'ବୋର୍ଡ</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" />ଟି ମୁଭ୍ କରାଯାଇଛି।</translation>
 <translation id="2198315389084035571">ସରଳୀକୃତ ଚାଇନିଜ୍</translation>
 <translation id="2208158072373999562">Zip ଆର୍କାଇଭ୍‍</translation>
 <translation id="2225536596944493418">ଆପଣ କ'ଣ ନିଶ୍ଚିତ ରୂପେ <ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ ଡିଲିଟ୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="2230062665678605299">ଫୋଲ୍ଡର୍‌ ତିଆରି କରିବାରେ ଅକ୍ଷମ "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2275059641601412272">ମୁଭ୍ କରାଯାଇଛି।</translation>
 <translation id="2278988676849463018">କନ୍ନଡ କୀବୋର୍ଡ (ଫୋନେଟିକ୍)</translation>
 <translation id="2288278176040912387">ରେକର୍ଡ ପ୍ଲେୟାର୍</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" />ଟି ଫାଇଲ୍ ଖୋଲାଯାଉଛି।</translation>
@@ -235,6 +238,7 @@
 <translation id="3620292326130836921">ସମସ୍ତ ବ୍ୟାକ୍‍ଅପ୍‍ ନିଆଯାଇଛି!</translation>
 <translation id="3626281679859535460">ଉଜ୍ଜ୍ୱଳତା</translation>
 <translation id="3644896802912593514">ପ୍ରସ୍ଥ</translation>
+<translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ ମୁଭ୍ କରାଯାଇଛି।</translation>
 <translation id="3645531960514756307">ଫୋଲ୍ଡର୍ ଅନ୍‌ପିନ୍ କରନ୍ତୁ</translation>
 <translation id="3678559383040232393">ମାଲ୍‌ଟିଜ୍ କୀ'ବୋର୍ଡ</translation>
 <translation id="3685122418104378273">ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବହାର କରିବା ସମୟରେ Google ଡ୍ରାଇଭ୍ ସିଙ୍କ ଡିଫଲ୍ଟ ରୂପେ ଅକ୍ଷମ କରାଯାଇଛି।</translation>
@@ -390,6 +394,7 @@
 <translation id="5253070652067921974">ଏହାଙ୍କ ଦ୍ୱାରା ତିଆରି କରାଯାଇଛି</translation>
 <translation id="5257456363153333584">ଡ୍ରାଗନ୍‌ଫ୍ଲାଏ</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />ସବୁ ଜାଗାରୁ, ଏପରିକି ଅଫ୍‍ଲାଇନ୍‌ରେ ଫାଇଲ୍ ଆକ୍ସେସ୍ କରେ।<ph name="MARKUP_2" />Google ଡ୍ରାଇଭ୍‍‌ରେ ଫାଇଲ୍‍ଗୁଡ଼ିକ ଅପ୍ ଟୁ ଡେଟ୍ ଅଛି ଏବଂ ଯେକୌଣସି ଡିଭାଇସ୍‍ରୁ ଉପଲବ୍ଧ ଅଟେ।<ph name="MARKUP_3" /> <ph name="MARKUP_4" />ଆପଣଙ୍କର ଫାଇଲ୍‍ଗୁଡ଼ିକ ସୁରକ୍ଷିତ ରଖନ୍ତୁ।<ph name="MARKUP_5" /> ଆପଣଙ୍କ ଡିଭାଇସ୍‍ର ଯାହା ହେଉନା କାହିଁକି, ଆପଣଙ୍କର ଫାଇଲ୍‍ଗୁଡ଼ିକ Google ଡ୍ରାଇଭ୍‌ରେ ସୁରକ୍ଷିତ ଭାବେ ଷ୍ଟୋର୍ ହୋଇରହିବ।<ph name="MARKUP_6" /> <ph name="MARKUP_7" />ଗୋଟିଏ ସ୍ଥାନରେ ଫାଇଲ୍‍ଗୁଡ଼ିକ ସେୟାର୍ କରନ୍ତୁ, ତିଆରି କରନ୍ତୁ<ph name="MARKUP_8" /> ଏବଂ ଅନ୍ୟମାନଙ୍କ ସହ ସହଯୋଗିତା କରନ୍ତୁ।<ph name="MARKUP_9" /></translation>
+<translation id="5274350207900771082">କପି କରାଯାଇଛି।</translation>
 <translation id="5275973617553375938">Google Driveରୁ ଫାଇଲ୍ ପୁନରୁଦ୍ଧାର ହୋଇଛି</translation>
 <translation id="5317780077021120954">ସଞ୍ଚୟ</translation>
 <translation id="5318819489018851358">Linux ସହିତ ସେୟାର୍ କରନ୍ତୁ</translation>
@@ -745,6 +750,7 @@
 <translation id="943972244133411984">ଏହାଙ୍କ ଦ୍ୱାରା ସଂଶୋଧନ କରାଗଲା</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> ରୁ <ph name="TO_ENTRY_NAME" /> ମଧ୍ୟରେ <ph name="ENTRY_COUNT" />ଟି ଫାଇଲ୍‌ର ଏକ ପରିସର ବଛାଯାଇଛି।</translation>
+<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" />ଟି କପି କରାଯାଇଛି।</translation>
 <translation id="981121421437150478">ଅଫ୍‍ଲାଇନ୍</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" ନାମକ ଗୋଟିଏ ଫାଇଲ୍ ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି। ଆପଣ ଏହାକୁ ପ୍ରତିସ୍ଥାପନ କରିବାକୁ ଚାହାନ୍ତି କି?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

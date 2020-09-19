@@ -374,7 +374,7 @@
 <translation id="143027896309062157">Alle Ihre Daten auf Ihrem Computer und den von Ihnen besuchten Websites lesen und ändern</translation>
 <translation id="1430915738399379752">Drucken</translation>
 <translation id="1431188203598586230">Letztes Softwareupdate</translation>
-<translation id="1431402976894535801">Websites daran hindern, Informationen zu Ihrer Präsenz abzurufen</translation>
+<translation id="1431402976894535801">Websites daran hindern, Informationen zu meiner Anwesenheit abzurufen</translation>
 <translation id="1431432486300429272">Google kann die Suche und andere Google-Dienste mithilfe deines Browserverlaufs für dich personalisieren. Das kann unter myaccount.google.com/activitycontrols/search geändert werden.</translation>
 <translation id="1432581352905426595">Suchmaschinen verwalten</translation>
 <translation id="1433811987160647649">Vor dem Zugriff nachfragen</translation>
@@ -568,7 +568,7 @@
 <translation id="1651008383952180276">Sie müssen zweimal dieselbe Passphrase eingeben</translation>
 <translation id="1652326691684645429">Nearby Share aktivieren</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Fügen Sie den Drucker zu Google Cloud Print hinzu, damit Sie von überall aus drucken können.}other{Fügen Sie # Drucker zu Google Cloud Print hinzu, damit Sie von überall aus drucken können.}}</translation>
-<translation id="1653575510930452864">Link als Text kopieren</translation>
+<translation id="1653575510930452864">Link zu Text kopieren</translation>
 <translation id="1656528038316521561">Deckkraft des Hintergrunds</translation>
 <translation id="1657406563541664238">Zur Verbesserung von <ph name="PRODUCT_NAME" /> Nutzungsstatistiken und Absturzberichte automatisch an Google senden</translation>
 <translation id="1657937299377480641">Wenn du dich noch einmal anmelden möchtest, um auf Bildungsressourcen zuzugreifen, brauchst du die Erlaubnis deiner Eltern</translation>
@@ -1002,7 +1002,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2178614541317717477">Kompromittierung der Zertifizierungsstelle</translation>
 <translation id="2182058453334755893">In die Zwischenablage kopiert</translation>
 <translation id="2184515124301515068">Chrome die Entscheidung überlassen, wann Audioinhalte auf Websites abgespielt werden (empfohlen)</translation>
-<translation id="2187243482123994665">Nutzerpräsenz</translation>
+<translation id="2187243482123994665">Anwesenheit des Nutzers</translation>
 <translation id="2187675480456493911">Mit anderen Geräten in Ihrem Konto synchronisiert. Von anderen Nutzern geänderte Einstellungen werden nicht synchronisiert. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Fehler beim Importieren des Serverzertifikats</translation>
 <translation id="2187906491731510095">Erweiterungen wurden aktualisiert</translation>
@@ -1829,7 +1829,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3163201441334626963">Unbekanntes Produkt <ph name="PRODUCT_ID" /> von Anbieter <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Diese Dienste tragen dazu bei, dass Ihre Daten sicher bleiben. Sie können diese Funktionen jederzeit deaktivieren.</translation>
 <translation id="3164329792803560526">Tab wird mit <ph name="APP_NAME" /> geteilt</translation>
-<translation id="3165371858310906303">Nachfragen, wenn eine Website Informationen zu Ihrer Präsenz abrufen möchte</translation>
+<translation id="3165371858310906303">Nachfragen, wenn eine Website Informationen zu meiner Anwesenheit abrufen möchte</translation>
 <translation id="3165390001037658081">Einige Mobilfunkanbieter blockieren diese Funktion möglicherweise.</translation>
 <translation id="316652501498554287">G Suite for Education-Konten</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2946,7 +2946,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4527186207340858212">Ein neues Profil für die Arbeit erstellen?</translation>
 <translation id="452750746583162491">Synchronisierte Daten prüfen</translation>
 <translation id="4530494379350999373">Ursprung</translation>
-<translation id="4531924570968473143">Wen möchten Sie diesem Gerät (<ph name="DEVICE_TYPE" />) hinzufügen?</translation>
+<translation id="4531924570968473143">Wen möchtest du diesem Gerät (<ph name="DEVICE_TYPE" />) hinzufügen?</translation>
 <translation id="4532646538815530781">Diese Website nutzt Bewegungssensoren.</translation>
 <translation id="4533846798469727141">Sagen Sie jetzt "Ok Google"</translation>
 <translation id="4533985347672295764">CPU-Zeit</translation>
@@ -5175,7 +5175,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7280649757394340890">Einstellungen für Sprachausgabe</translation>
 <translation id="7280877790564589615">Berechtigung angefordert</translation>
 <translation id="7282992757463864530">Infoleiste</translation>
-<translation id="7284411326658527427">Jeder Nutzer kann sein Konto personalisieren und seine Daten schützen.</translation>
+<translation id="7284411326658527427">Jeder Nutzer kann sein Konto personalisieren. Dabei bleiben die Daten der einzelnen Nutzer privat.</translation>
 <translation id="7287143125007575591">Zugriff verweigert</translation>
 <translation id="7287411021188441799">Standardhintergrund wiederherstellen</translation>
 <translation id="7288013116963835700">Linux für <ph name="DEVICE_TYPE" /> entfernen</translation>
@@ -5752,7 +5752,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7963826112438303517">Assistant verwendet diese Aufzeichnungen und Ihre mündlichen Anfragen, um Ihr Sprachmodell zu erstellen und zu aktualisieren. Es wird nur in Geräten gespeichert, in denen Sie Voice Match aktiviert haben. In den Assistant-Einstellungen können Sie sich die Sprachaktivität anzeigen lassen oder das Sprachmodell neu trainieren.</translation>
 <translation id="7966241909927244760">Bildadresse k&amp;opieren</translation>
 <translation id="7968072247663421402">Anbieteroptionen</translation>
-<translation id="7968198493605442410">Link als Text kopieren</translation>
+<translation id="7968198493605442410">Link zu Text kopieren</translation>
 <translation id="7968742106503422125">Daten lesen und ändern, die Sie kopieren und einfügen</translation>
 <translation id="7968833647796919681">Erfassung von Leistungsdaten aktivieren</translation>
 <translation id="7968982339740310781">Details ansehen</translation>

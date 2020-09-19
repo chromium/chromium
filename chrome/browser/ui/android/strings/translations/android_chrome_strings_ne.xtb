@@ -675,6 +675,7 @@
 <translation id="6341580099087024258">फाइलहरू कहाँ सुरक्षित गर्ने भनी सोध्नुहोस्</translation>
 <translation id="6342069812937806050">अहिले भर्खर</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> थप}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> थप}}</translation>
+<translation id="6345878117466430440">पढिसकिएको सामग्रीका रूपमा चिन्ह लगाउनुहोस्</translation>
 <translation id="6364438453358674297">इतिहासबाट सुझाव हटाउने?</translation>
 <translation id="6366047038980456022">सुरक्षित तरिकाले केही काम गर्न, केही नयाँ कुराहरू सिर्जना गर्न र अनलाइनमा कुनै कुरा अन्वेषण गर्नका लागि <ph name="APP_NAME" /> स्मार्ट हुनुका साथै छरितो पनि छ।</translation>
 <translation id="6378173571450987352">विवरणहरू: प्रयोग गरिएको डेटाको मात्राअनुसार क्रमबद्ध गरिएको</translation>
@@ -990,6 +991,7 @@
 <translation id="8655129584991699539">तपाईं Chrome का सेटिङहरूमा गई डेटा खाली गर्न सक्नुहुन्छ</translation>
 <translation id="8662811608048051533">तपाईंलाई प्रायः जसो साइटहरूबाट साइन आउट गर्दछ।</translation>
 <translation id="8664979001105139458">यो नामको फाइल पहिलेदेखि नै विद्यमान छ</translation>
+<translation id="8683039184091909753">फोटो</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{सङ्केतको क्षमता स्तर: # बार}other{सङ्केतको क्षमता स्तर: # बारहरू}}</translation>
 <translation id="869891660844655955">समाप्ति मिति</translation>
 <translation id="8712637175834984815">भयो</translation>

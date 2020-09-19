@@ -1288,7 +1288,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2505127913256479918">Tez orada bu boshqariluvchi hisob olib tashlanadi</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Ekran #}other{Ekran #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> / <ph name="TOTAL_SIZE" /></translation>
-<translation id="250642123108534012">Qurilmalarida yaqin-atrofga yuborish ilovasi ochiqligida koʻrinadigan sizga yaqin qurilmalar</translation>
+<translation id="250642123108534012">Qurilmalarida Yaqin-atrofga yuborish ilovasi ochiqligida chiqadigan qurilmalar</translation>
 <translation id="250704661983564564">Displey joylashuv tartibi</translation>
 <translation id="2507253002925770350">Chipta olib tashlandi</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> pauza qilindi</translation>
@@ -5670,7 +5670,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="786073089922909430">Xizmat: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Yuklanishlar</translation>
 <translation id="7864539943188674973">Bluetooth funksiyasini o‘chirish</translation>
-<translation id="7866352732146932341">Qurilmangizda yaqin-atrofga yuborish ilovasi ochiqligida koʻrinadigan sizga yaqin qurilmalar</translation>
+<translation id="7866352732146932341">Qurilmangizda Yaqin-atrofga yuborish ilovasi ochiqligida chiqadigan qurilmalar</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" />: ulangan</translation>
 <translation id="7870730066603611552">Sinxronizatsiya sozlamalari seans boshlangandan keyin tekshirilsin</translation>
 <translation id="7870790288828963061">Kiosk-ilovalarining yangi versiyalari mavjud emas. Yangilanish shart emas. USB-xotira qurilmasini chiqarib oling.</translation>

@@ -79,7 +79,7 @@
 <translation id="3114012059975132928">Videospiller</translation>
 <translation id="3115898365077584848">Vis informasjon</translation>
 <translation id="3123473560110926937">Blokkert på enkelte nettsteder</translation>
-<translation id="3165371858310906303">Spør når nettsteder vil vite når du er til stede</translation>
+<translation id="3165371858310906303">Spør når et nettsted vil vite når du er til stede</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> lagrede data</translation>
 <translation id="321187648315454507">For at <ph name="APP_NAME" /> skal kunne sende deg varsler, må du også slå på varsler i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -148,7 +148,7 @@
 <translation id="5403592356182871684">Navn</translation>
 <translation id="5489227211564503167">Medgått tid: <ph name="ELAPSED_TIME" /> av <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokkér annonser på nettsteder som ofte viser forstyrrende eller villedende annonser</translation>
-<translation id="5502860503640766021"><ph name="PERMISSION_1" /> er tillatt; <ph name="PERMISSION_2" /> er blokkert</translation>
+<translation id="5502860503640766021"><ph name="PERMISSION_1" /> er tillatt – <ph name="PERMISSION_2" /> er blokkert</translation>
 <translation id="5505264765875738116">Nettsteder kan ikke be om å få sende deg varsler</translation>
 <translation id="5516455585884385570">Åpne innstillingene for varsler</translation>
 <translation id="5527111080432883924">Spør før nettsteder får tilgang til tekst og bilder fra utklipptavlen (anbefalt)</translation>

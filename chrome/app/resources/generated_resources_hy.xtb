@@ -1290,7 +1290,7 @@
 <translation id="2505127913256479918">Այս վերահսկվող հաշիվը շուտով կհեռացվի</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Էկրան #}one{Screen #}other{Էկրան #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> / <ph name="TOTAL_SIZE" /></translation>
-<translation id="250642123108534012">Մոտակայքում գտնվող սարքերը, եթե դրանցում միացված է «Փոխանակում մոտակա սարքերի հետ» գործառույթը</translation>
+<translation id="250642123108534012">Մոտակայքում գտնվող սարքերը, երբ «Փոխանակում մոտակա սարքերի հետ» գործառույթը միացված է կոնտակտների սարքում</translation>
 <translation id="250704661983564564">Էկրանի տեղադրություն</translation>
 <translation id="2507253002925770350">Տոմսը հեռացվել է</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> հավելվածի աշխատանքը դադարեցված է</translation>

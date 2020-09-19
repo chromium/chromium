@@ -185,6 +185,7 @@
 
 ସନ୍ଧାନ କରିବା ପାଇଁ ଯେ କୌଣସି ଶବ୍ଦକୁ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ। ଆପଣଙ୍କ ସନ୍ଧାନକୁ ରିଫାଇନ୍ କରିବା ପାଇଁ ଅଧିକ କିମ୍ବା କମ୍ ସଂଖ୍ୟକ ଶବ୍ଦ ଚୟନ କରନ୍ତୁ। ଆପଣଙ୍କ ସନ୍ଧାନ ସମ୍ପାଦନ କରିବା ନିମନ୍ତେ ପ୍ୟାନେଲକୁ ଖୋଲନ୍ତୁ, ଏକ ନୂଆ ଟାବରେ ଖୋଲିବା ପାଇଁ ଆଇକନକୁ ଟାପ୍ କରନ୍ତୁ ଏବଂ ସନ୍ଧାନ ବାକ୍ସରେ ଆପଣଙ୍କର ପରିବର୍ତ୍ତନଗୁଡ଼ିକ କରନ୍ତୁ।</translation>
 <translation id="246532703174860178">ସେୟାର୍ କରନ୍ତୁ</translation>
+<translation id="2478076885740497414">ଆପକୁ ଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="2479148705183875116">ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2482878487686419369">ବିଜ୍ଞପ୍ତି</translation>
 <translation id="2494974097748878569">Chromeରେ Google Assistant</translation>
@@ -674,6 +675,7 @@
 <translation id="6341580099087024258">କେଉଁଠି ଫାଇଲ୍‍ଗୁଡ଼ିକୁ ସେଭ୍ କରିବେ, ପଚାରନ୍ତୁ</translation>
 <translation id="6342069812937806050">ଏହିକ୍ଷଣି</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ଏବଂ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ଅଧିକ}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ଏବଂ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ଅଧିକ}}</translation>
+<translation id="6345878117466430440">ପଢ଼ାଯାଇଛି ଭାବରେ ଚିହ୍ନଟ କରନ୍ତୁ</translation>
 <translation id="6364438453358674297">ଇତିବୃତ୍ତିରୁ ପ୍ରସ୍ତାବକୁ କାଢ଼ି ଦେବେକି?</translation>
 <translation id="6366047038980456022">ଆପଣ ସୁରକ୍ଷିତ ଭାବେ କାମ କରିବା, ତିଆରି କରିବା ଏବଂ ଅନଲାଇନରେ ଏକ୍ସପ୍ଲୋର୍ କରିବା ପାଇଁ ଆବଶ୍ୟକ କରୁଥିବା ସ୍ମାର୍ଟନେସ୍ ଏବଂ ବେଗ <ph name="APP_NAME" />ରେ ଅଛି</translation>
 <translation id="6378173571450987352">ବିବରଣୀ: ବ୍ୟବହାର କରାଯାଇଥିବା ଡାଟାର ପରିମାଣ ଅନୁସାରେ କ୍ରମବଦ୍ଧ କରାଯାଇଛି</translation>
@@ -989,6 +991,7 @@
 <translation id="8655129584991699539">ଆପଣା Chrome ସେଟିଂସ୍‌ରେ ଡାଟା ଖାଲି କରିପାରିବେ</translation>
 <translation id="8662811608048051533">ଆପଣଙ୍କୁ ଅଧିକାଂଶ ସାଇଟ୍‌ରୁ ସାଇନ୍ ଆଉଟ୍ କରିଦିଏ।</translation>
 <translation id="8664979001105139458">ଫାଇଲ୍‌ର ନାମ ପୂର୍ବରୁ ଅଛି</translation>
+<translation id="8683039184091909753">ଛବି</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{ସିଗ୍‍ନାଲ୍‌ ଦକ୍ଷତାର ସ୍ତର: #ଟି ବାର୍‍}other{ସିଗ୍‍ନାଲ୍‌ ଦକ୍ଷତାର ସ୍ତର: #ଟି ବାର୍‍}}</translation>
 <translation id="869891660844655955">ମିଆଦ ଶେଷ ହେଉଥିବା ତାରିଖ</translation>
 <translation id="8712637175834984815">ବୁଝିଗଲି</translation>

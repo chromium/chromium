@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="2077832278056815832">Close any bubbles or overlays from other apps. Then try again.</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2416359993254398973">Chrome needs permission to access your camera for this site.</translation>
+<translation id="2987449669841041897">This site can’t ask for your permission</translation>
 <translation id="557283862590186398">Chrome needs permission to access your microphone for this site.</translation>
 <translation id="5860491529813859533">Turn on</translation>
 <translation id="6092062101542170135">To continue, turn on NFC in Android settings</translation>
