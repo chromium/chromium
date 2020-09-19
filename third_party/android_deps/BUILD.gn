@@ -347,6 +347,20 @@ android_aar_prebuilt("androidx_interpolator_interpolator_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("androidx_leanback_leanback_java") {
+  aar_path = "libs/androidx_leanback_leanback/leanback-1.0.0.aar"
+  info_path = "libs/androidx_leanback_leanback/androidx_leanback_leanback.info"
+  deps = [
+    ":androidx_core_core_java",
+    ":androidx_fragment_fragment_java",
+    ":androidx_legacy_legacy_support_core_ui_java",
+    ":androidx_media_media_java",
+    ":androidx_recyclerview_recyclerview_java",
+  ]
+  resource_overlay = true
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_leanback_leanback_preference_java") {
   aar_path =
       "libs/androidx_leanback_leanback_preference/leanback-preference-1.0.0.aar"
@@ -1898,24 +1912,6 @@ android_aar_prebuilt("androidx_documentfile_documentfile_java") {
   # //third_party/android_deps/build.gradle.
   visibility = [ ":*" ]
   deps = [ ":androidx_annotation_annotation_java" ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_leanback_leanback_java") {
-  aar_path = "libs/androidx_leanback_leanback/leanback-1.0.0.aar"
-  info_path = "libs/androidx_leanback_leanback/androidx_leanback_leanback.info"
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
-  deps = [
-    ":androidx_core_core_java",
-    ":androidx_fragment_fragment_java",
-    ":androidx_legacy_legacy_support_core_ui_java",
-    ":androidx_media_media_java",
-    ":androidx_recyclerview_recyclerview_java",
-  ]
   resource_overlay = true
 }
 

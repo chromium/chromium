@@ -64,6 +64,7 @@ dependencies {
     compile "androidx.fragment:fragment:1.2.5"
     compile "androidx.gridlayout:gridlayout:${androidXSupportLibVersion}"
     compile "androidx.interpolator:interpolator:${androidXSupportLibVersion}"
+    compile "androidx.leanback:leanback:${androidXSupportLibVersion}"
     compile "androidx.leanback:leanback-preference:${androidXSupportLibVersion}"
     compile "androidx.localbroadcastmanager:localbroadcastmanager:${androidXSupportLibVersion}"
     compile "androidx.media:media:${androidXSupportLibVersion}"
