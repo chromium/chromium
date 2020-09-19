@@ -3255,8 +3255,6 @@ crbug.com/1050754 external/wpt/payment-method-basic-card/payment-request-canmake
 crbug.com/1050754 external/wpt/payment-method-basic-card/steps_for_selecting_the_payment_handler.html [ Timeout ]
 crbug.com/1050754 external/wpt/payment-request/MerchantValidationEvent/complete-method.https.html [ Failure ]
 crbug.com/1050754 external/wpt/payment-request/MerchantValidationEvent/constructor.https.html [ Failure ]
-crbug.com/1050754 external/wpt/payment-request/allowpaymentrequest/active-document-cross-origin.https.sub.html [ Failure ]
-crbug.com/1050754 external/wpt/payment-request/allowpaymentrequest/active-document-same-origin.https.html [ Failure ]
 crbug.com/1050754 external/wpt/payment-request/idlharness.https.window.html [ Failure ]
 crbug.com/1050754 external/wpt/payment-request/onmerchantvalidation-attribute.https.html [ Failure ]
 crbug.com/1050754 external/wpt/payment-request/payment-is-showing.https.html [ Failure ]

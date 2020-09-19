@@ -1,12 +1,12 @@
 <!doctype html>
-<title>PaymentRequest setting allowpaymentrequest after load and then navigating</title>
+<title>PaymentRequest setting allow="payment" after load and then navigating</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <div id="log"></div>
 <script>
 async_test((t) => {
   const iframe = document.createElement('iframe');
-  // no allowpaymentrequest attribute
+  // no allow="payment" attribute
 
   let i = 0;
 
@@ -14,7 +14,7 @@ async_test((t) => {
   iframe.src = "https://{{domains[www1]}}:{{ports[https][0]}}" + path + "echo-PaymentRequest.html";
   iframe.onload = t.step_func(() => {
     if (i === 0) {
-      iframe.allowPaymentRequest = true;
+      iframe.allow = "payment";
     }
     iframe.contentWindow.postMessage('What is the result of new PaymentRequest(...)?', '*');
   });

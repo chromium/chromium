@@ -1,6 +1,6 @@
 // Test should set these:
 // const expectSuccess = {'iframe': bool, 'frame': bool, 'object': bool, 'embed': bool};
-// const setAllowPaymentRequest = bool;
+// const setAllowPayment = bool;
 // const testCrossOrigin = bool;
 
 const tests = {};
@@ -32,8 +32,8 @@ window.onmessage = e => {
 ["iframe", "frame", "object", "embed"].forEach((tagName, i) => {
   tests[tagName] = async_test(t => {
     const elm = document.createElement(tagName);
-    if (setAllowPaymentRequest) {
-      elm.setAttribute("allowpaymentrequest", "");
+    if (setAllowPayment) {
+      elm.setAttribute("allow", "payment");
     }
     const path = location.pathname.substring(
       0,
