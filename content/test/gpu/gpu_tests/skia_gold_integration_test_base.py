@@ -314,6 +314,8 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         _ToNonEmptyStrOrNone(img_params.driver_version),
         'driver_vendor':
         _ToNonEmptyStrOrNone(img_params.driver_vendor),
+        'combined_hardware_identifier':
+        _GetCombinedHardwareIdentifier(img_params),
     }
     # If we have a grace period active, then the test is potentially flaky.
     # Include a pair that will cause Gold to ignore any untriaged images, which
@@ -341,13 +343,26 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     image_util.WritePngFile(screenshot, png_temp_file)
 
     gpu_keys = self.GetGoldJsonKeys(page)
-    gold_session = self.GetSkiaGoldSessionManager().GetSkiaGoldSession(gpu_keys)
+    gold_session = self.GetSkiaGoldSessionManager().GetSkiaGoldSession(
+        gpu_keys, corpus=SKIA_GOLD_CORPUS, instance='chrome')
     gold_properties = self.GetSkiaGoldProperties()
     use_luci = not (gold_properties.local_pixel_tests
                     or gold_properties.no_luci_auth)
 
     inexact_matching_args = page.matching_algorithm.GetCmdline()
 
+    # TODO(crbug.com/1113308): Switch the FYI session to the only session once
+    # all the data is migrated to the Chrome Gold instance.
+    status, error = gold_session.RunComparison(
+        name=image_name,
+        png_file=png_temp_file,
+        inexact_matching_args=inexact_matching_args,
+        use_luci=use_luci)
+    if status:
+      logging.warning('FYI Gold comparison failed with status %s and error %s',
+                      status, error)
+
+    gold_session = self.GetSkiaGoldSessionManager().GetSkiaGoldSession(gpu_keys)
     status, error = gold_session.RunComparison(
         name=image_name,
         png_file=png_temp_file,
@@ -468,6 +483,23 @@ def _StripAngleRevisionFromDriver(img_params):
       break
     kept_parts.append(part)
   img_params.driver_version = '.'.join(kept_parts)
+
+
+def _GetCombinedHardwareIdentifier(img_params):
+  """Combine all relevant hardware identifiers into a single key.
+
+  This makes Gold forwarding more precise by allowing us to forward explicit
+  configurations instead of individual components.
+  """
+  vendor_id = _ToHexOrNone(img_params.vendor_id)
+  device_id = _ToHexOrNone(img_params.device_id)
+  device_string = _ToNonEmptyStrOrNone(img_params.device_string)
+  combined_hw_identifiers = ('vendor_id:{vendor_id}, '
+                             'device_id:{device_id}, '
+                             'device_string:{device_string}')
+  combined_hw_identifiers = combined_hw_identifiers.format(
+      vendor_id=vendor_id, device_id=device_id, device_string=device_string)
+  return combined_hw_identifiers
 
 
 def _OutputLocalDiffFiles(gold_session, image_name):
