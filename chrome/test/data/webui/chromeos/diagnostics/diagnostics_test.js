@@ -88,6 +88,10 @@ suite('DiagnosticsAppTest', () => {
     // Verify the battery health card is in the page.
     const batteryHealth = page.$$('#batteryHealthCard');
     assertTrue(!!batteryHealth);
+
+    // Verify the battery status card is in the page.
+    const batteryStatus = page.$$('#batteryStatusCard');
+    assertTrue(!!batteryStatus);
   });
 });
 
@@ -131,6 +135,50 @@ suite('BatteryHealthCardTest', () => {
       // TODO(zentaro): Update when strings are finalized.
       assertEquals(
           'Battery Health', batteryHealthElement.$$('#cardTitle').textContent);
+    });
+  });
+});
+
+suite('BatteryStatusCardTest', () => {
+  /** @type {?HTMLElement} */
+  let batteryStatusElement = null;
+
+  /** @type {?FakeSystemDataProvider} */
+  let provider = null;
+
+  suiteSetup(() => {
+    provider = new FakeSystemDataProvider();
+    setSystemDataProviderForTesting(provider);
+  });
+
+  setup(function() {
+    PolymerTest.clearBody();
+  });
+
+  teardown(function() {
+    if (batteryStatusElement) {
+      batteryStatusElement.remove();
+    }
+    batteryStatusElement = null;
+    provider = null;
+  });
+
+  function initializeBatteryStatusCard() {
+    assertFalse(!!batteryStatusElement);
+
+    // Add the battery status card to the DOM.
+    batteryStatusElement = document.createElement('battery-status-card');
+    assertTrue(!!batteryStatusElement);
+    document.body.appendChild(batteryStatusElement);
+
+    return flushTasks();
+  }
+
+  test('BatterStatusCardPopulated', () => {
+    return initializeBatteryStatusCard().then(() => {
+      // TODO(zentaro): Update when strings are finalized.
+      assertEquals(
+          'Battery Status', batteryStatusElement.$$('#cardTitle').textContent);
     });
   });
 });

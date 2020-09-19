@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './battery_health_card.js';
+import './battery_status_card.js';
 import './cpu_card.js';
 import './diagnostics_shared_css.js';
 import './memory_card.js';
