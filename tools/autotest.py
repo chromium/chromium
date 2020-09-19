@@ -330,7 +330,7 @@ def BuildCppTestFilter(filenames, line):
 
 
 def BuildJavaTestFilter(filenames):
-  return ':'.join('*{}*'.format(os.path.splitext(os.path.basename(f))[0])
+  return ':'.join('*.{}*'.format(os.path.splitext(os.path.basename(f))[0])
                   for f in filenames)
 
 
