@@ -247,8 +247,6 @@ const char kHistogramForegroundToFirstPaint[] =
     "PageLoad.PaintTiming.ForegroundToFirstPaint";
 const char kHistogramForegroundToFirstContentfulPaint[] =
     "PageLoad.PaintTiming.ForegroundToFirstContentfulPaint";
-const char kHistogramForegroundToFirstMeaningfulPaint[] =
-    "PageLoad.Experimental.PaintTiming.ForegroundToFirstMeaningfulPaint";
 
 const char kHistogramFirstContentfulPaintUserInitiated[] =
     "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.UserInitiated";
@@ -642,13 +640,6 @@ void CorePageLoadMetricsObserver::OnFirstMeaningfulPaintInMainFrameDocument(
   } else {
     RecordFirstMeaningfulPaintStatus(
         internal::FIRST_MEANINGFUL_PAINT_BACKGROUNDED);
-  }
-
-  if (page_load_metrics::WasStartedInBackgroundOptionalEventInForeground(
-          timing.paint_timing->first_meaningful_paint, GetDelegate())) {
-    PAGE_LOAD_HISTOGRAM(internal::kHistogramForegroundToFirstMeaningfulPaint,
-                        timing.paint_timing->first_meaningful_paint.value() -
-                            GetDelegate().GetFirstForegroundTime().value());
   }
 }
 

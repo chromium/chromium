@@ -109,8 +109,6 @@ TEST_F(MultiTabLoadingPageLoadMetricsObserverTest, SingleTabLoading) {
   ValidateHistograms(internal::kHistogramForegroundToFirstContentfulPaintSuffix,
                      0, 0, 0);
   ValidateHistograms(internal::kHistogramFirstMeaningfulPaintSuffix, 0, 0, 0);
-  ValidateHistograms(internal::kHistogramForegroundToFirstMeaningfulPaintSuffix,
-                     0, 0, 0);
   ValidateHistograms(internal::kHistogramDOMContentLoadedEventFiredSuffix, 0, 0,
                      0);
   ValidateHistograms(
@@ -127,8 +125,6 @@ TEST_F(MultiTabLoadingPageLoadMetricsObserverTest, MultiTabLoading1) {
   ValidateHistograms(internal::kHistogramForegroundToFirstContentfulPaintSuffix,
                      0, 0, 0);
   ValidateHistograms(internal::kHistogramFirstMeaningfulPaintSuffix, 1, 0, 0);
-  ValidateHistograms(internal::kHistogramForegroundToFirstMeaningfulPaintSuffix,
-                     0, 0, 0);
   ValidateHistograms(internal::kHistogramDOMContentLoadedEventFiredSuffix, 1, 0,
                      0);
   ValidateHistograms(
@@ -145,8 +141,6 @@ TEST_F(MultiTabLoadingPageLoadMetricsObserverTest, MultiTabLoading2) {
   ValidateHistograms(internal::kHistogramForegroundToFirstContentfulPaintSuffix,
                      0, 0, 0);
   ValidateHistograms(internal::kHistogramFirstMeaningfulPaintSuffix, 1, 1, 0);
-  ValidateHistograms(internal::kHistogramForegroundToFirstMeaningfulPaintSuffix,
-                     0, 0, 0);
   ValidateHistograms(internal::kHistogramDOMContentLoadedEventFiredSuffix, 1, 1,
                      0);
   ValidateHistograms(
@@ -163,8 +157,6 @@ TEST_F(MultiTabLoadingPageLoadMetricsObserverTest, MultiTabLoading5) {
   ValidateHistograms(internal::kHistogramForegroundToFirstContentfulPaintSuffix,
                      0, 0, 0);
   ValidateHistograms(internal::kHistogramFirstMeaningfulPaintSuffix, 1, 1, 1);
-  ValidateHistograms(internal::kHistogramForegroundToFirstMeaningfulPaintSuffix,
-                     0, 0, 0);
   ValidateHistograms(internal::kHistogramDOMContentLoadedEventFiredSuffix, 1, 1,
                      1);
   ValidateHistograms(
@@ -181,8 +173,6 @@ TEST_F(MultiTabLoadingPageLoadMetricsObserverTest, MultiTabBackground) {
   ValidateHistograms(internal::kHistogramForegroundToFirstContentfulPaintSuffix,
                      1, 0, 0);
   ValidateHistograms(internal::kHistogramFirstMeaningfulPaintSuffix, 0, 0, 0);
-  ValidateHistograms(internal::kHistogramForegroundToFirstMeaningfulPaintSuffix,
-                     1, 0, 0);
   ValidateHistograms(internal::kHistogramDOMContentLoadedEventFiredSuffix, 0, 0,
                      0);
   ValidateHistograms(

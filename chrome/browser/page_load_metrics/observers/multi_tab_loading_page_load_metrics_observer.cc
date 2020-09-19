@@ -91,13 +91,6 @@ void MultiTabLoadingPageLoadMetricsObserver::
     RECORD_HISTOGRAMS(internal::kHistogramFirstMeaningfulPaintSuffix,
                       timing.paint_timing->first_meaningful_paint.value());
   }
-  if (page_load_metrics::WasStartedInBackgroundOptionalEventInForeground(
-          timing.paint_timing->first_meaningful_paint, GetDelegate())) {
-    RECORD_HISTOGRAMS(
-        internal::kHistogramForegroundToFirstMeaningfulPaintSuffix,
-        timing.paint_timing->first_meaningful_paint.value() -
-            GetDelegate().GetFirstForegroundTime().value());
-  }
 }
 
 void MultiTabLoadingPageLoadMetricsObserver::OnDomContentLoadedEventStart(

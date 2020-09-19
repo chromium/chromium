@@ -121341,6 +121341,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="PageLoad.Experimental.PaintTiming.ForegroundToFirstMeaningfulPaint"
     units="ms" expires_after="2020-09-27">
+  <obsolete>
+    Removed in Sep 2020.
+  </obsolete>
   <owner>ksakamoto@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>

@@ -16,7 +16,6 @@ extern const char kHistogramFirstInputDelaySuffix[];
 extern const char kHistogramFirstMeaningfulPaintSuffix[];
 extern const char kHistogramFirstPaintSuffix[];
 extern const char kHistogramForegroundToFirstContentfulPaintSuffix[];
-extern const char kHistogramForegroundToFirstMeaningfulPaintSuffix[];
 extern const char kHistogramLoadEventFiredBackgroundSuffix[];
 extern const char kHistogramLoadEventFiredSuffix[];
 extern const char kHistogramParseBlockedOnScriptLoadSuffix[];

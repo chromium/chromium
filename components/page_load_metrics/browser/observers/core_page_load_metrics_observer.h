@@ -61,8 +61,6 @@ extern const char kHistogramUserGestureNavigationToForwardBack[];
 extern const char kHistogramPageTimingForegroundDuration[];
 extern const char kHistogramPageTimingForegroundDurationNoCommit[];
 
-extern const char kHistogramForegroundToFirstMeaningfulPaint[];
-
 extern const char kHistogramFirstMeaningfulPaintStatus[];
 
 extern const char kHistogramFirstNonScrollInputAfterFirstPaint[];

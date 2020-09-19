@@ -1232,29 +1232,6 @@ TEST_F(CorePageLoadMetricsObserverTest,
   TestAllFramesLCP(990, LargestContentType::kText);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, ForegroundToFirstMeaningfulPaint) {
-  page_load_metrics::mojom::PageLoadTiming timing;
-  page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(1);
-  timing.parse_timing->parse_start = base::TimeDelta::FromMilliseconds(10);
-  timing.paint_timing->first_meaningful_paint = base::TimeDelta::FromSeconds(2);
-  PopulateRequiredTimingFields(&timing);
-
-  // Simulate "Open link in new tab."
-  web_contents()->WasHidden();
-  NavigateAndCommit(GURL(kDefaultTestUrl));
-
-  // First Meaningful Paint happens after tab is foregrounded.
-  web_contents()->WasShown();
-  tester()->SimulateTimingUpdate(timing);
-
-  // Navigate again to force histogram recording.
-  NavigateAndCommit(GURL(kDefaultTestUrl2));
-
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramForegroundToFirstMeaningfulPaint, 1);
-}
-
 TEST_F(CorePageLoadMetricsObserverTest, FirstInputDelayAndTimestamp) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
