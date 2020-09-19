@@ -21,13 +21,24 @@
 #include "base/containers/flat_map.h"
 #include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/version.h"
 #include "chromeos/chromeos_export.h"
-#include "chromeos/printing/ppd_provider.h"
 
 #ifndef CHROMEOS_PRINTING_PPD_METADATA_PARSER_H_
 #define CHROMEOS_PRINTING_PPD_METADATA_PARSER_H_
 
 namespace chromeos {
+
+// Defines the limitations on when we show a particular PPD.
+struct Restrictions {
+  Restrictions();
+  ~Restrictions();
+  Restrictions(const Restrictions&);
+  Restrictions& operator=(const Restrictions&);
+
+  base::Optional<base::Version> min_milestone;
+  base::Optional<base::Version> max_milestone;
+};
 
 struct CHROMEOS_EXPORT ReverseIndexLeaf {
   std::string manufacturer;
@@ -43,7 +54,7 @@ struct CHROMEOS_EXPORT ParsedPrinter {
 
   std::string user_visible_printer_name;
   std::string effective_make_and_model;
-  base::Optional<PpdProvider::Restrictions> restrictions;
+  Restrictions restrictions;
 };
 
 // A single leaf value parsed from a forward index.
@@ -54,7 +65,7 @@ struct CHROMEOS_EXPORT ParsedIndexLeaf {
   ParsedIndexLeaf& operator=(const ParsedIndexLeaf&);
 
   std::string ppd_basename;
-  base::Optional<PpdProvider::Restrictions> restrictions;
+  Restrictions restrictions;
   std::string license;
 };
 

@@ -64,7 +64,7 @@ struct ReverseIndexJSON {
   std::string model;
 
   // Restrictions for this manufacturer
-  PpdProvider::Restrictions restrictions;
+  PpdProvider::LegacyRestrictions restrictions;
 };
 
 struct PpdLicenseJSON {
@@ -84,7 +84,7 @@ struct ManufacturersJSON {
   std::string reference;
 
   // Restrictions for this manufacturer
-  PpdProvider::Restrictions restrictions;
+  PpdProvider::LegacyRestrictions restrictions;
 };
 
 // Holds a metadata_v2 printers response
@@ -96,7 +96,7 @@ struct PrintersJSON {
   std::string effective_make_and_model;
 
   // Restrictions for this printer
-  PpdProvider::Restrictions restrictions;
+  PpdProvider::LegacyRestrictions restrictions;
 };
 
 // Holds a metadata_v2 ppd-index response
@@ -276,9 +276,9 @@ std::string ComputeLicense(const base::Value& dict) {
 }
 
 // Constructs and returns a printers' restrictions parsed from |dict|.
-PpdProvider::Restrictions ComputeRestrictions(const base::Value& dict) {
+PpdProvider::LegacyRestrictions ComputeRestrictions(const base::Value& dict) {
   DCHECK(dict.is_dict());
-  PpdProvider::Restrictions restrictions;
+  PpdProvider::LegacyRestrictions restrictions;
 
   const base::Value* min_milestone =
       dict.FindKeyOfType({"min_milestone"}, base::Value::Type::DOUBLE);
@@ -301,7 +301,7 @@ PpdProvider::Restrictions ComputeRestrictions(const base::Value& dict) {
 // |current_version|.
 bool IsPrinterRestricted(const PrintersJSON& printer,
                          const base::Version& current_version) {
-  const PpdProvider::Restrictions& restrictions = printer.restrictions;
+  const PpdProvider::LegacyRestrictions& restrictions = printer.restrictions;
 
   if (restrictions.min_milestone != base::Version("0.0") &&
       restrictions.min_milestone > current_version) {

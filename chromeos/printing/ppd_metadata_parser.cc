@@ -59,29 +59,17 @@ base::Optional<base::Value> ParseJsonAndUnnestKey(
   return unnested;
 }
 
-// Returns a well-formed Restrictions struct from a dictionary |value|.
-// A well-formed Restrictions struct has at least one member that
-// for which calling base::Version::IsValid() will evaluate true.
-base::Optional<PpdProvider::Restrictions> ParseRestrictionsFromValue(
-    const base::Value& value) {
+// Returns a Restrictions struct from a dictionary |value|.
+Restrictions ParseRestrictionsFromValue(const base::Value& value) {
+  Restrictions restrictions;
   auto min_as_double = value.FindDoubleKey("minMilestone");
   auto max_as_double = value.FindDoubleKey("maxMilestone");
-  if (!min_as_double.has_value() && !max_as_double.has_value()) {
-    return base::nullopt;
-  }
 
-  // While we don't want to deliberately store trivial base::Version
-  // members into the Restrictions struct, take heed that a
-  // calling IsValid() on a default-constructed base::Version returns
-  // false.
-  PpdProvider::Restrictions restrictions;
-  bool restrictions_is_nontrivial = false;
   if (min_as_double.has_value()) {
     base::Version min_milestone =
         base::Version(base::NumberToString(int{min_as_double.value()}));
     if (min_milestone.IsValid()) {
       restrictions.min_milestone = min_milestone;
-      restrictions_is_nontrivial = true;
     }
   }
   if (max_as_double.has_value()) {
@@ -89,14 +77,9 @@ base::Optional<PpdProvider::Restrictions> ParseRestrictionsFromValue(
         base::Version(base::NumberToString(int{max_as_double.value()}));
     if (max_milestone.IsValid()) {
       restrictions.max_milestone = max_milestone;
-      restrictions_is_nontrivial = true;
     }
   }
-
-  if (restrictions_is_nontrivial) {
-    return restrictions;
-  }
-  return base::nullopt;
+  return restrictions;
 }
 
 // Returns a ParsedPrinter from a leaf |value| from Printers metadata.
@@ -174,6 +157,11 @@ base::Optional<ParsedIndexValues> UnnestPpdMetadata(const base::Value& value) {
 }
 
 }  // namespace
+
+Restrictions::Restrictions() = default;
+Restrictions::~Restrictions() = default;
+Restrictions::Restrictions(const Restrictions&) = default;
+Restrictions& Restrictions::operator=(const Restrictions&) = default;
 
 ParsedPrinter::ParsedPrinter() = default;
 ParsedPrinter::~ParsedPrinter() = default;

@@ -419,9 +419,11 @@ class PpdProviderImpl : public PpdProvider {
   // |restrictions|.
   bool CurrentVersionSatisfiesRestrictions(
       const Restrictions& restrictions) const {
-    if ((restrictions.min_milestone.IsValid() &&
+    if ((restrictions.min_milestone.has_value() &&
+         restrictions.min_milestone.value().IsValid() &&
          version_ < restrictions.min_milestone) ||
-        (restrictions.max_milestone.IsValid() &&
+        (restrictions.max_milestone.has_value() &&
+         restrictions.max_milestone.value().IsValid() &&
          version_ > restrictions.max_milestone)) {
       return false;
     }
@@ -458,8 +460,7 @@ class PpdProviderImpl : public PpdProvider {
 
     ResolvedPrintersList printers_available_to_our_version;
     for (const ParsedPrinter& printer : printers) {
-      if (!printer.restrictions.has_value() ||
-          CurrentVersionSatisfiesRestrictions(printer.restrictions.value())) {
+      if (CurrentVersionSatisfiesRestrictions(printer.restrictions)) {
         Printer::PpdReference ppd_reference;
         ppd_reference.effective_make_and_model =
             printer.effective_make_and_model;
@@ -488,9 +489,7 @@ class PpdProviderImpl : public PpdProvider {
     }
 
     for (const ParsedIndexLeaf& index_leaf : iter->second.values) {
-      if (!index_leaf.restrictions.has_value() ||
-          CurrentVersionSatisfiesRestrictions(
-              index_leaf.restrictions.value())) {
+      if (CurrentVersionSatisfiesRestrictions(index_leaf.restrictions)) {
         return &index_leaf;
       }
     }
