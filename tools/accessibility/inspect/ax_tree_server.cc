@@ -81,8 +81,14 @@ void AXTreeServer::Run(BuildTree build_tree,
 std::vector<AccessibilityTreeFormatter::PropertyFilter>
 AXTreeServer::GetPropertyFilters(const base::FilePath& filters_path) {
   if (filters_path.empty()) {
-    return {AccessibilityTreeFormatter::PropertyFilter(
-        "*", AccessibilityTreeFormatter::PropertyFilter::ALLOW)};
+    return {
+      AccessibilityTreeFormatter::PropertyFilter(
+          "*", AccessibilityTreeFormatter::PropertyFilter::ALLOW),
+#if defined(OS_MAC)
+      AccessibilityTreeFormatter::PropertyFilter(
+          "children", AccessibilityTreeFormatter::PropertyFilter::DENY),
+#endif
+    };
   }
 
   std::string raw_filters_text;
