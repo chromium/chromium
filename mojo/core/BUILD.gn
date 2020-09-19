@@ -217,16 +217,16 @@ if (is_chromeos || is_linux || is_android || is_win) {
     }
 
     copy("shared_library_arc32") {
-      sources = [ "${root_out_dir}/${android32_toolchain}/libmojo_core.so" ]
-      outputs = [ "${root_out_dir}/libmojo_core_arc32.so" ]
+      sources = [ "${root_build_dir}/${android32_toolchain}/libmojo_core.so" ]
+      outputs = [ "${root_build_dir}/libmojo_core_arc32.so" ]
       deps = [
         ":shared_library(//build/toolchain/android:${android32_toolchain})",
       ]
     }
 
     copy("shared_library_arc64") {
-      sources = [ "${root_out_dir}/${android64_toolchain}/libmojo_core.so" ]
-      outputs = [ "${root_out_dir}/libmojo_core_arc64.so" ]
+      sources = [ "${root_build_dir}/${android64_toolchain}/libmojo_core.so" ]
+      outputs = [ "${root_build_dir}/libmojo_core_arc64.so" ]
       deps = [
         ":shared_library(//build/toolchain/android:${android64_toolchain})",
       ]
