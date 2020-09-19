@@ -7,12 +7,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orderingFromXml="false">
 
-    <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="can_make_payment"
         android:title="@string/can_make_payment_title"
         android:summary="@string/settings_can_make_payment_toggle_label"
         android:order="0"/>
-    <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="preload_pages"
         android:title="@string/preload_pages_title"
         android:summary="@string/preload_pages_summary"

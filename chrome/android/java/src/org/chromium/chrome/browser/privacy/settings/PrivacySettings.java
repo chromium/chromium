@@ -9,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
@@ -28,7 +27,7 @@ import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.settings.SyncAndServicesSettings;
 import org.chromium.chrome.browser.usage_stats.UsageStatsConsentDialog;
-import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
+import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.prefs.PrefService;
@@ -93,12 +92,12 @@ public class PrivacySettings
 
         mManagedPreferenceDelegate = createManagedPreferenceDelegate();
 
-        ChromeBaseCheckBoxPreference canMakePaymentPref =
-                (ChromeBaseCheckBoxPreference) findPreference(PREF_CAN_MAKE_PAYMENT);
+        ChromeSwitchPreference canMakePaymentPref =
+                (ChromeSwitchPreference) findPreference(PREF_CAN_MAKE_PAYMENT);
         canMakePaymentPref.setOnPreferenceChangeListener(this);
 
-        ChromeBaseCheckBoxPreference networkPredictionPref =
-                (ChromeBaseCheckBoxPreference) findPreference(PREF_NETWORK_PREDICTIONS);
+        ChromeSwitchPreference networkPredictionPref =
+                (ChromeSwitchPreference) findPreference(PREF_NETWORK_PREDICTIONS);
         networkPredictionPref.setChecked(
                 PrivacyPreferencesManager.getInstance().getNetworkPredictionEnabled());
         networkPredictionPref.setOnPreferenceChangeListener(this);
@@ -145,8 +144,8 @@ public class PrivacySettings
     public void updateSummaries() {
         PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
 
-        CheckBoxPreference canMakePaymentPref =
-                (CheckBoxPreference) findPreference(PREF_CAN_MAKE_PAYMENT);
+        ChromeSwitchPreference canMakePaymentPref =
+                (ChromeSwitchPreference) findPreference(PREF_CAN_MAKE_PAYMENT);
         if (canMakePaymentPref != null) {
             canMakePaymentPref.setChecked(prefService.getBoolean(Pref.CAN_MAKE_PAYMENT_ENABLED));
         }
