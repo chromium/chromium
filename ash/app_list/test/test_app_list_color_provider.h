@@ -29,6 +29,7 @@ class TestAppListColorProvider : public AppListColorProvider {
   SkColor GetPageSwitcherButtonColor() const override;
   SkColor GetPageSwitcherInkDropBaseColor() const override;
   SkColor GetPageSwitcherInkDropHighlightColor() const override;
+  SkColor GetSearchBoxIconColor() const override;
 };
 
 }  // namespace ash

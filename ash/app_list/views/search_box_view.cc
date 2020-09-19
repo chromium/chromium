@@ -196,8 +196,9 @@ void SearchBoxView::UpdateSearchIcon() {
   const gfx::VectorIcon& icon = search_model_->search_engine_is_google()
                                     ? google_icon
                                     : kSearchEngineNotGoogleIcon;
-  SetSearchIconImage(
-      gfx::CreateVectorIcon(icon, search_box::kIconSize, search_box_color()));
+  SetSearchIconImage(gfx::CreateVectorIcon(
+      icon, search_box::kIconSize,
+      AppListColorProvider::Get()->GetSearchBoxIconColor()));
 }
 
 void SearchBoxView::UpdateSearchBoxBorder() {
@@ -231,10 +232,10 @@ int SearchBoxView::GetFocusRingSpacing() {
 
 void SearchBoxView::SetupCloseButton() {
   views::ImageButton* close = close_button();
-  close->SetImage(
-      views::ImageButton::STATE_NORMAL,
-      gfx::CreateVectorIcon(views::kIcCloseIcon, search_box::kIconSize,
-                            gfx::kGoogleGrey700));
+  close->SetImage(views::ImageButton::STATE_NORMAL,
+                  gfx::CreateVectorIcon(
+                      views::kIcCloseIcon, search_box::kIconSize,
+                      AppListColorProvider::Get()->GetSearchBoxIconColor()));
   close->SetVisible(false);
   base::string16 close_button_label(
       l10n_util::GetStringUTF16(IDS_APP_LIST_CLEAR_SEARCHBOX));
@@ -799,8 +800,9 @@ void SearchBoxView::SetupAssistantButton() {
   views::ImageButton* assistant = assistant_button();
   assistant->SetImage(
       views::ImageButton::STATE_NORMAL,
-      gfx::CreateVectorIcon(kAssistantIcon, search_box::kIconSize,
-                            gfx::kGoogleGrey700));
+      gfx::CreateVectorIcon(
+          kAssistantIcon, search_box::kIconSize,
+          AppListColorProvider::Get()->GetSearchBoxIconColor()));
   base::string16 assistant_button_label(
       l10n_util::GetStringUTF16(IDS_APP_LIST_START_ASSISTANT));
   assistant->SetAccessibleName(assistant_button_label);

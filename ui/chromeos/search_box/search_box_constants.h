@@ -7,13 +7,14 @@
 
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/chromeos/search_box/search_box_export.h"
+#include "ui/gfx/color_palette.h"
 
 namespace search_box {
 
 // Default color used when wallpaper customized color is not available for
 // searchbox, #000 at 87% opacity.
 SEARCH_BOX_EXPORT constexpr SkColor kDefaultSearchboxColor =
-    SkColorSetARGB(0xDE, 0x00, 0x00, 0x00);
+    gfx::kGoogleGrey200;
 
 // The horizontal padding of the box layout of the search box.
 SEARCH_BOX_EXPORT constexpr int kPadding = 12;

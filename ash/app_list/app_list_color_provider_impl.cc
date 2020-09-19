@@ -83,4 +83,9 @@ SkColor AppListColorProviderImpl::GetPageSwitcherInkDropHighlightColor() const {
                      ripple_attributes.highlight_opacity * 255);
 }
 
+SkColor AppListColorProviderImpl::GetSearchBoxIconColor() const {
+  return ash_color_provider_->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonIconColor);
+}
+
 }  // namespace ash

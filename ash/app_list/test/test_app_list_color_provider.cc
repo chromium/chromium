@@ -60,4 +60,8 @@ SkColor TestAppListColorProvider::GetPageSwitcherInkDropHighlightColor() const {
   return SkColorSetA(SK_ColorBLACK, 0x0F);
 }
 
+SkColor TestAppListColorProvider::GetSearchBoxIconColor() const {
+  return gfx::kGoogleGrey200;
+}
+
 }  // namespace ash
