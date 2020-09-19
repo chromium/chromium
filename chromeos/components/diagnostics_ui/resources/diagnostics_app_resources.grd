@@ -20,6 +20,7 @@
       <include name="IDR_DIAGNOSTICS_FAKE_DATA_JS" file="fake_data.js" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_FAKE_METHOD_RESOLVER_JS" file="fake_method_resolver.js" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_FAKE_SYSTEM_DATA_PROVIDER_JS" file="fake_system_data_provider.js" type="BINDATA"/>
+      <include name="IDR_DIAGNOSTICS_MEMORY_CARD_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/memory_card.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_MOJO_INTERFACE_PROVIDER_JS" file="mojo_interface_provider.js" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_OVERVIEW_CARD_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/overview_card.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_SHARED_CSS_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/diagnostics_shared_css.js" use_base_dir="false" type="BINDDATA"/>

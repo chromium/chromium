@@ -16,6 +16,7 @@ js_type_check("closure_compile_module") {
     ":fake_data",
     ":fake_method_resolver",
     ":fake_system_data_provider",
+    ":memory_card",
     ":mojo_interface_provider",
     ":overview_card",
   ]
@@ -24,6 +25,7 @@ js_type_check("closure_compile_module") {
 js_library("diagnostics_app") {
   deps = [
     ":diagnostics_card",
+    ":memory_card",
     ":overview_card",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -50,6 +52,12 @@ js_library("fake_system_data_provider") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
+js_library("memory_card") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("mojo_interface_provider") {
   deps = [
     ":diagnostics_types",
@@ -71,6 +79,7 @@ html_to_js("web_components") {
     "diagnostics_app.js",
     "diagnostics_card.js",
     "diagnostics_shared_css.js",
+    "memory_card.js",
     "overview_card.js",
   ]
 }

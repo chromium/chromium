@@ -76,6 +76,10 @@ suite('DiagnosticsAppTest', () => {
     // Verify the overview card is in the page.
     const overview = page.$$('#overviewCard');
     assertTrue(!!overview);
+
+    // Verify the memory card is in the page.
+    const memory = page.$$('#memoryCard');
+    assertTrue(!!memory);
   });
 });
 
@@ -130,6 +134,49 @@ suite('OverviewCardTest', () => {
       assertEquals(
           fakeSystemInfo.version.milestone_version,
           overviewElement.$$('#version').textContent);
+    });
+  });
+});
+
+suite('MemoryCardTest', () => {
+  /** @type {?HTMLElement} */
+  let memoryElement = null;
+
+  /** @type {?FakeSystemDataProvider} */
+  let provider = null;
+
+  suiteSetup(() => {
+    provider = new FakeSystemDataProvider();
+    setSystemDataProviderForTesting(provider);
+  });
+
+  setup(function() {
+    PolymerTest.clearBody();
+  });
+
+  teardown(function() {
+    if (memoryElement) {
+      memoryElement.remove();
+    }
+    memoryElement = null;
+    provider = null;
+  });
+
+  function initializeMemoryCard() {
+    assertFalse(!!memoryElement);
+
+    // Add the memory card to the DOM.
+    memoryElement = document.createElement('memory-card');
+    assertTrue(!!memoryElement);
+    document.body.appendChild(memoryElement);
+
+    return flushTasks();
+  }
+
+  test('MemoryCardPopulated', () => {
+    return initializeMemoryCard().then(() => {
+      // TODO(zentaro): Update when strings are finalized.
+      assertEquals('Memory', memoryElement.$$('#cardTitle').textContent);
     });
   });
 });
