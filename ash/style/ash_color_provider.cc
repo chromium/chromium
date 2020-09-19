@@ -258,6 +258,10 @@ SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
     case ContentLayerType::kAppStateIndicatorColorInactive:
       return GetDisabledColor(
           GetContentLayerColor(ContentLayerType::kAppStateIndicatorColor));
+    case ContentLayerType::kShelfHandleColor: {
+      return is_dark_mode ? SkColorSetA(SK_ColorWHITE, 0x24)
+                          : SkColorSetA(SK_ColorBLACK, 0x24);
+    }
   }
 }
 

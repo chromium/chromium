@@ -131,6 +131,9 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
     // Color for app state indicator.
     kAppStateIndicatorColor,
     kAppStateIndicatorColorInactive,
+
+    // Color for the shelf drag handle in tablet mode.
+    kShelfHandleColor,
   };
 
   // Types of ash styled buttons.

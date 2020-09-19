@@ -170,11 +170,6 @@ void DragHandle::ScheduleShowDragHandleNudge() {
                      base::Unretained(this)));
 }
 
-void DragHandle::SetColorAndOpacity(SkColor color, float opacity) {
-  layer()->SetColor(color);
-  layer()->SetOpacity(opacity);
-}
-
 void DragHandle::HideDragHandleNudge(
     contextual_tooltip::DismissNudgeReason reason) {
   StopDragHandleNudgeShowTimer();
@@ -221,6 +216,11 @@ void DragHandle::SetWindowDragFromShelfInProgress(bool gesture_in_progress) {
     HideDragHandleNudge(
         contextual_tooltip::DismissNudgeReason::kPerformedGesture);
   }
+}
+
+void DragHandle::UpdateColor() {
+  layer()->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kShelfHandleColor));
 }
 
 void DragHandle::OnGestureEvent(ui::GestureEvent* event) {

@@ -37,8 +37,6 @@ class ASH_EXPORT DragHandle : public views::View,
 
   DragHandle& operator=(const DragHandle&) = delete;
 
-  void SetColorAndOpacity(SkColor color, float opacity);
-
   // views::ViewTargeterDelegate:
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
@@ -63,6 +61,8 @@ class ASH_EXPORT DragHandle : public views::View,
   // Called when the window drag from shelf starts or ends. The drag handle
   // contextual nudge will remain visible while the gesture is in progress.
   void SetWindowDragFromShelfInProgress(bool gesture_in_progress);
+
+  void UpdateColor();
 
   // views::View:
   void OnGestureEvent(ui::GestureEvent* event) override;

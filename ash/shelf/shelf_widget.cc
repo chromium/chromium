@@ -146,7 +146,7 @@ class ShelfWidget::DelegateView : public views::WidgetDelegate,
 
   void UpdateBackgroundBlur();
   void UpdateOpaqueBackground();
-  void UpdateDragHandle(bool update_color);
+  void UpdateDragHandle();
 
   // This will be called when the parent local bounds change.
   void OnBoundsChanged(const gfx::Rect& old_bounds) override;
@@ -267,7 +267,7 @@ void ShelfWidget::DelegateView::HideOpaqueBackground() {
 void ShelfWidget::DelegateView::ShowOpaqueBackground() {
   hide_background_for_transitions_ = false;
   UpdateOpaqueBackground();
-  UpdateDragHandle(false /*update_color*/);
+  UpdateDragHandle();
   UpdateBackgroundBlur();
 }
 
@@ -358,32 +358,12 @@ void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
   }
   opaque_background()->SetBounds(opaque_background_bounds);
 
-  UpdateDragHandle(false /*update_color*/);
+  UpdateDragHandle();
   UpdateBackgroundBlur();
   SchedulePaint();
 }
 
-void ShelfWidget::DelegateView::UpdateDragHandle(bool update_color) {
-  if (update_color) {
-    if (Shell::Get()->session_controller()->IsUserSessionBlocked()) {
-      const bool is_oobe =
-          Shell::Get()->session_controller()->GetSessionState() ==
-          session_manager::SessionState::OOBE;
-      // For login shelf, let the drag handle match the login shelf nudge color.
-      drag_handle_->SetColorAndOpacity(
-          is_oobe ? gfx::kGoogleGrey700 : gfx::kGoogleGrey100, 1.0f);
-    } else {
-      const AshColorProvider::RippleAttributes ripple_attributes =
-          AshColorProvider::Get()->GetRippleAttributes(
-              ShelfConfig::Get()->GetDefaultShelfColor());
-      // TODO(manucornet): Figure out why we need a manual opacity adjustment
-      // to make this color look the same as the status area highlight.
-      drag_handle_->SetColorAndOpacity(
-          ripple_attributes.base_color,
-          ripple_attributes.inkdrop_opacity + 0.075);
-    }
-  }
-
+void ShelfWidget::DelegateView::UpdateDragHandle() {
   if (shelf_widget_->login_shelf_view_->GetVisible()) {
     drag_handle_->SetVisible(
         shelf_widget_->login_shelf_gesture_controller_.get());
@@ -531,13 +511,13 @@ bool ShelfWidget::SetLoginShelfSwipeHandler(
       std::make_unique<LoginShelfGestureController>(
           shelf_, delegate_view_->drag_handle(), nudge_text, fling_callback,
           std::move(exit_callback));
-  delegate_view_->UpdateDragHandle(false /*update_color*/);
+  delegate_view_->UpdateDragHandle();
   return true;
 }
 
 void ShelfWidget::ClearLoginShelfSwipeHandler() {
   login_shelf_gesture_controller_.reset();
-  delegate_view_->UpdateDragHandle(false /*update_color*/);
+  delegate_view_->UpdateDragHandle();
 }
 
 ui::Layer* ShelfWidget::GetOpaqueBackground() {
@@ -947,9 +927,10 @@ void ShelfWidget::OnSessionStateChanged(session_manager::SessionState state) {
       shelf_window->parent()->StackChildAtBottom(shelf_window);
   }
   shelf_layout_manager_->SetDimmed(false);
-  // Depending on session state change, the drag handle visibiliy and color
-  // might have to be changed.
-  delegate_view_->UpdateDragHandle(true /*update_color*/);
+  delegate_view_->UpdateDragHandle();
+  // Update drag handle's color on session state changes since the color mode
+  // might change on session state changes.
+  delegate_view_->drag_handle()->UpdateColor();
   login_shelf_view_->UpdateAfterSessionChange();
 }
 
