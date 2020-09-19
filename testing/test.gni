@@ -405,6 +405,13 @@ template("test") {
       _use_xvfb = false
     }
 
+    # When use_xvfb is set by the invoker, it indicates that running this test
+    # target requires a window, and in lacros build, ash-chrome serves as the
+    # display server. Note that even though the tests themselves do not require
+    # xvfb anymore, xvfb.py is still needed to invoke the lacros test runner
+    # because ash-chrome is based on x11.
+    _use_ash_chrome = _use_xvfb
+
     generate_wrapper(_gen_runner_target) {
       testonly = true
       wrapper_script = "$root_build_dir/bin/run_" + _executable
@@ -425,12 +432,6 @@ template("test") {
         "--test-launcher-bot-mode",
       ]
 
-      # When use_xvfb is set by the invoker, it indicates that running this test
-      # target requires a window, and in lacros build, ash-chrome serves as the
-      # display server. Note that even though the tests themselves do not
-      # require xvfb anymore, xvfb.py is still needed to invoke the lacros test
-      # runner because ash-chrome is based on x11.
-      _use_ash_chrome = _use_xvfb
       if (_use_ash_chrome) {
         executable_args += [ "--ash-chrome-version=for_bots" ]
       }
@@ -463,9 +464,17 @@ template("test") {
         deps = []
       }
 
+      if (!defined(data_deps)) {
+        data_deps = []
+      }
+
       testonly = true
       write_runtime_deps = _runtime_deps_file
       deps += [ ":$_gen_runner_target" ]
+      if (_use_ash_chrome && also_build_ash_chrome) {
+        data_deps +=
+            [ "//chrome:chrome(//build/toolchain/linux:ash_clang_x64)" ]
+      }
     }
   } else {
     if (is_mac || is_win) {
