@@ -1844,6 +1844,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      */
     @Override
     public boolean backShouldCloseTab(Tab tab) {
+        if (!tab.isInitialized()) {
+            return false;
+        }
         @TabLaunchType
         int type = tab.getLaunchType();
 
