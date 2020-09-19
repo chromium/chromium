@@ -2,25 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './cpu_card.js';
+import './diagnostics_card.js';
 import './diagnostics_shared_css.js';
-import './memory_card.js';
-import './overview_card.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {SystemDataProviderInterface} from './diagnostics_types.js'
+import {getSystemDataProvider} from './mojo_interface_provider.js';
 
 /**
  * @fileoverview
- * 'diagnostics-app' is the main page for viewing telemetric system information
- * and running diagnostic tests.
+ * 'cpu-card' shows information about the CPU.
  */
 Polymer({
-  is: 'diagnostics-app',
+  is: 'cpu-card',
 
   _template: html`{__html_template__}`,
 
+  /**
+   * @private {?SystemDataProviderInterface}
+   */
+  systemDataProvider_: null,
+
   /** @override */
-  ready() {
+  created() {
+    this.systemDataProvider_ = getSystemDataProvider();
   },
 
 });

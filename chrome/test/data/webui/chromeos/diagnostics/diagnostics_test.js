@@ -80,6 +80,53 @@ suite('DiagnosticsAppTest', () => {
     // Verify the memory card is in the page.
     const memory = page.$$('#memoryCard');
     assertTrue(!!memory);
+
+    // Verify the CPU card is in the page.
+    const cpu = page.$$('#cpuCard');
+    assertTrue(!!cpu);
+  });
+});
+
+suite('CpuCardTest', () => {
+  /** @type {?HTMLElement} */
+  let cpuElement = null;
+
+  /** @type {?FakeSystemDataProvider} */
+  let provider = null;
+
+  suiteSetup(() => {
+    provider = new FakeSystemDataProvider();
+    setSystemDataProviderForTesting(provider);
+  });
+
+  setup(function() {
+    PolymerTest.clearBody();
+  });
+
+  teardown(function() {
+    if (cpuElement) {
+      cpuElement.remove();
+    }
+    cpuElement = null;
+    provider = null;
+  });
+
+  function initializeCpuCard() {
+    assertFalse(!!cpuElement);
+
+    // Add the CPU card to the DOM.
+    cpuElement = document.createElement('cpu-card');
+    assertTrue(!!cpuElement);
+    document.body.appendChild(cpuElement);
+
+    return flushTasks();
+  }
+
+  test('CpuCardPopulated', () => {
+    return initializeCpuCard().then(() => {
+      // TODO(zentaro): Update when strings are finalized.
+      assertEquals('CPU', cpuElement.$$('#cardTitle').textContent);
+    });
   });
 });
 

@@ -10,6 +10,7 @@ import("//tools/polymer/html_to_js.gni")
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
+    ":cpu_card",
     ":diagnostics_app",
     ":diagnostics_card",
     ":diagnostics_types",
@@ -22,8 +23,15 @@ js_type_check("closure_compile_module") {
   ]
 }
 
+js_library("cpu_card") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("diagnostics_app") {
   deps = [
+    ":cpu_card",
     ":diagnostics_card",
     ":memory_card",
     ":overview_card",
@@ -76,6 +84,7 @@ js_library("overview_card") {
 
 html_to_js("web_components") {
   js_files = [
+    "cpu_card.js",
     "diagnostics_app.js",
     "diagnostics_card.js",
     "diagnostics_shared_css.js",
