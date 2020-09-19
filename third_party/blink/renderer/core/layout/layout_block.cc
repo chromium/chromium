@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
@@ -2326,6 +2327,14 @@ LayoutUnit LayoutBlock::AvailableLogicalHeightForPercentageComputation() const {
                  ConstrainContentBoxLogicalHeightByMinMax(
                      content_box_height - ComputeLogicalScrollbars().BlockSum(),
                      LayoutUnit(-1)));
+  } else if (ShouldComputeLogicalHeightFromAspectRatio()) {
+    NGBoxStrut border_padding(BorderStart() + ComputedCSSPaddingStart(),
+                              BorderEnd() + ComputedCSSPaddingEnd(),
+                              BorderBefore() + ComputedCSSPaddingBefore(),
+                              BorderAfter() + ComputedCSSPaddingAfter());
+    available_height = BlockSizeFromAspectRatio(
+        border_padding, *StyleRef().LogicalAspectRatio(),
+        StyleRef().BoxSizing(), LogicalWidth());
   } else if (style.LogicalHeight().IsPercentOrCalc() &&
              !is_out_of_flow_positioned_with_specified_height) {
     LayoutUnit height_with_scrollbar =
