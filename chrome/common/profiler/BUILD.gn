@@ -7,14 +7,14 @@ import("//extensions/buildflags/buildflags.gni")
 source_set("profiler") {
   public = [
     "main_thread_stack_sampling_profiler.h",
-    "stack_sampling_configuration.h",
     "thread_profiler.h",
+    "thread_profiler_configuration.h",
   ]
 
   sources = [
     "main_thread_stack_sampling_profiler.cc",
-    "stack_sampling_configuration.cc",
     "thread_profiler.cc",
+    "thread_profiler_configuration.cc",
   ]
 
   deps = [

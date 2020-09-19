@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_PROFILER_STACK_SAMPLING_CONFIGURATION_H_
-#define CHROME_COMMON_PROFILER_STACK_SAMPLING_CONFIGURATION_H_
+#ifndef CHROME_COMMON_PROFILER_THREAD_PROFILER_CONFIGURATION_H_
+#define CHROME_COMMON_PROFILER_THREAD_PROFILER_CONFIGURATION_H_
 
 #include <string>
 
@@ -15,13 +15,13 @@ namespace base {
 class CommandLine;
 }  // namespace base
 
-// StackSamplingConfiguration chooses a configuration for the enable state of
+// ThreadProfilerConfiguration chooses a configuration for the enable state of
 // the stack sampling profiler across all processes. This configuration is
 // determined once at browser process startup. Configurations for child
 // processes are communicated via command line arguments.
-class StackSamplingConfiguration {
+class ThreadProfilerConfiguration {
  public:
-  StackSamplingConfiguration();
+  ThreadProfilerConfiguration();
 
   // Get the stack sampling params to use.
   base::StackSamplingProfiler::SamplingParams GetSamplingParams() const;
@@ -42,8 +42,8 @@ class StackSamplingConfiguration {
       const std::string& process_type,
       base::CommandLine* command_line) const;
 
-  // Returns the StackSamplingConfiguration for the process.
-  static StackSamplingConfiguration* Get();
+  // Returns the ThreadProfilerConfiguration for the process.
+  static ThreadProfilerConfiguration* Get();
 
  private:
   // Configuration to use for this Chrome instance.
@@ -82,7 +82,7 @@ class StackSamplingConfiguration {
   // PROFILE_FROM_COMMAND_LINE.
   const ProfileConfiguration configuration_;
 
-  DISALLOW_COPY_AND_ASSIGN(StackSamplingConfiguration);
+  DISALLOW_COPY_AND_ASSIGN(ThreadProfilerConfiguration);
 };
 
-#endif  // CHROME_COMMON_PROFILER_STACK_SAMPLING_CONFIGURATION_H_
+#endif  // CHROME_COMMON_PROFILER_THREAD_PROFILER_CONFIGURATION_H_

@@ -108,8 +108,8 @@
 #include "chrome/common/media/media_resource_provider.h"
 #include "chrome/common/net/net_resource_provider.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/profiler/stack_sampling_configuration.h"
 #include "chrome/common/profiler/thread_profiler.h"
+#include "chrome/common/profiler/thread_profiler_configuration.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/device_event_log/device_event_log.h"
@@ -551,8 +551,8 @@ void ChromeBrowserMainParts::StartMetricsRecording() {
   // Register a synthetic field trial for the sampling profiler configuration
   // that was already chosen.
   std::string trial_name, group_name;
-  if (StackSamplingConfiguration::Get()->GetSyntheticFieldTrial(&trial_name,
-                                                                &group_name)) {
+  if (ThreadProfilerConfiguration::Get()->GetSyntheticFieldTrial(&trial_name,
+                                                                 &group_name)) {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(trial_name,
                                                               group_name);
   }

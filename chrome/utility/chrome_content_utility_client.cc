@@ -11,8 +11,8 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
-#include "chrome/common/profiler/stack_sampling_configuration.h"
 #include "chrome/common/profiler/thread_profiler.h"
+#include "chrome/common/profiler/thread_profiler_configuration.h"
 #include "chrome/utility/browser_exposed_utility_interfaces.h"
 #include "chrome/utility/services.h"
 #include "content/public/child/child_thread.h"
@@ -86,7 +86,8 @@ void ChromeContentUtilityClient::UtilityThreadStarted() {
           switches::kUtilityProcess &&  // An in-process utility thread may run
                                         // in other processes, only set up
                                         // collector in a utility process.
-      StackSamplingConfiguration::Get()->IsProfilerEnabledForCurrentProcess()) {
+      ThreadProfilerConfiguration::Get()
+          ->IsProfilerEnabledForCurrentProcess()) {
     mojo::PendingRemote<metrics::mojom::CallStackProfileCollector> collector;
     content::ChildThread::Get()->BindHostReceiver(
         collector.InitWithNewPipeAndPassReceiver());

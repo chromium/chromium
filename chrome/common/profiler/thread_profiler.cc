@@ -21,7 +21,7 @@
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "chrome/common/profiler/stack_sampling_configuration.h"
+#include "chrome/common/profiler/thread_profiler_configuration.h"
 #include "components/metrics/call_stack_profile_builder.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
 #include "content/public/common/content_switches.h"
@@ -108,7 +108,7 @@ GetCoreUnwindersFactory() {
 
     // The module is loadable if the profiler is enabled for the current
     // process.
-    CHECK(StackSamplingConfiguration::Get()
+    CHECK(ThreadProfilerConfiguration::Get()
               ->IsProfilerEnabledForCurrentProcess());
 
     class UnwindersFactory {
@@ -273,7 +273,7 @@ void ThreadProfiler::SetMainThreadTaskRunner(
 
 void ThreadProfiler::SetAuxUnwinderFactory(
     const base::RepeatingCallback<std::unique_ptr<base::Unwinder>()>& factory) {
-  if (!StackSamplingConfiguration::Get()->IsProfilerEnabledForCurrentProcess())
+  if (!ThreadProfilerConfiguration::Get()->IsProfilerEnabledForCurrentProcess())
     return;
 
   aux_unwinder_factory_ = factory;
@@ -290,7 +290,7 @@ void ThreadProfiler::StartOnChildThread(CallStackProfileParams::Thread thread) {
       base::SequenceLocalStorageSlot<std::unique_ptr<ThreadProfiler>>>
       child_thread_profiler_sequence_local_storage;
 
-  if (!StackSamplingConfiguration::Get()->IsProfilerEnabledForCurrentProcess())
+  if (!ThreadProfilerConfiguration::Get()->IsProfilerEnabledForCurrentProcess())
     return;
 
   child_thread_profiler_sequence_local_storage->emplace(
@@ -307,7 +307,7 @@ void ThreadProfiler::SetBrowserProcessReceiverCallback(
 // static
 void ThreadProfiler::SetCollectorForChildProcess(
     mojo::PendingRemote<metrics::mojom::CallStackProfileCollector> collector) {
-  if (!StackSamplingConfiguration::Get()->IsProfilerEnabledForCurrentProcess())
+  if (!ThreadProfilerConfiguration::Get()->IsProfilerEnabledForCurrentProcess())
     return;
 
   DCHECK_NE(CallStackProfileParams::BROWSER_PROCESS, GetProcess());
@@ -341,11 +341,11 @@ ThreadProfiler::ThreadProfiler(
       owning_thread_task_runner_(owning_thread_task_runner),
       work_id_recorder_(std::make_unique<WorkIdRecorder>(
           base::WorkIdProvider::GetForCurrentThread())) {
-  if (!StackSamplingConfiguration::Get()->IsProfilerEnabledForCurrentProcess())
+  if (!ThreadProfilerConfiguration::Get()->IsProfilerEnabledForCurrentProcess())
     return;
 
   const base::StackSamplingProfiler::SamplingParams sampling_params =
-      StackSamplingConfiguration::Get()->GetSamplingParams();
+      ThreadProfilerConfiguration::Get()->GetSamplingParams();
 
   startup_profiler_ = std::make_unique<StackSamplingProfiler>(
       base::GetSamplingProfilerCurrentThreadToken(), sampling_params,
@@ -385,7 +385,7 @@ void ThreadProfiler::OnPeriodicCollectionCompleted(
 
 void ThreadProfiler::SetMainThreadTaskRunnerImpl(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  if (!StackSamplingConfiguration::Get()->IsProfilerEnabledForCurrentProcess())
+  if (!ThreadProfilerConfiguration::Get()->IsProfilerEnabledForCurrentProcess())
     return;
 
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -411,7 +411,7 @@ void ThreadProfiler::StartPeriodicSamplingCollection() {
   // NB: Destroys the previous profiler as side effect.
   periodic_profiler_ = std::make_unique<StackSamplingProfiler>(
       base::GetSamplingProfilerCurrentThreadToken(),
-      StackSamplingConfiguration::Get()->GetSamplingParams(),
+      ThreadProfilerConfiguration::Get()->GetSamplingParams(),
       std::make_unique<CallStackProfileBuilder>(
           CallStackProfileParams(process_, thread_,
                                  CallStackProfileParams::PERIODIC_COLLECTION),

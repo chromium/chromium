@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/profiler/stack_sampling_configuration.h"
+#include "chrome/common/profiler/thread_profiler_configuration.h"
 
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
@@ -34,7 +34,7 @@
 
 namespace {
 
-base::LazyInstance<StackSamplingConfiguration>::Leaky g_configuration =
+base::LazyInstance<ThreadProfilerConfiguration>::Leaky g_configuration =
     LAZY_INSTANCE_INITIALIZER;
 
 // Returns true if the current execution is taking place in the browser process.
@@ -92,11 +92,11 @@ bool ShouldEnableProfilerForNextRendererProcess() {
 
 }  // namespace
 
-StackSamplingConfiguration::StackSamplingConfiguration()
+ThreadProfilerConfiguration::ThreadProfilerConfiguration()
     : configuration_(GenerateConfiguration()) {}
 
 base::StackSamplingProfiler::SamplingParams
-StackSamplingConfiguration::GetSamplingParams() const {
+ThreadProfilerConfiguration::GetSamplingParams() const {
   base::StackSamplingProfiler::SamplingParams params;
   params.initial_delay = base::TimeDelta::FromMilliseconds(0);
   // Trim the sampling duration when testing the profiler using browser tests.
@@ -110,7 +110,7 @@ StackSamplingConfiguration::GetSamplingParams() const {
   return params;
 }
 
-bool StackSamplingConfiguration::IsProfilerEnabledForCurrentProcess() const {
+bool ThreadProfilerConfiguration::IsProfilerEnabledForCurrentProcess() const {
   if (IsBrowserProcess()) {
     return configuration_ == PROFILE_ENABLED ||
            configuration_ == PROFILE_CONTROL;
@@ -124,7 +124,7 @@ bool StackSamplingConfiguration::IsProfilerEnabledForCurrentProcess() const {
   return command_line->HasSwitch(switches::kStartStackProfiler);
 }
 
-bool StackSamplingConfiguration::GetSyntheticFieldTrial(
+bool ThreadProfilerConfiguration::GetSyntheticFieldTrial(
     std::string* trial_name,
     std::string* group_name) const {
   DCHECK(IsBrowserProcess());
@@ -161,7 +161,7 @@ bool StackSamplingConfiguration::GetSyntheticFieldTrial(
   return !group_name->empty();
 }
 
-void StackSamplingConfiguration::AppendCommandLineSwitchForChildProcess(
+void ThreadProfilerConfiguration::AppendCommandLineSwitchForChildProcess(
     const std::string& process_type,
     base::CommandLine* command_line) const {
   DCHECK(IsBrowserProcess());
@@ -192,13 +192,13 @@ void StackSamplingConfiguration::AppendCommandLineSwitchForChildProcess(
 }
 
 // static
-StackSamplingConfiguration* StackSamplingConfiguration::Get() {
+ThreadProfilerConfiguration* ThreadProfilerConfiguration::Get() {
   return g_configuration.Pointer();
 }
 
 // static
-StackSamplingConfiguration::ProfileConfiguration
-StackSamplingConfiguration::ChooseConfiguration(
+ThreadProfilerConfiguration::ProfileConfiguration
+ThreadProfilerConfiguration::ChooseConfiguration(
     const std::vector<Variation>& variations) {
   int total_weight = 0;
   for (const Variation& variation : variations)
@@ -219,8 +219,8 @@ StackSamplingConfiguration::ChooseConfiguration(
 }
 
 // static
-StackSamplingConfiguration::ProfileConfiguration
-StackSamplingConfiguration::GenerateConfiguration() {
+ThreadProfilerConfiguration::ProfileConfiguration
+ThreadProfilerConfiguration::GenerateConfiguration() {
   if (!IsBrowserProcess())
     return PROFILE_FROM_COMMAND_LINE;
 
