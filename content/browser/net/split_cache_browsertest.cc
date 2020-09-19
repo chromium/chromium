@@ -619,14 +619,8 @@ IN_PROC_BROWSER_TEST_F(SplitCacheContentBrowserTestDisabled, NonSplitCache) {
                                GenURL("c.com", "/title1.html")));
 }
 
-// TODO(http://crbug.com/1104847): Flaky on Win10.
-#if defined(OS_WIN)
-#define MAYBE_SplitCacheDedicatedWorkers DISABLED_SplitCacheDedicatedWorkers
-#else
-#define MAYBE_SplitCacheDedicatedWorkers SplitCacheDedicatedWorkers
-#endif
 IN_PROC_BROWSER_TEST_F(SplitCacheWithFrameOriginContentBrowserTest,
-                       MAYBE_SplitCacheDedicatedWorkers) {
+                       SplitCacheDedicatedWorkers) {
   // Load 3p.com/script from a.com's worker. The first time it's loaded from the
   // network and the second it's cached.
   EXPECT_FALSE(TestResourceLoadFromDedicatedWorker(
@@ -768,16 +762,8 @@ IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled,
       GenURL("e.com", "/worker.js")));
 }
 
-#if defined(OS_WIN)
-// Flaky on Windows: https://crbug.com/1104847
-#define MAYBE_SplitCacheDedicatedWorkersScripts \
-  DISABLED_SplitCacheDedicatedWorkersScripts
-#else
-#define MAYBE_SplitCacheDedicatedWorkersScripts \
-  SplitCacheDedicatedWorkersScripts
-#endif
 IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled,
-                       MAYBE_SplitCacheDedicatedWorkersScripts) {
+                       SplitCacheDedicatedWorkersScripts) {
   // Load a.com's worker. The first time the worker script is loaded from the
   // network and the second it's cached.
   EXPECT_FALSE(DedicatedWorkerScriptCached(
