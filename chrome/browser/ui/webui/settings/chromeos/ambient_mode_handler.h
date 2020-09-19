@@ -81,13 +81,14 @@ class AmbientModeHandler : public ::settings::SettingsPageUIHandler {
   // Called when the settings is updated.
   void OnUpdateSettings(bool success);
 
+  // Will be called from ambientMode/photos subpage and ambientMode subpage.
+  // |topic_source| is used to request the albums in that source and identify
+  // the callers:
+  //   1. |kGooglePhotos|: ambientMode/photos?topicSource=0
+  //   2. |kArtGallery|:   ambientMode/photos?topicSource=1
+  //   3. base::nullopt:   ambientMode/
   void RequestSettingsAndAlbums(
-      ash::AmbientBackendController::OnSettingsAndAlbumsFetchedCallback
-          callback);
-
-  // |topic_source| is what the |settings_| and |personal_albums_| were
-  // requested for the ambientMode/photos subpage. It is base::nullopt if they
-  // were requested by the ambientMode subpage.
+      base::Optional<ash::AmbientModeTopicSource> topic_source);
   void OnSettingsAndAlbumsFetched(
       base::Optional<ash::AmbientModeTopicSource> topic_source,
       const base::Optional<ash::AmbientSettings>& settings,
@@ -116,6 +117,9 @@ class AmbientModeHandler : public ::settings::SettingsPageUIHandler {
 
   ash::PersonalAlbums personal_albums_;
 
+  // Backoff retries for RequestSettingsAndAlbums().
+  net::BackoffEntry fetch_settings_retry_backoff_;
+
   // Whether the Settings updating is ongoing.
   bool is_updating_backend_ = false;
 
@@ -124,9 +128,6 @@ class AmbientModeHandler : public ::settings::SettingsPageUIHandler {
 
   // Backoff retries for UpdateSettings().
   net::BackoffEntry update_settings_retry_backoff_;
-
-  // Number of attempts to update.
-  int update_settings_retries_ = 0;
 
   base::WeakPtrFactory<AmbientModeHandler> backend_weak_factory_{this};
   base::WeakPtrFactory<AmbientModeHandler> ui_update_weak_factory_{this};

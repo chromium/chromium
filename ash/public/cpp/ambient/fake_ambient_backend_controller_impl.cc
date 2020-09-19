@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "base/callback.h"
 #include "base/optional.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -141,15 +142,30 @@ void FakeAmbientBackendControllerImpl::FetchSettingsAndAlbums(
     int banner_height,
     int num_albums,
     OnSettingsAndAlbumsFetchedCallback callback) {
-  // Pretend to respond asynchronously.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), CreateFakeSettings(),
-                                CreateFakeAlbums()));
+  pending_fetch_settings_albums_callback_ = std::move(callback);
 }
 
 void FakeAmbientBackendControllerImpl::SetPhotoRefreshInterval(
     base::TimeDelta interval) {
   NOTIMPLEMENTED();
+}
+
+void FakeAmbientBackendControllerImpl::ReplyFetchSettingsAndAlbums(
+    bool success) {
+  if (!pending_fetch_settings_albums_callback_)
+    return;
+
+  if (success) {
+    std::move(pending_fetch_settings_albums_callback_)
+        .Run(CreateFakeSettings(), CreateFakeAlbums());
+  } else {
+    std::move(pending_fetch_settings_albums_callback_)
+        .Run(/*settings=*/base::nullopt, PersonalAlbums());
+  }
+}
+
+bool FakeAmbientBackendControllerImpl::IsFetchSettingsAndAlbumsPending() const {
+  return !pending_fetch_settings_albums_callback_.is_null();
 }
 
 void FakeAmbientBackendControllerImpl::ReplyUpdateSettings(bool success) {

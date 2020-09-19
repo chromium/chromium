@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
@@ -122,7 +123,8 @@ base::string16 GetAlbumDescription(const ash::PersonalAlbum& album) {
 }  // namespace
 
 AmbientModeHandler::AmbientModeHandler()
-    : update_settings_retry_backoff_(&kRetryBackoffPolicy) {}
+    : fetch_settings_retry_backoff_(&kRetryBackoffPolicy),
+      update_settings_retry_backoff_(&kRetryBackoffPolicy) {}
 
 AmbientModeHandler::~AmbientModeHandler() = default;
 
@@ -163,10 +165,7 @@ void AmbientModeHandler::HandleRequestSettings(const base::ListValue* args) {
   // since the last time requesting the data. Abort any request in progress to
   // avoid unnecessary updating invisible subpage.
   ui_update_weak_factory_.InvalidateWeakPtrs();
-  RequestSettingsAndAlbums(
-      base::BindOnce(&AmbientModeHandler::OnSettingsAndAlbumsFetched,
-                     ui_update_weak_factory_.GetWeakPtr(),
-                     /*topic_source=*/base::nullopt));
+  RequestSettingsAndAlbums(/*topic_source=*/base::nullopt);
 }
 
 void AmbientModeHandler::HandleRequestAlbums(const base::ListValue* args) {
@@ -179,9 +178,7 @@ void AmbientModeHandler::HandleRequestAlbums(const base::ListValue* args) {
   // Photos to Art gallery, since the last time requesting the data.
   // Abort any request in progress to avoid updating incorrect contents.
   ui_update_weak_factory_.InvalidateWeakPtrs();
-  RequestSettingsAndAlbums(base::BindOnce(
-      &AmbientModeHandler::OnSettingsAndAlbumsFetched,
-      ui_update_weak_factory_.GetWeakPtr(), ExtractTopicSource(args)));
+  RequestSettingsAndAlbums(ExtractTopicSource(args));
 }
 
 void AmbientModeHandler::HandleSetSelectedTemperatureUnit(
@@ -333,13 +330,12 @@ void AmbientModeHandler::UpdateSettings() {
 
 void AmbientModeHandler::OnUpdateSettings(bool success) {
   is_updating_backend_ = false;
-  update_settings_retry_backoff_.InformOfRequest(success);
 
   if (success) {
-    update_settings_retries_ = 0;
+    update_settings_retry_backoff_.Reset();
   } else {
-    ++update_settings_retries_;
-    if (update_settings_retries_ >= kMaxRetries)
+    update_settings_retry_backoff_.InformOfRequest(/*succeeded=*/false);
+    if (update_settings_retry_backoff_.failure_count() > kMaxRetries)
       return;
   }
 
@@ -355,23 +351,36 @@ void AmbientModeHandler::OnUpdateSettings(bool success) {
 }
 
 void AmbientModeHandler::RequestSettingsAndAlbums(
-    ash::AmbientBackendController::OnSettingsAndAlbumsFetchedCallback
-        callback) {
+    base::Optional<ash::AmbientModeTopicSource> topic_source) {
   // TODO(b/161044021): Add a helper function to get all the albums. Currently
   // only load 100 latest modified albums.
   ash::AmbientBackendController::Get()->FetchSettingsAndAlbums(
-      kBannerWidthPx, kBannerHeightPx, /*num_albums=*/100, std::move(callback));
+      kBannerWidthPx, kBannerHeightPx, /*num_albums=*/100,
+      base::BindOnce(&AmbientModeHandler::OnSettingsAndAlbumsFetched,
+                     ui_update_weak_factory_.GetWeakPtr(), topic_source));
 }
 
 void AmbientModeHandler::OnSettingsAndAlbumsFetched(
     base::Optional<ash::AmbientModeTopicSource> topic_source,
     const base::Optional<ash::AmbientSettings>& settings,
     ash::PersonalAlbums personal_albums) {
-  // TODO(b/152921891): Retry a small fixed number of times, then only retry
-  // when user confirms in the error message dialog.
-  if (!settings)
-    return;
+  // |settings| value implies success.
+  if (!settings) {
+    fetch_settings_retry_backoff_.InformOfRequest(/*succeeded=*/false);
+    if (fetch_settings_retry_backoff_.failure_count() > kMaxRetries)
+      return;
 
+    const base::TimeDelta kDelay =
+        fetch_settings_retry_backoff_.GetTimeUntilRelease();
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AmbientModeHandler::RequestSettingsAndAlbums,
+                       ui_update_weak_factory_.GetWeakPtr(), topic_source),
+        kDelay);
+    return;
+  }
+
+  fetch_settings_retry_backoff_.Reset();
   settings_ = settings;
   personal_albums_ = std::move(personal_albums);
   SyncSettingsAndAlbums();

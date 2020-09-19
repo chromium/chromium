@@ -41,6 +41,14 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
       OnSettingsAndAlbumsFetchedCallback callback) override;
   void SetPhotoRefreshInterval(base::TimeDelta interval) override;
 
+  // Simulate to reply the request of FetchSettingsAndAlbums().
+  // If |success| is true, will return fake data.
+  // If |success| is false, will return null |settings| data.
+  void ReplyFetchSettingsAndAlbums(bool success);
+
+  // Whether there is a pending FetchSettingsAndAlbums() request.
+  bool IsFetchSettingsAndAlbumsPending() const;
+
   // Simulate to reply the request of UpdateSettings() with |success|.
   void ReplyUpdateSettings(bool success);
 
@@ -48,6 +56,8 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
   bool IsUpdateSettingsPending() const;
 
  private:
+  OnSettingsAndAlbumsFetchedCallback pending_fetch_settings_albums_callback_;
+
   UpdateSettingsCallback pending_update_callback_;
 };
 
