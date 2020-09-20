@@ -137,7 +137,7 @@ const char kPerfITLBMissCyclesCmdAtom[] =
     "perf record -a -e page_walks.i_side_cycles -c 30001";
 
 const char kPerfDTLBMissCyclesCmdAtom[] =
-    "perf record -a -e page_walks.d_side_cycles -c -g 160001";
+    "perf record -a -e page_walks.d_side_cycles -g -c 160001";
 
 const char kPerfLLCMissesCmd[] = "perf record -a -e r412e -g -c 30007";
 // Precise events (request zero skid) for last level cache misses.
@@ -158,14 +158,17 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
   const char* lbr_cmd = kPerfLBRCmd;
 
   if (cpu_uarch == "Skylake" || cpu_uarch == "Kabylake" ||
-      cpu_uarch == "Tigerlake") {
+      cpu_uarch == "Tigerlake" || cpu_uarch == "GoldmontPlus") {
     itlb_miss_cycles_cmd = kPerfITLBMissCyclesCmdSkylake;
     dtlb_miss_cycles_cmd = kPerfDTLBMissCyclesCmdSkylake;
   }
   if (cpu_uarch == "Silvermont" || cpu_uarch == "Airmont" ||
-      cpu_uarch == "Goldmont" || cpu_uarch == "GoldmontPlus") {
+      cpu_uarch == "Goldmont") {
     itlb_miss_cycles_cmd = kPerfITLBMissCyclesCmdAtom;
     dtlb_miss_cycles_cmd = kPerfDTLBMissCyclesCmdAtom;
+  }
+  if (cpu_uarch == "Silvermont" || cpu_uarch == "Airmont" ||
+      cpu_uarch == "Goldmont" || cpu_uarch == "GoldmontPlus") {
     lbr_cmd = kPerfLBRCmdAtom;
   }
 
@@ -193,10 +196,9 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
     cmds.push_back(WeightAndValue(15.0, lbr_cmd));
     cmds.push_back(WeightAndValue(5.0, itlb_miss_cycles_cmd));
     cmds.push_back(WeightAndValue(5.0, dtlb_miss_cycles_cmd));
-    // Only atom family and big Intel cores newer than haswell support precise
-    // events on last level cache misses.
-    if (cpu_uarch != "IvyBridge" && cpu_uarch != "Haswell" &&
-        cpu_uarch != "SandyBridge") {
+    // Only Goldmont and GoldmontPlus support precise events on last level cache
+    // misses.
+    if (cpu_uarch == "Goldmont" || cpu_uarch == "GoldmontPlus") {
       cmds.push_back(WeightAndValue(5.0, kPerfLLCMissesPreciseCmd));
     } else {
       cmds.push_back(WeightAndValue(5.0, kPerfLLCMissesCmd));

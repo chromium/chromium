@@ -462,7 +462,7 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Skylake) {
   EXPECT_NE(cmds.end(), found);
   found = std::find_if(cmds.begin(), cmds.end(),
                        [](const RandomSelector::WeightAndValue& cmd) -> bool {
-                         return cmd.value == kPerfLLCMissesPreciseCmd;
+                         return cmd.value == kPerfLLCMissesCmd;
                        });
   EXPECT_NE(cmds.end(), found);
   found = std::find_if(cmds.begin(), cmds.end(),
@@ -495,7 +495,7 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Tigerlake) {
   EXPECT_NE(cmds.end(), found);
   found = std::find_if(cmds.begin(), cmds.end(),
                        [](const RandomSelector::WeightAndValue& cmd) -> bool {
-                         return cmd.value == kPerfLLCMissesPreciseCmd;
+                         return cmd.value == kPerfLLCMissesCmd;
                        });
   EXPECT_NE(cmds.end(), found);
   found = std::find_if(cmds.begin(), cmds.end(),
@@ -538,6 +538,43 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Goldmont) {
   found = std::find_if(cmds.begin(), cmds.end(),
                        [](const RandomSelector::WeightAndValue& cmd) -> bool {
                          return cmd.value == kPerfITLBMissCyclesCmdAtom;
+                       });
+  EXPECT_NE(cmds.end(), found);
+}
+
+TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_GoldmontPlus) {
+  CPUIdentity cpuid;
+  cpuid.arch = "x86_64";
+  cpuid.vendor = "GenuineIntel";
+  cpuid.family = 0x06;
+  cpuid.model = 0x7a;  // GoldmontPlus
+  cpuid.model_name = "";
+  cpuid.release = "4.4.196";
+  std::vector<RandomSelector::WeightAndValue> cmds =
+      internal::GetDefaultCommandsForCpu(cpuid);
+  ASSERT_GE(cmds.size(), 2UL);
+  EXPECT_EQ(cmds[0].value, kPerfCyclesCmd);
+  EXPECT_EQ(cmds[1].value, kPerfFPCallgraphCmd);
+  // No LBR callstacks because the microarchitecture doesn't support it.
+  auto found =
+      std::find_if(cmds.begin(), cmds.end(),
+                   [](const RandomSelector::WeightAndValue& cmd) -> bool {
+                     return cmd.value == kPerfLBRCallgraphCmd;
+                   });
+  EXPECT_EQ(cmds.end(), found);
+  found = std::find_if(cmds.begin(), cmds.end(),
+                       [](const RandomSelector::WeightAndValue& cmd) -> bool {
+                         return cmd.value == kPerfLBRCmdAtom;
+                       });
+  EXPECT_NE(cmds.end(), found);
+  found = std::find_if(cmds.begin(), cmds.end(),
+                       [](const RandomSelector::WeightAndValue& cmd) -> bool {
+                         return cmd.value == kPerfLLCMissesPreciseCmd;
+                       });
+  EXPECT_NE(cmds.end(), found);
+  found = std::find_if(cmds.begin(), cmds.end(),
+                       [](const RandomSelector::WeightAndValue& cmd) -> bool {
+                         return cmd.value == kPerfITLBMissCyclesCmdSkylake;
                        });
   EXPECT_NE(cmds.end(), found);
 }
