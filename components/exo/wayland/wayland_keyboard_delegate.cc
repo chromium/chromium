@@ -10,6 +10,7 @@
 #include <wayland-server-protocol-core.h>
 
 #include "base/containers/flat_map.h"
+#include "components/exo/keyboard_modifiers.h"
 #include "components/exo/wayland/serial_tracker.h"
 #include "components/exo/xkb_tracker.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -109,13 +110,12 @@ uint32_t WaylandKeyboardDelegate::DomCodeToKey(ui::DomCode code) const {
 }
 
 void WaylandKeyboardDelegate::SendKeyboardModifiers() {
+  const KeyboardModifiers modifiers = xkb_tracker_->GetModifiers();
   wl_keyboard_send_modifiers(
       keyboard_resource_,
       serial_tracker_->GetNextSerial(SerialTracker::EventType::OTHER_EVENT),
-      xkb_tracker_->GetSerializeMods(XKB_STATE_MODS_DEPRESSED),
-      xkb_tracker_->GetSerializeMods(XKB_STATE_MODS_LOCKED),
-      xkb_tracker_->GetSerializeMods(XKB_STATE_MODS_LATCHED),
-      xkb_tracker_->GetSerializeLayout(XKB_STATE_LAYOUT_EFFECTIVE));
+      modifiers.depressed, modifiers.locked, modifiers.latched,
+      modifiers.group);
   wl_client_flush(client());
 }
 

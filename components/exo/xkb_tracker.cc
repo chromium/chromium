@@ -5,6 +5,7 @@
 #include "components/exo/xkb_tracker.h"
 
 #if BUILDFLAG(USE_XKBCOMMON)
+#include "components/exo/keyboard_modifiers.h"
 #include "ui/events/ozone/layout/xkb/xkb_keyboard_layout_engine.h"
 #endif
 
@@ -50,12 +51,13 @@ std::unique_ptr<char, base::FreeDeleter> XkbTracker::GetKeymap() const {
       xkb_keymap_get_as_string(xkb_keymap_.get(), XKB_KEYMAP_FORMAT_TEXT_V1));
 }
 
-uint32_t XkbTracker::GetSerializeMods(xkb_state_component components) const {
-  return xkb_state_serialize_mods(xkb_state_.get(), components);
-}
-
-uint32_t XkbTracker::GetSerializeLayout(xkb_state_component components) const {
-  return xkb_state_serialize_layout(xkb_state_.get(), components);
+KeyboardModifiers XkbTracker::GetModifiers() const {
+  return {
+      xkb_state_serialize_mods(xkb_state_.get(), XKB_STATE_MODS_DEPRESSED),
+      xkb_state_serialize_mods(xkb_state_.get(), XKB_STATE_MODS_LOCKED),
+      xkb_state_serialize_mods(xkb_state_.get(), XKB_STATE_MODS_LATCHED),
+      xkb_state_serialize_layout(xkb_state_.get(), XKB_STATE_LAYOUT_EFFECTIVE),
+  };
 }
 
 void XkbTracker::UpdateKeyboardLayoutInternal(const xkb_rule_names* names) {

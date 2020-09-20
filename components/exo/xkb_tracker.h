@@ -21,6 +21,8 @@
 
 namespace exo {
 
+struct KeyboardModifiers;
+
 // Tracks the state of XKB. If Chrome is configured not to link against
 // libxkbcommon this class is empty.
 // TODO(hidehiko): Share the state between wl_keyboard and zwp_text_input.
@@ -42,11 +44,8 @@ class XkbTracker {
   // Returns the XKB keymap data.
   std::unique_ptr<char, base::FreeDeleter> GetKeymap() const;
 
-  // Returns the current modifier state of the given components.
-  uint32_t GetSerializeMods(xkb_state_component components) const;
-
-  // Returns the current layout state of the given components.
-  uint32_t GetSerializeLayout(xkb_state_component components) const;
+  // Returns the current keyboard modifiers.
+  KeyboardModifiers GetModifiers() const;
 
  private:
   void UpdateKeyboardLayoutInternal(const xkb_rule_names* names);

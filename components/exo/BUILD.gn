@@ -132,6 +132,7 @@ static_library("exo") {
       "input_method_surface_manager.h",
       "keyboard.cc",
       "keyboard.h",
+      "keyboard_modifiers.h",
       "notification.cc",
       "notification.h",
       "notification_surface.cc",
