@@ -7,8 +7,66 @@ bundle that need to be signed, as well as providing utilities to sign them.
 """
 
 import os.path
+import platform
+import re
+import subprocess
 
 from . import commands
+
+
+def _linker_signed_arm64_needs_force(path):
+    """Detects linker-signed arm64 code that can only be signed with --force
+    on this system.
+
+    Args:
+        path: A path to a code object to test.
+
+    Returns:
+        True if --force must be used with codesign --sign to successfully sign
+        the code, False otherwise.
+    """
+    # On macOS 11.0 and later, codesign handles linker-signed code properly
+    # without the --force hand-holding. Check OS >= 10.16 because that's what
+    # Python will think the OS is if it wasn't built with the 11.0 SDK or later.
+    if [int(x) for x in platform.mac_ver()[0].split('.')] >= [10, 16]:
+        return False
+
+    try:
+        # Look just for --arch=arm64 because that's the only architecture that
+        # has linker-signed code by default. If this were used with universal
+        # code (if there were any), --display without --arch would default to
+        # the native architecture, which almost certainly wouldn't be arm64 and
+        # therefore would be wrong.
+        codesign = subprocess.Popen(
+            ['codesign', '--display', '--verbose', '--arch=arm64', '--', path],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
+    except OSError:
+        # Problem running codesign? Don't make the error about this confusing
+        # function. Just return False and let some less obscure codesign
+        # invocation be the error.
+        return False
+
+    (stdout, stderr) = codesign.communicate()
+    if codesign.wait() != 0:
+        # Not signed at all? No problem. No arm64 code? No problem either. Not
+        # code at all? File not found? Well, those don't count as linker-signed
+        # either.
+        return False
+
+    # Yes, codesign --display puts all of this on stderr.
+    match = re.search(b'^CodeDirectory .* flags=(0x[0-9a-f]+)( |\().*$', stderr,
+                      re.MULTILINE)
+    if not match:
+        return False
+
+    flags = int(match.group(1), 16)
+
+    # This constant is from MacOSX11.0.sdk <Security/CSCommon.h>
+    # SecCodeSignatureFlags kSecCodeSignatureLinkerSigned.
+    LINKER_SIGNED_FLAG = 0x20000
+
+    return (flags & LINKER_SIGNED_FLAG) != 0
 
 
 def sign_part(paths, config, part):
@@ -21,6 +79,9 @@ def sign_part(paths, config, part):
             be in |paths.work|.
     """
     command = ['codesign', '--sign', config.identity]
+    path = os.path.join(paths.work, part.path)
+    if _linker_signed_arm64_needs_force(path):
+        command.append('--force')
     if config.notary_user:
         # Assume if the config has notary authentication information that the
         # products will be notarized, which requires a secure timestamp.
@@ -36,7 +97,7 @@ def sign_part(paths, config, part):
         command.extend(
             ['--entitlements',
              os.path.join(paths.work, part.entitlements)])
-    command.append(os.path.join(paths.work, part.path))
+    command.append(path)
     commands.run_command(command)
 
 
