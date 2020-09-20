@@ -5,10 +5,10 @@
 #include "chrome/browser/chromeos/login/saml/password_sync_token_verifier.h"
 
 #include "base/task/post_task.h"
+#include "chrome/browser/chromeos/login/login_pref_names.h"
 #include "chrome/browser/chromeos/login/saml/in_session_password_sync_manager.h"
 #include "chrome/browser/chromeos/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/browser/storage_partition.h"
@@ -64,8 +64,7 @@ void PasswordSyncTokenVerifier::CheckForPasswordNotInSync() {
     return;
   }
   // Get current sync token for primary_user_.
-  std::string sync_token = user_manager::known_user::GetPasswordSyncToken(
-      primary_user_->GetAccountId());
+  std::string sync_token = prefs->GetString(prefs::kSamlPasswordSyncToken);
 
   // No local sync token on the device - create it by sending user through the
   // online re-auth.
@@ -100,6 +99,11 @@ void PasswordSyncTokenVerifier::CancelPendingChecks() {
 
 void PasswordSyncTokenVerifier::OnTokenCreated(const std::string& sync_token) {
   DCHECK(!sync_token.empty());
+  PrefService* prefs = primary_profile_->GetPrefs();
+
+  // Set token value in prefs for in-session operations and ephemeral users and
+  // local settings for login screen sync.
+  prefs->SetString(prefs::kSamlPasswordSyncToken, sync_token);
   user_manager::known_user::SetPasswordSyncToken(primary_user_->GetAccountId(),
                                                  sync_token);
   password_sync_token_fetcher_.reset();
@@ -109,7 +113,9 @@ void PasswordSyncTokenVerifier::OnTokenCreated(const std::string& sync_token) {
 void PasswordSyncTokenVerifier::OnTokenFetched(const std::string& sync_token) {
   password_sync_token_fetcher_.reset();
   if (!sync_token.empty()) {
-    // Set token fetched from the endpoint.
+    // Set token fetched from the endpoint in prefs and local settings.
+    PrefService* prefs = primary_profile_->GetPrefs();
+    prefs->SetString(prefs::kSamlPasswordSyncToken, sync_token);
     user_manager::known_user::SetPasswordSyncToken(
         primary_user_->GetAccountId(), sync_token);
     RecheckAfter(retry_backoff_.GetTimeUntilRelease());

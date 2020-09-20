@@ -686,22 +686,6 @@ const char kMultiProfileUserBehavior[] = "settings.multiprofile_user_behavior";
 // already.
 const char kFirstRunTutorialShown[] = "settings.first_run_tutorial_shown";
 
-// Indicates the amount of time for which a user authenticated via SAML can use
-// offline authentication against a cached password before being forced to go
-// through online authentication against GAIA again. The time is expressed in
-// seconds. A value of -1 indicates no limit, allowing the user to use offline
-// authentication indefinitely. The limit is in effect only if GAIA redirected
-// the user to a SAML IdP during the last online authentication.
-const char kSAMLOfflineSigninTimeLimit[] = "saml.offline_signin_time_limit";
-
-// A preference to keep track of the last time the user authenticated against
-// GAIA using SAML. The preference is updated whenever the user authenticates
-// against GAIA: If GAIA redirects to a SAML IdP, the preference is set to the
-// current time. If GAIA performs the authentication itself, the preference is
-// cleared. The time is expressed as the serialization obtained from
-// PrefService::SetTime().
-const char kSAMLLastGAIASignInTime[] = "saml.last_gaia_sign_in_time";
-
 // The total number of seconds that the machine has spent sitting on the
 // OOBE screen.
 const char kTimeOnOobe[] = "settings.time_on_oobe";
@@ -2349,20 +2333,6 @@ const char kAutoScreenBrightnessMetricsUnsupportedAlsUserAdjustmentCount[] =
 // set for child users only, and kept on the known user storage.
 const char kKnownUserParentAccessCodeConfig[] =
     "child_user.parent_access_code.config";
-
-// Enable chrome://password-change page for in-session change of SAML passwords.
-// Also enables SAML password expiry notifications, if we have that information.
-const char kSamlInSessionPasswordChangeEnabled[] =
-    "saml.in_session_password_change_enabled";
-// The number of days in advance to notify the user that their SAML password
-// will expire (works when kSamlInSessionPasswordChangeEnabled is true).
-const char kSamlPasswordExpirationAdvanceWarningDays[] =
-    "saml.password_expiration_advance_warning_days";
-
-// Enable online signin on the lock screen.
-const char kSamlLockScreenReauthenticationEnabled[] =
-    "saml.lock_screen_reauthentication_enabled";
-
 #endif  // defined(OS_CHROMEOS)
 
 // Whether there is a Flash version installed that supports clearing LSO data.

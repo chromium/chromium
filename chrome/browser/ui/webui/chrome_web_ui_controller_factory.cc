@@ -17,6 +17,7 @@
 #include "chrome/browser/accessibility/accessibility_ui.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/buildflags.h"
+#include "chrome/browser/chromeos/login/login_pref_names.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 #include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/media/history/media_history_keyed_service.h"
@@ -603,14 +604,14 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 #if defined(OS_CHROMEOS)
   if (url.host_piece() == chrome::kChromeUIPasswordChangeHost) {
     if (!profile->GetPrefs()->GetBoolean(
-            prefs::kSamlInSessionPasswordChangeEnabled)) {
+            chromeos::prefs::kSamlInSessionPasswordChangeEnabled)) {
       return nullptr;
     }
     return &NewWebUI<chromeos::PasswordChangeUI>;
   }
   if (url.host_piece() == chrome::kChromeUIConfirmPasswordChangeHost) {
     if (!profile->GetPrefs()->GetBoolean(
-            prefs::kSamlInSessionPasswordChangeEnabled)) {
+            chromeos::prefs::kSamlInSessionPasswordChangeEnabled)) {
       return nullptr;
     }
     return &NewWebUI<chromeos::ConfirmPasswordChangeUI>;
@@ -618,7 +619,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() ==
       chrome::kChromeUIUrgentPasswordExpiryNotificationHost) {
     if (!profile->GetPrefs()->GetBoolean(
-            prefs::kSamlInSessionPasswordChangeEnabled)) {
+            chromeos::prefs::kSamlInSessionPasswordChangeEnabled)) {
       return nullptr;
     }
     return &NewWebUI<chromeos::UrgentPasswordExpiryNotificationUI>;

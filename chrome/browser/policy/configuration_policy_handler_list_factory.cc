@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/chromeos/login/login_pref_names.h"
 #include "chrome/browser/net/disk_cache_dir_policy_handler.h"
 #include "chrome/browser/net/referrer_policy_policy_handler.h"
 #include "chrome/browser/net/secure_dns_policy_handler.h"
@@ -1021,13 +1022,13 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     ash::prefs::kBootOnAcEnabled,
     base::Value::Type::BOOLEAN },
   { key::kSamlInSessionPasswordChangeEnabled,
-    prefs::kSamlInSessionPasswordChangeEnabled,
+    chromeos::prefs::kSamlInSessionPasswordChangeEnabled,
     base::Value::Type::BOOLEAN },
   { key::kSamlPasswordExpirationAdvanceWarningDays,
-    prefs::kSamlPasswordExpirationAdvanceWarningDays,
+    chromeos::prefs::kSamlPasswordExpirationAdvanceWarningDays,
     base::Value::Type::INTEGER },
   { key::kSamlLockScreenReauthenticationEnabled,
-    prefs::kSamlLockScreenReauthenticationEnabled,
+    chromeos::prefs::kSamlLockScreenReauthenticationEnabled,
     base::Value::Type::BOOLEAN },
   { key::kDeviceAdvancedBatteryChargeModeEnabled,
     ash::prefs::kAdvancedBatteryChargeModeEnabled,
@@ -1662,8 +1663,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
                                             prefs::kUserPrintersAllowed,
                                             base::Value::Type::BOOLEAN)));
   handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
-      key::kSAMLOfflineSigninTimeLimit, prefs::kSAMLOfflineSigninTimeLimit, -1,
-      INT_MAX, true));
+      key::kSAMLOfflineSigninTimeLimit,
+      chromeos::prefs::kSAMLOfflineSigninTimeLimit, -1, INT_MAX, true));
   handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
       key::kLidCloseAction, ash::prefs::kPowerLidClosedAction,
       chromeos::PowerPolicyController::ACTION_SUSPEND,

@@ -263,8 +263,6 @@ extern const char kMultiProfileNeverShowIntro[];
 extern const char kMultiProfileWarningShowDismissed[];
 extern const char kMultiProfileUserBehavior[];
 extern const char kFirstRunTutorialShown[];
-extern const char kSAMLOfflineSigninTimeLimit[];
-extern const char kSAMLLastGAIASignInTime[];
 extern const char kTimeOnOobe[];
 extern const char kFileSystemProviderMounted[];
 extern const char kTouchVirtualKeyboardEnabled[];
@@ -744,9 +742,6 @@ extern const char kAutoScreenBrightnessMetricsSupportedAlsUserAdjustmentCount[];
 extern const char
     kAutoScreenBrightnessMetricsUnsupportedAlsUserAdjustmentCount[];
 extern const char kKnownUserParentAccessCodeConfig[];
-extern const char kSamlInSessionPasswordChangeEnabled[];
-extern const char kSamlPasswordExpirationAdvanceWarningDays[];
-extern const char kSamlLockScreenReauthenticationEnabled[];
 extern const char kLastRsuDeviceIdUploaded[];
 
 #endif  // defined(OS_CHROMEOS)

@@ -6,9 +6,9 @@
 
 #include "base/time/default_clock.h"
 #include "chrome/browser/chromeos/login/lock/screen_locker.h"
+#include "chrome/browser/chromeos/login/login_pref_names.h"
 #include "chrome/browser/chromeos/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/prefs/pref_service.h"
@@ -139,6 +139,11 @@ void InSessionPasswordSyncManager::CreateTokenAsync() {
 }
 
 void InSessionPasswordSyncManager::OnTokenCreated(const std::string& token) {
+  PrefService* prefs = primary_profile_->GetPrefs();
+
+  // Set token value in prefs for in-session operations and ephemeral users and
+  // local settings for login screen sync.
+  prefs->SetString(prefs::kSamlPasswordSyncToken, token);
   user_manager::known_user::SetPasswordSyncToken(primary_user_->GetAccountId(),
                                                  token);
   lock_screen_reauth_reason_ = ReauthenticationReason::kNone;
@@ -152,7 +157,9 @@ void InSessionPasswordSyncManager::FetchTokenAsync() {
 
 void InSessionPasswordSyncManager::OnTokenFetched(const std::string& token) {
   if (!token.empty()) {
-    // Set token fetched from the endpoint.
+    // Set token fetched from the endpoint in prefs and local settings.
+    PrefService* prefs = primary_profile_->GetPrefs();
+    prefs->SetString(prefs::kSamlPasswordSyncToken, token);
     user_manager::known_user::SetPasswordSyncToken(
         primary_user_->GetAccountId(), token);
     lock_screen_reauth_reason_ = ReauthenticationReason::kNone;
