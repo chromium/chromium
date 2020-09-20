@@ -1118,6 +1118,7 @@ try_.chromium_mac_builder(
 try_.chromium_mac_builder(
     name = "mac-rel",
     branch_selector = branches.STANDARD_RELEASES,
+    use_clang_coverage = True,
     goma_jobs = goma.jobs.J150,
     main_list_view = settings.main_list_view_name,
     os = os.MAC_DEFAULT,
