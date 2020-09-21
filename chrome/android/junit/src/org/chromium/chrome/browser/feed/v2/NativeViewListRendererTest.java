@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.feed.v2;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -95,6 +97,21 @@ public class NativeViewListRendererTest {
                 new DummyViewGroup(mContext), mRenderer.getItemViewType(2));
         mRenderer.onBindViewHolder(viewHolder, 2);
         verify(mManager, times(1)).bindNativeView(2, viewHolder.itemView);
+    }
+
+    @Test
+    @SmallTest
+    public void testUnbind() {
+        mManager.addContents(
+                0, ImmutableList.of(createContent("1"), createContent("2"), createContent("3")));
+        RecyclerView view = (RecyclerView) mRenderer.bind(mManager);
+        assertNotNull(view.getAdapter());
+        assertNotNull(view.getLayoutManager());
+
+        mRenderer.unbind();
+        assertNull(view.getAdapter());
+        assertNull(view.getLayoutManager());
+        verify(mRenderer, times(1)).notifyItemRangeRemoved(0, 3);
     }
 
     @Test

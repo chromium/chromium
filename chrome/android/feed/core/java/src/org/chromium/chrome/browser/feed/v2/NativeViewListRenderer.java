@@ -89,6 +89,8 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
     public void unbind() {
         mManager.removeObserver(this);
         onItemRangeRemoved(0, mManager.getItemCount());
+        mView.setAdapter(null);
+        mView.setLayoutManager(null);
         mManager = null;
     }
 
