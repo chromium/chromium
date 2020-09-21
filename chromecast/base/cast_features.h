@@ -29,7 +29,6 @@ extern const base::Feature kTripleBuffer720;
 extern const base::Feature kSingleBuffer;
 extern const base::Feature kDisableIdleSocketsCloseOnMemoryPressure;
 extern const base::Feature kEnableGeneralAudienceBrowsing;
-extern const base::Feature kUseQueryableDataBackend;
 extern const base::Feature kEnableSideGesturePassThrough;
 extern const base::Feature kEnableChromeAudioManagerAndroid;
 

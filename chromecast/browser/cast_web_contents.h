@@ -37,8 +37,6 @@ class OnLoadScriptInjectorHost;
 
 namespace chromecast {
 
-class QueryableDataHost;
-
 struct RendererFeature {
   const std::string name;
   base::Value value;
@@ -230,10 +228,6 @@ class CastWebContents {
     bool enable_websql = false;
     // Enable mixer audio support for this CastWebContents.
     bool enable_mixer_audio = false;
-    // Whether to provide a QueryableDataHost for this CastWebContents.
-    // Clients can use it to send queryable values to the render frames.
-    // queryable_data_host() will return a nullptr if this is false.
-    bool enable_queryable_data_host = false;
     // Whether to provide a URL filter applied to network requests for the
     // activity hosted by this CastWebContents.
     // No filters implies no restrictions.
@@ -275,10 +269,6 @@ class CastWebContents {
   // TODO(seantopping): Hide this, clients shouldn't use WebContents directly.
   virtual content::WebContents* web_contents() const = 0;
   virtual PageState page_state() const = 0;
-
-  // Returns QueryableDataHost that is used to push values to the renderer.
-  // Returns nullptr if the new queryable data bindings is enabled.
-  virtual QueryableDataHost* queryable_data_host() const = 0;
 
   // Returns the PID of the main frame process if valid.
   virtual base::Optional<pid_t> GetMainFrameRenderProcessPid() const = 0;

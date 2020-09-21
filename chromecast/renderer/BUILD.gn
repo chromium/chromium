@@ -43,8 +43,6 @@ cast_source_set("renderer") {
     "js_channel_bindings.h",
     "native_bindings_helper.cc",
     "native_bindings_helper.h",
-    "queryable_data_bindings.cc",
-    "queryable_data_bindings.h",
     "queryable_data_store.cc",
     "queryable_data_store.h",
   ]

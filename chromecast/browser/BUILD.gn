@@ -130,8 +130,6 @@ cast_source_set("browser") {
     "media/media_caps_impl.h",
     "media/supported_codec_finder.cc",
     "media/supported_codec_finder.h",
-    "queryable_data_host_cast.cc",
-    "queryable_data_host_cast.h",
     "renderer_prelauncher.cc",
     "renderer_prelauncher.h",
     "service/cast_service_simple.cc",

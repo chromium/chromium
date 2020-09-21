@@ -22,7 +22,6 @@
 #include "chromecast/renderer/js_channel_bindings.h"
 #include "chromecast/renderer/media/key_systems_cast.h"
 #include "chromecast/renderer/media/media_caps_observer_impl.h"
-#include "chromecast/renderer/queryable_data_bindings.h"
 #include "components/media_control/renderer/media_playback_options.h"
 #include "components/network_hints/renderer/web_prescient_networking_impl.h"
 #include "components/on_load_script_injector/renderer/on_load_script_injector.h"
@@ -182,9 +181,6 @@ void CastContentRendererClient::RenderFrameCreated(
 
   // Lifetime is tied to |render_frame| via content::RenderFrameObserver.
   new media_control::MediaPlaybackOptions(render_frame);
-  if (!::chromecast::IsFeatureEnabled(kUseQueryableDataBackend)) {
-    new QueryableDataBindings(render_frame);
-  }
 
   // Add script injection support to the RenderFrame, used by Cast platform
   // APIs. The injector's lifetime is bound to the RenderFrame's lifetime.
