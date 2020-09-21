@@ -202,6 +202,7 @@ class CrostiniExportImport : public KeyedService,
                                  uint64_t minimum_required_space) override;
 
   void ExportAfterSharing(const ContainerId& container_id,
+                          const base::FilePath& path,
                           CrostiniManager::CrostiniResultCallback callback,
                           const base::FilePath& container_path,
                           bool result,
@@ -214,6 +215,7 @@ class CrostiniExportImport : public KeyedService,
                         uint64_t compressed_size);
 
   void ImportAfterSharing(const ContainerId& container_id,
+                          const base::FilePath& path,
                           CrostiniManager::CrostiniResultCallback callback,
                           const base::FilePath& container_path,
                           bool result,

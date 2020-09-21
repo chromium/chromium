@@ -296,7 +296,7 @@ void CrostiniExportImport::Start(
               kCrostiniDefaultVmName, path, false,
               base::BindOnce(&CrostiniExportImport::ExportAfterSharing,
                              weak_ptr_factory_.GetWeakPtr(),
-                             operation_data->container_id,
+                             operation_data->container_id, path,
                              std::move(callback))));
       break;
     case ExportImportType::IMPORT:
@@ -304,19 +304,22 @@ void CrostiniExportImport::Start(
           kCrostiniDefaultVmName, path, false,
           base::BindOnce(&CrostiniExportImport::ImportAfterSharing,
                          weak_ptr_factory_.GetWeakPtr(),
-                         operation_data->container_id, std::move(callback)));
+                         operation_data->container_id, path,
+                         std::move(callback)));
       break;
   }
 }
 
 void CrostiniExportImport::ExportAfterSharing(
     const ContainerId& container_id,
+    const base::FilePath& path,
     CrostiniManager::CrostiniResultCallback callback,
     const base::FilePath& container_path,
     bool result,
     const std::string& failure_reason) {
   if (!result) {
-    LOG(ERROR) << "Error sharing for export " << container_path.value() << ": "
+    LOG(ERROR) << "Error sharing for export host path=" << path.value()
+               << ", container path=" << container_path.value() << ": "
                << failure_reason;
     auto it = status_trackers_.find(container_id);
     if (it != status_trackers_.end()) {
@@ -468,12 +471,14 @@ void CrostiniExportImport::OnExportContainerProgress(
 
 void CrostiniExportImport::ImportAfterSharing(
     const ContainerId& container_id,
+    const base::FilePath& path,
     CrostiniManager::CrostiniResultCallback callback,
     const base::FilePath& container_path,
     bool result,
     const std::string& failure_reason) {
   if (!result) {
-    LOG(ERROR) << "Error sharing for import " << container_path.value() << ": "
+    LOG(ERROR) << "Error sharing for import path=" << path
+               << ", container path=" << container_path.value() << ": "
                << failure_reason;
     auto it = status_trackers_.find(container_id);
     if (it != status_trackers_.end()) {
