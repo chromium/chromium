@@ -30,6 +30,8 @@ class CORE_EXPORT NGTableTypes {
     LayoutUnit min_inline_size;
     LayoutUnit max_inline_size;
     base::Optional<float> percent;  // 100% is stored as 100.0f
+    LayoutUnit percent_border_padding;  // Border/padding used for percentage
+                                        // size resolution.
     bool is_constrained;  // True if this cell has a specified inline-size.
 
     void Encompass(const CellInlineConstraint&);
@@ -65,6 +67,8 @@ class CORE_EXPORT NGTableTypes {
     base::Optional<LayoutUnit> min_inline_size;
     base::Optional<LayoutUnit> max_inline_size;
     base::Optional<float> percent;  // 100% is stored as 100.0f
+    LayoutUnit percent_border_padding;  // Border/padding used for percentage
+                                        // size resolution.
     // True if any cell for this column is constrained.
     bool is_constrained = false;
     bool is_collapsed = false;
@@ -76,7 +80,8 @@ class CORE_EXPORT NGTableTypes {
         LayoutUnit percentage_resolution_inline_size) {
       return std::max(
           min_inline_size.value_or(LayoutUnit()),
-          LayoutUnit(*percent * percentage_resolution_inline_size / 100));
+          LayoutUnit(*percent * percentage_resolution_inline_size / 100) +
+              percent_border_padding);
     }
     bool IsFixed() const {
       return is_constrained && !percent && max_inline_size;

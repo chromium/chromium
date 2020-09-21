@@ -89,6 +89,7 @@ NGTableTypes::Column NGTableTypes::CreateColumn(
   return Column{min_inline_size.value_or(LayoutUnit()),
                 inline_size,
                 percentage_inline_size,
+                LayoutUnit() /* percent_border_padding */,
                 is_constrained,
                 is_collapsed,
                 kIndefiniteSize};
@@ -144,7 +145,6 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
   } else {
     min_max_size = node.ComputeMinMaxSizes(table_writing_mode, input);
   }
-
   // Compute min inline size.
   LayoutUnit resolved_min_inline_size;
   if (!is_fixed_layout) {
@@ -152,6 +152,7 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
         std::max(min_max_size.sizes.min_size,
                  css_min_inline_size.value_or(LayoutUnit()));
     // https://quirks.spec.whatwg.org/#the-table-cell-nowrap-minimum-width-calculation-quirk
+    // Has not worked in Legacy, might be pulled out.
     if (css_inline_size && node.GetDocument().InQuirksMode()) {
       bool has_nowrap_attribute =
           !To<Element>(node.GetLayoutBox()->GetNode())
@@ -182,9 +183,18 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
   bool is_constrained = css_inline_size.has_value();
 
   DCHECK_LE(resolved_min_inline_size, resolved_max_inline_size);
+
+  // Only fixed tables use border padding in percentage size computations.
+  LayoutUnit percent_border_padding;
+  if (is_fixed_layout && css_percentage_inline_size &&
+      node.Style().BoxSizing() == EBoxSizing::kContentBox) {
+    percent_border_padding = (cell_border + cell_padding).InlineSum();
+  }
+
+  DCHECK_GE(resolved_max_inline_size, percent_border_padding);
   return NGTableTypes::CellInlineConstraint{
       resolved_min_inline_size, resolved_max_inline_size,
-      css_percentage_inline_size, is_constrained};
+      css_percentage_inline_size, percent_border_padding, is_constrained};
 }
 
 NGTableTypes::Section NGTableTypes::CreateSection(
@@ -261,6 +271,10 @@ void NGTableTypes::CellInlineConstraint::Encompass(
   is_constrained = is_constrained || other.is_constrained;
   max_inline_size = std::max(max_inline_size, other.max_inline_size);
   percent = std::max(percent, other.percent);
+  if (other.percent > percent) {
+    percent = other.percent;
+    percent_border_padding = other.percent_border_padding;
+  }
 }
 
 void NGTableTypes::Column::Encompass(
@@ -288,11 +302,10 @@ void NGTableTypes::Column::Encompass(
   if (min_inline_size && max_inline_size) {
     max_inline_size = std::max(*min_inline_size, *max_inline_size);
   }
-  if (percent) {
-    if (cell->percent)
-      percent = std::max(*cell->percent, *percent);
-  } else {
+
+  if (cell->percent > percent) {
     percent = cell->percent;
+    percent_border_padding = cell->percent_border_padding;
   }
   is_constrained |= cell->is_constrained;
 }

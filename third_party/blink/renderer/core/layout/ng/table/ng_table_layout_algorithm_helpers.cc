@@ -334,7 +334,7 @@ void SynchronizeAssignableTableInlineSizeAndColumnsFixed(
       percent_columns_count++;
       total_percent += *column->percent;
       total_percent_inline_size +=
-          LayoutUnit(*column->percent / 100 * target_inline_size);
+          column->ResolvePercentInlineSize(target_inline_size);
     } else if (column->is_constrained) {  // Fixed column
       fixed_columns_count++;
       total_fixed_inline_size += *column->max_inline_size;
@@ -407,8 +407,8 @@ void SynchronizeAssignableTableInlineSizeAndColumnsFixed(
         continue;
       last_distributed_column = column;
       if (scale_available) {
-        column->computed_inline_size =
-            LayoutUnit(scale * *column->percent / 100 * target_inline_size);
+        column->computed_inline_size = LayoutUnit(
+            scale * column->ResolvePercentInlineSize(target_inline_size));
       } else {
         column->computed_inline_size =
             LayoutUnit((target_inline_size - assigned_inline_size).ToFloat() /
@@ -447,19 +447,19 @@ void DistributeColspanCellToColumnsFixed(
 
   LayoutUnit colspan_cell_min_inline_size;
   LayoutUnit colspan_cell_max_inline_size;
+  // Colspanned cells only distribute min inline size if constrained.
   if (colspan_cell.cell_inline_constraint.is_constrained) {
     colspan_cell_min_inline_size =
         (colspan_cell.cell_inline_constraint.min_inline_size -
          (colspan_cell.span - 1) * inline_border_spacing)
             .ClampNegativeToZero();
-    colspan_cell_max_inline_size =
-        (colspan_cell.cell_inline_constraint.max_inline_size -
-         (colspan_cell.span - 1) * inline_border_spacing)
-            .ClampNegativeToZero();
   }
+  colspan_cell_max_inline_size =
+      (colspan_cell.cell_inline_constraint.max_inline_size -
+       (colspan_cell.span - 1) * inline_border_spacing)
+          .ClampNegativeToZero();
 
   // Distribute min/max/percentage evenly between all cells.
-  // Colspanned cells only distribute min inline size if constrained.
   LayoutUnit rounding_error_min_inline_size = colspan_cell_min_inline_size;
   LayoutUnit rounding_error_max_inline_size = colspan_cell_max_inline_size;
   float rounding_error_percent =
@@ -843,8 +843,9 @@ void NGTableAlgorithmHelpers::ComputeGridInlineMinmax(
       }
       if (column.percent) {
         if (*column.max_inline_size > LayoutUnit() && *column.percent > 0) {
-          LayoutUnit estimate =
-              LayoutUnit(100 / *column.percent * *column.max_inline_size);
+          LayoutUnit estimate = LayoutUnit(
+              100 / *column.percent *
+              (*column.max_inline_size - column.percent_border_padding));
           percent_maxsize_estimate =
               std::max(percent_maxsize_estimate, estimate);
         }
