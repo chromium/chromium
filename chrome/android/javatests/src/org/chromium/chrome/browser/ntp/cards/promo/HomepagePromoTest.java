@@ -375,8 +375,7 @@ public class HomepagePromoTest {
      */
     @Test
     @SmallTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, message = "crbug.com/1084756")
+    @DisabledTest(message = "crbug.com/1084756, crbug.com/1130564")
     public void testDismiss_SwipeToDismiss() {
         setVariationForTests(LayoutStyle.SLIM);
 
