@@ -264,6 +264,15 @@ HTMLDocumentParser::HTMLDocumentParser(
       context_element, report_errors, options_));
 }
 
+namespace {
+int GetMaxTokenizationBudget() {
+  static int max = base::GetFieldTrialParamByFeatureAsInt(
+      features::kForceSynchronousHTMLParsing, "MaxTokenizationBudget",
+      kDefaultMaxTokenizationBudget);
+  return max;
+}
+}  // namespace
+
 HTMLDocumentParser::HTMLDocumentParser(Document& document,
                                        ParserContentPolicy content_policy,
                                        ParserSynchronizationPolicy sync_policy)
@@ -319,9 +328,7 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
         document.UkmSourceID(), document.UkmRecorder());
   }
 
-  max_tokenization_budget_ = base::GetFieldTrialParamByFeatureAsInt(
-      features::kForceSynchronousHTMLParsing, "MaxTokenizationBudget",
-      kDefaultMaxTokenizationBudget);
+  max_tokenization_budget_ = GetMaxTokenizationBudget();
 
   // Don't create preloader for parsing clipboard content.
   if (content_policy == kDisallowScriptingAndPluginContent)
