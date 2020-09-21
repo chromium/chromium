@@ -15,7 +15,7 @@ const int kReportIntervalSeconds = 10;
 }  // namespace
 
 const base::Feature kWebRtcThermalResource{"WebRtcThermalResource",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 // static
 scoped_refptr<ThermalResource> ThermalResource::Create(

@@ -1286,11 +1286,24 @@ TEST_F(RTCPeerConnectionHandlerTest, CheckInsertableStreamsConfig) {
   }
 }
 
-TEST_F(RTCPeerConnectionHandlerTest, ThermalResourceIsDisabledByDefault) {
+TEST_F(RTCPeerConnectionHandlerTest, ThermalResourceIsEnabledByDefault) {
   EXPECT_TRUE(mock_peer_connection_->adaptation_resources().IsEmpty());
   pc_handler_->OnThermalStateChange(
       base::PowerObserver::DeviceThermalState::kCritical);
-  // A ThermalResource is not created despite the thermal signal.
+  // A ThermalResource is created in response to the thermal signal.
+  EXPECT_FALSE(mock_peer_connection_->adaptation_resources().IsEmpty());
+}
+
+TEST_F(RTCPeerConnectionHandlerTest,
+       ThermalStateChangeDoesNothingIfThermalResourceIsDisabled) {
+  // Overwrite base::Feature kWebRtcThermalResource's default to DISABLED.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kWebRtcThermalResource);
+
+  EXPECT_TRUE(mock_peer_connection_->adaptation_resources().IsEmpty());
+  pc_handler_->OnThermalStateChange(
+      base::PowerObserver::DeviceThermalState::kCritical);
+  // A ThermalResource is created in response to the thermal signal.
   EXPECT_TRUE(mock_peer_connection_->adaptation_resources().IsEmpty());
 }
 
