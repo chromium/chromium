@@ -445,6 +445,8 @@ public abstract class Layout implements TabContentManager.ThumbnailChangeListene
         if (mRenderHost != null && mRenderHost.getResourceManager() != null) {
             mRenderHost.getResourceManager().clearTintedResourceCache();
         }
+
+        if (getSceneLayer() != null) getSceneLayer().removeFromParent();
     }
 
     /**

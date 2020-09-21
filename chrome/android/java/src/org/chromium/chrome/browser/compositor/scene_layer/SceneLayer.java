@@ -34,6 +34,12 @@ public class SceneLayer {
         assert mNativePtr != 0;
     }
 
+    /** Remove this layer from its parent in the tree. */
+    public void removeFromParent() {
+        if (mNativePtr == 0) return;
+        SceneLayerJni.get().removeFromParent(mNativePtr, SceneLayer.this);
+    }
+
     /**
      * Destroys this object and the corresponding native component.
      */
@@ -57,6 +63,7 @@ public class SceneLayer {
     @NativeMethods
     interface Natives {
         long init(SceneLayer caller);
+        void removeFromParent(long nativeSceneLayer, SceneLayer caller);
         void destroy(long nativeSceneLayer, SceneLayer caller);
     }
 }

@@ -38,6 +38,11 @@ class SceneLayer {
   // TODO(changwan): check if we can remove this.
   virtual void OnDetach();
 
+  // Remove this SceneLayer from its current parent.
+  virtual void RemoveFromParent(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jobj);
+
   // Java SceneLayer can use this method to destroy its native-side counterpart.
   virtual void Destroy(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& jobj);

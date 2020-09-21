@@ -41,7 +41,14 @@ SceneLayer::~SceneLayer() {
       env, jobj, reinterpret_cast<intptr_t>(static_cast<SceneLayer*>(NULL)));
 }
 
+void SceneLayer::RemoveFromParent(JNIEnv* env,
+                                  const JavaParamRef<jobject>& jobj) {
+  layer()->RemoveFromParent();
+}
+
 void SceneLayer::OnDetach() {
+  // TODO(1129451): Determine if this needed with the exposure of
+  //                RemoveFromParent to java.
   layer()->RemoveFromParent();
 }
 
