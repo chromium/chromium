@@ -147,7 +147,7 @@ bool PasswordScriptsFetcherImpl::IsScriptAvailable(
 
 void PasswordScriptsFetcherImpl::StartFetch() {
   static const base::NoDestructor<base::TimeDelta> kFetchTimeout(
-      base::TimeDelta::FromMinutes(kFetchTimeoutInSeconds));
+      base::TimeDelta::FromSeconds(kFetchTimeoutInSeconds));
   if (url_loader_)
     return;
   auto resource_request = std::make_unique<network::ResourceRequest>();
