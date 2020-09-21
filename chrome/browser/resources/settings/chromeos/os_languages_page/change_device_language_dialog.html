@@ -82,9 +82,10 @@
           <template>
             <!-- |selected| is a property of iron-list -->
             <div class$="list-item [[getItemClass_(selected)]]"
-                tabindex$="[[tabIndex]]">
+                tabindex$="[[tabIndex]]"
+                aria-label="[[getAriaLabelForItem_(item, selected)]]">
               <paper-ripple></paper-ripple>
-              <div class="flex padded">
+              <div class="flex padded" aria-hidden="true">
                 [[getDisplayText_(item)]]
               </div>
               <iron-icon icon="settings:check-circle" hidden="[[!selected]]">

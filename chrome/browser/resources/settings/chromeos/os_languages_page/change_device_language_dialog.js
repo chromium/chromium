@@ -77,6 +77,18 @@ Polymer({
   },
 
   /**
+   * @param {!chrome.languageSettingsPrivate.Language} item
+   * @param {boolean} selected
+   * @return {!string}
+   * @private
+   */
+  getAriaLabelForItem_(item, selected) {
+    const instruction = selected ? 'selectedDeviceLanguageInstruction' :
+                                   'notSelectedDeviceLanguageInstruction';
+    return this.i18n(instruction, this.getDisplayText_(item));
+  },
+
+  /**
    * @param {!chrome.languageSettingsPrivate.Language} language
    * @return {string} The text to be displayed.
    * @private
