@@ -47,6 +47,15 @@ ChromeVoxTutorialTest = class extends ChromeVoxNextE2ETest {
     return this.getPanelWindow().Panel;
   }
 
+  async launchAndWaitForTutorial() {
+    assertTrue(this.getPanel().iTutorialEnabled_);
+    new PanelCommand(PanelCommandType.TUTORIAL).send();
+    await this.waitForTutorial();
+    return new Promise(resolve => {
+      resolve();
+    });
+  }
+
   /**
    * Waits for the interactive tutorial to load.
    */
@@ -91,10 +100,7 @@ ChromeVoxTutorialTest = class extends ChromeVoxNextE2ETest {
 TEST_F('ChromeVoxTutorialTest', 'BasicTest', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
-    const Panel = this.getPanel();
-    assertTrue(Panel.iTutorialEnabled_);
-    new PanelCommand(PanelCommandType.TUTORIAL).send();
-    await this.waitForTutorial();
+    await this.launchAndWaitForTutorial();
     mockFeedback.expectSpeech('Choose your tutorial experience')
         .call(doCmd('nextObject'))
         .expectSpeech('New user', 'Button')
@@ -113,16 +119,13 @@ TEST_F('ChromeVoxTutorialTest', 'BasicTest', function() {
 TEST_F('ChromeVoxTutorialTest', 'LessonSetTest', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
-    const Panel = this.getPanel();
-    assertTrue(Panel.iTutorialEnabled_);
-    new PanelCommand(PanelCommandType.TUTORIAL).send();
-    await this.waitForTutorial();
-    const tutorial = Panel.iTutorial;
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getPanel().iTutorial;
     mockFeedback.expectSpeech('Choose your tutorial experience')
         .call(doCmd('nextObject'))
         .expectSpeech('New user', 'Button')
         .call(doCmd('forceClickOnCurrentItem'))
-        .expectSpeech('New User Tutorial, 8 Lessons')
+        .expectSpeech(/New User Tutorial, [0-9]+ Lessons/)
         .call(doCmd('nextObject'))
         .expectSpeech('On, Off, and Stop')
         .call(() => {
@@ -136,7 +139,7 @@ TEST_F('ChromeVoxTutorialTest', 'LessonSetTest', function() {
         .call(doCmd('nextObject'))
         .expectSpeech('Experienced user', 'Button')
         .call(doCmd('forceClickOnCurrentItem'))
-        .expectSpeech('Experienced User Tutorial, 2 Lessons')
+        .expectSpeech(/Experienced User Tutorial, [0-9]+ Lessons/)
         .call(doCmd('nextObject'))
         .expectSpeech('Text fields')
         .replay();
@@ -147,16 +150,13 @@ TEST_F('ChromeVoxTutorialTest', 'LessonSetTest', function() {
 TEST_F('ChromeVoxTutorialTest', 'NoPracticeAreaTest', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
-    const Panel = this.getPanel();
-    assertTrue(Panel.iTutorialEnabled_);
-    new PanelCommand(PanelCommandType.TUTORIAL).send();
-    await this.waitForTutorial();
-    const tutorial = Panel.iTutorial;
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getPanel().iTutorial;
     mockFeedback.expectSpeech('Choose your tutorial experience')
         .call(doCmd('nextObject'))
         .expectSpeech('New user', 'Button')
         .call(doCmd('forceClickOnCurrentItem'))
-        .expectSpeech('New User Tutorial, 8 Lessons')
+        .expectSpeech(/New User Tutorial, [0-9]+ Lessons/)
         .call(() => {
           tutorial.showLesson(0);
         })
@@ -171,22 +171,82 @@ TEST_F('ChromeVoxTutorialTest', 'NoPracticeAreaTest', function() {
 TEST_F('ChromeVoxTutorialTest', 'HasPracticeAreaTest', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
-    const Panel = this.getPanel();
-    assertTrue(Panel.iTutorialEnabled_);
-    new PanelCommand(PanelCommandType.TUTORIAL).send();
-    await this.waitForTutorial();
-    const tutorial = Panel.iTutorial;
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getPanel().iTutorial;
     mockFeedback.expectSpeech('Choose your tutorial experience')
         .call(doCmd('nextObject'))
         .expectSpeech('New user', 'Button')
         .call(doCmd('forceClickOnCurrentItem'))
-        .expectSpeech('New User Tutorial, 8 Lessons')
+        .expectSpeech(/New User Tutorial, [0-9]+ Lessons/)
         .call(() => {
           tutorial.showLesson(2);
         })
         .expectSpeech('Basic Navigation', 'Heading 1')
         .call(doCmd('nextButton'))
         .expectSpeech('Practice Area')
+        .replay();
+  });
+});
+
+// Tests nudges given in the general tutorial context.
+// The first three nudges should read the current item with full context.
+// Afterward, general hints will be given about using ChromeVox. Lastly,
+// we will give a hint for exiting the tutorial.
+TEST_F('ChromeVoxTutorialTest', 'GeneralNudgesTest', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getPanel().iTutorial;
+    const giveNudge = () => {
+      tutorial.giveNudge();
+    };
+    mockFeedback.expectSpeech('Choose your tutorial experience');
+    for (let i = 0; i < 3; ++i) {
+      mockFeedback.call(giveNudge).expectSpeech(
+          'Choose your tutorial experience', 'Heading 1');
+    }
+    mockFeedback.call(giveNudge)
+        .expectSpeech('Hint: Hold Search and press the arrow keys to navigate.')
+        .call(giveNudge)
+        .expectSpeech(
+            'Hint: Press Search + Space to activate the current item.')
+        .call(giveNudge)
+        .expectSpeech(
+            'Hint: Press Escape if you would like to exit this tutorial.')
+        .replay();
+  });
+});
+
+// Tests nudges given in the practice area context. Note, each practice area
+// can have different nudge messages; this test confirms that nudges given in
+// the practice area differ from those given in the general tutorial context.
+TEST_F('ChromeVoxTutorialTest', 'PracticeAreaNudgesTest', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getPanel().iTutorial;
+    const giveNudge = () => {
+      tutorial.giveNudge();
+    };
+    mockFeedback.expectSpeech('Choose your tutorial experience')
+        .call(doCmd('nextObject'))
+        .expectSpeech('New user', 'Button')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech(/New User Tutorial, [0-9]+ Lessons/)
+        .call(() => {
+          tutorial.showLesson(2);
+        })
+        .expectSpeech('Basic Navigation', 'Heading 1')
+        .call(doCmd('nextButton'))
+        .expectSpeech('Practice Area')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech('Basic Navigation Practice')
+        .call(giveNudge)
+        .expectSpeech(
+            'Try pressing Search + left/right arrow. The search key is ' +
+            'directly above the shift key')
+        .call(giveNudge)
+        .expectSpeech('Press Search + Space to activate the current item.')
         .replay();
   });
 });

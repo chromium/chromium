@@ -334,9 +334,9 @@ Polymer({
           },
           events: ['click'],
           hints: [
-            'Try pressing Search + left/right arrow. The search key directly ' +
-                ' above the shift key',
-            'Use search + space to click an item'
+            'Try pressing Search + left/right arrow. The search key is' +
+                ' directly above the shift key',
+            'Press Search + Space to activate the current item.'
           ],
         },
 
