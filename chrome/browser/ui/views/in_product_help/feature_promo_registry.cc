@@ -7,8 +7,10 @@
 #include "base/no_destructor.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/in_product_help/feature_promo_bubble_params.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 
@@ -21,6 +23,11 @@ views::View* GetTabGroupsAnchorView(BrowserView* browser_view) {
   constexpr int kPreferredAnchorTab = 2;
   return browser_view->tabstrip()->GetTabViewForPromoAnchor(
       kPreferredAnchorTab);
+}
+
+// kIPHLiveCaptionFeature:
+views::View* GetMediaButton(BrowserView* browser_view) {
+  return browser_view->toolbar()->media_button();
 }
 
 }  // namespace
@@ -85,6 +92,17 @@ void FeaturePromoRegistry::RegisterKnownFeatures() {
 
     RegisterFeature(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
                     params, base::BindRepeating(GetTabGroupsAnchorView));
+  }
+
+  {
+    // kIPHLiveCaptionFeature:
+    FeaturePromoBubbleParams params;
+    params.body_string_specifier = IDS_LIVE_CAPTION_PROMO;
+    params.screenreader_string_specifier = IDS_LIVE_CAPTION_PROMO_SCREENREADER;
+    params.arrow = views::BubbleBorder::Arrow::TOP_RIGHT;
+
+    RegisterFeature(feature_engagement::kIPHLiveCaptionFeature, params,
+                    base::BindRepeating(GetMediaButton));
   }
 }
 

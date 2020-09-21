@@ -49,7 +49,7 @@ class FeaturePromoControllerViews : public FeaturePromoController,
   // FeaturePromoController:
   bool MaybeShowPromo(const base::Feature& iph_feature) override;
   bool BubbleIsShowing(const base::Feature& iph_feature) const override;
-  void CloseBubble(const base::Feature& iph_feature) override;
+  bool CloseBubble(const base::Feature& iph_feature) override;
   PromoHandle CloseBubbleAndContinuePromo(
       const base::Feature& iph_feature) override;
 

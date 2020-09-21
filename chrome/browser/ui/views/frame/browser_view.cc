@@ -3443,9 +3443,6 @@ void BrowserView::ShowInProductHelpPromo(InProductHelpFeature iph_feature) {
       if (toolbar_ && toolbar_->media_button())
         toolbar_->media_button()->ShowPromo();
       break;
-    case InProductHelpFeature::kLiveCaption:
-      live_caption_promo_controller_.ShowPromo();
-      break;
   }
 }
 

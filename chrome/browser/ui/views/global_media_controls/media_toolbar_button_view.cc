@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -12,11 +13,12 @@
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_controller.h"
 #include "chrome/browser/ui/in_product_help/global_media_controls_in_product_help.h"
 #include "chrome/browser/ui/in_product_help/global_media_controls_in_product_help_factory.h"
-#include "chrome/browser/ui/in_product_help/live_caption_in_product_help.h"
-#include "chrome/browser/ui/in_product_help/live_caption_in_product_help_factory.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
+#include "chrome/browser/ui/views/in_product_help/feature_promo_controller_views.h"
 #include "chrome/browser/ui/views/in_product_help/global_media_controls_promo_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/vector_icons/vector_icons.h"
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -38,13 +40,6 @@ MediaToolbarButtonView::MediaToolbarButtonView(const Browser* browser)
           browser_->profile());
   if (global_media_controls_in_product_help)
     AddObserver(global_media_controls_in_product_help);
-
-  if (base::FeatureList::IsEnabled(media::kLiveCaption)) {
-    LiveCaptionInProductHelp* live_caption_in_product_help =
-        LiveCaptionInProductHelpFactory::GetForProfile(browser_->profile());
-    if (live_caption_in_product_help)
-      AddObserver(live_caption_in_product_help);
-  }
 
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
@@ -84,9 +79,12 @@ void MediaToolbarButtonView::ButtonPressed(views::Button* sender,
   } else {
     MediaDialogView::ShowDialog(this, service_);
 
-    // Inform observers. Since the promo controller cares about the dialog
-    // showing, we need to ensure that it's created.
+    // Ensure we have IPH related objects before calling into them.
     EnsurePromoController();
+
+    feature_promo_controller_->CloseBubble(
+        feature_engagement::kIPHLiveCaptionFeature);
+
     for (auto& observer : observers_)
       observer.OnMediaDialogOpened();
   }
@@ -104,8 +102,7 @@ void MediaToolbarButtonView::Hide() {
   SetVisible(false);
   PreferredSizeChanged();
 
-  // Inform observers. Since the promo controller cares about hiding, we need to
-  // ensure that it's created.
+  // Ensure we have IPH related objects before calling into them.
   EnsurePromoController();
   for (auto& observer : observers_)
     observer.OnMediaButtonHidden();
@@ -114,6 +111,14 @@ void MediaToolbarButtonView::Hide() {
 void MediaToolbarButtonView::Enable() {
   SetEnabled(true);
 
+  // Ensure we have IPH related objects before calling into them.
+  EnsurePromoController();
+
+  if (base::FeatureList::IsEnabled(media::kLiveCaption)) {
+    feature_promo_controller_->MaybeShowPromo(
+        feature_engagement::kIPHLiveCaptionFeature);
+  }
+
   for (auto& observer : observers_)
     observer.OnMediaButtonEnabled();
 }
@@ -121,9 +126,12 @@ void MediaToolbarButtonView::Enable() {
 void MediaToolbarButtonView::Disable() {
   SetEnabled(false);
 
-  // Inform observers. Since the promo controller cares about disabling, we need
-  // to ensure that it's created.
+  // Ensure we have IPH related objects before calling into them.
   EnsurePromoController();
+
+  feature_promo_controller_->CloseBubble(
+      feature_engagement::kIPHLiveCaptionFeature);
+
   for (auto& observer : observers_)
     observer.OnMediaButtonDisabled();
 }
@@ -154,10 +162,14 @@ void MediaToolbarButtonView::OnPromoEnded() {
 }
 
 void MediaToolbarButtonView::EnsurePromoController() {
-  if (promo_controller_)
-    return;
+  if (!promo_controller_) {
+    promo_controller_ = std::make_unique<GlobalMediaControlsPromoController>(
+        this, browser_->profile());
+    AddObserver(promo_controller_.get());
+  }
 
-  promo_controller_ = std::make_unique<GlobalMediaControlsPromoController>(
-      this, browser_->profile());
-  AddObserver(promo_controller_.get());
+  if (!feature_promo_controller_) {
+    feature_promo_controller_ = BrowserView::GetBrowserViewForBrowser(browser_)
+                                    ->feature_promo_controller();
+  }
 }

@@ -35,6 +35,8 @@ using ::testing::Return;
 namespace {
 base::Feature kTestIPHFeature{"TestIPHFeature",
                               base::FEATURE_ENABLED_BY_DEFAULT};
+base::Feature kSecondIPHFeature{"SecondIPHFeature",
+                                base::FEATURE_ENABLED_BY_DEFAULT};
 }  // namespace
 
 class FeaturePromoControllerViewsTest : public TestWithBrowserView {
@@ -145,12 +147,30 @@ TEST_F(FeaturePromoControllerViewsTest, PromoEndsWhenRequested) {
   views::test::WidgetClosingObserver widget_observer(bubble->GetWidget());
 
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
-  controller_->CloseBubble(kTestIPHFeature);
+  EXPECT_TRUE(controller_->CloseBubble(kTestIPHFeature));
   EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
   EXPECT_FALSE(controller_->promo_bubble_for_testing());
 
   // Ensure the widget does close.
   widget_observer.Wait();
+}
+
+TEST_F(FeaturePromoControllerViewsTest,
+       CloseBubbleDoesNothingIfPromoNotShowing) {
+  EXPECT_FALSE(controller_->CloseBubble(kTestIPHFeature));
+}
+
+TEST_F(FeaturePromoControllerViewsTest,
+       CloseBubbleDoesNothingIfDifferentPromoShowing) {
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .Times(1)
+      .WillOnce(Return(true));
+  ASSERT_TRUE(controller_->MaybeShowPromoWithParams(kTestIPHFeature,
+                                                    DefaultBubbleParams()));
+
+  EXPECT_FALSE(controller_->CloseBubble(kSecondIPHFeature));
+  EXPECT_TRUE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_TRUE(controller_->promo_bubble_for_testing());
 }
 
 TEST_F(FeaturePromoControllerViewsTest, PromoEndsOnBubbleClosure) {

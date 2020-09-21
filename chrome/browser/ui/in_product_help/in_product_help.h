@@ -9,7 +9,6 @@
 enum class InProductHelpFeature {
   kGlobalMediaControls,
   kIncognitoWindow,
-  kLiveCaption,
   kReopenTab,
 };
 

@@ -94,11 +94,12 @@ bool FeaturePromoControllerViews::BubbleIsShowing(
   return promo_bubble_ && current_iph_feature_ == &iph_feature;
 }
 
-void FeaturePromoControllerViews::CloseBubble(
+bool FeaturePromoControllerViews::CloseBubble(
     const base::Feature& iph_feature) {
-  DCHECK_EQ(&iph_feature, current_iph_feature_);
-  DCHECK(promo_bubble_);
+  if (!BubbleIsShowing(iph_feature))
+    return false;
   promo_bubble_->GetWidget()->Close();
+  return true;
 }
 
 void FeaturePromoControllerViews::UpdateBubbleForAnchorBoundsChange() {

@@ -31,10 +31,13 @@ class FeaturePromoController {
   // longer showing.
   virtual bool BubbleIsShowing(const base::Feature& iph_feature) const = 0;
 
-  // Close the bubble for |iph_feature| and end the promo. If no promo
-  // is showing for |iph_feature|, or the promo has continued past the
-  // bubble, calling this is an error.
-  virtual void CloseBubble(const base::Feature& iph_feature) = 0;
+  // If a bubble is showing for |iph_feature| close it and end the
+  // promo. Does nothing otherwise. Returns true if a bubble was closed
+  // and false otherwise.
+  //
+  // Calling this has no effect if |CloseBubbleAndContinuePromo()| was
+  // called for |iph_feature|.
+  virtual bool CloseBubble(const base::Feature& iph_feature) = 0;
 
   class PromoHandle;
 

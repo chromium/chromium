@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 
 class Browser;
+class FeaturePromoControllerViews;
 class GlobalMediaControlsPromoController;
 class MediaNotificationService;
 class MediaToolbarButtonController;
@@ -66,6 +67,9 @@ class MediaToolbarButtonView : public ToolbarButton,
 
   // Shows the in-product help bubble.
   std::unique_ptr<GlobalMediaControlsPromoController> promo_controller_;
+
+  // The window's IPH promo controller.
+  FeaturePromoControllerViews* feature_promo_controller_ = nullptr;
 
   // True if the in-product help bubble is currently showing.
   bool is_promo_showing_ = false;
