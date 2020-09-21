@@ -537,8 +537,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ShowContextMenu) {
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
                        ShowContextMenuOnMultilineElement) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
-      <div style='width: 10em'>This is some text.
-      <a href='www.google.com'>This is a multiline link.</a></div>
+      <a style="line-height: 16px" href='www.google.com'>
+      This is a <br><br><br><br>multiline link.</a>
       )HTML");
 
   BrowserAccessibility* target_node =
@@ -560,10 +560,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
 
   UntrustworthyContextMenuParams context_menu_params =
       context_menu_filter->get_params();
-  EXPECT_EQ(base::ASCIIToUTF16("This is a multiline link."),
-            context_menu_params.link_text);
+  std::string link_text = base::UTF16ToUTF8(context_menu_params.link_text);
+  base::ReplaceChars(link_text, "\n", "\\n", &link_text);
+  EXPECT_EQ("This is a\\n\\n\\n\\nmultiline link.", link_text);
   EXPECT_EQ(ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
             context_menu_params.source_type);
+  // Expect the context menu to open on the same line as the first line of link
+  // text. Check that the y coordinate of the context menu is near the line
+  // height.
+  EXPECT_NEAR(16, context_menu_params.y, 15);
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
@@ -596,6 +601,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   EXPECT_EQ(base::ASCIIToUTF16("Offscreen"), context_menu_params.link_text);
   EXPECT_EQ(ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
             context_menu_params.source_type);
+  // Expect the context menu point to be 0, 0.
+  EXPECT_EQ(0, context_menu_params.x);
+  EXPECT_EQ(0, context_menu_params.y);
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
@@ -603,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <a href='www.google.com'>Obscured</a>
       <div style="position: absolute; height: 100px; width: 100px; top: 0px;
-                  left: 0px; background-color:red;"></div>
+                  left: 0px; background-color:red; line-height: 16px"></div>
       )HTML");
 
   BrowserAccessibility* target_node =
@@ -628,6 +636,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   EXPECT_EQ(base::ASCIIToUTF16("Obscured"), context_menu_params.link_text);
   EXPECT_EQ(ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
             context_menu_params.source_type);
+  // Expect the context menu to open on the same line as the link text. Check
+  // that the y coordinate of the context menu is near the line height.
+  EXPECT_NEAR(16, context_menu_params.y, 15);
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,

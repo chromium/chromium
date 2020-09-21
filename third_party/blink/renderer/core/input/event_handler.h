@@ -366,6 +366,9 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
       const HitTestRequest& request,
       const WebMouseEvent& mev);
 
+  IntRect GetFocusedElementRectForNonLocatedContextMenu(
+      Element* focused_element);
+
   // NOTE: If adding a new field to this class please ensure that it is
   // cleared in |EventHandler::clear()|.
 

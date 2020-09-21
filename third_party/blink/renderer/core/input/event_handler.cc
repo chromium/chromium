@@ -2130,7 +2130,7 @@ WebInputEventResult EventHandler::ShowNonLocatedContextMenu(
     // Intersect the selection rect and the visible bounds of focused_element.
     if (focused_element) {
       IntRect clipped_rect = view->ViewportToFrame(
-          focused_element->VisibleBoundsInVisualViewport());
+          GetFocusedElementRectForNonLocatedContextMenu(focused_element));
       left = std::max(clipped_rect.X(), left);
       top = std::max(clipped_rect.Y(), top);
       right = std::min(clipped_rect.MaxX(), right);
@@ -2147,7 +2147,8 @@ WebInputEventResult EventHandler::ShowNonLocatedContextMenu(
           view->ConvertToRootFrame(selection_rect.Center());
     }
   } else if (focused_element) {
-    IntRect clipped_rect = focused_element->VisibleBoundsInVisualViewport();
+    IntRect clipped_rect =
+        GetFocusedElementRectForNonLocatedContextMenu(focused_element);
     location_in_root_frame =
         visual_viewport.ViewportToRootFrame(clipped_rect.Center());
   } else {
@@ -2193,6 +2194,20 @@ WebInputEventResult EventHandler::ShowNonLocatedContextMenu(
   mouse_event.SetFrameScale(1);
 
   return SendContextMenuEvent(mouse_event, focused_element);
+}
+
+IntRect EventHandler::GetFocusedElementRectForNonLocatedContextMenu(
+    Element* focused_element) {
+  IntRect clipped_rect = focused_element->VisibleBoundsInVisualViewport();
+  // The bounding rect of multiline elements may include points that are
+  // not within the element. Intersect the clipped rect with the first
+  // outline rect to ensure that the selection rect only includes visible
+  // points within the focused element.
+  Vector<IntRect> outline_rects =
+      focused_element->OutlineRectsInVisualViewport();
+  if (outline_rects.size() > 1)
+    clipped_rect.Intersect(outline_rects[0]);
+  return clipped_rect;
 }
 
 void EventHandler::ScheduleHoverStateUpdate() {
