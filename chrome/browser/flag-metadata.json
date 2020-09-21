@@ -1915,7 +1915,7 @@
   {
     "name": "enable-pixel-canvas-recording",
     "owners": [ "malaykeshav", "oshima" ],
-    "expiry_milestone": 77
+    "expiry_milestone": 95
   },
   {
     "name": "enable-play-store-search",
