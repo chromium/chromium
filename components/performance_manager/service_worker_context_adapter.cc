@@ -275,8 +275,10 @@ void ServiceWorkerContextAdapter::OnControlleeAdded(
   // notification is dropped.
   bool inserted =
       service_worker_clients_[version_id].insert(client_uuid).second;
-  if (!inserted)
+  if (!inserted) {
+    NOTREACHED();
     return;
+  }
 
   for (auto& observer : observer_list_)
     observer.OnControlleeAdded(version_id, client_uuid, client_info);
@@ -288,12 +290,16 @@ void ServiceWorkerContextAdapter::OnControlleeRemoved(
   // If |client_uuid| is not already marked as a client of |version_id|, the
   // notification is dropped.
   auto it = service_worker_clients_.find(version_id);
-  if (it == service_worker_clients_.end())
+  if (it == service_worker_clients_.end()) {
+    NOTREACHED();
     return;
+  }
 
   size_t removed = it->second.erase(client_uuid);
-  if (!removed)
+  if (!removed) {
+    NOTREACHED();
     return;
+  }
 
   // If a service worker no longer has any clients, it is removed entirely from
   // |service_worker_clients_|.
@@ -312,10 +318,23 @@ void ServiceWorkerContextAdapter::OnNoControllees(int64_t version_id,
 
 void ServiceWorkerContextAdapter::OnControlleeNavigationCommitted(
     int64_t version_id,
-    const std::string& uuid,
+    const std::string& client_uuid,
     content::GlobalFrameRoutingId render_frame_host_id) {
+  // The navigation committed notification should not be sent if the frame is
+  // not already a client of |version_id|.
+  auto it = service_worker_clients_.find(version_id);
+  if (it == service_worker_clients_.end()) {
+    NOTREACHED();
+    return;
+  }
+
+  if (it->second.find(client_uuid) == it->second.end()) {
+    NOTREACHED();
+    return;
+  }
+
   for (auto& observer : observer_list_)
-    observer.OnControlleeNavigationCommitted(version_id, uuid,
+    observer.OnControlleeNavigationCommitted(version_id, client_uuid,
                                              render_frame_host_id);
 }
 
