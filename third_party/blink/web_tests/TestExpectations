@@ -6747,3 +6747,6 @@ virtual/scroll-unification/fast/scrolling/scrollbars/mouse-scrolling-on-div-scro
 virtual/scroll-unification/fast/scrolling/scrollbars/scrollbar-occluded-by-div.html [ Failure ]
 virtual/scroll-unification/fast/scrolling/scrollbars/scrollbar-rtl-manipulation.html [ Failure ]
 virtual/scroll-unification/fast/scrolling/scrollbars/dsf-ready/mouse-interactions-dsf-2.html [ Failure ]
+
+# Sheriff 2020-09-21
+crbug.com/1130500 [ Mac10.13 Debug ] virtual/omt-worker-fetch/external/wpt/xhr/xhr-timeout-longtask.any.worker.html [ Pass Failure ]
