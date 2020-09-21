@@ -54,8 +54,8 @@
     </defs>
   </svg>
 </iron-iconset-svg>
-<tab-search-search-field id="searchField" autofocus clear-label="Clear search"
-    label="Search tabs [[getKeyboardShortcut_()]]" on-focus="onSearchFocus_"
+<tab-search-search-field id="searchField" autofocus clear-label="$i18n{clearSearch}"
+    label="$i18n{searchTabs} [[getKeyboardShortcut_()]]" on-focus="onSearchFocus_"
     on-keydown="onSearchKeyDown_" on-search-changed="onSearchChanged_">
 </tab-search-search-field>
 <div id="tabs">
@@ -71,10 +71,10 @@
   </iron-selector>
 </div>
 <div id="no-results" hidden="[[filteredOpenTabs_.length]]">
-  No results found
+  $i18n{noResultsFound}
 </div>
 <button id="feedback-footer" class="mwb-list-item" on-click="onFeedbackClick_"
     on-focus="onFeedbackFocus_">
   <iron-icon id="feedback-icon" icon="ts:feedback"></iron-icon>
-  <div id="feedback-text">Submit feedback</div>
+  <div id="feedback-text">$i18n{submitFeedback}</div>
 </button>
