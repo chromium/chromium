@@ -167,7 +167,7 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
         keyword, edit_model->client()->GetTemplateURLService());
     keyword_button_->SetText(names.full_name);
     keyword_button_->SetAccessibleName(
-        l10n_util::GetStringFUTF16(IDS_ACC_KEYWORD_BUTTON, names.short_name));
+        l10n_util::GetStringFUTF16(IDS_ACC_KEYWORD_MODE, names.short_name));
   }
 
   SetPillButtonVisibility(tab_switch_button_,

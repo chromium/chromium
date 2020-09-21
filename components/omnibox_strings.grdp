@@ -254,8 +254,8 @@
     <message name="IDS_ACC_KEYWORD_SUFFIX" desc="Suffix for spoken keyword suggestion description to explain keystroke used to search.">
     <ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to search
   </message>
-  <message name="IDS_ACC_KEYWORD_BUTTON" desc="Announcement when keyword search button focused.">
-    Search button, press Enter to search <ph name="KEYWORD_SUFFIX">$1<ex>Youtube</ex></ph>
+  <message name="IDS_ACC_KEYWORD_MODE" desc="Announcement when entering keyword search mode.">
+    Search mode, press Enter to search <ph name="KEYWORD_SUFFIX">$1<ex>Youtube</ex></ph>
   </message>
 
   <!-- Accessibility suffix for suggestions when the remove button is focused. -->

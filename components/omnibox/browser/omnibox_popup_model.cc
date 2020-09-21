@@ -617,11 +617,7 @@ base::string16 OmniboxPopupModel::GetAccessibilityLabelForCurrentSelection(
       break;
     }
     case KEYWORD_MODE:
-      if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled()) {
-        additional_message_id = IDS_ACC_KEYWORD_BUTTON;
-      }
-      // TODO(tommycli): Investigate whether the accessibility messaging for
-      // (non-button row) Keyword mode belongs here.
+      additional_message_id = IDS_ACC_KEYWORD_MODE;
       break;
     case FOCUSED_BUTTON_TAB_SWITCH:
       additional_message_id = IDS_ACC_TAB_SWITCH_BUTTON_FOCUSED_PREFIX;
