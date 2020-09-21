@@ -32992,7 +32992,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.DiskCleanupProgress"
-    enum="CryptohomeDiskCleanupProgress" expires_after="M87">
+    enum="CryptohomeDiskCleanupProgress" expires_after="M90">
   <owner>slangley@chromium.org</owner>
   <owner>weifangsun@chromium.org</owner>
   <summary>
@@ -33062,7 +33062,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.FreeDiskSpaceTotalTime2" units="ms"
-    expires_after="M87">
+    expires_after="M90">
   <owner>slangley@chromium.org</owner>
   <owner>weifangsun@chromium.org</owner>
   <summary>
@@ -33074,7 +33074,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.GCache.FreedDiskSpaceInMb" units="MB"
-    expires_after="M87">
+    expires_after="M90">
   <owner>slangley@chromium.org</owner>
   <owner>weifangsun@chromium.org</owner>
   <summary>
