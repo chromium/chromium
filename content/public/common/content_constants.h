@@ -9,6 +9,8 @@
 
 #include <stddef.h>         // For size_t
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
@@ -63,7 +65,10 @@ CONTENT_EXPORT extern const int kDefaultDetachableCancelDelayMs;
 // in content need to know the name to manage the header stored in
 // network::ResourceRequest::cors_exempt_headers.
 CONTENT_EXPORT extern const char kCorsExemptPurposeHeaderName[];
-CONTENT_EXPORT extern const char kCorsExemptRequestedWithHeaderName[];
+// This should just be a constant string, but there is evidence of malware
+// overwriting the value of the constant so try to confirm by constructing
+// it at run time.
+CONTENT_EXPORT std::string GetCorsExemptRequestedWithHeaderName();
 
 #if defined(OS_LINUX)
 // The OOM score adj constants

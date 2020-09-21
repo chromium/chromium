@@ -4,6 +4,9 @@
 
 #include "content/public/common/content_constants.h"
 
+#include <vector>
+
+#include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
 
 namespace content {
@@ -44,7 +47,14 @@ const int kHistogramSynchronizerReservedSequenceNumber = 0;
 const int kDefaultDetachableCancelDelayMs = 30000;
 
 const char kCorsExemptPurposeHeaderName[] = "Purpose";
-const char kCorsExemptRequestedWithHeaderName[] = "X-Requested-With";
+
+std::string GetCorsExemptRequestedWithHeaderName() {
+  std::vector<std::string> pieces;
+  pieces.push_back("X");
+  pieces.push_back("Requested");
+  pieces.push_back("With");
+  return base::JoinString(pieces, "-");
+}
 
 #if defined(OS_LINUX)
 const int kLowestRendererOomScore = 300;

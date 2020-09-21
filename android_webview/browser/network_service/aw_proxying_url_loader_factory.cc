@@ -351,11 +351,10 @@ void InterceptedRequest::InterceptResponseReceived(
   // compatibility with previous WebView versions. This should not be visible to
   // shouldInterceptRequest. It should also not trigger CORS prefetch if
   // OOR-CORS is enabled.
-  if (!request_.headers.HasHeader(
-          content::kCorsExemptRequestedWithHeaderName)) {
+  std::string header = content::GetCorsExemptRequestedWithHeaderName();
+  if (!request_.headers.HasHeader(header)) {
     request_.cors_exempt_headers.SetHeader(
-        content::kCorsExemptRequestedWithHeaderName,
-        base::android::BuildInfo::GetInstance()->host_package_name());
+        header, base::android::BuildInfo::GetInstance()->host_package_name());
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();

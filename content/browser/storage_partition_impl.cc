@@ -2442,7 +2442,7 @@ void StoragePartitionImpl::InitNetworkContext() {
   context_params->cors_exempt_header_list.push_back(
       kCorsExemptPurposeHeaderName);
   context_params->cors_exempt_header_list.push_back(
-      kCorsExemptRequestedWithHeaderName);
+      GetCorsExemptRequestedWithHeaderName());
   variations::UpdateCorsExemptHeaderForVariations(context_params.get());
 
   cors_exempt_header_list_ = context_params->cors_exempt_header_list;
