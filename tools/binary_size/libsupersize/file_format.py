@@ -557,10 +557,10 @@ def _LoadSizeInfoFromFile(file_obj, size_path):
       # Derived.
       if cur_paddings:
         new_sym.padding = cur_paddings[i]
-        new_sym.size += new_sym.padding
+        if not new_sym.IsOverhead():
+          new_sym.size += new_sym.padding
       else:
-        # This will be computed during CreateSizeInfo().
-        new_sym.padding = 0
+        new_sym.padding = 0  # Computed below.
       new_sym.template_name = ''
       new_sym.name = ''
 

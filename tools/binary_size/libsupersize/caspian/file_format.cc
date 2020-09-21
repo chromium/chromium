@@ -405,7 +405,9 @@ void ParseSizeInfo(const char* gzipped, unsigned long len, SizeInfo* info) {
       new_sym.size_ = cur_sizes[i];
       if (has_padding) {
         new_sym.padding_ = cur_paddings[i];
-        new_sym.size_ += new_sym.padding_;
+        if (!new_sym.IsOverhead()) {
+          new_sym.size_ += new_sym.padding_;
+        }
       }
       new_sym.section_name_ = cur_section_name;
       new_sym.object_path_ = info->object_paths[cur_path_indices[i]];

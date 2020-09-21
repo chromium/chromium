@@ -352,9 +352,11 @@ class IntegrationTest(unittest.TestCase):
   def test_Archive_Elf_DebugMeasures(self):
     return self._DoArchiveTest(use_elf=True, debug_measures=True)
 
-  @_CompareWithGolden(name='Archive')
+  @_CompareWithGolden(name='Archive_Apk')
   def test_ArchiveSparse(self):
-    return self._DoArchiveTest(use_output_directory=False, include_padding=True)
+    return self._DoArchiveTest(use_apk=True,
+                               use_aux_elf=True,
+                               include_padding=True)
 
   @_CompareWithGolden()
   def test_Console(self):
