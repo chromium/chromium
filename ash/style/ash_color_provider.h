@@ -35,21 +35,6 @@ class ColorModeObserver;
 // system UI will be the combination of the colors of the four layers.
 class ASH_EXPORT AshColorProvider : public SessionObserver {
  public:
-  // TODO(minch): Remove AshColorMode, |color_mode_| and DeprecatedGet*
-  // functions once all the deprecated colors have been removed.
-  // The color mode of system UI, which can be set through the dark mode feature
-  // pod in the system tray menu.
-  enum class AshColorMode {
-    // This is the color mode of current system UI, which is a combination of
-    // dark and light mode. e.g, shelf and system tray are dark while many other
-    // elements like notification are light.
-    kDefault = 0,
-    // The text is black while the background is white or light.
-    kLight,
-    // The text is light color while the background is black or dark grey.
-    kDark
-  };
-
   // Types of Shield layer. Number at the end of each type indicates the alpha
   // value.
   enum class ShieldLayerType {
@@ -176,30 +161,9 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* prefs) override;
 
-  // Gets color of Shield layer. See details at the corresponding function of
-  // Base layer.
-  SkColor DeprecatedGetShieldLayerColor(ShieldLayerType type,
-                                        SkColor default_color) const;
   SkColor GetShieldLayerColor(ShieldLayerType type) const;
-
-  // Used by UI elements that need to support |kDefault| mode to get the color
-  // of base layer. Deprecated. Remove once all the deprecated calls are
-  // converted to light/dark mode colors.
-  SkColor DeprecatedGetBaseLayerColor(BaseLayerType type,
-                                      SkColor default_color) const;
-  // Gets base layer's color of |type|.
   SkColor GetBaseLayerColor(BaseLayerType type) const;
-
-  // Gets color of Controls layer. See details at the corresponding function of
-  // Base layer.
-  SkColor DeprecatedGetControlsLayerColor(ControlsLayerType type,
-                                          SkColor default_color) const;
   SkColor GetControlsLayerColor(ControlsLayerType type) const;
-
-  // Gets color of Content layer. See details at the corresponding function of
-  // Base layer.
-  SkColor DeprecatedGetContentLayerColor(ContentLayerType type,
-                                         SkColor default_color) const;
   SkColor GetContentLayerColor(ContentLayerType type) const;
 
   // Gets the attributes of ripple on |bg_color|. |bg_color| is the background
@@ -257,9 +221,6 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
 
   // Notifies all the observers on |kColorModeThemed|'s change.
   void NotifyColorModeThemedPrefChange();
-
-  // Current color mode of system UI.
-  AshColorMode color_mode_ = AshColorMode::kDefault;
 
   base::ObserverList<ColorModeObserver> observers_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

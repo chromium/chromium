@@ -7,7 +7,6 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/default_color_constants.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/message_center/unified_message_center_view.h"
 #include "ash/system/tray/tray_constants.h"
@@ -41,17 +40,13 @@ class StackingBarLabelButton : public views::LabelButton {
                          UnifiedMessageCenterView* message_center_view)
       : views::LabelButton(listener, text),
         message_center_view_(message_center_view) {
-    SetEnabledTextColors(kUnifiedMenuButtonColorActive);
+    SetEnabledTextColors(message_center_style::kUnifiedMenuButtonColorActive);
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
     SetBorder(views::CreateEmptyBorder(gfx::Insets()));
     label()->SetSubpixelRenderingEnabled(false);
     label()->SetFontList(views::Label::GetDefaultFontList().Derive(
         1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
     TrayPopupUtils::ConfigureTrayPopupButton(this);
-
-    background_color_ = AshColorProvider::Get()->DeprecatedGetBaseLayerColor(
-        AshColorProvider::BaseLayerType::kTransparent90,
-        kNotificationBackgroundColor);
   }
 
   ~StackingBarLabelButton() override = default;
@@ -100,7 +95,8 @@ class StackingBarLabelButton : public views::LabelButton {
   }
 
  private:
-  SkColor background_color_ = gfx::kPlaceholderColor;
+  SkColor background_color_ =
+      message_center_style::kNotificationBackgroundColor;
   UnifiedMessageCenterView* message_center_view_;
   DISALLOW_COPY_AND_ASSIGN(StackingBarLabelButton);
 };
@@ -463,9 +459,7 @@ void StackedNotificationBar::UpdateStackedNotifications(
 
 void StackedNotificationBar::OnPaint(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
-  flags.setColor(AshColorProvider::Get()->DeprecatedGetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent90,
-      kNotificationBackgroundColor));
+  flags.setColor(message_center_style::kNotificationBackgroundColor);
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setAntiAlias(true);
 

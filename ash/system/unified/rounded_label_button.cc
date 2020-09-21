@@ -5,7 +5,6 @@
 #include "ash/system/unified/rounded_label_button.h"
 
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/default_color_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ui/gfx/canvas.h"

@@ -127,28 +127,10 @@ void AshColorProvider::OnActiveUserPrefServiceChanged(PrefService* prefs) {
   NotifyColorModeThemedPrefChange();
 }
 
-SkColor AshColorProvider::DeprecatedGetShieldLayerColor(
-    ShieldLayerType type,
-    SkColor default_color) const {
-  if (color_mode_ == AshColorMode::kDefault)
-    return default_color;
-
-  return GetShieldLayerColor(type);
-}
-
 SkColor AshColorProvider::GetShieldLayerColor(ShieldLayerType type) const {
   constexpr int kAlphas[] = {kAlpha20, kAlpha40, kAlpha60, kAlpha80, kAlpha90};
   DCHECK_LT(static_cast<size_t>(type), base::size(kAlphas));
   return SkColorSetA(GetBackgroundColor(), kAlphas[static_cast<int>(type)]);
-}
-
-SkColor AshColorProvider::DeprecatedGetBaseLayerColor(
-    BaseLayerType type,
-    SkColor default_color) const {
-  if (color_mode_ == AshColorMode::kDefault)
-    return default_color;
-
-  return GetBaseLayerColor(type);
 }
 
 SkColor AshColorProvider::GetBaseLayerColor(BaseLayerType type) const {
@@ -156,15 +138,6 @@ SkColor AshColorProvider::GetBaseLayerColor(BaseLayerType type) const {
                              kAlpha80, kAlpha90, 0xFF};
   DCHECK_LT(static_cast<size_t>(type), base::size(kAlphas));
   return SkColorSetA(GetBackgroundColor(), kAlphas[static_cast<int>(type)]);
-}
-
-SkColor AshColorProvider::DeprecatedGetControlsLayerColor(
-    ControlsLayerType type,
-    SkColor default_color) const {
-  if (color_mode_ == AshColorMode::kDefault)
-    return default_color;
-
-  return GetControlsLayerColor(type);
 }
 
 SkColor AshColorProvider::GetControlsLayerColor(ControlsLayerType type) const {
@@ -189,15 +162,6 @@ SkColor AshColorProvider::GetControlsLayerColor(ControlsLayerType type) const {
   const size_t index = static_cast<size_t>(type);
   DCHECK_LT(index, base::size(kLightColors));
   return IsDarkModeEnabled() ? kDarkColors[index] : kLightColors[index];
-}
-
-SkColor AshColorProvider::DeprecatedGetContentLayerColor(
-    ContentLayerType type,
-    SkColor default_color) const {
-  if (color_mode_ == AshColorMode::kDefault)
-    return default_color;
-
-  return GetContentLayerColor(type);
 }
 
 SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {

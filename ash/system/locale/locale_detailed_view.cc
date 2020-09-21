@@ -9,7 +9,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/default_color_constants.h"
 #include "ash/system/model/locale_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/actionable_view.h"
@@ -77,9 +76,8 @@ class LocaleItem : public ActionableView {
       views::ImageView* checked_image = TrayPopupUtils::CreateMainImageView();
       checked_image->SetImage(gfx::CreateVectorIcon(
           kCheckCircleIcon, kMenuIconSize,
-          AshColorProvider::Get()->DeprecatedGetContentLayerColor(
-              AshColorProvider::ContentLayerType::kIconColorProminent,
-              kProminentIconButtonColor)));
+          AshColorProvider::Get()->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kIconColorProminent)));
       tri_view->AddView(TriView::Container::END, checked_image);
     }
     SetAccessibleName(display_name_view->GetText());
