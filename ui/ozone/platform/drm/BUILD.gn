@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromecast_build.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//gpu/vulkan/features.gni")
 import("//ui/ozone/ozone.gni")
@@ -150,10 +151,12 @@ source_set("gbm") {
     "//ui/platform_window",
   ]
 
-  data_deps = [
-    "//third_party/angle:libEGL",
-    "//third_party/angle:libGLESv2",
-  ]
+  if (!is_chromecast) {
+    data_deps = [
+      "//third_party/angle:libEGL",
+      "//third_party/angle:libGLESv2",
+    ]
+  }
 
   if (is_chromeos) {
     deps += [ "//ui/base/ime/chromeos" ]
