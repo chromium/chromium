@@ -44,9 +44,8 @@ class OmniboxRowView::HeaderView : public views::View,
     views::BoxLayout* layout =
         SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal));
-    // The icons in the header view match their sizing to the location bar.
-    layout->set_between_child_spacing(
-        GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING));
+    // This is the designer-provided spacing that matches the NTP Realbox.
+    layout->set_between_child_spacing(8);
 
     header_label_ = AddChildView(std::make_unique<views::Label>());
     header_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
