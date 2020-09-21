@@ -510,7 +510,7 @@ void NGPhysicalFragment::AdjustScrollableOverflowForPropagation(
     return;
   }
 
-  if (height_type == TextHeightType::kNormalHeight)
+  if (height_type == TextHeightType::kNormalHeight && Type() == kFragmentBox)
     overflow->Unite({{}, Size()});
 
   const LayoutObject* layout_object = GetLayoutObject();
