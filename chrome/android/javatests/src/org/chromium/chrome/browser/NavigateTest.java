@@ -562,6 +562,7 @@ public class NavigateTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
+    @DisabledTest
     public void testRendererInitiatedIntentNavigate() throws Exception {
         final String finalUrl =
                 mTestServer.getURL("/chrome/test/data/android/renderer_initiated/final.html");
