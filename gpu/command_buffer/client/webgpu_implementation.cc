@@ -580,6 +580,16 @@ void WebGPUImplementation::FlushCommands() {
   helper_->Flush();
 }
 
+void WebGPUImplementation::FlushCommands(DawnDeviceClientID device_client_id) {
+#if BUILDFLAG(USE_DAWN)
+  WebGPUCommandSerializer* command_serializer =
+      GetCommandSerializerWithDeviceClientID(device_client_id);
+  DCHECK(command_serializer);
+  command_serializer->Flush();
+  helper_->Flush();
+#endif
+}
+
 void WebGPUImplementation::EnsureAwaitingFlush(
     DawnDeviceClientID device_client_id,
     bool* needs_flush) {

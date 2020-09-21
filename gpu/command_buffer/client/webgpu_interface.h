@@ -32,6 +32,9 @@ class WebGPUInterface : public InterfaceBase {
   // Flush all commands.
   virtual void FlushCommands() = 0;
 
+  // Flush all commands on the device client.
+  virtual void FlushCommands(DawnDeviceClientID device_client_id) = 0;
+
   // Ensure the awaiting flush flag is set on the device client. Returns false
   // if a flush has already been indicated, or a flush is not needed (there may
   // be no commands to flush). Returns true if the caller should schedule a

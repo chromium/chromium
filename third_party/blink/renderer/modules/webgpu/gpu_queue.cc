@@ -147,8 +147,9 @@ void GPUQueue::submit(const HeapVector<Member<GPUCommandBuffer>>& buffers) {
 
   GetProcs().queueSubmit(GetHandle(), buffers.size(), commandBuffers.get());
   // WebGPU guarantees that submitted commands finish in finite time so we
-  // need to ensure commands are flushed.
-  EnsureFlush();
+  // need to ensure commands are flushed. Flush immediately so the GPU process
+  // eagerly processes commands to maximize throughput.
+  FlushNow();
 }
 
 void GPUQueue::signal(GPUFence* fence, uint64_t signal_value) {

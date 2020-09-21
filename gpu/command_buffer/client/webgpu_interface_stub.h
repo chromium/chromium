@@ -25,6 +25,7 @@ class WebGPUInterfaceStub : public WebGPUInterface {
   // WebGPUInterface implementation
   const DawnProcTable& GetProcs() const override;
   void FlushCommands() override;
+  void FlushCommands(DawnDeviceClientID device_client_id) override;
   void EnsureAwaitingFlush(DawnDeviceClientID device_client_id,
                            bool* needs_flush) override;
   void FlushAwaitingCommands(DawnDeviceClientID device_client_id) override;

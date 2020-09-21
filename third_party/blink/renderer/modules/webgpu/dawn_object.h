@@ -92,6 +92,9 @@ class DeviceTreeObject {
   // the end of the task.
   void EnsureFlush();
 
+  // Flush commands up until now on this object's parent device immediately.
+  void FlushNow();
+
  protected:
   scoped_refptr<DawnDeviceClientSerializerHolder>
       device_client_serializer_holder_;

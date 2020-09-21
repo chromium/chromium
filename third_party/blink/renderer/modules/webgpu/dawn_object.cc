@@ -83,6 +83,12 @@ void DeviceTreeObject::EnsureFlush() {
       device_client_serializer_holder_));
 }
 
+// Flush commands up until now on this object's parent device immediately.
+void DeviceTreeObject::FlushNow() {
+  GetInterface()->FlushCommands(
+      device_client_serializer_holder_->device_client_id_);
+}
+
 DawnObjectImpl::DawnObjectImpl(GPUDevice* device)
     : DeviceTreeObject(device->GetDeviceClientSerializerHolder()),
       device_(device) {}
