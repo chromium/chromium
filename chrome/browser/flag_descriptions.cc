@@ -2186,12 +2186,6 @@ const char kSpeculativeServiceWorkerStartOnQueryInputDescription[] =
     "a query, any service worker associated with the search engine the query "
     "will be sent to is started early.";
 
-const char kSplitPartiallyOccludedQuadsName[] =
-    "Split partially occluded quads";
-const char kSplitPartiallyOccludedQuadsDescription[] =
-    "Split partially occluded quads before drawing, discarding the occluded "
-    "regions, in order to reduce compositing overdraw.";
-
 const char kStrictOriginIsolationName[] = "Strict-Origin-Isolation";
 const char kStrictOriginIsolationDescription[] =
     "Experimental security mode that strengthens the site isolation policy. "

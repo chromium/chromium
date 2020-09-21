@@ -312,8 +312,6 @@ Display::Display(
   DCHECK(frame_sink_id_.is_valid());
   if (scheduler_)
     scheduler_->SetClient(this);
-  enable_quad_splitting_ = features::ShouldSplitPartiallyOccludedQuads() &&
-                           !overlay_processor_->DisableSplittingQuads();
 }
 
 Display::~Display() {
@@ -1219,7 +1217,7 @@ void Display::RemoveOverdrawQuads(AggregatedFrame* frame) {
         // Split quad into multiple draw quads when area can be reduce by
         // more than X fragments.
         const bool should_split_quads =
-            enable_quad_splitting_ &&
+            !overlay_processor_->DisableSplittingQuads() &&
             !visible_region.Intersects(render_pass_quads_in_content_space) &&
             ReduceComplexity(visible_region, settings_.quad_split_limit,
                              &cached_visible_region_) &&

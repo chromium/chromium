@@ -74,10 +74,6 @@ const base::Feature kUseSkiaOutputDeviceBufferQueue{
     "UseSkiaOutputDeviceBufferQueue", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-// Whether we should split partially occluded quads to reduce overdraw.
-const base::Feature kSplitPartiallyOccludedQuads{
-    "SplitPartiallyOccludedQuads", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Whether we should log extra debug information to webrtc native log.
 const base::Feature kWebRtcLogCapturePipeline{
     "WebRtcLogCapturePipeline", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -164,10 +160,6 @@ int NumOfFramesToToggleInterval() {
 
 bool ShouldUseRealBuffersForPageFlipTest() {
   return base::FeatureList::IsEnabled(kUseRealBuffersForPageFlipTest);
-}
-
-bool ShouldSplitPartiallyOccludedQuads() {
-  return base::FeatureList::IsEnabled(kSplitPartiallyOccludedQuads);
 }
 
 bool ShouldWebRtcLogCapturePipeline() {

@@ -1257,9 +1257,6 @@ extern const char kSmsReceiverCrossDeviceDescription[];
 extern const char kSpeculativeServiceWorkerStartOnQueryInputName[];
 extern const char kSpeculativeServiceWorkerStartOnQueryInputDescription[];
 
-extern const char kSplitPartiallyOccludedQuadsName[];
-extern const char kSplitPartiallyOccludedQuadsDescription[];
-
 extern const char kStopInBackgroundName[];
 extern const char kStopInBackgroundDescription[];
 

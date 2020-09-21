@@ -4342,11 +4342,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForcePreferredIntervalForVideoDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kForcePreferredIntervalForVideo)},
 
-    {"split-partially-occluded-quads",
-     flag_descriptions::kSplitPartiallyOccludedQuadsName,
-     flag_descriptions::kSplitPartiallyOccludedQuadsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kSplitPartiallyOccludedQuads)},
-
 #if BUILDFLAG(ENABLE_PDF)
     {"accessible-pdf-form", flag_descriptions::kAccessiblePDFFormName,
      flag_descriptions::kAccessiblePDFFormDescription, kOsDesktop,

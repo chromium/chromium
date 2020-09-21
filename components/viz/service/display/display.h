@@ -282,8 +282,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
 
   bool disable_swap_until_resize_ = true;
 
-  bool enable_quad_splitting_ = true;
-
   // Callback that will be run after all pending swaps have acked.
   base::OnceClosure no_pending_swaps_callback_;
 
