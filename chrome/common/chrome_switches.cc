@@ -229,10 +229,6 @@ const char kDisablePrintPreview[]           = "disable-print-preview";
 // disable that check. This switch is used during automated testing.
 const char kDisablePromptOnRepost[]         = "disable-prompt-on-repost";
 
-// Disables showing the search geolocation disclosure UI. Used for perf testing.
-const char kDisableSearchGeolocationDisclosure[] =
-    "disable-search-geolocation-disclosure";
-
 // Some tests seem to require the application to close when the last
 // browser window is closed. Thus, we need a switch to force this behavior
 // for ChromeOS Aura, disable "zero window mode".
@@ -248,14 +244,9 @@ const char kDiskCacheDir[]                  = "disk-cache-dir";
 // Forces the maximum disk space to be used by the disk cache, in bytes.
 const char kDiskCacheSize[]                 = "disk-cache-size";
 
-const char kDnsLogDetails[]                 = "dns-log-details";
-
 // Requests that a running browser process dump its collected histograms to a
 // given file. The file is overwritten if it exists.
 const char kDumpBrowserHistograms[]         = "dump-browser-histograms";
-
-// Overrides the path of Easy Unlock component app.
-const char kEasyUnlockAppPath[]             = "easy-unlock-app-path";
 
 // Enable auto-reload of error pages.
 const char kEnableAutoReload[] = "enable-auto-reload";
@@ -422,13 +413,6 @@ const char kNoServiceAutorun[]              = "no-service-autorun";
 // launching Chrome for the purpose of hosting background apps).
 const char kNoStartupWindow[]               = "no-startup-window";
 
-// Disables checking whether we received an acknowledgment when registering
-// a supervised user. Also disables the timeout during registration that waits
-// for the ack. Useful when debugging against a server that does not
-// support notifications.
-const char kNoSupervisedUserAcknowledgmentCheck[]  =
-    "no-managed-user-acknowledgment-check";
-
 // Calculate the hash of an MHTML file as it is being saved.
 // The browser process will write the serialized MHTML contents to a file and
 // calculate its hash as it is streamed back from the renderer via a Mojo data
@@ -514,9 +498,6 @@ const char kSilentLaunch[]                  = "silent-launch";
 
 // Simulates a critical update being available.
 const char kSimulateCriticalUpdate[]        = "simulate-critical-update";
-
-// Simulates that elevation is needed to recover upgrade channel.
-const char kSimulateElevatedRecovery[]      = "simulate-elevated-recovery";
 
 // Simulates that current version is outdated.
 const char kSimulateOutdated[]              = "simulate-outdated";
@@ -665,9 +646,6 @@ const char kForceShowUpdateMenuItemCustomSummary[] = "custom_summary";
 // Sets the market URL for Chrome for use in testing.
 const char kMarketUrlForTesting[] = "market-url-for-testing";
 
-// Specifies Android phone page loading progress bar animation.
-const char kProgressBarAnimation[]          = "progress-bar-animation";
-
 // Specifies a base URL for the trusted CDN for tests.
 const char kTrustedCDNBaseURLForTests[] = "trusted-cdn-base-url-for-tests";
 
@@ -790,7 +768,7 @@ const char kNotificationLaunchId[] = "notification-launch-id";
 // for the watcher process. Use profiles 5, 6 and 7 as documented on
 // kPrefetchArgument* in content_switches.cc.
 const char kPrefetchArgumentBrowserBackground[] = "/prefetch:5";
-const char kPrefetchArgumentWatcher[] = "/prefetch:6";
+// /prefetch:6 was formerly used by the watcher but is no longer used.
 // /prefetch:7 is used by crashpad, which can't depend on constants defined
 // here. See crashpad_win.cc for more details.
 
