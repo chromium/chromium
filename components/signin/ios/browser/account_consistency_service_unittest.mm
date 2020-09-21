@@ -13,6 +13,8 @@
 #include "base/ios/ios_util.h"
 #include "base/test/bind_test_util.h"
 #import "base/test/ios/wait_util.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -55,6 +57,10 @@ const char* kGoogleDomain = "google.com";
 const char* kYoutubeDomain = "youtube.com";
 // Google domain where the CHROME_CONNECTED cookie is set/removed.
 const char* kCountryGoogleDomain = "google.de";
+
+// Name of the histogram to record whether the GAIA cookie is present.
+const char* kGAIACookiePresentHistogram =
+    "Signin.IOSGaiaCookiePresentOnNavigation";
 
 // Returns a cookie domain that applies for all origins on |host_domain|.
 std::string GetCookieDomain(const std::string& host_domain) {
@@ -573,7 +579,7 @@ TEST_F(AccountConsistencyServiceTest, SetChromeConnectedCookieAtUpdateTime) {
 TEST_F(AccountConsistencyServiceTest, SetGaiaCookieUpdateNotUpdateTime) {
   SimulateUpdateGaiaCookie();
 
-  // Advance clock past one-hour Gaia update time.
+  // Advance clock, but stay within the one-hour Gaia update time.
   const base::Time first_update_time = base::Time::Now();
   task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
   SimulateUpdateGaiaCookie();
@@ -590,6 +596,19 @@ TEST_F(AccountConsistencyServiceTest, SetGaiaCookieUpdateAtUpdateTime) {
   SimulateUpdateGaiaCookie();
 
   EXPECT_EQ(second_update_time, GetGaiaLastUpdateTime());
+}
+
+// Ensures that the presence or absence of GAIA cookies is logged even if the
+// |kRestoreGAIACookiesIfDeleted| experiment is disabled.
+TEST_F(AccountConsistencyServiceTest, GAIACookieStatusLoggedProperly) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kRestoreGAIACookiesIfDeleted);
+
+  histogram_tester.ExpectTotalCount(kGAIACookiePresentHistogram, 0);
+  SimulateUpdateGaiaCookie();
+  base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectTotalCount(kGAIACookiePresentHistogram, 1);
 }
 
 // Ensures that set and remove cookie operations are handled in the order
