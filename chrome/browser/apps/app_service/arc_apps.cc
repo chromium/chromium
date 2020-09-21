@@ -1193,6 +1193,13 @@ void ArcApps::OnPreferredAppsChanged() {
     // activity info.
     std::string app_id =
         prefs->GetAppIdByPackageName(added_preferred_app.package_name());
+
+    if (app_id.empty()) {
+      LOG(ERROR) << "Cannot get app id for package "
+                 << added_preferred_app.package_name()
+                 << " to add preferred app.";
+      continue;
+    }
     app_service->AddPreferredApp(apps::mojom::AppType::kArc, app_id,
                                  ConvertArcIntentFilter(added_preferred_app),
                                  /*intent=*/nullptr, kFromPublisher);
@@ -1215,6 +1222,12 @@ void ArcApps::OnPreferredAppsChanged() {
     // activity info.
     std::string app_id =
         prefs->GetAppIdByPackageName(deleted_preferred_app.package_name());
+    if (app_id.empty()) {
+      LOG(ERROR) << "Cannot get app id by package "
+                 << deleted_preferred_app.package_name()
+                 << " to delete preferred app.";
+      continue;
+    }
     app_service->RemovePreferredAppForFilter(
         apps::mojom::AppType::kArc, app_id,
         ConvertArcIntentFilter(deleted_preferred_app));
