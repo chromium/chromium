@@ -22,8 +22,8 @@ First have clang (//third_party/llvm-build/Release+Asserts/bin), clang-cl
 and meson (https://github.com/mesonbuild/meson/releases) in your path. Then you
 can run ./generate_configs.py
 
-Next you should update the dav1d_generated.gni file, to that run the
-./generate_sources.py command.
+Next you should update the dav1d_generated.gni file, to do that run the
+./generate_source.py command.
 
 Hopefully all that works and then you can roll DEPS to the new revision with
 all the updated configuration files. If not, you'll need to debug the bots :(
