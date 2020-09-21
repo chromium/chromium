@@ -10,7 +10,9 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.support.test.InstrumentationRegistry;
@@ -24,6 +26,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
 import org.mockito.Spy;
 
 import org.chromium.base.test.util.CommandLineFlags;
@@ -31,6 +35,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
@@ -63,6 +68,12 @@ public class AccountPickerDialogFragmentTest extends DummyUiActivityTestCase {
     public final AccountManagerTestRule mAccountManagerTestRule =
             new AccountManagerTestRule(new FakeProfileDataSource());
 
+    @Mock
+    private Profile mProfileMock;
+
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private IdentityServicesProvider mIdentityServicesProviderMock;
+
     @Spy
     private DummyAccountPickerTargetFragment mTargetFragment =
             new DummyAccountPickerTargetFragment();
@@ -78,6 +89,13 @@ public class AccountPickerDialogFragmentTest extends DummyUiActivityTestCase {
     @Before
     public void setUp() {
         initMocks(this);
+        Profile.setLastUsedProfileForTesting(mProfileMock);
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
+        when(mIdentityServicesProviderMock.getIdentityManager(mProfileMock)
+                        .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
+                                anyString()))
+                .thenReturn(null);
+
         addAccount(mAccountName1, mFullName1);
         addAccount(mAccountName2, "");
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
@@ -89,7 +107,11 @@ public class AccountPickerDialogFragmentTest extends DummyUiActivityTestCase {
 
     @After
     public void tearDown() {
-        if (mDialog.getDialog() != null) mDialog.dismiss();
+        if (mDialog.getDialog() != null) {
+            mDialog.dismiss();
+        }
+        IdentityServicesProvider.setInstanceForTests(null);
+        Profile.setLastUsedProfileForTesting(null);
     }
 
     @Test

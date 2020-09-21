@@ -34,6 +34,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.components.signin.AccountTrackerService;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ClearAccountsAction;
@@ -52,7 +53,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SigninManagerTest {
     @Rule
     public final JniMocker mocker = new JniMocker();
-
 
     @Mock
     SigninManager.Natives mNativeMock;
@@ -90,8 +90,8 @@ public class SigninManagerTest {
                 mAccountTrackerService, mIdentityManager, mIdentityMutator, mAndroidSyncSettings,
                 externalAuthUtils);
 
-        mAccount = new CoreAccountInfo(
-                new CoreAccountId("gaia-id-user"), "user@domain.com", "gaia-id-user");
+        mAccount = new AccountInfo(
+                new CoreAccountId("gaia-id-user"), "user@domain.com", "gaia-id-user", null);
     }
 
     @Test
@@ -299,8 +299,8 @@ public class SigninManagerTest {
 
     @Test
     public void callbackNotifiedOnSignin() {
-        CoreAccountInfo account = new CoreAccountInfo(
-                new CoreAccountId("test_at_gmail.com"), "test@gmail.com", "test_at_gmail.com");
+        AccountInfo account = new AccountInfo(new CoreAccountId("test_at_gmail.com"),
+                "test@gmail.com", "test_at_gmail.com", null);
 
         // No need to seed accounts to the native code.
         doReturn(true).when(mAccountTrackerService).checkAndSeedSystemAccounts();
@@ -337,8 +337,8 @@ public class SigninManagerTest {
 
     @Test(expected = AssertionError.class)
     public void failIfAlreadySignedin() {
-        CoreAccountInfo account = new CoreAccountInfo(
-                new CoreAccountId("test_at_gmail.com"), "test@gmail.com", "test_at_gmail.com");
+        AccountInfo account = new AccountInfo(new CoreAccountId("test_at_gmail.com"),
+                "test@gmail.com", "test_at_gmail.com", null);
 
         // No need to seed accounts to the native code.
         doReturn(true).when(mAccountTrackerService).checkAndSeedSystemAccounts();

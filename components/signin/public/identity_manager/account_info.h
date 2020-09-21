@@ -86,6 +86,11 @@ base::android::ScopedJavaLocalRef<jobject> ConvertToJavaCoreAccountInfo(
     JNIEnv* env,
     const CoreAccountInfo& account_info);
 
+// Constructs a Java AccountInfo from the provided C++ AccountInfo
+base::android::ScopedJavaLocalRef<jobject> ConvertToJavaAccountInfo(
+    JNIEnv* env,
+    const AccountInfo& account_info);
+
 // Constructs a Java CoreAccountId from the provided C++ CoreAccountId
 base::android::ScopedJavaLocalRef<jobject> ConvertToJavaCoreAccountId(
     JNIEnv* env,

@@ -27,9 +27,11 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.ProfileDataSource;
+import org.chromium.components.signin.base.AccountInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -239,8 +241,8 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
     private DisplayableProfileData createDisplayableProfileData(
             ProfileDataSource.ProfileData profileData) {
         return new DisplayableProfileData(profileData.getAccountName(),
-                prepareAvatar(profileData.getAvatar()), profileData.getFullName(),
-                profileData.getGivenName());
+                prepareAvatar(profileData.getAvatar(), profileData.getAccountName()),
+                profileData.getFullName(), profileData.getGivenName());
     }
 
     @Override
@@ -248,7 +250,8 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
             Bitmap bitmap) {
         ThreadUtils.assertOnUiThread();
         mCachedProfileData.put(accountId,
-                new DisplayableProfileData(accountId, prepareAvatar(bitmap), fullName, givenName));
+                new DisplayableProfileData(
+                        accountId, prepareAvatar(bitmap, accountId), fullName, givenName));
         for (Observer observer : mObservers) {
             observer.onProfileDataUpdated(accountId);
         }
@@ -313,7 +316,12 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
                 badge, badgeSize, new Point(badgePositionX, badgePositionY), badgeBorderSize);
     }
 
-    private Drawable prepareAvatar(Bitmap bitmap) {
+    private Drawable prepareAvatar(Bitmap bitmap, String accountEmail) {
+        if (bitmap == null) {
+            // If the given bitmap is null, try to fetch the account image which can be monogram
+            // from IdentityManager
+            bitmap = getAccountImageFromIdentityManager(accountEmail);
+        }
         Drawable croppedAvatar = bitmap != null
                 ? AvatarGenerator.makeRoundAvatar(mContext.getResources(), bitmap, mImageSize)
                 : mPlaceholderImage;
@@ -364,5 +372,24 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
         drawable.setBounds(0, 0, imageSize, imageSize);
         drawable.draw(canvas);
         return new BitmapDrawable(context.getResources(), output);
+    }
+
+    /**
+     * Fetches the account image stored in {@link AccountInfo}.
+     *
+     * If user is signed in and has a profile photo, the profile photo will be returned, otherwise,
+     * a monogram is returned.
+     * If the user is signed out, returns null.
+     *
+     * TODO(https://crbug.com/1130545): We should refactor the different sources for getting
+     *  the profile image.
+     */
+    private static @Nullable Bitmap getAccountImageFromIdentityManager(String accountEmail) {
+        AccountInfo accountInfo =
+                IdentityServicesProvider.get()
+                        .getIdentityManager(Profile.getLastUsedRegularProfile())
+                        .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
+                                accountEmail);
+        return accountInfo != null ? accountInfo.getAccountImage() : null;
     }
 }

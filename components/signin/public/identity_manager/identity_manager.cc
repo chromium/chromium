@@ -414,7 +414,7 @@ base::android::ScopedJavaLocalRef<jobject> IdentityManager::
           base::android::ConvertJavaStringToUTF8(env, j_email));
   if (!account_info.has_value())
     return nullptr;
-  return ConvertToJavaCoreAccountInfo(env, account_info.value());
+  return ConvertToJavaAccountInfo(env, account_info.value());
 }
 
 base::android::ScopedJavaLocalRef<jobjectArray>

@@ -7,8 +7,11 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_string.h"
+#include "components/signin/public/android/jni_headers/AccountInfo_jni.h"
 #include "components/signin/public/android/jni_headers/CoreAccountId_jni.h"
 #include "components/signin/public/android/jni_headers/CoreAccountInfo_jni.h"
+#include "ui/gfx/android/java_bitmap.h"
+#include "ui/gfx/image/image_skia.h"
 #endif
 
 namespace {
@@ -134,6 +137,19 @@ base::android::ScopedJavaLocalRef<jobject> ConvertToJavaCoreAccountInfo(
       env, ConvertToJavaCoreAccountId(env, account_info.account_id),
       base::android::ConvertUTF8ToJavaString(env, account_info.email),
       base::android::ConvertUTF8ToJavaString(env, account_info.gaia));
+}
+
+base::android::ScopedJavaLocalRef<jobject> ConvertToJavaAccountInfo(
+    JNIEnv* env,
+    const AccountInfo& account_info) {
+  gfx::Image avatar_image = account_info.account_image;
+  return signin::Java_AccountInfo_Constructor(
+      env, ConvertToJavaCoreAccountId(env, account_info.account_id),
+      base::android::ConvertUTF8ToJavaString(env, account_info.email),
+      base::android::ConvertUTF8ToJavaString(env, account_info.gaia),
+      avatar_image.IsEmpty()
+          ? nullptr
+          : gfx::ConvertToJavaBitmap(avatar_image.AsImageSkia().bitmap()));
 }
 
 base::android::ScopedJavaLocalRef<jobject> ConvertToJavaCoreAccountId(

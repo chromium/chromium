@@ -16,6 +16,7 @@ android_library("java") {
   ]
 
   sources = [
+    "java/src/org/chromium/components/signin/base/AccountInfo.java",
     "java/src/org/chromium/components/signin/base/CoreAccountId.java",
     "java/src/org/chromium/components/signin/base/CoreAccountInfo.java",
     "java/src/org/chromium/components/signin/base/GoogleServiceAuthError.java",
@@ -30,6 +31,7 @@ android_library("java") {
 generate_jni("jni_headers") {
   namespace = "signin"
   sources = [
+    "java/src/org/chromium/components/signin/base/AccountInfo.java",
     "java/src/org/chromium/components/signin/base/CoreAccountId.java",
     "java/src/org/chromium/components/signin/base/CoreAccountInfo.java",
     "java/src/org/chromium/components/signin/base/GoogleServiceAuthError.java",

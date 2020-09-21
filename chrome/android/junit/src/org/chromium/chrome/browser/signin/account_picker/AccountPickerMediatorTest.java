@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.signin.account_picker;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import org.junit.After;
@@ -13,11 +15,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.DisplayableProfileData;
+import org.chromium.chrome.browser.signin.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerCoordinator.AccountPickerAccessPoint;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerProperties.AddAccountRowProperties;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerProperties.ExistingAccountRowProperties;
@@ -44,6 +49,12 @@ public class AccountPickerMediatorTest {
             new AccountManagerTestRule(mFakeProfileDataSource);
 
     @Mock
+    private Profile mProfileMock;
+
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private IdentityServicesProvider mIdentityServicesProviderMock;
+
+    @Mock
     private AccountPickerCoordinator.Listener mListenerMock;
 
     private final MVCListAdapter.ModelList mModelList = new MVCListAdapter.ModelList();
@@ -53,6 +64,12 @@ public class AccountPickerMediatorTest {
     @Before
     public void setUp() {
         initMocks(this);
+        Profile.setLastUsedProfileForTesting(mProfileMock);
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
+        when(mIdentityServicesProviderMock.getIdentityManager(mProfileMock)
+                        .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
+                                anyString()))
+                .thenReturn(null);
     }
 
     @After
@@ -60,6 +77,8 @@ public class AccountPickerMediatorTest {
         if (mMediator != null) {
             mMediator.destroy();
         }
+        IdentityServicesProvider.setInstanceForTests(null);
+        Profile.setLastUsedProfileForTesting(null);
     }
 
     @Test

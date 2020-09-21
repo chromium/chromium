@@ -14,6 +14,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 /**
@@ -163,8 +164,8 @@ public class IdentityManager {
      * Looks up and returns information for account with given |email|. If the account
      * cannot be found, return a null value.
      */
-    public @Nullable CoreAccountInfo
-    findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(String email) {
+    public @Nullable AccountInfo findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
+            String email) {
         return IdentityManagerJni.get()
                 .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
                         mNativeIdentityManager, email);
@@ -242,7 +243,7 @@ public class IdentityManager {
         @Nullable
         CoreAccountInfo getPrimaryAccountInfo(long nativeIdentityManager, int consentLevel);
         @Nullable
-        CoreAccountInfo findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
+        AccountInfo findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
                 long nativeIdentityManager, String email);
         CoreAccountInfo[] getAccountsWithRefreshTokens(long nativeIdentityManager);
     }
