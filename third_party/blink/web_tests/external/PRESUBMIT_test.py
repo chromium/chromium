@@ -40,6 +40,9 @@ class MockPresubmitError(object):
         self.items = items
         self.long_text = long_text
 
+    def __repr__(self):
+        return self.message + "\n" + self.long_text
+
 
 class MockPresubmitWarning(object):
     """A minimal mock of an warning class for our checks."""
@@ -92,7 +95,7 @@ class LintWPTTest(unittest.TestCase):
         mock_output = MockOutputApi()
         mock_input.affected_paths = [os.path.abspath(self._test_file)]
         errors = PRESUBMIT._LintWPT(mock_input, mock_output)
-        self.assertEqual(len(errors), 0)
+        self.assertEqual(errors, [])
 
     def testWPTLintErrors(self):
         # Private LayoutTests APIs are not allowed.
@@ -103,6 +106,7 @@ class LintWPTTest(unittest.TestCase):
         mock_input.affected_paths = [os.path.abspath(self._test_file)]
         errors = PRESUBMIT._LintWPT(mock_input, mock_output)
         self.assertEqual(len(errors), 1)
+        self.assertTrue(isinstance(errors[0], MockPresubmitError))
 
     def testWPTLintIgnore(self):
         os.mkdir(self._ignored_directory)
@@ -115,7 +119,7 @@ class LintWPTTest(unittest.TestCase):
         mock_output = MockOutputApi()
         mock_input.affected_paths = files
         errors = PRESUBMIT._LintWPT(mock_input, mock_output)
-        self.assertEqual(len(errors), 0)
+        self.assertEqual(errors, [])
 
 
 class DontModifyIDLFilesTest(unittest.TestCase):
@@ -132,14 +136,14 @@ class DontModifyIDLFilesTest(unittest.TestCase):
         mock_output = MockOutputApi()
         mock_input.affected_paths = [os.path.join(mock_input.PresubmitLocalPath(), 'wpt', 'css', 'foo.html')]
         errors = PRESUBMIT._DontModifyIDLFiles(mock_input, mock_output)
-        self.assertEqual(len(errors), 0)
+        self.assertEqual(errors, [])
 
     def testModifiesInterfaceDirOutsideOfWPT(self):
         mock_input = MockInputApi()
         mock_output = MockOutputApi()
         mock_input.affected_paths = [os.path.join(mock_input.PresubmitLocalPath(), 'other', 'interfaces', 'test.idl')]
         errors = PRESUBMIT._DontModifyIDLFiles(mock_input, mock_output)
-        self.assertEqual(len(errors), 0)
+        self.assertEqual(errors, [])
 
 
 if __name__ == '__main__':
