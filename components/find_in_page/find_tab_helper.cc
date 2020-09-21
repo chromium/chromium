@@ -60,13 +60,18 @@ void FindTabHelper::StartFinding(base::string16 search_string,
       return;
   }
 
-  // Keep track of the previous search.
-  previous_find_text_ = find_text_;
-
   // NB: search_string will be empty when using the FindNext keyboard shortcut.
   bool new_session = (find_text_ != search_string && !search_string.empty()) ||
                      (last_search_case_sensitive_ != case_sensitive) ||
                      find_op_aborted_;
+
+  // Continuing here would just find the same results, potentially causing
+  // some flicker in the highlighting.
+  if (!new_session && !find_match)
+    return;
+
+  // Keep track of the previous search.
+  previous_find_text_ = find_text_;
 
   current_find_request_id_ = find_request_id_counter_++;
   if (new_session)

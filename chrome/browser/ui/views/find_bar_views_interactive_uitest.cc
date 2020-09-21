@@ -659,6 +659,13 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, SelectionDuringFind) {
   content::RunUntilInputProcessed(host);
   EXPECT_EQ(find_request_id, helper->current_find_request_id());
 
+  // Make sure calling Show while the findbar is already showing doesn't result
+  // in a find request. It's wasted work, could cause some flicker in the
+  // results, and was previously triggering another bug that caused an endless
+  // loop of searching and flickering results. See http://crbug.com/1129756
+  find_bar_controller->Show(false /*find_next*/);
+  EXPECT_EQ(find_request_id, helper->current_find_request_id());
+
   // Find the next match and verify the correct match is highlighted (the
   // one after text that was selected).
   find_bar_controller->Show(true /*find_next*/);

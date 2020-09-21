@@ -197,6 +197,29 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, MAYBE(Basic)) {
   }
 }
 
+IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, FindInPage_Issue615291) {
+  LoadAndWait("/find_in_simple_page.html");
+
+  auto options = blink::mojom::FindOptions::New();
+  options->run_synchronously_for_testing = true;
+  options->find_match = false;
+  Find("result", options->Clone());
+  delegate()->WaitForFinalReply();
+
+  FindResults results = delegate()->GetFindResults();
+  EXPECT_EQ(5, results.number_of_matches);
+  EXPECT_EQ(0, results.active_match_ordinal);
+
+  options->new_session = false;
+  Find("result", options->Clone());
+  // With the issue being tested, this would loop forever and cause the
+  // test to timeout.
+  delegate()->WaitForFinalReply();
+  results = delegate()->GetFindResults();
+  EXPECT_EQ(5, results.number_of_matches);
+  EXPECT_EQ(0, results.active_match_ordinal);
+}
+
 bool ExecuteScriptAndExtractRect(FrameTreeNode* frame,
                                  const std::string& script,
                                  gfx::Rect* out) {

@@ -759,6 +759,7 @@ void FindRequestManager::UpdateActiveMatchOrdinal() {
 void FindRequestManager::FinalUpdateReceived(int request_id,
                                              RenderFrameHost* rfh) {
   if (!number_of_matches_ ||
+      !current_request_.options->find_match ||
       (active_match_ordinal_ && !pending_active_match_ordinal_) ||
       pending_find_next_reply_) {
     // All the find results for |request_id| are in and ready to report. Note
