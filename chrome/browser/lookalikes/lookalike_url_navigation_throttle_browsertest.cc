@@ -493,12 +493,33 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
            LookalikeUrlMatchType::kTargetEmbedding);
 }
 
-// Target embedding should not trigger on allowlisted domains.
+// Target embedding should not trigger on allowlisted embedder domains.
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
-                       TargetEmbedding_Allowlist) {
+                       TargetEmbedding_EmbedderAllowlist) {
+  const GURL kNavigatedUrl = GetURL("google.com.allowlisted.com");
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  SetSafetyTipAllowlistPatterns({"allowlisted.com/"}, {});
+  TestInterstitialNotShown(browser(), kNavigatedUrl);
+  CheckNoUkm();
+}
+
+// Target embedding should not trigger on allowlisted target domains.
+IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
+                       TargetEmbedding_TargetAllowlist) {
   const GURL kNavigatedUrl = GetURL("foo.scholar.google.com.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
   SetSafetyTipAllowlistPatterns({}, {"scholar\\.google\\.com"});
+  TestInterstitialNotShown(browser(), kNavigatedUrl);
+  CheckNoUkm();
+}
+
+// Navigate to a domain target embedding a domain with no separators, but that
+// matches the target allowlist.  Regression test for crbug.com/1127450.
+IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
+                       TargetEmbedding_TargetAllowlistWithNoSeparators) {
+  const GURL kNavigatedUrl = GetURL("googlecom.example.com");
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  SetSafetyTipAllowlistPatterns({}, {"google\\.com"});
   TestInterstitialNotShown(browser(), kNavigatedUrl);
   CheckNoUkm();
 }
