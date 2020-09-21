@@ -2045,8 +2045,6 @@ test("content_unittests") {
     "../renderer/loader/test_request_peer.h",
     "../renderer/loader/url_loader_client_impl_unittest.cc",
     "../renderer/loader/web_url_loader_impl_unittest.cc",
-    "../renderer/media/audio/audio_renderer_mixer_manager_unittest.cc",
-    "../renderer/media/audio/audio_renderer_sink_cache_unittest.cc",
     "../renderer/media/audio/mock_audio_device_factory.cc",
     "../renderer/media/audio/mock_audio_device_factory.h",
     "../renderer/media/batching_media_log_unittest.cc",

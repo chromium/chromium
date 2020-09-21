@@ -91,8 +91,7 @@ scoped_refptr<::media::AudioOutputDevice> NewOutputDevice(
   return device;
 }
 
-CastAudioDeviceFactory::CastAudioDeviceFactory()
-    : content::AudioDeviceFactory() {
+CastAudioDeviceFactory::CastAudioDeviceFactory() : blink::AudioDeviceFactory() {
   DVLOG(1) << "Register CastAudioDeviceFactory";
 }
 

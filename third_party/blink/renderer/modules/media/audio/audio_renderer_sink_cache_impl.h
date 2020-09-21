@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_MEDIA_AUDIO_AUDIO_RENDERER_SINK_CACHE_IMPL_H_
-#define CONTENT_RENDERER_MEDIA_AUDIO_AUDIO_RENDERER_SINK_CACHE_IMPL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_SINK_CACHE_IMPL_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_SINK_CACHE_IMPL_H_
 
 #include "third_party/blink/public/web/modules/media/audio/audio_renderer_sink_cache.h"
 
@@ -14,33 +14,29 @@
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
-#include "content/common/content_export.h"
 #include "media/audio/audio_sink_parameters.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 
-namespace content {
+namespace blink {
 
-class RenderFrame;
+class LocalFrame;
 
 // AudioRendererSinkCache implementation.
-class CONTENT_EXPORT AudioRendererSinkCacheImpl
-    : public blink::AudioRendererSinkCache {
+class MODULES_EXPORT AudioRendererSinkCacheImpl
+    : public AudioRendererSinkCache {
  public:
   class FrameObserver;
 
   // Callback to be used for AudioRendererSink creation
   using CreateSinkCallback =
       base::RepeatingCallback<scoped_refptr<media::AudioRendererSink>(
-          const blink::LocalFrameToken& frame_token,
+          const LocalFrameToken& frame_token,
           const media::AudioSinkParameters& params)>;
 
   // If called, the cache will drop sinks belonging to the specified frame on
   // navigation.
-  //
-  // TODO(https://crbug.com/787252): Move the declaration back to
-  // AudioRendererSinkCache when this header moves to
-  // blink/renderer/modules/media/audio.
-  static void ObserveFrame(RenderFrame* frame);
+  static void InstallFrameObserver(LocalFrame& frame);
 
   // |cleanup_task_runner| will be used to delete sinks when they are unused,
   // AudioRendererSinkCacheImpl must outlive any tasks posted to it. Since
@@ -53,12 +49,11 @@ class CONTENT_EXPORT AudioRendererSinkCacheImpl
   ~AudioRendererSinkCacheImpl() final;
 
   // AudioRendererSinkCache implementation:
-  media::OutputDeviceInfo GetSinkInfo(
-      const blink::LocalFrameToken& source_frame_token,
-      const base::UnguessableToken& session_id,
-      const std::string& device_id) final;
+  media::OutputDeviceInfo GetSinkInfo(const LocalFrameToken& source_frame_token,
+                                      const base::UnguessableToken& session_id,
+                                      const std::string& device_id) final;
   scoped_refptr<media::AudioRendererSink> GetSink(
-      const blink::LocalFrameToken& source_frame_token,
+      const LocalFrameToken& source_frame_token,
       const std::string& device_id) final;
   void ReleaseSink(const media::AudioRendererSink* sink_ptr) final;
 
@@ -81,18 +76,18 @@ class CONTENT_EXPORT AudioRendererSinkCacheImpl
                   bool force_delete_used);
 
   CacheContainer::iterator FindCacheEntry_Locked(
-      const blink::LocalFrameToken& source_frame_token,
+      const LocalFrameToken& source_frame_token,
       const std::string& device_id,
       bool unused_only);
 
-  void CacheOrStopUnusedSink(const blink::LocalFrameToken& source_frame_token,
+  void CacheOrStopUnusedSink(const LocalFrameToken& source_frame_token,
                              const std::string& device_id,
                              scoped_refptr<media::AudioRendererSink> sink);
 
-  void DropSinksForFrame(const blink::LocalFrameToken& source_frame_token);
+  void DropSinksForFrame(const LocalFrameToken& source_frame_token);
 
   // To avoid publishing CacheEntry structure in the header.
-  int GetCacheSizeForTesting();
+  size_t GetCacheSizeForTesting();
 
   // Global instance, set in constructor and unset in destructor.
   static AudioRendererSinkCacheImpl* instance_;
@@ -118,6 +113,6 @@ class CONTENT_EXPORT AudioRendererSinkCacheImpl
   DISALLOW_COPY_AND_ASSIGN(AudioRendererSinkCacheImpl);
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_RENDERER_MEDIA_AUDIO_AUDIO_RENDERER_SINK_CACHE_IMPL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_SINK_CACHE_IMPL_H_

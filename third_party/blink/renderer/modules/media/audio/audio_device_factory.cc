@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/media/audio/audio_device_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 
 #include <algorithm>
 
@@ -15,20 +15,17 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
-#include "content/common/content_constants_internal.h"
-#include "content/renderer/media/audio/audio_renderer_mixer_manager.h"
-#include "content/renderer/media/audio/audio_renderer_sink_cache_impl.h"
-#include "content/renderer/render_frame_impl.h"
-#include "content/renderer/render_thread_impl.h"
 #include "media/audio/audio_input_device.h"
 #include "media/audio/audio_output_device.h"
 #include "media/base/audio_renderer_mixer_input.h"
-#include "media/base/media_switches.h"
-#include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/modules/media/audio/web_audio_input_ipc_factory.h"
 #include "third_party/blink/public/web/modules/media/audio/web_audio_output_ipc_factory.h"
+#include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_manager.h"
+#include "third_party/blink/renderer/modules/media/audio/audio_renderer_sink_cache_impl.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
-namespace content {
+namespace blink {
 
 // static
 AudioDeviceFactory* AudioDeviceFactory::factory_ = nullptr;
@@ -51,7 +48,8 @@ constexpr base::TimeDelta kMaxAuthorizationTimeout;  // No timeout.
 base::TimeDelta GetDefaultAuthTimeout() {
   // Set authorization request timeout at 80% of renderer hung timeout,
   // but no more than kMaxAuthorizationTimeout.
-  return std::min(kHungRendererDelay * 8 / 10, kMaxAuthorizationTimeout);
+  return std::min(Platform::Current()->GetHungRendererDelay() * 8 / 10,
+                  kMaxAuthorizationTimeout);
 }
 
 scoped_refptr<media::AudioOutputDevice> NewOutputDevice(
@@ -79,11 +77,9 @@ scoped_refptr<media::SwitchableAudioRendererSink> NewMixableSink(
     blink::WebAudioDeviceSourceType source_type,
     const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params) {
-  RenderThreadImpl* render_thread = RenderThreadImpl::current();
-  DCHECK(render_thread) << "RenderThreadImpl is not instantiated, or "
-                        << "GetOutputDeviceInfo() is called on a wrong thread ";
+  DCHECK(IsMainThread()) << __func__ << "() is called on a wrong thread.";
   DCHECK(!params.processing_id.has_value());
-  return render_thread->GetAudioRendererMixerManager()->CreateInput(
+  return AudioRendererMixerManager::GetInstance().CreateInput(
       frame_token, params.session_id, params.device_id,
       AudioDeviceFactory::GetSourceLatencyType(source_type));
 }
@@ -192,14 +188,14 @@ AudioDeviceFactory::NewAudioCapturerSource(
 media::OutputDeviceInfo AudioDeviceFactory::GetOutputDeviceInfo(
     const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params) {
-  DCHECK(RenderThreadImpl::current())
-      << "RenderThreadImpl is not instantiated, or "
-      << "GetOutputDeviceInfo() is called on a wrong thread ";
-
+  DCHECK(IsMainThread()) << __func__ << "() is called on a wrong thread.";
   constexpr base::TimeDelta kDeleteTimeout =
       base::TimeDelta::FromMilliseconds(5000);
 
   // There's one process wide instance that lives on the render thread.
+  //
+  // TODO(crbug.com/787252): Replace the use of base::ThreadPool below by
+  // worker_pool::PostTask().
   static base::NoDestructor<AudioRendererSinkCacheImpl> cache(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT,
@@ -236,4 +232,4 @@ AudioDeviceFactory::NewFinalAudioRendererSink(
   return NewOutputDevice(frame_token, params, auth_timeout);
 }
 
-}  // namespace content
+}  // namespace blink

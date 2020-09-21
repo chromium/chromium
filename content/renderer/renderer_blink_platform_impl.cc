@@ -31,6 +31,7 @@
 #include "build/build_config.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/child/child_process.h"
+#include "content/common/content_constants_internal.h"
 #include "content/common/frame_messages.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -42,7 +43,6 @@
 #include "content/renderer/loader/child_url_loader_factory_bundle.h"
 #include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/loader/web_url_loader_impl.h"
-#include "content/renderer/media/audio/audio_device_factory.h"
 #include "content/renderer/media/audio_decoder.h"
 #include "content/renderer/media/renderer_webaudiodevice_impl.h"
 #include "content/renderer/render_frame_impl.h"
@@ -88,6 +88,7 @@
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/sqlite/sqlite3.h"
 #include "ui/base/ui_base_switches.h"
@@ -121,6 +122,7 @@ namespace content {
 
 namespace {
 
+// TODO(https://crbug.com/787252): Move this method and its callers to Blink.
 media::AudioParameters GetAudioHardwareParams() {
   blink::WebLocalFrame* const web_frame =
       blink::WebLocalFrame::FrameForCurrentContext();
@@ -128,7 +130,7 @@ media::AudioParameters GetAudioHardwareParams() {
   if (!render_frame)
     return media::AudioParameters::UnavailableDeviceParams();
 
-  return AudioDeviceFactory::GetOutputDeviceInfo(
+  return blink::AudioDeviceFactory::GetOutputDeviceInfo(
              render_frame->GetWebFrame()->GetLocalFrameToken(),
              media::AudioSinkParameters())
       .output_params();
@@ -458,6 +460,10 @@ unsigned RendererBlinkPlatformImpl::AudioHardwareOutputChannels() {
   return GetAudioHardwareParams().channels();
 }
 
+base::TimeDelta RendererBlinkPlatformImpl::GetHungRendererDelay() {
+  return kHungRendererDelay;
+}
+
 std::unique_ptr<WebAudioDevice> RendererBlinkPlatformImpl::CreateAudioDevice(
     unsigned input_channels,
     unsigned channels,
@@ -490,7 +496,7 @@ scoped_refptr<media::AudioCapturerSource>
 RendererBlinkPlatformImpl::NewAudioCapturerSource(
     blink::WebLocalFrame* web_frame,
     const media::AudioSourceParameters& params) {
-  return AudioDeviceFactory::NewAudioCapturerSource(
+  return blink::AudioDeviceFactory::NewAudioCapturerSource(
       web_frame->GetLocalFrameToken(), params);
 }
 
@@ -524,14 +530,14 @@ RendererBlinkPlatformImpl::NewAudioRendererSink(
     blink::WebAudioDeviceSourceType source_type,
     blink::WebLocalFrame* web_frame,
     const media::AudioSinkParameters& params) {
-  return AudioDeviceFactory::NewAudioRendererSink(
+  return blink::AudioDeviceFactory::NewAudioRendererSink(
       source_type, web_frame->GetLocalFrameToken(), params);
 }
 
 media::AudioLatency::LatencyType
 RendererBlinkPlatformImpl::GetAudioSourceLatencyType(
     blink::WebAudioDeviceSourceType source_type) {
-  return AudioDeviceFactory::GetSourceLatencyType(source_type);
+  return blink::AudioDeviceFactory::GetSourceLatencyType(source_type);
 }
 
 base::Optional<std::string>

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/media/audio/audio_renderer_sink_cache_impl.h"
+#include "third_party/blink/renderer/modules/media/audio/audio_renderer_sink_cache_impl.h"
 
 #include <algorithm>
 #include <memory>
@@ -16,46 +16,61 @@
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
-#include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_frame_observer.h"
-#include "content/renderer/media/audio/audio_device_factory.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_renderer_sink.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
-namespace content {
+namespace blink {
 
 AudioRendererSinkCacheImpl* AudioRendererSinkCacheImpl::instance_ = nullptr;
 
-class AudioRendererSinkCacheImpl::FrameObserver : public RenderFrameObserver {
+class AudioRendererSinkCacheImpl::FrameObserver final
+    : public GarbageCollected<AudioRendererSinkCacheImpl::FrameObserver>,
+      public Supplement<LocalFrame>,
+      public ExecutionContextLifecycleObserver {
  public:
-  explicit FrameObserver(content::RenderFrame* render_frame)
-      : RenderFrameObserver(render_frame) {}
-  ~FrameObserver() override {}
+  static const char kSupplementName[];
+  static FrameObserver* From(LocalFrame& frame) {
+    return Supplement<LocalFrame>::From<FrameObserver>(frame);
+  }
+
+  explicit FrameObserver(LocalFrame& frame)
+      : Supplement<LocalFrame>(frame),
+        ExecutionContextLifecycleObserver(frame.DomWindow()) {}
+  ~FrameObserver() { DCHECK(dropped_frame_cached_); }
+
+  void Trace(Visitor* visitor) const final {
+    Supplement<LocalFrame>::Trace(visitor);
+    ExecutionContextLifecycleObserver::Trace(visitor);
+  }
+
+  // ExecutionContextLifecycleObserver implementation.
+  void ContextDestroyed() override { DropFrameCache(); }
 
  private:
-  // content::RenderFrameObserver implementation:
-  void DidCommitProvisionalLoad(ui::PageTransition transition) override {
-    DropFrameCache();
-  }
-
-  void OnDestruct() override {
-    DropFrameCache();
-    delete this;
-  }
-
   void DropFrameCache() {
+    dropped_frame_cached_ = true;
+
     if (!AudioRendererSinkCacheImpl::instance_)
       return;
-    if (!render_frame())
+    if (!GetSupplementable())
       return;
-    blink::LocalFrameToken frame_token =
-        render_frame()->GetWebFrame()->GetLocalFrameToken();
+
+    LocalFrameToken frame_token = GetSupplementable()->GetLocalFrameToken();
     AudioRendererSinkCacheImpl::instance_->DropSinksForFrame(frame_token);
   }
 
+  bool dropped_frame_cached_ = false;
   DISALLOW_COPY_AND_ASSIGN(FrameObserver);
 };
+
+const char AudioRendererSinkCacheImpl::FrameObserver::kSupplementName[] =
+    "AudioRendererSinkCacheImpl::FrameObserver";
 
 namespace {
 
@@ -83,15 +98,19 @@ bool SinkIsHealthy(media::AudioRendererSink* sink) {
 
 // Cached sink data.
 struct AudioRendererSinkCacheImpl::CacheEntry {
-  blink::LocalFrameToken source_frame_token;
+  LocalFrameToken source_frame_token;
   std::string device_id;
   scoped_refptr<media::AudioRendererSink> sink;  // Sink instance
   bool used;                                     // True if in use by a client.
 };
 
 // static
-void AudioRendererSinkCacheImpl::ObserveFrame(RenderFrame* frame) {
-  new AudioRendererSinkCacheImpl::FrameObserver(frame);
+void AudioRendererSinkCacheImpl::InstallFrameObserver(LocalFrame& frame) {
+  if (AudioRendererSinkCacheImpl::FrameObserver::From(frame))
+    return;
+  Supplement<LocalFrame>::ProvideTo(
+      frame,
+      MakeGarbageCollected<AudioRendererSinkCacheImpl::FrameObserver>(frame));
 }
 
 AudioRendererSinkCacheImpl::AudioRendererSinkCacheImpl(
@@ -107,8 +126,8 @@ AudioRendererSinkCacheImpl::AudioRendererSinkCacheImpl(
 
 AudioRendererSinkCacheImpl::~AudioRendererSinkCacheImpl() {
   // We just release all the cached sinks here. Stop them first.
-  // We can stop all the sinks, no matter they are used or not, since everything
-  // is being destroyed anyways.
+  // We can stop all the sinks, no matter they are used or not, since
+  // everything is being destroyed anyways.
   for (auto& entry : cache_)
     entry.sink->Stop();
 
@@ -117,7 +136,7 @@ AudioRendererSinkCacheImpl::~AudioRendererSinkCacheImpl() {
 }
 
 media::OutputDeviceInfo AudioRendererSinkCacheImpl::GetSinkInfo(
-    const blink::LocalFrameToken& source_frame_token,
+    const LocalFrameToken& source_frame_token,
     const base::UnguessableToken& session_id,
     const std::string& device_id) {
   TRACE_EVENT_BEGIN2("audio", "AudioRendererSinkCacheImpl::GetSinkInfo",
@@ -171,13 +190,13 @@ media::OutputDeviceInfo AudioRendererSinkCacheImpl::GetSinkInfo(
 
   TRACE_EVENT_END1("audio", "AudioRendererSinkCacheImpl::GetSinkInfo", "result",
                    "Cache miss");
-  // |sink| is ref-counted, so it's ok if it is removed from cache before we get
-  // here.
+  // |sink| is ref-counted, so it's ok if it is removed from cache before we
+  // get here.
   return sink->GetOutputDeviceInfo();
 }
 
 scoped_refptr<media::AudioRendererSink> AudioRendererSinkCacheImpl::GetSink(
-    const blink::LocalFrameToken& source_frame_token,
+    const LocalFrameToken& source_frame_token,
     const std::string& device_id) {
   UMA_HISTOGRAM_BOOLEAN("Media.Audio.Render.SinkCache.UsedForSinkCreation",
                         true);
@@ -285,7 +304,7 @@ void AudioRendererSinkCacheImpl::DeleteSink(
 
 AudioRendererSinkCacheImpl::CacheContainer::iterator
 AudioRendererSinkCacheImpl::FindCacheEntry_Locked(
-    const blink::LocalFrameToken& source_frame_token,
+    const LocalFrameToken& source_frame_token,
     const std::string& device_id,
     bool unused_only) {
   return std::find_if(
@@ -297,8 +316,8 @@ AudioRendererSinkCacheImpl::FindCacheEntry_Locked(
           return false;
         if (media::AudioDeviceDescription::IsDefaultDevice(device_id) &&
             media::AudioDeviceDescription::IsDefaultDevice(val.device_id)) {
-          // Both device IDs represent the same default device => do not compare
-          // them;
+          // Both device IDs represent the same default device => do not
+          // compare them;
           return true;
         }
         return val.device_id == device_id;
@@ -306,7 +325,7 @@ AudioRendererSinkCacheImpl::FindCacheEntry_Locked(
 }
 
 void AudioRendererSinkCacheImpl::CacheOrStopUnusedSink(
-    const blink::LocalFrameToken& source_frame_token,
+    const LocalFrameToken& source_frame_token,
     const std::string& device_id,
     scoped_refptr<media::AudioRendererSink> sink) {
   if (!SinkIsHealthy(sink.get())) {
@@ -329,7 +348,7 @@ void AudioRendererSinkCacheImpl::CacheOrStopUnusedSink(
 }
 
 void AudioRendererSinkCacheImpl::DropSinksForFrame(
-    const blink::LocalFrameToken& source_frame_token) {
+    const LocalFrameToken& source_frame_token) {
   base::AutoLock auto_lock(cache_lock_);
   base::EraseIf(cache_, [source_frame_token](const CacheEntry& val) {
     if (val.source_frame_token == source_frame_token) {
@@ -340,8 +359,8 @@ void AudioRendererSinkCacheImpl::DropSinksForFrame(
   });
 }
 
-int AudioRendererSinkCacheImpl::GetCacheSizeForTesting() {
+size_t AudioRendererSinkCacheImpl::GetCacheSizeForTesting() {
   return cache_.size();
 }
 
-}  // namespace content
+}  // namespace blink

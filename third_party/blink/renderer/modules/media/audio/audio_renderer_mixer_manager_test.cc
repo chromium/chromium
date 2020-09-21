@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/media/audio/audio_renderer_mixer_manager.h"
+#include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_manager.h"
 
 #include <memory>
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/macros.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/test/task_environment.h"
+#include "base/run_loop.h"
 #include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_parameters.h"
@@ -22,7 +22,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
+namespace blink {
 
 namespace {
 const int kSampleRate = 48000;
@@ -37,8 +37,8 @@ const char kAnotherDeviceId[] = "another-device-id";
 const char kMatchedDeviceId[] = "matched-device-id";
 const char kNonexistentDeviceId[] = "nonexistent-device-id";
 
-const blink::LocalFrameToken kFrameToken;
-const blink::LocalFrameToken kAnotherFrameToken;
+const LocalFrameToken kFrameToken;
+const LocalFrameToken kAnotherFrameToken;
 }  // namespace
 
 using media::AudioLatency;
@@ -74,12 +74,11 @@ class AudioRendererMixerManagerTest : public testing::Test {
   }
 
   enum class SinkUseState { kExistingSink, kNewSink };
-  media::AudioRendererMixer* GetMixer(
-      const blink::LocalFrameToken& source_frame_token,
-      const media::AudioParameters& params,
-      AudioLatency::LatencyType latency,
-      const std::string& device_id,
-      SinkUseState sink_state) {
+  media::AudioRendererMixer* GetMixer(const LocalFrameToken& source_frame_token,
+                                      const media::AudioParameters& params,
+                                      AudioLatency::LatencyType latency,
+                                      const std::string& device_id,
+                                      SinkUseState sink_state) {
     auto sink = GetSink(
         source_frame_token,
         media::AudioSinkParameters(base::UnguessableToken(), device_id));
@@ -95,7 +94,7 @@ class AudioRendererMixerManagerTest : public testing::Test {
   }
 
   scoped_refptr<media::AudioRendererMixerInput> CreateInputHelper(
-      const blink::LocalFrameToken& source_frame_token,
+      const LocalFrameToken& source_frame_token,
       const base::UnguessableToken& session_id,
       const std::string& device_id,
       media::AudioLatency::LatencyType latency,
@@ -105,7 +104,7 @@ class AudioRendererMixerManagerTest : public testing::Test {
                                        device_id, latency);
     input->GetOutputDeviceInfoAsync(
         base::DoNothing());  // Primes input, needed for tests.
-    task_env_.RunUntilIdle();
+    base::RunLoop().RunUntilIdle();
     input->Initialize(params, callback);
     return input;
   }
@@ -115,7 +114,7 @@ class AudioRendererMixerManagerTest : public testing::Test {
 
  protected:
   scoped_refptr<media::MockAudioRendererSink> GetSink(
-      const blink::LocalFrameToken& source_frame_token,
+      const LocalFrameToken& source_frame_token,
       const media::AudioSinkParameters& params) {
     if ((params.device_id == kDefaultDeviceId) ||
         (params.device_id == kAnotherDeviceId)) {
@@ -138,13 +137,12 @@ class AudioRendererMixerManagerTest : public testing::Test {
     return nullptr;
   }
 
-  base::test::TaskEnvironment task_env_;
   std::unique_ptr<AudioRendererMixerManager> manager_;
   scoped_refptr<media::MockAudioRendererSink> mock_sink_;
 
  private:
   scoped_refptr<media::AudioRendererSink> GetPlainSink(
-      const blink::LocalFrameToken& source_frame_token,
+      const LocalFrameToken& source_frame_token,
       const media::AudioSinkParameters& params) {
     return GetSink(source_frame_token, params);
   }
@@ -202,9 +200,7 @@ TEST_F(AudioRendererMixerManagerTest, MixerReuse) {
   EXPECT_EQ(mixer_count(), 0);
 
   media::AudioParameters params1(AudioParameters::AUDIO_PCM_LINEAR,
-                                 kChannelLayout,
-                                 kSampleRate,
-                                 kBufferSize);
+                                 kChannelLayout, kSampleRate, kBufferSize);
   media::AudioRendererMixer* mixer1 =
       GetMixer(kFrameToken, params1, AudioLatency::LATENCY_PLAYBACK,
                kDefaultDeviceId, SinkUseState::kNewSink);
@@ -214,8 +210,7 @@ TEST_F(AudioRendererMixerManagerTest, MixerReuse) {
   // Different sample rates, formats, bit depths, and buffer sizes should not
   // result in a different mixer.
   media::AudioParameters params2(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                 kChannelLayout,
-                                 kSampleRate * 2,
+                                 kChannelLayout, kSampleRate * 2,
                                  kBufferSize * 2);
   media::AudioRendererMixer* mixer2 =
       GetMixer(kFrameToken, params2, AudioLatency::LATENCY_PLAYBACK,
@@ -227,8 +222,7 @@ TEST_F(AudioRendererMixerManagerTest, MixerReuse) {
 
   // Modify some parameters that do matter: channel layout
   media::AudioParameters params3(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                 kAnotherChannelLayout,
-                                 kSampleRate,
+                                 kAnotherChannelLayout, kSampleRate,
                                  kBufferSize);
   ASSERT_NE(params3.channel_layout(), params1.channel_layout());
   media::AudioRendererMixer* mixer3 =
@@ -789,4 +783,4 @@ TEST_F(AudioRendererMixerManagerTest, MixerParamsBitstreamFormat) {
   ReturnMixer(mixer);
 }
 
-}  // namespace content
+}  // namespace blink

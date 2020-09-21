@@ -121,6 +121,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   double AudioHardwareSampleRate() override;
   size_t AudioHardwareBufferSize() override;
   unsigned AudioHardwareOutputChannels() override;
+  base::TimeDelta GetHungRendererDelay() override;
 
   std::unique_ptr<blink::WebAudioDevice> CreateAudioDevice(
       unsigned input_channels,

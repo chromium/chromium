@@ -9,7 +9,6 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "content/renderer/media/audio/audio_device_factory.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/limits.h"
 #include "media/base/mock_audio_renderer_sink.h"
@@ -17,6 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 
 using testing::_;
 
@@ -63,7 +63,7 @@ class RendererWebAudioDeviceImplUnderTest : public RendererWebAudioDeviceImpl {
 
 class RendererWebAudioDeviceImplTest
     : public blink::WebAudioDevice::RenderCallback,
-      public AudioDeviceFactory,
+      public blink::AudioDeviceFactory,
       public testing::Test {
  protected:
   RendererWebAudioDeviceImplTest() {}

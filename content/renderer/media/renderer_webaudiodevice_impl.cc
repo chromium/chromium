@@ -16,16 +16,17 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "content/renderer/media/audio/audio_device_factory.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/limits.h"
 #include "media/base/silent_sink_suspender.h"
 #include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
 
+using blink::AudioDeviceFactory;
 using blink::WebAudioDevice;
 using blink::WebAudioLatencyHint;
 using blink::WebLocalFrame;

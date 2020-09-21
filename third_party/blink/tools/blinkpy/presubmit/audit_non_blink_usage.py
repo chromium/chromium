@@ -845,8 +845,13 @@ _CONFIG = [
             # once the directory is fully Onion soup'ed.
             'base::Bind.*',
             'base::Unretained',
-            'mojo::WrapCallbackWithDefaultInvokeIfNotRun',
+            'base::NoDestructor',
+            'base::flat_map',
+            'base::AutoLock',
+            'base::Lock',
+            'base::EraseIf',
             'base::ScopedPlatformFile',
+            'mojo::WrapCallbackWithDefaultInvokeIfNotRun',
         ]
     },
     {

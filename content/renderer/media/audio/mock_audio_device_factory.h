@@ -7,11 +7,11 @@
 
 #include <string>
 
-#include "content/renderer/media/audio/audio_device_factory.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_renderer_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 
 namespace content {
 
@@ -35,7 +35,7 @@ class MockCapturerSource : public media::AudioCapturerSource {
 // Creates one MockCapturerSource instance for unit testing. This replaces the
 // need for unit tests to open a real platform audio output. Instantiating this
 // class sets the global content::AudioDeviceFactory implementation to |this|.
-class MockAudioDeviceFactory : public AudioDeviceFactory {
+class MockAudioDeviceFactory : public blink::AudioDeviceFactory {
  public:
   MockAudioDeviceFactory();
   ~MockAudioDeviceFactory() override;

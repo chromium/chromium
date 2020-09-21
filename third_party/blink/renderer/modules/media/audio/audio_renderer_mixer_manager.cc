@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/media/audio/audio_renderer_mixer_manager.h"
+#include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_manager.h"
 
 #include <algorithm>
 #include <limits>
@@ -16,10 +16,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-#include "content/renderer/media/audio/audio_device_factory.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_renderer_mixer.h"
 #include "media/base/audio_renderer_mixer_input.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace {
 
@@ -102,7 +103,7 @@ media::AudioParameters GetMixerOutputParams(
 
 }  // namespace
 
-namespace content {
+namespace blink {
 
 AudioRendererMixerManager::AudioRendererMixerManager(
     CreateSinkCB create_sink_cb)
@@ -117,9 +118,11 @@ AudioRendererMixerManager::~AudioRendererMixerManager() {
 }
 
 // static
-std::unique_ptr<AudioRendererMixerManager> AudioRendererMixerManager::Create() {
-  return base::WrapUnique(new AudioRendererMixerManager(
-      base::BindRepeating(&AudioDeviceFactory::NewAudioRendererMixerSink)));
+AudioRendererMixerManager& AudioRendererMixerManager::GetInstance() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      AudioRendererMixerManager, instance,
+      (base::BindRepeating(&AudioDeviceFactory::NewAudioRendererMixerSink)));
+  return instance;
 }
 
 scoped_refptr<media::AudioRendererMixerInput>
@@ -244,4 +247,4 @@ AudioRendererMixerManager::MixerKey::MixerKey(const MixerKey& other) = default;
 
 AudioRendererMixerManager::MixerKey::~MixerKey() = default;
 
-}  // namespace content
+}  // namespace blink

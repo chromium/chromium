@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/media/audio/audio_renderer_sink_cache_impl.h"
+#include "third_party/blink/renderer/modules/media/audio/audio_renderer_sink_cache_impl.h"
 
 #include <utility>
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/check.h"
-#include "base/test/task_environment.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_parameters.h"
@@ -17,14 +17,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
+namespace blink {
 
 namespace {
 const char* const kDefaultDeviceId =
     media::AudioDeviceDescription::kDefaultDeviceId;
 const char kAnotherDeviceId[] = "another-device-id";
 const char kUnhealthyDeviceId[] = "i-am-sick";
-const blink::LocalFrameToken kFrameToken;
+const LocalFrameToken kFrameToken;
 constexpr base::TimeDelta kDeleteTimeout =
     base::TimeDelta::FromMilliseconds(500);
 }  // namespace
@@ -32,18 +32,22 @@ constexpr base::TimeDelta kDeleteTimeout =
 class AudioRendererSinkCacheTest : public testing::Test {
  public:
   AudioRendererSinkCacheTest()
-      : task_env_(base::test::TaskEnvironment::TimeSource::MOCK_TIME,
-                  base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED),
+      : task_runner_(base::MakeRefCounted<base::TestMockTimeTaskRunner>(
+            base::Time::Now(),
+            base::TimeTicks::Now())),
+        task_runner_context_(
+            std::make_unique<base::TestMockTimeTaskRunner::ScopedContext>(
+                task_runner_)),
         cache_(std::make_unique<AudioRendererSinkCacheImpl>(
-            task_env_.GetMainThreadTaskRunner(),
+            task_runner_,
             base::BindRepeating(&AudioRendererSinkCacheTest::CreateSink,
                                 base::Unretained(this)),
             kDeleteTimeout)) {}
   ~AudioRendererSinkCacheTest() override {
-    task_env_.FastForwardUntilNoTasksRemain();
+    task_runner_->FastForwardUntilNoTasksRemain();
   }
 
-  void GetSink(const blink::LocalFrameToken& frame_token,
+  void GetSink(const LocalFrameToken& frame_token,
                const std::string& device_id,
                media::AudioRendererSink** sink) {
     *sink = cache_->GetSink(frame_token, device_id).get();
@@ -51,17 +55,17 @@ class AudioRendererSinkCacheTest : public testing::Test {
 
  protected:
   int sink_count() {
-    DCHECK(task_env_.GetMainThreadTaskRunner()->BelongsToCurrentThread());
+    DCHECK(task_runner_->BelongsToCurrentThread());
     return cache_->GetCacheSizeForTesting();
   }
 
   scoped_refptr<media::AudioRendererSink> CreateSink(
-      const blink::LocalFrameToken& frame_token,
+      const LocalFrameToken& frame_token,
       const media::AudioSinkParameters& params) {
     return new testing::NiceMock<media::MockAudioRendererSink>(
         params.device_id, (params.device_id == kUnhealthyDeviceId)
-                       ? media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL
-                       : media::OUTPUT_DEVICE_STATUS_OK);
+                              ? media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL
+                              : media::OUTPUT_DEVICE_STATUS_OK);
   }
 
   void ExpectNotToStop(media::AudioRendererSink* sink) {
@@ -85,11 +89,16 @@ class AudioRendererSinkCacheTest : public testing::Test {
     e.Wait();
   }
 
-  void DropSinksForFrame(const blink::LocalFrameToken& frame_token) {
+  void DropSinksForFrame(const LocalFrameToken& frame_token) {
     cache_->DropSinksForFrame(frame_token);
   }
 
-  base::test::TaskEnvironment task_env_;
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
+  // Ensure all things run on |task_runner_| instead of the default task
+  // runner initialized by blink_unittests.
+  std::unique_ptr<base::TestMockTimeTaskRunner::ScopedContext>
+      task_runner_context_;
+
   std::unique_ptr<AudioRendererSinkCacheImpl> cache_;
 
  private:
@@ -194,7 +203,7 @@ TEST_F(AudioRendererSinkCacheTest, GarbageCollection) {
 
   // Wait for garbage collection. Doesn't actually sleep, just advances the mock
   // clock.
-  task_env_.FastForwardBy(kDeleteTimeout);
+  task_runner_->FastForwardBy(kDeleteTimeout);
 
   // All the sinks should be garbage-collected by now.
   EXPECT_EQ(0, sink_count());
@@ -212,7 +221,7 @@ TEST_F(AudioRendererSinkCacheTest, NoGarbageCollectionForUsedSink) {
   // Wait less than garbage collection timeout.
   base::TimeDelta wait_a_bit =
       kDeleteTimeout - base::TimeDelta::FromMilliseconds(1);
-  task_env_.FastForwardBy(wait_a_bit);
+  task_runner_->FastForwardBy(wait_a_bit);
 
   // Sink is not deleted yet.
   EXPECT_EQ(1, sink_count());
@@ -224,7 +233,7 @@ TEST_F(AudioRendererSinkCacheTest, NoGarbageCollectionForUsedSink) {
   EXPECT_EQ(1, sink_count());
 
   // Wait more to hit garbage collection timeout.
-  task_env_.FastForwardBy(kDeleteTimeout);
+  task_runner_->FastForwardBy(kDeleteTimeout);
 
   // The sink is still in place.
   EXPECT_EQ(1, sink_count());
@@ -251,10 +260,10 @@ TEST_F(AudioRendererSinkCacheTest, UnhealthySinkIsStopped) {
 
   cache_.reset();  // Destruct first so there's only one cache at a time.
   cache_ = std::make_unique<AudioRendererSinkCacheImpl>(
-      task_env_.GetMainThreadTaskRunner(),
+      task_runner_,
       base::BindRepeating(
           [](scoped_refptr<media::AudioRendererSink> sink,
-             const blink::LocalFrameToken& frame_token,
+             const LocalFrameToken& frame_token,
              const media::AudioSinkParameters& params) {
             EXPECT_EQ(kFrameToken, frame_token);
             EXPECT_TRUE(params.session_id.is_empty());
@@ -279,10 +288,10 @@ TEST_F(AudioRendererSinkCacheTest, UnhealthySinkUsingSessionIdIsStopped) {
 
   cache_.reset();  // Destruct first so there's only one cache at a time.
   cache_ = std::make_unique<AudioRendererSinkCacheImpl>(
-      task_env_.GetMainThreadTaskRunner(),
+      task_runner_,
       base::BindRepeating(
           [](scoped_refptr<media::AudioRendererSink> sink,
-             const blink::LocalFrameToken& frame_token,
+             const LocalFrameToken& frame_token,
              const media::AudioSinkParameters& params) {
             EXPECT_EQ(kFrameToken, frame_token);
             EXPECT_TRUE(!params.session_id.is_empty());
@@ -324,7 +333,7 @@ TEST_F(AudioRendererSinkCacheTest, ReleaseSinkBeforeScheduledDeletion) {
       kFrameToken, base::UnguessableToken(), kAnotherDeviceId);
   EXPECT_EQ(1, sink_count());  // This sink is scheduled for deletion now.
 
-  task_env_.FastForwardBy(kDeleteTimeout);
+  task_runner_->FastForwardBy(kDeleteTimeout);
 
   // Nothing crashed and the second sink deleted on schedule.
   EXPECT_EQ(0, sink_count());
@@ -372,7 +381,7 @@ TEST_F(AudioRendererSinkCacheTest, MultithreadedAccess) {
   // Release the sink on the second thread.
   PostAndWaitUntilDone(
       thread2,
-      base::BindOnce(&blink::AudioRendererSinkCache::ReleaseSink,
+      base::BindOnce(&AudioRendererSinkCache::ReleaseSink,
                      base::Unretained(cache_.get()), base::RetainedRef(sink)));
 
   EXPECT_EQ(0, sink_count());
@@ -397,7 +406,7 @@ TEST_F(AudioRendererSinkCacheTest, StopsAndDropsCorrectSinks) {
   scoped_refptr<media::AudioRendererSink> sink1 =
       cache_->GetSink(kFrameToken, "device1").get();
   scoped_refptr<media::AudioRendererSink> another_sink =
-      cache_->GetSink(blink::LocalFrameToken(), "device1").get();
+      cache_->GetSink(LocalFrameToken(), "device1").get();
   scoped_refptr<media::AudioRendererSink> sink2 =
       cache_->GetSink(kFrameToken, "device2").get();
   EXPECT_EQ(3, sink_count());
@@ -410,4 +419,4 @@ TEST_F(AudioRendererSinkCacheTest, StopsAndDropsCorrectSinks) {
               Stop());
 }
 
-}  // namespace content
+}  // namespace blink

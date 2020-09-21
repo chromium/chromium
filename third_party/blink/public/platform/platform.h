@@ -191,6 +191,7 @@ class BLINK_PLATFORM_EXPORT Platform {
   virtual double AudioHardwareSampleRate() { return 0; }
   virtual size_t AudioHardwareBufferSize() { return 0; }
   virtual unsigned AudioHardwareOutputChannels() { return 0; }
+  virtual base::TimeDelta GetHungRendererDelay() { return base::TimeDelta(); }
 
   // SavableResource ----------------------------------------------------
 

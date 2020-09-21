@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_MEDIA_AUDIO_AUDIO_RENDERER_MIXER_MANAGER_H_
-#define CONTENT_RENDERER_MEDIA_AUDIO_AUDIO_RENDERER_MIXER_MANAGER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_MIXER_MANAGER_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_MIXER_MANAGER_H_
 
 #include <bitset>
 #include <map>
@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/unguessable_token.h"
-#include "content/common/content_export.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_sink_parameters.h"
 #include "media/base/audio_latency.h"
@@ -22,14 +21,15 @@
 #include "media/base/audio_renderer_mixer_pool.h"
 #include "media/base/output_device_info.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/platform/web_common.h"
 
 namespace media {
 class AudioRendererMixer;
 class AudioRendererMixerInput;
 class AudioRendererSink;
-}
+}  // namespace media
 
-namespace content {
+namespace blink {
 
 // Manages sharing of an AudioRendererMixer among AudioRendererMixerInputs based
 // on their AudioParameters configuration.  Inputs with the same AudioParameters
@@ -40,12 +40,15 @@ namespace content {
 //
 // There should only be one instance of AudioRendererMixerManager per render
 // thread.
-class CONTENT_EXPORT AudioRendererMixerManager
+class BLINK_MODULES_EXPORT AudioRendererMixerManager
     : public media::AudioRendererMixerPool {
  public:
   ~AudioRendererMixerManager() final;
 
-  static std::unique_ptr<AudioRendererMixerManager> Create();
+  // AudioRendererMixerManager instance which manages renderer side mixer
+  // instances shared based on configured audio parameters. Lazily created on
+  // first call.
+  static AudioRendererMixerManager& GetInstance();
 
   // Creates an AudioRendererMixerInput with the proper callbacks necessary to
   // retrieve an AudioRendererMixer instance from AudioRendererMixerManager.
@@ -66,7 +69,7 @@ class CONTENT_EXPORT AudioRendererMixerManager
   void ReturnMixer(media::AudioRendererMixer* mixer) final;
 
   // media::AudioRendererMixerPool look-alikes, with strongly typed tokens.
-  // Clients in content/ should use these functions.
+  // Clients in blink/ should use these functions.
   media::AudioRendererMixer* GetMixer(
       const blink::LocalFrameToken& source_frame_token,
       const media::AudioParameters& input_params,
@@ -92,7 +95,7 @@ class CONTENT_EXPORT AudioRendererMixerManager
 
   // media::AudioRendererMixerPool implementation. This interface faces
   // code in media/ which uses untyped tokens, and is kept private so that
-  // content/ clients prefer to use the strongly-typed-token variants.
+  // blink/ clients prefer to use the strongly-typed-token variants.
   media::AudioRendererMixer* GetMixer(
       const base::UnguessableToken& source_frame_token,
       const media::AudioParameters& input_params,
@@ -173,6 +176,6 @@ class CONTENT_EXPORT AudioRendererMixerManager
   DISALLOW_COPY_AND_ASSIGN(AudioRendererMixerManager);
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_RENDERER_MEDIA_AUDIO_AUDIO_RENDERER_MIXER_MANAGER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_MIXER_MANAGER_H_

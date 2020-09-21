@@ -1,7 +1,16 @@
 include_rules = [
+    "+base/unguessable_token.h",
+    "+base/threading/platform_thread.h",
     "+media/audio",
-    "+media/base/audio_parameters.h",
+    "+media/base",
     "+media/mojo",
+
+    # TODO(https://crbug.com/787252): Replace this use by a Blink singleton
+    # construction.
+    "+base/no_destructor.h",
+
+    # TODO(https://crbug.com/787252): Replace the use by WTF::HashMap.
+    "+base/containers/flat_map.h",
 ]
 
 specific_include_rules = {
@@ -10,6 +19,7 @@ specific_include_rules = {
         "+base/run_loop.h",
         "+base/test/bind_test_util.h",
         "+base/test/gtest_util.h",
+        "+base/test/test_mock_time_task_runner.h",
         "+base/threading/thread.h",
     ],
 }

@@ -5,12 +5,12 @@
 #ifndef CONTENT_RENDERER_MEDIA_AUDIO_FUCHSIA_AUDIO_DEVICE_FACTORY_H_
 #define CONTENT_RENDERER_MEDIA_AUDIO_FUCHSIA_AUDIO_DEVICE_FACTORY_H_
 
-#include "content/renderer/media/audio/audio_device_factory.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 
 namespace content {
 
-class FuchsiaAudioDeviceFactory : public AudioDeviceFactory {
+class FuchsiaAudioDeviceFactory : public blink::AudioDeviceFactory {
  public:
   FuchsiaAudioDeviceFactory();
   ~FuchsiaAudioDeviceFactory() final;

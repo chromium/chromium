@@ -21,7 +21,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/render_frame_media_playback_options.h"
-#include "content/renderer/media/audio/audio_device_factory.h"
 #include "content/renderer/media/batching_media_log.h"
 #include "content/renderer/media/inspector_media_event_handler.h"
 #include "content/renderer/media/media_interface_factory.h"
@@ -57,6 +56,7 @@
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
 #include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 #include "third_party/blink/public/web/modules/mediastream/webmediaplayer_ms.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/origin.h"
@@ -373,7 +373,7 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
     return nullptr;
 
   scoped_refptr<media::SwitchableAudioRendererSink> audio_renderer_sink =
-      AudioDeviceFactory::NewSwitchableAudioRendererSink(
+      blink::AudioDeviceFactory::NewSwitchableAudioRendererSink(
           blink::WebAudioDeviceSourceType::kMediaElement,
           render_frame_->GetWebFrame()->GetLocalFrameToken(),
           media::AudioSinkParameters(/*session_id=*/base::UnguessableToken(),
