@@ -37,6 +37,7 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Features.EnableFeatures(ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS)
+@Features.DisableFeatures(ChromeFeatureList.INTEREST_FEED_V2)
 public final class FeedNewTabPageCardInstrumentationTest {
     @Rule
     public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
