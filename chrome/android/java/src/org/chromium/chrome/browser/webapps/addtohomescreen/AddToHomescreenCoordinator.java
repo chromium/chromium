@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.webapps.addtohomescreen;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.text.TextUtils;
 
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -50,20 +52,22 @@ public class AddToHomescreenCoordinator {
      */
     public static boolean showForAppMenu(Tab tab, Context activityContext,
             WindowAndroid windowAndroid, ModalDialogManager modalDialogManager,
-            WebContents webContents) {
+            WebContents webContents, Bundle menuItemData) {
+        @StringRes
+        int titleId = menuItemData.getInt(AppBannerManager.MENU_TITLE_KEY);
         return new AddToHomescreenCoordinator(
                 tab, activityContext, windowAndroid, modalDialogManager)
-                .showForAppMenu(webContents);
+                .showForAppMenu(webContents, titleId);
     }
 
     @VisibleForTesting
-    boolean showForAppMenu(WebContents webContents) {
+    boolean showForAppMenu(WebContents webContents, @StringRes int titleId) {
         // Don't start if there is no visible URL to add.
         if (webContents == null || TextUtils.isEmpty(webContents.getVisibleUrlString())) {
             return false;
         }
 
-        buildMediatorAndShowDialog().startForAppMenu(webContents);
+        buildMediatorAndShowDialog().startForAppMenu(webContents, titleId);
         return true;
     }
 

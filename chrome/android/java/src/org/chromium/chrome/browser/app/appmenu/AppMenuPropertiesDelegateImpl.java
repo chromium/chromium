@@ -34,6 +34,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.banners.AppBannerManager;
+import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.device.DeviceClassManager;
@@ -89,6 +90,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     private Callback<BookmarkBridge> mBookmarkBridgeSupplierCallback;
     private boolean mUpdateMenuItemVisible;
     private ShareUtils mShareUtils;
+    // Keeps track of which menu item was shown when installable app is detected.
+    private int mAddAppTitleShown;
 
     @VisibleForTesting
     @IntDef({MenuGroup.INVALID, MenuGroup.PAGE_MENU, MenuGroup.OVERVIEW_MODE_MENU,
@@ -538,6 +541,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             Menu menu, Tab currentTab, boolean shouldShowHomeScreenMenuItem) {
         MenuItem homescreenItem = menu.findItem(R.id.add_to_homescreen_id);
         MenuItem openWebApkItem = menu.findItem(R.id.open_webapk_id);
+        mAddAppTitleShown = AppMenuVerbiage.APP_MENU_OPTION_UNKNOWN;
         if (shouldShowHomeScreenMenuItem) {
             Context context = ContextUtils.getApplicationContext();
             long addToHomeScreenStart = SystemClock.elapsedRealtime();
@@ -561,6 +565,12 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 homescreenItem.setTitle(installStrings.titleTextId);
                 homescreenItem.setVisible(true);
                 openWebApkItem.setVisible(false);
+
+                if (installStrings.titleTextId == AppBannerManager.NON_PWA_PAIR.titleTextId) {
+                    mAddAppTitleShown = AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN;
+                } else if (installStrings.titleTextId == AppBannerManager.PWA_PAIR.titleTextId) {
+                    mAddAppTitleShown = AppMenuVerbiage.APP_MENU_OPTION_INSTALL;
+                }
             }
         } else {
             homescreenItem.setVisible(false);
@@ -575,6 +585,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
     @Override
     public Bundle getBundleForMenuItem(MenuItem item) {
+        if (item.getItemId() == R.id.add_to_homescreen_id) {
+            Bundle payload = new Bundle();
+            payload.putInt(AppBannerManager.MENU_TITLE_KEY, mAddAppTitleShown);
+            return payload;
+        }
         return null;
     }
 

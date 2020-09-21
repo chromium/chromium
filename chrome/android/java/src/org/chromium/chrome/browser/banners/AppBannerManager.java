@@ -44,10 +44,13 @@ public class AppBannerManager {
         }
     }
 
-    private static final InstallStringPair PWA_PAIR = new InstallStringPair(
+    public static final InstallStringPair PWA_PAIR = new InstallStringPair(
             R.string.menu_add_to_homescreen_install, R.string.app_banner_install);
-    private static final InstallStringPair NON_PWA_PAIR =
+    public static final InstallStringPair NON_PWA_PAIR =
             new InstallStringPair(R.string.menu_add_to_homescreen, R.string.add);
+
+    /** The key to use to store and retrieve (from the menu data) what was shown in the menu. */
+    public static final String MENU_TITLE_KEY = "AppMenuTitleShown";
 
     private static final String TAG = "AppBannerManager";
 

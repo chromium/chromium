@@ -44,7 +44,8 @@ class AddToHomescreenMediator : public AddToHomescreenDataFetcher::Observer {
 
   void StartForAppMenu(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_web_contents);
+      const base::android::JavaParamRef<jobject>& java_web_contents,
+      int title_id);
 
   // Called from the Java side when the user accepts app installation from the
   // dialog.
@@ -96,6 +97,8 @@ class AddToHomescreenMediator : public AddToHomescreenDataFetcher::Observer {
   base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
                                const AddToHomescreenParams&)>
       event_callback_;
+
+  int title_id_ = -1;
 
   AddToHomescreenMediator(const AddToHomescreenMediator&) = delete;
   AddToHomescreenMediator& operator=(const AddToHomescreenMediator&) = delete;

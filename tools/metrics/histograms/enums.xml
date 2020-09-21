@@ -3049,6 +3049,17 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="Panel"/>
 </enum>
 
+<enum name="AppTypeToMenuEntry">
+  <int value="0" label="WebApk install, menu item unknown (failure mode)"/>
+  <int value="1"
+      label="WebApk install, menu showed 'Add To Homescreen' (failure mode)"/>
+  <int value="2" label="WebApk install, menu showed 'Install'"/>
+  <int value="3" label="Shortcut install, menu item unknown (failure mode)"/>
+  <int value="4" label="Shortcut install, menu showed 'Add To Homescreen'"/>
+  <int value="5"
+      label="Shortcut install, menu showed 'Install' (failure mode)"/>
+</enum>
+
 <enum name="AppWindowDragEndWindowState">
   <int value="0" label="Maximized or Fullscreen"/>
   <int value="1" label="In Overview"/>

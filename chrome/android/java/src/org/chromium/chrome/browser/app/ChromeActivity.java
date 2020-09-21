@@ -308,6 +308,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     /** Whether or not the activity is in started state. */
     private boolean mStarted;
 
+    /** The data associated with the most recently selected menu item. */
+    @Nullable
+    private Bundle mMenuItemData;
+
     /**
      * The RootUiCoordinator associated with the activity. This variable is held to facilitate
      * testing.
@@ -1392,6 +1396,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     @Override
     public boolean onOptionsItemSelected(int itemId, @Nullable Bundle menuItemData) {
+        mMenuItemData = menuItemData;
         if (mManualFillingComponent != null) mManualFillingComponent.dismiss();
         return onMenuOrKeyboardAction(itemId, true);
     }
@@ -2014,7 +2019,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             }
         } else if (id == R.id.add_to_homescreen_id) {
             AddToHomescreenCoordinator.showForAppMenu(currentTab, this, getWindowAndroid(),
-                    getModalDialogManager(), currentTab.getWebContents());
+                    getModalDialogManager(), currentTab.getWebContents(), mMenuItemData);
             RecordUserAction.record("MobileMenuAddToHomescreen");
         } else if (id == R.id.open_webapk_id) {
             Context context = ContextUtils.getApplicationContext();

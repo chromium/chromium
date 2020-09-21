@@ -28,6 +28,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.banners.AppBannerManager;
+import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -345,7 +346,8 @@ public class AddToHomescreenTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             boolean started = new TestAddToHomescreenCoordinator(mActivity,
                     mActivity.getWindowAndroid(), mActivity.getModalDialogManager(), title)
-                                      .showForAppMenu(tab.getWebContents());
+                                      .showForAppMenu(tab.getWebContents(),
+                                              AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN);
             Assert.assertEquals(expectAdded, started);
         });
 

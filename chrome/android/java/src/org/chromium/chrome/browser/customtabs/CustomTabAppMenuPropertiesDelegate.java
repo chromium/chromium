@@ -245,7 +245,10 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             return null;
         }
 
-        Bundle itemBundle = new Bundle();
+        Bundle itemBundle = super.getBundleForMenuItem(item);
+        if (itemBundle == null) {
+            itemBundle = new Bundle();
+        }
         itemBundle.putInt(CUSTOM_MENU_ITEM_ID_KEY, mItemToIndexMap.get(item).intValue());
         return itemBundle;
     }
