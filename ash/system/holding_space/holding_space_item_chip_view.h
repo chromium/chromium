@@ -47,6 +47,7 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView,
  private:
   void AddPinButton();
   void Update();
+  void UpdatePin();
 
   tray::RoundedImageView* image_ = nullptr;
   views::Label* label_ = nullptr;

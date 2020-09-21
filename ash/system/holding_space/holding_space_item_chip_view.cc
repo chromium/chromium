@@ -4,8 +4,11 @@
 
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 
+#include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
@@ -73,10 +76,8 @@ HoldingSpaceItemChipView::~HoldingSpaceItemChipView() = default;
 void HoldingSpaceItemChipView::OnMouseEvent(ui::MouseEvent* event) {
   switch (event->type()) {
     case ui::ET_MOUSE_ENTERED:
-      pin_->SetVisible(IsMouseHovered());
-      break;
     case ui::ET_MOUSE_EXITED:
-      pin_->SetVisible(IsMouseHovered());
+      UpdatePin();
       break;
     default:
       break;
@@ -86,10 +87,18 @@ void HoldingSpaceItemChipView::OnMouseEvent(ui::MouseEvent* event) {
 
 void HoldingSpaceItemChipView::ButtonPressed(views::Button* sender,
                                              const ui::Event& event) {
-  if (sender == pin_) {
-    pin_->SetToggled(!pin_->toggled());
-    // TODO(amehfooz): Toggle pin
-  }
+  DCHECK_EQ(sender, pin_);
+  bool is_item_pinned = HoldingSpaceController::Get()->model()->GetItem(
+      HoldingSpaceItem::GetFileBackedItemId(HoldingSpaceItem::Type::kPinnedFile,
+                                            item()->file_path()));
+  pin_->SetToggled(!is_item_pinned);
+
+  if (is_item_pinned)
+    HoldingSpaceController::Get()->client()->UnpinItem(*item());
+  else
+    HoldingSpaceController::Get()->client()->PinItem(*item());
+
+  UpdatePin();
 }
 
 void HoldingSpaceItemChipView::AddPinButton() {
@@ -112,6 +121,20 @@ void HoldingSpaceItemChipView::Update() {
   image_->SetImage(
       item()->image().image_skia(),
       gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize));
+}
+
+void HoldingSpaceItemChipView::UpdatePin() {
+  if (!IsMouseHovered()) {
+    pin_->SetVisible(false);
+    return;
+  }
+
+  bool is_item_pinned = HoldingSpaceController::Get()->model()->GetItem(
+      HoldingSpaceItem::GetFileBackedItemId(HoldingSpaceItem::Type::kPinnedFile,
+                                            item()->file_path()));
+
+  pin_->SetToggled(!is_item_pinned);
+  pin_->SetVisible(true);
 }
 
 BEGIN_METADATA(HoldingSpaceItemChipView, HoldingSpaceItemView)
