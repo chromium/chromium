@@ -55,11 +55,11 @@ fuchsia::web::ContentDirectoryProvider CreateTestDataDirectoryProvider() {
 
 }  // namespace
 
-class WebEngineIntegrationTest : public testing::Test {
+class WebEngineIntegrationTestBase : public testing::Test {
  public:
-  WebEngineIntegrationTest()
+  WebEngineIntegrationTestBase()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
-  ~WebEngineIntegrationTest() override = default;
+  ~WebEngineIntegrationTestBase() override = default;
 
   void SetUp() override {
     embedded_test_server_.ServeFilesFromSourceDirectory(
@@ -68,8 +68,7 @@ class WebEngineIntegrationTest : public testing::Test {
     ASSERT_TRUE(embedded_test_server_.Start());
   }
 
-  void StartWebEngine(base::CommandLine command_line =
-                          base::CommandLine(base::CommandLine::NO_PROGRAM)) {
+  void StartWebEngine(base::CommandLine command_line) {
     web_context_provider_ = cr_fuchsia::ConnectContextProvider(
         web_engine_controller_.NewRequest(), std::move(command_line));
     web_context_provider_.set_error_handler(
@@ -252,12 +251,22 @@ class WebEngineIntegrationTest : public testing::Test {
 
   std::unique_ptr<media::FakeAudioConsumerService> fake_audio_consumer_service_;
 
-  DISALLOW_COPY_AND_ASSIGN(WebEngineIntegrationTest);
+  DISALLOW_COPY_AND_ASSIGN(WebEngineIntegrationTestBase);
+};
+
+// Starts a WebEngine instance before running the test.
+class WebEngineIntegrationTest : public WebEngineIntegrationTestBase {
+ protected:
+  WebEngineIntegrationTest() : WebEngineIntegrationTestBase() {}
+
+  void SetUp() override {
+    WebEngineIntegrationTestBase::SetUp();
+
+    StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
+  }
 };
 
 TEST_F(WebEngineIntegrationTest, ValidUserAgent) {
-  StartWebEngine();
-
   const std::string kEchoHeaderPath =
       std::string("/echoheader?") + net::HttpRequestHeaders::kUserAgent;
   const GURL kEchoUserAgentUrl(embedded_test_server_.GetURL(kEchoHeaderPath));
@@ -303,8 +312,6 @@ TEST_F(WebEngineIntegrationTest, ValidUserAgent) {
 }
 
 TEST_F(WebEngineIntegrationTest, InvalidUserAgent) {
-  StartWebEngine();
-
   const std::string kEchoHeaderPath =
       std::string("/echoheader?") + net::HttpRequestHeaders::kUserAgent;
   const GURL kEchoUserAgentUrl(embedded_test_server_.GetURL(kEchoHeaderPath));
@@ -336,8 +343,6 @@ TEST_F(WebEngineIntegrationTest, InvalidUserAgent) {
 // - DevTools becomes available when the first debuggable Frame is created.
 // - DevTools closes when the last debuggable Frame is closed.
 TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
-  StartWebEngine();
-
   // Create a Context with remote debugging enabled via an ephemeral port.
   fuchsia::web::CreateContextParams create_params;
   auto directory = base::fuchsia::OpenDirectory(
@@ -458,8 +463,6 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
 // Check that remote debugging requests for Frames in non-debuggable Contexts
 // cause an error to be reported.
 TEST_F(WebEngineIntegrationTest, RequestDebuggableFrameInNonDebuggableContext) {
-  StartWebEngine();
-
   fuchsia::web::CreateContextParams create_params = DefaultContextParams();
 
   fuchsia::web::ContextPtr web_context;
@@ -484,8 +487,6 @@ TEST_F(WebEngineIntegrationTest, RequestDebuggableFrameInNonDebuggableContext) {
 
 // Navigates to a resource served under the "testdata" ContentDirectory.
 TEST_F(WebEngineIntegrationTest, ContentDirectoryProvider) {
-  StartWebEngine();
-
   const GURL kUrl("fuchsia-dir://testdata/title1.html");
   constexpr char kTitle[] = "title 1";
 
@@ -503,7 +504,6 @@ TEST_F(WebEngineIntegrationTest, ContentDirectoryProvider) {
 }
 
 TEST_F(WebEngineIntegrationTest, PlayAudio) {
-  StartWebEngine();
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
   static uint16_t kTestMediaSessionId = 43;
@@ -528,8 +528,6 @@ TEST_F(WebEngineIntegrationTest, PlayAudio) {
 // Check that audio cannot play when the AUDIO ContextFeatureFlag is not
 // provided.
 TEST_F(WebEngineIntegrationTest, PlayAudio_NoFlag) {
-  StartWebEngine();
-
   // Both FilteredServiceDirectory and test data are needed.
   fuchsia::web::CreateContextParams create_params =
       ContextParamsWithFilteredServiceDirectory();
@@ -552,7 +550,6 @@ TEST_F(WebEngineIntegrationTest, PlayAudio_NoFlag) {
 }
 
 TEST_F(WebEngineIntegrationTest, PlayVideo) {
-  StartWebEngine();
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
   frame_->SetBlockMediaLoading(false);
@@ -562,9 +559,7 @@ TEST_F(WebEngineIntegrationTest, PlayVideo) {
   navigation_listener_->RunUntilTitleEquals("ended");
 }
 
-void WebEngineIntegrationTest::RunPermissionTest(bool grant) {
-  StartWebEngine();
-
+void WebEngineIntegrationTestBase::RunPermissionTest(bool grant) {
   fuchsia::web::CreateContextParams create_params =
       DefaultContextParamsWithTestData();
   CreateContextAndFrame(std::move(create_params));
@@ -590,7 +585,6 @@ TEST_F(WebEngineIntegrationTest, PermissionGranted) {
 }
 
 TEST_F(WebEngineIntegrationTest, MicrophoneAccess_WithPermission) {
-  StartWebEngine();
   CreateContextAndFrame(ContextParamsWithAudio());
 
   GrantPermission(fuchsia::web::PermissionType::MICROPHONE,
@@ -604,7 +598,6 @@ TEST_F(WebEngineIntegrationTest, MicrophoneAccess_WithPermission) {
 }
 
 TEST_F(WebEngineIntegrationTest, MicrophoneAccess_WithoutPermission) {
-  StartWebEngine();
   CreateContextAndFrame(ContextParamsWithAudio());
 
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
@@ -615,7 +608,6 @@ TEST_F(WebEngineIntegrationTest, MicrophoneAccess_WithoutPermission) {
 }
 
 TEST_F(WebEngineIntegrationTest, SetBlockMediaLoading_Blocked) {
-  StartWebEngine();
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
   frame_->SetBlockMediaLoading(true);
@@ -633,7 +625,6 @@ TEST_F(WebEngineIntegrationTest, SetBlockMediaLoading_Blocked) {
 // Initially, set media blocking to be true. When media is unblocked, check that
 // it begins playing, since autoplay=true.
 TEST_F(WebEngineIntegrationTest, SetBlockMediaLoading_AfterUnblock) {
-  StartWebEngine();
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
   frame_->SetBlockMediaLoading(true);
@@ -653,7 +644,6 @@ TEST_F(WebEngineIntegrationTest, SetBlockMediaLoading_AfterUnblock) {
 // Check that when autoplay=false and media loading was blocked after the
 // element has started loading that media will play when play() is called.
 TEST_F(WebEngineIntegrationTest, SetBlockMediaLoading_SetBlockedAfterLoading) {
-  StartWebEngine();
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
   LoadUrlWithUserActivation("fuchsia-dir://testdata/play_video.html");
@@ -665,8 +655,6 @@ TEST_F(WebEngineIntegrationTest, SetBlockMediaLoading_SetBlockedAfterLoading) {
 }
 
 TEST_F(WebEngineIntegrationTest, WebGLContextAbsentWithoutVulkanFeature) {
-  StartWebEngine();
-
   fuchsia::web::CreateContextParams create_params = DefaultContextParams();
   CreateContextAndFrame(std::move(create_params));
 
@@ -691,8 +679,6 @@ class MAYBE_VulkanWebEngineIntegrationTest : public WebEngineIntegrationTest {};
 // TODO(crbug.com/1104563): Flakily times-out.
 TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
        DISABLED_WebGLContextPresentWithVulkanFeature) {
-  StartWebEngine();
-
   fuchsia::web::CreateContextParams create_params = DefaultContextParams();
   create_params.set_features(fuchsia::web::ContextFeatureFlags::VULKAN);
   CreateContextAndFrame(std::move(create_params));
@@ -706,7 +692,7 @@ TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
   EXPECT_EQ(navigation_listener_->title(), "present");
 }
 
-void WebEngineIntegrationTest::RunCameraTest(bool grant_permission) {
+void WebEngineIntegrationTestBase::RunCameraTest(bool grant_permission) {
   fuchsia::web::CreateContextParams create_params =
       ContextParamsWithFilteredServiceDirectory();
 
@@ -731,16 +717,14 @@ void WebEngineIntegrationTest::RunCameraTest(bool grant_permission) {
 
 // TODO(crbug.com/1104562): Flakily times-out.
 TEST_F(WebEngineIntegrationTest, DISABLED_CameraAccess_WithPermission) {
-  StartWebEngine();
   RunCameraTest(/*grant_permission=*/true);
 }
 
 TEST_F(WebEngineIntegrationTest, CameraAccess_WithoutPermission) {
-  StartWebEngine();
   RunCameraTest(/*grant_permission=*/false);
 }
 
-TEST_F(WebEngineIntegrationTest, CameraNoVideoCaptureProcess) {
+TEST_F(WebEngineIntegrationTestBase, CameraNoVideoCaptureProcess) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII("disable-features", "MojoVideoCapture");
   StartWebEngine(std::move(command_line));
