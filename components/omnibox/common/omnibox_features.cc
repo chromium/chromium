@@ -291,8 +291,7 @@ const base::Feature kZeroSuggestionsOnSERP{"OmniboxZeroSuggestionsOnSERP",
 const base::Feature kOnDeviceHeadProviderIncognito{
     "OmniboxOnDeviceHeadProviderIncognito", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kOnDeviceHeadProviderNonIncognito{
-    "OmniboxOnDeviceHeadProviderNonIncognito",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    "OmniboxOnDeviceHeadProviderNonIncognito", enabled_by_default_android_ios};
 
 // If enabled, changes the way Google-provided search suggestions are scored by
 // the backend. Note that this Feature is only used for triggering a server-

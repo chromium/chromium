@@ -821,10 +821,17 @@ int OmniboxFieldTrial::OnDeviceHeadSuggestMaxScoreForNonUrlInput(
 
 int OmniboxFieldTrial::OnDeviceHeadSuggestDelaySuggestRequestMs(
     bool is_incognito) {
+  const int kDefaultDelayNonIncognito =
+#if defined(OS_ANDROID) || defined(OS_IOS)
+      100;
+#else
+      0;
+#endif  // defined(OS_ANDROID) || defined(OS_IOS)
   return is_incognito ? 0
                       : base::GetFieldTrialParamByFeatureAsInt(
                             omnibox::kOnDeviceHeadProviderNonIncognito,
-                            kOnDeviceHeadSuggestDelaySuggestRequestMs, 0);
+                            kOnDeviceHeadSuggestDelaySuggestRequestMs,
+                            kDefaultDelayNonIncognito);
 }
 
 int OmniboxFieldTrial::OnDeviceSearchProviderDefaultLoaderTimeoutMs(
