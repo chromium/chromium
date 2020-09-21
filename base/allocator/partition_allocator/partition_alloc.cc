@@ -849,13 +849,13 @@ void PartitionAllocator<thread_safe>::init(
     PartitionAllocatorAlignment alignment,
     bool with_thread_cache) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  CHECK(!with_thread_cache)
-      << "Cannot use a thread cache when PartitionAlloc is malloc()."
+  PA_CHECK(!with_thread_cache)
+      << "Cannot use a thread cache when PartitionAlloc is malloc().";
 #endif
-         partition_root_.Init(alignment ==
-                                  PartitionAllocatorAlignment::
-                                      kAlignedAlloc /* enforce_alignment */,
-                              with_thread_cache);
+  partition_root_.Init(
+      alignment ==
+          PartitionAllocatorAlignment::kAlignedAlloc /* enforce_alignment */,
+      with_thread_cache);
   PartitionAllocMemoryReclaimer::Instance()->RegisterPartition(
       &partition_root_);
 }

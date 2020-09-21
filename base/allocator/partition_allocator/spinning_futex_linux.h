@@ -44,6 +44,7 @@ class BASE_EXPORT SpinningFutex {
   inline constexpr SpinningFutex();
   ALWAYS_INLINE void Acquire();
   ALWAYS_INLINE void Release();
+  ALWAYS_INLINE bool Try();
   void AssertAcquired() const {}  // Not supported.
 
  private:
@@ -66,17 +67,20 @@ ALWAYS_INLINE void SpinningFutex::Acquire() {
   // Busy-waiting is inlined, which is fine as long as we have few callers. This
   // is only used for the partition lock, so this is the case.
   do {
-    int expected = kUnlocked;
-    if (LIKELY(state_.compare_exchange_strong(expected, kLockedUncontended,
-                                              std::memory_order_acquire,
-                                              std::memory_order_relaxed))) {
+    if (LIKELY(Try()))
       return;
-    }
     YIELD_PROCESSOR;
     tries++;
   } while (tries < kSpinCount);
 
   LockSlow();
+}
+
+ALWAYS_INLINE bool SpinningFutex::Try() {
+  int expected = kUnlocked;
+  return state_.compare_exchange_strong(expected, kLockedUncontended,
+                                        std::memory_order_acquire,
+                                        std::memory_order_relaxed);
 }
 
 inline constexpr SpinningFutex::SpinningFutex() = default;

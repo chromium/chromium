@@ -69,6 +69,12 @@ class BASE_EXPORT SpinLock {
     AcquireSlow();
   }
 
+  ALWAYS_INLINE bool Try() {
+    // Faster than simple CAS.
+    return !lock_.load(std::memory_order_relaxed) &&
+           !lock_.exchange(true, std::memory_order_acquire);
+  }
+
   ALWAYS_INLINE void Release() {
     lock_.store(false, std::memory_order_release);
   }
