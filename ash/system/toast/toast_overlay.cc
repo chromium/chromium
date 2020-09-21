@@ -5,7 +5,6 @@
 #include "ash/system/toast/toast_overlay.h"
 
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
@@ -160,9 +159,7 @@ class ToastOverlayView : public views::View, public views::ButtonListener {
       : overlay_(overlay) {
     SetPaintToLayer();
     background_color_ = AshColorProvider::Get()->GetBaseLayerColor(
-        features::IsBackgroundBlurEnabled()
-            ? AshColorProvider::BaseLayerType::kTransparent80
-            : AshColorProvider::BaseLayerType::kTransparent90);
+        AshColorProvider::BaseLayerType::kTransparent80);
     SetBackground(views::CreateSolidBackground(background_color_));
     layer()->SetFillsBoundsOpaquely(false);
     layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kToastCornerRounding));

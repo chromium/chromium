@@ -8,7 +8,6 @@
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/login/login_screen_controller.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -54,9 +53,7 @@ PowerButtonMenuView::PowerButtonMenuView(
   SetPaintToLayer();
   SetBackground(
       views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
-          features::IsBackgroundBlurEnabled()
-              ? AshColorProvider::BaseLayerType::kTransparent80
-              : AshColorProvider::BaseLayerType::kTransparent90)));
+          AshColorProvider::BaseLayerType::kTransparent80)));
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(kMenuViewRoundRectRadiusDp);
   layer()->SetBackgroundBlur(
