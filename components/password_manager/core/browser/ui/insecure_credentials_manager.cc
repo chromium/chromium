@@ -10,11 +10,13 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/compromised_credentials_table.h"
+#include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/browser/ui/weak_check_utility.h"
@@ -309,7 +311,15 @@ InsecureCredentialsManager::GetCompromisedCredentials() const {
 
 std::vector<CredentialWithPassword>
 InsecureCredentialsManager::GetWeakCredentials() const {
-  return ExtractInsecureCredentials(credentials_to_forms_, &IsWeak);
+  std::vector<CredentialWithPassword> weak_credentials =
+      ExtractInsecureCredentials(credentials_to_forms_, &IsWeak);
+
+  auto get_sort_key = [this](const CredentialWithPassword& credential) {
+    return CreateSortKey(GetSavedPasswordsFor(credential)[0],
+                         IgnoreStore(true));
+  };
+  base::ranges::sort(weak_credentials, {}, get_sort_key);
+  return weak_credentials;
 }
 
 SavedPasswordsPresenter::SavedPasswordsView

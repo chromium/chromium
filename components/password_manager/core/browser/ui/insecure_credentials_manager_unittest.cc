@@ -66,6 +66,7 @@ PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
                                base::StringPiece username_element = "") {
   PasswordForm form;
   form.signon_realm = std::string(signon_realm);
+  form.url = GURL(signon_realm);
   form.username_value = base::ASCIIToUTF16(username);
   form.password_value = base::ASCIIToUTF16(password);
   form.username_element = base::ASCIIToUTF16(username_element);
@@ -88,6 +89,12 @@ CredentialWithPassword MakeCompromisedCredential(
           ? InsecureCredentialTypeFlags::kCredentialLeaked
           : InsecureCredentialTypeFlags::kCredentialPhished;
   return credential_with_password;
+}
+
+CredentialWithPassword MakeWeakCredential(const PasswordForm& form) {
+  CredentialWithPassword weak_credential{CredentialView(form)};
+  weak_credential.insecure_type = InsecureCredentialTypeFlags::kWeakCredential;
+  return weak_credential;
 }
 
 CredentialWithPassword MakeWeakAndCompromisedCredential(
@@ -785,6 +792,30 @@ TEST_F(InsecureCredentialsManagerTest, RemoveInsecureCredential) {
   EXPECT_TRUE(provider().RemoveCredential(expected));
   RunUntilIdle();
   EXPECT_THAT(GetSavedPasswordForUsername(kExampleCom, kUsername1), IsEmpty());
+}
+
+// Verifues that GetWeakCredentials() returns sorted weak credentials by using
+// CreateSortKey.
+TEST_F(InsecureCredentialsManagerTest, GetWeakCredentialsReturnsSortedData) {
+  const std::vector<PasswordForm> password_forms = {
+      MakeSavedPassword("http://example-a.com", "user_a1", "pwd"),
+      MakeSavedPassword("http://example-a.com", "user_a2", "pwd"),
+      MakeSavedPassword("http://example-b.com", "user_a", "pwd"),
+      MakeSavedPassword("http://example-c.com", "user_a", "pwd")};
+  store().AddLogin(password_forms[0]);
+  store().AddLogin(password_forms[1]);
+  store().AddLogin(password_forms[2]);
+  store().AddLogin(password_forms[3]);
+  RunUntilIdle();
+
+  provider().StartWeakCheck();
+  RunUntilIdle();
+
+  EXPECT_THAT(provider().GetWeakCredentials(),
+              ElementsAre(MakeWeakCredential(password_forms[0]),
+                          MakeWeakCredential(password_forms[1]),
+                          MakeWeakCredential(password_forms[2]),
+                          MakeWeakCredential(password_forms[3])));
 }
 
 namespace {
