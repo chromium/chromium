@@ -697,7 +697,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_offline_pin_blue_white.xml",
   "java/res/drawable/ic_offline_pin_white.xml",
   "java/res/drawable/ic_open_in_browser.xml",
-  "java/res/drawable/ic_person_add_24dp.xml",
+  "java/res/drawable/ic_person_add_40dp.xml",
   "java/res/drawable/ic_photo_camera_black.xml",
   "java/res/drawable/ic_play_circle_filled_24dp_on_dark_bg.xml",
   "java/res/drawable/ic_play_circle_filled_24dp_on_light_bg.xml",
