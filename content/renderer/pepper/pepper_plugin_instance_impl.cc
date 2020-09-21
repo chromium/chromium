@@ -515,7 +515,6 @@ PepperPluginInstanceImpl::PepperPluginInstanceImpl(
       sent_initial_did_change_view_(false),
       bound_graphics_2d_platform_(nullptr),
       has_webkit_focus_(false),
-      has_content_area_focus_(false),
       find_identifier_(-1),
       plugin_find_interface_(nullptr),
       plugin_input_event_interface_(nullptr),
@@ -555,10 +554,6 @@ PepperPluginInstanceImpl::PepperPluginInstanceImpl(
     render_frame_->PepperInstanceCreated(this);
     view_data_.is_page_visible =
         !render_frame_->GetLocalRootRenderWidget()->GetWebWidget()->IsHidden();
-
-    // Set the initial focus.
-    SetContentAreaFocus(
-        render_frame_->GetLocalRootRenderWidget()->GetWebWidget()->HasFocus());
 
     if (!module_->IsProxied()) {
       created_in_process_instance_ = true;
@@ -1327,16 +1322,6 @@ void PepperPluginInstanceImpl::SetWebKitFocus(bool has_focus) {
     SendFocusChangeNotification();
 }
 
-void PepperPluginInstanceImpl::SetContentAreaFocus(bool has_focus) {
-  if (has_content_area_focus_ == has_focus)
-    return;
-
-  bool old_plugin_focus = PluginHasFocus();
-  has_content_area_focus_ = has_focus;
-  if (PluginHasFocus() != old_plugin_focus)
-    SendFocusChangeNotification();
-}
-
 void PepperPluginInstanceImpl::PageVisibilityChanged(bool is_visible) {
   if (is_visible == view_data_.is_page_visible)
     return;  // Nothing to do.
@@ -1731,7 +1716,7 @@ void PepperPluginInstanceImpl::UpdateLayerTransform() {
 }
 
 bool PepperPluginInstanceImpl::PluginHasFocus() const {
-  return flash_fullscreen_ || (has_webkit_focus_ && has_content_area_focus_);
+  return flash_fullscreen_ || has_webkit_focus_;
 }
 
 void PepperPluginInstanceImpl::SendFocusChangeNotification() {

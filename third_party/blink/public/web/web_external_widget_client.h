@@ -69,10 +69,6 @@ class WebExternalWidgetClient {
       const cc::OverscrollBehavior& overscroll_behavior,
       bool event_processed) {}
 
-  // The state of the focus has changed for the WebWidget. |enabled|
-  // is the new state.
-  virtual void FocusChanged(bool enabled) {}
-
   // Callback to notify new visual properties have been applied.
   virtual void DidUpdateVisualProperties() {}
 };

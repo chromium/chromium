@@ -172,7 +172,6 @@ void WebViewFrameWidget::MouseCaptureLost() {
 
 void WebViewFrameWidget::FocusChanged(bool enable) {
   web_view_->SetFocus(enable);
-  Client()->FocusChanged(enable);
 }
 
 float WebViewFrameWidget::GetDeviceScaleFactorForTesting() {

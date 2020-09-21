@@ -491,14 +491,6 @@ bool RenderViewImpl::AutoResizeMode() {
   return GetWebView()->AutoResizeMode();
 }
 
-void RenderViewImpl::DidReceiveSetFocusEventForWidget() {
-  // This message must always be received when the main frame is a
-  // WebLocalFrame.
-  // TODO(ajwong): Can this be removed and just check |delegate_| in
-  // RenderWidget instead?
-  CHECK(GetWebView()->MainFrame()->IsWebLocalFrame());
-}
-
 void RenderViewImpl::DidCommitCompositorFrameForWidget() {
   for (auto& observer : observers_)
     observer.DidCommitCompositorFrame();

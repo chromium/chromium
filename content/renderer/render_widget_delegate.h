@@ -36,9 +36,6 @@ class CONTENT_EXPORT RenderWidgetDelegate {
   // Returns the current state of auto resize.
   virtual bool AutoResizeMode() = 0;
 
-  // Called when RenderWidget receives a SetFocus event.
-  virtual void DidReceiveSetFocusEventForWidget() = 0;
-
   // Called when the RenderWidget handles
   // LayerTreeViewDelegate::DidCommitCompositorFrame().
   virtual void DidCommitCompositorFrameForWidget() = 0;

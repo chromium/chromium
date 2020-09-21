@@ -376,14 +376,6 @@ void RenderWidget::SetActive(bool active) {
     delegate()->SetActiveForWidget(active);
 }
 
-void RenderWidget::FocusChanged(bool enable) {
-  if (delegate())
-    delegate()->DidReceiveSetFocusEventForWidget();
-
-  for (auto& observer : render_frames_)
-    observer.RenderWidgetSetFocus(enable);
-}
-
 void RenderWidget::RequestNewLayerTreeFrameSink(
     LayerTreeFrameSinkCallback callback) {
   GURL url = GetWebWidget()->GetURLForDebugTrace();

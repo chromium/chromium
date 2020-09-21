@@ -152,7 +152,7 @@ class WidgetBaseClient {
   virtual blink::FrameWidget* FrameWidget() { return nullptr; }
 
   // Called to inform the Widget that it has gained or lost keyboard focus.
-  virtual void FocusChanged(bool) = 0;
+  virtual void FocusChanged(bool) {}
 
   // Call to schedule an animation.
   virtual void ScheduleAnimation() {}

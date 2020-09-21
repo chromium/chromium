@@ -247,7 +247,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
 
   // Notifications about focus changes, see has_webkit_focus_ below.
   void SetWebKitFocus(bool has_focus);
-  void SetContentAreaFocus(bool has_focus);
 
   // Notification about page visibility. The default is "visible".
   void PageVisibilityChanged(bool is_visible);
@@ -745,12 +744,8 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   scoped_refptr<PPB_Graphics3D_Impl> bound_graphics_3d_;
   PepperGraphics2DHost* bound_graphics_2d_platform_;
 
-  // We track two types of focus, one from WebKit, which is the focus among
-  // all elements of the page, one one from the browser, which is whether the
-  // tab/window has focus. We tell the plugin it has focus only when both of
-  // these values are set to true.
+  // Whether the plugin has focus or not.
   bool has_webkit_focus_;
-  bool has_content_area_focus_;
 
   // The id of the current find operation, or -1 if none is in process.
   int find_identifier_;

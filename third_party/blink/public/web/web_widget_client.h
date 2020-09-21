@@ -245,10 +245,6 @@ class WebWidgetClient {
   // Returns the current pepper caret bounds in window coordinates.
   virtual gfx::Rect GetPepperCaretBounds() { return gfx::Rect(); }
 
-  // The state of the focus has changed for the WebWidget. |enabled|
-  // is the new state.
-  virtual void FocusChanged(bool enabled) {}
-
   // Set the composition in pepper.
   virtual void ImeSetCompositionForPepper(
       const WebString& text,

@@ -106,7 +106,6 @@ class WebExternalWidgetImpl : public WebExternalWidget,
       const cc::OverscrollBehavior& overscroll_behavior,
       bool event_processed) override;
   bool SupportsBufferedTouchEvents() override;
-  void FocusChanged(bool enabled) override;
   void FlushInputProcessedCallback() override;
   void CancelCompositionForPepper() override;
   void UpdateVisualProperties(

@@ -337,9 +337,6 @@ class CONTENT_EXPORT RenderFrameImpl
                          blink::WebNavigationPolicy policy,
                          const gfx::Rect& initial_rect);
 
-  // Called when this frame's widget is focused.
-  void RenderWidgetSetFocus(bool enable);
-
   // Called when the widget receives a mouse event.
   void RenderWidgetWillHandleMouseEvent();
 

@@ -800,7 +800,6 @@ void WebPagePopupImpl::FocusChanged(bool enable) {
   if (enable)
     page_->GetFocusController().SetActive(true);
   page_->GetFocusController().SetFocused(enable);
-  WidgetClient()->FocusChanged(enable);
 }
 
 void WebPagePopupImpl::ScheduleAnimation() {

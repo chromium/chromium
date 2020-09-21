@@ -532,7 +532,6 @@ class StubRenderWidgetDelegate : public RenderWidgetDelegate {
   void SetActiveForWidget(bool active) override {}
   bool SupportsMultipleWindowsForWidget() override { return true; }
   bool ShouldAckSyntheticInputImmediately() override { return true; }
-  void DidReceiveSetFocusEventForWidget() override {}
   void DidCommitCompositorFrameForWidget() override {}
   void DidCompletePageScaleAnimationForWidget() override {}
   void ResizeWebWidgetForWidget(const gfx::Size& main_frame_widget_size,

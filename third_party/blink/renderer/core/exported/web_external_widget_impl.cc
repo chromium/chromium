@@ -268,10 +268,6 @@ bool WebExternalWidgetImpl::SupportsBufferedTouchEvents() {
   return client_->SupportsBufferedTouchEvents();
 }
 
-void WebExternalWidgetImpl::FocusChanged(bool enabled) {
-  client_->FocusChanged(enabled);
-}
-
 const ScreenInfo& WebExternalWidgetImpl::GetOriginalScreenInfo() {
   return widget_base_->GetScreenInfo();
 }

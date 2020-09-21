@@ -161,8 +161,6 @@ class PepperExternalWidgetClient : public blink::WebExternalWidgetClient {
     widget_->DidInitiatePaint();
   }
 
-  void FocusChanged(bool enabled) override { widget_->FocusChanged(enabled); }
-
   void DidUpdateVisualProperties() override { widget_->UpdateLayerBounds(); }
 
  private:

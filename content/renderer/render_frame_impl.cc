@@ -6706,14 +6706,6 @@ void RenderFrameImpl::ShowCreatedWindow(bool opened_by_user_gesture,
       opened_by_user_gesture);
 }
 
-void RenderFrameImpl::RenderWidgetSetFocus(bool enable) {
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // Notify all Pepper plugins.
-  for (auto* plugin : active_pepper_instances_)
-    plugin->SetContentAreaFocus(enable);
-#endif
-}
-
 void RenderFrameImpl::RenderWidgetWillHandleMouseEvent() {
 #if BUILDFLAG(ENABLE_PLUGINS)
   // This method is called for every mouse event that the RenderWidget receives.

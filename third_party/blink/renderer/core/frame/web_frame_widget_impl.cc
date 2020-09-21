@@ -638,7 +638,6 @@ void WebFrameWidgetImpl::FocusChanged(bool enable) {
       ime_accept_events_ = false;
     }
   }
-  Client()->FocusChanged(enable);
 }
 
 void WebFrameWidgetImpl::EnableDeviceEmulation(

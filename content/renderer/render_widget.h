@@ -247,7 +247,6 @@ class CONTENT_EXPORT RenderWidget
   bool ShouldDispatchImeEventsToPepper() override;
   blink::WebTextInputType GetPepperTextInputType() override;
   gfx::Rect GetPepperCaretBounds() override;
-  void FocusChanged(bool enable) override;
   void ImeSetCompositionForPepper(
       const blink::WebString& text,
       const std::vector<ui::ImeTextSpan>& ime_text_spans,
