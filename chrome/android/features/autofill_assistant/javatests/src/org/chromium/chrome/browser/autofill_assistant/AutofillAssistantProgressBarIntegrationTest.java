@@ -348,6 +348,74 @@ public class AutofillAssistantProgressBarIntegrationTest {
 
     @Test
     @MediumTest
+    public void testStepProgressBarErrorOnlyAction() {
+        ArrayList<ActionProto> list = new ArrayList<>();
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setShowProgressBar(
+                                 ShowProgressBarProto.newBuilder().setStepProgressBarConfiguration(
+                                         getDefaultStepProgressBarConfiguration()))
+                         .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder()
+                                            .setMessage("Initial Step")
+                                            .addChoices(Choice.newBuilder().setChip(
+                                                    ChipProto.newBuilder().setText("Next"))))
+                         .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setShowProgressBar(ShowProgressBarProto.newBuilder().setActiveStep(3))
+                         .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setShowProgressBar(ShowProgressBarProto.newBuilder().setErrorState(true))
+                         .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder()
+                                            .setMessage("Error State")
+                                            .addChoices(Choice.newBuilder().setChip(
+                                                    ChipProto.newBuilder().setText("Next"))))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                        .setPath("form_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
+                                ChipProto.newBuilder().setText("Autostart")))
+                        .build(),
+                list);
+        runScript(script);
+
+        waitUntilViewMatchesCondition(withText("Initial Step"), isCompletelyDisplayed());
+        for (int i = 0; i < 4; ++i) {
+            onView(withTagValue(is(String.format(
+                           Locale.getDefault(), AssistantTagsForTesting.PROGRESSBAR_ICON_TAG, i))))
+                    .check(matches(isDisplayed()));
+            onView(allOf(isDescendantOfA(withTagValue(is(String.format(Locale.getDefault(),
+                                 AssistantTagsForTesting.PROGRESSBAR_ICON_TAG, i)))),
+                           withClassName(is(ChromeImageView.class.getName()))))
+                    .check(matches(allOf(
+                            not(isEnabled()), hasTintColor(R.color.modern_grey_800_alpha_38))));
+        }
+        for (int i = 0; i < 3; ++i) {
+            onView(withTagValue(is(String.format(
+                           Locale.getDefault(), AssistantTagsForTesting.PROGRESSBAR_LINE_TAG, i))))
+                    .check(matches(isDisplayed()));
+        }
+        onView(withText("Next")).perform(click());
+
+        waitUntilViewMatchesCondition(withText("Error State"), isCompletelyDisplayed());
+        for (int i = 0; i < 3; ++i) {
+            onView(allOf(isDescendantOfA(withTagValue(is(String.format(Locale.getDefault(),
+                                 AssistantTagsForTesting.PROGRESSBAR_ICON_TAG, i)))),
+                           withClassName(is(ChromeImageView.class.getName()))))
+                    .check(matches(allOf(isEnabled(), hasTintColor(R.color.modern_blue_600))));
+        }
+        onView(allOf(isDescendantOfA(withTagValue(is(String.format(Locale.getDefault(),
+                             AssistantTagsForTesting.PROGRESSBAR_ICON_TAG, 3)))),
+                       withClassName(is(ChromeImageView.class.getName()))))
+                .check(matches(allOf(not(isEnabled()), hasTintColor(R.color.default_red))));
+    }
+
+    @Test
+    @MediumTest
     public void testStepProgressBarErrorAfterCompletion() {
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add((ActionProto) ActionProto.newBuilder()
