@@ -121,6 +121,14 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest, ShowOriginalLanguage) {
 // called, and didSelectSourceLanguageIndex and didSelectTargetLanguageIndex
 // were called beforehand to change the source and target languages.
 TEST_F(TranslateInfobarModalOverlayMediatorTest, UpdateLanguageInfo) {
+  // The order of the languages depends on the locale the device is running.
+  // Skip the test if the locale is no en-US where the indexes have been
+  // computed.
+  NSString* currentLanguage =
+      [[[NSBundle mainBundle] preferredLocalizations] firstObject];
+  if (![currentLanguage isEqual:@"en-US"])
+    return;
+
   // Language indexes are different on iOS 14.
   // TODO(crbug.com/1102968): Avoid hard-coding indexes here.
   const int portuguese_index = base::ios::IsRunningOnIOS14OrLater() ? 67 : 69;
