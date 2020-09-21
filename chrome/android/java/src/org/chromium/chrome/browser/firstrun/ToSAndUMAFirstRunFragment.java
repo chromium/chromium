@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 
@@ -43,6 +44,8 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
             return new ToSAndUMAFirstRunFragment();
         }
     }
+
+    private static boolean sShowUmaCheckBoxForTesting;
 
     protected boolean mNativeInitialized;
 
@@ -77,17 +80,14 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
             }
         });
 
-        if (canShowUmaCheckBox()) {
-            int paddingStart = getResources().getDimensionPixelSize(
-                    R.dimen.fre_tos_checkbox_padding);
-            ViewCompat.setPaddingRelative(mSendReportCheckBox,
-                    ViewCompat.getPaddingStart(mSendReportCheckBox) + paddingStart,
-                    mSendReportCheckBox.getPaddingTop(),
-                    ViewCompat.getPaddingEnd(mSendReportCheckBox),
-                    mSendReportCheckBox.getPaddingBottom());
+        int paddingStart = getResources().getDimensionPixelSize(R.dimen.fre_tos_checkbox_padding);
+        ViewCompat.setPaddingRelative(mSendReportCheckBox,
+                ViewCompat.getPaddingStart(mSendReportCheckBox) + paddingStart,
+                mSendReportCheckBox.getPaddingTop(), ViewCompat.getPaddingEnd(mSendReportCheckBox),
+                mSendReportCheckBox.getPaddingBottom());
+        mSendReportCheckBox.setChecked(FirstRunActivity.DEFAULT_METRICS_AND_CRASH_REPORTING);
 
-            mSendReportCheckBox.setChecked(FirstRunActivity.DEFAULT_METRICS_AND_CRASH_REPORTING);
-        } else {
+        if (!canShowUmaCheckBox()) {
             mSendReportCheckBox.setVisibility(View.GONE);
         }
 
@@ -175,7 +175,9 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
         }
 
         mTriggerAcceptAfterNativeInit = false;
-        getPageDelegate().acceptTermsOfService(mSendReportCheckBox.isChecked());
+        boolean allowCrashUpload = (mSendReportCheckBox.getVisibility() == View.VISIBLE)
+                && mSendReportCheckBox.isChecked();
+        getPageDelegate().acceptTermsOfService(allowCrashUpload);
     }
 
     private void setSpinnerVisible(boolean spinnerVisible) {
@@ -210,6 +212,11 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
      *         with whether other non-spinner elements can generally be shown.
      */
     protected boolean canShowUmaCheckBox() {
-        return ChromeVersionInfo.isOfficialBuild();
+        return sShowUmaCheckBoxForTesting || ChromeVersionInfo.isOfficialBuild();
+    }
+
+    @VisibleForTesting
+    public static void setShowUmaCheckBoxForTesting(boolean showForTesting) {
+        sShowUmaCheckBoxForTesting = showForTesting;
     }
 }
