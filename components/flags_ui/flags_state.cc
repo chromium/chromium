@@ -23,6 +23,7 @@
 #include "components/flags_ui/feature_entry.h"
 #include "components/flags_ui/flags_storage.h"
 #include "components/flags_ui/flags_ui_switches.h"
+#include "components/variations/field_trial_config/field_trial_util.h"
 #include "components/variations/variations_associated_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -927,10 +928,27 @@ void FlagsState::GenerateFlagsToSwitchesMapping(
             AddFeatureMapping(entry.NameForOption(j), std::string(), false,
                               name_to_switch_map);
           } else {
-            AddFeatureMapping(entry.NameForOption(j),
-                              entry.feature.feature->name,
-                              state == FeatureEntry::FeatureState::ENABLED,
-                              name_to_switch_map);
+            const FeatureEntry::FeatureVariation* variation =
+                entry.VariationForOption(j);
+            std::string feature_name(entry.feature.feature->name);
+            std::vector<std::string> params_value;
+
+            if (variation) {
+              feature_name.append(":");
+              for (int i = 0; i < variation->num_params; ++i) {
+                std::string param_name =
+                    variations::EscapeValue(variation->params[i].param_name);
+                std::string param_value =
+                    variations::EscapeValue(variation->params[i].param_value);
+                params_value.push_back(
+                    param_name.append("/").append(param_value));
+              }
+            }
+            AddFeatureMapping(
+                entry.NameForOption(j),
+                feature_name.append(base::JoinString(params_value, "/")),
+                state == FeatureEntry::FeatureState::ENABLED,
+                name_to_switch_map);
           }
         }
         break;

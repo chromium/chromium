@@ -27,6 +27,7 @@ static_library("flags_ui") {
     "//components/prefs",
     "//components/strings",
     "//components/variations",
+    "//components/variations/field_trial_config",
     "//ui/base",
     "//url",
   ]
