@@ -1000,21 +1000,6 @@ void InspectorOverlayAgent::PaintOverlayPage() {
   if (!view || !frame)
     return;
 
-  // Throttling rendering to avoid high CPU usage on highly active pages
-  // (animations). If force_overlay_paint_ is true, we rerender even if the last
-  // paint was less than 50ms ago.
-  auto now = base::Time::Now();
-  if (!force_overlay_paint_ &&
-      now - last_paint_time_ < base::TimeDelta::FromMilliseconds(50)) {
-    OverlayMainFrame()->View()->UpdateAllLifecyclePhases(
-        DocumentUpdateReason::kInspector);
-    return;
-  }
-  if (force_overlay_paint_) {
-    force_overlay_paint_ = false;
-  }
-  last_paint_time_ = now;
-
   LocalFrame* overlay_frame = OverlayMainFrame();
   // To make overlay render the same size text with any emulation scale,
   // compensate the emulation scale using page scale.
@@ -1302,7 +1287,6 @@ void InspectorOverlayAgent::Inspect(Node* inspected_node) {
   DOMNodeId backend_node_id = DOMNodeIds::IdForNode(node);
   if (!enabled_.Get()) {
     backend_node_id_to_inspect_ = backend_node_id;
-    force_overlay_paint_ = true;
     return;
   }
 
@@ -1403,7 +1387,6 @@ void InspectorOverlayAgent::SetInspectTool(InspectTool* inspect_tool) {
     if (!hinge_)
       DisableFrameOverlay();
   }
-  force_overlay_paint_ = true;
   ScheduleUpdate();
 }
 
