@@ -35,6 +35,23 @@ class KeyboardNode extends BasicNode {
   }
 
   /** @override */
+  isValidAndVisible() {
+    if (super.isValidAndVisible()) {
+      return true;
+    }
+    if (!KeyboardNode.resetting &&
+        NavigationManager.currentGroupHasChild(this)) {
+      // TODO(crbug/1130773): move this code to another location, if possible
+      KeyboardNode.resetting = true;
+      KeyboardRootNode.ignoreNextExit_ = true;
+      NavigationManager.exitKeyboard();
+      NavigationManager.enterKeyboard();
+    }
+
+    return false;
+  }
+
+  /** @override */
   performAction(action) {
     if (action !== SwitchAccessMenuAction.SELECT) {
       return SAConstants.ActionResponse.NO_ACTION_TAKEN;
@@ -66,6 +83,7 @@ class KeyboardRootNode extends BasicRootNode {
    */
   constructor(groupNode) {
     super(groupNode);
+    KeyboardNode.resetting = false;
   }
 
   // ================= General methods =================
@@ -80,6 +98,11 @@ class KeyboardRootNode extends BasicRootNode {
 
   /** @override */
   onExit() {
+    if (KeyboardRootNode.ignoreNextExit_) {
+      KeyboardRootNode.ignoreNextExit_ = false;
+      return;
+    }
+
     // If the keyboard is currently visible, ignore the corresponding
     // state change.
     if (KeyboardRootNode.isVisible_) {

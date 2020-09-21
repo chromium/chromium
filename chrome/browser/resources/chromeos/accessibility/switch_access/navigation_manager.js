@@ -33,6 +33,14 @@ class NavigationManager {
   // =============== Static Methods ==============
 
   /**
+   * @param {!SAChildNode} node
+   * @return {boolean}
+   */
+  static currentGroupHasChild(node) {
+    return NavigationManager.instance.group_.children.includes(node);
+  }
+
+  /**
    * Enters |this.node_|.
    */
   static enterGroup() {
@@ -50,8 +58,6 @@ class NavigationManager {
 
   /**
    * Puts focus on the virtual keyboard, if the current node is a text input.
-   * TODO(crbug/946190): Handle the case where the user has not enabled the
-   *     onscreen keyboard.
    */
   static enterKeyboard() {
     const navigator = NavigationManager.instance;
