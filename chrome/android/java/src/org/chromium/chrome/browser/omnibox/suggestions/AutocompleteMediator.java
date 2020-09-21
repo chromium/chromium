@@ -1199,8 +1199,10 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         GURL updatedUrl = mAutocomplete.updateMatchDestinationUrlWithQueryFormulationTime(position,
                 suggestion.hashCode(), getElapsedTimeSinceInputChange(), queryTile.queryText,
                 queryTile.searchParams);
+        // RecordMetrics has to be called before loadUrl, or otherwise the native AutocompleteResult
+        // object will be reset and the suggestion will fail validation.
+        recordMetrics(position, WindowOpenDisposition.CURRENT_TAB, suggestion);
         mDelegate.loadUrl(updatedUrl.getSpec(), PageTransition.LINK, mLastActionUpTimestamp);
         mDelegate.setKeyboardVisibility(false);
-        recordMetrics(position, WindowOpenDisposition.CURRENT_TAB, suggestion);
     }
 }
