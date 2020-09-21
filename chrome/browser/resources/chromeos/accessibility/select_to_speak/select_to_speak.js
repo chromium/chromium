@@ -586,6 +586,28 @@ class SelectToSpeak {
    */
   startSpeechQueue_(nodes, opt_startIndex, opt_endIndex) {
     this.prepareForSpeech_();
+
+    if (nodes.length === 0) {
+      return;
+    }
+
+    // Remember the original first and last node in the given list, as
+    // opt_startIndex and opt_endIndex pertain to them. If, after SVG
+    // resorting, the first or last nodes are re-ordered, do not clip them.
+    const originalFirstNode = nodes[0];
+    const originalLastNode = nodes[nodes.length - 1];
+
+    // Sort any SVG child nodes, if present, by visual reading order.
+    NodeUtils.sortSvgNodesByReadingOrder(nodes);
+
+    // Override start or end index if original nodes were sorted.
+    if (originalFirstNode !== nodes[0]) {
+      opt_startIndex = undefined;
+    }
+    if (originalLastNode !== nodes[nodes.length - 1]) {
+      opt_endIndex = undefined;
+    }
+
     for (var i = 0; i < nodes.length; i++) {
       const nodeGroup = ParagraphUtils.buildNodeGroup(
           nodes, i, this.enableLanguageDetectionIntegration_);
@@ -595,18 +617,15 @@ class SelectToSpeak {
         // the start index so that it is not spoken.
         // Backfill with spaces so that index counting functions don't get
         // confused.
-        // Must check opt_startIndex in its own if statement to make the
-        // Closure compiler happy.
-        if (opt_startIndex !== undefined) {
-          if (nodeGroup.nodes.length > 0 && nodeGroup.nodes[0].hasInlineText) {
-            // The first node is inlineText type. Find the start index in
-            // its staticText parent.
-            const startIndexInParent =
-                ParagraphUtils.getStartCharIndexInParent(nodes[0]);
-            opt_startIndex += startIndexInParent;
-            nodeGroup.text = ' '.repeat(opt_startIndex) +
-                nodeGroup.text.substr(opt_startIndex);
-          }
+        if (opt_startIndex !== undefined && nodeGroup.nodes.length > 0 &&
+            nodeGroup.nodes[0].hasInlineText) {
+          // The first node is inlineText type. Find the start index in
+          // its staticText parent.
+          const startIndexInParent =
+              ParagraphUtils.getStartCharIndexInParent(nodes[0]);
+          opt_startIndex += startIndexInParent;
+          nodeGroup.text = ' '.repeat(opt_startIndex) +
+              nodeGroup.text.substr(opt_startIndex);
         }
       }
       const isFirst = i == 0;

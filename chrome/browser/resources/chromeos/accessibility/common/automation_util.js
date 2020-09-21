@@ -172,6 +172,21 @@ AutomationUtil = class {
   }
 
   /**
+   * Finds the lowest ancestor with a given role.
+   * @param {!AutomationNode} node
+   * @param {!RoleType} role
+   */
+  static getFirstAncestorWithRole(node, role) {
+    if (!node.parent) {
+      return null;
+    }
+    if (node.parent.role === role) {
+      return node.parent;
+    }
+    return AutomationUtil.getFirstAncestorWithRole(node.parent, role);
+  }
+
+  /**
    * Gets the first index where the two input arrays differ. Returns -1 if they
    * do not.
    * @param {!Array<AutomationNode>} ancestorsA

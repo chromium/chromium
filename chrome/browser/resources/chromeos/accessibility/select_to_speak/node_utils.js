@@ -352,6 +352,95 @@ class NodeUtils {
     }
     return {node, offset: NodeUtils.nameLength(node)};
   }
+
+  /**
+   * Sorts given nodes by visual reading order. Expects nodes to be leaf nodes
+   * with text.
+   * @param {!Array<!AutomationNode>} nodes
+   */
+  static sortNodesByReadingOrder(nodes) {
+    // Pre-compute ancestors for each node.
+    const nodeAncestorMap = new Map();
+    for (const node of nodes) {
+      nodeAncestorMap.set(node, AutomationUtil.getAncestors(node));
+    }
+
+    // Sort nodes by bounds of their divergent ancestors. This will ensure all
+    // nodes with the same parent are grouped together.
+    nodes.sort((a, b) => {
+      const ancestorsA = nodeAncestorMap.get(a);
+      const ancestorsB = nodeAncestorMap.get(b);
+      const divergence = AutomationUtil.getDivergence(ancestorsA, ancestorsB);
+      if (divergence === -1 || divergence >= ancestorsA.length ||
+          divergence >= ancestorsB.length) {
+        // Nodes do not have any ancestors in common (different trees) or one
+        // node is the ancestor of another.
+        console.warn(
+            'Nodes are directly related or have no common ancestors', a, b);
+        return 0;
+      }
+      const divA = ancestorsA[divergence];
+      const divB = ancestorsB[divergence];
+
+      if (RectUtil.sameRow(divA.unclippedLocation, divB.unclippedLocation)) {
+        // Nodes are on the same line, sort by LTR reading order.
+        // TODO(joelriley@google.com): Handle RTL.
+        if (divA.unclippedLocation.left < divB.unclippedLocation.left) {
+          return -1;
+        }
+        if (divB.unclippedLocation.left < divA.unclippedLocation.left) {
+          return 1;
+        }
+        return 0;
+      }
+      // Nodes are on different lines, sort top-to-bottom.
+      if (divA.unclippedLocation.top < divB.unclippedLocation.top) {
+        return -1;
+      }
+      if (divB.unclippedLocation.top < divA.unclippedLocation.top) {
+        return 1;
+      }
+      return 0;
+    });
+  }
+
+  /**
+   * Sorts a specific range of a given array of nodes by visual reading order.
+   * Expects nodes to be leaf nodes with text.
+   * @param {!Array<!AutomationNode>} nodes
+   * @param {number} startIndex Index specifying start of range.
+   * @param {number} endIndex  Index specifying end of range, non-inclusive.
+   */
+  static sortNodeRangeByReadingOrder(nodes, startIndex, endIndex) {
+    const nodesToSort = nodes.slice(startIndex, endIndex);
+    NodeUtils.sortNodesByReadingOrder(nodesToSort);
+    nodes.splice(startIndex, endIndex - startIndex, ...nodesToSort);
+  }
+
+  /**
+   * Sorts SVG nodes with the same SVG root parent by visual reading order.
+   * @param {!Array<!AutomationNode>} nodes
+   */
+  static sortSvgNodesByReadingOrder(nodes) {
+    let lastSvgRoot = null;
+    let startIndex = 0;
+    for (let i = 0; i < nodes.length; i++) {
+      const node = nodes[i];
+      const svgRoot =
+          AutomationUtil.getFirstAncestorWithRole(node, RoleType.SVG_ROOT);
+      if (svgRoot !== lastSvgRoot) {
+        if (lastSvgRoot !== null) {
+          NodeUtils.sortNodeRangeByReadingOrder(nodes, startIndex, i);
+        } else if (svgRoot !== null) {
+          startIndex = i;
+        }
+        lastSvgRoot = svgRoot;
+      }
+    }
+    if (lastSvgRoot !== null) {
+      NodeUtils.sortNodeRangeByReadingOrder(nodes, startIndex, nodes.length);
+    }
+  }
 }
 
 /**

@@ -570,3 +570,102 @@ TEST_F(
                 this.mockTts.pendingUtterances()[1], 'd e f');
           });
     });
+
+TEST_F(
+    'SelectToSpeakKeystrokeSelectionTest', 'ReordersSvgSingleLine', function() {
+      const selectionCode =
+          'let body = document.getElementsByTagName("body")[0];' +
+          'range.setStart(body, 0);' +
+          'range.setEnd(body, 1);';
+      this.runWithLoadedTree(
+          this.generateHtmlWithSelection(
+              selectionCode,
+              '<svg viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">' +
+                  '  <text x="65" y="55">Grumpy!</text>' +
+                  '  <text x="20" y="35">My</text>' +
+                  '  <text x="40" y="35">cat</text>' +
+                  '  <text x="55" y="55">is</text>' +
+                  '</svg>'),
+          function() {
+            this.triggerReadSelectedText();
+            assertTrue(this.mockTts.currentlySpeaking());
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0], 'My cat is Grumpy!');
+          });
+    });
+
+TEST_F(
+    'SelectToSpeakKeystrokeSelectionTest', 'ReordersSvgWithGroups', function() {
+      const selectionCode =
+          'let body = document.getElementsByTagName("body")[0];' +
+          'range.setStart(body, 0);' +
+          'range.setEnd(body, 1);';
+      this.runWithLoadedTree(
+          this.generateHtmlWithSelection(
+              selectionCode,
+              '<svg viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">' +
+                  '  <g>' +
+                  '    <text x="65" y="0">Column 2, Text 1</text>' +
+                  '    <text x="65" y="50">Column 2, Text 2</text>' +
+                  '  </g>' +
+                  '  <g>' +
+                  '    <text x="0" y="50">Column 1, Text 2</text>' +
+                  '    <text x="0" y="0">Column 1, Text 1</text>' +
+                  '  </g>' +
+                  '</svg>'),
+          function() {
+            this.triggerReadSelectedText();
+            assertTrue(this.mockTts.currentlySpeaking());
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0], 'Column 1, Text 1');
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[1], 'Column 1, Text 2');
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[2], 'Column 2, Text 1');
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[3], 'Column 2, Text 2');
+          });
+    });
+TEST_F(
+    'SelectToSpeakKeystrokeSelectionTest',
+    'NonReorderedSvgPreservesSelectionStartEnd', function() {
+      const selectionCode = 'const t1 = document.getElementById("t1");' +
+          'const t2 = document.getElementById("t2");' +
+          'range.setStart(t1.childNodes[0], 3);' +
+          'range.setEnd(t2.childNodes[0], 2);';
+      this.runWithLoadedTree(
+          this.generateHtmlWithSelection(
+              selectionCode,
+              '<svg viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">' +
+                  '  <text id="t1" x="0" y="55">My cat</text>' +
+                  '  <text id="t2" x="100" y="55">is Grumpy!</text>' +
+                  '</svg>'),
+          function() {
+            this.triggerReadSelectedText();
+            assertTrue(this.mockTts.currentlySpeaking());
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0], 'cat is');
+          });
+    });
+
+TEST_F(
+    'SelectToSpeakKeystrokeSelectionTest',
+    'ReorderedSvgIgnoresSelectionStartEnd', function() {
+      const selectionCode = 'const t1 = document.getElementById("t1");' +
+          'const t2 = document.getElementById("t2");' +
+          'range.setStart(t1.childNodes[0], 3);' +
+          'range.setEnd(t2.childNodes[0], 2);';
+      this.runWithLoadedTree(
+          this.generateHtmlWithSelection(
+              selectionCode,
+              '<svg viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">' +
+                  '  <text id="t1" x="100" y="55">is Grumpy!</text>' +
+                  '  <text id="t2" x="0" y="55">My cat</text>' +
+                  '</svg>'),
+          function() {
+            this.triggerReadSelectedText();
+            assertTrue(this.mockTts.currentlySpeaking());
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0], 'My cat is Grumpy!');
+          });
+    });

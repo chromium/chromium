@@ -75,6 +75,30 @@ TEST_F(
     });
 
 TEST_F(
+    'AccessibilityExtensionAutomationUtilE2ETest', 'GetFirstAncestorWithRole',
+    function() {
+      this.runWithLoadedTree(
+          `
+    <div aria-label="x">
+      <div aria-label="y">
+        <p>
+          <button>Hello world</div>
+        </p>
+      </div>
+    </div>`,
+          function(root) {
+            const buttonNode = root.firstChild.firstChild.firstChild;
+            const containerNode = AutomationUtil.getFirstAncestorWithRole(
+                buttonNode, RoleType.GENERIC_CONTAINER);
+            assertEquals(containerNode.name, 'y');
+
+            const parentContainerNode = AutomationUtil.getFirstAncestorWithRole(
+                containerNode, RoleType.GENERIC_CONTAINER);
+            assertEquals(parentContainerNode.name, 'x');
+          });
+    });
+
+TEST_F(
     'AccessibilityExtensionAutomationUtilE2ETest', 'GetUniqueAncestors',
     function() {
       this.runWithLoadedTree(this.basicDoc(), function(root) {

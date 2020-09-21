@@ -9,12 +9,7 @@
 var goog = {};
 
 goog.provide = function(n) {
-  // Skip setting window property in non-browser environments (e.g. pure V8)
-  if (typeof window === 'undefined') {
-    return;
-  }
-
-  window[n] = {};
+  globalThis[n] = {};
 };
 
 goog.require = function() {};
