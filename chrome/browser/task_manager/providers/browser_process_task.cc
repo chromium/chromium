@@ -7,7 +7,7 @@
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "third_party/sqlite/sqlite3.h"  // nogncheck crbug.com/1126800
+#include "third_party/sqlite/sqlite3.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace task_manager {

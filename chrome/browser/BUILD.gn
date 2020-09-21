@@ -3976,10 +3976,6 @@ static_library("browser") {
       "//courgette:courgette_lib",
       "//third_party/sqlite",
     ]
-    if (is_win) {
-      # TODO (crbug.com/1126800): Include this dep when build bots are fixed.
-      deps -= [ "//third_party/sqlite" ]
-    }
     if (is_chromeos) {
       deps += [
         "//chrome/browser/supervised_user:supervised_user_unscaled_resources",
