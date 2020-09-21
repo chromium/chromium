@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1456 tests; 1373 PASS, 83 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1458 tests; 1375 PASS, 83 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -127,6 +127,7 @@ PASS OffscreenCanvasRenderingContext2D includes CanvasImageData: member names ar
 PASS OffscreenCanvasRenderingContext2D includes CanvasPathDrawingStyles: member names are unique
 PASS OffscreenCanvasRenderingContext2D includes CanvasTextDrawingStyles: member names are unique
 PASS OffscreenCanvasRenderingContext2D includes CanvasPath: member names are unique
+PASS ElementInternals includes ARIAMixin: member names are unique
 PASS Window includes GlobalEventHandlers: member names are unique
 PASS Window includes WindowEventHandlers: member names are unique
 PASS Window includes WindowOrWorkerGlobalScope: member names are unique
@@ -149,6 +150,11 @@ PASS WorkerNavigator includes NavigatorLanguage: member names are unique
 PASS WorkerNavigator includes NavigatorOnLine: member names are unique
 PASS WorkerNavigator includes NavigatorConcurrentHardware: member names are unique
 PASS HTMLFrameSetElement includes WindowEventHandlers: member names are unique
+PASS Element includes ARIAMixin: member names are unique
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slottable: member names are unique
 PASS SVGElement includes GlobalEventHandlers: member names are unique
 PASS SVGElement includes DocumentAndElementEventHandlers: member names are unique
 PASS SVGElement includes SVGElementInstance: member names are unique
@@ -164,10 +170,6 @@ FAIL SVGAElement includes HTMLHyperlinkElementUtils: member names are unique ass
 PASS DocumentFragment includes NonElementParentNode: member names are unique
 PASS DocumentFragment includes ParentNode: member names are unique
 PASS ShadowRoot includes DocumentOrShadowRoot: member names are unique
-PASS Element includes ParentNode: member names are unique
-PASS Element includes NonDocumentTypeChildNode: member names are unique
-PASS Element includes ChildNode: member names are unique
-PASS Element includes Slottable: member names are unique
 PASS RadioNodeList interface: existence and properties of interface object
 PASS RadioNodeList interface object length
 PASS RadioNodeList interface object name

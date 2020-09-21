@@ -3,6 +3,7 @@ PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface ElementInternals: original interface defined
 PASS Partial interface ElementInternals: member names are unique
+PASS ElementInternals includes ARIAMixin: member names are unique
 FAIL ElementInternals interface: attribute states assert_equals: setter must be function for PutForwards, Replaceable, or non-readonly attributes expected "function" but got "undefined"
 Harness: the test ran to completion.
 
