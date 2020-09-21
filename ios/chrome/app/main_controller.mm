@@ -260,9 +260,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   StartupTasks* _startupTasks;
 }
 
-// The ChromeBrowserState associated with the main (non-OTR) browsing mode.
-@property(nonatomic, assign) ChromeBrowserState* mainBrowserState;  // Weak.
-
 // Handles collecting metrics on user triggered screenshots
 @property(nonatomic, strong)
     ScreenshotMetricsRecorder* screenshotMetricsRecorder;
@@ -489,7 +486,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   // Initialize and set the main browser state.
   [self initializeBrowserState:chromeBrowserState];
-  self.mainBrowserState = chromeBrowserState;
+  self.appState.mainBrowserState = chromeBrowserState;
 
   if (base::FeatureList::IsEnabled(kLogBreadcrumbs)) {
     [self startLoggingBreadcrumbs];
@@ -499,26 +496,28 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // be done before creation of the UI to ensure the service is initialised
   // before use (it is a security issue, so accessing the service CHECK if
   // this is not the case).
-  DCHECK(self.mainBrowserState);
+  DCHECK(self.appState.mainBrowserState);
   AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-      self.mainBrowserState,
+      self.appState.mainBrowserState,
       std::make_unique<MainControllerAuthenticationServiceDelegate>(
-          self.mainBrowserState, self));
+          self.appState.mainBrowserState, self));
 
   // Send "Chrome Opened" event to the feature_engagement::Tracker on cold
   // start.
   feature_engagement::TrackerFactory::GetForBrowserState(chromeBrowserState)
       ->NotifyEvent(feature_engagement::events::kChromeOpened);
 
-  _spotlightManager =
-      [SpotlightManager spotlightManagerWithBrowserState:self.mainBrowserState];
+  _spotlightManager = [SpotlightManager
+      spotlightManagerWithBrowserState:self.appState.mainBrowserState];
 
   ShareExtensionService* service =
-      ShareExtensionServiceFactory::GetForBrowserState(self.mainBrowserState);
+      ShareExtensionServiceFactory::GetForBrowserState(
+          self.appState.mainBrowserState);
   service->Initialize();
 
   if (IsCredentialProviderExtensionSupported()) {
-    CredentialProviderServiceFactory::GetForBrowserState(self.mainBrowserState);
+    CredentialProviderServiceFactory::GetForBrowserState(
+        self.appState.mainBrowserState);
   }
 
   if ([PreviousSessionInfo sharedInstance].isFirstSessionAfterLanguageChange) {
@@ -549,9 +548,9 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                              connectedScenes:self.appState.connectedScenes];
   if (self.isColdStart) {
     [ContentSuggestionsSchedulerNotifications
-        notifyColdStart:self.mainBrowserState];
+        notifyColdStart:self.appState.mainBrowserState];
     [ContentSuggestionsSchedulerNotifications
-        notifyForeground:self.mainBrowserState];
+        notifyForeground:self.appState.mainBrowserState];
   }
 
   ios::GetChromeBrowserProvider()->GetOverridesProvider()->InstallOverrides();
@@ -683,14 +682,15 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   _spotlightManager = nil;
 
   if (base::FeatureList::IsEnabled(kLogBreadcrumbs)) {
-    if (self.mainBrowserState->HasOffTheRecordChromeBrowserState()) {
+    if (self.appState.mainBrowserState->HasOffTheRecordChromeBrowserState()) {
       breakpad::StopMonitoringBreadcrumbManagerService(
           BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-              self.mainBrowserState->GetOffTheRecordChromeBrowserState()));
+              self.appState.mainBrowserState
+                  ->GetOffTheRecordChromeBrowserState()));
     }
     breakpad::StopMonitoringBreadcrumbManagerService(
         BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-            self.mainBrowserState));
+            self.appState.mainBrowserState));
   }
 
   _extensionSearchEngineDataUpdater = nullptr;
@@ -776,7 +776,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                     // Track changes to default search engine.
                     TemplateURLService* service =
                         ios::TemplateURLServiceFactory::GetForBrowserState(
-                            self.mainBrowserState);
+                            self.appState.mainBrowserState);
                     _extensionSearchEngineDataUpdater =
                         std::make_unique<ExtensionSearchEngineDataUpdater>(
                             service);
@@ -787,8 +787,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [[DeferredInitializationRunner sharedInstance]
       enqueueBlockNamed:kSendInstallPingIfNecessary
                   block:^{
-                    auto URLLoaderFactory =
-                        self.mainBrowserState->GetSharedURLLoaderFactory();
+                    auto URLLoaderFactory = self.appState.mainBrowserState
+                                                ->GetSharedURLLoaderFactory();
                     const bool is_first_run = FirstRun::IsChromeFirstRun();
                     ios::GetChromeBrowserProvider()
                         ->GetAppDistributionProvider()
@@ -838,10 +838,10 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // ClearSessionCookies() is not synchronous.
   if (cookie_util::ShouldClearSessionCookies()) {
     cookie_util::ClearSessionCookies(
-        self.mainBrowserState->GetOriginalChromeBrowserState());
+        self.appState.mainBrowserState->GetOriginalChromeBrowserState());
     if (!(self.otrBrowser->GetWebStateList()->empty())) {
       cookie_util::ClearSessionCookies(
-          self.mainBrowserState->GetOffTheRecordChromeBrowserState());
+          self.appState.mainBrowserState->GetOffTheRecordChromeBrowserState());
     }
   }
 
@@ -871,12 +871,13 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       enqueueBlockNamed:kMailtoHandlingInitialization
                   block:^{
                     __strong __typeof(weakSelf) strongSelf = weakSelf;
-                    if (!strongSelf || !strongSelf.mainBrowserState) {
+                    if (!strongSelf || !strongSelf.appState.mainBrowserState) {
                       return;
                     }
                     ios::GetChromeBrowserProvider()
                         ->GetMailtoHandlerProvider()
-                        ->PrepareMailtoHandling(strongSelf.mainBrowserState);
+                        ->PrepareMailtoHandling(
+                            strongSelf.appState.mainBrowserState);
                   }];
 }
 
@@ -939,31 +940,31 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)startLoggingBreadcrumbs {
   BreadcrumbManagerKeyedService* breadcrumbService =
       BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-          self.mainBrowserState);
+          self.appState.mainBrowserState);
   breakpad::MonitorBreadcrumbManagerService(breadcrumbService);
 
   __weak __typeof(self) weakSelf = self;
   BreadcrumbPersistentStorageKeyedService* persistentStorageService =
       BreadcrumbPersistentStorageKeyedServiceFactory::GetForBrowserState(
-          self.mainBrowserState);
+          self.appState.mainBrowserState);
   // Get stored persistent breadcrumbs from last run and set them on the
   // breadcrumb manager.
   persistentStorageService->GetStoredEvents(
       base::BindOnce(^(std::vector<std::string> events) {
         __strong __typeof(weakSelf) strongSelf = weakSelf;
-        if (!strongSelf || !strongSelf.mainBrowserState) {
+        if (!strongSelf || !strongSelf.appState.mainBrowserState) {
           return;
         }
 
         BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-            strongSelf.mainBrowserState)
+            strongSelf.appState.mainBrowserState)
             ->SetPreviousEvents(events);
         breakpad::SetPreviousSessionEvents(events);
 
         // Notify persistent breadcrumb service to clear old breadcrumbs and
         // start storing breadcrumbs for this session.
         BreadcrumbPersistentStorageKeyedServiceFactory::GetForBrowserState(
-            strongSelf.mainBrowserState)
+            strongSelf.appState.mainBrowserState)
             ->StartStoringEvents();
       }));
 }
@@ -975,7 +976,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [self schedulePrefObserverInitialization];
   [self scheduleMemoryDebuggingTools];
   [StartupTasks
-      scheduleDeferredBrowserStateInitialization:self.mainBrowserState];
+      scheduleDeferredBrowserStateInitialization:self.appState
+                                                     .mainBrowserState];
   [self sendQueuedFeedback];
   [self scheduleSpotlightResync];
   [self scheduleDeleteTempDownloadsDirectory];
@@ -992,7 +994,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   if (GetApplicationContext()->WasLastShutdownClean()) {
     // Delay the cleanup of the unreferenced files to not impact startup
     // performance.
-    ExternalFileRemoverFactory::GetForBrowserState(self.mainBrowserState)
+    ExternalFileRemoverFactory::GetForBrowserState(
+        self.appState.mainBrowserState)
         ->RemoveAfterDelay(
             base::TimeDelta::FromSeconds(kExternalFilesCleanupDelaySeconds),
             base::OnceClosure());
@@ -1126,7 +1129,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // TODO(crbug.com/1116496): Browsers for disconnected scenes are not in the
   // BrowserList, so this may not reach all folders.
   BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(self.mainBrowserState);
+      BrowserListFactory::GetForBrowserState(self.appState.mainBrowserState);
   for (Browser* browser : browser_list->AllRegularBrowsers()) {
     SnapshotBrowserAgent::FromBrowser(browser)->PerformStorageMaintenance();
   }

@@ -535,10 +535,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   DCHECK(!self.browserViewWrangler);
   DCHECK(self.sceneURLLoadingService);
   DCHECK(self.mainController);
-  DCHECK(self.mainController.mainBrowserState);
+  DCHECK(self.sceneState.appState.mainBrowserState);
 
   self.browserViewWrangler = [[BrowserViewWrangler alloc]
-             initWithBrowserState:self.mainController.mainBrowserState
+             initWithBrowserState:self.sceneState.appState.mainBrowserState
                        sceneState:self.sceneState
        applicationCommandEndpoint:self
       browsingDataCommandEndpoint:self.mainController];
@@ -599,7 +599,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
 // Determines which UI should be shown on startup, and shows it.
 - (void)createInitialUI:(ApplicationMode)launchMode {
-  DCHECK(self.mainController.mainBrowserState);
+  DCHECK(self.sceneState.appState.mainBrowserState);
 
   // Set the Scene application URL loader on the URL loading browser interface
   // for the regular and incognito interfaces. This will lazily instantiate the
@@ -779,7 +779,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // Returns YES if the promo is shown.
 - (BOOL)presentSigninUpgradePromoIfPossible {
   if (!SigninShouldPresentUserSigninUpgrade(
-          self.mainController.mainBrowserState))
+          self.sceneState.appState.mainBrowserState))
     return NO;
   // Don't show promos if first run is shown in any scene.  (Note:  This flag
   // is only YES while the first run UI is visible.  However, as this function
@@ -2108,10 +2108,11 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // Clears incognito data that is specific to iOS and won't be cleared by
 // deleting the browser state.
 - (void)clearIOSSpecificIncognitoData {
-  DCHECK(self.mainController.mainBrowserState
+  DCHECK(self.sceneState.appState.mainBrowserState
              ->HasOffTheRecordChromeBrowserState());
   ChromeBrowserState* otrBrowserState =
-      self.mainController.mainBrowserState->GetOffTheRecordChromeBrowserState();
+      self.sceneState.appState.mainBrowserState
+          ->GetOffTheRecordChromeBrowserState();
   [self.mainController
       removeBrowsingDataForBrowserState:otrBrowserState
                              timePeriod:browsing_data::TimePeriod::ALL_TIME
@@ -2228,7 +2229,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // closed (i.e. if there are other incognito tabs open in another Scene, the
 // BrowserState must not be destroyed).
 - (BOOL)shouldDestroyAndRebuildIncognitoBrowserState {
-  ChromeBrowserState* mainBrowserState = self.mainController.mainBrowserState;
+  ChromeBrowserState* mainBrowserState =
+      self.sceneState.appState.mainBrowserState;
   if (!mainBrowserState->HasOffTheRecordChromeBrowserState())
     return NO;
 
@@ -2258,16 +2260,15 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
   [self clearIOSSpecificIncognitoData];
 
-  ChromeBrowserState* mainBrowserState = self.mainController.mainBrowserState;
+  ChromeBrowserState* mainBrowserState =
+      self.sceneState.appState.mainBrowserState;
   DCHECK(mainBrowserState->HasOffTheRecordChromeBrowserState());
 
   NSMutableArray<SceneController*>* sceneControllers =
       [[NSMutableArray alloc] init];
   for (SceneState* sceneState in self.sceneState.appState.connectedScenes) {
     SceneController* sceneController = sceneState.controller;
-    if (sceneController.mainController.mainBrowserState == mainBrowserState) {
-      [sceneControllers addObject:sceneController];
-    }
+    [sceneControllers addObject:sceneController];
   }
 
   for (SceneController* sceneController in sceneControllers) {

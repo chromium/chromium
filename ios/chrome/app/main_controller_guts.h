@@ -26,8 +26,6 @@ class ChromeBrowserState;
 // Keeps track of the restore state during startup.
 @property(nonatomic, strong) CrashRestoreHelper* restoreHelper;
 
-- (ChromeBrowserState*)mainBrowserState;
-
 // Only for iOS 12 compat.
 - (NSDictionary*)launchOptions;
 

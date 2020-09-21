@@ -12,6 +12,7 @@
 
 @class AppState;
 @protocol BrowserLauncher;
+class ChromeBrowserState;
 @class CommandDispatcher;
 @protocol ConnectionInformation;
 @class SceneState;
@@ -53,6 +54,9 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // Dispatcher for app-level commands for multiwindow use cases.
 // Most features should use the browser-level dispatcher instead.
 @property(nonatomic, strong) CommandDispatcher* appCommandDispatcher;
+
+// The ChromeBrowserState associated with the main (non-OTR) browsing mode.
+@property(nonatomic, assign) ChromeBrowserState* mainBrowserState;
 
 // YES if the user has ever interacted with the application. May be NO if the
 // application has been woken up by the system for background work.
