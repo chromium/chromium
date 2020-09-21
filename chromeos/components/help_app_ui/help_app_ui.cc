@@ -9,6 +9,9 @@
 #include "chromeos/components/help_app_ui/help_app_page_handler.h"
 #include "chromeos/components/help_app_ui/help_app_untrusted_ui.h"
 #include "chromeos/components/help_app_ui/url_constants.h"
+#include "chromeos/components/local_search_service/local_search_service_proxy.h"
+#include "chromeos/components/local_search_service/local_search_service_proxy_factory.h"
+#include "chromeos/components/local_search_service/mojom/types.mojom.h"
 #include "chromeos/components/web_applications/manifest_request_filter.h"
 #include "chromeos/grit/chromeos_help_app_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -35,6 +38,10 @@ content::WebUIDataSource* CreateHostDataSource() {
   source->AddResourcePath("browser_proxy.js", IDR_HELP_APP_BROWSER_PROXY_JS);
   source->AddResourcePath("help_app.mojom-lite.js",
                           IDR_HELP_APP_HELP_APP_MOJOM_JS);
+  source->AddResourcePath("local_search_service_types.mojom-lite.js",
+                          IDR_HELP_APP_LOCAL_SEARCH_SERVICE_TYPES_MOJOM_JS);
+  source->AddResourcePath("local_search_service_proxy.mojom-lite.js",
+                          IDR_HELP_APP_LOCAL_SEARCH_SERVICE_PROXY_MOJOM_JS);
   source->AddLocalizedString("appTitle", IDS_HELP_APP_EXPLORE);
   web_app::SetManifestRequestFilter(source, IDR_HELP_APP_MANIFEST,
                                     IDS_HELP_APP_EXPLORE);
@@ -84,6 +91,16 @@ void HelpAppUI::BindInterface(
     mojo::PendingReceiver<help_app_ui::mojom::PageHandlerFactory> receiver) {
   page_factory_receiver_.reset();
   page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void HelpAppUI::BindInterface(
+    mojo::PendingReceiver<chromeos::local_search_service::mojom::IndexProxy>
+        index_receiver) {
+  chromeos::local_search_service::LocalSearchServiceProxyFactory::
+      GetForBrowserContext(web_ui()->GetWebContents()->GetBrowserContext())
+          ->GetIndex(chromeos::local_search_service::IndexId::kHelpApp,
+                     chromeos::local_search_service::Backend::kInvertedIndex,
+                     delegate_->GetLocalState(), std::move(index_receiver));
 }
 
 void HelpAppUI::CreatePageHandler(

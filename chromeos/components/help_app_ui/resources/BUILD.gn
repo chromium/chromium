@@ -25,5 +25,6 @@ js_type_check("closure_compile") {
 js_library("browser_proxy") {
   deps = [
     "//chromeos/components/help_app_ui:mojo_bindings_js_library_for_compile",
+    "//chromeos/components/local_search_service/mojom:mojom_js_library_for_compile",
   ]
 }

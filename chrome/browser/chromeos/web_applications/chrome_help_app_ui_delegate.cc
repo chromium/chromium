@@ -133,3 +133,7 @@ void ChromeHelpAppUIDelegate::ShowParentalControls() {
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       profile, chromeos::settings::mojom::kPeopleSectionPath);
 }
+
+PrefService* ChromeHelpAppUIDelegate::GetLocalState() {
+  return g_browser_process->local_state();
+}

@@ -28,6 +28,12 @@
       <include name="IDR_HELP_APP_HELP_APP_MOJOM_JS"
           file="${root_gen_dir}/chromeos/components/help_app_ui/help_app_ui.mojom-lite.js"
           use_base_dir="false" type="BINDATA" />
+      <include name="IDR_HELP_APP_LOCAL_SEARCH_SERVICE_TYPES_MOJOM_JS"
+          file="${root_gen_dir}/chromeos/components/local_search_service/mojom/types.mojom-lite.js"
+          use_base_dir="false" type="BINDATA" />
+      <include name="IDR_HELP_APP_LOCAL_SEARCH_SERVICE_PROXY_MOJOM_JS"
+          file="${root_gen_dir}/chromeos/components/local_search_service/mojom/local_search_service_proxy.mojom-lite.js"
+          use_base_dir="false" type="BINDATA" />
     </includes>
   </release>
 </grit>

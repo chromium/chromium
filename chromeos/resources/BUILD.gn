@@ -109,7 +109,10 @@ grit("help_app_resources") {
     "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
   ]
 
-  deps = [ "//chromeos/components/help_app_ui:mojo_bindings_js" ]
+  deps = [
+    "//chromeos/components/help_app_ui:mojo_bindings_js",
+    "//chromeos/components/local_search_service/mojom:mojom_js",
+  ]
 }
 
 # Resources automatically served by the chrome://help-app bundle, obtained via DEPS.

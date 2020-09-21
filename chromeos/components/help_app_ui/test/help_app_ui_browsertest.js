@@ -60,6 +60,8 @@ var HelpAppUIBrowserTest = class extends testing.Test {
   }
 };
 
+const toString16 = s => ({data: Array.from(s, c => c.charCodeAt())});
+
 // Tests that chrome://help-app goes somewhere instead of 404ing or crashing.
 TEST_F('HelpAppUIBrowserTest', 'HasChromeSchemeURL', () => {
   const guest = document.querySelector('iframe');
@@ -92,6 +94,17 @@ TEST_F('HelpAppUIBrowserTest', 'GuestCanOpenFeedbackDialog', async () => {
 
   // No error message from opening feedback dialog.
   assertEquals(result.errorMessage, '');
+  testDone();
+});
+
+// Tests that we can make calls to the LSS to search.
+TEST_F('HelpAppUIBrowserTest', 'CanSearchViaLSSIndex', async () => {
+  const result = await indexRemote.find(toString16('search string!'), 100);
+
+  // Status 3 corresponds to kEmptyIndex.
+  // https://source.chromium.org/chromium/chromium/src/+/master:chromeos/components/local_search_service/mojom/types.mojom;drc=c2c84a5ac7711dedcc0b7ff9e79bf7f2da019537;l=72
+  assertEquals(result.status, 3);
+  assertEquals(result.results, null);
   testDone();
 });
 

@@ -10,6 +10,11 @@ const help_app = {
 helpAppUi.mojom.PageHandlerFactory.getRemote().createPageHandler(
     help_app.handler.$.bindNewPipeAndPassReceiver());
 
+// Set up an index remote to talk to Local Search Service.
+// TODO(b/166047521): Define and use API to make calls to this from untrusted
+// context.
+const indexRemote = chromeos.localSearchService.mojom.IndexProxy.getRemote();
+
 const GUEST_ORIGIN = 'chrome-untrusted://help-app';
 const guestFrame = /** @type{HTMLIFrameElement} */ (
     document.createElement('iframe'));

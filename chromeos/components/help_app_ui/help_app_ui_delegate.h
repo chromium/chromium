@@ -9,6 +9,8 @@
 
 #include "base/optional.h"
 
+class PrefService;
+
 namespace content {
 class WebUIDataSource;
 }
@@ -30,6 +32,9 @@ class HelpAppUIDelegate {
 
   // Opens OS Settings at the parental controls section.
   virtual void ShowParentalControls() = 0;
+
+  // Gets locally stored users preferences and state.
+  virtual PrefService* GetLocalState() = 0;
 };
 
 #endif  // CHROMEOS_COMPONENTS_HELP_APP_UI_HELP_APP_UI_DELEGATE_H_
