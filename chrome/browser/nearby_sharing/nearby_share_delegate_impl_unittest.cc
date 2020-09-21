@@ -8,12 +8,18 @@
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/time/clock.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
+#include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/mock_nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/nearby_share_settings.h"
 #include "chrome/browser/ui/ash/test_session_controller.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::_;
+using ::testing::AtLeast;
+using ::testing::Return;
+using ::testing::ReturnPointee;
 
 class MockSettingsOpener : public NearbyShareDelegateImpl::SettingsOpener {
  public:
@@ -33,7 +39,18 @@ class MockNearbyShareController : public ash::NearbyShareController {
 class NearbyShareDelegateImplTest : public ::testing::Test {
  public:
   NearbyShareDelegateImplTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        settings_(&test_pref_service_, &test_local_device_data_),
+        delegate_(&controller_) {
+    RegisterNearbySharingPrefs(test_pref_service_.registry());
+
+    delegate_.set_nearby_share_service_for_test(&nearby_share_service_);
+
+    std::unique_ptr<MockSettingsOpener> settings_opener =
+        std::make_unique<MockSettingsOpener>();
+    settings_opener_ = settings_opener.get();
+    delegate_.set_settings_opener_for_test(std::move(settings_opener));
+  }
 
   ~NearbyShareDelegateImplTest() override = default;
 
@@ -44,34 +61,132 @@ class NearbyShareDelegateImplTest : public ::testing::Test {
     task_environment_.FastForwardBy(delta);
   }
 
+  void SetHighVisibilityOn(bool high_visibility_on) {
+    if (high_visibility_on_ != high_visibility_on) {
+      high_visibility_on_ = high_visibility_on;
+      delegate_.OnHighVisibilityChanged(high_visibility_on);
+    }
+  }
+
+  void SetUp() override {
+    settings_.SetEnabled(false);
+
+    EXPECT_CALL(nearby_share_service_, GetSettings())
+        .WillRepeatedly(Return(&settings_));
+    EXPECT_CALL(nearby_share_service_, IsInHighVisibility())
+        .WillRepeatedly(ReturnPointee(&high_visibility_on_));
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   MockNearbySharingService nearby_share_service_;
+  TestSessionController session_controller_;
+  sync_preferences::TestingPrefServiceSyncable test_pref_service_;
+  FakeNearbyShareLocalDeviceDataManager test_local_device_data_;
+  NearbyShareSettings settings_;
   MockSettingsOpener* settings_opener_;
   MockNearbyShareController controller_;
   NearbyShareDelegateImpl delegate_;
+  bool high_visibility_on_ = false;
 };
 
 TEST_F(NearbyShareDelegateImplTest, StartHighVisibilityAndTimeout) {
-  // TODO(cclem)
+  settings_.SetEnabled(true);
+
+  EXPECT_CALL(*settings_opener_, ShowSettingsPage(_));
+  EXPECT_CALL(controller_, HighVisibilityEnabledChanged(true));
+  EXPECT_CALL(controller_, HighVisibilityCountdownUpdate(_)).Times(AtLeast(1));
+
+  delegate_.EnableHighVisibility();
+  SetHighVisibilityOn(true);
+
+  EXPECT_CALL(*settings_opener_, ShowSettingsPage(_));
+  EXPECT_CALL(controller_, HighVisibilityEnabledChanged(false));
+
+  // DisableHighVisibility will be called automatically after the timer fires.
+  FastForward(base::TimeDelta::FromMinutes(10));
+  SetHighVisibilityOn(false);
 }
 
 TEST_F(NearbyShareDelegateImplTest, StartStopHighVisibility) {
-  // TODO(cclem)
+  settings_.SetEnabled(true);
+
+  EXPECT_CALL(*settings_opener_, ShowSettingsPage(_));
+  EXPECT_CALL(controller_, HighVisibilityEnabledChanged(true));
+  EXPECT_CALL(controller_, HighVisibilityCountdownUpdate(_)).Times(AtLeast(1));
+
+  delegate_.EnableHighVisibility();
+  SetHighVisibilityOn(true);
+
+  EXPECT_CALL(*settings_opener_, ShowSettingsPage(_));
+  EXPECT_CALL(controller_, HighVisibilityEnabledChanged(false));
+
+  delegate_.DisableHighVisibility();
+  SetHighVisibilityOn(false);
 }
 
 TEST_F(NearbyShareDelegateImplTest, ShowOnboardingAndTurnOnHighVisibility) {
-  // TODO(cclem)
+  settings_.SetEnabled(false);
+
+  // Called once to start onboarding, once to enter high visibility, and once to
+  // exit high visibility.
+  EXPECT_CALL(*settings_opener_, ShowSettingsPage(_)).Times(3);
+
+  delegate_.EnableHighVisibility();
+
+  EXPECT_CALL(controller_, HighVisibilityEnabledChanged(true));
+
+  // Delegate will observe Nearby Share enabled within onboarding wait period
+  // and will turn on high visibility.
+  settings_.SetEnabled(true);
+  SetHighVisibilityOn(true);
+
+  EXPECT_CALL(controller_, HighVisibilityEnabledChanged(false));
+
+  // DisableHighVisibility will be called automatically after the timer fires.
+  FastForward(base::TimeDelta::FromMinutes(10));
+  SetHighVisibilityOn(false);
 }
 
 TEST_F(NearbyShareDelegateImplTest, ShowOnboardingAndTimeout) {
-  // TODO(cclem)
+  settings_.SetEnabled(false);
+
+  EXPECT_CALL(nearby_share_service_, GetSettings())
+      .WillRepeatedly(Return(&settings_));
+  EXPECT_CALL(*settings_opener_, ShowSettingsPage(_));
+
+  delegate_.EnableHighVisibility();
+
+  EXPECT_CALL(controller_, HighVisibilityEnabledChanged(_)).Times(0);
+
+  // Wait for longer than the onboarding wait period.
+  FastForward(base::TimeDelta::FromMinutes(10));
+
+  // Delegate will observe Nearby Share enabled outside of onboarding wait
+  // period and will not turn on high visibility.
+  settings_.SetEnabled(true);
 }
 
 TEST_F(NearbyShareDelegateImplTest, StopHighVisibilityOnScreenLock) {
-  // TODO(cclem)
+  settings_.SetEnabled(true);
+
+  EXPECT_CALL(controller_, HighVisibilityEnabledChanged(true));
+  EXPECT_CALL(controller_, HighVisibilityCountdownUpdate(_)).Times(AtLeast(1));
+  EXPECT_CALL(*settings_opener_, ShowSettingsPage(_));
+
+  delegate_.EnableHighVisibility();
+  SetHighVisibilityOn(true);
+
+  EXPECT_CALL(controller_, HighVisibilityEnabledChanged(false));
+  EXPECT_CALL(*settings_opener_, ShowSettingsPage(_));
+
+  // DisableHighVisibility will be called when the screen locks.
+  delegate_.OnLockStateChanged(/*locked=*/true);
+  SetHighVisibilityOn(false);
 }
 
 TEST_F(NearbyShareDelegateImplTest, ShowNearbyShareSettings) {
-  // TODO(cclem)
+  EXPECT_CALL(*settings_opener_, ShowSettingsPage(_));
+
+  delegate_.ShowNearbyShareSettings();
 }

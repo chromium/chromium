@@ -804,6 +804,11 @@ Shell::~Shell() {
   // Similarly for PrivacyScreenController.
   privacy_screen_controller_ = nullptr;
 
+  // NearbyShareDelegateImpl must be destroyed before SessionController and
+  // NearbyShareControllerImpl.
+  nearby_share_delegate_.reset();
+  nearby_share_controller_.reset();
+
   // Stop observing window activation changes before closing all windows.
   focus_controller_->RemoveObserver(this);
 
@@ -1157,8 +1162,9 @@ void Shell::Init(
   // to initialize itself.
   shelf_config_->Init();
 
-  nearby_share_delegate_ = shell_delegate_->CreateNearbyShareDelegate();
   nearby_share_controller_ = std::make_unique<NearbyShareControllerImpl>();
+  nearby_share_delegate_ = shell_delegate_->CreateNearbyShareDelegate(
+      nearby_share_controller_.get());
 
   system_notification_controller_ =
       std::make_unique<SystemNotificationController>();

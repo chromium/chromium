@@ -10,16 +10,16 @@ TestNearbyShareDelegate::TestNearbyShareDelegate() = default;
 
 TestNearbyShareDelegate::~TestNearbyShareDelegate() = default;
 
-bool TestNearbyShareDelegate::IsPodButtonVisible() const {
+bool TestNearbyShareDelegate::IsPodButtonVisible() {
   return false;
 }
 
-bool TestNearbyShareDelegate::IsHighVisibilityOn() const {
+bool TestNearbyShareDelegate::IsHighVisibilityOn() {
   return false;
 }
 
 base::Optional<base::TimeDelta>
-TestNearbyShareDelegate::RemainingHighVisibilityTime() const {
+TestNearbyShareDelegate::RemainingHighVisibilityTime() {
   return base::nullopt;
 }
 

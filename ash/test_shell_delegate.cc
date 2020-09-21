@@ -72,7 +72,8 @@ void TestShellDelegate::SetShouldWaitForTouchAck(
 }
 
 std::unique_ptr<NearbyShareDelegate>
-TestShellDelegate::CreateNearbyShareDelegate() const {
+TestShellDelegate::CreateNearbyShareDelegate(
+    NearbyShareController* controller) const {
   return std::make_unique<TestNearbyShareDelegate>();
 }
 

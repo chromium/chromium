@@ -20,9 +20,9 @@ class ASH_PUBLIC_EXPORT TestNearbyShareDelegate : public NearbyShareDelegate {
   TestNearbyShareDelegate& operator=(TestNearbyShareDelegate&) = delete;
 
   // NearbyShareDelegate
-  bool IsPodButtonVisible() const override;
-  bool IsHighVisibilityOn() const override;
-  base::Optional<base::TimeDelta> RemainingHighVisibilityTime() const override;
+  bool IsPodButtonVisible() override;
+  bool IsHighVisibilityOn() override;
+  base::Optional<base::TimeDelta> RemainingHighVisibilityTime() override;
   void EnableHighVisibility() override;
   void DisableHighVisibility() override;
   void ShowNearbyShareSettings() const override;

@@ -202,6 +202,7 @@ ChromeShellDelegate::CreateBackGestureContextualNudgeDelegate(
 }
 
 std::unique_ptr<ash::NearbyShareDelegate>
-ChromeShellDelegate::CreateNearbyShareDelegate() const {
-  return std::make_unique<NearbyShareDelegateImpl>();
+ChromeShellDelegate::CreateNearbyShareDelegate(
+    ash::NearbyShareController* controller) const {
+  return std::make_unique<NearbyShareDelegateImpl>(controller);
 }

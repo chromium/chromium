@@ -23,15 +23,14 @@ class ASH_PUBLIC_EXPORT NearbyShareDelegate {
   virtual ~NearbyShareDelegate() = default;
 
   // Used by the pod button to determine whether it should be visible.
-  virtual bool IsPodButtonVisible() const = 0;
+  virtual bool IsPodButtonVisible() = 0;
 
   // Gets the current high visibility state from the NearbySharingService.
-  virtual bool IsHighVisibilityOn() const = 0;
+  virtual bool IsHighVisibilityOn() = 0;
 
   // If high visibility is on, returns the remaining duration until the delegate
   // will turn it off, or nullopt if high visibility is off.
-  virtual base::Optional<base::TimeDelta> RemainingHighVisibilityTime()
-      const = 0;
+  virtual base::Optional<base::TimeDelta> RemainingHighVisibilityTime() = 0;
 
   // Request high visibility be turned on. If Nearby Share is disabled in prefs,
   // this will instead redirect the user to onboarding.
