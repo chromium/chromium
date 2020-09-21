@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.locale.DefaultSearchEngineDialogHelperUtils;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManager.SearchEnginePromoType;
 import org.chromium.chrome.browser.policy.EnterpriseInfo;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.MultiActivityTestRule;
@@ -286,6 +287,9 @@ public class FirstRunIntegrationTest {
                 "native never initialized.");
 
         waitForActivity(CustomTabActivity.class);
+
+        Assert.assertFalse("Usage and crash reporting pref was set to true after skip",
+                PrivacyPreferencesManager.getInstance().isUsageAndCrashReportingPermittedByUser());
     }
 
     @Test
