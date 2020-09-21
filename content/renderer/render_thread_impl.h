@@ -516,7 +516,7 @@ class CONTENT_EXPORT RenderThreadImpl
   base::RepeatingCallback<void(const AgentSchedulingGroup*)>
       remove_agent_scheduling_group_callback_;
 
-  std::unique_ptr<base::DiscardableMemoryAllocator>
+  std::unique_ptr<discardable_memory::ClientDiscardableSharedMemoryManager>
       discardable_memory_allocator_;
 
   // These objects live solely on the render thread.

@@ -2132,6 +2132,7 @@ bool RenderThreadImpl::RendererIsBackgrounded() const {
 void RenderThreadImpl::OnRendererBackgrounded() {
   main_thread_scheduler_->SetRendererBackgrounded(true);
   needs_to_record_first_active_paint_ = false;
+  discardable_memory_allocator_->OnBackgrounded();
   GetWebMainThreadScheduler()->DefaultTaskRunner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&RenderThreadImpl::RecordMemoryUsageAfterBackgrounded,
@@ -2155,6 +2156,7 @@ void RenderThreadImpl::OnRendererBackgrounded() {
 
 void RenderThreadImpl::OnRendererForegrounded() {
   main_thread_scheduler_->SetRendererBackgrounded(false);
+  discardable_memory_allocator_->OnForegrounded();
   process_foregrounded_count_++;
 }
 

@@ -25,15 +25,8 @@
 
 namespace content {
 
-std::unique_ptr<base::DiscardableMemoryAllocator>
+std::unique_ptr<discardable_memory::ClientDiscardableSharedMemoryManager>
 CreateDiscardableMemoryAllocator() {
-#if defined(OS_POSIX)
-  if (base::GetDiscardableMemoryBacking() ==
-      base::DiscardableMemoryBacking::kMadvFree) {
-    DVLOG(1) << "Using MADV_FREE for discardable memory";
-    return std::make_unique<base::MadvFreeDiscardableMemoryAllocatorPosix>();
-  }
-#endif  // defined(OS_POSIX)
   DVLOG(1) << "Using shared memory for discardable memory";
 
   mojo::PendingRemote<discardable_memory::mojom::DiscardableSharedMemoryManager>

@@ -9,9 +9,12 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
+#include "base/feature_list.h"
+#include "base/format_macros.h"
 #include "base/macros.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/discardable_shared_memory.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/memory.h"
 #include "base/process/process_metrics.h"
@@ -227,6 +230,14 @@ ClientDiscardableSharedMemoryManager::~ClientDiscardableSharedMemoryManager() {
     manager_mojo_.reset();
 }
 
+void ClientDiscardableSharedMemoryManager::OnForegrounded() {
+  foregrounded_ = true;
+}
+
+void ClientDiscardableSharedMemoryManager::OnBackgrounded() {
+  foregrounded_ = false;
+}
+
 std::unique_ptr<base::DiscardableMemory>
 ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
     size_t size) {
@@ -239,9 +250,9 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
 
   auto size_in_kb = static_cast<base::HistogramBase::Sample>(size / 1024);
   UMA_HISTOGRAM_CUSTOM_COUNTS("Memory.DiscardableAllocationSize",
-                              size_in_kb,  // In KB
+                              size_in_kb,  // In KiB
                               1,
-                              4 * 1024 * 1024,  // 4 GB
+                              4 * 1024 * 1024,  // 4 GiB
                               50);
 
   // Round up to multiple of page size.
@@ -378,6 +389,17 @@ bool ClientDiscardableSharedMemoryManager::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
   base::AutoLock lock(lock_);
+  if (foregrounded_) {
+    const size_t total_size = heap_->GetSize() / 1024;                // in KiB
+    const size_t freelist_size = heap_->GetSizeOfFreeLists() / 1024;  // in KiB
+
+    base::UmaHistogramCounts1M("Memory.Discardable.FreelistSize.Foreground",
+                               freelist_size);
+    base::UmaHistogramCounts1M("Memory.Discardable.VirtualSize.Foreground",
+                               total_size);
+    base::UmaHistogramCounts1M("Memory.Discardable.Size.Foreground",
+                               total_size - freelist_size);
+  }
   return heap_->OnMemoryDump(args, pmd);
 }
 
