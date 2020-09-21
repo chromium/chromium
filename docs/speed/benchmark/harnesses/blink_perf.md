@@ -85,7 +85,7 @@ Example tracing synchronous tests:
 
 *   [append-child-measure-time.html](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/perf_tests/test_data/append-child-measure-time.html)
 
-*   [simple-html-measure-page-load-time.html](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/perf_tests/test_ata/simple-html-measure-page-load-time.html)
+*   [simple-html-measure-page-load-time.html](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/perf_tests/test_data/simple-html-measure-page-load-time.html)
 
 
 ### Asynchronous Perf Tests
