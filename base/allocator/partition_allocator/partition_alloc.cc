@@ -229,15 +229,15 @@ void PartitionRoot<thread_safe>::Init(bool enforce_alignment,
   // If alignment needs to be enforced, disallow adding cookies and/or tags at
   // the beginning of the slot.
   allow_extras = !enforce_alignment;
-#if !defined(OS_LINUX)
-  // Linux only, for now.
+#if !defined(OS_POSIX)
+  // TLS in ThreadCache not supported on other OSes.
   with_thread_cache = false;
 #else
   with_thread_cache = enable_thread_cache;
 
   if (with_thread_cache)
     internal::ThreadCache::Init(this);
-#endif
+#endif  // !defined(OS_POSIX)
 
   // We mark the sentinel bucket/page as free to make sure it is skipped by our
   // logic to find a new active page.
