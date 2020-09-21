@@ -1033,7 +1033,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.Shortcuts.CrosDockedMagnifier"
-    enum="BooleanEnabled" expires_after="2020-10-18">
+    enum="BooleanEnabled" expires_after="2021-03-18">
   <owner>amraboelkher@chromium.org</owner>
   <owner>poromov@chromium.org</owner>
   <summary>
