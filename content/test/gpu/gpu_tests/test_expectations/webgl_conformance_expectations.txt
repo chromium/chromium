@@ -7,6 +7,7 @@
 # tags: [ android-chromium android-webview-instrumentation ]
 # tags: [ debug debug-x64 release ]
 # tags: [ amd amd-0x6613 amd-0x699f amd-0x679e
+#         apple apple-apple-a12z
 #         intel intel-0xa011 intel-0xa2e
 #         nvidia nvidia-0x1cb3 nvidia-0x2184 nvidia-0xfe9
 #         arm-mali-t860
@@ -471,6 +472,15 @@ crbug.com/angleproject/4846 [ mac metal passthrough intel ] deqp/data/gles2/shad
 crbug.com/angleproject/4846 [ mac metal passthrough nvidia ] conformance/rendering/clipping-wide-points.html [ Failure ]
 crbug.com/angleproject/4846 [ mac metal passthrough nvidia ] conformance/rendering/more-than-65536-indices.html [ Failure ]
 crbug.com/angleproject/4846 [ mac metal passthrough nvidia ] conformance/textures/misc/texture-mips.html [ Failure ]
+
+# Mac ARM-based DTKs
+crbug.com/1130703 [ mac apple-apple-a12z no-passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
+crbug.com/1130703 [ mac apple-apple-a12z no-passthrough ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
+crbug.com/1130758 [ mac apple-apple-a12z ] conformance/extensions/webgl-depth-texture.html [ Failure ]
+crbug.com/1130759 [ mac apple-apple-a12z metal ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
+crbug.com/1130759 [ mac apple-apple-a12z metal ] conformance/textures/misc/texture-mips.html [ Failure ]
+crbug.com/1130760 [ mac apple-apple-a12z metal ] conformance/extensions/webgl-draw-buffers.html [ Failure ]
+crbug.com/1130760 [ mac apple-apple-a12z metal ] conformance/ogles/GL/discard/discard_001_to_002.html [ Failure ]
 
 ####################
 # Linux failures   #
