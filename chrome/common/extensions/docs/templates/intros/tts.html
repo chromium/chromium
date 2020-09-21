@@ -76,7 +76,7 @@ pass an event listener in the options to <code>speak()</code>, like this:</p>
     utterance,
     {
       onEvent: function(event) {
-        console.log('Event ' + event.type ' at position ' + event.charIndex);
+        console.log('Event ' + event.type + ' at position ' + event.charIndex);
         if (event.type == 'error') {
           console.log('Error: ' + event.errorMessage);
         }
