@@ -114,6 +114,9 @@ void SerialChooserController::OpenHelpCenterUrl() const {
 
 void SerialChooserController::OnPortAdded(
     const device::mojom::SerialPortInfo& port) {
+  if (!FilterMatchesAny(port))
+    return;
+
   ports_.push_back(port.Clone());
   if (view())
     view()->OnOptionAdded(ports_.size() - 1);
