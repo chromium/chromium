@@ -21,6 +21,7 @@
 #include "base/macros.h"
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
@@ -83,8 +84,13 @@ struct VideoCaptureImpl::BufferContext
         InitializeFromMailbox(std::move(buffer_handle->get_mailbox_handles()));
         break;
       case VideoFrameBufferHandleType::GPU_MEMORY_BUFFER_HANDLE:
+#if !defined(OS_MAC)
+        // On macOS, an IOSurfaces passed as a GpuMemoryBufferHandle can be
+        // used by both hardware and software paths.
+        // https://crbug.com/1125879
         CHECK(gpu_factories_);
         CHECK(media_task_runner_);
+#endif
         InitializeFromGpuMemoryBufferHandle(
             std::move(buffer_handle->get_gpu_memory_buffer_handle()));
         break;
@@ -124,10 +130,6 @@ struct VideoCaptureImpl::BufferContext
     DCHECK(buffer_context->media_task_runner_->BelongsToCurrentThread());
     DCHECK(buffer_context->gpu_factories_);
     DCHECK_EQ(info->pixel_format, media::PIXEL_FORMAT_NV12);
-    DCHECK_EQ(
-        buffer_context->gpu_factories_->VideoFrameOutputFormat(
-            info->pixel_format),
-        media::GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB);
 
     // Create GPU texture and bind GpuMemoryBuffer to the texture.
     auto* sii = buffer_context->gpu_factories_->SharedImageInterface();
@@ -136,6 +138,12 @@ struct VideoCaptureImpl::BufferContext
           .Run(std::move(info), std::move(frame), std::move(buffer_context));
       return;
     }
+    // Don't check VideoFrameOutputFormat until we ensure the context has not
+    // been lost (if it is lost, then the format will be UNKNOWN).
+    DCHECK_EQ(
+        buffer_context->gpu_factories_->VideoFrameOutputFormat(
+            info->pixel_format),
+        media::GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB);
     unsigned texture_target =
         buffer_context->gpu_factories_->ImageTextureTarget(
             gpu_memory_buffer->GetFormat());
@@ -155,6 +163,7 @@ struct VideoCaptureImpl::BufferContext
     }
     gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
     CHECK(!buffer_context->gmb_resources_->mailbox.IsZero());
+    CHECK(buffer_context->gmb_resources_->mailbox.IsSharedImage());
     gpu::MailboxHolder mailbox_holder_array[media::VideoFrame::kMaxPlanes];
     mailbox_holder_array[0] = gpu::MailboxHolder(
         buffer_context->gmb_resources_->mailbox, sync_token, texture_target);
@@ -238,7 +247,7 @@ struct VideoCaptureImpl::BufferContext
 
   friend class base::RefCountedThreadSafe<BufferContext>;
   virtual ~BufferContext() {
-    if (buffer_type_ == VideoFrameBufferHandleType::GPU_MEMORY_BUFFER_HANDLE) {
+    if (gmb_resources_ && gmb_resources_->mailbox.IsSharedImage()) {
       media_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&BufferContext::DestroyTextureOnMediaThread,
                                     gpu_factories_, gmb_resources_->mailbox,
@@ -609,6 +618,19 @@ void VideoCaptureImpl::OnBufferReady(
       break;
     }
     case VideoFrameBufferHandleType::GPU_MEMORY_BUFFER_HANDLE: {
+#if defined(OS_MAC)
+      // On macOS, an IOSurfaces passed as a GpuMemoryBufferHandle can be
+      // used by both hardware and software paths.
+      // https://crbug.com/1125879
+      if (!gpu_factories_ || !media_task_runner_) {
+        frame = media::VideoFrame::WrapIOSurface(
+            buffer_context->TakeGpuMemoryBufferHandle(),
+            gfx::Rect(info->visible_rect), info->timestamp);
+        break;
+      }
+#endif
+      CHECK(gpu_factories_);
+      CHECK(media_task_runner_);
       // Create GpuMemoryBuffer from handle.
       if (!buffer_context->GetGpuMemoryBuffer()) {
         gfx::BufferFormat gfx_format;
@@ -722,7 +744,13 @@ void VideoCaptureImpl::OnAllClientsFinishedConsumingFrame(
   BufferContext* const buffer_raw_ptr = buffer_context.get();
   buffer_context = nullptr;
   // Now there should be only one reference, from |client_buffers_|.
-  DCHECK(buffer_raw_ptr->HasOneRef());
+  // TODO(https://crbug.com/1128853): This DCHECK is invalid for GpuMemoryBuffer
+  // backed frames, because MailboxHolderReleased may hold on to a reference to
+  // |buffer_context|.
+  if (buffer_raw_ptr->buffer_type() !=
+      VideoFrameBufferHandleType::GPU_MEMORY_BUFFER_HANDLE) {
+    DCHECK(buffer_raw_ptr->HasOneRef());
+  }
 #else
   buffer_context = nullptr;
 #endif
