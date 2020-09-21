@@ -32,6 +32,7 @@ class AndroidSkiaGoldSessionDiffTest(fake_filesystem_unittest.TestCase):
   def setUp(self):
     self.setUpPyfakefs()
     self._working_dir = tempfile.mkdtemp()
+    self._json_keys = tempfile.NamedTemporaryFile(delete=False).name
 
   @mock.patch.object(gold_utils.AndroidSkiaGoldSession, '_RunCmdForRcAndOutput')
   def test_commandCommonArgs(self, cmd_mock):
@@ -40,7 +41,7 @@ class AndroidSkiaGoldSessionDiffTest(fake_filesystem_unittest.TestCase):
     sgp = gold_utils.AndroidSkiaGoldProperties(args)
     session = gold_utils.AndroidSkiaGoldSession(self._working_dir,
                                                 sgp,
-                                                None,
+                                                self._json_keys,
                                                 'corpus',
                                                 instance='instance')
     session.Diff('name', 'png_file', None)
@@ -84,12 +85,13 @@ class AndroidSkiaGoldSessionDiffLinksTest(fake_filesystem_unittest.TestCase):
   def setUp(self):
     self.setUpPyfakefs()
     self._working_dir = tempfile.mkdtemp()
+    self._json_keys = tempfile.NamedTemporaryFile(delete=False).name
 
   def test_outputManagerUsed(self):
     args = createSkiaGoldArgs(git_revision='a', local_pixel_tests=True)
     sgp = gold_utils.AndroidSkiaGoldProperties(args)
-    session = gold_utils.AndroidSkiaGoldSession(self._working_dir, sgp, None,
-                                                None, None)
+    session = gold_utils.AndroidSkiaGoldSession(self._working_dir, sgp,
+                                                self._json_keys, None, None)
     with open(os.path.join(self._working_dir, 'input-inputhash.png'), 'w') as f:
       f.write('input')
     with open(os.path.join(self._working_dir, 'closest-closesthash.png'),

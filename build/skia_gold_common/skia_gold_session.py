@@ -62,7 +62,6 @@ class SkiaGoldSession(object):
     """
     self._working_dir = working_dir
     self._gold_properties = gold_properties
-    self._keys_file = keys_file
     self._corpus = corpus
     self._instance = instance
     self._triage_link_file = tempfile.NamedTemporaryFile(suffix='.txt',
@@ -72,6 +71,11 @@ class SkiaGoldSession(object):
     self._comparison_results = {}
     self._authenticated = False
     self._initialized = False
+
+    # Copy the given keys file to the working directory in case it ends up
+    # getting deleted before we try to use it.
+    self._keys_file = os.path.join(working_dir, 'gold_keys.json')
+    shutil.copy(keys_file, self._keys_file)
 
   def RunComparison(self,
                     name,
