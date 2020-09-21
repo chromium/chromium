@@ -417,15 +417,15 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   gfx::Rect damage_rects_union_of_surfaces_on_top_;
 
   // True if the frame that's currently being aggregated has copy requests.
-  // This is valid during Aggregate after PrewalkTree is called.
+  // This is valid during Aggregate after PrewalkSurface is called.
   bool has_copy_requests_ = false;
 
   // True if the frame that's currently being aggregated has cached render
-  // passes. This is valid during Aggregate after PrewalkTree is called.
+  // passes. This is valid during Aggregate after PrewalkSurface is called.
   bool has_cached_render_passes_ = false;
 
   // True if any RenderPasses in the aggregated frame have a backdrop filter
-  // that moves pixels. This is valid during Aggregate after PrewalkTree is
+  // that moves pixels. This is valid during Aggregate after PrewalkSurface is
   // called.
   bool has_pixel_moving_backdrop_filter_ = false;
 
