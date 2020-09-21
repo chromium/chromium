@@ -5,7 +5,6 @@
 #include "ash/system/power/power_button_menu_item_view.h"
 
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/default_color_constants.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font.h"
@@ -49,15 +48,13 @@ PowerButtonMenuItemView::PowerButtonMenuItemView(
 
   const AshColorProvider* color_provider = AshColorProvider::Get();
   icon_view_->SetImage(gfx::CreateVectorIcon(
-      icon, color_provider->DeprecatedGetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorPrimary,
-                kPowerButtonMenuItemIconColor)));
+      icon, color_provider->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kIconColorPrimary)));
   AddChildView(icon_view_);
 
   title_->SetBackgroundColor(SK_ColorTRANSPARENT);
-  title_->SetEnabledColor(color_provider->DeprecatedGetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary,
-      kPowerButtonMenuItemTitleColor));
+  title_->SetEnabledColor(color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
   title_->SetText(title_text);
   title_->SetVerticalAlignment(gfx::ALIGN_TOP);
   title_->SetLineHeight(kLineHeight);
@@ -123,9 +120,8 @@ void PowerButtonMenuItemView::PaintButtonContents(gfx::Canvas* canvas) {
   gfx::Rect bounds = GetLocalBounds();
   bounds.Inset(gfx::Insets(kItemBorderThickness));
   // Stroke.
-  flags.setColor(AshColorProvider::Get()->DeprecatedGetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor,
-      kPowerButtonMenuItemFocusColor));
+  flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
   flags.setStrokeWidth(kItemBorderThickness);
   flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
   canvas->DrawRoundRect(bounds, kFocusedItemRoundRectRadiusDp, flags);

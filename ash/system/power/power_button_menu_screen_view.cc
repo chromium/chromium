@@ -8,7 +8,6 @@
 
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/default_color_constants.h"
 #include "ash/system/power/power_button_menu_metrics_type.h"
 #include "ash/system/power/power_button_menu_view.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -26,7 +25,7 @@ constexpr int PowerButtonMenuView::kMenuViewTransformDistanceDp;
 namespace {
 
 // Opacity of the power button menu fullscreen background shield.
-constexpr float kPowerButtonMenuOpacity = 0.6f;
+constexpr float kPowerButtonMenuOpacity = 0.4f;
 
 // TODO(minch): Get the internal display size instead if needed.
 // Gets the landscape size of the primary display. For landscape orientation,
@@ -64,9 +63,8 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
   PowerButtonMenuBackgroundView(base::RepeatingClosure show_animation_done)
       : show_animation_done_(show_animation_done) {
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-    layer()->SetColor(AshColorProvider::Get()->DeprecatedGetShieldLayerColor(
-        AshColorProvider::ShieldLayerType::kShield60,
-        kPowerButtonMenuFullscreenShieldColor));
+    layer()->SetColor(AshColorProvider::Get()->GetShieldLayerColor(
+        AshColorProvider::ShieldLayerType::kShield40));
     layer()->SetOpacity(0.f);
   }
 

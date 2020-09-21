@@ -74,7 +74,6 @@ class ASH_EXPORT PowerButtonMenuView : public views::View,
  private:
   // views::View:
   void Layout() override;
-  void OnPaint(gfx::Canvas* canvas) override;
   gfx::Size CalculatePreferredSize() const override;
 
   // views::ButtonListener:

@@ -15,7 +15,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/default_color_constants.h"
 #include "ash/system/power/power_button_menu_item_view.h"
 #include "ash/system/power/power_button_menu_metrics_type.h"
 #include "ash/system/user/login_status.h"
@@ -24,9 +23,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/gfx/canvas.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
 
 namespace ash {
 
@@ -37,18 +36,10 @@ constexpr int kMenuItemHorizontalPadding = 16;
 constexpr int kMenuItemVerticalPadding = 16;
 
 // The amount of rounding applied to the corners of the menu view.
-constexpr int kMenuViewRoundRectRadiusDp = 16;
+constexpr gfx::RoundedCornersF kMenuViewRoundRectRadiusDp{16.f};
 
 // Horizontal padding between two menu items.
 constexpr int kPaddingBetweenMenuItems = 8;
-
-SkColor GetMenuBackgroundColor() {
-  return AshColorProvider::Get()->DeprecatedGetBaseLayerColor(
-      features::IsBackgroundBlurEnabled()
-          ? AshColorProvider::BaseLayerType::kTransparent80
-          : AshColorProvider::BaseLayerType::kTransparent90,
-      kPowerButtonMenuBackgroundColor);
-}
 
 }  // namespace
 
@@ -61,8 +52,15 @@ PowerButtonMenuView::PowerButtonMenuView(
     : power_button_position_(power_button_position) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetPaintToLayer();
+  SetBackground(
+      views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
+          features::IsBackgroundBlurEnabled()
+              ? AshColorProvider::BaseLayerType::kTransparent80
+              : AshColorProvider::BaseLayerType::kTransparent90)));
   layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetOpacity(0.f);
+  layer()->SetRoundedCornerRadius(kMenuViewRoundRectRadiusDp);
+  layer()->SetBackgroundBlur(
+      static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenu);
   GetViewAccessibility().OverrideName(
       l10n_util::GetStringUTF16(IDS_ASH_POWER_BUTTON_MENU_ACCESSIBLE));
@@ -230,19 +228,6 @@ void PowerButtonMenuView::Layout() {
     rect.Offset(x_offset, 0);
     feedback_item_->SetBoundsRect(rect);
   }
-}
-
-void PowerButtonMenuView::OnPaint(gfx::Canvas* canvas) {
-  views::View::OnPaint(canvas);
-
-  // Clip into a rounded rectangle.
-  constexpr SkScalar radius = SkIntToScalar(kMenuViewRoundRectRadiusDp);
-  constexpr SkScalar kRadius[8] = {radius, radius, radius, radius,
-                                   radius, radius, radius, radius};
-  SkPath path;
-  path.addRoundRect(gfx::RectToSkRect(gfx::Rect(size())), kRadius);
-  canvas->ClipPath(path, true);
-  canvas->DrawColor(GetMenuBackgroundColor());
 }
 
 gfx::Size PowerButtonMenuView::CalculatePreferredSize() const {
