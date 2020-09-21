@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "third_party/blink/renderer/platform/graphics/lab_color_space.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_lab_color_space.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/effects/SkHighContrastFilter.h"
 #include "third_party/skia/include/effects/SkTableColorFilter.h"
@@ -48,10 +48,10 @@ class SkColorFilterWrapper : public DarkModeColorFilter {
   sk_sp<SkColorFilter> filter_;
 };
 
-// LabColorFilter implementation.
-class LabColorFilter : public DarkModeColorFilter {
+// LABColorFilter implementation.
+class LABColorFilter : public DarkModeColorFilter {
  public:
-  LabColorFilter() : transformer_(LabColorSpace::RGBLABTransformer()) {
+  LABColorFilter() : transformer_(lab::DarkModeSRGBLABTransformer()) {
     SkHighContrastConfig config;
     config.fInvertStyle = SkHighContrastConfig::InvertStyle::kInvertLightness;
     config.fGrayscale = false;
@@ -62,9 +62,9 @@ class LabColorFilter : public DarkModeColorFilter {
   SkColor InvertColor(SkColor color) const override {
     SkV3 rgb = {SkColorGetR(color) / 255.0f, SkColorGetG(color) / 255.0f,
                 SkColorGetB(color) / 255.0f};
-    SkV3 lab = transformer_.sRGBToLab(rgb);
+    SkV3 lab = transformer_.SRGBToLAB(rgb);
     lab.x = std::min(110.0f - lab.x, 100.0f);
-    rgb = transformer_.LabToSRGB(lab);
+    rgb = transformer_.LABToSRGB(lab);
 
     SkColor inverted_color = SkColorSetARGB(
         SkColorGetA(color), static_cast<unsigned int>(rgb.x * 255 + 0.5),
@@ -99,7 +99,7 @@ class LabColorFilter : public DarkModeColorFilter {
     return color;
   }
 
-  const LabColorSpace::RGBLABTransformer transformer_;
+  const lab::DarkModeSRGBLABTransformer transformer_;
   sk_sp<SkColorFilter> filter_;
 };
 
@@ -129,7 +129,7 @@ std::unique_ptr<DarkModeColorFilter> DarkModeColorFilter::FromSettings(
           SkHighContrastConfig::InvertStyle::kInvertLightness, settings);
 
     case DarkModeInversionAlgorithm::kInvertLightnessLAB:
-      return std::make_unique<LabColorFilter>();
+      return std::make_unique<LABColorFilter>();
   }
   NOTREACHED();
 }

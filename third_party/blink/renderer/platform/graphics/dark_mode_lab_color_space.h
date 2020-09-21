@@ -1,5 +1,5 @@
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_LAB_COLOR_SPACE_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_LAB_COLOR_SPACE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_DARK_MODE_LAB_COLOR_SPACE_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_DARK_MODE_LAB_COLOR_SPACE_H_
 
 #include <algorithm>
 #include <cmath>
@@ -7,8 +7,12 @@
 #include "base/check.h"
 #include "third_party/skia/include/core/SkM44.h"
 
-// Class to handle color transformation between RGB and CIE L*a*b* color spaces.
-namespace LabColorSpace {
+namespace blink {
+
+// TODO(prashant.n): Hide implementation details to .cc file.
+// Namespace to handle color transformation between RGB and CIE L*a*b* color
+// spaces.
+namespace lab {
 
 static constexpr SkV3 kIlluminantD50 = {0.964212f, 1.0f, 0.825188f};
 static constexpr SkV3 kIlluminantD65 = {0.95042855f, 1.0f, 1.0889004f};
@@ -40,9 +44,9 @@ inline SkM44 ChromaticAdaptation(const SkM44& matrix,
   return inverse * (SkM44::Scale(lms.x, lms.y, lms.z) * matrix);
 }
 
-class sRGBColorSpace {
+class DarkModeSRGBColorSpace {
  public:
-  sRGBColorSpace() {
+  DarkModeSRGBColorSpace() {
     bool success = transform_.invert(&inverseTransform_);
     DCHECK(success);
   }
@@ -115,7 +119,7 @@ class sRGBColorSpace {
   SkM44 inverseTransform_;
 };
 
-class LABColorSpace {
+class DarkModeLABColorSpace {
  public:
   // See
   // https://en.wikipedia.org/wiki/CIELAB_color_space#Reverse_transformation.
@@ -158,23 +162,25 @@ class LABColorSpace {
   static const constexpr float kSigma3 = 216.0f / 24389.0f;
 };
 
-class RGBLABTransformer {
+class DarkModeSRGBLABTransformer {
  public:
-  SkV3 sRGBToLab(const SkV3& rgb) const {
-    SkV3 xyz = rgb_space_.ToXYZ(rgb);
+  SkV3 SRGBToLAB(const SkV3& rgb) const {
+    SkV3 xyz = srgb_space_.ToXYZ(rgb);
     return lab_space_.FromXYZ(xyz);
   }
 
-  SkV3 LabToSRGB(const SkV3& lab) const {
+  SkV3 LABToSRGB(const SkV3& lab) const {
     SkV3 xyz = lab_space_.ToXYZ(lab);
-    return rgb_space_.FromXYZ(xyz);
+    return srgb_space_.FromXYZ(xyz);
   }
 
  private:
-  sRGBColorSpace rgb_space_ = sRGBColorSpace();
-  LABColorSpace lab_space_ = LABColorSpace();
+  DarkModeSRGBColorSpace srgb_space_ = DarkModeSRGBColorSpace();
+  DarkModeLABColorSpace lab_space_ = DarkModeLABColorSpace();
 };
 
-}  // namespace LabColorSpace
+}  // namespace lab
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_LAB_COLOR_SPACE_H_
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_DARK_MODE_LAB_COLOR_SPACE_H_
