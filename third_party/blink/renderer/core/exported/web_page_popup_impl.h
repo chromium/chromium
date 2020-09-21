@@ -196,23 +196,12 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
                                        const WebMouseWheelEvent&) override;
   void ApplyVisualProperties(
       const VisualProperties& visual_properties) override;
-  void UpdateSurfaceAndScreenInfo(
-      const viz::LocalSurfaceIdAllocation& new_local_surface_id_allocation,
-      const gfx::Rect& compositor_viewport_pixel_rect,
-      const ScreenInfo& new_screen_info) override;
-  void UpdateScreenInfo(const ScreenInfo& new_screen_info) override;
-  void UpdateCompositorViewportAndScreenInfo(
-      const gfx::Rect& compositor_viewport_pixel_rect,
-      const ScreenInfo& new_screen_info) override;
-  void UpdateCompositorViewportRect(
-      const gfx::Rect& compositor_viewport_pixel_rect) override;
   const ScreenInfo& GetScreenInfo() override;
   gfx::Rect WindowRect() override;
   gfx::Rect ViewRect() override;
   void SetScreenRects(const gfx::Rect& widget_screen_rect,
                       const gfx::Rect& window_screen_rect) override;
-  void SetVisibleViewportSize(const gfx::Size& visible_viewport_size) override;
-  const gfx::Size& VisibleViewportSize() override;
+  gfx::Size VisibleViewportSizeInDIPs() override;
   void SetPendingWindowRect(const gfx::Rect* window_screen_rect) override;
   bool IsHidden() const override;
 

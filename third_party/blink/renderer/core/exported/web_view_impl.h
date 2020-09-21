@@ -93,7 +93,6 @@ class WebLocalFrame;
 class WebLocalFrameImpl;
 class WebSettingsImpl;
 class WebViewClient;
-class WebFrameWidgetBase;
 class WebViewFrameWidget;
 
 enum class FullscreenRequestType;
@@ -183,6 +182,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   WebSize GetSize() override;
   void SetScreenOrientationOverrideForTesting(
       base::Optional<blink::mojom::ScreenOrientation> orientation) override;
+  void UseSynchronousResizeModeForTesting(bool enable) override;
+  void SetWindowRectSynchronouslyForTesting(
+      const gfx::Rect& new_window_rect) override;
   void ResetScrollAndScaleState() override;
   void SetIgnoreViewportTagScaleLimits(bool) override;
   WebSize ContentsPreferredMinimumSize() override;
@@ -451,8 +453,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void DidEnterFullscreen();
   void DidExitFullscreen();
 
-  void SetMainFrameWidgetBase(WebViewFrameWidget* widget);
-  WebFrameWidgetBase* MainFrameWidgetBase();
+  void SetMainFrameViewWidget(WebViewFrameWidget* widget);
+  WebViewFrameWidget* MainFrameViewWidget();
 
   // Called when hovering over an anchor with the given URL.
   void SetMouseOverURL(const KURL&);

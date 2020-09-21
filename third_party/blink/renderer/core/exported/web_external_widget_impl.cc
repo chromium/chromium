@@ -172,30 +172,17 @@ void WebExternalWidgetImpl::ApplyVisualProperties(
   widget_base_->UpdateVisualProperties(visual_properties);
 }
 
-void WebExternalWidgetImpl::UpdateSurfaceAndScreenInfo(
-    const viz::LocalSurfaceIdAllocation& new_local_surface_id_allocation,
-    const gfx::Rect& compositor_viewport_pixel_rect,
-    const ScreenInfo& new_screen_info) {
-  widget_base_->UpdateSurfaceAndScreenInfo(new_local_surface_id_allocation,
-                                           compositor_viewport_pixel_rect,
-                                           new_screen_info);
-}
-
-void WebExternalWidgetImpl::UpdateScreenInfo(
-    const ScreenInfo& new_screen_info) {
-  widget_base_->UpdateScreenInfo(new_screen_info);
-}
-
-void WebExternalWidgetImpl::UpdateCompositorViewportAndScreenInfo(
-    const gfx::Rect& compositor_viewport_pixel_rect,
-    const ScreenInfo& new_screen_info) {
-  widget_base_->UpdateCompositorViewportAndScreenInfo(
-      compositor_viewport_pixel_rect, new_screen_info);
-}
-
-void WebExternalWidgetImpl::UpdateCompositorViewportRect(
-    const gfx::Rect& compositor_viewport_pixel_rect) {
-  widget_base_->UpdateCompositorViewportRect(compositor_viewport_pixel_rect);
+void WebExternalWidgetImpl::UpdateVisualProperties(
+    const VisualProperties& visual_properties) {
+  widget_base_->UpdateSurfaceAndScreenInfo(
+      visual_properties.local_surface_id_allocation.value_or(
+          viz::LocalSurfaceIdAllocation()),
+      visual_properties.compositor_viewport_pixel_rect,
+      visual_properties.screen_info);
+  widget_base_->SetVisibleViewportSize(
+      widget_base_->DIPsToBlinkSpace(visual_properties.visible_viewport_size));
+  Resize(WebSize(widget_base_->DIPsToBlinkSpace(visual_properties.new_size)));
+  client_->DidUpdateVisualProperties();
 }
 
 const ScreenInfo& WebExternalWidgetImpl::GetScreenInfo() {
@@ -216,13 +203,8 @@ void WebExternalWidgetImpl::SetScreenRects(
   widget_base_->SetScreenRects(widget_screen_rect, window_screen_rect);
 }
 
-void WebExternalWidgetImpl::SetVisibleViewportSize(
-    const gfx::Size& visible_viewport_size) {
-  widget_base_->SetVisibleViewportSize(visible_viewport_size);
-}
-
-const gfx::Size& WebExternalWidgetImpl::VisibleViewportSize() {
-  return widget_base_->VisibleViewportSize();
+gfx::Size WebExternalWidgetImpl::VisibleViewportSizeInDIPs() {
+  return widget_base_->BlinkSpaceToDIPs(widget_base_->VisibleViewportSize());
 }
 
 void WebExternalWidgetImpl::SetPendingWindowRect(
@@ -288,11 +270,6 @@ bool WebExternalWidgetImpl::SupportsBufferedTouchEvents() {
 
 void WebExternalWidgetImpl::FocusChanged(bool enabled) {
   client_->FocusChanged(enabled);
-}
-
-void WebExternalWidgetImpl::UpdateVisualProperties(
-    const VisualProperties& visual_properties) {
-  client_->UpdateVisualProperties(visual_properties);
 }
 
 const ScreenInfo& WebExternalWidgetImpl::GetOriginalScreenInfo() {

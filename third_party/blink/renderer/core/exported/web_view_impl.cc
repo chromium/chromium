@@ -1654,10 +1654,20 @@ void WebViewImpl::SetScreenOrientationOverrideForTesting(
   // Since we updated the override value, notify all widgets.
   for (WebFrame* frame = MainFrame(); frame; frame = frame->TraverseNext()) {
     if (frame->IsWebLocalFrame()) {
-      if (WebFrameWidget* widget = frame->ToWebLocalFrame()->FrameWidget())
+      if (WebFrameWidgetBase* widget = static_cast<WebFrameWidgetBase*>(
+              frame->ToWebLocalFrame()->FrameWidget()))
         widget->UpdateScreenInfo(widget->GetScreenInfo());
     }
   }
+}
+
+void WebViewImpl::UseSynchronousResizeModeForTesting(bool enable) {
+  web_widget_->UseSynchronousResizeModeForTesting(enable);
+}
+
+void WebViewImpl::SetWindowRectSynchronouslyForTesting(
+    const gfx::Rect& new_window_rect) {
+  web_widget_->SetWindowRectSynchronouslyForTesting(new_window_rect);
 }
 
 base::Optional<mojom::blink::ScreenOrientation>
@@ -1673,7 +1683,7 @@ void WebViewImpl::DidExitFullscreen() {
   fullscreen_controller_->DidExitFullscreen();
 }
 
-void WebViewImpl::SetMainFrameWidgetBase(WebViewFrameWidget* widget) {
+void WebViewImpl::SetMainFrameViewWidget(WebViewFrameWidget* widget) {
   web_widget_ = widget;
 }
 
@@ -1687,7 +1697,7 @@ void WebViewImpl::SetKeyboardFocusURL(const KURL& url) {
   UpdateTargetURL(focus_url_, mouse_over_url_);
 }
 
-WebFrameWidgetBase* WebViewImpl::MainFrameWidgetBase() {
+WebViewFrameWidget* WebViewImpl::MainFrameViewWidget() {
   return web_widget_;
 }
 
@@ -3219,15 +3229,8 @@ bool WebViewImpl::AutoResizeMode() {
 
 void WebViewImpl::EnableAutoResizeForTesting(const gfx::Size& min_window_size,
                                              const gfx::Size& max_window_size) {
-  float scale_factor = 1.f;
-  if (Platform::Current()->IsUseZoomForDSFEnabled()) {
-    scale_factor = MainFrameImpl()
-                       ->FrameWidgetImpl()
-                       ->GetScreenInfo()
-                       .device_scale_factor;
-  }
-  EnableAutoResizeMode(gfx::ScaleToCeiledSize(min_window_size, scale_factor),
-                       gfx::ScaleToCeiledSize(max_window_size, scale_factor));
+  EnableAutoResizeMode(web_widget_->DIPsToBlinkSpace(min_window_size),
+                       web_widget_->DIPsToBlinkSpace(max_window_size));
 }
 
 void WebViewImpl::DisableAutoResizeForTesting(
@@ -3239,7 +3242,8 @@ void WebViewImpl::DisableAutoResizeForTesting(
   // The |new_size| is empty when resetting auto resize in between tests. In
   // this case the current size should just be preserved.
   if (!new_window_size.IsEmpty()) {
-    MainFrameImpl()->FrameWidgetImpl()->Client()->SetSize(new_window_size);
+    web_widget_->Resize(
+        WebSize(web_widget_->DIPsToBlinkSpace(new_window_size)));
   }
 }
 

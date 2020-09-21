@@ -28,27 +28,27 @@ TEST_F(WebFrameWidgetSimTest, AutoResizeAllocatedLocalSurfaceId) {
   visual_properties.local_surface_id_allocation =
       allocator.GetCurrentLocalSurfaceIdAllocation();
   WebView().MainFrameWidget()->ApplyVisualProperties(visual_properties);
-  WebView().MainFrameWidget()->UpdateSurfaceAndScreenInfo(
+  WebView().MainFrameViewWidget()->UpdateSurfaceAndScreenInfo(
       visual_properties.local_surface_id_allocation.value(),
       visual_properties.compositor_viewport_pixel_rect,
       visual_properties.screen_info);
 
   EXPECT_EQ(
       allocator.GetCurrentLocalSurfaceIdAllocation(),
-      WebView().MainFrameWidgetBase()->LocalSurfaceIdAllocationFromParent());
+      WebView().MainFrameViewWidget()->LocalSurfaceIdAllocationFromParent());
   EXPECT_FALSE(WebView()
-                   .MainFrameWidgetBase()
+                   .MainFrameViewWidget()
                    ->LayerTreeHost()
                    ->new_local_surface_id_request_for_testing());
 
   constexpr gfx::Size size(200, 200);
-  static_cast<WebViewFrameWidget*>(WebView().MainFrameWidgetBase())
+  static_cast<WebViewFrameWidget*>(WebView().MainFrameViewWidget())
       ->DidAutoResize(size);
   EXPECT_EQ(
       allocator.GetCurrentLocalSurfaceIdAllocation(),
-      WebView().MainFrameWidgetBase()->LocalSurfaceIdAllocationFromParent());
+      WebView().MainFrameViewWidget()->LocalSurfaceIdAllocationFromParent());
   EXPECT_TRUE(WebView()
-                  .MainFrameWidgetBase()
+                  .MainFrameViewWidget()
                   ->LayerTreeHost()
                   ->new_local_surface_id_request_for_testing());
 }
@@ -76,16 +76,16 @@ TEST_F(WebFrameWidgetSimTest, FrameSinkIdHitTestAPI) {
 
   gfx::PointF point;
   viz::FrameSinkId main_frame_sink_id =
-      WebView().MainFrameWidgetBase()->GetFrameSinkIdAtPoint(
+      WebView().MainFrameViewWidget()->GetFrameSinkIdAtPoint(
           gfx::PointF(10.43, 10.74), &point);
-  EXPECT_EQ(WebView().MainFrameWidgetBase()->Client()->GetFrameSinkId(),
+  EXPECT_EQ(WebView().MainFrameViewWidget()->Client()->GetFrameSinkId(),
             main_frame_sink_id);
   EXPECT_EQ(gfx::PointF(10.43, 10.74), point);
 
   // Targeting a child frame should also return the FrameSinkId for the main
   // widget.
   viz::FrameSinkId frame_sink_id =
-      WebView().MainFrameWidgetBase()->GetFrameSinkIdAtPoint(
+      WebView().MainFrameViewWidget()->GetFrameSinkIdAtPoint(
           gfx::PointF(150.27, 150.25), &point);
   EXPECT_EQ(main_frame_sink_id, frame_sink_id);
   EXPECT_EQ(gfx::PointF(150.27, 150.25), point);

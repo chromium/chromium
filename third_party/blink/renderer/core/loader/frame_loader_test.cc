@@ -6,7 +6,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
+#include "third_party/blink/renderer/core/frame/web_view_frame_widget.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/page/chrome_client_impl.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -22,7 +22,7 @@ class FrameLoaderSimTest : public SimTest {
 
   void SetUp() override {
     SimTest::SetUp();
-    WebView().MainFrameWidgetBase()->UpdateAllLifecyclePhases(
+    WebView().MainFrameViewWidget()->UpdateAllLifecyclePhases(
         DocumentUpdateReason::kTest);
   }
 };

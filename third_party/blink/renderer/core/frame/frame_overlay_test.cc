@@ -121,6 +121,7 @@ TEST_P(FrameOverlayTest, AcceleratedCompositing) {
 TEST_P(FrameOverlayTest, DeviceEmulationScale) {
   DeviceEmulationParams params;
   params.scale = 1.5;
+  params.view_size = gfx::Size(800, 600);
   GetWebView()->EnableDeviceEmulation(params);
   GetWebView()->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);

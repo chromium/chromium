@@ -1255,7 +1255,7 @@ void TestRunnerBindings::DisableAutoResizeMode(int new_width, int new_height) {
 
   gfx::Rect window_rect(widget->GetWebWidget()->WindowRect().origin(),
                         new_size);
-  widget->SetWindowRectSynchronouslyForTesting(window_rect);
+  web_view->SetWindowRectSynchronouslyForTesting(window_rect);
 }
 
 void TestRunnerBindings::SetMockScreenOrientation(
@@ -1656,8 +1656,8 @@ void TestRunnerBindings::SetBackingScaleFactor(
   // https://crbug.com/900271
   double limited_value = fmin(15, value);
 
-  WebWidgetTestProxy* widget = frame_->GetLocalRootWebWidgetTestProxy();
-  widget->SetDeviceScaleFactorForTesting(limited_value);
+  frame_->GetLocalRootWebFrameWidget()->SetDeviceScaleFactorForTesting(
+      limited_value);
 
   v8::Isolate* isolate = blink::MainThreadIsolate();
   v8::HandleScope handle_scope(isolate);
@@ -2262,18 +2262,18 @@ void TestRunner::ResetWebView(WebViewTestProxy* web_view_test_proxy) {
   web_view->DisableAutoResizeForTesting(gfx::Size());
   web_view->SetScreenOrientationOverrideForTesting(
       fake_screen_orientation_impl_.CurrentOrientationType());
+  web_view->UseSynchronousResizeModeForTesting(false);
 }
 
 void TestRunner::ResetWebWidget(WebWidgetTestProxy* web_widget_test_proxy) {
   blink::WebFrameWidget* web_widget =
       web_widget_test_proxy->GetWebFrameWidget();
 
-  web_widget_test_proxy->SetDeviceScaleFactorForTesting(0);
+  web_widget->SetDeviceScaleFactorForTesting(0);
 
   // These things are only modified/valid for the main frame's widget.
   if (web_widget_test_proxy->delegate()) {
     web_widget->ResetZoomLevelForTesting();
-    web_widget_test_proxy->UseSynchronousResizeModeForTesting(false);
 
     web_widget->SetMainFrameOverlayColor(SK_ColorTRANSPARENT);
     web_widget->SetTextZoomFactor(1);
@@ -2833,10 +2833,9 @@ void TestRunner::SetTextSubpixelPositioning(bool value) {
 }
 
 void TestRunner::UseUnfortunateSynchronousResizeMode() {
-  // Sets the resize mode on the main frame of each open window.
-  for (WebFrameTestProxy* frame : main_frames_) {
-    auto* widget_proxy = frame->GetLocalRootWebWidgetTestProxy();
-    widget_proxy->UseSynchronousResizeModeForTesting(true);
+  // Sets the resize mode on the view of each open window.
+  for (WebViewTestProxy* view : render_views_) {
+    view->GetWebView()->UseSynchronousResizeModeForTesting(true);
   }
 }
 

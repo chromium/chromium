@@ -45,8 +45,8 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
-#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/frame/web_view_frame_widget.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
@@ -78,8 +78,8 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
  public:
   ScrollingTest() : base_url_("http://www.test.com/") {
     helper_.Initialize(nullptr, nullptr, nullptr, &ConfigureSettings);
-    GetWebView()->MainFrameWidgetBase()->Resize(IntSize(320, 240));
-    GetWebView()->MainFrameWidgetBase()->UpdateAllLifecyclePhases(
+    GetWebView()->MainFrameViewWidget()->Resize(IntSize(320, 240));
+    GetWebView()->MainFrameViewWidget()->UpdateAllLifecyclePhases(
         DocumentUpdateReason::kTest);
   }
 
@@ -97,7 +97,7 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
   }
 
   void ForceFullCompositingUpdate() {
-    GetWebView()->MainFrameWidgetBase()->UpdateAllLifecyclePhases(
+    GetWebView()->MainFrameViewWidget()->UpdateAllLifecyclePhases(
         DocumentUpdateReason::kTest);
   }
 
@@ -202,7 +202,7 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
 INSTANTIATE_PAINT_TEST_SUITE_P(ScrollingTest);
 
 TEST_P(ScrollingTest, fastScrollingByDefault) {
-  GetWebView()->MainFrameWidgetBase()->Resize(WebSize(800, 600));
+  GetWebView()->MainFrameViewWidget()->Resize(WebSize(800, 600));
   LoadHTML("<div id='spacer' style='height: 1000px'></div>");
   ForceFullCompositingUpdate();
 
@@ -1456,9 +1456,9 @@ TEST_P(ScrollingTest, UpdateUMAMetricUpdated) {
 
   // After an initial compositing update, we should have one scrolling update
   // recorded as PreFCP.
-  GetWebView()->MainFrameWidgetBase()->RecordStartOfFrameMetrics();
+  GetWebView()->MainFrameViewWidget()->RecordStartOfFrameMetrics();
   ForceFullCompositingUpdate();
-  GetWebView()->MainFrameWidgetBase()->RecordEndOfFrameMetrics(
+  GetWebView()->MainFrameViewWidget()->RecordEndOfFrameMetrics(
       base::TimeTicks(), 0);
   histogram_tester.ExpectTotalCount("Blink.ScrollingCoordinator.UpdateTime", 1);
   histogram_tester.ExpectTotalCount(
@@ -1469,9 +1469,9 @@ TEST_P(ScrollingTest, UpdateUMAMetricUpdated) {
       "Blink.ScrollingCoordinator.UpdateTime.AggregatedPreFCP", 0);
 
   // An update with no scrolling changes should not cause a scrolling update.
-  GetWebView()->MainFrameWidgetBase()->RecordStartOfFrameMetrics();
+  GetWebView()->MainFrameViewWidget()->RecordStartOfFrameMetrics();
   ForceFullCompositingUpdate();
-  GetWebView()->MainFrameWidgetBase()->RecordEndOfFrameMetrics(
+  GetWebView()->MainFrameViewWidget()->RecordEndOfFrameMetrics(
       base::TimeTicks(), 0);
   histogram_tester.ExpectTotalCount("Blink.ScrollingCoordinator.UpdateTime", 1);
   histogram_tester.ExpectTotalCount(
@@ -1488,9 +1488,9 @@ TEST_P(ScrollingTest, UpdateUMAMetricUpdated) {
   auto* background = GetFrame()->GetDocument()->getElementById("bg");
   background->removeAttribute(html_names::kStyleAttr);
   background->setInnerHTML("Some Text");
-  GetWebView()->MainFrameWidgetBase()->RecordStartOfFrameMetrics();
+  GetWebView()->MainFrameViewWidget()->RecordStartOfFrameMetrics();
   ForceFullCompositingUpdate();
-  GetWebView()->MainFrameWidgetBase()->RecordEndOfFrameMetrics(
+  GetWebView()->MainFrameViewWidget()->RecordEndOfFrameMetrics(
       base::TimeTicks(), 0);
   histogram_tester.ExpectTotalCount("Blink.ScrollingCoordinator.UpdateTime", 2);
   histogram_tester.ExpectTotalCount(
@@ -1503,9 +1503,9 @@ TEST_P(ScrollingTest, UpdateUMAMetricUpdated) {
   // Removing a scrollable area should cause a scrolling update.
   auto* scroller = GetFrame()->GetDocument()->getElementById("scroller");
   scroller->removeAttribute(html_names::kStyleAttr);
-  GetWebView()->MainFrameWidgetBase()->RecordStartOfFrameMetrics();
+  GetWebView()->MainFrameViewWidget()->RecordStartOfFrameMetrics();
   ForceFullCompositingUpdate();
-  GetWebView()->MainFrameWidgetBase()->RecordEndOfFrameMetrics(
+  GetWebView()->MainFrameViewWidget()->RecordEndOfFrameMetrics(
       base::TimeTicks(), 0);
   histogram_tester.ExpectTotalCount("Blink.ScrollingCoordinator.UpdateTime", 3);
   histogram_tester.ExpectTotalCount(
@@ -1686,8 +1686,8 @@ class UnifiedScrollingSimTest : public SimTest, public PaintTestConfigurations {
   void SetUp() override {
     SimTest::SetUp();
     WebView().GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
-    WebView().MainFrameWidgetBase()->Resize(IntSize(1000, 1000));
-    WebView().MainFrameWidgetBase()->UpdateAllLifecyclePhases(
+    WebView().MainFrameViewWidget()->Resize(IntSize(1000, 1000));
+    WebView().MainFrameViewWidget()->UpdateAllLifecyclePhases(
         DocumentUpdateReason::kTest);
   }
 
@@ -2123,8 +2123,8 @@ class ScrollingSimTest : public SimTest,
   void SetUp() override {
     SimTest::SetUp();
     WebView().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
-    WebView().MainFrameWidgetBase()->Resize(IntSize(1000, 1000));
-    WebView().MainFrameWidgetBase()->UpdateAllLifecyclePhases(
+    WebView().MainFrameViewWidget()->Resize(IntSize(1000, 1000));
+    WebView().MainFrameViewWidget()->UpdateAllLifecyclePhases(
         DocumentUpdateReason::kTest);
   }
 

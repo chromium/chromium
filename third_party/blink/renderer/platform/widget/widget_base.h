@@ -7,6 +7,8 @@
 
 #include "base/time/time.h"
 #include "cc/paint/element_id.h"
+#include "cc/trees/browser_controls_params.h"
+#include "components/viz/common/surfaces/local_surface_id_allocation.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
@@ -51,8 +53,10 @@ class WebThreadScheduler;
 // This class is the foundational class for all widgets that blink creates.
 // (WebPagePopupImpl, WebFrameWidgetBase) will contain an instance of this
 // class. For simplicity purposes this class will be a member of those classes.
-// It will eventually host compositing, input and emulation. See design doc:
-// https://docs.google.com/document/d/10uBnSWBaitGsaROOYO155Wb83rjOPtrgrGTrQ_pcssY/edit?ts=5e3b26f7
+//
+// Co-orindates handled in this class can be in the "blink coordinate space"
+// which is scaled DSF baked in if UseZoomForDSF is enabled, otherwise they
+// are equivalent to DIPs.
 class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
                                    public LayerTreeViewDelegate {
  public:
@@ -257,12 +261,12 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void SetScreenRects(const gfx::Rect& widget_screen_rect,
                       const gfx::Rect& window_screen_rect);
 
-  // Returns the visible viewport size (in screen coorindates).
+  // Returns the visible viewport size (blink coordinate space).
   const gfx::Size& VisibleViewportSize() const {
     return visible_viewport_size_;
   }
 
-  // Set the visible viewport size (in screen coorindates).
+  // Set the visible viewport size (blink coordinate space).
   void SetVisibleViewportSize(const gfx::Size& size) {
     visible_viewport_size_ = size;
   }
@@ -275,6 +279,14 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // DIPS.
   gfx::PointF BlinkSpaceToDIPs(const gfx::PointF& point);
 
+  // Converts from DIPs to Blink coordinate space (ie. Viewport/Physical
+  // pixels).
+  gfx::Size DIPsToBlinkSpace(const gfx::Size& size);
+
+  // Converts from Blink coordinate space (ie. Viewport/Physical pixels) to
+  // DIPs.
+  gfx::Size BlinkSpaceToDIPs(const gfx::Size& size);
+
   // Returns whether Zoom for DSF is enabled for the widget.
   bool UseZoomForDsf() { return use_zoom_for_dsf_; }
 
@@ -285,14 +297,26 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  // Update the surface allocation information, compositor viewport rect and
+  // screen info on the widget.
   void UpdateSurfaceAndScreenInfo(
       const viz::LocalSurfaceIdAllocation& new_local_surface_id_allocation,
       const gfx::Rect& compositor_viewport_pixel_rect,
       const ScreenInfo& new_screen_info);
+  // Similar to UpdateSurfaceAndScreenInfo but the screen info remains the same.
+  void UpdateSurfaceAndCompositorRect(
+      const viz::LocalSurfaceIdAllocation& new_local_surface_id_allocation,
+      const gfx::Rect& compositor_viewport_pixel_rect);
+  // Similar to UpdateSurfaceAndScreenInfo but the surface allocation
+  // and compositor viewport rect remains the same.
   void UpdateScreenInfo(const ScreenInfo& new_screen_info);
+  // Similar to UpdateSurfaceAndScreenInfo but the surface allocation
+  // remains the same.
   void UpdateCompositorViewportAndScreenInfo(
       const gfx::Rect& compositor_viewport_pixel_rect,
       const ScreenInfo& new_screen_info);
+  // Similar to UpdateSurfaceAndScreenInfo but the surface allocation and screen
+  // info remains the same.
   void UpdateCompositorViewportRect(
       const gfx::Rect& compositor_viewport_pixel_rect);
   const ScreenInfo& GetScreenInfo();
@@ -402,7 +426,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   gfx::Rect window_screen_rect_;
   base::Optional<gfx::Rect> pending_window_rect_;
 
-  // The size of the visible viewport in pixels.
+  // The size of the visible viewport (blink coordinate space).
   gfx::Size visible_viewport_size_;
 
   const bool use_zoom_for_dsf_;

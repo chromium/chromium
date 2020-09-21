@@ -26,7 +26,6 @@
 #include "build/build_config.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/touch_action.h"
-#include "cc/trees/browser_controls_params.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "cc/trees/managed_memory_policy.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
@@ -64,7 +63,6 @@
 #include "ui/surface/transport_dib.h"
 
 namespace blink {
-struct VisualProperties;
 class WebFrameWidget;
 class WebInputMethodController;
 class WebLocalFrame;
@@ -195,8 +193,6 @@ class CONTENT_EXPORT RenderWidget
   // focused frame and can be nullptr.
   blink::WebInputMethodController* GetInputMethodController() const;
 
-  const gfx::Size& size() const { return size_; }
-
   // A main frame RenderWidget is destroyed and recreated using the same routing
   // id. So messages en route to a destroyed RenderWidget may end up being
   // received by a provisional RenderWidget, even though we don't normally
@@ -226,7 +222,6 @@ class CONTENT_EXPORT RenderWidget
   void ClosePopupWidgetSoon() override;
   void Show(blink::WebNavigationPolicy) override;
   void SetWindowRect(const gfx::Rect&) override;
-  void SetSize(const gfx::Size&) override;
   void ConvertViewportToWindow(blink::WebRect* rect) override;
   void ConvertViewportToWindow(blink::WebFloatRect* rect) override;
   void ConvertWindowToViewport(blink::WebFloatRect* rect) override;
@@ -275,9 +270,6 @@ class CONTENT_EXPORT RenderWidget
   // the new value will be sent to the browser process.
   void UpdateSelectionBounds();
 
-  // Called when the Widget has changed size as a result of an auto-resize.
-  void DidAutoResize(const gfx::Size& new_size);
-
   MouseLockDispatcher* mouse_lock_dispatcher() const {
     return mouse_lock_dispatcher_.get();
   }
@@ -285,10 +277,6 @@ class CONTENT_EXPORT RenderWidget
   void DidNavigate(ukm::SourceId source_id, const GURL& url);
 
   void SetActive(bool active);
-
-  void UseSynchronousResizeModeForTesting(bool enable);
-  void SetDeviceScaleFactorForTesting(float factor);
-  void SetWindowRectSynchronouslyForTesting(const gfx::Rect& new_window_rect);
 
   // Forces a redraw and invokes the callback once the frame's been displayed
   // to the user in the display compositor.
@@ -300,11 +288,6 @@ class CONTENT_EXPORT RenderWidget
   bool IsFullscreenGrantedForFrame();
 
  protected:
-  // blink::WebWidgetClient
-  void UpdateVisualProperties(
-      bool emulator_enabled,
-      const blink::VisualProperties& properties) override;
-
   // Destroy the RenderWidget. The |widget| is the owning pointer of |this|.
   virtual void Close(std::unique_ptr<RenderWidget> widget);
 
@@ -333,10 +316,6 @@ class CONTENT_EXPORT RenderWidget
   // Request the window to close from the renderer by sending the request to the
   // browser.
   static void DoDeferredClose(int widget_routing_id);
-
-  // Must be called to pass updated values to blink when the widget size, the
-  // visual viewport size, or the device scale factor change.
-  void ResizeWebWidget();
 
   // RenderWidget IPC message handlers.
   void OnClose();
@@ -368,9 +347,6 @@ class CONTENT_EXPORT RenderWidget
   // a local root associated with it. RenderWidgetFullscreenPepper and a swapped
   // out RenderWidgets are amongst the cases where this method returns nullptr.
   blink::WebFrameWidget* GetFrameWidget() const;
-
-  // Used to force the size of a window when running web tests.
-  void SetWindowRectSynchronously(const gfx::Rect& new_window_rect);
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Returns the focused pepper plugin, if any, inside the WebWidget. That is
@@ -410,30 +386,9 @@ class CONTENT_EXPORT RenderWidget
   // The rect where this view should be initially shown.
   gfx::Rect initial_rect_;
 
-  // The size of the RenderWidget in DIPs. This may differ from the viewport
-  // set in the compositor, as the viewport can be a subset of the RenderWidget
-  // in such cases as:
-  // - When (hiding-on-scroll) top and bottom controls are present.
-  // - Rounding issues with OOPIFs (??).
-  gfx::Size size_;
-
   // True once Close() is called, during the self-destruction process, and to
   // verify destruction always goes through Close().
   bool closing_ = false;
-
-  // In web tests, synchronous resizing mode may be used. Normally each widget's
-  // size is controlled by IPC from the browser. In synchronous resize mode the
-  // renderer controls the size directly, and IPCs from the browser must be
-  // ignored. This was deprecated but then later undeprecated, so it is now
-  // called unfortunate instead. See https://crbug.com/309760. When this is
-  // enabled the various size properties will be controlled directly when
-  // SetWindowRect() is called instead of needing a round trip through the
-  // browser.
-  // Note that SetWindowRectSynchronouslyForTesting() provides a secondary way
-  // to control the size of the RenderWidget independently from the renderer
-  // process, without the use of this mode, however it would be overridden by
-  // the browser if they disagree.
-  bool synchronous_resize_mode_for_testing_ = false;
 
   // While we are waiting for the browser to update window sizes, we track the
   // pending size temporarily.
@@ -476,10 +431,6 @@ class CONTENT_EXPORT RenderWidget
   // A callback into the creator/opener of this widget, to be executed when
   // WebWidgetClient::Show() occurs.
   ShowCallback show_callback_;
-
-  // Browser controls params such as top and bottom controls heights, whether
-  // controls shrink blink size etc.
-  cc::BrowserControlsParams browser_controls_params_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderWidget);
 };

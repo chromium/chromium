@@ -101,8 +101,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
-#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/frame/web_view_frame_widget.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/forms/external_date_time_chooser.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -2972,7 +2972,7 @@ TEST_F(WebViewTest, TouchDragContextMenuWithoutDrag) {
 
   // Simulate the end of a non-moving drag.
   const gfx::PointF dragend_point(250, 8);
-  web_view->MainFrameWidgetBase()->DragSourceEndedAt(
+  web_view->MainFrameViewWidget()->DragSourceEndedAt(
       dragend_point, dragend_point, kWebDragOperationNone);
   EXPECT_TRUE(
       web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(
@@ -3011,7 +3011,7 @@ TEST_F(WebViewTest, TouchDragContextMenuWithDrag) {
 
   // Simulate the end of a drag.
   const gfx::PointF dragend_point(270, 28);
-  web_view->MainFrameWidgetBase()->DragSourceEndedAt(
+  web_view->MainFrameViewWidget()->DragSourceEndedAt(
       dragend_point, dragend_point, kWebDragOperationNone);
   EXPECT_FALSE(
       web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(

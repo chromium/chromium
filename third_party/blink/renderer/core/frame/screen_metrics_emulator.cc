@@ -170,11 +170,10 @@ void ScreenMetricsEmulator::UpdateVisualProperties(
   // Appy the compositor viewport rect and surface id allocation. The screen
   // info is kept the same as the current ScreenInfo state. The screen info
   // already was updated in |Apply| via |SetScreenInfoAndSize|.
-  delegate_->UpdateSurfaceAndScreenInfo(
+  delegate_->UpdateSurfaceAndCompositorRect(
       visual_properties.local_surface_id_allocation.value_or(
           viz::LocalSurfaceIdAllocation()),
-      visual_properties.compositor_viewport_pixel_rect,
-      delegate_->GetScreenInfo());
+      visual_properties.compositor_viewport_pixel_rect);
 }
 
 void ScreenMetricsEmulator::OnUpdateScreenRects(

@@ -178,6 +178,8 @@ void WidgetBase::InitializeCompositing(
       *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch(switches::kAllowPreCommitInput))
     widget_input_handler_manager_->AllowPreCommitInput();
+
+  UpdateScreenInfo(screen_info);
 }
 
 void WidgetBase::Shutdown(
@@ -1175,6 +1177,13 @@ void WidgetBase::UpdateCompositorViewportRect(
                              compositor_viewport_pixel_rect, screen_info_);
 }
 
+void WidgetBase::UpdateSurfaceAndCompositorRect(
+    const viz::LocalSurfaceIdAllocation& new_local_surface_id_allocation,
+    const gfx::Rect& compositor_viewport_pixel_rect) {
+  UpdateSurfaceAndScreenInfo(new_local_surface_id_allocation,
+                             compositor_viewport_pixel_rect, screen_info_);
+}
+
 const ScreenInfo& WidgetBase::GetScreenInfo() {
   return screen_info_;
 }
@@ -1186,10 +1195,16 @@ void WidgetBase::SetScreenRects(const gfx::Rect& widget_screen_rect,
 }
 
 void WidgetBase::SetPendingWindowRect(const gfx::Rect* rect) {
-  if (rect)
+  if (rect) {
     pending_window_rect_ = *rect;
-  else
+    // Popups don't get size updates back from the browser so just store the set
+    // values.
+    if (!client_->FrameWidget()) {
+      SetScreenRects(*rect, *rect);
+    }
+  } else {
     pending_window_rect_.reset();
+  }
 }
 
 gfx::Rect WidgetBase::WindowRect() {
@@ -1258,4 +1273,19 @@ gfx::PointF WidgetBase::BlinkSpaceToDIPs(const gfx::PointF& point) {
   return gfx::ConvertPointToDIP(
       client_->GetOriginalScreenInfo().device_scale_factor, point);
 }
+
+gfx::Size WidgetBase::DIPsToBlinkSpace(const gfx::Size& size) {
+  if (!use_zoom_for_dsf_)
+    return size;
+  return gfx::ScaleToCeiledSize(
+      size, client_->GetOriginalScreenInfo().device_scale_factor);
+}
+
+gfx::Size WidgetBase::BlinkSpaceToDIPs(const gfx::Size& size) {
+  if (!use_zoom_for_dsf_)
+    return size;
+  float reverse = 1 / client_->GetOriginalScreenInfo().device_scale_factor;
+  return gfx::ScaleToCeiledSize(size, reverse);
+}
+
 }  // namespace blink

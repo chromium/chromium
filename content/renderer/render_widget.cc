@@ -354,73 +354,16 @@ void RenderWidget::OnClose() {
   Close(base::WrapUnique(this));
 }
 
-void RenderWidget::UpdateVisualProperties(
-    bool emulator_enabled,
-    const blink::VisualProperties& visual_properties) {
-  if (delegate()) {
-    if (size_ != visual_properties.new_size) {
-      // Only hide popups when the size changes. Eg https://crbug.com/761908.
-      blink::WebView* web_view = GetFrameWidget()->LocalRoot()->View();
-      web_view->CancelPagePopup();
-    }
-
-    browser_controls_params_ = visual_properties.browser_controls_params;
-  }
-
-  if (!emulator_enabled) {
-    // We can ignore browser-initialized resizing during synchronous
-    // (renderer-controlled) mode, unless it is switching us to/from
-    // fullsreen mode or changing the device scale factor.
-    bool ignore_resize_ipc = synchronous_resize_mode_for_testing_;
-    if (ignore_resize_ipc) {
-      // TODO(danakj): Does the browser actually change DSF inside a web test??
-      // TODO(danakj): Isn't the display mode check redundant with the
-      // fullscreen one?
-      if (visual_properties.is_fullscreen_granted !=
-              IsFullscreenGrantedForFrame() ||
-          visual_properties.screen_info.device_scale_factor !=
-              GetWebWidget()->GetScreenInfo().device_scale_factor)
-        ignore_resize_ipc = false;
-    }
-
-    // When controlling the size in the renderer, we should ignore sizes given
-    // by the browser IPC here.
-    // TODO(danakj): There are many things also being ignored that aren't the
-    // widget's size params. It works because tests that use this mode don't
-    // change those parameters, I guess. But it's more complicated then because
-    // it looks like they are related to sync resize mode. Let's move them out
-    // of this block.
-    if (!ignore_resize_ipc) {
-      gfx::Rect new_compositor_viewport_pixel_rect =
-          visual_properties.compositor_viewport_pixel_rect;
-      if (AutoResizeMode()) {
-        new_compositor_viewport_pixel_rect = gfx::Rect(gfx::ScaleToCeiledSize(
-            size_, visual_properties.screen_info.device_scale_factor));
-      }
-
-      GetWebWidget()->UpdateSurfaceAndScreenInfo(
-          visual_properties.local_surface_id_allocation.value_or(
-              viz::LocalSurfaceIdAllocation()),
-          new_compositor_viewport_pixel_rect, visual_properties.screen_info);
-
-      // Store this even when auto-resizing, it is the size of the full viewport
-      // used for clipping, and this value is propagated down the RenderWidget
-      // hierarchy via the VisualProperties waterfall.
-      GetWebWidget()->SetVisibleViewportSize(
-          visual_properties.visible_viewport_size);
-
-      if (!AutoResizeMode()) {
-        SetSize(visual_properties.new_size);
-      }
-    }
-  }
-}
-
 void RenderWidget::OnRequestSetBoundsAck() {
   DCHECK(pending_window_rect_count_);
   pending_window_rect_count_--;
   if (pending_window_rect_count_ == 0)
     GetWebWidget()->SetPendingWindowRect(nullptr);
+}
+
+void RenderWidget::SetPendingWindowRect(const gfx::Rect& rect) {
+  pending_window_rect_count_++;
+  GetWebWidget()->SetPendingWindowRect(&rect);
 }
 
 void RenderWidget::RequestPresentation(PresentationTimeCallback callback) {
@@ -472,7 +415,11 @@ void RenderWidget::ScheduleAnimation() {
   // This call is not needed in single thread mode for tests without a
   // scheduler, but they override this method in order to schedule a synchronous
   // composite task themselves.
-  layer_tree_host_->SetNeedsAnimate();
+  // TODO(dtapuska): ScheduleAnimation might get called before layer_tree_host_
+  // is assigned, inside the InitializeCompositing call. This should eventually
+  // go away when this is moved inside blink. https://crbug.com/1097816
+  if (layer_tree_host_)
+    layer_tree_host_->SetNeedsAnimate();
 }
 
 void RenderWidget::RecordTimeToFirstActivePaint(base::TimeDelta duration) {
@@ -538,58 +485,6 @@ bool RenderWidget::WillHandleMouseEvent(const blink::WebMouseEvent& event) {
   return mouse_lock_dispatcher()->WillHandleMouseEvent(event);
 }
 
-void RenderWidget::ResizeWebWidget() {
-  // In auto resize mode, blink controls sizes and RenderWidget should not be
-  // passing values back in.
-  DCHECK(!AutoResizeMode());
-
-  // The widget size given to blink is scaled by the (non-emulated,
-  // see https://crbug.com/819903) device scale factor (if UseZoomForDSF is
-  // enabled).
-  gfx::Size size_for_blink;
-  if (!compositor_deps_->IsUseZoomForDSFEnabled()) {
-    size_for_blink = size_;
-  } else {
-    size_for_blink = gfx::ScaleToCeiledSize(
-        size_, GetWebWidget()->GetOriginalScreenInfo().device_scale_factor);
-  }
-
-  // The |visible_viewport_size| given to blink is scaled by the (non-emulated,
-  // see https://crbug.com/819903) device scale factor (if UseZoomForDSF is
-  // enabled).
-  gfx::Size visible_viewport_size_for_blink;
-  if (!compositor_deps_->IsUseZoomForDSFEnabled()) {
-    visible_viewport_size_for_blink = GetWebWidget()->VisibleViewportSize();
-  } else {
-    visible_viewport_size_for_blink = gfx::ScaleToCeiledSize(
-        GetWebWidget()->VisibleViewportSize(),
-        GetWebWidget()->GetOriginalScreenInfo().device_scale_factor);
-  }
-
-  if (delegate()) {
-    // When associated with a RenderView, the RenderView is in control of the
-    // main frame's size, because it includes other factors for top and bottom
-    // controls.
-    delegate()->ResizeWebWidgetForWidget(size_for_blink,
-                                         visible_viewport_size_for_blink,
-                                         browser_controls_params_);
-  } else {
-    // Child frames set the |visible_viewport_size| on the RenderView/WebView to
-    // limit the size blink tries to composite when the widget is not visible,
-    // such as when it is scrolled out of the main frame's view.
-    if (for_frame()) {
-      RenderFrameImpl* render_frame =
-          RenderFrameImpl::FromWebFrame(GetFrameWidget()->LocalRoot());
-      render_frame->SetVisibleViewportSizeForChildLocalRootOnRenderView(
-          visible_viewport_size_for_blink);
-    }
-
-    // For child frame widgets, popups, and pepper, the RenderWidget is in
-    // control of the WebWidget's size.
-    GetWebWidget()->Resize(size_for_blink);
-  }
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // WebWidgetClient
 
@@ -638,7 +533,6 @@ void RenderWidget::InitCompositing(const blink::ScreenInfo& screen_info) {
       screen_info, compositor_deps_->CreateUkmRecorderFactory(),
       /*settings=*/nullptr);
   DCHECK(layer_tree_host_);
-  webwidget_->UpdateScreenInfo(screen_info);
 }
 
 // static
@@ -718,21 +612,6 @@ bool RenderWidget::IsForProvisionalFrame() const {
 }
 
 void RenderWidget::SetWindowRect(const gfx::Rect& window_rect) {
-  // This path is for the renderer to change the on-screen position/size of
-  // the widget by changing its window rect. This is not possible for
-  // RenderWidgets whose position/size are controlled by layout from another
-  // frame tree (ie. child local root frames), as the window rect can only be
-  // set by the browser.
-  if (for_child_local_root_frame_)
-    return;
-
-  if (synchronous_resize_mode_for_testing_) {
-    // This is a web-test-only path. At one point, it was planned to be
-    // removed. See https://crbug.com/309760.
-    SetWindowRectSynchronously(window_rect);
-    return;
-  }
-
   if (show_callback_) {
     // The widget is not shown yet. Delay the |window_rect| being sent to the
     // browser until Show() is called so it can be sent with that IPC, once the
@@ -743,23 +622,6 @@ void RenderWidget::SetWindowRect(const gfx::Rect& window_rect) {
     SetPendingWindowRect(window_rect);
   }
 }
-
-void RenderWidget::SetPendingWindowRect(const gfx::Rect& rect) {
-  GetWebWidget()->SetPendingWindowRect(&rect);
-  pending_window_rect_count_++;
-
-  // Popups don't get size updates back from the browser so just store the set
-  // values.
-  if (!for_frame()) {
-    GetWebWidget()->SetScreenRects(rect, rect);
-  }
-}
-
-void RenderWidget::SetSize(const gfx::Size& new_size) {
-  size_ = new_size;
-  ResizeWebWidget();
-}
-
 void RenderWidget::ImeSetCompositionForPepper(
     const blink::WebString& text,
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
@@ -793,37 +655,6 @@ void RenderWidget::ImeFinishComposingTextForPepper(bool keep_selection) {
   DCHECK(plugin);
   plugin->render_frame()->OnImeFinishComposingText(keep_selection);
 #endif
-}
-
-void RenderWidget::SetWindowRectSynchronously(
-    const gfx::Rect& new_window_rect) {
-  // This method is only call in tests, and it applies the |new_window_rect| to
-  // all three of:
-  // a) widget size (in |size_|)
-  // b) blink viewport (in |visible_viewport_size_|)
-  // c) compositor viewport (in cc::LayerTreeHost)
-  // Normally the browser controls these three things independently, but this is
-  // used in tests to control the size from the renderer.
-
-  // We are resizing the window from the renderer, so allocate a new
-  // viz::LocalSurfaceId to avoid surface invariants violations in tests.
-  layer_tree_host_->RequestNewLocalSurfaceId();
-
-  gfx::Rect compositor_viewport_pixel_rect(gfx::ScaleToCeiledSize(
-      new_window_rect.size(),
-      GetWebWidget()->GetScreenInfo().device_scale_factor));
-  GetWebWidget()->UpdateCompositorViewportRect(compositor_viewport_pixel_rect);
-
-  GetWebWidget()->SetVisibleViewportSize(new_window_rect.size());
-  SetSize(new_window_rect.size());
-  GetWebWidget()->SetScreenRects(new_window_rect, new_window_rect);
-
-  if (show_callback_) {
-    // Tests may call here directly to control the window rect. If
-    // Show() did not happen yet, the rect is stored to be passed to the
-    // browser when the RenderWidget requests Show().
-    initial_rect_ = new_window_rect;
-  }
 }
 
 void RenderWidget::OnSetViewportIntersection(
@@ -888,20 +719,6 @@ void RenderWidget::ConvertWindowToViewport(blink::WebFloatRect* rect) {
 
 void RenderWidget::UpdateSelectionBounds() {
   GetWebWidget()->UpdateSelectionBounds();
-}
-
-void RenderWidget::DidAutoResize(const gfx::Size& new_size) {
-  WebRect new_size_in_window(0, 0, new_size.width(), new_size.height());
-  ConvertViewportToWindow(&new_size_in_window);
-  if (size_.width() != new_size_in_window.width ||
-      size_.height() != new_size_in_window.height) {
-    size_ = gfx::Size(new_size_in_window.width, new_size_in_window.height);
-
-    if (synchronous_resize_mode_for_testing_) {
-      gfx::Rect new_pos(GetWebWidget()->WindowRect().origin(), size_);
-      GetWebWidget()->SetScreenRects(new_pos, new_pos);
-    }
-  }
 }
 
 viz::FrameSinkId RenderWidget::GetFrameSinkId() {
@@ -977,33 +794,6 @@ blink::WebInputMethodController* RenderWidget::GetInputMethodController()
   return nullptr;
 }
 
-void RenderWidget::UseSynchronousResizeModeForTesting(bool enable) {
-  synchronous_resize_mode_for_testing_ = enable;
-}
-
-void RenderWidget::SetDeviceScaleFactorForTesting(float factor) {
-  DCHECK(for_frame());
-  GetFrameWidget()->SetDeviceScaleFactorForTesting(factor);
-
-  // Receiving a 0 is used to reset between tests, it removes the override in
-  // order to listen to the browser for the next test.
-  if (!factor)
-    return;
-
-  blink::ScreenInfo info = GetWebWidget()->GetScreenInfo();
-  info.device_scale_factor = factor;
-  gfx::Size viewport_pixel_size = gfx::ScaleToCeiledSize(size_, factor);
-  GetWebWidget()->UpdateCompositorViewportAndScreenInfo(
-      gfx::Rect(viewport_pixel_size), info);
-  if (!AutoResizeMode())
-    ResizeWebWidget();  // This picks up the new device scale factor in |info|.
-}
-
-void RenderWidget::SetWindowRectSynchronouslyForTesting(
-    const gfx::Rect& new_window_rect) {
-  SetWindowRectSynchronously(new_window_rect);
-}
-
 #if BUILDFLAG(ENABLE_PLUGINS)
 PepperPluginInstanceImpl* RenderWidget::GetFocusedPepperPluginInsideWidget() {
   blink::WebFrameWidget* frame_widget = GetFrameWidget();
@@ -1031,12 +821,6 @@ PepperPluginInstanceImpl* RenderWidget::GetFocusedPepperPluginInsideWidget() {
   return nullptr;
 }
 #endif
-
-bool RenderWidget::AutoResizeMode() {
-  if (!delegate_)
-    return false;
-  return delegate_->AutoResizeMode();
-}
 
 bool RenderWidget::IsFullscreenGrantedForFrame() {
   if (!for_frame())

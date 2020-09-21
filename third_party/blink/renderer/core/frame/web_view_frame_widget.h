@@ -60,7 +60,7 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   void Close(
       scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) override;
   WebSize Size() override;
-  void Resize(const WebSize&) override;
+  void Resize(const WebSize& size_with_dsf) override;
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason) override;
   void ThemeChanged() override;
@@ -101,6 +101,8 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
                                   float maximum) override;
   ScreenMetricsEmulator* DeviceEmulator() override;
   const ScreenInfo& GetOriginalScreenInfo() override;
+  void ApplyVisualPropertiesSizing(
+      const VisualProperties& visual_properties) override;
 
   // FrameWidget overrides:
   void SetRootLayer(scoped_refptr<cc::Layer>) override;
@@ -134,7 +136,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   bool UpdateScreenRects(const gfx::Rect& widget_screen_rect,
                          const gfx::Rect& window_screen_rect) override;
 
-  // RenderWidgetScreenMetricsEmulatorDelegate
   void SetScreenMetricsEmulationParameters(
       bool enabled,
       const blink::DeviceEmulationParams& params);
@@ -144,14 +145,25 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
 
   void Trace(Visitor*) const override;
 
+  void UpdateSurfaceAndCompositorRect(
+      const viz::LocalSurfaceIdAllocation& new_local_surface_id_allocation,
+      const gfx::Rect& compositor_viewport_pixel_rect);
   void SetIsNestedMainFrameWidget(bool is_nested);
   void DidAutoResize(const gfx::Size& size);
   void SetDeviceColorSpaceForTesting(const gfx::ColorSpace& color_space);
   bool AutoResizeMode();
+  void SetWindowRect(const gfx::Rect& window_rect);
+  void SetWindowRectSynchronouslyForTesting(const gfx::Rect& new_window_rect);
+  void UseSynchronousResizeModeForTesting(bool enable);
+
+  // Converts from DIPs to Blink coordinate space (ie. Viewport/Physical
+  // pixels).
+  gfx::Size DIPsToBlinkSpace(const gfx::Size& size);
 
  private:
   PageWidgetEventHandler* GetPageWidgetEventHandler() override;
   LocalFrameView* GetLocalFrameViewForAnimationScrolling() override;
+  void SetWindowRectSynchronously(const gfx::Rect& new_window_rect);
 
   scoped_refptr<WebViewImpl> web_view_;
   base::Optional<base::TimeTicks> commit_compositor_frame_start_time_;
@@ -175,6 +187,24 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   // to override values given from the browser such as ScreenInfo,
   // WidgetScreenRect, WindowScreenRect, and the widget's size.
   Member<ScreenMetricsEmulator> device_emulator_;
+
+  // In web tests, synchronous resizing mode may be used. Normally each widget's
+  // size is controlled by IPC from the browser. In synchronous resize mode the
+  // renderer controls the size directly, and IPCs from the browser must be
+  // ignored. This was deprecated but then later undeprecated, so it is now
+  // called unfortunate instead. See https://crbug.com/309760. When this is
+  // enabled the various size properties will be controlled directly when
+  // SetWindowRect() is called instead of needing a round trip through the
+  // browser.
+  // Note that SetWindowRectSynchronouslyForTesting() provides a secondary way
+  // to control the size of the FrameWidget independently from the renderer
+  // process, without the use of this mode, however it would be overridden by
+  // the browser if they disagree.
+  bool synchronous_resize_mode_for_testing_ = false;
+
+  // The size of the widget in viewport coordinates. This is slightly different
+  // than the WebViewImpl::size_ since isn't set in auto resize mode.
+  gfx::Size size_;
 
   SelfKeepAlive<WebViewFrameWidget> self_keep_alive_;
 

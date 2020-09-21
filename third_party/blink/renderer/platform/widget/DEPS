@@ -1,9 +1,11 @@
 include_rules = [
     "+cc/paint/element_id.h",
+    "+cc/trees/browser_controls_params.h",
     "+cc/trees/latency_info_swap_promise_monitor.h",
     "+cc/trees/layer_tree_host.h",
     "+cc/trees/layer_tree_settings.h",
     "+cc/trees/ukm_manager.h",
+    "+components/viz/common/surfaces/local_surface_id_allocation.h",
     "+ui/base/ime/text_input_mode.h",
     "+ui/base/ime/text_input_type.h",
     "+ui/base/ime/mojom/text_input_state.mojom-blink.h",

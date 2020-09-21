@@ -137,8 +137,8 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
-#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/frame/web_view_frame_widget.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
@@ -1266,7 +1266,7 @@ void UpdateScreenInfoAndResizeView(
     int viewport_width,
     int viewport_height) {
   client->screen_info_.rect = gfx::Rect(viewport_width, viewport_height);
-  web_view_helper->GetWebView()->MainFrameWidget()->UpdateScreenInfo(
+  web_view_helper->GetWebView()->MainFrameViewWidget()->UpdateScreenInfo(
       client->screen_info_);
   web_view_helper->Resize(WebSize(viewport_width, viewport_height));
 }
@@ -10817,7 +10817,7 @@ class WebRemoteFrameVisibilityChangeTest : public WebFrameTest {
   void ExecuteScriptOnMainFrame(const WebScriptSource& script) {
     MainFrame()->ExecuteScript(script);
     web_view_helper_.GetWebView()
-        ->MainFrameWidgetBase()
+        ->MainFrameViewWidget()
         ->SynchronouslyCompositeForTesting(base::TimeTicks::Now());
     RunPendingTasks();
   }
@@ -10910,7 +10910,7 @@ class WebLocalFrameVisibilityChangeTest
   void ExecuteScriptOnMainFrame(const WebScriptSource& script) {
     MainFrame()->ExecuteScript(script);
     web_view_helper_.GetWebView()
-        ->MainFrameWidgetBase()
+        ->MainFrameViewWidget()
         ->SynchronouslyCompositeForTesting(base::TimeTicks::Now());
     RunPendingTasks();
   }

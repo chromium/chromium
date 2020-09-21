@@ -508,6 +508,13 @@ class RenderViewImplTest : public RenderViewTest {
     return gfx::Size(webview->GetPreferredSizeForTest());
   }
 
+  gfx::Size MainWidgetSizeInDIPS() {
+    blink::WebSize widget_size = main_widget()->GetWebWidget()->Size();
+    blink::WebRect widget_rect(0, 0, widget_size.width, widget_size.height);
+    main_widget()->ConvertViewportToWindow(&widget_rect);
+    return gfx::Rect(widget_rect).size();
+  }
+
   int GetScrollbarWidth() {
     blink::WebView* webview = view()->GetWebView();
     return webview->MainFrameWidget()->Size().width -
@@ -3245,24 +3252,24 @@ const char kAutoResizeTestPage[] =
 TEST_F(RenderViewImplEnableZoomForDSFTest, AutoResizeWithZoomForDSF) {
   EnableAutoResize(gfx::Size(5, 5), gfx::Size(1000, 1000));
   LoadHTML(kAutoResizeTestPage);
-  gfx::Size size_at_1x = main_widget()->size();
+  gfx::Size size_at_1x = MainWidgetSizeInDIPS();
   ASSERT_FALSE(size_at_1x.IsEmpty());
 
   SetDeviceScaleFactor(2.f);
   LoadHTML(kAutoResizeTestPage);
-  gfx::Size size_at_2x = main_widget()->size();
+  gfx::Size size_at_2x = MainWidgetSizeInDIPS();
   EXPECT_EQ(size_at_1x, size_at_2x);
 }
 
 TEST_F(RenderViewImplScaleFactorTest, AutoResizeWithoutZoomForDSF) {
   EnableAutoResize(gfx::Size(5, 5), gfx::Size(1000, 1000));
   LoadHTML(kAutoResizeTestPage);
-  gfx::Size size_at_1x = main_widget()->size();
+  gfx::Size size_at_1x = MainWidgetSizeInDIPS();
   ASSERT_FALSE(size_at_1x.IsEmpty());
 
   SetDeviceScaleFactor(2.f);
   LoadHTML(kAutoResizeTestPage);
-  gfx::Size size_at_2x = main_widget()->size();
+  gfx::Size size_at_2x = MainWidgetSizeInDIPS();
   EXPECT_EQ(size_at_1x, size_at_2x);
 }
 

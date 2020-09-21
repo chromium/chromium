@@ -149,16 +149,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   void AddObserver(RenderViewObserver* observer);
   void RemoveObserver(RenderViewObserver* observer);
 
-  // Passes along the device scale factor to the WebView.
-  void SetDeviceScaleFactor(bool use_zoom_for_dsf, float device_scale_factor);
-
-  // Passes along the visible viewport size to the WebView, for child local
-  // roots when there is no local main frame present. When a local main frame
-  // exists in this renderer's frame tree, its value should persist and this
-  // method does nothing.
-  void SetVisibleViewportSizeForChildLocalRoot(
-      const gfx::Size& visible_viewport_size);
-
   // Passes along the page zoom to the WebView to set it on a newly attached
   // LocalFrame.
   void PropagatePageZoomToNewlyAttachedFrame(bool use_zoom_for_dsf,
@@ -222,7 +212,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   blink::WebString AcceptLanguages() override;
   int HistoryBackListCount() override;
   int HistoryForwardListCount() override;
-  void DidAutoResize(const blink::WebSize& newSize) override;
   bool CanHandleGestureEvent() override;
   bool AllowPopupsDuringPageUnload() override;
   void OnPageVisibilityChanged(PageVisibilityState visibility) override;

@@ -55,8 +55,8 @@
 #include "third_party/blink/renderer/core/frame/screen_metrics_emulator.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
-#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/frame/web_view_frame_widget.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -277,7 +277,7 @@ void WebPagePopupImpl::SetWebView(WebViewImpl* web_view) {
   DCHECK(web_view);
   DCHECK(!web_view_);
   web_view_ = web_view;
-  if (auto* widget = web_view->MainFrameWidgetBase()) {
+  if (auto* widget = web_view->MainFrameViewWidget()) {
     if (auto* device_emulator = widget->DeviceEmulator()) {
       opener_widget_screen_origin_ = device_emulator->ViewRectOrigin();
       opener_original_widget_screen_origin_ =
@@ -484,31 +484,6 @@ void WebPagePopupImpl::ApplyVisualProperties(
   widget_base_->UpdateVisualProperties(visual_properties);
 }
 
-void WebPagePopupImpl::UpdateSurfaceAndScreenInfo(
-    const viz::LocalSurfaceIdAllocation& new_local_surface_id_allocation,
-    const gfx::Rect& compositor_viewport_pixel_rect,
-    const ScreenInfo& new_screen_info) {
-  widget_base_->UpdateSurfaceAndScreenInfo(new_local_surface_id_allocation,
-                                           compositor_viewport_pixel_rect,
-                                           new_screen_info);
-}
-
-void WebPagePopupImpl::UpdateScreenInfo(const ScreenInfo& new_screen_info) {
-  widget_base_->UpdateScreenInfo(new_screen_info);
-}
-
-void WebPagePopupImpl::UpdateCompositorViewportAndScreenInfo(
-    const gfx::Rect& compositor_viewport_pixel_rect,
-    const ScreenInfo& new_screen_info) {
-  widget_base_->UpdateCompositorViewportAndScreenInfo(
-      compositor_viewport_pixel_rect, new_screen_info);
-}
-
-void WebPagePopupImpl::UpdateCompositorViewportRect(
-    const gfx::Rect& compositor_viewport_pixel_rect) {
-  widget_base_->UpdateCompositorViewportRect(compositor_viewport_pixel_rect);
-}
-
 const ScreenInfo& WebPagePopupImpl::GetScreenInfo() {
   return widget_base_->GetScreenInfo();
 }
@@ -526,13 +501,8 @@ void WebPagePopupImpl::SetScreenRects(const gfx::Rect& widget_screen_rect,
   widget_base_->SetScreenRects(widget_screen_rect, window_screen_rect);
 }
 
-void WebPagePopupImpl::SetVisibleViewportSize(
-    const gfx::Size& visible_viewport_size) {
-  widget_base_->SetVisibleViewportSize(visible_viewport_size);
-}
-
-const gfx::Size& WebPagePopupImpl::VisibleViewportSize() {
-  return widget_base_->VisibleViewportSize();
+gfx::Size WebPagePopupImpl::VisibleViewportSizeInDIPs() {
+  return widget_base_->BlinkSpaceToDIPs(widget_base_->VisibleViewportSize());
 }
 
 void WebPagePopupImpl::SetPendingWindowRect(
@@ -839,8 +809,15 @@ void WebPagePopupImpl::ScheduleAnimation() {
 
 void WebPagePopupImpl::UpdateVisualProperties(
     const VisualProperties& visual_properties) {
-  WidgetClient()->UpdateVisualProperties(/*emulator_enabled=*/false,
-                                         visual_properties);
+  widget_base_->UpdateSurfaceAndScreenInfo(
+      visual_properties.local_surface_id_allocation.value_or(
+          viz::LocalSurfaceIdAllocation()),
+      visual_properties.compositor_viewport_pixel_rect,
+      visual_properties.screen_info);
+  widget_base_->SetVisibleViewportSize(
+      widget_base_->DIPsToBlinkSpace(visual_properties.visible_viewport_size));
+
+  Resize(WebSize(widget_base_->DIPsToBlinkSpace(visual_properties.new_size)));
 }
 
 const ScreenInfo& WebPagePopupImpl::GetOriginalScreenInfo() {

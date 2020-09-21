@@ -2975,18 +2975,6 @@ void RenderFrameImpl::SetSelectedText(const base::string16& selection_text,
                                       static_cast<uint32_t>(offset), range);
 }
 
-void RenderFrameImpl::SetDeviceScaleFactorOnRenderView(
-    bool use_zoom_for_dsf,
-    float device_scale_factor) {
-  render_view_->SetDeviceScaleFactor(use_zoom_for_dsf, device_scale_factor);
-}
-
-void RenderFrameImpl::SetVisibleViewportSizeForChildLocalRootOnRenderView(
-    const gfx::Size& visible_viewport_size) {
-  DCHECK(frame_->Parent());  // Only called for child local roots.
-  render_view_->SetVisibleViewportSizeForChildLocalRoot(visible_viewport_size);
-}
-
 void RenderFrameImpl::AddMessageToConsole(
     blink::mojom::ConsoleMessageLevel level,
     const std::string& message) {

@@ -70,10 +70,6 @@ class Cursor;
 class LatencyInfo;
 }
 
-namespace viz {
-class LocalSurfaceIdAllocation;
-}
-
 namespace blink {
 class SynchronousCompositorRegistry;
 struct VisualProperties;
@@ -254,31 +250,6 @@ class WebWidget {
   virtual void ApplyVisualProperties(
       const VisualProperties& visual_properties) = 0;
 
-  // Update the surface allocation information, compositor viewport rect and
-  // screen info on the widget. This method is temporary as updating visual
-  // properties is shared action between WidgetBase and RenderWidget, and will
-  // be removed when it is all done inside blink proper.
-  // (https://crbug.com/1097816)
-  virtual void UpdateSurfaceAndScreenInfo(
-      const viz::LocalSurfaceIdAllocation& new_local_surface_id_allocation,
-      const gfx::Rect& compositor_viewport_pixel_rect,
-      const ScreenInfo& new_screen_info) = 0;
-
-  // Similar to UpdateSurfaceAndScreenInfo but the surface allocation
-  // and compositor viewport rect remain the same.
-  virtual void UpdateScreenInfo(const ScreenInfo& new_screen_info) = 0;
-
-  // Similar to UpdateSurfaceAndScreenInfo but the surface allocation
-  // remains the same.
-  virtual void UpdateCompositorViewportAndScreenInfo(
-      const gfx::Rect& compositor_viewport_pixel_rect,
-      const ScreenInfo& new_screen_info) = 0;
-
-  // Similar to UpdateSurfaceAndScreenInfo but the surface allocation and screen
-  // info remain the same.
-  virtual void UpdateCompositorViewportRect(
-      const gfx::Rect& compositor_viewport_pixel_rect) = 0;
-
   // Returns information about the screen where this view's widgets are being
   // displayed.
   virtual const ScreenInfo& GetScreenInfo() = 0;
@@ -300,12 +271,8 @@ class WebWidget {
   virtual void SetScreenRects(const gfx::Rect& widget_screen_rect,
                               const gfx::Rect& window_screen_rect) = 0;
 
-  // Sets the visible viewport size (in screen coorindates).
-  virtual void SetVisibleViewportSize(
-      const gfx::Size& visible_viewport_size) = 0;
-
   // Returns the visible viewport size (in screen coorindates).
-  virtual const gfx::Size& VisibleViewportSize() = 0;
+  virtual gfx::Size VisibleViewportSizeInDIPs() = 0;
 
   // Returns the emulator scale.
   virtual float GetEmulatorScale() { return 1.0f; }

@@ -271,7 +271,7 @@ void RenderFrameProxy::Init(blink::WebRemoteFrame* web_frame,
     pending_visual_properties_.screen_info =
         ancestor_render_widget_->GetWebWidget()->GetOriginalScreenInfo();
     pending_visual_properties_.visible_viewport_size =
-        ancestor_render_widget_->GetWebWidget()->VisibleViewportSize();
+        ancestor_render_widget_->GetWebWidget()->VisibleViewportSizeInDIPs();
     const blink::WebVector<gfx::Rect>& window_segments =
         static_cast<blink::WebFrameWidget*>(
             ancestor_render_widget_->GetWebWidget())

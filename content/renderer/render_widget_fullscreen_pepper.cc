@@ -163,12 +163,7 @@ class PepperExternalWidgetClient : public blink::WebExternalWidgetClient {
 
   void FocusChanged(bool enabled) override { widget_->FocusChanged(enabled); }
 
-  void UpdateVisualProperties(
-      const blink::VisualProperties& visual_properties) override {
-    widget_->UpdateVisualProperties(/*emulator_enabled=*/false,
-                                    visual_properties);
-    widget_->UpdateLayerBounds();
-  }
+  void DidUpdateVisualProperties() override { widget_->UpdateLayerBounds(); }
 
  private:
   RenderWidgetFullscreenPepper* widget_;

@@ -799,17 +799,6 @@ class CONTENT_EXPORT RenderFrameImpl
 
   media::MediaPermission* GetMediaPermission();
 
-  // Proxies the call to set the device scale factor over to the RenderViewImpl.
-  // Meant to be called by the |render_widget_| in order to get access to the
-  // RenderViewImpl.
-  void SetDeviceScaleFactorOnRenderView(bool use_zoom_for_dsf,
-                                        float device_scale_factor);
-  // Proxies the call to set the visible viewport size over to the
-  // RenderViewImpl. Meant to be called by the |render_widget_| in order to get
-  // access to the RenderViewImpl.
-  void SetVisibleViewportSizeForChildLocalRootOnRenderView(
-      const gfx::Size& visible_viewport_size);
-
   // Sends the current frame's navigation state to the browser.
   void SendUpdateState();
 

@@ -31,12 +31,6 @@ class RenderWidgetTest : public RenderViewTest {
     return view_impl->GetMainRenderFrame()->GetLocalRootRenderWidget();
   }
 
-  void OnSynchronizeVisualProperties(
-      const blink::VisualProperties& visual_properties) {
-    widget()->UpdateVisualProperties(/*emulator_enabled=*/false,
-                                     visual_properties);
-  }
-
   gfx::Range LastCompositionRange() {
     render_widget_host_->GetWidgetInputHandler()->RequestCompositionUpdates(
         true, false);
@@ -74,53 +68,6 @@ class RenderWidgetTest : public RenderViewTest {
     return node.ScrollingElementIdForTesting();
   }
 };
-
-TEST_F(RenderWidgetTest, OnSynchronizeVisualProperties) {
-  widget()->DidNavigate(ukm::SourceId(42), GURL(""));
-  // The initial bounds is empty, so setting it to the same thing should do
-  // nothing.
-  blink::VisualProperties visual_properties;
-  visual_properties.screen_info = blink::ScreenInfo();
-  visual_properties.new_size = gfx::Size();
-  visual_properties.compositor_viewport_pixel_rect = gfx::Rect();
-  visual_properties.is_fullscreen_granted = false;
-  OnSynchronizeVisualProperties(visual_properties);
-
-  // Setting empty physical backing size should not send the ack.
-  visual_properties.new_size = gfx::Size(10, 10);
-  OnSynchronizeVisualProperties(visual_properties);
-
-  // Setting the bounds to a "real" rect should send the ack.
-  render_thread_->sink().ClearMessages();
-  viz::ParentLocalSurfaceIdAllocator local_surface_id_allocator;
-  local_surface_id_allocator.GenerateId();
-  gfx::Size size(100, 100);
-  visual_properties.local_surface_id_allocation =
-      local_surface_id_allocator.GetCurrentLocalSurfaceIdAllocation();
-  visual_properties.new_size = size;
-  visual_properties.compositor_viewport_pixel_rect = gfx::Rect(size);
-  OnSynchronizeVisualProperties(visual_properties);
-
-  // Clear the flag.
-  widget()->DidCommitCompositorFrame(base::TimeTicks());
-
-  // Setting the same size again should not send the ack.
-  OnSynchronizeVisualProperties(visual_properties);
-
-  // Resetting the rect to empty should not send the ack.
-  visual_properties.new_size = gfx::Size();
-  visual_properties.compositor_viewport_pixel_rect = gfx::Rect();
-  visual_properties.local_surface_id_allocation = base::nullopt;
-  OnSynchronizeVisualProperties(visual_properties);
-
-  // Changing the screen info should not send the ack.
-  visual_properties.screen_info.orientation_angle = 90;
-  OnSynchronizeVisualProperties(visual_properties);
-
-  visual_properties.screen_info.orientation_type =
-      blink::mojom::ScreenOrientation::kPortraitPrimary;
-  OnSynchronizeVisualProperties(visual_properties);
-}
 
 class RenderWidgetInitialSizeTest : public RenderWidgetTest {
  protected:

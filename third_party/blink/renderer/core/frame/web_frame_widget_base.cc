@@ -765,15 +765,7 @@ void WebFrameWidgetBase::UpdateVisualProperties(
   }
 
   gfx::Size old_visible_viewport_size = widget_base_->VisibleViewportSize();
-  auto* emulator = DeviceEmulator();
-  if (emulator) {
-    emulator->UpdateVisualProperties(visual_properties);
-  } else {
-    SetWindowSegments(visual_properties.root_widget_window_segments);
-  }
-
-  Client()->UpdateVisualProperties(/*emulator_enabled=*/!!emulator,
-                                   visual_properties);
+  ApplyVisualPropertiesSizing(visual_properties);
 
   if (old_visible_viewport_size != widget_base_->VisibleViewportSize()) {
     ForEachLocalFrameControlledByWidget(
@@ -789,7 +781,7 @@ void WebFrameWidgetBase::UpdateVisualProperties(
           remote_frame->Client()->DidChangeVisibleViewportSize(
               visible_viewport_size);
         },
-        widget_base_->VisibleViewportSize()));
+        widget_base_->BlinkSpaceToDIPs(widget_base_->VisibleViewportSize())));
   }
 
   // All non-top-level Widgets (child local-root frames, Portals, GuestViews,
@@ -1228,18 +1220,6 @@ void WebFrameWidgetBase::UpdateScreenInfo(const ScreenInfo& new_screen_info) {
   widget_base_->UpdateScreenInfo(new_screen_info);
 }
 
-void WebFrameWidgetBase::UpdateCompositorViewportAndScreenInfo(
-    const gfx::Rect& compositor_viewport_pixel_rect,
-    const ScreenInfo& new_screen_info) {
-  widget_base_->UpdateCompositorViewportAndScreenInfo(
-      compositor_viewport_pixel_rect, new_screen_info);
-}
-
-void WebFrameWidgetBase::UpdateCompositorViewportRect(
-    const gfx::Rect& compositor_viewport_pixel_rect) {
-  widget_base_->UpdateCompositorViewportRect(compositor_viewport_pixel_rect);
-}
-
 const ScreenInfo& WebFrameWidgetBase::GetScreenInfo() {
   return widget_base_->GetScreenInfo();
 }
@@ -1257,13 +1237,8 @@ void WebFrameWidgetBase::SetScreenRects(const gfx::Rect& widget_screen_rect,
   widget_base_->SetScreenRects(widget_screen_rect, window_screen_rect);
 }
 
-void WebFrameWidgetBase::SetVisibleViewportSize(
-    const gfx::Size& visible_viewport_size) {
-  widget_base_->SetVisibleViewportSize(visible_viewport_size);
-}
-
-const gfx::Size& WebFrameWidgetBase::VisibleViewportSize() {
-  return widget_base_->VisibleViewportSize();
+gfx::Size WebFrameWidgetBase::VisibleViewportSizeInDIPs() {
+  return widget_base_->BlinkSpaceToDIPs(widget_base_->VisibleViewportSize());
 }
 
 void WebFrameWidgetBase::SetPendingWindowRect(

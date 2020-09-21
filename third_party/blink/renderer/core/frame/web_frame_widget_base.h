@@ -309,23 +309,12 @@ class CORE_EXPORT WebFrameWidgetBase
   bool IsFullscreenGranted() override;
   bool PinchGestureActiveInMainFrame() override;
   float PageScaleInMainFrame() override;
-  void UpdateSurfaceAndScreenInfo(
-      const viz::LocalSurfaceIdAllocation& new_local_surface_id_allocation,
-      const gfx::Rect& compositor_viewport_pixel_rect,
-      const ScreenInfo& new_screen_info) override;
-  void UpdateScreenInfo(const ScreenInfo& new_screen_info) override;
-  void UpdateCompositorViewportAndScreenInfo(
-      const gfx::Rect& compositor_viewport_pixel_rect,
-      const ScreenInfo& new_screen_info) override;
-  void UpdateCompositorViewportRect(
-      const gfx::Rect& compositor_viewport_pixel_rect) override;
   const ScreenInfo& GetScreenInfo() override;
   gfx::Rect WindowRect() override;
   gfx::Rect ViewRect() override;
   void SetScreenRects(const gfx::Rect& widget_screen_rect,
                       const gfx::Rect& window_screen_rect) override;
-  void SetVisibleViewportSize(const gfx::Size& visible_viewport_size) override;
-  const gfx::Size& VisibleViewportSize() override;
+  gfx::Size VisibleViewportSizeInDIPs() override;
   void SetPendingWindowRect(const gfx::Rect* window_screen_rect) override;
   bool IsHidden() const override;
 
@@ -555,6 +544,19 @@ class CORE_EXPORT WebFrameWidgetBase
 
   virtual ScreenMetricsEmulator* DeviceEmulator() { return nullptr; }
 
+  // Called during |UpdateVisualProperties| to apply the new size to the widget.
+  virtual void ApplyVisualPropertiesSizing(
+      const VisualProperties& visual_properties) = 0;
+
+  // Update the surface allocation information, compositor viewport rect and
+  // screen info on the widget.
+  void UpdateSurfaceAndScreenInfo(
+      const viz::LocalSurfaceIdAllocation& new_local_surface_id_allocation,
+      const gfx::Rect& compositor_viewport_pixel_rect,
+      const ScreenInfo& new_screen_info);
+  // Similar to UpdateSurfaceAndScreenInfo but the surface allocation
+  // and compositor viewport rect remains the same.
+  void UpdateScreenInfo(const ScreenInfo& screen_info);
   void SetWindowSegments(const std::vector<gfx::Rect>& window_segments);
   viz::FrameSinkId GetFrameSinkIdAtPoint(const gfx::PointF& point,
                                          gfx::PointF* local_point);

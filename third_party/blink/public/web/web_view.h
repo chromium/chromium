@@ -330,6 +330,14 @@ class WebView {
   virtual void SetScreenOrientationOverrideForTesting(
       base::Optional<blink::mojom::ScreenOrientation> orientation) = 0;
 
+  // Enable/Disable synchronous resize mode that is used for web tests.
+  virtual void UseSynchronousResizeModeForTesting(bool enable) = 0;
+
+  // Set the window rect synchronously for testing. The normal flow is an
+  // asynchronous request to the browser.
+  virtual void SetWindowRectSynchronouslyForTesting(
+      const gfx::Rect& new_window_rect) = 0;
+
   // Auto-Resize -----------------------------------------------------------
 
   // Return the state of the auto resize mode.

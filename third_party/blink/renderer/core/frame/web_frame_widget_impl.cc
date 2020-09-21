@@ -1177,4 +1177,33 @@ gfx::Rect WebFrameWidgetImpl::ViewportVisibleRect() {
   return compositor_visible_rect_;
 }
 
+void WebFrameWidgetImpl::ApplyVisualPropertiesSizing(
+    const VisualProperties& visual_properties) {
+  SetWindowSegments(visual_properties.root_widget_window_segments);
+  widget_base_->UpdateSurfaceAndScreenInfo(
+      visual_properties.local_surface_id_allocation.value_or(
+          viz::LocalSurfaceIdAllocation()),
+      visual_properties.compositor_viewport_pixel_rect,
+      visual_properties.screen_info);
+
+  // Store this even when auto-resizing, it is the size of the full viewport
+  // used for clipping, and this value is propagated down the Widget
+  // hierarchy via the VisualProperties waterfall.
+  widget_base_->SetVisibleViewportSize(
+      widget_base_->DIPsToBlinkSpace(visual_properties.visible_viewport_size));
+
+  // Widgets in a WebView's frame tree without a local main frame
+  // set the size of the WebView to be the |visible_viewport_size|, in order
+  // to limit compositing in (out of process) child frames to what is visible.
+  //
+  // Note that child frames in the same process/WebView frame tree as the
+  // main frame do not do this in order to not clobber the source of truth in
+  // the main frame.
+  if (!View()->MainFrameImpl()) {
+    View()->Resize(WebSize(widget_base_->VisibleViewportSize()));
+  }
+
+  Resize(WebSize(widget_base_->DIPsToBlinkSpace(visual_properties.new_size)));
+}
+
 }  // namespace blink
