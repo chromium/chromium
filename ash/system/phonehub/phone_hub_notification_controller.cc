@@ -4,11 +4,14 @@
 
 #include "ash/system/phonehub/phone_hub_notification_controller.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/components/phonehub/notification.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -18,6 +21,8 @@ namespace ash {
 namespace {
 const char kNotifierId[] = "chrome://phonehub";
 const char kNotifierIdSeparator[] = "-";
+const int kReplyButtonIndex = 0;
+const int kCancelButtonIndex = 1;
 }  // namespace
 
 // Delegate for the displayed ChromeOS notification.
@@ -59,8 +64,16 @@ class PhoneHubNotificationController::NotificationDelegate
 
   void Click(const base::Optional<int>& button_index,
              const base::Optional<base::string16>& reply) override {
-    if (controller_ && reply.has_value())
+    if (!controller_ || !button_index.has_value())
+      return;
+
+    if (button_index.value() == kReplyButtonIndex && reply.has_value()) {
       controller_->SendInlineReply(phone_hub_id_, reply.value());
+      return;
+    }
+
+    if (button_index.value() == kCancelButtonIndex)
+      Remove();
   }
 
   void SettingsClick() override {
@@ -173,20 +186,64 @@ PhoneHubNotificationController::CreateNotification(
     const chromeos::phonehub::Notification* notification,
     const std::string& cros_id,
     NotificationDelegate* delegate) {
-  // TODO(tengs): Fill in the notification fields based on the PhoneHub
-  // notification data.
+  message_center::NotifierId notifier_id(
+      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId);
+
   auto notification_type = message_center::NOTIFICATION_TYPE_SIMPLE;
+
   base::string16 title = notification->title().value_or(base::string16());
   base::string16 message =
       notification->text_content().value_or(base::string16());
-  gfx::Image icon;
-  message_center::NotifierId notifier_id(
-      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId);
+
+  auto app_metadata = notification->app_metadata();
+  base::string16 display_source = app_metadata.visible_app_name;
+
   message_center::RichNotificationData optional_fields;
+  optional_fields.small_image = app_metadata.icon;
+  optional_fields.timestamp = notification->timestamp();
+
+  auto shared_image = notification->shared_image();
+  if (shared_image.has_value()) {
+    optional_fields.image = shared_image.value();
+    notification_type = message_center::NOTIFICATION_TYPE_IMAGE;
+  }
+
+  const gfx::Image& icon = notification->contact_image().value_or(gfx::Image());
+
+  switch (notification->importance()) {
+    case chromeos::phonehub::Notification::Importance::kNone:
+      FALLTHROUGH;
+    case chromeos::phonehub::Notification::Importance::kLow:
+      optional_fields.priority = message_center::MIN_PRIORITY;
+      break;
+    case chromeos::phonehub::Notification::Importance::kUnspecified:
+      FALLTHROUGH;
+    case chromeos::phonehub::Notification::Importance::kMin:
+      FALLTHROUGH;
+    case chromeos::phonehub::Notification::Importance::kDefault:
+      optional_fields.priority = message_center::LOW_PRIORITY;
+      break;
+    case chromeos::phonehub::Notification::Importance::kHigh:
+      optional_fields.priority = message_center::MAX_PRIORITY;
+      break;
+  }
+
+  message_center::ButtonInfo reply_button;
+  reply_button.title = l10n_util::GetStringUTF16(
+      IDS_ASH_PHONE_HUB_NOTIFICATION_INLINE_REPLY_BUTTON);
+  reply_button.placeholder = base::string16();
+  optional_fields.buttons.push_back(reply_button);
+
+  message_center::ButtonInfo cancel_button;
+  cancel_button.title = l10n_util::GetStringUTF16(
+      IDS_ASH_PHONE_HUB_NOTIFICATION_INLINE_CANCEL_BUTTON);
+  optional_fields.buttons.push_back(cancel_button);
+
+  optional_fields.settings_button_handler =
+      message_center::SettingsButtonHandler::DELEGATE;
 
   return std::make_unique<message_center::Notification>(
-      notification_type, cros_id, title, message, icon,
-      /*display_source=*/base::string16(),
+      notification_type, cros_id, title, message, icon, display_source,
       /*origin_url=*/GURL(), notifier_id, optional_fields,
       delegate->AsScopedRefPtr());
 }

@@ -1020,6 +1020,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_CONNECTION_ERROR_DIALOG_LEARN_MORE_BUTTON" desc="Learn more button on the connection error dialog to show more related information.">
         Learn more
       </message>
+      <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_INLINE_REPLY_BUTTON" desc="Label for the inline reply button inside a PhoneHub notification.">
+        Reply
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_INLINE_CANCEL_BUTTON" desc="Label for the cancel button inside a PhoneHub notification.">
+        Cancel
+      </message>
 
       <message name="IDS_ASH_STYLUS_TOOLS_CAPTURE_REGION_ACTION" desc="Title of the capture region action in the stylus tools (a pop-up panel next to the status tray). This causes a partial screenshot to be taken (the user selects an area of the screen to take a screenshot of).">
         Capture region

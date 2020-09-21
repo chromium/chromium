@@ -13,7 +13,9 @@
 #include "chromeos/components/phonehub/fake_notification_manager.h"
 #include "chromeos/components/phonehub/notification.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/events/event.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -168,6 +170,68 @@ TEST_F(PhoneHubNotificationControllerTest, InlineReply) {
 
 TEST_F(PhoneHubNotificationControllerTest, ClickSettings) {
   // TODO(tengs): Test this case once it is implemented.
+}
+
+TEST_F(PhoneHubNotificationControllerTest, CancelReply) {
+  chromeos::phonehub::Notification fake_notification(
+      kPhoneHubNotificationId0,
+      chromeos::phonehub::Notification::AppMetadata(base::UTF8ToUTF16(kAppName),
+                                                    kPackageName,
+                                                    /*icon=*/gfx::Image()),
+      base::Time::Now(), chromeos::phonehub::Notification::Importance::kDefault,
+      /*inline_reply_id=*/1, base::UTF8ToUTF16(kTitle),
+      base::UTF8ToUTF16(kTextContent));
+
+  notification_manager_.SetNotification(fake_notification);
+
+  auto* cros_notification =
+      message_center_->FindVisibleNotificationById(kCrOSNotificationId0);
+  ASSERT_TRUE(cros_notification);
+  EXPECT_EQ(2u, cros_notification->buttons().size());
+  message_center_->ClickOnNotificationButton(kCrOSNotificationId0, 1);
+  EXPECT_EQ(0u, message_center_->NotificationCount());
+}
+
+TEST_F(PhoneHubNotificationControllerTest, NotificationDataAndImages) {
+  base::Time timestamp = base::Time::FromJsTime(12345);
+
+  SkBitmap icon_bitmap;
+  icon_bitmap.allocN32Pixels(32, 32);
+  gfx::Image icon(gfx::ImageSkia::CreateFrom1xBitmap(icon_bitmap));
+
+  SkBitmap contact_image_bitmap;
+  contact_image_bitmap.allocN32Pixels(80, 80);
+  gfx::Image contact_image(
+      gfx::ImageSkia::CreateFrom1xBitmap(contact_image_bitmap));
+
+  SkBitmap shared_image_bitmap;
+  shared_image_bitmap.allocN32Pixels(400, 300);
+  gfx::Image shared_image(
+      gfx::ImageSkia::CreateFrom1xBitmap(shared_image_bitmap));
+
+  chromeos::phonehub::Notification fake_notification(
+      kPhoneHubNotificationId0,
+      chromeos::phonehub::Notification::AppMetadata(base::UTF8ToUTF16(kAppName),
+                                                    kPackageName, icon),
+      timestamp, chromeos::phonehub::Notification::Importance::kHigh,
+      /*inline_reply_id=*/0, base::UTF8ToUTF16(kTitle),
+      base::UTF8ToUTF16(kTextContent), shared_image, contact_image);
+
+  notification_manager_.SetNotification(fake_notification);
+
+  auto* cros_notification =
+      message_center_->FindVisibleNotificationById(kCrOSNotificationId0);
+  ASSERT_TRUE(cros_notification);
+  EXPECT_EQ(timestamp, cros_notification->timestamp());
+  EXPECT_EQ(message_center::MAX_PRIORITY, cros_notification->priority());
+  EXPECT_EQ(kTitle, base::UTF16ToUTF8(cros_notification->title()));
+  EXPECT_EQ(kAppName, base::UTF16ToUTF8(cros_notification->display_source()));
+
+  // Note that there's a slight discrepancy between the PhoneHub and
+  // notification image naming.
+  EXPECT_EQ(contact_image, cros_notification->icon());
+  EXPECT_EQ(icon, cros_notification->small_image());
+  EXPECT_EQ(shared_image, cros_notification->image());
 }
 
 }  // namespace ash

@@ -19,6 +19,10 @@ namespace multidevice {
 
 namespace {
 
+const int kIconSize = 16;
+const int kContactImageSize = 80;
+const int kSharedImageSize = 400;
+
 // Fake image types used for fields that require gfx::Image().
 enum class ImageType {
   kPink = 1,
@@ -28,24 +32,24 @@ enum class ImageType {
   kYellow = 5,
 };
 
-const SkBitmap ImageTypeToBitmap(ImageType image_type_num) {
+const SkBitmap ImageTypeToBitmap(ImageType image_type_num, int size) {
   SkBitmap bitmap;
-  bitmap.allocN32Pixels(16, 16);
+  bitmap.allocN32Pixels(size, size);
   switch (image_type_num) {
     case ImageType::kPink:
-      bitmap.eraseARGB(0, 255, 192, 203);
+      bitmap.eraseARGB(255, 255, 192, 203);
       break;
     case ImageType::kRed:
-      bitmap.eraseARGB(0, 255, 0, 0);
+      bitmap.eraseARGB(255, 255, 0, 0);
       break;
     case ImageType::kGreen:
-      bitmap.eraseARGB(0, 0, 255, 0);
+      bitmap.eraseARGB(255, 0, 255, 0);
       break;
     case ImageType::kBlue:
-      bitmap.eraseARGB(0, 0, 0, 255);
+      bitmap.eraseARGB(255, 0, 0, 255);
       break;
     case ImageType::kYellow:
-      bitmap.eraseARGB(0, 255, 255, 0);
+      bitmap.eraseARGB(255, 255, 255, 0);
       break;
     default:
       break;
@@ -65,8 +69,8 @@ phonehub::Notification::AppMetadata DictToAppMetadata(
   CHECK(app_metadata_dict->GetInteger("icon", &icon_image_type_as_int));
 
   auto icon_image_type = static_cast<ImageType>(icon_image_type_as_int);
-  gfx::Image icon =
-      gfx::Image::CreateFrom1xBitmap(ImageTypeToBitmap(icon_image_type));
+  gfx::Image icon = gfx::Image::CreateFrom1xBitmap(
+      ImageTypeToBitmap(icon_image_type, kIconSize));
   return phonehub::Notification::AppMetadata(visible_app_name, package_name,
                                              icon);
 }
@@ -103,8 +107,8 @@ void TryAddingMetadata(
   }
 
   auto favicon_image_type = static_cast<ImageType>(favicon_image_type_as_int);
-  gfx::Image favicon =
-      gfx::Image::CreateFrom1xBitmap(ImageTypeToBitmap(favicon_image_type));
+  gfx::Image favicon = gfx::Image::CreateFrom1xBitmap(
+      ImageTypeToBitmap(favicon_image_type, kIconSize));
 
   auto metadata = phonehub::BrowserTabsModel::BrowserTabMetadata(
       GURL(url), title, base::Time::FromJsTime(last_accessed_timestamp),
@@ -378,8 +382,8 @@ void MultidevicePhoneHubHandler::HandleSetNotification(
                                          &shared_image_type_as_int) &&
       shared_image_type_as_int) {
     auto shared_image_type = static_cast<ImageType>(shared_image_type_as_int);
-    opt_shared_image =
-        gfx::Image::CreateFrom1xBitmap(ImageTypeToBitmap(shared_image_type));
+    opt_shared_image = gfx::Image::CreateFrom1xBitmap(
+        ImageTypeToBitmap(shared_image_type, kSharedImageSize));
   }
 
   base::Optional<gfx::Image> opt_contact_image;
@@ -390,7 +394,7 @@ void MultidevicePhoneHubHandler::HandleSetNotification(
     auto shared_contact_image_type =
         static_cast<ImageType>(contact_image_type_as_int);
     opt_contact_image = gfx::Image::CreateFrom1xBitmap(
-        ImageTypeToBitmap(shared_contact_image_type));
+        ImageTypeToBitmap(shared_contact_image_type, kContactImageSize));
   }
 
   auto notification = phonehub::Notification(
