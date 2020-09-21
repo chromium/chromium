@@ -142,8 +142,7 @@ class LOCKABLE MaybeSpinLock<true> {
   }
 
  private:
-  // DCHECK_IS_ON() for now to check stability before performance.
-#if DCHECK_IS_ON() && (defined(OS_LINUX) || defined(OS_ANDROID))
+#if defined(OS_LINUX) || defined(OS_ANDROID)
   base::NoDestructor<SpinningFutex> lock_;
 #else
   // base::Lock is slower on the fast path than SpinLock, hence we still use it
