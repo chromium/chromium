@@ -33414,6 +33414,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cryptohome.TimeToPerformMount" units="ms"
+    expires_after="2021-10-01">
+  <owner>betuls@chromium.org</owner>
+  <owner>jorgelo@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    The amount of time cryptohome spends performing the mounts for the user's
+    encrypted home directory. Does not include any process or async dispatch
+    overhead.
+  </summary>
+</histogram>
+
 <histogram name="Cryptohome.TimeToPerformOOPMountCleanup" units="ms"
     expires_after="2021-01-31">
   <owner>jorgelo@chromium.org</owner>
