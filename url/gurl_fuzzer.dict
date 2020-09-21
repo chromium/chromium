@@ -403,3 +403,7 @@
 
 # This comes from https://crbug.com/1075515.
 "FilEsysteM:htTp:E=/."
+
+# This comes from https://crbug.com/1128999.
+"file:///.//"
+"file:////"
