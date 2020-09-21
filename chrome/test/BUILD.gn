@@ -6546,7 +6546,6 @@ if (is_android) {
       "//chrome/browser/profiles/android:java",
       "//chrome/test/android:chrome_java_test_support",
       "//components/signin/public/android:java",
-      "//components/sync:sync_java_test_support",
       "//components/sync/android:sync_java",
       "//content/public/test/android:content_java_test_support",
       "//third_party/android_deps:androidx_annotation_annotation_java",
@@ -6554,6 +6553,7 @@ if (is_android) {
     ]
     sources = [
       "../android/javatests/src/org/chromium/chrome/browser/sync/AndroidSyncSettingsTestUtils.java",
+      "../android/javatests/src/org/chromium/chrome/browser/sync/MockSyncContentResolverDelegate.java",
       "../android/javatests/src/org/chromium/chrome/browser/sync/SyncTestSigninUtils.java",
     ]
   }

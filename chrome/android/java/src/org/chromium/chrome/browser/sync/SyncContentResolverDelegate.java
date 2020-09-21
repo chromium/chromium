@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.sync;
+package org.chromium.chrome.browser.sync;
 
 import android.accounts.Account;
 import android.content.SyncStatusObserver;
@@ -13,7 +13,7 @@ import android.os.Bundle;
  * mock out for tests. This interface wraps all the sync-related methods we use from
  * the Android ContentResolver.
  */
-public interface SyncContentResolverDelegate {
+interface SyncContentResolverDelegate {
     Object addStatusChangeListener(int mask, SyncStatusObserver callback);
 
     void removeStatusChangeListener(Object handle);

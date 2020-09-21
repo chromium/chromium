@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.sync;
+package org.chromium.chrome.browser.sync;
 
 import android.accounts.Account;
 import android.content.ContentResolver;
@@ -14,7 +14,7 @@ import android.os.Bundle;
  * Note that SyncContentResolverDelegate is not an Android concept. In particular,
  * it's not this class that will notify observers, Android will directly do that.
  */
-public class SystemSyncContentResolverDelegate implements SyncContentResolverDelegate {
+class SystemSyncContentResolverDelegate implements SyncContentResolverDelegate {
     @Override
     public Object addStatusChangeListener(int mask, SyncStatusObserver callback) {
         return ContentResolver.addStatusChangeListener(mask, callback);

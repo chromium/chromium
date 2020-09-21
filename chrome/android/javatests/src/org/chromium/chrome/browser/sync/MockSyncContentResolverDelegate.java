@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.sync.test.util;
+package org.chromium.chrome.browser.sync;
 
 import android.accounts.Account;
 import android.content.ContentResolver;
@@ -10,8 +10,6 @@ import android.content.SyncStatusObserver;
 import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
-
-import org.chromium.components.sync.SyncContentResolverDelegate;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,7 +24,7 @@ import java.util.Set;
  * observers for the SYNC_OBSERVER_TYPE_SETTINGS type and it doesn't allow querying
  * settings for a null account.
  */
-public class MockSyncContentResolverDelegate implements SyncContentResolverDelegate {
+class MockSyncContentResolverDelegate implements SyncContentResolverDelegate {
     private final Set<String> mSyncAutomaticallySet;
     private final Map<String, Boolean> mIsSyncableMap;
     private final Set<SyncStatusObserver> mObservers;
@@ -139,5 +137,4 @@ public class MockSyncContentResolverDelegate implements SyncContentResolverDeleg
             }
         }
     }
-
 }

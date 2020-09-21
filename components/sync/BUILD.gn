@@ -591,18 +591,3 @@ source_set("unit_tests") {
     deps += [ "//chromeos/constants" ]
   }
 }
-
-if (is_android) {
-  import("//build/config/android/rules.gni")
-
-  android_library("sync_java_test_support") {
-    testonly = true
-    deps = [
-      "android:sync_java",
-      "//base:base_java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
-      "//third_party/junit",
-    ]
-    sources = [ "test/android/javatests/src/org/chromium/components/sync/test/util/MockSyncContentResolverDelegate.java" ]
-  }
-}

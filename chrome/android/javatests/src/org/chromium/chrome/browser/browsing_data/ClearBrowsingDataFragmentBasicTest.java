@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.browsing_data;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.PreferenceScreen;
@@ -17,6 +18,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -30,7 +34,6 @@ import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.sync.ModelType;
-import org.chromium.components.sync.test.util.MockSyncContentResolverDelegate;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.HashSet;
@@ -53,9 +56,14 @@ public class ClearBrowsingDataFragmentBasicTest {
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final String GOOGLE_ACCOUNT = "Google Account";
     private static final String OTHER_ACTIVITY = "other forms of browsing history";
     private static final String SIGNED_IN_DEVICES = "signed-in devices";
+    @Mock
+    private AndroidSyncSettings mAndroidSyncSettings;
 
     @Before
     public void setUp() throws InterruptedException {
@@ -84,14 +92,8 @@ public class ClearBrowsingDataFragmentBasicTest {
 
     private void setSyncable(final boolean syncable) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            MockSyncContentResolverDelegate delegate = new MockSyncContentResolverDelegate();
-            delegate.setMasterSyncAutomatically(syncable);
-            AndroidSyncSettings.overrideForTests(new AndroidSyncSettings(delegate));
-            if (syncable) {
-                AndroidSyncSettings.get().enableChromeSync();
-            } else {
-                AndroidSyncSettings.get().disableChromeSync();
-            }
+            when(mAndroidSyncSettings.isSyncEnabled()).thenReturn(syncable);
+            AndroidSyncSettings.overrideForTests(mAndroidSyncSettings);
 
             ProfileSyncService.overrideForTests(new StubProfileSyncService(syncable));
         });

@@ -59,7 +59,7 @@ import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.sync.AndroidSyncSettings;
+import org.chromium.chrome.browser.sync.AndroidSyncSettingsTestUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -77,7 +77,6 @@ import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.ViewType;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.sync.test.util.MockSyncContentResolverDelegate;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -121,7 +120,6 @@ public class BookmarkTest {
     private BookmarkManager mManager;
     private BookmarkModel mBookmarkModel;
     private BookmarkBridge mBookmarkBridge;
-    private MockSyncContentResolverDelegate mSyncDelegate;
     private RecyclerView mItemsContainer;
     private String mTestPage;
     private String mTestPageFoo;
@@ -148,9 +146,7 @@ public class BookmarkTest {
             mBookmarkBridge = mActivityTestRule.getActivity().getBookmarkBridgeForTesting();
 
             // Stub Android master sync state to make sure promos aren't suppressed.
-            mSyncDelegate = new MockSyncContentResolverDelegate();
-            mSyncDelegate.setMasterSyncAutomatically(true);
-            AndroidSyncSettings.overrideForTests(new AndroidSyncSettings(mSyncDelegate));
+            AndroidSyncSettingsTestUtils.setUpAndroidSyncSettingsForTesting();
         });
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         mTestPage = mTestServer.getURL(TEST_PAGE_URL_GOOGLE);

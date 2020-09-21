@@ -38,7 +38,6 @@ import org.chromium.components.sync.protocol.AutofillWalletSpecifics;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SyncEntity;
 import org.chromium.components.sync.protocol.WalletMaskedCreditCard;
-import org.chromium.components.sync.test.util.MockSyncContentResolverDelegate;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -159,7 +158,7 @@ public class SyncTestRule extends ChromeActivityTestRule<ChromeActivity> {
         return mProfileSyncService;
     }
 
-    public MockSyncContentResolverDelegate getSyncContentResolver() {
+    MockSyncContentResolverDelegate getSyncContentResolver() {
         return mSyncContentResolver;
     }
 

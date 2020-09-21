@@ -26,8 +26,6 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.SyncContentResolverDelegate;
-import org.chromium.components.sync.SystemSyncContentResolverDelegate;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
@@ -94,7 +92,7 @@ public class AndroidSyncSettings {
      * @param syncContentResolverDelegate an implementation of {@link SyncContentResolverDelegate}.
      */
     @VisibleForTesting
-    public AndroidSyncSettings(SyncContentResolverDelegate syncContentResolverDelegate) {
+    AndroidSyncSettings(SyncContentResolverDelegate syncContentResolverDelegate) {
         this(syncContentResolverDelegate, getSyncAccount());
     }
 
@@ -110,7 +108,7 @@ public class AndroidSyncSettings {
     // (in that case, a new object would be returned, not the one constructed by the test).
     // Consider exposing them as static methods that also register a singleton instance.
     @VisibleForTesting
-    public AndroidSyncSettings(
+    AndroidSyncSettings(
             SyncContentResolverDelegate syncContentResolverDelegate, @Nullable Account account) {
         mContractAuthority = getContractAuthority();
         mSyncContentResolverDelegate = syncContentResolverDelegate;
