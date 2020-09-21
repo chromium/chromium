@@ -392,10 +392,10 @@ def chromium_mac_ios_builder(
         properties = None,
         **kwargs):
     if not caches:
-        caches = [builders.xcode_cache.x12a8189n]
+        caches = [builders.xcode_cache.x12a7209]
     if not properties:
         properties = {
-            "xcode_build_version": "12a8189n",
+            "xcode_build_version": "12a7209",
         }
     return try_builder(
         name = name,
