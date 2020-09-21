@@ -91,12 +91,6 @@ enum class AlternateFontName {
   kLastResort
 };
 
-struct FontEnumerationEntry {
-  String postscript_name;
-  String full_name;
-  String family;
-};
-
 typedef HashMap<unsigned,
                 std::unique_ptr<FontPlatformData>,
                 WTF::IntHash<unsigned>,
@@ -108,7 +102,6 @@ typedef HashMap<FallbackListCompositeKey,
                 FallbackListCompositeKeyHash,
                 FallbackListCompositeKeyTraits>
     FallbackListShaperCache;
-typedef std::vector<FontEnumerationEntry> FontEnumerationCache;
 
 // "und-Zsye", the special locale for retrieving the color emoji font defined
 // in UTS #51: https://unicode.org/reports/tr51/#Emoji_Script
@@ -260,13 +253,7 @@ class PLATFORM_EXPORT FontCache {
       ShouldRetain = kRetain,
       bool subpixel_ascent_descent = false);
 
-  const std::vector<FontEnumerationEntry>& EnumerateAvailableFonts();
-  size_t EnumerationCacheSizeForTesting() {
-    return font_enumeration_cache_.size();
-  }
-
   void InvalidateShapeCache();
-  void InvalidateEnumerationCache();
 
   static void CrashWithFontInfo(const FontDescription*);
 
@@ -328,7 +315,6 @@ class PLATFORM_EXPORT FontCache {
       const FontDescription&,
       const FontFaceCreationParams&,
       float font_size);
-  std::vector<FontEnumerationEntry> EnumeratePlatformAvailableFonts();
 
   sk_sp<SkTypeface> CreateTypeface(const FontDescription&,
                                    const FontFaceCreationParams&,
@@ -389,9 +375,6 @@ class PLATFORM_EXPORT FontCache {
   FontPlatformDataCache font_platform_data_cache_;
   FallbackListShaperCache fallback_list_shaper_cache_;
   FontDataCache font_data_cache_;
-  // TODO(https://crbug.com/1061625): Move to the browser process for better
-  // resource utilization.
-  FontEnumerationCache font_enumeration_cache_;
 
   Persistent<FontFallbackMap> font_fallback_map_;
 

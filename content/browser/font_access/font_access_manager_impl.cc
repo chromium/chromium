@@ -35,44 +35,6 @@ void FontAccessManagerImpl::BindReceiver(
   receivers_.Add(this, std::move(receiver), context);
 }
 
-#if defined(OS_MAC)
-void FontAccessManagerImpl::RequestPermission(
-    RequestPermissionCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const BindingContext& context = receivers_.current_context();
-  RenderFrameHost* rfh = RenderFrameHost::FromID(context.frame_id);
-
-  auto status = PermissionControllerImpl::FromBrowserContext(
-                    rfh->GetProcess()->GetBrowserContext())
-                    ->GetPermissionStatusForFrame(PermissionType::FONT_ACCESS,
-                                                  rfh, context.origin.GetURL());
-
-  if (status != blink::mojom::PermissionStatus::ASK) {
-    // Permission has been requested before.
-    std::move(callback).Run(status);
-    return;
-  }
-
-  if (!rfh->HasTransientUserActivation()) {
-    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
-    return;
-  }
-
-  PermissionControllerImpl::FromBrowserContext(
-      rfh->GetProcess()->GetBrowserContext())
-      ->RequestPermission(PermissionType::FONT_ACCESS, rfh,
-                          context.origin.GetURL(),
-                          /*user_gesture=*/true,
-                          base::BindOnce(
-                              [](RequestPermissionCallback callback,
-                                 blink::mojom::PermissionStatus status) {
-                                std::move(callback).Run(status);
-                              },
-                              std::move(callback)));
-}
-#endif
-
 void FontAccessManagerImpl::EnumerateLocalFonts(
     EnumerateLocalFontsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

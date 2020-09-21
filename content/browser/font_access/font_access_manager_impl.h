@@ -35,12 +35,6 @@ class CONTENT_EXPORT FontAccessManagerImpl
       mojo::PendingReceiver<blink::mojom::FontAccessManager> receiver);
 
   // blink.mojom.FontAccessManager:
-#if defined(OS_MAC)
-  // TODO(crbug.com/1119575): Remove this IPC method. It is there due to
-  // the Mac enumeration implementation being done renderer-side and only
-  // the permission request being needed browser-side.
-  void RequestPermission(RequestPermissionCallback callback) override;
-#endif
   void EnumerateLocalFonts(EnumerateLocalFontsCallback callback) override;
 
  private:

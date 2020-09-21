@@ -14,7 +14,12 @@ namespace blink {
 class ScriptState;
 class ScriptPromise;
 class ScriptPromiseResolver;
-struct FontEnumerationEntry;
+
+struct FontEnumerationEntry {
+  String postscript_name;
+  String full_name;
+  String family;
+};
 
 class BLINK_EXPORT FontMetadata final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();

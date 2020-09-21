@@ -39,7 +39,6 @@ class FontIterator final : public ScriptWrappable,
 
  private:
   FontIteratorEntry* GetNextEntry();
-  void DidGetPermissionResponse(PermissionStatus);
   void DidGetEnumerationResponse(FontEnumerationStatus,
                                  base::ReadOnlySharedMemoryRegion);
   void ContextDestroyed() override;

@@ -21,11 +21,6 @@ enum FontEnumerationStatus {
 // and workers in renderer processes.
 // Provides methods related to enumerating locally installed fonts.
 interface FontAccessManager {
-  // Provides a permission request response. Used on Mac because fonts are
-  // enumerated in-renderer on that platform.
-  [EnableIf=is_mac]
-  RequestPermission() => (PermissionStatus status);
-
   // Enumerate locally installed fonts. Results will be gated by a permission
   // check.
   EnumerateLocalFonts() => (FontEnumerationStatus enumeration_status, mojo_base.mojom.ReadOnlySharedMemoryRegion? enumeration_table);

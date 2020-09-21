@@ -64,22 +64,6 @@
              inLanguage:(id)useNil;
 @end
 
-namespace {
-
-NSString* GetLocalizedString(CTFontDescriptorRef fd, CFStringRef attribute) {
-  base::ScopedCFTypeRef<CFStringRef> cf_str(base::mac::CFCast<CFStringRef>(
-      CTFontDescriptorCopyLocalizedAttribute(fd, attribute, nullptr)));
-  return [base::mac::CFToNSCast(cf_str.release()) autorelease];
-}
-
-NSString* GetString(CTFontDescriptorRef fd, CFStringRef attribute) {
-  base::ScopedCFTypeRef<CFStringRef> cf_str(base::mac::CFCast<CFStringRef>(
-      CTFontDescriptorCopyAttribute(fd, attribute)));
-  return [base::mac::CFToNSCast(cf_str.release()) autorelease];
-}
-
-}  // namespace
-
 namespace blink {
 
 const char kColorEmojiFontMac[] = "Apple Color Emoji";
@@ -325,40 +309,6 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
     return nullptr;
   }
   return platform_data;
-}
-
-std::vector<FontEnumerationEntry> FontCache::EnumeratePlatformAvailableFonts() {
-  @autoreleasepool {
-    base::ElapsedTimer timer;
-    std::vector<FontEnumerationEntry> output;
-
-    CFTypeRef values[1] = {kCFBooleanTrue};
-    base::ScopedCFTypeRef<CFDictionaryRef> options(CFDictionaryCreate(
-        kCFAllocatorDefault,
-        (const void**)kCTFontCollectionRemoveDuplicatesOption,
-        (const void**)&values,
-        /*numValues=*/1, &kCFTypeDictionaryKeyCallBacks,
-        &kCFTypeDictionaryValueCallBacks));
-    base::ScopedCFTypeRef<CTFontCollectionRef> collection(
-        CTFontCollectionCreateFromAvailableFonts(options));
-
-    base::ScopedCFTypeRef<CFArrayRef> font_descs(
-        CTFontCollectionCreateMatchingFontDescriptors(collection));
-
-    for (CFIndex i = 0; i < CFArrayGetCount(font_descs); ++i) {
-      CTFontDescriptorRef fd = base::mac::CFCast<CTFontDescriptorRef>(
-          CFArrayGetValueAtIndex(font_descs, i));
-      NSString* postscript_name = GetString(fd, kCTFontNameAttribute);
-      NSString* full_name = GetLocalizedString(fd, kCTFontDisplayNameAttribute);
-      NSString* family = GetLocalizedString(fd, kCTFontFamilyNameAttribute);
-      output.push_back(FontEnumerationEntry{String(postscript_name),
-                                            String(full_name), String(family)});
-    }
-
-    UMA_HISTOGRAM_MEDIUM_TIMES("Fonts.AccessAPI.EnumerationTime",
-                               timer.Elapsed());
-    return output;
-  }
 }
 
 }  // namespace blink
