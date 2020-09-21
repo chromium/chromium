@@ -16,11 +16,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
-#import "ios/chrome/browser/metrics/previous_session_info.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -65,14 +60,6 @@ void CreateSyntheticCrashReportForUte(
   AppendConfig(config, "BreakpadVersion", breakpad_version);
   AppendConfig(config, "BreakpadURL", breakpad_url);
   AppendConfig(config, "BreakpadMinidumpLocation", path.value());
-  PreviousSessionInfo* previous_session = [PreviousSessionInfo sharedInstance];
-  AppendConfig(config, "BreakpadServerParameterPrefix_free_disk_in_kb",
-               base::NumberToString(previous_session.availableDeviceStorage));
-  if (previous_session.didSeeMemoryWarningShortlyBeforeTerminating) {
-    AppendConfig(config,
-                 "BreakpadServerParameterPrefix_memory_warning_in_progress",
-                 "yes");
-  }
   AppendConfig(config, "BreakpadServerParameterPrefix_platform",
                base::SysInfo::HardwareModelName());
 

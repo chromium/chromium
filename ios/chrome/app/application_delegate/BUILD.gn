@@ -13,7 +13,7 @@ source_set("application_delegate") {
   deps = [
     "//base",
     "//ios/chrome/browser/crash_report",
-    "//ios/chrome/browser/metrics:previous_session_info",
+    "//ios/chrome/browser/metrics",
   ]
   frameworks = [ "Foundation.framework" ]
 
@@ -57,7 +57,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/metrics",
-    "//ios/chrome/browser/metrics:previous_session_info",
     "//ios/chrome/browser/ntp_snippets",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:test_support",
@@ -189,7 +188,6 @@ source_set("application_delegate_internal") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/metrics:metrics_internal",
-    "//ios/chrome/browser/metrics:previous_session_info",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/ntp_snippets:ntp_snippets",
     "//ios/chrome/browser/search_engines",
