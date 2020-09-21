@@ -52,4 +52,9 @@ public class BottomSheetControllerFactory {
     public static void detach(ManagedBottomSheetController controller) {
         BottomSheetControllerProvider.detach(controller);
     }
+
+    /** @param reporter A means of reporting an exception without crashing. */
+    public static void setExceptionReporter(Callback<Throwable> reporter) {
+        BottomSheet.setExceptionReporter(reporter);
+    }
 }

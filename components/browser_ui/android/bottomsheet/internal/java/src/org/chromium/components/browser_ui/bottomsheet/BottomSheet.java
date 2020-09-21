@@ -23,8 +23,11 @@ import androidx.annotation.DimenRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -65,6 +68,9 @@ class BottomSheet extends FrameLayout
 
     /** The desired height of a content that has just been shown or whose height was invalidated. */
     private static final float HEIGHT_UNSPECIFIED = -1.0f;
+
+    /** A means of reporting an exception/stack without crashing. */
+    private static Callback<Throwable> sExceptionReporter;
 
     /** A flag to force the small screen state of the bottom sheet. */
     private static Boolean sIsSmallScreenForTesting;
@@ -195,6 +201,11 @@ class BottomSheet extends FrameLayout
 
         mGestureDetector = new BottomSheetSwipeDetector(context, this);
         mIsTouchEnabled = true;
+    }
+
+    /** @param reporter A means of reporting an exception without crashing. */
+    static void setExceptionReporter(Callback<Throwable> reporter) {
+        sExceptionReporter = reporter;
     }
 
     /** @return The dimen describing the height of the shadow above the bottom sheet. */
@@ -863,9 +874,8 @@ class BottomSheet extends FrameLayout
 
         if (state == SheetState.HALF && !isHalfStateEnabled()) state = SheetState.FULL;
 
-        mTargetState = state;
-
         cancelAnimation();
+        mTargetState = state;
 
         if (animate && state != mCurrentState) {
             createSettleAnimation(state, reason);
@@ -907,6 +917,18 @@ class BottomSheet extends FrameLayout
      */
     private void setInternalCurrentState(@SheetState int state, @StateChangeReason int reason) {
         if (state == mCurrentState) return;
+
+        // If we somehow got here with null content, force the sheet to close without animation.
+        // See https://crbug.com/1126872 for more information.
+        if (getCurrentSheetContent() == null && state != SheetState.HIDDEN) {
+            Throwable throwable = new Throwable(
+                    "This is not a crash. See https://crbug.com/1126872 for details.");
+            PostTask.postTask(
+                    TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> sExceptionReporter.onResult(throwable));
+
+            setSheetState(SheetState.HIDDEN, false);
+            return;
+        }
 
         // TODO(mdjones): This shouldn't be able to happen, but does occasionally during layout.
         //                Fix the race condition that is making this happen.
