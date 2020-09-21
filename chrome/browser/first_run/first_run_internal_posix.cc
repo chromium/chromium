@@ -108,11 +108,6 @@ void DoPostImportPlatformSpecificTasks(Profile* profile) {
 #endif  // !OS_CHROMEOS
 }
 
-bool IsFirstRunSentinelPresent() {
-  base::FilePath sentinel;
-  return !GetFirstRunSentinelFilePath(&sentinel) || base::PathExists(sentinel);
-}
-
 bool ShowPostInstallEULAIfNeeded(installer::InitialPreferences* install_prefs) {
   // The EULA is only handled on Windows.
   return true;

@@ -35,18 +35,9 @@ void SetupInitialPrefsFromInstallPrefs(
     const installer::InitialPreferences& install_prefs,
     MasterPrefs* out_prefs);
 
-// Get the file path of the first run sentinel; returns false on failure.
-bool GetFirstRunSentinelFilePath(base::FilePath* path);
-
-// Create the first run sentinel file; returns false on failure.
-bool CreateSentinel();
-
 // -- Platform-specific functions --
 
 void DoPostImportPlatformSpecificTasks(Profile* profile);
-
-// Returns true if the sentinel file exists (or the path cannot be obtained).
-bool IsFirstRunSentinelPresent();
 
 // This function has a common implementationin for all non-linux platforms, and
 // a linux specific implementation.

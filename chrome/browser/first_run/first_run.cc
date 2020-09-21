@@ -214,17 +214,39 @@ void ProcessDefaultBrowserPolicy(bool make_chrome_default_for_user) {
   }
 }
 
+// Get the file path of the first run sentinel; returns false on failure.
+bool GetFirstRunSentinelFilePath(base::FilePath* path) {
+  base::FilePath user_data_dir;
+  if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir))
+    return false;
+  *path = user_data_dir.Append(chrome::kFirstRunSentinel);
+  return true;
+}
+
+// Create the first run sentinel file; returns false on failure.
+bool CreateSentinel() {
+  base::FilePath first_run_sentinel;
+  return GetFirstRunSentinelFilePath(&first_run_sentinel) &&
+         base::WriteFile(first_run_sentinel, "");
+}
+
 // Reads the creation time of the first run sentinel file. If the first run
 // sentinel file does not exist, it will return base::Time().
 base::Time ReadFirstRunSentinelCreationTime() {
   base::Time first_run_sentinel_creation_time = base::Time();
   base::FilePath first_run_sentinel;
-  if (first_run::internal::GetFirstRunSentinelFilePath(&first_run_sentinel)) {
+  if (GetFirstRunSentinelFilePath(&first_run_sentinel)) {
     base::File::Info info;
     if (base::GetFileInfo(first_run_sentinel, &info))
       first_run_sentinel_creation_time = info.creation_time;
   }
   return first_run_sentinel_creation_time;
+}
+
+// Returns true if the sentinel file exists (or the path cannot be obtained).
+bool IsFirstRunSentinelPresent() {
+  base::FilePath sentinel;
+  return !GetFirstRunSentinelFilePath(&sentinel) || base::PathExists(sentinel);
 }
 
 }  // namespace
@@ -252,20 +274,6 @@ void SetupInitialPrefsFromInstallPrefs(
   install_prefs.GetString(
       installer::master_preferences::kDistroSuppressDefaultBrowserPromptPref,
       &out_prefs->suppress_default_browser_prompt_for_version);
-}
-
-bool GetFirstRunSentinelFilePath(base::FilePath* path) {
-  base::FilePath user_data_dir;
-  if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir))
-    return false;
-  *path = user_data_dir.Append(chrome::kFirstRunSentinel);
-  return true;
-}
-
-bool CreateSentinel() {
-  base::FilePath first_run_sentinel;
-  return GetFirstRunSentinelFilePath(&first_run_sentinel) &&
-         base::WriteFile(first_run_sentinel, "");
 }
 
 // -- Platform-specific functions --
@@ -307,7 +315,7 @@ bool IsChromeFirstRun() {
     const base::CommandLine* command_line =
         base::CommandLine::ForCurrentProcess();
     g_first_run = internal::DetermineFirstRunState(
-        internal::IsFirstRunSentinelPresent(),
+        IsFirstRunSentinelPresent(),
         command_line->HasSwitch(switches::kForceFirstRun),
         command_line->HasSwitch(switches::kNoFirstRun));
   }
@@ -329,7 +337,7 @@ bool IsMetricsReportingOptIn() {
 
 void CreateSentinelIfNeeded() {
   if (IsChromeFirstRun())
-    internal::CreateSentinel();
+    CreateSentinel();
 
   // Causes the first run sentinel creation time to be read and cached, while
   // I/O is still allowed.

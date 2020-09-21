@@ -120,11 +120,6 @@ void DoPostImportPlatformSpecificTasks(Profile* /* profile */) {
   }
 }
 
-bool IsFirstRunSentinelPresent() {
-  base::FilePath sentinel;
-  return !GetFirstRunSentinelFilePath(&sentinel) || base::PathExists(sentinel);
-}
-
 bool ShowPostInstallEULAIfNeeded(installer::InitialPreferences* install_prefs) {
   if (IsEULANotAccepted(install_prefs)) {
     // Show the post-installation EULA. This is done by setup.exe and the
