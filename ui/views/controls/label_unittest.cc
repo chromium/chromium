@@ -488,6 +488,45 @@ TEST_F(LabelTest, MultilinePreferredSizeTest) {
   EXPECT_LT(multi_line_size.height(), new_size.height());
 }
 
+TEST_F(LabelTest, SingleLineGetHeightForWidth) {
+  // Even an empty label should take one line worth of height.
+  const int line_height = label()->GetLineHeight();
+  EXPECT_EQ(line_height, label()->GetHeightForWidth(100));
+
+  // Given any amount of width, the label should take one line.
+  label()->SetText(ASCIIToUTF16("This is an example."));
+  const int width = label()->GetPreferredSize().width();
+  EXPECT_EQ(line_height, label()->GetHeightForWidth(width));
+  EXPECT_EQ(line_height, label()->GetHeightForWidth(width * 2));
+  EXPECT_EQ(line_height, label()->GetHeightForWidth(width / 2));
+  EXPECT_EQ(line_height, label()->GetHeightForWidth(0));
+}
+
+TEST_F(LabelTest, MultiLineGetHeightForWidth) {
+  // Even an empty label should take one line worth of height.
+  label()->SetMultiLine(true);
+  const int line_height = label()->GetLineHeight();
+  EXPECT_EQ(line_height, label()->GetHeightForWidth(100));
+
+  // Given its preferred width or more, the label should take one line.
+  label()->SetText(ASCIIToUTF16("This is an example."));
+  const int width = label()->GetPreferredSize().width();
+  EXPECT_EQ(line_height, label()->GetHeightForWidth(width));
+  EXPECT_EQ(line_height, label()->GetHeightForWidth(width * 2));
+
+  // Given too little width, the required number of lines should increase.
+  // Linebreaking will affect this, so sanity-checks are sufficient.
+  const int height_for_half_width = label()->GetHeightForWidth(width / 2);
+  EXPECT_GT(height_for_half_width, line_height);
+  EXPECT_GT(label()->GetHeightForWidth(width / 4), height_for_half_width);
+
+  // Given zero width, the label should take GetMaxLines(); if this is not set,
+  // default to one.
+  EXPECT_EQ(line_height, label()->GetHeightForWidth(0));
+  label()->SetMaxLines(10);
+  EXPECT_EQ(line_height * 10, label()->GetHeightForWidth(0));
+}
+
 TEST_F(LabelTest, TooltipProperty) {
   label()->SetText(ASCIIToUTF16("My cool string."));
 

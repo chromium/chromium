@@ -541,8 +541,10 @@ int Label::GetHeightForWidth(int w) const {
   w -= GetInsets().width();
   int height = 0;
   int base_line_height = GetLineHeight();
-  if (!GetMultiLine() || GetText().empty() || w <= 0) {
+  if (!GetMultiLine() || GetText().empty() || w < 0) {
     height = base_line_height;
+  } else if (w == 0) {
+    height = std::max(GetMaxLines(), 1) * base_line_height;
   } else {
     // SetDisplayRect() has a side effect for later calls of GetStringSize().
     // Be careful to invoke |full_text_->SetDisplayRect(gfx::Rect())| to
