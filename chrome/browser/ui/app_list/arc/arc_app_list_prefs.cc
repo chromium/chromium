@@ -556,41 +556,17 @@ void ArcAppListPrefs::SendIconRequest(const std::string& app_id,
   if (app_info.icon_resource_id.empty()) {
     auto* app_instance =
         ARC_GET_INSTANCE_FOR_METHOD(app_connection_holder(), GetAppIcon);
-    if (!app_instance) {
-      // TODO(crbug.com/1083331): Remove the RequestAppIcon related change, when
-      // the ARC change is rolled in Chrome OS.
-      app_instance =
-          ARC_GET_INSTANCE_FOR_METHOD(app_connection_holder(), RequestAppIcon);
-      if (app_instance) {
-        auto callback =
-            base::BindOnce(&ArcAppListPrefs::OnGetIcon,
-                           weak_ptr_factory_.GetWeakPtr(), app_id, descriptor);
-        app_instance->RequestAppIcon(app_info.package_name, app_info.activity,
-                                     descriptor.GetSizeInPixels(),
-                                     std::move(callback));
-      }
+    if (!app_instance)
       return;  // Error is logged in macro.
-    }
+
     app_instance->GetAppIcon(app_info.package_name, app_info.activity,
                              descriptor.GetSizeInPixels(), std::move(callback));
   } else {
     auto* app_instance = ARC_GET_INSTANCE_FOR_METHOD(app_connection_holder(),
                                                      GetAppShortcutIcon);
-    if (!app_instance) {
-      // TODO(crbug.com/1083331): Remove the RequestAppIcon related change, when
-      // the ARC change is rolled in Chrome OS.
-      app_instance = ARC_GET_INSTANCE_FOR_METHOD(app_connection_holder(),
-                                                 RequestShortcutIcon);
-      if (app_instance) {
-        auto callback =
-            base::BindOnce(&ArcAppListPrefs::OnGetIcon,
-                           weak_ptr_factory_.GetWeakPtr(), app_id, descriptor);
-        app_instance->RequestAppIcon(app_info.package_name, app_info.activity,
-                                     descriptor.GetSizeInPixels(),
-                                     std::move(callback));
-      }
+    if (!app_instance)
       return;  // Error is logged in macro.
-    }
+
     app_instance->GetAppShortcutIcon(app_info.icon_resource_id,
                                      descriptor.GetSizeInPixels(),
                                      std::move(callback));
@@ -1671,18 +1647,6 @@ void ArcAppListPrefs::OnPackageRemoved(const std::string& package_name) {
 
   for (auto& observer : observer_list_)
     observer.OnPackageRemoved(package_name, true);
-}
-
-void ArcAppListPrefs::OnGetIcon(const std::string& app_id,
-                                const ArcAppIconDescriptor& descriptor,
-                                const std::vector<uint8_t>& icon_png_data) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  arc::mojom::RawIconPngDataPtr icon = arc::mojom::RawIconPngData::New();
-  icon->is_adaptive_icon = false;
-  icon->icon_png_data =
-      std::vector<uint8_t>(icon_png_data.begin(), icon_png_data.end());
-  OnIcon(app_id, descriptor, std::move(icon));
 }
 
 void ArcAppListPrefs::OnIcon(const std::string& app_id,

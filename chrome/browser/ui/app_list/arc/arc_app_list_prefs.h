@@ -396,11 +396,6 @@ class ArcAppListPrefs : public KeyedService,
   void OnUninstallShortcut(const std::string& package_name,
                            const std::string& intent_uri) override;
   void OnPackageRemoved(const std::string& package_name) override;
-  // TODO(crbug.com/1083331): Remove this function, when the ARC change is
-  // rolled in Chrome OS.
-  void OnGetIcon(const std::string& app_id,
-                 const ArcAppIconDescriptor& descriptor,
-                 const std::vector<uint8_t>& icon_png_data);
   void OnIcon(const std::string& app_id,
               const ArcAppIconDescriptor& descriptor,
               arc::mojom::RawIconPngDataPtr icon);

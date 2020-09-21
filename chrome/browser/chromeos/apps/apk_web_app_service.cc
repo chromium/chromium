@@ -300,21 +300,8 @@ void ApkWebAppService::OnPackageInstalled(
   // artifact. Install it.
   auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_app_list_prefs_->app_connection_holder(), GetPackageIcon);
-  if (!instance) {
-    // TODO(crbug.com/1083331): Remove the RequestPackageIcon related code,
-    // when the ARC change is rolled in Chrome OS.
-    ARC_GET_INSTANCE_FOR_METHOD(arc_app_list_prefs_->app_connection_holder(),
-                                RequestPackageIcon);
-    if (!instance)
-      return;
-
-    instance->RequestPackageIcon(
-        package_info.package_name, kDefaultIconSize, /*normalize=*/false,
-        base::BindOnce(
-            &ApkWebAppService::OnGetWebAppIcon, weak_ptr_factory_.GetWeakPtr(),
-            package_info.package_name, package_info.web_app_info.Clone()));
+  if (!instance)
     return;
-  }
 
   instance->GetPackageIcon(
       package_info.package_name, kDefaultIconSize, /*normalize=*/false,
@@ -450,16 +437,6 @@ void ApkWebAppService::OnWebAppUninstalled(const web_app::AppId& web_app_id) {
         FROM_HERE, base::BindOnce(std::move(web_app_uninstalled_callback_),
                                   package_name, web_app_id));
   }
-}
-
-void ApkWebAppService::OnGetWebAppIcon(
-    const std::string& package_name,
-    arc::mojom::WebAppInfoPtr web_app_info,
-    const std::vector<uint8_t>& icon_png_data) {
-  arc::mojom::RawIconPngDataPtr icon = arc::mojom::RawIconPngData::New();
-  icon->is_adaptive_icon = false;
-  icon->icon_png_data = std::vector<uint8_t>(icon_png_data);
-  OnDidGetWebAppIcon(package_name, std::move(web_app_info), std::move(icon));
 }
 
 void ApkWebAppService::OnDidGetWebAppIcon(
