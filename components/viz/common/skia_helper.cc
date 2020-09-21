@@ -8,11 +8,11 @@
 #include "third_party/skia/include/effects/SkColorMatrix.h"
 #include "third_party/skia/include/effects/SkOverdrawColorFilter.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrContext.h"
+#include "third_party/skia/include/gpu/GrRecordingContext.h"
 #include "ui/gfx/skia_util.h"
 
 namespace viz {
-sk_sp<SkImage> SkiaHelper::ApplyImageFilter(GrContext* context,
+sk_sp<SkImage> SkiaHelper::ApplyImageFilter(GrRecordingContext* context,
                                             sk_sp<SkImage> src_image,
                                             const gfx::RectF& src_rect,
                                             const gfx::RectF& dst_rect,

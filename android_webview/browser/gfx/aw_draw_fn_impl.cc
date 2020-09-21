@@ -22,7 +22,7 @@
 #include "gpu/vulkan/vulkan_image.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
-#include "third_party/skia/include/gpu/GrContext.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/vk/GrVkBackendContext.h"
 #include "third_party/skia/include/gpu/vk/GrVkExtensions.h"
 #include "third_party/skia/src/gpu/vk/GrVkSecondaryCBDrawContext.h"
@@ -157,7 +157,7 @@ void PostDrawVkWrapper(int functor,
 }
 
 sk_sp<GrVkSecondaryCBDrawContext> CreateDrawContext(
-    GrContext* gr_context,
+    GrDirectContext* gr_context,
     AwDrawFn_DrawVkParams* params,
     sk_sp<SkColorSpace> color_space) {
   // Create a GrVkSecondaryCBDrawContext to render our AHB w/ Vulkan.

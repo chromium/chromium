@@ -7,7 +7,7 @@
 
 #include "device/vr/gl_bindings.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/gpu/GrContext.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 
 class SkSurface;
 

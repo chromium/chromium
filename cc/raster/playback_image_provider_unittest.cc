@@ -4,11 +4,14 @@
 
 #include "cc/raster/playback_image_provider.h"
 
+#include <utility>
+#include <vector>
+
 #include "cc/paint/paint_image_builder.h"
 #include "cc/test/skia_common.h"
 #include "cc/test/stub_decode_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/gpu/GrContext.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 
 namespace cc {

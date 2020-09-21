@@ -22,7 +22,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrContext.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/dc_renderer_layer_params.h"
@@ -108,7 +108,7 @@ SkiaOutputDeviceGL::SkiaOutputDeviceGL(
     context_state_->MakeCurrent(gl_surface_.get());
   }
 
-  GrContext* gr_context = context_state_->gr_context();
+  GrDirectContext* gr_context = context_state_->gr_context();
   gl::CurrentGL* current_gl = context_state_->context()->GetCurrentGL();
 
   // Get alpha bits from the default frame buffer.

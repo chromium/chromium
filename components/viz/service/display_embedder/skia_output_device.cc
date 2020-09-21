@@ -15,7 +15,7 @@
 #include "components/viz/service/display/dc_layer_overlay.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrContext.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/latency/latency_tracker.h"
@@ -55,7 +55,7 @@ SkiaOutputDevice::ScopedPaint::~ScopedPaint() {
 }
 
 SkiaOutputDevice::SkiaOutputDevice(
-    GrContext* gr_context,
+    GrDirectContext* gr_context,
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
     : did_swap_buffer_complete_callback_(
