@@ -1065,6 +1065,19 @@ void NGBlockLayoutAlgorithm::HandleFloat(
           ? NextBorderEdge(previous_inflow_position)
           : ConstraintSpace().ExpectedBfcBlockOffset()};
 
+  if (ConstraintSpace().HasBlockFragmentation()) {
+    // Forced breaks cannot be specified directly on floats, but if the
+    // preceding block has a forced break after, we need to break before this
+    // float.
+    EBreakBetween break_between =
+        container_builder_.JoinedBreakBetweenValue(EBreakBetween::kAuto);
+    if (IsForcedBreakValue(ConstraintSpace(), break_between)) {
+      container_builder_.AddBreakBeforeChild(child, kBreakAppealPerfect,
+                                             /* is_forced_break*/ true);
+      return;
+    }
+  }
+
   NGUnpositionedFloat unpositioned_float(
       child, child_break_token, ChildAvailableSize(), child_percentage_size_,
       replaced_child_percentage_size_, origin_bfc_offset, ConstraintSpace(),
