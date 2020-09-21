@@ -26,6 +26,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/components/account_manager/account_manager_factory.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/dbus/util/version_loader.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -281,6 +282,9 @@ void InlineLoginHandlerChromeOS::SetExtraInitParams(
   const GURL& url = gaia_urls->embedded_setup_chromeos_url(2U);
   params.SetKey("gaiaPath", base::Value(url.path().substr(1)));
 
+  params.SetKey(
+      "platformVersion",
+      base::Value(version_loader::GetVersion(version_loader::VERSION_SHORT)));
   params.SetKey("constrained", base::Value("1"));
   params.SetKey("flow", base::Value(GetInlineLoginFlowName(
                             Profile::FromWebUI(web_ui()),
