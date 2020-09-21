@@ -1177,30 +1177,9 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
     }
   }
 
-  if (presenter_.IsVisibleDeprecated() && result->is_omnibox_search() &&
-      IsAssistantAllowedAndEnabled() &&
-      app_list_features::IsAssistantSearchEnabled()) {
-    // Record the assistant result. Other types of results are recorded in
-    // |client_| where there is richer data on SearchResultType.
-    DCHECK_EQ(AppListLaunchedFrom::kLaunchedFromSearchBox, launched_from)
-        << "Only log search results which are represented to the user as "
-           "search results (ie. search results in the search result page) not "
-           "chips.";
-    RecordSearchResultOpenTypeHistogram(launched_from, ASSISTANT_OMNIBOX_RESULT,
-                                        IsTabletMode());
-    if (!GetLastQueryLength()) {
-      RecordZeroStateSuggestionOpenTypeHistogram(ASSISTANT_OMNIBOX_RESULT);
-    }
-    AssistantUiController::Get()->ShowUi(
-        AssistantEntryPoint::kLauncherSearchResult);
-    AssistantController::Get()->OpenUrl(
-        assistant::util::CreateAssistantQueryDeepLink(
-            base::UTF16ToUTF8(result->title())));
-  } else {
-    if (client_)
-      client_->OpenSearchResult(result_id, event_flags, launched_from,
-                                launch_type, suggestion_index,
-                                launch_as_default);
+  if (client_) {
+    client_->OpenSearchResult(result_id, event_flags, launched_from,
+                              launch_type, suggestion_index, launch_as_default);
   }
 
   ResetHomeLauncherIfShown();

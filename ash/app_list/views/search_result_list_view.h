@@ -71,6 +71,12 @@ class APP_LIST_EXPORT SearchResultListView : public SearchResultContainerView {
   // after a period of time.
   void LogImpressions();
 
+  // Returns search results specific to Assistant if any are available.
+  std::vector<SearchResult*> GetAssistantResults();
+
+  // Returns regular search results with Assistant search results appended.
+  std::vector<SearchResult*> GetSearchResults();
+
   AppListMainView* main_view_;          // Owned by views hierarchy.
   AppListViewDelegate* view_delegate_;  // Not owned.
 

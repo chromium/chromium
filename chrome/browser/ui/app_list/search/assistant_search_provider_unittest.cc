@@ -13,6 +13,7 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_suggestions_controller.h"
 #include "ash/public/cpp/assistant/test_support/mock_assistant_controller.h"
+#include "ash/public/cpp/assistant/test_support/mock_assistant_state.h"
 #include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -111,36 +112,6 @@ class ConversationStarterBuilder {
   GURL action_url_;
 };
 
-// TestAssistantState ----------------------------------------------------------
-
-class TestAssistantState : public ash::AssistantState {
- public:
-  TestAssistantState() {
-    allowed_state_ = chromeos::assistant::AssistantAllowedState::ALLOWED;
-    settings_enabled_ = true;
-  }
-
-  TestAssistantState(const TestAssistantState&) = delete;
-  TestAssistantState& operator=(const TestAssistantState&) = delete;
-  ~TestAssistantState() override = default;
-
-  void SetAllowedState(AssistantAllowedState allowed_state) {
-    if (allowed_state_ != allowed_state) {
-      allowed_state_ = allowed_state;
-      for (auto& observer : observers_)
-        observer.OnAssistantFeatureAllowedChanged(allowed_state_.value());
-    }
-  }
-
-  void SetSettingsEnabled(bool enabled) {
-    if (settings_enabled_ != enabled) {
-      settings_enabled_ = enabled;
-      for (auto& observer : observers_)
-        observer.OnAssistantSettingsEnabled(settings_enabled_.value());
-    }
-  }
-};
-
 // TestAssistantSuggestionsController ------------------------------------------
 
 class TestAssistantSuggestionsController
@@ -193,7 +164,7 @@ class AssistantSearchProviderTest : public AppListTestBase {
 
   AssistantSearchProvider& search_provider() { return search_provider_; }
 
-  TestAssistantState& assistant_state() { return assistant_state_; }
+  ash::MockAssistantState& assistant_state() { return assistant_state_; }
 
   NiceMock<ash::MockAssistantController>& assistant_controller() {
     return assistant_controller_;
@@ -204,7 +175,7 @@ class AssistantSearchProviderTest : public AppListTestBase {
   }
 
  private:
-  TestAssistantState assistant_state_;
+  ash::MockAssistantState assistant_state_;
   NiceMock<ash::MockAssistantController> assistant_controller_;
   TestAssistantSuggestionsController suggestions_controller_;
   AssistantSearchProvider search_provider_;

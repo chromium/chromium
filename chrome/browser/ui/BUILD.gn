@@ -1719,6 +1719,8 @@ static_library("ui") {
       "app_list/search/arc/arc_playstore_search_result.h",
       "app_list/search/assistant_search_provider.cc",
       "app_list/search/assistant_search_provider.h",
+      "app_list/search/assistant_text_search_provider.cc",
+      "app_list/search/assistant_text_search_provider.h",
       "app_list/search/chrome_search_result.cc",
       "app_list/search/chrome_search_result.h",
       "app_list/search/common/url_icon_source.cc",

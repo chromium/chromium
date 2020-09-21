@@ -2,4 +2,5 @@ include_rules = [
   "+ash/assistant/model",
   "+ash/assistant/util",
   "+ash/public/cpp/vector_icons",
+  "+ash/strings/grit",
 ]

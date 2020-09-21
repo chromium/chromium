@@ -4,6 +4,8 @@ static_library("test_support") {
   sources = [
     "mock_assistant_controller.cc",
     "mock_assistant_controller.h",
+    "mock_assistant_state.cc",
+    "mock_assistant_state.h",
   ]
 
   deps = [

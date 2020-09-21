@@ -45,83 +45,6 @@ constexpr base::TimeDelta kImpressionThreshold =
 constexpr base::TimeDelta kZeroStateImpressionThreshold =
     base::TimeDelta::FromSeconds(1);
 
-constexpr SkColor kListVerticalBarIconColor =
-    SkColorSetARGB(0xFF, 0xE8, 0xEA, 0xED);
-
-bool IsAssistantSearchEnabled(AppListViewDelegate* view_delegate) {
-  if (!app_list_features::IsAssistantSearchEnabled())
-    return false;
-
-  return view_delegate && view_delegate->IsAssistantAllowedAndEnabled();
-}
-
-// Get the vector icon to update previous Assistant item.
-const gfx::VectorIcon* GetPreviousVectorIcon(
-    int continuous_assistant_item_count) {
-  if (continuous_assistant_item_count == 2) {
-    return &kVerticalBarSingleIcon;
-  } else if (continuous_assistant_item_count > 2) {
-    return &kVerticalBarEndIcon;
-  }
-
-  NOTREACHED();
-  return nullptr;
-}
-
-// Get the vector icon to update current Assistant item.
-const gfx::VectorIcon* GetCurrentVectorIcon(
-    int continuous_assistant_item_count) {
-  if (continuous_assistant_item_count == 1) {
-    return &kAssistantIcon;
-  } else if (continuous_assistant_item_count == 2) {
-    return &kVerticalBarStartIcon;
-  } else if (continuous_assistant_item_count > 2) {
-    return &kVerticalBarMiddleIcon;
-  }
-
-  NOTREACHED();
-  return nullptr;
-}
-
-// Calculate the display icons for Assistant items.
-// We have the following situations:
-// Number of consecutive Assistant items:
-// 1 item       -> Assistant icon.
-// 2 items      -> Assistant icon + single vertical bar icon.
-// 3 items      -> Assistant icon + start + end vertical bar icons.
-// n >= 4 items -> Assistant icon + start + middle (n - 3) + end vertical bar
-//                 icons.
-// This algo sets current result's vertical icon based on the
-// |continuous_assistant_item_count|, but also needs to update previous result's
-// vertical icon if current result is not an Assisttant item or previous result
-// is the last result.
-void CalculateDisplayIcons(
-    const std::vector<SearchResult*>& display_results,
-    std::vector<const gfx::VectorIcon*>* out_display_icons) {
-  const size_t display_size = display_results.size();
-  int continuous_assistant_item_count = 0;
-  // Index |i| goes beyond the last display result to update its icon.
-  for (size_t i = 0; i <= display_size; ++i) {
-    if (i < display_size && display_results[i]->is_omnibox_search()) {
-      ++continuous_assistant_item_count;
-    } else {
-      // Update previous result's icon.
-      if (continuous_assistant_item_count >= 2) {
-        (*out_display_icons)[i - 1] =
-            GetPreviousVectorIcon(continuous_assistant_item_count);
-      }
-
-      continuous_assistant_item_count = 0;
-    }
-
-    // Update current result's icon.
-    if (continuous_assistant_item_count > 0) {
-      (*out_display_icons)[i] =
-          GetCurrentVectorIcon(continuous_assistant_item_count);
-    }
-  }
-}
-
 SearchResultIdWithPositionIndices GetSearchResultsForLogging(
     std::vector<SearchResultView*> search_result_views) {
   SearchResultIdWithPositionIndices results;
@@ -158,8 +81,11 @@ SearchResultListView::SearchResultListView(AppListMainView* main_view,
   results_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  for (size_t i = 0;
-       i < AppListConfig::instance().max_search_result_list_items(); ++i) {
+  size_t result_count =
+      AppListConfig::instance().max_search_result_list_items() +
+      AppListConfig::instance().max_assistant_search_result_list_items();
+
+  for (size_t i = 0; i < result_count; ++i) {
     search_result_views_.emplace_back(
         new SearchResultView(this, view_delegate_));
     search_result_views_.back()->set_index_in_container(i);
@@ -186,24 +112,14 @@ SearchResultView* SearchResultListView::GetResultViewAt(size_t index) {
 
 int SearchResultListView::DoUpdate() {
   if (!GetWidget() || !GetWidget()->IsVisible()) {
-    for (size_t i = 0; i < results_container_->children().size(); ++i) {
-      SearchResultView* result_view = GetResultViewAt(i);
+    for (auto* result_view : search_result_views_) {
       result_view->SetResult(nullptr);
       result_view->SetVisible(false);
     }
     return 0;
   }
 
-  std::vector<SearchResult*> display_results =
-      SearchModel::FilterSearchResultsByDisplayType(
-          results(), SearchResultDisplayType::kList, /*excludes=*/{},
-          results_container_->children().size());
-
-  const size_t display_size = display_results.size();
-  std::vector<const gfx::VectorIcon*> assistant_item_icons(display_size,
-                                                           nullptr);
-  if (IsAssistantSearchEnabled(view_delegate_))
-    CalculateDisplayIcons(display_results, &assistant_item_icons);
+  std::vector<SearchResult*> display_results = GetSearchResults();
 
   // TODO(crbug.com/1076270): The logic for zero state and Drive quick access
   // files below exists only for metrics, and can be folded into the
@@ -211,31 +127,13 @@ int SearchResultListView::DoUpdate() {
   bool found_zero_state_file = false;
   bool found_drive_quick_access = false;
 
-  for (size_t i = 0; i < results_container_->children().size(); ++i) {
+  for (size_t i = 0; i < search_result_views_.size(); ++i) {
     SearchResultView* result_view = GetResultViewAt(i);
     if (i < display_results.size()) {
       if (IsZeroStateFile(*display_results[i])) {
         found_zero_state_file = true;
       } else if (IsDriveQuickAccess(*display_results[i])) {
         found_drive_quick_access = true;
-      }
-      if (assistant_item_icons[i]) {
-        result_view->SetDisplayIcon(gfx::CreateVectorIcon(
-            *(assistant_item_icons[i]),
-            (assistant_item_icons[i] == &kAssistantIcon)
-                ? AppListConfig::instance().search_list_icon_dimension()
-                : AppListConfig::instance()
-                      .search_list_icon_vertical_bar_dimension(),
-            kListVerticalBarIconColor));
-      } else {
-        // Reset |display_icon_|.
-        result_view->SetDisplayIcon(gfx::ImageSkia());
-      }
-      if (IsAssistantSearchEnabled(view_delegate_) &&
-          display_results[i]->is_omnibox_search()) {
-        display_results[i]->set_accessible_name(l10n_util::GetStringFUTF16(
-            IDS_ASH_ASSISTANT_QUERY_ACCESSIBILITY_ANNOUNCEMENT,
-            display_results[i]->title()));
       }
 
       result_view->SetResult(display_results[i]);
@@ -323,21 +221,24 @@ int SearchResultListView::GetHeightForWidth(int w) const {
 void SearchResultListView::SearchResultActivated(SearchResultView* view,
                                                  int event_flags,
                                                  bool by_button_press) {
-  if (view_delegate_ && view->result()) {
-    RecordSearchResultOpenSource(view->result(), view_delegate_->GetModel(),
-                                 view_delegate_->GetSearchModel());
-    view_delegate_->LogResultLaunchHistogram(
-        SearchResultLaunchLocation::kResultList, view->index_in_container());
-    view_delegate_->NotifySearchResultsForLogging(
-        view_delegate_->GetSearchModel()->search_box()->text(),
-        GetSearchResultsForLogging(search_result_views_),
-        view->index_in_container());
-    view_delegate_->OpenSearchResult(
-        view->result()->id(), event_flags,
-        AppListLaunchedFrom::kLaunchedFromSearchBox,
-        AppListLaunchType::kSearchResult, -1 /* suggestion_index */,
-        !by_button_press && view->is_default_result() /* launch_as_default */);
-  }
+  if (!view_delegate_ || !view || !view->result())
+    return;
+
+  auto* result = view->result();
+
+  RecordSearchResultOpenSource(result, view_delegate_->GetModel(),
+                               view_delegate_->GetSearchModel());
+  view_delegate_->LogResultLaunchHistogram(
+      SearchResultLaunchLocation::kResultList, view->index_in_container());
+  view_delegate_->NotifySearchResultsForLogging(
+      view_delegate_->GetSearchModel()->search_box()->text(),
+      GetSearchResultsForLogging(search_result_views_),
+      view->index_in_container());
+
+  view_delegate_->OpenSearchResult(
+      result->id(), event_flags, AppListLaunchedFrom::kLaunchedFromSearchBox,
+      AppListLaunchType::kSearchResult, -1 /* suggestion_index */,
+      !by_button_press && view->is_default_result() /* launch_as_default */);
 }
 
 void SearchResultListView::SearchResultActionActivated(SearchResultView* view,
@@ -373,6 +274,46 @@ void SearchResultListView::VisibilityChanged(View* starting_from,
   drive_quick_access_impression_timer_.Stop();
   previous_found_zero_state_file_ = false;
   previous_found_drive_quick_access_ = false;
+}
+
+std::vector<SearchResult*> SearchResultListView::GetAssistantResults() {
+  // Only show Assistant results if there are no tiles. There is not enough
+  // room in launcher to display Assistant results if there are tiles visible.
+  bool visible_tiles = !SearchModel::FilterSearchResultsByDisplayType(
+                            results(), SearchResult::DisplayType::kTile,
+                            /*excludes=*/{}, /*max_results=*/1)
+                            .empty();
+
+  if (visible_tiles)
+    return std::vector<SearchResult*>();
+
+  return SearchModel::FilterSearchResultsByFunction(
+      results(), base::BindRepeating([](const SearchResult& search_result) {
+        return search_result.display_type() == SearchResultDisplayType::kList &&
+               search_result.result_type() ==
+                   AppListSearchResultType::kAssistantText;
+      }),
+      /*max_results=*/
+      AppListConfig::instance().max_assistant_search_result_list_items());
+}
+
+std::vector<SearchResult*> SearchResultListView::GetSearchResults() {
+  std::vector<SearchResult*> search_results =
+      SearchModel::FilterSearchResultsByFunction(
+          results(), base::BindRepeating([](const SearchResult& result) {
+            return result.display_type() == SearchResultDisplayType::kList &&
+                   result.result_type() !=
+                       AppListSearchResultType::kAssistantText;
+          }),
+          /*max_results=*/
+          AppListConfig::instance().max_search_result_list_items());
+
+  std::vector<SearchResult*> assistant_results = GetAssistantResults();
+
+  search_results.insert(search_results.end(), assistant_results.begin(),
+                        assistant_results.end());
+
+  return search_results;
 }
 
 }  // namespace ash

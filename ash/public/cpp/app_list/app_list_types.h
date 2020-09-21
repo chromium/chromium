@@ -151,6 +151,7 @@ enum class AppListSearchResultType {
   kAssistantChip,          // Assistant results in suggestion chips.
   kOsSettings,             // OS settings results.
   kInternalPrivacyInfo,    // Result used internally by privacy notices.
+  kAssistantText,          // Assistant text results.
   // Add new values here.
 };
 

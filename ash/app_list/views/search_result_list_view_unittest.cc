@@ -57,8 +57,33 @@ class SearchResultListViewTest : public views::test::WidgetTest {
     return view_->GetResultViewAt(index);
   }
 
+  std::vector<SearchResultView*> GetAssistantResultViews() const {
+    std::vector<SearchResultView*> results;
+    for (auto* view : view_->search_result_views_) {
+      auto* result = view->result();
+      if (result &&
+          result->result_type() == AppListSearchResultType::kAssistantText)
+        results.push_back(view);
+    }
+    return results;
+  }
+
   SearchModel::SearchResults* GetResults() {
     return view_delegate_.GetSearchModel()->results();
+  }
+
+  void AddAssistantSearchResult() {
+    SearchModel::SearchResults* results = GetResults();
+
+    std::unique_ptr<TestSearchResult> assistant_result =
+        std::make_unique<TestSearchResult>();
+    assistant_result->set_result_type(
+        ash::AppListSearchResultType::kAssistantText);
+    assistant_result->set_display_type(ash::SearchResultDisplayType::kList);
+    assistant_result->set_title(base::UTF8ToUTF16("assistant result"));
+    results->Add(std::move(assistant_result));
+
+    RunPendingMessages();
   }
 
   void SetUpSearchResults() {
@@ -151,6 +176,32 @@ TEST_F(SearchResultListViewTest, ModelObservers) {
   // Delete from start.
   DeleteResultAt(0);
   ExpectConsistent();
+}
+
+TEST_F(SearchResultListViewTest, HidesAssistantResultWhenTilesVisible) {
+  SetUpSearchResults();
+
+  // No assistant results available.
+  EXPECT_TRUE(GetAssistantResultViews().empty());
+
+  AddAssistantSearchResult();
+
+  // Assistant result should be set and visible.
+  for (const auto* view : GetAssistantResultViews()) {
+    EXPECT_TRUE(view->GetVisible());
+    EXPECT_EQ(view->result()->title(), base::UTF8ToUTF16("assistant result"));
+  }
+
+  // Add a tile result
+  std::unique_ptr<TestSearchResult> tile_result =
+      std::make_unique<TestSearchResult>();
+  tile_result->set_display_type(ash::SearchResultDisplayType::kTile);
+  GetResults()->Add(std::move(tile_result));
+
+  RunPendingMessages();
+
+  // Assistant result should be gone.
+  EXPECT_TRUE(GetAssistantResultViews().empty());
 }
 
 }  // namespace test
