@@ -491,6 +491,54 @@ TEST_F(AdTrackerSimTest, ScriptDetectedByContext) {
       ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop));
 }
 
+TEST_F(AdTrackerSimTest, EventHandlerForPostMessageFromAdFrame_NoAdInStack) {
+  const char kAdScriptUrl[] = "https://example.com/ad_script.js";
+  SimSubresourceRequest ad_script(kAdScriptUrl, "text/javascript");
+  const char kVanillaUrl[] = "https://example.com/vanilla_script.js";
+  SimSubresourceRequest vanilla_script(kVanillaUrl, "text/javascript");
+
+  SimSubresourceRequest image_resource("https://example.com/image.gif",
+                                       "image/gif");
+
+  ad_tracker_->SetAdSuffix("ad_script.js");
+
+  // Create an iframe that's considered an ad.
+  main_resource_->Complete(R"(<body>
+    <script src='vanilla_script.js'></script>
+    <script src='ad_script.js'></script>
+    </body>)");
+
+  // Register a postMessage handler which is not considered to be ad script,
+  // which loads an image.
+  vanilla_script.Complete(R"SCRIPT(
+    window.addEventListener('message', e => {
+      image = document.createElement("img");
+      image.src = "image.gif";
+      document.body.appendChild(image);
+    });)SCRIPT");
+
+  // Post message from an ad iframe to the non-ad script in the parent frame.
+  ad_script.Complete(R"SCRIPT(
+    frame = document.createElement("iframe");
+    document.body.appendChild(frame);
+    iframeDocument = frame.contentWindow.document;
+    iframeDocument.open();
+    iframeDocument.write(
+      "<html><script>window.parent.postMessage('a', '*');</script></html>");
+    iframeDocument.close();
+    )SCRIPT");
+
+  // Wait for script to run.
+  base::RunLoop().RunUntilIdle();
+
+  image_resource.Complete("data");
+
+  // The image should not be considered an ad even if it was loaded in response
+  // to an ad initiated postMessage.
+  EXPECT_FALSE(
+      ad_tracker_->RequestWithUrlTaggedAsAd("https://example.com/image.gif"));
+}
+
 TEST_F(AdTrackerSimTest, RedirectToAdUrl) {
   SimRequest::Params params;
   params.redirect_url = "https://example.com/ad_script.js";
