@@ -260,6 +260,7 @@ import java.util.Set;
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1130550")
     @Feature({"Downloads"})
     public void testDuplicateHttpPostDownload_Cancel() {
         // Remove download progress info bar.
