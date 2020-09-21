@@ -78,6 +78,7 @@
 -org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSwipeToDismiss_Dialog
 
 # crbug.com/1077552
+-org.chromium.chrome.features.start_surface.StartSurfaceLayoutTest.testRenderGrid_Incognito
 -org.chromium.chrome.features.start_surface.StartSurfaceLayoutTest.testRenderGrid_10WebTabs
 -org.chromium.chrome.features.start_surface.StartSurfaceLayoutTest.testRenderGrid_10WebTabs_InitialScroll
 
