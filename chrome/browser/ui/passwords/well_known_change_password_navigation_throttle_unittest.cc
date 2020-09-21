@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/passwords/well_known_change_password_navigation_throttle.h"
 
+#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -12,7 +13,21 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
+#include "url/origin.h"
+
+namespace {
+
+// An option struct to simplify setting up a specific navigation throttle.
+struct NavigationThrottleOptions {
+  GURL url;
+  content::RenderFrameHost* rfh = nullptr;
+  ui::PageTransition page_transition = ui::PAGE_TRANSITION_FROM_API;
+  base::Optional<url::Origin> initiator_origin;
+};
+
+}  // namespace
 
 // Test with parameter for kWellKnownChangePassword feature state.
 class WellKnownChangePasswordNavigationThrottleTest
@@ -35,16 +50,15 @@ class WellKnownChangePasswordNavigationThrottleTest
 
   ~WellKnownChangePasswordNavigationThrottleTest() override = default;
 
-  std::unique_ptr<WellKnownChangePasswordNavigationThrottle>
-  CreateNavigationThrottleForUrl(const GURL& url) {
-    content::MockNavigationHandle handle(url, main_rfh());
-    return WellKnownChangePasswordNavigationThrottle::MaybeCreateThrottleFor(
-        &handle);
-  }
+  content::RenderFrameHost* subframe() const { return subframe_; }
 
   std::unique_ptr<WellKnownChangePasswordNavigationThrottle>
-  CreateNavigationThrottleForUrlAndSubframe(const GURL& url) {
-    content::MockNavigationHandle handle(url, subframe_);
+  CreateNavigationThrottle(NavigationThrottleOptions opts) {
+    content::MockNavigationHandle handle(opts.url,
+                                         opts.rfh ? opts.rfh : main_rfh());
+    handle.set_page_transition(opts.page_transition);
+    if (opts.initiator_origin)
+      handle.set_initiator_origin(*opts.initiator_origin);
     return WellKnownChangePasswordNavigationThrottle::MaybeCreateThrottleFor(
         &handle);
   }
@@ -59,26 +73,61 @@ TEST_P(WellKnownChangePasswordNavigationThrottleTest,
   bool flag_enabled = GetParam();
   // change-password url without trailing slash
   GURL url("https://google.com/.well-known/change-password");
-  EXPECT_EQ(!!CreateNavigationThrottleForUrl(url), flag_enabled);
+  EXPECT_EQ(!!CreateNavigationThrottle({url}), flag_enabled);
 
   // change-password url with trailing slash
   url = GURL("https://google.com/.well-known/change-password/");
-  EXPECT_EQ(!!CreateNavigationThrottleForUrl(url), flag_enabled);
+  EXPECT_EQ(!!CreateNavigationThrottle({url}), flag_enabled);
+}
+
+TEST_P(WellKnownChangePasswordNavigationThrottleTest,
+       CreateNavigationThrottle_ChangePasswordUrl_FromGoogleLink) {
+  bool flag_enabled = GetParam();
+  EXPECT_EQ(!!CreateNavigationThrottle({
+                .url = GURL("https://google.com/.well-known/change-password"),
+                .page_transition = ui::PAGE_TRANSITION_LINK,
+                .initiator_origin = url::Origin::Create(
+                    GURL("chrome://settings/passwords/check")),
+            }),
+            flag_enabled);
+
+  EXPECT_EQ(!!CreateNavigationThrottle({
+                .url = GURL("https://google.com/.well-known/change-password/"),
+                .page_transition = ui::PAGE_TRANSITION_LINK,
+                .initiator_origin = url::Origin::Create(
+                    GURL("https://passwords.google.com/checkup")),
+            }),
+            flag_enabled);
+}
+
+TEST_P(WellKnownChangePasswordNavigationThrottleTest,
+       NeverCreateNavigationThrottle_FromOtherLink) {
+  EXPECT_FALSE(CreateNavigationThrottle({
+      .url = GURL("https://google.com/.well-known/change-password"),
+      .page_transition = ui::PAGE_TRANSITION_LINK,
+      .initiator_origin = url::Origin::Create(GURL("https://example.com")),
+  }));
+
+  EXPECT_FALSE(CreateNavigationThrottle({
+      .url = GURL("https://google.com/.well-known/change-password/"),
+      .page_transition = ui::PAGE_TRANSITION_LINK,
+      .initiator_origin = url::Origin::Create(GURL("https://example.com")),
+  }));
 }
 
 TEST_P(WellKnownChangePasswordNavigationThrottleTest,
        NeverCreateNavigationThrottle_DifferentUrl) {
   GURL url("https://google.com/.well-known/time");
-  EXPECT_FALSE(CreateNavigationThrottleForUrl(url));
+  EXPECT_FALSE(CreateNavigationThrottle({url}));
 
   url = GURL("https://google.com/foo");
-  EXPECT_FALSE(CreateNavigationThrottleForUrl(url));
+  EXPECT_FALSE(CreateNavigationThrottle({url}));
 
   url = GURL("chrome://settings/");
-  EXPECT_FALSE(CreateNavigationThrottleForUrl(url));
+  EXPECT_FALSE(CreateNavigationThrottle({url}));
 
   url = GURL("mailto:?subject=test");
-  EXPECT_FALSE(CreateNavigationThrottleForUrl(url));
+  EXPECT_FALSE(CreateNavigationThrottle({url}));
 }
 
 // A WellKnownChangePasswordNavigationThrottle should never be created for a
@@ -87,11 +136,11 @@ TEST_P(WellKnownChangePasswordNavigationThrottleTest,
        NeverCreateNavigationThrottle_Subframe) {
   // change-password url without trailing slash
   GURL url("https://google.com/.well-known/change-password");
-  EXPECT_EQ(CreateNavigationThrottleForUrlAndSubframe(url), nullptr);
+  EXPECT_EQ(CreateNavigationThrottle({url, subframe()}), nullptr);
 
   // change-password url with trailing slash
   url = GURL("https://google.com/.well-known/change-password/");
-  EXPECT_EQ(CreateNavigationThrottleForUrlAndSubframe(url), nullptr);
+  EXPECT_EQ(CreateNavigationThrottle({url, subframe()}), nullptr);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
