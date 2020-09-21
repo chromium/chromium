@@ -239,16 +239,17 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
      * for a selected subset of Android Downloadable fonts.
      *
      * Note: Because the CaseMap.Fold Java API is only available in Android API 29+, these keys have
-     * been manually converted from full font name (i.e. "Google Sans") to ICU case folded full font
-     * name using `third_party/blink/common/font_unique_name_lookup/icu_fold_case_util.cc`. When
-     * further map entries are added in future, consider importing ICU4J as a third_party library to
-     * do this case folding explicitly in Java code instead, or using the native utility via JNI.
+     * been manually converted from full font name to ICU case folded full font name (i.e. "Google
+     * Sans Regular" to "google sans regular") using
+     * `third_party/blink/common/font_unique_name_lookup/icu_fold_case_util.cc`. When further map
+     * entries are added in future, consider importing ICU4J as a third_party library to do this
+     * case folding explicitly in Java code instead, or using the native utility via JNI.
      *
      * @return The created map from font names to queries.
      */
     private static Map<String, String> createFullFontNameToQueryMap() {
         Map<String, String> map = new HashMap<>();
-        map.put("google sans", "name=Google Sans&weight=400");
+        map.put("google sans regular", "name=Google Sans&weight=400");
         map.put("google sans medium", "name=Google Sans&weight=500");
         return map;
     }
