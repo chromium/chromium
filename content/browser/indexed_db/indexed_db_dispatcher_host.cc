@@ -16,6 +16,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "components/services/storage/filesystem_proxy_factory.h"
 #include "content/browser/indexed_db/cursor_impl.h"
 #include "content/browser/indexed_db/file_stream_reader_to_data_pipe.h"
 #include "content/browser/indexed_db/indexed_db_callbacks.h"
@@ -116,9 +117,9 @@ class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
             ReadCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    auto reader = storage::FileStreamReader::CreateForLocalFile(
-        file_task_runner_.get(), file_path_, offset,
-        expected_modification_time_);
+    auto reader = storage::FileStreamReader::CreateForFilesystemProxy(
+        file_task_runner_.get(), file_path_, storage::CreateFilesystemProxy(),
+        offset, expected_modification_time_);
     auto adapter = std::make_unique<FileStreamReaderToDataPipe>(
         std::move(reader), std::move(pipe));
     auto* raw_adapter = adapter.get();

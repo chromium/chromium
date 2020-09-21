@@ -67,7 +67,6 @@ using blink::IndexedDBDatabaseMetadata;
 using blink::IndexedDBKey;
 using blink::IndexedDBKeyRange;
 using leveldb::Status;
-using storage::FileWriterDelegate;
 using url::Origin;
 
 namespace content {

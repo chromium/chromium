@@ -54,12 +54,13 @@ void SendGetFileInfoResults(GetFileInfoCallback callback,
 }  // namespace
 
 std::unique_ptr<FileStreamReader> FileStreamReader::CreateForLocalFile(
-    base::TaskRunner* task_runner,
+    scoped_refptr<base::TaskRunner> task_runner,
     const base::FilePath& file_path,
     int64_t initial_offset,
     const base::Time& expected_modification_time) {
-  return base::WrapUnique(new LocalFileStreamReader(
-      task_runner, file_path, initial_offset, expected_modification_time));
+  return base::WrapUnique(
+      new LocalFileStreamReader(std::move(task_runner), file_path,
+                                initial_offset, expected_modification_time));
 }
 
 LocalFileStreamReader::~LocalFileStreamReader() = default;
@@ -92,15 +93,14 @@ int64_t LocalFileStreamReader::GetLength(
 }
 
 LocalFileStreamReader::LocalFileStreamReader(
-    base::TaskRunner* task_runner,
+    scoped_refptr<base::TaskRunner> task_runner,
     const base::FilePath& file_path,
     int64_t initial_offset,
     const base::Time& expected_modification_time)
-    : task_runner_(task_runner),
+    : task_runner_(std::move(task_runner)),
       file_path_(file_path),
       initial_offset_(initial_offset),
-      expected_modification_time_(expected_modification_time),
-      has_pending_open_(false) {}
+      expected_modification_time_(expected_modification_time) {}
 
 void LocalFileStreamReader::Open(net::CompletionOnceCallback callback) {
   DCHECK(!has_pending_open_);

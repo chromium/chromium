@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
+#include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "net/base/completion_once_callback.h"
 
 namespace base {
@@ -44,8 +45,20 @@ class FileStreamReader {
   // ERR_UPLOAD_FILE_CHANGED error.
   COMPONENT_EXPORT(STORAGE_BROWSER)
   static std::unique_ptr<FileStreamReader> CreateForLocalFile(
-      base::TaskRunner* task_runner,
+      scoped_refptr<base::TaskRunner> task_runner,
       const base::FilePath& file_path,
+      int64_t initial_offset,
+      const base::Time& expected_modification_time);
+
+  // Creates a new FileReader for a local file |file_path|, which is a
+  // relative path into |filesystem_proxy|.  This function's behavior
+  // is otherwise identical to CreateForLocalFile other than all file operations
+  // going through |filesystem_proxy|.
+  COMPONENT_EXPORT(STORAGE_BROWSER)
+  static std::unique_ptr<FileStreamReader> CreateForFilesystemProxy(
+      scoped_refptr<base::TaskRunner> task_runner,
+      const base::FilePath& file_path,
+      std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       int64_t initial_offset,
       const base::Time& expected_modification_time);
 
