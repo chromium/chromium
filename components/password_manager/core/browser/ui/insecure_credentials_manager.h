@@ -150,7 +150,7 @@ class InsecureCredentialsManager
    public:
     virtual void OnCompromisedCredentialsChanged(
         CredentialsView credentials) = 0;
-    virtual void OnWeakCredentialsChanged(CredentialsView credentials) {}
+    virtual void OnWeakCredentialsChanged() {}
   };
 
   InsecureCredentialsManager(

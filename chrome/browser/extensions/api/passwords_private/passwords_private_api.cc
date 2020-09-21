@@ -271,6 +271,16 @@ ResponseAction PasswordsPrivateGetCompromisedCredentialsFunction::Run() {
           GetDelegate(browser_context())->GetCompromisedCredentials())));
 }
 
+// PasswordsPrivateGetWeakCredentialsFunction:
+PasswordsPrivateGetWeakCredentialsFunction::
+    ~PasswordsPrivateGetWeakCredentialsFunction() = default;
+
+ResponseAction PasswordsPrivateGetWeakCredentialsFunction::Run() {
+  return RespondNow(
+      ArgumentList(api::passwords_private::GetWeakCredentials::Results::Create(
+          GetDelegate(browser_context())->GetWeakCredentials())));
+}
+
 // PasswordsPrivateGetPlaintextInsecurePasswordFunction:
 PasswordsPrivateGetPlaintextInsecurePasswordFunction::
     ~PasswordsPrivateGetPlaintextInsecurePasswordFunction() = default;

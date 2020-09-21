@@ -131,6 +131,10 @@ class PasswordsPrivateDelegate : public KeyedService {
   virtual std::vector<api::passwords_private::InsecureCredential>
   GetCompromisedCredentials() = 0;
 
+  // Obtains information about weak credentials.
+  virtual std::vector<api::passwords_private::InsecureCredential>
+  GetWeakCredentials() = 0;
+
   // Requests the plaintext password for |credential| due to |reason|. If
   // successful, |callback| gets invoked with the same |credential|, whose
   // |password| field will be set.

@@ -478,6 +478,11 @@ PasswordsPrivateDelegateImpl::GetCompromisedCredentials() {
   return password_check_delegate_.GetCompromisedCredentials();
 }
 
+std::vector<api::passwords_private::InsecureCredential>
+PasswordsPrivateDelegateImpl::GetWeakCredentials() {
+  return password_check_delegate_.GetWeakCredentials();
+}
+
 void PasswordsPrivateDelegateImpl::GetPlaintextInsecurePassword(
     api::passwords_private::InsecureCredential credential,
     api::passwords_private::PlaintextReason reason,

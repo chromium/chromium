@@ -202,6 +202,20 @@ TestPasswordsPrivateDelegate::GetCompromisedCredentials() {
   return credentials;
 }
 
+std::vector<api::passwords_private::InsecureCredential>
+TestPasswordsPrivateDelegate::GetWeakCredentials() {
+  api::passwords_private::InsecureCredential credential;
+  credential.username = "bob";
+  credential.formatted_origin = "example.com";
+  credential.detailed_origin = "https://example.com";
+  credential.is_android_credential = false;
+  credential.change_password_url =
+      std::make_unique<std::string>("https://example.com/change-password");
+  std::vector<api::passwords_private::InsecureCredential> credentials;
+  credentials.push_back(std::move(credential));
+  return credentials;
+}
+
 void TestPasswordsPrivateDelegate::GetPlaintextInsecurePassword(
     api::passwords_private::InsecureCredential credential,
     api::passwords_private::PlaintextReason reason,

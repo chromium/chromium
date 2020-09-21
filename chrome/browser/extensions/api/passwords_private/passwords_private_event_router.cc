@@ -107,6 +107,16 @@ void PasswordsPrivateEventRouter::OnCompromisedCredentialsChanged(
   event_router_->BroadcastEvent(std::move(extension_event));
 }
 
+void PasswordsPrivateEventRouter::OnWeakCredentialsChanged(
+    std::vector<api::passwords_private::InsecureCredential> weak_credentials) {
+  auto extension_event = std::make_unique<Event>(
+      events::PASSWORDS_PRIVATE_ON_WEAK_CREDENTIALS_CHANGED,
+      api::passwords_private::OnWeakCredentialsChanged::kEventName,
+      api::passwords_private::OnWeakCredentialsChanged::Create(
+          weak_credentials));
+  event_router_->BroadcastEvent(std::move(extension_event));
+}
+
 void PasswordsPrivateEventRouter::OnPasswordCheckStatusChanged(
     const api::passwords_private::PasswordCheckStatus& status) {
   auto extension_event = std::make_unique<Event>(

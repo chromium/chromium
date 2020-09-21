@@ -22989,6 +22989,7 @@ Called by update_extension_histograms.py.-->
   <int value="460" label="CERTIFICATEPROVIDER_ON_SIGNATURE_REQUESTED"/>
   <int value="461" label="WINDOWS_ON_BOUNDS_CHANGED"/>
   <int value="462" label="WALLPAPER_PRIVATE_ON_CLOSE_PREVIEW_WALLPAPER"/>
+  <int value="463" label="PASSWORDS_PRIVATE_ON_WEAK_CREDENTIALS_CHANGED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
@@ -24570,6 +24571,7 @@ Called by update_extension_histograms.py.-->
   <int value="1506" label="AUTOTESTPRIVATE_LAUNCHSYSTEMWEBAPP"/>
   <int value="1507" label="ACCESSIBILITY_PRIVATE_PERFORMACCELERATORACTION"/>
   <int value="1508" label="DECLARATIVENETREQUEST_ISREGEXSUPPORTED"/>
+  <int value="1509" label="PASSWORDSPRIVATE_GETWEAKCREDENTIALS"/>
 </enum>
 
 <enum name="ExtensionIconState">

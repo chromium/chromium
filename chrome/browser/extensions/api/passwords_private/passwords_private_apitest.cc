@@ -219,6 +219,10 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, GetCompromisedCredentials) {
   EXPECT_TRUE(RunPasswordsSubtest("getCompromisedCredentials")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, GetWeakCredentials) {
+  EXPECT_TRUE(RunPasswordsSubtest("getWeakCredentials")) << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, GetPlaintextInsecurePassword) {
   EXPECT_TRUE(RunPasswordsSubtest("getPlaintextInsecurePassword")) << message_;
 }

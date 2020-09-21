@@ -327,6 +327,22 @@ var availableTests = [
         });
   },
 
+  function getWeakCredentials() {
+    chrome.passwordsPrivate.getWeakCredentials(weakCredentials => {
+      chrome.test.assertEq(1, weakCredentials.length);
+
+      var weakredential = weakCredentials[0];
+      chrome.test.assertEq('example.com', weakredential.formattedOrigin);
+      chrome.test.assertEq('https://example.com', weakredential.detailedOrigin);
+      chrome.test.assertFalse(weakredential.isAndroidCredential);
+      chrome.test.assertEq(
+          'https://example.com/change-password',
+          weakredential.changePasswordUrl);
+      chrome.test.assertEq('bob', weakredential.username);
+      chrome.test.succeed();
+    });
+  },
+
   function getPlaintextInsecurePassword() {
     var compromisedCredential = {
       id: 0,

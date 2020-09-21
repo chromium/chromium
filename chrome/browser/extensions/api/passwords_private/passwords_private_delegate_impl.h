@@ -72,6 +72,8 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
                               content::WebContents* web_contents) override;
   std::vector<api::passwords_private::InsecureCredential>
   GetCompromisedCredentials() override;
+  std::vector<api::passwords_private::InsecureCredential> GetWeakCredentials()
+      override;
   void GetPlaintextInsecurePassword(
       api::passwords_private::InsecureCredential credential,
       api::passwords_private::PlaintextReason reason,

@@ -259,6 +259,18 @@ class PasswordsPrivateGetCompromisedCredentialsFunction
   ResponseAction Run() override;
 };
 
+class PasswordsPrivateGetWeakCredentialsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.getWeakCredentials",
+                             PASSWORDSPRIVATE_GETWEAKCREDENTIALS)
+
+ protected:
+  ~PasswordsPrivateGetWeakCredentialsFunction() override;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 class PasswordsPrivateGetPlaintextInsecurePasswordFunction
     : public ExtensionFunction {
  public:

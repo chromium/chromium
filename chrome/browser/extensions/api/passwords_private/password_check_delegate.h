@@ -55,6 +55,9 @@ class PasswordCheckDelegate
   std::vector<api::passwords_private::InsecureCredential>
   GetCompromisedCredentials();
 
+  // Obtains information about weak credentials.
+  std::vector<api::passwords_private::InsecureCredential> GetWeakCredentials();
+
   // Requests the plaintext password for |credential|. If successful, this
   // returns |credential| with its |password| member set. This can fail if no
   // matching insecure credential can be found in the password store.
@@ -99,9 +102,7 @@ class PasswordCheckDelegate
   // password_manager::InsecureCredentialsManager::Observer:
   // Invokes PasswordsPrivateEventRouter::OnWeakCredentialsChanged if a valid
   // pointer can be obtained.
-  void OnWeakCredentialsChanged(
-      password_manager::InsecureCredentialsManager::CredentialsView credentials)
-      override;
+  void OnWeakCredentialsChanged() override;
 
   // password_manager::BulkLeakCheckService::Observer:
   void OnStateChanged(
@@ -123,6 +124,10 @@ class PasswordCheckDelegate
   // status has changed. Invoked after OnSavedPasswordsChanged and
   // OnStateChanged.
   void NotifyPasswordCheckStatusChanged();
+
+  // Constructs |InsecureCredential| from |CredentialWithPassword|.
+  api::passwords_private::InsecureCredential ConstructInsecureCredential(
+      const password_manager::CredentialWithPassword& credential);
 
   // Raw pointer to the underlying profile. Needs to outlive this instance.
   Profile* profile_ = nullptr;

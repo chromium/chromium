@@ -370,10 +370,8 @@ void InsecureCredentialsManager::NotifyCompromisedCredentialsChanged() {
 }
 
 void InsecureCredentialsManager::NotifyWeakCredentialsChanged() {
-  std::vector<CredentialWithPassword> weak_credentials =
-      ExtractInsecureCredentials(credentials_to_forms_, &IsWeak);
   for (auto& observer : observers_) {
-    observer.OnWeakCredentialsChanged(weak_credentials);
+    observer.OnWeakCredentialsChanged();
   }
 }
 

@@ -45,6 +45,7 @@ struct MockInsecureCredentialsManagerObserver
               OnCompromisedCredentialsChanged,
               (InsecureCredentialsManager::CredentialsView),
               (override));
+  MOCK_METHOD(void, OnWeakCredentialsChanged, (), (override));
 };
 
 using StrictMockInsecureCredentialsManagerObserver =
@@ -247,23 +248,27 @@ TEST_F(InsecureCredentialsManagerTest,
 
   // Adding a saved password should notify observers.
   EXPECT_CALL(observer, OnCompromisedCredentialsChanged);
+  EXPECT_CALL(observer, OnWeakCredentialsChanged);
   store().AddLogin(saved_password);
   RunUntilIdle();
 
   // Updating a saved password should notify observers.
   saved_password.password_value = base::ASCIIToUTF16(kPassword2);
   EXPECT_CALL(observer, OnCompromisedCredentialsChanged);
+  EXPECT_CALL(observer, OnWeakCredentialsChanged);
   store().UpdateLogin(saved_password);
   RunUntilIdle();
 
   // Removing a saved password should notify observers.
   EXPECT_CALL(observer, OnCompromisedCredentialsChanged);
+  EXPECT_CALL(observer, OnWeakCredentialsChanged);
   store().RemoveLogin(saved_password);
   RunUntilIdle();
 
   // After an observer is removed it should no longer receive notifications.
   provider().RemoveObserver(&observer);
   EXPECT_CALL(observer, OnCompromisedCredentialsChanged).Times(0);
+  EXPECT_CALL(observer, OnWeakCredentialsChanged).Times(0);
   store().AddLogin(saved_password);
   RunUntilIdle();
 }

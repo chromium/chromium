@@ -67,6 +67,8 @@ constexpr char kUsername2[] = "bob";
 
 constexpr char kPassword1[] = "s3cre3t";
 constexpr char kPassword2[] = "f00b4r";
+constexpr char kWeakPassword1[] = "123456";
+constexpr char kWeakPassword2[] = "111111";
 
 using api::passwords_private::CompromisedInfo;
 using api::passwords_private::InsecureCredential;
@@ -177,13 +179,32 @@ PasswordForm MakeSavedAndroidPassword(
     base::StringPiece package_name,
     base::StringPiece username,
     base::StringPiece app_display_name = "",
-    base::StringPiece affiliated_web_realm = "") {
+    base::StringPiece affiliated_web_realm = "",
+    base::StringPiece password = kPassword1) {
   PasswordForm form;
   form.signon_realm = MakeAndroidRealm(package_name);
   form.username_value = base::ASCIIToUTF16(username);
   form.app_display_name = std::string(app_display_name);
   form.affiliated_web_realm = std::string(affiliated_web_realm);
+  form.password_value = base::ASCIIToUTF16(password);
   return form;
+}
+
+// Creates matcher for a given insecure credential.
+auto ExpectInsecureCredential(
+    const std::string& formatted_origin,
+    const std::string& detailed_origin,
+    const base::Optional<std::string>& change_password_url,
+    const std::string& username) {
+  auto change_password_url_field_matcher =
+      change_password_url.has_value()
+          ? Field(&InsecureCredential::change_password_url,
+                  Pointee(change_password_url.value()))
+          : Field(&InsecureCredential::change_password_url, IsNull());
+  return AllOf(Field(&InsecureCredential::formatted_origin, formatted_origin),
+               Field(&InsecureCredential::detailed_origin, detailed_origin),
+               change_password_url_field_matcher,
+               Field(&InsecureCredential::username, username));
 }
 
 // Creates matcher for a given compromised info.
@@ -208,15 +229,8 @@ auto ExpectCompromisedCredential(
     base::TimeDelta elapsed_time_since_compromise,
     const std::string& elapsed_time_since_compromise_str,
     api::passwords_private::CompromiseType compromise_type) {
-  auto change_password_url_field_matcher =
-      change_password_url.has_value()
-          ? Field(&InsecureCredential::change_password_url,
-                  Pointee(change_password_url.value()))
-          : Field(&InsecureCredential::change_password_url, IsNull());
-  return AllOf(Field(&InsecureCredential::formatted_origin, formatted_origin),
-               Field(&InsecureCredential::detailed_origin, detailed_origin),
-               change_password_url_field_matcher,
-               Field(&InsecureCredential::username, username),
+  return AllOf(ExpectInsecureCredential(formatted_origin, detailed_origin,
+                                        change_password_url, username),
                Field(&InsecureCredential::compromised_info,
                      Pointee(ExpectCompromisedInfo(
                          elapsed_time_since_compromise,
@@ -284,6 +298,77 @@ TEST_F(PasswordCheckDelegateTest, VerifyCastingOfCompromisedCredentialTypes) {
           static_cast<int>(InsecureCredentialTypeFlags::kCredentialLeaked |
                            InsecureCredentialTypeFlags::kCredentialPhished),
       "");
+}
+
+// Verify that weak credentials will not be found if kPasswordsWeaknessCheck is
+// disabled.
+TEST_F(PasswordCheckDelegateTest, DisablePasswordsWeaknessCheck) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kPasswordsWeaknessCheck);
+  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1));
+  RunUntilIdle();
+  delegate().StartPasswordCheck();
+  RunUntilIdle();
+
+  EXPECT_THAT(delegate().GetWeakCredentials(), IsEmpty());
+}
+
+// Verify that GetWeakCredentials() correctly represents weak credentials.
+TEST_F(PasswordCheckDelegateTest, GetWeakCredentialsFillsFielsCorrectly) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordsWeaknessCheck);
+  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1));
+  store().AddLogin(MakeSavedAndroidPassword(
+      kExampleApp, kUsername2, "Example App", kExampleCom, kWeakPassword2));
+  RunUntilIdle();
+  delegate().StartPasswordCheck();
+  RunUntilIdle();
+
+  EXPECT_THAT(
+      delegate().GetWeakCredentials(),
+      UnorderedElementsAre(
+          ExpectInsecureCredential("example.com", "https://example.com",
+                                   "https://example.com/", kUsername1),
+          ExpectInsecureCredential("Example App", "Example App",
+                                   "https://example.com/", kUsername2)));
+}
+
+// Verify that computation of weak credentials notifies observers.
+TEST_F(PasswordCheckDelegateTest, WeakCheckNotifiesObservers) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordsWeaknessCheck);
+  const char* const kEventName =
+      api::passwords_private::OnWeakCredentialsChanged::kEventName;
+
+  // Verify that the event was not fired during construction.
+  EXPECT_FALSE(base::Contains(event_router_observer().events(), kEventName));
+
+  // Verify that the event gets fired after weak check is complete.
+  delegate().StartPasswordCheck();
+  RunUntilIdle();
+  EXPECT_EQ(events::PASSWORDS_PRIVATE_ON_WEAK_CREDENTIALS_CHANGED,
+            event_router_observer().events().at(kEventName)->histogram_value);
+}
+
+// Verifies that the weak check will be run if the user is signed out.
+TEST_F(PasswordCheckDelegateTest, WeakCheckWhenUserSignedOut) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordsWeaknessCheck);
+  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1));
+  RunUntilIdle();
+  delegate().StartPasswordCheck();
+  RunUntilIdle();
+
+  EXPECT_THAT(delegate().GetWeakCredentials(),
+              ElementsAre(ExpectInsecureCredential(
+                  "example.com", "https://example.com", "https://example.com/",
+                  kUsername1)));
+  EXPECT_EQ(api::passwords_private::PASSWORD_CHECK_STATE_SIGNED_OUT,
+            delegate().GetPasswordCheckStatus().state);
 }
 
 // Sets up the password store with a couple of passwords and compromised

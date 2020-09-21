@@ -274,6 +274,13 @@ chrome.passwordsPrivate.optInForAccountStorage = function(optIn) {};
 chrome.passwordsPrivate.getCompromisedCredentials = function(callback) {};
 
 /**
+ * Requests the latest weak credentials.
+ * @param {function(!Array<!chrome.passwordsPrivate.InsecureCredential>): void}
+ *     callback
+ */
+chrome.passwordsPrivate.getWeakCredentials = function(callback) {};
+
+/**
  * Requests the plaintext password for |credential|. |callback| gets invoked
  * with the same |credential|, whose |password| field will be set.
  * @param {!chrome.passwordsPrivate.InsecureCredential} credential The insecure
@@ -357,6 +364,12 @@ chrome.passwordsPrivate.onAccountStorageOptInStateChanged;
  * @type {!ChromeEvent}
  */
 chrome.passwordsPrivate.onCompromisedCredentialsChanged;
+
+/**
+ * Fired when the weak credentials changed.
+ * @type {!ChromeEvent}
+ */
+chrome.passwordsPrivate.onWeakCredentialsChanged;
 
 /**
  * Fired when the status of the password check changes.
