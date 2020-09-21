@@ -1255,11 +1255,6 @@ void Controller::OnCollectUserDataContinueButtonClicked() {
 
   auto callback = std::move(collect_user_data_options_->confirm_callback);
 
-  // TODO(crbug.com/806868): succeed is currently always true, but we might want
-  // to set it to false and propagate the result to CollectUserDataAction
-  // when the user clicks "Cancel" during that action.
-  user_data_->succeed_ = true;
-
   SetCollectUserDataOptions(nullptr);
   std::move(callback).Run(user_data_.get(), &user_model_);
 }

@@ -124,7 +124,6 @@ TEST_F(CollectUserDataActionTest, SucceedsForPrivacyTextPresent) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([this](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
             user_data_.terms_and_conditions_ = ACCEPTED;
             std::move(collect_user_data_options->confirm_callback)
                 .Run(&user_data_, &user_model_);
@@ -185,7 +184,6 @@ TEST_F(CollectUserDataActionTest, SucceedsForCheckboxIfReviewTextMissing) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([this](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
             user_data_.terms_and_conditions_ = ACCEPTED;
             std::move(collect_user_data_options->confirm_callback)
                 .Run(&user_data_, &user_model_);
@@ -217,7 +215,6 @@ TEST_F(CollectUserDataActionTest, SucceedsForAllTermsTextPresent) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([this](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
             user_data_.terms_and_conditions_ = ACCEPTED;
             std::move(collect_user_data_options->confirm_callback)
                 .Run(&user_data_, &user_model_);
@@ -247,7 +244,6 @@ TEST_F(CollectUserDataActionTest, InfoSectionText) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([this](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
             std::move(collect_user_data_options->confirm_callback)
                 .Run(&user_data_, &user_model_);
           }));
@@ -293,7 +289,6 @@ TEST_F(CollectUserDataActionTest, SelectLogin) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([this](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
             user_data_.login_choice_identifier_.assign(
                 collect_user_data_options->login_choices[0].identifier);
             std::move(collect_user_data_options->confirm_callback)
@@ -334,7 +329,6 @@ TEST_F(CollectUserDataActionTest, SelectLoginMissingUsername) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([this](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
             user_data_.login_choice_identifier_.assign(
                 collect_user_data_options->login_choices[0].identifier);
             std::move(collect_user_data_options->confirm_callback)
@@ -427,6 +421,8 @@ TEST_F(CollectUserDataActionTest,
 }
 
 TEST_F(CollectUserDataActionTest, EarlyActionReturnIfOnlyLoginRequested) {
+  ON_CALL(mock_action_delegate_, CollectUserData(_)).WillByDefault(Return());
+
   ActionProto action_proto;
   auto* proto = action_proto.mutable_collect_user_data();
   auto* login_details = proto->mutable_login_details();
@@ -616,7 +612,6 @@ TEST_F(CollectUserDataActionTest, SelectContactDetails) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
             user_data_.selected_addresses_[kMemoryLocation] =
                 std::make_unique<autofill::AutofillProfile>(contact_profile);
             std::move(collect_user_data_options->confirm_callback)
@@ -734,7 +729,6 @@ TEST_F(CollectUserDataActionTest, SelectPaymentMethod) {
                 std::make_unique<autofill::CreditCard>(credit_card);
             user_data_.selected_addresses_["billing_address"] =
                 std::make_unique<autofill::AutofillProfile>(billing_profile);
-            user_data_.succeed_ = true;
             std::move(collect_user_data_options->confirm_callback)
                 .Run(&user_data_, &user_model_);
           }));
@@ -788,7 +782,6 @@ TEST_F(CollectUserDataActionTest, ContactDetailsCanHandleUtf8) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
             user_data_.selected_addresses_[kMemoryLocation] =
                 std::make_unique<autofill::AutofillProfile>(contact_profile);
             std::move(collect_user_data_options->confirm_callback)
@@ -1101,7 +1094,6 @@ TEST_F(CollectUserDataActionTest, SelectDateTimeRange) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([&](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
             user_data_.date_time_range_start_date_ = actual_pickup_date;
             user_data_.date_time_range_start_timeslot_ = actual_pickup_time;
             user_data_.date_time_range_end_date_ = actual_return_date;
@@ -1139,7 +1131,6 @@ TEST_F(CollectUserDataActionTest, StaticSectionValid) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([this](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
             std::move(collect_user_data_options->confirm_callback)
                 .Run(&user_data_, &user_model_);
           }));
@@ -1180,7 +1171,6 @@ TEST_F(CollectUserDataActionTest, TextInputSectionValid) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([this](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
             std::move(collect_user_data_options->confirm_callback)
                 .Run(&user_data_, &user_model_);
           }));
@@ -1263,7 +1253,6 @@ TEST_F(CollectUserDataActionTest, PopupListSectionValid) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([this](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
             std::move(collect_user_data_options->confirm_callback)
                 .Run(&user_data_, &user_model_);
           }));
@@ -1338,7 +1327,6 @@ TEST_F(CollectUserDataActionTest, TextInputSectionWritesToClientMemory) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([this](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
             ValueProto value;
             value.mutable_strings()->add_values("modified");
             user_data_.additional_values_["key2"] = value;
@@ -1410,8 +1398,6 @@ TEST_F(CollectUserDataActionTest, AllowedBasicCardNetworks) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([this](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
-
             user_data_.selected_addresses_["billing_address"] =
                 std::make_unique<autofill::AutofillProfile>(
                     base::GenerateGUID(), kFakeUrl);
@@ -1526,7 +1512,6 @@ TEST_F(CollectUserDataActionTest, AttachesProfiles) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
             user_data_.selected_addresses_[kMemoryLocation] =
                 std::make_unique<autofill::AutofillProfile>(profile);
 
@@ -1567,8 +1552,6 @@ TEST_F(CollectUserDataActionTest, InitialSelectsProfileAndShippingAddress) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
-
             EXPECT_EQ(
                 user_data_.selected_addresses_["profile"]->Compare(profile), 0);
             EXPECT_EQ(
@@ -1692,8 +1675,6 @@ TEST_F(CollectUserDataActionTest, InitialSelectsProfileFromDefaultEmail) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
-
             EXPECT_EQ(
                 user_data_.selected_addresses_["profile"]->Compare(profile_b),
                 0);
@@ -1736,8 +1717,6 @@ TEST_F(CollectUserDataActionTest, KeepsSelectedProfileAndShippingAddress) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
-
             EXPECT_EQ(
                 user_data_.selected_addresses_["profile"]->Compare(profile), 0);
             EXPECT_EQ(
@@ -1844,8 +1823,6 @@ TEST_F(CollectUserDataActionTest, AttachesCreditCardsWithAddress) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
-
             EXPECT_THAT(user_data_.available_payment_instruments_, SizeIs(1));
             EXPECT_EQ(
                 user_data_.available_payment_instruments_[0]->card->Compare(
@@ -1889,8 +1866,6 @@ TEST_F(CollectUserDataActionTest, AttachesCreditCardsWithoutAddress) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
-
             EXPECT_THAT(user_data_.available_payment_instruments_, SizeIs(1));
             EXPECT_EQ(
                 user_data_.available_payment_instruments_[0]->card->Compare(
@@ -1934,8 +1909,6 @@ TEST_F(CollectUserDataActionTest, AttachesCreditCardsForEmptyNetworksList) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
-
             EXPECT_THAT(user_data_.available_payment_instruments_, SizeIs(1));
             EXPECT_EQ(
                 user_data_.available_payment_instruments_[0]->card->Compare(
@@ -1983,8 +1956,6 @@ TEST_F(CollectUserDataActionTest, InitialSelectsCardAndAddress) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
-
             EXPECT_EQ(user_data_.selected_card_->Compare(card_with_address), 0);
             EXPECT_EQ(
                 user_data_.selected_addresses_["billing_address"]->Compare(
@@ -2035,8 +2006,6 @@ TEST_F(CollectUserDataActionTest, KeepsSelectedCardAndAddress) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
-
             EXPECT_EQ(user_data_.selected_card_->Compare(card_with_address), 0);
             EXPECT_EQ(
                 user_data_.selected_addresses_["billing_address"]->Compare(
@@ -2155,8 +2124,6 @@ TEST_F(CollectUserDataActionTest, GenericUiModelWritesToProtoResult) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = true;
-
             user_model_.SetValue("value_1_key", value_1_modified.value());
             user_model_.SetValue("value_2_key", value_2_modified.value());
             user_model_.SetValue("value_3_key", value_3_modified.value());
@@ -2299,7 +2266,6 @@ TEST_F(CollectUserDataActionTest, LinkClickWritesPartialUserData) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([this](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.succeed_ = false;
             ValueProto value;
             value.mutable_strings()->add_values("modified");
             user_data_.additional_values_["key1"] = value;
@@ -2348,7 +2314,6 @@ TEST_F(CollectUserDataActionTest, ConfirmButtonChip) {
                       ICON_CLEAR);
             EXPECT_EQ(collect_user_data_options->confirm_action.chip().sticky(),
                       true);
-            user_data_.succeed_ = true;
             std::move(collect_user_data_options->confirm_callback)
                 .Run(&user_data_, &user_model_);
           }));
@@ -2372,7 +2337,6 @@ TEST_F(CollectUserDataActionTest, ConfirmButtonFallbackText) {
             EXPECT_EQ(collect_user_data_options->confirm_action.chip().text(),
                       l10n_util::GetStringUTF8(
                           IDS_AUTOFILL_ASSISTANT_PAYMENT_INFO_CONFIRM));
-            user_data_.succeed_ = true;
             std::move(collect_user_data_options->confirm_callback)
                 .Run(&user_data_, &user_model_);
           }));

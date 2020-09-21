@@ -108,7 +108,6 @@ class UserData {
     AVAILABLE_PAYMENT_INSTRUMENTS,
   };
 
-  bool succeed_ = false;
   std::unique_ptr<autofill::CreditCard> selected_card_;
   std::string login_choice_identifier_;
   TermsAndConditionsState terms_and_conditions_ = NOT_SELECTED;

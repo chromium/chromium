@@ -513,7 +513,6 @@ void CollectUserDataAction::OnShowToUser(UserData* user_data,
   // merge the new proto_ into the existing user_data. the proto_ always takes
   // precedence over the existing user_data.
   *field_change = UserData::FieldChange::ALL;
-  user_data->succeed_ = false;
   auto collect_user_data = proto_.collect_user_data();
   // the backend should explicitly set the terms and conditions state on every
   // new action.
@@ -565,7 +564,6 @@ void CollectUserDataAction::OnShowToUser(UserData* user_data,
     // made implicitly, the entire UI will not be shown and the action will
     // complete immediately.
     if (OnlyLoginRequested(*collect_user_data_options_)) {
-      user_data->succeed_ = true;
       std::move(collect_user_data_options_->confirm_callback)
           .Run(user_data, nullptr);
       return;
@@ -617,16 +615,12 @@ void CollectUserDataAction::OnGetUserData(
     const UserModel* user_model) {
   if (!callback_)
     return;
+  delegate_->GetPersonalDataManager()->RemoveObserver(this);
 
-  bool succeed = user_data->succeed_;
-  if (succeed) {
-    succeed = IsUserDataComplete(*user_data, *user_model,
-                                 *collect_user_data_options_);
-    WriteProcessedAction(user_data, user_model);
-  }
-
-  EndAction(succeed ? ClientStatus(ACTION_APPLIED)
-                    : ClientStatus(COLLECT_USER_DATA_ERROR));
+  WriteProcessedAction(user_data, user_model);
+  DCHECK(
+      IsUserDataComplete(*user_data, *user_model, *collect_user_data_options_));
+  EndAction(ClientStatus(ACTION_APPLIED));
 }
 
 void CollectUserDataAction::OnAdditionalActionTriggered(
@@ -635,6 +629,7 @@ void CollectUserDataAction::OnAdditionalActionTriggered(
     const UserModel* user_model) {
   if (!callback_)
     return;
+  delegate_->GetPersonalDataManager()->RemoveObserver(this);
 
   processed_action_proto_->mutable_collect_user_data_result()
       ->set_additional_action_index(index);
@@ -648,6 +643,7 @@ void CollectUserDataAction::OnTermsAndConditionsLinkClicked(
     const UserModel* user_model) {
   if (!callback_)
     return;
+  delegate_->GetPersonalDataManager()->RemoveObserver(this);
 
   processed_action_proto_->mutable_collect_user_data_result()->set_terms_link(
       link);
