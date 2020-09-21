@@ -368,4 +368,52 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest, MigratePreferences) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
+                       UserUninstalledExtensionApp) {
+  // Set up pre-migration state.
+  {
+    ASSERT_FALSE(IsExternalAppInstallFeatureEnabled(kMigrationFlag));
+
+    SyncExternalExtensions();
+    SyncExternalWebApps(/*expect_install=*/false, /*expect_uninstall=*/false);
+
+    EXPECT_FALSE(IsWebAppInstalled());
+    EXPECT_TRUE(IsExtensionAppInstalled());
+  }
+
+  {
+    extensions::TestExtensionRegistryObserver uninstall_observer(
+        extensions::ExtensionRegistry::Get(profile()), kExtensionId);
+    extensions::ExtensionSystem::Get(profile())
+        ->extension_service()
+        ->UninstallExtension(kExtensionId,
+                             extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+    uninstall_observer.WaitForExtensionUninstalled();
+    EXPECT_FALSE(IsWebAppInstalled());
+    EXPECT_FALSE(IsExtensionAppInstalled());
+  }
+
+  // Migrate extension app to web app.
+  {
+    base::AutoReset<bool> testing_scope =
+        SetExternalAppInstallFeatureAlwaysEnabledForTesting();
+    ASSERT_TRUE(IsExternalAppInstallFeatureEnabled(kMigrationFlag));
+
+    SyncExternalExtensions();
+    EXPECT_FALSE(IsExtensionAppInstalled());
+
+    // The web app should *not* be installed, since the user chose to uninstall
+    // the extension app that it's replacing. Unfortunately, this doesn't
+    // currently work.
+    // TODO(alancutter): Fix this so that default web apps that are replacing
+    // extensions are only installed if the corresponding extension is still
+    // installed.
+    // SyncExternalWebApps(/*expect_install=*/false,
+    // /*expect_uninstall=*/false); EXPECT_FALSE(IsWebAppInstalled());
+
+    SyncExternalWebApps(/*expect_install=*/true, /*expect_uninstall=*/false);
+    EXPECT_TRUE(IsWebAppInstalled());
+  }
+}
+
 }  // namespace web_app
