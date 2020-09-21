@@ -590,19 +590,16 @@ int ContentMainRunnerImpl::Initialize(const ContentMainParams& params) {
 
 // On Android, the ipc_fd is passed through the Java service.
 #if !defined(OS_ANDROID)
-    g_fds->Set(service_manager::kMojoIPCChannel,
-               service_manager::kMojoIPCChannel +
-                   base::GlobalDescriptors::kBaseDescriptor);
+  g_fds->Set(kMojoIPCChannel,
+             kMojoIPCChannel + base::GlobalDescriptors::kBaseDescriptor);
 
-    g_fds->Set(service_manager::kFieldTrialDescriptor,
-               service_manager::kFieldTrialDescriptor +
-                   base::GlobalDescriptors::kBaseDescriptor);
+  g_fds->Set(kFieldTrialDescriptor,
+             kFieldTrialDescriptor + base::GlobalDescriptors::kBaseDescriptor);
 #endif  // !OS_ANDROID
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_OPENBSD)
-    g_fds->Set(service_manager::kCrashDumpSignal,
-               service_manager::kCrashDumpSignal +
-                   base::GlobalDescriptors::kBaseDescriptor);
+  g_fds->Set(kCrashDumpSignal,
+             kCrashDumpSignal + base::GlobalDescriptors::kBaseDescriptor);
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_OPENBSD)
 
 #endif  // !OS_WIN

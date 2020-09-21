@@ -45,7 +45,7 @@
 #include "components/crash/core/app/breakpad_linux_impl.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/common/crash_keys.h"
-#include "services/service_manager/embedder/descriptors.h"
+#include "content/public/common/content_descriptors.h"
 #include "third_party/breakpad/breakpad/src/client/linux/crash_generation/crash_generation_client.h"
 #include "third_party/breakpad/breakpad/src/client/linux/handler/exception_handler.h"
 #include "third_party/breakpad/breakpad/src/client/linux/minidump_writer/directory_reader.h"
@@ -65,7 +65,6 @@
 
 #if defined(OS_CHROMEOS)
 #include "components/crash/core/app/crash_switches.h"
-#include "services/service_manager/embedder/switches.h"  // nogncheck
 #endif
 
 #if defined(ADDRESS_SANITIZER)
@@ -1024,8 +1023,8 @@ void MicrodumpInfo::Initialize(const std::string& process_type,
 class NonBrowserCrashHandler : public google_breakpad::CrashGenerationClient {
  public:
   NonBrowserCrashHandler()
-      : server_fd_(base::GlobalDescriptors::GetInstance()->Get(
-            service_manager::kCrashDumpSignal)) {}
+      : server_fd_(
+            base::GlobalDescriptors::GetInstance()->Get(kCrashDumpSignal)) {}
 
   ~NonBrowserCrashHandler() override {}
 

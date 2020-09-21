@@ -36,13 +36,12 @@
 #include "build/build_config.h"
 #include "components/nacl/common/nacl_switches.h"
 #include "components/nacl/loader/sandbox_linux/nacl_sandbox_linux.h"
+#include "content/public/common/content_descriptors.h"
 #include "content/public/common/zygote/send_zygote_child_ping_linux.h"
 #include "content/public/common/zygote/zygote_fork_delegate_linux.h"
 #include "mojo/core/embedder/embedder.h"
 #include "sandbox/linux/services/credentials.h"
 #include "sandbox/linux/services/namespace_sandbox.h"
-#include "services/service_manager/embedder/descriptors.h"
-#include "services/service_manager/embedder/switches.h"
 
 #if defined(OS_NACL_NONSFI)
 #include "components/nacl/loader/nonsfi/nonsfi_listener.h"
@@ -94,8 +93,8 @@ void BecomeNaClLoader(base::ScopedFD browser_fd,
   // This file descriptor is insidiously used by a number of APIs. Closing it
   // could lead to difficult to debug issues. Instead of closing it, replace
   // it with a dummy.
-  const int sandbox_ipc_channel = base::GlobalDescriptors::kBaseDescriptor +
-                                  service_manager::kSandboxIPCChannel;
+  const int sandbox_ipc_channel =
+      base::GlobalDescriptors::kBaseDescriptor + kSandboxIPCChannel;
 
   ReplaceFDWithDummy(sandbox_ipc_channel);
 
@@ -116,7 +115,7 @@ void BecomeNaClLoader(base::ScopedFD browser_fd,
   nacl_sandbox->SealLayerOneSandbox();
   nacl_sandbox->CheckSandboxingStateWithPolicy();
 
-  base::GlobalDescriptors::GetInstance()->Set(service_manager::kMojoIPCChannel,
+  base::GlobalDescriptors::GetInstance()->Set(kMojoIPCChannel,
                                               browser_fd.release());
 
   // The Mojo EDK must be initialized before using IPC.

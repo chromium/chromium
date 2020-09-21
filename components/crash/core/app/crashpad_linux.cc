@@ -18,8 +18,8 @@
 #include "build/branding_buildflags.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/app/crash_switches.h"
+#include "content/public/common/content_descriptors.h"
 #include "sandbox/linux/services/namespace_sandbox.h"
-#include "services/service_manager/embedder/descriptors.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 
 namespace crash_reporter {
@@ -175,8 +175,7 @@ base::FilePath PlatformCrashpadInitialization(
     return database_path;
   }
 
-  int fd = base::GlobalDescriptors::GetInstance()->Get(
-      service_manager::kCrashDumpSignal);
+  int fd = base::GlobalDescriptors::GetInstance()->Get(kCrashDumpSignal);
 
   pid_t pid = 0;
   if (!sandbox::NamespaceSandbox::InNewUserNamespace()) {

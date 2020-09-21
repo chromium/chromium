@@ -34,6 +34,7 @@
 #include "build/build_config.h"
 #include "content/common/set_process_title.h"
 #include "content/common/zygote/zygote_commands_linux.h"
+#include "content/public/common/content_descriptors.h"
 #include "content/public/common/zygote/send_zygote_child_ping_linux.h"
 #include "content/public/common/zygote/zygote_fork_delegate_linux.h"
 #include "ipc/ipc_channel.h"
@@ -41,7 +42,6 @@
 #include "sandbox/linux/services/namespace_sandbox.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 #include "sandbox/policy/sandbox.h"
-#include "services/service_manager/embedder/descriptors.h"
 #include "services/service_manager/embedder/result_codes.h"
 #include "services/service_manager/embedder/switches.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
@@ -407,8 +407,7 @@ int Zygote::ForkWithRealPid(const std::string& process_type,
   base::ScopedFD read_pipe, write_pipe;
   base::ProcessId pid = 0;
   if (helper) {
-    int mojo_channel_fd =
-        LookUpFd(fd_mapping, service_manager::kMojoIPCChannel);
+    int mojo_channel_fd = LookUpFd(fd_mapping, kMojoIPCChannel);
     if (mojo_channel_fd < 0) {
       DLOG(ERROR) << "Failed to find kMojoIPCChannel in FD mapping";
       return -1;

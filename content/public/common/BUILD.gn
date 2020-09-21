@@ -33,11 +33,6 @@ source_set("result_codes") {
 # a header-only dependency, without bringing in all of content.
 source_set("content_descriptors") {
   sources = [ "content_descriptors.h" ]
-
-  # The header uses V8_USE_EXTERNAL_STARTUP_DATA.
-  public_configs = [ "//v8:external_startup_data" ]
-
-  deps = [ "//ipc" ]
 }
 
 source_set("content_descriptor_keys") {

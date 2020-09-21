@@ -14,12 +14,11 @@
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/invitation.h"
-#include "services/service_manager/embedder/switches.h"
 
 #if defined(OS_POSIX)
 #include "base/files/scoped_file.h"
 #include "base/posix/global_descriptors.h"
-#include "services/service_manager/embedder/descriptors.h"
+#include "content/public/common/content_descriptors.h"
 #endif
 
 #if defined(OS_APPLE)
@@ -40,9 +39,8 @@ mojo::IncomingInvitation GetMojoInvitation() {
         mojo::PlatformHandle(client->TakeReceiveRight('mojo')));
   }
 #else
-  endpoint = mojo::PlatformChannelEndpoint(mojo::PlatformHandle(
-      base::ScopedFD(base::GlobalDescriptors::GetInstance()->Get(
-          service_manager::kMojoIPCChannel))));
+  endpoint = mojo::PlatformChannelEndpoint(mojo::PlatformHandle(base::ScopedFD(
+      base::GlobalDescriptors::GetInstance()->Get(kMojoIPCChannel))));
 #endif  // !defined(OS_WIN)
   DCHECK(endpoint.is_valid());
   return mojo::IncomingInvitation::Accept(std::move(endpoint));

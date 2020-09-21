@@ -595,7 +595,7 @@ void AwContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
   int crash_signal_fd =
       crashpad::CrashHandlerHost::Get()->GetDeathSignalSocket();
   if (crash_signal_fd >= 0) {
-    mappings->Share(service_manager::kCrashDumpSignal, crash_signal_fd);
+    mappings->Share(kCrashDumpSignal, crash_signal_fd);
   }
 }
 

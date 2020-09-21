@@ -8,8 +8,8 @@
 #include "base/posix/global_descriptors.h"
 #include "base/posix/unix_domain_socket.h"
 #include "build/build_config.h"
+#include "content/public/common/content_descriptors.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
-#include "services/service_manager/embedder/descriptors.h"
 
 namespace content {
 
@@ -32,8 +32,7 @@ int SharedMemoryIPCSupport::MakeSharedMemorySegment(size_t length,
 #endif
 
 int GetSandboxFD() {
-  return service_manager::kSandboxIPCChannel +
-         base::GlobalDescriptors::kBaseDescriptor;
+  return kSandboxIPCChannel + base::GlobalDescriptors::kBaseDescriptor;
 }
 
 }  // namespace content

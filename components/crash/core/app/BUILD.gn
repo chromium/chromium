@@ -73,6 +73,7 @@ static_library("app") {
   deps = [
     "//base",
     "//build:branding_buildflags",
+    "//content/public/common:content_descriptors",
   ]
 
   if (is_mac || is_win || is_android || is_linux || is_chromeos) {

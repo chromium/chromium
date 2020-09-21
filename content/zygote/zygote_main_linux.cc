@@ -29,6 +29,7 @@
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "content/common/zygote/zygote_commands_linux.h"
+#include "content/public/common/content_descriptors.h"
 #include "content/public/common/zygote/sandbox_support_linux.h"
 #include "content/public/common/zygote/zygote_fork_delegate_linux.h"
 #include "content/zygote/zygote_linux.h"
@@ -42,8 +43,6 @@
 #include "sandbox/policy/linux/sandbox_linux.h"
 #include "sandbox/policy/sandbox.h"
 #include "sandbox/policy/switches.h"
-#include "services/service_manager/embedder/descriptors.h"
-#include "services/service_manager/embedder/switches.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace content {
@@ -237,8 +236,7 @@ bool ZygoteMain(
 
   Zygote zygote(sandbox_flags, std::move(fork_delegates),
                 base::GlobalDescriptors::Descriptor(
-                    static_cast<uint32_t>(service_manager::kSandboxIPCChannel),
-                    GetSandboxFD()));
+                    static_cast<uint32_t>(kSandboxIPCChannel), GetSandboxFD()));
 
   // This function call can return multiple times, once per fork().
   return zygote.ProcessRequests();

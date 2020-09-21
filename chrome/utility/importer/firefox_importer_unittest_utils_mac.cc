@@ -34,7 +34,6 @@
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/invitation.h"
-#include "services/service_manager/embedder/descriptors.h"
 #include "testing/multiprocess_func_list.h"
 
 namespace {

@@ -60,11 +60,11 @@ std::unique_ptr<PosixFileDescriptorInfo> CreateDefaultPosixFilesToMap(
 #if !defined(OS_MAC)
   int fd = base::FieldTrialList::GetFieldTrialDescriptor();
   DCHECK_NE(fd, -1);
-  files_to_register->Share(service_manager::kFieldTrialDescriptor, fd);
+  files_to_register->Share(kFieldTrialDescriptor, fd);
 
   DCHECK(mojo_channel_remote_endpoint.is_valid());
   files_to_register->Share(
-      service_manager::kMojoIPCChannel,
+      kMojoIPCChannel,
       mojo_channel_remote_endpoint.platform_handle().GetFD().get());
 
   // TODO(jcivelli): remove this "if defined" by making

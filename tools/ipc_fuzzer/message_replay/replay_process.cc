@@ -31,11 +31,10 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/system/invitation.h"
-#include "services/service_manager/embedder/switches.h"
 
 #if defined(OS_POSIX)
 #include "base/posix/global_descriptors.h"
-#include "services/service_manager/embedder/descriptors.h"
+#include "content/public/common/content_descriptors.h"
 #endif
 
 namespace ipc_fuzzer {
@@ -82,9 +81,8 @@ mojo::IncomingInvitation InitializeMojoIPCChannel() {
   endpoint = mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(
       *base::CommandLine::ForCurrentProcess());
 #elif defined(OS_POSIX)
-  endpoint = mojo::PlatformChannelEndpoint(mojo::PlatformHandle(
-      base::ScopedFD(base::GlobalDescriptors::GetInstance()->Get(
-          service_manager::kMojoIPCChannel))));
+  endpoint = mojo::PlatformChannelEndpoint(mojo::PlatformHandle(base::ScopedFD(
+      base::GlobalDescriptors::GetInstance()->Get(kMojoIPCChannel))));
 #endif
   CHECK(endpoint.is_valid());
   return mojo::IncomingInvitation::Accept(std::move(endpoint));
@@ -130,9 +128,8 @@ bool ReplayProcess::Initialize(int argc, const char** argv) {
 
 #if defined(OS_POSIX)
   base::GlobalDescriptors* g_fds = base::GlobalDescriptors::GetInstance();
-  g_fds->Set(service_manager::kMojoIPCChannel,
-             service_manager::kMojoIPCChannel +
-                 base::GlobalDescriptors::kBaseDescriptor);
+  g_fds->Set(kMojoIPCChannel,
+             kMojoIPCChannel + base::GlobalDescriptors::kBaseDescriptor);
 #endif
 
   mojo_ipc_support_.reset(new mojo::core::ScopedIPCSupport(

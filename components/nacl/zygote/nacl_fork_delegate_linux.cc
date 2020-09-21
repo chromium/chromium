@@ -174,8 +174,8 @@ void NaClForkDelegate::Init(const int sandboxdesc,
 
   // For communications between the NaCl loader process and
   // the browser process.
-  int nacl_sandbox_descriptor = base::GlobalDescriptors::kBaseDescriptor +
-                                service_manager::kSandboxIPCChannel;
+  int nacl_sandbox_descriptor =
+      base::GlobalDescriptors::kBaseDescriptor + kSandboxIPCChannel;
   // Confirm a hard-wired assumption.
   DCHECK_EQ(sandboxdesc, nacl_sandbox_descriptor);
 

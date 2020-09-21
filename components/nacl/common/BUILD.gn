@@ -36,7 +36,7 @@ if (enable_nacl) {
       ":nacl_error_code",
       "//base",
       "//base:base_static",
-      "//content/public/common:service_names",
+      "//content/public/common:content_descriptors",
       "//mojo/core/embedder",
       "//services/service_manager/public/cpp",
     ]
