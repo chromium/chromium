@@ -38,6 +38,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/blocked_content/list_item_position.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/embedder_support/switches.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
@@ -874,6 +875,43 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PopupsDisableBackForwardCache) {
 
   EXPECT_TRUE(tester.IsDisabledForFrameWithReason(process_id, frame_routing_id,
                                                   "PopupBlockerTabHelper"));
+}
+
+// Make sure the poput is attributed to the right WebContents when it is
+// triggered from a different WebContents. Regression test for
+// https://crbug.com/1128495
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
+                       PopupTriggeredFromDifferentWebContents) {
+  content::BackForwardCacheDisabledTester tester;
+  const GURL url(
+      embedded_test_server()->GetURL("/popup_blocker/popup-in-href.html"));
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+
+  content::WebContents* tab_1 =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ui_test_utils::TabAddedWaiter tab_Added_waiter(browser());
+  SimulateMouseClickOrTapElementWithId(tab_1, "link");
+
+  tab_Added_waiter.Wait();
+  content::WebContents* tab_2 =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_NE(tab_1, tab_2);
+
+  // We need to make sure the js in the new tab that comes from the href runs
+  // before we perform the checks further down. Since we have no control over
+  // that script we just run some more (that we do control) and wait for it to
+  // finish.
+  EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(tab_2, ""));
+
+  EXPECT_FALSE(content_settings::PageSpecificContentSettings::GetForFrame(
+                   tab_1->GetMainFrame())
+                   ->IsContentBlocked(ContentSettingsType::POPUPS));
+  EXPECT_TRUE(content_settings::PageSpecificContentSettings::GetForFrame(
+                  tab_2->GetMainFrame())
+                  ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 
 }  // namespace

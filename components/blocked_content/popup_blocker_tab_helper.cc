@@ -82,7 +82,6 @@ void PopupBlockerTabHelper::HidePopupNotification() {
 }
 
 void PopupBlockerTabHelper::AddBlockedPopup(
-    content::RenderFrameHost* source_frame,
     std::unique_ptr<PopupNavigationDelegate> delegate,
     const blink::mojom::WindowFeatures& window_features,
     PopupBlockType block_type) {
@@ -95,10 +94,9 @@ void PopupBlockerTabHelper::AddBlockedPopup(
   blocked_popups_[id] = std::make_unique<BlockedRequest>(
       std::move(delegate), window_features, block_type);
 
-  // PageSpecificContentSettings is per page so it does not matter that we use
-  // the source_frame here and the main frame in HidePopupNotification
   auto* content_settings =
-      content_settings::PageSpecificContentSettings::GetForFrame(source_frame);
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetMainFrame());
   if (content_settings) {
     content_settings->OnContentBlocked(ContentSettingsType::POPUPS);
   }

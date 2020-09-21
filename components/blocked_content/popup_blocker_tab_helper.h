@@ -19,10 +19,6 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
-namespace content {
-class RenderFrameHost;
-}
-
 namespace blocked_content {
 class PopupNavigationDelegate;
 
@@ -69,8 +65,7 @@ class PopupBlockerTabHelper
   void ShowBlockedPopup(int32_t popup_id, WindowOpenDisposition disposition);
 
   // Adds a new blocked popup to the UI.
-  void AddBlockedPopup(content::RenderFrameHost* source_frame,
-                       std::unique_ptr<PopupNavigationDelegate> delegate,
+  void AddBlockedPopup(std::unique_ptr<PopupNavigationDelegate> delegate,
                        const blink::mojom::WindowFeatures& window_features,
                        PopupBlockType block_type);
 
