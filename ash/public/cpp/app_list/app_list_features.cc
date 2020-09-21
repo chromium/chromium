@@ -13,8 +13,8 @@ namespace app_list_features {
 
 const base::Feature kEnableAnswerCard{"EnableAnswerCard",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kEnablePlayStoreAppSearch{
-    "EnablePlayStoreAppSearch", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kEnablePlayStoreAppSearch{"EnablePlayStoreAppSearch",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEnableAppDataSearch{"EnableAppDataSearch",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEnableSettingsShortcutSearch{
@@ -58,6 +58,8 @@ const base::Feature kEnableAggregatedMlSearchRanking{
     "EnableAggregatedMlSearchRanking", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kNewDragSpecInLauncher{"NewDragSpecInLauncher",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kEnableOmniboxRichEntities{
+    "EnableOmniboxRichEntities", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsAnswerCardEnabled() {
   // Not using local static variable to allow tests to change this value.
@@ -141,6 +143,10 @@ bool IsAggregatedMlSearchRankingEnabled() {
 
 bool IsNewDragSpecInLauncherEnabled() {
   return base::FeatureList::IsEnabled(kNewDragSpecInLauncher);
+}
+
+bool IsOmniboxRichEntitiesEnabled() {
+  return base::FeatureList::IsEnabled(kEnableOmniboxRichEntities);
 }
 
 std::string AnswerServerUrl() {

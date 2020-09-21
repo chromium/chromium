@@ -41104,6 +41104,7 @@ from previous Chrome versions.
   <int value="-1662646099" label="NTPOfflinePageSuggestions:enabled"/>
   <int value="-1662447331" label="wake-on-packets"/>
   <int value="-1660972490" label="gpu-rasterization-msaa-sample-count"/>
+  <int value="-1656179450" label="EnableOmniboxRichEntities:enabled"/>
   <int value="-1655535052" label="enable-pointer-events"/>
   <int value="-1654344175" label="disable-extension-info-dialog"/>
   <int value="-1653991213" label="CrossOriginIsolated:disabled"/>
@@ -43552,6 +43553,7 @@ from previous Chrome versions.
   <int value="851238417" label="VirtualKeyboardFloatingResizable:enabled"/>
   <int value="851616920" label="EnableTLS13EarlyData:disabled"/>
   <int value="852313529" label="RTCUnifiedPlanByDefault:disabled"/>
+  <int value="854294457" label="EnableOmniboxRichEntities:disabled"/>
   <int value="854730848" label="disable-app-info-dialog-mac"/>
   <int value="855746780" label="disable-physical-keyboard-autocorrect"/>
   <int value="857391671" label="BluetoothNextHandsfreeProfile:disabled"/>

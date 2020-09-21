@@ -920,6 +920,9 @@ extern const char kOmniboxRichAutocompletionShowAdditionalTextDescription[];
 extern const char kOmniboxRichAutocompletionPromisingName[];
 extern const char kOmniboxRichAutocompletionPromisingDescription[];
 
+extern const char kOmniboxRichEntitiesInLauncherName[];
+extern const char kOmniboxRichEntitiesInLauncherDescription[];
+
 extern const char kOmniboxOnFocusSuggestionsName[];
 extern const char kOmniboxOnFocusSuggestionsDescription[];
 
