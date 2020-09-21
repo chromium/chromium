@@ -318,9 +318,11 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
       /*frame=*/nullptr, worker_process_host_->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kWorkerSubResource,
       worker_origin_, /*navigation_id=*/base::nullopt,
+      base::UkmSourceId::FromInt64(
+          ancestor_render_frame_host->GetPageUkmSourceId()),
       &default_factory_receiver, &factory_params->header_client,
-      bypass_redirect_checks, /*disable_secure_dns=*/nullptr,
-      &factory_params->factory_override);
+      bypass_redirect_checks,
+      /*disable_secure_dns=*/nullptr, &factory_params->factory_override);
 
   // TODO(nhiroki): Call devtools_instrumentation::WillCreateURLLoaderFactory()
   // here.

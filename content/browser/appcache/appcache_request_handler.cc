@@ -437,6 +437,8 @@ void AppCacheRequestHandler::RunLoaderCallbackForMainResource(
               ContentBrowserClient::URLLoaderFactoryType::kNavigation,
               url::Origin(),
               frame_tree_node->navigation_request()->GetNavigationId(),
+              base::UkmSourceId::FromInt64(frame_tree_node->navigation_request()
+                                               ->GetNextPageUkmSourceId()),
               &factory_receiver, nullptr /* header_client */,
               nullptr /* bypass_redirect_checks */,
               nullptr /* disable_secure_dns */, nullptr /* factory_override */);

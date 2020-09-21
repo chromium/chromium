@@ -100,7 +100,7 @@ class IdentifiableSurface {
     // associated with document's ID.
     kExtensionFileAccess = 5,
 
-    // Extension running content-script.
+    // Extension running content-script. Input is the extension ID.
     kExtensionContentScript = 6,
 
     // Represents making a measurement of one of the above surfacess. This
@@ -136,6 +136,9 @@ class IdentifiableSurface {
     // Represents loading a font locally as a last resort. Input is the
     // FontSelectionRequest (i.e. weight, width and slope).
     kLocalFontLookupAsLastResort = 14,
+
+    // Extension cancelled a network request. Input is the extension ID.
+    kExtensionCancelRequest = 15,
 
     // We can use values up to and including |kMax|.
     kMax = (1 << kTypeBits) - 1

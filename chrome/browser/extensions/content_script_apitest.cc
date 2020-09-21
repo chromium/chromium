@@ -1728,18 +1728,16 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiIdentifiabilityTest, InjectionRecorded) {
   // Right now the instrumentation infra doesn't track all of the sources that
   // reported a particular surface, so we merely look for if one had it.
   // Eventually both frames should report it.
-  bool found = false;
-  for (const auto& entry : merged_entries) {
-    const auto& metrics = entry.second->metrics;
-    if (metrics.contains(
-            SurfaceForExtension(
-                blink::IdentifiableSurface::Type::kExtensionContentScript,
-                GetSingleLoadedExtension()->id())
-                .ToUkmMetricHash())) {
-      found = true;
-    }
-  }
-  EXPECT_TRUE(found);
+  //
+  // Further, we can't actually check the UKM source ID since those events
+  // are renderer-side, so use Document-generated IDs that are different than
+  // the navigation IDs provided by RenderFrameHost.
+  std::set<ukm::SourceId> source_ids =
+      IdentifiabilityMetricsTestHelper::GetSourceIDsForSurfaceAndExtension(
+          merged_entries,
+          blink::IdentifiableSurface::Type::kExtensionContentScript,
+          GetSingleLoadedExtension()->id());
+  EXPECT_FALSE(source_ids.empty());
 }
 
 // Test that where a page doesn't get a content script injected, no
@@ -1753,29 +1751,14 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiIdentifiabilityTest,
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Create a canvas and serialize it to force at least one event to happen,
-  // since otherwise there is no way to synchronize with the renderer.
-  constexpr char kForceMetricScript[] =
-      R"(
-        var c = document.createElement("canvas");
-        document.body.appendChild(c);
-        var ctx = c.getContext("2d");
-        var url = c.toDataURL();
-        "ok";
-      )";
-  EXPECT_EQ("ok", content::EvalJs(web_contents, kForceMetricScript));
+  identifiability_metrics_test_helper_.EnsureIdentifiabilityEventGenerated(
+      web_contents);
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
       identifiability_metrics_test_helper_.NavigateToBlankAndWaitForMetrics(
           web_contents, &run_loop);
-  for (const auto& entry : merged_entries) {
-    const auto& metrics = entry.second->metrics;
-    for (const auto& surface_value : metrics) {
-      EXPECT_NE(blink::IdentifiableSurface::Type::kExtensionContentScript,
-                blink::IdentifiableSurface::FromMetricHash(surface_value.first)
-                    .GetType());
-    }
-  }
+  EXPECT_FALSE(IdentifiabilityMetricsTestHelper::ContainsSurfaceOfType(
+      merged_entries,
+      blink::IdentifiableSurface::Type::kExtensionContentScript));
 }
 
 }  // namespace extensions

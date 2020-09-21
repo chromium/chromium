@@ -324,8 +324,10 @@ void CreateNetworkFactoryForNavigationPreloadOnUI(
       partition->browser_context(), frame_tree_node->current_frame_host(),
       frame_tree_node->current_frame_host()->GetProcess()->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
-      frame_tree_node->navigation_request()->GetNavigationId(), &receiver,
-      &header_client, &bypass_redirect_checks_unused,
+      frame_tree_node->navigation_request()->GetNavigationId(),
+      base::UkmSourceId::FromInt64(
+          frame_tree_node->navigation_request()->GetNextPageUkmSourceId()),
+      &receiver, &header_client, &bypass_redirect_checks_unused,
       /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr);
 
   // Make the network factory.

@@ -51,6 +51,7 @@ WebRequestProxyingWebSocket::WebRequestProxyingWebSocket(
     bool has_extra_headers,
     int process_id,
     int render_frame_id,
+    base::UkmSourceId ukm_source_id,
     content::BrowserContext* browser_context,
     WebRequestAPI::RequestIDGenerator* request_id_generator,
     WebRequestAPI::ProxySet* proxies)
@@ -70,7 +71,8 @@ WebRequestProxyingWebSocket::WebRequestProxyingWebSocket(
           /*is_download=*/false,
           /*is_async=*/true,
           /*is_service_worker_script=*/false,
-          /*navigation_id=*/base::nullopt)),
+          /*navigation_id=*/base::nullopt,
+          ukm_source_id)),
       proxies_(proxies) {
   // base::Unretained is safe here because the callback will be canceled when
   // |shutdown_notifier_| is destroyed, and |proxies_| owns this.
@@ -278,6 +280,7 @@ void WebRequestProxyingWebSocket::StartProxying(
     bool has_extra_headers,
     int process_id,
     int render_frame_id,
+    base::UkmSourceId ukm_source_id,
     WebRequestAPI::RequestIDGenerator* request_id_generator,
     const url::Origin& origin,
     content::BrowserContext* browser_context,
@@ -293,8 +296,8 @@ void WebRequestProxyingWebSocket::StartProxying(
 
   auto proxy = std::make_unique<WebRequestProxyingWebSocket>(
       std::move(factory), request, std::move(handshake_client),
-      has_extra_headers, process_id, render_frame_id, browser_context,
-      request_id_generator, proxies);
+      has_extra_headers, process_id, render_frame_id, ukm_source_id,
+      browser_context, request_id_generator, proxies);
 
   auto* raw_proxy = proxy.get();
   proxies->AddProxy(std::move(proxy));

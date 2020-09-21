@@ -38,7 +38,9 @@ void UrlLoaderFactoryProxyImpl::GetProxiedURLLoaderFactory(
   web_request_api->MaybeProxyURLLoaderFactory(
       browser_context, frame_host_, process->GetID(),
       content::ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-      /*navigation_id=*/base::nullopt, &proxied_factory,
+      /*navigation_id=*/base::nullopt,
+      base::UkmSourceId::FromInt64(frame_host_->GetPageUkmSourceId()),
+      &proxied_factory,
       /*headber_client=*/nullptr);
 
   mojo::FusePipes(std::move(proxied_factory), std::move(original_factory));

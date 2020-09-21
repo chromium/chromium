@@ -99,7 +99,7 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
     int32_t network_service_request_id,
     int32_t routing_id,
     uint32_t options,
-    ukm::SourceId ukm_source_id,
+    base::UkmSourceId ukm_source_id,
     const network::ResourceRequest& request,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
@@ -139,7 +139,7 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
       request_(request),
       original_initiator_(request.request_initiator),
       request_id_(request_id),
-      ukm_source_id_(ukm::kInvalidSourceId),
+      ukm_source_id_(base::kInvalidUkmSourceId),
       proxied_loader_receiver_(this),
       for_cors_preflight_(true),
       has_any_extra_headers_listeners_(
@@ -195,7 +195,8 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
                                     : nullptr,
       routing_id_, request_for_info, factory_->IsForDownload(),
       !(options_ & network::mojom::kURLLoadOptionSynchronous),
-      factory_->IsForServiceWorkerScript(), factory_->navigation_id_));
+      factory_->IsForServiceWorkerScript(), factory_->navigation_id_,
+      ukm_source_id_));
 
   current_request_uses_header_client_ =
       factory_->url_loader_header_client_receiver_.is_bound() &&
@@ -1083,6 +1084,7 @@ WebRequestProxyingURLLoaderFactory::WebRequestProxyingURLLoaderFactory(
     WebRequestAPI::RequestIDGenerator* request_id_generator,
     std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
     base::Optional<int64_t> navigation_id,
+    base::UkmSourceId ukm_source_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
     mojo::PendingReceiver<network::mojom::TrustedURLLoaderHeaderClient>
@@ -1096,7 +1098,8 @@ WebRequestProxyingURLLoaderFactory::WebRequestProxyingURLLoaderFactory(
       navigation_ui_data_(std::move(navigation_ui_data)),
       navigation_id_(std::move(navigation_id)),
       proxies_(proxies),
-      loader_factory_type_(loader_factory_type) {
+      loader_factory_type_(loader_factory_type),
+      ukm_source_id_(ukm_source_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // base::Unretained is safe here because the callback will be
   // canceled when |shutdown_notifier_| is destroyed, and |proxies_|
@@ -1127,6 +1130,7 @@ void WebRequestProxyingURLLoaderFactory::StartProxying(
     WebRequestAPI::RequestIDGenerator* request_id_generator,
     std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
     base::Optional<int64_t> navigation_id,
+    base::UkmSourceId ukm_source_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
     mojo::PendingReceiver<network::mojom::TrustedURLLoaderHeaderClient>
@@ -1137,7 +1141,7 @@ void WebRequestProxyingURLLoaderFactory::StartProxying(
 
   auto proxy = std::make_unique<WebRequestProxyingURLLoaderFactory>(
       browser_context, render_process_id, frame_id, request_id_generator,
-      std::move(navigation_ui_data), std::move(navigation_id),
+      std::move(navigation_ui_data), std::move(navigation_id), ukm_source_id,
       std::move(loader_receiver), std::move(target_factory_remote),
       std::move(header_client_receiver), proxies, loader_factory_type);
 
@@ -1154,18 +1158,19 @@ void WebRequestProxyingURLLoaderFactory::CreateLoaderAndStart(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!ukm_source_id_) {
-    auto* frame =
-        content::RenderFrameHost::FromID(render_process_id_, frame_id_);
-    using FactoryType = content::ContentBrowserClient::URLLoaderFactoryType;
-    if (loader_factory_type_ == FactoryType::kDocumentSubResource ||
-        loader_factory_type_ == FactoryType::kWorkerSubResource) {
-      ukm_source_id_ =
-          frame ? frame->GetPageUkmSourceId() : ukm::kInvalidSourceId;
-    } else {
-      ukm_source_id_ = ukm::kInvalidSourceId;
-    }
+  // Sanity check the plumbed |ukm_source_id_|.
+#if DCHECK_IS_ON()
+  auto* frame = content::RenderFrameHost::FromID(render_process_id_, frame_id_);
+  using FactoryType = content::ContentBrowserClient::URLLoaderFactoryType;
+  if ((ukm_source_id_ != base::kInvalidUkmSourceId) && frame &&
+      (frame->GetPageUkmSourceId() != ukm::kInvalidSourceId) &&
+      (loader_factory_type_ == FactoryType::kDocumentSubResource ||
+       loader_factory_type_ == FactoryType::kWorkerSubResource)) {
+    DCHECK_EQ(ukm_source_id_.ToInt64(), frame->GetPageUkmSourceId());
   }
+#else
+  (void)frame_id_;  // avoid compile trouble due to unused.
+#endif
 
   // Make sure we are not proxying a browser initiated non-navigation
   // request except for loading service worker scripts.
@@ -1195,7 +1200,7 @@ void WebRequestProxyingURLLoaderFactory::CreateLoaderAndStart(
   auto result = requests_.emplace(
       web_request_id, std::make_unique<InProgressRequest>(
                           this, web_request_id, request_id, routing_id, options,
-                          *ukm_source_id_, request, traffic_annotation,
+                          ukm_source_id_, request, traffic_annotation,
                           std::move(loader_receiver), std::move(client)));
   result.first->second->Restart();
 }

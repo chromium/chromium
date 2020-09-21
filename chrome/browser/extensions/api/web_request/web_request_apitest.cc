@@ -35,6 +35,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/extension_with_management_policy_apitest.h"
+#include "chrome/browser/extensions/identifiability_metrics_test_util.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/net/profile_network_context_service.h"
@@ -1811,7 +1812,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       frame->GetProcess()->GetBrowserContext(), frame,
       frame->GetProcess()->GetID(),
       content::ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-      base::nullopt, &pending_receiver, nullptr));
+      base::nullopt, base::kInvalidUkmSourceId, &pending_receiver, nullptr));
   temp_web_contents.reset();
   auto params = network::mojom::URLLoaderFactoryParams::New();
   params->process_id = 0;
@@ -3677,6 +3678,124 @@ IN_PROC_BROWSER_TEST_P(RedirectInfoWebRequestApiTest,
               net::IsolationInfo::RedirectMode::kUpdateFrameOnly,
               top_level_origin, redirected_origin,
               net::SiteForCookies::FromOrigin(top_level_origin))));
+}
+
+class ExtensionWebRequestApiIdentifiabilityTest
+    : public ExtensionWebRequestApiTest {
+ public:
+  void SetUpOnMainThread() override {
+    identifiability_metrics_test_helper_.SetUpOnMainThread();
+    ExtensionWebRequestApiTest::SetUpOnMainThread();
+  }
+
+ protected:
+  IdentifiabilityMetricsTestHelper identifiability_metrics_test_helper_;
+};
+
+// Test that identifiability study of request cancellation produces expected
+// events for a subresource.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiIdentifiabilityTest, Loader) {
+  base::RunLoop run_loop;
+  identifiability_metrics_test_helper_.PrepareForTest(&run_loop);
+
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionSubtest("webrequest", "test_simple_cancel.html"))
+      << message_;
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ukm::SourceId frame_id = web_contents->GetMainFrame()->GetPageUkmSourceId();
+
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      identifiability_metrics_test_helper_.NavigateToBlankAndWaitForMetrics(
+          web_contents, &run_loop);
+
+  std::set<ukm::SourceId> cancel_ids =
+      IdentifiabilityMetricsTestHelper::GetSourceIDsForSurfaceAndExtension(
+          merged_entries,
+          blink::IdentifiableSurface::Type::kExtensionCancelRequest,
+          GetSingleLoadedExtension()->id());
+  ASSERT_EQ(1u, cancel_ids.size());
+  EXPECT_TRUE(base::Contains(cancel_ids, frame_id));
+}
+
+// Test that identifiability study of request cancellation produces expected
+// events when the navigation is cancelled.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiIdentifiabilityTest, Navigation) {
+  base::RunLoop run_loop;
+  identifiability_metrics_test_helper_.PrepareForTest(&run_loop);
+
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(
+      RunExtensionSubtest("webrequest", "test_simple_cancel_navigation.html"))
+      << message_;
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ukm::SourceId frame_id = web_contents->GetMainFrame()->GetPageUkmSourceId();
+
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      identifiability_metrics_test_helper_.NavigateToBlankAndWaitForMetrics(
+          web_contents, &run_loop);
+
+  std::set<ukm::SourceId> cancel_ids =
+      IdentifiabilityMetricsTestHelper::GetSourceIDsForSurfaceAndExtension(
+          merged_entries,
+          blink::IdentifiableSurface::Type::kExtensionCancelRequest,
+          GetSingleLoadedExtension()->id());
+  ASSERT_EQ(1u, cancel_ids.size());
+  EXPECT_TRUE(base::Contains(cancel_ids, frame_id));
+}
+
+// Test that identifiability study of request cancellation produces expected
+// events with WebSocket.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiIdentifiabilityTest, WebSocket) {
+  base::RunLoop run_loop;
+  identifiability_metrics_test_helper_.PrepareForTest(&run_loop);
+
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(StartWebSocketServer(net::GetWebSocketTestDataDirectory()));
+  ASSERT_TRUE(
+      RunExtensionSubtest("webrequest", "test_simple_websocket_cancel.html"))
+      << message_;
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ukm::SourceId frame_id = web_contents->GetMainFrame()->GetPageUkmSourceId();
+
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      identifiability_metrics_test_helper_.NavigateToBlankAndWaitForMetrics(
+          web_contents, &run_loop);
+
+  std::set<ukm::SourceId> cancel_ids =
+      IdentifiabilityMetricsTestHelper::GetSourceIDsForSurfaceAndExtension(
+          merged_entries,
+          blink::IdentifiableSurface::Type::kExtensionCancelRequest,
+          GetSingleLoadedExtension()->id());
+  ASSERT_EQ(1u, cancel_ids.size());
+  EXPECT_TRUE(cancel_ids.find(frame_id) != cancel_ids.end());
+}
+
+// Test that where a page doesn't have extensions cancelling requests, no
+// such event is recorded.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiIdentifiabilityTest,
+                       NoInjectionRecorded) {
+  base::RunLoop run_loop;
+  identifiability_metrics_test_helper_.PrepareForTest(&run_loop);
+
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  identifiability_metrics_test_helper_.EnsureIdentifiabilityEventGenerated(
+      web_contents);
+
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      identifiability_metrics_test_helper_.NavigateToBlankAndWaitForMetrics(
+          web_contents, &run_loop);
+  EXPECT_FALSE(IdentifiabilityMetricsTestHelper::ContainsSurfaceOfType(
+      merged_entries,
+      blink::IdentifiableSurface::Type::kExtensionCancelRequest));
 }
 
 }  // namespace extensions

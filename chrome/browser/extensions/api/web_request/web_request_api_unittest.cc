@@ -529,7 +529,7 @@ TEST(ExtensionWebRequestHelpersTest, TestCalculateOnAuthRequiredDelta) {
 
 TEST(ExtensionWebRequestHelpersTest, TestMergeCancelOfResponses) {
   EventResponseDeltas deltas;
-  bool canceled = false;
+  base::Optional<extensions::ExtensionId> canceled_by_extension;
 
   // Single event that does not cancel.
   {
@@ -537,8 +537,8 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeCancelOfResponses) {
     d1.cancel = false;
     deltas.push_back(std::move(d1));
   }
-  MergeCancelOfResponses(deltas, &canceled);
-  EXPECT_FALSE(canceled);
+  MergeCancelOfResponses(deltas, &canceled_by_extension);
+  EXPECT_FALSE(canceled_by_extension);
 
   // Second event that cancels the request
   {
@@ -547,8 +547,9 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeCancelOfResponses) {
     deltas.push_back(std::move(d2));
   }
   deltas.sort(&InDecreasingExtensionInstallationTimeOrder);
-  MergeCancelOfResponses(deltas, &canceled);
-  EXPECT_TRUE(canceled);
+  MergeCancelOfResponses(deltas, &canceled_by_extension);
+  EXPECT_TRUE(canceled_by_extension);
+  EXPECT_EQ("extid2", canceled_by_extension.value());
 }
 
 TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses) {

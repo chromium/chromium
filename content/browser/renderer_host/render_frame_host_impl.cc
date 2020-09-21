@@ -1508,15 +1508,17 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>
         default_factory_receiver) {
   // By providing null |navigation_request| we will always use the last
-  // committed Origin and ClientSecurityState. If the caller wanted a factory
-  // associated to a navigation about to commit, the params generated won't be
-  // correct. There is no good way of fixing this before RenderDocumentHost (ie
-  // swapping RenderFrameHost on each navigation).
+  // committed Origin and ClientSecurityState (using GetPageUkmSourceId()
+  // does the same for UKM). If the caller wanted a factory associated to a
+  // navigation about to commit, the params generated won't be correct. There is
+  // no good way of fixing this before RenderDocumentHost (ie swapping
+  // RenderFrameHost on each navigation).
   NavigationRequest* navigation_request = nullptr;
 
   return CreateNetworkServiceDefaultFactoryAndObserve(
       CreateURLLoaderFactoryParamsForMainWorld(
           navigation_request, "RFHI::CreateNetworkServiceDefaultFactory"),
+      base::UkmSourceId::FromInt64(GetPageUkmSourceId()),
       std::move(default_factory_receiver));
 }
 
@@ -1591,6 +1593,7 @@ RenderFrameHostImpl::CreateURLLoaderFactoriesForIsolatedWorlds(
     mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
     CreateNetworkServiceDefaultFactoryAndObserve(
         std::move(factory_params),
+        base::kInvalidUkmSourceId, /* isolated from page */
         factory_remote.InitWithNewPipeAndPassReceiver());
     result[isolated_world_origin] = std::move(factory_remote);
   }
@@ -3689,13 +3692,19 @@ void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
   DCHECK(!IsOutOfProcessNetworkService() ||
          network_service_disconnect_handler_holder_.is_bound());
 
+  NavigationRequest* latest_nav_request_still_committing =
+      FindLatestNavigationRequestThatIsStillCommitting();
   mojo::PendingRemote<network::mojom::URLLoaderFactory> default_factory_remote;
   bool bypass_redirect_checks = false;
   if (recreate_default_url_loader_factory_after_network_service_crash_) {
     bypass_redirect_checks = CreateNetworkServiceDefaultFactoryAndObserve(
         CreateURLLoaderFactoryParamsForMainWorld(
-            FindLatestNavigationRequestThatIsStillCommitting(),
+            latest_nav_request_still_committing,
             "RFHI::UpdateSubresourceLoaderFactories"),
+        base::UkmSourceId::FromInt64(
+            latest_nav_request_still_committing
+                ? latest_nav_request_still_committing->GetNextPageUkmSourceId()
+                : GetPageUkmSourceId()),
         default_factory_remote.InitWithNewPipeAndPassReceiver());
   }
 
@@ -3705,7 +3714,7 @@ void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
               std::move(default_factory_remote),
               blink::PendingURLLoaderFactoryBundle::SchemeMap(),
               CreateURLLoaderFactoriesForIsolatedWorlds(
-                  FindLatestNavigationRequestThatIsStillCommitting(),
+                  latest_nav_request_still_committing,
                   isolated_worlds_requiring_separate_url_loader_factory_),
               bypass_redirect_checks);
   GetNavigationControl()->UpdateSubresourceLoaderFactories(
@@ -4825,6 +4834,9 @@ RenderFrameHostImpl::CreateCrossOriginPrefetchLoaderFactoryBundle() {
   // it.
   bypass_redirect_checks = CreateNetworkServiceDefaultFactoryAndObserve(
       std::move(factory_params),
+      // This is for renderer prefetches, so it's associated with this page, not
+      // pending navigation.
+      base::UkmSourceId::FromInt64(GetPageUkmSourceId()),
       pending_default_factory.InitWithNewPipeAndPassReceiver());
 
   return std::make_unique<blink::PendingURLLoaderFactoryBundle>(
@@ -6027,6 +6039,10 @@ void RenderFrameHostImpl::CommitNavigation(
         ->set_origin_for_url_loader_factory(
             main_world_origin_for_url_loader_factory);
   }
+  // This needs to ask |navigation_request| for the UKM ID since the commit is
+  // in progress but not yet done.
+  base::UkmSourceId next_page_ukm_source_id = base::UkmSourceId::FromInt64(
+      navigation_request->GetNextPageUkmSourceId());
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
       subresource_loader_factories;
   if ((!is_same_document || is_first_navigation) && !is_srcdoc) {
@@ -6054,8 +6070,9 @@ void RenderFrameHostImpl::CommitNavigation(
               browser_context, this, GetProcess()->GetID(),
               ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
               main_world_origin_for_url_loader_factory,
-              base::nullopt /* navigation_id */, &appcache_proxied_receiver,
-              nullptr /* header_client */, nullptr /* bypass_redirect_checks */,
+              base::nullopt /* navigation_id */, next_page_ukm_source_id,
+              &appcache_proxied_receiver, nullptr /* header_client */,
+              nullptr /* bypass_redirect_checks */,
               nullptr /* disable_secure_dns */, nullptr /* factory_override */);
       if (use_proxy) {
         appcache_remote->Clone(std::move(appcache_proxied_receiver));
@@ -6085,8 +6102,9 @@ void RenderFrameHostImpl::CommitNavigation(
           browser_context, this, GetProcess()->GetID(),
           ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
           main_world_origin_for_url_loader_factory,
-          base::nullopt /* navigation_id */, &factory_receiver,
-          nullptr /* header_client */, nullptr /* bypass_redirect_checks */,
+          base::nullopt /* navigation_id */, next_page_ukm_source_id,
+          &factory_receiver, nullptr /* header_client */,
+          nullptr /* bypass_redirect_checks */,
           nullptr /* disable_secure_dns */, nullptr /* factory_override */);
       mojo::Remote<network::mojom::URLLoaderFactory> direct_factory_for_webui(
           CreateWebUIURLLoaderFactory(this, scheme, {}));
@@ -6124,6 +6142,7 @@ void RenderFrameHostImpl::CommitNavigation(
           CreateNetworkServiceDefaultFactoryAndObserve(
               CreateURLLoaderFactoryParamsForMainWorld(
                   navigation_request, "RFHI::CommitNavigation"),
+              next_page_ukm_source_id,
               pending_default_factory.InitWithNewPipeAndPassReceiver());
       subresource_loader_factories->set_bypass_redirect_checks(
           bypass_redirect_checks);
@@ -6215,7 +6234,7 @@ void RenderFrameHostImpl::CommitNavigation(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver =
           pending_factory_proxy.InitWithNewPipeAndPassReceiver();
       WillCreateURLLoaderFactory(main_world_origin_for_url_loader_factory,
-                                 &factory_receiver);
+                                 &factory_receiver, next_page_ukm_source_id);
       factory.second->Clone(std::move(factory_receiver));
       subresource_loader_factories->pending_scheme_specific_factories().emplace(
           factory.first, std::move(pending_factory_proxy));
@@ -6227,7 +6246,7 @@ void RenderFrameHostImpl::CommitNavigation(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver =
           pending_factory_proxy.InitWithNewPipeAndPassReceiver();
       WillCreateURLLoaderFactory(main_world_origin_for_url_loader_factory,
-                                 &factory_receiver);
+                                 &factory_receiver, next_page_ukm_source_id);
       mojo::Remote<network::mojom::URLLoaderFactory> remote(
           std::move(factory.second));
       remote->Clone(std::move(factory_receiver));
@@ -6414,6 +6433,7 @@ void RenderFrameHostImpl::FailedNavigation(
   bool bypass_redirect_checks = CreateNetworkServiceDefaultFactoryAndObserve(
       CreateURLLoaderFactoryParamsForMainWorld(navigation_request,
                                                "RFHI::FailedNavigation"),
+      base::kInvalidUkmSourceId,
       default_factory_remote.InitWithNewPipeAndPassReceiver());
   subresource_loader_factories =
       std::make_unique<blink::PendingURLLoaderFactoryBundle>(
@@ -7089,10 +7109,11 @@ RenderFrameHostImpl::CreateURLLoaderFactoryParamsForMainWorld(
 
 bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryAndObserve(
     network::mojom::URLLoaderFactoryParamsPtr params,
+    base::UkmSourceId ukm_source_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>
         default_factory_receiver) {
   bool bypass_redirect_checks = CreateNetworkServiceDefaultFactoryInternal(
-      std::move(params), std::move(default_factory_receiver));
+      std::move(params), ukm_source_id, std::move(default_factory_receiver));
 
   // Add a disconnect handler when Network Service is running
   // out-of-process.
@@ -7126,6 +7147,7 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryAndObserve(
 
 bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryInternal(
     network::mojom::URLLoaderFactoryParamsPtr params,
+    base::UkmSourceId ukm_source_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>
         default_factory_receiver) {
   DCHECK(params->request_initiator_origin_lock.has_value());
@@ -7133,10 +7155,10 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryInternal(
       params->request_initiator_origin_lock.value();
 
   bool bypass_redirect_checks = false;
-  WillCreateURLLoaderFactory(request_initiator, &default_factory_receiver,
-                             &params->header_client, &bypass_redirect_checks,
-                             &params->disable_secure_dns,
-                             &params->factory_override);
+  WillCreateURLLoaderFactory(
+      request_initiator, &default_factory_receiver, ukm_source_id,
+      &params->header_client, &bypass_redirect_checks,
+      &params->disable_secure_dns, &params->factory_override);
 
   GetProcess()->CreateURLLoaderFactory(std::move(default_factory_receiver),
                                        std::move(params));
@@ -7147,6 +7169,7 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryInternal(
 void RenderFrameHostImpl::WillCreateURLLoaderFactory(
     const url::Origin& request_initiator,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
+    base::UkmSourceId ukm_source_id,
     mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
         header_client,
     bool* bypass_redirect_checks,
@@ -7155,9 +7178,9 @@ void RenderFrameHostImpl::WillCreateURLLoaderFactory(
   GetContentClient()->browser()->WillCreateURLLoaderFactory(
       GetBrowserContext(), this, GetProcess()->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-      request_initiator, base::nullopt /* navigation_id */, factory_receiver,
-      header_client, bypass_redirect_checks, disable_secure_dns,
-      factory_override);
+      request_initiator, base::nullopt /* navigation_id */, ukm_source_id,
+      factory_receiver, header_client, bypass_redirect_checks,
+      disable_secure_dns, factory_override);
 
   // Keep DevTools proxy last, i.e. closest to the network.
   devtools_instrumentation::WillCreateURLLoaderFactory(

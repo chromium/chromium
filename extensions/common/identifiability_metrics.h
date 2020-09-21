@@ -40,6 +40,11 @@ void RecordExtensionResourceAccessResult(base::UkmSourceId ukm_source_id,
 void RecordContentScriptInjection(base::UkmSourceId ukm_source_id,
                                   const ExtensionId& extension_id);
 
+// Records that the extension |extension_id| has blocked a network request on
+// page identified by |ukm_source_id|.
+void RecordNetworkRequestBlocked(base::UkmSourceId ukm_source_id,
+                                 const ExtensionId& extension_id);
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_COMMON_IDENTIFIABILITY_METRICS_H_

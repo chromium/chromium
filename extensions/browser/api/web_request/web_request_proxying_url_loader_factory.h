@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/ukm_source_id.h"
 #include "base/optional.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/content_browser_client.h"
@@ -25,7 +26,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -55,7 +55,7 @@ class WebRequestProxyingURLLoaderFactory
         int32_t routing_id,
         int32_t network_service_request_id,
         uint32_t options,
-        ukm::SourceId ukm_source_id,
+        base::UkmSourceId ukm_source_id,
         const network::ResourceRequest& request,
         const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
         mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
@@ -173,7 +173,7 @@ class WebRequestProxyingURLLoaderFactory
     const int32_t network_service_request_id_ = 0;
     const int32_t routing_id_ = 0;
     const uint32_t options_ = 0;
-    const ukm::SourceId ukm_source_id_;
+    const base::UkmSourceId ukm_source_id_;
     const net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
     mojo::Receiver<network::mojom::URLLoader> proxied_loader_receiver_;
     mojo::Remote<network::mojom::URLLoaderClient> target_client_;
@@ -242,6 +242,7 @@ class WebRequestProxyingURLLoaderFactory
       WebRequestAPI::RequestIDGenerator* request_id_generator,
       std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
       base::Optional<int64_t> navigation_id,
+      base::UkmSourceId ukm_source_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           target_factory_remote,
@@ -259,6 +260,7 @@ class WebRequestProxyingURLLoaderFactory
       WebRequestAPI::RequestIDGenerator* request_id_generator,
       std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
       base::Optional<int64_t> navigation_id,
+      base::UkmSourceId ukm_source_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           target_factory_remote,
@@ -326,13 +328,8 @@ class WebRequestProxyingURLLoaderFactory
 
   const content::ContentBrowserClient::URLLoaderFactoryType
       loader_factory_type_;
-  // A UKM source ID associated with the initiator frame.
-  // This is non-const and optional, because at the construction timing the
-  // frame hasn't been fully committed yet. See
-  // https://groups.google.com/a/chromium.org/forum/#!msg/navigation-dev/zsEzPKm-COk/N7k58Fa8BgAJ.
-  // TODO(yhirano): Make this const non-optional when it is fixed.
-  // This is calculated correctly only for factories for subresource requests.
-  base::Optional<ukm::SourceId> ukm_source_id_;
+  // A UKM source ID to attribute activity to.
+  base::UkmSourceId ukm_source_id_;
 
   // Mapping from our own internally generated request ID to an
   // InProgressRequest instance.

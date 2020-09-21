@@ -163,7 +163,8 @@ WebRequestInfoInitParams::WebRequestInfoInitParams(
     bool is_download,
     bool is_async,
     bool is_service_worker_script,
-    base::Optional<int64_t> navigation_id)
+    base::Optional<int64_t> navigation_id,
+    base::UkmSourceId ukm_source_id)
     : id(request_id),
       url(request.url),
       site_for_cookies(request.site_for_cookies),
@@ -177,7 +178,8 @@ WebRequestInfoInitParams::WebRequestInfoInitParams(
       is_async(is_async),
       extra_request_headers(request.headers),
       is_service_worker_script(is_service_worker_script),
-      navigation_id(std::move(navigation_id)) {
+      navigation_id(std::move(navigation_id)),
+      ukm_source_id(ukm_source_id) {
   if (url.SchemeIsWSOrWSS())
     web_request_type = WebRequestResourceType::WEB_SOCKET;
   else if (is_download)
@@ -249,6 +251,7 @@ WebRequestInfo::WebRequestInfo(WebRequestInfoInitParams params)
       web_view_embedder_process_id(params.web_view_embedder_process_id),
       is_service_worker_script(params.is_service_worker_script),
       navigation_id(std::move(params.navigation_id)),
+      ukm_source_id(params.ukm_source_id),
       parent_routing_id(params.parent_routing_id) {}
 
 WebRequestInfo::~WebRequestInfo() = default;

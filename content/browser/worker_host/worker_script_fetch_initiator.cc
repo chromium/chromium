@@ -344,7 +344,9 @@ void WorkerScriptFetchInitiator::CreateScriptLoader(
         browser_context, creator_render_frame_host, factory_process->GetID(),
         ContentBrowserClient::URLLoaderFactoryType::kWorkerMainResource,
         request_initiator,
-        /*navigation_id=*/base::nullopt, &default_factory_receiver,
+        /*navigation_id=*/base::nullopt,
+        /* TODO(https://crbug.com/1103288): The UKM ID could be computed */
+        base::kInvalidUkmSourceId, &default_factory_receiver,
         &factory_params->header_client, &bypass_redirect_checks,
         nullptr /* disable_secure_dns */, &factory_params->factory_override);
     factory_bundle_for_browser_info->set_bypass_redirect_checks(

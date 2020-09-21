@@ -1235,9 +1235,9 @@ EmbeddedWorkerInstance::CreateFactoryBundleOnUI(
   GetContentClient()->browser()->WillCreateURLLoaderFactory(
       rph->GetBrowserContext(), nullptr /* frame_host */, rph->GetID(),
       factory_type, origin, base::nullopt /* navigation_id */,
-      &default_factory_receiver, &factory_params->header_client,
-      &bypass_redirect_checks, nullptr /* disable_secure_dns */,
-      &factory_params->factory_override);
+      base::kInvalidUkmSourceId, &default_factory_receiver,
+      &factory_params->header_client, &bypass_redirect_checks,
+      nullptr /* disable_secure_dns */, &factory_params->factory_override);
   devtools_instrumentation::WillCreateURLLoaderFactoryForServiceWorker(
       rph, routing_id, &factory_params->factory_override);
 

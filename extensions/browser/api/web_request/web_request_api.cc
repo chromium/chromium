@@ -76,6 +76,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
+#include "extensions/common/identifiability_metrics.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/strings/grit/extensions_strings.h"
@@ -687,6 +688,7 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
     int render_process_id,
     URLLoaderFactoryType type,
     base::Optional<int64_t> navigation_id,
+    base::UkmSourceId ukm_source_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
     mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
         header_client) {
@@ -748,7 +750,7 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
   WebRequestProxyingURLLoaderFactory::StartProxying(
       browser_context, is_navigation ? -1 : render_process_id, frame_id,
       &request_id_generator_, std::move(navigation_ui_data),
-      std::move(navigation_id), std::move(proxied_receiver),
+      std::move(navigation_id), ukm_source_id, std::move(proxied_receiver),
       std::move(target_factory_remote), std::move(header_client_receiver),
       proxies_.get(), type);
   return true;
@@ -795,10 +797,15 @@ void WebRequestAPI::ProxyWebSocket(
       ExtensionWebRequestEventRouter::GetInstance()->HasAnyExtraHeadersListener(
           frame->GetProcess()->GetBrowserContext());
 
+  auto* web_contents = content::WebContents::FromRenderFrameHost(frame);
+  const base::UkmSourceId ukm_source_id =
+      web_contents ? base::UkmSourceId::FromInt64(
+                         ukm::GetSourceIdForWebContentsDocument(web_contents))
+                   : base::kInvalidUkmSourceId;
   WebRequestProxyingWebSocket::StartProxying(
       std::move(factory), url, site_for_cookies, user_agent,
       std::move(handshake_client), has_extra_headers,
-      frame->GetProcess()->GetID(), frame->GetRoutingID(),
+      frame->GetProcess()->GetID(), frame->GetRoutingID(), ukm_source_id,
       &request_id_generator_, frame->GetLastCommittedOrigin(),
       frame->GetProcess()->GetBrowserContext(), proxies_.get());
 }
@@ -1085,12 +1092,16 @@ int ExtensionWebRequestEventRouter::OnBeforeRequest(
         ClearPendingCallbacks(*request);
         DCHECK_EQ(1u, actions.size());
         OnDNRActionMatched(browser_context, *request, action);
+        RecordNetworkRequestBlocked(request->ukm_source_id,
+                                    action.extension_id);
         return net::ERR_BLOCKED_BY_CLIENT;
       case DNRRequestAction::Type::COLLAPSE:
         ClearPendingCallbacks(*request);
         DCHECK_EQ(1u, actions.size());
         OnDNRActionMatched(browser_context, *request, action);
         *should_collapse_initiator = true;
+        RecordNetworkRequestBlocked(request->ukm_source_id,
+                                    action.extension_id);
         return net::ERR_BLOCKED_BY_CLIENT;
       case DNRRequestAction::Type::ALLOW:
       case DNRRequestAction::Type::ALLOW_ALL_REQUESTS:
@@ -2240,8 +2251,9 @@ int ExtensionWebRequestEventRouter::ExecuteDeltas(
 
   deltas.sort(&helpers::InDecreasingExtensionInstallationTimeOrder);
 
-  bool canceled = false;
-  helpers::MergeCancelOfResponses(blocked_request.response_deltas, &canceled);
+  base::Optional<ExtensionId> canceled_by_extension;
+  helpers::MergeCancelOfResponses(blocked_request.response_deltas,
+                                  &canceled_by_extension);
 
   extension_web_request_api_helpers::IgnoredActions ignored_actions;
   std::vector<const DNRRequestAction*> matched_dnr_actions;
@@ -2287,7 +2299,7 @@ int ExtensionWebRequestEventRouter::ExecuteDeltas(
   const bool redirected =
       blocked_request.new_url && !blocked_request.new_url->is_empty();
 
-  if (canceled)
+  if (canceled_by_extension)
     request_time_tracker_->SetRequestCanceled(request->id);
   else if (redirected)
     request_time_tracker_->SetRequestRedirected(request->id);
@@ -2296,7 +2308,7 @@ int ExtensionWebRequestEventRouter::ExecuteDeltas(
   // action taken. Instead we are interested in how frequently the different
   // actions are used by extensions. Hence multiple actions may be logged for a
   // single delta execution.
-  if (canceled)
+  if (canceled_by_extension)
     LogRequestAction(RequestAction::CANCEL);
   if (redirected)
     LogRequestAction(RequestAction::REDIRECT);
@@ -2308,7 +2320,12 @@ int ExtensionWebRequestEventRouter::ExecuteDeltas(
     LogRequestAction(RequestAction::SET_AUTH_CREDENTIALS);
 
   // This triggers onErrorOccurred if canceled is true.
-  int rv = canceled ? net::ERR_BLOCKED_BY_CLIENT : net::OK;
+  int rv = net::OK;
+  if (canceled_by_extension) {
+    rv = net::ERR_BLOCKED_BY_CLIENT;
+    RecordNetworkRequestBlocked(request->ukm_source_id,
+                                canceled_by_extension.value());
+  }
 
   if (!blocked_request.callback.is_null()) {
     net::CompletionOnceCallback callback = std::move(blocked_request.callback);
@@ -2326,7 +2343,7 @@ int ExtensionWebRequestEventRouter::ExecuteDeltas(
       std::move(callback).Run(request_headers_removed, request_headers_set, rv);
   } else if (!blocked_request.auth_callback.is_null()) {
     ExtensionWebRequestEventRouter::AuthRequiredResponse response;
-    if (canceled)
+    if (canceled_by_extension)
       response = AuthRequiredResponse::AUTH_REQUIRED_RESPONSE_CANCEL_AUTH;
     else if (credentials_set)
       response = AuthRequiredResponse::AUTH_REQUIRED_RESPONSE_SET_AUTH;

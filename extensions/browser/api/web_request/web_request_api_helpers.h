@@ -413,8 +413,11 @@ EventResponseDelta CalculateOnAuthRequiredDelta(
 // extensions. In case extensions had |deltas| that could not be honored, their
 // IDs are reported in |conflicting_extensions|.
 
-// Stores in |canceled| whether any extension wanted to cancel the request.
-void MergeCancelOfResponses(const EventResponseDeltas& deltas, bool* canceled);
+// Stores in |*canceled_by_extension| whether any extension wanted to cancel the
+// request, base::nullopt if none did, the extension id otherwise.
+void MergeCancelOfResponses(
+    const EventResponseDeltas& deltas,
+    base::Optional<extensions::ExtensionId>* canceled_by_extension);
 // Stores in |*new_url| the redirect request of the extension with highest
 // precedence. Extensions that did not command to redirect the request are
 // ignored in this logic.

@@ -2143,10 +2143,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // downstream loaders.
   bool CreateNetworkServiceDefaultFactoryAndObserve(
       network::mojom::URLLoaderFactoryParamsPtr params,
+      base::UkmSourceId ukm_source_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory>
           default_factory_receiver);
   bool CreateNetworkServiceDefaultFactoryInternal(
       network::mojom::URLLoaderFactoryParamsPtr params,
+      base::UkmSourceId ukm_source_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory>
           default_factory_receiver);
 
@@ -2155,6 +2157,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void WillCreateURLLoaderFactory(
       const url::Origin& request_initiator,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
+      base::UkmSourceId ukm_source_id,
       mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
           header_client = nullptr,
       bool* bypass_redirect_checks = nullptr,

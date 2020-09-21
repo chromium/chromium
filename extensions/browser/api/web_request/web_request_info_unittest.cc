@@ -31,7 +31,8 @@ TEST(WebRequestInfoTest, CreateRequestBodyDataFromFile) {
                                         std::numeric_limits<uint64_t>::max(),
                                         base::Time());
   WebRequestInfo info(WebRequestInfoInitParams(
-      0, 0, 0, nullptr, 0, request, false, false, false, base::nullopt));
+      0, 0, 0, nullptr, 0, request, false, false, false, base::nullopt,
+      base::kInvalidUkmSourceId));
   ASSERT_TRUE(info.request_body_data);
   auto* value = info.request_body_data->FindKey(
       extension_web_request_api_constants::kRequestBodyRawKey);

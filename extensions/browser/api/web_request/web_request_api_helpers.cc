@@ -876,10 +876,13 @@ EventResponseDelta CalculateOnAuthRequiredDelta(
   return result;
 }
 
-void MergeCancelOfResponses(const EventResponseDeltas& deltas, bool* canceled) {
+void MergeCancelOfResponses(
+    const EventResponseDeltas& deltas,
+    base::Optional<extensions::ExtensionId>* canceled_by_extension) {
+  *canceled_by_extension = base::nullopt;
   for (const auto& delta : deltas) {
     if (delta.cancel) {
-      *canceled = true;
+      *canceled_by_extension = delta.extension_id;
       break;
     }
   }
