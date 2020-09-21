@@ -20800,6 +20800,57 @@
       '''
     },
     {
+      'id': 583,
+      'name': 'SendFilesForMalwareCheck',
+      'type': 'int-enum',
+      'owners': ['drubery@chromium.org', 'chrome-safebrowsing-team@chromium.org'],
+      'schema': {
+        'type': 'integer',
+        'enum': [0, 2, 3, 4],
+      },
+      'items': [
+        {
+          'name': 'DoNotScan',
+          'value': 0,
+          'caption': '''Do not scan files'''
+        },
+        {
+          'name': 'SendDownloads',
+          'value': 2,
+          'caption': '''Send user downloads for scanning'''
+        },
+        {
+          'name': 'SendUploads',
+          'value': 3,
+          'caption': '''Send user uploads for scanning'''
+        },
+        {
+          'name': 'SendUploadsAndDownloads',
+          'value': 4,
+          'caption': '''Send user uploads and downloads for scanning'''
+        },
+      ],
+      'supported_on': ['chrome.*:78-', 'chrome_os:78-'],
+      'future': True,
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+        'cloud_only': True,
+      },
+      'example_value': 2,
+      'caption': '''Scan users downloads with Safe Browsing''',
+      'tags': ['google-sharing', 'admin-sharing'],
+      'desc': '''This policy controls the deep scanning of user downloads with Safe Browsing. If unset, or set to the default, 'Do not scan files', user downloads will not be scanned by Safe Browsing.
+
+      If set to 'Send user downloads for scanning', users downloads will be sent over the network to Safe Browsing for malware scanning.
+
+      If set to 'Send user uploads for scanning', users uploads will be sent over the network to Safe Browsing for malware scanning.
+
+      If set to 'Send user uploads and downloads for scanning', behaves according to the rules described under 'Send user uploads for scanning' and 'Send user downloads for scanning'.
+
+      See the <ph name="DELAY_DELIVER_UNTIL_VERDICT_POLICY_NAME">DelayDeliveryUntilVerdict</ph> and <ph name="UNSAFE_EVENTS_REPORTING_ENABLED">UnsafeEventsReportingEnabled</ph> policies for details of how the results of scanning are displayed to the user and admin.'''
+    },
+    {
       'name': 'UnsafeEventsReportingEnabled',
       'owners': ['rogerta@chromium.org', 'mad@chromium.org'],
       'type': 'main',
@@ -21028,6 +21079,58 @@
       If this policy is set to 'Block unsupported filetypes uploads' (2) and the user attempts to upload a file to a domain not in the <ph name="DOMAINS_TO_NOT_CHECK_COMPLIANCE_OF_UPLOADED_CONTENT_POLICY_NAME">URLsToNotCheckComplianceOfUploadedContent</ph> and the file has unsupported filetype regarding DLP or malware scan, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will block the file uploaded, data pasted from the clipboard, or data dragged and dropped.
 
       If this policy is set to 'Block unsupported filetypes uploads and downloads' (3), <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> behaves according to the rules described under 'Block unsupported filetypes uploads' and 'Block unsupported filetypes downloads'.
+      '''
+    },
+    {
+      'name': 'CheckContentCompliance',
+      'owners': ['rogerta@chromium.org', 'mad@chromium.org'],
+      'type': 'int-enum',
+      'schema': {
+        'type': 'integer',
+        'enum': [ 0, 1, 2, 3 ],
+      },
+      'items': [
+        {
+          'name': 'None',
+          'value': 0,
+          'caption': '''Don't check for sensitive data protection rule violations''',
+        },
+        {
+          'name': 'Check-downloads',
+          'value': 1,
+          'caption': '''Check sensitive data protection rule violations for downloads''',
+        },
+        {
+          'name': 'Check-uploads',
+          'value': 2,
+          'caption': '''Check sensitive data protection rule violations for uploads''',
+        },
+        {
+          'name': 'Check-uploads-and-downloads',
+          'value': 3,
+          'caption': '''Check sensitive data protection rule violations for uploads and downloads''',
+        },
+      ],
+      'example_value': 0,
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+        'cloud_only': True,
+      },
+      'id': 589,
+      'supported_on': ['chrome.*:78-', 'chrome_os:81-'],
+      'future': True,
+      'caption': '''Send files for sensitive data protection rule violation inspection''',
+      'tags': [],
+      'desc': '''Controls how <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> checks data that is uploaded, downloaded, pasted from the clipboard, or dragged and dropped for sensitive data protection rule violations.
+
+      If this policy is not set or set to 'None', <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not check any data for sensitive data protection rule violations.
+
+      If this policy is set to 'Check downloads' and the user attempts to download a file from a URL in the <ph name="DOMAINS_TO_CHECK_COMPLIANCE_OF_DOWNLOADED_CONTENT_POLICTY_NAME">URLsToCheckComplianceOfDownloadedContent</ph> policy, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will check the data downloaded for compiance with enterprise rules.
+
+      If this policy is set to 'Check uploads' and the user attempts to upload a file to a domain not in the <ph name="DOMAINS_TO_NOT_CHECK_COMPLIANCE_OF_UPLOADED_CONTENT_POLICY_NAME">URLsToNotCheckComplianceOfUploadedContent</ph>, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will check the file uploaded, data pasted from the clipboard, or data dragged and dropped for compiance with enterprise rules.
+
+      If this policy is set to 'Check uploads and downloads', <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> behaves according to the rules described under 'Check downloads' and 'Check uploads'.
       '''
     },
     {
@@ -24036,7 +24139,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     },
   ],
   'placeholders': [],
-  'deleted_policy_ids': [114, 115, 412, 476, 544, 546, 562, 569, 578, 583, 589],
+  'deleted_policy_ids': [114, 115, 412, 476, 544, 546, 562, 569, 578],
   'highest_id_currently_used': 785,
   'highest_atomic_group_id_currently_used': 40
 }

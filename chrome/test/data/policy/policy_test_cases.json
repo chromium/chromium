@@ -7604,6 +7604,18 @@
     ]
   },
 
+  "SendFilesForMalwareCheck": {
+    "os": ["win", "linux", "mac", "chromeos"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": {
+          "SendFilesForMalwareCheck": 2
+        },
+        "prefs": { "safebrowsing.send_files_for_malware_check": {} }
+      }
+    ]
+  },
+
   "UnsafeEventsReportingEnabled": {
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_test": [
@@ -7648,6 +7660,16 @@
           "AllowPasswordProtectedFiles": 0
         },
         "prefs": { "safebrowsing.allow_password_protected_files": { "local_state": true } }
+      }
+    ]
+  },
+
+  "CheckContentCompliance": {
+    "os": ["win", "linux", "mac", "chromeos"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": { "CheckContentCompliance": 0 },
+        "prefs": { "safebrowsing.check_content_compliance": { "local_state": true } }
       }
     ]
   },
