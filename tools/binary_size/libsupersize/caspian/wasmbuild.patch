@@ -1,5 +1,5 @@
 diff --git a/build/config/BUILDCONFIG.gn b/build/config/BUILDCONFIG.gn
-index e011502180b5..9e55fcd6c74f 100644
+index bb656fa19ff3..7fbf650f7b0e 100644
 --- a/build/config/BUILDCONFIG.gn
 +++ b/build/config/BUILDCONFIG.gn
 @@ -291,10 +291,11 @@ is_ios = current_os == "ios"
@@ -16,31 +16,32 @@ index e011502180b5..9e55fcd6c74f 100644
  # =============================================================================
  # SOURCES FILTERS
 diff --git a/build/config/compiler/BUILD.gn b/build/config/compiler/BUILD.gn
-index 0b5de5cd7173..ff761c9b46b3 100644
+index c9ef45a1495e..85ea1ddd0d00 100644
 --- a/build/config/compiler/BUILD.gn
 +++ b/build/config/compiler/BUILD.gn
-@@ -581,6 +581,19 @@ config("compiler") {
+@@ -603,6 +603,20 @@ config("compiler") {
      ldflags += [ "-stdlib=libc++" ]
    }
  
-+  if (is_wasm && is_official_build) {
-+    cflags_c += [
++  if (is_wasm) {
++    _emscripten_flags = [
 +      "-s",
-+      "WASM_OBJECT_FILES=0",
++      "ALLOW_MEMORY_GROWTH=1",
 +    ]
-+    ldflags += [
-+      "-s",
-+      "WASM_OBJECT_FILES=0",
-+      "--llvm-lto",
-+      "1",
-+    ]
++
++    # TODO(agrieve): Figure out why this causes link to fail.
++    #if (is_official_build) {
++    #  _emscripten_flags += ["-flto=full"]
++    #}
++    cflags += _emscripten_flags
++    ldflags += _emscripten_flags
 +  }
 +
    # Add flags for link-time optimization. These flags enable
    # optimizations/transformations that require whole-program visibility at link
    # time, so they need to be applied to all translation units, and we may end up
-@@ -704,7 +717,7 @@ config("compiler") {
-   if (use_lld) {
+@@ -726,7 +740,7 @@ config("compiler") {
+   if (use_lld && !enable_call_graph_profile_sort) {
      if (is_win) {
        ldflags += [ "/call-graph-profile-sort:no" ]
 -    } else {
@@ -48,7 +49,7 @@ index 0b5de5cd7173..ff761c9b46b3 100644
        ldflags += [ "-Wl,--no-call-graph-profile-sort" ]
      }
    }
-@@ -1510,7 +1523,8 @@ config("default_warnings") {
+@@ -1532,7 +1546,8 @@ config("default_warnings") {
          cflags += [ "-Wno-nonportable-include-path" ]
        }
  
@@ -58,7 +59,7 @@ index 0b5de5cd7173..ff761c9b46b3 100644
          # Flags NaCl (Clang 3.7) and Xcode 9.2 (Clang clang-900.0.39.2) do not
          # recognize.
          cflags += [
-@@ -2275,6 +2289,9 @@ config("symbols") {
+@@ -2294,6 +2309,9 @@ config("symbols") {
          "-debug-info-kind=constructor",
        ]
      }
@@ -84,10 +85,10 @@ index d556b0e0927e..f4597ab04037 100644
  }
 diff --git a/build/toolchain/wasm/BUILD.gn b/build/toolchain/wasm/BUILD.gn
 new file mode 100644
-index 000000000000..15bc7a4ea258
+index 000000000000..fdc5120981de
 --- /dev/null
 +++ b/build/toolchain/wasm/BUILD.gn
-@@ -0,0 +1,31 @@
+@@ -0,0 +1,30 @@
 +# Copyright 2019 The Chromium Authors. All rights reserved.
 +# Use of this source code is governed by a BSD-style license that can be
 +# found in the LICENSE file.
@@ -112,7 +113,6 @@ index 000000000000..15bc7a4ea258
 +    use_allocator_shim = false
 +    is_component_build = false
 +  }
-+  extra_ldflags = "-s BINARYEN_METHOD='native-wasm'"
 +  executable_extension = ".js"
 +  link_outputs = [
 +    "{{output_dir}}/{{target_output_name}}.wasm",

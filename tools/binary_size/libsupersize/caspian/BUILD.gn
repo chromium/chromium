@@ -74,15 +74,11 @@ if (is_wasm) {
     }
     ldflags = [
       "-s",
-      "TOTAL_MEMORY=536870912",
-      "-s",
-      "ALLOW_MEMORY_GROWTH=1",
-      "-s",
       "EXPORTED_FUNCTIONS=['_LoadSizeFile','_LoadBeforeSizeFile','_BuildTree','_Open','_QueryProperty','_malloc','_free']",
       "-s",
       "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall','cwrap','UTF8ToString']",
     ]
-    if (!is_debug) {
+    if (is_official_build) {
       ldflags += [ "-O3" ]
     }
   }
