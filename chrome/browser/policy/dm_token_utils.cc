@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/dm_token_utils.h"
+#include "chrome/browser/policy/dm_token_utils.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 
 #if defined(OS_CHROMEOS)
@@ -18,20 +19,20 @@
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #endif
 
-namespace safe_browsing {
+namespace policy {
 
 namespace {
 
-policy::DMToken* GetTestingDMTokenStorage() {
-  static policy::DMToken dm_token =
-      policy::DMToken::CreateEmptyTokenForTesting();
-  return &dm_token;
+DMToken* GetTestingDMTokenStorage() {
+  static base::NoDestructor<DMToken> dm_token(
+      DMToken::CreateEmptyTokenForTesting());
+  return dm_token.get();
 }
 
 }  // namespace
 
-policy::DMToken GetDMToken(Profile* profile) {
-  policy::DMToken dm_token = *GetTestingDMTokenStorage();
+DMToken GetDMToken(Profile* const profile) {
+  DMToken dm_token = *GetTestingDMTokenStorage();
 
 #if defined(OS_CHROMEOS)
   if (!profile)
@@ -41,22 +42,22 @@ policy::DMToken GetDMToken(Profile* profile) {
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
   if (dm_token.is_empty() && user && user->IsAffiliated() && policy_manager &&
       policy_manager->IsClientRegistered()) {
-    dm_token = policy::DMToken(policy::DMToken::Status::kValid,
-                               policy_manager->core()->client()->dm_token());
+    dm_token = DMToken(DMToken::Status::kValid,
+                       policy_manager->core()->client()->dm_token());
   }
-#else
+#elif !defined(OS_ANDROID)
   if (dm_token.is_empty() && g_browser_process->browser_policy_connector()
                                  ->chrome_browser_cloud_management_controller()
                                  ->IsEnabled()) {
-    dm_token = policy::BrowserDMTokenStorage::Get()->RetrieveDMToken();
+    dm_token = BrowserDMTokenStorage::Get()->RetrieveDMToken();
   }
 #endif
 
   return dm_token;
 }
 
-void SetDMTokenForTesting(const policy::DMToken& dm_token) {
+void SetDMTokenForTesting(const DMToken& dm_token) {
   *GetTestingDMTokenStorage() = dm_token;
 }
 
-}  // namespace safe_browsing
+}  // namespace policy

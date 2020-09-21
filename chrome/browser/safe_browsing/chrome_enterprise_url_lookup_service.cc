@@ -6,8 +6,8 @@
 
 #include "base/callback.h"
 #include "base/task/post_task.h"
+#include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/dm_token_utils.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
@@ -75,7 +75,7 @@ void ChromeEnterpriseRealTimeUrlLookupService::GetAccessToken(
 }
 
 policy::DMToken ChromeEnterpriseRealTimeUrlLookupService::GetDMToken() const {
-  return ::safe_browsing::GetDMToken(profile_);
+  return policy::GetDMToken(profile_);
 }
 
 base::Optional<std::string>

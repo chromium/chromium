@@ -13,10 +13,10 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
+#include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_source_request.h"
-#include "chrome/browser/safe_browsing/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -180,7 +180,7 @@ void DeepScanningRequest::Start() {
 void DeepScanningRequest::PrepareRequest(BinaryUploadService::Request* request,
                                          Profile* profile) {
   if (trigger_ == DeepScanTrigger::TRIGGER_POLICY)
-    request->set_device_token(GetDMToken(profile).value());
+    request->set_device_token(policy::GetDMToken(profile).value());
 
   request->set_analysis_connector(enterprise_connectors::FILE_DOWNLOADED);
   request->set_email(GetProfileEmail(profile));

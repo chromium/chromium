@@ -30,13 +30,13 @@
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/file_util_service.h"
+#include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_dialog_views.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_source_request.h"
-#include "chrome/browser/safe_browsing/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_rar_analyzer.h"
@@ -283,7 +283,7 @@ bool DeepScanningDialogDelegate::IsEnabled(
     return false;
 
   // If there's no valid DM token, the upload will fail.
-  if (!GetDMToken(profile).is_valid())
+  if (!policy::GetDMToken(profile).is_valid())
     return false;
 
   // If the corresponding Connector policy isn't set, don't perform scans.
@@ -554,7 +554,7 @@ void DeepScanningDialogDelegate::PrepareRequest(
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
 
-  request->set_device_token(GetDMToken(profile).value());
+  request->set_device_token(policy::GetDMToken(profile).value());
   request->set_analysis_connector(connector);
   request->set_email(GetProfileEmail(profile));
   request->set_url(data_.url.spec());

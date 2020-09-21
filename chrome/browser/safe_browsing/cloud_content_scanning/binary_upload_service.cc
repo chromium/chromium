@@ -22,13 +22,13 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_fcm_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_uploader.h"
-#include "chrome/browser/safe_browsing/dm_token_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/common/strings.h"
 #include "components/prefs/pref_service.h"
@@ -875,7 +875,7 @@ void BinaryUploadService::IsAuthorized(const GURL& url,
     // Send a request to check if the browser can upload data.
     authorization_callbacks_.push_back(std::move(callback));
     if (!pending_validate_data_upload_request_) {
-      auto dm_token = GetDMToken(profile_);
+      auto dm_token = policy::GetDMToken(profile_);
       if (!dm_token.is_valid()) {
         can_upload_enterprise_data_ = false;
         RunAuthorizationCallbacks();

@@ -161,8 +161,6 @@ static_library("safe_browsing") {
         "cloud_content_scanning/file_source_request.h",
         "cloud_content_scanning/multipart_uploader.cc",
         "cloud_content_scanning/multipart_uploader.h",
-        "dm_token_utils.cc",
-        "dm_token_utils.h",
         "download_protection/check_client_download_request.cc",
         "download_protection/check_client_download_request.h",
         "download_protection/check_client_download_request_base.cc",

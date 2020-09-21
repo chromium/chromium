@@ -1164,6 +1164,8 @@ static_library("browser") {
     "policy/developer_tools_policy_handler.h",
     "policy/device_management_service_configuration.cc",
     "policy/device_management_service_configuration.h",
+    "policy/dm_token_utils.cc",
+    "policy/dm_token_utils.h",
     "policy/enrollment_status.cc",
     "policy/enrollment_status.h",
     "policy/file_selection_dialogs_policy_handler.cc",

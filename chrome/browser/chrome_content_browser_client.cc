@@ -460,7 +460,7 @@
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/media/unified_autoplay_config.h"
-#include "chrome/browser/safe_browsing/dm_token_utils.h"
+#include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/serial/chrome_serial_delegate.h"
@@ -4374,7 +4374,7 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
     bool is_enterprise_lookup_enabled =
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
         safe_browsing::RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
-            profile->GetPrefs(), safe_browsing::GetDMToken(profile).is_valid(),
+            profile->GetPrefs(), policy::GetDMToken(profile).is_valid(),
             profile->IsOffTheRecord());
 #else
         false;

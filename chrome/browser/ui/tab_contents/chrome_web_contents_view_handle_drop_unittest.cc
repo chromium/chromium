@@ -15,10 +15,10 @@
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_dialog_delegate.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/fake_deep_scanning_dialog_delegate.h"
-#include "chrome/browser/safe_browsing/dm_token_utils.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_handle_drop.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -69,7 +69,7 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
     auto is_encrypted_callback =
         base::BindRepeating([](const base::FilePath&) { return false; });
 
-    safe_browsing::SetDMTokenForTesting(
+    policy::SetDMTokenForTesting(
         policy::DMToken::CreateValidTokenForTesting("dm_token"));
     auto callback = base::BindLambdaForTesting(
         [this, scan_succeeds](const base::FilePath&)
