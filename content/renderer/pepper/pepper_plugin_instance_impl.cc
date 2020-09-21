@@ -1116,10 +1116,6 @@ bool PepperPluginInstanceImpl::HandleInputEvent(
   if (throttler_ && throttler_->ConsumeInputEvent(event))
     return true;
 
-  if (WebInputEvent::IsMouseEventType(event.GetType())) {
-    render_frame_->PepperDidReceiveMouseEvent(this);
-  }
-
   // Don't dispatch input events to crashed plugins.
   if (module()->is_crashed())
     return false;
@@ -3033,10 +3029,19 @@ void PepperPluginInstanceImpl::SetAlwaysOnTop(bool on_top) {
 
 void PepperPluginInstanceImpl::DoSetCursor(std::unique_ptr<ui::Cursor> cursor) {
   cursor_ = std::move(cursor);
-  if (fullscreen_container_)
+  if (fullscreen_container_) {
     fullscreen_container_->PepperDidChangeCursor(*cursor_);
-  else if (render_frame_)
-    render_frame_->PepperDidChangeCursor(this, *cursor_);
+  } else if (render_frame_) {
+    // Update the cursor appearance immediately if the requesting plugin is the
+    // one which receives the last mouse event. Otherwise, the new cursor won't
+    // be picked up until the plugin gets the next input event. That is bad if,
+    // e.g., the plugin would like to set an invisible cursor when there isn't
+    // any user input for a while.
+    if (container()->WasTargetForLastMouseEvent()) {
+      render_frame_->GetLocalRootRenderWidget()->GetWebWidget()->SetCursor(
+          *cursor_);
+    }
+  }
 }
 
 bool PepperPluginInstanceImpl::IsFullPagePlugin() {

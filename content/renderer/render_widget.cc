@@ -471,9 +471,6 @@ void RenderWidget::UpdateTextInputState() {
 }
 
 bool RenderWidget::WillHandleMouseEvent(const blink::WebMouseEvent& event) {
-  for (auto& observer : render_frames_)
-    observer.RenderWidgetWillHandleMouseEvent();
-
   return mouse_lock_dispatcher()->WillHandleMouseEvent(event);
 }
 

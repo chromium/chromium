@@ -142,10 +142,6 @@ namespace service_manager {
 class InterfaceProvider;
 }
 
-namespace ui {
-class Cursor;
-}
-
 namespace url {
 class Origin;
 }
@@ -337,21 +333,9 @@ class CONTENT_EXPORT RenderFrameImpl
                          blink::WebNavigationPolicy policy,
                          const gfx::Rect& initial_rect);
 
-  // Called when the widget receives a mouse event.
-  void RenderWidgetWillHandleMouseEvent();
-
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Notification that a PPAPI plugin has been created.
   void PepperPluginCreated(RendererPpapiHost* host);
-
-  // Notifies that |instance| has changed the cursor.
-  // This will update the cursor appearance if it is currently over the plugin
-  // instance.
-  void PepperDidChangeCursor(PepperPluginInstanceImpl* instance,
-                             const ui::Cursor& cursor);
-
-  // Notifies that |instance| has received a mouse event.
-  void PepperDidReceiveMouseEvent(PepperPluginInstanceImpl* instance);
 
   // Informs the render view that a PPAPI plugin has changed text input status.
   void PepperTextInputTypeChanged(PepperPluginInstanceImpl* instance);
@@ -813,13 +797,6 @@ class CONTENT_EXPORT RenderFrameImpl
   PepperPluginInstanceImpl* focused_pepper_plugin() {
     return focused_pepper_plugin_;
   }
-  PepperPluginInstanceImpl* pepper_last_mouse_event_target() {
-    return pepper_last_mouse_event_target_;
-  }
-  void set_pepper_last_mouse_event_target(PepperPluginInstanceImpl* plugin) {
-    pepper_last_mouse_event_target_ = plugin;
-  }
-
   // Indicates that the given instance has been created.
   void PepperInstanceCreated(PepperPluginInstanceImpl* instance);
 
@@ -1383,12 +1360,6 @@ class CONTENT_EXPORT RenderFrameImpl
 
   // Whether or not the focus is on a PPAPI plugin
   PepperPluginInstanceImpl* focused_pepper_plugin_;
-
-  // The plugin instance that received the last mouse event. It is set to NULL
-  // if the last mouse event went to elements other than Pepper plugins.
-  // |pepper_last_mouse_event_target_| is not owned by this class. We depend on
-  // the RenderFrameImpl to NULL it out when it destructs.
-  PepperPluginInstanceImpl* pepper_last_mouse_event_target_;
 #endif
 
   using AutoplayOriginAndFlags = std::pair<url::Origin, int32_t>;

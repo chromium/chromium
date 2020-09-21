@@ -681,6 +681,13 @@ gfx::Point WebPluginContainerImpl::LocalToRootFramePoint(
   return ParentFrameView()->ConvertToRootFrame(absolute_point);
 }
 
+bool WebPluginContainerImpl::WasTargetForLastMouseEvent() {
+  return element_->GetDocument()
+             .GetFrame()
+             ->GetEventHandler()
+             .GetElementUnderMouse() == element_;
+}
+
 void WebPluginContainerImpl::DidReceiveResponse(
     const ResourceResponse& response) {
   // Make sure that the plugin receives window geometry before data, or else

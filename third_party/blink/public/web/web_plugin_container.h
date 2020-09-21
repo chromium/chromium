@@ -154,6 +154,9 @@ class WebPluginContainer {
   virtual bool IsFullscreenElement() const = 0;
   virtual void CancelFullscreen() = 0;
 
+  // Returns true if this container was the target for the last mouse event.
+  virtual bool WasTargetForLastMouseEvent() = 0;
+
  protected:
   ~WebPluginContainer() = default;
 };

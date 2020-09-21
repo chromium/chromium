@@ -133,6 +133,7 @@ class CORE_EXPORT WebPluginContainerImpl final
   void SetWantsWheelEvents(bool) override;
   gfx::Point RootFrameToLocalPoint(const gfx::Point&) override;
   gfx::Point LocalToRootFramePoint(const gfx::Point&) override;
+  bool WasTargetForLastMouseEvent() override;
 
   // Non-Oilpan, this cannot be null. With Oilpan, it will be
   // null when in a disposed state, pending finalization during the next GC.
