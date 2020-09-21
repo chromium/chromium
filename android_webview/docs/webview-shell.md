@@ -74,29 +74,11 @@ following [commandline-flags.md](./commandline-flags.md).
 
 ### INSTALL\_FAILED\_UPDATE\_INCOMPATIBLE: Package ... signatures do not match previously installed version
 
-The easiest way to workaround this is to [change the shell's package name in a
-local build](#building-for-the-emulator).
+This may be happening because the shell is preinstalled on your device (ex. this
+is the case on all emulators). **The easiest way** to workaround this is to
+[change the shell's package name in a local build](#building-for-the-emulator).
 
-If you **need** to use the same package name (ex. you're installing an official
-build of WebView shell), then you can modify the system image.
-
-*** note
-**Note:** If using the emulator ensure it is being started with the
-`-writable-system` option as per the
-[Writable system partition](/docs/android_emulator.md#writable-system-partition)
-instructions.
-***
-
-```sh
-# Remount the /system partition read-write
-$ adb root
-$ adb remount
-# Get the APK path to the WebView shell
-$ adb shell pm path org.chromium.webview_shell
-package:/system/app/Browser2/Browser2.apk
-# Use the APK path above to delete the APK
-$ adb shell rm /system/app/Browser2/Browser2.apk
-# Restart the Android shell to "forget" about the WebView shell
-$ adb shell stop
-$ adb shell start
-```
+If you don't want to (or can't) change the package name, then you may be able to
+modify your device's system image. See the [manual steps for removing system
+apps](removing-system-apps.md) and replace **com.google.android.webview** with
+**org.chromium.webview_shell**.

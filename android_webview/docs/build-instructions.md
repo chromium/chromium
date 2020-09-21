@@ -165,6 +165,14 @@ Otherwise, you can remove the preinstalled WebView like so:
 android_webview/tools/remove_preinstalled_webview.py
 ```
 
+*** note
+If you're using an emulator, make sure to [start it with
+`-writable-system`](/docs/android_emulator.md#writable-system-partition)
+**before** removing the preinstalled WebView.
+***
+
+If the script doesn't work, see the [manual steps](removing-system-apps.md).
+
 ### Important notes for N-P
 
 _This functionality was added in N and removed in Q, so you should skip this if
