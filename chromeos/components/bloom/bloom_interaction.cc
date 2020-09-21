@@ -8,9 +8,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/bloom/bloom_controller_impl.h"
 #include "chromeos/components/bloom/bloom_interaction.h"
-#include "chromeos/components/bloom/bloom_server_proxy.h"
 #include "chromeos/components/bloom/public/cpp/bloom_screenshot_delegate.h"
 #include "chromeos/components/bloom/public/cpp/future_value.h"
+#include "chromeos/components/bloom/server/bloom_server_proxy.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
@@ -23,7 +23,10 @@ namespace bloom {
 BloomInteraction::BloomInteraction(BloomControllerImpl* controller)
     : controller_(controller), weak_ptr_factory_(this) {}
 
-BloomInteraction::~BloomInteraction() = default;
+BloomInteraction::~BloomInteraction() {
+  // TODO(jeroendh): Cancel ongoing processes here, like the screenshot fetcher
+  // and the bloom server requests.
+}
 
 void BloomInteraction::Start() {
   FetchAccessTokenAsync();
@@ -39,7 +42,8 @@ void BloomInteraction::StartAssistantInteraction(std::string&& access_token,
   controller_->ShowUI();
   DVLOG(2) << "Contacting Bloom server";
   controller_->server_proxy()->AnalyzeProblem(
-      access_token, screenshot, Bind(&BloomInteraction::OnServerResponse));
+      access_token, std::move(screenshot),
+      Bind(&BloomInteraction::OnServerResponse));
 }
 
 void BloomInteraction::OnServerResponse(base::Optional<std::string> html) {

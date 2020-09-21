@@ -6,8 +6,8 @@
 
 #include "base/logging.h"
 #include "chromeos/components/bloom/bloom_interaction.h"
-#include "chromeos/components/bloom/bloom_server_proxy.h"
 #include "chromeos/components/bloom/public/cpp/bloom_screenshot_delegate.h"
+#include "chromeos/components/bloom/server/bloom_server_proxy.h"
 
 namespace chromeos {
 namespace bloom {

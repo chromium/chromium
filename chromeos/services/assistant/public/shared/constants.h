@@ -37,6 +37,13 @@ extern const char kBloomOcrImagePath[];
 COMPONENT_EXPORT(ASSISTANT_SERVICE_SHARED)
 extern const char kBloomSearchProblemPath[];
 
+COMPONENT_EXPORT(ASSISTANT_SERVICE_SHARED)
+extern const char kBloomCreateImagePath[];
+COMPONENT_EXPORT(ASSISTANT_SERVICE_SHARED)
+extern const char kBloomOcrImagePath[];
+COMPONENT_EXPORT(ASSISTANT_SERVICE_SHARED)
+extern const char kBloomSearchProblemPath[];
+
 }  // namespace assistant
 }  // namespace chromeos
 

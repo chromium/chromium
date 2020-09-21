@@ -11,9 +11,12 @@ source_set("bloom") {
     "bloom_interaction_observer.h",
     "bloom_interaction_observer_impl.cc",
     "bloom_interaction_observer_impl.h",
-    "bloom_server_proxy.h",
-    "bloom_server_proxy_impl.cc",
-    "bloom_server_proxy_impl.h",
+    "server/bloom_server_proxy.h",
+    "server/bloom_server_proxy_impl.cc",
+    "server/bloom_server_proxy_impl.h",
+    "server/bloom_url_loader.h",
+    "server/bloom_url_loader_impl.cc",
+    "server/bloom_url_loader_impl.h",
   ]
 
   deps = [
@@ -31,7 +34,10 @@ source_set("bloom") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "bloom_controller_impl_unittest.cc" ]
+  sources = [
+    "bloom_controller_impl_unittest.cc",
+    "server/bloom_server_proxy_impl_unittest.cc",
+  ]
 
   deps = [
     ":bloom",
@@ -41,6 +47,7 @@ source_set("unit_tests") {
     "//chromeos/services/assistant/public/shared",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
+    "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",

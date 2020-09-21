@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_BLOOM_BLOOM_SERVER_PROXY_H_
-#define CHROMEOS_COMPONENTS_BLOOM_BLOOM_SERVER_PROXY_H_
+#ifndef CHROMEOS_COMPONENTS_BLOOM_SERVER_BLOOM_SERVER_PROXY_H_
+#define CHROMEOS_COMPONENTS_BLOOM_SERVER_BLOOM_SERVER_PROXY_H_
 
 #include <string>
 #include "base/callback.h"
@@ -36,4 +36,4 @@ class BloomServerProxy {
 }  // namespace bloom
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_BLOOM_BLOOM_SERVER_PROXY_H_
+#endif  // CHROMEOS_COMPONENTS_BLOOM_SERVER_BLOOM_SERVER_PROXY_H_

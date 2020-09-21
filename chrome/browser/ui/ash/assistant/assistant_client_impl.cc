@@ -92,7 +92,7 @@ void AssistantClientImpl::MaybeInit(Profile* profile) {
 
   if (chromeos::assistant::features::IsBloomEnabled()) {
     bloom_controller_ = chromeos::bloom::BloomControllerFactory::Create(
-        profile->GetURLLoaderFactory(),
+        profile->GetURLLoaderFactory()->Clone(),
         IdentityManagerFactory::GetForProfile(profile),
         nullptr  // TODO(jeroendh): pass in real BloomScreenshotDelegate
     );

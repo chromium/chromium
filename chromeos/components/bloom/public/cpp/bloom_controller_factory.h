@@ -11,7 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 
 namespace network {
-class SharedURLLoaderFactory;
+class PendingSharedURLLoaderFactory;
 }  // namespace network
 
 namespace signin {
@@ -28,7 +28,8 @@ class COMPONENT_EXPORT(BLOOM) BloomControllerFactory {
  public:
   // Create the Bloom controller. Can only be invoked once.
   static std::unique_ptr<BloomController> Create(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<network::PendingSharedURLLoaderFactory>
+          url_loader_factory,
       signin::IdentityManager* identity_manager,
       std::unique_ptr<BloomScreenshotDelegate> screenshot_delegate);
 };
