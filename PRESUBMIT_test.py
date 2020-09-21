@@ -2888,6 +2888,22 @@ class StringTest(unittest.TestCase):
         '</message>',
     '</grit-part>')
 
+  NEW_GRDP_CONTENTS5 = (
+    '<?xml version="1.0" encoding="utf-8"?>',
+      '<grit-part>',
+        '<message name="IDS_PART_TEST1" meaning="Meaning with typo.">',
+          'Part string 1',
+        '</message>',
+    '</grit-part>')
+
+  NEW_GRDP_CONTENTS6 = (
+    '<?xml version="1.0" encoding="utf-8"?>',
+      '<grit-part>',
+        '<message name="IDS_PART_TEST1" meaning="Meaning with typo fixed.">',
+          'Part string 1',
+        '</message>',
+    '</grit-part>')
+
   # A grdp file with one ICU syntax message without syntax errors.
   NEW_GRDP_CONTENTS_ICU_SYNTAX_OK1 = (
     '<?xml version="1.0" encoding="utf-8"?>',
@@ -2993,18 +3009,37 @@ class StringTest(unittest.TestCase):
 
   def testModifiedMessageDescription(self):
     # CL modified a message description for a message that does not yet have a
-    # screenshot. Should warn.
+    # screenshot. Should not warn.
     input_api = self.makeInputApi([
       MockAffectedFile('part.grdp', self.NEW_GRDP_CONTENTS3,
                        self.NEW_GRDP_CONTENTS4, action='M')])
     warnings = PRESUBMIT.CheckStrings(input_api, MockOutputApi())
-    self.assertEqual(1, len(warnings))
+    self.assertEqual(0, len(warnings))
 
     # CL modified a message description for a message that already has a
     # screenshot. Should not warn.
     input_api = self.makeInputApi([
       MockAffectedFile('part.grdp', self.NEW_GRDP_CONTENTS3,
                        self.NEW_GRDP_CONTENTS4, action='M'),
+      MockFile(os.path.join('part_grdp', 'IDS_PART_TEST1.png.sha1'),
+               'binary', action='A')])
+    warnings = PRESUBMIT.CheckStrings(input_api, MockOutputApi())
+    self.assertEqual(0, len(warnings))
+
+  def testModifiedMessageMeaning(self):
+    # CL modified a message meaning for a message that does not yet have a
+    # screenshot. Should warn.
+    input_api = self.makeInputApi([
+      MockAffectedFile('part.grdp', self.NEW_GRDP_CONTENTS5,
+                       self.NEW_GRDP_CONTENTS6, action='M')])
+    warnings = PRESUBMIT.CheckStrings(input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+
+    # CL modified a message meaning for a message that already has a
+    # screenshot. Should not warn.
+    input_api = self.makeInputApi([
+      MockAffectedFile('part.grdp', self.NEW_GRDP_CONTENTS5,
+                       self.NEW_GRDP_CONTENTS6, action='M'),
       MockFile(os.path.join('part_grdp', 'IDS_PART_TEST1.png.sha1'),
                'binary', action='A')])
     warnings = PRESUBMIT.CheckStrings(input_api, MockOutputApi())

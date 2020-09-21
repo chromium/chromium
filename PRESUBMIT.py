@@ -5099,17 +5099,18 @@ def CheckStrings(input_api, output_api):
     removed_ids = old_ids - new_ids
     modified_ids = set([])
     for key in old_ids.intersection(new_ids):
-      if (old_id_to_msg_map[key].FormatXml()
-          != new_id_to_msg_map[key].FormatXml()):
-        sha1_path = input_api.os_path.join(
-          screenshots_dir, key + '.png.sha1')
-        if sha1_path not in new_or_added_paths and \
-           not input_api.os_path.exists(sha1_path):
-          # This message does not yet have a screenshot. Require one.
-          modified_ids.add(key)
-        elif (old_id_to_msg_map[key].ContentsAsXml('', True)
+      if (old_id_to_msg_map[key].ContentsAsXml('', True)
           != new_id_to_msg_map[key].ContentsAsXml('', True)):
           # The message content itself changed. Require an updated screenshot.
+          modified_ids.add(key)
+      elif old_id_to_msg_map[key].attrs['meaning'] != \
+          new_id_to_msg_map[key].attrs['meaning']:
+        # The message meaning changed. Ensure there is a screenshot for it.
+        sha1_path = input_api.os_path.join(screenshots_dir, key + '.png.sha1')
+        if sha1_path not in new_or_added_paths and not \
+            input_api.os_path.exists(sha1_path):
+          # There is neither a previous screenshot nor is a new one added now.
+          # Require a screenshot.
           modified_ids.add(key)
 
     if run_screenshot_check:
