@@ -96,6 +96,9 @@ extern const char kAdvancedProtectionLastRefreshInUs[];
 // is configured by enterprise policy.
 extern const char kSafeBrowsingSendFilesForMalwareCheck[];
 
+// Boolean that indidicates if Chrome reports unsafe events to Google.
+extern const char kUnsafeEventsReportingEnabled[];
+
 // Integer that specifies if large files are blocked form either uploads or
 // downloads or both.
 extern const char kBlockLargeFileTransfer[];

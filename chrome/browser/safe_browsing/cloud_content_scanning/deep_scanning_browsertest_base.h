@@ -21,6 +21,9 @@ class DeepScanningBrowserTestBase : public InProcessBrowserTest {
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
+  // Setters for deep scanning policies.
+  void SetUnsafeEventsReportingPolicy(bool report);
+
   // Sets up a FakeDeepScanningDialogDelegate to use this class's StatusCallback
   // and EncryptionStatusCallback. Also sets up a test DM token.
   void SetUpDelegate();
