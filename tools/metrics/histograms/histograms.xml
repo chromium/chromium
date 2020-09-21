@@ -167689,7 +167689,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="SoftwareReporter.Cleaner.CleaningTime" units="ms"
-    expires_after="M85">
+    expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -167700,7 +167700,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="SoftwareReporter.Cleaner.CleanupResult"
-    enum="SoftwareReporterCleanupResult" expires_after="M85">
+    enum="SoftwareReporterCleanupResult" expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -167756,7 +167756,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="SoftwareReporter.Cleaner.HasRebooted" enum="BooleanRebooted"
-    expires_after="M85">
+    expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -167790,7 +167790,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="SoftwareReporter.Cleaner.RebootResponse" enum="Boolean"
-    expires_after="M85">
+    expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -167803,14 +167803,14 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="SoftwareReporter.Cleaner.RunningTime" units="ms"
-    expires_after="M85">
+    expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>How long it took to run the software reporter cleaner tool.</summary>
 </histogram>
 
 <histogram name="SoftwareReporter.Cleaner.ScanningTime" units="ms"
-    expires_after="M85">
+    expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -167822,7 +167822,7 @@ should be kept until we use this API.  -->
 
 <histogram name="SoftwareReporter.Cleaner.SettingsPageActiveOnRebootRequired"
     enum="SoftwareReporterCleanerSettingsPageActiveOnRebootRequired"
-    expires_after="M85">
+    expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -167873,7 +167873,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="SoftwareReporter.CleanupStarted"
-    enum="SoftwareReporterCleanupStarted" expires_after="M85">
+    enum="SoftwareReporterCleanupStarted" expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
