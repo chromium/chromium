@@ -930,6 +930,7 @@ Unknown properties are collapsed to zero. -->
 <enum name="AccessPasswordInSettingsEvent">
   <int value="0" label="Viewed"/>
   <int value="1" label="Copied"/>
+  <int value="2" label="Edited"/>
 </enum>
 
 <enum name="AccountChooserDismissalReason">
