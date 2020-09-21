@@ -132,7 +132,6 @@ class CC_EXPORT FrameSequenceMetrics {
 
   ThroughputData& impl_throughput() { return impl_throughput_; }
   ThroughputData& main_throughput() { return main_throughput_; }
-  ThroughputData& aggregated_throughput() { return aggregated_throughput_; }
   void add_checkerboarded_frames(int64_t frames) {
     frames_checkerboarded_ += frames;
   }
@@ -175,8 +174,6 @@ class CC_EXPORT FrameSequenceMetrics {
 
   ThroughputData impl_throughput_;
   ThroughputData main_throughput_;
-  // The aggregated throughput for the main/compositor thread.
-  ThroughputData aggregated_throughput_;
 
   ThreadType scrolling_thread_ = ThreadType::kUnknown;
 

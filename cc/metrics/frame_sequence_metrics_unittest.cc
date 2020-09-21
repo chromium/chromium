@@ -14,22 +14,6 @@
 
 namespace cc {
 
-TEST(FrameSequenceMetricsTest, AggregatedThroughputClearedAfterReport) {
-  FrameSequenceMetrics first(FrameSequenceTrackerType::kCompositorAnimation,
-                             nullptr);
-  first.impl_throughput().frames_expected = 200u;
-  first.impl_throughput().frames_produced = 190u;
-  first.impl_throughput().frames_ontime = 120u;
-  first.aggregated_throughput().frames_expected = 170u;
-  first.aggregated_throughput().frames_produced = 150u;
-  first.aggregated_throughput().frames_ontime = 100u;
-
-  first.ReportMetrics();
-  EXPECT_EQ(first.aggregated_throughput().frames_expected, 0u);
-  EXPECT_EQ(first.aggregated_throughput().frames_produced, 0u);
-  EXPECT_EQ(first.aggregated_throughput().frames_ontime, 0u);
-}
-
 TEST(FrameSequenceMetricsTest, MergeMetrics) {
   // Create a metric with only a small number of frames. It shouldn't report any
   // metrics.

@@ -175,7 +175,6 @@ void FrameSequenceMetrics::Merge(
   DCHECK_EQ(GetEffectiveThread(), metrics->GetEffectiveThread());
   impl_throughput_.Merge(metrics->impl_throughput_);
   main_throughput_.Merge(metrics->main_throughput_);
-  aggregated_throughput_.Merge(metrics->aggregated_throughput_);
   frames_checkerboarded_ += metrics->frames_checkerboarded_;
 
   if (jank_reporter_)
@@ -185,7 +184,6 @@ void FrameSequenceMetrics::Merge(
   // up reporting the metrics.
   metrics->impl_throughput_ = {};
   metrics->main_throughput_ = {};
-  metrics->aggregated_throughput_ = {};
   metrics->frames_checkerboarded_ = 0;
 }
 
@@ -212,12 +210,8 @@ void FrameSequenceMetrics::AdvanceTrace(base::TimeTicks timestamp) {
 void FrameSequenceMetrics::ReportMetrics() {
   DCHECK_LE(impl_throughput_.frames_produced, impl_throughput_.frames_expected);
   DCHECK_LE(main_throughput_.frames_produced, main_throughput_.frames_expected);
-  DCHECK_LE(aggregated_throughput_.frames_produced,
-            aggregated_throughput_.frames_expected);
   DCHECK_LE(impl_throughput_.frames_ontime, impl_throughput_.frames_expected);
   DCHECK_LE(main_throughput_.frames_ontime, main_throughput_.frames_expected);
-  DCHECK_LE(aggregated_throughput_.frames_ontime,
-            aggregated_throughput_.frames_expected);
 
   // Terminates |trace_data_| for all types of FrameSequenceTracker.
   trace_data_.Terminate();
@@ -228,7 +222,6 @@ void FrameSequenceMetrics::ReportMetrics() {
 
     main_throughput_ = {};
     impl_throughput_ = {};
-    aggregated_throughput_ = {};
     frames_checkerboarded_ = 0;
     return;
   }
@@ -352,10 +345,8 @@ void FrameSequenceMetrics::ReportMetrics() {
   }
 
   // Reset the metrics that reach reporting threshold.
-  if (impl_throughput_.frames_expected >= kMinFramesForThroughputMetric) {
+  if (impl_throughput_.frames_expected >= kMinFramesForThroughputMetric)
     impl_throughput_ = {};
-    aggregated_throughput_ = {};
-  }
   if (main_throughput_.frames_expected >= kMinFramesForThroughputMetric)
     main_throughput_ = {};
 }

@@ -135,8 +135,6 @@ void FrameSequenceTracker::ReportBeginImplFrame(
                          args.frame_id.sequence_number);
   impl_throughput().frames_expected +=
       begin_impl_frame_data_.previous_sequence_delta;
-  aggregated_throughput().frames_expected +=
-      begin_impl_frame_data_.previous_sequence_delta;
 #if DCHECK_IS_ON()
   ++impl_throughput().frames_received;
 #endif
@@ -189,7 +187,6 @@ void FrameSequenceTracker::ReportBeginMainFrame(
       begin_main_frame_data_.previous_sequence_delta;
   previous_begin_main_sequence_ = current_begin_main_sequence_;
   current_begin_main_sequence_ = args.frame_id.sequence_number;
-  no_damage_impl_frames_while_expecting_main_ = 0;
 }
 
 void FrameSequenceTracker::ReportMainFrameProcessed(
@@ -304,14 +301,6 @@ void FrameSequenceTracker::ReportSubmitFrame(
       main_frames_.push_back(frame_token);
       DCHECK_GE(main_throughput().frames_expected, main_frames_.size())
           << TRACKER_DCHECK_MSG;
-    } else {
-      // If we have sent a BeginMainFrame which hasn't yet been submitted, or
-      // confirmed that it has no damage (previous_sequence is set to 0), then
-      // we are currently expecting a main frame.
-      const bool expecting_main = begin_main_frame_data_.previous_sequence >
-                                  last_submitted_main_sequence_;
-      if (expecting_main)
-        expecting_main_when_submit_impl_.push_back(frame_token);
     }
   }
 
@@ -378,10 +367,6 @@ void FrameSequenceTracker::ReportFrameEnd(
       NOTREACHED() << TRACKER_DCHECK_MSG;
 #endif
     begin_impl_frame_data_.previous_sequence = 0;
-    if (!IsExpectingMainFrame())
-      --aggregated_throughput().frames_expected;
-    else
-      ++no_damage_impl_frames_while_expecting_main_;
   }
   // last_submitted_frame_ == 0 means the last impl frame has been presented.
   if (termination_status_ == TerminationStatus::kScheduledForTermination &&
@@ -508,48 +493,6 @@ void FrameSequenceTracker::ReportFramePresented(
         ++main_frames_ontime;
       }
     }
-
-    if (impl_frames_produced > 0) {
-      // If there is no main frame presented, then we need to see whether or not
-      // we are expecting main frames to be presented or not.
-      if (main_frames_produced == 0) {
-        // Only need to check the first element in the deque because the
-        // elements are in order.
-        bool expecting_main_frames =
-            !expecting_main_when_submit_impl_.empty() &&
-            !viz::FrameTokenGT(expecting_main_when_submit_impl_[0],
-                               frame_token);
-        if (expecting_main_frames) {
-          // We are expecting a main frame to be processed, the main frame
-          // should either report no-damage or be submitted to GPU. Since we
-          // don't know which case it would be, we accumulate the number of impl
-          // frames produced so that we can apply that to aggregated throughput
-          // if the main frame reports no-damage later on.
-          impl_frames_produced_while_expecting_main_ += impl_frames_produced;
-          impl_frames_ontime_while_expecting_main_ += impl_frames_ontime;
-        } else {
-          // TODO(https://crbug.com/1066455): Determine why this DCHECK is
-          // causing PageLoadMetricsBrowserTests to flake, and re-enable.
-          // DCHECK_EQ(impl_frames_produced_while_expecting_main_, 0u)
-          //    << TRACKER_DCHECK_MSG;
-          aggregated_throughput().frames_produced += impl_frames_produced;
-          impl_frames_produced_while_expecting_main_ = 0;
-          aggregated_throughput().frames_ontime += impl_frames_ontime;
-          impl_frames_ontime_while_expecting_main_ = 0;
-        }
-      } else {
-        aggregated_throughput().frames_produced += main_frames_produced;
-        impl_frames_produced_while_expecting_main_ = 0;
-        aggregated_throughput().frames_ontime += main_frames_ontime;
-        impl_frames_ontime_while_expecting_main_ = 0;
-        while (!expecting_main_when_submit_impl_.empty() &&
-               !viz::FrameTokenGT(expecting_main_when_submit_impl_.front(),
-                                  frame_token)) {
-          expecting_main_when_submit_impl_.pop_front();
-        }
-      }
-    }
-
     last_frame_presentation_timestamp_ = feedback.timestamp;
 
     if (checkerboarding_.last_frame_had_checkerboarding) {
@@ -653,16 +596,6 @@ void FrameSequenceTracker::ReportMainFrameCausedNoDamage(
       << TRACKER_DCHECK_MSG;
   last_no_main_damage_sequence_ = args.frame_id.sequence_number;
   --main_throughput().frames_expected;
-  // Compute the number of actually expected compositor frames during this main
-  // frame, which produced no damage..
-  DCHECK_GE(aggregated_throughput().frames_expected,
-            no_damage_impl_frames_while_expecting_main_)
-      << TRACKER_DCHECK_MSG;
-  aggregated_throughput().frames_expected -=
-      no_damage_impl_frames_while_expecting_main_;
-  DCHECK_GE(aggregated_throughput().frames_expected,
-            aggregated_throughput().frames_produced)
-      << TRACKER_DCHECK_MSG;
   DCHECK_GE(main_throughput().frames_expected, main_frames_.size())
       << TRACKER_DCHECK_MSG;
 
@@ -673,14 +606,6 @@ void FrameSequenceTracker::ReportMainFrameCausedNoDamage(
         << TRACKER_DCHECK_MSG;
   }
   begin_main_frame_data_.previous_sequence = 0;
-
-  aggregated_throughput().frames_produced +=
-      impl_frames_produced_while_expecting_main_;
-  impl_frames_produced_while_expecting_main_ = 0;
-  aggregated_throughput().frames_ontime +=
-      impl_frames_ontime_while_expecting_main_;
-  impl_frames_ontime_while_expecting_main_ = 0;
-  expecting_main_when_submit_impl_.clear();
 }
 
 void FrameSequenceTracker::PauseFrameProduction() {
@@ -726,13 +651,6 @@ bool FrameSequenceTracker::ShouldIgnoreBeginFrameSource(
 bool FrameSequenceTracker::ShouldIgnoreSequence(
     uint64_t sequence_number) const {
   return sequence_number != begin_impl_frame_data_.previous_sequence;
-}
-
-bool FrameSequenceTracker::IsExpectingMainFrame() const {
-  bool last_main_not_processed =
-      begin_main_frame_data_.previous_sequence != 0 &&
-      begin_main_frame_data_.previous_sequence != last_processed_main_sequence_;
-  return !main_frames_.empty() || last_main_not_processed;
 }
 
 bool FrameSequenceTracker::ShouldReportMetricsNow(

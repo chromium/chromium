@@ -125,9 +125,6 @@ class CC_EXPORT FrameSequenceTracker {
   FrameSequenceMetrics::ThroughputData& main_throughput() {
     return metrics_->main_throughput();
   }
-  FrameSequenceMetrics::ThroughputData& aggregated_throughput() {
-    return metrics_->aggregated_throughput();
-  }
 
   void ScheduleTerminate();
 
@@ -164,8 +161,6 @@ class CC_EXPORT FrameSequenceTracker {
   bool ShouldIgnoreBeginFrameSource(uint64_t source_id) const;
 
   bool ShouldIgnoreSequence(uint64_t sequence_number) const;
-
-  bool IsExpectingMainFrame() const;
 
   const int custom_sequence_id_;
 
@@ -242,15 +237,6 @@ class CC_EXPORT FrameSequenceTracker {
   uint64_t last_processed_main_sequence_ = 0;
   uint64_t last_processed_main_sequence_latency_ = 0;
 
-  // Used to compute aggregated throughput.
-  // When expecting a main frame, we accumulate the number of impl frames
-  // presented because if that main frame ends up with no-damage, then we should
-  // count the impl frames that were produced in the meantime.
-  uint32_t impl_frames_produced_while_expecting_main_ = 0;
-  uint32_t impl_frames_ontime_while_expecting_main_ = 0;
-  // Each entry is a frame token, inserted at ReportSubmitFrame.
-  base::circular_deque<uint32_t> expecting_main_when_submit_impl_;
-
   // Handle off-screen main damage case. In this case, the sequence is typically
   // like: b(1)B(0,1)E(1)n(1)e(1)b(2)n(2)e(2)...b(10)E(2)B(10,10)n(10)e(10).
   // Note that between two 'E's, all the impl frames caused no damage, and
@@ -264,10 +250,6 @@ class CC_EXPORT FrameSequenceTracker {
   // only when the last impl-frame is ended (ReportFrameEnd).
   bool is_inside_frame_ = false;
 
-  // The number of no damage impl frames accumulated while expecting main. This
-  // main frame could report no damage eventually, then we need to account for
-  // that in the aggregated throughput.
-  uint32_t no_damage_impl_frames_while_expecting_main_ = 0;
 
 #if DCHECK_IS_ON()
   // This stringstream represents a sequence of frame reporting activities on
