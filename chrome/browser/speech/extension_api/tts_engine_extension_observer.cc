@@ -196,6 +196,11 @@ void TtsEngineExtensionObserver::OnExtensionLoaded(
     UpdateGoogleSpeechSynthesisKeepAliveCount(browser_context,
                                               true /* increment */);
   }
+
+  if (chromeos::AccessibilityManager::Get()->IsSelectToSpeakEnabled()) {
+    UpdateGoogleSpeechSynthesisKeepAliveCount(browser_context,
+                                              true /* increment */);
+  }
 #endif  // defined(OS_CHROMEOS)
 }
 
@@ -219,12 +224,14 @@ void TtsEngineExtensionObserver::OnExtensionUnloaded(
 void TtsEngineExtensionObserver::OnAccessibilityStatusChanged(
     const chromeos::AccessibilityStatusEventDetails& details) {
   if (details.notification_type != chromeos::AccessibilityNotificationType::
-                                       ACCESSIBILITY_TOGGLE_SPOKEN_FEEDBACK)
+                                       ACCESSIBILITY_TOGGLE_SPOKEN_FEEDBACK &&
+      details.notification_type != chromeos::AccessibilityNotificationType::
+                                       ACCESSIBILITY_TOGGLE_SELECT_TO_SPEAK)
     return;
 
   // Google speech synthesis might not be loaded yet. If it isn't, the call in
   // |OnExtensionLoaded| will do the increment. If it is, the call below will
-  // increment. Decrements only occur when toggling off ChromeVox here.
+  // increment. Decrements only occur when toggling off here.
   UpdateGoogleSpeechSynthesisKeepAliveCount(profile(), details.enabled);
 }
 #endif
