@@ -20797,6 +20797,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -20823,6 +20824,7 @@
         "args": [
           "--no-use-spvc",
           "--no-use-spvc-parser",
+          "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -20849,6 +20851,7 @@
       {
         "args": [
           "--skip-validation",
+          "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -20875,6 +20878,7 @@
       {
         "args": [
           "--enable-backend-validation",
+          "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -20901,6 +20905,7 @@
       {
         "args": [
           "--use-wire",
+          "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -21069,6 +21074,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -21095,6 +21101,7 @@
         "args": [
           "--no-use-spvc",
           "--no-use-spvc-parser",
+          "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -21121,6 +21128,7 @@
       {
         "args": [
           "--skip-validation",
+          "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -21147,6 +21155,7 @@
       {
         "args": [
           "--enable-backend-validation",
+          "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -21173,6 +21182,7 @@
       {
         "args": [
           "--use-wire",
+          "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -21341,6 +21351,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -21367,6 +21378,7 @@
         "args": [
           "--no-use-spvc",
           "--no-use-spvc-parser",
+          "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -21393,6 +21405,7 @@
       {
         "args": [
           "--skip-validation",
+          "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -21419,6 +21432,7 @@
       {
         "args": [
           "--enable-backend-validation",
+          "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -21445,6 +21459,7 @@
       {
         "args": [
           "--use-wire",
+          "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -21613,6 +21628,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -21639,6 +21655,7 @@
         "args": [
           "--no-use-spvc",
           "--no-use-spvc-parser",
+          "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -21665,6 +21682,7 @@
       {
         "args": [
           "--skip-validation",
+          "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -21691,6 +21709,7 @@
       {
         "args": [
           "--enable-backend-validation",
+          "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -21717,6 +21736,7 @@
       {
         "args": [
           "--use-wire",
+          "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"

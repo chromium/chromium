@@ -2164,6 +2164,7 @@
         'args': [
           '--enable-backend-validation',
         ],
+        'linux_args': [ '--no-xvfb' ],
         'test': 'dawn_end2end_tests',
       },
     },
@@ -2176,6 +2177,7 @@
           '--no-use-spvc',
           '--no-use-spvc-parser',
         ],
+        'linux_args': [ '--no-xvfb' ],
         'test': 'dawn_end2end_tests',
       },
       'dawn_end2end_skip_validation_tests': {
@@ -2183,16 +2185,19 @@
         'args': [
           '--skip-validation',
         ],
+        'linux_args': [ '--no-xvfb' ],
         'test': 'dawn_end2end_tests',
       },
       'dawn_end2end_tests': {
         'mixins': ['dawn_end2end_gpu_test'],
+        'linux_args': [ '--no-xvfb' ],
       },
       'dawn_end2end_wire_tests': {
         'mixins': ['dawn_end2end_gpu_test'],
         'args': [
           '--use-wire',
         ],
+        'linux_args': [ '--no-xvfb' ],
         'test': 'dawn_end2end_tests',
       },
     },
