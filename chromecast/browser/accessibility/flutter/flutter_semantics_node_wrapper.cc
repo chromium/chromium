@@ -234,9 +234,11 @@ bool FlutterSemanticsNodeWrapper::IsDescendant(
 }
 
 bool FlutterSemanticsNodeWrapper::IsRapidChangingSlider() const {
-  return (node_ptr_->scroll_extent_min() || node_ptr_->scroll_extent_min() ||
-          node_ptr_->action_properties().increase() ||
-          node_ptr_->action_properties().decrease());
+  const float min = node_ptr_->scroll_extent_min();
+  const float max = node_ptr_->scroll_extent_max();
+  bool has_scroll_extent = IsScrollable() && (min < max);
+  return has_scroll_extent || (node_ptr_->action_properties().increase() ||
+                               node_ptr_->action_properties().decrease());
 }
 
 void FlutterSemanticsNodeWrapper::PopulateAXState(
