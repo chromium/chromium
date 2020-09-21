@@ -389,6 +389,12 @@ class MessagePipe {
    */
   receiveMessage_(event) {
     const e = /** @type {!MessageEvent<!MessageData>} */ (event);
+
+    // Ignore message events missing a type.
+    if (typeof e.data !== 'object' || !e.data
+        || typeof e.data.type !== 'string') {
+      return;
+    }
     const {messageId, type, message} = e.data;
     const {ERROR_TYPE} = ReservedMessageTypes;
 

@@ -71,6 +71,32 @@ TEST_F('MessagePipeBrowserTest', 'ReceivesSuccessResponse', async () => {
   testDone();
 });
 
+TEST_F('MessagePipeBrowserTest', 'IgnoresMessagesWithNoType', async () => {
+  await sendTestMessage('install-generic-responder');
+
+  let messageCount = 0;
+  const receiveMessage = event => {
+    messageCount++;
+    // There should be one 'response' for each of the postMessages below.
+    // There should be no response from parentMessagePipe because it should
+    // ignore the messages below.
+    assertEquals(event.data, 'test-response');
+    if (messageCount === 5) {
+      testDone();
+    }
+  };
+  window.addEventListener('message', receiveMessage, false);
+  const guestFrame = /** @type {!HTMLIFrameElement} */ (
+      document.querySelector('iframe'));
+  const TEST_GUEST_ORIGIN = 'chrome-untrusted://system-app-test';
+  // These postMessages should be ignored and not cause any errors.
+  guestFrame.contentWindow.postMessage('test', TEST_GUEST_ORIGIN);
+  guestFrame.contentWindow.postMessage({type: 9}, TEST_GUEST_ORIGIN);
+  guestFrame.contentWindow.postMessage({}, TEST_GUEST_ORIGIN);
+  guestFrame.contentWindow.postMessage(null, TEST_GUEST_ORIGIN);
+  guestFrame.contentWindow.postMessage(undefined, TEST_GUEST_ORIGIN);
+});
+
 // Tests that we receive an error if our message is unhandled.
 TEST_F('MessagePipeBrowserTest', 'ReceivesNoHandlerError', async () => {
   untrustedMessagePipe.logClientError = error =>

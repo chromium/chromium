@@ -52,6 +52,14 @@ function installTestHandlers() {
     return parentMessagePipe.sendMessage('bad-handler');
   });
 
+  parentMessagePipe.registerHandler('install-generic-responder', () => {
+    // A general postMessage response to all message events. Does not use
+    // message pipe.
+    window.addEventListener('message', () => {
+      window.parent.postMessage('test-response', '*');
+    }, false);
+  });
+
   signalTestHandlersReady();
 }
 
