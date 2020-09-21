@@ -39,6 +39,11 @@ const base::TimeDelta kBatchDownloadUpdatesInterval =
 const base::TimeDelta kDownloadImmediateRetryDelay =
     base::TimeDelta::FromSeconds(1);
 
+// Any downloads started before this interval will be ignored. User scheduled
+// download will not be affected.
+const base::TimeDelta kAutoResumptionExpireInterval =
+    base::TimeDelta::FromDays(7);
+
 // The task type to use for scheduling a task.
 const download::DownloadTaskType kResumptionTaskType =
     download::DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK;
@@ -308,6 +313,13 @@ bool AutoResumptionHandler::IsAutoResumableDownload(
     download::DownloadItem* item) const {
   if (!item || item->IsDangerous())
     return false;
+
+  // Ignore downloads started a while ago. This doesn't include user scheduled
+  // downloads.
+  if (!item->GetDownloadSchedule().has_value() &&
+      (clock_->Now() - item->GetStartTime() > kAutoResumptionExpireInterval)) {
+    return false;
+  }
 
   switch (item->GetState()) {
     case download::DownloadItem::IN_PROGRESS:

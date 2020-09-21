@@ -108,6 +108,10 @@ class AutoResumptionHandlerTest : public testing::Test {
     ON_CALL(*download, GetLastReason()).WillByDefault(Return(last_reason));
     ON_CALL(*download, GetDownloadSchedule())
         .WillByDefault(ReturnRefOfCopy(base::Optional<DownloadSchedule>()));
+
+    // Make sure the item won't be expired and ignored.
+    ON_CALL(*download, GetStartTime())
+        .WillByDefault(Return(GetNow() - base::TimeDelta::FromDays(1)));
   }
 
   void SetNetworkConnectionType(ConnectionType connection_type) {
@@ -274,6 +278,39 @@ TEST_F(AutoResumptionHandlerTest,
 
   // Start the task. It should resume all downloads.
   EXPECT_CALL(*item.get(), Resume(_)).Times(1);
+  TaskFinishedCallback callback;
+  auto_resumption_handler_->OnStartScheduledTask(
+      DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK, std::move(callback));
+  task_runner_->FastForwardUntilNoTasksRemain();
+}
+
+TEST_F(AutoResumptionHandlerTest, ExpiredDownloadNotAutoResumed) {
+  SetNetworkConnectionType(ConnectionType::CONNECTION_WIFI);
+
+  // Create a normal expired download.
+  base::Time expired_start_time = GetNow() - base::TimeDelta::FromDays(100);
+  auto item0 = std::make_unique<NiceMock<MockDownloadItem>>();
+  SetDownloadState(item0.get(), DownloadItem::INTERRUPTED, false, false);
+  ON_CALL(*item0.get(), GetStartTime())
+      .WillByDefault(Return(expired_start_time));
+
+  // Create an expired user scheduled download.
+  auto item1 = std::make_unique<NiceMock<MockDownloadItem>>();
+  SetDownloadState(item1.get(), DownloadItem::INTERRUPTED, false, false);
+  SetDownloadSchedule(item1.get(),
+                      DownloadSchedule(true /*only_on_wifi*/, base::nullopt));
+  ON_CALL(*item1.get(), GetStartTime())
+      .WillByDefault(Return(expired_start_time));
+
+  auto_resumption_handler_->OnDownloadStarted(item0.get());
+  auto_resumption_handler_->OnDownloadStarted(item1.get());
+  task_runner_->FastForwardUntilNoTasksRemain();
+
+  // Expired downoad |item0| won't be resumed. Expired user scheduled download
+  // |item1| will still be resumed.
+  EXPECT_CALL(*item0.get(), Resume(_)).Times(0);
+  EXPECT_CALL(*item1.get(), Resume(_)).Times(1);
+
   TaskFinishedCallback callback;
   auto_resumption_handler_->OnStartScheduledTask(
       DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK, std::move(callback));
