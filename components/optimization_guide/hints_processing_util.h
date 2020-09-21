@@ -18,15 +18,6 @@ namespace optimization_guide {
 std::string GetStringNameForOptimizationType(
     proto::OptimizationType optimization_type);
 
-// Returns whether |optimization| is disabled subject to it being part of
-// an optimization hint experiment. |optimization| could be disabled either
-// because: it is only to be used with a named optimization experiment; or it
-// is not to be used with a named excluded experiment. One experiment name
-// may be configured for the client with the experiment_name parameter to the
-// kOptimizationHintsExperiments feature.
-bool IsDisabledPerOptimizationHintExperiment(
-    const proto::Optimization& optimization);
-
 // Returns the matching PageHint for |gurl| if found in |hint|.
 const proto::PageHint* FindPageHintForURL(const GURL& gurl,
                                           const proto::Hint* hint);

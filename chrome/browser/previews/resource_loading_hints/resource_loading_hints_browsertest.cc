@@ -214,42 +214,6 @@ class ResourceLoadingNoFeaturesBrowserTest : public InProcessBrowserTest {
     LoadHintsForUrl(hint_setup_url);
   }
 
-  // Sets the resource loading hints in optimization guide service. The hints
-  // are set as experimental.
-  void SetExperimentOnlyResourceLoadingHints(const GURL& hint_setup_url) {
-    std::vector<std::string> resource_patterns;
-    resource_patterns.push_back("foo.jpg");
-    resource_patterns.push_back("png");
-    resource_patterns.push_back("woff2");
-
-    ProcessHintsComponent(
-        test_hints_component_creator_
-            .CreateHintsComponentInfoWithExperimentalPageHints(
-                optimization_guide::proto::RESOURCE_LOADING,
-                {hint_setup_url.host()}, resource_patterns));
-    LoadHintsForUrl(hint_setup_url);
-  }
-
-  // Sets the resource loading hints in optimization guide service. Some hints
-  // are set as experimental, while others are set as default.
-  void SetMixResourceLoadingHints(const GURL& hint_setup_url) {
-    std::vector<std::string> experimental_resource_patterns;
-    experimental_resource_patterns.push_back("foo.jpg");
-    experimental_resource_patterns.push_back("png");
-    experimental_resource_patterns.push_back("woff2");
-
-    std::vector<std::string> default_resource_patterns;
-    default_resource_patterns.push_back("bar.jpg");
-    default_resource_patterns.push_back("woff2");
-
-    ProcessHintsComponent(
-        test_hints_component_creator_.CreateHintsComponentInfoWithMixPageHints(
-            optimization_guide::proto::RESOURCE_LOADING,
-            {hint_setup_url.host()}, experimental_resource_patterns,
-            default_resource_patterns));
-    LoadHintsForUrl(hint_setup_url);
-  }
-
   virtual const GURL& https_url() const { return https_url_; }
 
   // URL that loads blocked resources uses link-rel preload in <head>.

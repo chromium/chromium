@@ -137,11 +137,6 @@ bool IsOptimizationTypeAllowed(
     if (optimization_type != optimization.optimization_type())
       continue;
 
-    if (optimization_guide::IsDisabledPerOptimizationHintExperiment(
-            optimization)) {
-      continue;
-    }
-
     if (optimization.has_tuning_version()) {
       *tuning_version = optimization.tuning_version();
 

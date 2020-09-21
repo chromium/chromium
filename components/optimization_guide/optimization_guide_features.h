@@ -20,9 +20,7 @@ namespace optimization_guide {
 namespace features {
 
 extern const base::Feature kOptimizationHints;
-extern const base::Feature kOptimizationHintsExperiments;
 extern const base::Feature kOptimizationHintsFieldTrials;
-constexpr char kOptimizationHintsExperimentNameParam[] = "experiment_name";
 extern const base::Feature kRemoteOptimizationGuideFetching;
 extern const base::Feature kRemoteOptimizationGuideFetchingAnonymousDataConsent;
 extern const base::Feature kOptimizationTargetPrediction;

@@ -153,29 +153,9 @@ enum KeyRepresentation {
 }
 
 message Optimization {
-  reserved 2, 3, 14;
+  reserved 2, 3, 4, 5, 14;
   // The type of optimization the hint applies to.
   optional OptimizationType optimization_type = 1;
-  // The experiment name that activates the optimization.
-  //
-  // If a non-empty name is provided, the optimization will be disabled unless
-  // an experiment of that same name is running. An empty name is not
-  // experimental.
-  //
-  // Optimization Hints experiments are enabled and configured by passing an
-  // experiment_name parameter to the OptimizationHintsExperiments feature.
-  // For example, if experiment_name is my_exp, it could be enabled with the
-  // following command-line flags:
-  //   --enable-features=OptimizationHintsExperiments<MyFieldTrial
-  //   --force-fieldtrial-params="MyFieldTrial.Enabled:experiment_name/my_exp"
-  //   --force-fieldtrials=MyFieldTrial/Enabled/
-  optional string experiment_name = 4;
-  // The experiment name that should be excluded from using this optimization.
-  //
-  // If a non-empty name is provided and the client is in an experiment of that
-  // same name, the optimization will be disabled and skipped for that client.
-  // An empty name is not experimental.
-  optional string excluded_experiment_name = 5;
   // The version of the tuning group for the optimization type.
   //
   // This will only be populated if this optimization is being autotuned.

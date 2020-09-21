@@ -57,6 +57,7 @@ TEST(HintsProcessingUtilTest, FindPageHintForSubstringPagePattern) {
   EXPECT_EQ(page_hint3, FindPageHintForURL(
                             GURL("https://www.foo.org/bar/three.jpg"), &hint1));
 }
+
 TEST(HintsProcessingUtilTest, ConvertProtoEffectiveConnectionType) {
   EXPECT_EQ(
       ConvertProtoEffectiveConnectionType(

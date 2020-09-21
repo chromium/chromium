@@ -31,18 +31,6 @@ const base::Feature kOptimizationHints {
 #endif  // defined(OS_ANDROID)
 };
 
-// Enables Optimization Hints that are marked as experimental. Optimizations are
-// marked experimental by setting an experiment name in the "experiment_name"
-// field of the Optimization proto. This allows experiments at the granularity
-// of a single PreviewType for a single host (or host suffix). The intent is
-// that optimizations that may not work properly for certain sites can be tried
-// at a small scale via Finch experiments. Experimental optimizations can be
-// activated by enabling this feature and passing an experiment name as a
-// parameter called "experiment_name" that matches the experiment name in the
-// Optimization proto.
-const base::Feature kOptimizationHintsExperiments{
-    "OptimizationHintsExperiments", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Feature flag that contains a feature param that specifies the field trials
 // that are allowed to be sent up to the Optimization Guide Server.
 const base::Feature kOptimizationHintsFieldTrials{
