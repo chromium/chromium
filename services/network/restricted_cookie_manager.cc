@@ -131,14 +131,13 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
     // TODO(pwnall): add a constructor w/options to net::CookieChangeDispatcher.
     cookie_store_subscription_ =
         cookie_store->GetChangeDispatcher().AddCallbackForUrl(
-            url,
-            base::BindRepeating(
-                &Listener::OnCookieChange,
-                // Safe because net::CookieChangeDispatcher guarantees that the
-                // callback will stop being called immediately after we remove
-                // the subscription, and the cookie store lives on the same
-                // thread as we do.
-                base::Unretained(this)));
+            url, base::BindRepeating(
+                     &Listener::OnCookieChange,
+                     // Safe because net::CookieChangeDispatcher guarantees that
+                     // the callback will stop being called immediately after we
+                     // remove the subscription, and the cookie store lives on
+                     // the same thread as we do.
+                     base::Unretained(this)));
   }
 
   ~Listener() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
@@ -569,13 +568,14 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
         base::debug::AllocateCrashKeyString(
             "restricted_cookie_manager_bound_origin",
             base::debug::CrashKeySize::Size256);
-    base::debug::ScopedCrashKeyString(bound_origin, origin_.GetDebugString());
+    base::debug::ScopedCrashKeyString scoped_key_string_bound(
+        bound_origin, origin_.GetDebugString());
 
     static base::debug::CrashKeyString* url_origin =
         base::debug::AllocateCrashKeyString(
             "restricted_cookie_manager_url_origin",
             base::debug::CrashKeySize::Size256);
-    base::debug::ScopedCrashKeyString(
+    base::debug::ScopedCrashKeyString scoped_key_string_url(
         url_origin, url::Origin::Create(url).GetDebugString());
 
     base::debug::DumpWithoutCrashing();
