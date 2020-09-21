@@ -16,6 +16,7 @@ import android.provider.Settings;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Selection;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.ActionMode;
@@ -335,6 +336,7 @@ public class FindToolbar extends LinearLayout {
         });
 
         mFindStatus = (TextView) findViewById(R.id.find_status);
+        setStatus("", false);
 
         mFindPrevButton = findViewById(R.id.find_prev_button);
         mFindPrevButton.setOnClickListener(new OnClickListener() {
@@ -769,6 +771,7 @@ public class FindToolbar extends LinearLayout {
         mFindStatus.setText(text);
         mFindStatus.setContentDescription(null);
         mFindStatus.setTextColor(getStatusColor(failed, isIncognito()));
+        mFindStatus.setVisibility(TextUtils.isEmpty(text) ? GONE : VISIBLE);
     }
 
     /**
