@@ -36,12 +36,15 @@
 #include "extensions/grit/extensions_browser_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/layout.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/arc/icon_decode_request.h"
 #include "chrome/browser/ui/app_list/icon_standardizer.h"
+#include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #endif
 
@@ -89,6 +92,17 @@ void VerifyIcon(const gfx::ImageSkia& src, const gfx::ImageSkia& dst) {
         gfx::test::AreBitmapsEqual(src.GetRepresentation(scale).GetBitmap(),
                                    dst.GetRepresentation(scale).GetBitmap()));
   }
+}
+
+void VerifyCompressedIcon(const std::vector<uint8_t>& src_data,
+                          apps::mojom::IconValuePtr& icon) {
+  ASSERT_FALSE(icon.is_null());
+  ASSERT_EQ(apps::mojom::IconType::kCompressed, icon->icon_type);
+  ASSERT_FALSE(icon->is_placeholder_icon);
+  ASSERT_TRUE(icon->compressed.has_value());
+  ASSERT_FALSE(icon->compressed.value().empty());
+
+  ASSERT_EQ(src_data, icon->compressed.value());
 }
 
 }  // namespace
@@ -146,6 +160,87 @@ class AppIconFactoryTest : public testing::Test {
     CHECK(base::ReadFileToString(icon_file_path, &png_data_as_string));
     return png_data_as_string;
   }
+
+  void RunLoadIconFromCompressedData(const std::string png_data_as_string,
+                                     apps::mojom::IconType icon_type,
+                                     apps::IconEffects icon_effects,
+                                     apps::mojom::IconValuePtr& output_icon) {
+    apps::LoadIconFromCompressedData(
+        icon_type, kSizeInDip, icon_effects, png_data_as_string,
+        base::BindOnce(
+            [](apps::mojom::IconValuePtr* result,
+               base::OnceClosure load_app_icon_callback,
+               apps::mojom::IconValuePtr icon) {
+              *result = std::move(icon);
+              std::move(load_app_icon_callback).Run();
+            },
+            &output_icon, run_loop_.QuitClosure()));
+    run_loop_.Run();
+
+    ASSERT_FALSE(output_icon.is_null());
+    ASSERT_EQ(icon_type, output_icon->icon_type);
+    ASSERT_FALSE(output_icon->is_placeholder_icon);
+    ASSERT_FALSE(output_icon->uncompressed.isNull());
+
+    EnsureRepresentationsLoaded(output_icon->uncompressed);
+  }
+
+  void GenerateIconFromCompressedData(const std::string& compressed_icon,
+                                      float scale,
+                                      gfx::ImageSkia& output_image_skia) {
+    std::vector<uint8_t> compressed_data(compressed_icon.begin(),
+                                         compressed_icon.end());
+    SkBitmap decoded;
+    ASSERT_TRUE(gfx::PNGCodec::Decode(compressed_data.data(),
+                                      compressed_data.size(), &decoded));
+
+    output_image_skia = gfx::ImageSkia(gfx::ImageSkiaRep(decoded, scale));
+
+#if defined(OS_CHROMEOS)
+    if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
+      output_image_skia = app_list::CreateStandardIconImage(output_image_skia);
+    }
+#endif
+    EnsureRepresentationsLoaded(output_image_skia);
+  }
+
+#if defined(OS_CHROMEOS)
+  void RunLoadIconFromResource(apps::mojom::IconType icon_type,
+                               apps::IconEffects icon_effects,
+                               apps::mojom::IconValuePtr& output_icon) {
+    bool is_placeholder_icon = false;
+    apps::LoadIconFromResource(icon_type, kSizeInDip,
+                               IDR_LOGO_CROSTINI_DEFAULT_192,
+                               is_placeholder_icon, icon_effects,
+                               base::BindOnce(
+                                   [](apps::mojom::IconValuePtr* result,
+                                      base::OnceClosure load_app_icon_callback,
+                                      apps::mojom::IconValuePtr icon) {
+                                     *result = std::move(icon);
+                                     std::move(load_app_icon_callback).Run();
+                                   },
+                                   &output_icon, run_loop_.QuitClosure()));
+    run_loop_.Run();
+  }
+
+  void GenerateCrostiniPenguinIcon(gfx::ImageSkia& output_image_skia) {
+    output_image_skia =
+        *(ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+            IDR_LOGO_CROSTINI_DEFAULT_192));
+    output_image_skia = gfx::ImageSkiaOperations::CreateResizedImage(
+        output_image_skia, skia::ImageOperations::RESIZE_BEST,
+        gfx::Size(kSizeInDip, kSizeInDip));
+
+    EnsureRepresentationsLoaded(output_image_skia);
+  }
+
+  void GenerateCrostiniPenguinCompressedIcon(std::vector<uint8_t>& output) {
+    base::StringPiece data =
+        ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+            IDR_LOGO_CROSTINI_DEFAULT_192);
+    output = std::vector<uint8_t>(data.begin(), data.end());
+  }
+#endif
 
  protected:
   content::BrowserTaskEnvironment task_env_{};
@@ -230,7 +325,72 @@ TEST_F(AppIconFactoryTest, LoadFromFileFallbackDoesNotReturn) {
   EXPECT_FALSE(result.is_null());
 }
 
+TEST_F(AppIconFactoryTest, LoadIconFromCompressedData) {
+  std::string png_data_as_string = GetPngData("icon_100p.png");
+
+  auto icon_type = apps::mojom::IconType::kUncompressed;
+  auto icon_effects = apps::IconEffects::kNone;
+  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
+    icon_type = apps::mojom::IconType::kStandard;
+    icon_effects = apps::IconEffects::kCrOsStandardIcon;
+  }
+
+  apps::mojom::IconValuePtr result;
+  RunLoadIconFromCompressedData(png_data_as_string, icon_type, icon_effects,
+                                result);
+
+  float scale = 1.0;
+  gfx::ImageSkia src_image_skia;
+  GenerateIconFromCompressedData(png_data_as_string, scale, src_image_skia);
+
+  ASSERT_FALSE(src_image_skia.isNull());
+  ASSERT_TRUE(src_image_skia.HasRepresentation(scale));
+  ASSERT_TRUE(result->uncompressed.HasRepresentation(scale));
+  ASSERT_TRUE(gfx::test::AreBitmapsEqual(
+      src_image_skia.GetRepresentation(scale).GetBitmap(),
+      result->uncompressed.GetRepresentation(scale).GetBitmap()));
+}
+
 #if defined(OS_CHROMEOS)
+TEST_F(AppIconFactoryTest, LoadCrostiniPenguinIcon) {
+  auto icon_type = apps::mojom::IconType::kUncompressed;
+  auto icon_effects = apps::IconEffects::kNone;
+  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
+    icon_type = apps::mojom::IconType::kStandard;
+    icon_effects = apps::IconEffects::kCrOsStandardIcon;
+  }
+
+  apps::mojom::IconValuePtr result;
+  RunLoadIconFromResource(icon_type, icon_effects, result);
+
+  EXPECT_FALSE(result.is_null());
+  EXPECT_EQ(icon_type, result->icon_type);
+  EXPECT_FALSE(result->is_placeholder_icon);
+
+  EnsureRepresentationsLoaded(result->uncompressed);
+
+  gfx::ImageSkia src_image_skia;
+  GenerateCrostiniPenguinIcon(src_image_skia);
+
+  VerifyIcon(src_image_skia, result->uncompressed);
+}
+
+TEST_F(AppIconFactoryTest, LoadCrostiniPenguinCompressedIcon) {
+  auto icon_effects = apps::IconEffects::kNone;
+  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
+    icon_effects = apps::IconEffects::kCrOsStandardIcon;
+  }
+
+  apps::mojom::IconValuePtr result;
+  RunLoadIconFromResource(apps::mojom::IconType::kCompressed, icon_effects,
+                          result);
+
+  std::vector<uint8_t> src_data;
+  GenerateCrostiniPenguinCompressedIcon(src_data);
+
+  VerifyCompressedIcon(src_data, result);
+}
+
 TEST_F(AppIconFactoryTest, ArcNonAdaptiveIconToImageSkia) {
   arc::IconDecodeRequest::DisableSafeDecodingForTesting();
   std::string png_data_as_string = GetPngData("icon_100p.png");
@@ -472,6 +632,26 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
     EnsureRepresentationsLoaded(output_image_skia);
   }
 
+  void GenerateWebAppCompressedIcon(const std::string& app_id,
+                                    IconPurpose purpose,
+                                    const std::vector<int>& sizes_px,
+                                    apps::ScaleToSize scale_to_size_in_px,
+                                    std::vector<uint8_t>& result) {
+    gfx::ImageSkia image_skia;
+    GenerateWebAppIcon(app_id, purpose, sizes_px, scale_to_size_in_px,
+                       image_skia);
+
+    const float scale = 1.0;
+    const gfx::ImageSkiaRep& image_skia_rep =
+        image_skia.GetRepresentation(scale);
+    ASSERT_EQ(image_skia_rep.scale(), scale);
+
+    const SkBitmap& bitmap = image_skia_rep.GetBitmap();
+    const bool discard_transparency = false;
+    ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, discard_transparency,
+                                                  &result));
+  }
+
   void LoadIconFromWebApp(const std::string& app_id,
                           apps::IconEffects icon_effects,
                           gfx::ImageSkia& output_image_skia) {
@@ -496,6 +676,25 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
     run_loop.Run();
 
     EnsureRepresentationsLoaded(output_image_skia);
+  }
+
+  void LoadCompressedIconBlockingFromWebApp(
+      const std::string& app_id,
+      apps::IconEffects icon_effects,
+      apps::mojom::IconValuePtr& output_data) {
+    base::RunLoop run_loop;
+
+    apps::LoadIconFromWebApp(profile(), apps::mojom::IconType::kCompressed,
+                             kSizeInDip, app_id, icon_effects,
+                             base::BindOnce(
+                                 [](apps::mojom::IconValuePtr* result,
+                                    base::OnceClosure load_app_icon_callback,
+                                    apps::mojom::IconValuePtr icon) {
+                                   *result = std::move(icon);
+                                   std::move(load_app_icon_callback).Run();
+                                 },
+                                 &output_data, run_loop.QuitClosure()));
+    run_loop.Run();
   }
 
   web_app::WebAppIconManager& icon_manager() { return *icon_manager_; }
@@ -536,6 +735,35 @@ TEST_F(WebAppIconFactoryTest, LoadNonMaskableIcon) {
       dst_image_skia);
 
   VerifyIcon(src_image_skia, dst_image_skia);
+}
+
+TEST_F(WebAppIconFactoryTest, LoadNonMaskableCompressedIcon) {
+  auto web_app = CreateWebApp();
+  const std::string app_id = web_app->app_id();
+
+  const int kIconSize1 = 96;
+  const int kIconSize2 = 256;
+  const std::vector<int> sizes_px{kIconSize1, kIconSize2};
+  const std::vector<SkColor> colors{SK_ColorGREEN, SK_ColorYELLOW};
+  WriteIcons(app_id, {IconPurpose::ANY}, sizes_px, colors);
+
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
+  RegisterApp(std::move(web_app));
+
+  ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
+
+  std::vector<uint8_t> src_data;
+  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY, sizes_px,
+                               {{1.0, kIconSize1}, {2.0, kIconSize2}},
+                               src_data);
+
+  apps::mojom::IconValuePtr icon;
+  LoadCompressedIconBlockingFromWebApp(
+      app_id,
+      apps::IconEffects::kRoundCorners | apps::IconEffects::kCrOsStandardIcon,
+      icon);
+
+  VerifyCompressedIcon(src_data, icon);
 }
 
 TEST_F(WebAppIconFactoryTest, LoadMaskableIcon) {
@@ -580,6 +808,52 @@ TEST_F(WebAppIconFactoryTest, LoadMaskableIcon) {
 #endif
 
   VerifyIcon(src_image_skia, dst_image_skia);
+}
+
+TEST_F(WebAppIconFactoryTest, LoadMaskableCompressedIcon) {
+  auto web_app = CreateWebApp();
+  const std::string app_id = web_app->app_id();
+
+  const int kIconSize1 = 128;
+  const int kIconSize2 = 256;
+  const std::vector<int> sizes_px{kIconSize1, kIconSize2};
+  const std::vector<SkColor> colors{SK_ColorGREEN, SK_ColorYELLOW};
+  WriteIcons(app_id, {IconPurpose::ANY, IconPurpose::MASKABLE}, sizes_px,
+             colors);
+
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, {kIconSize1});
+  web_app->SetDownloadedIconSizes(IconPurpose::MASKABLE, {kIconSize2});
+
+  RegisterApp(std::move(web_app));
+
+  std::vector<uint8_t> src_data;
+  apps::mojom::IconValuePtr icon;
+#if defined(OS_CHROMEOS)
+  ASSERT_TRUE(
+      icon_manager().HasIcons(app_id, IconPurpose::MASKABLE, {kIconSize2}));
+
+  GenerateWebAppCompressedIcon(app_id, IconPurpose::MASKABLE, {kIconSize2},
+                               {{1.0, kIconSize2}, {2.0, kIconSize2}},
+                               src_data);
+
+  LoadCompressedIconBlockingFromWebApp(
+      app_id,
+      apps::IconEffects::kRoundCorners |
+          apps::IconEffects::kCrOsStandardBackground |
+          apps::IconEffects::kCrOsStandardMask,
+      icon);
+#else
+  ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, {kIconSize1}));
+
+  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY, {kIconSize1},
+                               {{1.0, kIconSize1}, {2.0, kIconSize1}},
+                               src_data);
+
+  LoadCompressedIconBlockingFromWebApp(app_id, apps::IconEffects::kRoundCorners,
+                                       icon);
+#endif
+
+  VerifyCompressedIcon(src_data, icon);
 }
 
 TEST_F(WebAppIconFactoryTest, LoadNonMaskableIconWithMaskableIcon) {

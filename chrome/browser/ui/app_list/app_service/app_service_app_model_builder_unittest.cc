@@ -54,6 +54,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
@@ -282,6 +283,22 @@ class ExtensionAppTest : public AppServiceAppModelBuilderTest {
 
     if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
       output_image_skia = app_list::CreateStandardIconImage(output_image_skia);
+  }
+
+  void GenerateExtensionAppCompressedIcon(const std::string app_id,
+                                          std::vector<uint8_t>& result) {
+    gfx::ImageSkia image_skia;
+    GenerateExtensionAppIcon(app_id, image_skia);
+
+    const float scale = 1.0;
+    const gfx::ImageSkiaRep& image_skia_rep =
+        image_skia.GetRepresentation(scale);
+    ASSERT_EQ(image_skia_rep.scale(), scale);
+
+    const SkBitmap& bitmap = image_skia_rep.GetBitmap();
+    const bool discard_transparency = false;
+    ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, discard_transparency,
+                                                  &result));
   }
 
   std::vector<std::string> default_apps_;
@@ -575,6 +592,41 @@ TEST_P(ExtensionAppTest, LoadIcon) {
   WaitForIconUpdates(item);
 
   VerifyIcon(src_image_skia, item->icon());
+}
+
+TEST_P(ExtensionAppTest, LoadCompressedIcon) {
+  // Generate the source icon for comparing.
+  std::vector<uint8_t> src_data;
+  GenerateExtensionAppCompressedIcon(kPackagedApp1Id, src_data);
+
+  apps::IconEffects icon_effects =
+      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
+          ? apps::IconEffects::kCrOsStandardIcon
+          : apps::IconEffects::kNone;
+
+  base::RunLoop run_loop;
+  apps::mojom::IconValuePtr dst_icon;
+  apps::LoadIconFromExtension(
+      apps::mojom::IconType::kCompressed,
+      ash::AppListConfig::instance().grid_icon_dimension(), profile(),
+      kPackagedApp1Id, icon_effects,
+      base::BindOnce(
+          [](apps::mojom::IconValuePtr* output_icon,
+             base::OnceClosure load_app_icon_callback,
+             apps::mojom::IconValuePtr icon) {
+            *output_icon = std::move(icon);
+            std::move(load_app_icon_callback).Run();
+          },
+          &dst_icon, run_loop.QuitClosure()));
+  run_loop.Run();
+
+  ASSERT_FALSE(dst_icon.is_null());
+  ASSERT_EQ(apps::mojom::IconType::kCompressed, dst_icon->icon_type);
+  ASSERT_FALSE(dst_icon->is_placeholder_icon);
+  ASSERT_TRUE(dst_icon->compressed.has_value());
+  ASSERT_FALSE(dst_icon->compressed.value().empty());
+
+  ASSERT_EQ(src_data, dst_icon->compressed.value());
 }
 
 // This test adds a bookmark app to the app list.
