@@ -584,7 +584,8 @@ void WebContentsViewAndroid::OnSizeChanged() {
   }
 }
 
-void WebContentsViewAndroid::OnPhysicalBackingSizeChanged() {
+void WebContentsViewAndroid::OnPhysicalBackingSizeChanged(
+    base::Optional<base::TimeDelta> deadline_override) {
   if (web_contents_->GetRenderWidgetHostView())
     web_contents_->SendScreenRects();
 }

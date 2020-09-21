@@ -87,11 +87,12 @@ public final class BrowserViewController
     private boolean mCachedDoBrowserControlsShrinkRendererSize;
 
     public BrowserViewController(FragmentWindowAndroid windowAndroid,
-            View.OnAttachStateChangeListener listener, @Nullable State savedState) {
+            View.OnAttachStateChangeListener listener, @Nullable State savedState,
+            boolean recreateForConfigurationChange) {
         mWindowAndroid = windowAndroid;
         mOnAttachedStateChangeListener = listener;
         Context context = mWindowAndroid.getContext().get();
-        mContentViewRenderView = new ContentViewRenderView(context);
+        mContentViewRenderView = new ContentViewRenderView(context, recreateForConfigurationChange);
         mContentViewRenderView.addOnAttachStateChangeListener(listener);
 
         mContentViewRenderView.onNativeLibraryLoaded(

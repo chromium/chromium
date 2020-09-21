@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
+import android.os.SystemClock;
 import android.util.Size;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -32,6 +33,7 @@ import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.resources.ResourceManager;
 
 import java.lang.annotation.Retention;
@@ -52,6 +54,8 @@ public class ContentViewRenderView extends RelativeLayout {
     public @interface Mode {}
     public static final int MODE_SURFACE_VIEW = 0;
     public static final int MODE_TEXTURE_VIEW = 1;
+
+    private static final int CONFIG_TIMEOUT_MS = 1000;
 
     // A child view of this class. Parent of SurfaceView/TextureView.
     // Needed to support not resizing the surface when soft keyboard is showing.
@@ -85,6 +89,13 @@ public class ContentViewRenderView extends RelativeLayout {
     private int mWebContentsHeightDelta;
 
     private boolean mCompositorHasSurface;
+
+    private DisplayAndroid.DisplayAndroidObserver mDisplayAndroidObserver;
+
+    // The time stamp when a configuration was detected (if any).
+    // This is used along with a timeout to determine if a resize surface resize
+    // is due to screen rotation.
+    private long mConfigurationChangedTimestamp;
 
     // Common interface to listen to surface related events.
     private interface SurfaceEventListener {
@@ -154,10 +165,7 @@ public class ContentViewRenderView extends RelativeLayout {
             ContentViewRenderViewJni.get().surfaceChanged(mNativeContentViewRenderView,
                     canBeUsedWithSurfaceControl, format, width, height, surface);
             mCompositorHasSurface = surface != null;
-            if (mWebContents != null) {
-                ContentViewRenderViewJni.get().onPhysicalBackingSizeChanged(
-                        mNativeContentViewRenderView, mWebContents, width, height);
-            }
+            maybeUpdatePhysicalBackingSize(width, height);
         }
 
         @Override
@@ -617,8 +625,11 @@ public class ContentViewRenderView extends RelativeLayout {
      * hierarchy before the first draw to avoid a black flash that is seen every time a
      * {@link SurfaceView} is added.
      * @param context The context used to create this.
+     * @param recreateForConfigurationChange indicates that views are recreated after BrowserImpl
+     *                                       is retained, but Activity is recreated, for a
+     *                                       configuration change.
      */
-    public ContentViewRenderView(Context context) {
+    public ContentViewRenderView(Context context, boolean recreateForConfigurationChange) {
         super(context);
         mSurfaceParent = new SurfaceParent(context);
         addView(mSurfaceParent,
@@ -637,6 +648,7 @@ public class ContentViewRenderView extends RelativeLayout {
             @Override
             public void onSafeAreaChanged(Rect area) {}
         });
+        if (recreateForConfigurationChange) updateConfigChangeTimeStamp();
     }
 
     /**
@@ -651,6 +663,13 @@ public class ContentViewRenderView extends RelativeLayout {
         assert mNativeContentViewRenderView != 0;
         mWindowAndroid = rootWindow;
         requestMode(mode, (Boolean result) -> {});
+        mDisplayAndroidObserver = new DisplayAndroid.DisplayAndroidObserver() {
+            @Override
+            public void onRotationChanged(int rotation) {
+                updateConfigChangeTimeStamp();
+            }
+        };
+        mWindowAndroid.getDisplay().addObserver(mDisplayAndroidObserver);
         updateBackgroundColor();
     }
 
@@ -769,6 +788,10 @@ public class ContentViewRenderView extends RelativeLayout {
         mRequested = null;
         mCurrent = null;
 
+        if (mDisplayAndroidObserver != null) {
+            mWindowAndroid.getDisplay().removeObserver(mDisplayAndroidObserver);
+            mDisplayAndroidObserver = null;
+        }
         mWindowAndroid = null;
 
         while (!mPendingRunnables.isEmpty()) {
@@ -785,12 +808,9 @@ public class ContentViewRenderView extends RelativeLayout {
         assert mNativeContentViewRenderView != 0;
         mWebContents = webContents;
 
-        if (webContents != null) {
-            if (getWidth() != 0 && getHeight() != 0) {
-                updateWebContentsSize();
-            }
-            ContentViewRenderViewJni.get().onPhysicalBackingSizeChanged(
-                    mNativeContentViewRenderView, webContents, mPhysicalWidth, mPhysicalHeight);
+        if (webContents != null && getWidth() != 0 && getHeight() != 0) {
+            updateWebContentsSize();
+            maybeUpdatePhysicalBackingSize(mPhysicalWidth, mPhysicalHeight);
         }
         ContentViewRenderViewJni.get().setCurrentWebContents(
                 mNativeContentViewRenderView, webContents);
@@ -851,13 +871,25 @@ public class ContentViewRenderView extends RelativeLayout {
         return inputMethodManager.isActive();
     }
 
+    private void updateConfigChangeTimeStamp() {
+        mConfigurationChangedTimestamp = SystemClock.uptimeMillis();
+    }
+
+    private void maybeUpdatePhysicalBackingSize(int width, int height) {
+        if (mWebContents == null) return;
+        boolean forConfigChange =
+                SystemClock.uptimeMillis() - mConfigurationChangedTimestamp < CONFIG_TIMEOUT_MS;
+        ContentViewRenderViewJni.get().onPhysicalBackingSizeChanged(
+                mNativeContentViewRenderView, mWebContents, width, height, forConfigChange);
+    }
+
     @NativeMethods
     interface Natives {
         long init(ContentViewRenderView caller, WindowAndroid rootWindow);
         void destroy(long nativeContentViewRenderView);
         void setCurrentWebContents(long nativeContentViewRenderView, WebContents webContents);
-        void onPhysicalBackingSizeChanged(
-                long nativeContentViewRenderView, WebContents webContents, int width, int height);
+        void onPhysicalBackingSizeChanged(long nativeContentViewRenderView, WebContents webContents,
+                int width, int height, boolean forConfigChange);
         void surfaceCreated(long nativeContentViewRenderView);
         void surfaceDestroyed(long nativeContentViewRenderView, boolean cacheBackBuffer);
         void surfaceChanged(long nativeContentViewRenderView, boolean canBeUsedWithSurfaceControl,

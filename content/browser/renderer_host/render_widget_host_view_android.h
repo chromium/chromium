@@ -187,7 +187,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   bool OnMouseEvent(const ui::MotionEventAndroid& m) override;
   bool OnMouseWheelEvent(const ui::MotionEventAndroid& event) override;
   bool OnGestureEvent(const ui::GestureEventAndroid& event) override;
-  void OnPhysicalBackingSizeChanged() override;
+  void OnPhysicalBackingSizeChanged(
+      base::Optional<base::TimeDelta> deadline_override) override;
 
   // ui::ViewAndroidObserver implementation:
   void OnAttachedToWindow() override;

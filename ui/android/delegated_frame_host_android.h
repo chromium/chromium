@@ -49,6 +49,11 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
 
   ~DelegatedFrameHostAndroid() override;
 
+  static int64_t TimeDeltaToFrames(base::TimeDelta delta) {
+    return base::ClampRound<int64_t>(delta /
+                                     viz::BeginFrameArgs::DefaultInterval());
+  }
+
   // Wait up to 5 seconds for the first frame to be produced. Having Android
   // display a placeholder for a longer period of time is preferable to drawing
   // nothing, and the first frame can take a while on low-end systems.
@@ -56,8 +61,7 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
     return base::TimeDelta::FromSeconds(5);
   }
   static int64_t FirstFrameTimeoutFrames() {
-    return base::ClampRound<int64_t>(FirstFrameTimeout() /
-                                     viz::BeginFrameArgs::DefaultInterval());
+    return TimeDeltaToFrames(FirstFrameTimeout());
   }
 
   // Wait up to 1 second for a frame of the correct size to be produced. Android
@@ -67,8 +71,7 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
     return base::TimeDelta::FromSeconds(1);
   }
   static int64_t ResizeTimeoutFrames() {
-    return base::ClampRound<int64_t>(ResizeTimeout() /
-                                     viz::BeginFrameArgs::DefaultInterval());
+    return TimeDeltaToFrames(ResizeTimeout());
   }
 
   // Advances the fallback surface to the first surface after navigation. This
