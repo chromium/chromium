@@ -722,6 +722,18 @@ inline scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::Layout(
   // offset, as that could give us a negative content box size.
   intrinsic_block_size_ = content_edge;
 
+  // To save space of the stack when we recurse into children, the rest of this
+  // function is continued within |FinishLayout|. However it should be read as
+  // one function.
+  return FinishLayout(&previous_inflow_position, inline_child_layout_context);
+}
+
+scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
+    NGPreviousInflowPosition* previous_inflow_position,
+    NGInlineChildLayoutContext* inline_child_layout_context) {
+  LogicalSize border_box_size = container_builder_.InitialBorderBoxSize();
+  NGMarginStrut end_margin_strut = previous_inflow_position->margin_strut;
+
   // Add line height for empty content editable or button with empty label, e.g.
   // <div contenteditable></div>, <input type="button" value="">
   if (container_builder_.HasSeenAllChildren() &&
@@ -745,25 +757,13 @@ inline scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::Layout(
   // However, if the container has non-zero block-end padding, the annotation
   // can extend on the padding. So we decrease logical_block_offset by
   // shareable part of the annotation overflow and the padding.
-  if (previous_inflow_position.block_end_annotation_space < LayoutUnit()) {
+  if (previous_inflow_position->block_end_annotation_space < LayoutUnit()) {
     DCHECK(RuntimeEnabledFeatures::LayoutNGRubyEnabled());
     const LayoutUnit annotation_overflow =
-        -previous_inflow_position.block_end_annotation_space;
-    previous_inflow_position.logical_block_offset -=
+        -previous_inflow_position->block_end_annotation_space;
+    previous_inflow_position->logical_block_offset -=
         std::min(container_builder_.Padding().block_end, annotation_overflow);
   }
-
-  // To save space of the stack when we recurse into children, the rest of this
-  // function is continued within |FinishLayout|. However it should be read as
-  // one function.
-  return FinishLayout(&previous_inflow_position, inline_child_layout_context);
-}
-
-scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
-    NGPreviousInflowPosition* previous_inflow_position,
-    NGInlineChildLayoutContext* inline_child_layout_context) {
-  LogicalSize border_box_size = container_builder_.InitialBorderBoxSize();
-  NGMarginStrut end_margin_strut = previous_inflow_position->margin_strut;
 
   // If the current layout is a new formatting context, we need to encapsulate
   // all of our floats.
