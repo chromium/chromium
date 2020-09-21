@@ -74,8 +74,8 @@ class VersionInfoUpdater : public policy::CloudPolicyStore::Observer {
   void SetEnterpriseInfo(const std::string& enterprise_display_domain,
                          const std::string& asset_id);
 
-  // Creates a serial number string.
-  void UpdateSerialNumberInfo();
+  // Produce a label with device identifiers.
+  std::string GetDeviceIdsLabel();
 
   // Callback from chromeos::VersionLoader giving the version.
   void OnVersion(const std::string& version);
@@ -88,12 +88,8 @@ class VersionInfoUpdater : public policy::CloudPolicyStore::Observer {
       SessionManagerClient::AdbSideloadResponseCode response_code,
       bool enabled);
 
-  // Information pieces for version label.
+  // Text obtained from OnVersion.
   std::string version_text_;
-  std::string serial_number_text_;
-
-  // Full text for the OS version label.
-  std::string os_version_label_text_;
 
   std::vector<std::unique_ptr<CrosSettings::ObserverSubscription>>
       subscriptions_;
