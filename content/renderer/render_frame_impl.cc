@@ -2016,9 +2016,6 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
   if (parent && parent->IsWebLocalFrame()) {
     local_root = parent->ToWebLocalFrame()->LocalRoot();
   }
-  RenderFrameImpl::FromWebFrame(local_root)
-      ->render_widget_->RegisterRenderFrame(this);
-
   bool is_tracing_rail = false;
   bool is_tracing_navigation = false;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED("navigation", &is_tracing_navigation);
@@ -4158,9 +4155,6 @@ void RenderFrameImpl::WillDetach() {
 }
 
 void RenderFrameImpl::FrameDetached() {
-  // Clean up the associated RenderWidget for the frame.
-  GetLocalRootRenderWidget()->UnregisterRenderFrame(this);
-
   // Close/delete the RenderWidget if this frame was a local root.
   if (render_widget_) {
     DCHECK(owned_render_widget_);

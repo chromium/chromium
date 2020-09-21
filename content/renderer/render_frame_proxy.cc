@@ -235,9 +235,6 @@ RenderFrameProxy::RenderFrameProxy(int routing_id)
 }
 
 RenderFrameProxy::~RenderFrameProxy() {
-  if (ancestor_render_widget_)
-    ancestor_render_widget_->UnregisterRenderFrameProxy(this);
-
   CHECK(!web_frame_);
   RenderThread::Get()->RemoveRoute(routing_id_);
   g_routing_id_proxy_map.Get().erase(routing_id_);
@@ -278,7 +275,6 @@ void RenderFrameProxy::Init(blink::WebRemoteFrame* web_frame,
             ->WindowSegments();
     pending_visual_properties_.root_widget_window_segments.assign(
         window_segments.begin(), window_segments.end());
-    ancestor_render_widget_->RegisterRenderFrameProxy(this);
     SynchronizeVisualProperties();
   }
 

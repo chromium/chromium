@@ -201,15 +201,6 @@ class CONTENT_EXPORT RenderWidget
   // destroyed RenderWidget.
   bool IsForProvisionalFrame() const;
 
-  // Functions to track out-of-process frames for special notifications.
-  void RegisterRenderFrameProxy(RenderFrameProxy* proxy);
-  void UnregisterRenderFrameProxy(RenderFrameProxy* proxy);
-
-  // Functions to track all RenderFrame objects associated with this
-  // RenderWidget.
-  void RegisterRenderFrame(RenderFrameImpl* frame);
-  void UnregisterRenderFrame(RenderFrameImpl* frame);
-
   // IPC::Listener
   bool OnMessageReceived(const IPC::Message& msg) override;
 
@@ -395,19 +386,6 @@ class CONTENT_EXPORT RenderWidget
 
   // The time spent in input handlers this frame. Used to throttle input acks.
   base::TimeDelta total_input_handling_time_this_frame_;
-
-  // Lists of RenderFrameProxy objects for which this RenderWidget is their
-  // local root. Each of these represents a child local root RenderWidget in
-  // another RenderView frame tree. For values that are propagated from
-  // a parent RenderWidget to its children, they are plumbed through the
-  // RenderFrameProxys in this list, which bounce those values through the
-  // browser to the child RenderWidget in the correct process.
-  base::ObserverList<RenderFrameProxy>::Unchecked render_frame_proxies_;
-
-  // A list of RenderFrames associated with this RenderWidget. Notifications
-  // are sent to each frame in the list for events such as changing
-  // visibility state for example.
-  base::ObserverList<RenderFrameImpl>::Unchecked render_frames_;
 
   // Mouse Lock dispatcher attached to this view.
   std::unique_ptr<RenderWidgetMouseLockDispatcher> mouse_lock_dispatcher_;

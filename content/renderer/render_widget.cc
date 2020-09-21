@@ -714,22 +714,6 @@ viz::FrameSinkId RenderWidget::GetFrameSinkId() {
   return viz::FrameSinkId(RenderThread::Get()->GetClientId(), routing_id());
 }
 
-void RenderWidget::RegisterRenderFrameProxy(RenderFrameProxy* proxy) {
-  render_frame_proxies_.AddObserver(proxy);
-}
-
-void RenderWidget::UnregisterRenderFrameProxy(RenderFrameProxy* proxy) {
-  render_frame_proxies_.RemoveObserver(proxy);
-}
-
-void RenderWidget::RegisterRenderFrame(RenderFrameImpl* frame) {
-  render_frames_.AddObserver(frame);
-}
-
-void RenderWidget::UnregisterRenderFrame(RenderFrameImpl* frame) {
-  render_frames_.RemoveObserver(frame);
-}
-
 gfx::PointF RenderWidget::ConvertWindowPointToViewport(
     const gfx::PointF& point) {
   blink::WebFloatRect point_in_viewport(point.x(), point.y(), 0, 0);
