@@ -10,6 +10,11 @@
     position: relative;
   }
 
+  :host([more-menu-open_]) #more {
+    background-color: var(--active-button-bg);
+    border-radius: 50%;
+  }
+
   #toolbar {
     align-items: center;
     background-color: var(--viewer-pdf-toolbar-background-color);
@@ -234,7 +239,7 @@
 <paper-progress id="progress" value="[[loadProgress]]" hidden="[[!loading_]]">
 </paper-progress>
 
-<cr-action-menu>
+<cr-action-menu on-open-changed="onMoreOpenChanged_">
   <button id="two-page-view-button"
       class="dropdown-item" on-click="toggleTwoPageViewClick_" role="checkbox"
 <if expr="chromeos">

@@ -162,6 +162,7 @@ Polymer({
 
     open: {
       type: Boolean,
+      notify: true,
       value: false,
     },
 

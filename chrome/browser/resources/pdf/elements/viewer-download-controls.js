@@ -83,9 +83,12 @@ export class ViewerDownloadControlsElement extends PolymerElement {
     this.getDownloadMenu_().close();
   }
 
-  /** @private */
-  onMenuClose_() {
-    this.menuOpen_ = false;
+  /**
+   * @param {!CustomEvent<!{value: boolean}>} e
+   * @private
+   */
+  onOpenChanged_(e) {
+    this.menuOpen_ = e.detail.value;
   }
 
   /**
@@ -117,7 +120,6 @@ export class ViewerDownloadControlsElement extends PolymerElement {
 
   /** @private */
   showDownloadMenu_() {
-    this.menuOpen_ = true;
     this.getDownloadMenu_().showAt(this.$.download, {
       anchorAlignmentX: AnchorAlignment.CENTER,
     });

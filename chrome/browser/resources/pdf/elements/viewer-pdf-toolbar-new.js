@@ -72,6 +72,11 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
         observer: 'viewportZoomChanged_',
       },
 
+      moreMenuOpen_: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
+
       twoUpViewEnabled_: Boolean,
 
       fittingType_: Number,
@@ -104,6 +109,9 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
 
     /** @private {boolean} */
     this.displayAnnotations_ = true;
+
+    /** @private {boolean} */
+    this.moreMenuOpen_ = false;
 
     /** @private {boolean} */
     this.twoUpViewEnabled_ = false;
@@ -319,6 +327,14 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
       anchorAlignmentY: AnchorAlignment.AFTER_END,
       noOffset: true,
     });
+  }
+
+  /**
+   * @param {!CustomEvent<!{value: boolean}>} e
+   * @private
+   */
+  onMoreOpenChanged_(e) {
+    this.moreMenuOpen_ = e.detail.value;
   }
 
   // <if expr="chromeos">

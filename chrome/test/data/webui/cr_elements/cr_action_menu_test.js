@@ -85,6 +85,18 @@ suite('CrActionMenu', function() {
     MockInteractions.keyDownOn(menu, 0, [], 'Enter');
   }
 
+  test('open-changed event fires', async function() {
+    let whenFired = test_util.eventToPromise('open-changed', menu);
+    menu.showAt(dots);
+    let event = await whenFired;
+    assertTrue(event.detail.value);
+
+    whenFired = test_util.eventToPromise('open-changed', menu);
+    menu.close();
+    event = await whenFired;
+    assertFalse(event.detail.value);
+  });
+
   test('close event bubbles', function() {
     menu.showAt(dots);
     const whenFired = test_util.eventToPromise('close', menu);
