@@ -73,9 +73,10 @@ std::unique_ptr<DecoderInterface> VaapiVideoDecoder::Create(
 }
 
 // static
-SupportedVideoDecoderConfigs VaapiVideoDecoder::GetSupportedConfigs() {
+SupportedVideoDecoderConfigs VaapiVideoDecoder::GetSupportedConfigs(
+    const gpu::GpuDriverBugWorkarounds& workarounds) {
   return ConvertFromSupportedProfiles(
-      VaapiWrapper::GetSupportedDecodeProfiles(), false);
+      VaapiWrapper::GetSupportedDecodeProfiles(workarounds), false);
 }
 
 VaapiVideoDecoder::VaapiVideoDecoder(

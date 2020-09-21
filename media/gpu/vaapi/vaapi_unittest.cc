@@ -22,6 +22,7 @@
 #include "base/strings/string_split.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 
 namespace media {
@@ -161,7 +162,8 @@ TEST_F(VaapiTest, VerifyNoVAProfileH264Baseline) {
 TEST_F(VaapiTest, GetSupportedDecodeProfiles) {
   const auto va_info = RetrieveVAInfoOutput();
 
-  for (const auto& profile : VaapiWrapper::GetSupportedDecodeProfiles()) {
+  for (const auto& profile : VaapiWrapper::GetSupportedDecodeProfiles(
+           gpu::GpuDriverBugWorkarounds())) {
     const auto va_profile = ConvertToVAProfile(profile.profile);
     ASSERT_TRUE(va_profile.has_value());
 

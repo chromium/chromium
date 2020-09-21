@@ -32,6 +32,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
+namespace gpu {
+class GpuDriverBugWorkarounds;
+}
+
 namespace media {
 
 class AcceleratedVideoDecoder;
@@ -48,7 +52,8 @@ class VaapiVideoDecoder : public DecoderInterface,
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
       base::WeakPtr<DecoderInterface::Client> client);
 
-  static SupportedVideoDecoderConfigs GetSupportedConfigs();
+  static SupportedVideoDecoderConfigs GetSupportedConfigs(
+      const gpu::GpuDriverBugWorkarounds& workarounds);
 
   // DecoderInterface implementation.
   void Initialize(const VideoDecoderConfig& config,

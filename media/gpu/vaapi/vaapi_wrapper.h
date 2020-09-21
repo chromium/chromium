@@ -44,6 +44,10 @@ class NativePixmapDmaBuf;
 class Rect;
 }
 
+namespace gpu {
+class GpuDriverBugWorkarounds;
+}
+
 namespace media {
 constexpr unsigned int kInvalidVaRtFormat = 0u;
 
@@ -150,7 +154,8 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   static VideoEncodeAccelerator::SupportedProfiles GetSupportedEncodeProfiles();
 
   // Return the supported video decode profiles.
-  static VideoDecodeAccelerator::SupportedProfiles GetSupportedDecodeProfiles();
+  static VideoDecodeAccelerator::SupportedProfiles GetSupportedDecodeProfiles(
+      const gpu::GpuDriverBugWorkarounds& workarounds);
 
   // Return true when decoding using |va_profile| is supported.
   static bool IsDecodeSupported(VAProfile va_profile);

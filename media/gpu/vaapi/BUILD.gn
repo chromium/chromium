@@ -161,6 +161,7 @@ source_set("common") {
   ]
   public_deps = [
     "//base",
+    "//gpu",
     "//media",
     "//media/gpu:common",
     "//ui/gfx/geometry",
@@ -300,6 +301,7 @@ test("vaapi_unittest") {
     ":vaapi_utils_unittest",
     "//base",
     "//base/test:test_support",
+    "//gpu",
     "//media/gpu/test:helpers",
     "//testing/gtest",
   ]

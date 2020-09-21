@@ -1182,9 +1182,10 @@ void VaapiVideoDecodeAccelerator::RecycleVASurface(
 
 // static
 VideoDecodeAccelerator::SupportedProfiles
-VaapiVideoDecodeAccelerator::GetSupportedProfiles() {
+VaapiVideoDecodeAccelerator::GetSupportedProfiles(
+    const gpu::GpuDriverBugWorkarounds& workarounds) {
   VideoDecodeAccelerator::SupportedProfiles profiles =
-      VaapiWrapper::GetSupportedDecodeProfiles();
+      VaapiWrapper::GetSupportedDecodeProfiles(workarounds);
   // VaVDA never supported VP9 Profile 2, but VaapiWrapper does. Filter it out.
   base::EraseIf(profiles, [](const auto& profile) {
     return profile.profile == VP9PROFILE_PROFILE2;
