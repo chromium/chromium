@@ -1843,17 +1843,14 @@ void Controller::DidStartNavigation(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAssistantBreakOnRunningNavigation)) {
-    // When in RUNNING state, all renderer initiated navigation is allowed,
-    // user initiated navigation will cause an error.
-    if (state_ == AutofillAssistantState::RUNNING &&
-        !navigation_handle->WasServerRedirect() &&
-        !navigation_handle->IsRendererInitiated()) {
-      OnScriptError(l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_GIVE_UP),
-                    Metrics::DropOutReason::NAVIGATION_WHILE_RUNNING);
-      return;
-    }
+  // When in RUNNING state, all renderer initiated navigation is allowed,
+  // user initiated navigation will cause an error.
+  if (state_ == AutofillAssistantState::RUNNING &&
+      !navigation_handle->WasServerRedirect() &&
+      !navigation_handle->IsRendererInitiated()) {
+    OnScriptError(l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_GIVE_UP),
+                  Metrics::DropOutReason::NAVIGATION_WHILE_RUNNING);
+    return;
   }
 
   // Note that BROWSE state end conditions are in DidFinishNavigation, in order

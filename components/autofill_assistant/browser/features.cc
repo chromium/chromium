@@ -12,14 +12,6 @@ namespace features {
 const base::Feature kAutofillAssistant{"AutofillAssistant",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Guard for the end condition when a non-renderer-initiated navigation occurs
-// while the AutofillAssistant is in RUNNING state.
-// TODO(b/159309621): Remove this if the end condition shows no unwanted side
-// effects.
-const base::Feature kAutofillAssistantBreakOnRunningNavigation{
-    "AutofillAssistantBreakOnRunningNavigation",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether to enable Assistant Autofill in a normal Chrome tab.
 const base::Feature kAutofillAssistantChromeEntry{
     "AutofillAssistantChromeEntry", base::FEATURE_ENABLED_BY_DEFAULT};
