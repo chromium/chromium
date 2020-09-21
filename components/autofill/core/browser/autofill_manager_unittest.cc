@@ -5075,106 +5075,11 @@ TEST_P(AutofillManagerStructuredProfileTest,
 }
 
 // Test that OnLoadedServerPredictions can obtain the FormStructure with the
-// signature of the queried form and apply type predictions.
-TEST_P(AutofillManagerStructuredProfileTest,
-       OnLoadedServerPredictionsFromLegacyServer) {
-  // Set features.
-  // This entire test can be deleted because we have
-  // OnLoadedServerPredictionsAPI.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      // Enabled
-      {},
-      // Disabled
-      // We want to query the legacy server rather than the API server.
-      {features::kAutofillUseApi});
-
-  // Set up our form data.
-  FormData form;
-  test::CreateTestAddressFormData(&form);
-
-  // Simulate having seen this form on page load.
-  // |form_structure| will be owned by |autofill_manager_|.
-  TestFormStructure* form_structure = new TestFormStructure(form);
-  form_structure->DetermineHeuristicTypes();
-  autofill_manager_->AddSeenFormStructure(
-      std::unique_ptr<TestFormStructure>(form_structure));
-
-  // Similarly, a second form.
-  FormData form2;
-  form2.unique_renderer_id.value() = 2;
-  form2.name = ASCIIToUTF16("MyForm");
-  form2.url = GURL("http://myform.com/form.html");
-  form2.action = GURL("http://myform.com/submit.html");
-
-  FormFieldData field;
-  test::CreateTestFormField("Last Name", "lastname", "", "text", &field);
-  form2.fields.push_back(field);
-
-  test::CreateTestFormField("Middle Name", "middlename", "", "text", &field);
-  form2.fields.push_back(field);
-
-  test::CreateTestFormField("Postal Code", "zipcode", "", "text", &field);
-  form2.fields.push_back(field);
-
-  TestFormStructure* form_structure2 = new TestFormStructure(form2);
-  form_structure2->DetermineHeuristicTypes();
-  autofill_manager_->AddSeenFormStructure(
-      std::unique_ptr<TestFormStructure>(form_structure2));
-
-  AutofillQueryResponseContents response;
-  response.add_field()->set_overall_type_prediction(3);
-  for (int i = 0; i < 7; ++i) {
-    response.add_field()->set_overall_type_prediction(0);
-  }
-  response.add_field()->set_overall_type_prediction(3);
-  response.add_field()->set_overall_type_prediction(2);
-  response.add_field()->set_overall_type_prediction(61);
-  response.add_field()->set_overall_type_prediction(5);
-  response.add_field()->set_overall_type_prediction(4);
-  response.add_field()->set_overall_type_prediction(35);
-
-  std::string response_string;
-  ASSERT_TRUE(response.SerializeToString(&response_string));
-
-  FormAndFieldSignatures signatures =
-      test::GetEncodedSignatures({form_structure, form_structure2});
-
-  base::HistogramTester histogram_tester;
-  autofill_manager_->OnLoadedServerPredictionsForTest(response_string,
-                                                      signatures);
-  // Verify that FormStructure::ParseQueryResponse was called (here and below).
-  histogram_tester.ExpectBucketCount("Autofill.ServerQueryResponse",
-                                     AutofillMetrics::QUERY_RESPONSE_RECEIVED,
-                                     1);
-  histogram_tester.ExpectBucketCount("Autofill.ServerQueryResponse",
-                                     AutofillMetrics::QUERY_RESPONSE_PARSED, 1);
-  // We expect the server type to have been applied to the first field of the
-  // first form.
-  EXPECT_EQ(NAME_FIRST, form_structure->field(0)->Type().GetStorableType());
-
-  // We expect the server types to have been applied to the second form.
-  EXPECT_EQ(NAME_LAST, form_structure2->field(0)->Type().GetStorableType());
-  EXPECT_EQ(NAME_MIDDLE, form_structure2->field(1)->Type().GetStorableType());
-  EXPECT_EQ(ADDRESS_HOME_ZIP,
-            form_structure2->field(2)->Type().GetStorableType());
-}
-
-// Test that OnLoadedServerPredictions can obtain the FormStructure with the
 // signature of the queried form from the API and apply type predictions.
 // What we test here:
 //  * The API response parser is used.
 //  * The query can be processed with a response from the API.
 TEST_P(AutofillManagerStructuredProfileTest, OnLoadedServerPredictionsFromApi) {
-  // Set features.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      // Enabled
-      // We want to query the API rather than the legacy server.
-      {features::kAutofillUseApi},
-      // Disabled
-      {});
-
   // First form on the page.
   FormData form;
   form.unique_renderer_id.value() = 1;

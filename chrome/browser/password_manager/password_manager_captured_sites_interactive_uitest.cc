@@ -32,7 +32,6 @@ namespace {
 constexpr base::TimeDelta kWaitForSaveFallbackInterval =
     base::TimeDelta::FromSeconds(5);
 
-
 // Return path to the Password Manager captured sites test root directory. The
 // directory contains subdirectories for different password manager test
 // scenarios. The test scenario subdirectories contain site capture files
@@ -182,10 +181,7 @@ class CapturedSitesPasswordManagerBrowserTest
         std::make_unique<ServerUrlLoader>(std::make_unique<ServerCacheReplayer>(
             GetParam().capture_file_path,
             ServerCacheReplayer::kOptionFailOnInvalidJsonRecord |
-                ServerCacheReplayer::kOptionSplitRequestsByForm,
-            base::FeatureList::IsEnabled(autofill::features::kAutofillUseApi)
-                ? autofill::test::AutofillServerType::kApi
-                : autofill::test::AutofillServerType::kLegacy)));
+                ServerCacheReplayer::kOptionSplitRequestsByForm)));
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
