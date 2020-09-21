@@ -16,8 +16,8 @@
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_user_service.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
@@ -103,7 +103,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
   std::string public_key_spki_der_;
   const std::string extension_id_;
   GenerateKeyCallback callback_;
-  std::unique_ptr<platform_keys::KeyPermissionsManager::PermissionsForExtension>
+  std::unique_ptr<platform_keys::KeyPermissionsService::PermissionsForExtension>
       extension_permissions_;
   ExtensionPlatformKeysService* const service_;
 
@@ -146,7 +146,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
 
   // Gets the permissions for the extension with id |extension_id|.
   void GetExtensionPermissions() {
-    service_->key_permissions_->GetPermissionsForExtension(
+    service_->key_permissions_service_->GetPermissionsForExtension(
         extension_id_,
         base::Bind(&GenerateKeyTask::GotPermissions, base::Unretained(this)));
   }
@@ -162,7 +162,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
 
   void GotPermissions(
       std::unique_ptr<
-          platform_keys::KeyPermissionsManager::PermissionsForExtension>
+          platform_keys::KeyPermissionsService::PermissionsForExtension>
           extension_permissions) {
     extension_permissions_ = std::move(extension_permissions);
     DoStep();
@@ -309,14 +309,14 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   }
 
   void GetExtensionPermissions() {
-    service_->key_permissions_->GetPermissionsForExtension(
+    service_->key_permissions_service_->GetPermissionsForExtension(
         extension_id_,
         base::Bind(&SignTask::GotPermissions, base::Unretained(this)));
   }
 
   void GotPermissions(
       std::unique_ptr<
-          platform_keys::KeyPermissionsManager::PermissionsForExtension>
+          platform_keys::KeyPermissionsService::PermissionsForExtension>
           extension_permissions) {
     extension_permissions_ = std::move(extension_permissions);
     DoStep();
@@ -390,7 +390,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   const platform_keys::HashAlgorithm hash_algorithm_;
   const std::string extension_id_;
   const SignCallback callback_;
-  std::unique_ptr<platform_keys::KeyPermissionsManager::PermissionsForExtension>
+  std::unique_ptr<platform_keys::KeyPermissionsService::PermissionsForExtension>
       extension_permissions_;
   std::vector<platform_keys::TokenId> key_locations_;
   ExtensionPlatformKeysService* const service_;
@@ -486,14 +486,14 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   }
 
   void GetExtensionPermissions() {
-    service_->key_permissions_->GetPermissionsForExtension(
+    service_->key_permissions_service_->GetPermissionsForExtension(
         extension_id_,
         base::Bind(&SelectTask::GotPermissions, base::Unretained(this)));
   }
 
   void GotPermissions(
       std::unique_ptr<
-          platform_keys::KeyPermissionsManager::PermissionsForExtension>
+          platform_keys::KeyPermissionsService::PermissionsForExtension>
           extension_permissions) {
     extension_permissions_ = std::move(extension_permissions);
     DoStep();
@@ -548,7 +548,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   // |matches_pending_key_locations_|.  Each invocation processes the first
   // element and removes it from the deque. Each processed certificate is added
   // to |matches_| and |key_locations_for_matches_| if it is selectable
-  // according to KeyPermissionsManager. When all certificates have been
+  // according to KeyPermissionsService. When all certificates have been
   // processed, advances the SignTask state machine to |next_step|.
   void GetKeyLocations(Step next_step) {
     if (matches_pending_key_locations_.empty()) {
@@ -584,7 +584,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
 
     // Use this key if the user can use it for signing or can grant permission
     // for it.
-    if (service_->key_permissions_->CanUserGrantPermissionFor(
+    if (service_->key_permissions_service_->CanUserGrantPermissionFor(
             public_key_spki_der, token_ids) ||
         extension_permissions_->CanUseKeyForSigning(public_key_spki_der,
                                                     token_ids)) {
@@ -704,7 +704,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   const std::string extension_id_;
   const SelectCertificatesCallback callback_;
   content::WebContents* const web_contents_;
-  std::unique_ptr<platform_keys::KeyPermissionsManager::PermissionsForExtension>
+  std::unique_ptr<platform_keys::KeyPermissionsService::PermissionsForExtension>
       extension_permissions_;
   ExtensionPlatformKeysService* const service_;
   base::WeakPtrFactory<SelectTask> weak_factory_{this};
@@ -726,12 +726,11 @@ ExtensionPlatformKeysService::ExtensionPlatformKeysService(
       platform_keys_service_(
           platform_keys::PlatformKeysServiceFactory::GetForBrowserContext(
               browser_context)),
-      key_permissions_(
-          chromeos::platform_keys::KeyPermissionsManagerUserServiceFactory::
-              GetForBrowserContext(browser_context)
-                  ->key_permissions_manager()) {
+      key_permissions_service_(
+          chromeos::platform_keys::KeyPermissionsServiceFactory::
+              GetForBrowserContext(browser_context)) {
   DCHECK(platform_keys_service_);
-  DCHECK(key_permissions_);
+  DCHECK(key_permissions_service_);
   DCHECK(browser_context);
   DCHECK(state_store);
 }

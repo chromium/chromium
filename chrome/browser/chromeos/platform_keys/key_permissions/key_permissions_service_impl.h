@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_MANAGER_IMPL_H_
-#define CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_MANAGER_IMPL_H_
+#ifndef CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_SERVICE_IMPL_H_
+#define CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_SERVICE_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -12,7 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 
 class PrefService;
@@ -32,20 +32,21 @@ class PolicyService;
 namespace chromeos {
 namespace platform_keys {
 
-class KeyPermissionsManagerImpl : public KeyPermissionsManager {
+class KeyPermissionsServiceImpl : public KeyPermissionsService {
  public:
   // Implementation of PermissionsForExtension.
   class PermissionsForExtensionImpl : public PermissionsForExtension {
    public:
-    // |key_permissions| must not be null and outlive this object.
+    // |key_permissions_service| must not be null and outlive this object.
     // Methods of this object refer implicitly to the extension with the id
     // |extension_id|. Don't use this constructor directly. Call
-    // |KeyPermissionsManager::GetPermissionsForExtension| instead.
-    PermissionsForExtensionImpl(const std::string& extension_id,
-                                std::unique_ptr<base::Value> state_store_value,
-                                PrefService* profile_prefs,
-                                policy::PolicyService* profile_policies,
-                                KeyPermissionsManagerImpl* key_permissions);
+    // |KeyPermissionsService::GetPermissionsForExtension| instead.
+    PermissionsForExtensionImpl(
+        const std::string& extension_id,
+        std::unique_ptr<base::Value> state_store_value,
+        PrefService* profile_prefs,
+        policy::PolicyService* profile_policies,
+        KeyPermissionsServiceImpl* key_permissions_service_impl);
 
     PermissionsForExtensionImpl(const PermissionsForExtensionImpl& other) =
         delete;
@@ -89,7 +90,7 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager {
     // returns a new entry.
     // |public_key_spki_der| must be the base64 encoding of the DER of a Subject
     // Public Key Info.
-    KeyPermissionsManagerImpl::PermissionsForExtensionImpl::KeyEntry*
+    KeyPermissionsServiceImpl::PermissionsForExtensionImpl::KeyEntry*
     GetStateStoreEntry(const std::string& public_key_spki_der_b64);
 
     bool PolicyAllowsCorporateKeyUsage() const;
@@ -98,7 +99,7 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager {
     std::vector<KeyEntry> state_store_entries_;
     PrefService* const profile_prefs_;
     policy::PolicyService* const profile_policies_;
-    KeyPermissionsManagerImpl* const key_permissions_;
+    KeyPermissionsServiceImpl* const key_permissions_service_;
   };
 
   // |profile_prefs| and |extensions_state_store| must not be null and must
@@ -107,15 +108,15 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager {
   // |profile_policies| must not be null and must outlive this object.
   // |profile_is_managed| determines the default usage and permissions for
   // keys without explicitly assigned usage.
-  KeyPermissionsManagerImpl(bool profile_is_managed,
+  KeyPermissionsServiceImpl(bool profile_is_managed,
                             PrefService* profile_prefs,
                             policy::PolicyService* profile_policies,
                             extensions::StateStore* extensions_state_store);
 
-  ~KeyPermissionsManagerImpl() override;
+  ~KeyPermissionsServiceImpl() override;
 
-  KeyPermissionsManagerImpl(const KeyPermissionsManagerImpl& other) = delete;
-  KeyPermissionsManagerImpl& operator=(const KeyPermissionsManagerImpl& other) =
+  KeyPermissionsServiceImpl(const KeyPermissionsServiceImpl& other) = delete;
+  KeyPermissionsServiceImpl& operator=(const KeyPermissionsServiceImpl& other) =
       delete;
 
   void GetPermissionsForExtension(const std::string& extension_id,
@@ -160,10 +161,10 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager {
   PrefService* const profile_prefs_;
   policy::PolicyService* const profile_policies_;
   extensions::StateStore* const extensions_state_store_;
-  base::WeakPtrFactory<KeyPermissionsManagerImpl> weak_factory_{this};
+  base::WeakPtrFactory<KeyPermissionsServiceImpl> weak_factory_{this};
 };
 
 }  // namespace platform_keys
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_MANAGER_IMPL_H_
+#endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_SERVICE_IMPL_H_

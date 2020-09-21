@@ -22,9 +22,9 @@
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_metrics.h"
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_test_helpers.h"
 #include "chrome/browser/chromeos/cert_provisioning/mock_cert_provisioning_invalidator.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_user_service.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/mock_key_permissions_manager.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/mock_key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/mock_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
@@ -314,31 +314,6 @@ const std::string& GetPublicKey() {
         .WillOnce(RunOnceCallback<2>(platform_keys::Status::kSuccess)); \
   }
 
-// A fake KeyPermissionsManagerUserService which returns a KeyPermissionsManager
-// pointer passed to its constructor.
-class FakeKeyPermissionsManagerUserService
-    : public platform_keys::KeyPermissionsManagerUserService {
- public:
-  FakeKeyPermissionsManagerUserService(
-      platform_keys::KeyPermissionsManager* key_permissions_manager)
-      : key_permissions_manager_(key_permissions_manager) {}
-  ~FakeKeyPermissionsManagerUserService() override = default;
-
-  platform_keys::KeyPermissionsManager* key_permissions_manager() override {
-    return key_permissions_manager_;
-  }
-
-  static std::unique_ptr<KeyedService> Build(
-      platform_keys::KeyPermissionsManager* key_permissions_manager,
-      content::BrowserContext* browser_context) {
-    return std::make_unique<FakeKeyPermissionsManagerUserService>(
-        key_permissions_manager);
-  }
-
- private:
-  platform_keys::KeyPermissionsManager* key_permissions_manager_;
-};
-
 // A mock for observing the result callback of the worker.
 class CallbackObserver {
  public:
@@ -388,11 +363,13 @@ class CertProvisioningWorkerTest : public ::testing::Test {
     platform_keys::PlatformKeysServiceFactory::GetInstance()
         ->SetDeviceWideServiceForTesting(platform_keys_service_);
 
-    platform_keys::KeyPermissionsManagerUserServiceFactory::GetInstance()
-        ->SetTestingFactory(
-            GetProfile(),
-            base::BindRepeating(&FakeKeyPermissionsManagerUserService::Build,
-                                &key_permissions_manager_));
+    key_permissions_service_ =
+        static_cast<platform_keys::MockKeyPermissionsService*>(
+            platform_keys::KeyPermissionsServiceFactory::GetInstance()
+                ->SetTestingFactoryAndUse(
+                    GetProfile(),
+                    base::BindRepeating(
+                        &platform_keys::BuildMockKeyPermissionsService)));
 
     // Only explicitly expected removals are allowed.
     EXPECT_CALL(*platform_keys_service_, RemoveCertificate).Times(0);
@@ -456,7 +433,7 @@ class CertProvisioningWorkerTest : public ::testing::Test {
 
   policy::MockCloudPolicyClient cloud_policy_client_;
   platform_keys::MockPlatformKeysService* platform_keys_service_ = nullptr;
-  StrictMock<platform_keys::MockKeyPermissionsManager> key_permissions_manager_;
+  platform_keys::MockKeyPermissionsService* key_permissions_service_ = nullptr;
 };
 
 // Checks that the worker makes all necessary requests to other modules during
@@ -501,7 +478,7 @@ TEST_F(CertProvisioningWorkerTest, Success) {
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
-    EXPECT_CALL(key_permissions_manager_,
+    EXPECT_CALL(*key_permissions_service_,
                 SetCorporateKey(GetPublicKey(), platform_keys::TokenId::kUser));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
@@ -577,7 +554,7 @@ TEST_F(CertProvisioningWorkerTest, NoVaSuccess) {
         kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
         /*callback=*/_));
 
-    EXPECT_CALL(key_permissions_manager_,
+    EXPECT_CALL(*key_permissions_service_,
                 SetCorporateKey(GetPublicKey(), platform_keys::TokenId::kUser));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
@@ -659,7 +636,7 @@ TEST_F(CertProvisioningWorkerTest, TryLaterManualRetry) {
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
 
-    // Note: No call to KeyPermissionsManager::SetCorporateKey, because it is
+    // Note: No call to KeyPermissionsService::SetCorporateKey, because it is
     // only performed for platform_keys::TokenId::kUser, but this test works
     // with the system token.
 
@@ -773,7 +750,7 @@ TEST_F(CertProvisioningWorkerTest, TryLaterWait) {
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
 
-    EXPECT_CALL(key_permissions_manager_,
+    EXPECT_CALL(*key_permissions_service_,
                 SetCorporateKey(GetPublicKey(), platform_keys::TokenId::kUser));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
@@ -1075,7 +1052,7 @@ TEST_F(CertProvisioningWorkerTest, RemoveRegisteredKey) {
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
 
-    EXPECT_CALL(key_permissions_manager_,
+    EXPECT_CALL(*key_permissions_service_,
                 SetCorporateKey(GetPublicKey(), platform_keys::TokenId::kUser));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_FAIL(SetAttributeForKey(
@@ -1233,7 +1210,7 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
 
-    EXPECT_CALL(key_permissions_manager_,
+    EXPECT_CALL(*key_permissions_service_,
                 SetCorporateKey(GetPublicKey(), platform_keys::TokenId::kUser));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(

@@ -13,7 +13,7 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -226,7 +226,8 @@ class ExtensionPlatformKeysService : public KeyedService {
 
   content::BrowserContext* const browser_context_ = nullptr;
   platform_keys::PlatformKeysService* const platform_keys_service_ = nullptr;
-  platform_keys::KeyPermissionsManager* const key_permissions_ = nullptr;
+  platform_keys::KeyPermissionsService* const key_permissions_service_ =
+      nullptr;
   std::unique_ptr<SelectDelegate> select_delegate_;
   base::queue<std::unique_ptr<Task>> tasks_;
   base::WeakPtrFactory<ExtensionPlatformKeysService> weak_factory_{this};

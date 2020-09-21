@@ -2,27 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_MOCK_KEY_PERMISSIONS_MANAGER_H_
-#define CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_MOCK_KEY_PERMISSIONS_MANAGER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_MOCK_KEY_PERMISSIONS_SERVICE_H_
+#define CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_MOCK_KEY_PERMISSIONS_SERVICE_H_
 
 #include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "content/public/browser/browser_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+namespace content {
+class BrowserContext;
+}
 
 namespace chromeos {
 namespace platform_keys {
 
-class MockKeyPermissionsManager : public KeyPermissionsManager {
+class MockKeyPermissionsService : public KeyPermissionsService {
  public:
-  MockKeyPermissionsManager();
-  MockKeyPermissionsManager(const MockKeyPermissionsManager&) = delete;
-  MockKeyPermissionsManager& operator=(const MockKeyPermissionsManager&) =
-      delete;
-  ~MockKeyPermissionsManager() override;
+  MockKeyPermissionsService();
+  ~MockKeyPermissionsService() override;
 
   MOCK_METHOD(void,
               GetPermissionsForExtension,
@@ -49,7 +51,10 @@ class MockKeyPermissionsManager : public KeyPermissionsManager {
               (const override));
 };
 
+std::unique_ptr<KeyedService> BuildMockKeyPermissionsService(
+    content::BrowserContext* browser_context);
+
 }  // namespace platform_keys
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_MOCK_KEY_PERMISSIONS_MANAGER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_MOCK_KEY_PERMISSIONS_SERVICE_H_

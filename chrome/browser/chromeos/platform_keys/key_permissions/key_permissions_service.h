@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_MANAGER_H_
-#define CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_MANAGER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_SERVICE_H_
+#define CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_SERVICE_H_
 
 #include <memory>
 #include <string>
@@ -11,10 +11,16 @@
 
 #include "base/callback_forward.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "components/keyed_service/core/keyed_service.h"
 
 namespace chromeos {
 namespace platform_keys {
 
+// This service will be responsible for answering queries regarding platform key
+// permissions with respect to a specific profile.
+//
+// Use KeyPermissionsServiceFactory to retrieve instances of this service.
+//
 // This class manages permissions for extensions to use private keys through
 // chrome.platformKeys or chrome.enterprise.platformKeys .
 // The permission model depends on whether the user account is managed or not.
@@ -52,10 +58,7 @@ namespace platform_keys {
 // certificate authority creates the certificate of the generated key, the
 // generating extension isn't able to use the key anymore except if explicitly
 // permitted by the administrator.
-//
-// For retrieving a profile-specific KeyPermissionsManager, use
-// KeyPermissionsManagerUserServiceFactory.
-class KeyPermissionsManager {
+class KeyPermissionsService : public KeyedService {
  public:
   // Allows querying and modifying permissions and registering keys for a
   // specific extension.
@@ -99,8 +102,8 @@ class KeyPermissionsManager {
         const std::vector<platform_keys::TokenId>& key_locations) = 0;
   };
 
-  KeyPermissionsManager();
-  virtual ~KeyPermissionsManager();
+  KeyPermissionsService();
+  ~KeyPermissionsService() override;
 
   using PermissionsCallback =
       base::Callback<void(std::unique_ptr<PermissionsForExtension>)>;
@@ -135,4 +138,4 @@ class KeyPermissionsManager {
 }  // namespace platform_keys
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_MANAGER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_SERVICE_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_impl.h"
 
 #include <memory>
 
@@ -19,13 +19,13 @@
 namespace chromeos {
 namespace platform_keys {
 
-class KeyPermissionsManagerImplTest : public ::testing::Test {
+class KeyPermissionsServiceImplTest : public ::testing::Test {
  public:
-  KeyPermissionsManagerImplTest() = default;
-  KeyPermissionsManagerImplTest(const KeyPermissionsManagerImplTest&) = delete;
-  KeyPermissionsManagerImplTest& operator=(
-      const KeyPermissionsManagerImplTest&) = delete;
-  ~KeyPermissionsManagerImplTest() override = default;
+  KeyPermissionsServiceImplTest() = default;
+  KeyPermissionsServiceImplTest(const KeyPermissionsServiceImplTest&) = delete;
+  KeyPermissionsServiceImplTest& operator=(
+      const KeyPermissionsServiceImplTest&) = delete;
+  ~KeyPermissionsServiceImplTest() override = default;
 
   void SetUp() override {
     auto mock_policy_service = std::make_unique<policy::MockPolicyService>();
@@ -43,7 +43,7 @@ class KeyPermissionsManagerImplTest : public ::testing::Test {
         /*autoupdate_enabled=*/false);
     extensions_state_store_ = extension_system->state_store();
 
-    key_permissions_manager_ = std::make_unique<KeyPermissionsManagerImpl>(
+    key_permissions_service_ = std::make_unique<KeyPermissionsServiceImpl>(
         /*profile_is_managed=*/true, profile_->GetPrefs(), policy_service_,
         extensions_state_store_);
   }
@@ -56,30 +56,30 @@ class KeyPermissionsManagerImplTest : public ::testing::Test {
   // Owned by |profile_|.
   extensions::StateStore* extensions_state_store_ = nullptr;
 
-  std::unique_ptr<KeyPermissionsManagerImpl> key_permissions_manager_;
+  std::unique_ptr<KeyPermissionsServiceImpl> key_permissions_service_;
 };
 
-TEST_F(KeyPermissionsManagerImplTest, SystemTokenKeyIsImplicitlyCorporate) {
-  EXPECT_TRUE(key_permissions_manager_->IsCorporateKey("some_public_key",
+TEST_F(KeyPermissionsServiceImplTest, SystemTokenKeyIsImplicitlyCorporate) {
+  EXPECT_TRUE(key_permissions_service_->IsCorporateKey("some_public_key",
                                                        {TokenId::kSystem}));
-  EXPECT_TRUE(key_permissions_manager_->IsCorporateKey(
+  EXPECT_TRUE(key_permissions_service_->IsCorporateKey(
       "some_public_key", {TokenId::kUser, TokenId::kSystem}));
 }
 
-TEST_F(KeyPermissionsManagerImplTest, CorporateRoundTrip) {
+TEST_F(KeyPermissionsServiceImplTest, CorporateRoundTrip) {
   // By default, user-token keys are not corporate.
-  EXPECT_FALSE(key_permissions_manager_->IsCorporateKey("some_public_key",
+  EXPECT_FALSE(key_permissions_service_->IsCorporateKey("some_public_key",
                                                         {TokenId::kUser}));
 
-  key_permissions_manager_->SetCorporateKey("some_public_key", TokenId::kUser);
+  key_permissions_service_->SetCorporateKey("some_public_key", TokenId::kUser);
 
-  EXPECT_TRUE(key_permissions_manager_->IsCorporateKey("some_public_key",
+  EXPECT_TRUE(key_permissions_service_->IsCorporateKey("some_public_key",
                                                        {TokenId::kUser}));
 
   // Check that a repeated call doesn't corrupt the stored state.
-  key_permissions_manager_->SetCorporateKey("some_public_key", TokenId::kUser);
+  key_permissions_service_->SetCorporateKey("some_public_key", TokenId::kUser);
 
-  EXPECT_TRUE(key_permissions_manager_->IsCorporateKey("some_public_key",
+  EXPECT_TRUE(key_permissions_service_->IsCorporateKey("some_public_key",
                                                        {TokenId::kUser}));
 }
 

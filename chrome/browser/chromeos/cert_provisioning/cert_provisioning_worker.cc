@@ -16,8 +16,8 @@
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_invalidator.h"
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_metrics.h"
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_serializer.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_user_service.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
@@ -128,9 +128,7 @@ void MarkKeyAsCorporate(CertScope scope,
   }
   DCHECK(profile);
 
-  platform_keys::KeyPermissionsManagerUserServiceFactory::GetForBrowserContext(
-      profile)
-      ->key_permissions_manager()
+  platform_keys::KeyPermissionsServiceFactory::GetForBrowserContext(profile)
       ->SetCorporateKey(public_key_spki_der, GetPlatformKeysTokenId(scope));
 }
 
