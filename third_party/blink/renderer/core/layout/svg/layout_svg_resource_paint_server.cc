@@ -63,6 +63,23 @@ void SVGPaintServer::PrependTransform(const AffineTransform& transform) {
   transform_ = transform * transform_;
 }
 
+static base::Optional<Color> ResolveColor(const ComputedStyle& style,
+                                          const SVGPaint& paint,
+                                          const SVGPaint& visited_paint) {
+  if (!paint.HasColor())
+    return base::nullopt;
+  Color color = style.ResolvedColor(paint.GetColor());
+  if (style.InsideLink() != EInsideLink::kInsideVisitedLink)
+    return color;
+  // FIXME: This code doesn't support the uri component of the visited link
+  // paint, https://bugs.webkit.org/show_bug.cgi?id=70006
+  if (!visited_paint.HasColor())
+    return color;
+  const Color& visited_color = style.ResolvedColor(visited_paint.GetColor());
+  return Color(visited_color.Red(), visited_color.Green(), visited_color.Blue(),
+               color.Alpha());
+}
+
 static SVGPaintDescription RequestPaint(const LayoutObject& object,
                                         const ComputedStyle& style,
                                         LayoutSVGResourceMode mode) {
@@ -74,57 +91,32 @@ static SVGPaintDescription RequestPaint(const LayoutObject& object,
   const SVGPaint& visited_paint = apply_to_fill
                                       ? svg_style.InternalVisitedFillPaint()
                                       : svg_style.InternalVisitedStrokePaint();
+  base::Optional<Color> color = ResolveColor(style, paint, visited_paint);
 
-  // If we have no, ignore it.
-  if (paint.IsNone())
-    return SVGPaintDescription();
-
-  Color color = style.ResolvedColor(paint.GetColor());
-  bool has_color = paint.HasColor();
-
-  if (style.InsideLink() == EInsideLink::kInsideVisitedLink) {
-    // FIXME: This code doesn't support the uri component of the visited link
-    // paint, https://bugs.webkit.org/show_bug.cgi?id=70006
-    if (!visited_paint.HasUrl()) {
-      const Color& visited_color =
-          style.ResolvedColor(visited_paint.GetColor());
-      color = Color(visited_color.Red(), visited_color.Green(),
-                    visited_color.Blue(), color.Alpha());
-      has_color = true;
+  if (paint.HasUrl()) {
+    LayoutSVGResourcePaintServer* uri_resource = nullptr;
+    if (SVGResources* resources =
+            SVGResourcesCache::CachedResourcesForLayoutObject(object))
+      uri_resource = apply_to_fill ? resources->Fill() : resources->Stroke();
+    if (uri_resource) {
+      // The paint server resource exists, though it may be invalid (pattern
+      // with width/height=0). Return the fallback color to our caller so it can
+      // use it, if PreparePaintServer() on the resource container failed.
+      if (color)
+        return SVGPaintDescription(uri_resource, *color);
+      return SVGPaintDescription(uri_resource);
     }
+    // If the requested resource is not available, return the color resource or
+    // 'none'.
   }
 
-  // If the primary resource is just a color, return immediately.
-  if (!paint.HasUrl()) {
-    // |paint.type| will be either <current-color> or <rgb-color> here - both of
-    // which will have a color.
-    DCHECK(has_color);
-    return SVGPaintDescription(color);
-  }
+  // Color or fallback color.
+  if (color)
+    return SVGPaintDescription(*color);
 
-  LayoutSVGResourcePaintServer* uri_resource = nullptr;
-  if (SVGResources* resources =
-          SVGResourcesCache::CachedResourcesForLayoutObject(object))
-    uri_resource = apply_to_fill ? resources->Fill() : resources->Stroke();
-
-  // If the requested resource is not available, return the color resource or
-  // 'none'.
-  if (!uri_resource) {
-    // The fallback is 'none'. (SVG2 say 'none' is implied when no fallback is
-    // specified.)
-    if (!paint.HasFallbackColor() || !has_color)
-      return SVGPaintDescription();
-
-    return SVGPaintDescription(color);
-  }
-
-  // The paint server resource exists, though it may be invalid (pattern with
-  // width/height=0). Return the fallback color to our caller so it can use it,
-  // if preparePaintServer() on the resource container failed.
-  if (has_color)
-    return SVGPaintDescription(uri_resource, color);
-
-  return SVGPaintDescription(uri_resource);
+  // Either 'none' or a 'none' fallback. (SVG2 say 'none' is implied when no
+  // fallback is specified.)
+  return SVGPaintDescription();
 }
 
 SVGPaintServer SVGPaintServer::RequestForLayoutObject(
