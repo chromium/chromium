@@ -1724,7 +1724,7 @@ TEST_P(HotseatWidgetTest, DragActiveWindowInTabletMode) {
 // Tests that when hotseat and drag-window-to-overview features are both
 // enabled, hotseat is not extended after dragging a window to overview, and
 // then activating the window.
-TEST_P(HotseatWidgetTest, ExitingOvervieHidesHotseat) {
+TEST_P(HotseatWidgetTest, ExitingOverviewHidesHotseat) {
   const ShelfAutoHideBehavior auto_hide_behavior = shelf_auto_hide_behavior();
   GetPrimaryShelf()->SetAutoHideBehavior(auto_hide_behavior);
   TabletModeControllerTestApi().EnterTabletMode();
@@ -1745,7 +1745,10 @@ TEST_P(HotseatWidgetTest, ExitingOvervieHidesHotseat) {
   const gfx::Rect bottom_shelf_bounds =
       GetShelfWidget()->GetWindowBoundsInScreen();
   StartScroll(bottom_shelf_bounds.CenterPoint());
-
+  // Ensure swipe goes past the top of the hotseat first to activate the window
+  // drag controller.
+  UpdateScroll(
+      -GetPrimaryShelf()->hotseat_widget()->GetHotseatFullDragAmount());
   // Drag upward, to the center of the screen, and release (this should enter
   // the overview).
   const gfx::Rect display_bounds =
@@ -1796,12 +1799,22 @@ TEST_P(HotseatWidgetTest, FailingOverviewDragResultsInExtendedHotseat) {
       GetShelfWidget()->GetWindowBoundsInScreen();
   StartScroll(bottom_shelf_bounds.top_center());
 
-  // Drag upward, a bit past the hotseat extended height but not enough to go to
-  // overview.
   const int extended_hotseat_distance_from_top_of_shelf =
       ShelfConfig::Get()->hotseat_bottom_padding() +
       GetPrimaryShelf()->hotseat_widget()->GetHotseatSize();
-  UpdateScroll(-extended_hotseat_distance_from_top_of_shelf - 30);
+  // Overview is triggered when the bottom of the dragged window goes past the
+  // top of the hotseat. The window scaling and translation are handled slightly
+  // differently for if the hotseat is extended or not.
+  if (HotseatState::kExtended == GetShelfLayoutManager()->hotseat_state()) {
+    // Drag upward, a bit below the hotseat extended height, to ensure that the
+    // bottom of the dragged window doesn't go past the top of the hotseat, so
+    // that it doesn't go into overview.
+    UpdateScroll(-extended_hotseat_distance_from_top_of_shelf + 20);
+  } else {
+    // Drag upward, a bit past the hotseat extended height so that the window
+    // drag controller is activated, but not enough to go to overview.
+    UpdateScroll(-extended_hotseat_distance_from_top_of_shelf - 30);
+  }
   EndScroll(/*is_fling=*/false, 0.f);
 
   ASSERT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());

@@ -2030,8 +2030,8 @@ void SplitViewController::SetTransformWithAnimation(
 void SplitViewController::UpdateSnappingWindowTransformedBounds(
     aura::Window* window) {
   if (!window->layer()->GetTargetTransform().IsIdentity()) {
-    snapping_window_transformed_bounds_map_[window] =
-        gfx::ToEnclosedRect(GetTransformedBounds(window, /*top_inset=*/0));
+    snapping_window_transformed_bounds_map_[window] = gfx::ToEnclosedRect(
+        window_util::GetTransformedBounds(window, /*top_inset=*/0));
   }
 }
 

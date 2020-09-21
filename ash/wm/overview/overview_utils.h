@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
-#include "ash/wm/window_transient_descendant_iterator.h"
 #include "base/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer_type.h"
@@ -56,19 +55,6 @@ void FadeOutWidgetAndMaybeSlideOnExit(std::unique_ptr<views::Widget> widget,
 
 // Takes ownership of |widget|, closes and destroys it without any animations.
 void ImmediatelyCloseWidgetOnExit(std::unique_ptr<views::Widget> widget);
-
-// Iterates through all the windows in the transient tree associated with
-// |window| that are visible.
-WindowTransientDescendantIteratorRange GetVisibleTransientTreeIterator(
-    aura::Window* window);
-
-// Calculates the bounds of the |transformed_window|. Those bounds are a union
-// of all regular (normal and panel) windows in the |transformed_window|'s
-// transient hierarchy. The returned Rect is in virtual screen coordinates. The
-// returned bounds are adjusted to allow the original |transformed_window|'s
-// header to be hidden if |top_inset| is not zero.
-gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
-                                int top_inset);
 
 // Returns the original target bounds of |window|. The bounds are a union of all
 // regular (normal and panel) windows in the window's transient hierarchy.

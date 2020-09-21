@@ -28,6 +28,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
+#include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/no_destructor.h"
@@ -169,48 +170,10 @@ void ImmediatelyCloseWidgetOnExit(std::unique_ptr<views::Widget> widget) {
   widget.reset();
 }
 
-WindowTransientDescendantIteratorRange GetVisibleTransientTreeIterator(
-    aura::Window* window) {
-  auto hide_predicate = [](aura::Window* window) {
-    return window->GetProperty(kHideInOverviewKey);
-  };
-  return GetTransientTreeIterator(window, base::BindRepeating(hide_predicate));
-}
-
-gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
-                                int top_inset) {
-  gfx::RectF bounds;
-  for (auto* window : GetVisibleTransientTreeIterator(transformed_window)) {
-    // Ignore other window types when computing bounding box of overview target
-    // item.
-    if (window != transformed_window &&
-        window->type() != aura::client::WINDOW_TYPE_NORMAL) {
-      continue;
-    }
-    gfx::RectF window_bounds(window->GetTargetBounds());
-    gfx::Transform new_transform =
-        TransformAboutPivot(gfx::ToRoundedPoint(window_bounds.origin()),
-                            window->layer()->GetTargetTransform());
-    new_transform.TransformRect(&window_bounds);
-
-    // The preview title is shown above the preview window. Hide the window
-    // header for apps or browser windows with no tabs (web apps) to avoid
-    // showing both the window header and the preview title.
-    if (top_inset > 0) {
-      gfx::RectF header_bounds(window_bounds);
-      header_bounds.set_height(top_inset);
-      new_transform.TransformRect(&header_bounds);
-      window_bounds.Inset(0, header_bounds.height(), 0, 0);
-    }
-    ::wm::TranslateRectToScreen(window->parent(), &window_bounds);
-    bounds.Union(window_bounds);
-  }
-  return bounds;
-}
-
 gfx::RectF GetTargetBoundsInScreen(aura::Window* window) {
   gfx::RectF bounds;
-  for (auto* window_iter : GetVisibleTransientTreeIterator(window)) {
+  for (auto* window_iter :
+       window_util::GetVisibleTransientTreeIterator(window)) {
     // Ignore other window types when computing bounding box of overview target
     // item.
     if (window_iter != window &&
@@ -226,7 +189,8 @@ gfx::RectF GetTargetBoundsInScreen(aura::Window* window) {
 
 void SetTransform(aura::Window* window, const gfx::Transform& transform) {
   gfx::PointF target_origin(GetTargetBoundsInScreen(window).origin());
-  for (auto* window_iter : GetVisibleTransientTreeIterator(window)) {
+  for (auto* window_iter :
+       window_util::GetVisibleTransientTreeIterator(window)) {
     aura::Window* parent_window = window_iter->parent();
     gfx::RectF original_bounds(window_iter->GetTargetBounds());
     ::wm::TranslateRectToScreen(parent_window, &original_bounds);

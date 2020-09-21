@@ -3156,7 +3156,10 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingInSplitView) {
   // Longer fling, one that significantly exceeds the distance required to show
   // the hotseat (by 2 hotseat heights).
   StartScroll(shelf_widget_bounds.bottom_left());
-  UpdateScroll(-shelf_size - 3 * hotseat_size - hotseat_padding_size);
+  // Ensure swipe goes past the top of the hotseat first to activate the window
+  // drag controller
+  UpdateScroll(-shelf_size - hotseat_size - hotseat_padding_size - 10);
+  UpdateScroll(-2 * hotseat_size);
   EndScroll(
       true /* is_fling */,
       -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));

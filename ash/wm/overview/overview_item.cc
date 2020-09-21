@@ -36,6 +36,7 @@
 #include "ash/wm/window_preview_view.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
+#include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
@@ -1181,7 +1182,8 @@ void OverviewItem::PerformItemSpawnedAnimation(
   transform_window_.SetOpacity(kInitialScaler);
 
   ScopedOverviewTransformWindow::ScopedAnimationSettings animation_settings;
-  for (auto* window_iter : GetVisibleTransientTreeIterator(window)) {
+  for (auto* window_iter :
+       window_util::GetVisibleTransientTreeIterator(window)) {
     auto settings = std::make_unique<ScopedOverviewAnimationSettings>(
         OVERVIEW_ANIMATION_SPAWN_ITEM_IN_OVERVIEW, window_iter);
     settings->DeferPaint();

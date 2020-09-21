@@ -15,6 +15,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
+#include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_property.h"
@@ -60,12 +61,6 @@ constexpr float kMinYDisplayHeightRatio = 0.125f;
 // window dragging.
 constexpr base::TimeDelta kShowOverviewTimeWhenDragSuspend =
     base::TimeDelta::FromMilliseconds(40);
-
-// The distance for the dragged window to pass over the bottom of the display
-// so that it can be dragged into home launcher or overview. If not pass this
-// value, the window will snap back to its original position.
-constexpr float kReturnToMaximizedDenseThreshold = 152.f;
-constexpr float kReturnToMaximizedStandardThreshold = 164.f;
 
 // The scroll update threshold to restart the show overview timer.
 constexpr float kScrollUpdateOverviewThreshold = 2.f;
@@ -148,16 +143,16 @@ class DragWindowFromShelfController::WindowsHider
 
 // static
 float DragWindowFromShelfController::GetReturnToMaximizedThreshold() {
-  return ShelfConfig::Get()->is_dense() ? kReturnToMaximizedDenseThreshold
-                                        : kReturnToMaximizedStandardThreshold;
+  return Shell::GetPrimaryRootWindowController()
+      ->shelf()
+      ->hotseat_widget()
+      ->GetHotseatFullDragAmount();
 }
 
 DragWindowFromShelfController::DragWindowFromShelfController(
     aura::Window* window,
-    const gfx::PointF& location_in_screen,
-    HotseatState hotseat_state)
-    : window_(window), hotseat_state_(hotseat_state) {
-  DCHECK_NE(hotseat_state, HotseatState::kShownHomeLauncher);
+    const gfx::PointF& location_in_screen)
+    : window_(window) {
   window_->AddObserver(this);
   OnDragStarted(location_in_screen);
 
@@ -227,8 +222,8 @@ void DragWindowFromShelfController::Drag(const gfx::PointF& location_in_screen,
                std::abs(scroll_y) > kScrollUpdateOverviewThreshold) {
       // Otherwise start the |show_overview_timer_| to show and update
       // overview when the dragging slows down or stops. Note if the window is
-      // still being dragged with scroll rate more than kScrollUpdateThreshold,
-      // we restart the show overview timer.
+      // still being dragged with scroll rate more than
+      // kScrollUpdateOverviewThreshold, we restart the show overview timer.
       show_overview_timer_.Start(
           FROM_HERE, kShowOverviewTimeWhenDragSuspend, this,
           &DragWindowFromShelfController::ShowOverviewDuringOrAfterDrag);
@@ -243,6 +238,8 @@ base::Optional<ShelfWindowDragResult> DragWindowFromShelfController::EndDrag(
     base::Optional<float> velocity_y) {
   if (!drag_started_)
     return base::nullopt;
+
+  UpdateDraggedWindow(location_in_screen);
 
   drag_started_ = false;
   previous_location_in_screen_ = location_in_screen;
@@ -451,8 +448,8 @@ void DragWindowFromShelfController::UpdateDraggedWindow(
   // Calculate the window's transform based on the location.
   // For scale, at |initial_location_in_screen_| or bounds.bottom(), the scale
   // is 1.0, and at the |min_y| position of its bounds, it reaches to its
-  // minimum scale 0.2. Calculate the desired scale based on the current y
-  // position.
+  // minimum scale |kMinimumWindowScaleDuringDragging|. Calculate the desired
+  // scale based on the current y position.
   const gfx::Rect display_bounds =
       display::Screen::GetScreen()
           ->GetDisplayNearestPoint(gfx::ToRoundedPoint(location_in_screen))
@@ -470,16 +467,19 @@ void DragWindowFromShelfController::UpdateDraggedWindow(
 
   // Calculate the desired translation so that the dragged window stays under
   // the finger during the dragging.
+  // Since vertical drag doesn't start until after passing the top of the shelf,
+  // the y calculations should be relative to the window bounds instead of
+  // |initial_location_in_screen| (which is on the shelf)
   gfx::Transform transform;
   transform.Translate(
       (location_in_screen.x() - bounds.x()) -
           (initial_location_in_screen_.x() - bounds.x()) * scale,
-      (location_in_screen.y() - bounds.y()) -
-          (initial_location_in_screen_.y() - bounds.y()) * scale);
+      (location_in_screen.y() - bounds.y()) - bounds.height() * scale);
   transform.Scale(scale, scale);
 
-  // The dragged window cannot exceed the top of the display. So calculate the
-  // expected transformed bounds and then adjust the transform if needed.
+  // The dragged window cannot exceed the top or bottom of the display. So
+  // calculate the expected transformed bounds and then adjust the transform if
+  // needed.
   gfx::RectF transformed_bounds(window_->bounds());
   gfx::Transform new_tranform = TransformAboutPivot(
       gfx::ToRoundedPoint(transformed_bounds.origin()), transform);
@@ -488,6 +488,10 @@ void DragWindowFromShelfController::UpdateDraggedWindow(
   if (transformed_bounds.y() < display_bounds.y()) {
     transform.Translate(0,
                         (display_bounds.y() - transformed_bounds.y()) / scale);
+  } else if (transformed_bounds.bottom() > bounds.bottom()) {
+    DCHECK_EQ(1.f, scale);
+    transform.Translate(
+        0, (bounds.bottom() - transformed_bounds.bottom()) / scale);
   }
 
   SetTransform(window_, transform);
@@ -530,26 +534,21 @@ bool DragWindowFromShelfController::ShouldRestoreToOriginalBounds(
       display::Screen::GetScreen()
           ->GetDisplayNearestPoint(gfx::ToRoundedPoint(location_in_screen))
           .bounds();
-  return location_in_screen.y() >
+  gfx::RectF transformed_window_bounds =
+      window_util::GetTransformedBounds(window_, /*top_inset=*/0);
+
+  return transformed_window_bounds.bottom() >
          display_bounds.bottom() - GetReturnToMaximizedThreshold();
 }
 
 bool DragWindowFromShelfController::ShouldGoToHomeScreen(
     const gfx::PointF& location_in_screen,
     base::Optional<float> velocity_y) const {
-  // If the drag ends below the shelf, do not go to home screen (theoratically
+  // If the drag ends below the shelf, do not go to home screen (theoretically
   // it may happen in kExtended hotseat case when drag can start and end below
   // the shelf).
   if (location_in_screen.y() >=
       Shelf::ForWindow(window_)->GetIdealBoundsForWorkAreaCalculation().y()) {
-    return false;
-  }
-
-  // For a hidden hotseat, if the event end position does not exceed
-  // GetReturnToMaximizedThreshold(), it should restore back to the maximized
-  // bounds even though the velocity might be large.
-  if (hotseat_state_ == HotseatState::kHidden &&
-      ShouldRestoreToOriginalBounds(location_in_screen)) {
     return false;
   }
 

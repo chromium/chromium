@@ -474,8 +474,8 @@ void OverviewSession::SelectWindow(OverviewItem* item) {
     // The following instance self-destructs when the window state changed.
     new AsyncWindowStateChangeObserver(
         window, base::BindOnce([](WindowState* window_state) {
-          for (auto* window_iter :
-               GetVisibleTransientTreeIterator(window_state->window())) {
+          for (auto* window_iter : window_util::GetVisibleTransientTreeIterator(
+                   window_state->window())) {
             window_iter->layer()->SetOpacity(1.0);
           }
           wm::ActivateWindow(window_state->window());

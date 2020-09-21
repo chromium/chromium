@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/wm/window_transient_descendant_iterator.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/wm/core/window_util.h"
 
@@ -19,7 +20,8 @@ class Window;
 namespace gfx {
 class Point;
 class Rect;
-}
+class RectF;
+}  // namespace gfx
 
 namespace ash {
 
@@ -125,6 +127,19 @@ ASH_EXPORT bool ShouldMinimizeTopWindowOnBack();
 // Sends |ui::VKEY_BROWSER_BACK| key press and key release event to the
 // WindowTreeHost associated with |root_window|.
 void SendBackKeyEvent(aura::Window* root_window);
+
+// Iterates through all the windows in the transient tree associated with
+// |window| that are visible.
+WindowTransientDescendantIteratorRange GetVisibleTransientTreeIterator(
+    aura::Window* window);
+
+// Calculates the bounds of the |transformed_window|. Those bounds are a union
+// of all regular (normal and panel) windows in the |transformed_window|'s
+// transient hierarchy. The returned Rect is in screen coordinates. The returned
+// bounds are adjusted to allow the original |transformed_window|'s header to be
+// hidden if |top_inset| is not zero.
+gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
+                                int top_inset);
 
 }  // namespace window_util
 }  // namespace ash

@@ -41,6 +41,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/transform_util.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -400,6 +401,45 @@ void SendBackKeyEvent(aura::Window* root_window) {
   ui::KeyEvent release_key_event(ui::ET_KEY_RELEASED, ui::VKEY_BROWSER_BACK,
                                  ui::EF_NONE);
   ignore_result(root_window->GetHost()->SendEventToSink(&release_key_event));
+}
+
+WindowTransientDescendantIteratorRange GetVisibleTransientTreeIterator(
+    aura::Window* window) {
+  auto hide_predicate = [](aura::Window* window) {
+    return window->GetProperty(kHideInOverviewKey);
+  };
+  return GetTransientTreeIterator(window, base::BindRepeating(hide_predicate));
+}
+
+gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
+                                int top_inset) {
+  gfx::RectF bounds;
+  for (auto* window : GetVisibleTransientTreeIterator(transformed_window)) {
+    // Ignore other window types when computing bounding box of overview target
+    // item.
+    if (window != transformed_window &&
+        window->type() != aura::client::WINDOW_TYPE_NORMAL) {
+      continue;
+    }
+    gfx::RectF window_bounds(window->GetTargetBounds());
+    gfx::Transform new_transform =
+        TransformAboutPivot(gfx::ToRoundedPoint(window_bounds.origin()),
+                            window->layer()->GetTargetTransform());
+    new_transform.TransformRect(&window_bounds);
+
+    // The preview title is shown above the preview window. Hide the window
+    // header for apps or browser windows with no tabs (web apps) to avoid
+    // showing both the window header and the preview title.
+    if (top_inset > 0) {
+      gfx::RectF header_bounds(window_bounds);
+      header_bounds.set_height(top_inset);
+      new_transform.TransformRect(&header_bounds);
+      window_bounds.Inset(0, header_bounds.height(), 0, 0);
+    }
+    ::wm::TranslateRectToScreen(window->parent(), &window_bounds);
+    bounds.Union(window_bounds);
+  }
+  return bounds;
 }
 
 }  // namespace window_util
