@@ -121,6 +121,7 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps() {
     infos.at(SystemAppType::CAMERA).enabled_origin_trials =
         OriginTrialsMap({{GetOrigin("chrome://camera-app"),
                           {"FileHandling", "NativeFileSystem2"}}});
+    infos.at(SystemAppType::CAMERA).capture_navigations = true;
   }
 
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::DIAGNOSTICS)) {
