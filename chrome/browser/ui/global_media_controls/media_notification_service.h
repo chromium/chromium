@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -90,6 +91,11 @@ class MediaNotificationService
   // KeyedService implementation.
   void Shutdown() override;
 
+  // Adds a "suppplemental" notification, which should only be shown if there is
+  // no other notification associated with the same web contents.
+  void AddSupplementalNotification(const std::string& id,
+                                   content::WebContents* web_contents);
+
   // Called by the |overlay_media_notifications_manager_| when an overlay
   // notification is closed.
   void OnOverlayNotificationClosed(const std::string& id);
@@ -128,6 +134,9 @@ class MediaNotificationService
   RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
       const std::string& id,
       base::RepeatingCallback<void(bool)> callback);
+
+  void OnPresentationRequestCreated(
+      std::unique_ptr<media_router::StartPresentationContext> context);
 
   void OnStartPresentationContextCreated(
       std::unique_ptr<media_router::StartPresentationContext> context);
@@ -286,6 +295,12 @@ class MediaNotificationService
   base::WeakPtr<media_message_center::MediaNotificationItem>
   GetNotificationItem(const std::string& id);
 
+  // Called after changing anything about a notification to notify any observers
+  // and update the visibility of supplemental notifications.  If the change is
+  // associated with a particular notification ID, that ID should be passed as
+  // the argument, otherwise the argument should be nullptr.
+  void OnNotificationChanged(const std::string* changed_notification_id);
+
   // Looks up a Session object by its ID.  Returns null if not found.
   Session* GetSession(const std::string& id);
 
@@ -319,6 +334,14 @@ class MediaNotificationService
   // sessions are hidden from the dialog until the user interacts with them
   // again (e.g. by playing the session).
   std::unordered_set<std::string> inactive_session_ids_;
+
+  // A mapping of supplemental notification IDs to their associated web
+  // contents.  See MediaNotificationController::AddSupplementalNotification for
+  // a description of supplemental notifications.
+  //
+  // This map should usually have at most one item.
+  base::flat_map<std::string, content::WebContents*>
+      supplemental_notifications_;
 
   // Stores a Session for each media session keyed by its |request_id| in string
   // format.

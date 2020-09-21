@@ -313,6 +313,8 @@ MediaNotificationService::MediaNotificationService(Profile* profile,
             base::BindRepeating(
                 &MediaNotificationService::OnCastNotificationsChanged,
                 base::Unretained(this)));
+    presentation_request_notification_provider_ =
+        std::make_unique<PresentationRequestNotificationProvider>(this);
   }
   if (media_router::GlobalMediaControlsCastStartStopEnabled()) {
     presentation_request_notification_provider_ =
@@ -424,8 +426,7 @@ void MediaNotificationService::OnFocusLost(
       &MediaNotificationService::OnItemUnfrozen, base::Unretained(this), id));
   active_controllable_session_ids_.erase(id);
   frozen_session_ids_.insert(id);
-  for (auto& observer : observers_)
-    observer.OnNotificationListChanged();
+  OnNotificationChanged(&id);
 }
 
 void MediaNotificationService::ShowNotification(const std::string& id) {
@@ -437,9 +438,7 @@ void MediaNotificationService::ShowNotification(const std::string& id) {
   }
 
   active_controllable_session_ids_.insert(id);
-
-  for (auto& observer : observers_)
-    observer.OnNotificationListChanged();
+  OnNotificationChanged(&id);
 
   if (!dialog_delegate_)
     return;
@@ -465,8 +464,7 @@ void MediaNotificationService::HideNotification(const std::string& id) {
     dragged_out_session_ids_.erase(id);
   }
 
-  for (auto& observer : observers_)
-    observer.OnNotificationListChanged();
+  OnNotificationChanged(&id);
 
   if (!dialog_delegate_)
     return;
@@ -483,16 +481,20 @@ void MediaNotificationService::RemoveItem(const std::string& id) {
   active_controllable_session_ids_.erase(id);
   frozen_session_ids_.erase(id);
   inactive_session_ids_.erase(id);
+  supplemental_notifications_.erase(id);
 
   if (base::Contains(dragged_out_session_ids_, id)) {
     overlay_media_notifications_manager_.CloseOverlayNotification(id);
     dragged_out_session_ids_.erase(id);
   }
 
+  // Copy |id| to avoid a dangling reference after the session is deleted.  This
+  // happens when |id| refers to a string owned by the session being removed.
+  const auto id_copy{id};
+
   sessions_.erase(id);
 
-  for (auto& observer : observers_)
-    observer.OnNotificationListChanged();
+  OnNotificationChanged(&id_copy);
 }
 
 void MediaNotificationService::LogMediaSessionActionButtonPressed(
@@ -594,9 +596,7 @@ void MediaNotificationService::OnContainerDraggedOut(const std::string& id,
       id, std::move(overlay_notification));
   active_controllable_session_ids_.erase(id);
   dragged_out_session_ids_.insert(id);
-
-  for (auto& observer : observers_)
-    observer.OnNotificationListChanged();
+  OnNotificationChanged(&id);
 }
 
 void MediaNotificationService::OnAudioSinkChosen(const std::string& id,
@@ -612,6 +612,13 @@ void MediaNotificationService::Shutdown() {
   // is another keyed service.
   cast_notification_provider_.reset();
   presentation_request_notification_provider_.reset();
+}
+
+void MediaNotificationService::AddSupplementalNotification(
+    const std::string& id,
+    content::WebContents* web_contents) {
+  supplemental_notifications_.emplace(id, web_contents);
+  ShowNotification(id);
 }
 
 void MediaNotificationService::OnOverlayNotificationClosed(
@@ -636,8 +643,7 @@ void MediaNotificationService::OnOverlayNotificationClosed(
     active_controllable_session_ids_.insert(id);
   dragged_out_session_ids_.erase(id);
 
-  for (auto& observer : observers_)
-    observer.OnNotificationListChanged();
+  OnNotificationChanged(&id);
 
   // If there's a dialog currently open, then we should show the item in the
   // dialog.
@@ -654,8 +660,7 @@ void MediaNotificationService::OnOverlayNotificationClosed(
 }
 
 void MediaNotificationService::OnCastNotificationsChanged() {
-  for (auto& observer : observers_)
-    observer.OnNotificationListChanged();
+  OnNotificationChanged(nullptr);
 }
 
 void MediaNotificationService::SetDialogDelegate(
@@ -729,8 +734,7 @@ void MediaNotificationService::OnSessionBecameActive(const std::string& id) {
   else
     active_controllable_session_ids_.insert(id);
 
-  for (auto& observer : observers_)
-    observer.OnNotificationListChanged();
+  OnNotificationChanged(&id);
 
   // If there's a dialog currently open, then we should show the item in the
   // dialog.
@@ -810,8 +814,7 @@ void MediaNotificationService::OnItemUnfrozen(const std::string& id) {
   if (!base::Contains(dragged_out_session_ids_, id))
     active_controllable_session_ids_.insert(id);
 
-  for (auto& observer : observers_)
-    observer.OnNotificationListChanged();
+  OnNotificationChanged(&id);
 }
 
 void MediaNotificationService::OnReceivedAudioFocusRequests(
@@ -850,4 +853,35 @@ MediaNotificationService::GetNonSessionNotificationItem(const std::string& id) {
   }
 
   return nullptr;
+}
+
+void MediaNotificationService::OnNotificationChanged(
+    const std::string* changed_notification_id) {
+  for (auto& observer : observers_)
+    observer.OnNotificationListChanged();
+
+  // Avoid re-examining the supplemental notifications as a side-effect or
+  // showing or hiding a supplemental notification.
+  if (!changed_notification_id ||
+      base::Contains(supplemental_notifications_, *changed_notification_id))
+    return;
+
+  // Show or hide supplemental notifications as necessary.
+  for (const auto& pair : supplemental_notifications_) {
+    auto* web_contents = pair.second;
+    const bool should_hide = std::any_of(
+        sessions_.begin(), sessions_.end(),
+        [web_contents, this](const auto& pair) {
+          return pair.second.web_contents() == web_contents &&
+                 base::Contains(active_controllable_session_ids_, pair.first);
+        });
+
+    // If there is an active session associated with the same web contents as
+    // this supplemental notification, hide it; if not, show it.
+    if (should_hide) {
+      HideNotification(pair.first);
+    } else {
+      ShowNotification(pair.first);
+    }
+  }
 }

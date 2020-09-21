@@ -347,6 +347,8 @@ class MediaNotificationServiceTest : public testing::Test {
 
   MockMediaNotificationServiceObserver& observer() { return observer_; }
 
+  MediaNotificationService* service() { return service_.get(); }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   MockMediaNotificationServiceObserver observer_;
@@ -407,6 +409,8 @@ TEST_F(MediaNotificationServiceTest, ShowControllableOnGainAndHideOnLoss) {
   // Ensure that the observer was notification of the frozen notification.
   EXPECT_TRUE(HasFrozenNotifications());
   testing::Mock::VerifyAndClearExpectations(&observer());
+
+  service()->ShowNotification(id.ToString());
 
   // Once the freeze timer fires, we should hide the media session.
   EXPECT_CALL(observer(), OnNotificationListChanged()).Times(AtLeast(1));
