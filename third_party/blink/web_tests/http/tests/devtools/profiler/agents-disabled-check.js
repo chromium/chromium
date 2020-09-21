@@ -22,6 +22,12 @@
     var message = messages[i];
     if (message.startsWith('backend'))
       continue;
+    // Manually remove "Grid" because CSS Grid is still experimental but enabled by default
+    // see: https://crrev.com/c/2416525
+    // TODO: remove this and update test expectations once CSS Grid is non-experimental
+    if (message.includes('setShowGridOverlays')) {
+      continue;
+    }
     message = message.replace(/"id":\d+,/, '"id":<number>,');
     TestRunner.addResult(message);
   }

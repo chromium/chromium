@@ -5,7 +5,6 @@
 (async function() {
   TestRunner.addResult(`Test that the command menu is properly filled.\n`);
 
-
   self.runtime.loadModulePromise('quick_open').then(() => {
     var categories = new Set();
     var commands = new Map();
@@ -13,6 +12,11 @@
       categories.add(command.category());
       commands.set(command.category() + ': ' + command.title(), command);
     });
+
+    // Manually remove "Grid" because CSS Grid is still experimental but enabled by default
+    // see: https://crrev.com/c/2416525
+    // TODO: remove this and update test expectations once CSS Grid is non-experimental
+    categories.delete('Grid');
 
     TestRunner.addResult('Categories active:');
     Array.from(categories).sort().forEach(category => TestRunner.addResult('Has category: ' + category));
