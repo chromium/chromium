@@ -52,6 +52,21 @@ Polymer({
      * @private
      */
     displayString_: String,
+
+    /**
+     * A set of statuses that the entire row is clickable.
+     * @type {!Set<!SafetyCheckSafeBrowsingStatus>}
+     * @private
+     */
+    rowClickableStatuses: {
+      readOnly: true,
+      type: Object,
+      value: () => new Set([
+        SafetyCheckSafeBrowsingStatus.ENABLED_STANDARD,
+        SafetyCheckSafeBrowsingStatus.ENABLED_ENHANCED,
+        SafetyCheckSafeBrowsingStatus.ENABLED_STANDARD_AVAILABLE_ENHANCED,
+      ]),
+    },
   },
 
   /** @private {?MetricsBrowserProxy} */
@@ -120,10 +135,7 @@ Polymer({
         SafetyCheckInteractions.SAFETY_CHECK_SAFE_BROWSING_MANAGE);
     this.metricsBrowserProxy_.recordAction(
         'Settings.SafetyCheck.ManageSafeBrowsing');
-
-    Router.getInstance().navigateTo(
-        routes.SECURITY, /* dynamicParams= */ null,
-        /* removeSearch= */ true);
+    this.openSecurityPage_();
   },
 
   /**
@@ -139,5 +151,30 @@ Polymer({
       default:
         return null;
     }
+  },
+
+  /**
+   * @private
+   * @return {?boolean}
+   */
+  isRowClickable_: function() {
+    return this.rowClickableStatuses.has(this.status_);
+  },
+
+  /** @private */
+  onRowClick_: function() {
+    if (this.isRowClickable_()) {
+      // TODO(crbug.com/1103015): Log action and histogram:
+      // SafetyCheckInteractions.SAFETY_CHECK_SAFE_BROWSING_NAVIGATE
+      // Settings.SafetyCheck.NavigateToSafeBrowsing
+      this.openSecurityPage_();
+    }
+  },
+
+  /** @private */
+  openSecurityPage_: function() {
+    Router.getInstance().navigateTo(
+        routes.SECURITY, /* dynamicParams= */ null,
+        /* removeSearch= */ true);
   },
 });

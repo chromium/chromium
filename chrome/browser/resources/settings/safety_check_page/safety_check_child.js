@@ -62,6 +62,19 @@ Polymer({
     // Classes of the right hand button.
     buttonClass: String,
 
+    // Should the entire row be clickable.
+    rowClickable: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
+    },
+
+    // Is the row directed to external link.
+    external: {
+      type: Boolean,
+      value: false,
+    },
+
     // Right hand managed icon. |null| removes it from the DOM.
     managedIcon: String,
   },
@@ -156,5 +169,14 @@ Polymer({
    */
   showManagedIcon_: function() {
     return !!this.managedIcon;
+  },
+
+  /**
+   * Return the icon to show when the row is clickable.
+   * @return {string}
+   * @private
+   */
+  getRowClickableIcon_() {
+    return this.external ? 'cr:open-in-new' : 'cr:arrow-right';
   },
 });

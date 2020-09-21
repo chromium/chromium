@@ -107,6 +107,7 @@ function fireSafetyCheckChromeCleanerEvent(state) {
  *   buttonAriaLabel: (string|undefined),
  *   buttonClass: (string|undefined),
  *   managedIcon: (boolean|undefined),
+ *   rowClickable: (boolean|undefined),
  * }} destructured1
  */
 function assertSafetyCheckChild({
@@ -116,7 +117,8 @@ function assertSafetyCheckChild({
   buttonLabel,
   buttonAriaLabel,
   buttonClass,
-  managedIcon
+  managedIcon,
+  rowClickable
 }) {
   const safetyCheckChild = page.$$('#safetyCheckChild');
   assertTrue(safetyCheckChild.iconStatus === iconStatus);
@@ -127,6 +129,7 @@ function assertSafetyCheckChild({
       !buttonAriaLabel || safetyCheckChild.buttonAriaLabel === buttonAriaLabel);
   assertTrue(!buttonClass || safetyCheckChild.buttonClass === buttonClass);
   assertTrue(!!managedIcon === !!safetyCheckChild.managedIcon);
+  assertTrue(!!rowClickable === !!safetyCheckChild.rowClickable);
 }
 
 /** @implements {SafetyCheckBrowserProxy} */
@@ -370,6 +373,30 @@ suite('SafetyCheckChildTests', function() {
     // Managed icon not set -> no managed icon.
     assertFalse(!!page.$$('#managedIcon'));
   });
+
+  test('testRowClickableIndicator', function() {
+    page.rowClickable = true;
+    flush();
+    assertTrue(!!page.$$('#rowClickableIndicator'));
+    assertEquals(
+        'cr:arrow-right',
+        page.$$('#rowClickableIndicator').getAttribute('iron-icon'));
+  });
+
+  test('testExternalRowClickableIndicator', function() {
+    page.rowClickable = true;
+    page.external = true;
+    flush();
+    assertTrue(!!page.$$('#rowClickableIndicator'));
+    assertEquals(
+        'cr:open-in-new',
+        page.$$('#rowClickableIndicator').getAttribute('iron-icon'));
+  });
+
+  test('testNoRowClickableIndicator', function() {
+    // rowClickable not set -> no RowClickableIndicator.
+    assertFalse(!!page.$$('#rowClickableIndicator'));
+  });
 });
 
 suite('SafetyCheckUpdatesChildUiTests', function() {
@@ -517,6 +544,7 @@ suite('SafetyCheckPasswordsChildUiTests', function() {
 
   teardown(function() {
     page.remove();
+    Router.getInstance().navigateTo(routes.BASIC);
   });
 
   test('passwordCheckingUiTest', function() {
@@ -536,7 +564,14 @@ suite('SafetyCheckPasswordsChildUiTests', function() {
       page: page,
       iconStatus: SafetyCheckIconStatus.SAFE,
       label: 'Passwords',
+      rowClickable: true,
     });
+
+    // User clicks the row.
+    page.$$('#safetyCheckChild').click();
+    // Ensure the correct Settings page is shown.
+    assertEquals(
+        routes.CHECK_PASSWORDS, Router.getInstance().getCurrentRoute());
   });
 
   test('passwordCompromisedUiTest', async function() {
@@ -586,13 +621,20 @@ suite('SafetyCheckPasswordsChildUiTests', function() {
         case SafetyCheckPasswordsStatus.OFFLINE:
         case SafetyCheckPasswordsStatus.NO_PASSWORDS:
         case SafetyCheckPasswordsStatus.SIGNED_OUT:
-        case SafetyCheckPasswordsStatus.QUOTA_LIMIT:
-        case SafetyCheckPasswordsStatus.ERROR:
         case SafetyCheckPasswordsStatus.FEATURE_UNAVAILABLE:
           assertSafetyCheckChild({
             page: page,
             iconStatus: SafetyCheckIconStatus.INFO,
             label: 'Passwords',
+          });
+          break;
+        case SafetyCheckPasswordsStatus.QUOTA_LIMIT:
+        case SafetyCheckPasswordsStatus.ERROR:
+          assertSafetyCheckChild({
+            page: page,
+            iconStatus: SafetyCheckIconStatus.INFO,
+            label: 'Passwords',
+            rowClickable: true,
           });
           break;
         default:
@@ -623,6 +665,7 @@ suite('SafetyCheckSafeBrowsingChildUiTests', function() {
 
   teardown(function() {
     page.remove();
+    Router.getInstance().navigateTo(routes.BASIC);
   });
 
   test('safeBrowsingCheckingUiTest', function() {
@@ -643,7 +686,13 @@ suite('SafetyCheckSafeBrowsingChildUiTests', function() {
       page: page,
       iconStatus: SafetyCheckIconStatus.SAFE,
       label: 'Safe Browsing',
+      rowClickable: true,
     });
+
+    // User clicks the row.
+    page.$$('#safetyCheckChild').click();
+    // Ensure the correct Settings page is shown.
+    assertEquals(routes.SECURITY, Router.getInstance().getCurrentRoute());
   });
 
   test('safeBrowsingEnabledStandardAvailableEnhancedUiTest', function() {
@@ -654,6 +703,7 @@ suite('SafetyCheckSafeBrowsingChildUiTests', function() {
       page: page,
       iconStatus: SafetyCheckIconStatus.SAFE,
       label: 'Safe Browsing',
+      rowClickable: true,
     });
   });
 
@@ -665,6 +715,7 @@ suite('SafetyCheckSafeBrowsingChildUiTests', function() {
       page: page,
       iconStatus: SafetyCheckIconStatus.SAFE,
       label: 'Safe Browsing',
+      rowClickable: true,
     });
   });
 
@@ -780,10 +831,11 @@ suite('SafetyCheckExtensionsChildUiTests', function() {
       page: page,
       iconStatus: SafetyCheckIconStatus.INFO,
       label: 'Extensions',
+      rowClickable: true,
     });
   });
 
-  test('extensionsSafeUiTest', function() {
+  test('extensionsSafeUiTest', async function() {
     fireSafetyCheckExtensionsEvent(
         SafetyCheckExtensionsStatus.NO_BLOCKLISTED_EXTENSIONS);
     flush();
@@ -791,7 +843,14 @@ suite('SafetyCheckExtensionsChildUiTests', function() {
       page: page,
       iconStatus: SafetyCheckIconStatus.SAFE,
       label: 'Extensions',
+      rowClickable: true,
     });
+
+    // User clicks the row.
+    page.$$('#safetyCheckChild').click();
+    // Ensure the browser proxy call is done.
+    const url = await openWindowProxy.whenCalled('openURL');
+    assertEquals('chrome://extensions', url);
   });
 
   test('extensionsBlocklistedOffUiTest', function() {

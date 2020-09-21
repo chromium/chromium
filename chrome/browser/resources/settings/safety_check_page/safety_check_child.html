@@ -1,4 +1,8 @@
 <style include="cr-shared-style settings-shared iron-flex">
+  :host([row-clickable]) .cr-row {
+    cursor: pointer;
+  }
+
   iron-icon {
     display: flex;
     flex-shrink: 0;
@@ -45,6 +49,13 @@
         aria-label="[[buttonAriaLabel]]" no-search>
       [[buttonLabel]]
     </cr-button>
+  </template>
+  <template is="dom-if" if="[[rowClickable]]">
+    <cr-icon-button id="rowClickableIndicator"
+        iron-icon="[[getRowClickableIcon_(external)]]"
+        aria-describedby="subLabel"
+        aria-labelledby="label">
+    </cr-icon-button>
   </template>
   <template is="dom-if" if="[[showManagedIcon_(managedIcon)]]" restamp>
     <iron-icon id="managedIcon" icon="[[managedIcon]]" aria-hidden="true">

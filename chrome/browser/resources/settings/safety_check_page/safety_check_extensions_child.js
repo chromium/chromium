@@ -51,6 +51,20 @@ Polymer({
      * @private
      */
     displayString_: String,
+
+    /**
+     * A set of statuses that the entire row is clickable.
+     * @type {!Set<!SafetyCheckExtensionsStatus>}
+     * @private
+     */
+    rowClickableStatuses: {
+      readOnly: true,
+      type: Object,
+      value: () => new Set([
+        SafetyCheckExtensionsStatus.NO_BLOCKLISTED_EXTENSIONS,
+        SafetyCheckExtensionsStatus.ERROR,
+      ]),
+    },
   },
 
   /** @private {?MetricsBrowserProxy} */
@@ -133,8 +147,7 @@ Polymer({
         SafetyCheckInteractions.SAFETY_CHECK_EXTENSIONS_REVIEW);
     this.metricsBrowserProxy_.recordAction(
         'Settings.SafetyCheck.ReviewExtensions');
-
-    OpenWindowProxyImpl.getInstance().openURL('chrome://extensions');
+    this.openExtensionsPage_();
   },
 
   /**
@@ -148,5 +161,28 @@ Polymer({
       default:
         return null;
     }
+  },
+
+  /**
+   * @private
+   * @return {?boolean}
+   */
+  isRowClickable_: function() {
+    return this.rowClickableStatuses.has(this.status_);
+  },
+
+  /** @private */
+  onRowClick_: function() {
+    if (this.isRowClickable_()) {
+      // TODO(crbug.com/1103015): Log action and histogram:
+      // SafetyCheckInteractions.SAFETY_CHECK_EXTENSIONS_NAVIGATE
+      // Settings.SafetyCheck.NavigateToExtensions
+      this.openExtensionsPage_();
+    }
+  },
+
+  /** @private */
+  openExtensionsPage_: function() {
+    OpenWindowProxyImpl.getInstance().openURL('chrome://extensions');
   },
 });
