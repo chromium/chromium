@@ -82363,17 +82363,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>olka@chromium.org</owner>
   <summary>
     A rough estimate of the private memory footprint of the audio service
-    process. Recorded once per UMA ping.
+    process.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram name="Memory.AudioService.PrivateSwapFootprint" units="MB"
-    expires_after="2021-07-02">
+    expires_after="2022-01-10">
   <owner>olka@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <summary>
     An amount of private memory of the audio service process placed in swap
-    (VmSwap). Available only on Android and Linux.
+    (VmSwap).
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -82386,18 +82392,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The size of the resident memory in a audio service process. This is
     influenced by factors we control (e.g. memory that is not accessed can be
     swapped) and factors we don't control (e.g. an unrelated process using a lot
-    of memory can force memory in our process to be swapped). Recorded once per
-    UMA ping on Windows/Linux/ChromeOS/Android.
+    of memory can force memory in our process to be swapped). Recorded once on
+    Windows/Linux/ChromeOS/Android.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram name="Memory.AudioService.SharedMemoryFootprint" units="MB"
-    expires_after="2021-07-02">
+    expires_after="2022-01-10">
   <owner>olka@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <summary>
     A rough estimate of the shared memory footprint of the audio service
-    process. Recorded once per UMA ping.
+    process.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -82705,7 +82717,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
     A rough estimate of the private memory footprint of the browser process.
-    Recorded once per UMA ping.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
 
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
@@ -82713,12 +82727,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Browser.PrivateSwapFootprint" units="MB"
-    expires_after="2021-02-14">
+    expires_after="2022-01-10">
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
     An amount of private memory of the browser process placed in swap (VmSwap).
-    Available only on Android and Linux.
+    Available on Android, Linux and ChromeOS.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -82730,17 +82747,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The size of the resident memory in the browser process. This is influenced
     by factors we control (e.g. memory that is not accessed can be swapped) and
     factors we don't control (e.g. an unrelated process using a lot of memory
-    can force memory in our process to be swapped). Recorded once per UMA ping
-    on Windows/Linux/ChromeOS/Android.
+    can force memory in our process to be swapped). Recorded on
+    Windows/Linux/ChromeOS/Android.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram name="Memory.Browser.SharedMemoryFootprint" units="MB"
-    expires_after="2021-02-14">
+    expires_after="2022-01-10">
   <owner>erikchen@chromium.org</owner>
   <summary>
     A rough estimate of the shared memory footprint of the browser process.
-    Recorded once per UMA ping.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -82970,7 +82992,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Browser2" units="MB"
-    expires_after="2020-10-11">
+    expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocator2" -->
 
   <owner>erikchen@chromium.org</owner>
@@ -82978,23 +83000,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The browser process's memory usage reported by the memory instrumentation
     service in MB.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Browser2.Custom" units="bytes"
-    expires_after="2021-03-07">
+    expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorCustom2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <summary>
     The browser process's memory usage reported by the memory instrumentation
     service in bytes.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Browser2.Small" units="KB"
-    expires_after="2021-01-24">
+    expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorSmall2" -->
 
   <owner>erikchen@chromium.org</owner>
@@ -83002,18 +83032,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The browser process's memory usage reported by the memory instrumentation
     service in KB.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Browser2.Tiny" units="bytes"
-    expires_after="2020-12-31">
+    expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorTiny2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <summary>
     The browser process's memory usage reported by the memory instrumentation
     service in bytes.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -83093,7 +83131,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Extension2" units="MB"
-    expires_after="2020-10-11">
+    expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocator2" -->
 
   <owner>erikchen@chromium.org</owner>
@@ -83101,23 +83139,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The extension process's memory usage reported by the memory instrumentation
     service in MB.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Extension2.Custom"
-    units="bytes" expires_after="2020-12-31">
+    units="bytes" expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorCustom2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <summary>
     The extension process's memory usage reported by the memory instrumentation
     service in bytes.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Extension2.Small" units="KB"
-    expires_after="2021-02-14">
+    expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorSmall2" -->
 
   <owner>erikchen@chromium.org</owner>
@@ -83125,18 +83171,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The extension process's memory usage reported by the memory instrumentation
     service in KB.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Extension2.Tiny" units="bytes"
-    expires_after="2020-12-31">
+    expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorTiny2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <summary>
     The extension process's memory usage reported by the memory instrumentation
     service in bytes.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -83147,7 +83201,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The physical footprint of the GPU process on macOS. Other measurements fail
     to correctly account for OpenGL memory usage. This metric also has flaws and
     is not intended for permanent use. It's an emergency measure added to help
-    debug https://crbug.com/713854. Recorded once per UMA ping.
+    debug https://crbug.com/713854.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -83163,7 +83220,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Gpu2" units="MB"
-    expires_after="2020-10-11">
+    expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocator2" -->
 
   <owner>erikchen@chromium.org</owner>
@@ -83171,23 +83228,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The gpu process's memory usage reported by the memory instrumentation
     service in MB.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Gpu2.Custom" units="bytes"
-    expires_after="2021-03-07">
+    expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorCustom2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <summary>
     The gpu process's memory usage reported by the memory instrumentation
     service in bytes.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Gpu2.Small" units="KB"
-    expires_after="2020-12-31">
+    expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorSmall2" -->
 
   <owner>erikchen@chromium.org</owner>
@@ -83195,18 +83260,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The gpu process's memory usage reported by the memory instrumentation
     service in KB.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Gpu2.Tiny" units="bytes"
-    expires_after="2020-12-31">
+    expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorTiny2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <summary>
     The gpu process's memory usage reported by the memory instrumentation
     service in bytes.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -83224,50 +83297,70 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.NetworkService2" units="MiB"
-    expires_after="2020-10-11">
+    expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocator2" -->
 
   <owner>mmenke@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <summary>
     The network service process's memory usage reported by the memory
-    instrumentation service in MiB. Recorded once per UMA ping.
+    instrumentation service in MiB.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.NetworkService2.Custom"
-    units="bytes" expires_after="2020-12-31">
+    units="bytes" expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorCustom2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <summary>
     The network service process's memory usage reported by the memory
-    instrumentation service in bytes. Recorded once per UMA ping.
+    instrumentation service in bytes.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.NetworkService2.Small"
-    units="KiB" expires_after="2020-10-11">
+    units="KiB" expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorSmall2" -->
 
   <owner>mmenke@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <summary>
     The network service process's memory usage reported by the memory
-    instrumentation service in KiB. Recorded once per UMA ping.
+    instrumentation service in KiB.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.NetworkService2.Tiny"
-    units="bytes" expires_after="2020-12-31">
+    units="bytes" expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorTiny2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <summary>
     The network service process's memory usage reported by the memory
-    instrumentation service in bytes. Recorded once per UMA ping.
+    instrumentation service in bytes.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -83821,7 +83914,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Renderer2" units="MB"
-    expires_after="2021-02-14">
+    expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocator2" -->
 
   <owner>erikchen@chromium.org</owner>
@@ -83829,23 +83922,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The renderer process's memory usage reported by the memory instrumentation
     service in MB.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Renderer2.Custom"
-    units="bytes" expires_after="2020-12-31">
+    units="bytes" expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorCustom2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <summary>
     The renderer process's memory usage reported by the memory instrumentation
     service in bytes.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Renderer2.Small" units="KB"
-    expires_after="2021-02-14">
+    expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorSmall2" -->
 
   <owner>erikchen@chromium.org</owner>
@@ -83853,18 +83954,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The renderer process's memory usage reported by the memory instrumentation
     service in KB.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Renderer2.Tiny" units="bytes"
-    expires_after="2020-12-31">
+    expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorTiny2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <summary>
     The renderer process's memory usage reported by the memory instrumentation
     service in bytes.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -83910,11 +84019,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Experimental.Total2.PrivateMemoryFootprint" units="MB"
-    expires_after="2021-02-14">
+    expires_after="2022-01-10">
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
     A rough estimate of the private memory footprint of all processes.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -83941,50 +84053,66 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Utility2" units="MB"
-    expires_after="2020-12-31">
+    expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocator2" -->
 
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
     The utility process's memory usage reported by the memory instrumentation
-    service in MB. Recorded once per UMA ping for each process.
+    service in MB.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Utility2.Custom" units="bytes"
-    expires_after="2020-12-31">
+    expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorCustom2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <summary>
     The utility process's memory usage reported by the memory instrumentation
-    service in bytes. Recorded once per UMA ping for each process.
+    service in bytes.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Utility2.Small" units="KB"
-    expires_after="2020-12-31">
+    expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorSmall2" -->
 
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
     The utility process's memory usage reported by the memory instrumentation
-    service in KB. Recorded once per UMA ping for each process.
+    service in KB.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Utility2.Tiny" units="bytes"
-    expires_after="2020-12-31">
+    expires_after="2022-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorTiny2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <summary>
     The utility process's memory usage reported by the memory instrumentation
-    service in bytes. Recorded once per UMA ping for each process.
+    service in bytes.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -84120,7 +84248,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>ssid@chromium.org</owner>
   <summary>
     A rough estimate of the private memory footprint of the extension process.
-    Recorded once per process per UMA ping.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -84133,8 +84263,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The size of the resident memory in an extension process. This is influenced
     by factors we control (e.g. memory that is not accessed can be swapped) and
     factors we don't control (e.g. an unrelated process using a lot of memory
-    can force memory in our process to be swapped). Recorded once per UMA ping
-    on Windows/Linux/ChromeOS/Android.
+    can force memory in our process to be swapped). Recorded on
+    Windows/Linux/ChromeOS.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -84144,7 +84277,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>ssid@chromium.org</owner>
   <summary>
     A rough estimate of the shared memory footprint of the extension process.
-    Recorded once per process per UMA ping.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -84236,7 +84371,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
     A rough estimate of the private memory footprint of the gpu process.
-    Recorded once per UMA ping.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
 
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
@@ -84249,7 +84386,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>ssid@chromium.org</owner>
   <summary>
     An amount of private memory of the GPU process placed in swap (VmSwap).
-    Available only on Android and Linux.
+    Available on Android, Linux and ChromeOS.
   </summary>
 </histogram>
 
@@ -84261,18 +84398,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The size of the resident memory in the GPU process. This is influenced by
     factors we control (e.g. memory that is not accessed can be swapped) and
     factors we don't control (e.g. an unrelated process using a lot of memory
-    can force memory in our process to be swapped). Recorded once per UMA ping
-    on Windows/Linux/ChromeOS/Android.
+    can force memory in our process to be swapped). Recorded on
+    Windows/Linux/ChromeOS/Android.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram name="Memory.Gpu.SharedMemoryFootprint" units="MB"
-    expires_after="2021-02-14">
+    expires_after="2022-01-10">
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
-    A rough estimate of the shared memory footprint of the gpu process. Recorded
-    once per UMA ping.
+    A rough estimate of the shared memory footprint of the gpu process.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -84395,7 +84537,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The size of the resident memory for the native library code across all
     processes. This metric is computed by parsing proc/self/pagemap and counting
     native library pages that are mapped and present in RAM for at least one
-    Chrome process. Recorded once per UMA ping. Available only on Android.
+    Chrome process.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -84408,8 +84553,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Result of an attempt to read /proc/self/pagemap when determining the amount
     of resident memory mapped by the current process. Reading the file is
     performed as part of computing the
-    Memory.NativeLibrary.MappedAndResidentMemoryFootprint2 histogram. Recorded
-    once per UMA ping. Available only on Android.
+    Memory.NativeLibrary.MappedAndResidentMemoryFootprint2 histogram. Available
+    only on Android.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -84420,8 +84568,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The size of the native library code which was ordered, yet is not resident
     in memory, across all processes. This metric is computed by parsing
     proc/self/pagemap and counting native library pages that are mapped and
-    present in RAM for at least one Chrome process. Recorded once per UMA ping.
-    Available only on Android.
+    present in RAM for at least one Chrome process. Available only on Android.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -84432,28 +84582,43 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The size of the native library code which is outside the ordered section,
     yet is resident in memory, across all processes. This metric is computed by
     parsing proc/self/pagemap and counting native library pages that are mapped
-    and present in RAM for at least one Chrome process. Recorded once per UMA
-    ping. Available only on Android.
+    and present in RAM for at least one Chrome process. Available only on
+    Android.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram name="Memory.NetworkService.PrivateMemoryFootprint" units="MiB"
-    expires_after="2021-02-14">
+    expires_after="2022-01-10">
   <owner>mmenke@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <summary>
     A rough estimate of the private memory footprint of the network service
-    process. Recorded once per UMA ping.
+    process.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram name="Memory.NetworkService.PrivateSwapFootprint" units="MiB"
-    expires_after="2020-05-06">
+    expires_after="2022-01-10">
   <owner>mmenke@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <summary>
     An amount of private memory of the network service process placed in swap
-    (VmSwap). Available only on Android and Linux.
+    (VmSwap). Available on Android, Linux and ChromeOS.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
+
+    Note: Histogram data may be missing for mid-2020 due to expiry.
   </summary>
 </histogram>
 
@@ -84461,22 +84626,34 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2020-05-06">
   <owner>mmenke@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <summary>
     The size of the resident memory in a network service process. This is
     influenced by factors we control (e.g. memory that is not accessed can be
     swapped) and factors we don't control (e.g. an unrelated process using a lot
-    of memory can force memory in our process to be swapped). Recorded once per
-    UMA ping on Windows/Linux/ChromeOS/Android.
+    of memory can force memory in our process to be swapped). Recorded on
+    Windows/Linux/ChromeOS/Android.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram name="Memory.NetworkService.SharedMemoryFootprint" units="MiB"
-    expires_after="2020-05-06">
+    expires_after="2022-01-10">
   <owner>mmenke@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <summary>
     A rough estimate of the shared memory footprint of the network service
-    process. Recorded once per UMA ping.
+    process.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
+
+    Note: Histogram data may be missing for mid-2020 due to expiry.
   </summary>
 </histogram>
 
@@ -85022,11 +85199,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ProcessCount" units="processes"
-    expires_after="2021-02-14">
+    expires_after="2022-01-10">
   <owner>creis@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
   <summary>
-    The count of all active processes. Recorded once per UMA ping.
+    The count of all active processes.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -85110,7 +85290,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
     A rough estimate of the private memory footprint of the renderer process.
-    Recorded once per process per UMA ping.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
 
     Do not modify this metric in any way without contacting
     speed-metrics-dev@chromium.org AND chrome-analysis-team@google.com.
@@ -85125,18 +85307,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The size of the resident memory in a renderer process. This is influenced by
     factors we control (e.g. memory that is not accessed can be swapped) and
     factors we don't control (e.g. an unrelated process using a lot of memory
-    can force memory in our process to be swapped). Recorded once per UMA ping
-    on Windows/Linux/ChromeOS/Android.
+    can force memory in our process to be swapped). Recorded on
+    Windows/Linux/ChromeOS/Android.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram name="Memory.Renderer.SharedMemoryFootprint" units="MB"
-    expires_after="2021-02-14">
+    expires_after="2022-01-10">
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
     A rough estimate of the shared memory footprint of the renderer process.
-    Recorded once per process per UMA ping.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -85199,8 +85386,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>creis@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
   <summary>
-    The count of active renderer processes. Recorded once per UMA ping. Excludes
-    renderers hosting chrome-extension:// and/or chrome:// URLs.
+    The count of active renderer processes. Excludes renderers hosting
+    chrome-extension:// and/or chrome:// URLs.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
 
     Computed based on OS data.
 
@@ -85232,16 +85422,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.RenderProcessHost.Count.All" units="processes"
-    expires_after="2021-02-14">
+    expires_after="2022-01-10">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
   <summary>
-    The count of all renderer processes. Recorded once per UMA ping. Covers all
-    renderer processes, including ones hosting web content (i.e. http(s)://
-    and/or file://), extensions (i.e. chrome-extension://) and WebUI (i.e.
-    chrome://).
+    The count of all renderer processes. Covers all renderer processes,
+    including ones hosting web content (i.e. http(s):// and/or file://),
+    extensions (i.e. chrome-extension://) and WebUI (i.e. chrome://).
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
 
     Computed based on count of RenderProcessHost objects, even if 1) they have
     not been launched yet (e.g. during session restore) or 2) they are dead
@@ -85260,6 +85452,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     all renderer processes, including ones hosting web content (i.e. http(s)://
     and/or file://), extensions (i.e. chrome-extension://) and WebUI (i.e.
     chrome://).
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
 
     Computed based on count of RenderProcessHost objects that are
     IsInitializedAndNotDead (i.e. have been launched and not terminated yet).
@@ -85792,8 +85987,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>ssid@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
-    A rough estimate of the private memory footprint of all processes. Recorded
-    once per UMA ping.
+    A rough estimate of the private memory footprint of all processes.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
 
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
@@ -85801,11 +85998,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Total.RendererPrivateMemoryFootprint" units="MB"
-    expires_after="2021-02-14">
+    expires_after="2022-01-10">
   <owner>tommckee@chromium.org</owner>
   <summary>
     A rough estimate of the private memory footprint of all renderer processes.
-    Recorded once per UMA ping.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -85817,8 +86016,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The size of the resident memory in all processes. This is influenced by
     factors we control (e.g. memory that is not accessed can be swapped) and
     factors we don't control (e.g. an unrelated process using a lot of memory
-    can force memory in our process to be swapped). Recorded once per UMA ping
-    on Windows/Linux/ChromeOS/Android.
+    can force memory in our process to be swapped). Recorded on
+    Windows/Linux/ChromeOS/Android.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
 
     Note: This metric is a simple sum of the resident set of all processes and
     this cause some double accounting for the shared portion of the working set.
@@ -85828,12 +86030,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Total.SharedMemoryFootprint" units="MB"
-    expires_after="2021-02-14">
+    expires_after="2022-01-10">
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
-    A rough estimate of the shared memory footprint of all processes. Recorded
-    once per UMA ping.
+    A rough estimate of the shared memory footprint of all processes.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -85882,16 +86086,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>jam@chromium.org</owner>
   <summary>
     A rough estimate of the private memory footprint of the utility process.
-    Recorded once per process per UMA ping.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram name="Memory.Utility.PrivateSwapFootprint" units="MB"
-    expires_after="M82">
+    expires_after="2022-01-10">
   <owner>jam@chromium.org</owner>
   <summary>
     An amount of private memory of the utility process placed in swap (VmSwap).
-    Available only on Android and Linux.
+    Available on Android, Linux and ChromeOS.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
+
+    Note: Histogram data may be missing for mid-2020 due to expiry.
   </summary>
 </histogram>
 
@@ -85903,17 +86114,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The size of the resident memory in a utility process. This is influenced by
     factors we control (e.g. memory that is not accessed can be swapped) and
     factors we don't control (e.g. an unrelated process using a lot of memory
-    can force memory in our process to be swapped). Recorded once per UMA ping
-    on Windows/Linux/ChromeOS/Android.
+    can force memory in our process to be swapped). Recorded on
+    Windows/Linux/ChromeOS/Android.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
 <histogram name="Memory.Utility.SharedMemoryFootprint" units="MB"
-    expires_after="M77">
+    expires_after="2022-01-10">
   <owner>jam@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <summary>
     A rough estimate of the shared memory footprint of the utility process.
-    Recorded once per process per UMA ping.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
+
+    Note: Histogram data may be missing between M77 to M87 due to expiry.
   </summary>
 </histogram>
 
