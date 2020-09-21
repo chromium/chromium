@@ -259,8 +259,12 @@ MediaStreamTrack::MediaStreamTrack(ExecutionContext* context,
     image_capture_ = MakeGarbageCollected<ImageCapture>(
         context, this, pan_tilt_zoom_allowed, std::move(callback));
   } else {
-    execution_context_->GetTaskRunner(TaskType::kInternalMedia)
-        ->PostTask(FROM_HERE, std::move(callback));
+    if (execution_context_) {
+      execution_context_->GetTaskRunner(TaskType::kInternalMedia)
+          ->PostTask(FROM_HERE, std::move(callback));
+    } else {
+      std::move(callback).Run();
+    }
   }
 
   // Note that both 'live' and 'muted' correspond to a 'live' ready state in the
