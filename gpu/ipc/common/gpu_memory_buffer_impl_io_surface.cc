@@ -24,13 +24,20 @@ uint32_t LockFlags(gfx::BufferUsage usage) {
   switch (usage) {
     case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:
       return kIOSurfaceLockAvoidSync;
+    case gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE:
+      // This constant is used for buffers used by video capture. On macOS,
+      // these buffers are only ever written to in the capture process,
+      // directly as IOSurfaces. Once they are sent to other processes, no CPU
+      // writes are performed.
+      // TODO(https://crbug.com/1130101): A more accurate usage constant may be
+      // appropriate.
+      return kIOSurfaceLockReadOnly;
     case gfx::BufferUsage::GPU_READ:
     case gfx::BufferUsage::SCANOUT:
     case gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE:
     case gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE:
     case gfx::BufferUsage::SCANOUT_CPU_READ_WRITE:
     case gfx::BufferUsage::SCANOUT_VDA_WRITE:
-    case gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE:
       return 0;
   }
   NOTREACHED();
