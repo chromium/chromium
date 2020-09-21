@@ -3744,14 +3744,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxOnFocusSuggestionsContextualWebDescription,
      kOsAll, FEATURE_VALUE_TYPE(omnibox::kOnFocusSuggestionsContextualWeb)},
 
-    {"omnibox-preserve-default-match-against-async-update",
-     flag_descriptions::kOmniboxPreserveDefaultMatchAgainstAsyncUpdateName,
-     flag_descriptions::
-         kOmniboxPreserveDefaultMatchAgainstAsyncUpdateDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         omnibox::kOmniboxPreserveDefaultMatchAgainstAsyncUpdate)},
-
     {"omnibox-local-zero-suggest-frecency-ranking",
      flag_descriptions::kOmniboxLocalZeroSuggestFrecencyRankingName,
      flag_descriptions::kOmniboxLocalZeroSuggestFrecencyRankingDescription,

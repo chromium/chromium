@@ -684,9 +684,7 @@ void AutocompleteController::UpdateResult(
 
   // Sort the matches and trim to a small number of "best" matches.
   const AutocompleteMatch* preserve_default_match = nullptr;
-  if (!in_start_ && last_default_match &&
-      base::FeatureList::IsEnabled(
-          omnibox::kOmniboxPreserveDefaultMatchAgainstAsyncUpdate)) {
+  if (!in_start_ && last_default_match) {
     preserve_default_match = &last_default_match.value();
   }
   result_.SortAndCull(input_, template_url_service_, preserve_default_match);

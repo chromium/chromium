@@ -3421,11 +3421,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "omnibox-preserve-default-match-against-async-update",
-    "owners": [ "tommycli", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 85
-  },
-  {
     "name": "omnibox-rich-autocompletion",
     "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 95

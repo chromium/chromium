@@ -31,7 +31,6 @@ extern const base::Feature kDebounceDocumentProvider;
 
 // Flags that affect the "twiddle" step of AutocompleteResult, i.e. SortAndCull.
 // TODO(tommycli): There are more flags above that belong in this category.
-extern const base::Feature kOmniboxPreserveDefaultMatchAgainstAsyncUpdate;
 extern const base::Feature kOmniboxDemoteByType;
 
 // A special flag, enabled by default, that can be used to disable all new

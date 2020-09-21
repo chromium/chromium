@@ -139,14 +139,6 @@ const base::Feature kOmniboxRemoveSuggestionsFromClipboard{
 const base::Feature kDebounceDocumentProvider{
     "OmniboxDebounceDocumentProvider", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Preserves the default match against change when providers return results
-// asynchronously. This prevents the default match from changing after the user
-// finishes typing. Without this feature, if the default match is updated right
-// when the user presses Enter, the user may go to a surprising destination.
-const base::Feature kOmniboxPreserveDefaultMatchAgainstAsyncUpdate{
-    "OmniboxPreserveDefaultMatchAgainstAsyncUpdate",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Demotes the relevance scores when comparing suggestions based on the
 // suggestion's |AutocompleteMatchType| and the user's |PageClassification|.
 // This feature's main job is to contain the DemoteByType parameter.
