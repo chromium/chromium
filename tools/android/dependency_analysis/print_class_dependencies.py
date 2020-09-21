@@ -8,6 +8,7 @@ import argparse
 from dataclasses import dataclass
 from typing import List
 
+import chrome_names
 import class_dependency
 import graph
 import print_dependencies_helper
@@ -20,14 +21,35 @@ class PrintMode:
     inbound: bool
     outbound: bool
     build_targets: bool
+    fully_qualified: bool
 
 
-def print_with_indent(indent, message):
-    print(' ' * indent + message)
+def get_class_name_to_display(fully_qualified_name: str,
+                              print_mode: PrintMode) -> str:
+    if print_mode.fully_qualified:
+        return fully_qualified_name
+    else:
+        return chrome_names.shorten_class(fully_qualified_name)
+
+
+def get_build_target_name_to_display(build_target: str,
+                                     print_mode: PrintMode) -> str:
+    if print_mode.fully_qualified:
+        return build_target
+    else:
+        return chrome_names.shorten_build_target(build_target)
+
+
+def print_with_indent(indent: int, message: str,
+                      bullet_point: str = '') -> None:
+    indents = ' ' * indent
+    bullet_point_text = f'{bullet_point} ' if bullet_point else ''
+    print(f'{indents}{bullet_point_text}{message}')
 
 
 def print_class_nodes_grouped_by_target(
-        class_nodes: List[class_dependency.JavaClass], print_mode: PrintMode):
+        class_nodes: List[class_dependency.JavaClass], print_mode: PrintMode,
+        bullet_point: None):
     # TODO(crbug.com/1124836): This is not quite correct because
     # sets considered equal can be converted to different strings. Fix this by
     # making JavaClass.build_targets return a List instead of a Set.
@@ -36,18 +58,27 @@ def print_class_nodes_grouped_by_target(
     for class_node in class_nodes:
         build_target = str(class_node.build_targets)
         if last_build_target != build_target:
-            print_with_indent(4, f'[{", ".join(class_node.build_targets)}]')
+            build_target_names = [
+                get_build_target_name_to_display(target, print_mode)
+                for target in class_node.build_targets
+            ]
+            print_with_indent(4, f'[{", ".join(build_target_names)}]')
             last_build_target = build_target
-        print_with_indent(8, f'{class_node.name}')
+        print_with_indent(
+            8, get_class_name_to_display(class_node.name, print_mode),
+            bullet_point)
 
 
 def print_class_nodes(class_nodes: List[class_dependency.JavaClass],
-                      print_mode: PrintMode):
+                      print_mode: PrintMode, bullet_point: None):
     if print_mode.build_targets:
-        print_class_nodes_grouped_by_target(class_nodes, print_mode)
+        print_class_nodes_grouped_by_target(class_nodes, print_mode,
+                                            bullet_point)
     else:
         for class_node in class_nodes:
-            print_with_indent(8, f'{class_node.name}')
+            print_with_indent(
+                8, get_class_name_to_display(class_node.name, print_mode),
+                bullet_point)
 
 
 def print_class_dependencies_for_key(
@@ -55,16 +86,20 @@ def print_class_dependencies_for_key(
         print_mode: PrintMode):
     """Prints dependencies for a valid key into the class graph."""
     node: class_dependency.JavaClass = class_graph.get_node_by_key(key)
+    class_name = get_class_name_to_display(node.name, print_mode)
 
     if print_mode.inbound:
-        print(f'{len(node.inbound)} inbound dependency(ies) into {node.name}:')
-        print_class_nodes(graph.sorted_nodes_by_name(node.inbound), print_mode)
+        print(
+            f'{len(node.inbound)} inbound dependency(ies) into {class_name}:')
+        print_class_nodes(graph.sorted_nodes_by_name(node.inbound), print_mode,
+                          '<-')
 
     if print_mode.outbound:
         print(
-            f'{len(node.outbound)} outbound dependency(ies) from {node.name}:')
+            f'{len(node.outbound)} outbound dependency(ies) from {class_name}:'
+        )
         print_class_nodes(graph.sorted_nodes_by_name(node.outbound),
-                          print_mode)
+                          print_mode, '->')
 
 
 def main():
@@ -102,11 +137,16 @@ def main():
     arg_parser.add_argument('--no-build-target',
                             action='store_true',
                             help='Do not print build target (cleaner output).')
+    arg_parser.add_argument('--fully-qualified',
+                            action='store_true',
+                            help='Use fully qualified class names instead of '
+                            'shortened ones.')
     arguments = arg_parser.parse_args()
 
     print_mode = PrintMode(inbound=not arguments.outbound_only,
                            outbound=not arguments.inbound_only,
-                           build_targets=not arguments.no_build_target)
+                           build_targets=not arguments.no_build_target,
+                           fully_qualified=arguments.fully_qualified)
 
     class_graph = serialization.load_class_graph_from_file(arguments.file)
     class_graph_keys = [node.name for node in class_graph.nodes]
@@ -127,9 +167,13 @@ def main():
                   'please disambiguate between one of the following options:')
             for valid_key in valid_keys:
                 print(f'\t{valid_key}')
-        else:
-            print(f'Printing class dependencies for {valid_keys[0]}:')
-            print_class_dependencies_for_key(class_graph, valid_keys[0],
+        else:  # len(valid_keys) == 1
+            fully_qualified_class_name = valid_keys[0]
+            class_name = get_class_name_to_display(fully_qualified_class_name,
+                                                   print_mode)
+            print(f'Printing class dependencies for {class_name}:')
+            print_class_dependencies_for_key(class_graph,
+                                             fully_qualified_class_name,
                                              print_mode)
 
 
