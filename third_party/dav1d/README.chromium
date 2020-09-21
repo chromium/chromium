@@ -19,8 +19,8 @@ and source listing.
 
 First have clang (//third_party/llvm-build/Release+Asserts/bin), clang-cl
 (https://chromium.googlesource.com/chromium/src/+/lkgr/docs/win_cross.md),
-and meson (https://github.com/mesonbuild/meson/releases) in your path. Then you
-can run ./generate_configs.py
+and meson v0.55 or higher (https://github.com/mesonbuild/meson/releases) in
+your path. Then you can run ./generate_configs.py
 
 Next you should update the dav1d_generated.gni file, to do that run the
 ./generate_source.py command.
@@ -30,5 +30,4 @@ all the updated configuration files. If not, you'll need to debug the bots :(
 
 
 -- [ OPEN ISSUES ] ------------------
-meson v0.53.1 (and at least earlier v0.51.1), have a bug with clang-cl on
-linux. See https://github.com/mesonbuild/meson/issues/5639 for issue and fix.
+None at this time.

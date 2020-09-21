@@ -42,6 +42,7 @@ arm32_asm_sources = [
   "libdav1d/src/arm/32/loopfilter.S",
   "libdav1d/src/arm/32/looprestoration.S",
   "libdav1d/src/arm/32/mc.S",
+  "libdav1d/src/arm/32/mc16.S",
   "libdav1d/src/arm/32/msac.S",
   "libdav1d/src/arm/32/util.S",
 ]

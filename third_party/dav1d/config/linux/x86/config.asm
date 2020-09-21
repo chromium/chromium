@@ -10,3 +10,5 @@
 %define PIC 1
 
 ; %define STACK_ALIGNMENT 16 -- Stack alignment is controlled by Chromium
+
+%define private_prefix dav1d
