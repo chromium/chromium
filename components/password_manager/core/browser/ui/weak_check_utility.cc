@@ -22,36 +22,17 @@ constexpr int kZxcvbnLengthCap = 40;
 
 // If the password has a score of 2 or less, this password should be marked as
 // weak. The lower the password score, the weaker it is.
-constexpr int kHighSeverityScore = 0;
 constexpr int kLowSeverityScore = 2;
 
-constexpr int kStrongPasswordScore = 4;
-
-// Very rough, extremely simplified strength check that only makes sense for
-// long passwords.
-int SimpleLongPasswordStrengthEstimate(const base::string16& password) {
-  base::flat_set<base::char16> chars;
-
-  for (auto character : password) {
-    chars.insert(character);
-    if (chars.size() > 4) {
-      return kStrongPasswordScore;
-    }
-  }
-  return kHighSeverityScore;
-}
-
 // Returns the |password| score.
-int PasswordWeakCheck(const base::string16& password) {
-  // zxcvbn's computation time explodes for long passwords, so don't use it for
-  // those.
-  if (password.size() > kZxcvbnLengthCap) {
-    return SimpleLongPasswordStrengthEstimate(password);
-  }
-  std::vector<zxcvbn::Match> matches =
-      zxcvbn::omnimatch(base::UTF16ToUTF8(password));
-  zxcvbn::ScoringResult result = zxcvbn::most_guessable_match_sequence(
-      base::UTF16ToUTF8(password), matches);
+int PasswordWeakCheck(base::StringPiece16 password16) {
+  // zxcvbn's computation time explodes for long passwords, so cap at that
+  // number.
+  std::string password =
+      base::UTF16ToUTF8(password16.substr(0, kZxcvbnLengthCap));
+  std::vector<zxcvbn::Match> matches = zxcvbn::omnimatch(password);
+  zxcvbn::ScoringResult result =
+      zxcvbn::most_guessable_match_sequence(password, matches);
   return zxcvbn::estimate_attack_times(result.guesses).score;
 }
 
