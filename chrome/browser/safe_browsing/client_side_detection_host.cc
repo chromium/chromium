@@ -389,7 +389,7 @@ void ClientSideDetectionHost::DidFinishNavigation(
 
 void ClientSideDetectionHost::SendModelToRenderFrame() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!web_contents() || web_contents() != tab_)
+  if (!web_contents() || web_contents() != tab_ || !csd_service_)
     return;
 
   for (content::RenderFrameHost* frame : web_contents()->GetAllFrames()) {
@@ -435,8 +435,8 @@ void ClientSideDetectionHost::WebContentsDestroyed() {
   }
   // Cancel all pending feature extractions.
   feature_extractor_.reset();
-
-  csd_service_->RemoveClientSideDetectionHost(this);
+  if (csd_service_)
+    csd_service_->RemoveClientSideDetectionHost(this);
 }
 
 void ClientSideDetectionHost::RenderFrameCreated(
