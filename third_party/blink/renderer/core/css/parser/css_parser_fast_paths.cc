@@ -670,8 +670,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kAlpha;
     case CSSPropertyID::kMathStyle:
       DCHECK(RuntimeEnabledFeatures::CSSMathStyleEnabled());
-      return value_id == CSSValueID::kInline ||
-             value_id == CSSValueID::kDisplay;
+      return value_id == CSSValueID::kNormal ||
+             value_id == CSSValueID::kCompact;
     case CSSPropertyID::kMathSuperscriptShiftStyle:
       DCHECK(RuntimeEnabledFeatures::CSSMathSuperscriptShiftStyleEnabled());
       return value_id == CSSValueID::kInline ||

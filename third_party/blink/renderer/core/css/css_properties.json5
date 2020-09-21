@@ -2522,9 +2522,9 @@
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_template: "keyword",
       inherited: true,
-      keywords: ["inline", "display"],
+      keywords: ["normal", "compact"],
       typedom_types: ["Keyword"],
-      default_value: "inline",
+      default_value: "normal",
       runtime_flag: "CSSMathStyle"
     },
     {

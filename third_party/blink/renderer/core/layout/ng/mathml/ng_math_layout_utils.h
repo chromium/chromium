@@ -53,7 +53,7 @@ inline base::Optional<float> MathConstant(
 LayoutUnit FractionLineThickness(const ComputedStyle&);
 
 inline bool HasDisplayStyle(const ComputedStyle& style) {
-  return style.MathStyle() == EMathStyle::kDisplay;
+  return style.MathStyle() == EMathStyle::kNormal;
 }
 
 // Get parameters for horizontal positioning of mroot.

@@ -36,6 +36,7 @@
 math {
     display: inline-math;
     math-superscript-shift-style: display;
+    math-style: compact;
 }
 
 math[display="block"] {
@@ -78,7 +79,7 @@ mfrac {
 
 mfrac > * {
   font-size: scriptlevel(auto);
-  math-style: inline;
+  math-style: compact;
 }
 
 mfrac > :nth-child(2) {
@@ -88,7 +89,7 @@ mfrac > :nth-child(2) {
 /* Other rules for scriptlevel, displaystyle and math-superscript-shift-style */
 mroot > :not(:first-child) {
     font-size: scriptlevel(add(2));
-    math-style: inline;
+    math-style: compact;
 }
 mroot, msqrt {
     math-superscript-shift-style: inline;
@@ -101,7 +102,7 @@ munder > :not(:first-child),
 mover > :not(:first-child),
 munderover > :not(:first-child) {
   font-size: scriptlevel(add(1));
-  math-style: inline;
+  math-style: compact;
 }
 
 munder[accentunder="true" i] > :nth-child(2),

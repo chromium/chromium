@@ -438,7 +438,7 @@ static FontDescription::Size ConvertScriptLevelFontSize(
                  DynamicTo<CSSIdentifierValue>(css_value)) {
     DCHECK(identifier_value->GetValueID() == CSSValueID::kAuto);
     unsigned level = 0;
-    if (state.ParentStyle()->MathStyle() == EMathStyle::kInline)
+    if (state.ParentStyle()->MathStyle() == EMathStyle::kCompact)
       level += 1;
     state.Style()->SetMathScriptLevel(state.ParentStyle()->MathScriptLevel() +
                                       level);

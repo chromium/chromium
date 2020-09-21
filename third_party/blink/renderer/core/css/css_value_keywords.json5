@@ -643,6 +643,10 @@
     //
     // math-style
     //
+    // normal
+    "compact",
+
+    // math-shift
     // inline
     "display",
 

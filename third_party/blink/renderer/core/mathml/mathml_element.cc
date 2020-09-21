@@ -72,20 +72,20 @@ void MathMLElement::CollectStyleForPresentationAttribute(
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kDisplay,
                                               CSSValueID::kInlineMath);
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kMathStyle,
-                                              CSSValueID::kInline);
+                                              CSSValueID::kCompact);
     } else if (EqualIgnoringASCIICase(value, "block")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kDisplay,
                                               CSSValueID::kMath);
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kMathStyle,
-                                              CSSValueID::kDisplay);
+                                              CSSValueID::kNormal);
     }
   } else if (name == mathml_names::kDisplaystyleAttr) {
     if (EqualIgnoringASCIICase(value, "false")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kMathStyle,
-                                              CSSValueID::kInline);
+                                              CSSValueID::kCompact);
     } else if (EqualIgnoringASCIICase(value, "true")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kMathStyle,
-                                              CSSValueID::kDisplay);
+                                              CSSValueID::kNormal);
     }
   } else if (name == mathml_names::kMathvariantAttr) {
     // TODO(crbug.com/1076420): this needs to handle all mathvariant values.
