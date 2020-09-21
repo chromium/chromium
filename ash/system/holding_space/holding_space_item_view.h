@@ -27,6 +27,8 @@ class ASH_EXPORT HoldingSpaceItemView : public views::InkDropHostView {
   // views::InkDropHostView:
   int GetDragOperations(const gfx::Point& point) override;
   SkColor GetInkDropBaseColor() const override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
   void WriteDragData(const gfx::Point& point, ui::OSExchangeData*) override;
 
   const HoldingSpaceItem* item() const { return item_; }

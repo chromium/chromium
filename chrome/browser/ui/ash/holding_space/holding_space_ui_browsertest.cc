@@ -9,6 +9,7 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
+#include "base/scoped_observer.h"
 #include "base/test/bind_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -18,12 +19,29 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/wm/public/activation_change_observer.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace ash {
 
 namespace {
 
 // Helpers ---------------------------------------------------------------------
+
+// Performs a double click on `view`.
+void DoubleClick(const views::View* view) {
+  auto* root_window = HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows();
+  ui::test::EventGenerator event_generator(root_window);
+  event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
+  event_generator.DoubleClickLeftButton();
+}
+
+// Performs a gesture tap on `view`.
+void GestureTap(const views::View* view) {
+  auto* root_window = HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows();
+  ui::test::EventGenerator event_generator(root_window);
+  event_generator.GestureTapAt(view->GetBoundsInScreen().CenterPoint());
+}
 
 // Performs a mouse drag between `from` and `to`.
 void MouseDrag(const views::View* from, const views::View* to) {
@@ -44,6 +62,16 @@ void PressAndReleaseKey(ui::KeyboardCode key_code, int flags = ui::EF_NONE) {
 }
 
 // Mocks -----------------------------------------------------------------------
+
+class MockActivationChangeObserver : public wm::ActivationChangeObserver {
+ public:
+  MOCK_METHOD(void,
+              OnWindowActivated,
+              (wm::ActivationChangeObserver::ActivationReason reason,
+               aura::Window* gained_active,
+               aura::Window* lost_active),
+              (override));
+};
 
 class MockHoldingSpaceModelObserver : public HoldingSpaceModelObserver {
  public:
@@ -154,6 +182,53 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, LockScreen) {
   ASSERT_TRUE(IsShowingInShelf());
   RequestAndAwaitLockScreen();
   ASSERT_FALSE(IsShowingInShelf());
+}
+
+// Verifies that opening holding space items works.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, OpenItem) {
+  auto* const activation_client = wm::GetActivationClient(
+      HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows());
+
+  // Observe the `activation_client` so we can detect windows becoming active as
+  // a result of opening holding space items.
+  testing::NiceMock<MockActivationChangeObserver> mock;
+  ScopedObserver<wm::ActivationClient, wm::ActivationChangeObserver> obs{&mock};
+  obs.Add(activation_client);
+
+  // Create a holding space item.
+  AddScreenshotFile();
+
+  // We're going to verify we can open holding space items by interacting with
+  // the view in a few ways as we expect a user to.
+  std::vector<base::OnceCallback<void(const views::View*)>> user_interactions;
+  user_interactions.push_back(base::BindOnce(&DoubleClick));
+  user_interactions.push_back(base::BindOnce(&GestureTap));
+
+  for (auto& user_interaction : user_interactions) {
+    // Show holding space UI and verify a holding space item view exists.
+    Show();
+    ASSERT_TRUE(IsShowing());
+    std::vector<views::View*> screenshot_views = GetScreenshotViews();
+    ASSERT_EQ(1u, screenshot_views.size());
+
+    // Attempt to open the holding space item via user interaction on its view.
+    std::move(user_interaction).Run(screenshot_views[0]);
+
+    // Expect and wait for a `Gallery` window to be activated since the holding
+    // space item that we attempted to open was a screenshot.
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock, OnWindowActivated)
+        .WillOnce([&](wm::ActivationChangeObserver::ActivationReason reason,
+                      aura::Window* gained_active, aura::Window* lost_active) {
+          EXPECT_EQ("Gallery", base::UTF16ToUTF8(gained_active->GetTitle()));
+          run_loop.Quit();
+        });
+    run_loop.Run();
+
+    // Reset.
+    testing::Mock::VerifyAndClearExpectations(&mock);
+    activation_client->DeactivateWindow(activation_client->GetActiveWindow());
+  }
 }
 
 // Base class for holding space UI browser tests that take screenshots.
