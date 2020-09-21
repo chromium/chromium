@@ -136,7 +136,6 @@
 <translation id="5197729504361054390">مخاطبین انتخابی شما با <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> هم‌رسانی می‌شود.</translation>
 <translation id="5300589172476337783">نمایش</translation>
 <translation id="5301954838959518834">بله، متوجه شدم</translation>
-<translation id="5308418739111119514"><ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> مورد دیگر</translation>
 <translation id="5313967007315987356">افزودن سایت</translation>
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5335288049665977812">مجاز کردن همه سایت‌ها برای اجرای جاوااسکریپت (توصیه‌ می‌شود)</translation>
@@ -163,7 +162,6 @@
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> مسدود شد</translation>
 <translation id="5804241973901381774">مجوزها</translation>
 <translation id="5860033963881614850">خاموش</translation>
-<translation id="5863245810240683687"><ph name="PERMISSION_1" />،‏ <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> مورد دیگر مجاز هستند</translation>
 <translation id="5876056640971328065">مکث ویدیو</translation>
 <translation id="5916664084637901428">روشن</translation>
 <translation id="5922853908706496913">درحال هم‌رسانی صفحه‌نمایش</translation>
@@ -203,7 +201,6 @@
 <translation id="6790428901817661496">پخش</translation>
 <translation id="6818926723028410516">انتخاب موارد</translation>
 <translation id="6864395892908308021">‏این دستگاه نمی‌تواند NFC را بخواند</translation>
-<translation id="6879016579615558281"><ph name="PERMISSION_1" />،‏ <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> مورد دیگر مسدود هستند</translation>
 <translation id="6910211073230771657">حذف شد</translation>
 <translation id="6912998170423641340">سایت‌ها از خواندن نوشتار و تصاویر بریده‌دان منع شوند</translation>
 <translation id="6945221475159498467">انتخاب</translation>

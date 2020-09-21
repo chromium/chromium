@@ -1786,6 +1786,7 @@ Bu politika False (Yanlış) değerine ayarlanırsa <ph name="PRODUCT_NAME" /> y
 <translation id="3631099945620529777">False (yanlış) değerine ayarlanırsa Görev Yöneticisi'nde "İşlemi sonlandır" düğmesi devre dışı bırakılır.
 
       True (doğru) değerine ayarlanır veya yapılandırılmazsa kullanıcı, Görev Yöneticisi'ndeki işlemleri sona erdirebilir.</translation>
+<translation id="3639444551396586995">Chrome'un güvenli olmayan etkinlikleri Google'a bildirmesine olanak verir</translation>
 <translation id="3643284063603988867">"Şifreyi hatırla" özelliğini etkinleştir</translation>
 <translation id="3646859102161347133">Ekran büyüteci türünü ayarla</translation>
 <translation id="3647212518036289905">Politikanın ayarlanması, HTTP kimlik doğrulaması için hangi GSSAPI kitaplığının kullanılacağını belirtir. Politikayı bir kitaplık adı veya tam yol olarak ayarlayın.
@@ -2565,6 +2566,10 @@ politikayı geçersiz kılamaz.
 <translation id="4874982543810021567">Bu sitelerde WebUSB'yi engelle</translation>
 <translation id="4876805738539874299">Etkinleştirilen maksimum SSL sürümü</translation>
 <translation id="4887274746092315609">SAML kullanıcılarına yönelik oturum içi şifre değişimi için bir sayfayı etkinleştir</translation>
+<translation id="4887863670424903990">Bu politika etkin olarak ayarlandığında <ph name="PRODUCT_NAME" />; şifre yeniden kullanımı, kötü amaçlı yazılım indirmeleri, geçiş reklamları, hassas verileri koruma kuralı ihlalleri gibi güvenli olmayan etkinlikleri analiz için Google'a bildirir.  Hassas verileri koruma kuralı ihlalleri gibi bazı güvenli olmayan etkinlikler, bu tür denetimleri etkinleştiren diğer politikalara bağlıdır.
+
+      Bu politika hiç ayarlanmazsa veya devre dışı olarak ayarlanırsa <ph name="PRODUCT_NAME" /> güvenli olmayan etkinlikleri bildirmeyecektir.
+      </translation>
 <translation id="4894290482695457375"><ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> politikası Devre dışı değerine ayarlanmadığı sürece, <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> politikası Etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yalnızca RFC1918/RFC4193 özel adreslerinde değil tüm IP adreslerinde yayın cihazlarına bağlanır.
 
       Politika Devre dışı değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yalnızca RFC1918/RFC4193 adreslerinde yayın cihazlarına bağlanır.

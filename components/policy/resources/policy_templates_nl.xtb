@@ -1778,6 +1778,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
 <translation id="3631099945620529777">Als deze optie is ingesteld op 'false', is de knop 'Proces beëindigen' uitgeschakeld in Taakbeheer.
 
       Als deze optie is ingesteld op 'true' of niet is geconfigureerd, kan de gebruiker processen in Taakbeheer beëindigen.</translation>
+<translation id="3639444551396586995">Hiermee wordt toegestaan dat Chrome onveilige gebeurtenissen rapporteert aan Google</translation>
 <translation id="3643284063603988867">Functie 'Wachtwoord onthouden' inschakelen</translation>
 <translation id="3646859102161347133">Het type vergrootglas instellen</translation>
 <translation id="3647212518036289905">Als je het beleid instelt, geef je aan welke GSSAPI-bibliotheek moet worden gebruikt voor HTTP-verificatie. Stel het beleid in op een bibliotheeknaam of een volledig pad.
@@ -2558,6 +2559,10 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="4874982543810021567">WebUSB blokkeren op deze sites</translation>
 <translation id="4876805738539874299">Maximale SSL-versie ingeschakeld</translation>
 <translation id="4887274746092315609">Schakelt een pagina in voor wachtwoordwijziging tijdens een sessie voor SAML-gebruikers</translation>
+<translation id="4887863670424903990">Als dit beleid is ingeschakeld, rapporteert <ph name="PRODUCT_NAME" /> onveilige gebeurtenissen (zoals hergebruik van wachtwoorden, malwaredownloads, interstitials, schendingen van de beveiligingsregels voor gevoelige gegevens, enzovoort) aan Google voor analyse.  Bepaalde onveilige gebeurtenissen, zoals schendingen van de beveiligingsregels voor gevoelige gegevens, zijn afhankelijk van ander beleid waarmee dergelijke controles worden ingeschakeld.
+
+      Als dit beleid is uitgeschakeld of niet is ingesteld, rapporteert <ph name="PRODUCT_NAME" /> geen onveilige gebeurtenissen.
+      </translation>
 <translation id="4894290482695457375">Als je <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> inschakelt, maakt <ph name="PRODUCT_NAME" /> verbinding met cast-apparaten op alle IP-adressen en niet alleen op RFC1918/RFC4913-privéadressen, tenzij je <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> uitschakelt.
 
       Als je het beleid uitschakelt, maakt <ph name="PRODUCT_NAME" /> alleen verbinding met cast-apparaten op RFC1918/RFC4193.

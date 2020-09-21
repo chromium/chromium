@@ -136,7 +136,6 @@
 <translation id="5197729504361054390">ستتم مشاركة جهات الاتصال التي تختارها مع الموقع الإلكتروني <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">عرض</translation>
 <translation id="5301954838959518834">حسنًا</translation>
-<translation id="5308418739111119514"><ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر</translation>
 <translation id="5313967007315987356">إضافة موقع إلكتروني</translation>
 <translation id="5317780077021120954">حفظ</translation>
 <translation id="5335288049665977812">‏السماح للمواقع الإلكترونية بتشغيل JavaScript (موصى به)</translation>
@@ -163,7 +162,6 @@
 <translation id="5771720122942595109">تم حظر <ph name="PERMISSION_1" />.</translation>
 <translation id="5804241973901381774">الأذونات</translation>
 <translation id="5860033963881614850">غير مفعّل</translation>
-<translation id="5863245810240683687">تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.</translation>
 <translation id="5876056640971328065">إيقاف الفيديو مؤقتًا</translation>
 <translation id="5916664084637901428">مفعّل</translation>
 <translation id="5922853908706496913">جارٍ مشاركة شاشتك</translation>
@@ -203,7 +201,6 @@
 <translation id="6790428901817661496">التشغيل</translation>
 <translation id="6818926723028410516">اختيار عناصر</translation>
 <translation id="6864395892908308021">‏يتعذّر على هذا الجهاز قراءة NFC.</translation>
-<translation id="6879016579615558281">تم حظر <ph name="PERMISSION_1" />، و<ph name="PERMISSION_2" />، و<ph name="NUM_MORE" /> إذن آخر.</translation>
 <translation id="6910211073230771657">تم الحذف</translation>
 <translation id="6912998170423641340">حظر المواقع الإلكترونية من قراءة الصور والنصوص من الحافظة</translation>
 <translation id="6945221475159498467">تحديد</translation>

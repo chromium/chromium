@@ -136,7 +136,6 @@
 <translation id="5197729504361054390">మీరు ఎంచుకున్న పరిచయాలు <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />తో షేర్ చేయబడతాయి.</translation>
 <translation id="5300589172476337783">చూపించు</translation>
 <translation id="5301954838959518834">సరే, అర్థమైంది</translation>
-<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /></translation>
 <translation id="5313967007315987356">సైట్‌ను జోడించు</translation>
 <translation id="5317780077021120954">సేవ్ చేయి</translation>
 <translation id="5335288049665977812">సైట్‌లను జావాస్క్రిప్ట్ అమలు చేయడానికి అనుమతిస్తుంది (సిఫార్సు చేయబడింది)</translation>
@@ -163,7 +162,6 @@
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> బ్లాక్ చేయబడింది</translation>
 <translation id="5804241973901381774">అనుమతులు</translation>
 <translation id="5860033963881614850">ఆఫ్ అయ్యింది</translation>
-<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> అనుమతించబడ్డాయి</translation>
 <translation id="5876056640971328065">వీడియోను పాజ్ చేయి</translation>
 <translation id="5916664084637901428">ఆన్ చేయి</translation>
 <translation id="5922853908706496913">మీ స్క్రీన్‌ను షేర్ చేయడం</translation>
@@ -203,7 +201,6 @@
 <translation id="6790428901817661496">ప్లే చేయి</translation>
 <translation id="6818926723028410516">అంశాలను ఎంచుకోండి</translation>
 <translation id="6864395892908308021">ఈ పరికరం NFCని రీడ్ చేయదు</translation>
-<translation id="6879016579615558281"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="6910211073230771657">తొలగించబడింది</translation>
 <translation id="6912998170423641340">క్లిప్‌బోర్డ్ నుండి వచనం మరియు చిత్రాలను చదవకుండా సైట్‌లు బ్లాక్ చేయబడతాయి</translation>
 <translation id="6945221475159498467">ఎంచుకోండి</translation>

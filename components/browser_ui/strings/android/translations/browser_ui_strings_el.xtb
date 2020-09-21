@@ -136,7 +136,6 @@
 <translation id="5197729504361054390">Οι επαφές που επιλέγετε θα κοινοποιηθούν στον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Εμφάνιση</translation>
 <translation id="5301954838959518834">OK, το κατάλαβα</translation>
-<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη</translation>
 <translation id="5313967007315987356">Προσθήκη ιστότοπου</translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5335288049665977812">Να επιτρέπεται στους ιστότοπους να εκτελούν JavaScript (συνιστάται)</translation>
@@ -163,7 +162,6 @@
 <translation id="5771720122942595109">Η άδεια <ph name="PERMISSION_1" /> αποκλείστηκε.</translation>
 <translation id="5804241973901381774">Άδειες</translation>
 <translation id="5860033963881614850">Απενεργοποιημένη</translation>
-<translation id="5863245810240683687">Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη επιτράπηκαν.</translation>
 <translation id="5876056640971328065">Παύση βίντεο</translation>
 <translation id="5916664084637901428">Ενεργό</translation>
 <translation id="5922853908706496913">Κοινή χρήση της οθόνης σας</translation>
@@ -203,7 +201,6 @@
 <translation id="6790428901817661496">Αναπαραγωγή</translation>
 <translation id="6818926723028410516">Επιλέξτε στοιχεία</translation>
 <translation id="6864395892908308021">Αυτή η συσκευή δεν μπορεί να διαβάσει NFC</translation>
-<translation id="6879016579615558281">Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη αποκλείστηκαν.</translation>
 <translation id="6910211073230771657">Διαγράφηκε</translation>
 <translation id="6912998170423641340">Αποκλεισμός ιστοτόπων από ανάγνωση κειμένου και εικόνων από το πρόχειρο</translation>
 <translation id="6945221475159498467">Επιλογή</translation>

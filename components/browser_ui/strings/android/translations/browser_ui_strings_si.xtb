@@ -136,7 +136,6 @@
 <translation id="5197729504361054390">ඔබ තේරූ සම්බන්ධතා <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> සමඟ බෙදා ගනු ලැබේ.</translation>
 <translation id="5300589172476337783">පෙන්වන්න</translation>
 <translation id="5301954838959518834">හරි, එය තේරුණා</translation>
-<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> සහ තවත් <ph name="NUM_MORE" /></translation>
 <translation id="5313967007315987356">අඩවිය එක් කරන්න</translation>
 <translation id="5317780077021120954">සුරකින්න</translation>
 <translation id="5335288049665977812">ජාවාස්ක්‍රිප්ට් ධාවනය කිරීමට අඩවි වලට ඉඩ දෙන්න (නිර්දේශිතයි)</translation>
@@ -163,7 +162,6 @@
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> අවහිර කරන ලදී</translation>
 <translation id="5804241973901381774">අවසර</translation>
 <translation id="5860033963881614850">අක්‍රීය</translation>
-<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> සහ තව <ph name="NUM_MORE" />ක් ඉඩ දෙන ලදි</translation>
 <translation id="5876056640971328065">විඩියෝව විරාම කරන්න</translation>
 <translation id="5916664084637901428">ක්‍රියාත්මකයි</translation>
 <translation id="5922853908706496913">ඔබේ තිරය බෙදා ගැනීම</translation>
@@ -203,7 +201,6 @@
 <translation id="6790428901817661496">වාදනය කරන්න</translation>
 <translation id="6818926723028410516">අයිතම තෝරන්න</translation>
 <translation id="6864395892908308021">මෙම උපාංගය NFC කියවිය නොහැක</translation>
-<translation id="6879016579615558281"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> සහ තව <ph name="NUM_MORE" />ක් අවහිර කරන ලදි</translation>
 <translation id="6910211073230771657">මකාදැමූ</translation>
 <translation id="6912998170423641340">පසුරු පුවරුවෙන් පෙළ සහ රූප කියවීමෙන් අඩවි අවහිර කරන්න</translation>
 <translation id="6945221475159498467">තෝරන්න</translation>

@@ -136,7 +136,6 @@
 <translation id="5197729504361054390">Kontakti koje odaberete će se podijeliti s web lokacijom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5301954838959518834">Uredu, razumijem</translation>
-<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" /></translation>
 <translation id="5313967007315987356">Dodajte web lokaciju</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5335288049665977812">Web-lokacije mogu pokretati JavaScript (preporučeno)</translation>
@@ -163,7 +162,6 @@
 <translation id="5771720122942595109">Blokirano: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Odobrenja</translation>
 <translation id="5860033963881614850">Isklj.</translation>
-<translation id="5863245810240683687">Dozvoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" /></translation>
 <translation id="5876056640971328065">Pauziranje videozapisa</translation>
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5922853908706496913">Dijeljenje ekrana</translation>
@@ -203,7 +201,6 @@
 <translation id="6790428901817661496">Pokreni</translation>
 <translation id="6818926723028410516">Odaberite stavke</translation>
 <translation id="6864395892908308021">Ovaj uređaj ne može očitavati NFC</translation>
-<translation id="6879016579615558281">Blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" /></translation>
 <translation id="6910211073230771657">Izbrisano</translation>
 <translation id="6912998170423641340">Blokirajte web lokacijama čitanje teksta i pregled slika u međumemoriji</translation>
 <translation id="6945221475159498467">Odaberi</translation>

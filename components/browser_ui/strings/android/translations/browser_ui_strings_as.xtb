@@ -136,7 +136,6 @@
 <translation id="5197729504361054390">আপুনি বাছনি কৰা সম্পৰ্কবোৰ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />ৰ সৈতে শ্বেয়াৰ কৰা হ’ব।</translation>
 <translation id="5300589172476337783">দেখুৱাওক</translation>
 <translation id="5301954838959518834">ঠিক আছে, বুজি পালোঁ</translation>
-<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা</translation>
 <translation id="5313967007315987356">ছাইট যোগ দিয়ক</translation>
 <translation id="5317780077021120954">ছেভ কৰক</translation>
 <translation id="5335288049665977812">JavaScript চলাবলৈ ছাইটক অনুমতি দিয়ক (চুপাৰিছ কৰা)</translation>
@@ -163,7 +162,6 @@
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />ক অৱৰোধ কৰা আছে</translation>
 <translation id="5804241973901381774">অনুমতি</translation>
 <translation id="5860033963881614850">অফ আছে</translation>
-<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে</translation>
 <translation id="5876056640971328065">ভিডিঅ’ পজ কৰক</translation>
 <translation id="5916664084637901428">অন আছে</translation>
 <translation id="5922853908706496913">আপোনাৰ স্ক্ৰীন শ্বেয়াৰ কৰি থকা হৈছে</translation>
@@ -203,7 +201,6 @@
 <translation id="6790428901817661496">প্লে’ কৰক</translation>
 <translation id="6818926723028410516">বস্তু বাছনি কৰক</translation>
 <translation id="6864395892908308021">এই ডিভাইচটোৱে NFC পঢ়িব নোৱাৰে</translation>
-<translation id="6879016579615558281"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাক অৱৰোধ কৰা আছে</translation>
 <translation id="6910211073230771657">মচা হ’ল</translation>
 <translation id="6912998170423641340">ছাইটসমূহৰ ক্লিপব’ৰ্ডৰ পাঠ আৰু ছবি পঢ়াৰ সুবিধা অৱৰোধ কৰক</translation>
 <translation id="6945221475159498467">বাছনি কৰক</translation>

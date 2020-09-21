@@ -136,7 +136,6 @@
 <translation id="5197729504361054390">Сіз таңдаған контактілер <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтымен бөлісіледі.</translation>
 <translation id="5300589172476337783">Көрсету</translation>
 <translation id="5301954838959518834">Жарайды, түсінікті</translation>
-<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /></translation>
 <translation id="5313967007315987356">Сайт қосу</translation>
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5335288049665977812">Сайттарға JavaScript тілін іске қосуға рұқсат беру (ұсынылады)</translation>
@@ -163,7 +162,6 @@
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> үшін тыйым салынған.</translation>
 <translation id="5804241973901381774">Рұқсаттар</translation>
 <translation id="5860033963881614850">Өшірулі</translation>
-<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> үшін рұқсат етілген.</translation>
 <translation id="5876056640971328065">Бейнені кідірту</translation>
 <translation id="5916664084637901428">Қосулы</translation>
 <translation id="5922853908706496913">Экранды бөлісіп жатырсыз.</translation>
@@ -203,7 +201,6 @@
 <translation id="6790428901817661496">Ойнату</translation>
 <translation id="6818926723028410516">Элементтерді таңдаңыз</translation>
 <translation id="6864395892908308021">Бұл құрылғы NFC сигналын оқи алмайды</translation>
-<translation id="6879016579615558281"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> үшін тыйым салынған.</translation>
 <translation id="6910211073230771657">Жойылды</translation>
 <translation id="6912998170423641340">Сайттардың буфердегі мәтіндер мен кескіндерді оқуына тыйым салу</translation>
 <translation id="6945221475159498467">Таңдау</translation>

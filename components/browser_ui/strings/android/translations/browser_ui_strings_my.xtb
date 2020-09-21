@@ -136,7 +136,6 @@
 <translation id="5197729504361054390">သင်ရွေးချယ်သော အဆက်အသွယ်များကို <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> နှင့် မျှဝေပါမည်။</translation>
 <translation id="5300589172476337783">ပြရန်</translation>
 <translation id="5301954838959518834">OK</translation>
-<translation id="5308418739111119514"><ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု</translation>
 <translation id="5313967007315987356">ဆိုက်အား ထည့်ရန်</translation>
 <translation id="5317780077021120954">သိမ်းရန်</translation>
 <translation id="5335288049665977812">ဆိုက်များကို JavaScript အားဖွင့်ခွင့်ပေးပါ (အကြံပြုထားသည်)</translation>
@@ -163,7 +162,6 @@
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> ပိတ်ထားသည်</translation>
 <translation id="5804241973901381774">ခွင့်ပြုချက်များ</translation>
 <translation id="5860033963881614850">ပိတ်ထား</translation>
-<translation id="5863245810240683687"><ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု ခွင့်ပြုထားသည်</translation>
 <translation id="5876056640971328065">ဗီဒီယို ခဏရပ်ရန်</translation>
 <translation id="5916664084637901428">ဖွင့်ရန်</translation>
 <translation id="5922853908706496913">သင့်ဖန်သားပြင်ကို မျှဝေနေသည်</translation>
@@ -203,7 +201,6 @@
 <translation id="6790428901817661496">ဖွင့်ရန်</translation>
 <translation id="6818926723028410516">စာရင်းမှ ရွေးရန်</translation>
 <translation id="6864395892908308021">ဤစက်က NFC ဖတ်၍မရပါ</translation>
-<translation id="6879016579615558281"><ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခုကို ပိတ်ထားသည်</translation>
 <translation id="6910211073230771657">ဖျက်ပြီး</translation>
 <translation id="6912998170423641340">ကလစ်ဘုတ်ရှိ စာနှင့် ပုံများအား မကြည့်နိုင်ရန် ဝဘ်ဆိုက်များကို ပိတ်ပါ</translation>
 <translation id="6945221475159498467">ရွေးရန်</translation>

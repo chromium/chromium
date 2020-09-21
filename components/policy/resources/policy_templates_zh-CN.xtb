@@ -1769,6 +1769,7 @@
 <translation id="3631099945620529777">如果设为 false，则任务管理器中的“结束进程”按钮会处于停用状态。
 
       如果设为 true 或未配置，则用户可以在任务管理器中结束进程。</translation>
+<translation id="3639444551396586995">允许 Chrome 向 Google 报告不安全事件</translation>
 <translation id="3643284063603988867">启用“记住密码”功能</translation>
 <translation id="3646859102161347133">设置放大镜类型</translation>
 <translation id="3647212518036289905">通过设置此政策，您可以指定要用于 HTTP 身份验证的 GSSAPI 库。您可以将此政策设为库名称或完整路径。
@@ -2545,6 +2546,10 @@
 <translation id="4874982543810021567">禁止这些网站使用 WebUSB</translation>
 <translation id="4876805738539874299">启用最高 SSL 版本</translation>
 <translation id="4887274746092315609">启用一个页面，以便 SAML 用户在会话期间更改密码</translation>
+<translation id="4887863670424903990">如果此政策设为“enabled”，<ph name="PRODUCT_NAME" /> 会向 Google 报告密码重用、恶意软件下载、插页式广告、违反敏感数据保护规则的行为等不安全事件，以供分析。至于是否报告某些不安全事件（例如违反敏感数据保护规则的行为），取决于启用此类检查的其他政策。
+
+      如果此政策设为“disabled”或未设置，<ph name="PRODUCT_NAME" /> 将不会报告不安全事件。
+      </translation>
 <translation id="4894290482695457375">除非 <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> 设为“已停用”，否则，如果 <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> 已启用，<ph name="PRODUCT_NAME" /> 将会连接到位于所有 IP 地址的投射设备，而不是只连接到位于 RFC1918/RFC4193 私有地址的投射设备。
 
       如果此政策已停用，<ph name="PRODUCT_NAME" /> 将会只连接到位于 RFC1918/RFC4193 的投射设备。

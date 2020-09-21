@@ -116,7 +116,7 @@
 <translation id="2208158072373999562">Archive ZIP</translation>
 <translation id="2225536596944493418">Voulez-vous vraiment supprimer <ph name="NUMBER_OF_ITEMS" /> éléments?</translation>
 <translation id="2230062665678605299">Impossible de créer le dossier « <ph name="FOLDER_NAME" /> ». <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2275059641601412272">Déplacés.</translation>
+<translation id="2275059641601412272">Déplacé.</translation>
 <translation id="2278988676849463018">Clavier kannada (phonétique)</translation>
 <translation id="2288278176040912387">Tourne-disque</translation>
 <translation id="2291538123825441971">Ouverture de <ph name="NUMBER_OF_FILES" /> fichiers en cours…</translation>

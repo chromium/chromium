@@ -136,7 +136,6 @@
 <translation id="5197729504361054390">Els contactes que seleccionis es compartiran amb <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5301954838959518834">D'acord</translation>
-<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més</translation>
 <translation id="5313967007315987356">Afegeix un lloc web</translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5335288049665977812">Permet que els llocs web executin JavaScript (opció recomanada)</translation>
@@ -163,7 +162,6 @@
 <translation id="5771720122942595109">S'ha bloquejat <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5860033963881614850">Desactivat</translation>
-<translation id="5863245810240683687">S'han permès <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més</translation>
 <translation id="5876056640971328065">Posa en pausa el vídeo</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5922853908706496913">S'està compartint la pantalla</translation>
@@ -203,7 +201,6 @@
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="6818926723028410516">Selecciona elements</translation>
 <translation id="6864395892908308021">Aquest dispositiu no pot llegir NFC</translation>
-<translation id="6879016579615558281">S'han bloquejat <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més</translation>
 <translation id="6910211073230771657">Suprimit</translation>
 <translation id="6912998170423641340">Impedeix que els llocs web llegeixin el text i les imatges del porta-retalls</translation>
 <translation id="6945221475159498467">Selecciona</translation>

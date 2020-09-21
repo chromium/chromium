@@ -136,7 +136,6 @@
 <translation id="5197729504361054390">選択した連絡先が <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> と共有されます。</translation>
 <translation id="5300589172476337783">表示</translation>
 <translation id="5301954838959518834">OK</translation>
-<translation id="5308418739111119514"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 件</translation>
 <translation id="5313967007315987356">サイトを追加</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5335288049665977812">サイトに JavaScript の実行を許可する（推奨）</translation>
@@ -163,7 +162,6 @@
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> をブロック</translation>
 <translation id="5804241973901381774">権限</translation>
 <translation id="5860033963881614850">オフ</translation>
-<translation id="5863245810240683687"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 件を許可</translation>
 <translation id="5876056640971328065">動画を一時停止</translation>
 <translation id="5916664084637901428">オン</translation>
 <translation id="5922853908706496913">画面を共有しています</translation>
@@ -203,7 +201,6 @@
 <translation id="6790428901817661496">再生</translation>
 <translation id="6818926723028410516">アイテムを選択</translation>
 <translation id="6864395892908308021">このデバイスでは NFC を読み込めません</translation>
-<translation id="6879016579615558281"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 件をブロック</translation>
 <translation id="6910211073230771657">削除済み</translation>
 <translation id="6912998170423641340">サイトによるクリップボードのテキストや画像の読み取りをブロックする</translation>
 <translation id="6945221475159498467">選択</translation>

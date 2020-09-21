@@ -1782,6 +1782,7 @@ Wird die Richtlinie auf "False" gesetzt , verwendet <ph name="PRODUCT_NAME" /> k
 <translation id="3631099945620529777">Wenn diese Richtlinie auf "false" gesetzt ist, ist die Schaltfläche "Prozess beenden" im Task-Manager deaktiviert.
 
       Ist sie auf "true" gesetzt oder nicht konfiguriert, kann der Nutzer Prozesse im Task-Manager beenden.</translation>
+<translation id="3639444551396586995">Unsichere Ereignisse in Chrome an Google melden</translation>
 <translation id="3643284063603988867">Funktion zum Speichern des Passworts aktivieren</translation>
 <translation id="3646859102161347133">Lupentyp festlegen</translation>
 <translation id="3647212518036289905">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche GSSAPI-Bibliothek für die HTTP-Authentifizierung verwendet werden soll. Geben Sie entweder nur den Namen einer Bibliothek oder einen vollständigen Pfad an.
@@ -2559,6 +2560,10 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
 <translation id="4874982543810021567">WebUSB auf diesen Websites blockieren</translation>
 <translation id="4876805738539874299">SSL-Höchstversion aktiviert</translation>
 <translation id="4887274746092315609">Erlaubt SAML-Nutzern das Ändern des Passworts während einer Sitzung</translation>
+<translation id="4887863670424903990">Wenn diese Richtlinie aktiviert ist, werden unsichere Ereignisse in <ph name="PRODUCT_NAME" /> zur Analyse an Google gesendet, darunter die Wiederverwendung von Passwörtern, der Download von Malware, Interstitials, Verstöße gegen die Richtlinie zum Schutz von sensiblen Daten usw.  Einige dieser Ereignisse, etwa Verstöße gegen die Richtlinie zum Schutz von sensiblen Daten, sind abhängig von anderen Richtlinien, mit denen entsprechende Überprüfungen aktiviert werden.
+
+      Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden unsichere Ereignisse in <ph name="PRODUCT_NAME" /> nicht gemeldet.
+      </translation>
 <translation id="4894290482695457375">Wenn "<ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />" aktiviert und "<ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" />" konfiguriert ist, wird <ph name="PRODUCT_NAME" /> unter allen IP-Adressen und nicht nur unter privaten RFC1918-/RFC4193-Adressen mit Cast-Geräten verbunden.
 
       Ist die Richtlinie deaktiviert, wird <ph name="PRODUCT_NAME" /> nur unter RFC1918-/RFC4193-Adressen mit Cast-Geräten verbunden.

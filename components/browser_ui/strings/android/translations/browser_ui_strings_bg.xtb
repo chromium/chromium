@@ -136,7 +136,6 @@
 <translation id="5197729504361054390">Избраните от вас контакти ще бъдат споделени със сайта <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Показване</translation>
 <translation id="5301954838959518834">Добре, разбрах</translation>
-<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /></translation>
 <translation id="5313967007315987356">Добавяне на сайт</translation>
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5335288049665977812">Разрешаване на сайтовете да изпълняват JavaScript (препоръчително)</translation>
@@ -163,7 +162,6 @@
 <translation id="5771720122942595109">Достъпът до <ph name="PERMISSION_1" /> е блокиран</translation>
 <translation id="5804241973901381774">Разрешения</translation>
 <translation id="5860033963881614850">Изключено</translation>
-<translation id="5863245810240683687">Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е разрешен</translation>
 <translation id="5876056640971328065">Поставяне на видеоклипа на пауза</translation>
 <translation id="5916664084637901428">Включено</translation>
 <translation id="5922853908706496913">Екранът ви се споделя</translation>
@@ -203,7 +201,6 @@
 <translation id="6790428901817661496">Пускане</translation>
 <translation id="6818926723028410516">Избор на елементи</translation>
 <translation id="6864395892908308021">Това устройство не може да чете NFC</translation>
-<translation id="6879016579615558281"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> са блокирани</translation>
 <translation id="6910211073230771657">Изтрито</translation>
 <translation id="6912998170423641340">Забраняване на сайтовете да четат текста и изображенията от буферната памет</translation>
 <translation id="6945221475159498467">Избиране</translation>

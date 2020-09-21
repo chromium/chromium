@@ -136,7 +136,6 @@
 <translation id="5197729504361054390">Ձեր ընտրած կոնտակտները հասանելի կդառնան <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> կայքին:</translation>
 <translation id="5300589172476337783">Ցույց տալ</translation>
 <translation id="5301954838959518834">Պարզ է</translation>
-<translation id="5308418739111119514">«<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն</translation>
 <translation id="5313967007315987356">Ավելացնել կայք</translation>
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5335288049665977812">Թույլ տալ կայքերին գործարկել JavaScript-ը (խորհուրդ է տրվում)</translation>
@@ -163,7 +162,6 @@
 <translation id="5771720122942595109">Արգելափակված է՝ «<ph name="PERMISSION_1" />»</translation>
 <translation id="5804241973901381774">Թույլտվություններ</translation>
 <translation id="5860033963881614850">Անջատ.</translation>
-<translation id="5863245810240683687">Թույլատրված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն</translation>
 <translation id="5876056640971328065">Դադարեցնել</translation>
 <translation id="5916664084637901428">Միացնել</translation>
 <translation id="5922853908706496913">Էկրանը ցուցադրվում է</translation>
@@ -203,7 +201,6 @@
 <translation id="6790428901817661496">Նվագարկել</translation>
 <translation id="6818926723028410516">Ընտրեք տարրեր</translation>
 <translation id="6864395892908308021">Այս սարքում NFC-ն չի աջակցվում</translation>
-<translation id="6879016579615558281">Արգելափակված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն</translation>
 <translation id="6910211073230771657">Ջնջված</translation>
 <translation id="6912998170423641340">Արգելափակել սեղմատախտակի տեքստերի ու պատկերների հասանելիությունը կայքերին</translation>
 <translation id="6945221475159498467">Ընտրել</translation>

@@ -136,7 +136,6 @@
 <translation id="5197729504361054390">Anwani unazochagua zitashirikiwa na <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Onyesha</translation>
 <translation id="5301954838959518834">Sawa, nimeelewa</translation>
-<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na <ph name="NUM_MORE" /> zaidi</translation>
 <translation id="5313967007315987356">Ongeza tovuti</translation>
 <translation id="5317780077021120954">Hifadhi</translation>
 <translation id="5335288049665977812">Ruhusu tovuti zitumie JavaScript (inapendekezwa)</translation>
@@ -163,7 +162,6 @@
 <translation id="5771720122942595109">Umezuia <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Idhini</translation>
 <translation id="5860033963881614850">Kimezimwa</translation>
-<translation id="5863245810240683687">Umeruhusu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na <ph name="NUM_MORE" /> zaidi</translation>
 <translation id="5876056640971328065">Sitisha video</translation>
 <translation id="5916664084637901428">Imewashwa</translation>
 <translation id="5922853908706496913">Inashiriki skrini yako</translation>
@@ -203,7 +201,6 @@
 <translation id="6790428901817661496">Cheza</translation>
 <translation id="6818926723028410516">Chagua vipengee</translation>
 <translation id="6864395892908308021">Kifaa hiki kimeshindwa kusoma NFC</translation>
-<translation id="6879016579615558281">Umezuia kipengele cha <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na <ph name="NUM_MORE" /> zaidi visifikiwe</translation>
 <translation id="6910211073230771657">Imeondolewa</translation>
 <translation id="6912998170423641340">Zuia tovuti zisisome maandishi na picha kutoka ubao wa kunakili</translation>
 <translation id="6945221475159498467">Chagua</translation>

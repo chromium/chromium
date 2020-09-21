@@ -1805,6 +1805,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="3631099945620529777">Si se asigna el valor "False" a esta política, se inhabilita el botón Finalizar proceso en el administrador de tareas.
 
       Si se le asigna el valor "True" o no se configura, el usuario puede finalizar procesos en el administrador de tareas.</translation>
+<translation id="3639444551396586995">Permite a Chrome informar de eventos inseguros a Google</translation>
 <translation id="3643284063603988867">Habilitar la función "Recordar contraseña"</translation>
 <translation id="3646859102161347133">Establecer el tipo de lupa</translation>
 <translation id="3647212518036289905">Si se define esta política, especificará qué biblioteca GSSAPI se debe usar para la autenticación HTTP. Puedes definirla como un nombre de biblioteca o una ruta completa.
@@ -2585,6 +2586,10 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 <translation id="4874982543810021567">Bloquear WebUSB en estos sitios web</translation>
 <translation id="4876805738539874299">Versión máxima de SSL habilitada</translation>
 <translation id="4887274746092315609">Habilita una página para cambiar la contraseña dentro de la sesión para usuarios de SAML</translation>
+<translation id="4887863670424903990">Si se habilita esta política, <ph name="PRODUCT_NAME" /> informará a Google sobre los eventos no seguros que se detecten (como la reutilización de contraseñas, las descargas de software malicioso, los intersticiales, la infracción de las normas de protección de datos sensibles, etc.) para que se analicen.  Algunos eventos no seguros, como la infracción de las normas de protección de datos sensibles, dependen de otras políticas que habilitan esas comprobaciones.
+
+      Si no se define esta política o se inhabilita, <ph name="PRODUCT_NAME" /> no informará sobre los eventos no seguros.
+      </translation>
 <translation id="4894290482695457375">A no ser que se le asigne el valor "Inhabilitada" a la política <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />, si se le asigna el valor "Habilitada" a <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" />,<ph name="PRODUCT_NAME" /> se conectará con todos los dispositivos de emisión de todas las direcciones IP, no solo con las direcciones privadas de RFC 1918 o RFC 4193.
 
       Si se le asigna el valor "Inhabilitada", <ph name="PRODUCT_NAME" /> solo se conectará con dispositivos de emisión en direcciones de RFC 1918 o RFC 4193.

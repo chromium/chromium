@@ -2950,7 +2950,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4527186207340858212">Créer un profil pour le travail?</translation>
 <translation id="452750746583162491">Examiner vos données synchronisées</translation>
 <translation id="4530494379350999373">Origine</translation>
-<translation id="4531924570968473143">Qui souhaitez-vous ajouter à cet <ph name="DEVICE_TYPE" />?</translation>
+<translation id="4531924570968473143">Qui souhaitez-vous ajouter à cet appareil (<ph name="DEVICE_TYPE" />)?</translation>
 <translation id="4532646538815530781">Ce site utilise des capteurs de mouvement.</translation>
 <translation id="4533846798469727141">Maintenant dites « Hey Google »</translation>
 <translation id="4533985347672295764">Temps CPU</translation>

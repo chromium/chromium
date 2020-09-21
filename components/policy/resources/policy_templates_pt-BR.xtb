@@ -1781,6 +1781,7 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 <translation id="3631099945620529777">Se definida como falsa, o botão "Encerrar processo" será desativado no Gerenciador de tarefas.
 
       Se definida como verdadeira ou se não for configurada, o usuário poderá encerrar processos no Gerenciador de tarefas.</translation>
+<translation id="3639444551396586995">Permite que o Chrome informe eventos inseguros ao Google</translation>
 <translation id="3643284063603988867">Ativar o recurso "Lembrar senha"</translation>
 <translation id="3646859102161347133">Definir tipo de lupa</translation>
 <translation id="3647212518036289905">Definir a política especifica qual biblioteca GSSAPI será usada para a autenticação HTTP. Defina a política como um nome de biblioteca ou um caminho completo.
@@ -2561,6 +2562,10 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 <translation id="4874982543810021567">Bloquear o WebUSB nesses sites</translation>
 <translation id="4876805738539874299">Versão máxima de SSL ativada</translation>
 <translation id="4887274746092315609">Ativa uma página para alteração de senha durante a sessão para usuários do SAML</translation>
+<translation id="4887863670424903990">Quando esta política é definida como ativada, o <ph name="PRODUCT_NAME" /> informa ao Google se há eventos inseguros, por exemplo, reutilização de senha, downloads de malware, intersticiais, violações da regra de proteção de dados confidenciais etc., para que eles sejam analisados.  Alguns eventos não seguros, como violações da regra de proteção de dados confidenciais, dependem de outras políticas para ativar essas verificações.
+
+      Se esta política for desativada ou não for definida, o <ph name="PRODUCT_NAME" /> não informará eventos inseguros.
+      </translation>
 <translation id="4894290482695457375">A menos que <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> esteja definida como desativada, definir <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> como ativada irá conectar o <ph name="PRODUCT_NAME" /> aos dispositivos Cast em todos os endereços IP, não apenas no endereço particular RFC1918/RFC4193.
 
       Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> será conectado aos dispositivos Cast apenas em RFC1918/RFC4193.

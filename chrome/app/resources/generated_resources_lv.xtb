@@ -374,7 +374,7 @@
 <translation id="143027896309062157">Lasīt un mainīt visus jūsu datus jūsu datorā un jūsu apmeklētajās vietnēs</translation>
 <translation id="1430915738399379752">Drukāt</translation>
 <translation id="1431188203598586230">Pēdējais programmatūras atjauninājums</translation>
-<translation id="1431402976894535801">Nerādīt vietnēm informāciju, kad jūs esat aktīvs</translation>
+<translation id="1431402976894535801">Nerādīt vietnēm informāciju par jūsu aktivitāti</translation>
 <translation id="1431432486300429272">Google var izmantot jūsu pārlūkošanas vēsturi, lai personalizētu Meklēšanu un citus Google pakalpojumus. Jūs vai jūsu vecāki varat to mainīt jebkurā brīdī vietnē myaccount.google.com/activitycontrols/search.</translation>
 <translation id="1432581352905426595">Pārvaldīt meklējumprogrammas</translation>
 <translation id="1433811987160647649">Jautāt pirms piekļūšanas</translation>
@@ -1833,7 +1833,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3163201441334626963">Nezināms produkts (ID: <ph name="PRODUCT_ID" />), ko piedāvā <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Tālāk norādītie pakalpojumi tiek izmantoti jūsu datu aizsardzībai. Varat jebkurā laikā izslēgt šīs funkcijas.</translation>
 <translation id="3164329792803560526">Šī cilne tiek kopīgota lietotnē <ph name="APP_NAME" /></translation>
-<translation id="3165371858310906303">Vaicāt, ja vietne pieprasa informāciju, kad jūs esat aktīvs</translation>
+<translation id="3165371858310906303">Vaicāt, ja vietne pieprasa informāciju par jūsu aktivitāti</translation>
 <translation id="3165390001037658081">Daļa mobilo sakaru operatoru var bloķēt šo funkciju.</translation>
 <translation id="316652501498554287">G Suite for Education konti</translation>
 <translation id="3169472444629675720">Discover</translation>

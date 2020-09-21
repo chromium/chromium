@@ -136,7 +136,6 @@
 <translation id="5197729504361054390">ទំនាក់ទំនងដែលអ្នកជ្រើសរើស​នឹងចែករំលែកជាមួយ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ។</translation>
 <translation id="5300589172476337783">បង្ហាញ</translation>
 <translation id="5301954838959518834">យល់ព្រម ខ្ញុំយល់ហើយ</translation>
-<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> និង <ph name="NUM_MORE" /> ទៀត</translation>
 <translation id="5313967007315987356">បន្ថែមគេហទំព័រ</translation>
 <translation id="5317780077021120954">រក្សាទុក</translation>
 <translation id="5335288049665977812">អនុញ្ញាតឲ្យគេហទំព័រដំណើរការ JavaScript (បានណែនាំ)</translation>
@@ -163,7 +162,6 @@
 <translation id="5771720122942595109">បានទប់​ស្កាត់ <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">ការអនុញ្ញាត</translation>
 <translation id="5860033963881614850">បិទ</translation>
-<translation id="5863245810240683687">បានអនុញ្ញាត <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> និង <ph name="NUM_MORE" /> ទៀត</translation>
 <translation id="5876056640971328065">ផ្អាក​វីដេអូ</translation>
 <translation id="5916664084637901428">បើក</translation>
 <translation id="5922853908706496913">កំពុងចែក​រំលែក​អេក្រង់​របស់​អ្នក</translation>
@@ -203,7 +201,6 @@
 <translation id="6790428901817661496">លេង</translation>
 <translation id="6818926723028410516">ជ្រើសរើសធាតុ</translation>
 <translation id="6864395892908308021">ឧបករណ៍នេះ​មិនអាចអាន NFC បានទេ</translation>
-<translation id="6879016579615558281">បានទប់ស្កាត់ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> និង <ph name="NUM_MORE" /> ទៀត</translation>
 <translation id="6910211073230771657">បានលុប</translation>
 <translation id="6912998170423641340">ទប់ស្កាត់​ទំព័រ​មិន​ឱ្យ​អាន​អក្សរ និង​រូបភាព​ពី​អង្គ​ចង​ចាំ</translation>
 <translation id="6945221475159498467">ជ្រើសរើស</translation>

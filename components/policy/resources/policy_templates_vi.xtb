@@ -1806,6 +1806,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="3631099945620529777">Nếu bạn đặt chính sách này thành false thì nút 'Kết thúc quá trình' sẽ bị tắt trong Trình quản lý tác vụ.
 
       Nếu bạn không định cấu hình hoặc nếu bạn đặt chính sách này thành true, người dùng có thể kết thúc các quá trình trong Trình quản lý tác vụ.</translation>
+<translation id="3639444551396586995">Cho phép Chrome báo cáo các sự kiện không an toàn cho Google</translation>
 <translation id="3643284063603988867">Bật tính năng 'Nhớ mật khẩu'</translation>
 <translation id="3646859102161347133">Đặt loại kính lúp màn hình</translation>
 <translation id="3647212518036289905">Nếu bạn đặt chính sách này, hệ thống sẽ chỉ định thư viện GSSAPI dùng để xác thực HTTP. Hãy đặt chính sách này thành tên thư viện hoặc đường dẫn đầy đủ.
@@ -2587,6 +2588,10 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="4874982543810021567">Chặn WebUSB trên các trang web này</translation>
 <translation id="4876805738539874299">Đã bật phiên bản SSL tối đa</translation>
 <translation id="4887274746092315609">Cho phép một trang để người dùng SAML có thể đổi mật khẩu ngay trong phiên đăng nhập</translation>
+<translation id="4887863670424903990">Khi bạn đặt chính sách này thành bật, thì <ph name="PRODUCT_NAME" /> sẽ báo cáo các sự kiện không an toàn, chẳng hạn như dùng lại mật khẩu, tệp đã tải xuống có phần mềm độc hại, quảng cáo xen kẽ, hành vi vi phạm quy tắc bảo vệ dữ liệu nhạy cảm, v.v. cho Google để phân tích.  Một số sự kiện không an toàn, chẳng hạn như hành vi vi phạm quy tắc bảo vệ dữ liệu nhạy cảm, sẽ phụ thuộc vào các chính sách khác cho phép các hoạt động kiểm tra liên quan.
+
+      Nếu bạn không đặt hoặc đặt chính sách này thành tắt, thì <ph name="PRODUCT_NAME" /> sẽ không báo cáo các sự kiện không an toàn.
+      </translation>
 <translation id="4894290482695457375">Trừ khi bạn đặt <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> thành Tắt, nếu bạn đặt <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> thành Bật, thì <ph name="PRODUCT_NAME" /> sẽ kết nối với các thiết bị truyền trên mọi địa chỉ IP, chứ không chỉ các địa chỉ riêng RFC1918/RFC4193.
 
       Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" /> sẽ chỉ kết nối với các thiết bị truyền trên địa chỉ RFC1918/RFC4193.
