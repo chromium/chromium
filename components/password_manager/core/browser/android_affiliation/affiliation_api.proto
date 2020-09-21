@@ -10,7 +10,7 @@ option optimize_for = LITE_RUNTIME;
 
 // The messages below mirror the corresponding messages on the server side.
 // These should be updated once the server side changes.
-// Synced version: http://shortn/_g0W3toNGei
+// Synced version: http://shortn/_TgsbdjhbU3
 
 // Contains a list of affiliated facets.
 // Affiliated facets are allowed to share credentials among each other.
@@ -157,4 +157,34 @@ message LookupAffiliationResponse {
 
   // Information required for grouping facets in the UI.
   repeated FacetGroup group = 2;
+}
+
+// Request message for AffiliationService.LookupByHashPrefix.
+message LookupAffiliationByHashPrefixRequest {
+  // Request mask.
+  optional LookupAffiliationMask mask = 1;
+
+  // Number of bits in each hash prefix. Required, request will fail
+  // if this is not set.
+  optional uint32 hash_prefix_length = 2;
+
+  // The prefixes of the requested hashes. Encoding of the string prior to
+  // hashing should be UTF-8. SHA256 should be used to calculate the hashes. The
+  // prefix will be taken as the first 'hash_prefix_length' number of bits
+  // of this uint64. Other bits will be ignored.
+  repeated uint64 hash_prefixes = 3;
+}
+
+// Response message for AffiliationService.LookupByHashPrefix.
+message LookupAffiliationByHashPrefixResponse {
+  // Affiliations containing facets that match the requested prefixes.
+  // Affiliations will be deduplicated, i.e. if an affiliation matched multiple
+  // prefixes only one copy will be returned. No correlation should be assumed
+  // between the order of returned affiliations and the order of requested
+  // prefixes.
+  repeated Affiliation affiliations = 1;
+
+  // Information required for grouping facets in the UI. Ordering and
+  // deplication works the same as for affiliations.
+  repeated FacetGroup groups = 2;
 }
