@@ -25,7 +25,9 @@
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
+#include "ui/base/ime/constants.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 
 namespace chromecast {
 
@@ -273,12 +275,20 @@ void WebContentController::ProcessInputEvent(const webview::InputEvent& ev) {
     case ui::ET_KEY_PRESSED:
     case ui::ET_KEY_RELEASED:
       if (ev.has_key()) {
-        ui::KeyEvent evt(type,
-                         static_cast<ui::KeyboardCode>(ev.key().key_code()),
-                         static_cast<ui::DomCode>(ev.key().dom_code()),
-                         ev.flags(), ui::DomKey(ev.key().dom_key()),
-                         base::TimeTicks() +
-                             base::TimeDelta::FromMicroseconds(ev.timestamp()));
+        ui::KeyEvent evt(
+            type, static_cast<ui::KeyboardCode>(ev.key().key_code()),
+            static_cast<ui::DomCode>(ev.key().dom_code()),
+            ev.flags() | ui::EF_IS_SYNTHESIZED, ui::DomKey(ev.key().dom_key()),
+            base::TimeTicks() +
+                base::TimeDelta::FromMicroseconds(ev.timestamp()),
+            ev.key().is_char());
+
+        // Marks the simulated key event is from a Virtual Keyboard.
+        ui::Event::Properties properties;
+        properties[ui::kPropertyFromVK] =
+            std::vector<uint8_t>(ui::kPropertyFromVKSize);
+        evt.SetProperties(properties);
+
         handler->OnKeyEvent(&evt);
       } else {
         client_->OnError("key() not supplied for key event");
