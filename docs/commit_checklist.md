@@ -63,6 +63,9 @@ After making your changes, check that common targets build correctly:
 *   unit_tests
 *   browser_tests
 
+You can find [instructions here][build-instructions] for building various
+targets.
+
 It's easy to inadvertently break one of the other builds you're not currently
 working on without realizing it. Even though the Commit Queue should catch any
 build errors, checking locally first can save you some time since the CQ Dry Run
@@ -70,10 +73,10 @@ can take a while to run, on the order of a few hours sometimes.
 
 ## 5. Test your changes
 
-Test your changes manually by running the X11 simulator or deploying your
-changes to a test device. Follow the [Simple Chrome][simple-chrome] instructions
-to deploy your changes to a test device. Make sure you hit every code path you
-changed.
+Test your changes manually by running the Chrome binary or deploying your
+changes to a test device. If you're testing Chrome for ChromeOS, follow the
+[Simple Chrome][simple-chrome] instructions to deploy your changes to a test
+device. Make sure you hit every code path you changed.
 
 ## 6. Write unit or browser tests for any new code
 
@@ -142,7 +145,9 @@ Run `git cl upload`. Some useful options include:
 *   `-r <chromium_username>` will add reviewers.
 *   `-b <bug_number>` automatically populates the bug reference line of the
     commit message. Use `-b None` is there is no relevant crbug.
-*   `--edit-description` will let you update the commit message.
+*   `--edit-description` will let you update the commit message. Using square
+    brackets in the commit message title, like [hashtag], will add a hashtag to
+    your CL. This feature is useful for grouping related CLs together.
 
 To help guide your reviewers, it is also recommended to provide a title for each
 patchset summarizing the changes and indicating whose comments the patchset
@@ -183,14 +188,21 @@ receive a notification. Doing this signals that your CL is ready for review
 again, since the assumption is that your CL is not ready for review until you
 hit reply.
 
+If your change is simple and you feel confident that your reviewer will approve
+your CL on the next iteration, you can set Auto-Submit +1. The CL will proceed
+to the next step automatically after approval. This feature is useful if your
+reviewer is in a different time zone and you want to land the CL sooner. Setting
+this flag also puts the onus on your reviewer to land the CL.
+
 ## 18. Land your CL
 
 Once you have obtained a Looks Good To Me (LGTM), which is reflected by a
 Code-Review+1 in Gerrit, from at least one owner for each file, then you have
 the minimum prerequisite to land your changes. It may be helpful to wait for all
 of your reviewers to approve your changes as well, even if they're not owners.
-Click `Submit to CQ` to try your change in the commit queue (CQ), which will
-land it if successful.
+Don't use `chrome/OWNERS` as a blanket stamp if your CL makes significant
+changes to subsystems. Click `Submit to CQ` to try your change in the commit
+queue (CQ), which will land it if successful.
 
 ## 19. Cleanup
 
@@ -199,6 +211,7 @@ clean up your local branches. These commands will automatically delete merged
 branches. Mark the associated crbug as "fixed".
 
 [//]: # (the reference link section should be alphabetically sorted)
+[build-instructions]: https://chromium.googlesource.com/chromium/src.git/+/master/docs/#Checking-Out-and-Building
 [contributing]: contributing.md
 [simple-chrome]: https://chromium.googlesource.com/chromiumos/docs/+/master/simple_chrome_workflow.md
 [uploading-a-change-for-review]: contributing.md#Uploading-a-change-for-review
