@@ -426,10 +426,7 @@ MAC_HIGH_END = PerfPlatform(
     'mac-10_13_laptop_high_end-perf',
     'MacBook Pro, Core i7 2.8 GHz, 16GB RAM, 256GB SSD, Radeon 55',
     _MAC_HIGH_END_BENCHMARK_CONFIGS,
-    # crbug.com/1068120
-    # The shard size is reduced from 26 to 23 due to the COVID-19
-    # situation that labs may not be able to recover devices in time.
-    23,
+    26,
     'mac',
     executables=_MAC_HIGH_END_EXECUTABLE_CONFIGS)
 MAC_LOW_END = PerfPlatform(
