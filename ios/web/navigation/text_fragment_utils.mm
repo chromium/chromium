@@ -7,6 +7,7 @@
 #include <cstring.h>
 
 #include "base/json/json_writer.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -22,6 +23,10 @@ namespace {
 
 const char kDirectivePrefix[] = ":~:";
 const char kTextFragmentPrefix[] = "text=";
+
+base::Value DecodeStringToValue(const std::string& str) {
+  return base::Value(base::UnescapeBinaryURLComponent(str));
+}
 
 }  // namespace
 
@@ -42,10 +47,14 @@ bool AreTextFragmentsAllowed(NavigationContext* context) {
 }
 
 void HandleTextFragments(WebState* state) {
+  base::Value parsed_fragments =
+      internal::ParseTextFragments(state->GetLastCommittedURL());
+
+  if (parsed_fragments.type() == base::Value::Type::NONE)
+    return;
+
   std::string fragment_param;
-  base::JSONWriter::Write(
-      internal::ParseTextFragments(state->GetLastCommittedURL()),
-      &fragment_param);
+  base::JSONWriter::Write(parsed_fragments, &fragment_param);
 
   std::string script = base::ReplaceStringPlaceholders(
       "__gCrWeb.textFragments.handleTextFragments($1, $2)",
@@ -148,16 +157,16 @@ base::Value TextFragmentToValue(std::string fragment) {
   }
 
   if (prefix.size())
-    dict.SetKey("prefix", base::Value(prefix));
+    dict.SetKey("prefix", DecodeStringToValue(prefix));
 
   // Guaranteed non-empty after checking for malformed input above.
-  dict.SetKey("textStart", base::Value(text_start));
+  dict.SetKey("textStart", DecodeStringToValue(text_start));
 
   if (text_end.size())
-    dict.SetKey("textEnd", base::Value(text_end));
+    dict.SetKey("textEnd", DecodeStringToValue(text_end));
 
   if (suffix.size())
-    dict.SetKey("suffix", base::Value(suffix));
+    dict.SetKey("suffix", DecodeStringToValue(suffix));
 
   return dict;
 }
