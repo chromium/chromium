@@ -3561,6 +3561,7 @@ test("unit_tests") {
     "../browser/policy/messaging_layer/upload/dm_server_upload_service_unittest.cc",
     "../browser/policy/messaging_layer/upload/upload_client_unittest.cc",
     "../browser/policy/messaging_layer/util/shared_queue_unittest.cc",
+    "../browser/policy/messaging_layer/util/shared_vector_unittest.cc",
     "../browser/policy/messaging_layer/util/status_macros_unittest.cc",
     "../browser/policy/messaging_layer/util/status_unittest.cc",
     "../browser/policy/messaging_layer/util/statusor_unittest.cc",

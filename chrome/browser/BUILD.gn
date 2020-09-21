@@ -1199,6 +1199,7 @@ static_library("browser") {
     "policy/messaging_layer/util/backoff_settings.cc",
     "policy/messaging_layer/util/backoff_settings.h",
     "policy/messaging_layer/util/shared_queue.h",
+    "policy/messaging_layer/util/shared_vector.h",
     "policy/messaging_layer/util/status.cc",
     "policy/messaging_layer/util/status.h",
     "policy/messaging_layer/util/status_macros.h",
