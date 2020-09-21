@@ -157,7 +157,7 @@ void HoldingSpaceTray::ShowBubble(bool show_by_click) {
   auto* separator =
       bubble_view->AddChildView(std::make_unique<views::Separator>());
   separator->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(kHoldingSpaceContainerSeparation, 0, 0, 0)));
+      gfx::Insets(kHoldingSpaceContainerSpacing, 0, 0, 0)));
 
   recent_files_container_ =
       bubble_view->AddChildView(std::make_unique<RecentFilesContainer>());

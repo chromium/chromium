@@ -9,6 +9,7 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/holding_space/holding_space_item_chip_view.h"
 #include "ash/system/holding_space/holding_space_item_chips_container.h"
 #include "ash/system/holding_space/holding_space_item_screenshot_view.h"
 #include "ash/system/tray/tray_constants.h"
@@ -25,7 +26,9 @@ RecentFilesContainer::RecentFilesContainer() {
   SetID(kHoldingSpaceRecentFilesContainerId);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, kHoldingSpaceContainerPadding));
+      views::BoxLayout::Orientation::kVertical, kHoldingSpaceContainerPadding,
+      kHoldingSpaceContainerChildSpacing));
+
   auto setup_layered_child = [](views::View* child) {
     child->SetPaintToLayer();
     child->layer()->SetFillsBoundsOpaquely(false);
@@ -40,8 +43,9 @@ RecentFilesContainer::RecentFilesContainer() {
 
   screenshots_container_ = AddChildView(std::make_unique<views::View>());
   screenshots_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(16, 0, 24, 0),
-      8));
+      views::BoxLayout::Orientation::kHorizontal,
+      kHoldingSpaceScreenshotsContainerPadding,
+      kHoldingSpaceScreenshotSpacing));
 
   // TODO(crbug.com/1125254): Populate containers if and when holding space
   // model is attached, below is a temporary solution.
@@ -63,8 +67,10 @@ RecentFilesContainer::RecentFilesContainer() {
   // TODO(crbug.com/1125254): Populate containers if and when holding space
   // model is attached, below is a temporary solution.
   for (const auto& item : HoldingSpaceController::Get()->model()->items()) {
-    if (item->type() == HoldingSpaceItem::Type::kDownload)
-      recent_downloads_container_->AddItemChip(item.get());
+    if (item->type() == HoldingSpaceItem::Type::kDownload) {
+      recent_downloads_container_->AddChildView(
+          std::make_unique<HoldingSpaceItemChipView>(item.get()));
+    }
   }
 }
 

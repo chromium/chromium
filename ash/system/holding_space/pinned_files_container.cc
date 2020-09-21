@@ -26,7 +26,8 @@ PinnedFilesContainer::PinnedFilesContainer() {
   SetID(kHoldingSpacePinnedFilesContainerId);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, kHoldingSpaceContainerPadding));
+      views::BoxLayout::Orientation::kVertical, kHoldingSpaceContainerPadding,
+      kHoldingSpaceContainerChildSpacing));
 
   auto* title_label = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_PINNED_TITLE)));
@@ -42,8 +43,10 @@ PinnedFilesContainer::PinnedFilesContainer() {
   // TODO(crbug.com/1125254): Populate containers if and when holding space
   // model is attached, below is a temporary solution.
   for (const auto& item : HoldingSpaceController::Get()->model()->items()) {
-    if (item->type() == HoldingSpaceItem::Type::kPinnedFile)
-      item_chips_container_->AddItemChip(item.get());
+    if (item->type() == HoldingSpaceItem::Type::kPinnedFile) {
+      item_chips_container_->AddChildView(
+          std::make_unique<HoldingSpaceItemChipView>(item.get()));
+    }
   }
 }
 

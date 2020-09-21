@@ -37,6 +37,8 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(const HoldingSpaceItem* item)
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets(kHoldingSpaceChipPadding), kHoldingSpaceChipChildSpacing));
 
+  SetPreferredSize(gfx::Size(kHoldingSpaceChipWidth, kHoldingSpaceChipHeight));
+
   image_ =
       AddChildView(std::make_unique<tray::RoundedImageView>(kTrayItemSize / 2));
 

@@ -8,14 +8,7 @@
 #include "ash/ash_export.h"
 #include "ui/views/view.h"
 
-namespace views {
-class ColumnSet;
-class GridLayout;
-}  // namespace views
-
 namespace ash {
-
-class HoldingSpaceItem;
 
 // A container view which automatically arranges item chips into a 2 column
 // grid.
@@ -30,12 +23,6 @@ class HoldingSpaceItemChipsContainer : public views::View {
 
   // views::View:
   const char* GetClassName() const override;
-
-  void AddItemChip(const HoldingSpaceItem* item);
-
- private:
-  views::GridLayout* layout_ = nullptr;
-  views::ColumnSet* column_set_ = nullptr;
 };
 
 }  // namespace ash

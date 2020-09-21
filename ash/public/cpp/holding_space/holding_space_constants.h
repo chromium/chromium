@@ -22,15 +22,21 @@ enum HoldingSpaceCommandId {
 
 // Appearance.
 constexpr gfx::Insets kHoldingSpaceContainerPadding(16);
-constexpr int kHoldingSpaceContainerSeparation = 8;
+constexpr int kHoldingSpaceContainerChildSpacing = 16;
+constexpr int kHoldingSpaceContainerSpacing = 8;
 constexpr gfx::Insets kHoldingSpaceChipPadding(8);
 constexpr int kHoldingSpaceChipChildSpacing = 8;
 constexpr int kHoldingSpaceChipCornerRadius = 8;
+constexpr int kHoldingSpaceChipHeight = 40;
 constexpr int kHoldingSpaceChipIconSize = 24;
-constexpr int kHoldingSpaceColumnPadding = 8;
+constexpr int kHoldingSpaceChipWidth = 160;
+constexpr int kHoldingSpaceChipsPerRow = 2;
+constexpr int kHoldingSpaceColumnSpacing = 8;
 constexpr int kHoldingSpaceColumnWidth = 160;
-constexpr int kHoldingSpaceRowPadding = 8;
+constexpr int kHoldingSpaceRowSpacing = 8;
+constexpr int kHoldingSpaceScreenshotSpacing = 8;
 constexpr gfx::Size kHoldingSpaceScreenshotSize(104, 80);
+constexpr gfx::Insets kHoldingSpaceScreenshotsContainerPadding(8, 0);
 
 // View IDs.
 constexpr int kHoldingSpacePinnedFilesContainerId = 1;
