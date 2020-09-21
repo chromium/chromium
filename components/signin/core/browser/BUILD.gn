@@ -103,6 +103,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "account_investigator_unittest.cc",
+    "account_reconcilor_delegate_unittest.cc",
     "account_reconcilor_unittest.cc",
     "dice_account_reconcilor_delegate_unittest.cc",
     "signin_error_controller_unittest.cc",

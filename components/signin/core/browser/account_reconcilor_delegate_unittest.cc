@@ -135,8 +135,8 @@ TEST_P(AccountReconcilorDelegateTest, ReorderChromeAccountsForReconcile) {
   // Check results.
   std::string order_as_string;
   for (const CoreAccountId& account : order) {
-    ASSERT_EQ(1u, account.id.size());
-    order_as_string += account.id;
+    ASSERT_EQ(1u, account.ToString().size());
+    order_as_string += account.ToString();
   }
   EXPECT_EQ(GetParam().expected_order, order_as_string);
 
