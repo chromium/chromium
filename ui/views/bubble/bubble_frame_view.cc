@@ -535,6 +535,8 @@ void BubbleFrameView::SetHeaderView(std::unique_ptr<View> view) {
 
   if (view)
     header_view_ = AddChildViewAt(std::move(view), 0);
+
+  InvalidateLayout();
 }
 
 void BubbleFrameView::SetFootnoteView(std::unique_ptr<View> view) {
