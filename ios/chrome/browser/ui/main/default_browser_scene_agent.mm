@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 
 #include "base/feature_list.h"
+#include "base/ios/ios_util.h"
+#include "base/version.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/whats_new_commands.h"
@@ -49,6 +51,33 @@
     // on.
     return;
   }
+  std::map<std::string, std::string> params;
+  if (!base::GetFieldTrialParamsByFeature(kDefaultBrowserFullscreenPromo,
+                                          &params)) {
+    // No FieldTrial in the Finch Config.
+    return;
+  } else {
+    base::Version min_os_version;
+    for (const auto& param : params) {
+      if (param.first == "min_os_version") {
+        min_os_version = base::Version(param.second);
+      }
+    }
+
+    if (min_os_version.components().size() != 3) {
+      return;
+    }
+    // Do not show fullscreen promo if the min_os_version set in the Finch
+    // Config is higher than the device os version. This is to protect users
+    // on 14.0.0 (which has the default browser reset bug) from seeing this
+    // promo.
+    std::vector<uint32_t> components = min_os_version.components();
+    if (!base::ios::IsRunningOnOrLater(components[0], components[1],
+                                       components[2])) {
+      return;
+    }
+  }
+
   AppState* appState = self.sceneState.appState;
   // Can only present UI when activation level is
   // SceneActivationLevelForegroundActive. Show the UI if user has met the
