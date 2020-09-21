@@ -902,11 +902,16 @@ interface LocalMainFrame {
 
   // Cross-Origin-Opener-Policy(COOP):
   // Check accesses made from this window to |accessed_window|. If this happens,
-  // a report will be sent to |reporter|.
+  // 1) A network report will be sent to |reporter|.
+  // 2) A ReportingObserver event will be dispatched.
+  // 3) Devtool will be notified.
+  //
+  // |endpoint_defined|: The COOP header defines at least one endpoint.
   InstallCoopAccessMonitor(
       network.mojom.CoopAccessReportType report_type,
       mojo_base.mojom.UnguessableToken accessed_window,
-      pending_remote<network.mojom.CrossOriginOpenerPolicyReporter> reporter);
+      pending_remote<network.mojom.CrossOriginOpenerPolicyReporter> reporter,
+      bool endpoint_defined);
 
   // Called on the main frame of a page embedded in a Portal when it is
   // activated. The frame has the option to adopt the previous page as a portal

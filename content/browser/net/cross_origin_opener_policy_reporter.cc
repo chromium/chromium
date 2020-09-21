@@ -310,8 +310,12 @@ void CrossOriginOpenerPolicyReporter::MonitorAccesses(
       report_type = CoopAccessReportType::kAccessToCoopPageFromOther;
   }
 
+  bool endpoint_defined =
+      coop_.report_only_reporting_endpoint || coop_.reporting_endpoint;
+
   accessing_rfh->GetAssociatedLocalMainFrame()->InstallCoopAccessMonitor(
-      report_type, *accessed_window_token, std::move(remote_reporter));
+      report_type, *accessed_window_token, std::move(remote_reporter),
+      endpoint_defined);
 }
 
 // static

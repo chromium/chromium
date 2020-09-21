@@ -140,7 +140,8 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
       network::mojom::blink::CoopAccessReportType report_type,
       LocalFrame* accessing_frame,
       mojo::PendingRemote<
-          network::mojom::blink::CrossOriginOpenerPolicyReporter> reporter);
+          network::mojom::blink::CrossOriginOpenerPolicyReporter> reporter,
+      bool endpoint_defined);
   // Whenever we detect that the enforcement of a report-only COOP policy would
   // have resulted in preventing access to this window, a report is potentially
   // sent when calling this function.
@@ -193,6 +194,7 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
     base::UnguessableToken accessing_main_frame;
     mojo::Remote<network::mojom::blink::CrossOriginOpenerPolicyReporter>
         reporter;
+    bool endpoint_defined;
   };
   WTF::Vector<CoopAccessMonitor> coop_access_monitor_;
 };

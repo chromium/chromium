@@ -142,8 +142,11 @@ CrossOriginOpenerPolicyStatus::EnforceCOOP(
         kCoopSandboxedIFrameCannotNavigateToCoopPage;
   }
 
-  std::unique_ptr<CrossOriginOpenerPolicyReporter> response_reporter =
-      CreateCoopReporterIfNeeded(response_coop, response_url);
+  StoragePartition* storage_partition = frame_tree_node_->current_frame_host()
+                                            ->GetProcess()
+                                            ->GetStoragePartition();
+  auto response_reporter = std::make_unique<CrossOriginOpenerPolicyReporter>(
+      storage_partition, response_url, response_coop);
   CrossOriginOpenerPolicyReporter* previous_reporter =
       use_current_document_coop_reporter_
           ? frame_tree_node_->current_frame_host()->coop_reporter()
@@ -184,12 +187,10 @@ CrossOriginOpenerPolicyStatus::EnforceCOOP(
     // and not only when the browsing context has an opener. Otherwise, we
     // would not emit a report when the opener of a window has a bcg switch.
     if (had_opener_) {
-      if (response_reporter) {
-        response_reporter->QueueNavigationToCOOPReport(
-            current_url_, response_referrer_url,
-            current_origin_.IsSameOriginWith(response_origin),
-            false /* is_report_only */);
-      }
+      response_reporter->QueueNavigationToCOOPReport(
+          current_url_, response_referrer_url,
+          current_origin_.IsSameOriginWith(response_origin),
+          false /* is_report_only */);
 
       if (previous_reporter) {
         previous_reporter->QueueNavigationAwayFromCOOPReport(
@@ -212,12 +213,10 @@ CrossOriginOpenerPolicyStatus::EnforceCOOP(
     // and not only when the browsing context has an opener. Otherwise, we
     // would not emit a report when the opener of a window has a bcg switch.
     if (had_opener_) {
-      if (response_reporter) {
-        response_reporter->QueueNavigationToCOOPReport(
-            current_url_, response_referrer_url,
-            current_origin_.IsSameOriginWith(response_origin),
-            true /* is_report_only */);
-      }
+      response_reporter->QueueNavigationToCOOPReport(
+          current_url_, response_referrer_url,
+          current_origin_.IsSameOriginWith(response_origin),
+          true /* is_report_only */);
 
       if (previous_reporter) {
         previous_reporter->QueueNavigationAwayFromCOOPReport(
@@ -313,32 +312,6 @@ void CrossOriginOpenerPolicyStatus::SanitizeCoopHeaders(
     coop.report_only_value =
         network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone;
   }
-}
-
-std::unique_ptr<CrossOriginOpenerPolicyReporter>
-CrossOriginOpenerPolicyStatus::CreateCoopReporterIfNeeded(
-    const network::CrossOriginOpenerPolicy& coop,
-    const GURL& url) {
-  // If the main document hasn't specified any network report endpoint(s),
-  // then it is likely not interested in receiving:
-  // 1. Network reports (for obvious reasons).
-  // 2. ReportingObserver's reports.
-  // 3. Devtools warnings.
-  //
-  // Not creating a COOP reporter currently prevents all of these.
-  //
-  // TODO(arthursonzogni): Reconsider this decision later, developers might be
-  // interested in (2) and (3), despite not being interested in (1).
-  if (!coop.reporting_endpoint && !coop.report_only_reporting_endpoint) {
-    return nullptr;
-  }
-
-  DCHECK(frame_tree_node_->IsMainFrame());
-  return std::make_unique<CrossOriginOpenerPolicyReporter>(
-      frame_tree_node_->current_frame_host()
-          ->GetProcess()
-          ->GetStoragePartition(),
-      url, coop);
 }
 
 }  // namespace content

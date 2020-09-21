@@ -81,11 +81,6 @@ class CrossOriginOpenerPolicyStatus {
                            const url::Origin& response_origin,
                            network::mojom::URLResponseHead* response_head);
 
-  // Creates a reporter based on reporting parameters specified by |coop|.
-  std::unique_ptr<CrossOriginOpenerPolicyReporter> CreateCoopReporterIfNeeded(
-      const network::CrossOriginOpenerPolicy& coop,
-      const GURL& url);
-
   // Tracks the FrameTreeNode in which this navigation is taking place.
   const FrameTreeNode* frame_tree_node_;
 

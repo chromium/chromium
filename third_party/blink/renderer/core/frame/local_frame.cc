@@ -2507,14 +2507,15 @@ void LocalFrame::InstallCoopAccessMonitor(
     network::mojom::blink::CoopAccessReportType report_type,
     const base::UnguessableToken& accessed_window,
     mojo::PendingRemote<network::mojom::blink::CrossOriginOpenerPolicyReporter>
-        reporter) {
+        reporter,
+    bool endpoint_defined) {
   blink::Frame* accessed_frame = Frame::ResolveFrame(accessed_window);
   // The Frame might have been deleted during the cross-process communication.
   if (!accessed_frame)
     return;
 
-  accessed_frame->DomWindow()->InstallCoopAccessMonitor(report_type, this,
-                                                        std::move(reporter));
+  accessed_frame->DomWindow()->InstallCoopAccessMonitor(
+      report_type, this, std::move(reporter), endpoint_defined);
 }
 
 void LocalFrame::OnPortalActivated(

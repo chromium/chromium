@@ -671,7 +671,8 @@ void RecordCrossOriginIsolationMetrics(RenderFrameHostImpl* rfh) {
         rfh, blink::mojom::WebFeature::kCoopAndCoepIsolated);
   }
 
-  if (rfh->coop_reporter()) {
+  if (rfh->cross_origin_opener_policy().reporting_endpoint ||
+      rfh->cross_origin_opener_policy().report_only_reporting_endpoint) {
     client->LogWebFeatureForCurrentPage(
         rfh, blink::mojom::WebFeature::kCrossOriginOpenerPolicyReporting);
   }

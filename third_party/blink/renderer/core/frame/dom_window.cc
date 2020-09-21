@@ -440,13 +440,14 @@ void DOMWindow::InstallCoopAccessMonitor(
     network::mojom::blink::CoopAccessReportType report_type,
     LocalFrame* accessing_frame,
     mojo::PendingRemote<network::mojom::blink::CrossOriginOpenerPolicyReporter>
-        pending_reporter) {
+        pending_reporter,
+    bool endpoint_defined) {
   CoopAccessMonitor monitor;
 
   DCHECK(accessing_frame->IsMainFrame());
   monitor.report_type = report_type;
   monitor.accessing_main_frame = accessing_frame->GetFrameToken();
-
+  monitor.endpoint_defined = endpoint_defined;
   monitor.reporter.Bind(std::move(pending_reporter));
   // CoopAccessMonitor are cleared when their reporter are gone. This avoids
   // accumulation. However it would have been interesting continuing reporting
@@ -516,25 +517,32 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
 
     auto location = SourceLocation::Capture(
         ExecutionContext::From(isolate->GetCurrentContext()));
-    // TODO(arthursonzogni): Once implemented, use the SourceLocation typemape
+    // TODO(arthursonzogni): Once implemented, use the SourceLocation typemap
     // https://chromium-review.googlesource.com/c/chromium/src/+/2041657
     auto source_location = network::mojom::blink::SourceLocation::New(
         location->Url() ? location->Url() : "", location->LineNumber(),
         location->ColumnNumber());
 
-    it->reporter->QueueAccessReport(it->report_type, property_name,
-                                    std::move(source_location));
+    // TODO(https://crbug.com/1124251): Notify Devtool about the access attempt.
 
-    // TODO(arthursonzogni): Dispatch a console error/warning message.
-
-    // Send a coop-access-violation report.
-    if (network::IsAccessFromCoopPage(it->report_type)) {
-      ReportingContext::From(accessing_main_frame.DomWindow())
-          ->QueueReport(MakeGarbageCollected<Report>(
-              ReportType::kCoopAccessViolation,
-              accessing_main_frame.GetDocument()->Url().GetString(),
-              MakeGarbageCollected<CoopAccessViolationReportBody>(
-                  std::move(location), String(property_name))));
+    // If the reporting document hasn't specified any network report
+    // endpoint(s), then it is likely not interested in receiving
+    // ReportingObserver's reports.
+    //
+    // TODO(arthursonzogni): Reconsider this decision later, developers might be
+    // interested.
+    if (it->endpoint_defined) {
+      it->reporter->QueueAccessReport(it->report_type, property_name,
+                                      std::move(source_location));
+      // Send a coop-access-violation report.
+      if (network::IsAccessFromCoopPage(it->report_type)) {
+        ReportingContext::From(accessing_main_frame.DomWindow())
+            ->QueueReport(MakeGarbageCollected<Report>(
+                ReportType::kCoopAccessViolation,
+                accessing_main_frame.GetDocument()->Url().GetString(),
+                MakeGarbageCollected<CoopAccessViolationReportBody>(
+                    std::move(location), String(property_name))));
+      }
     }
 
     // CoopAccessMonitor are used once and destroyed. This avoids sending
