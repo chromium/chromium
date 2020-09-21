@@ -124,17 +124,16 @@ crbug.com/angleproject/4846 [ mac metal passthrough ] WebglExtension_WEBGL_draw_
 # ========================
 # Fails on all platforms
 
-crbug.com/1110449 [ linux passthrough ] conformance/misc/type-conversion-test.html [ Failure ]
 crbug.com/1081973 conformance/buffers/buffer-data-and-buffer-sub-data.html [ Failure ]
 crbug.com/1082533 [ mac intel ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
-crbug.com/1082533 [ win vulkan passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
-crbug.com/1082533 [ linux vulkan passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
 crbug.com/1018028 [ win vulkan nvidia ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
 crbug.com/1110111 [ win nvidia ] conformance/rendering/point-no-attributes.html [ RetryOnFailure ]
 
 # Need to implement new error semantics
 # https://github.com/KhronosGroup/WebGL/pull/2607
-crbug.com/849572 [ passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
+crbug.com/849572 [ win d3d11 passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
+crbug.com/849572 [ opengl passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
+crbug.com/849572 [ vulkan passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 
 # Nvidia bugs fixed in latest driver
 # TODO(http://crbug.com/887241): Upgrade the drivers on the bots.
@@ -243,23 +242,17 @@ crbug.com/1096746 [ fuchsia ] conformance/glsl/functions/glsl-function-ceil.html
 # Win failures     #
 ####################
 
-crbug.com/1081973 [ win opengl passthrough ] conformance/textures/misc/compressed-tex-image.html [ Failure ]
-crbug.com/1081973 [ win vulkan passthrough ] conformance/textures/misc/compressed-tex-image.html [ Failure ]
-
 # Intel flaky issues
 crbug.com/825338 [ win intel d3d11 ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 crbug.com/929009 [ win intel ] conformance/glsl/misc/shader-with-non-reserved-words.html [ RetryOnFailure ]
 crbug.com/1023745 [ win intel d3d9 passthrough ] conformance2/textures/image_bitmap_from_video/tex-2d-r16f-red-half_float.html [ RetryOnFailure ]
+crbug.com/1111652 [ win intel vulkan passthrough ] conformance/context/context-size-change.html [ Failure ]
 
 # Intel driver issues
 crbug.com/854100 [ win intel opengl passthrough intel_lt_25.20.100.6577 ] conformance/glsl/variables/gl-pointcoord.html [ Failure ]
 crbug.com/angleproject/2909 [ win intel vulkan passthrough intel_lt_26.20.100.7000 ] conformance/ogles/GL/faceforward/faceforward_001_to_006.html [ Failure ]
 crbug.com/angleproject/2722 [ win intel vulkan passthrough intel_lt_26.20.100.7323 ] conformance/rendering/clipping-wide-points.html [ Failure ]
 crbug.com/1082565 [ win intel opengl passthrough intel_lt_26.20.100.8141 ] conformance/canvas/webgl-to-2d-canvas.html [ Failure ]
-crbug.com/angleproject/4855 [ win intel vulkan passthrough ] conformance/rendering/line-loop-tri-fan.html [ Failure ]
-crbug.com/angleproject/4855 [ win intel vulkan passthrough ] conformance/textures/misc/tex-image-and-sub-image-2d-with-array-buffer-view.html [ Failure ]
-crbug.com/angleproject/4855 [ win intel vulkan passthrough ] conformance/textures/misc/texture-transparent-pixels-initialized.html [ Failure ]
-crbug.com/angleproject/4855 [ win intel vulkan passthrough ] conformance/offscreencanvas/offscreencanvas-transfer-image-bitmap.html [ Failure ]
 
 # This is an OpenGL driver bug on Intel platform and it is fixed in
 # Intel Driver 25.20.100.6444.
@@ -395,9 +388,6 @@ crbug.com/1004581 [ win amd vulkan passthrough ] conformance/rendering/multisamp
 crbug.com/1010942 [ win amd vulkan passthrough ] conformance/glsl/samplers/glsl-function-texture2dproj.html [ Failure ]
 crbug.com/angleproject/4286 [ win amd vulkan passthrough ] conformance/rendering/out-of-bounds-array-buffers.html [ Failure ]
 
-# Vulkan / Win10 / Intel / Passthrough
-crbug.com/1111652 [ win10 intel vulkan passthrough ] conformance/context/context-size-change.html [ Failure ]
-
 ####################
 # Mac failures     #
 ####################
@@ -486,11 +476,7 @@ crbug.com/angleproject/4846 [ mac metal passthrough nvidia ] conformance/texture
 # Linux failures   #
 ####################
 
-crbug.com/1081973 [ linux opengl passthrough ] conformance/textures/misc/compressed-tex-image.html [ Failure ]
-crbug.com/1081973 [ linux vulkan passthrough ] conformance/textures/misc/compressed-tex-image.html [ Failure ]
-
 # Linux / Vulkan / Passthrough command decoder
-crbug.com/1021428 [ linux vulkan passthrough intel ] WebglExtension_EXT_shader_texture_lod [ Failure ]
 crbug.com/1021428 [ linux vulkan passthrough intel ] WebglExtension_WEBGL_depth_texture [ Failure ]
 
 # NVIDIA

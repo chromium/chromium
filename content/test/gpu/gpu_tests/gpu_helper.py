@@ -14,8 +14,9 @@ EXPECTATIONS_DRIVER_TAGS = frozenset([
     'intel_lt_26.20.100.7323',
     'intel_lt_26.20.100.7870',
     'intel_lt_26.20.100.8141',
+    'intel_lt_27.20.100.8280',
     'mesa_lt_19.1',
-    'mesa_lt_19.1.2',
+    'mesa_ge_20.1',
 ])
 
 # Driver tag format: VENDOR_OPERATION_VERSION

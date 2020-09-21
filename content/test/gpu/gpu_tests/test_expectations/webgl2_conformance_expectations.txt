@@ -13,7 +13,8 @@
 # tags: [ debug ]
 # tags: [ intel_lt_25.20.100.6444 intel_lt_25.20.100.6577
 #         intel_lt_26.20.100.7870 intel_lt_26.20.100.8141
-#         mesa_lt_19.1 mesa_lt_19.1.2 ]
+#         intel_lt_27.20.100.8280
+#         mesa_lt_19.1 mesa_ge_20.1 ]
 # tags: [ no-asan asan ]
 # results: [ Failure RetryOnFailure Skip ]
 
@@ -72,7 +73,7 @@ crbug.com/891861 [ android no-passthrough ] WebglExtension_WEBGL_multi_draw_inst
 # Failing new updated tests
 crbug.com/1108044 conformance2/renderbuffers/readbuffer.html [ Failure ]
 crbug.com/1108086 [ no-passthrough ] conformance2/renderbuffers/framebuffer-object-attachment.html [ Failure ]
-crbug.com/angleproject/4807 [ win passthrough ] conformance2/glsl3/switch-case.html [ Failure ]
+crbug.com/angleproject/4807 [ win d3d11 passthrough ] conformance2/glsl3/switch-case.html [ Failure ]
 crbug.com/1081973 conformance/buffers/buffer-data-and-buffer-sub-data.html [ Failure ]
 crbug.com/1082455 [ win ] conformance2/renderbuffers/multisampled-depth-renderbuffer-initialization.html [ Failure ]
 crbug.com/1082455 [ linux ] conformance2/renderbuffers/multisampled-depth-renderbuffer-initialization.html [ Failure ]
@@ -127,8 +128,6 @@ crbug.com/792210 [ nvidia ] conformance/glsl/bugs/in-parameter-passed-as-inout-a
 # Win failures     #
 ####################
 
-crbug.com/1081973 [ win opengl passthrough ] conformance2/textures/misc/compressed-tex-image.html [ Failure ]
-crbug.com/1081973 [ win vulkan passthrough ] conformance2/textures/misc/compressed-tex-image.html [ Failure ]
 crbug.com/angleproject/4417 [ win d3d11 ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
 crbug.com/angleproject/4417 [ win d3d11 ] conformance2/rendering/framebuffer-render-to-layer-angle-issue.html [ Failure ]
 crbug.com/1127867 [ win d3d11 ] conformance2/textures/image_data/tex-3d-rgb565-rgb-unsigned_byte.html [ RetryOnFailure ]
@@ -145,11 +144,11 @@ crbug.com/1093482 [ win10 intel-0x3e92 ] deqp/functional/gles3/shadermatrix/sub_
 crbug.com/1093482 [ win10 intel-0x5912 ] deqp/functional/gles3/shadermatrix/sub_dynamic.html [ RetryOnFailure ]
 
 # Intel failed issues
-crbug.com/795030 [ opengl win passthrough intel ] deqp/functional/gles3/shadercommonfunction.html [ Failure ]
 crbug.com/angleproject/2994 [ opengl win passthrough intel ] conformance2/textures/misc/copy-texture-image-same-texture.html [ Failure ]
 crbug.com/1042246 [ opengl win passthrough intel ] conformance2/extensions/ext-texture-norm16.html [ Skip ]
 
 # Intel driver issues
+crbug.com/795030 [ win intel opengl passthrough intel_lt_27.20.100.8280 ] deqp/functional/gles3/shadercommonfunction.html [ Failure ]
 crbug.com/602688 [ win intel opengl passthrough intel_lt_26.20.100.7870 ] conformance2/glsl3/vector-dynamic-indexing.html [ Failure ]
 crbug.com/1082565 [ win intel opengl passthrough intel_lt_26.20.100.8141 ] conformance/canvas/webgl-to-2d-canvas.html [ Failure ]
 
@@ -723,15 +722,15 @@ crbug.com/1130119 [ mac apple-apple-a12z passthrough opengl ] deqp/functional/gl
 # Linux failures   #
 ####################
 
-crbug.com/1081973 [ linux opengl passthrough ] conformance2/textures/misc/compressed-tex-image.html [ Failure ]
 crbug.com/1060012 [ linux no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/angleproject/4417 [ linux no-passthrough ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
-crbug.com/1081978 [ linux intel opengl passthrough ] conformance2/textures/misc/tex-3d-size-limit.html [ Failure ]
 
 # Mesa issues
 # Driver tag doesn't work on the passthrough command decoder because the detected driver version is ANGLE's version.
-crbug.com/950552 [ linux intel mesa_lt_19.1.2 ] conformance2/textures/misc/tex-base-level-bug.html [ Failure ]
+crbug.com/1127180 [ linux intel no-passthrough mesa_ge_20.1 ] deqp/functional/gles3/shaderindexing/tmp.html [ Failure ]
+crbug.com/1127180 [ linux intel no-passthrough mesa_ge_20.1 ] deqp/data/gles3/shaders/functions.html [ Failure ]
 crbug.com/1084864 [ linux intel opengl passthrough ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
+crbug.com/1081978 [ linux intel opengl passthrough ] conformance2/textures/misc/tex-3d-size-limit.html [ Failure ]
 crbug.com/angleproject/4242 [ linux intel opengl passthrough ] conformance2/glsl3/matrix-row-major-dynamic-indexing.html [ Failure ]
 crbug.com/angleproject/4242 [ linux intel no-passthrough mesa_lt_19.1 ] conformance2/glsl3/matrix-row-major-dynamic-indexing.html [ Failure ]
 
