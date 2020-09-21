@@ -122,7 +122,7 @@
 
 Si esta política se establece en False, no se informará sobre el estado del conector de modo de desarrollador.</translation>
 <translation id="1160479894929412407">Permitir protocolo QUIC</translation>
-<translation id="1160939557934457296">Inhabilitar seguir navegando desde la página de advertencia sobre Navegación Segura</translation>
+<translation id="1160939557934457296">Inhabilitar seguir navegando desde la página de advertencia sobre Navegación segura</translation>
 <translation id="1163080558183062209">Inhabilitar tipos de impresora en la lista de denegación</translation>
 <translation id="117059611145966538">Servidores de impresión externos</translation>
 <translation id="1177567780207290133">Si la política se define, controla el filtro de URL SafeSites, que usa la API Google Safe Search para clasificar las URL como pornográficas o no.
@@ -157,7 +157,7 @@ Si no se establece ningún valor para esta política, la frecuencia predetermina
 
       El valor predeterminado es RollbackDisabled.</translation>
 <translation id="1221359380862872747">Cargar URL especificadas en el inicio de sesión de demostración</translation>
-<translation id="1223789468190631420">Estado habilitado de Navegación Segura con fuentes de confianza</translation>
+<translation id="1223789468190631420">Estado habilitado de Navegación segura con fuentes de confianza</translation>
 <translation id="122899932962115297">Una lista blanca que controla qué modos de desbloqueo rápido puede configurar y emplear el usuario para desbloquear la pantalla. 
           Este valor es una lista de cadenas. Entre los registros válidos de la lista, se incluyen "all", "PIN" y "FINGERPRINT". Si se añade "all" a la lista, todos los modos de desbloqueo rápido están disponibles para el usuario, incluidos los que se implementarán en el futuro. Si no se añade, solo los modos de desbloqueo rápido incluidos en la lista están disponibles.
           
@@ -350,17 +350,17 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 
        Estos son los efectos de cada valor:
 
-      * "Bloquear descargas peligrosas": se permiten todas las descargas excepto las que incluyan advertencias de Navegación Segura.
+      * "Bloquear descargas peligrosas": se permiten todas las descargas excepto las que incluyan advertencias de Navegación segura.
 
-      * "Bloquear descargas potencialmente peligrosas": se permiten todas las descargas excepto las que incluyan advertencias de Navegación Segura sobre descargas potencialmente peligrosas.
+      * "Bloquear descargas potencialmente peligrosas": se permiten todas las descargas excepto las que incluyan advertencias de Navegación segura sobre descargas potencialmente peligrosas.
 
       * "Bloquear todas las descargas": se bloquean todas las descargas.
 
-      * "Bloquear las descargas de contenido malicioso": se permiten todas las descargas excepto las que Navegación Segura define como software malicioso con un nivel elevado de certeza. A diferencia de la opción "Bloquear descargas peligrosas", esta opción no tiene en cuenta el tipo de archivo, pero sí el host.
+      * "Bloquear las descargas de contenido malicioso": se permiten todas las descargas excepto las que Navegación segura define como software malicioso con un nivel elevado de certeza. A diferencia de la opción "Bloquear descargas peligrosas", esta opción no tiene en cuenta el tipo de archivo, pero sí el host.
 
-      * "Sin restricciones especiales": se aplican a las descargas las restricciones de seguridad habituales en función de los resultados de análisis de Navegación Segura.
+      * "Sin restricciones especiales": se aplican a las descargas las restricciones de seguridad habituales en función de los resultados de análisis de Navegación segura.
 
-      Nota: Estas restricciones se aplican a las descargas activadas desde el contenido de las páginas web o a través de la opción "Descargar enlace..." del menú. No se aplican a la opción Descargar de la página actual ni a la opción Guardar como PDF de las opciones de impresión. Consulta más información sobre Navegación Segura en la siguiente página: https://developers.google.com/safe-browsing.</translation>
+      Nota: Estas restricciones se aplican a las descargas activadas desde el contenido de las páginas web o a través de la opción "Descargar enlace..." del menú. No se aplican a la opción Descargar de la página actual ni a la opción Guardar como PDF de las opciones de impresión. Consulta más información sobre Navegación segura en la siguiente página: https://developers.google.com/safe-browsing.</translation>
 <translation id="1553532014072799546">Lista blanca de límites de tiempo por aplicación</translation>
 <translation id="1553956579506604198">Bloquea las extensiones externas para que no puedan instalarse</translation>
 <translation id="1555248923316727072">Configuración de gestión de identidades de usuarios de SAML</translation>
@@ -696,9 +696,9 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2113068765175018713">Limitar tiempo de actividad de dispositivo mediante reinicio automático</translation>
 <translation id="2124881675920287921">Esta política está obsoleta en la versión M82 y se eliminará en la versión M85. Utiliza <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> en su lugar. Inhabilitar <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" /> equivale a inhabilitar <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. Habilitar <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" /> o no configurar este ajuste equivale a no configurar <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />.
 
-      Si se asigna el valor "false" a esta política, los usuarios no podrán elegir si enviar o no parte de la información del sistema y del contenido de las páginas a los servidores de Google. Si se le asigna el valor "true" o no se configura, los usuarios podrán enviar parte de la información del sistema y del contenido de las páginas a la función Navegación Segura para que detecte aplicaciones y sitios web peligrosos.
+      Si se asigna el valor "false" a esta política, los usuarios no podrán elegir si enviar o no parte de la información del sistema y del contenido de las páginas a los servidores de Google. Si se le asigna el valor "true" o no se configura, los usuarios podrán enviar parte de la información del sistema y del contenido de las páginas a la función Navegación segura para que detecte aplicaciones y sitios web peligrosos.
 
-      Consulta la página https://developers.google.com/safe-browsing para obtener más información acerca de Navegación Segura.</translation>
+      Consulta la página https://developers.google.com/safe-browsing para obtener más información acerca de Navegación segura.</translation>
 <translation id="2127599828444728326">Permitir notificaciones en estos sitios</translation>
 <translation id="2131902621292742709">Retraso de atenuado de pantalla cuando el dispositivo funciona con la batería</translation>
 <translation id="2132424782557550556">Configura las políticas de informes en la nube.
@@ -856,7 +856,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2327252517317514801">Definir los dominios autorizados para acceder a G Suite</translation>
 <translation id="2328573323851533589">Esta política se puede utilizar para habilitar o inhabilitar de forma forzada la comprobación de filtraciones de credenciales en <ph name="PRODUCT_NAME" />.
 
-          Ten en cuenta que aunque se le asigne el valor "True" a esta política, este comportamiento no se activará si se ha inhabilitado la Navegación Segura, ya sea por obra de una política o del propio usuario. Para activar la Navegación Segura de forma forzosa, utiliza la política <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" />.
+          Ten en cuenta que aunque se le asigne el valor "True" a esta política, este comportamiento no se activará si se ha inhabilitado la Navegación segura, ya sea por obra de una política o del propio usuario. Para activar la Navegación segura de forma forzosa, utiliza la política <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" />.
 
           Si esta política está habilitada o inhabilitada, los usuarios no podrán cambiarla ni anularla en <ph name="PRODUCT_NAME" />. Si no se define esta política, se permitirá la comprobación de filtraciones de credenciales, pero el usuario podrá desactivarla.</translation>
 <translation id="2331354174913096226">La plantilla URI de la resolución de DNS-over-HTTPS deseada. Para especificar varias resoluciones de DNS-over-HTTPS, separa las plantillas URI correspondientes con espacios.
@@ -1086,7 +1086,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
           Si no se establece esta política, se utiliza un valor de tiempo predeterminado.
 
           El valor de esta política debe especificarse en milisegundos. Los valores deben ser inferiores o iguales al retraso de inactividad.</translation>
-<translation id="2548572254685798999">Recoger información sobre Navegación Segura</translation>
+<translation id="2548572254685798999">Recoger información sobre Navegación segura</translation>
 <translation id="2550593661567988768">Solo impresión por una cara</translation>
 <translation id="2551520365302988324">Enviar subidas de usuario para analizarlas</translation>
 <translation id="2552318891854145040">Si se establece esta política, se definirá una lista de marcadores en la que cada uno es un diccionario con las claves "<ph name="NAME" />" y "<ph name="URL_LABEL" />". Estas claves contienen el nombre y la URL de destino del marcador. Los administradores podrán configurar una subcarpeta definiendo un marcador sin una clave "<ph name="URL_LABEL" />", pero con una clave "<ph name="CHILDREN" />" adicional. Esta clave también contiene una lista de marcadores, algunos de los cuales también pueden ser carpetas. Chrome modifica las URL incompletas como si se enviasen mediante la barra de direcciones. Por ejemplo, "<ph name="GOOGLE_COM" />" se convierte en "<ph name="HTTPS_GOOGLE_COM" />".
@@ -1118,7 +1118,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2592162121850992309">Si se asigna el valor "True" a esta política o no se le asigna ningún valor, se habilitará la aceleración por hardware a no ser que se incluya una función de GPU determinada en la lista negra.
 
       Si se le asigna el valor "False", se inhabilitará la aceleración por hardware.</translation>
-<translation id="2593762551209145088">Navegación Segura nunca está activa.</translation>
+<translation id="2593762551209145088">Navegación segura nunca está activa.</translation>
 <translation id="26023406105317310">Configurar las cuentas de Kerberos</translation>
 <translation id="2604182581880595781">Configura las políticas relacionadas con el uso compartido de archivos del sistema.</translation>
 <translation id="2615240493030733717">Informar sobre la zona horaria</translation>
@@ -1199,7 +1199,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Esta política se aplica a la pantalla de inicio de sesión. También puedes consultar la política <ph name="SITE_PER_PROCESS_POLICY_NAME" />, que se aplica a la sesión del usuario. Se recomienda asignar el mismo valor a ambas políticas. Si los valores de las dos políticas no coinciden, es posible que se produzca un retraso al acceder a una sesión de usuario mientras se aplica el valor especificado por la política del usuario.
       </translation>
 <translation id="2706708761587205154">Permitir imprimir solo con PIN</translation>
-<translation id="2707873794476722903">La función Navegación Segura está activa en modo estándar.</translation>
+<translation id="2707873794476722903">La función Navegación segura está activa en modo estándar.</translation>
 <translation id="2710534340210290498">Si se asigna el valor "False" a esta política, los usuarios no podrán bloquear la pantalla (solo podrán cerrar su sesión de usuario). Si se asigna el valor "True" a esta opción o no se le asigna ninguno, los usuarios que se autenticaron con una contraseña pueden bloquear la pantalla.</translation>
 <translation id="2731627323327011390">Inhabilitar el uso de certificados de <ph name="PRODUCT_OS_NAME" /> a las aplicaciones ARC</translation>
 <translation id="2742843273354638707">Permite ocultar la aplicación Chrome Web Store y el enlace de la parte inferior de la página en la página Nueva pestaña y en el menú de aplicaciones de <ph name="PRODUCT_OS_NAME" />.
@@ -1436,9 +1436,9 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       En la versión 81 y versiones posteriores de <ph name="PRODUCT_NAME" />, si no se establece la política, la autenticación pasiva se habilitará únicamente en las sesiones normales.</translation>
 <translation id="3021288356473993647">Esta política controla la comprobación de URLs en tiempo real para identificar URL no seguras.
 
-      Si se inhabilita o no se le asigna ningún valor, se aplicarán las comprobaciones predeterminadas de Navegación Segura para usuarios particulares. Las comprobaciones de Navegación Segura para usuarios particulares podrán seguir incluyendo consultas en tiempo real en función del valor del ajuste "Mejorar las búsquedas y la navegación" y del valor de la política UrlKeyedAnonymizedDataCollectionEnabled.
+      Si se inhabilita o no se le asigna ningún valor, se aplicarán las comprobaciones predeterminadas de Navegación segura para usuarios particulares. Las comprobaciones de Navegación segura para usuarios particulares podrán seguir incluyendo consultas en tiempo real en función del valor del ajuste "Mejorar las búsquedas y la navegación" y del valor de la política UrlKeyedAnonymizedDataCollectionEnabled.
 
-      Si se habilita esta política, las URL se enviarán para que se analicen en tiempo real de acuerdo con los Términos del Servicio de Chrome Enterprise. Chrome enviará las URL a Google Cloud o a terceros de tu elección para que se analicen en tiempo real. Se desactivará la versión para usuarios particulares de la búsqueda en tiempo real de Navegación Segura.
+      Si se habilita esta política, las URL se enviarán para que se analicen en tiempo real de acuerdo con los Términos del Servicio de Chrome Enterprise. Chrome enviará las URL a Google Cloud o a terceros de tu elección para que se analicen en tiempo real. Se desactivará la versión para usuarios particulares de la búsqueda en tiempo real de Navegación segura.
 
       Esta política solo se puede establecer desde la consola de administración de Google.</translation>
 <translation id="3021562480854470924">Se permite restaurar el número de eventos clave</translation>
@@ -1790,7 +1790,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="3554984410014457319">Permite que el Asistente de Google escuche la frase de activación</translation>
 <translation id="3562741878192828370">Lista de tipos de archivo que deberían abrirse automáticamente al descargarse. No se debe incluir el separador inicial al añadir un tipo de archivo a la lista, así que añade "txt" en lugar de ".txt".
 
-      Los archivos de los tipos que se deben abrir automáticamente seguirán estando sujetos a las comprobaciones de Navegación Segura y no se abrirán si no las superan.
+      Los archivos de los tipos que se deben abrir automáticamente seguirán estando sujetos a las comprobaciones de Navegación segura y no se abrirán si no las superan.
 
       Si no se establece esta política, solo se abrirán automáticamente al descargarse los tipos de archivo que haya especificado el usuario.
 
@@ -2340,19 +2340,19 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 <translation id="4382413175336720282">La comprobación de URL en tiempo real está inhabilitada.</translation>
 <translation id="4389073105055031853">Permitir que los usuarios gestionen todos los certificados</translation>
 <translation id="4389091865841123886">Permite configurar la confirmación remota con el mecanismo de TPM.</translation>
-<translation id="4401496838830169080">Te permite controlar si la función Navegación Segura de <ph name="PRODUCT_NAME" /> está habilitada y el modo en el que funciona.
+<translation id="4401496838830169080">Te permite controlar si la función Navegación segura de <ph name="PRODUCT_NAME" /> está habilitada y el modo en el que funciona.
 
-      Si se asigna el valor NoProtection (valor 0) a esta política, Navegación Segura no estará activa nunca.
+      Si se asigna el valor NoProtection (valor 0) a esta política, Navegación segura no estará activa nunca.
 
-      Si se le asigna el valor StandardProtection (valor 1, que es el predeterminado), Navegación Segura estará siempre activa en modo estándar.
+      Si se le asigna el valor StandardProtection (valor 1, que es el predeterminado), Navegación segura estará siempre activa en modo estándar.
 
-      Si se le asigna el valor EnhancedProtection (valor 2), Navegación Segura estará siempre activa en modo mejorado, el cual proporciona mayor seguridad, pero requiere compartir más información de navegación con Google.
+      Si se le asigna el valor EnhancedProtection (valor 2), Navegación segura estará siempre activa en modo mejorado, el cual proporciona mayor seguridad, pero requiere compartir más información de navegación con Google.
 
-      Si estableces esta política como obligatoria, los usuarios no podrán cambiar ni anular la opción de Navegación Segura en <ph name="PRODUCT_NAME" />.
+      Si estableces esta política como obligatoria, los usuarios no podrán cambiar ni anular la opción de Navegación segura en <ph name="PRODUCT_NAME" />.
 
-      Si no se establece esta política, Navegación Segura funcionará en modo de protección estándar, pero los usuarios podrán cambiar esta opción.
+      Si no se establece esta política, Navegación segura funcionará en modo de protección estándar, pero los usuarios podrán cambiar esta opción.
 
-      Consulta la página https://developers.google.com/safe-browsing para obtener más información acerca de Navegación Segura.</translation>
+      Consulta la página https://developers.google.com/safe-browsing para obtener más información acerca de Navegación segura.</translation>
 <translation id="4408428864159735559">Lista de sistemas de archivos de red compartidos preconfigurados.</translation>
 <translation id="4410236409016356088">Habilitar la limitación de ancho de banda</translation>
 <translation id="441217499641439905">Inhabilitar Google Drive a través de conexiones móviles en la aplicación Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
@@ -2361,7 +2361,7 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
       Si se le asigna el valor "False", el navegador no volverá a mostrar la página de bienvenida la primera vez que inicies el navegador después de actualizar el SO.</translation>
 <translation id="4418726081189202489">Si se asigna el valor false a esta política, <ph name="PRODUCT_NAME" /> no podrá enviar consultas de forma ocasional a un servidor de Google para obtener una marca de tiempo precisa. Estas consultas se habilitarán si le asigna el valor true a esta política o si no se configura.</translation>
 <translation id="4423597592074154136">Especificar configuración de proxy manualmente</translation>
-<translation id="4432762137771104529">Habilita los informes ampliados de Navegación Segura</translation>
+<translation id="4432762137771104529">Habilita los informes ampliados de Navegación segura</translation>
 <translation id="443454694385851356">Antiguos (no seguro)</translation>
 <translation id="443665821428652897">Borrar datos del sitio al cerrar el navegador (obsoleta)</translation>
 <translation id="4438784219739665968">Permite que el dispositivo ejecute PluginVm.
@@ -2416,8 +2416,8 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
       Si hay varias cuentas de usuario en un dispositivo administrado, la notificación solo se muestra si se asigna el valor True a esta política.
       En dispositivos no administrados, la notificación se muestra siempre.</translation>
 <translation id="4510923771103268849">El usuario puede tener acceso root a los contenedores de Crostini</translation>
-<translation id="4515404363392014383">Habilitar Navegación Segura en fuentes de confianza</translation>
-<translation id="4517928394515633751">Analizar las descargas de los usuarios con Navegación Segura</translation>
+<translation id="4515404363392014383">Habilitar Navegación segura en fuentes de confianza</translation>
+<translation id="4517928394515633751">Analizar las descargas de los usuarios con Navegación segura</translation>
 <translation id="4518251772179446575">Preguntar siempre que un sitio quiera hacer un seguimiento de la ubicación física de los usuarios</translation>
 <translation id="4529868888205510667">Si se asigna el valor "true" a esta política o no se le asigna ninguno, se permite a los usuarios utilizar ARC, a menos que ARC se haya desactivado de otra forma. Si se le asigna el valor "false", no se permite usar ARC a los usuarios no afiliados.
 
@@ -2505,9 +2505,9 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 <translation id="465099050592230505">URL de la tienda online de la empresa (política obsoleta)</translation>
 <translation id="4656856690225958260">Esta política está obsoleta. Usa la política <ph name="SAFE_BROWSING_ALLOWLIST_DOMAINS_POLICY_NAME" /> en su lugar.
 
-      Si se habilita esta política, Navegación Segura confiará en los dominios que indiques. No comprobará si los recursos son peligrosos (por ejemplo: suplantación de identidad, software malicioso o software no deseado). El servicio de protección de descargas de Navegación Segura no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará si se reutilizan contraseñas.
+      Si se habilita esta política, Navegación segura confiará en los dominios que indiques. No comprobará si los recursos son peligrosos (por ejemplo: suplantación de identidad, software malicioso o software no deseado). El servicio de protección de descargas de Navegación segura no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará si se reutilizan contraseñas.
 
-      Si se inhabilita la política o se deja sin definir, se aplicará la protección predeterminada de Navegación Segura a todos los recursos.
+      Si se inhabilita la política o se deja sin definir, se aplicará la protección predeterminada de Navegación segura a todos los recursos.
 
        En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="4661889655253181651">La configuración de contenido permite especificar la gestión de un tipo específico de contenido (por ejemplo, cookies, imágenes o JavaScript).</translation>
@@ -2593,11 +2593,11 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
           Si el valor de una lista de bloqueados es un asterisco (*), se bloquearán todos los hosts de mensajes nativos excepto los que estén incluidos explícitamente en la lista de permitidos.
 
           Si no se asigna ningún valor a esta política, <ph name="PRODUCT_NAME" /> cargará todos los hosts instalados de mensajes nativos.</translation>
-<translation id="4771144269610910963">Esta política controla el análisis profundo de las descargas de usuario con Navegación Segura. Si no se le asigna ningún valor o se le asigna el valor predeterminado "No analizar archivos", las descargas de usuario no se analizarán con Navegación Segura.
+<translation id="4771144269610910963">Esta política controla el análisis profundo de las descargas de usuario con Navegación segura. Si no se le asigna ningún valor o se le asigna el valor predeterminado "No analizar archivos", las descargas de usuario no se analizarán con Navegación segura.
 
-      Si se le asigna el valor "Enviar descargas de usuario para analizarlas", las descargas de usuario se enviarán a Navegación Segura a través de la red para realizar un análisis de software malicioso.
+      Si se le asigna el valor "Enviar descargas de usuario para analizarlas", las descargas de usuario se enviarán a Navegación segura a través de la red para realizar un análisis de software malicioso.
 
-      Si se le asigna el valor "Enviar subidas de usuario para analizarlas", las subidas de usuario se enviarán a Navegación Segura a través de la red para realizar un análisis de software malicioso.
+      Si se le asigna el valor "Enviar subidas de usuario para analizarlas", las subidas de usuario se enviarán a Navegación segura a través de la red para realizar un análisis de software malicioso.
 
       Si se le asigna el valor "Enviar subidas y descargas de usuario para analizarlas", seguirá las reglas de los valores "Enviar subidas de usuario para analizarlas" y "Enviar descargas de usuario para analizarlas" que hemos descrito.
 
@@ -2659,7 +2659,7 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 
       Si no se le asigna ningún valor, <ph name="PRODUCT_NAME" /> solo se conectará con dispositivos de emisión en direcciones de RFC 1918 o RFC 4193, a no ser que la función CastAllowAllIPs esté activada.</translation>
 <translation id="489803897780524242">Parámetro que controla el emplazamiento de los términos de búsqueda para el proveedor de búsquedas predeterminado</translation>
-<translation id="4899708173828500852">Habilitar Navegación Segura</translation>
+<translation id="4899708173828500852">Habilitar Navegación segura</translation>
 <translation id="4902163780937592202">Habilita la combinación de las siguientes políticas de lista de instalación de extensiones: <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" /> y <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.
 
       Si habilitas esta opción, los valores de la política de plataforma del equipo, de la política de nube del equipo y de la política de plataforma del usuario se combinarán en una única lista que se usará en conjunto, en lugar de utilizar únicamente los valores de la fuente que tenga mayor prioridad.
@@ -2700,13 +2700,13 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 <translation id="4952347392677351397">Si se le asigna el valor 1 a esta política, los sitios web podrán usar y acceder a los sensores, como los de luz o movimiento. Si se le asigna el valor 2, se denegará el acceso a los sensores.
 
       Si no se le asigna ningún valor, se aplicará la política <ph name="ALLOW_SENSORS_POLICY_NAME" />, pero los usuarios podrán cambiar esta opción.</translation>
-<translation id="4954185885991137927">Si se habilita esta política, se activan los informes ampliados de Navegación Segura de <ph name="PRODUCT_NAME" />, que envían parte de la información del sistema y del contenido de las páginas a los servidores de Google para ayudar a detectar aplicaciones y sitios web peligrosos.
+<translation id="4954185885991137927">Si se habilita esta política, se activan los informes ampliados de Navegación segura de <ph name="PRODUCT_NAME" />, que envían parte de la información del sistema y del contenido de las páginas a los servidores de Google para ayudar a detectar aplicaciones y sitios web peligrosos.
 
       Si se inhabilita, no se envía ningún informe.
 
       Si se le asigna un valor a esta política, los usuarios no podrán cambiarlo. Si no se le asigna ningún valor, los usuarios podrán decidir si quieren enviar informes o no.
 
-      Consulta más información sobre Navegación Segura en https://developers.google.com/safe-browsing.</translation>
+      Consulta más información sobre Navegación segura en https://developers.google.com/safe-browsing.</translation>
 <translation id="4962262530309732070">Si se asigna el valor true a esta política o si esta no se configura, <ph name="PRODUCT_NAME" /> permitirá la opción Añadir persona del administrador de usuarios.
 
       Si se asigna el valor false a esta política, <ph name="PRODUCT_NAME" /> no se podrán crear perfiles desde el administrador de usuarios.</translation>
@@ -2896,7 +2896,7 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
       * Moderado: el usuario solo puede seleccionar los modos restringidos moderado y estricto en YouTube, pero no puede desactivar el modo restringido.
 
       * Desactivado, o si no se define: Chrome no aplica el modo restringido en YouTube. Políticas externas, como las de YouTube, pueden seguir aplicando el modo restringido.</translation>
-<translation id="519247340330463721">Configura las políticas relacionadas con la función Navegación Segura</translation>
+<translation id="519247340330463721">Configura las políticas relacionadas con la función Navegación segura</translation>
 <translation id="5196520640744454600">Habilitar las teclas persistentes en la pantalla de inicio de sesión</translation>
 <translation id="5212118847531454979">Permite establecer el periodo (en milisegundos) durante el cual los usuarios reciben una notificación informándoles de que deben reiniciar <ph name="PRODUCT_NAME" /> o un dispositivo <ph name="PRODUCT_OS_NAME" /> para aplicar una actualización pendiente.
 
@@ -3118,9 +3118,9 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 
           Si se le asigna el valor "Inhabilitada", esta función se inhabilitará de forma forzosa.
           </translation>
-<translation id="5433987053727629422">Si se habilita esta política, Navegación Segura confiará en los dominios que indiques. No comprobará si los recursos son peligrosos (por ejemplo: suplantación de identidad, software malicioso o software no deseado). El servicio de protección de descargas de Navegación Segura no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará si se reutilizan contraseñas.
+<translation id="5433987053727629422">Si se habilita esta política, Navegación segura confiará en los dominios que indiques. No comprobará si los recursos son peligrosos (por ejemplo: suplantación de identidad, software malicioso o software no deseado). El servicio de protección de descargas de Navegación segura no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará si se reutilizan contraseñas.
 
-      Si se inhabilita la política o se deja sin definir, se aplicará la protección predeterminada de Navegación Segura a todos los recursos.
+      Si se inhabilita la política o se deja sin definir, se aplicará la protección predeterminada de Navegación segura a todos los recursos.
 
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="5437214086679373363">Controla si se permite a los usuarios subir o descargar archivos protegidos con contraseña cuando sea necesario realizar un análisis de los ficheros.  Esta restricción solo se aplica a los archivos que deban analizarse según se establezca en las políticas <ph name="SEND_FILES_FOR_MALWARE_CHECK_POLICY_NAME" /> y <ph name="CHECK_CONTENT_COMPLIANCE_POLICY_NAME" />, y en las políticas que controlan la lista de dominios en los que se hayan habilitado las comprobaciones.
@@ -3456,9 +3456,9 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
       <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> puede ser una versión exacta, como 13305.0.0, o el prefijo de una versión, como 13305.
       <ph name="WARNING_PERIOD_PROPERTY_NAME" /> y <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" /> son propiedades opcionales que se definen en número de días. El valor predeterminado es 0 días, lo que significa que no hay ningún periodo de advertencia.
       <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> es una propiedad opcional cuyo valor predeterminado es False.</translation>
-<translation id="5877790747601986904">Si la política se habilita o no se define, Navegación Segura analizará los archivos que se descarguen, aunque provengan de una fuente de confianza.
+<translation id="5877790747601986904">Si la política se habilita o no se define, Navegación segura analizará los archivos que se descarguen, aunque provengan de una fuente de confianza.
 
-      Si la política se inhabilita, Navegación Segura no analizará los archivos que se descarguen si provienen de una fuente de confianza.
+      Si la política se inhabilita, Navegación segura no analizará los archivos que se descarguen si provienen de una fuente de confianza.
 
       Estas restricciones se aplican a las descargas activadas desde el contenido de las páginas web o a través de la opción "Descargar enlace" del menú. No se aplican a la opción para guardar o descargar de la página actual ni a la opción para guardar como PDF de las opciones de impresión.
 
@@ -3524,12 +3524,12 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 
           Nota: <ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLICY_NAME" /> anula esta política si se especifica la anterior.</translation>
 <translation id="6011969832398368671">Permitir que los sitios web pidan al usuario que otorgue permiso de escritura a archivos y directorios</translation>
-<translation id="6015281292796053435">Esta política determina si se recoge información de Navegación Segura, incluido el número de advertencias de esta función y el número de clics de destino después de las advertencias.
+<translation id="6015281292796053435">Esta política determina si se recoge información de Navegación segura, incluido el número de advertencias de esta función y el número de clics de destino después de las advertencias.
 
       Si no se establece la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> o se inhabilita, esta se ignorará.
 
-      Si no se establece esta política o se le asigna el valor "true", se recogerán datos de Navegación Segura.
-      Si se le asigna el valor "false" a esta política, no se recogerán datos de Navegación Segura.
+      Si no se establece esta política o se le asigna el valor "true", se recogerán datos de Navegación segura.
+      Si se le asigna el valor "false" a esta política, no se recogerán datos de Navegación segura.
 
       Esta política solo es efectiva cuando el equipo está registrado en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
       Para <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.</translation>
@@ -3612,8 +3612,8 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 <translation id="6111936128861357925">Permitir el juego del huevo de pascua de dinosaurio</translation>
 <translation id="6114416803310251055">obsoleto</translation>
 <translation id="6133088669883929098">Permitir que todos los sitios web utilicen la generación de claves</translation>
-<translation id="6135398260575578389">Navegación Segura está activa en modo mejorado. Este modo proporciona mayor seguridad, pero requiere compartir más información de navegación con Google.</translation>
-<translation id="6138636318340561140">Comprueba en tiempo real el estado de Navegación Segura de las URL</translation>
+<translation id="6135398260575578389">Navegación segura está activa en modo mejorado. Este modo proporciona mayor seguridad, pero requiere compartir más información de navegación con Google.</translation>
+<translation id="6138636318340561140">Comprueba en tiempo real el estado de Navegación segura de las URL</translation>
 <translation id="6141402445226505817">Utilizar siempre la detección de zona horaria común</translation>
 <translation id="6144046700495610112">Si se asigna el valor "Habilitada" a esta política, se importarán los datos de formularios para la función Autocompletar del navegador predeterminado anterior al ejecutarse por primera vez. Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, no se importarán estos datos al ejecutarse por primera vez.
 
@@ -3847,7 +3847,7 @@ Si la política está establecida en False, no se informará sobre los usuarios.
 <translation id="6464074037294098618">Habilitar la función Autocompletar para direcciones</translation>
 <translation id="6467613372414922590">Permitir hosts de mensajes nativos en el nivel de usuario (instalados sin permisos de administrador)</translation>
 <translation id="6468980648680553776">Esta política está obsoleta. Sustitúyela por la política RemoteAccessHostClientDomainList.</translation>
-<translation id="6473623140202114570">Configura la lista de dominios en los que la Navegación Segura no activará advertencias.</translation>
+<translation id="6473623140202114570">Configura la lista de dominios en los que la Navegación segura no activará advertencias.</translation>
 <translation id="647698599569353771">Permite habilitar Compartir con Nearby.</translation>
 <translation id="6485813825811798133">Si se establece esta política, podrás definir una lista de patrones de URL donde se especifique qué sitios web no pueden pedir a los usuarios que les otorguen acceso de lectura a archivos o directorios del sistema de archivos del sistema operativo del host a través de la API File System.
 
@@ -4442,7 +4442,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7202925763179776247">Permitir restricciones de descarga</translation>
 <translation id="7207095846245296855">Forzar Google Búsqueda Segura</translation>
 <translation id="7211368186050418507">No detectar nunca la zona horaria automáticamente</translation>
-<translation id="7216442368414164495">Permitir a los usuarios habilitar los informes ampliados de la función de Navegación Segura</translation>
+<translation id="7216442368414164495">Permitir a los usuarios habilitar los informes ampliados de la función de Navegación segura</translation>
 <translation id="7222749588229362483">Permite combinar las políticas seleccionadas si proceden de fuentes distintas, con los mismos permisos y el mismo nivel.
 
         La combinación consiste en combinar las claves de primer nivel del diccionario de cada fuente. En caso de que se produzca un conflicto entre las claves, se aplicará la clave que procede de la fuente que tenga la mayor prioridad.
@@ -4499,11 +4499,11 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7278854311116092134">Nombres de hosts de mensajes nativos que se deben excluir de la lista de bloqueados</translation>
 <translation id="7284511417206336750">Esta política está obsoleta en <ph name="PRODUCT_NAME" /> 83. Usa la política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> en su lugar.
 
-      Si se habilita la política, la función Navegación Segura de Chrome permanecerá activada. Si la política se inhabilita, Navegación Segura seguirá desactivada.
+      Si se habilita la política, la función Navegación segura de Chrome permanecerá activada. Si la política se inhabilita, Navegación segura seguirá desactivada.
 
       Si se define esta política, los usuarios no podrán cambiarla ni anular el ajuste "Habilitar protección contra phishing y software malicioso" en Chrome. Si no se define, se asignará el valor "True" a "Habilitar protección contra phishing y software malicioso", pero el usuario puede cambiarlo.
 
-      Consulta más información sobre Navegación Segura en la siguiente página: https://developers.google.com/safe-browsing .
+      Consulta más información sobre Navegación segura en la siguiente página: https://developers.google.com/safe-browsing .
 
       Si se define la política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />, se ignora el valor de la política <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" />.
 
@@ -4683,7 +4683,7 @@ Si esta opción no está establecida o está establecida en True, los dispositiv
 
       Si se le asigna el valor "False", se inhabilitan las actualizaciones de los componentes. Sin embargo, algunos componentes quedan exentos de esta política: no se inhabilitarán las actualizaciones de cualquier componente que no contenga ningún código ejecutable, que no influya en el funcionamiento del navegador de forma significativa o que sea esencial para su seguridad.
       Entre los ejemplos de estos componentes se incluyen las listas de revocación de certificados y los datos de navegación segura.
-      Consulta la página https://developers.google.com/safe-browsing para obtener más información sobre la función Navegación Segura.</translation>
+      Consulta la página https://developers.google.com/safe-browsing para obtener más información sobre la función Navegación segura.</translation>
 <translation id="7563608136659080810">Esta política está obsoleta. Usa la política <ph name="AUTH_NEGOCIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> en su lugar.
 
       Si se define esta política, asignará los servidores en los que puede delegar <ph name="PRODUCT_NAME" />. Si hay varios nombres de servidores, se deben separar con comas. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
@@ -4711,7 +4711,7 @@ Si esta opción no está establecida o está establecida en True, los dispositiv
 
       La documentación sobre las extensiones externas y sobre cómo instalarlas está disponible en https://developer.chrome.com/apps/external_extensions
       </translation>
-<translation id="759957074386651883">Configuración de Navegación Segura</translation>
+<translation id="759957074386651883">Configuración de Navegación segura</translation>
 <translation id="7604169113182304895">Las aplicaciones para Android pueden aceptar esta lista voluntariamente. No se les puede forzar a que lo hagan.</translation>
 <translation id="7612157962821894603">Opciones que se deben aplicar al iniciar <ph name="PRODUCT_NAME" /> en todo el sistema</translation>
 <translation id="7614443356666150520">Si le asignas un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios web no pueden mostrar imágenes.
@@ -5111,11 +5111,11 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Las solicitudes de unión a diferentes hosts mediante conexiones que utilizan certificados de cliente pueden dar lugar a problemas de seguridad y privacidad, ya que la autoridad de certificación se vinculará a todas las solicitudes, aunque el usuario no lo autorice de forma explícita. Esta política es temporal y se retirará en versiones posteriores. Consulta https://crbug.com/855690
 
       Si no se establece esta política, se realizará la acción predeterminada: no permitir la unión de ninguna conexión HTTP/2 en conexiones que utilicen certificados de cliente.</translation>
-<translation id="8197373549462388216">Si se habilita esta política, se evita que los usuarios puedan pasar de la página de advertencia que muestra el servicio Navegación Segura antes de acceder a un sitio web malicioso. Esta política solo evita que los usuarios continúen si aparece una advertencia de Navegación Segura (por ejemplo, por software malicioso o suplantación de identidad), pero no si se trata de un problema relacionado con un certificado SSL (por ejemplo, si no es válido o ha caducado).
+<translation id="8197373549462388216">Si se habilita esta política, se evita que los usuarios puedan pasar de la página de advertencia que muestra el servicio Navegación segura antes de acceder a un sitio web malicioso. Esta política solo evita que los usuarios continúen si aparece una advertencia de Navegación segura (por ejemplo, por software malicioso o suplantación de identidad), pero no si se trata de un problema relacionado con un certificado SSL (por ejemplo, si no es válido o ha caducado).
 
       Si se inhabilita o no se le asigna ningún valor, los usuarios podrán decidir si quieren acceder al sitio web denunciado después de ver la advertencia.
 
-      Consulta más información sobre Navegación Segura en https://developers.google.com/safe-browsing.</translation>
+      Consulta más información sobre Navegación segura en https://developers.google.com/safe-browsing.</translation>
 <translation id="8213770777756919897">Ten en cuenta que esta política está obsoleta y se eliminará de la versión 85 de <ph name="PRODUCT_OS_NAME" />. Utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> en su lugar.
 
           Cuando se configura esta política, se especifica la acción que realiza <ph name="PRODUCT_OS_NAME" /> cuando el usuario permanece inactivo durante el periodo de tiempo indicado por el retraso de inactividad, que puede configurarse por separado.
@@ -5435,7 +5435,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
        Si se configura esta política, los usuarios no pueden cambiarla. Si no se le asigna ningún valor, los mensajes de voz están en un principio desactivados, pero los usuarios pueden activarlos en cualquier momento.</translation>
 <translation id="8656110680728938054">Habilita Enunciar Selección</translation>
 <translation id="8661297125441579970">No permitir la migración de datos ni ARC.</translation>
-<translation id="8665314828727504286">Nivel de protección de Navegación Segura</translation>
+<translation id="8665314828727504286">Nivel de protección de Navegación segura</translation>
 <translation id="8672321184841719703">Versión de destino de actualizaciones automáticas</translation>
 <translation id="867410340948518937">U2F (Universal Second Factor)</translation>
 <translation id="8680488165461049026">Esta política da permiso a la función de Respuestas rápidas para acceder al contenido seleccionado y enviar la información al servidor.
