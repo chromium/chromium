@@ -5,10 +5,13 @@
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 
 #include "build/branding_buildflags.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/favicon_base/favicon_url_parser.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -44,6 +47,11 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       kGeneratedPath, IDR_TAB_SEARCH_PAGE_HTML);
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
+
+  Profile* profile = Profile::FromWebUI(web_ui);
+  content::URLDataSource::Add(
+      profile, std::make_unique<FaviconSource>(
+                   profile, chrome::FaviconUrlFormat::kFavicon2));
 #endif  // BUILDFLAG(ENABLE_TAB_SEARCH)
 }
 
