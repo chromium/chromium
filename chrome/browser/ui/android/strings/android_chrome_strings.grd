@@ -1405,8 +1405,14 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SYNC_IS_DISABLED" desc="Message to show when Chrome sync is disabled">
         Sync is off
       </message>
-      <message name="IDS_SYNC_SETTINGS_NOT_CONFIRMED" desc="The error message to display when sign-in was interrupted and the user didn't review the sync settings.">
+      <message name="IDS_SYNC_DATA_TYPES_OFF" desc="Message to show when all sync data types are off">
+        No data selected to sync
+      </message>
+      <message name="IDS_SYNC_SETTINGS_NOT_CONFIRMED_LEGACY" desc="The error message to display when sign-in was interrupted and the user didn't review the sync settings.">
         Initial sync setup was not finished. Sync is off.
+      </message>
+      <message name="IDS_SYNC_SETTINGS_NOT_CONFIRMED" desc="The error message to display when sign-in was interrupted and the user didn't review the sync settings.">
+        Tap to continue sync setup
       </message>
       <message name="IDS_SYNC_IS_DISABLED_BY_ADMINISTRATOR" desc="Message to show when Chrome sync is disabled by administrator">
         Sync is disabled by your administrator
@@ -1692,6 +1698,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Enter your passphrase to start sync
       </message>
       <message name="IDS_HINT_SYNC_SETTINGS_NOT_CONFIRMED_DESCRIPTION" desc="The error message to display when sign-in was interrupted and the user didn't review the sync settings.">
+        Choose what to sync below
+      </message>
+      <message name="IDS_HINT_SYNC_SETTINGS_NOT_CONFIRMED_DESCRIPTION_LEGACY" desc="The error message to display when sign-in was interrupted and the user didn't review the sync settings.">
         To start sync, turn on "Sync your Chrome data".
       </message>
       <message name="IDS_HINT_OTHER_SYNC_ERRORS" desc="Hint message to resolve sync errors not listed independently.">
@@ -1713,12 +1722,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_AUTH_ERROR_CARD_BUTTON" desc="Button text for auth error in sync error cards.">
         Sign in again
-      </message>
-      <message name="IDS_SYNC_SETUP_INCOMPLETE_ERROR_CARD_CONFIRM_BUTTON" desc="Positive button text for advanced sync interrupted error in sync error cards.">
-        Confirm sync
-      </message>
-      <message name="IDS_SYNC_SETUP_INCOMPLETE_ERROR_CARD_CANCEL_BUTTON" desc="Negative button text for advanced sync interrupted error in sync error cards. This button turns off Sync.">
-        Cancel sync setup
       </message>
       <message name="IDS_TRUSTED_VAULT_ERROR_CARD_BUTTON" desc="Button text for trusted vault error in sync error cards.">
         Unlock with Screen Lock

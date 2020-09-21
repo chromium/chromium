@@ -126,7 +126,11 @@ public class SyncErrorCardPreference extends Preference
         errorCardView.getImage().setImageDrawable(accountImage);
 
         errorCardView.getDismissButton().setVisibility(View.GONE);
-        errorCardView.getStatusMessage().setVisibility(View.VISIBLE);
+        if (mSyncError == SyncError.SYNC_SETUP_INCOMPLETE) {
+            errorCardView.getStatusMessage().setVisibility(View.GONE);
+        } else {
+            errorCardView.getStatusMessage().setVisibility(View.VISIBLE);
+        }
         errorCardView.getDescription().setText(
                 SyncSettingsUtils.getSyncErrorHint(getContext(), mSyncError));
 
@@ -137,8 +141,7 @@ public class SyncErrorCardPreference extends Preference
         if (mSyncError == SyncError.SYNC_SETUP_INCOMPLETE) {
             errorCardView.getSecondaryButton().setOnClickListener(
                     v -> mButtonListener.onSyncErrorCardSecondaryButtonClicked());
-            errorCardView.getSecondaryButton().setText(
-                    R.string.sync_setup_incomplete_error_card_cancel_button);
+            errorCardView.getSecondaryButton().setText(R.string.cancel);
         } else {
             errorCardView.getSecondaryButton().setVisibility(View.GONE);
         }

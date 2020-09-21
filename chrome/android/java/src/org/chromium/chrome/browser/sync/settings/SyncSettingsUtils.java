@@ -146,7 +146,10 @@ public class SyncSettingsUtils {
                                 ? R.string.hint_sync_retrieve_keys
                                 : R.string.hint_sync_retrieve_keys_legacy);
             case SyncError.SYNC_SETUP_INCOMPLETE:
-                return context.getString(R.string.hint_sync_settings_not_confirmed_description);
+                return context.getString(
+                        ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
+                                ? R.string.hint_sync_settings_not_confirmed_description
+                                : R.string.hint_sync_settings_not_confirmed_description_legacy);
             case SyncError.NO_ERROR:
             default:
                 return null;
@@ -171,7 +174,7 @@ public class SyncSettingsUtils {
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
                 return context.getString(R.string.trusted_vault_error_card_button);
             case SyncError.SYNC_SETUP_INCOMPLETE:
-                return context.getString(R.string.sync_setup_incomplete_error_card_confirm_button);
+                return context.getString(R.string.sync_promo_turn_on_sync);
             case SyncError.NO_ERROR:
             default:
                 return null;
@@ -200,6 +203,7 @@ public class SyncSettingsUtils {
 
     /**
      * Return a short summary of the current sync status.
+     * TODO(https://crbug.com/1129930): Refactor this method
      */
     public static String getSyncStatusSummary(Context context) {
         Resources res = context.getResources();
@@ -228,7 +232,9 @@ public class SyncSettingsUtils {
         }
 
         if (!profileSyncService.isFirstSetupComplete()) {
-            return res.getString(R.string.sync_settings_not_confirmed);
+            return ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
+                    ? res.getString(R.string.sync_settings_not_confirmed)
+                    : res.getString(R.string.sync_settings_not_confirmed_legacy);
         }
 
         if (profileSyncService.getAuthError() != GoogleServiceAuthError.State.NONE) {
@@ -242,6 +248,11 @@ public class SyncSettingsUtils {
 
         if (profileSyncService.hasUnrecoverableError()) {
             return res.getString(R.string.sync_error_generic);
+        }
+
+        if (!profileSyncService.isSyncRequested()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
+            return res.getString(R.string.sync_data_types_off);
         }
 
         boolean syncEnabled = AndroidSyncSettings.get().isSyncEnabled();
