@@ -264,7 +264,8 @@ bool FinishFragmentation(NGBlockNode node,
     // more content, but the specified height is 100px, so distribute what we
     // haven't already consumed (100px - 20px = 80px) over two columns. We get
     // two fragments for #container after the spanner, each 40px tall.
-    final_block_size = std::min(final_block_size, intrinsic_block_size);
+    final_block_size = std::min(final_block_size, intrinsic_block_size) -
+                       border_padding.block_end;
     builder->SetDidBreakSelf();
   } else if (space_left != kIndefiniteSize && desired_block_size > space_left) {
     // We're taller than what we have room for. We don't want to use more than
