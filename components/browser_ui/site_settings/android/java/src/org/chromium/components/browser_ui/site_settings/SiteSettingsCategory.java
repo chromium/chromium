@@ -307,24 +307,16 @@ public class SiteSettingsCategory {
      * custodian of a supervised account.
      */
     public boolean isManaged() {
-        if (showSites(Type.AUTOMATIC_DOWNLOADS)) {
-            return WebsitePreferenceBridge.isAutomaticDownloadsManaged(getBrowserContextHandle());
-        } else if (showSites(Type.BACKGROUND_SYNC)) {
-            return WebsitePreferenceBridge.isBackgroundSyncManaged(getBrowserContextHandle());
-        } else if (showSites(Type.COOKIES)) {
-            return !WebsitePreferenceBridge.isAcceptCookiesUserModifiable(
-                    getBrowserContextHandle());
-        } else if (showSites(Type.DEVICE_LOCATION)) {
-            return !WebsitePreferenceBridge.isAllowLocationUserModifiable(
-                    getBrowserContextHandle());
-        } else if (showSites(Type.JAVASCRIPT)) {
-            return WebsitePreferenceBridge.javaScriptManaged(getBrowserContextHandle());
-        } else if (showSites(Type.CAMERA)) {
-            return !WebsitePreferenceBridge.isCameraUserModifiable(getBrowserContextHandle());
-        } else if (showSites(Type.MICROPHONE)) {
-            return !WebsitePreferenceBridge.isMicUserModifiable(getBrowserContextHandle());
-        } else if (showSites(Type.POPUPS)) {
-            return WebsitePreferenceBridge.isPopupsManaged(getBrowserContextHandle());
+        // TODO(dullweber): Why do we check some permissions for managed state and some for user
+        // modifiability and some not at all?
+        if (showSites(Type.AUTOMATIC_DOWNLOADS) || showSites(Type.BACKGROUND_SYNC)
+                || showSites(Type.JAVASCRIPT) || showSites(Type.POPUPS)) {
+            return WebsitePreferenceBridge.isContentSettingManaged(
+                    getBrowserContextHandle(), getContentSettingsType());
+        } else if (showSites(Type.COOKIES) || showSites(Type.DEVICE_LOCATION)
+                || showSites(Type.CAMERA) || showSites(Type.MICROPHONE)) {
+            return !WebsitePreferenceBridge.isContentSettingUserModifiable(
+                    getBrowserContextHandle(), getContentSettingsType());
         }
         return false;
     }
@@ -334,16 +326,11 @@ public class SiteSettingsCategory {
      * enterprise admin) of the account if the account is supervised.
      */
     public boolean isManagedByCustodian() {
-        if (showSites(Type.COOKIES)) {
-            return WebsitePreferenceBridge.isAcceptCookiesManagedByCustodian(
-                    getBrowserContextHandle());
-        } else if (showSites(Type.DEVICE_LOCATION)) {
-            return WebsitePreferenceBridge.isAllowLocationManagedByCustodian(
-                    getBrowserContextHandle());
-        } else if (showSites(Type.CAMERA)) {
-            return WebsitePreferenceBridge.isCameraManagedByCustodian(getBrowserContextHandle());
-        } else if (showSites(Type.MICROPHONE)) {
-            return WebsitePreferenceBridge.isMicManagedByCustodian(getBrowserContextHandle());
+        // TODO(dullweber): Why do we only check these types?
+        if (showSites(Type.COOKIES) || showSites(Type.DEVICE_LOCATION) || showSites(Type.CAMERA)
+                || showSites(Type.MICROPHONE)) {
+            return WebsitePreferenceBridge.isContentSettingManagedByCustodian(
+                    getBrowserContextHandle(), getContentSettingsType());
         }
         return false;
     }

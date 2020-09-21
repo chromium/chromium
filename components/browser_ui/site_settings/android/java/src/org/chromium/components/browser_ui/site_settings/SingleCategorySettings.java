@@ -993,13 +993,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                 getSiteSettingsClient().getManagedPreferenceDelegate()));
 
         // Set the checked value.
-        if (mCategory.showSites(SiteSettingsCategory.Type.DEVICE_LOCATION)) {
-            binaryToggle.setChecked(
-                    WebsitePreferenceBridge.isAllowLocationEnabled(browserContextHandle));
-        } else {
-            binaryToggle.setChecked(
-                    WebsitePreferenceBridge.isCategoryEnabled(browserContextHandle, contentType));
-        }
+        binaryToggle.setChecked(
+                WebsitePreferenceBridge.isCategoryEnabled(browserContextHandle, contentType));
     }
 
     private void updateNotificationsSecondaryControls() {
