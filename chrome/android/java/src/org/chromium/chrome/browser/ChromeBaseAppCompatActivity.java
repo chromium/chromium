@@ -35,15 +35,16 @@ public class ChromeBaseAppCompatActivity
         super.attachBaseContext(newBase);
         mNightModeStateProvider = createNightModeStateProvider();
 
-        // If the activity locale will be overridden enable using language splits.
-        AppLocaleUtils.maybeInstallActivitySplitCompat(this);
-
         Configuration config = new Configuration();
         // Pre-Android O, fontScale gets initialized to 1 in the constructor. Set it to 0 so
         // that applyOverrideConfiguration() does not interpret it as an overridden value.
         // https://crbug.com/834191
         config.fontScale = 0;
         if (applyOverrides(newBase, config)) applyOverrideConfiguration(config);
+
+        // If the activity locale will be overridden enable using language splits.
+        // Must be called after applyOverrideConfiguration.
+        AppLocaleUtils.maybeInstallActivitySplitCompat(this);
     }
 
     @Override
