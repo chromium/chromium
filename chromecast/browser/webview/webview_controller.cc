@@ -23,7 +23,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/common/web_preferences/autoplay_policy.h"
 
 namespace chromecast {
 

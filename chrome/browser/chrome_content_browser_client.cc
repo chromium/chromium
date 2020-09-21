@@ -350,6 +350,7 @@
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/common/web_preferences/autoplay_policy.h"
 #include "third_party/blink/public/common/web_preferences/image_animation_policy.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"

@@ -184,6 +184,7 @@ source_set("headers") {
     "web_cache/web_cache_resource_type_stats.h",
     "web_package/signed_exchange_consts.h",
     "web_package/web_package_request_matcher.h",
+    "web_preferences/autoplay_policy.h",
     "web_preferences/editing_behavior_types.h",
     "web_preferences/image_animation_policy.h",
     "web_preferences/web_preferences.h",

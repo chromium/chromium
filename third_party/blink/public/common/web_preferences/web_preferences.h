@@ -15,6 +15,7 @@
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/css/preferred_color_scheme.h"
+#include "third_party/blink/public/common/web_preferences/autoplay_policy.h"
 #include "third_party/blink/public/common/web_preferences/editing_behavior_types.h"
 #include "third_party/blink/public/common/web_preferences/image_animation_policy.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-forward.h"
@@ -32,14 +33,6 @@ namespace web_pref {
 typedef std::map<std::string, base::string16> ScriptFontFamilyMap;
 
 enum class ViewportStyle { DEFAULT, MOBILE, TELEVISION, LAST = TELEVISION };
-
-// Defines the autoplay policy to be used. Should match the class in
-// WebSettings.h.
-enum class AutoplayPolicy {
-  kNoUserGestureRequired,
-  kUserGestureRequired,
-  kDocumentUserActivationRequired,
-};
 
 // The ISO 15924 script code for undetermined script aka Common. It's the
 // default used on WebKit's side to get/set a font setting when no script is
