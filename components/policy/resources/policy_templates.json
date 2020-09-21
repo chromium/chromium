@@ -1247,7 +1247,7 @@
       'id': 360,
       'caption': '''Configure the New Tab page URL''',
       'tags': [],
-      'desc': '''Setting the policy sets the default New Tab page URL. The New Tab page opens with new tabs and windows. This policy doesn't decide which pages open on start up. Those are controlled by the <ph name="RESTORE_ON_STARTUP_POLICY_NAME">RestoreOnStartup</ph> policies. This policy does affect the homepage, if that's set to open the New Tab page, as well as the startup page if it's set to open the New Tab page.
+      'desc': '''Setting the policy sets the default New Tab page URL. The New Tab page opens with new tabs and windows. This policy doesn't decide which pages open on start up. Those are controlled by the <ph name="RESTORE_ON_STARTUP_POLICY_NAME">RestoreOnStartup</ph> policies. This policy does affect the homepage, if that's set to open the New Tab page, as well as the startup page if it's set to open the New Tab page. It is a best practice to provide fully canonicalized URL, if the URL is not fully canonicalized <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will default to https://.
 
       Leaving the policy unset or empty puts the default New Tab page in use.
 

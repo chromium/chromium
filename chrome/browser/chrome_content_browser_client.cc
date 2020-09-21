@@ -366,6 +366,8 @@
 #include "ui/resources/grit/ui_resources.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/third_party/mozilla/url_parse.h"
+#include "url/url_constants.h"
 
 #if defined(OS_WIN)
 #include "base/strings/string_tokenizer.h"
@@ -750,6 +752,12 @@ bool HandleNewTabPageLocationOverride(
       profile->GetPrefs()->GetString(prefs::kNewTabPageLocationOverride);
   if (ntp_location.empty())
     return false;
+  url::Component scheme;
+  if (!url::ExtractScheme(ntp_location.data(),
+                          static_cast<int>(ntp_location.length()), &scheme)) {
+    ntp_location = base::StrCat(
+        {url::kHttpsScheme, url::kStandardSchemeSeparator, ntp_location});
+  }
 
   *url = GURL(ntp_location);
   return true;
