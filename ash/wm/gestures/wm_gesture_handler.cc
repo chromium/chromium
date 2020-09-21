@@ -30,7 +30,7 @@ bool Handle3FingerVerticalScroll(float scroll_y) {
   auto* overview_controller = Shell::Get()->overview_controller();
   const bool in_overview = overview_controller->InOverviewSession();
   if (in_overview) {
-    if (scroll_y < WmGestureHandler::kVerticalThresholdDp)
+    if (scroll_y > -WmGestureHandler::kVerticalThresholdDp)
       return false;
 
     base::RecordAction(base::UserMetricsAction("Touchpad_Gesture_Overview"));
@@ -38,7 +38,7 @@ bool Handle3FingerVerticalScroll(float scroll_y) {
       return true;
     overview_controller->EndOverview();
   } else {
-    if (scroll_y > -WmGestureHandler::kVerticalThresholdDp)
+    if (scroll_y < WmGestureHandler::kVerticalThresholdDp)
       return false;
 
     auto* window_cycle_controller = Shell::Get()->window_cycle_controller();

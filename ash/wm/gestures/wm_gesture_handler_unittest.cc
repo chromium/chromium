@@ -66,19 +66,19 @@ class WmGestureHandlerTest : public AshTestBase {
 // exit overview.
 TEST_F(WmGestureHandlerTest, VerticalScrolls) {
   const float long_scroll = 2 * WmGestureHandler::kVerticalThresholdDp;
-  Scroll(0, -long_scroll, 3);
+  Scroll(0, long_scroll, 3);
   EXPECT_TRUE(InOverviewSession());
 
   // Swiping up again does nothing.
-  Scroll(0, -long_scroll, 3);
+  Scroll(0, long_scroll, 3);
   EXPECT_TRUE(InOverviewSession());
 
   // Swiping down exits.
-  Scroll(0, long_scroll, 3);
+  Scroll(0, -long_scroll, 3);
   EXPECT_FALSE(InOverviewSession());
 
   // Swiping down again does nothing.
-  Scroll(0, long_scroll, 3);
+  Scroll(0, -long_scroll, 3);
   EXPECT_FALSE(InOverviewSession());
 }
 
@@ -124,7 +124,7 @@ TEST_F(WmGestureHandlerTest, HorizontalScrollInOverview) {
 
   // Swiping down (3 fingers) exits and selects the currently-highlighted
   // window.
-  Scroll(0, vertical_scroll, 3);
+  Scroll(0, -vertical_scroll, 3);
   EXPECT_FALSE(InOverviewSession());
 
   // Second MRU window is selected (i.e. |window4|).
@@ -134,10 +134,10 @@ TEST_F(WmGestureHandlerTest, HorizontalScrollInOverview) {
 // Tests that a mostly horizontal scroll does not trigger overview.
 TEST_F(WmGestureHandlerTest, HorizontalScrolls) {
   const float long_scroll = 2 * WmGestureHandler::kVerticalThresholdDp;
-  Scroll(long_scroll + 100, -long_scroll, kNumFingersForHighlight);
+  Scroll(long_scroll + 100, long_scroll, kNumFingersForHighlight);
   EXPECT_FALSE(InOverviewSession());
 
-  Scroll(-long_scroll - 100, -long_scroll, kNumFingersForHighlight);
+  Scroll(-long_scroll - 100, long_scroll, kNumFingersForHighlight);
   EXPECT_FALSE(InOverviewSession());
 }
 
@@ -154,15 +154,15 @@ TEST_F(WmGestureHandlerTest, EnterOverviewOnScrollEnd) {
   // still ongoing.
   for (int i = 0; i < 100; ++i) {
     timestamp += step_delay;
-    ui::ScrollEvent move(ui::ET_SCROLL, gfx::Point(), timestamp, 0, 0, -10, 0,
-                         -10, num_fingers);
+    ui::ScrollEvent move(ui::ET_SCROLL, gfx::Point(), timestamp, 0, 0, 10, 0,
+                         10, num_fingers);
     GetEventGenerator()->Dispatch(&move);
   }
   ASSERT_FALSE(InOverviewSession());
 
   timestamp += step_delay;
   ui::ScrollEvent fling_start(ui::ET_SCROLL_FLING_START, gfx::Point(),
-                              timestamp, 0, 0, 10, 0, 10, num_fingers);
+                              timestamp, 0, 0, -10, 0, -10, num_fingers);
   GetEventGenerator()->Dispatch(&fling_start);
   EXPECT_TRUE(InOverviewSession());
 }
@@ -171,7 +171,7 @@ TEST_F(WmGestureHandlerTest, EnterOverviewOnScrollEnd) {
 // separately to run only when Virtual Desks and its gestures are enabled.
 using DesksGestureHandlerTest = WmGestureHandlerTest;
 
-// Tests that a three-finger horizontal scroll will switch desks as expected.
+// Tests that a four-finger horizontal scroll will switch desks as expected.
 TEST_F(DesksGestureHandlerTest, HorizontalScrolls) {
   auto* desk_controller = DesksController::Get();
   desk_controller->NewDesk(DesksCreationRemovalSource::kButton);
@@ -340,23 +340,23 @@ TEST_F(InteractiveWindowCycleListGestureHandlerTest, VerticalScroll) {
   // Start cycling and then swipe up to open up overview.
   window_cycle_controller->HandleCycleWindow(WindowCycleController::FORWARD);
   EXPECT_TRUE(window_cycle_controller->IsCycling());
-  Scroll(0, -vertical_scroll, 3);
+  Scroll(0, vertical_scroll, 3);
   EXPECT_TRUE(InOverviewSession());
   EXPECT_FALSE(window_cycle_controller->IsCycling());
 
   // Start cycling and then swipe down.
   window_cycle_controller->HandleCycleWindow(WindowCycleController::FORWARD);
   EXPECT_TRUE(window_cycle_controller->IsCycling());
-  Scroll(0, vertical_scroll, 3);
+  Scroll(0, -vertical_scroll, 3);
   EXPECT_TRUE(window_cycle_controller->IsCycling());
 
   // Swipe diagonally with horizontal bias.
-  Scroll(horizontal_scroll * 3, -vertical_scroll, 3);
+  Scroll(horizontal_scroll * 3, vertical_scroll, 3);
   EXPECT_TRUE(window_cycle_controller->IsCycling());
   EXPECT_FALSE(InOverviewSession());
 
   // Swipe diagonally with vertical bias.
-  Scroll(horizontal_scroll, -vertical_scroll, 3);
+  Scroll(horizontal_scroll, vertical_scroll, 3);
   EXPECT_FALSE(window_cycle_controller->IsCycling());
   EXPECT_TRUE(InOverviewSession());
 }
