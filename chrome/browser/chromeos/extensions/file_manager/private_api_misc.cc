@@ -211,6 +211,22 @@ std::string MakeThumbnailDataUrlOnThreadPool(
   return base::StrCat({"data:image/png;base64,", base::Base64Encode(png_data)});
 }
 
+// Converts bitmap to a PNG image and encodes it as a data string.
+std::string ConvertAndEncode(const SkBitmap& bitmap) {
+  if (bitmap.isNull()) {
+    DLOG(WARNING) << "Got an invalid bitmap";
+    return std::string();
+  }
+  sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
+  sk_sp<SkData> png_data(image->encodeToData(SkEncodedImageFormat::kPNG, 100));
+  if (!png_data) {
+    DLOG(WARNING) << "Thumbnail encoding error";
+    return std::string();
+  }
+  return MakeThumbnailDataUrlOnThreadPool(base::make_span(
+      reinterpret_cast<const uint8_t*>(png_data->data()), png_data->size()));
+}
+
 // The maximum size of the input PDF file for which thumbnails are generated.
 constexpr uint32_t kMaxPdfSize = 1024u * 1024u;
 
@@ -1191,7 +1207,8 @@ FileManagerPrivateInternalGetThumbnailFunction::GetLocalThumbnail(
     return RespondNow(Error("Can only handle PDF files"));
   }
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce(&ReadLocalPdf, path),
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+      base::BindOnce(&ReadLocalPdf, path),
       base::BindOnce(
           &FileManagerPrivateInternalGetThumbnailFunction::FetchPdfThumbnail,
           this, crop_to_square));
@@ -1200,9 +1217,10 @@ FileManagerPrivateInternalGetThumbnailFunction::GetLocalThumbnail(
 
 void FileManagerPrivateInternalGetThumbnailFunction::FetchPdfThumbnail(
     bool crop_to_square,
-    const std::string& pdf_contents) {
-  if (pdf_contents.empty()) {
-    Respond(Error("Failed to read file content"));
+    const std::string& contents) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (contents.empty()) {
+    Respond(Error("Failed to read PDF file"));
     return;
   }
   if (!pdf_thumbnailer_.is_bound()) {
@@ -1213,9 +1231,8 @@ void FileManagerPrivateInternalGetThumbnailFunction::FetchPdfThumbnail(
                            PdfThumbnailDisconected,
                        base::Unretained(this)));
   }
-  auto pdf_region =
-      base::ReadOnlySharedMemoryRegion::Create(pdf_contents.size());
-  memcpy(pdf_region.mapping.memory(), pdf_contents.data(), pdf_contents.size());
+  auto pdf_region = base::ReadOnlySharedMemoryRegion::Create(contents.size());
+  memcpy(pdf_region.mapping.memory(), contents.data(), contents.size());
   gfx::Size thumb_size =
       crop_to_square
           ? gfx::Size(FileManagerPrivateInternalGetThumbnailFunction::kSize,
@@ -1241,18 +1258,12 @@ void FileManagerPrivateInternalGetThumbnailFunction::PdfThumbnailDisconected() {
 
 void FileManagerPrivateInternalGetThumbnailFunction::GotPdfThumbnail(
     const SkBitmap& bitmap) {
-  if (bitmap.isNull()) {
-    Respond(Error("Failed to render the thumbnail"));
-    return;
-  }
-  sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
-  sk_sp<SkData> png_data(image->encodeToData(SkEncodedImageFormat::kPNG, 100));
-  if (!png_data) {
-    Respond(Error("Thumbnail encoding error"));
-    return;
-  }
-  SendEncodedThumbnail(MakeThumbnailDataUrlOnThreadPool(base::make_span(
-      reinterpret_cast<const uint8_t*>(png_data->data()), png_data->size())));
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&ConvertAndEncode, bitmap),
+      base::BindOnce(
+          &FileManagerPrivateInternalGetThumbnailFunction::SendEncodedThumbnail,
+          this));
 }
 
 ExtensionFunction::ResponseAction

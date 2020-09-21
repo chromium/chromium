@@ -546,10 +546,10 @@ class FileManagerPrivateInternalGetThumbnailFunction
       const storage::FileSystemURL& url,
       bool crop_to_square);
 
-  // For a given |pdf_contents| starts fetching the first page PDF thumbnail by
+  // For a given |content| starts fetching the first page PDF thumbnail by
   // calling PdfThumbnailer from the printing service. The first parameter,
   // |crop_to_square| is supplied by the JavaScript caller.
-  void FetchPdfThumbnail(bool crop_to_square, const std::string& pdf_contents);
+  void FetchPdfThumbnail(bool crop_to_square, const std::string& content);
 
   // Callback invoked by the thumbnailing service when a PDF thumbnail has been
   // generated. The solitary parameter |bitmap| is supplied by the callback.
