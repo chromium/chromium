@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/WICG/media-capabilities/blob/master/eme-extension-policy-check.md
+// https://wicg.github.io/hdcp-detection/
 
 [
     ImplementedAs=MediaKeysGetStatusForPolicy,
