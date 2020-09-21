@@ -38,6 +38,8 @@ IPC_ENUM_TRAITS_MAX_VALUE(ax::mojom::TextAffinity,
                           ax::mojom::TextAffinity::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(ax::mojom::EventFrom, ax::mojom::EventFrom::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(ax::mojom::Command, ax::mojom::Command::kMaxValue)
+IPC_ENUM_TRAITS_MAX_VALUE(ax::mojom::InputEventType,
+                          ax::mojom::InputEventType::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(ax::mojom::TextBoundary,
                           ax::mojom::TextBoundary::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(ax::mojom::MoveDirection,
@@ -59,6 +61,7 @@ IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(ui::AXEventIntent)
   IPC_STRUCT_TRAITS_MEMBER(command)
+  IPC_STRUCT_TRAITS_MEMBER(input_event_type)
   IPC_STRUCT_TRAITS_MEMBER(text_boundary)
   IPC_STRUCT_TRAITS_MEMBER(move_direction)
 IPC_STRUCT_TRAITS_END()

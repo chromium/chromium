@@ -15,6 +15,10 @@ struct StructTraits<ax::mojom::EventIntentDataView, ui::AXEventIntent> {
   static ax::mojom::Command command(const ui::AXEventIntent& p) {
     return p.command;
   }
+  static ax::mojom::InputEventType input_event_type(
+      const ui::AXEventIntent& p) {
+    return p.input_event_type;
+  }
   static ax::mojom::TextBoundary text_boundary(const ui::AXEventIntent& p) {
     return p.text_boundary;
   }

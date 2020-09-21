@@ -9,6 +9,7 @@ import "ui/accessibility/ax_enums.mojom";
 // See ui::AXEventIntent for documentation.
 struct EventIntent {
   Command command;
+  InputEventType input_event_type;
   TextBoundary text_boundary;
   MoveDirection move_direction;
 };

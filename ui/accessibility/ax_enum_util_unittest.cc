@@ -164,15 +164,19 @@ TEST(AXEnumUtilTest, Command) {
   TestEnumStringConversion<ax::mojom::Command>();
 }
 
-TEST(AXEnumUtilTest, TextAlign) {
-  TestEnumStringConversion<ax::mojom::TextAlign>();
+TEST(AXEnumUtilTest, InputEventType) {
+  TestEnumStringConversion<ax::mojom::InputEventType>();
 }
 
 TEST(AXEnumUtilTest, TextBoundary) {
   TestEnumStringConversion<ax::mojom::TextBoundary>();
 }
 
-TEST(AXEnumUtilTest, TextDirection) {
+TEST(AXEnumUtilTest, TextAlign) {
+  TestEnumStringConversion<ax::mojom::TextAlign>();
+}
+
+TEST(AXEnumUtilTest, WritingDirection) {
   TestEnumStringConversion<ax::mojom::WritingDirection>();
 }
 
