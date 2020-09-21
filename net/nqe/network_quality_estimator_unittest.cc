@@ -3058,8 +3058,15 @@ TEST_F(NetworkQualityEstimatorTest, TestPeerToPeerConnectionsCountObserver) {
   EXPECT_EQ(3u, observer.count());
 }
 
+// Fails only for Android. https://crbug.com/1130720
+#if defined(OS_ANDROID)
+#define MAYBE_CheckSignalStrength DISABLED_CheckSignalStrength
+#else
+#define MAYBE_CheckSignalStrength CheckSignalStrength
+#endif
+
 // Tests that the signal strength API is not called too frequently.
-TEST_F(NetworkQualityEstimatorTest, CheckSignalStrength) {
+TEST_F(NetworkQualityEstimatorTest, MAYBE_CheckSignalStrength) {
   base::HistogramTester histogram_tester;
   constexpr char histogram_name[] = "NQE.SignalStrengthQueried.WiFi";
   constexpr int kWiFiSignalStrengthQueryIntervalSeconds = 30 * 60;
