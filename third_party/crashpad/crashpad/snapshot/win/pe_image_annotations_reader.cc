@@ -99,7 +99,7 @@ void PEImageAnnotationsReader::ReadCrashpadSimpleAnnotations(
           simple_annotations.size() * sizeof(simple_annotations[0]),
           &simple_annotations[0])) {
     LOG(WARNING) << "could not read simple annotations from "
-                 << base::UTF16ToUTF8(name_);
+                 << base::WideToUTF8(name_);
     return;
   }
 
@@ -110,7 +110,7 @@ void PEImageAnnotationsReader::ReadCrashpadSimpleAnnotations(
       std::string value(entry.value, strnlen(entry.value, sizeof(entry.value)));
       if (!simple_map_annotations->insert(std::make_pair(key, value)).second) {
         LOG(INFO) << "duplicate simple annotation " << key << " in "
-                  << base::UTF16ToUTF8(name_);
+                  << base::WideToUTF8(name_);
       }
     }
   }
@@ -133,7 +133,7 @@ void PEImageAnnotationsReader::ReadCrashpadAnnotationsList(
                                        sizeof(annotation_list_object),
                                        &annotation_list_object)) {
     LOG(WARNING) << "could not read annotations list object in "
-                 << base::UTF16ToUTF8(name_);
+                 << base::WideToUTF8(name_);
     return;
   }
 
@@ -145,7 +145,7 @@ void PEImageAnnotationsReader::ReadCrashpadAnnotationsList(
     if (!process_reader_->Memory()->Read(
             current.link_node, sizeof(current), &current)) {
       LOG(WARNING) << "could not read annotation at index " << index << " in "
-                   << base::UTF16ToUTF8(name_);
+                   << base::WideToUTF8(name_);
       return;
     }
 
@@ -160,7 +160,7 @@ void PEImageAnnotationsReader::ReadCrashpadAnnotationsList(
     if (!process_reader_->Memory()->Read(
             current.name, base::size(name), name)) {
       LOG(WARNING) << "could not read annotation name at index " << index
-                   << " in " << base::UTF16ToUTF8(name_);
+                   << " in " << base::WideToUTF8(name_);
       continue;
     }
 
@@ -173,7 +173,7 @@ void PEImageAnnotationsReader::ReadCrashpadAnnotationsList(
     if (!process_reader_->Memory()->Read(
             current.value, value_length, snapshot.value.data())) {
       LOG(WARNING) << "could not read annotation value at index " << index
-                   << " in " << base::UTF16ToUTF8(name_);
+                   << " in " << base::WideToUTF8(name_);
       continue;
     }
 

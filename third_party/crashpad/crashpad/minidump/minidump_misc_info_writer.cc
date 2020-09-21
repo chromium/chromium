@@ -310,7 +310,7 @@ void MinidumpMiscInfoWriter::SetTimeZone(uint32_t time_zone_id,
   misc_info_.TimeZone.Bias = bias;
 
   internal::MinidumpWriterUtil::AssignUTF8ToUTF16(
-      misc_info_.TimeZone.StandardName,
+      AsU16CStr(misc_info_.TimeZone.StandardName),
       base::size(misc_info_.TimeZone.StandardName),
       standard_name);
 
@@ -318,7 +318,7 @@ void MinidumpMiscInfoWriter::SetTimeZone(uint32_t time_zone_id,
   misc_info_.TimeZone.StandardBias = standard_bias;
 
   internal::MinidumpWriterUtil::AssignUTF8ToUTF16(
-      misc_info_.TimeZone.DaylightName,
+      AsU16CStr(misc_info_.TimeZone.DaylightName),
       base::size(misc_info_.TimeZone.DaylightName),
       daylight_name);
 
@@ -336,9 +336,11 @@ void MinidumpMiscInfoWriter::SetBuildString(
   misc_info_.Flags1 |= MINIDUMP_MISC4_BUILDSTRING;
 
   internal::MinidumpWriterUtil::AssignUTF8ToUTF16(
-      misc_info_.BuildString, base::size(misc_info_.BuildString), build_string);
+      AsU16CStr(misc_info_.BuildString),
+      base::size(misc_info_.BuildString),
+      build_string);
   internal::MinidumpWriterUtil::AssignUTF8ToUTF16(
-      misc_info_.DbgBldStr,
+      AsU16CStr(misc_info_.DbgBldStr),
       base::size(misc_info_.DbgBldStr),
       debug_build_string);
 }

@@ -30,8 +30,7 @@ namespace crashpad {
 
 namespace {
 
-void* GetSecurityDescriptorWithUser(const base::char16* sddl_string,
-                                    size_t* size) {
+void* GetSecurityDescriptorWithUser(const wchar_t* sddl_string, size_t* size) {
   if (size)
     *size = 0;
 
@@ -71,7 +70,7 @@ void* GetSecurityDescriptorWithUser(const base::char16* sddl_string,
 
 }  // namespace
 
-bool SendToCrashHandlerServer(const base::string16& pipe_name,
+bool SendToCrashHandlerServer(const std::wstring& pipe_name,
                               const ClientToServerMessage& message,
                               ServerToClientMessage* response) {
   // Retry CreateFile() in a loop. If the handler isn’t actively waiting in

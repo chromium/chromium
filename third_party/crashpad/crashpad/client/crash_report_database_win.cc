@@ -25,7 +25,6 @@
 
 #include "base/logging.h"
 #include "base/numerics/safe_math.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "client/settings.h"
@@ -66,9 +65,8 @@ uint32_t AddStringToTable(std::string* string_table, const std::string& str) {
 
 // Converts |str| to UTF8, adds the result to the string table and returns the
 // byte index where it was added.
-uint32_t AddStringToTable(std::string* string_table,
-                          const base::string16& str) {
-  return AddStringToTable(string_table, base::UTF16ToUTF8(str));
+uint32_t AddStringToTable(std::string* string_table, const std::wstring& str) {
+  return AddStringToTable(string_table, base::WideToUTF8(str));
 }
 
 // Reads from the current file position to EOF and returns as a string of bytes.
@@ -183,7 +181,7 @@ ReportDisk::ReportDisk(const MetadataFileReportRecord& record,
     : Report() {
   uuid = record.uuid;
   file_path = report_dir.Append(
-      base::UTF8ToUTF16(&string_table[record.file_path_index]));
+      base::UTF8ToWide(&string_table[record.file_path_index]));
   id = &string_table[record.id_index];
   creation_time = record.creation_time;
   last_upload_attempt_time = record.last_upload_attempt_time;
@@ -540,7 +538,7 @@ void Metadata::Write() {
     const base::FilePath& path = report.file_path;
     if (path.DirName() != report_dir_) {
       LOG(ERROR) << path.value().c_str() << " expected to start with "
-                 << base::UTF16ToUTF8(report_dir_.value());
+                 << base::WideToUTF8(report_dir_.value());
       return;
     }
     records.push_back(MetadataFileReportRecord(report, &string_table));
@@ -584,12 +582,11 @@ OperationStatus Metadata::VerifyReport(const ReportDisk& report_disk,
 bool EnsureDirectory(const base::FilePath& path) {
   DWORD fileattr = GetFileAttributes(path.value().c_str());
   if (fileattr == INVALID_FILE_ATTRIBUTES) {
-    PLOG(ERROR) << "GetFileAttributes " << base::UTF16ToUTF8(path.value());
+    PLOG(ERROR) << "GetFileAttributes " << base::WideToUTF8(path.value());
     return false;
   }
   if ((fileattr & FILE_ATTRIBUTE_DIRECTORY) == 0) {
-    LOG(ERROR) << "GetFileAttributes "
-               << base::UTF16ToUTF8(path.value())
+    LOG(ERROR) << "GetFileAttributes " << base::WideToUTF8(path.value())
                << ": not a directory";
     return false;
   }
@@ -606,7 +603,7 @@ bool CreateDirectoryIfNecessary(const base::FilePath& path) {
   if (CreateDirectory(path.value().c_str(), nullptr))
     return true;
   if (GetLastError() != ERROR_ALREADY_EXISTS) {
-    PLOG(ERROR) << "CreateDirectory " << base::UTF16ToUTF8(path.value());
+    PLOG(ERROR) << "CreateDirectory " << base::WideToUTF8(path.value());
     return false;
   }
   return EnsureDirectory(path);
@@ -675,7 +672,7 @@ base::FilePath CrashReportDatabaseWin::AttachmentsRootPath() {
 }
 
 base::FilePath CrashReportDatabaseWin::AttachmentsPath(const UUID& uuid) {
-  const std::wstring uuid_string = uuid.ToString16();
+  const std::wstring uuid_string = uuid.ToWString();
   return base_dir_.Append(kAttachmentsDirectory).Append(uuid_string);
 }
 
@@ -691,7 +688,7 @@ FileWriter* CrashReportDatabase::NewReport::AddAttachment(
     return nullptr;
   }
 
-  base::FilePath path = attachments_dir.Append(base::UTF8ToUTF16(name));
+  base::FilePath path = attachments_dir.Append(base::UTF8ToWide(name));
 
   auto writer = std::make_unique<FileWriter>();
   if (!writer->Open(
@@ -727,7 +724,7 @@ void CrashReportDatabase::UploadReport::InitializeAttachments() {
       continue;
     }
     attachment_readers_.emplace_back(std::move(file_reader));
-    attachment_map_[base::UTF16ToUTF8(filename.value())] =
+    attachment_map_[base::WideToUTF8(filename.value())] =
         attachment_readers_.back().get();
   }
 }
@@ -925,8 +922,7 @@ OperationStatus CrashReportDatabaseWin::DeleteReport(const UUID& uuid) {
     return os;
 
   if (!DeleteFile(report_path.value().c_str())) {
-    PLOG(ERROR) << "DeleteFile "
-                << base::UTF16ToUTF8(report_path.value());
+    PLOG(ERROR) << "DeleteFile " << base::WideToUTF8(report_path.value());
     return kFileSystemError;
   }
 
@@ -1096,7 +1092,7 @@ void CrashReportDatabaseWin::CleanOrphanedAttachments() {
 
       // Remove attachments if corresponding report doen't exist.
       base::FilePath report_path =
-          reports_dir.Append(uuid.ToString16() + kCrashReportFileExtension);
+          reports_dir.Append(uuid.ToWString() + kCrashReportFileExtension);
       if (!IsRegularFile(report_path)) {
         RemoveAttachmentsByUUID(uuid);
       }

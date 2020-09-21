@@ -35,7 +35,7 @@ void TestImageReaderChild(const TestPaths::Architecture architecture) {
   UUID done_uuid;
   done_uuid.InitializeWithNew();
   ScopedKernelHANDLE done(
-      CreateEvent(nullptr, true, false, done_uuid.ToString16().c_str()));
+      CreateEvent(nullptr, true, false, done_uuid.ToWString().c_str()));
   ASSERT_TRUE(done.is_valid()) << ErrorMessage("CreateEvent");
 
   base::FilePath child_test_executable =
@@ -43,7 +43,7 @@ void TestImageReaderChild(const TestPaths::Architecture architecture) {
                                L"image_reader",
                                TestPaths::FileType::kExecutable,
                                architecture);
-  ChildLauncher child(child_test_executable, done_uuid.ToString16());
+  ChildLauncher child(child_test_executable, done_uuid.ToWString());
   ASSERT_NO_FATAL_FAILURE(child.Start());
 
   ScopedSetEvent set_done(done.get());

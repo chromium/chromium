@@ -83,9 +83,11 @@ bool UUID::InitializeFromString(const base::StringPiece& string) {
   return true;
 }
 
-bool UUID::InitializeFromString(const base::StringPiece16& string) {
-  return InitializeFromString(UTF16ToUTF8(string));
+#if defined(OS_WIN)
+bool UUID::InitializeFromString(const base::WStringPiece& string) {
+  return InitializeFromString(WideToUTF8(string));
 }
+#endif
 
 bool UUID::InitializeWithNew() {
 #if defined(OS_APPLE)
@@ -138,8 +140,8 @@ std::string UUID::ToString() const {
 }
 
 #if defined(OS_WIN)
-base::string16 UUID::ToString16() const {
-  return base::UTF8ToUTF16(ToString());
+std::wstring UUID::ToWString() const {
+  return base::UTF8ToWide(ToString());
 }
 #endif  // OS_WIN
 

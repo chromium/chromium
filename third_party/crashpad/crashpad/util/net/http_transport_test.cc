@@ -42,8 +42,8 @@ namespace test {
 namespace {
 
 #if defined(OS_WIN)
-std::string ToUTF8IfWin(const base::string16& x) {
-  return base::UTF16ToUTF8(x);
+std::string ToUTF8IfWin(const std::wstring& x) {
+  return base::WideToUTF8(x);
 }
 #else
 std::string ToUTF8IfWin(const std::string& x) {

@@ -181,6 +181,8 @@ if (crashpad_is_android) {
 
     sources = [ "linux/handler_trampoline.cc" ]
 
+    deps = [ "../util:no_cfi_icall" ]
+
     ldflags = [ "-llog" ]
 
     if (crashpad_is_in_chromium) {

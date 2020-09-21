@@ -20,6 +20,7 @@
 #include <unistd.h>
 
 #include "dlfcn_internal.h"
+#include "util/misc/no_cfi_icall.h"
 
 #if defined(__USE_FILE_OFFSET64) && __ANDROID_API__ < 21
 
@@ -88,8 +89,7 @@ extern "C" {
 void* mmap(void* addr, size_t size, int prot, int flags, int fd, off_t offset) {
   // Use the system’s mmap64() wrapper if available. It will be available on
   // Android 5.0 (“Lollipop”) and later.
-  using Mmap64Type = void* (*)(void*, size_t, int, int, int, off64_t);
-  static const Mmap64Type mmap64 = reinterpret_cast<Mmap64Type>(
+  static const crashpad::NoCfiIcall<decltype(LocalMmap64)*> mmap64(
       crashpad::internal::Dlsym(RTLD_DEFAULT, "mmap64"));
   if (mmap64) {
     return mmap64(addr, size, prot, flags, fd, offset);

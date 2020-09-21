@@ -215,20 +215,6 @@ TEST(UUID, FromString) {
   uuid.InitializeFromString("5762C15D-50b5-4171-a2e9-7429C9EC6CAB");
   EXPECT_EQ(uuid.ToString(), "5762c15d-50b5-4171-a2e9-7429c9ec6cab");
 
-  // Test accepting a StringPiece16.
-  // clang-format off
-  static constexpr base::char16 kChar16UUID[] = {
-      'f', '3', '2', 'e', '5', 'b', 'd', 'c', '-',
-      '2', '6', '8', '1', '-',
-      '4', 'c', '7', '3', '-',
-      'a', '4', 'e', '6', '-',
-      '3', '3', '3', 'f', 'f', 'd', '3', '3', 'b', '3', '3', '3',
-  };
-  // clang-format on
-  EXPECT_TRUE(uuid.InitializeFromString(
-      base::StringPiece16(kChar16UUID, base::size(kChar16UUID))));
-  EXPECT_EQ(uuid.ToString(), "f32e5bdc-2681-4c73-a4e6-333ffd33b333");
-
 #if defined(OS_WIN)
   // Test accepting a StringPiece16 via L"" literals on Windows.
   EXPECT_TRUE(
@@ -263,7 +249,7 @@ TEST(UUID, FromSystem) {
       base::ScopedGeneric<RPC_WSTR*, ScopedRpcStringFreeTraits>;
   ScopedRpcString scoped_system_string(&system_string);
 
-  EXPECT_EQ(uuid.ToString16(), reinterpret_cast<wchar_t*>(system_string));
+  EXPECT_EQ(uuid.ToWString(), reinterpret_cast<wchar_t*>(system_string));
 }
 
 #endif  // OS_WIN

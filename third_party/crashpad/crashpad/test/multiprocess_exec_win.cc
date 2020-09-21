@@ -125,7 +125,7 @@ void MultiprocessExec::PreFork() {
   command_line_.clear();
   AppendCommandLineArgument(command_.value(), &command_line_);
   for (size_t i = 0; i < arguments_.size(); ++i) {
-    AppendCommandLineArgument(base::UTF8ToUTF16(arguments_[i]), &command_line_);
+    AppendCommandLineArgument(base::UTF8ToWide(arguments_[i]), &command_line_);
   }
 
   // Make pipes for child-to-parent and parent-to-child communication. Mark them
