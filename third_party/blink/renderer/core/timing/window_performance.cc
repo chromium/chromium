@@ -49,7 +49,6 @@
 #include "third_party/blink/renderer/core/page/page_hidden_state.h"
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
-#include "third_party/blink/renderer/core/timing/measure_memory/measure_memory_delegate.h"
 #include "third_party/blink/renderer/core/timing/performance_element_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_observer.h"
@@ -154,21 +153,11 @@ WindowPerformance::WindowPerformance(LocalDOMWindow* window)
     : Performance(ToTimeOrigin(window),
                   window->GetTaskRunner(TaskType::kPerformanceTimeline)),
       ExecutionContextClient(window),
-      PageVisibilityObserver(GetFrame()->GetPage()),
-      measure_memory_experiment_timer_(
-          task_runner_,
-          this,
-          &WindowPerformance::MeasureMemoryExperimentTimerFired) {
+      PageVisibilityObserver(GetFrame()->GetPage()) {
   DCHECK(GetFrame());
   DCHECK(GetFrame()->GetPerformanceMonitor());
   GetFrame()->GetPerformanceMonitor()->Subscribe(
       PerformanceMonitor::kLongTask, kLongTaskObserverThreshold, this);
-  if (MeasureMemoryDelegate::IsMeasureMemoryAvailable(window) &&
-      base::FeatureList::IsEnabled(blink::features::kMeasureMemoryExperiment)) {
-    int delay_in_ms = base::RandInt(0, kMaxMeasureMemoryExperimentDelayInMs);
-    measure_memory_experiment_timer_.StartOneShot(
-        base::TimeDelta::FromMilliseconds(delay_in_ms), FROM_HERE);
-  }
   if (RuntimeEnabledFeatures::VisibilityStateEntryEnabled()) {
     DCHECK(GetPage());
     AddVisibilityStateEntry(GetPage()->IsPageVisible(), base::TimeTicks());
@@ -533,22 +522,6 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
 
 void WindowPerformance::OnPaintFinished() {
   ++frame_index_;
-}
-
-void WindowPerformance::MeasureMemoryExperimentTimerFired(TimerBase*) {
-  if (!GetFrame() || !GetExecutionContext())
-    return;
-  v8::Isolate* isolate = GetExecutionContext()->GetIsolate();
-  v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context =
-      ToV8Context(GetFrame(), DOMWrapperWorld::MainWorld());
-  if (context.IsEmpty()) {
-    // The frame has been detached in the meantime.
-    return;
-  }
-  isolate->MeasureMemory(
-      std::make_unique<MeasureMemoryDelegate>(isolate, context),
-      v8::MeasureMemoryExecution::kDefault);
 }
 
 }  // namespace blink

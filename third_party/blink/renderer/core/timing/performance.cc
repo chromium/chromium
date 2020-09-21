@@ -57,7 +57,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
-#include "third_party/blink/renderer/core/timing/measure_memory/measure_memory_delegate.h"
+#include "third_party/blink/renderer/core/timing/measure_memory/measure_memory_controller.h"
 #include "third_party/blink/renderer/core/timing/performance_element_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_long_task_timing.h"
@@ -153,30 +153,8 @@ EventCounts* Performance::eventCounts() {
 ScriptPromise Performance::measureMemory(
     ScriptState* script_state,
     ExceptionState& exception_state) const {
-  if (!MeasureMemoryDelegate::IsMeasureMemoryAvailable(
-          LocalDOMWindow::From(script_state))) {
-    exception_state.ThrowSecurityError(
-        "performance.measureMemory is not available in this context");
-    return ScriptPromise();
-  }
-  v8::Isolate* isolate = script_state->GetIsolate();
-  v8::TryCatch try_catch(isolate);
-  v8::Local<v8::Context> context = script_state->GetContext();
-  v8::Local<v8::Promise::Resolver> promise_resolver;
-  if (!v8::Promise::Resolver::New(context).ToLocal(&promise_resolver)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
-    return ScriptPromise();
-  }
-  v8::MeasureMemoryExecution execution =
-      RuntimeEnabledFeatures::ForceEagerMeasureMemoryEnabled(
-          ExecutionContext::From(script_state))
-          ? v8::MeasureMemoryExecution::kEager
-          : v8::MeasureMemoryExecution::kDefault;
-
-  isolate->MeasureMemory(std::make_unique<MeasureMemoryDelegate>(
-                             isolate, context, promise_resolver),
-                         execution);
-  return ScriptPromise(script_state, promise_resolver->GetPromise());
+  return MeasureMemoryController::StartMeasurement(script_state,
+                                                   exception_state);
 }
 
 DOMHighResTimeStamp Performance::timeOrigin() const {

@@ -131,8 +131,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   void DispatchFirstInputTiming(PerformanceEventTiming* entry);
 
-  void MeasureMemoryExperimentTimerFired(TimerBase*);
-
   // Counter of the current frame index, based on calls to OnPaintFinished().
   uint64_t frame_index_ = 1;
   // Monotonically increasing value with the last frame index on which a swap
@@ -157,11 +155,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   Member<EventCounts> event_counts_;
   mutable Member<PerformanceNavigation> navigation_;
   mutable Member<PerformanceTiming> timing_;
-
-  // This is used in a Finch experiment to perform a memory measurement without
-  // reporting the results to evaluate its impact on stability and performance.
-  TaskRunnerTimer<WindowPerformance> measure_memory_experiment_timer_;
-  static const int kMaxMeasureMemoryExperimentDelayInMs = 30000;
 };
 
 }  // namespace blink

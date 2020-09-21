@@ -23,23 +23,12 @@
 
 namespace blink {
 
-MeasureMemoryDelegate::MeasureMemoryDelegate(
-    v8::Isolate* isolate,
-    v8::Local<v8::Context> context,
-    v8::Local<v8::Promise::Resolver> promise_resolver)
+MeasureMemoryDelegate::MeasureMemoryDelegate(v8::Isolate* isolate,
+                                             v8::Local<v8::Context> context,
+                                             ResultCallback callback)
     : isolate_(isolate),
       context_(isolate, context),
-      promise_resolver_(isolate, promise_resolver) {
-  context_.SetPhantom();
-  // TODO(ulan): Currently we keep a strong reference to the promise resolver.
-  // This may prolong the lifetime of the context by one more GC in the worst
-  // case as JSPromise keeps its context alive.
-  // To avoid that we should store the promise resolver in V8PerContextData.
-}
-
-MeasureMemoryDelegate::MeasureMemoryDelegate(v8::Isolate* isolate,
-                                             v8::Local<v8::Context> context)
-    : isolate_(isolate), context_(isolate, context) {
+      callback_(std::move(callback)) {
   context_.SetPhantom();
 }
 
@@ -258,8 +247,6 @@ void MeasureMemoryDelegate::MeasurementComplete(
   for (const auto& context_size : context_sizes) {
     total_size += context_size.second;
   }
-  MeasureMemory* result = MeasureMemory::Create();
-  result->setBytes(total_size + unattributed_size);
   HeapVector<Member<MeasureMemoryBreakdown>> breakdown;
   size_t detached_size;
   size_t unknown_frame_size;
@@ -293,32 +280,7 @@ void MeasureMemoryDelegate::MeasurementComplete(
     breakdown.push_back(CreateMeasureMemoryBreakdown(
         unknown_frame_size, Vector<String>{kWindow, kJS}, ""));
   }
-  result->setBreakdown(breakdown);
-  if (!promise_resolver_.IsEmpty()) {
-    v8::Local<v8::Promise::Resolver> promise_resolver =
-        promise_resolver_.NewLocal(isolate_);
-    promise_resolver->Resolve(context, ToV8(result, promise_resolver, isolate_))
-        .ToChecked();
-  }
-}
-
-bool MeasureMemoryDelegate::IsMeasureMemoryAvailable(LocalDOMWindow* window) {
-  // TODO(ulan): We should check for window.crossOriginIsolated when it ships.
-  // Until then we enable the API only for processes locked to a site
-  // similar to the precise mode of the legacy performance.memory API.
-  if (!Platform::Current()->IsLockedToSite()) {
-    return false;
-  }
-  // The window.crossOriginIsolated will be true only for the top-level frame.
-  // Until the flag is available we check for the top-level condition manually.
-  if (!window) {
-    return false;
-  }
-  LocalFrame* local_frame = window->GetFrame();
-  if (!local_frame || !local_frame->IsMainFrame()) {
-    return false;
-  }
-  return true;
+  std::move(callback_).Run(breakdown);
 }
 
 }  // namespace blink
