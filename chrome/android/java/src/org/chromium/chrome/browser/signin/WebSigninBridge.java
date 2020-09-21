@@ -26,7 +26,7 @@ public class WebSigninBridge {
         /**
          * Sign-in completed successfully and the primary account is available in the cookie jar.
          */
-        void onSigninSucceded();
+        void onSigninSucceeded();
 
         /**
          * Sign-in process failed.
@@ -75,12 +75,12 @@ public class WebSigninBridge {
     }
 
     @CalledByNative
-    static void onSigninSucceded(Listener listener) {
-        listener.onSigninSucceded();
+    private static void onSigninSucceded(Listener listener) {
+        listener.onSigninSucceeded();
     }
 
     @CalledByNative
-    static void onSigninFailed(Listener listener, GoogleServiceAuthError error) {
+    private static void onSigninFailed(Listener listener, GoogleServiceAuthError error) {
         listener.onSigninFailed(error);
     }
 

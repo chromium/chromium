@@ -137,7 +137,7 @@ public class AccountPickerDelegate implements WebSigninBridge.Listener {
      */
     @MainThread
     @Override
-    public void onSigninSucceded() {
+    public void onSigninSucceeded() {
         ThreadUtils.assertOnUiThread();
         mCurrentTab.loadUrl(new LoadUrlParams(mContinueUrl));
     }

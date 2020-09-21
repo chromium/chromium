@@ -123,7 +123,7 @@ public class AccountPickerDelegateTest {
         calledInOrder.verify(mWebSigninBridgeFactoryMock)
                 .create(mProfileMock, coreAccountInfo, mDelegate);
         calledInOrder.verify(mSigninManagerMock).signin(eq(coreAccountInfo), any());
-        mDelegate.onSigninSucceded();
+        mDelegate.onSigninSucceeded();
         verify(mTabMock).loadUrl(mLoadUrlParamsCaptor.capture());
         LoadUrlParams loadUrlParams = mLoadUrlParamsCaptor.getValue();
         Assert.assertEquals("Continue url does not match!", CONTINUE_URL, loadUrlParams.getUrl());
