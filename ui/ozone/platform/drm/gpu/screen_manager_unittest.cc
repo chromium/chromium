@@ -627,6 +627,38 @@ TEST_F(ScreenManagerTest, CheckMirrorModeAfterBeginReEnabled) {
   EXPECT_TRUE(controller->IsMirrored());
 }
 
+TEST_F(ScreenManagerTest, ConfigureOnDifferentDrmDevices) {
+  auto gbm_device = std::make_unique<ui::MockGbmDevice>();
+  scoped_refptr<ui::MockDrmDevice> drm2 =
+      new ui::MockDrmDevice(std::move(gbm_device));
+
+  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm2, kSecondaryCrtc,
+                                        kSecondaryConnector);
+  screen_manager_->AddDisplayController(drm2, kSecondaryCrtc + 1,
+                                        kSecondaryConnector + 1);
+
+  std::vector<ScreenManager::ControllerConfigParams> controllers_to_enable;
+  controllers_to_enable.emplace_back(
+      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      GetPrimaryBounds().origin(),
+      std::make_unique<drmModeModeInfo>(kDefaultMode));
+  drmModeModeInfo secondary_mode = kDefaultMode;
+  controllers_to_enable.emplace_back(
+      kSecondaryDisplayId, drm2, kSecondaryCrtc, kSecondaryConnector,
+      GetSecondaryBounds().origin(),
+      std::make_unique<drmModeModeInfo>(secondary_mode));
+  drmModeModeInfo secondary_mode2 = kDefaultMode;
+  controllers_to_enable.emplace_back(
+      kSecondaryDisplayId + 1, drm2, kSecondaryCrtc + 1,
+      kSecondaryConnector + 1, GetSecondaryBounds().origin(),
+      std::make_unique<drmModeModeInfo>(secondary_mode2));
+  screen_manager_->ConfigureDisplayControllers(controllers_to_enable);
+
+  EXPECT_EQ(drm_->get_set_crtc_call_count(), 1);
+  EXPECT_EQ(drm2->get_set_crtc_call_count(), 2);
+}
+
 TEST_F(ScreenManagerTest,
        CheckProperConfigurationWithDifferentDeviceAndSameCrtc) {
   auto gbm_device = std::make_unique<ui::MockGbmDevice>();

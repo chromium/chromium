@@ -38,6 +38,7 @@ class ScreenManager {
                            uint32_t connector,
                            gfx::Point origin,
                            std::unique_ptr<drmModeModeInfo> pmode);
+    ControllerConfigParams(const ControllerConfigParams& other);
     ControllerConfigParams(ControllerConfigParams&& other);
     ~ControllerConfigParams();
 
@@ -66,7 +67,7 @@ class ScreenManager {
   // Enables/Disables the display controller based on if a mode exists.
   base::flat_map<int64_t, bool> ConfigureDisplayControllers(
       const std::vector<ScreenManager::ControllerConfigParams>&
-          controllersParams);
+          controllers_params);
 
   // Returns a reference to the display controller configured to display within
   // |bounds|. If the caller caches the controller it must also register as an
