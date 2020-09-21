@@ -374,7 +374,7 @@
 <translation id="143027896309062157">自分のパソコンとアクセスしたウェブサイト上にある自分の全データの読み取りと変更</translation>
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1431188203598586230">最後のソフトウェア アップデート</translation>
-<translation id="1431402976894535801">サイトによるアクティブ状態の検出をブロックする</translation>
+<translation id="1431402976894535801">サイトによるユーザーのアクティブ状態の検出をブロックする</translation>
 <translation id="1431432486300429272">検索やその他の Google サービスをカスタマイズする目的で、Google が閲覧履歴を使用することがあります。この設定は保護者が myaccount.google.com/activitycontrols/search でいつでも変更できます。</translation>
 <translation id="1432581352905426595">検索エンジンの管理</translation>
 <translation id="1433811987160647649">アクセスする前に確認する</translation>
@@ -1833,7 +1833,7 @@
 <translation id="3163201441334626963">不明な商品（<ph name="PRODUCT_ID" />、ベンダー: <ph name="VENDOR_ID" />）</translation>
 <translation id="3163254451837720982">次のサービスは、ユーザーデータの安全性とセキュリティの維持に役立ちます。これらの機能はいつでも無効にすることができます。</translation>
 <translation id="3164329792803560526">このタブを <ph name="APP_NAME" /> に共有しています</translation>
-<translation id="3165371858310906303">サイトがアクティブ状態を検出しようとしたときに確認する</translation>
+<translation id="3165371858310906303">サイトがユーザーのアクティブ状態を検出しようとしたときに確認する</translation>
 <translation id="3165390001037658081">携帯通信会社によってはこの機能を利用できない場合があります。</translation>
 <translation id="316652501498554287">G Suite for Education アカウント</translation>
 <translation id="3169472444629675720">Discover</translation>

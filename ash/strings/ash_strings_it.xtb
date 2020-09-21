@@ -304,6 +304,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Off per un'app}other{Off per # app}}</translation>
 <translation id="4072264167173457037">Segnale medio</translation>
 <translation id="4112140312785995938">Vai indietro</translation>
+<translation id="4114315158543974537">Attiva Phone Hub</translation>
 <translation id="4129129681837227511">Se vuoi vedere le notifiche nella schermata di blocco, sblocca il dispositivo per cambiare l'impostazione</translation>
 <translation id="4146833061457621061">Fammi ascoltare musica</translation>
 <translation id="4149156641122542261">Dispositivo <ph name="DEVICE_TYPE" /> gestito da <ph name="DOMAIN" /></translation>
@@ -435,6 +436,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5648021990716966815">Jack per microfono</translation>
 <translation id="5669267381087807207">Attivazione</translation>
 <translation id="5673434351075758678">Da "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" dopo la sincronizzazione delle impostazioni.</translation>
+<translation id="5679050765726761783">Alimentatore a basso consumo energetico collegato</translation>
 <translation id="5682642926269496722">L'Assistente Google non è disponibile per l'attuale account utente.</translation>
 <translation id="5689633613396158040">Con la funzione Luminosità notturna, potrai guardare lo schermo senza sforzare la vista o leggere in condizioni di luce attenuata. Tocca per cambiare l'ora di attivazione della funzione Luminosità notturna o disattiva completamente la funzione.</translation>
 <translation id="5691772641933328258">Impronta digitale non riconosciuta</translation>
@@ -548,6 +550,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6857811139397017780">Attiva <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Manca una cifra}other{Mancano # cifre}}</translation>
 <translation id="6878400149835617132">Scorciatoia disattivata</translation>
+<translation id="6886172995547742638">Il tuo <ph name="DEVICE_TYPE" /> potrebbe offrire prestazioni inferiori. Usa un alimentatore USB-C certificato da almeno <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6910714959251846841">Questo aggiornamento richiede il powerwash del dispositivo. Leggi ulteriori informazioni sull'ultimo aggiornamento di <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Impossibile riconoscere la smart card. Riprova.</translation>

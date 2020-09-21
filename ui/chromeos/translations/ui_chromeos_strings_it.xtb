@@ -375,6 +375,7 @@
 <translation id="5098629044894065541">Ebraico</translation>
 <translation id="5123433949759960244">Basket</translation>
 <translation id="5129662217315786329">Polacco</translation>
+<translation id="5132435854979302863">Filippino</translation>
 <translation id="5144820558584035333">Hangul 3 Set (390)</translation>
 <translation id="5145331109270917438">Data modifica</translation>
 <translation id="515594325917491223">Scacchi</translation>
@@ -420,6 +421,7 @@
 <translation id="5464696796438641524">Tastiera polacca</translation>
 <translation id="5465122519792752163">Tastiera Nepalese (InScript)</translation>
 <translation id="5469868506864199649">Italiano</translation>
+<translation id="5484429245813572665">Indonesiano</translation>
 <translation id="5494920125229734069">Seleziona tutto</translation>
 <translation id="5500122897333236901">Islandese</translation>
 <translation id="5508696409934741614">Punti</translation>
@@ -607,6 +609,7 @@
 <translation id="7649070708921625228">Guida</translation>
 <translation id="7654209398114106148">Spostamento di <ph name="NUMBER_OF_ITEMS" /> elementi...</translation>
 <translation id="7658239707568436148">Annulla</translation>
+<translation id="7693909743393669729">La formattazione di un'unità causerà l'eliminazione di tutti i dati archiviati e la rimozione di tutte le partizioni esistenti, incluse quelle che potrebbero non essere visibili. L'operazione non potrà essere annullata.</translation>
 <translation id="7695430100978772476">Impossibile formattare <ph name="DRIVE_NAME" /></translation>
 <translation id="770015031906360009">Greco</translation>
 <translation id="7706319470528945664">Tastiera portoghese</translation>
@@ -638,6 +641,7 @@
 <translation id="78946041517601018">Drive condivisi</translation>
 <translation id="7896906914454843592">Tastiera estesa americana</translation>
 <translation id="7898607018410277265">Tastiera Gujarati (nuova fonetica)</translation>
+<translation id="7908793776359722643">La formattazione di una partizione comporterà l'eliminazione degli dati archiviati al suo interno. L'operazione non potrà essere annullata.</translation>
 <translation id="7917972308273378936">Tastiera lituana</translation>
 <translation id="7925686952655276919">Non utilizzare dati mobili per la sincronizzazione</translation>
 <translation id="7928710562641958568">Espelli dispositivo</translation>
@@ -725,6 +729,7 @@
 <translation id="8900820606136623064">Ungherese</translation>
 <translation id="8901822611024316615">Tastiera QWERTY Ceco</translation>
 <translation id="8919081441417203123">Danese</translation>
+<translation id="8941776146379310519">Malese</translation>
 <translation id="8960999352790021682">Tastiera Bengalese (fonetica)</translation>
 <translation id="8965697826696209160">Spazio insufficiente.</translation>
 <translation id="9017798300203431059">Fonetica russa</translation>

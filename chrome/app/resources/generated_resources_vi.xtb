@@ -374,7 +374,7 @@
 <translation id="143027896309062157">Đọc và thay đổi tất cả dữ liệu trên máy tính của bạn và các trang web bạn truy cập</translation>
 <translation id="1430915738399379752">In</translation>
 <translation id="1431188203598586230">Bản cập nhật phần mềm cuối cùng</translation>
-<translation id="1431402976894535801">Chặn không cho các trang web biết trạng thái hoạt động của bạn</translation>
+<translation id="1431402976894535801">Không cho các trang web biết trạng thái hoạt động của bạn</translation>
 <translation id="1431432486300429272">Google có thể sử dụng lịch sử duyệt web của bạn để điều chỉnh tính năng Tìm kiếm và các dịch vụ khác của Google cho phù hợp với bạn. Bạn hoặc cha mẹ của bạn có thể truy cập vào trang myaccount.google.com/activitycontrols/search để thay đổi tùy chọn này bất cứ lúc nào</translation>
 <translation id="1432581352905426595">Quản lý công cụ tìm kiếm</translation>
 <translation id="1433811987160647649">Hỏi trước khi truy cập</translation>
@@ -2811,7 +2811,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="435527878592612277">Chọn ảnh của bạn</translation>
 <translation id="4358313196493694334">Ổn định vị trí nhấp</translation>
 <translation id="4359408040881008151">Đã được cài đặt vì (các) tiện ích phụ thuộc.</translation>
-<translation id="4359717112757026264">Cảnh quan thành phố</translation>
+<translation id="4359717112757026264">Cảnh thành phố</translation>
 <translation id="4361142739114356624">Khóa cá nhân cho chứng chỉ ứng dụng này còn thiếu hoặc không hợp lệ</translation>
 <translation id="4361745360460842907">Mở dưới dạng thẻ</translation>
 <translation id="4363771538994847871">Không tìm thấy đích Truyền nào. Bạn cần trợ giúp?</translation>
@@ -2949,7 +2949,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4527186207340858212">Tạo một hồ sơ công việc mới?</translation>
 <translation id="452750746583162491">Xem lại các dữ liệu đã đồng bộ hóa của bạn</translation>
 <translation id="4530494379350999373">Nguồn gốc</translation>
-<translation id="4531924570968473143">Bạn muốn thêm ai vào <ph name="DEVICE_TYPE" /> này?</translation>
+<translation id="4531924570968473143">Bạn muốn thêm ai vào chiếc <ph name="DEVICE_TYPE" /> này?</translation>
 <translation id="4532646538815530781">Trang web này đang sử dụng cảm biến chuyển động.</translation>
 <translation id="4533846798469727141">Bây giờ hãy nói "Ok Google"</translation>
 <translation id="4533985347672295764">Thời gian của CPU</translation>

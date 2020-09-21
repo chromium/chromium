@@ -163,7 +163,7 @@
 <translation id="5771720122942595109">Lokað er fyrir <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Heimildir</translation>
 <translation id="5860033963881614850">Slökkt</translation>
-<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, og <ph name="NUM_MORE" /> í viðbót leyft</translation>
+<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> í viðbót leyft</translation>
 <translation id="5876056640971328065">Gera hlé á spilun</translation>
 <translation id="5916664084637901428">Kveikt</translation>
 <translation id="5922853908706496913">Deiling skjásins þíns</translation>
@@ -203,7 +203,7 @@
 <translation id="6790428901817661496">Spila</translation>
 <translation id="6818926723028410516">Veldu atriði</translation>
 <translation id="6864395892908308021">Þetta tæki getur ekki lesið NFC</translation>
-<translation id="6879016579615558281">Lokað er fyrir <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, og <ph name="NUM_MORE" /> í viðbót</translation>
+<translation id="6879016579615558281">Lokað er fyrir <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> í viðbót</translation>
 <translation id="6910211073230771657">Eytt</translation>
 <translation id="6912998170423641340">Koma í veg fyrir að vefsvæði geti lesið texta og myndir af klippiborðinu</translation>
 <translation id="6945221475159498467">Velja</translation>

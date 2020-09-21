@@ -47,9 +47,9 @@
 <translation id="1161325031994447685">重新连接到 Wi-Fi 网络</translation>
 <translation id="1165039591588034296">错误</translation>
 <translation id="1165174597379888365">访问过的网页</translation>
-<translation id="1174723505405632867">您想允许 <ph name="EMBEDDED_URL" /> 使用 <ph name="TOP_LEVEL_URL" /> 上的 Cookie 和网站数据吗？
+<translation id="1174723505405632867">您想允许 <ph name="EMBEDDED_URL" /> 在 <ph name="TOP_LEVEL_URL" /> 上使用 Cookie 和网站数据吗？
 
-如果不允许，您的隐私设置便会禁止上述操作。授予该权限会使得您与之互动的内容正常运行，但可能会允许 <ph name="EMBEDDED_URL" /> 跟踪您的活动。</translation>
+除非您主动允许，否则您的隐私设置会禁止上述操作。授予该权限后，您与之互动的内容将可正常运行，但 <ph name="EMBEDDED_URL" /> 可能将能够跟踪您的活动。</translation>
 <translation id="1175364870820465910">打印(&amp;P)...</translation>
 <translation id="1175875016430184367">三钉（右侧）</translation>
 <translation id="1178581264944972037">暂停</translation>

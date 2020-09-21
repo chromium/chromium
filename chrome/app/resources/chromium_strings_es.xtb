@@ -143,7 +143,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="6096348254544841612">Personaliza y controla Chromium. Hay una actualización disponible.</translation>
 <translation id="6120345080069858279">Chromium guardará esta contraseña en tu cuenta de Google para que no tengas que recordarla.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> es peligroso, por lo que Chromium lo ha bloqueado.</translation>
-<translation id="6134968993075716475">La función Navegación Segura está desactivada. Chromium recomienda activarla.</translation>
+<translation id="6134968993075716475">La función Navegación segura está desactivada. Chromium recomienda activarla.</translation>
 <translation id="6212496753309875659">Este ordenador ya cuenta con una versión más reciente de Chromium. Si el software no funciona, desinstala Chromium y vuelve a intentarlo.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium se reiniciará ahora}=1{Chromium se reiniciará dentro de 1 segundo}other{Chromium se reiniciará dentro de # segundos}}</translation>
 <translation id="623836266260425961">Chromium OS no ha podido sincronizar los datos.</translation>

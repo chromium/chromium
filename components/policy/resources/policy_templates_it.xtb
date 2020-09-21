@@ -3936,6 +3936,13 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 
       Se il criterio viene impostato su Disattivato, viene visualizzato invece un messaggio di errore.</translation>
 <translation id="6821268164692776674">Destinazioni <ph name="CLOUD_PRINT_NAME" /> e "Salva su Google Drive"</translation>
+<translation id="6833023569065717572">Se il criterio viene impostato su Vero, nella schermata di accesso del dispositivo viene usato il formato dell'orologio di 24 ore.
+
+      Se il criterio viene impostato su Falso, nella schermata di accesso del dispositivo viene usato il formato dell'orologio di 12 ore.
+
+      Se il criterio non viene configurato, il dispositivo usa il formato delle impostazioni locali.
+
+      Il formato del dispositivo viene usato per impostazione predefinita anche per le sessioni utente, ma gli utenti possono cambiare il formato dell'orologio dell'account.</translation>
 <translation id="6833064854262015312">Se il criterio è impostato su True, la modalità ad alto contrasto viene attivata nella schermata di accesso. Se il criterio è impostato su False, la modalità ad alto contrasto viene disattivata nella schermata di accesso.
 
       Se imposti il criterio, gli utenti possono modificare temporaneamente la modalità ad alto contrasto attivandola o disattivandola. Quando la schermata di accesso viene ricaricata o rimane inattiva per un minuto, viene ripristinato lo stato originale della modalità.
@@ -4118,6 +4125,7 @@ Se questa norma è impostata su True o non è impostata, il modello di oscuramen
       La configurazione di un elenco di URL in questo criterio equivale a impostare il flag della riga di comando unsafely-treat-insecure-origin-as-secure su un elenco separato da virgole degli stessi URL. Il criterio sovrascrive il flag della riga di comando e UnsafelyTreatInsecureOriginAsSecure, se presenti.
 
       Per ulteriori informazioni sui contesti sicuri, visita la pagina https://www.w3.org/TR/secure-contexts.</translation>
+<translation id="7033985774616781500">Configura la videocamera, le impostazioni del browser, le impostazioni del sistema operativo e le funzionalità di scansione da disattivare</translation>
 <translation id="7037812781389976160">Consente di controllare la posizione della shelf di <ph name="PRODUCT_OS_NAME" />.
 
       Se per questo criterio viene impostato il valore "In basso", la shelf viene posizionata nella parte inferiore dello schermo.
@@ -4703,6 +4711,13 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7754704193130578113">Chiedi dove salvare il file prima di scaricarlo</translation>
 <translation id="7758378441185523981">Attiva l'autenticazione ambientale in base ai tipi di profilo.</translation>
 <translation id="7763614521440615342">Mostra suggerimenti di contenuti nella pagina Nuova scheda</translation>
+<translation id="7765753178910647492">Consente di configurare un elenco di funzionalità di <ph name="PRODUCT_OS_NAME" /> da disattivare.
+
+      Se una qualsiasi di queste funzionalità viene disattivata, l'utente non può accedervi dall'UI e la vede contrassegnata come "disattivata dall'amministratore".
+
+      Se il criterio non viene configurato, tutte le funzionalità di <ph name="PRODUCT_OS_NAME" /> vengono attivate per impostazione predefinita e l'utente le può utilizzare.
+
+      Nota: al momento la funzionalità di scansione è disattivata per impostazione predefinita tramite un flag funzionalità. Se l'utente attiva la funzionalità tramite un flag funzionalità, questa può comunque essere disattivata dal criterio.</translation>
 <translation id="7765879851993224640">Consenti l'uso dell'accesso tramite Smart Lock.</translation>
 <translation id="7774768074957326919">Utilizza le impostazioni proxy di sistema</translation>
 <translation id="777734450201217641">Consente di attivare le scorciatoie delle funzioni di accessibilità nella schermata di accesso.
@@ -4825,6 +4840,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
           Se questo criterio non viene impostato, viene usato un periodo di tempo predefinito.
 
           Il valore del criterio deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di inattività.</translation>
+<translation id="7995610550667275367">Scansione (supportata dalla versione 87)</translation>
 <translation id="8001701200415781021">Limita gli Account Google che è possibile impostare come account principali del browser in <ph name="PRODUCT_NAME" /></translation>
 <translation id="8006219716745491366">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> consente di specificare un elenco di URL alternativi per l'estrazione dei termini di ricerca dal motore di ricerca. Gli URL devono includere la stringa <ph name="SEARCH_TERM_MARKER" />.
 
@@ -4961,6 +4977,9 @@ Se questo criterio non viene impostato, verrà applicato il comportamento predef
           Se l'azione è la sospensione, è possibile configurare separatamente <ph name="PRODUCT_OS_NAME" /> in modo che blocchi o meno lo schermo prima della sospensione.</translation>
 <translation id="8214600119442850823">Consente di configurare Gestione password.</translation>
 <translation id="8217516105848565518">Questa norma è obsoleta. Al suo posto utilizza RemoteAccessHostDomainList.</translation>
+<translation id="8219777886736887686">Se il criterio viene configurato, è possibile stabilire il comando da usare per aprire gli URL in un browser alternativo. Per il criterio è possibile impostare i valori <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> oppure un percorso del file. Se per questo criterio viene impostato un percorso del file, tale file viene usato come eseguibile. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> e <ph name="EDGE_VALUE_PLACEHOLDER" /> sono disponibili solo su <ph name="MS_WIN_NAME" />, mentre <ph name="SAFARI_VALUE_PLACEHOLDER" /> è disponibile solo su <ph name="MS_WIN_NAME" /> e <ph name="MAC_OS_NAME" />.
+
+      Se il criterio non viene configurato, viene usato un valore predefinito specifico della piattaforma: <ph name="IE_PRODUCT_NAME" /> per <ph name="MS_WIN_NAME" /> oppure <ph name="SAFARI_PRODUCT_NAME" /> per <ph name="MAC_OS_NAME" />. Su <ph name="LINUX_OS_NAME" /> non è possibile aprire un browser alternativo.</translation>
 <translation id="8220156281401380422">Configura lista consentita di messaggi nativi</translation>
 <translation id="8244171102276095471">Attiva i pacchetti di crittografia RC4 in TLS</translation>
 <translation id="8244525275280476362">Ritardo di recupero massimo dopo l'invalidazione di una norma</translation>

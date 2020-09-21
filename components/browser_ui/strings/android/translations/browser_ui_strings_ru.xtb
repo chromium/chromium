@@ -148,7 +148,7 @@
 <translation id="5403592356182871684">Имена</translation>
 <translation id="5489227211564503167">Просмотрено <ph name="ELAPSED_TIME" /> из <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Блокировать объявления на сайтах, которые показывают навязчивую или вводящую в заблуждение рекламу</translation>
-<translation id="5502860503640766021">Разрешено: <ph name="PERMISSION_1" />, заблокировано: <ph name="PERMISSION_2" /></translation>
+<translation id="5502860503640766021">Разрешено: <ph name="PERMISSION_1" />. Заблокировано: <ph name="PERMISSION_2" />.</translation>
 <translation id="5505264765875738116">Сайты не могут запрашивать разрешения на отправку уведомлений</translation>
 <translation id="5516455585884385570">Перейти в настройки уведомлений</translation>
 <translation id="5527111080432883924">Запрашивать мое разрешение на доступ сайтов к тексту и изображениям, скопированным в буфер обмена (рекомендуется)</translation>
@@ -168,7 +168,7 @@
 <translation id="5916664084637901428">ВКЛ</translation>
 <translation id="5922853908706496913">Предоставлен доступ к вашему экрану</translation>
 <translation id="5939518447894949180">Сбросить</translation>
-<translation id="5976059395673079613"><ph name="PERMISSION" />–<ph name="WARNING_MESSAGE" /></translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Управляйте доступом сайта к данным на устройстве.</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6042308850641462728">Ещё</translation>

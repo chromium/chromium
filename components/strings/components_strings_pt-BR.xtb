@@ -531,7 +531,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
       verificar se o servidor proxy está funcionando. Se você acredita que não deve
       usar um servidor proxy:
       <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456"><ph name="URL" /> quer saber quando você está presente</translation>
+<translation id="3184534047932533456"><ph name="URL" /> quer saber quando você está interagindo</translation>
 <translation id="3188393374551744535">Saldo da conta</translation>
 <translation id="3194737229810486521"><ph name="URL" /> quer armazenar permanentemente os dados no seu dispositivo</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> em <ph name="SERVER_NAME" /></translation>
@@ -1019,7 +1019,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5171689220826475070">Fanfold European</translation>
 <translation id="5172758083709347301">Máquina</translation>
 <translation id="5179510805599951267">Não está em <ph name="ORIGINAL_LANGUAGE" />? Informe este erro</translation>
-<translation id="5179740473595559246">Saber quando você está presente</translation>
+<translation id="5179740473595559246">Saber quando você está interagindo</translation>
 <translation id="5190835502935405962">Barra de favoritos</translation>
 <translation id="519422657042045905">Anotação indisponível</translation>
 <translation id="5201306358585911203">Uma página incorporada nesta página diz</translation>
@@ -1242,7 +1242,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6049488691372270142">Entrega de página</translation>
 <translation id="6051221802930200923">Não é possível acessar <ph name="SITE" /> no momento, porque o site usa bloqueio de certificados. Como os ataques e erros de rede são geralmente temporários, esta pagina provavelmente funcionará mais tarde.</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">Compartilhar sua presença?</translation>
+<translation id="6053328359599022071">Compartilhar que você está interagindo?</translation>
 <translation id="6058977677006700226">Usar seus cartões em todos os dispositivos?</translation>
 <translation id="6059925163896151826">Dispositivos USB</translation>
 <translation id="6060009363608157444">Modo DnsOverHttps inválido.</translation>

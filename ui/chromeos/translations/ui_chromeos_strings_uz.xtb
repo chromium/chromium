@@ -70,7 +70,7 @@
 <translation id="1673103856845176271">Faylga ruxsat havfsizlik maqsadlarida cheklangan.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> ta element arxivlanmoqda...</translation>
-<translation id="1731889557567069540">Nusxa olingan obyektlar: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="1731889557567069540">Nusxa olindi: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="174173592514158117">Barcha Google Play jildlari ko‘rsatilsin</translation>
 <translation id="174937106936716857">Umumiy fayllar soni</translation>
 <translation id="1775381402323441512">Video haqida</translation>
@@ -111,12 +111,12 @@
 <translation id="2163152940313951844">Yaroqsiz belgi: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Vyetnam klaviaturasi (TCVN)</translation>
 <translation id="2168214441502403371">Fors klaviaturasi</translation>
-<translation id="2197363559908958454">Koʻchirildi: <ph name="NUMBER_OF_ITEMS" />.</translation>
+<translation id="2197363559908958454">Boshqa joyga olindi: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">Xitoy (soddalashtirilgan) klaviaturasi</translation>
 <translation id="2208158072373999562">Zip-arxiv</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> ta element oʻchirib tashlansinmi?</translation>
 <translation id="2230062665678605299">“<ph name="FOLDER_NAME" />” jildini yaratib bo‘lmadi. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2275059641601412272">Koʻchirilgan.</translation>
+<translation id="2275059641601412272">Boshqa joyga olindi.</translation>
 <translation id="2278988676849463018">Kannada klaviaturasi (Fonetik)</translation>
 <translation id="2288278176040912387">Patefon</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ta fayl ochilmoqda.</translation>
@@ -238,7 +238,7 @@
 <translation id="3620292326130836921">Ma’lumotlar saqlandi!</translation>
 <translation id="3626281679859535460">Yorqinlik</translation>
 <translation id="3644896802912593514">Eni</translation>
-<translation id="3645233063072417428">Koʻchirildi: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="3645233063072417428">Boshqa joyga olindi: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="3645531960514756307">Jildni olib tashlash</translation>
 <translation id="3678559383040232393">Malta klaviaturasi</translation>
 <translation id="3685122418104378273">Google Disk‘ni mobil internet orqali sinxronlash birlamchi holatda o‘chirib qo‘yilgan.</translation>

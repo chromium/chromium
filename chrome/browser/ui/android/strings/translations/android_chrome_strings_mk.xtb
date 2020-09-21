@@ -676,7 +676,7 @@
 <translation id="6341580099087024258">Прашај каде да зачувуваш датотеки</translation>
 <translation id="6342069812937806050">Пред малку</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
-<translation id="6345878117466430440">Означете како прочитано</translation>
+<translation id="6345878117466430440">Означи како прочитано</translation>
 <translation id="6364438453358674297">Да се отстрани предлогот од историјата?</translation>
 <translation id="6366047038980456022"><ph name="APP_NAME" /> има доволно знаење и брзина за да ви овозможи безбедно да работите, создавате и истражувате онлајн</translation>
 <translation id="6378173571450987352">Детали: подредени по количината на податоци што се користат</translation>
@@ -897,7 +897,6 @@
 <translation id="7975379999046275268">Прегледајте ја страницата <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Претходно вчитувај страници за побрзо прелистување и пребарување</translation>
 <translation id="79859296434321399">За да прегледувате содржини во проширена реалност, инсталирајте го ARCore</translation>
-<translation id="799806351373751710">Откажи поставување синхронизација</translation>
 <translation id="7998918019931843664">Повторно отвори ја затворената картичка</translation>
 <translation id="8004582292198964060">Прелистувач</translation>
 <translation id="8013372441983637696">Избришете ги и вашите податоци на Chrome од уредов</translation>
@@ -942,7 +941,6 @@
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8266862848225348053">Локација за преземањата</translation>
 <translation id="8274165955039650276">Видете ги преземањата</translation>
-<translation id="8278640294239011163">Потврдете ја синхронизацијата</translation>
 <translation id="8284326494547611709">Титлови</translation>
 <translation id="8310344678080805313">Стандардни картички</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> и други сајтови</translation>

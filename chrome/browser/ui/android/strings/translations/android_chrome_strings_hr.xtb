@@ -897,7 +897,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7975379999046275268">Pregled stranice <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Prethodno učitaj stranice za brže pregledavanje i pretraživanje</translation>
 <translation id="79859296434321399">Za prikaz sadržaja proširene stvarnosti instalirajte ARCore</translation>
-<translation id="799806351373751710">Otkaži postavljanje sinkronizacije</translation>
 <translation id="7998918019931843664">Ponovno otvaranje zatvorene kartice</translation>
 <translation id="8004582292198964060">Preglednik</translation>
 <translation id="8013372441983637696">Izbriši podatke iz Chromea i s ovog uređaja</translation>
@@ -942,7 +941,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8266862848225348053">Lokacija za preuzimanje</translation>
 <translation id="8274165955039650276">Pregled preuzimanja</translation>
-<translation id="8278640294239011163">Potvrdite sinkronizaciju</translation>
 <translation id="8284326494547611709">Titlovi</translation>
 <translation id="8310344678080805313">Standardne kartice</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> i druge web-lokacije</translation>

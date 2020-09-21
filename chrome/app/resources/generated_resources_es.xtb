@@ -113,7 +113,7 @@
 <translation id="1123753900084781868">La función Subtítulos instantáneos no está disponible en estos momentos</translation>
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1125550662859510761">Resolución de <ph name="WIDTH" />x<ph name="HEIGHT" /> (nativa)</translation>
-<translation id="1126809382673880764">No te protege frente a descargas, extensiones ni sitios web peligrosos. Seguirás disfrutando de protección con la función Navegación Segura, si está disponible, en otros servicios de Google, como Gmail y la Búsqueda.</translation>
+<translation id="1126809382673880764">No te protege frente a descargas, extensiones ni sitios web peligrosos. Seguirás disfrutando de protección con la función Navegación segura, si está disponible, en otros servicios de Google, como Gmail y la Búsqueda.</translation>
 <translation id="112752777279960360">Para configurar por primera vez un teléfono Android como llave de seguridad de este ordenador, abre Chrome en tu teléfono y ve a Configuración &gt; Contraseñas &gt; Usar teléfono como llave de seguridad. A continuación, toca Conectar nuevo dispositivo y escanea este código QR.</translation>
 <translation id="1128109161498068552">No permitir que ningún sitio utilice mensajes exclusivos del sistema para acceder a los dispositivos MIDI</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -374,7 +374,7 @@
 <translation id="143027896309062157">Leer y modificar todos tus datos en tu ordenador y en los sitios web que visites</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1431188203598586230">Última actualización de software</translation>
-<translation id="1431402976894535801">Impedir que los sitios web para impedir que sepan cuándo estás activo</translation>
+<translation id="1431402976894535801">Impedir que los sitios web sepan cuándo estás presente</translation>
 <translation id="1431432486300429272">Google puede utilizar tu historial de navegación para personalizar la Búsqueda y otros Servicios de Google. Tú o tus padres podéis cambiar esta opción en cualquier momento desde myaccount.google.com/activitycontrols/search</translation>
 <translation id="1432581352905426595">Administrar buscadores</translation>
 <translation id="1433811987160647649">Preguntar antes de acceder</translation>
@@ -559,7 +559,7 @@
 <translation id="163993578339087550"><ph name="SERVICE_NAME" /> quiere comprobar si estás utilizando un dispositivo Chrome OS apto.</translation>
 <translation id="1640235262200048077"><ph name="IME_NAME" /> aún no funciona en las aplicaciones de Linux</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 con cifrado RSA</translation>
-<translation id="1641113438599504367">Navegación Segura</translation>
+<translation id="1641113438599504367">Navegación segura</translation>
 <translation id="1642494467033190216">Para poder habilitar otras funciones de depuración, es necesario eliminar la protección de rootfs y reiniciar.</translation>
 <translation id="1643072738649235303">Firma X9.62 ECDSA con SHA-1</translation>
 <translation id="1644574205037202324">Historial</translation>
@@ -944,7 +944,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2114326799768592691">Volver a cargar &amp;marco</translation>
 <translation id="2114896190328250491">Foto de <ph name="NAME" /></translation>
 <translation id="2119349053129246860">Abrir en <ph name="APP" /></translation>
-<translation id="2119461801241504254">La función Navegación Segura está activada y te protege de descargas y sitios web dañinos</translation>
+<translation id="2119461801241504254">La función Navegación segura está activada y te protege de descargas y sitios web dañinos</translation>
 <translation id="2120297377148151361">Actividad e interacciones</translation>
 <translation id="2120639962942052471">Bloqueado: <ph name="PERMISSION" /></translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{Se han bloqueado las cookies}=1{Se han bloqueado las cookies (1 excepción)}other{Se han bloqueado las cookies ({COUNT} excepciones)}}</translation>
@@ -1833,14 +1833,14 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3163201441334626963">Producto <ph name="PRODUCT_ID" /> del proveedor <ph name="VENDOR_ID" /> desconocido</translation>
 <translation id="3163254451837720982">Los siguientes servicios te ayudan a mantener tus datos seguros y protegidos. Puedes inhabilitar estas funciones en cualquier momento.</translation>
 <translation id="3164329792803560526">Compartiendo esta pestaña con <ph name="APP_NAME" /></translation>
-<translation id="3165371858310906303">Preguntar cuando un sitio web quiera saber si estás activo</translation>
+<translation id="3165371858310906303">Preguntar cuando un sitio web quiera saber si estás presente</translation>
 <translation id="3165390001037658081">Es posible que algunos operadores bloqueen esta función.</translation>
 <translation id="316652501498554287">Cuentas de G Suite para Centros Educativos</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">También puedes <ph name="LINK_START" />navegar como invitado<ph name="LINK_END" /> sin iniciar sesión.</translation>
 <translation id="3177909033752230686">Idioma de la página:</translation>
 <translation id="3179982752812949580">Fuente del texto</translation>
-<translation id="3181954750937456830">Navegación Segura (te protege a ti y a tu dispositivo frente a sitios web peligrosos)</translation>
+<translation id="3181954750937456830">Navegación segura (te protege a ti y a tu dispositivo frente a sitios web peligrosos)</translation>
 <translation id="3182749001423093222">Revisión ortográfica</translation>
 <translation id="3183139917765991655">Importador de perfiles</translation>
 <translation id="3183143381919926261">Redes de datos móviles</translation>
@@ -1947,7 +1947,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3317459757438853210">Doble cara</translation>
 <translation id="3317678681329786349">Cámara y micrófono bloqueados</translation>
 <translation id="3319048459796106952">Nueva ventana de &amp;incógnito</translation>
-<translation id="3320630259304269485">Navegación Segura (protección frente a sitios web peligrosos) y otros ajustes de seguridad</translation>
+<translation id="3320630259304269485">Navegación segura (protección frente a sitios web peligrosos) y otros ajustes de seguridad</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Estos datos incluyen contenido sensible o peligroso. Elimina ese contenido e inténtalo de nuevo.}=1{Este archivo incluye contenido sensible o peligroso. Elimina ese contenido e inténtalo de nuevo.}other{Estos archivos incluyen contenido sensible o peligroso. Elimina ese contenido e inténtalo de nuevo.}}</translation>
 <translation id="3323521181261657960">¡Extra! Has conseguido más tiempo de pantalla</translation>
 <translation id="3325910708063135066">La cámara y el micrófono están desactivados en las Preferencias del Sistema de Mac</translation>
@@ -2482,7 +2482,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3923184630988645767">Uso de datos</translation>
 <translation id="3923676227229836009">Esta página tiene permiso para ver archivos</translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3924487862883651986">Envía URL a Navegación Segura para que las compruebe. También envía una muestra pequeña de páginas, descargas, actividad de las extensiones e información del sistema para contribuir a detectar nuevas amenazas. Cuando inicias sesión, vincula estos datos a tu cuenta de Google de forma temporal para protegerte en las aplicaciones de Google.</translation>
+<translation id="3924487862883651986">Envía URL a Navegación segura para que las compruebe. También envía una muestra pequeña de páginas, descargas, actividad de las extensiones e información del sistema para contribuir a detectar nuevas amenazas. Cuando inicias sesión, vincula estos datos a tu cuenta de Google de forma temporal para protegerte en las aplicaciones de Google.</translation>
 <translation id="3925573269917483990">Cámara:</translation>
 <translation id="3926002189479431949">El teléfono de Smart Lock ha cambiado</translation>
 <translation id="3927787410750478258">El dominio <ph name="DOMAIN" /> gestionará este <ph name="DEVICE_TYPE" />.</translation>
@@ -3398,7 +3398,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5097874180538493929">Hacer clic automáticamente cuando se detenga el cursor</translation>
 <translation id="5101042277149003567">Abrir todos los marcadores</translation>
 <translation id="5101839224773798795">Hacer clic automáticamente cuando se detenga el cursor</translation>
-<translation id="5107443654503185812">Una extensión ha desactivado la Navegación Segura</translation>
+<translation id="5107443654503185812">Una extensión ha desactivado la Navegación segura</translation>
 <translation id="5108967062857032718">Configuración - Quitar aplicaciones de Android</translation>
 <translation id="5109044022078737958">Atleta</translation>
 <translation id="5111646998522066203">Salir del modo de incógnito</translation>
@@ -4086,7 +4086,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5932881020239635062">Número de serie</translation>
 <translation id="5933376509899483611">Zona horaria</translation>
 <translation id="5935158534896975820">Preparando solicitud de firma de certificado (esperando en el servidor)</translation>
-<translation id="5935656526031444304">Gestionar Navegación Segura</translation>
+<translation id="5935656526031444304">Gestionar Navegación segura</translation>
 <translation id="5938002010494270685">Actualización de seguridad disponible</translation>
 <translation id="5939518447894949180">Restablecer</translation>
 <translation id="5941153596444580863">Añadir perfil...</translation>
@@ -4246,7 +4246,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6122095009389448667">Seguir impidiendo que este sitio web vea el portapapeles</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122600716821516697">¿Compartir con este dispositivo?</translation>
-<translation id="6122831415929794347">¿Desactivar Navegación Segura?</translation>
+<translation id="6122831415929794347">¿Desactivar Navegación segura?</translation>
 <translation id="6122875415561139701">No se permite la operación de escritura en "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6124213551517593835">Esta acción borrará todos los datos y las cookies guardados por <ph name="SITE_GROUP_NAME" /> y por los sitios web que incluya</translation>
 <translation id="6124650939968185064">Las siguientes extensiones dependen de esta extensión:</translation>
@@ -4477,10 +4477,10 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6408118934673775994">Leer y modificar tus datos en <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> y <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">Archivos de imagen</translation>
 <translation id="6410328738210026208">Cambiar canal y Powerwash</translation>
-<translation id="6410390304316730527">La función Navegación Segura te protege frente a atacantes que pueden intentar engañarte para que realices alguna acción peligrosa, como instalar software malicioso o revelar información personal, incluidas contraseñas, números de teléfono o tarjetas de crédito. Si desactivas esta función, debes tener cuidado al navegar por sitios web desconocidos o que no sean de confianza.</translation>
+<translation id="6410390304316730527">La función Navegación segura te protege frente a atacantes que pueden intentar engañarte para que realices alguna acción peligrosa, como instalar software malicioso o revelar información personal, incluidas contraseñas, números de teléfono o tarjetas de crédito. Si desactivas esta función, debes tener cuidado al navegar por sitios web desconocidos o que no sean de confianza.</translation>
 <translation id="6410668567036790476">Añadir motor de búsqueda</translation>
 <translation id="641081527798843608">Coincidencia de asunto</translation>
-<translation id="6412673304250309937">Comprueba las URL guardadas en Chrome con una lista de sitios web que no son seguros. Si un sitio web intenta robarte la contraseña o te descargas un archivo dañino, puede que Chrome también envíe URL, así como fragmentos de contenido de la página, a Navegación Segura.</translation>
+<translation id="6412673304250309937">Comprueba las URL guardadas en Chrome con una lista de sitios web que no son seguros. Si un sitio web intenta robarte la contraseña o te descargas un archivo dañino, puede que Chrome también envíe URL, así como fragmentos de contenido de la página, a Navegación segura.</translation>
 <translation id="6412931879992742813">Nueva ventana de incógnito</translation>
 <translation id="641469293210305670">Instalar actualizaciones y aplicaciones</translation>
 <translation id="6414888972213066896">Has solicitado permiso a uno de tus padres para poder acceder a este sitio web</translation>
@@ -4739,7 +4739,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6737663862851963468">Quitar ticket de Kerberos</translation>
 <translation id="6739923123728562974">Mostrar acceso directo del escritorio</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> en pausa</translation>
-<translation id="6741063444351041466"><ph name="BEGIN_LINK" />Tu administrador<ph name="END_LINK" /> ha desactivado la Navegación Segura</translation>
+<translation id="6741063444351041466"><ph name="BEGIN_LINK" />Tu administrador<ph name="END_LINK" /> ha desactivado la Navegación segura</translation>
 <translation id="6742339027238151589">Accesible para secuencia de comandos</translation>
 <translation id="6745592621698551453">Actualizar ahora</translation>
 <translation id="6746124502594467657">Bajar</translation>

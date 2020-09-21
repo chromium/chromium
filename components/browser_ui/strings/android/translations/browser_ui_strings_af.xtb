@@ -148,7 +148,7 @@
 <translation id="5403592356182871684">Name</translation>
 <translation id="5489227211564503167">Tyd verstreke is <ph name="ELAPSED_TIME" /> van <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokkeer advertensies op werwe wat indringerige of misleidende advertensies wys</translation>
-<translation id="5502860503640766021"><ph name="PERMISSION_1" /> word toegelaat, <ph name="PERMISSION_2" /> word geblokkeer</translation>
+<translation id="5502860503640766021"><ph name="PERMISSION_1" /> word toegelaat. <ph name="PERMISSION_2" /> word geblokkeer.</translation>
 <translation id="5505264765875738116">Werwe kan nie vra om kennisgewings te stuur nie</translation>
 <translation id="5516455585884385570">Maak kennisgewinginstellings oop</translation>
 <translation id="5527111080432883924">Vra voordat werwe toegelaat word om teks en prente van die knipbord af te lees (aanbeveel)</translation>

@@ -897,7 +897,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7975379999046275268">Förhandsgranska sida <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Läs in sidor i förväg så att det går snabbare att surfa och söka</translation>
 <translation id="79859296434321399">Installera ARCore om du vill visa innehåll med förstärkt verklighet</translation>
-<translation id="799806351373751710">Avbryt och konfigurera inte synkronisering</translation>
 <translation id="7998918019931843664">Öppna en stängd flik på nytt</translation>
 <translation id="8004582292198964060">Webbläsare</translation>
 <translation id="8013372441983637696">Rensa även Chrome-data från enheten</translation>
@@ -942,7 +941,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8261506727792406068">Radera</translation>
 <translation id="8266862848225348053">Nedladdningsplats</translation>
 <translation id="8274165955039650276">Visa nedladdningar</translation>
-<translation id="8278640294239011163">Bekräfta synkronisering</translation>
 <translation id="8284326494547611709">Textning</translation>
 <translation id="8310344678080805313">Standardflikar</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> och fler webbplatser</translation>

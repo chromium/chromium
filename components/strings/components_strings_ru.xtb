@@ -530,7 +530,7 @@
 <translation id="3176929007561373547">Проверьте настройки прокси-сервера или попросите администратора
           задать верные параметры. В противном случае^
           <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456">Сайт <ph name="URL" /> запрашивает информацию о вашем присутствии.</translation>
+<translation id="3184534047932533456">Разрешить сайту <ph name="URL" /> доступ к информации о вашем присутствии?</translation>
 <translation id="3188393374551744535">Баланс</translation>
 <translation id="3194737229810486521">Сайт <ph name="URL" /> запрашивает разрешение на постоянное хранение данных на вашем устройстве.</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на <ph name="SERVER_NAME" /></translation>
@@ -1018,7 +1018,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Локальный компьютер</translation>
 <translation id="5179510805599951267">Это не <ph name="ORIGINAL_LANGUAGE" />? Сообщите об ошибке</translation>
-<translation id="5179740473595559246">Сообщать о вашем присутствии.</translation>
+<translation id="5179740473595559246">доступ к информации о вашем присутствии.</translation>
 <translation id="5190835502935405962">Панель закладок</translation>
 <translation id="519422657042045905">В этот PDF-файл нельзя добавлять заметки</translation>
 <translation id="5201306358585911203">Подтвердите действие</translation>
@@ -1371,7 +1371,7 @@
 <translation id="6631202559048444592">Для этого правила существует более одного источника с одинаковыми значениями.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Удалить</translation>
-<translation id="6645291930348198241">Доступ к файлам cookie и данным сайта.</translation>
+<translation id="6645291930348198241">доступ к файлам cookie и данным сайта.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Нет}=1{С 1 сайта (вы останетесь в аккаунте Google)}one{С # сайта (вы останетесь в аккаунте Google)}few{С # сайтов (вы останетесь в аккаунте Google)}many{С # сайтов (вы останетесь в аккаунте Google)}other{С # сайта (вы останетесь в аккаунте Google)}}</translation>
 <translation id="6648459603387803038">Администратор может удаленно менять настройки браузера и управлять действиями вне браузера Chrome на этом устройстве.</translation>
 <translation id="6652101503459149953">Использовать Windows Hello</translation>

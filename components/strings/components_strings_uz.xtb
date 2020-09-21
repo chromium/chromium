@@ -534,7 +534,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3174168572213147020">Orol</translation>
 <translation id="3176929007561373547">Proksi sozlamalarini tekshiring yoki administratordan kerakli parametrlarni so‘rang. Aks holda:
 <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456"><ph name="URL" /> sayti qachon faol boʻlishingizni bilmoqchi</translation>
+<translation id="3184534047932533456"><ph name="URL" /> saytiga faolligingiz haqidagi axborotni olish uchun ruxsat berilsinmi?</translation>
 <translation id="3188393374551744535">Hisob balansi</translation>
 <translation id="3194737229810486521"><ph name="URL" /> saytidan ma’lumotlarni mobil qurilmangizda doimiy saqlashga ruxsat so‘rovi keldi</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> – <ph name="SERVER_NAME" /></translation>
@@ -1025,7 +1025,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Mahalliy kompyuter</translation>
 <translation id="5179510805599951267">Bu <ph name="ORIGINAL_LANGUAGE" /> tili emasmi? Xatolik haqida xabar yuboring</translation>
-<translation id="5179740473595559246">Qachon faol boʻlishingiz haqida xabar berish</translation>
+<translation id="5179740473595559246">Faol ekaningiz haqidagi axborotni olish</translation>
 <translation id="5190835502935405962">Xatcho‘plar paneli</translation>
 <translation id="519422657042045905">Annotatsiya qilish imkonsiz.</translation>
 <translation id="5201306358585911203">Amalni tasdiqlang</translation>
@@ -1248,7 +1248,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6049488691372270142">Sahifa yetkazib berilishi</translation>
 <translation id="6051221802930200923"><ph name="SITE" /> sayti ochilmadi, bu sayt taqilgan sertifikatdan foydalanayotgan bo‘lishi mumkin. Bunday xatolik tarmoq xatoligi va saytga hujumlar bo‘layotganda yuz beradi, lekin keyinroq sayt ishlab ketishi mumkin.</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">Faolligining haqida axborot berishni xohlaysizmi?</translation>
+<translation id="6053328359599022071">Faolligingiz haqida axborot berishni xohlaysizmi?</translation>
 <translation id="6058977677006700226">Kartalaringiz barcha qurilmalaringizda ishlatilsinmi?</translation>
 <translation id="6059925163896151826">USB qurilmalar</translation>
 <translation id="6060009363608157444">Yaroqsiz DnsOverHttps rejimi.</translation>

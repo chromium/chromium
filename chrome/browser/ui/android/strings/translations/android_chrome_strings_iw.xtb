@@ -897,7 +897,6 @@
 <translation id="7975379999046275268">הצגת הדף בתצוגה מקדימה<ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">טעינה מראש של דפים כדי לאפשר גלישה וחיפוש מהירים יותר</translation>
 <translation id="79859296434321399">‏כדי להציג תוכן של מציאות רבודה, צריך להתקין את ARCore</translation>
-<translation id="799806351373751710">ביטול הגדרת הסנכרון</translation>
 <translation id="7998918019931843664">פתח מחדש כרטיסייה שנסגרה</translation>
 <translation id="8004582292198964060">דפדפן</translation>
 <translation id="8013372441983637696">‏יש לנקות גם את נתוני Chrome מהמכשיר הזה</translation>
@@ -942,7 +941,6 @@
 <translation id="8261506727792406068">מחיקה</translation>
 <translation id="8266862848225348053">מיקום ההורדה</translation>
 <translation id="8274165955039650276">הצגת הורדות</translation>
-<translation id="8278640294239011163">אישור הסנכרון</translation>
 <translation id="8284326494547611709">כתוביות</translation>
 <translation id="8310344678080805313">כרטיסיות רגילות</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> ועוד אתרים</translation>

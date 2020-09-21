@@ -374,7 +374,7 @@
 <translation id="143027896309062157">讀取及變更您的電腦和瀏覽過的網站上的所有資料</translation>
 <translation id="1430915738399379752">列印</translation>
 <translation id="1431188203598586230">最後一次軟件更新</translation>
-<translation id="1431402976894535801">禁止網站知道您處於使用中狀態的時間</translation>
+<translation id="1431402976894535801">禁止網站知道您何時使用裝置</translation>
 <translation id="1431432486300429272">Google 可能會使用您的瀏覽記錄，為您提供個人化的搜尋服務和其他 Google 服務。您或家長可隨時前往 myaccount.google.com/activitycontrols/search 變更此設定</translation>
 <translation id="1432581352905426595">管理搜尋引擎</translation>
 <translation id="1433811987160647649">存取前先詢問</translation>
@@ -1005,7 +1005,7 @@
 <translation id="2178614541317717477">CA 洩露</translation>
 <translation id="2182058453334755893">已複製至剪貼簿</translation>
 <translation id="2184515124301515068">允許 Chrome 選擇何時讓網站播放音效 (建議)</translation>
-<translation id="2187243482123994665">使用者動態</translation>
+<translation id="2187243482123994665">使用者狀態</translation>
 <translation id="2187675480456493911">此網絡已與您帳戶上的其他裝置同步。系統不會同步處理其他使用者修改的設定。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">伺服器憑證匯入錯誤</translation>
 <translation id="2187906491731510095">擴充程式更新咗</translation>
@@ -1832,7 +1832,7 @@
 <translation id="3163201441334626963">來自供應商 <ph name="VENDOR_ID" /> 的不明產品 <ph name="PRODUCT_ID" /></translation>
 <translation id="3163254451837720982">下列服務可協助確保資料安全無虞，您可隨時停用這些功能。</translation>
 <translation id="3164329792803560526">正在將此分頁與 <ph name="APP_NAME" /> 共用</translation>
-<translation id="3165371858310906303">在網站要求知道您處於使用中狀態的時間時詢問您</translation>
+<translation id="3165371858310906303">在網站要求知道您何時使用裝置時詢問您</translation>
 <translation id="3165390001037658081">部分流動網絡供應商可能會封鎖此功能。</translation>
 <translation id="316652501498554287">G Suite 教育版帳戶</translation>
 <translation id="3169472444629675720">探索</translation>

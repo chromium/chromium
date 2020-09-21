@@ -125,6 +125,7 @@
 <translation id="1993768208584545658">Il sito <ph name="SITE" /> desidera accoppiarsi</translation>
 <translation id="2000419248597011803">Invia al tuo motore di ricerca predefinito alcune ricerche dalla barra degli indirizzi e dalla casella di ricerca, nonché alcuni cookie</translation>
 <translation id="2002537628803770967">Carte di credito e indirizzi che utilizzano Google Pay</translation>
+<translation id="2010780124464321179">Impossibile creare il link al testo. Condividi il link alla pagina.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# file}other{# file}}</translation>
 <translation id="2017836877785168846">Consente di cancellare la cronologia e i completamenti automatici nella barra degli indirizzi.</translation>
 <translation id="2021896219286479412">Controlli sito a schermo intero</translation>
@@ -192,6 +193,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="2494974097748878569">Assistente Google in Chrome</translation>
 <translation id="2496180316473517155">Cronologia di navigazione</translation>
 <translation id="2497852260688568942">La sincronizzazione è stata disattivata dall'amministratore</translation>
+<translation id="250020030759455918">Troverai lo stato di accesso a <ph name="SITE_NAME" />, i dati di navigazione e i dati relativi ai siti in Chrome</translation>
 <translation id="2513403576141822879">Per altre impostazioni relative a privacy, sicurezza e raccolta dei dati, consulta la sezione <ph name="BEGIN_LINK" />Sincronizzazione e servizi Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Scansiona</translation>
 <translation id="2518590038762162553">Nella modalità Lite, Chrome carica le pagine più rapidamente e utilizza fino al 60% di dati in meno. Per ottimizzare le pagine che visiti, Chrome invia il tuo traffico web a Google. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
@@ -273,7 +275,9 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3207960819495026254">Aggiunto ai preferiti</translation>
 <translation id="3208584281581115441">Controlla ora</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> è stato eliminato</translation>
+<translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> pagine non lette</translation>
 <translation id="321773570071367578">Se non ricordi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincronizzazione<ph name="END_LINK" /></translation>
+<translation id="3223655207402797071">Accedi a questo sito, al tuo Account Google e a Chrome. Potresti voler attivare la sincronizzazione in un secondo momento.</translation>
 <translation id="3232754137068452469">App web</translation>
 <translation id="3236059992281584593">1 min rimanente</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -491,6 +495,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4913169188695071480">Interrompi aggiornamento</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Richiedi assistenza<ph name="END_LINK" /> durante la ricerca di dispositivi…</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# pagina}other{# pagine}}</translation>
+<translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Le tue password verranno esportate e scaricate in un file di testo. Saranno visibili a qualsiasi persona e app con accesso alla cartella di destinazione.</translation>
 <translation id="4932247056774066048">Poiché stai uscendo da un account gestito da <ph name="DOMAIN_NAME" />, i tuoi dati di Chrome verranno eliminati da questo dispositivo. Rimarranno memorizzati nel tuo Account Google.</translation>
 <translation id="4943703118917034429">Realtà virtuale</translation>
@@ -582,6 +587,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5683547024293500885">Chrome non può controllare la disponibilità di aggiornamenti</translation>
 <translation id="5686790454216892815">Nome file troppo lungo</translation>
 <translation id="5687809546194252819">Al riavvio, <ph name="APP_NAME" /> utilizzerà questa lingua: <ph name="LANGUAGE" />.</translation>
+<translation id="5691211010013816086">Hai <ph name="READING_LIST_COUNT" /> pagine</translation>
 <translation id="569536719314091526">Traduci questa pagina in una lingua qualsiasi usando il pulsante Altre opzioni</translation>
 <translation id="5696597120588531049">Chrome può contribuire a proteggerti da violazioni dei dati, siti web non sicuri e non solo</translation>
 <translation id="5697688514913266141">Il file verrà salvato in: <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Modifica<ph name="END_LINK2" />.</translation>
@@ -632,6 +638,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5979084224081478209">Controlla password</translation>
 <translation id="6000066717592683814">Mantieni Google</translation>
 <translation id="6005538289190791541">Password consigliata</translation>
+<translation id="6014293228235665243">Da leggere</translation>
 <translation id="6036057147555329831">ICU extra</translation>
 <translation id="6039379616847168523">Vai alla scheda successiva</translation>
 <translation id="604124094241169006">Automatica</translation>
@@ -660,6 +667,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="6232535412751077445">Se attivi l'opzione "Non tenere traccia", verrà inclusa una richiesta nel tuo traffico di navigazione. Gli effetti dipendono dall'eventuale risposta dei siti web alla richiesta e dall'interpretazione di quest'ultima.
 
 Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annunci non basati su altri siti web visitati. Molti siti web continueranno tuttavia a raccogliere e a utilizzare i dati di navigazione, ad esempio per aumentare la sicurezza, fornire contenuti, annunci e consigli, nonché per generare statistiche sui rapporti.</translation>
+<translation id="6243852395147506234">Pronta per la modalità offline</translation>
 <translation id="624789221780392884">Aggiornamento pronto</translation>
 <translation id="6255999984061454636">Contenuti suggeriti</translation>
 <translation id="6277522088822131679">Si è verificato un problema durante la stampa della pagina. Riprova.</translation>
@@ -667,6 +675,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6292420053234093573">Utilizzando Chrome, accetti i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Google Chrome e Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="629730747756840877">Account</translation>
 <translation id="6297765934698848803">L'organizzazione che gestisce il tuo dispositivo ha disattivato la fotocamera.</translation>
+<translation id="6301525844455696527">Non dimenticarti il tuo elenco di lettura</translation>
 <translation id="6303969859164067831">Esci e disattiva la sincronizzazione</translation>
 <translation id="6312687380483398334">App web (modalità silenziosa)</translation>
 <translation id="6316139424528454185">Vers. Android non supportata</translation>
@@ -745,6 +754,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="671481426037969117">Il timer di <ph name="FQDN" /> è scaduto. Verrà riavviato domani.</translation>
 <translation id="6738867403308150051">Download in corso…</translation>
 <translation id="6767294960381293877">Elenco di dispositivi con cui condividere una scheda aperto nella parte inferiore dello schermo.</translation>
+<translation id="6783942555455976443">Salva questa pagina per un secondo momento e ricevi un promemoria</translation>
 <translation id="6811034713472274749">La pagina è pronta per essere visualizzata</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6845325883481699275">Contribuisci a migliorare la sicurezza di Chrome</translation>
@@ -860,6 +870,9 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="766587987807204883">Qui vengono visualizzati gli articoli che potrai leggere anche offline</translation>
 <translation id="7682724950699840886">Prova i seguenti suggerimenti: assicurati di avere spazio sufficiente sul dispositivo e prova a esportare di nuovo.</translation>
 <translation id="7698359219371678927">Crea email in <ph name="APP_NAME" /></translation>
+<translation id="7702724591845223485">Per eliminare le tue informazioni di accesso e altri dati da Chrome, chiudi tutte le schede di navigazione in incognito.
+
+In incognito, la tua attività potrebbe essere comunque visibile ai siti web visitati, al tuo datore di lavoro o alla scuola e al tuo provider di servizi Internet.</translation>
 <translation id="7704317875155739195">Completamento automatico di ricerche e URL</translation>
 <translation id="7725024127233776428">Le pagine aggiunte ai preferiti saranno mostrate qui</translation>
 <translation id="7735637452482172701">Sblocca con blocco schermo</translation>
@@ -897,7 +910,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7975379999046275268">Anteprima pagina <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Le pagine vengono precaricate per velocizzare la navigazione e la ricerca</translation>
 <translation id="79859296434321399">Per visualizzare i contenuti di realtà aumentata, installa ARCore</translation>
-<translation id="799806351373751710">Annulla configurazione della sincronizzazione</translation>
 <translation id="7998918019931843664">Riapri la scheda chiusa</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8013372441983637696">Cancella i tuoi dati di Chrome anche da questo dispositivo</translation>
@@ -942,7 +954,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="8266862848225348053">Percorso di download</translation>
 <translation id="8274165955039650276">Visualizza i download</translation>
-<translation id="8278640294239011163">Conferma sincronizzazione</translation>
 <translation id="8284326494547611709">Sottotitoli</translation>
 <translation id="8310344678080805313">Schede standard</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> e altri siti</translation>
@@ -978,6 +989,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8555836665334561807">Con Wi-Fi</translation>
 <translation id="8558485628462305855">Per visualizzare i contenuti di realtà aumentata, aggiorna ARCore</translation>
 <translation id="8559990750235505898">Proponi di tradurre le pagine in altre lingue</translation>
+<translation id="8560602726703398413">Trova il tuo elenco di lettura in Segnalibri</translation>
 <translation id="8561196567344536112">1. Vai a Impostazioni\n2. Tocca "App Browser"\n3. Scegli <ph name="APP_NAME" /></translation>
 <translation id="8562452229998620586">Le password salvate verranno visualizzate qui.</translation>
 <translation id="8569404424186215731">dal giorno <ph name="DATE" /></translation>
@@ -1000,6 +1012,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8748850008226585750">Contenuti nascosti</translation>
 <translation id="8788265440806329501">La cronologia di navigazione è chiusa</translation>
 <translation id="8788968922598763114">Riapri l'ultima scheda chiusa</translation>
+<translation id="8798449543960971550">Leggi</translation>
 <translation id="8812260976093120287">In alcuni siti web puoi pagare con le suddette app di pagamento supportate sul tuo dispositivo.</translation>
 <translation id="8820817407110198400">Preferiti</translation>
 <translation id="883806473910249246">Si è verificato un errore durante il download dei contenuti.</translation>

@@ -48,7 +48,8 @@
 <translation id="1165039591588034296">錯誤</translation>
 <translation id="1165174597379888365">瀏覽網頁</translation>
 <translation id="1174723505405632867">您要允許 <ph name="EMBEDDED_URL" /> 使用 <ph name="TOP_LEVEL_URL" /> 上的 Cookie 和網站資料嗎？
-如不允許，您的私隱權設定將禁止上述操作。這可讓與您互動的內容正常運作，但可能允許 <ph name="EMBEDDED_URL" /> 追蹤您的活動。</translation>
+
+如不允許，您的私隱權設定將禁止上述操作。如允許，與您互動的內容即可正常運作，但亦可能允許 <ph name="EMBEDDED_URL" /> 追蹤您的活動。</translation>
 <translation id="1175364870820465910">列印(&amp;P)…</translation>
 <translation id="1175875016430184367">三釘 (右側)</translation>
 <translation id="1178581264944972037">暫停</translation>
@@ -307,7 +308,7 @@
 <translation id="2181821976797666341">政策</translation>
 <translation id="2183608646556468874">電話號碼</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 個地址}other{# 個地址}}</translation>
-<translation id="2187243482123994665">使用者動態</translation>
+<translation id="2187243482123994665">使用者狀態</translation>
 <translation id="2187317261103489799">偵測 (預設)</translation>
 <translation id="2188375229972301266">多孔 (底部)</translation>
 <translation id="2202020181578195191">請輸入有效的到期年份</translation>
@@ -530,7 +531,7 @@
       確認 Proxy 伺服器運作正常。如果您認為不需要使用
       Proxy 伺服器：
       <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456"><ph name="URL" /> 要求知道您處於使用中狀態的時間</translation>
+<translation id="3184534047932533456"><ph name="URL" /> 要求知道您何時使用裝置</translation>
 <translation id="3188393374551744535">帳戶餘額</translation>
 <translation id="3194737229810486521"><ph name="URL" /> 要求在您的裝置上永久儲存數據</translation>
 <translation id="3195213714973468956">「<ph name="SERVER_NAME" />」上的 <ph name="PRINTER_NAME" /></translation>
@@ -1017,7 +1018,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">本機</translation>
 <translation id="5179510805599951267">網頁內容不是<ph name="ORIGINAL_LANGUAGE" />嗎？請報告此錯誤</translation>
-<translation id="5179740473595559246">知道您處於使用中狀態的時間</translation>
+<translation id="5179740473595559246">知道您何時使用裝置</translation>
 <translation id="5190835502935405962">書籤列</translation>
 <translation id="519422657042045905">無法使用註解模式</translation>
 <translation id="5201306358585911203">此網頁上的嵌入式頁面顯示</translation>
@@ -1240,7 +1241,7 @@
 <translation id="6049488691372270142">頁面傳送</translation>
 <translation id="6051221802930200923">您目前無法瀏覽 <ph name="SITE" />，因為此網站使用憑證固定功能。網絡錯誤和攻擊行為通常是暫時性問題，所以此網頁可能稍後就能正常使用。</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">要分享您的動態嗎？</translation>
+<translation id="6053328359599022071">要分享您的狀態嗎？</translation>
 <translation id="6058977677006700226">要在所有裝置上使用您的卡嗎？</translation>
 <translation id="6059925163896151826">USB 裝置</translation>
 <translation id="6060009363608157444">DnsOverHttps 模式無效。</translation>

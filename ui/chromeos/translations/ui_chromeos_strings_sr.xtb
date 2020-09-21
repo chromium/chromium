@@ -70,7 +70,7 @@
 <translation id="1673103856845176271">Није могуће приступити датотеци из безбедносних разлога.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">Ставке (<ph name="NUMBER_OF_ITEMS" />) се додају у датотеку...</translation>
-<translation id="1731889557567069540">Копирано ставки: <ph name="NUMBER_OF_ITEMS" />.</translation>
+<translation id="1731889557567069540">Копираних ставки: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="174173592514158117">Прикажи све Play директоријуме</translation>
 <translation id="174937106936716857">Укупан број датотека</translation>
 <translation id="1775381402323441512">Информације о видео датотеци</translation>
@@ -111,7 +111,7 @@
 <translation id="2163152940313951844">Неважећи знак: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Вијетнамска тастатура (TCVN)</translation>
 <translation id="2168214441502403371">Персијска тастатура</translation>
-<translation id="2197363559908958454">Премештено ставки: <ph name="NUMBER_OF_ITEMS" />.</translation>
+<translation id="2197363559908958454">Премештених ставки: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">кинески (поједностављени)</translation>
 <translation id="2208158072373999562">Zip архива</translation>
 <translation id="2225536596944493418">Желите ли стварно да избришете ставке (<ph name="NUMBER_OF_ITEMS" />)?</translation>
@@ -756,7 +756,7 @@
 <translation id="943972244133411984">Изменио/ла</translation>
 <translation id="945522503751344254">Пошаљи повратне информације</translation>
 <translation id="947144732524271678">Изабрали сте низ ставки (<ph name="ENTRY_COUNT" />) од ставке <ph name="FROM_ENTRY_NAME" /> до ставке <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="949308258121608615">Копирано ставки: <ph name="NUMBER_OF_ITEMS" />.</translation>
+<translation id="949308258121608615">Копираних ставки: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="981121421437150478">Офлајн</translation>
 <translation id="988685240266037636">Датотека „<ph name="FILE_NAME" />“ већ постоји. Да ли желите да је замените?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

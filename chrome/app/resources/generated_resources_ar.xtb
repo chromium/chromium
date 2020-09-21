@@ -374,7 +374,7 @@
 <translation id="143027896309062157">قراءة جميع بياناتك وتغييرها على جهاز الكمبيوتر، ومواقع الويب التي تزورها</translation>
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1431188203598586230">التحديث الأخير للبرنامج</translation>
-<translation id="1431402976894535801">منع المواقع الإلكترونية من معرفة وقت نشاطك على الجهاز</translation>
+<translation id="1431402976894535801">منع المواقع الإلكترونية من معرفة متى تستخدم الجهاز</translation>
 <translation id="1431432486300429272">‏قد تستخدم Google سجلّ التصفُّح لتخصيص "البحث" وخدمات Google أخرى. ويمكنك أنت أو أحد والدَيك تغيير هذا الإعداد في أي وقت على myaccount.google.com/activitycontrols/search.</translation>
 <translation id="1432581352905426595">إدارة محركات البحث</translation>
 <translation id="1433811987160647649">السؤال قبل الوصول</translation>
@@ -1005,7 +1005,7 @@
 <translation id="2178614541317717477">‏اختراق المرجع المصدق (CA)</translation>
 <translation id="2182058453334755893">تم النسخ إلى الحافظة.</translation>
 <translation id="2184515124301515068">‏السماح لمتصفِّح Chrome باختيار الوقت الذي يمكن للمواقع الإلكترونية تشغيل الصوت فيه (مُوصى به)</translation>
-<translation id="2187243482123994665">حضور المستخدم</translation>
+<translation id="2187243482123994665">استخدام الجهاز</translation>
 <translation id="2187675480456493911">تمت مزامنة الشبكة مع الأجهزة الأخرى المرتبطة بحسابك. ولن تتم مزامنة الإعدادات التي عدَّلها المستخدمون. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">خط استيراد شهادة الخادم</translation>
 <translation id="2187906491731510095">تم تحديث الإضافات.</translation>
@@ -1833,7 +1833,7 @@
 <translation id="3163201441334626963">المنتج غير معروف <ph name="PRODUCT_ID" /> من المورّد‬ <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">تساعد هذه الخدمات في الحفاظ على أمان بياناتك وسلامتها. ويمكنك إيقاف هذه الميزات في أيّ وقت.</translation>
 <translation id="3164329792803560526">مشاركة علامة التبويب هذه مع <ph name="APP_NAME" /></translation>
-<translation id="3165371858310906303">طلب الإذن عند محاولة موقع إلكتروني معرفة وقت نشاطك على الجهاز</translation>
+<translation id="3165371858310906303">طلب الإذن عند محاولة موقع إلكتروني معرفة متى تستخدم الجهاز</translation>
 <translation id="3165390001037658081">قد يحظر بعض مشغلي شبكات الجوّال هذه الميزة.</translation>
 <translation id="316652501498554287">‏حسابات "G Suite للتعليم"</translation>
 <translation id="3169472444629675720">Discover</translation>

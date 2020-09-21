@@ -569,7 +569,7 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="1651008383952180276">Siz kodli iborani ikki marta bir xil kiritishingiz kerak.</translation>
 <translation id="1652326691684645429">Yaqin-atrofga yuborishni yoqish</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Google Virtual printer xizmatiga printer qo‘shing va hujjatlarni istalgan qurilmadan turib chop etishga yuboring.}other{Google Virtual printer xizmatiga # ta printer qo‘shing va hujjatlarni istalgan qurilmadan turib chop etishga yuboring.}}</translation>
-<translation id="1653575510930452864">Havoladan matn sifatida nusxa olish</translation>
+<translation id="1653575510930452864">Matn havolasini nusxalash</translation>
 <translation id="1656528038316521561">Orqa fon shaffofligi</translation>
 <translation id="1657406563541664238">Google’ga foydalanish statistikasi va ishdan chiqish hisobotlarini jo‘natish orqali <ph name="PRODUCT_NAME" />’ni takomillashtirishga yordam bering</translation>
 <translation id="1657937299377480641">Taʼlim manbalaridan foydalanadigan hisobga qayta kirish uchun ota-onangizdan ruxsat oling</translation>
@@ -1831,7 +1831,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> tomonidan ishlab chiqarilgan noma’lum mahsulot: <ph name="PRODUCT_ID" /></translation>
 <translation id="3163254451837720982">Quyidagi xizmatlar axborotlaringizni himoyalashda yordam beradi. Ularni istalgan vaqtda faolsizlantirish mumkin.</translation>
 <translation id="3164329792803560526">Bu varaq <ph name="APP_NAME" /> ilovasiga ulashilmoqda</translation>
-<translation id="3165371858310906303">Saytga faolligingiz haqidagi axborotni yuborishdan oldin sizdan ruxsat olsin</translation>
+<translation id="3165371858310906303">Sayt faolligingiz haqidagi axborotni yuborishdan oldin sizdan ruxsat oladi</translation>
 <translation id="3165390001037658081">Ba’zi aloqa kompaniyalari bu xususiyatni bloklagan bo‘lishi mumkin.</translation>
 <translation id="316652501498554287">G Suite for Education hisoblari</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2947,7 +2947,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4527186207340858212">Ish uchun yangi profil yaratilsinmi?</translation>
 <translation id="452750746583162491">Sinxronlangan maʼlumotlaringizni tekshiring</translation>
 <translation id="4530494379350999373">Kelib chiqishi</translation>
-<translation id="4531924570968473143">Nima uchun ushbu <ph name="DEVICE_TYPE" /> qurilmasiga foydalanuvchini qoʻshmoqchisiz?</translation>
+<translation id="4531924570968473143">Bu <ph name="DEVICE_TYPE" /> qurilmasiga kimni qoʻshmoqchisiz?</translation>
 <translation id="4532646538815530781">Bu saytda harakat sensorlari ishlatilyapti.</translation>
 <translation id="4533846798469727141">“Hey Google” deng</translation>
 <translation id="4533985347672295764">CPU vaqti</translation>
@@ -5752,7 +5752,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7963826112438303517">Assistent bu ovoz yozuvlaridan ovozingiz modelini yaratish va yangilash uchun foydalanadi. Namunalar Voice Match funksiyasi yoqilgan qurilmalarda saqlanadi. Assistent sozlamalari orqali ochish yoki qaytadan sozlash.</translation>
 <translation id="7966241909927244760">Tasvirning URL manzilini nusxalash</translation>
 <translation id="7968072247663421402">Provayder parametrlari</translation>
-<translation id="7968198493605442410">Havoladan matn sifatida nusxa olish</translation>
+<translation id="7968198493605442410">Matn havolasini nusxalash</translation>
 <translation id="7968742106503422125">Nusxalab joylanadigan ma’lumotlarni ko‘rish va tahrirlash</translation>
 <translation id="7968833647796919681">Unumdorlik haqidagi ma’lumot to‘plashni yoqish</translation>
 <translation id="7968982339740310781">Tafsilotlarni ko‘rish</translation>

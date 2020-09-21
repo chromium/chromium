@@ -16,7 +16,7 @@
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> сайты қосылды</translation>
 <translation id="1383876407941801731">Іздеу</translation>
 <translation id="1384959399684842514">Жүктеу кідіртілді</translation>
-<translation id="1431402976894535801">Сайттардың сіздің белсенді пайдаланып жатқаныңызды анықтауын бөгейді.</translation>
+<translation id="1431402976894535801">Сайттардың сіздің бар болу уақытыңызды анықтауын бөгейді.</translation>
 <translation id="1446450296470737166">MIDI толық бақылауға рұқсат беру</translation>
 <translation id="1509960214886564027">Көптеген сайттағы функциялар дұрыс жұмыс істемеуі мүмкін.</translation>
 <translation id="1620510694547887537">Камера</translation>
@@ -44,7 +44,7 @@
 <translation id="2146738493024040262">Instant App ашу</translation>
 <translation id="2148716181193084225">Бүгін</translation>
 <translation id="2182457891543959921">Cайттарға айналаңыздың 3D картасын жасауға немесе камераңыздың орнын бақылауға рұқсат беру алдында сізден сұраy (ұсынылады)</translation>
-<translation id="2187243482123994665">Пайдаланушының белсенді қолдануы</translation>
+<translation id="2187243482123994665">Пайдаланушының бар-жоғы</translation>
 <translation id="2212565012507486665">Cookie файлдарына рұқсат беру</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> браузері камераны пайдалануы үшін, <ph name="BEGIN_LINK" />Android параметрлерінде<ph name="END_LINK" /> оны да қосыңыз.</translation>
 <translation id="2289270750774289114">Сайт маңайдағы Bluetooth құрылғыларын анықтағысы келген кезде, рұқсат сұралсын (ұсынылады).</translation>
@@ -79,7 +79,7 @@
 <translation id="3114012059975132928">Бейне ойнатқыш</translation>
 <translation id="3115898365077584848">Ақпаратты көрсету</translation>
 <translation id="3123473560110926937">Кейбір сайттарда тыйым салынған</translation>
-<translation id="3165371858310906303">Сайт белсенді пайдаланып отырғаныңызды анықтағысы келгенде, сізден рұқсат сұрау</translation>
+<translation id="3165371858310906303">Сайт сіздің бар болу уақытыңызды анықтағысы келгенде, сізден рұқсат сұрау</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> сақталған деректері</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> браузерінен хабарландырулар алу үшін <ph name="BEGIN_LINK" />Android параметрлерінде<ph name="END_LINK" /> оларды да қосыңыз.</translation>
 <translation id="3227137524299004712">Микрофон</translation>

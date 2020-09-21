@@ -897,7 +897,6 @@
 <translation id="7975379999046275268">Просмотреть страницу <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Разрешить предзагрузку страниц для повышения скорости работы браузера и поиска</translation>
 <translation id="79859296434321399">Чтобы просматривать контент в режиме дополненной реальности, установите приложение ARCore.</translation>
-<translation id="799806351373751710">Отменить настройку синхронизации</translation>
 <translation id="7998918019931843664">Восстановить закрытую вкладку</translation>
 <translation id="8004582292198964060">Браузер</translation>
 <translation id="8013372441983637696">Удалить данные Chrome с этого устройства</translation>
@@ -942,7 +941,6 @@
 <translation id="8261506727792406068">Удалить</translation>
 <translation id="8266862848225348053">Расположение скачиваемых файлов</translation>
 <translation id="8274165955039650276">Показать скачанные файлы</translation>
-<translation id="8278640294239011163">Подтвердить синхронизацию</translation>
 <translation id="8284326494547611709">Титры</translation>
 <translation id="8310344678080805313">Обычные вкладки</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> и другие сайты</translation>
@@ -992,7 +990,7 @@
 <translation id="8655129584991699539">Удалить данные можно в настройках Chrome</translation>
 <translation id="8662811608048051533">Вы автоматически выйдете из учетных записей на большинстве сайтов.</translation>
 <translation id="8664979001105139458">Файл с таким именем уже существует.</translation>
-<translation id="8683039184091909753">изображение</translation>
+<translation id="8683039184091909753">Изображение</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Уровень сигнала: # линия}one{Уровень сигнала: # линия}few{Уровень сигнала: # линии}many{Уровень сигнала: # линий}other{Уровень сигнала: # линии}}</translation>
 <translation id="869891660844655955">Срок действия</translation>
 <translation id="8712637175834984815">Готово</translation>

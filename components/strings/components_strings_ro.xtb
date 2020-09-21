@@ -1028,7 +1028,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Computer</translation>
 <translation id="5179510805599951267">Nu este în <ph name="ORIGINAL_LANGUAGE" />? Semnalează această eroare.</translation>
-<translation id="5179740473595559246">Să-ți detecteze prezența</translation>
+<translation id="5179740473595559246">să-ți detecteze prezența</translation>
 <translation id="5190835502935405962">Bară de marcaje</translation>
 <translation id="519422657042045905">Adnotarea nu este disponibilă</translation>
 <translation id="5201306358585911203">O pagină încorporată de pe această pagină afișează mesajul</translation>
@@ -1381,7 +1381,7 @@
 <translation id="6631202559048444592">Este prezentă mai mult de o sursă pentru politică, dar valorile sunt identice.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Șterge</translation>
-<translation id="6645291930348198241">Să acceseze cookie-urile și datele privind site-urile.</translation>
+<translation id="6645291930348198241">să acceseze cookie-urile și datele privind site-urile.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Niciunul}=1{De pe un site (nu te va deconecta de la Contul Google)}few{De pe # site-uri (nu te va deconecta de la Contul Google)}other{De pe # de site-uri (nu te va deconecta de la Contul Google)}}</translation>
 <translation id="6648459603387803038">Administratorul poate schimba configurația browserului de la distanță. Este posibil ca activitatea de pe acest dispozitiv să fie gestionată și din afara Chrome.</translation>
 <translation id="6652101503459149953">Folosește Windows Hello</translation>

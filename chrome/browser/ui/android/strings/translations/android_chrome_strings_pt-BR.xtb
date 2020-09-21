@@ -677,7 +677,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6341580099087024258">Perguntar onde salvar os arquivos</translation>
 <translation id="6342069812937806050">Neste instante</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
-<translation id="6345878117466430440">Marcar como lido</translation>
+<translation id="6345878117466430440">Marcar como lida</translation>
 <translation id="6364438453358674297">Remover sugestão do histórico?</translation>
 <translation id="6366047038980456022">O app <ph name="APP_NAME" /> tem a tecnologia e a velocidade de que você precisa para navegar com segurança</translation>
 <translation id="6378173571450987352">Detalhes: classificados pela quantidade de dados usados</translation>
@@ -898,7 +898,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7975379999046275268">Visualizar página <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Pré-carregar páginas para possibilitar navegação e pesquisa mais rápidas</translation>
 <translation id="79859296434321399">Para ver conteúdo de realidade aumentada, instale o ARCore</translation>
-<translation id="799806351373751710">Cancelar configuração de sincronização</translation>
 <translation id="7998918019931843664">Reabrir guia fechada</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8013372441983637696">Limpar também seus dados do Chrome deste dispositivo</translation>
@@ -943,7 +942,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8261506727792406068">Excluir</translation>
 <translation id="8266862848225348053">Local de download</translation>
 <translation id="8274165955039650276">Ver downloads</translation>
-<translation id="8278640294239011163">Confirmar sincronização</translation>
 <translation id="8284326494547611709">Legendas</translation>
 <translation id="8310344678080805313">Guias padrão</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> e outros sites</translation>

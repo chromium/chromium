@@ -2946,7 +2946,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4527186207340858212">¿Deseas crear un nuevo perfil de trabajo?</translation>
 <translation id="452750746583162491">Revisa tus datos sincronizados</translation>
 <translation id="4530494379350999373">Origen</translation>
-<translation id="4531924570968473143">¿A quién quieres agregar a este dispositivo <ph name="DEVICE_TYPE" />?</translation>
+<translation id="4531924570968473143">¿A quién quieres agregar a este <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4532646538815530781">Este sitio está usando los sensores de movimiento.</translation>
 <translation id="4533846798469727141">Ahora di "Ok Google"</translation>
 <translation id="4533985347672295764">Tiempo de CPU</translation>

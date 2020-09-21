@@ -374,7 +374,7 @@
 <translation id="143027896309062157">讀取及變更你的電腦和造訪過的網站上的所有資料</translation>
 <translation id="1430915738399379752">列印</translation>
 <translation id="1431188203598586230">最後一次軟體更新</translation>
-<translation id="1431402976894535801">禁止網站知道你處於使用中狀態的時間</translation>
+<translation id="1431402976894535801">禁止網站取得你的使用狀態</translation>
 <translation id="1431432486300429272">Google 可能會使用你的瀏覽記錄，為你提供個人化的搜尋服務和其他各項 Google 服務。你或貴家長隨時可以前往 myaccount.google.com/activitycontrols/search 變更這項設定</translation>
 <translation id="1432581352905426595">管理搜尋引擎</translation>
 <translation id="1433811987160647649">使用前詢問我</translation>
@@ -1832,7 +1832,7 @@
 <translation id="3163201441334626963">供應商 <ph name="VENDOR_ID" /> 提供的不明產品 <ph name="PRODUCT_ID" /></translation>
 <translation id="3163254451837720982">下列服務可協助確保資料安全無虞，你隨時可以停用這些功能。</translation>
 <translation id="3164329792803560526">這個分頁正與 <ph name="APP_NAME" /> 共用</translation>
-<translation id="3165371858310906303">網站必須先詢問你，才能知道你處於使用中狀態的時間</translation>
+<translation id="3165371858310906303">網站必須先詢問你，才能知道你是否正在使用裝置</translation>
 <translation id="3165390001037658081">部分電信業者可能會封鎖這項功能。</translation>
 <translation id="316652501498554287">G Suite 教育版帳戶</translation>
 <translation id="3169472444629675720">Discover</translation>

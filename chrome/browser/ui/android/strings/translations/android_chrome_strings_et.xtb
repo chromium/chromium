@@ -897,7 +897,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7975379999046275268">Lehe eelvaade <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Eellaaditakse lehti kiiremaks sirvimiseks ja otsimiseks</translation>
 <translation id="79859296434321399">Liitreaalsuse sisu vaatamiseks installige ARCore</translation>
-<translation id="799806351373751710">Tühista sünkroonimise seadistus</translation>
 <translation id="7998918019931843664">Suletud vahelehe uuesti avamine</translation>
 <translation id="8004582292198964060">Brauser</translation>
 <translation id="8013372441983637696">Kustuta sellest seadmest ka Chrome'i andmed</translation>
@@ -942,7 +941,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8261506727792406068">Kustuta</translation>
 <translation id="8266862848225348053">Allalaadimise asukoht</translation>
 <translation id="8274165955039650276">Kuva allalaadimised</translation>
-<translation id="8278640294239011163">Kinnita sünkroonimine</translation>
 <translation id="8284326494547611709">Subtiitrid</translation>
 <translation id="8310344678080805313">Tavapärased vahekaardid</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> ja muud saidid</translation>

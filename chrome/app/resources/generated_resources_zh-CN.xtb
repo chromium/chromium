@@ -568,7 +568,7 @@
 <translation id="1651008383952180276">您两次输入的密码必须相同</translation>
 <translation id="1652326691684645429">启用“附近分享”功能</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{请将该打印机添加到 Google 云打印，以便您可以随时随地进行打印。}other{请将 # 台打印机添加到 Google 云打印，以便您可以随时随地进行打印。}}</translation>
-<translation id="1653575510930452864">复制指向文本的链接</translation>
+<translation id="1653575510930452864">复制指向这段文本的链接</translation>
 <translation id="1656528038316521561">背景不透明度</translation>
 <translation id="1657406563541664238">将使用情况统计信息和崩溃报告自动发送给 Google，帮助我们完善 <ph name="PRODUCT_NAME" /></translation>
 <translation id="1657937299377480641">要重新登录并访问教育资源，请让您的家长向您授予权限</translation>
@@ -5750,7 +5750,7 @@
 <translation id="7963826112438303517">Google 助理会使用这些录音以及您的语音请求来创建和更新您的语音模型，语音模型仅会存储在已开启 Voice Match 的设备上。您可在 Google 助理的“设置”中查看或重新调校语音活动。</translation>
 <translation id="7966241909927244760">复制图片地址(&amp;O)</translation>
 <translation id="7968072247663421402">提供商选项</translation>
-<translation id="7968198493605442410">复制指向文本的链接</translation>
+<translation id="7968198493605442410">复制指向这段文本的链接</translation>
 <translation id="7968742106503422125">读取和修改您复制和粘贴的数据</translation>
 <translation id="7968833647796919681">启用性能数据收集</translation>
 <translation id="7968982339740310781">查看详情</translation>

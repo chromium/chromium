@@ -163,7 +163,7 @@
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> 차단됨</translation>
 <translation id="5804241973901381774">권한</translation>
 <translation id="5860033963881614850">사용 안함</translation>
-<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개 이상 허용됨</translation>
+<translation id="5863245810240683687"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개 허용됨</translation>
 <translation id="5876056640971328065">동영상 일시중지</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5922853908706496913">화면 공유</translation>

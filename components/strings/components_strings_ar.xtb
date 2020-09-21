@@ -49,7 +49,7 @@
 <translation id="1165174597379888365">تمّت زيارة صفحة</translation>
 <translation id="1174723505405632867">هل تريد السماح للموقع الإلكتروني <ph name="EMBEDDED_URL" /> باستخدام بيانات الموقع الإلكتروني وملفات تعريف الارتباط على <ph name="TOP_LEVEL_URL" />؟
 
-في حال عدم السماح، سيكون هذا الموقع الإلكتروني محظورًا من خلال إعدادات الخصوصية. وسيسمح هذا الإجراء للمحتوى الذي تفاعلت معه بالعمل بشكل صحيح، ولكنه قد يسمح للموقع الإلكتروني <ph name="EMBEDDED_URL" /> بتتبّع نشاطك.</translation>
+في حال عدم السماح بذلك، سيكون هذا الموقع الإلكتروني محظورًا من خلال إعدادات الخصوصية. وسيسمح هذا الإجراء للمحتوى الذي تفاعلت معه بالعمل بشكل صحيح، ولكنه قد يسمح للموقع الإلكتروني <ph name="EMBEDDED_URL" /> بتتبّع نشاطك.</translation>
 <translation id="1175364870820465910">ط&amp;باعة...</translation>
 <translation id="1175875016430184367">وضع ثلاثة دبابيس يمينًا</translation>
 <translation id="1178581264944972037">الإيقاف مؤقتًا</translation>
@@ -312,7 +312,7 @@
 <translation id="2181821976797666341">السياسات</translation>
 <translation id="2183608646556468874">رقم الهاتف</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{عنوان واحد}zero{# عنوان}two{عنوانان (#)}few{# عناوين}many{# عنوانًا}other{# عنوان}}</translation>
-<translation id="2187243482123994665">حضور المستخدم</translation>
+<translation id="2187243482123994665">استخدام الجهاز</translation>
 <translation id="2187317261103489799">اكتشاف (تلقائي)</translation>
 <translation id="2188375229972301266">عمل عدة ثقوب في الأسفل</translation>
 <translation id="2202020181578195191">أدخِل سنة تاريخ انتهاء صلاحية صحيحة</translation>
@@ -537,7 +537,7 @@
           للتأكد من عمل الخادم الوكيل. فإذا كنت لا تعتقد أنه يجب عليك استخدام
           خادم وكيل:
           <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456">يريد <ph name="URL" /> معرفة وقت نشاطك على الجهاز.</translation>
+<translation id="3184534047932533456">يريد <ph name="URL" /> معرفة متى تستخدم جهازك.</translation>
 <translation id="3188393374551744535">رصيد الحساب</translation>
 <translation id="3194737229810486521">يريد <ph name="URL" /> تخزين البيانات بشكل دائم على جهازك.</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> على <ph name="SERVER_NAME" /></translation>
@@ -1030,7 +1030,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">الجهاز</translation>
 <translation id="5179510805599951267">هل الصفحة ليست باللغة <ph name="ORIGINAL_LANGUAGE" />؟ الإبلاغ عن هذا الخطأ</translation>
-<translation id="5179740473595559246">معرفة وقت نشاطك على الجهاز</translation>
+<translation id="5179740473595559246">معرفة متى تستخدم الجهاز</translation>
 <translation id="5190835502935405962">شريط الإشارات</translation>
 <translation id="519422657042045905">التعليق التوضيحي غير متوفِّر</translation>
 <translation id="5201306358585911203">تعرض صفحة مضمّنة في هذه الصفحة</translation>
@@ -1253,7 +1253,7 @@
 <translation id="6049488691372270142">تسليم الصفحة</translation>
 <translation id="6051221802930200923">لا يمكنك زيارة <ph name="SITE" /> في الوقت الحالي لأن الموقع يستخدم أداة التحقق من صحة الشهادات. أخطاء الشبكة والهجمات عليها عادةً ما تكون مؤقتة، لذا ستعمل هذه الصفحة في وقت لاحق على الأرجح.</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">هل تودّ مشاركة حضورك على الجهاز؟</translation>
+<translation id="6053328359599022071">هل تودّ مشاركة متى تستخدم جهازك؟</translation>
 <translation id="6058977677006700226">هل تستخدم بطاقاتك على جميع أجهزتك؟</translation>
 <translation id="6059925163896151826">‏أجهزة USB</translation>
 <translation id="6060009363608157444">‏وضع DnsOverHttps غير صحيح.</translation>

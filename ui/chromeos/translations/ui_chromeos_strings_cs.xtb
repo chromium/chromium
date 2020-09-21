@@ -111,7 +111,7 @@
 <translation id="2163152940313951844">Neplatný znak: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Vietnamská klávesnice (TCVN)</translation>
 <translation id="2168214441502403371">Perská klávesnice</translation>
-<translation id="2197363559908958454">Přesunuté položky: <ph name="NUMBER_OF_ITEMS" />.</translation>
+<translation id="2197363559908958454">Přesunutá položka: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">Zjednodušená čínština</translation>
 <translation id="2208158072373999562">Archiv ZIP</translation>
 <translation id="2225536596944493418">Opravdu chcete tyto položky (<ph name="NUMBER_OF_ITEMS" />) smazat?</translation>
@@ -755,7 +755,7 @@
 <translation id="943972244133411984">Upravil(a)</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
 <translation id="947144732524271678">Vybrali jste položky <ph name="FROM_ENTRY_NAME" /> až <ph name="TO_ENTRY_NAME" /> (celkem <ph name="ENTRY_COUNT" />).</translation>
-<translation id="949308258121608615">Zkopírované položky: <ph name="NUMBER_OF_ITEMS" />.</translation>
+<translation id="949308258121608615">Zkopírovaná položka: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Soubor s názvem „<ph name="FILE_NAME" />“ již existuje. Chcete jej nahradit?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

@@ -531,7 +531,7 @@
       動作しているかどうかを確認してください。プロキシ サーバーを使用していない場合は
       次の方法をお試しください。
       <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456"><ph name="URL" /> がアクティブ状態の検出を求めています</translation>
+<translation id="3184534047932533456"><ph name="URL" /> がユーザーのアクティブ状態の検出を求めています</translation>
 <translation id="3188393374551744535">アカウント残高</translation>
 <translation id="3194737229810486521"><ph name="URL" /> から、デバイスにデータを永続的に保存する許可を求められています</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" />（<ph name="SERVER_NAME" /> 上）</translation>
@@ -1019,7 +1019,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">マシン</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />でない場合はこのエラーを報告する</translation>
-<translation id="5179740473595559246">アクティブ状態の検出</translation>
+<translation id="5179740473595559246">ユーザーのアクティブ状態の検出</translation>
 <translation id="5190835502935405962">ブックマーク バー</translation>
 <translation id="519422657042045905">注釈は使用できません</translation>
 <translation id="5201306358585911203">このページに埋め込まれているページの内容</translation>
@@ -1242,7 +1242,7 @@
 <translation id="6049488691372270142">排紙</translation>
 <translation id="6051221802930200923"><ph name="SITE" /> では証明書ピンニングが使用されているため、現在アクセスできません。通常、ネットワーク エラーやネットワークへの攻撃は一時的なものです。しばらくするとページにアクセスできるようになります。</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">アクティブ状態を共有しますか？</translation>
+<translation id="6053328359599022071">ご自分のアクティブ状態を共有しますか？</translation>
 <translation id="6058977677006700226">お使いのどのデバイスでも同じカードを使用できるようにしますか？</translation>
 <translation id="6059925163896151826">USB デバイス</translation>
 <translation id="6060009363608157444">無効な DnsOverHttps モードです。</translation>

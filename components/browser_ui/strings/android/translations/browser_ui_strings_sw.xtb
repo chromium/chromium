@@ -136,7 +136,7 @@
 <translation id="5197729504361054390">Anwani unazochagua zitashirikiwa na <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Onyesha</translation>
 <translation id="5301954838959518834">Sawa, nimeelewa</translation>
-<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na kipengele kingine <ph name="NUM_MORE" /></translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na <ph name="NUM_MORE" /> zaidi</translation>
 <translation id="5313967007315987356">Ongeza tovuti</translation>
 <translation id="5317780077021120954">Hifadhi</translation>
 <translation id="5335288049665977812">Ruhusu tovuti zitumie JavaScript (inapendekezwa)</translation>
@@ -148,7 +148,7 @@
 <translation id="5403592356182871684">Majina</translation>
 <translation id="5489227211564503167">Muda uliopita ni <ph name="ELAPSED_TIME" /> kati ya <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Zuia matangazo kwenye tovuti zinazoonyesha matangazo yanayopotosha au yanayokatiza huduma</translation>
-<translation id="5502860503640766021">Umeruhusu kipengele cha <ph name="PERMISSION_1" /> kifikiwe, umezuia kipengele cha <ph name="PERMISSION_2" /> kisifikiwe</translation>
+<translation id="5502860503640766021">Umeruhusu <ph name="PERMISSION_1" />, umezuia <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Tovuti haziwezi kukuuliza kutuma arifa</translation>
 <translation id="5516455585884385570">Fungua mipangilio ya arifa</translation>
 <translation id="5527111080432883924">Iulize kabla ya kuruhusu tovuti kusoma maandishi na picha kutoka ubao wa kunakili (inapendekezwa)</translation>
@@ -160,15 +160,15 @@
 <translation id="5690795753582697420">Kamera imezimwa katika mipangilio ya Android</translation>
 <translation id="5710871682236653961">Uliza kabla ya kuruhusu tovuti kutuma na kupokea maelezo unapogusa vifaa vya NFC (inapendekezwa)</translation>
 <translation id="5719847187258001597">Hatua hii itafuta data na vidakuzi vyote vilivyohifadhiwa na <ph name="ORIGIN" /> au na programu yake kwenye Skrini yako ya kwanza.</translation>
-<translation id="5771720122942595109">Umezuia kipengele cha <ph name="PERMISSION_1" /> kisifikiwe</translation>
+<translation id="5771720122942595109">Umezuia <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Idhini</translation>
 <translation id="5860033963881614850">Kimezimwa</translation>
-<translation id="5863245810240683687">Umeruhusu vipengele vya <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na kingine <ph name="NUM_MORE" /> vifikiwe</translation>
+<translation id="5863245810240683687">Umeruhusu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na <ph name="NUM_MORE" /> zaidi</translation>
 <translation id="5876056640971328065">Sitisha video</translation>
 <translation id="5916664084637901428">Imewashwa</translation>
 <translation id="5922853908706496913">Inashiriki skrini yako</translation>
 <translation id="5939518447894949180">Weka upya</translation>
-<translation id="5976059395673079613"><ph name="PERMISSION" />, <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Dhibiti ufikiaji wa tovuti hii kwenye kifaa chako</translation>
 <translation id="6040143037577758943">Funga</translation>
 <translation id="6042308850641462728">Zaidi</translation>
@@ -180,7 +180,7 @@
 <translation id="6196640612572343990">Zuia vidakuzi vya tovuti nyingine</translation>
 <translation id="6206551242102657620">Muunganisho ni salama. Maelezo ya tovuti</translation>
 <translation id="6216432067784365534">Chaguo za <ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="6262279340360821358">Umezuia vipengele vya <ph name="PERMISSION_1" /> na <ph name="PERMISSION_2" /> visifikiwe</translation>
+<translation id="6262279340360821358">Umezuia <ph name="PERMISSION_1" /> na <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Tovuti zinaweza kukuuliza kutuma arifa</translation>
 <translation id="6295158916970320988">Tovuti zote</translation>
 <translation id="6320088164292336938">Tetema</translation>
@@ -203,7 +203,7 @@
 <translation id="6790428901817661496">Cheza</translation>
 <translation id="6818926723028410516">Chagua vipengee</translation>
 <translation id="6864395892908308021">Kifaa hiki kimeshindwa kusoma NFC</translation>
-<translation id="6879016579615558281">Umezuia kipengele cha <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na kingine <ph name="NUM_MORE" /> visifikiwe</translation>
+<translation id="6879016579615558281">Umezuia kipengele cha <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na <ph name="NUM_MORE" /> zaidi visifikiwe</translation>
 <translation id="6910211073230771657">Imeondolewa</translation>
 <translation id="6912998170423641340">Zuia tovuti zisisome maandishi na picha kutoka ubao wa kunakili</translation>
 <translation id="6945221475159498467">Chagua</translation>
@@ -221,7 +221,7 @@
 <translation id="723171743924126238">Chagua picha</translation>
 <translation id="7243308994586599757">Chaguo zinapatikana karibu na sehemu ya chini ya skrini</translation>
 <translation id="7250468141469952378">Umechagua <ph name="ITEM_COUNT" /></translation>
-<translation id="7260727271532453612">Umeruhusu vipengele vya <ph name="PERMISSION_1" /> na <ph name="PERMISSION_2" /> vifikiwe</translation>
+<translation id="7260727271532453612">Umeruhusu <ph name="PERMISSION_1" /> na <ph name="PERMISSION_2" /></translation>
 <translation id="7302486331832100261">Huwa unazuia arifa. Ili uziruhusu, gusa Maelezo.</translation>
 <translation id="7423098979219808738">Uliza kwanza</translation>
 <translation id="7423538860840206698">Imezuiwa kusoma ubao wa kunakili</translation>
@@ -253,7 +253,7 @@
 <translation id="8087000398470557479">Maudhui haya yanatoka <ph name="DOMAIN_NAME" />, yamewasilishwa na Google.</translation>
 <translation id="8116925261070264013">Imezimwa</translation>
 <translation id="8131740175452115882">Thibitisha</translation>
-<translation id="8197286292360124385">Umeruhusu kipengele cha <ph name="PERMISSION_1" /> kifikiwe</translation>
+<translation id="8197286292360124385">Umeruhusu <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Endelea</translation>
 <translation id="8206354486702514201">Mpangilio huu umetekelezwa na msimamizi wako.</translation>
 <translation id="8249310407154411074">Sogeza juu</translation>

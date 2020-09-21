@@ -676,7 +676,7 @@
 <translation id="6341580099087024258">फ़ाइलें सेव करने की जगह पूछें</translation>
 <translation id="6342069812937806050">अभी</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}}</translation>
-<translation id="6345878117466430440">'पढ़ा गया' का निशान लगाएं</translation>
+<translation id="6345878117466430440">'पढ़ा गया' के तौर पर मार्क करें</translation>
 <translation id="6364438453358674297">सुझाव को इतिहास से निकालें?</translation>
 <translation id="6366047038980456022"><ph name="APP_NAME" /> तेज़ और स्मार्ट तरीके से काम करता है. इंटरनेट पर सुरक्षित तरीके से काम करने, कुछ नया बनाने, और किसी विषय के बारे में बेहतर जानकारी खोजने के लिए आपको इन दोनों खासियतों की ज़रूरत होती है</translation>
 <translation id="6378173571450987352">जानकारी: इस्तेमाल किए गए डेटा की मात्रा के अनुसार क्रम से लगाया गया</translation>
@@ -897,7 +897,6 @@
 <translation id="7975379999046275268">पेज की झलक देखें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">ज़्यादा तेज़ी से ब्राउज़ करने और खोजने के लिए पेज पहले से लोड करें</translation>
 <translation id="79859296434321399">'बढ़ी हुई वास्तविकता' की सामग्री देखने के लिए, ARCore इंस्टॉल करें</translation>
-<translation id="799806351373751710">सिंक करने वाला सेट अप रद्द करें</translation>
 <translation id="7998918019931843664">बंद टैब फिर से खोलें</translation>
 <translation id="8004582292198964060">ब्राउज़र</translation>
 <translation id="8013372441983637696">इस डिवाइस से अपना Chrome डेटा भी हटाएं</translation>
@@ -942,7 +941,6 @@
 <translation id="8261506727792406068">मिटाएं</translation>
 <translation id="8266862848225348053">डाउनलोड सेव करने की जगह</translation>
 <translation id="8274165955039650276">डाउनलोड देखें</translation>
-<translation id="8278640294239011163">सिंक की पुष्टि करें</translation>
 <translation id="8284326494547611709">कैप्शन</translation>
 <translation id="8310344678080805313">मानक टैब</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> और कई साइटें</translation>

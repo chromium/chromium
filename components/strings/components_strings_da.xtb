@@ -537,7 +537,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
       for at sikre, at proxyserveren fungerer. Hvis du ikke mener,
       at du skal bruge en proxyserver, skal du:
       <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456"><ph name="URL" /> vil gerne vide, hvornår du er tilstede</translation>
+<translation id="3184534047932533456"><ph name="URL" /> vil gerne vide, hvornår du er til stede</translation>
 <translation id="3188393374551744535">Kontosaldo</translation>
 <translation id="3194737229810486521"><ph name="URL" /> anmoder om at gemme data permanent på din enhed</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> på <ph name="SERVER_NAME" /></translation>
@@ -1030,7 +1030,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Maskine</translation>
 <translation id="5179510805599951267">Ikke på <ph name="ORIGINAL_LANGUAGE" />? Rapporter denne fejl</translation>
-<translation id="5179740473595559246">Vide, hvornår du er tilstede</translation>
+<translation id="5179740473595559246">Vide, hvornår du er til stede</translation>
 <translation id="5190835502935405962">Bogmærkelinje</translation>
 <translation id="519422657042045905">Annotering er ikke tilgængelig</translation>
 <translation id="5201306358585911203">En integreret side på denne side siger</translation>
@@ -1253,7 +1253,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6049488691372270142">Sidelevering</translation>
 <translation id="6051221802930200923">Du kan ikke besøge <ph name="SITE" /> lige nu, da websitet bruger certifikatlåsning. Netværksfejl og angreb er normalt midlertidige, så siden vil sandsynligvis fungere igen senere.</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">Vil du dele, hvornår du er tilstede?</translation>
+<translation id="6053328359599022071">Vil du dele, hvornår du er til stede?</translation>
 <translation id="6058977677006700226">Vil du bruge kortene på alle dine enheder?</translation>
 <translation id="6059925163896151826">USB-enheder</translation>
 <translation id="6060009363608157444">Ugyldig DnsOverHttps-tilstand.</translation>

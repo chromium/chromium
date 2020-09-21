@@ -374,7 +374,7 @@
 <translation id="143027896309062157">Читати й змінювати всі ваші дані на комп’ютері та веб-сайтах, які ви відвідуєте</translation>
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1431188203598586230">Останнє оновлення програмного забезпечення</translation>
-<translation id="1431402976894535801">Блокувати сайтам доступ до даних про те, чи ви активні</translation>
+<translation id="1431402976894535801">Блокувати сайтам інформацію про те, чи ви присутні</translation>
 <translation id="1431432486300429272">Google може використовувати твою історію веб-перегляду, щоб персоналізувати Пошук та інші сервіси Google. Ти або твої батьки можете змінити це налаштування на сторінці myaccount.google.com/activitycontrols/search</translation>
 <translation id="1432581352905426595">Керування пошуковими системами</translation>
 <translation id="1433811987160647649">Запитувати дозвіл, перш ніж надавати доступ</translation>
@@ -1005,7 +1005,7 @@
 <translation id="2178614541317717477">Дискредитація ЦС</translation>
 <translation id="2182058453334755893">Скопійовано в буфер обміну</translation>
 <translation id="2184515124301515068">Дозволити Chrome вибирати, коли відтворювати звук на сайтах (рекомендується)</translation>
-<translation id="2187243482123994665">Дані про те, чи ви активні</translation>
+<translation id="2187243482123994665">Інформація про присутність</translation>
 <translation id="2187675480456493911">Мережу синхронізовано з іншими пристроями у вашому обліковому записі. Налаштування, які змінюють інші користувачі, не синхронізуватимуться. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Помилка імпортування сертифіката сервера</translation>
 <translation id="2187906491731510095">Розширення оновлено</translation>
@@ -1833,7 +1833,7 @@
 <translation id="3163201441334626963">Невідомий продукт <ph name="PRODUCT_ID" /> від постачальника <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Сервіси нижче допомагають захищати ваші дані. Ви можете будь-коли вимкнути ці функції.</translation>
 <translation id="3164329792803560526">Додаток <ph name="APP_NAME" /> має доступ до цієї вкладки</translation>
-<translation id="3165371858310906303">Запитувати, коли сайт хоче отримати доступ до даних про те, чи ви активні</translation>
+<translation id="3165371858310906303">Запитувати, коли сайт хоче дізнатися, чи ви присутні</translation>
 <translation id="3165390001037658081">Деякі оператори можуть блокувати цю функцію.</translation>
 <translation id="316652501498554287">Облікові записи G Suite for Education</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2949,7 +2949,7 @@
 <translation id="4527186207340858212">Створити новий робочий профіль?</translation>
 <translation id="452750746583162491">Переглянути синхронізовані дані</translation>
 <translation id="4530494379350999373">Походження</translation>
-<translation id="4531924570968473143">Для кого ви хочете додати профіль на цьому пристрої <ph name="DEVICE_TYPE" />?</translation>
+<translation id="4531924570968473143">Хто буде використовувати <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4532646538815530781">Цей сайт використовує датчики руху.</translation>
 <translation id="4533846798469727141">Тепер скажіть "Hey Google"</translation>
 <translation id="4533985347672295764">Процесорний час</translation>
@@ -5178,7 +5178,7 @@
 <translation id="7280649757394340890">Налаштування голосу для синтезу мовлення</translation>
 <translation id="7280877790564589615">Потрібен дозвіл</translation>
 <translation id="7282992757463864530">Інформаційна панель</translation>
-<translation id="7284411326658527427">Кожний користувач може персоналізувати свій обліковий запис і надійно зберігати особисті дані.</translation>
+<translation id="7284411326658527427">Кожен користувач може персоналізувати обліковий запис і захистити свої дані.</translation>
 <translation id="7287143125007575591">У доступі відмовлено.</translation>
 <translation id="7287411021188441799">Відновити фон за умовчанням</translation>
 <translation id="7288013116963835700">Видалити Linux для пристроїв <ph name="DEVICE_TYPE" /></translation>

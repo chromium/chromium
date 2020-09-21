@@ -897,7 +897,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7975379999046275268">Prikaži stranicu <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Stranice se učitavaju unapred radi bržeg pregledanja i pretraživanja</translation>
 <translation id="79859296434321399">Da biste videli sadržaj proširene realnosti, instalirajte ARCore</translation>
-<translation id="799806351373751710">Otkaži podešavanje sinhronizacije</translation>
 <translation id="7998918019931843664">Ponovo otvorite zatvorenu karticu</translation>
 <translation id="8004582292198964060">Pregledač</translation>
 <translation id="8013372441983637696">Obriši Chrome podatke i sa ovog uređaja</translation>
@@ -942,7 +941,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8266862848225348053">Lokacija za preuzimanje</translation>
 <translation id="8274165955039650276">Pogledajte preuzimanja</translation>
-<translation id="8278640294239011163">Potvrdi sinhronizaciju</translation>
 <translation id="8284326494547611709">Titl</translation>
 <translation id="8310344678080805313">Standardne kartice</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> i još sajtova</translation>

@@ -16,7 +16,7 @@
 <translation id="1369915414381695676">Se ha añadido el sitio <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384959399684842514">Descarga en pausa</translation>
-<translation id="1431402976894535801">Impedir que los sitios web para impedir que sepan cuándo estás activo</translation>
+<translation id="1431402976894535801">Impedir que los sitios web sepan cuándo estás presente</translation>
 <translation id="1446450296470737166">Control total dispositivos MIDI</translation>
 <translation id="1509960214886564027">Es posible que las funciones de muchos sitios web no funcionen correctamente.</translation>
 <translation id="1620510694547887537">Cámara</translation>
@@ -79,7 +79,7 @@
 <translation id="3114012059975132928">Reproductor de vídeo</translation>
 <translation id="3115898365077584848">Mostrar información</translation>
 <translation id="3123473560110926937">Bloqueados en algunos sitios web</translation>
-<translation id="3165371858310906303">Preguntar cuando un sitio web quiera saber si estás activo</translation>
+<translation id="3165371858310906303">Preguntar cuando un sitio web quiera saber si estás presente</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de datos almacenados</translation>
 <translation id="321187648315454507">Para que <ph name="APP_NAME" /> pueda enviarte notificaciones, actívalas también en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Micrófono</translation>

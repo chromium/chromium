@@ -531,7 +531,7 @@
       確認您的 Proxy 伺服器運作正常。如果您認為自己不需要使用
       Proxy 伺服器：
       <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456"><ph name="URL" /> 想要知道你處於使用中狀態的時間</translation>
+<translation id="3184534047932533456"><ph name="URL" /> 想要知道你是否正在使用裝置</translation>
 <translation id="3188393374551744535">帳戶餘額</translation>
 <translation id="3194737229810486521"><ph name="URL" /> 要求在你的裝置上永久儲存資料</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> 上的 <ph name="PRINTER_NAME" /></translation>
@@ -1019,7 +1019,7 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">本機</translation>
 <translation id="5179510805599951267">網頁內容不是<ph name="ORIGINAL_LANGUAGE" />嗎？請回報此錯誤</translation>
-<translation id="5179740473595559246">知道你處於使用中狀態的時間</translation>
+<translation id="5179740473595559246">知道你是否正在使用裝置</translation>
 <translation id="5190835502935405962">書籤列</translation>
 <translation id="519422657042045905">無法使用註解模式</translation>
 <translation id="5201306358585911203">這個網頁上的嵌入式網頁顯示</translation>
@@ -1242,7 +1242,7 @@
 <translation id="6049488691372270142">頁面傳送</translation>
 <translation id="6051221802930200923">目前無法造訪 <ph name="SITE" />，因為這個網站使用憑證鎖定功能。網路錯誤和攻擊行為通常是暫時性的，因此這個網頁可能稍後就會恢復正常狀態。</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">要分享你的狀態嗎？</translation>
+<translation id="6053328359599022071">要分享使用狀態嗎？</translation>
 <translation id="6058977677006700226">想在所有裝置上使用你的卡片嗎？</translation>
 <translation id="6059925163896151826">USB 裝置</translation>
 <translation id="6060009363608157444">DnsOverHttps 模式無效。</translation>

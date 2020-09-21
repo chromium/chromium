@@ -16,7 +16,7 @@
 <translation id="1369915414381695676">已新增 <ph name="SITE_NAME" /> 網站</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1384959399684842514">已暫停下載</translation>
-<translation id="1431402976894535801">禁止網站知道你處於使用中狀態的時間</translation>
+<translation id="1431402976894535801">禁止網站取得你的使用狀態</translation>
 <translation id="1446450296470737166">允許完整控制 MIDI 裝置</translation>
 <translation id="1509960214886564027">許多網站的功能可能無法正常運作</translation>
 <translation id="1620510694547887537">攝影機</translation>
@@ -79,7 +79,7 @@
 <translation id="3114012059975132928">影片播放器</translation>
 <translation id="3115898365077584848">顯示資訊</translation>
 <translation id="3123473560110926937">在某些網站上設定封鎖</translation>
-<translation id="3165371858310906303">網站必須先詢問你，才能知道你處於使用中狀態的時間</translation>
+<translation id="3165371858310906303">網站必須先詢問你，才能知道你是否正在使用裝置</translation>
 <translation id="3198916472715691905">儲存了 <ph name="STORAGE_AMOUNT" /> 的資料</translation>
 <translation id="321187648315454507">如要允許 <ph name="APP_NAME" /> 傳送通知，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟通知功能。</translation>
 <translation id="3227137524299004712">麥克風</translation>

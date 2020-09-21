@@ -3576,9 +3576,9 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
           Nếu bạn không đặt chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ tải tất cả máy chủ nhắn tin gốc đã cài đặt.</translation>
 <translation id="6224304369267200483">URL/miền đã tự động cho phép chứng thực Khóa bảo mật trực tiếp</translation>
 <translation id="6230442621691161858">Tính năng này sẽ bật tùy chọn đề xuất nội dung mới để khám phá. Bao gồm ứng dụng, trang web và nhiều nội dung khác.
-      Nếu bạn đặt chính sách này thành Bật, tùy chọn đề xuất nội dung mới để khám phá sẽ bật.
-      Nếu bạn đặt chính sách này thành Tắt, tùy chọn đề xuất nội dung mới để khám phá sẽ tắt.
-      Nếu bạn không đặt chính sách này, tùy chọn đề xuất nội dung mới để khám phá sẽ tắt đối với người dùng được quản lý và sẽ bật cho những người dùng khác.
+      Nếu bạn đặt chính sách này thành Bật, tùy chọn đề xuất nội dung mới để khám phá sẽ được bật.
+      Nếu bạn đặt chính sách này thành Tắt, tùy chọn đề xuất nội dung mới để khám phá sẽ bị tắt.
+      Nếu bạn không đặt chính sách này, tùy chọn đề xuất nội dung mới để khám phá sẽ bị tắt đối với người dùng được quản lý và sẽ được bật cho những người dùng khác.
       </translation>
 <translation id="6233173491898450179">Đặt thư mục tải xuống</translation>
 <translation id="6234177445959386333">Định cấu hình danh sách các URL đăng nhập của doanh nghiệp mà dịch vụ bảo vệ mật khẩu sẽ ghi lại hàm băm có chuỗi ngẫu nhiên của mật khẩu.</translation>

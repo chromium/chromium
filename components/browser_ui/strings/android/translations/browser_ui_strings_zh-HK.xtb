@@ -16,7 +16,7 @@
 <translation id="1369915414381695676">已新增網站 <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1384959399684842514">已暫停下載</translation>
-<translation id="1431402976894535801">禁止網站知道您處於使用中狀態的時間</translation>
+<translation id="1431402976894535801">禁止網站知道您何時使用裝置</translation>
 <translation id="1446450296470737166">允許全權控制 MIDI 裝置。</translation>
 <translation id="1509960214886564027">很多網站的功能可能會無法正常運作</translation>
 <translation id="1620510694547887537">相機</translation>
@@ -44,7 +44,7 @@
 <translation id="2146738493024040262">開啟免安裝應用程式</translation>
 <translation id="2148716181193084225">今天</translation>
 <translation id="2182457891543959921">在允許網站建立您身處環境的 3D 地圖或追蹤攝錄機位置前先詢問您 (建議)</translation>
-<translation id="2187243482123994665">使用者動態</translation>
+<translation id="2187243482123994665">使用者狀態</translation>
 <translation id="2212565012507486665">允許 Cookie</translation>
 <translation id="2228071138934252756">如要讓 <ph name="APP_NAME" /> 存取您的相機，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
 <translation id="2289270750774289114">在網站要探索附近的藍牙裝置時詢問您 (建議)</translation>
@@ -79,7 +79,7 @@
 <translation id="3114012059975132928">影片播放器</translation>
 <translation id="3115898365077584848">顯示資料</translation>
 <translation id="3123473560110926937">在部分網站上設定封鎖</translation>
-<translation id="3165371858310906303">在網站要求知道您處於使用中狀態的時間時詢問您</translation>
+<translation id="3165371858310906303">在網站要求知道您何時使用裝置時詢問您</translation>
 <translation id="3198916472715691905">已使用 <ph name="STORAGE_AMOUNT" /> 儲存空間</translation>
 <translation id="321187648315454507">如要讓 <ph name="APP_NAME" /> 傳送通知，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟通知功能。</translation>
 <translation id="3227137524299004712">麥克風</translation>

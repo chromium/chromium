@@ -136,7 +136,7 @@
 <translation id="5197729504361054390">आप जो संपर्क चुनेंगे उन्हें <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> के साथ शेयर किया जाएगा.</translation>
 <translation id="5300589172476337783">दिखाएं</translation>
 <translation id="5301954838959518834">ठीक है, समझ लिया</translation>
-<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> और सुविधा</translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा</translation>
 <translation id="5313967007315987356">साइट जोड़ें</translation>
 <translation id="5317780077021120954">सेव करें</translation>
 <translation id="5335288049665977812">साइटों को JavaScript चलाने की अनुमति दें (हम इस सेटिंग को चालू रखने का सुझाव देते हैं)</translation>

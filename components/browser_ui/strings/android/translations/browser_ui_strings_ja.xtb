@@ -16,7 +16,7 @@
 <translation id="1369915414381695676">サイト <ph name="SITE_NAME" /> を追加しました</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1384959399684842514">ダウンロードを一時停止しました</translation>
-<translation id="1431402976894535801">サイトによるアクティブ状態の検出をブロックする</translation>
+<translation id="1431402976894535801">サイトによるユーザーのアクティブ状態の検出をブロックする</translation>
 <translation id="1446450296470737166">MIDI機器のフルコントロールを許可</translation>
 <translation id="1509960214886564027">多くサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="1620510694547887537">カメラ</translation>
@@ -79,7 +79,7 @@
 <translation id="3114012059975132928">動画プレーヤー</translation>
 <translation id="3115898365077584848">情報を表示</translation>
 <translation id="3123473560110926937">一部のサイトでブロックされています</translation>
-<translation id="3165371858310906303">サイトがアクティブ状態を検出しようとしたときに確認する</translation>
+<translation id="3165371858310906303">サイトがユーザーのアクティブ状態を検出しようとしたときに確認する</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> の保存データ</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> に通知の送信を許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でも通知をオンにしてください。</translation>
 <translation id="3227137524299004712">マイク</translation>

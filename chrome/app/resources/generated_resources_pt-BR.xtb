@@ -374,7 +374,7 @@
 <translation id="143027896309062157">Ler e modificar todos os dados no seu computador e nos sites que você visitar</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1431188203598586230">Atualização de software final</translation>
-<translation id="1431402976894535801">Impedir que sites saibam quando você está presente</translation>
+<translation id="1431402976894535801">Impedir que sites saibam quando você está interagindo</translation>
 <translation id="1431432486300429272">O Google pode usar seu histórico de navegação para personalizar a Pesquisa e outros Serviços do Google Você ou seu pai/mãe pode mudar essa configuração a qualquer momento em myaccount.google.com/activitycontrols/search</translation>
 <translation id="1432581352905426595">Gerenciar mecanismos de pesquisa</translation>
 <translation id="1433811987160647649">Perguntar antes de acessar</translation>
@@ -571,7 +571,7 @@
 <translation id="1651008383952180276">Informe a mesma senha longa duas vezes</translation>
 <translation id="1652326691684645429">Ativar o "Compartilhar por proximidade"</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Adicionar a impressora ao Google Cloud Print para poder imprimir de qualquer lugar.}one{Adicionar # impressoras ao Google Cloud Print para poder imprimir de qualquer lugar.}other{Adicionar # impressoras ao Google Cloud Print para poder imprimir de qualquer lugar.}}</translation>
-<translation id="1653575510930452864">Copiar link para texto</translation>
+<translation id="1653575510930452864">Copiar link para este texto</translation>
 <translation id="1656528038316521561">Opacidade do plano de fundo</translation>
 <translation id="1657406563541664238">Ajudar a tornar o <ph name="PRODUCT_NAME" /> melhor enviando automaticamente estatísticas de uso e relatórios de problemas ao Google.</translation>
 <translation id="1657937299377480641">Para fazer login novamente e ter acesso a recursos educacionais, peça permissão a um dos responsáveis</translation>
@@ -1833,7 +1833,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3163201441334626963">Produto <ph name="PRODUCT_ID" /> desconhecido do fornecedor <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Os serviços a seguir ajudam a proteger seus dados. Esses recursos podem ser desativados a qualquer momento.</translation>
 <translation id="3164329792803560526">Compartilhando esta guia com <ph name="APP_NAME" /></translation>
-<translation id="3165371858310906303">Perguntar quando um site quiser saber quando você está presente</translation>
+<translation id="3165371858310906303">Perguntar quando um site quiser saber seu estado de atividade</translation>
 <translation id="3165390001037658081">Algumas operadoras podem bloquear esse recurso.</translation>
 <translation id="316652501498554287">Contas do G Suite for Education</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -4440,7 +4440,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6344170822609224263">Acessar lista de conexões de rede</translation>
 <translation id="6344576354370880196">Impressoras salvas</translation>
 <translation id="6345418402353744910">É preciso inserir seu nome de usuário e sua senha para o proxy <ph name="PROXY" />. Assim, o administrador poderá configurar sua rede.</translation>
-<translation id="6345878117466430440">Marcar como lido</translation>
+<translation id="6345878117466430440">Marcar como lida</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">A sincronização não está funcionando. Tente sair e fazer login novamente.</translation>
 <translation id="6351063337294363751">É possível limpar seus dados de navegação desse menu</translation>
@@ -5758,7 +5758,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7963826112438303517">O Assistente usa essas gravações e as solicitações por voz para criar e atualizar seu modelo de voz, que é armazenado apenas em dispositivos com o Voice Match ativado. Veja ou altere as atividades de voz nas configurações do Assistente.</translation>
 <translation id="7966241909927244760">C&amp;opiar endereço da imagem</translation>
 <translation id="7968072247663421402">Opções do provedor</translation>
-<translation id="7968198493605442410">Copiar link para texto</translation>
+<translation id="7968198493605442410">Copiar link para este texto</translation>
 <translation id="7968742106503422125">Ler e modificar os dados que você copia e cola</translation>
 <translation id="7968833647796919681">Ativar coleta de dados de desempenho</translation>
 <translation id="7968982339740310781">Visualizar detalhes</translation>
