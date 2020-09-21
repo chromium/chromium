@@ -34,6 +34,12 @@ public class SyncErrorCardPreference extends Preference
      */
     public interface SyncErrorCardPreferenceListener {
         /**
+         * Called to check if the preference should be hidden in case its created from signin
+         * screen.
+         */
+        boolean shouldSuppressSyncSetupIncomplete();
+
+        /**
          * Called when the user clicks the primary button.
          */
         void onSyncErrorCardPrimaryButtonClicked();
@@ -46,7 +52,7 @@ public class SyncErrorCardPreference extends Preference
     }
 
     private final ProfileDataCache mProfileDataCache;
-    private SyncErrorCardPreferenceListener mButtonListener;
+    private SyncErrorCardPreferenceListener mListener;
     private @SyncError int mSyncError;
 
     public SyncErrorCardPreference(Context context, AttributeSet attrs) {
@@ -101,7 +107,10 @@ public class SyncErrorCardPreference extends Preference
         }
 
         mSyncError = SyncSettingsUtils.getSyncError();
-        if (mSyncError == SyncError.NO_ERROR) {
+        boolean suppressSyncSetupIncompleteFromSigninPage =
+                (mSyncError == SyncError.SYNC_SETUP_INCOMPLETE)
+                && mListener.shouldSuppressSyncSetupIncomplete();
+        if (mSyncError == SyncError.NO_ERROR || suppressSyncSetupIncompleteFromSigninPage) {
             setVisible(false);
         } else {
             setVisible(true);
@@ -137,10 +146,10 @@ public class SyncErrorCardPreference extends Preference
         errorCardView.getPrimaryButton().setText(
                 SyncSettingsUtils.getSyncErrorCardButtonLabel(getContext(), mSyncError));
         errorCardView.getPrimaryButton().setOnClickListener(
-                v -> mButtonListener.onSyncErrorCardPrimaryButtonClicked());
+                v -> mListener.onSyncErrorCardPrimaryButtonClicked());
         if (mSyncError == SyncError.SYNC_SETUP_INCOMPLETE) {
             errorCardView.getSecondaryButton().setOnClickListener(
-                    v -> mButtonListener.onSyncErrorCardSecondaryButtonClicked());
+                    v -> mListener.onSyncErrorCardSecondaryButtonClicked());
             errorCardView.getSecondaryButton().setText(R.string.cancel);
         } else {
             errorCardView.getSecondaryButton().setVisibility(View.GONE);
@@ -148,7 +157,7 @@ public class SyncErrorCardPreference extends Preference
     }
 
     public void setSyncErrorCardPreferenceListener(SyncErrorCardPreferenceListener listener) {
-        mButtonListener = listener;
+        mListener = listener;
     }
 
     public @SyncError int getSyncError() {

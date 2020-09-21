@@ -653,6 +653,12 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         return true;
     }
 
+    // SyncErrorCardPreferenceListener implementation:
+    @Override
+    public boolean shouldSuppressSyncSetupIncomplete() {
+        return mIsFromSigninScreen;
+    }
+
     @Override
     public void onSyncErrorCardPrimaryButtonClicked() {
         @SyncError
