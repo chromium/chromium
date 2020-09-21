@@ -30,8 +30,7 @@ class ServiceConnection {
 
   // Bind to the CfM Service Context Daemon
   virtual void BindServiceContext(
-      mojo::PendingReceiver<::chromeos::cfm::mojom::CfmServiceContext>
-          receiver) = 0;
+      mojo::PendingReceiver<mojom::CfmServiceContext> receiver) = 0;
 
  protected:
   ServiceConnection() = default;

@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "chromeos/dbus/cfm/cfm_hotline_client.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -18,8 +19,11 @@ namespace cfm {
 
 namespace {
 
-// Real Impl of ServiceConnection
-class ServiceConnectionImpl : public ServiceConnection {
+// Real Impl of ServiceConnection.
+// Wraps |CfmServiceContext| to allow a single mojo invitation to facilitate
+// multiple |CfmServiceContext|s.
+class ServiceConnectionImpl : public ServiceConnection,
+                              mojom::CfmServiceContext {
  public:
   ServiceConnectionImpl();
   ServiceConnectionImpl(const ServiceConnectionImpl&) = delete;
@@ -28,33 +32,70 @@ class ServiceConnectionImpl : public ServiceConnection {
 
  private:
   void BindServiceContext(
-      mojo::PendingReceiver<::chromeos::cfm::mojom::CfmServiceContext> receiver)
-      override;
+      mojo::PendingReceiver<mojom::CfmServiceContext> receiver) override;
+
+  // Binds the |CfmServiceContext| if needed.
+  void BindPlatformServiceContextIfNeeded();
 
   void CfMContextServiceStarted(
-      mojo::PendingReceiver<::chromeos::cfm::mojom::CfmServiceContext> receiver,
+      mojo::PendingReceiver<mojom::CfmServiceContext> receiver,
       bool is_available);
 
   // Response callback for CfmHotlineClient::BootstrapMojoConnection.
   void OnBootstrapMojoConnectionResponse(
-      mojo::PendingReceiver<::chromeos::cfm::mojom::CfmServiceContext> receiver,
+      mojo::PendingReceiver<mojom::CfmServiceContext> receiver,
       mojo::PlatformChannel channel,
       mojo::ScopedMessagePipeHandle context_remote_pipe,
       bool success);
 
+  // |mojom::CfmServiceContext| implementation.
+  void ProvideAdaptor(const std::string& interface_name,
+                      chromeos::cfm::mojom::CfmServiceAdaptorPtr adaptor_remote,
+                      ProvideAdaptorCallback callback) override;
+  void BindRegistry(
+      const std::string& interface_name,
+      chromeos::cfm::mojom::CfmServiceRegistryRequest broker_receiver,
+      BindRegistryCallback callback) override;
+
+  void OnMojoConnectionError();
+
+  mojo::Remote<mojom::CfmServiceContext> remote_;
+  mojo::ReceiverSet<mojom::CfmServiceContext> receiver_set_;
+
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Note: This should remain the last member so it'll be destroyed and
+  // invalidate its weak pointers before any other members are destroyed.
+  base::WeakPtrFactory<ServiceConnectionImpl> weak_factory_{this};
 };
 
 void ServiceConnectionImpl::BindServiceContext(
-    mojo::PendingReceiver<::chromeos::cfm::mojom::CfmServiceContext> receiver) {
+    mojo::PendingReceiver<mojom::CfmServiceContext> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  BindPlatformServiceContextIfNeeded();
+
+  receiver_set_.Add(this, std::move(receiver));
+  VLOG(2) << "Bound |CfmServiceContext| Request";
+}
+
+void ServiceConnectionImpl::BindPlatformServiceContextIfNeeded() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (remote_.is_bound()) {
+    return;
+  }
+
+  auto pending_receiver = remote_.BindNewPipeAndPassReceiver();
+  remote_.reset_on_disconnect();
+  // Note: Bind the remote so called can be queued
   CfmHotlineClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(&ServiceConnectionImpl::CfMContextServiceStarted,
-                     base::Unretained(this), std::move(receiver)));
+                     weak_factory_.GetWeakPtr(), std::move(pending_receiver)));
 }
 
 void ServiceConnectionImpl::CfMContextServiceStarted(
-    mojo::PendingReceiver<::chromeos::cfm::mojom::CfmServiceContext> receiver,
+    mojo::PendingReceiver<mojom::CfmServiceContext> receiver,
     bool is_available) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_available) {
@@ -79,12 +120,12 @@ void ServiceConnectionImpl::CfMContextServiceStarted(
   CfmHotlineClient::Get()->BootstrapMojoConnection(
       channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD(),
       base::BindOnce(&ServiceConnectionImpl::OnBootstrapMojoConnectionResponse,
-                     base::Unretained(this), std::move(receiver),
+                     weak_factory_.GetWeakPtr(), std::move(receiver),
                      std::move(channel), std::move(pipe)));
 }
 
 void ServiceConnectionImpl::OnBootstrapMojoConnectionResponse(
-    mojo::PendingReceiver<::chromeos::cfm::mojom::CfmServiceContext> receiver,
+    mojo::PendingReceiver<mojom::CfmServiceContext> receiver,
     mojo::PlatformChannel channel,
     mojo::ScopedMessagePipeHandle context_remote_pipe,
     bool success) {
@@ -97,13 +138,42 @@ void ServiceConnectionImpl::OnBootstrapMojoConnectionResponse(
 
   MojoResult result = mojo::FuseMessagePipes(receiver.PassPipe(),
                                              std::move(context_remote_pipe));
-  if (result == MOJO_RESULT_OK) {
+  if (result != MOJO_RESULT_OK) {
     LOG(WARNING) << "Fusing message pipes failed.";
   }
 }
 
+void ServiceConnectionImpl::ProvideAdaptor(
+    const std::string& interface_name,
+    chromeos::cfm::mojom::CfmServiceAdaptorPtr adaptor_remote,
+    ProvideAdaptorCallback callback) {
+  BindPlatformServiceContextIfNeeded();
+
+  remote_->ProvideAdaptor(std::move(interface_name), std::move(adaptor_remote),
+                          std::move(callback));
+}
+
+void ServiceConnectionImpl::BindRegistry(
+    const std::string& interface_name,
+    chromeos::cfm::mojom::CfmServiceRegistryRequest broker_receiver,
+    BindRegistryCallback callback) {
+  BindPlatformServiceContextIfNeeded();
+
+  remote_->BindRegistry(std::move(interface_name), std::move(broker_receiver),
+                        std::move(callback));
+}
+
+void ServiceConnectionImpl::OnMojoConnectionError() {
+  // The lifecycle of connected clients is unimportant since this class
+  // ultimately behaves like a one-off factory class
+  VLOG(2) << "Connection to factory close received";
+}
+
 ServiceConnectionImpl::ServiceConnectionImpl() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+  receiver_set_.set_disconnect_handler(
+      base::BindRepeating(&ServiceConnectionImpl::OnMojoConnectionError,
+                          weak_factory_.GetWeakPtr()));
 }
 
 static ServiceConnection* g_fake_service_connection_for_testing = nullptr;
