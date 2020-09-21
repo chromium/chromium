@@ -203,20 +203,36 @@ select:-internal-list-box {
   border-radius: 2px;
 }
 
-select:-internal-list-box:enabled option:hover:enabled {
+select:-internal-list-box option:hover {
   background-color: initial;
 }
 
-/* option selected */
+/* option selected, list-box not focused */
 select:-internal-list-box option:checked,
-select:-internal-list-box:enabled option:checked:enabled:hover {
-  background-color: #cecece !important;
-  color: #101010 !important;
+select:-internal-list-box option:checked:hover {
+  background-color: -internal-light-dark(#cecece, #545454) !important;
+  color: -internal-light-dark(#101010, #FFFFFF) !important;
 }
 
-select:-internal-list-box:focus option:checked:enabled:hover {
-  background-color: -internal-active-list-box-selection !important;
-  color: -internal-active-list-box-selection-text !important;
+/* option selected, list-box focused */
+select:-internal-list-box:focus option:checked,
+select:-internal-list-box:focus option:checked:hover {
+  /* TODO(crbug.com/1129658): The dark mode color here should be handled
+     within LayoutTheme::ActiveListBoxSelectionBackgroundColor(). */
+  background-color: -internal-light-dark(-internal-active-list-box-selection, #99C8FF) !important;
+  color: -internal-light-dark(-internal-active-list-box-selection-text, #FFFFFF) !important;
+}
+
+select:-internal-list-box:focus option:checked:disabled {
+  /* TODO(crbug.com/1129658): The dark mode color here should be handled
+     within LayoutTheme::ActiveListBoxSelectionBackgroundColor(). */
+  background-color: -internal-light-dark(-internal-inactive-list-box-selection, rgba(59, 59, 59, 0.3)) !important;
+}
+
+select:-internal-list-box:disabled option:checked,
+select:-internal-list-box option:checked:disabled,
+select:-internal-list-box option:checked:disabled:hover {
+  color: -internal-light-dark(gray, #aaa) !important;
 }
 
 input::-webkit-datetime-edit-ampm-field:focus,
