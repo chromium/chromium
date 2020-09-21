@@ -158,6 +158,7 @@ copy("chrome_camera_app_js_models") {
     "src/js/models/file_system.js",
     "src/js/models/file_system_entry.js",
     "src/js/models/file_util.js",
+    "src/js/models/lazy_directory_entry.js",
     "src/js/models/mp4_video_processor.js",
     "src/js/models/nop_video_processor.js",
     "src/js/models/result_saver.js",

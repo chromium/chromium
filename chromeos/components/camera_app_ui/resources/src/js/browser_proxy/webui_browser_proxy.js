@@ -16,6 +16,7 @@ import {BackgroundOps} from '../background_ops.js';
 import {assert} from '../chrome_util.js';
 import {NotImplementedError} from '../error.js';
 import {Intent} from '../intent.js';
+import {getMaybeLazyDirectory} from '../models/lazy_directory_entry.js';
 import {NativeDirectoryEntry} from '../models/native_file_system_entry.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {PerfLogger} from '../perf.js';
@@ -36,7 +37,7 @@ class WebUIBrowserProxy {
   }
 
   /** @override */
-  async getExternalDir() {
+  async getCameraDirectory() {
     return new Promise((resolve) => {
       const launchQueue = window.launchQueue;
       assert(launchQueue !== undefined);
@@ -45,7 +46,9 @@ class WebUIBrowserProxy {
         const dir =
             /** @type {!FileSystemDirectoryHandle} */ (launchParams.files[0]);
         assert(dir.kind === 'directory');
-        resolve(new NativeDirectoryEntry(dir));
+
+        const myFilesDir = new NativeDirectoryEntry(dir);
+        resolve(getMaybeLazyDirectory(myFilesDir, 'Camera'));
       });
     });
   }

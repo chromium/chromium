@@ -40,6 +40,7 @@
       <structure name="IDR_CAMERA_INIT_JS" file="src/js/init.js" type="chrome_html" />
       <structure name="IDR_CAMERA_INTENT_JS" file="src/js/intent.js" type="chrome_html" />
       <structure name="IDR_CAMERA_LAYOUT_JS" file="src/js/views/camera/layout.js" type="chrome_html" />
+      <structure name="IDR_CAMERA_LAZY_DIRECTORY_ENTRY_JS" file="src/js/models/lazy_directory_entry.js" type="chrome_html" />
       <structure name="IDR_CAMERA_MAIN_CSS" file="src/css/main.css" type="chrome_html" />
       <structure name="IDR_CAMERA_MAIN_HTML" file="src/views/main.html" type="chrome_html" />
       <structure name="IDR_CAMERA_MAIN_JS" file="src/js/main.js" type="chrome_html" />

@@ -48,17 +48,17 @@ let internalDir = null;
 let internalTempDir = null;
 
 /**
- * Directory in the external file system.
+ * Camera directory in the external file system.
  * @type {?AbstractDirectoryEntry}
  */
-let externalDir = null;
+let cameraDir = null;
 
 /**
- * Gets global external directory used by CCA.
+ * Gets camera directory used by CCA.
  * @return {?AbstractDirectoryEntry}
  */
-export function getExternalDirectory() {
-  return externalDir;
+export function getCameraDirectory() {
+  return cameraDir;
 }
 
 /**
@@ -86,11 +86,11 @@ function initInternalTempDir() {
 }
 
 /**
- * Initializes the directory in the external file system.
+ * Initializes the camera directory in the external file system.
  * @return {!Promise<?AbstractDirectoryEntry>} Promise for the directory result.
  */
-async function initExternalDir() {
-  return browserProxy.getExternalDir();
+async function initCameraDirectory() {
+  return browserProxy.getCameraDirectory();
 }
 
 /**
@@ -122,6 +122,7 @@ function regulatePictureName(entry) {
  * @return {!Promise} Promise for the operation.
  */
 async function migratePictures() {
+  assert(cameraDir !== null);
   const internalEntries = await internalDir.getFiles();
   for (const entry of internalEntries) {
     if (entry.name.startsWith(THUMBNAIL_PREFIX)) {
@@ -129,8 +130,7 @@ async function migratePictures() {
       continue;
     }
     const name = regulatePictureName(entry);
-    assert(externalDir !== null);
-    await entry.moveTo(externalDir, name);
+    await entry.moveTo(cameraDir, name);
   }
 }
 
@@ -146,8 +146,8 @@ export async function initialize() {
   internalTempDir = await initInternalTempDir();
   assert(internalTempDir !== null);
 
-  externalDir = await initExternalDir();
-  assert(externalDir !== null);
+  cameraDir = await initCameraDirectory();
+  assert(cameraDir !== null);
 }
 
 /**
@@ -198,9 +198,7 @@ export async function checkMigration(promptMigrate) {
  * @return {!Promise<?AbstractFileEntry>} Promise for the result.
  */
 export async function saveBlob(blob, name) {
-  assert(externalDir !== null);
-
-  const file = await externalDir.createFile(name);
+  const file = await cameraDir.createFile(name);
   assert(file !== null);
 
   await file.write(blob);
@@ -213,9 +211,8 @@ export async function saveBlob(blob, name) {
  * @throws {!Error} If failed to create video file.
  */
 export async function createVideoFile() {
-  assert(externalDir !== null);
   const name = new Filenamer().newVideoName();
-  const file = await externalDir.createFile(name);
+  const file = await cameraDir.createFile(name);
   if (file === null) {
     throw new Error('Failed to create video temp file.');
   }
@@ -248,7 +245,7 @@ export async function createPrivateTempVideoFile() {
  *     entries.
  */
 export async function getEntries() {
-  const entries = await externalDir.getFiles();
+  const entries = await cameraDir.getFiles();
   return entries.filter((entry) => {
     if (!hasVideoPrefix(entry) && !hasImagePrefix(entry)) {
       return false;

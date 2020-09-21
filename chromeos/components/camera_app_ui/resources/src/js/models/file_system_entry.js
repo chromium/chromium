@@ -125,6 +125,8 @@ export class AbstractDirectoryEntry extends AbstractFileSystemEntry {
   /**
    * Gets the directory given by its |name|. If the directory is not found,
    * create one if |createIfNotExist| is true.
+   * TODO(crbug.com/1127587): Split this method to getDirectory() and
+   * createDirectory().
    * @param {{name: string, createIfNotExist: boolean}} params
    * @return {!Promise<?AbstractDirectoryEntry>} The entry of the found/created
    *     directory.

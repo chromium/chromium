@@ -209,9 +209,9 @@ export class App {
         metrics.sendLaunchEvent({ackMigrate});
       });
 
-      const externalDir = filesystem.getExternalDirectory();
-      assert(externalDir !== null);
-      this.galleryButton_.initialize(externalDir);
+      const cameraDir = filesystem.getCameraDirectory();
+      assert(cameraDir !== null);
+      this.galleryButton_.initialize(cameraDir);
     } catch (error) {
       console.error(error);
       if (error && error.message === 'no-migrate') {

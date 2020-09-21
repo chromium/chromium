@@ -25,7 +25,7 @@ export class BrowserProxy {
    * @return {!Promise<?AbstractDirectoryEntry>}
    * @abstract
    */
-  async getExternalDir() {}
+  async getCameraDirectory() {}
 
   /**
    * @param {(string|!Array<string>|!Object)} keys

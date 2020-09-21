@@ -166,11 +166,18 @@ export class NativeDirectoryEntry extends NativeFileSystemEntry {
    * @override
    */
   async getDirectory({name, createIfNotExist}) {
-    const handle =
-        await this.handle_.getDirectoryHandle(name, {create: createIfNotExist});
-    assert(handle !== null);
-    return new NativeDirectoryEntry(
-        /** @type {!FileSystemDirectoryHandle} */ (handle));
+    try {
+      const handle = await this.handle_.getDirectoryHandle(
+          name, {create: createIfNotExist});
+      assert(handle !== null);
+      return new NativeDirectoryEntry(
+          /** @type {!FileSystemDirectoryHandle} */ (handle));
+    } catch (error) {
+      if (!createIfNotExist && error.name === 'NotFoundError') {
+        return null;
+      }
+      throw error;
+    }
   }
 
   /**
