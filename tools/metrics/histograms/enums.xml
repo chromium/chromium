@@ -7076,6 +7076,7 @@ Called by update_bad_message_reasons.py.-->
 <enum name="BookmarkType">
   <int value="0" label="Normal"/>
   <int value="1" label="Partner"/>
+  <int value="2" label="ReadingList"/>
 </enum>
 
 <enum name="Boolean">
