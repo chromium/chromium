@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <input autofocus id="input" value="input">
 
 <script>
 'use strict';
 
-async_test_after_layout_and_paint((t) => {
+async_test((t) => {
+  // This forces building the accessibility tree, because selection change
+  // events only fire on elements that already exist.
+  accessibilityController.accessibleElementById('dummy');
+
   const inputElement = document.getElementById('input');
   const axRootElement = accessibilityController.rootElement;
   const axInputElement = accessibilityController.accessibleElementById('input');
@@ -23,7 +26,7 @@ async_test_after_layout_and_paint((t) => {
   axRootElement.setNotificationListener(function(notification, intents) {
     if (notification == 'DocumentSelectionChanged') {
       assert_array_equals(intents,
-                          ['AXEventIntent(setSelection,none,character,forward)']);
+                          ['AXEventIntent(setSelection,character,forward)']);
       gotDocumentSelectionChanged = true;
       axRootElement.unsetNotificationListener();
       succeedIfDone();
@@ -33,7 +36,7 @@ async_test_after_layout_and_paint((t) => {
   axInputElement.setNotificationListener(function(notification, intents) {
     if (notification == 'SelectedTextChanged') {
       assert_array_equals(intents,
-                          ['AXEventIntent(setSelection,none,character,forward)']);
+                          ['AXEventIntent(setSelection,character,forward)']);
       gotSelectedTextChanged = true;
       axInputElement.unsetNotificationListener();
       succeedIfDone();

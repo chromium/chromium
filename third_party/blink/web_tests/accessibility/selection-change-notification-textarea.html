@@ -1,25 +1,29 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <textarea autofocus id="textarea">textarea</textarea>
 
 <script>
 'use strict';
 
-async_test_after_layout_and_paint((t) => {
+async_test((t) => {
+  // This forces building the accessibility tree, because selection change
+  // events only fire on elements that already exist.
+  accessibilityController.accessibleElementById('dummy');
+
+  const element = document.getElementById('textarea');
   const axElement = accessibilityController.accessibleElementById('textarea');
+
   axElement.setNotificationListener(t.step_func((notification, intents) => {
     if (notification == 'SelectedTextChanged') {
       assert_array_equals(intents,
-                          ['AXEventIntent(setSelection,none,character,forward)']);
+                          ['AXEventIntent(setSelection,character,forward)']);
       axElement.unsetNotificationListener();
       t.done();
     }
   }));
 
-  const element = document.getElementById('textarea');
   element.setSelectionRange(0, 1);
 });
 

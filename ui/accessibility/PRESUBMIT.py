@@ -150,13 +150,11 @@ def CheckEnumsMatch(input_api, output_api):
   CheckMatchingEnum(ax_enums, 'MarkerType', automation_enums,
                    'MarkerType', errs, output_api)
   CheckMatchingEnum(ax_enums, 'Command', automation_enums,
-                   'IntentCommandType', errs, output_api)
-  CheckMatchingEnum(ax_enums, 'InputEventType', automation_enums,
-                   'IntentInputEventType', errs, output_api)
+                   'EventCommandType', errs, output_api)
   CheckMatchingEnum(ax_enums, 'TextBoundary', automation_enums,
-                   'IntentTextBoundaryType', errs, output_api)
+                   'EventTextBoundaryType', errs, output_api)
   CheckMatchingEnum(ax_enums, 'MoveDirection', automation_enums,
-                   'IntentMoveDirectionType', errs, output_api)
+                   'EventMoveDirectionType', errs, output_api)
   CheckMatchingEnum(ax_enums, 'SortDirection', automation_enums,
                    'SortDirectionType', errs, output_api)
   return errs

@@ -19,119 +19,82 @@ async_test((t) => {
   const expectedSelectedTextChangedIntents = [];
 
   axTextBox.setNotificationListener(t.step_func((notification, intents) => {
-    if (notification == 'ValueChanged') {
+    if (notification == "ValueChanged") {
       assert_array_equals(intents,
-                          expectedValueChangedIntents[valueChangedCount],
-                          'ValueChanged at ' + valueChangedCount);
+                          expectedValueChangedIntents[valueChangedCount]);
       ++valueChangedCount;
-    } else if (notification == 'SelectedTextChanged') {
+    } else if (notification == "SelectedTextChanged") {
       assert_array_equals(intents,
-                          expectedSelectedTextChangedIntents[selectedTextChangedCount],
-                          'SelectedTextChanged at ' + selectedTextChangedCount);
+                          expectedSelectedTextChangedIntents[selectedTextChangedCount]);
       ++selectedTextChangedCount;
     }
 
-    if (valueChangedCount >= 6 && selectedTextChangedCount >= 11) {
+    if (valueChangedCount >= 4 && selectedTextChangedCount >= 9) {
       t.done();
     }
   }));
 
-  // SelectedTextChanged at 0.
+  // Initial setting of the selection.
   expectedSelectedTextChangedIntents.push([
-    'AXEventIntent(setSelection,none,character,forward)'
+    'AXEventIntent(setSelection,character,forward)'
   ]);
   textbox.focus();
 
-  // SelectedTextChanged at 1.
   expectedSelectedTextChangedIntents.push([
-    'AXEventIntent(moveSelection,none,lineStart,forward)'
+    'AXEventIntent(moveSelection,lineStart,forward)'
   ]);
-  eventSender.keyDown('ArrowDown', []);
+  eventSender.keyDown("ArrowDown", []);
 
-  // ValueChanged at 0.
   expectedValueChangedIntents.push([
-    'AXEventIntent(insert,insertText,none,none)'
+    'AXEventIntent(type,character,forward)'
   ]);
-  // SelectedTextChanged at 2.
   expectedSelectedTextChangedIntents.push([
-    'AXEventIntent(insert,insertText,none,none)',
-    'AXEventIntent(setSelection,none,character,forward)'
+    'AXEventIntent(setSelection,character,forward)',
+    'AXEventIntent(type,character,forward)'
   ]);
-  eventSender.keyDown('w', []);
+  eventSender.keyDown("w", []);
 
-  // SelectedTextChanged at 3.
   expectedSelectedTextChangedIntents.push([
-    'AXEventIntent(moveSelection,none,lineStart,forward)'
+    'AXEventIntent(moveSelection,lineStart,forward)'
   ]);
-  eventSender.keyDown('ArrowDown', []);
+  eventSender.keyDown("ArrowDown", []);
 
-  // ValueChanged at 1.
   expectedValueChangedIntents.push([
-    'AXEventIntent(insert,insertText,none,none)'
+    'AXEventIntent(type,character,forward)'
   ]);
-  // SelectedTextChanged at 4.
   expectedSelectedTextChangedIntents.push([
-    'AXEventIntent(setSelection,none,character,forward)',
-    'AXEventIntent(insert,insertText,none,none)'
+    'AXEventIntent(type,character,forward)',
+    'AXEventIntent(setSelection,character,forward)'
   ]);
-  eventSender.keyDown('x', []);
+  eventSender.keyDown("x", []);
 
-  // SelectedTextChanged at 5.
   expectedSelectedTextChangedIntents.push([
-    'AXEventIntent(moveSelection,none,character,backward)'
+    'AXEventIntent(moveSelection,character,backward)'
   ]);
-  eventSender.keyDown('ArrowLeft', []);
+  eventSender.keyDown("ArrowLeft", []);
 
-  // ValueChanged at 2.
   expectedValueChangedIntents.push([
-    'AXEventIntent(delete,deleteContentForward,none,none)'
+    'AXEventIntent(type,character,forward)'
   ]);
-  eventSender.keyDown('Delete', []);
-
-  // SelectedTextChanged at 6.
   expectedSelectedTextChangedIntents.push([
-    'AXEventIntent(moveSelection,none,character,backward)'
+    'AXEventIntent(setSelection,character,forward)',
+    'AXEventIntent(type,character,forward)'
   ]);
-  eventSender.keyDown('ArrowLeft', []);
+  eventSender.keyDown("y", []);
 
-  // ValueChanged at 3.
+  expectedSelectedTextChangedIntents.push([
+    'AXEventIntent(moveSelection,character,backward)'
+  ]);
+  eventSender.keyDown("ArrowLeft", []);
+
   expectedValueChangedIntents.push([
-    'AXEventIntent(insert,insertText,none,none)'
+    'AXEventIntent(type,character,forward)'
   ]);
-  // SelectedTextChanged at 7.
   expectedSelectedTextChangedIntents.push([
-    'AXEventIntent(setSelection,none,character,forward)',
-    'AXEventIntent(insert,insertText,none,none)'
+    'AXEventIntent(setSelection,character,forward)',
+    'AXEventIntent(type,character,forward)'
   ]);
-  eventSender.keyDown('y', []);
-
-  // SelectedTextChanged at 8.
-  expectedSelectedTextChangedIntents.push([
-    'AXEventIntent(moveSelection,none,lineStart,backward)'
-  ]);
-  eventSender.keyDown('ArrowUp', []);
-
-  // ValueChanged at 4.
-  expectedValueChangedIntents.push([
-    'AXEventIntent(insert,insertParagraph,none,none)'
-  ]);
-  // SelectedTextChanged at 9.
-  expectedSelectedTextChangedIntents.push([
-    'AXEventIntent(insert,insertParagraph,none,none)',
-    'AXEventIntent(setSelection,none,character,forward)'
-  ]);
-  eventSender.keyDown('Enter', []);
-
-  // ValueChanged at 5.
-  expectedValueChangedIntents.push([
-    'AXEventIntent(delete,deleteContentBackward,none,none)',
-  ]);
-  // SelectedTextChanged at 10.
-  expectedSelectedTextChangedIntents.push([
-    'AXEventIntent(setSelection,none,character,forward)',
-    'AXEventIntent(delete,deleteContentBackward,none,none)',
-  ]);
-  eventSender.keyDown('Backspace', []);
-}, 'Ensures that moving the cursor in a contentEditable sends a selected text change notification, and typing in a contentEditable sends both a value changed and selected text changed notification.');
+  eventSender.keyDown("z", []);
+}, 'This test ensures that moving the cursor in a contentEditable sends a selected text change notification, and typing in a contentEditable sends both a value changed and selected text changed notification.');
 
 </script>

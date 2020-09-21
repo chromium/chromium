@@ -76,28 +76,24 @@ AX_BASE_EXPORT const char* ToString(ax::mojom::MoveDirection move_direction);
 // ax::mojom::Command
 AX_BASE_EXPORT const char* ToString(ax::mojom::Command command);
 
-// ax::mojom::InputEventType
-AX_BASE_EXPORT const char* ToString(ax::mojom::InputEventType input_event_type);
-
 // ax::mojom::TextBoundary
 AX_BASE_EXPORT const char* ToString(ax::mojom::TextBoundary text_boundary);
+
+// ax:mojom::TextDecorationStyle
+AX_BASE_EXPORT const char* ToString(
+    ax::mojom::TextDecorationStyle text_decoration_style);
 
 // ax::mojom::TextAlign
 AX_BASE_EXPORT const char* ToString(ax::mojom::TextAlign text_align);
 
 // ax::mojom::WritingDirection
-AX_BASE_EXPORT const char* ToString(
-    ax::mojom::WritingDirection writing_direction);
+AX_BASE_EXPORT const char* ToString(ax::mojom::WritingDirection text_direction);
 
 // ax::mojom::TextPosition
 AX_BASE_EXPORT const char* ToString(ax::mojom::TextPosition text_position);
 
 // ax::mojom::TextStyle
 AX_BASE_EXPORT const char* ToString(ax::mojom::TextStyle text_style);
-
-// ax:mojom::TextDecorationStyle
-AX_BASE_EXPORT const char* ToString(
-    ax::mojom::TextDecorationStyle text_decoration_style);
 
 // ax::mojom::AriaCurrentState
 AX_BASE_EXPORT const char* ToString(

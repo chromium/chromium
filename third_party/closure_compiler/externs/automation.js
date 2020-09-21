@@ -435,71 +435,29 @@ chrome.automation.MarkerType = {
 
 /**
  * @enum {string}
- * @see https://developer.chrome.com/extensions/automation#type-IntentCommandType
+ * @see https://developer.chrome.com/extensions/automation#type-EventCommandType
  */
-chrome.automation.IntentCommandType = {
+chrome.automation.EventCommandType = {
   CLEAR_SELECTION: 'clearSelection',
+  CUT: 'cut',
   DELETE: 'delete',
   DICTATE: 'dictate',
   EXTEND_SELECTION: 'extendSelection',
   FORMAT: 'format',
-  HISTORY: 'history',
   INSERT: 'insert',
   MARKER: 'marker',
   MOVE_SELECTION: 'moveSelection',
+  PASTE: 'paste',
+  REPLACE: 'replace',
   SET_SELECTION: 'setSelection',
+  TYPE: 'type',
 };
 
 /**
  * @enum {string}
- * @see https://developer.chrome.com/extensions/automation#type-IntentInputEventType
+ * @see https://developer.chrome.com/extensions/automation#type-EventTextBoundaryType
  */
-chrome.automation.IntentInputEventType = {
-  INSERT_TEXT: 'insertText',
-  INSERT_LINE_BREAK: 'insertLineBreak',
-  INSERT_PARAGRAPH: 'insertParagraph',
-  INSERT_ORDERED_LIST: 'insertOrderedList',
-  INSERT_UNORDERED_LIST: 'insertUnorderedList',
-  INSERT_HORIZONTAL_RULE: 'insertHorizontalRule',
-  INSERT_FROM_PASTE: 'insertFromPaste',
-  INSERT_FROM_DROP: 'insertFromDrop',
-  INSERT_FROM_YANK: 'insertFromYank',
-  INSERT_TRANSPOSE: 'insertTranspose',
-  INSERT_REPLACEMENT_TEXT: 'insertReplacementText',
-  INSERT_COMPOSITION_TEXT: 'insertCompositionText',
-  DELETE_WORD_BACKWARD: 'deleteWordBackward',
-  DELETE_WORD_FORWARD: 'deleteWordForward',
-  DELETE_SOFT_LINE_BACKWARD: 'deleteSoftLineBackward',
-  DELETE_SOFT_LINE_FORWARD: 'deleteSoftLineForward',
-  DELETE_HARD_LINE_BACKWARD: 'deleteHardLineBackward',
-  DELETE_HARD_LINE_FORWARD: 'deleteHardLineForward',
-  DELETE_CONTENT_BACKWARD: 'deleteContentBackward',
-  DELETE_CONTENT_FORWARD: 'deleteContentForward',
-  DELETE_BY_CUT: 'deleteByCut',
-  DELETE_BY_DRAG: 'deleteByDrag',
-  HISTORY_UNDO: 'historyUndo',
-  HISTORY_REDO: 'historyRedo',
-  FORMAT_BOLD: 'formatBold',
-  FORMAT_ITALIC: 'formatItalic',
-  FORMAT_UNDERLINE: 'formatUnderline',
-  FORMAT_STRIKE_THROUGH: 'formatStrikeThrough',
-  FORMAT_SUPERSCRIPT: 'formatSuperscript',
-  FORMAT_SUBSCRIPT: 'formatSubscript',
-  FORMAT_JUSTIFY_CENTER: 'formatJustifyCenter',
-  FORMAT_JUSTIFY_FULL: 'formatJustifyFull',
-  FORMAT_JUSTIFY_RIGHT: 'formatJustifyRight',
-  FORMAT_JUSTIFY_LEFT: 'formatJustifyLeft',
-  FORMAT_INDENT: 'formatIndent',
-  FORMAT_OUTDENT: 'formatOutdent',
-  FORMAT_REMOVE: 'formatRemove',
-  FORMAT_SET_BLOCK_TEXT_DIRECTION: 'formatSetBlockTextDirection',
-};
-
-/**
- * @enum {string}
- * @see https://developer.chrome.com/extensions/automation#type-IntentTextBoundaryType
- */
-chrome.automation.IntentTextBoundaryType = {
+chrome.automation.EventTextBoundaryType = {
   CHARACTER: 'character',
   FORMAT: 'format',
   LINE_END: 'lineEnd',
@@ -523,11 +481,11 @@ chrome.automation.IntentTextBoundaryType = {
 
 /**
  * @enum {string}
- * @see https://developer.chrome.com/extensions/automation#type-IntentMoveDirectionType
+ * @see https://developer.chrome.com/extensions/automation#type-EventMoveDirectionType
  */
-chrome.automation.IntentMoveDirectionType = {
-  BACKWARD: 'backward',
+chrome.automation.EventMoveDirectionType = {
   FORWARD: 'forward',
+  BACKWARD: 'backward',
 };
 
 /**
@@ -631,9 +589,9 @@ chrome.automation.SetDocumentSelectionParams;
 
 /**
  * @typedef {{
- *   command: !chrome.automation.IntentCommandType,
- *   textBoundary: !chrome.automation.IntentTextBoundaryType,
- *   moveDirection: !chrome.automation.IntentMoveDirectionType
+ *   command: !chrome.automation.EventCommandType,
+ *   textBoundary: !chrome.automation.EventTextBoundaryType,
+ *   moveDirection: !chrome.automation.EventMoveDirectionType
  * }}
  * @see https://developer.chrome.com/extensions/automation#type-AutomationIntent
  */
@@ -687,7 +645,7 @@ chrome.automation.AutomationEvent.prototype.mouseX;
 chrome.automation.AutomationEvent.prototype.mouseY;
 
 /**
- * A list of $(ref:automation.AutomationIntent)s associated with this event.
+ * Intents associated with this event.
  * @type {!Array<!chrome.automation.AutomationIntent>}
  * @see https://developer.chrome.com/extensions/automation#type-intents
  */
@@ -695,7 +653,7 @@ chrome.automation.AutomationEvent.prototype.intents;
 
 /**
  * Stops this event from further processing except for any remaining listeners
- * on $(ref:automation.AutomationEvent.target).
+ * on $(ref:AutomationEvent.target).
  * @see https://developer.chrome.com/extensions/automation#method-stopPropagation
  */
 chrome.automation.AutomationEvent.prototype.stopPropagation = function() {};

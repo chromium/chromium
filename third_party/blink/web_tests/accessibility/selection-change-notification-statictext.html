@@ -12,7 +12,7 @@ async_test((t) => {
   axElement.setNotificationListener(t.step_func(function(notification, intents) {
     if (notification == 'SelectedTextChanged') {
       assert_array_equals(intents,
-                          ['AXEventIntent(setSelection,none,character,forward)']);
+                          ['AXEventIntent(setSelection,character,forward)']);
       axElement.unsetNotificationListener();
       t.done();
     }

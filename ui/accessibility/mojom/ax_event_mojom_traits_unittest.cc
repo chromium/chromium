@@ -22,16 +22,11 @@ TEST(AXEventMojomTraitsTest, RoundTrip) {
   input.event_type = ax::mojom::Event::kTextChanged;
   input.id = 111;
   input.event_from = ax::mojom::EventFrom::kUser;
-  ui::AXEventIntent editing_intent;
-  editing_intent.command = ax::mojom::Command::kDelete;
-  editing_intent.input_event_type =
-      ax::mojom::InputEventType::kDeleteWordForward;
-  ui::AXEventIntent selection_intent;
-  selection_intent.command = ax::mojom::Command::kMoveSelection;
-  selection_intent.text_boundary = ax::mojom::TextBoundary::kWordStart;
-  selection_intent.move_direction = ax::mojom::MoveDirection::kForward;
-  const std::vector<ui::AXEventIntent> event_intents{editing_intent,
-                                                     selection_intent};
+  ui::AXEventIntent cut_intent;
+  cut_intent.command = ax::mojom::Command::kCut;
+  cut_intent.text_boundary = ax::mojom::TextBoundary::kWordEnd;
+  cut_intent.move_direction = ax::mojom::MoveDirection::kForward;
+  const std::vector<ui::AXEventIntent> event_intents{cut_intent};
   input.event_intents = event_intents;
   input.action_request_id = 222;
 

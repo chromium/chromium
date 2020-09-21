@@ -4888,9 +4888,6 @@ int AXPlatformNodeAuraLinux::FindStartOfStyle(
   DCHECK(!offset_to_text_attributes_.empty());
 
   switch (direction) {
-    case ax::mojom::MoveDirection::kNone:
-      NOTREACHED();
-      return start_offset;
     case ax::mojom::MoveDirection::kBackward: {
       auto iterator = offset_to_text_attributes_.upper_bound(start_offset);
       --iterator;
