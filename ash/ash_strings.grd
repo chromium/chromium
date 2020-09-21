@@ -1020,6 +1020,18 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_CONNECTION_ERROR_DIALOG_LEARN_MORE_BUTTON" desc="Learn more button on the connection error dialog to show more related information.">
         Learn more
       </message>
+      <message name="IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_TITLE" desc="The title of the dialog that pops up when the phone hub feature is not available because Bluetooth is disabled on this device.">
+        Uh Oh! Check your connection
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_DESCRIPTION" desc="The description of the dialog that pops up when the phone hub feature is not available because Bluetooth is disabled on this device.">
+        Looks like your Bluetooth or Wi-Fi is turned off on your Chromebook. Please check your connection to use Phone Hub.
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_OK_BUTTON" desc="Confirm button on the bluetooth disabled dialog to acknowledge.">
+        Ok, got it
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_LEARN_MORE_BUTTON" desc="Learn more button on the bluetooth disabled dialog to show more related information.">
+        Learn more
+      </message>
       <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_INLINE_REPLY_BUTTON" desc="Label for the inline reply button inside a PhoneHub notification.">
         Reply
       </message>

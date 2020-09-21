@@ -1098,6 +1098,8 @@ component("ash") {
     "system/palette/tools/magnifier_mode.h",
     "system/palette/tools/metalayer_mode.cc",
     "system/palette/tools/metalayer_mode.h",
+    "system/phonehub/bluetooth_disabled_view.cc",
+    "system/phonehub/bluetooth_disabled_view.h",
     "system/phonehub/connection_error_view.cc",
     "system/phonehub/connection_error_view.h",
     "system/phonehub/continue_browsing_chip.cc",
