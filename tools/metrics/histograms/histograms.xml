@@ -60513,14 +60513,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FirstRun.Sentinel.Created" enum="FirstRunSentinelResult"
-    expires_after="M87">
+    expires_after="2021-04-20">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>Result of sentinel file has been written.</summary>
 </histogram>
 
 <histogram name="FirstRun.Sentinel.CreatedFileError" enum="PlatformFileError"
-    expires_after="M87">
+    expires_after="2021-04-20">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>File error when the sentinel file was not written.</summary>
@@ -87380,8 +87380,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MobileSignInPromo.BookmarkManager.ImpressionsTilDismiss"
-    units="impressions" expires_after="M87">
+    units="impressions" expires_after="2021-04-20">
   <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Counts how many times the signin promo is implicitly dismissed (by closing
     the bookmark manager) per impression.
@@ -87389,8 +87390,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MobileSignInPromo.BookmarkManager.ImpressionsTilSigninButtons"
-    units="impressions" expires_after="M87">
+    units="impressions" expires_after="2021-04-20">
   <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Counts how many times one of the &quot;sign in&quot; buttons (any of the
     signed-out &quot;Sign in to Chrome&quot; button, the &quot;Continue as
@@ -87400,8 +87402,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MobileSignInPromo.BookmarkManager.ImpressionsTilXButton"
-    units="impressions" expires_after="M87">
+    units="impressions" expires_after="2021-04-20">
   <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Counts how many times the explicit &quot;X&quot;-to-close button is clicked
     per impression.
@@ -87409,8 +87412,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MobileSignInPromo.SettingsManager.ImpressionsTilDismiss"
-    units="impressions" expires_after="M87">
+    units="impressions" expires_after="2021-04-20">
   <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Counts how many times the signin promo is implicitly dismissed (by closing
     the settings view) per impression.
@@ -87418,8 +87422,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MobileSignInPromo.SettingsManager.ImpressionsTilSigninButtons"
-    units="impressions" expires_after="M87">
+    units="impressions" expires_after="2021-04-20">
   <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Counts how many times one of the &quot;sign in&quot; buttons (any of the
     signed-out &quot;Sign in to Chrome&quot; button, the &quot;Continue as
@@ -87429,8 +87434,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MobileSignInPromo.SettingsManager.ImpressionsTilXButton"
-    units="impressions" expires_after="M87">
+    units="impressions" expires_after="2021-04-20">
   <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Counts how many times the explicit &quot;X&quot;-to-close button is clicked
     per impression.
@@ -163054,8 +163060,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Signin.AccountReconcilorState.OnGaiaResponse"
-    enum="SigninAccountReconcilorState" expires_after="M87">
+    enum="SigninAccountReconcilorState" expires_after="2021-04-20">
   <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the state of the account reconcilor when GAIA returns a specific
     response.
