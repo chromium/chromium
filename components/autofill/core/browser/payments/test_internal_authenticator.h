@@ -30,6 +30,7 @@ class TestInternalAuthenticator : public InternalAuthenticator {
           IsUserVerifyingPlatformAuthenticatorAvailableCallback callback)
       override;
   void Cancel() override {}
+  content::RenderFrameHost* GetRenderFrameHost() override;
 };
 
 }  // namespace autofill

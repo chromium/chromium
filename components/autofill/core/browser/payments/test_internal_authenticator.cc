@@ -12,4 +12,8 @@ void TestInternalAuthenticator::IsUserVerifyingPlatformAuthenticatorAvailable(
   std::move(callback).Run(false);
 }
 
+content::RenderFrameHost* TestInternalAuthenticator::GetRenderFrameHost() {
+  return nullptr;
+}
+
 }  // namespace autofill

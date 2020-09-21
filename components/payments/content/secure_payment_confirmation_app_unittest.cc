@@ -4,10 +4,16 @@
 
 #include "components/payments/content/secure_payment_confirmation_app.h"
 
+#include <memory>
+
 #include "base/base64.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/payments/internal_authenticator.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
@@ -24,6 +30,10 @@ static constexpr char kCredentialIdBase64[] = "cccc";
 
 class MockAuthenticator : public autofill::InternalAuthenticator {
  public:
+  MockAuthenticator()
+      : web_contents_(web_contents_factory_.CreateWebContents(&context_)) {}
+  ~MockAuthenticator() override = default;
+
   MOCK_METHOD1(SetEffectiveOrigin, void(const url::Origin&));
   MOCK_METHOD2(
       MakeCredential,
@@ -35,6 +45,10 @@ class MockAuthenticator : public autofill::InternalAuthenticator {
   MOCK_METHOD0(Cancel, void());
   MOCK_METHOD1(VerifyChallenge, void(const std::vector<uint8_t>&));
 
+  content::RenderFrameHost* GetRenderFrameHost() override {
+    return web_contents_->GetMainFrame();
+  }
+
   // Implements an autofill::InternalAuthenticator method to delegate fields of
   // |options| to gmock methods for easier verification.
   void GetAssertion(
@@ -42,6 +56,14 @@ class MockAuthenticator : public autofill::InternalAuthenticator {
       blink::mojom::Authenticator::GetAssertionCallback callback) override {
     VerifyChallenge(options->challenge);
   }
+
+  content::WebContents* web_contents() { return web_contents_; }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  content::TestBrowserContext context_;
+  content::TestWebContentsFactory web_contents_factory_;
+  content::WebContents* web_contents_;  // Owned by `web_contents_factory_`.
 };
 
 class SecurePaymentConfirmationAppTest : public testing::Test {
@@ -77,9 +99,10 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
 
   auto authenticator = std::make_unique<MockAuthenticator>();
   MockAuthenticator* mock_authenticator = authenticator.get();
+  content::WebContents* web_contents = authenticator->web_contents();
 
   SecurePaymentConfirmationApp app(
-      "effective_rp.example",
+      web_contents, "effective_rp.example",
       /*icon=*/std::make_unique<SkBitmap>(), label_, std::move(credential_id),
       url::Origin::Create(GURL("https://merchant.example")), total_,
       MakeRequest(), std::move(authenticator));

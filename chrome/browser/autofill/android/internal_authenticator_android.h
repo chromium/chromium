@@ -47,6 +47,7 @@ class InternalAuthenticatorAndroid : public autofill::InternalAuthenticator {
           IsUserVerifyingPlatformAuthenticatorAvailableCallback callback)
       override;
   void Cancel() override;
+  content::RenderFrameHost* GetRenderFrameHost() override;
 
   void InvokeMakeCredentialResponse(
       JNIEnv* env,
