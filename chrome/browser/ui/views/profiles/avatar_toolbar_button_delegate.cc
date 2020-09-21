@@ -105,7 +105,8 @@ void AvatarToolbarButtonDelegate::Init(AvatarToolbarButton* button,
       std::make_unique<AvatarButtonErrorController>(this, profile_);
   profile_observer_.Add(&GetProfileAttributesStorage());
   AvatarToolbarButton::State state = GetState();
-  if (state == AvatarToolbarButton::State::kIncognitoProfile) {
+  if (state == AvatarToolbarButton::State::kIncognitoProfile ||
+      state == AvatarToolbarButton::State::kGuestSession) {
     BrowserList::AddObserver(this);
   } else if (state != AvatarToolbarButton::State::kGuestSession) {
     signin::IdentityManager* identity_manager =
@@ -159,7 +160,10 @@ gfx::Image AvatarToolbarButtonDelegate::GetProfileAvatarImage(
   return GetAvatarImage(profile_, gaia_account_image, preferred_size);
 }
 
-int AvatarToolbarButtonDelegate::GetIncognitoWindowsCount() const {
+int AvatarToolbarButtonDelegate::GetWindowCount() const {
+  if (profile_->IsGuestSession())
+    return BrowserList::GetGuestBrowserCount();
+  DCHECK(profile_->IsOffTheRecord());
   return BrowserList::GetOffTheRecordBrowsersActiveForProfile(profile_);
 }
 

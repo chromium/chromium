@@ -40,8 +40,8 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   gfx::Image GetProfileAvatarImage(gfx::Image gaia_account_image,
                                    int preferred_size) const;
 
-  // Returns the count of incognito windows attached to the profile.
-  int GetIncognitoWindowsCount() const;
+  // Returns the count of incognito or guest windows attached to the profile.
+  int GetWindowCount() const;
 
   AvatarToolbarButton::State GetState() const;
 

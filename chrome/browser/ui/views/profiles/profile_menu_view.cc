@@ -482,11 +482,20 @@ void ProfileMenuView::BuildIdentity() {
 }
 
 void ProfileMenuView::BuildGuestIdentity() {
-  SetProfileIdentityInfo(/*profile_name=*/base::string16(),
-                         /*background_color=*/SK_ColorTRANSPARENT,
-                         /*edit_button=*/base::nullopt,
-                         profiles::GetGuestAvatar(),
-                         l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME));
+  int guest_window_count = BrowserList::GetGuestBrowserCount();
+
+  base::string16 subtitle;
+  if (guest_window_count > 1 &&
+      base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
+    subtitle = l10n_util::GetPluralStringFUTF16(IDS_GUEST_WINDOW_COUNT_MESSAGE,
+                                                guest_window_count);
+  }
+
+  SetProfileIdentityInfo(
+      /*profile_name=*/base::string16(),
+      /*background_color=*/SK_ColorTRANSPARENT,
+      /*edit_button=*/base::nullopt, profiles::GetGuestAvatar(),
+      l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME), subtitle);
 }
 
 void ProfileMenuView::BuildAutofillButtons() {

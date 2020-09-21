@@ -129,7 +129,7 @@ void AvatarToolbarButton::UpdateText() {
 
   switch (delegate_->GetState()) {
     case State::kIncognitoProfile: {
-      int incognito_window_count = delegate_->GetIncognitoWindowsCount();
+      const int incognito_window_count = delegate_->GetWindowCount();
       SetAccessibleName(l10n_util::GetPluralStringFUTF16(
           IDS_INCOGNITO_BUBBLE_ACCESSIBLE_TITLE, incognito_window_count));
       text = l10n_util::GetPluralStringFUTF16(IDS_AVATAR_BUTTON_INCOGNITO,
@@ -153,9 +153,14 @@ void AvatarToolbarButton::UpdateText() {
           gfx::kGoogleBlue050, gfx::kGoogleBlue900);
       text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PAUSED);
       break;
-    case State::kGuestSession:
-      text = l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME);
+    case State::kGuestSession: {
+      const int guest_window_count = delegate_->GetWindowCount();
+      SetAccessibleName(l10n_util::GetPluralStringFUTF16(
+          IDS_GUEST_BUBBLE_ACCESSIBLE_TITLE, guest_window_count));
+      text = l10n_util::GetPluralStringFUTF16(IDS_AVATAR_BUTTON_GUEST,
+                                              guest_window_count);
       break;
+    }
     case State::kGenericProfile:
     case State::kNormal:
       if (delegate_->IsHighlightAnimationVisible()) {

@@ -10655,6 +10655,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
 
    <!-- Guest Profile Menu bubble. -->
+   <message name="IDS_GUEST_WINDOW_COUNT_MESSAGE" desc="The message showing the number of open guest windows. This is not used for zero windows.[ICU Syntax]">
+      {0, plural,
+        =1 {# open window}
+        other {# open windows}
+      }
+    </message>
     <message name="IDS_GUEST_PROFILE_MENU_CLOSE_BUTTON" desc="The text of the button offering to close all guest windows.">
       {0, plural,
         =1 {Close guest}
