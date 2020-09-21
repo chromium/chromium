@@ -89395,9 +89395,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NativeSmbFileShare.GetSharesResult"
-    enum="NativeSmbFileShare_MountResult" expires_after="M85">
-  <owner>amistry@chromium.org</owner>
-  <owner>slangley@chromium.org</owner>
+    enum="NativeSmbFileShare_MountResult" expires_after="M94">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/chrome/browser/chromeos/smb_client/OWNERS</owner>
   <summary>
     The result of the GetShares operation for Native SMB File Share. This is
     recorded after the D-Bus call to GetShares returns.
