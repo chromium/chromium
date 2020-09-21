@@ -112,6 +112,9 @@ class ErrorScreen : public BaseScreen,
   void DoShow();
   void DoHide();
 
+  void SetupNetworkErrorMessage(NetworkStateInformer::State state,
+                                NetworkError::ErrorReason reason);
+
  protected:
   // BaseScreen:
   void ShowImpl() override;

@@ -36,6 +36,7 @@
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/login/demo_preferences_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/demo_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
@@ -954,7 +955,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OfflineSetupFlowSuccess) {
   // TODO(agawronska): Progress dialog transition is async - extra work is
   // needed to be able to check it reliably.
 
-  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
@@ -1206,7 +1207,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, RetryOnErrorScreen) {
                                       JSExecution::kAsync);
   // TODO(agawronska): Progress dialog transition is async - extra work is
   // needed to be able to check it reliably.
-  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
 }
 
 // Test is flaky: crbug.com/1099402
@@ -1388,7 +1389,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, DeviceFromFactory) {
   // TODO(agawronska): Progress dialog transition is async - extra work is
   // needed to be able to check it reliably.
 
-  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
@@ -1423,7 +1424,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, NonEnterpriseDevice) {
   // TODO(agawronska): Progress dialog transition is async - extra work is
   // needed to be able to check it reliably.
 
-  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
@@ -1459,7 +1460,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, LegacyDemoModeDevice) {
   // TODO(agawronska): Progress dialog transition is async - extra work is
   // needed to be able to check it reliably.
 
-  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }

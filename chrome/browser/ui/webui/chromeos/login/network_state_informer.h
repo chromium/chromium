@@ -77,6 +77,11 @@ class NetworkStateInformer
   std::string network_path() const { return network_path_; }
 
   static const char* StatusString(State state);
+  static std::string GetNetworkName(const std::string& service_path);
+  static bool IsOnline(State state, NetworkError::ErrorReason reason);
+  static bool IsBehindCaptivePortal(State state,
+                                    NetworkError::ErrorReason reason);
+  static bool IsProxyError(State state, NetworkError::ErrorReason reason);
 
  private:
   friend class base::RefCounted<NetworkStateInformer>;

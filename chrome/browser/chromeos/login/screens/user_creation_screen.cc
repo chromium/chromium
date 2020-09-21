@@ -9,8 +9,11 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/login/wizard_context.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/network/network_state.h"
+#include "chromeos/network/network_state_handler.h"
 
 namespace {
 constexpr char kUserActionSignIn[] = "signin";
@@ -40,10 +43,14 @@ std::string UserCreationScreen::GetResultString(Result result) {
 }
 
 UserCreationScreen::UserCreationScreen(UserCreationView* view,
+                                       ErrorScreen* error_screen,
                                        const ScreenExitCallback& exit_callback)
     : BaseScreen(UserCreationView::kScreenId, OobeScreenPriority::DEFAULT),
       view_(view),
+      error_screen_(error_screen),
       exit_callback_(exit_callback) {
+  network_state_informer_ = base::MakeRefCounted<NetworkStateInformer>();
+  network_state_informer_->Init();
   if (view_)
     view_->Bind(this);
 }
@@ -76,16 +83,27 @@ void UserCreationScreen::ShowImpl() {
   if (!view_)
     return;
 
+  scoped_observer_ = std::make_unique<
+      ScopedObserver<NetworkStateInformer, NetworkStateInformerObserver>>(this);
+  scoped_observer_->Add(network_state_informer_.get());
+
   ash::LoginScreen::Get()->ShowGuestButtonInOobe(true);
 
   // Back button is only available in login screen (add user flow) which is
   // indicated by if the device has users. Back button is hidden in the oobe
   // flow.
   view_->SetIsBackButtonVisible(context()->device_has_users);
-  view_->Show();
+
+  UpdateState(NetworkError::ERROR_REASON_UPDATE);
+
+  if (!error_screen_visible_)
+    view_->Show();
 }
 
-void UserCreationScreen::HideImpl() {}
+void UserCreationScreen::HideImpl() {
+  error_screen_visible_ = false;
+  scoped_observer_.reset();
+}
 
 void UserCreationScreen::OnUserAction(const std::string& action_id) {
   if (action_id == kUserActionSignIn) {
@@ -112,6 +130,37 @@ bool UserCreationScreen::HandleAccelerator(ash::LoginAcceleratorAction action) {
     return true;
   }
   return false;
+}
+
+void UserCreationScreen::UpdateState(NetworkError::ErrorReason reason) {
+  NetworkStateInformer::State state = network_state_informer_->state();
+  const bool is_online = NetworkStateInformer::IsOnline(state, reason);
+  if (!is_online) {
+    ShowOfflineMessage(state, reason);
+  } else {
+    HideOfflineMessage();
+  }
+}
+
+void UserCreationScreen::ShowOfflineMessage(NetworkStateInformer::State state,
+                                            NetworkError::ErrorReason reason) {
+  error_screen_->SetupNetworkErrorMessage(state, reason);
+  if (!error_screen_visible_) {
+    error_screen_visible_ = true;
+    error_screen_->SetUIState(NetworkError::UI_STATE_SIGNIN);
+    error_screen_->SetParentScreen(UserCreationView::kScreenId);
+    error_screen_->Show(nullptr);
+  }
+}
+
+void UserCreationScreen::HideOfflineMessage() {
+  error_screen_->HideCaptivePortal();
+  if (error_screen_visible_ &&
+      error_screen_->GetParentScreen() == UserCreationView::kScreenId) {
+    error_screen_visible_ = false;
+    error_screen_->Hide();
+    view_->Show();
+  }
 }
 
 }  // namespace chromeos

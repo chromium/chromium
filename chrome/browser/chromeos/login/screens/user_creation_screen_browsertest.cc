@@ -10,11 +10,13 @@
 #include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
+#include "chrome/browser/chromeos/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
+#include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -87,6 +89,8 @@ class UserCreationScreenTest : public OobeBaseTest {
  protected:
   chromeos::DeviceStateMixin device_state_{
       &mixin_host_, chromeos::DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
+
+  NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
 
  private:
   void HandleScreenExit(UserCreationScreen::Result result) {
@@ -171,6 +175,26 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, EnterpriseEnroll) {
   EXPECT_EQ(screen_result_.value(),
             UserCreationScreen::Result::ENTERPRISE_ENROLL);
   OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, NetworkOffline) {
+  network_portal_detector_.SimulateDefaultNetworkState(
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
+
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+  test::OobeJS().ExpectVisiblePath({"error-guest-signin-link"});
+  test::OobeJS().ExpectVisiblePath({"error-offline-login-link"});
+
+  test::OobeJS().ClickOnPath({"error-offline-login-link"});
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+
+  content::ExecuteScriptAsync(GetLoginUI()->GetWebContents(),
+                              "$('gaia-signin').cancel()");
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+
+  network_portal_detector_.SimulateDefaultNetworkState(
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
 }
 
 class UserCreationScreenLoginTest : public UserCreationScreenTest {

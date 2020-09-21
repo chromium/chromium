@@ -148,6 +148,53 @@ const char* NetworkStateInformer::StatusString(State state) {
   }
 }
 
+// static
+// Returns network name by service path.
+std::string NetworkStateInformer::GetNetworkName(
+    const std::string& service_path) {
+  const NetworkState* network =
+      NetworkHandler::Get()->network_state_handler()->GetNetworkState(
+          service_path);
+  if (!network)
+    return std::string();
+  return network->name();
+}
+
+// static
+bool NetworkStateInformer::IsOnline(State state,
+                                    NetworkError::ErrorReason reason) {
+  switch (reason) {
+    case NetworkError::ERROR_REASON_PORTAL_DETECTED:
+    case NetworkError::ERROR_REASON_LOADING_TIMEOUT:
+      return false;
+    case NetworkError::ERROR_REASON_PROXY_AUTH_CANCELLED:
+    case NetworkError::ERROR_REASON_PROXY_AUTH_SUPPLIED:
+    case NetworkError::ERROR_REASON_PROXY_CONNECTION_FAILED:
+    case NetworkError::ERROR_REASON_PROXY_CONFIG_CHANGED:
+    case NetworkError::ERROR_REASON_NETWORK_STATE_CHANGED:
+    case NetworkError::ERROR_REASON_UPDATE:
+    case NetworkError::ERROR_REASON_FRAME_ERROR:
+    case NetworkError::ERROR_REASON_NONE:
+      return state == NetworkStateInformer::ONLINE;
+  }
+}
+
+// static
+bool NetworkStateInformer::IsBehindCaptivePortal(
+    State state,
+    NetworkError::ErrorReason reason) {
+  return state == NetworkStateInformer::CAPTIVE_PORTAL ||
+         reason == NetworkError::ERROR_REASON_PORTAL_DETECTED;
+}
+
+// static
+bool NetworkStateInformer::IsProxyError(State state,
+                                        NetworkError::ErrorReason reason) {
+  return state == NetworkStateInformer::PROXY_AUTH_REQUIRED ||
+         reason == NetworkError::ERROR_REASON_PROXY_AUTH_CANCELLED ||
+         reason == NetworkError::ERROR_REASON_PROXY_CONNECTION_FAILED;
+}
+
 bool NetworkStateInformer::UpdateState() {
   const NetworkState* default_network =
       NetworkHandler::Get()->network_state_handler()->DefaultNetwork();

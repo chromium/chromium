@@ -205,6 +205,42 @@ void ErrorScreen::DoHide() {
       PortalDetectorStrategy::STRATEGY_ID_LOGIN_SCREEN);
 }
 
+void ErrorScreen::SetupNetworkErrorMessage(NetworkStateInformer::State state,
+                                           NetworkError::ErrorReason reason) {
+  const std::string network_path = network_state_informer_->network_path();
+  const std::string network_name =
+      NetworkStateInformer::GetNetworkName(network_path);
+
+  const bool is_behind_captive_portal =
+      NetworkStateInformer::IsBehindCaptivePortal(state, reason);
+  const bool is_proxy_error = NetworkStateInformer::IsProxyError(state, reason);
+  const bool is_loading_timeout =
+      (reason == NetworkError::ERROR_REASON_LOADING_TIMEOUT);
+
+  if (!is_behind_captive_portal)
+    HideCaptivePortal();
+
+  if (is_proxy_error) {
+    SetErrorState(NetworkError::ERROR_STATE_PROXY, std::string());
+  } else if (is_behind_captive_portal) {
+    if (GetErrorState() != NetworkError::ERROR_STATE_PORTAL) {
+      LoginDisplayHost::default_host()->HandleDisplayCaptivePortal();
+    }
+    SetErrorState(NetworkError::ERROR_STATE_PORTAL, network_name);
+  } else if (is_loading_timeout) {
+    SetErrorState(NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT, network_name);
+  } else {
+    SetErrorState(NetworkError::ERROR_STATE_OFFLINE, std::string());
+  }
+
+  const bool guest_signin_allowed =
+      user_manager::UserManager::Get()->IsGuestSessionAllowed();
+  const bool offline_login_allowed =
+      GetErrorState() != NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT;
+  AllowGuestSignin(guest_signin_allowed);
+  AllowOfflineLogin(offline_login_allowed);
+}
+
 void ErrorScreen::ShowImpl() {
   if (!on_hide_callback_) {
     SetHideCallback(base::BindOnce(&ErrorScreen::DefaultHideCallback,

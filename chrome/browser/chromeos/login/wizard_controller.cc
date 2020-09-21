@@ -655,7 +655,7 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
                           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<UserCreationScreen>(
-      oobe_ui->GetView<UserCreationScreenHandler>(),
+      oobe_ui->GetView<UserCreationScreenHandler>(), oobe_ui->GetErrorScreen(),
       base::BindRepeating(&WizardController::OnUserCreationScreenExit,
                           weak_factory_.GetWeakPtr())));
 
