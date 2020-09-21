@@ -116,10 +116,8 @@ base::string16 GetSafetyTipDescription(
       return l10n_util::GetStringUTF16(
           IDS_PAGE_INFO_SAFETY_TIP_BAD_REPUTATION_DESCRIPTION);
     case security_state::SafetyTipStatus::kLookalike:
-      return l10n_util::GetStringFUTF16(
-          IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_DESCRIPTION,
-          security_interstitials::common_string_util::GetFormattedHostName(
-              suggested_url));
+      return l10n_util::GetStringUTF16(
+          IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_DESCRIPTION);
     case security_state::SafetyTipStatus::kBadReputationIgnored:
     case security_state::SafetyTipStatus::kLookalikeIgnored:
     case security_state::SafetyTipStatus::kBadKeyword:

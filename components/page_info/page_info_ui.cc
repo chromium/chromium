@@ -217,8 +217,8 @@ CreateSecurityDescriptionForLookalikeSafetyTip(const GURL& safe_url) {
           safe_url);
   security_description->summary = l10n_util::GetStringFUTF16(
       IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_TITLE, safe_host);
-  security_description->details = l10n_util::GetStringFUTF16(
-      IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_DESCRIPTION, safe_host);
+  security_description->details =
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_DESCRIPTION);
   security_description->type = PageInfoUI::SecurityDescriptionType::SAFETY_TIP;
   return security_description;
 }
