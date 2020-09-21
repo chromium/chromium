@@ -193,7 +193,8 @@ class SharedImageRepresentationSkiaVkScopedHardwareBufferFenceSync
       int final_msaa_count,
       const SkSurfaceProps& surface_props,
       std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphores) override {
+      std::vector<GrBackendSemaphore>* end_semaphores,
+      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
     // Writes are not intended to used for this backing.
     NOTIMPLEMENTED();
     return nullptr;
