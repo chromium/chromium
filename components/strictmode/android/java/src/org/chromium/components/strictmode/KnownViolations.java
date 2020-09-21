@@ -105,8 +105,8 @@ public final class KnownViolations {
                     DETECT_DISK_WRITE, "android.content.ClipboardManager#setPrimaryClip");
         }
 
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O
-                || Build.VERSION.SDK_INT == Build.VERSION_CODES.O_MR1) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                && Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
             exemptions.ignoreExternalMethod(DETECT_DISK_READ, "dalvik.system.DexPathList#toString");
         }
     }
