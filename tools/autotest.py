@@ -117,7 +117,8 @@ def RunCommand(cmd, **kwargs):
 
 def BuildTestTargetsWithNinja(out_dir, targets, dry_run):
   """Builds the specified targets with ninja"""
-  ninja_path = os.path.join(DEPOT_TOOLS_DIR, 'autoninja')
+  # Use autoninja from PATH to match version used for manual builds.
+  ninja_path = 'autoninja'
   if sys.platform.startswith('win32'):
     ninja_path += '.bat'
   cmd = [ninja_path, '-C', out_dir] + targets
@@ -349,12 +350,10 @@ def BuildTestFilter(filenames, line):
 def main():
   parser = argparse.ArgumentParser(
       description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
-  parser.add_argument(
-      '--out-dir',
-      '-C',
-      metavar='OUT_DIR',
-      help='output directory of the build',
-      required=True)
+  parser.add_argument('--out-dir',
+                      '-C',
+                      metavar='OUT_DIR',
+                      help='output directory of the build')
   parser.add_argument(
       '--run-all',
       action='store_true',
@@ -374,6 +373,10 @@ def main():
                       help='test suite file (eg. FooTest.java)')
 
   args, _extras = parser.parse_known_args()
+
+  # Use CWD as out_dir when build.ninja exists.
+  if not args.out_dir and os.path.exists('build.ninja'):
+    args.out_dir = '.'
 
   if not os.path.isdir(args.out_dir):
     parser.error(f'OUT_DIR "{args.out_dir}" does not exist.')
