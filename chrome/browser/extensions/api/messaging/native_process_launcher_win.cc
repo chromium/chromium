@@ -64,7 +64,8 @@ base::FilePath NativeProcessLauncher::FindManifest(
     std::string* error_message) {
   base::string16 host_name_wide = base::UTF8ToUTF16(host_name);
 
-  // Try to find the key in HKEY_LOCAL_MACHINE and then in HKEY_CURRENT_USER.
+  // If permitted, look in HKEY_CURRENT_USER first. If the manifest isn't found
+  // there, then try HKEY_LOCAL_MACHINE. https://crbug.com/1034919#c6
   base::string16 path_str;
   bool found = false;
   if (allow_user_level_hosts)
