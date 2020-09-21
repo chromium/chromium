@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/components/external_app_install_features.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/external_web_app_manager.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -156,7 +157,9 @@ class ExternalWebAppMigrationBrowserTest : public InProcessBrowserTest {
     run_loop.Run();
   }
 
-  void SyncExternalWebApps(bool expect_install, bool expect_uninstall) {
+  void SyncExternalWebApps(bool expect_install,
+                           bool expect_uninstall,
+                           bool pass_config = true) {
     base::RunLoop run_loop;
 
     auto callback = base::BindLambdaForTesting(
@@ -173,21 +176,24 @@ class ExternalWebAppMigrationBrowserTest : public InProcessBrowserTest {
           run_loop.Quit();
         });
 
-    std::string external_web_app_config = base::ReplaceStringPlaceholders(
-        R"({
-          "app_url": "$1",
-          "launch_container": "window",
-          "user_type": ["unmanaged"],
-          "feature_name": "$2",
-          "uninstall_and_replace": ["$3"]
-        })",
-        {GetWebAppUrl().spec(), kMigrationFlag, kExtensionId}, nullptr);
+    std::vector<std::string> configs;
+    if (pass_config) {
+      std::string external_web_app_config = base::ReplaceStringPlaceholders(
+          R"({
+            "app_url": "$1",
+            "launch_container": "window",
+            "user_type": ["unmanaged"],
+            "feature_name": "$2",
+            "uninstall_and_replace": ["$3"]
+          })",
+          {GetWebAppUrl().spec(), kMigrationFlag, kExtensionId}, nullptr);
+      configs.push_back(std::move(external_web_app_config));
+    }
 
     WebAppProvider::Get(profile())
         ->external_web_app_manager_for_testing()
         .SynchronizeAppsForTesting(std::make_unique<FileUtilsWrapper>(),
-                                   {external_web_app_config},
-                                   std::move(callback));
+                                   configs, std::move(callback));
 
     run_loop.Run();
   }
@@ -413,6 +419,57 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
 
     SyncExternalWebApps(/*expect_install=*/true, /*expect_uninstall=*/false);
     EXPECT_TRUE(IsWebAppInstalled());
+  }
+}
+
+// Tests the migration from an extension-app to a preinstalled web app provided
+// by the preinstalled apps (rather than an external config).
+IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
+                       MigrateToPreinstalledWebApp) {
+  // Set up pre-migration state.
+  {
+    // Override the preinstalled apps to be empty.
+    ScopedTestingPreinstalledAppData empty_preinstalled_apps;
+    EXPECT_EQ(0u, GetPreinstalledWebApps().size());
+
+    ASSERT_FALSE(IsExternalAppInstallFeatureEnabled(kMigrationFlag));
+
+    SyncExternalExtensions();
+    SyncExternalWebApps(/*expect_install=*/false, /*expect_uninstall=*/false,
+                        /*pass_config=*/false);
+
+    EXPECT_FALSE(IsWebAppInstalled());
+    EXPECT_TRUE(IsExtensionAppInstalled());
+  }
+
+  // Migrate extension app to web app.
+  {
+    base::AutoReset<bool> testing_scope =
+        SetExternalAppInstallFeatureAlwaysEnabledForTesting();
+    ASSERT_TRUE(IsExternalAppInstallFeatureEnabled(kMigrationFlag));
+
+    SyncExternalExtensions();
+    // Extension sticks around to be uninstalled by the replacement web app.
+    EXPECT_TRUE(IsExtensionAppInstalled());
+
+    {
+      extensions::TestExtensionRegistryObserver uninstall_observer(
+          extensions::ExtensionRegistry::Get(profile()));
+
+      ScopedTestingPreinstalledAppData preinstalled_apps;
+      preinstalled_apps.apps.push_back(
+          {GetWebAppUrl(), kMigrationFlag, kExtensionId});
+      EXPECT_EQ(1u, GetPreinstalledWebApps().size());
+
+      SyncExternalWebApps(/*expect_install=*/true, /*expect_uninstall=*/false,
+                          /*pass_config=*/false);
+      EXPECT_TRUE(IsWebAppInstalled());
+
+      scoped_refptr<const extensions::Extension> uninstalled_app =
+          uninstall_observer.WaitForExtensionUninstalled();
+      EXPECT_EQ(uninstalled_app->id(), kExtensionId);
+      EXPECT_FALSE(IsExtensionAppInstalled());
+    }
   }
 }
 

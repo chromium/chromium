@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/external_web_app_manager.h"
 
+#include <iterator>
 #include <map>
 #include <memory>
 #include <string>
@@ -29,6 +30,7 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/external_web_app_utils.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/browser_thread.h"
@@ -219,6 +221,14 @@ void ExternalWebAppManager::SynchronizeExternalInstallOptions(
     PendingAppManager::SynchronizeCallback callback,
     std::vector<ExternalInstallOptions> desired_apps_install_options) {
   DCHECK(pending_app_manager_);
+
+  // Add in any web apps that should be pre-installed.
+  std::vector<ExternalInstallOptions> default_apps = GetPreinstalledWebApps();
+  desired_apps_install_options.insert(
+      desired_apps_install_options.end(),
+      std::make_move_iterator(default_apps.begin()),
+      std::make_move_iterator(default_apps.end()));
+
   pending_app_manager_->SynchronizeInstalledApps(
       std::move(desired_apps_install_options),
       ExternalInstallSource::kExternalDefault, std::move(callback));
