@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.signin;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressBack;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -240,6 +242,39 @@ public class AccountPickerBottomSheetRenderTest {
         clickContinueButtonAndWaitForErrorView();
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(), "signin_auth_error_sheet");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testSigninAgainButtonOnSigninAuthErrorSheet(boolean nightModeEnabled)
+            throws IOException {
+        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
+        CoreAccountInfo coreAccountInfo =
+                mAccountManagerTestRule.toCoreAccountInfo(PROFILE_DATA1.getAccountName());
+        // Throws an auth error during the sign-in action
+        doAnswer(invocation -> {
+            Callback<GoogleServiceAuthError> onSignInErrorCallback = invocation.getArgument(1);
+            onSignInErrorCallback.onResult(
+                    new GoogleServiceAuthError(State.INVALID_GAIA_CREDENTIALS));
+            return null;
+        })
+                .when(mAccountPickerDelegateMock)
+                .signIn(eq(coreAccountInfo), any());
+
+        buildAndShowCollapsedBottomSheet();
+        clickContinueButtonAndWaitForErrorView();
+        doAnswer(invocation -> {
+            Callback<Boolean> callback = invocation.getArgument(1);
+            callback.onResult(true);
+            return null;
+        })
+                .when(mAccountPickerDelegateMock)
+                .updateCredentials(eq(PROFILE_DATA1.getAccountName()), any());
+        onView(withText(R.string.auth_error_card_button)).perform(click());
+        mRenderTestRule.render(
+                mCoordinator.getBottomSheetViewForTesting(), "collapsed_sheet_with_account");
     }
 
     private void openIncognitoInterstitialOnExpandedSheet() {
