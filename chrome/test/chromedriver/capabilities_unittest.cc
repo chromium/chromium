@@ -513,7 +513,7 @@ TEST(ParseCapabilities, ExcludeSwitches) {
   ASSERT_TRUE(base::Contains(switches, "switch2"));
 }
 
-TEST(ParseCapabilities, UseRemoteBrowser) {
+TEST(ParseCapabilities, UseRemoteBrowserHostName) {
   Capabilities capabilities;
   base::DictionaryValue caps;
   caps.SetString("goog:chromeOptions.debuggerAddress", "abc:123");
@@ -522,6 +522,30 @@ TEST(ParseCapabilities, UseRemoteBrowser) {
   ASSERT_TRUE(capabilities.IsRemoteBrowser());
   ASSERT_EQ("abc", capabilities.debugger_address.host());
   ASSERT_EQ(123, capabilities.debugger_address.port());
+}
+
+TEST(ParseCapabilities, UseRemoteBrowserIpv4) {
+  Capabilities capabilities;
+  base::DictionaryValue caps;
+  caps.SetString("goog:chromeOptions.debuggerAddress", "127.0.0.1:456");
+  Status status = capabilities.Parse(caps);
+  ASSERT_TRUE(status.IsOk());
+  ASSERT_TRUE(capabilities.IsRemoteBrowser());
+  ASSERT_EQ("127.0.0.1", capabilities.debugger_address.host());
+  ASSERT_EQ(456, capabilities.debugger_address.port());
+}
+
+TEST(ParseCapabilities, UseRemoteBrowserIpv6) {
+  Capabilities capabilities;
+  base::DictionaryValue caps;
+  caps.SetString("goog:chromeOptions.debuggerAddress",
+                 "[fe80::f2ef:86ff:fe69:cafe]:789");
+  Status status = capabilities.Parse(caps);
+  ASSERT_TRUE(status.IsOk());
+  ASSERT_TRUE(capabilities.IsRemoteBrowser());
+  ASSERT_EQ("[fe80::f2ef:86ff:fe69:cafe]",
+            capabilities.debugger_address.host());
+  ASSERT_EQ(789, capabilities.debugger_address.port());
 }
 
 TEST(ParseCapabilities, MobileEmulationUserAgent) {

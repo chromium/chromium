@@ -410,8 +410,23 @@ Status ParseNetAddress(NetAddress* to_set,
   if (!option.GetAsString(&server_addr))
     return Status(kInvalidArgument, "must be 'host:port'");
 
-  std::vector<std::string> values = base::SplitString(
-      server_addr, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<std::string> values;
+  if (base::StartsWith(server_addr, "[")) {
+    size_t ipv6_terminator_pos = server_addr.find(']');
+    if (ipv6_terminator_pos == std::string::npos) {
+      return Status(kInvalidArgument,
+                    "ipv6 address must be terminated with ']'");
+    }
+    values.push_back(server_addr.substr(0, ipv6_terminator_pos + 1));
+    std::vector<std::string> remaining =
+        base::SplitString(server_addr.substr(ipv6_terminator_pos + 1), ":",
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    values.insert(values.end(), remaining.begin(), remaining.end());
+  } else {
+    values = base::SplitString(server_addr, ":", base::TRIM_WHITESPACE,
+                               base::SPLIT_WANT_ALL);
+  }
+
   if (values.size() != 2)
     return Status(kInvalidArgument, "must be 'host:port'");
 
