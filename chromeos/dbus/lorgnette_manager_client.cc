@@ -88,7 +88,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     request.mutable_settings()->set_color_mode(mode);
 
     dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
-                                 lorgnette::kStartScanMethod);
+                                 lorgnette::kStartScanMultiPageMethod);
     dbus::MessageWriter writer(&method_call);
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
       LOG(ERROR) << "Failed to encode StartScanRequest protobuf";
@@ -97,15 +97,10 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       return;
     }
 
-    auto scan_data_reader = std::make_unique<ScanDataReader>();
-    base::ScopedFD fd = scan_data_reader->Start();
-    writer.AppendFileDescriptor(fd.get());
-
     ScanJobState state;
     state.completion_callback = std::move(completion_callback);
     state.progress_callback = progress_callback;
     state.page_callback = page_callback;
-    state.scan_data_reader = std::move(scan_data_reader);
 
     lorgnette_daemon_proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
@@ -205,6 +200,40 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     std::unique_ptr<ScanDataReader> scan_data_reader;
   };
 
+  // Helper function to send a GetNextImage request to lorgnette for the scan
+  // job with the given UUID.
+  // Requires that scan_job_state_ contains uuid.
+  void GetNextImage(const std::string& uuid) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    lorgnette::GetNextImageRequest request;
+    request.set_scan_uuid(uuid);
+
+    ScanJobState& state = scan_job_state_.at(uuid);
+
+    dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
+                                 lorgnette::kGetNextImageMethod);
+    dbus::MessageWriter writer(&method_call);
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to encode GetNextImageRequest protobuf";
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(state.completion_callback), false));
+      scan_job_state_.erase(uuid);
+      return;
+    }
+
+    auto scan_data_reader = std::make_unique<ScanDataReader>();
+    base::ScopedFD fd = scan_data_reader->Start();
+    writer.AppendFileDescriptor(fd.get());
+
+    state.scan_data_reader = std::move(scan_data_reader);
+
+    lorgnette_daemon_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&LorgnetteManagerClientImpl::OnGetNextImageResponse,
+                       weak_ptr_factory_.GetWeakPtr(), uuid));
+  }
+
   // Called when ListScanners completes.
   void OnListScanners(
       DBusMethodCallback<lorgnette::ListScannersResponse> callback,
@@ -248,8 +277,9 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   }
 
   // Called when scan data read is completed.
-  // This is to maintain the lifetime of ScanDataReader instance.
-  void OnScanDataCompleted(std::string uuid, base::Optional<std::string> data) {
+  void OnScanDataCompleted(std::string uuid,
+                           bool more_pages,
+                           base::Optional<std::string> data) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!base::Contains(scan_job_state_, uuid)) {
       LOG(ERROR) << "Received ScanDataCompleted for unrecognized scan job: "
@@ -258,12 +288,21 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     }
 
     ScanJobState& state = scan_job_state_[uuid];
-    if (data.has_value()) {
-      state.page_callback.Run(std::move(data.value()));
+    if (!data.has_value()) {
+      LOG(ERROR) << "Reading scan data failed";
+      std::move(state.completion_callback).Run(false);
+      scan_job_state_.erase(uuid);
+      return;
     }
 
-    std::move(state.completion_callback).Run(data.has_value());
-    scan_job_state_.erase(uuid);
+    state.page_callback.Run(std::move(data.value()));
+
+    if (more_pages) {
+      GetNextImage(uuid);
+    } else {
+      std::move(state.completion_callback).Run(true);
+      scan_job_state_.erase(uuid);
+    }
   }
 
   void OnStartScanResponse(ScanJobState state, dbus::Response* response) {
@@ -289,6 +328,37 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     }
 
     scan_job_state_[response_proto.scan_uuid()] = std::move(state);
+    GetNextImage(response_proto.scan_uuid());
+  }
+
+  // Callend when a response to a GetNextImage request is received from
+  // lorgnette. Handles stopping the scan if the request failed.
+  void OnGetNextImageResponse(std::string uuid, dbus::Response* response) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    ScanJobState& state = scan_job_state_[uuid];
+    if (!response) {
+      LOG(ERROR) << "Failed to obtain GetNextImage response";
+      std::move(state.completion_callback).Run(false);
+      scan_job_state_.erase(uuid);
+      return;
+    }
+
+    lorgnette::StartScanResponse response_proto;
+    dbus::MessageReader reader(response);
+    if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
+      LOG(ERROR) << "Failed to decode GetNextImageResponse proto";
+      std::move(state.completion_callback).Run(false);
+      scan_job_state_.erase(uuid);
+      return;
+    }
+
+    if (response_proto.state() == lorgnette::SCAN_STATE_FAILED) {
+      LOG(ERROR) << "Getting next image failed: "
+                 << response_proto.failure_reason();
+      std::move(state.completion_callback).Run(false);
+      scan_job_state_.erase(uuid);
+      return;
+    }
   }
 
   void ScanStatusChangedReceived(dbus::Signal* signal) {
@@ -312,13 +382,17 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
                  << " failed: " << signal_proto.failure_reason();
       std::move(state.completion_callback).Run(false);
       scan_job_state_.erase(signal_proto.scan_uuid());
+    } else if (signal_proto.state() == lorgnette::SCAN_STATE_PAGE_COMPLETED) {
+      VLOG(1) << "Scan job " << signal_proto.scan_uuid() << " page "
+              << signal_proto.page() << " completed successfully";
+      ScanDataReader* reader = state.scan_data_reader.get();
+      reader->Wait(
+          base::BindOnce(&LorgnetteManagerClientImpl::OnScanDataCompleted,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         signal_proto.scan_uuid(), signal_proto.more_pages()));
     } else if (signal_proto.state() == lorgnette::SCAN_STATE_COMPLETED) {
       VLOG(1) << "Scan job " << signal_proto.scan_uuid()
               << " completed successfully";
-      ScanDataReader* reader = state.scan_data_reader.get();
-      reader->Wait(base::BindOnce(
-          &LorgnetteManagerClientImpl::OnScanDataCompleted,
-          weak_ptr_factory_.GetWeakPtr(), signal_proto.scan_uuid()));
     } else if (signal_proto.state() == lorgnette::SCAN_STATE_IN_PROGRESS &&
                state.progress_callback.has_value()) {
       state.progress_callback.value().Run(signal_proto.progress());
