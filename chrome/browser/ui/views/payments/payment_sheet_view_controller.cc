@@ -50,6 +50,7 @@
 #include "ui/gfx/text_utils.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
@@ -289,14 +290,10 @@ class PaymentSheetRowBuilder {
   std::unique_ptr<PaymentRequestRowView> CreateWithChevron(
       std::unique_ptr<views::View> content_view,
       std::unique_ptr<views::View> extra_content_view) {
-    std::unique_ptr<views::ImageView> chevron =
-        std::make_unique<views::ImageView>();
-    chevron->set_can_process_events_within_subtree(false);
-    std::unique_ptr<views::Label> label =
-        std::make_unique<views::Label>(section_name_);
-    chevron->SetImage(gfx::CreateVectorIcon(
+    auto chevron = std::make_unique<views::ColorTrackingIconView>(
         views::kSubmenuArrowIcon,
-        color_utils::DeriveDefaultIconColor(label->GetEnabledColor())));
+        gfx::GetDefaultSizeOfVectorIcon(views::kSubmenuArrowIcon));
+    chevron->set_can_process_events_within_subtree(false);
     std::unique_ptr<PaymentRequestRowView> section = CreatePaymentSheetRow(
         listener_, section_name_, accessible_content_, std::move(content_view),
         std::move(extra_content_view), std::move(chevron),
