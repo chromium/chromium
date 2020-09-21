@@ -3444,6 +3444,21 @@
             ]
         }
     ],
+    "IOSFullPageScreenshots": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableFullPageScreenshot"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSLegacyTLSInterstitial": [
         {
             "platforms": [
