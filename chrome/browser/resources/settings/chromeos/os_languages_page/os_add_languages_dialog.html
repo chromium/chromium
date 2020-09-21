@@ -43,8 +43,8 @@
       <div slot="title">$i18n{addLanguagesDialogTitle}</div>
       <div id="dialog-body" slot="body" scrollable>
         <cr-search-field label="$i18n{searchLanguages}" id="search"
-            on-search-changed="onSearchChanged_"
-            on-keydown="onKeydown_" autofocus>
+            on-search-changed="onSearchChanged_" on-keydown="onKeydown_"
+            clear-label="$i18n{clearSearch}" autofocus>
         </cr-search-field>
         <iron-list class="ripple-padding" scroll-target="[[$$('[slot=body]')]]"
             items="[[getLanguages_(

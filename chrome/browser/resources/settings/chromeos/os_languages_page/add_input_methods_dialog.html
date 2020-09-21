@@ -45,9 +45,9 @@
     <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
       <div slot="title">$i18n{addInputMethodLabel}</div>
       <div id="dialogBody" slot="body" scrollable>
-        <cr-search-field label="$i18n{searchInputMethodsLabel}"
-            id="search" on-search-changed="onSearchChanged_"
-            on-keydown="onKeydown_" autofocus>
+        <cr-search-field label="$i18n{searchInputMethodsLabel}" id="search"
+            on-search-changed="onSearchChanged_" on-keydown="onKeydown_"
+            clear-label="$i18n{clearSearch}" autofocus>
         </cr-search-field>
         <template is="dom-if" if="[[showSuggestedList_]]">
           <div id="suggestedInputMethods">

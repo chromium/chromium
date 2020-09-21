@@ -73,7 +73,7 @@
         </settings-localized-link>
         <cr-search-field class="padded" label="$i18n{searchLanguages}"
             id="search" on-search-changed="onSearchChanged_"
-            on-keydown="onKeydown_" autofocus>
+            clear-label="$i18n{clearSearch}" on-keydown="onKeydown_" autofocus>
         </cr-search-field>
         <iron-list scroll-target="[[$$('[slot=body]')]]"
             items="[[getPossibleDeviceLanguages_(languages.supported,
