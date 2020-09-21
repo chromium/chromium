@@ -3,13 +3,16 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/string16.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -32,7 +35,9 @@
 #include "chrome/browser/chromeos/policy/user_network_configuration_updater_factory.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/net/nss_context.h"
+#include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
@@ -55,6 +60,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_type.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -76,6 +82,10 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+#if defined(OS_CHROMEOS)
+#include "chromeos/constants/chromeos_switches.h"
+#endif
 
 namespace em = enterprise_management;
 
@@ -197,48 +207,54 @@ std::string GetTestCertsFileContents(const std::string& file_name) {
 class UserPolicyCertsHelper {
  public:
   UserPolicyCertsHelper() = default;
+  ~UserPolicyCertsHelper() = default;
 
-  // Installs the BrowserPolicyConnector to set user policy.
-  void SetUpInProcessBrowserTestFixture() {
-    is_set_up_ = true;
+  UserPolicyCertsHelper(const UserPolicyCertsHelper& other) = delete;
+  UserPolicyCertsHelper& operator=(const UserPolicyCertsHelper& other) = delete;
 
+  // Reads in testing certificates.
+  // Run in ASSERT_NO_FATAL_FAILURE.
+  void Initialize() {
     base::ScopedAllowBlockingForTesting allow_io;
     base::FilePath test_certs_path = GetTestCertsPath();
 
     base::FilePath server_cert_path = test_certs_path.AppendASCII(kServerCert);
     server_cert_ = net::ImportCertFromFile(server_cert_path.DirName(),
                                            server_cert_path.BaseName().value());
+    ASSERT_TRUE(server_cert_);
 
     base::FilePath root_cert_path = test_certs_path.AppendASCII(kRootCaCert);
     root_cert_ = net::ImportCertFromFile(root_cert_path.DirName(),
                                          root_cert_path.BaseName().value());
+    ASSERT_TRUE(root_cert_);
 
     base::FilePath server_cert_by_intermediate_path =
         test_certs_path.AppendASCII(kServerCertByIntermediate);
     server_cert_by_intermediate_ = net::ImportCertFromFile(
         server_cert_path.DirName(),
         server_cert_by_intermediate_path.BaseName().value());
-    // Set up the mock policy provider.
-    EXPECT_CALL(provider_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
-    BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+    ASSERT_TRUE(server_cert_by_intermediate_);
   }
 
   // Sets the ONC-policy to the blob defined by |kRootCaCertOnc| and waits until
   // the notification that policy-provided trust roots have changed is sent from
   // |profile|'s UserNetworkConfigurationUpdater.
-  void SetRootCertONCUserPolicy(Profile* profile) {
+  void SetRootCertONCUserPolicy(
+      Profile* profile,
+      MockConfigurationPolicyProvider* mock_policy_provider) {
     std::string onc_policy_data = GetTestCertsFileContents(kRootCaCertOnc);
-    SetONCUserPolicy(profile, onc_policy_data);
+    SetONCUserPolicy(profile, mock_policy_provider, onc_policy_data);
   }
 
   // Sets the ONC-policy to the blob defined by |kRootCaCertOnc| and waits until
   // the notification that policy-provided trust roots have changed is sent from
   // |profile|'s UserNetworkConfigurationUpdater.
-  void SetRootAndIntermediateCertsONCUserPolicy(Profile* profile) {
+  void SetRootAndIntermediateCertsONCUserPolicy(
+      Profile* profile,
+      MockConfigurationPolicyProvider* mock_policy_provider) {
     std::string onc_policy_data =
         GetTestCertsFileContents(kRootAndIntermediateCaCertsOnc);
-    SetONCUserPolicy(profile, onc_policy_data);
+    SetONCUserPolicy(profile, mock_policy_provider, onc_policy_data);
   }
 
   const scoped_refptr<net::X509Certificate>& server_cert() {
@@ -252,8 +268,9 @@ class UserPolicyCertsHelper {
   }
 
  private:
-  void SetONCUserPolicy(Profile* profile, const std::string& onc_policy_data) {
-    ASSERT_TRUE(is_set_up_);
+  void SetONCUserPolicy(Profile* profile,
+                        MockConfigurationPolicyProvider* mock_policy_provider,
+                        const std::string& onc_policy_data) {
     UserNetworkConfigurationUpdater* user_network_configuration_updater =
         UserNetworkConfigurationUpdaterFactory::GetForBrowserContext(profile);
 
@@ -265,19 +282,13 @@ class UserPolicyCertsHelper {
     policy.Set(key::kOpenNetworkConfiguration, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                base::Value(onc_policy_data), nullptr);
-    provider_.UpdateChromePolicy(policy);
+    mock_policy_provider->UpdateChromePolicy(policy);
     // Note that this relies on the implementation detail that the notification
     // is sent even if the trust roots effectively remain the same.
     trust_roots_changed_observer.Wait();
     user_network_configuration_updater->RemovePolicyProvidedCertsObserver(
         &trust_roots_changed_observer);
   }
-
-  // This is set to true when |SetUpInProcessBrowserTestFixture| has been
-  // called.
-  bool is_set_up_ = false;
-
-  MockConfigurationPolicyProvider provider_;
 
   // Server Certificate which is signed by authority specified in |kRootCaCert|.
   scoped_refptr<net::X509Certificate> server_cert_;
@@ -290,6 +301,111 @@ class UserPolicyCertsHelper {
   // does not request web trust for it. Instead, trust should be delegate from
   // the root authrotiy.
   scoped_refptr<net::X509Certificate> server_cert_by_intermediate_;
+};
+
+// A class that allows testing multiple profiles in a browsertest, each having
+// its own MockConfigurationPolicyProvider.
+// TODO(https://crbug.com/1127263): Transform this into a general-purpose mixin.
+class MultiProfilePolicyProviderHelper {
+ public:
+  MultiProfilePolicyProviderHelper() = default;
+  ~MultiProfilePolicyProviderHelper() = default;
+
+  MultiProfilePolicyProviderHelper(
+      const MultiProfilePolicyProviderHelper& other) = delete;
+  MultiProfilePolicyProviderHelper& operator=(
+      const MultiProfilePolicyProviderHelper& other) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) {
+#if defined(OS_CHROMEOS)
+    command_line->AppendSwitch(
+        chromeos::switches::kIgnoreUserProfileMappingForTests);
+#endif
+  }
+
+  // The test should call this before the initial profile is created by chrome.
+  void BeforeInitialProfileCreated() {
+    // Set the overridden policy provider for the first Profile (|profile_1_|).
+    // Note that the first ptofile will be created automatically by the
+    // browser initialization.
+    EXPECT_CALL(policy_for_profile_1_, IsInitializationComplete(testing::_))
+        .WillRepeatedly(testing::Return(true));
+    policy::PushProfilePolicyConnectorProviderForTesting(
+        &policy_for_profile_1_);
+  }
+
+  // The test should call this after the initial profile is created by chrome.
+  void AfterInitialProfileCreated() {
+    // Mimics what InProcessBrowserTest does to get the first created Profile.
+    const BrowserList* browser_list = BrowserList::GetInstance();
+    ASSERT_FALSE(browser_list->empty());
+    Browser* first_browser = browser_list->get(0);
+    profile_1_ = first_browser->profile();
+    ASSERT_TRUE(profile_1_);
+  }
+
+  // Creates a additional profile. The Profile can then be accessed by
+  // profile_2() and its policy by policy_for_profile_2(). Should be wrapped in
+  // ASSERT_NO_FATAL_FAILURE.
+  void CreateSecondProfile() {
+    ASSERT_FALSE(profile_2_);
+
+    // Prepare policy provider for second profile.
+    EXPECT_CALL(policy_for_profile_2_, IsInitializationComplete(testing::_))
+        .WillRepeatedly(testing::Return(true));
+    policy::PushProfilePolicyConnectorProviderForTesting(
+        &policy_for_profile_2_);
+
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+    // Create an additional profile.
+    base::FilePath path_profile =
+        profile_manager->GenerateNextProfileDirectoryPath();
+    base::RunLoop run_loop;
+    profile_manager->CreateProfileAsync(
+        path_profile,
+        base::Bind(&OnProfileInitialized, &profile_2_, run_loop.QuitClosure()),
+        base::string16(), std::string());
+
+    // Run the message loop to allow profile creation to take place; the loop is
+    // terminated by OnProfileInitialized calling the loop's QuitClosure when
+    // the profile is created.
+    run_loop.Run();
+
+    // Make sure second profile creation does what we think it does.
+    ASSERT_TRUE(profile_1() != profile_2());
+  }
+
+  Profile* profile_1() { return profile_1_; }
+  Profile* profile_2() { return profile_2_; }
+
+  // Returns the MockConfigurationPolicyProvider for profile_1.
+  MockConfigurationPolicyProvider* policy_for_profile_1() {
+    return &policy_for_profile_1_;
+  }
+
+  // Returns the MockConfigurationPolicyProvider for profile_2.
+  MockConfigurationPolicyProvider* policy_for_profile_2() {
+    return &policy_for_profile_2_;
+  }
+
+ private:
+  // Called when an additional profile has been created.
+  // The created profile is stored in *|out_created_profile|.
+  static void OnProfileInitialized(Profile** out_created_profile,
+                                   const base::Closure& closure,
+                                   Profile* profile,
+                                   Profile::CreateStatus status) {
+    if (status == Profile::CREATE_STATUS_INITIALIZED) {
+      *out_created_profile = profile;
+      closure.Run();
+    }
+  }
+  Profile* profile_1_ = nullptr;
+  Profile* profile_2_ = nullptr;
+
+  MockConfigurationPolicyProvider policy_for_profile_1_;
+  MockConfigurationPolicyProvider policy_for_profile_2_;
 };
 
 // Verifies |certificate| with |storage_partition|'s CertVerifier and returns
@@ -399,21 +515,18 @@ bool IsCertInCertificateList(
 
 // Allows testing if user policy provided trust roots take effect, without
 // having device policy.
+// The parameter specifies whether the CertVerifierService is enabled.
 class PolicyProvidedCertsRegularUserTest
     : public InProcessBrowserTest,
       public ::testing::WithParamInterface<bool> {
  protected:
   PolicyProvidedCertsRegularUserTest() = default;
+  ~PolicyProvidedCertsRegularUserTest() = default;
 
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
 
-    // Use the same testing slot as private and public slot for testing.
-    test_nss_cert_db_ = std::make_unique<net::NSSCertDatabase>(
-        crypto::ScopedPK11Slot(
-            PK11_ReferenceSlot(test_nssdb_.slot())) /* public slot */,
-        crypto::ScopedPK11Slot(
-            PK11_ReferenceSlot(test_nssdb_.slot())) /* private slot */);
+    multi_profile_policy_helper_.SetUpCommandLine(command_line);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -426,21 +539,82 @@ class PolicyProvidedCertsRegularUserTest
     }
 
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-    user_policy_certs_helper_.SetUpInProcessBrowserTestFixture();
+
+    ASSERT_NO_FATAL_FAILURE(
+        multi_profile_policy_helper_.BeforeInitialProfileCreated());
   }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    ASSERT_NO_FATAL_FAILURE(
+        multi_profile_policy_helper_.AfterInitialProfileCreated());
+
+    ASSERT_NO_FATAL_FAILURE(user_policy_certs_helper_.Initialize());
+
+    // Use the same testing slot as private and public slot for testing.
+    test_nss_cert_db_ = std::make_unique<net::NSSCertDatabase>(
+        crypto::ScopedPK11Slot(
+            PK11_ReferenceSlot(test_nssdb_.slot())) /* public slot */,
+        crypto::ScopedPK11Slot(
+            PK11_ReferenceSlot(test_nssdb_.slot())) /* private slot */);
+  }
+
+  MultiProfilePolicyProviderHelper multi_profile_policy_helper_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
   UserPolicyCertsHelper user_policy_certs_helper_;
 
+  // A NSSCertDatabase is needed for the tests that do something with
+  // NetworkCertLoader.
   crypto::ScopedTestNSSDB test_nssdb_;
   std::unique_ptr<net::NSSCertDatabase> test_nss_cert_db_;
 };
 
 IN_PROC_BROWSER_TEST_P(PolicyProvidedCertsRegularUserTest, TrustAnchorApplied) {
-  user_policy_certs_helper_.SetRootCertONCUserPolicy(browser()->profile());
+  user_policy_certs_helper_.SetRootCertONCUserPolicy(
+      multi_profile_policy_helper_.profile_1(),
+      multi_profile_policy_helper_.policy_for_profile_1());
   EXPECT_EQ(net::OK,
-            VerifyTestServerCert(browser()->profile(),
+            VerifyTestServerCert(multi_profile_policy_helper_.profile_1(),
+                                 user_policy_certs_helper_.server_cert()));
+}
+
+IN_PROC_BROWSER_TEST_P(PolicyProvidedCertsRegularUserTest,
+                       PrimaryProfileTrustAnchorDoesNotLeak) {
+  ASSERT_NO_FATAL_FAILURE(multi_profile_policy_helper_.CreateSecondProfile());
+
+  user_policy_certs_helper_.SetRootCertONCUserPolicy(
+      multi_profile_policy_helper_.profile_1(),
+      multi_profile_policy_helper_.policy_for_profile_1());
+  EXPECT_EQ(net::OK,
+            VerifyTestServerCert(multi_profile_policy_helper_.profile_1(),
+                                 user_policy_certs_helper_.server_cert()));
+  EXPECT_EQ(net::ERR_CERT_AUTHORITY_INVALID,
+            VerifyTestServerCert(multi_profile_policy_helper_.profile_2(),
+                                 user_policy_certs_helper_.server_cert()));
+}
+
+IN_PROC_BROWSER_TEST_P(PolicyProvidedCertsRegularUserTest,
+                       SecondaryProfileTrustAnchorDoesNotLeak) {
+  ASSERT_NO_FATAL_FAILURE(multi_profile_policy_helper_.CreateSecondProfile());
+
+  user_policy_certs_helper_.SetRootCertONCUserPolicy(
+      multi_profile_policy_helper_.profile_2(),
+      multi_profile_policy_helper_.policy_for_profile_2());
+  EXPECT_EQ(net::ERR_CERT_AUTHORITY_INVALID,
+            VerifyTestServerCert(multi_profile_policy_helper_.profile_1(),
+                                 user_policy_certs_helper_.server_cert()));
+  // TODO(https://crbug.com/1127263): That the cert from a secondary user's
+  // policy is used at all is currently an artifact of the test, which reuses
+  // the primary user_manager::User for the secondary Profile.
+  // Fix that and then expect ERR_CERT_AUTHORITY_INVALID here too, and rename
+  // the test to SecondaryProfileTrustAnchorIgnored.
+  // Or, allow secondary Profile ONC policy to set trust anchors for the
+  // secondary Profile.
+  EXPECT_EQ(net::OK,
+            VerifyTestServerCert(multi_profile_policy_helper_.profile_2(),
                                  user_policy_certs_helper_.server_cert()));
 }
 
@@ -448,19 +622,22 @@ IN_PROC_BROWSER_TEST_P(PolicyProvidedCertsRegularUserTest,
                        UntrustedIntermediateAuthorityApplied) {
   // Sanity check: Apply ONC policy which does not mention the intermediate
   // authority.
-  user_policy_certs_helper_.SetRootCertONCUserPolicy(browser()->profile());
+  user_policy_certs_helper_.SetRootCertONCUserPolicy(
+      multi_profile_policy_helper_.profile_1(),
+      multi_profile_policy_helper_.policy_for_profile_1());
   EXPECT_EQ(net::ERR_CERT_AUTHORITY_INVALID,
             VerifyTestServerCert(
-                browser()->profile(),
+                multi_profile_policy_helper_.profile_1(),
                 user_policy_certs_helper_.server_cert_by_intermediate()));
 
   // Now apply ONC policy which mentions the intermediate authority (but does
   // not assign trust to it).
   user_policy_certs_helper_.SetRootAndIntermediateCertsONCUserPolicy(
-      browser()->profile());
+      multi_profile_policy_helper_.profile_1(),
+      multi_profile_policy_helper_.policy_for_profile_1());
   EXPECT_EQ(net::OK,
             VerifyTestServerCert(
-                browser()->profile(),
+                multi_profile_policy_helper_.profile_1(),
                 user_policy_certs_helper_.server_cert_by_intermediate()));
 }
 
@@ -478,7 +655,9 @@ IN_PROC_BROWSER_TEST_P(PolicyProvidedCertsRegularUserTest,
       chromeos::NetworkCertLoader::Get()->authority_certs()));
   NetworkCertLoaderTestObserver network_cert_loader_observer(
       chromeos::NetworkCertLoader::Get());
-  user_policy_certs_helper_.SetRootCertONCUserPolicy(browser()->profile());
+  user_policy_certs_helper_.SetRootCertONCUserPolicy(
+      multi_profile_policy_helper_.profile_1(),
+      multi_profile_policy_helper_.policy_for_profile_1());
   network_cert_loader_observer.Wait();
 
   // Check that |NetworkCertLoader| is aware of the authority certificate.
@@ -522,7 +701,12 @@ class PolicyProvidedCertsDeviceLocalAccountTest
 
     DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
 
-    user_policy_certs_helper_.SetUpInProcessBrowserTestFixture();
+    ASSERT_NO_FATAL_FAILURE(user_policy_certs_helper_.Initialize());
+
+    // Set up the mock policy provider.
+    EXPECT_CALL(user_policy_provider_, IsInitializationComplete(testing::_))
+        .WillRepeatedly(testing::Return(true));
+    BrowserPolicyConnector::SetPolicyProviderForTesting(&user_policy_provider_);
 
     device_policy()->policy_data().set_public_key_version(1);
     em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
@@ -548,6 +732,7 @@ class PolicyProvidedCertsDeviceLocalAccountTest
           kDeviceLocalAccountId,
           DeviceLocalAccount::TYPE_PUBLIC_SESSION));
 
+  MockConfigurationPolicyProvider user_policy_provider_;
   UserPolicyCertsHelper user_policy_certs_helper_;
 
   crypto::ScopedTestNSSDB test_nssdb_;
@@ -605,7 +790,8 @@ IN_PROC_BROWSER_TEST_P(PolicyProvidedCertsPublicSessionTest,
   Browser* browser = browser_list->get(0);
   ASSERT_TRUE(browser);
 
-  user_policy_certs_helper_.SetRootCertONCUserPolicy(browser->profile());
+  user_policy_certs_helper_.SetRootCertONCUserPolicy(browser->profile(),
+                                                     &user_policy_provider_);
   EXPECT_EQ(net::OK,
             VerifyTestServerCert(browser->profile(),
                                  user_policy_certs_helper_.server_cert()));

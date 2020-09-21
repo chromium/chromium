@@ -58,6 +58,7 @@
 #include "chrome/browser/chromeos/policy/external_data_handlers/printers_external_data_handler.h"
 #include "chrome/browser/chromeos/policy/external_data_handlers/user_avatar_image_external_data_handler.h"
 #include "chrome/browser/chromeos/policy/external_data_handlers/wallpaper_image_external_data_handler.h"
+#include "chrome/browser/chromeos/policy/policy_cert_service_factory.h"
 #include "chrome/browser/chromeos/policy/user_network_configuration_updater.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/session_length_limiter.h"
@@ -1018,6 +1019,9 @@ void ChromeUserManagerImpl::RemoveNonCryptohomeData(
   supervised_user_manager_->RemoveNonCryptohomeData(account_id.GetUserEmail());
 
   multi_profile_user_controller_->RemoveCachedValues(account_id.GetUserEmail());
+
+  policy::PolicyCertServiceFactory::ClearUsedPolicyCertificates(
+      account_id.GetUserEmail());
 
   EasyUnlockService::ResetLocalStateForUser(account_id);
 

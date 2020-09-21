@@ -42,14 +42,6 @@ class MultiProfileUserController {
     // Owner of the device is not allowed to be added as a secondary user.
     NOT_ALLOWED_OWNER_AS_SECONDARY,
 
-    // Not allowed since it is potentially "tainted" with policy-pushed
-    // certificates.
-    NOT_ALLOWED_POLICY_CERT_TAINTED,
-
-    // Not allowed since primary user is already "tainted" with policy-pushed
-    // certificates.
-    NOT_ALLOWED_PRIMARY_POLICY_CERT_TAINTED,
-
     // Not allowed since primary user policy forbids it to be part of
     // multi-profiles session.
     NOT_ALLOWED_PRIMARY_USER_POLICY_FORBIDS,

@@ -348,9 +348,9 @@ TEST_F(MultiProfileUserControllerTest,
 }
 
 TEST_F(MultiProfileUserControllerTest,
-       UsedPolicyCertificatesDisallowedForSecondary) {
+       UsedPolicyCertificatesAllowedForSecondary) {
   // Verifies that if a regular user is signed-in then other regular users can
-  // be added but tainted users can't.
+  // be added, including users that have used policy-provided trust anchors.
   LoginUser(1);
 
   // TODO(xiyuan): Remove the following SetPrefBehavor when default is
@@ -364,16 +364,15 @@ TEST_F(MultiProfileUserControllerTest,
 
   policy::PolicyCertServiceFactory::SetUsedPolicyCertificates(
       test_users_[0].GetUserEmail());
-  EXPECT_FALSE(controller()->IsUserAllowedInSession(
+  EXPECT_TRUE(controller()->IsUserAllowedInSession(
       test_users_[0].GetUserEmail(), &reason));
-  EXPECT_EQ(MultiProfileUserController::NOT_ALLOWED_POLICY_CERT_TAINTED,
-            reason);
+  EXPECT_EQ(MultiProfileUserController::ALLOWED, reason);
 }
 
 TEST_F(MultiProfileUserControllerTest,
-       UsedPolicyCertificatesDisallowsSecondaries) {
-  // Verifies that if a tainted user is signed-in then no other users can
-  // be added.
+       SecondaryAllowedWhenPrimaryUsedPolicyCertificates) {
+  // Verifies that if a tainted user is signed-in then other users can still be
+  // added.
   policy::PolicyCertServiceFactory::SetUsedPolicyCertificates(
       test_users_[0].GetUserEmail());
   LoginUser(0);
@@ -383,19 +382,17 @@ TEST_F(MultiProfileUserControllerTest,
           profile(0), base::BindRepeating(&TestPolicyCertServiceFactory)));
 
   MultiProfileUserController::UserAllowedInSessionReason reason;
-  EXPECT_FALSE(controller()->IsUserAllowedInSession(
+  EXPECT_TRUE(controller()->IsUserAllowedInSession(
       test_users_[1].GetUserEmail(), &reason));
-  EXPECT_EQ(MultiProfileUserController::NOT_ALLOWED_PRIMARY_POLICY_CERT_TAINTED,
-            reason);
-  EXPECT_EQ(MultiProfileUserController::NOT_ALLOWED_PRIMARY_POLICY_CERT_TAINTED,
+  EXPECT_EQ(MultiProfileUserController::ALLOWED, reason);
+  EXPECT_EQ(MultiProfileUserController::ALLOWED,
             MultiProfileUserController::GetPrimaryUserPolicy());
   policy::PolicyCertServiceFactory::SetUsedPolicyCertificates(
       test_users_[1].GetUserEmail());
-  EXPECT_FALSE(controller()->IsUserAllowedInSession(
+  EXPECT_TRUE(controller()->IsUserAllowedInSession(
       test_users_[1].GetUserEmail(), &reason));
-  EXPECT_EQ(MultiProfileUserController::NOT_ALLOWED_POLICY_CERT_TAINTED,
-            reason);
-  EXPECT_EQ(MultiProfileUserController::NOT_ALLOWED_PRIMARY_POLICY_CERT_TAINTED,
+  EXPECT_EQ(MultiProfileUserController::ALLOWED, reason);
+  EXPECT_EQ(MultiProfileUserController::ALLOWED,
             MultiProfileUserController::GetPrimaryUserPolicy());
 
   // Flush tasks posted to IO.
@@ -405,7 +402,7 @@ TEST_F(MultiProfileUserControllerTest,
 TEST_F(MultiProfileUserControllerTest,
        PolicyCertificatesInMemoryDisallowsSecondaries) {
   // Verifies that if a user is signed-in and has policy certificates installed
-  // then no other users can be added.
+  // then other users can still be added.
   LoginUser(0);
 
   // TODO(xiyuan): Remove the following SetPrefBehavor when default is
@@ -432,11 +429,10 @@ TEST_F(MultiProfileUserControllerTest,
       net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem"));
   service->SetPolicyTrustAnchorsForTesting(/*trust_anchors=*/certificates);
   EXPECT_TRUE(service->has_policy_certificates());
-  EXPECT_FALSE(controller()->IsUserAllowedInSession(
+  EXPECT_TRUE(controller()->IsUserAllowedInSession(
       test_users_[1].GetUserEmail(), &reason));
-  EXPECT_EQ(MultiProfileUserController::NOT_ALLOWED_PRIMARY_POLICY_CERT_TAINTED,
-            reason);
-  EXPECT_EQ(MultiProfileUserController::NOT_ALLOWED_PRIMARY_POLICY_CERT_TAINTED,
+  EXPECT_EQ(MultiProfileUserController::ALLOWED, reason);
+  EXPECT_EQ(MultiProfileUserController::ALLOWED,
             MultiProfileUserController::GetPrimaryUserPolicy());
 
   // Flush tasks posted to IO.

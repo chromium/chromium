@@ -9,8 +9,6 @@
 #include "ash/public/cpp/login_types.h"
 #include "base/bind.h"
 #include "chrome/browser/chromeos/login/users/multi_profile_user_controller_delegate.h"
-#include "chrome/browser/chromeos/policy/policy_cert_service.h"
-#include "chrome/browser/chromeos/policy/policy_cert_service_factory.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -92,26 +90,9 @@ MultiProfileUserController::GetPrimaryUserPolicy() {
   if (!user)
     return ALLOWED;
 
-  // Don't allow any secondary profiles if the primary profile is tainted.
-  if (policy::PolicyCertServiceFactory::UsedPolicyCertificates(
-          user->GetAccountId().GetUserEmail())) {
-    // Check directly in local_state before checking if the primary user has
-    // a PolicyCertService. Their profile may have been tainted previously
-    // though they didn't get a PolicyCertService created for this session.
-    return NOT_ALLOWED_PRIMARY_POLICY_CERT_TAINTED;
-  }
-
   Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
   if (!profile)
     return ALLOWED;
-
-  // If the primary profile already has policy certificates installed but
-  // hasn't used them yet then it can become tainted at any time during this
-  // session disable secondary profiles in this case too.
-  policy::PolicyCertService* service =
-      policy::PolicyCertServiceFactory::GetForProfile(profile);
-  if (service && service->has_policy_certificates())
-    return NOT_ALLOWED_PRIMARY_POLICY_CERT_TAINTED;
 
   // No user is allowed if the primary user policy forbids it.
   const std::string behavior =
@@ -152,11 +133,6 @@ bool MultiProfileUserController::IsUserAllowedInSession(
   if (primary_user_email.empty() || primary_user_email == user_email)
     return SetUserAllowedReason(reason, ALLOWED);
 
-  // Don't allow profiles potentially tainted by data fetched with policy-pushed
-  // certificates to join a multiprofile session.
-  if (policy::PolicyCertServiceFactory::UsedPolicyCertificates(user_email))
-    return SetUserAllowedReason(reason, NOT_ALLOWED_POLICY_CERT_TAINTED);
-
   UserAllowedInSessionReason primary_user_policy = GetPrimaryUserPolicy();
   if (primary_user_policy != ALLOWED)
     return SetUserAllowedReason(reason, primary_user_policy);
@@ -188,7 +164,6 @@ void MultiProfileUserController::RemoveCachedValues(
   DictionaryPrefUpdate update(local_state_,
                               prefs::kCachedMultiProfileUserBehavior);
   update->RemoveWithoutPathExpansion(user_email, NULL);
-  policy::PolicyCertServiceFactory::ClearUsedPolicyCertificates(user_email);
 }
 
 std::string MultiProfileUserController::GetCachedValue(
