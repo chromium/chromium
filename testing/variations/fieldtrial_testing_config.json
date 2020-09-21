@@ -546,9 +546,13 @@
             ],
             "experiments": [
                 {
-                    "name": "AssistPersonalInfo",
+                    "name": "Enabled_20200917",
                     "enable_features": [
-                        "AssistPersonalInfo"
+                        "AssistPersonalInfo",
+                        "AssistPersonalInfoAddress",
+                        "AssistPersonalInfoEmail",
+                        "AssistPersonalInfoName",
+                        "AssistPersonalInfoPhoneNumber"
                     ]
                 }
             ]
