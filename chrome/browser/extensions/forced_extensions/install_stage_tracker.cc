@@ -150,6 +150,15 @@ void InstallStageTracker::ReportManifestInvalidFailure(
   NotifyObserversOfFailure(id, data.failure_reason.value(), data);
 }
 
+void InstallStageTracker::ReportInstallCreationStage(
+    const ExtensionId& id,
+    InstallCreationStage stage) {
+  InstallationData& data = installation_data_map_[id];
+  data.install_creation_stage = stage;
+  for (auto& observer : observers_)
+    observer.OnExtensionDataChangedForTesting(id, browser_context_, data);
+}
+
 void InstallStageTracker::ReportInstallationStage(const ExtensionId& id,
                                                   Stage stage) {
   InstallationData& data = installation_data_map_[id];

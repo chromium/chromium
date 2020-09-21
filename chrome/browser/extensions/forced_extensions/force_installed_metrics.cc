@@ -166,8 +166,15 @@ void ReportErrorCodes(const InstallStageTracker::InstallationData& installation,
 void ReportCurrentStage(
     const InstallStageTracker::InstallationData& installation) {
   InstallStageTracker::Stage install_stage = installation.install_stage.value();
-  base::UmaHistogramEnumeration("Extensions.ForceInstalledStage",
+  base::UmaHistogramEnumeration("Extensions.ForceInstalledStage2",
                                 install_stage);
+  if (install_stage == InstallStageTracker::Stage::CREATED) {
+    DCHECK(installation.install_creation_stage);
+    InstallStageTracker::InstallCreationStage install_creation_stage =
+        installation.install_creation_stage.value();
+    base::UmaHistogramEnumeration("Extensions.ForceInstalledCreationStage",
+                                  install_creation_stage);
+  }
   if (install_stage == InstallStageTracker::Stage::DOWNLOADING) {
     DCHECK(installation.downloading_stage);
     ExtensionDownloaderDelegate::Stage downloading_stage =

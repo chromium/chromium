@@ -132,21 +132,14 @@ em::ExtensionInstallReportLogEvent_FailureReason ConvertFailureReasonToProto(
 }
 
 // Helper method to convert InstallStageTracker::Stage to the Stage proto.
+// TODO(crbug/1124808): Add an event for the stages that are used for
+// investigating CREATED stage.
 em::ExtensionInstallReportLogEvent_InstallationStage
 ConvertInstallationStageToProto(extensions::InstallStageTracker::Stage stage) {
   using Stage = extensions::InstallStageTracker::Stage;
   switch (stage) {
     case Stage::CREATED:
       return em::ExtensionInstallReportLogEvent::CREATED;
-    case extensions::InstallStageTracker::Stage::NOTIFIED_FROM_MANAGEMENT:
-      return em::ExtensionInstallReportLogEvent::NOTIFIED_FROM_MANAGEMENT;
-    case Stage::NOTIFIED_FROM_MANAGEMENT_NOT_FORCED:
-      return em::ExtensionInstallReportLogEvent::
-          NOTIFIED_FROM_MANAGEMENT_NOT_FORCED;
-    case Stage::SEEN_BY_POLICY_LOADER:
-      return em::ExtensionInstallReportLogEvent::SEEN_BY_POLICY_LOADER;
-    case Stage::SEEN_BY_EXTERNAL_PROVIDER:
-      return em::ExtensionInstallReportLogEvent::SEEN_BY_EXTERNAL_PROVIDER;
     case Stage::PENDING:
       return em::ExtensionInstallReportLogEvent::PENDING;
     case Stage::DOWNLOADING:

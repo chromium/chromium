@@ -2939,14 +2939,6 @@ message ExtensionInstallReportLogEvent {
 
     CREATED = 1;
 
-    NOTIFIED_FROM_MANAGEMENT = 6;
-
-    NOTIFIED_FROM_MANAGEMENT_NOT_FORCED = 7;
-
-    SEEN_BY_POLICY_LOADER = 8;
-
-    SEEN_BY_EXTERNAL_PROVIDER = 9;
-
     PENDING = 2;
 
     DOWNLOADING = 3;

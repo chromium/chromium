@@ -50,25 +50,14 @@ class InstallStageTracker : public KeyedService {
     // ExtensionManagement::settings_by_id_.
     CREATED = 0,
 
-    // TODO(crbug.com/989526): stages from NOTIFIED_FROM_MANAGEMENT to
-    // SEEN_BY_EXTERNAL_PROVIDER are temporary ones for investigation. Remove
-    // then after investigation will complete and we'll be confident in
-    // extension handling between CREATED and PENDING.
+    // NOTIFIED_FROM_MANAGEMENT = 5, // Moved to InstallCreationStage.
 
-    // ExtensionManagement class is about to pass extension with
-    // INSTALLATION_FORCED mode to its observers.
-    NOTIFIED_FROM_MANAGEMENT = 5,
+    // NOTIFIED_FROM_MANAGEMENT_NOT_FORCED = 6, // Moved to
+    // InstallCreationStage.
 
-    // ExtensionManagement class is about to pass extension with other mode to
-    // its observers.
-    NOTIFIED_FROM_MANAGEMENT_NOT_FORCED = 6,
+    // SEEN_BY_POLICY_LOADER = 7, // Moved to InstallCreationStage.
 
-    // ExternalPolicyLoader with FORCED type fetches extension from
-    // ExtensionManagement.
-    SEEN_BY_POLICY_LOADER = 7,
-
-    // ExternalProviderImpl receives extension.
-    SEEN_BY_EXTERNAL_PROVIDER = 8,
+    // SEEN_BY_EXTERNAL_PROVIDER = 8, // Moved to InstallCreationStage.
 
     // Extension added to PendingExtensionManager.
     PENDING = 1,
@@ -81,6 +70,45 @@ class InstallStageTracker : public KeyedService {
 
     // Extension installation finished (either successfully or not).
     COMPLETE = 4,
+
+    // Magic constant used by the histogram macros.
+    // Always update it to the max value.
+    kMaxValue = COMPLETE,
+  };
+
+  // Intermediate stage of extension installation when the Stage is CREATED.
+  // TODO(crbug.com/989526): These stages are temporary ones for investigation.
+  // Remove them after investigation will complete.
+  enum InstallCreationStage {
+    UNKNOWN = 0,
+
+    // ExtensionManagement has reported the Stage has Stage::CREATED.
+    CREATION_INITIATED = 1,
+
+    // Installation mode for the extension is set to INSTALLATION_FORCED just
+    // after ExtensionManagement class is created and CREATION_INITIATED has
+    // been reported.
+    NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED = 2,
+
+    // Installation mode for the extension is set to other mode just after
+    // ExtensionManagement class is created and CREATION_INITIATED has been
+    // reported.
+    NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_NOT_FORCED = 3,
+
+    // ExtensionManagement class is about to pass extension with
+    // INSTALLATION_FORCED mode to its observers.
+    NOTIFIED_FROM_MANAGEMENT = 4,
+
+    // ExtensionManagement class is about to pass extension with other mode to
+    // its observers.
+    NOTIFIED_FROM_MANAGEMENT_NOT_FORCED = 5,
+
+    // ExternalPolicyLoader with FORCED type fetches extension from
+    // ExtensionManagement.
+    SEEN_BY_POLICY_LOADER = 6,
+
+    // ExternalProviderImpl receives extension.
+    SEEN_BY_EXTERNAL_PROVIDER = 7,
 
     // Magic constant used by the histogram macros.
     // Always update it to the max value.
@@ -255,6 +283,7 @@ class InstallStageTracker : public KeyedService {
     InstallationData(const InstallationData&);
 
     base::Optional<Stage> install_stage;
+    base::Optional<InstallCreationStage> install_creation_stage;
     base::Optional<ExtensionDownloaderDelegate::Stage> downloading_stage;
     base::Optional<ExtensionDownloaderDelegate::CacheStatus>
         downloading_cache_status;
@@ -369,6 +398,8 @@ class InstallStageTracker : public KeyedService {
 
   // Remembers failure reason and in-progress stages in memory.
   void ReportInstallationStage(const ExtensionId& id, Stage stage);
+  void ReportInstallCreationStage(const ExtensionId& id,
+                                  InstallCreationStage stage);
   void ReportFetchError(
       const ExtensionId& id,
       FailureReason reason,

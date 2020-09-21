@@ -1170,21 +1170,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelist) {
   Sequence sequence;
   EXPECT_CALL(
       collector_observer,
-      ExtensionStageChanged(
-          extensions::InstallStageTracker::Stage::NOTIFIED_FROM_MANAGEMENT))
-      .InSequence(sequence);
-  EXPECT_CALL(
-      collector_observer,
-      ExtensionStageChanged(
-          extensions::InstallStageTracker::Stage::SEEN_BY_POLICY_LOADER))
-      .InSequence(sequence);
-  EXPECT_CALL(
-      collector_observer,
-      ExtensionStageChanged(
-          extensions::InstallStageTracker::Stage::SEEN_BY_EXTERNAL_PROVIDER))
-      .InSequence(sequence);
-  EXPECT_CALL(
-      collector_observer,
       ExtensionStageChanged(extensions::InstallStageTracker::Stage::PENDING))
       .InSequence(sequence);
   EXPECT_CALL(collector_observer,

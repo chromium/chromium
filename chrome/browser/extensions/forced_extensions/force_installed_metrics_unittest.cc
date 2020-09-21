@@ -59,7 +59,9 @@ constexpr char kFailureReasonsCWS[] =
     "Extensions.WebStore_ForceInstalledFailureReason3";
 constexpr char kFailureReasonsSH[] =
     "Extensions.OffStore_ForceInstalledFailureReason3";
-constexpr char kInstallationStages[] = "Extensions.ForceInstalledStage";
+constexpr char kInstallationStages[] = "Extensions.ForceInstalledStage2";
+constexpr char kInstallCreationStages[] =
+    "Extensions.ForceInstalledCreationStage";
 constexpr char kInstallationDownloadingStages[] =
     "Extensions.ForceInstalledDownloadingStage";
 constexpr char kFailureCrxInstallErrorStats[] =
@@ -665,6 +667,29 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsStuck) {
   histogram_tester_.ExpectUniqueSample(
       kTotalCountStats,
       prefs_->GetManagedPref(pref_names::kInstallForceList)->DictSize(), 1);
+}
+
+TEST_F(ForceInstalledMetricsTest, ExtensionStuckInCreatedStage) {
+  SetupForceList();
+  auto extension =
+      ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
+  tracker_->OnExtensionLoaded(profile_, extension.get());
+  install_stage_tracker_->ReportInstallationStage(
+      kExtensionId2, InstallStageTracker::Stage::CREATED);
+  install_stage_tracker_->ReportInstallCreationStage(
+      kExtensionId2, InstallStageTracker::InstallCreationStage::
+                         NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED);
+  EXPECT_TRUE(fake_timer_->IsRunning());
+  fake_timer_->Fire();
+  histogram_tester_.ExpectUniqueSample(
+      kFailureReasonsCWS, InstallStageTracker::FailureReason::IN_PROGRESS, 1);
+  histogram_tester_.ExpectUniqueSample(kInstallationStages,
+                                       InstallStageTracker::Stage::CREATED, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kInstallCreationStages,
+      InstallStageTracker::InstallCreationStage::
+          NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED,
+      1);
 }
 
 #if defined(OS_CHROMEOS)

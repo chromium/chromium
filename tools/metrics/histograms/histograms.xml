@@ -55214,6 +55214,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Extensions.ForceInstalledCreationStage"
+    enum="ExtensionInstallCreationStage" expires_after="2021-01-24">
+  <owner>swapnilgupta@google.com</owner>
+  <owner>burunduk@chromium.org</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>
+    The last known intermediate stage of extension when the extension
+    installation stage if CREATED if failure reason was not recorded
+    (installation of an extension was neither yet finished nor failed). Recorded
+    for each forced extension that failed to install after 5 minutes. Recorded
+    together with &quot;Extensions.ForceInstalledTimedOutCount&quot; histogram,
+    but for every extension not installed at the moment.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ForceInstalledDownloadingStage"
     enum="ExtensionInstallationDownloadingStage" expires_after="2021-01-24">
   <owner>burunduk@chromium.org</owner>
@@ -55593,6 +55608,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Extensions.ForceInstalledStage"
     enum="ExtensionInstallationStage" expires_after="2021-01-24">
+  <obsolete>
+    Removed 09/2020, replaced by Extensions.ForceInstalledStage2.
+  </obsolete>
   <owner>burunduk@chromium.org</owner>
   <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
@@ -55603,6 +55621,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     minutes. Recorded together with
     &quot;Extensions.ForceInstalledTimedOutCount&quot; histogram, but for every
     extension not installed at the moment.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ForceInstalledStage2"
+    enum="ExtensionInstallationStage" expires_after="2021-01-24">
+  <owner>burunduk@chromium.org</owner>
+  <owner>swapnilgupta@google.com</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>
+    The last known stage of extension installation process if failure reason was
+    not recorded (installation of an extension was neither yet finished nor
+    failed). Recorded for each forced extension that failed to install after 5
+    minutes. Recorded together with
+    &quot;Extensions.ForceInstalledTimedOutCount&quot; histogram, but for every
+    extension not installed at the moment.
+
+    Replaced Extensions.ForceInstalledStage because the stages that were used
+    for used for investigation of CREATED stage are moved to a new enum.
   </summary>
 </histogram>
 
