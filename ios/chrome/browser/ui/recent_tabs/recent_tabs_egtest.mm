@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
+#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_app_interface.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
@@ -30,6 +31,14 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+// TODO(crbug.com/1015113): The EG2 macro is breaking indexing for some reason
+// without the trailing semicolon.  For now, disable the extra semi warning
+// so Xcode indexing works for the egtest.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
+GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(RecentTabsAppInterface);
+#pragma clang diagnostic pop
 
 using chrome_test_util::RecentTabsMenuButton;
 
@@ -78,8 +87,7 @@ id<GREYMatcher> TitleOfTestPage() {
       web::test::HttpServer::MakeUrl(kURLOfTestPage),
       std::string(kHTMLOfTestPage),
   }});
-  [NSUserDefaults.standardUserDefaults setObject:@{}
-                                          forKey:kListModelCollapsedKey];
+  [RecentTabsAppInterface clearCollapsedListViewSectionStates];
 }
 
 // Closes the recent tabs panel.

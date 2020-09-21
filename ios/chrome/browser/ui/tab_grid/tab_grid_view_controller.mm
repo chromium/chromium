@@ -359,6 +359,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [self.incognitoTabsViewController contentWillAppearAnimated:animated];
   [self.regularTabsViewController contentWillAppearAnimated:animated];
+
+  if (@available(iOS 13.0, *)) {
+    self.remoteTabsViewController.session =
+        self.view.window.windowScene.session;
+  }
+
   self.remoteTabsViewController.preventUpdates = NO;
 }
 

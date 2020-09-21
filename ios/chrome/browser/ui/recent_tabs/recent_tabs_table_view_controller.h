@@ -51,6 +51,9 @@ class DistantSession;
 @property(nonatomic, weak) id<RecentTabsMenuProvider> menuProvider
     API_AVAILABLE(ios(13.0));
 
+// Multi-window session for this vc's recent tabs.
+@property(nonatomic, assign) UISceneSession* session API_AVAILABLE(ios(13.0));
+
 // Initializers.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;

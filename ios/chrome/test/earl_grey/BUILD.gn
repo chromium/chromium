@@ -117,6 +117,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/qr_scanner:eg_app_support+eg2",
     "//ios/chrome/browser/ui/reading_list:eg_app_support+eg2",
+    "//ios/chrome/browser/ui/recent_tabs:app_support+eg2",
     "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui_constants",
     "//ios/chrome/browser/ui/safe_mode",
     "//ios/chrome/browser/ui/safe_mode:eg_app_support+eg2",

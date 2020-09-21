@@ -113,6 +113,13 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 
 }  // namespace
 
+API_AVAILABLE(ios(13.0))
+@interface ListModelCollapsedSceneSessionMediator : ListModelCollapsedMediator
+// Creates a collapsed section mediator that stores data in the session's
+// userInfo instead of NSUserDefaults, which allows different states per window.
+- (instancetype)initWithSession:(UISceneSession*)session;
+@end
+
 @interface RecentTabsTableViewController () <SigninPromoViewConsumer,
                                              SigninPresenter,
                                              SyncPresenter,
@@ -227,6 +234,16 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 
 - (void)loadModel {
   [super loadModel];
+
+  if (@available(iOS 13, *)) {
+    if (self.session) {
+      // Replace mediator to store collapsed keys in scene session.
+      self.tableViewModel.collapsableMediator =
+          [[ListModelCollapsedSceneSessionMediator alloc]
+              initWithSession:self.session];
+    }
+  }
+
   [self addRecentlyClosedSection];
 
   if (self.sessionState ==
@@ -1428,6 +1445,36 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   } else if (ShouldShowSyncPassphraseSettings(syncState)) {
     [self showSyncPassphraseSettings];
   }
+}
+
+@end
+
+@implementation ListModelCollapsedSceneSessionMediator {
+  UISceneSession* _session;
+}
+
+- (instancetype)initWithSession:(UISceneSession*)session {
+  self = [super init];
+  if (self) {
+    _session = session;
+  }
+  return self;
+}
+
+- (void)setSectionKey:(NSString*)sectionKey collapsed:(BOOL)collapsed {
+  NSMutableDictionary* newUserInfo =
+      [NSMutableDictionary dictionaryWithDictionary:_session.userInfo];
+  NSMutableDictionary* newCollapsedSection = [NSMutableDictionary
+      dictionaryWithDictionary:newUserInfo[kListModelCollapsedKey]];
+  newUserInfo[kListModelCollapsedKey] = newCollapsedSection;
+  newCollapsedSection[sectionKey] = [NSNumber numberWithBool:collapsed];
+  _session.userInfo = newUserInfo;
+}
+
+- (BOOL)sectionKeyIsCollapsed:(NSString*)sectionKey {
+  NSDictionary* collapsedSections = _session.userInfo[kListModelCollapsedKey];
+  NSNumber* value = (NSNumber*)[collapsedSections valueForKey:sectionKey];
+  return [value boolValue];
 }
 
 @end

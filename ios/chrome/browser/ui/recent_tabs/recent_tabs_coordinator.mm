@@ -77,6 +77,8 @@
                                recentTabsContextMenuDelegate:self];
     self.recentTabsTableViewController.menuProvider =
         self.recentTabsContextMenuHelper;
+    self.recentTabsTableViewController.session =
+        self.baseViewController.view.window.windowScene.session;
   }
 
   // Adds the "Done" button and hooks it up to |stop|.
