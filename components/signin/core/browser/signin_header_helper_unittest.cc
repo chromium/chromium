@@ -161,18 +161,31 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestNoAccountIdChromeOS) {
 }
 #else  // !defined(OS_CHROMEOS)
 #if defined(OS_ANDROID) || defined(OS_IOS)
-// Tests that Mirror request is returned on mobile (Android, iOS) for Public
-// Sessions (no account id), when the Mobile Identity Consistency feature is
-// enabled.
-TEST_F(SigninHeaderHelperTest, TestMirrorRequestNoAccountIdMobile) {
+// Tests that eligible_for_consistency request is returned on mobile (Android,
+// iOS) when reaching to Gaia origin and there's no primary account. Only
+// applicable when the Mobile Identity Consistency is enabled.
+TEST_F(SigninHeaderHelperTest, TestEligibleForConsistencyRequestGaiaOrigin) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kMobileIdentityConsistency);
 
   account_consistency_ = AccountConsistencyMethod::kMirror;
-  CheckMirrorHeaderRequest(GURL("https://docs.google.com"), "",
+  CheckMirrorHeaderRequest(GURL("https://accounts.google.com"), "",
                            "source=TestSource,eligible_for_consistency=true");
-  CheckMirrorCookieRequest(GURL("https://docs.google.com"), "",
+  CheckMirrorCookieRequest(GURL("https://accounts.google.com"), "",
                            "eligible_for_consistency=true");
+}
+
+// Tests that eligible_for_consistency request is NOT returned on mobile
+// (Android, iOS) when reaching to NON-Gaia origin and there's no primary
+// account. Only applicable when the Mobile Identity Consistency is enabled.
+TEST_F(SigninHeaderHelperTest,
+       TestNoEligibleForConsistencyRequestNonGaiaOrigin) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kMobileIdentityConsistency);
+
+  account_consistency_ = AccountConsistencyMethod::kMirror;
+  CheckMirrorHeaderRequest(GURL("https://docs.google.com"), "", "");
+  CheckMirrorCookieRequest(GURL("https://docs.google.com"), "", "");
 }
 
 // Tests that the full Mirror request is returned when the

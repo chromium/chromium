@@ -196,7 +196,8 @@ std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
 #if !defined(OS_CHROMEOS)
   if (!force_account_consistency && gaia_id.empty()) {
 #if defined(OS_ANDROID) || defined(OS_IOS)
-    if (base::FeatureList::IsEnabled(kMobileIdentityConsistency)) {
+    if (base::FeatureList::IsEnabled(kMobileIdentityConsistency) &&
+        gaia::IsGaiaSignonRealm(url.GetOrigin())) {
       parts.push_back(
           base::StringPrintf("%s=%s", kEligibleForConsistency, "true"));
       return base::JoinString(parts, is_header_request ? "," : ":");
