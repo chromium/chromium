@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/webui/web_ui_util.h"
 
 #if BUILDFLAG(ENABLE_TAB_SEARCH)
 #include "chrome/grit/tab_search_resources.h"
@@ -38,6 +39,20 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
 #if BUILDFLAG(ENABLE_TAB_SEARCH)
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUITabSearchHost);
+  static constexpr webui::LocalizedString kStrings[] = {
+      {"clearSearch", IDS_CLEAR_SEARCH},
+      {"searchTabs", IDS_TAB_SEARCH_SEARCH_TABS},
+      {"noResultsFound", IDS_TAB_SEARCH_NO_RESULTS_FOUND},
+      {"closeTab", IDS_TAB_SEARCH_CLOSE_TAB},
+      {"submitFeedback", IDS_TAB_SEARCH_SUBMIT_FEEDBACK},
+      {"a11yTabClosed", IDS_TAB_SEARCH_A11Y_TAB_CLOSED},
+      {"a11yFoundTab", IDS_TAB_SEARCH_A11Y_FOUND_TAB},
+      {"a11yFoundTabs", IDS_TAB_SEARCH_A11Y_FOUND_TABS},
+      {"a11yFoundTabFor", IDS_TAB_SEARCH_A11Y_FOUND_TAB_FOR},
+      {"a11yFoundTabsFor", IDS_TAB_SEARCH_A11Y_FOUND_TABS_FOR},
+  };
+  AddLocalizedStringsBulk(source, kStrings);
+
   source->AddLocalizedString("close", IDS_CLOSE);
   source->AddResourcePath("tab_search.mojom-lite.js",
                           IDR_TAB_SEARCH_MOJO_LITE_JS);
