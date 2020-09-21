@@ -5060,6 +5060,8 @@ test("unit_tests") {
       "../browser/extensions/external_provider_impl_chromeos_unittest.cc",
       "../browser/extensions/external_provider_impl_unittest.cc",
       "../browser/extensions/forced_extensions/force_installed_metrics_unittest.cc",
+      "../browser/extensions/forced_extensions/force_installed_test_base.cc",
+      "../browser/extensions/forced_extensions/force_installed_test_base.h",
       "../browser/extensions/install_tracker_unittest.cc",
       "../browser/extensions/install_verifier_unittest.cc",
       "../browser/extensions/installed_loader_unittest.cc",

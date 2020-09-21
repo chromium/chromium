@@ -7,21 +7,15 @@
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
-#include "base/strings/strcat.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
+#include "chrome/browser/extensions/forced_extensions/force_installed_test_base.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "components/policy/core/common/mock_configuration_policy_provider.h"
-#include "components/policy/core/common/policy_service_impl.h"
-#include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/disable_reason.h"
@@ -48,15 +42,8 @@
 
 namespace {
 
-// The extension ids used here should be valid extension ids.
-constexpr char kExtensionId1[] = "abcdefghijklmnopabcdefghijklmnop";
-constexpr char kExtensionId2[] = "bcdefghijklmnopabcdefghijklmnopa";
+// Intentionally invalid extension id.
 constexpr char kExtensionId3[] = "cdefghijklmnopqrstuvwxyzabcdefgh";
-constexpr char kExtensionName1[] = "name1";
-constexpr char kExtensionName2[] = "name2";
-constexpr char kExtensionUpdateUrl[] =
-    "https://clients2.google.com/service/update2/crx";  // URL of Chrome Web
-                                                        // Store backend.
 
 const int kFetchTries = 5;
 // HTTP_UNAUTHORIZED
@@ -130,7 +117,7 @@ namespace extensions {
 using testing::_;
 using testing::Return;
 
-class ForceInstalledMetricsTest : public testing::Test,
+class ForceInstalledMetricsTest : public ForceInstalledTestBase,
                                   public ForceInstalledTracker::Observer {
  public:
   ForceInstalledMetricsTest() = default;
@@ -140,57 +127,12 @@ class ForceInstalledMetricsTest : public testing::Test,
       delete;
 
   void SetUp() override {
-    EXPECT_CALL(policy_provider_, IsInitializationComplete(_))
-        .WillRepeatedly(Return(false));
-
-    auto policy_service = std::make_unique<policy::PolicyServiceImpl>(
-        std::vector<policy::ConfigurationPolicyProvider*>{&policy_provider_});
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
-    profile_ = profile_manager_->CreateTestingProfile(
-        "p1", nullptr, base::UTF8ToUTF16("p1"), 0, "",
-        TestingProfile::TestingFactories(), base::nullopt,
-        std::move(policy_service));
-
-    prefs_ = profile_->GetTestingPrefService();
-    registry_ = ExtensionRegistry::Get(profile_);
-    install_stage_tracker_ = InstallStageTracker::Get(profile_);
+    ForceInstalledTestBase::SetUp();
     auto fake_timer = std::make_unique<base::MockOneShotTimer>();
     fake_timer_ = fake_timer.get();
-    tracker_ = std::make_unique<ForceInstalledTracker>(registry_, profile_);
     scoped_observer_.Add(tracker_.get());
     metrics_ = std::make_unique<ForceInstalledMetrics>(
         registry_, profile_, tracker_.get(), std::move(fake_timer));
-  }
-
-  void SetupForceList() {
-    base::Value list(base::Value::Type::LIST);
-    list.Append(base::StrCat({kExtensionId1, ";", kExtensionUpdateUrl}));
-    list.Append(base::StrCat({kExtensionId2, ";", kExtensionUpdateUrl}));
-    std::unique_ptr<base::Value> dict =
-        DictionaryBuilder()
-            .Set(kExtensionId1,
-                 DictionaryBuilder()
-                     .Set(ExternalProviderImpl::kExternalUpdateUrl,
-                          kExtensionUpdateUrl)
-                     .Build())
-            .Set(kExtensionId2,
-                 DictionaryBuilder()
-                     .Set(ExternalProviderImpl::kExternalUpdateUrl,
-                          kExtensionUpdateUrl)
-                     .Build())
-            .Build();
-    prefs_->SetManagedPref(pref_names::kInstallForceList, std::move(dict));
-
-    EXPECT_CALL(policy_provider_, IsInitializationComplete(_))
-        .WillRepeatedly(Return(true));
-    policy::PolicyMap map;
-    map.Set("ExtensionInstallForcelist", policy::POLICY_LEVEL_MANDATORY,
-            policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_PLATFORM,
-            std::move(list), nullptr);
-    policy_provider_.UpdateChromePolicy(map);
-    base::RunLoop().RunUntilIdle();
   }
 
   void SetupExtensionManagementPref() {
@@ -203,17 +145,6 @@ class ForceInstalledMetricsTest : public testing::Test,
                            DictionaryBuilder()
                                .Set(kExtensionId1, std::move(extension_entry))
                                .Build());
-  }
-
-  void SetupEmptyForceList() {
-    std::unique_ptr<base::Value> dict = DictionaryBuilder().Build();
-    prefs_->SetManagedPref(pref_names::kInstallForceList, std::move(dict));
-
-    EXPECT_CALL(policy_provider_, IsInitializationComplete(_))
-        .WillRepeatedly(Return(true));
-    policy::PolicyMap map;
-    policy_provider_.UpdateChromePolicy(std::move(map));
-    base::RunLoop().RunUntilIdle();
   }
 
   // Report downloading manifest stage for both the extensions.
@@ -244,18 +175,8 @@ class ForceInstalledMetricsTest : public testing::Test,
   void OnForceInstalledExtensionsReady() override { ready_call_count_++; }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  policy::MockConfigurationPolicyProvider policy_provider_;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
-  sync_preferences::TestingPrefServiceSyncable* prefs_;
-  ExtensionRegistry* registry_;
-  InstallStageTracker* install_stage_tracker_;
   base::HistogramTester histogram_tester_;
-
   base::MockOneShotTimer* fake_timer_;
-  std::unique_ptr<ForceInstalledTracker> tracker_;
   std::unique_ptr<ForceInstalledMetrics> metrics_;
 
   ScopedObserver<ForceInstalledTracker, ForceInstalledTracker::Observer>
