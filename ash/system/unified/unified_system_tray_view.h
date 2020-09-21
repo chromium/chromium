@@ -18,6 +18,7 @@ namespace ash {
 class FeaturePodButton;
 class FeaturePodsContainerView;
 class TopShortcutsView;
+class UnifiedMediaControlsContainer;
 class NotificationHiddenView;
 class PageIndicatorView;
 class UnifiedManagedDeviceView;
@@ -86,6 +87,9 @@ class ASH_EXPORT UnifiedSystemTrayView : public views::View,
   // Add slider view.
   void AddSliderView(views::View* slider_view);
 
+  // Add media controls view to |media_controls_container_|;
+  void AddMediaControlsView(views::View* media_controls);
+
   // Hide the main view and show the given |detailed_view|.
   void SetDetailedView(views::View* detailed_view);
 
@@ -131,6 +135,10 @@ class ASH_EXPORT UnifiedSystemTrayView : public views::View,
   // Returns true if a detailed view is being shown in the tray. (e.g Bluetooth
   // Settings).
   bool IsDetailedViewShown() const;
+
+  // Show and hide media controls view.
+  void ShowMediaControls();
+  void HideMediaControls();
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
@@ -189,6 +197,9 @@ class ASH_EXPORT UnifiedSystemTrayView : public views::View,
   UnifiedSystemInfoView* const system_info_view_;
   SystemTrayContainer* const system_tray_container_;
   views::View* const detailed_view_container_;
+
+  // Null if media::kGlobalMediaControlsForChromeOS is disabled.
+  UnifiedMediaControlsContainer* media_controls_container_ = nullptr;
 
   // Null if kManagedDeviceUIRedesign is disabled.
   UnifiedManagedDeviceView* managed_device_view_ = nullptr;

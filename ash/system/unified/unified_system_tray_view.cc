@@ -12,6 +12,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/media/unified_media_controls_container.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
 #include "ash/system/message_center/unified_message_center_view.h"
 #include "ash/system/tray/interacted_by_tap_recorder.h"
@@ -27,6 +28,7 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "media/base/media_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/canvas.h"
@@ -238,6 +240,13 @@ UnifiedSystemTrayView::UnifiedSystemTrayView(
   add_layered_child(system_tray_container_, top_shortcuts_view_);
   system_tray_container_->AddChildView(feature_pods_container_);
   system_tray_container_->AddChildView(page_indicator_view_);
+
+  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForChromeOS)) {
+    media_controls_container_ = new UnifiedMediaControlsContainer();
+    system_tray_container_->AddChildView(media_controls_container_);
+    media_controls_container_->SetExpandedAmount(expanded_amount_);
+  }
+
   system_tray_container_->AddChildView(sliders_container_);
 
   if (features::IsManagedDeviceUIRedesignEnabled()) {
@@ -267,12 +276,17 @@ void UnifiedSystemTrayView::SetMaxHeight(int max_height) {
       managed_device_view_ ? managed_device_view_->GetPreferredSize().height()
                            : 0;
 
+  int media_controls_container_height =
+      media_controls_container_ ? media_controls_container_->GetExpandedHeight()
+                                : 0;
+
   // FeaturePodsContainer can adjust it's height by reducing the number of rows
   // it uses. It will calculate how many rows to use based on the max height
   // passed here.
   feature_pods_container_->SetMaxHeight(
       max_height - top_shortcuts_view_->GetPreferredSize().height() -
       page_indicator_view_->GetPreferredSize().height() -
+      media_controls_container_height -
       sliders_container_->GetExpandedHeight() -
       system_info_view_->GetPreferredSize().height() -
       managed_device_view_height);
@@ -286,6 +300,25 @@ void UnifiedSystemTrayView::AddSliderView(views::View* slider_view) {
   slider_view->SetPaintToLayer();
   slider_view->layer()->SetFillsBoundsOpaquely(false);
   sliders_container_->AddChildView(slider_view);
+}
+
+void UnifiedSystemTrayView::AddMediaControlsView(views::View* media_controls) {
+  DCHECK(media_controls);
+  DCHECK(media_controls_container_);
+
+  media_controls->SetPaintToLayer();
+  media_controls->layer()->SetFillsBoundsOpaquely(false);
+  media_controls_container_->AddChildView(media_controls);
+}
+
+void UnifiedSystemTrayView::ShowMediaControls() {
+  media_controls_container_->SetShouldShowMediaControls(true);
+  PreferredSizeChanged();
+}
+
+void UnifiedSystemTrayView::HideMediaControls() {
+  media_controls_container_->SetShouldShowMediaControls(false);
+  PreferredSizeChanged();
 }
 
 void UnifiedSystemTrayView::SetDetailedView(views::View* detailed_view) {
@@ -329,6 +362,8 @@ void UnifiedSystemTrayView::SetExpandedAmount(double expanded_amount) {
   top_shortcuts_view_->SetExpandedAmount(expanded_amount);
   feature_pods_container_->SetExpandedAmount(expanded_amount);
   page_indicator_view_->SetExpandedAmount(expanded_amount);
+  if (media_controls_container_)
+    media_controls_container_->SetExpandedAmount(expanded_amount);
   sliders_container_->SetExpandedAmount(expanded_amount);
 
   PreferredSizeChanged();
@@ -341,6 +376,9 @@ int UnifiedSystemTrayView::GetExpandedSystemTrayHeight() const {
   int managed_device_view_height =
       managed_device_view_ ? managed_device_view_->GetPreferredSize().height()
                            : 0;
+  int media_controls_container_height =
+      media_controls_container_ ? media_controls_container_->GetExpandedHeight()
+                                : 0;
   return (notification_hidden_view_->GetVisible()
               ? notification_hidden_view_->GetPreferredSize().height()
               : 0) +
@@ -348,6 +386,7 @@ int UnifiedSystemTrayView::GetExpandedSystemTrayHeight() const {
          feature_pods_container_->GetExpandedHeight() +
          page_indicator_view_->GetExpandedHeight() +
          sliders_container_->GetExpandedHeight() +
+         media_controls_container_height +
          system_info_view_->GetPreferredSize().height() +
          managed_device_view_height;
 }

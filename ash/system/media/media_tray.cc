@@ -62,8 +62,8 @@ class GlobalMediaControlsTitleView : public views::View {
 }  // namespace
 
 MediaTray::MediaTray(Shelf* shelf) : TrayBackgroundView(shelf) {
-  DCHECK(MediaNotificationProvider::Get());
-  MediaNotificationProvider::Get()->AddObserver(this);
+  if (MediaNotificationProvider::Get())
+    MediaNotificationProvider::Get()->AddObserver(this);
 
   auto icon = std::make_unique<views::ImageView>();
   icon->SetTooltipText(l10n_util::GetStringUTF16(

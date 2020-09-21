@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
+#include "ash/system/media/unified_media_controls_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/macros.h"
 #include "ui/gfx/geometry/point.h"
@@ -24,6 +25,7 @@ namespace ash {
 class DetailedViewController;
 class FeaturePodControllerBase;
 class PaginationController;
+class UnifiedMediaControlsController;
 class UnifiedBrightnessSliderController;
 class UnifiedVolumeSliderController;
 class UnifiedSystemTrayBubble;
@@ -33,7 +35,8 @@ class UnifiedSystemTrayView;
 // Controller class of UnifiedSystemTrayView. Handles events of the view.
 class ASH_EXPORT UnifiedSystemTrayController
     : public views::AnimationDelegateViews,
-      public UnifiedVolumeSliderController::Delegate {
+      public UnifiedVolumeSliderController::Delegate,
+      public UnifiedMediaControlsController::Delegate {
  public:
   UnifiedSystemTrayController(UnifiedSystemTrayModel* model,
                               UnifiedSystemTrayBubble* bubble = nullptr,
@@ -127,6 +130,10 @@ class ASH_EXPORT UnifiedSystemTrayController
   // UnifiedVolumeSliderController::Delegate:
   void OnAudioSettingsButtonClicked() override;
 
+  // UnifedMediaControlsController::Delegate;
+  void ShowMediaControls() override;
+  void HideMediaControls() override;
+
   UnifiedSystemTrayModel* model() { return model_; }
 
   PaginationController* pagination_controller() {
@@ -211,6 +218,8 @@ class ASH_EXPORT UnifiedSystemTrayController
       feature_pod_controllers_;
 
   std::unique_ptr<PaginationController> pagination_controller_;
+
+  std::unique_ptr<UnifiedMediaControlsController> media_controls_controller_;
 
   // Controller of volume slider. Owned.
   std::unique_ptr<UnifiedVolumeSliderController> volume_slider_controller_;

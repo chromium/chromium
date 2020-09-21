@@ -27,6 +27,7 @@
 #include "ash/system/ime/unified_ime_detailed_view_controller.h"
 #include "ash/system/locale/locale_feature_pod_controller.h"
 #include "ash/system/locale/unified_locale_detailed_view_controller.h"
+#include "ash/system/media/unified_media_controls_controller.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_feature_pod_controller.h"
@@ -53,6 +54,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/ranges.h"
+#include "media/base/media_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/compositor/animation_metrics_reporter.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -129,6 +131,13 @@ UnifiedSystemTrayView* UnifiedSystemTrayController::CreateView() {
   DCHECK(!unified_view_);
   unified_view_ = new UnifiedSystemTrayView(this, model_->IsExpandedOnOpen());
   InitFeaturePods();
+
+  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForChromeOS)) {
+    media_controls_controller_ =
+        std::make_unique<UnifiedMediaControlsController>(this);
+    unified_view_->AddMediaControlsView(
+        media_controls_controller_->CreateView());
+  }
 
   volume_slider_controller_ =
       std::make_unique<UnifiedVolumeSliderController>(this);
@@ -405,6 +414,14 @@ void UnifiedSystemTrayController::AnimationCanceled(
 
 void UnifiedSystemTrayController::OnAudioSettingsButtonClicked() {
   ShowAudioDetailedView();
+}
+
+void UnifiedSystemTrayController::ShowMediaControls() {
+  unified_view_->ShowMediaControls();
+}
+
+void UnifiedSystemTrayController::HideMediaControls() {
+  unified_view_->HideMediaControls();
 }
 
 void UnifiedSystemTrayController::InitFeaturePods() {
