@@ -89640,8 +89640,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NativeSmbFileShare.MountCount" units="units"
-    expires_after="M85">
-  <owner>zentaro@chromium.org</owner>
+    expires_after="M94">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/chrome/browser/chromeos/smb_client/OWNERS</owner>
   <summary>
     The number of active mounts that a user has. This is recorded after a share
     has been successfully mounted.
@@ -89649,8 +89650,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NativeSmbFileShare.MountResult"
-    enum="NativeSmbFileShare_MountResult" expires_after="M85">
-  <owner>zentaro@chromium.org</owner>
+    enum="NativeSmbFileShare_MountResult" expires_after="M94">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/chrome/browser/chromeos/smb_client/OWNERS</owner>
   <summary>
     The result of the mount operation for Native SMB File Share. This is
     recorded after the D-Bus call to Mount returns.
