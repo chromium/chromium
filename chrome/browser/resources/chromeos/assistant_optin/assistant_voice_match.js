@@ -185,7 +185,8 @@ Polymer({
     this.$['already-setup-lottie'].setPlay(true);
     Polymer.RenderStatus.afterNextRender(
         this, () => this.$['agree-button'].focus());
-    if (loadTimeData.getBoolean('hotwordDspAvailable')) {
+    if (loadTimeData.getBoolean('hotwordDspAvailable') ||
+        loadTimeData.getBoolean('deviceHasNoBattery')) {
       this.$['no-dsp-message'].hidden = true;
     }
   },

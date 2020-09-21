@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/assistant_optin/assistant_optin_utils.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
@@ -147,6 +148,7 @@ void AssistantOptInFlowScreenHandler::RegisterMessages() {
 void AssistantOptInFlowScreenHandler::GetAdditionalParameters(
     base::DictionaryValue* dict) {
   dict->SetBoolean("hotwordDspAvailable", chromeos::IsHotwordDspAvailable());
+  dict->SetBoolean("deviceHasNoBattery", !DeviceHasBattery());
   dict->SetBoolean("voiceMatchDisabled",
                    chromeos::assistant::features::IsVoiceMatchDisabled());
   BaseScreenHandler::GetAdditionalParameters(dict);
@@ -601,6 +603,19 @@ void AssistantOptInFlowScreenHandler::HandleFlowInitialized(
 
   if (flow_type_ == ash::FlowType::kConsentFlow)
     SendGetSettingsRequest();
+}
+
+bool AssistantOptInFlowScreenHandler::DeviceHasBattery() {
+  // Assume that the device has a battery if we can't determine otherwise.
+  if (!chromeos::PowerManagerClient::Get())
+    return true;
+
+  auto status = PowerManagerClient::Get()->GetLastStatus();
+  if (!status.has_value() || !status->has_battery_state())
+    return true;
+
+  return status->battery_state() !=
+         power_manager::PowerSupplyProperties_BatteryState_NOT_PRESENT;
 }
 
 }  // namespace chromeos

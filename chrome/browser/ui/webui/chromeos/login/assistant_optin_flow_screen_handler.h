@@ -128,6 +128,9 @@ class AssistantOptInFlowScreenHandler
   void HandleFlowFinished();
   void HandleFlowInitialized(const int flow_type);
 
+  // Power related
+  bool DeviceHasBattery();
+
   AssistantOptInFlowScreen* screen_ = nullptr;
 
   base::OnceClosure on_initialized_;
