@@ -107,6 +107,8 @@ enum Strategy {
 struct MediumSelection {
   // Whether Bluetooth should be allowed.
   bool bluetooth;
+  // Whether BLE should be allowed.
+  bool ble;
   // Whether WebRTC should be allowed.
   bool web_rtc;
   // Whether WiFi LAN should be allowed.

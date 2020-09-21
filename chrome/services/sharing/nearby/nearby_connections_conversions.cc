@@ -129,6 +129,7 @@ BooleanMediumSelector MediumSelectorFromMojom(
     mojom::MediumSelection* allowed_mediums) {
   return BooleanMediumSelector{
       .bluetooth = allowed_mediums->bluetooth,
+      .ble = allowed_mediums->ble,
       .web_rtc = allowed_mediums->web_rtc,
       .wifi_lan = allowed_mediums->wifi_lan,
   };

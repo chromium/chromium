@@ -466,6 +466,7 @@ TEST_P(NearbyConnectionsManagerImplTestConnectionMediums,
   // TODO(crbug.com/1129069): Update when WiFi LAN is supported.
   auto expected_mediums = MediumSelection::New(
       /*bluetooth=*/true,
+      /*ble=*/false,
       /*web_rtc=*/should_use_web_rtc,
       /*wifi_lan=*/false);
 
@@ -1236,6 +1237,7 @@ TEST_P(NearbyConnectionsManagerImplTestMediums,
   // TODO(crbug.com/1129069): Update when WiFi LAN is supported.
   auto expected_mediums = MediumSelection::New(
       /*bluetooth=*/is_high_power,
+      /*ble=*/!is_high_power,
       /*web_rtc=*/should_use_web_rtc,
       /*wifi_lan=*/false);
 

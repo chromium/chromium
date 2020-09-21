@@ -48,6 +48,7 @@ const char kBluetoothMacAddress[] = {0x00, 0x00, 0xe6, 0x88, 0x64, 0x13};
 
 mojom::AdvertisingOptionsPtr CreateAdvertisingOptions() {
   auto allowed_mediums = mojom::MediumSelection::New(/*bluetooth=*/true,
+                                                     /*ble=*/false,
                                                      /*web_rtc=*/false,
                                                      /*wifi_lan=*/true);
   return mojom::AdvertisingOptions::New(
@@ -61,6 +62,7 @@ mojom::AdvertisingOptionsPtr CreateAdvertisingOptions() {
 mojom::ConnectionOptionsPtr CreateConnectionOptions(
     base::Optional<std::vector<uint8_t>> bluetooth_mac_address) {
   auto allowed_mediums = mojom::MediumSelection::New(/*bluetooth=*/true,
+                                                     /*ble=*/false,
                                                      /*web_rtc=*/false,
                                                      /*wifi_lan=*/true);
   return mojom::ConnectionOptions::New(std::move(allowed_mediums),
