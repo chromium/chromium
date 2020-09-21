@@ -1407,6 +1407,7 @@ public class StartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS})
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @DisabledTest
     public void testCloseTabViaCloseButton() throws Exception {
         // clang-format on
         mActivityTestRule.getActivity().getSnackbarManager().disableForTesting();
