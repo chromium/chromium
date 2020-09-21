@@ -881,6 +881,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/language/LanguageAskPrompt.java",
   "java/src/org/chromium/chrome/browser/language/settings/AddLanguageFragment.java",
   "java/src/org/chromium/chrome/browser/language/settings/AvailableUiLanguages.java",
+  "java/src/org/chromium/chrome/browser/language/settings/DetailedLanguageListPreference.java",
   "java/src/org/chromium/chrome/browser/language/settings/LanguageItem.java",
   "java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java",
   "java/src/org/chromium/chrome/browser/language/settings/LanguageListPreference.java",

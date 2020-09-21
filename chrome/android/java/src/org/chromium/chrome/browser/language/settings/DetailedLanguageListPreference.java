@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.language.AppLocaleUtils;
+import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.translate.TranslateBridge;
@@ -29,11 +32,12 @@ import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.widget.Toast;
 
 /**
  * A preference that displays the current accept language list.
  */
-public class LanguageListPreference extends Preference {
+public class DetailedLanguageListPreference extends Preference {
     private static class LanguageListAdapter
             extends LanguageListBaseAdapter implements LanguagesManager.AcceptLanguageObserver {
         private final Context mContext;
@@ -69,6 +73,17 @@ public class LanguageListPreference extends Preference {
                 menuItems.add(item);
             }
 
+            // Show "Use as language" and mark as checked if current item is set as language pref.
+            int endIconResId = AppLocaleUtils.isAppLanguagePref(info.getCode())
+                    ? R.drawable.ic_check_googblue_24dp
+                    : 0;
+            ListItem item =
+                    buildMenuListItemWithEndIcon(R.string.languages_set_application_language_prompt,
+                            0, endIconResId, info.isUISupported());
+            item.model.set(ListMenuItemProperties.TINT_COLOR_ID, R.color.default_icon_color_blue);
+
+            menuItems.add(item);
+
             int languageCount = getItemCount();
             // Enable "Remove" option if there are multiple accept languages.
             menuItems.add(buildMenuListItem(R.string.remove, 0, 0, languageCount > 1));
@@ -87,6 +102,7 @@ public class LanguageListPreference extends Preference {
                     menuItems.add(buildMenuListItem(R.string.menu_item_move_down, 0, 0));
                 }
             }
+
             ListMenu.Delegate delegate = (model) -> {
                 int textId = model.get(ListMenuItemProperties.TITLE_ID);
                 if (textId == R.string.languages_item_option_offer_to_translate) {
@@ -98,7 +114,13 @@ public class LanguageListPreference extends Preference {
                                               .ENABLE_TRANSLATE_FOR_SINGLE_LANGUAGE
                                     : LanguagesManager.LanguageSettingsActionType
                                               .DISABLE_TRANSLATE_FOR_SINGLE_LANGUAGE);
+                } else if (textId == R.string.languages_set_application_language_prompt) {
+                    updateOverrideLanguage(info);
                 } else if (textId == R.string.remove) {
+                    // If the removed language is the override language reset UI to system language.
+                    if (AppLocaleUtils.isAppLanguagePref(info.getCode())) {
+                        resetOverrideLanguage();
+                    }
                     LanguagesManager.getInstance().removeFromAcceptLanguages(info.getCode());
                     LanguagesManager.recordAction(
                             LanguagesManager.LanguageSettingsActionType.LANGUAGE_REMOVED);
@@ -119,6 +141,37 @@ public class LanguageListPreference extends Preference {
                     .setMenuButtonDelegate(() -> new BasicListMenu(mContext, menuItems, delegate));
         }
 
+        /**
+         * Updates the app language preference and shows Toast notifing user language
+         * will change after restart. If attempting to set the current app language pref
+         * instead reset override language to use system language.
+         * @param info LanguageItem to update application language to.
+         */
+        private void updateOverrideLanguage(LanguageItem info) {
+            String newLanguageCode = info.getCode();
+            if (AppLocaleUtils.isAppLanguagePref(newLanguageCode)) {
+                resetOverrideLanguage();
+                return;
+            }
+            // Set the language preference value. The UI will not change until a full restart.
+            AppLocaleUtils.setAppLanguagePref(newLanguageCode);
+            showAppLanguageToast(info.getDisplayName());
+        }
+
+        private void resetOverrideLanguage() {
+            AppLocaleUtils.setAppLanguagePref(null);
+            showAppLanguageToast(GlobalAppLocaleController.getInstance()
+                                         .getOriginalSystemLocale()
+                                         .getDisplayName());
+        }
+
+        private void showAppLanguageToast(String languageName) {
+            String appName = BuildInfo.getInstance().hostPackageLabel;
+            String text = mContext.getString(
+                    R.string.languages_set_as_application_language, appName, languageName);
+            Toast.makeText(mContext, text, Toast.LENGTH_LONG).show();
+        }
+
         @Override
         public void onDataUpdated() {
             if (mDragStateDelegate.getDragActive()) {
@@ -135,7 +188,7 @@ public class LanguageListPreference extends Preference {
     private LanguageListAdapter mAdapter;
     private AddLanguageFragment.Launcher mLauncher;
 
-    public LanguageListPreference(Context context, AttributeSet attrs) {
+    public DetailedLanguageListPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         mAdapter = new LanguageListAdapter(context);
     }
