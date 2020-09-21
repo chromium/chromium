@@ -317,6 +317,13 @@ extern const char kMobileGoogleSRPDescription[];
 extern const char kMobileIdentityConsistencyName[];
 extern const char kMobileIdentityConsistencyDescription[];
 
+// TODO(crbug.com/1128242): Remove this flag after the refactoring work is
+// finished.
+// Title and description for the flag used to test the newly
+// implemented tabstrip.
+extern const char kModernTabStripName[];
+extern const char kModernTabStripDescription[];
+
 // Title and description for the flag to preserve the default match when an
 // async match updates.
 extern const char kOmniboxPreserveDefaultMatchAgainstAsyncUpdateName[];

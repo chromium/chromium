@@ -3126,6 +3126,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "modern-tab-strip",
+    "owners": [ "nazerke", "bling-flags" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "mouse-subframe-no-implicit-capture",
     "owners": [ "eirage", "nzolghadr", "input-dev" ],
     "expiry_milestone": 84

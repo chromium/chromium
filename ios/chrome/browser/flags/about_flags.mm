@@ -693,6 +693,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"default-browser-setting", flag_descriptions::kDefaultBrowserSettingsName,
      flag_descriptions::kDefaultBrowserSettingsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDefaultBrowserSettings)},
+    {"modern-tab-strip", flag_descriptions::kModernTabStripName,
+     flag_descriptions::kModernTabStripDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kModernTabStrip)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

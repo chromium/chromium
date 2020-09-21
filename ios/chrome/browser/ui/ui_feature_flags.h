@@ -77,4 +77,8 @@ extern const base::Feature kDefaultBrowserFullscreenPromo;
 // Settings.app to update the default browser.
 extern const base::Feature kDefaultBrowserSettings;
 
+// TODO(crbug.com/1128242): Remove this flag after the refactoring work is
+// finished. Flag to modernize the tabstrip without disturbing the existing one.
+extern const base::Feature kModernTabStrip;
+
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

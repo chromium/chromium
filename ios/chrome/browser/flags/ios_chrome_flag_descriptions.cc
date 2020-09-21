@@ -365,6 +365,10 @@ const char kMobileIdentityConsistencyName[] = "Mobile identity consistency";
 const char kMobileIdentityConsistencyDescription[] =
     "Enables identity consistency on mobile by decoupling sync and sign-in.";
 
+const char kModernTabStripName[] = "Modern TabStrip";
+const char kModernTabStripDescription[] =
+    "When enabled, the newly implemented tabstrip can be tested.";
+
 const char kOmniboxPreserveDefaultMatchAgainstAsyncUpdateName[] =
     "Omnibox Preserve Default Match Against Async Update";
 const char kOmniboxPreserveDefaultMatchAgainstAsyncUpdateDescription[] =
