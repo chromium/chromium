@@ -413,6 +413,7 @@ void MediaPerceptionAPIManager::SendMojoInvitation(
                                  base::kNullProcessHandle,
                                  channel.TakeLocalEndpoint());
 
+  media_perception_service_.reset();
   media_perception_service_.Bind(
       mojo::PendingRemote<
           chromeos::media_perception::mojom::MediaPerceptionService>(
@@ -468,6 +469,7 @@ void MediaPerceptionAPIManager::OnBootstrapMojoConnection(
     return;
   }
 
+  media_perception_controller_.reset();
   auto controller_receiver =
       media_perception_controller_.BindNewPipeAndPassReceiver();
 
