@@ -15,7 +15,6 @@
 
 namespace views {
 class GridLayout;
-class Textfield;
 
 // BubbleDialogModelHost is a views implementation of ui::DialogModelHost which
 // hosts a ui::DialogModel as a BubbleDialogDelegateView. This exposes such as
@@ -69,12 +68,10 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
 
   void OnViewCreatedForField(View* view, ui::DialogModelField* field);
 
-  void NotifyTextfieldTextChanged(views::Textfield* textfield);
-
   View* FieldToView(ui::DialogModelField* field);
 
   std::unique_ptr<ui::DialogModel> model_;
-  base::flat_map<View*, ui::DialogModelField*> view_to_field_;
+  base::flat_map<ui::DialogModelField*, View*> field_to_view_;
   std::vector<PropertyChangedSubscription> property_changed_subscriptions_;
 };
 

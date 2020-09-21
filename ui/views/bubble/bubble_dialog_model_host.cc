@@ -188,7 +188,7 @@ void BubbleDialogModelHost::Close() {
 
   // TODO(pbos): Consider turning this into for-each-field remove field.
   RemoveAllChildViews(true);
-  view_to_field_.clear();
+  field_to_view_.clear();
   model_.reset();
 }
 
@@ -371,9 +371,13 @@ View* BubbleDialogModelHost::AddOrUpdateTextfield(
                                    : model->accessible_name(GetPassKey()));
   textfield->SetText(model->text());
 
-  property_changed_subscriptions_.push_back(textfield->AddTextChangedCallback(
-      base::BindRepeating(&BubbleDialogModelHost::NotifyTextfieldTextChanged,
-                          base::Unretained(this), textfield.get())));
+  property_changed_subscriptions_.push_back(
+      textfield->AddTextChangedCallback(base::BindRepeating(
+          [](ui::DialogModelTextfield* model,
+             util::PassKey<DialogModelHost> pass_key, Textfield* textfield) {
+            model->OnTextChanged(pass_key, textfield->GetText());
+          },
+          model, GetPassKey(), textfield.get())));
 
   auto* textfield_ptr = textfield.get();
   AddLabelAndField(model->label(GetPassKey()), std::move(textfield),
@@ -397,35 +401,24 @@ void BubbleDialogModelHost::AddLabelAndField(const base::string16& label_text,
   layout->AddView(std::move(field));
 }
 
-void BubbleDialogModelHost::NotifyTextfieldTextChanged(Textfield* textfield) {
-  view_to_field_[textfield]
-      ->AsTextfield(GetPassKey())
-      ->OnTextChanged(GetPassKey(), textfield->GetText());
-}
-
 void BubbleDialogModelHost::OnViewCreatedForField(View* view,
                                                   ui::DialogModelField* field) {
 #if DCHECK_IS_ON()
   // Make sure neither view nor field has been previously used.
-  for (const auto& kv : view_to_field_) {
-    DCHECK_NE(kv.first, view);
-    DCHECK_NE(kv.second, field);
+  for (const auto& kv : field_to_view_) {
+    DCHECK_NE(kv.first, field);
+    DCHECK_NE(kv.second, view);
   }
 #endif  // DCHECK_IS_ON()
-  view_to_field_[view] = field;
+  field_to_view_[field] = view;
   for (const auto& accelerator : field->accelerators(GetPassKey()))
     view->AddAccelerator(accelerator);
 }
 
 View* BubbleDialogModelHost::FieldToView(ui::DialogModelField* field) {
   DCHECK(field);
-  for (auto& kv : view_to_field_) {
-    if (kv.second == field)
-      return kv.first;
-  }
-
-  NOTREACHED();
-  return nullptr;
+  DCHECK(field_to_view_[field]);
+  return field_to_view_[field];
 }
 
 std::unique_ptr<View> BubbleDialogModelHost::CreateViewForLabel(
