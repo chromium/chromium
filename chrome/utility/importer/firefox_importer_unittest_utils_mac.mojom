@@ -4,7 +4,7 @@
 
 module firefox_importer_unittest_utils_mac.mojom;
 
-import "components/autofill/core/common/mojom/autofill_types.mojom";
+import "chrome/common/importer/profile_import.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 
@@ -19,5 +19,5 @@ interface FirefoxDecryptor {
   // Parses the Firefox sqlite passwords database and returns the list of
   // credentials.
   ParseSignons(mojo_base.mojom.FilePath sqlite_file) =>
-      (array<autofill.mojom.PasswordForm> parsed_vector);
+      (array<chrome.mojom.ImportedPasswordForm> parsed_vector);
 };

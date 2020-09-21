@@ -3208,6 +3208,7 @@ if (is_mac) {
     sources =
         [ "../utility/importer/firefox_importer_unittest_utils_mac.mojom" ]
     public_deps = [
+      "//chrome/common/importer:interfaces",
       "//components/autofill/core/common/mojom:mojo_types",
       "//mojo/public/mojom/base",
     ]

@@ -33,6 +33,8 @@ enum SubmissionIndicatorEvent {
 // essentially a digest of |autofill::ServerFieldType|. Note that we cannot
 // simply reuse |autofill::ServerFieldType| as it is defined in the browser,
 // while this enum will be used by both the browser and renderer.
+// TODO(https://crbug.com/1067347): move this enum to browser code. It is not
+// used in Mojo anymore.
 enum PasswordFormFieldPredictionType {
   kUsername,
   kCurrentPassword,
@@ -234,81 +236,6 @@ struct PasswordGenerationUIData {
   bool is_generation_element_password_type;
   mojo_base.mojom.TextDirection text_direction;
   FormData form_data;
-};
-
-// autofill::ValueElementPair
-struct ValueElementPair {
-  mojo_base.mojom.String16 value;
-  mojo_base.mojom.String16 field_name;
-};
-
-// autofill::PasswordForm
-struct PasswordForm {
-  // Enum to differentiate between HTML form based authentication, and dialogs
-  // using basic or digest schemes. Default is kHtml. Only PasswordForms of the
-  // same Scheme will be matched/autofilled against each other.
-  enum Scheme {
-    kHtml,
-    kBasic,
-    kDigest,
-    kOther,
-    kUsernameOnly,
-  };
-
-  // Enum to differentiate between manually filled forms, forms with auto-
-  // generated passwords, and forms generated from the DOM API.
-  //
-  // Always append new types at the end. This enum is converted to int and
-  // stored in password store backends, so it is important to keep each
-  // value assigned to the same integer.
-  enum Type {
-    kManual,
-    kGenerated,
-    kApi,
-  };
-
-  // Enum to keep track of what information has been sent to the server about
-  // this form regarding password generation.
-  enum GenerationUploadStatus {
-    kNoSignalSent,
-    kPositiveSignalSent,
-    kNegativeSignalSent,
-    // Reserve a few values for future use.
-    kUnknownStatus = 10,
-  };
-
-  Scheme scheme;
-  string signon_realm;
-  url.mojom.Url url;
-  url.mojom.Url action;
-  string affiliated_web_realm;
-  mojo_base.mojom.String16 submit_element;
-  mojo_base.mojom.String16 username_element;
-  mojo_base.mojom.String16 username_value;
-  array<ValueElementPair> all_possible_usernames;
-  array<ValueElementPair> all_possible_passwords;
-  bool form_has_autofilled_value;
-  mojo_base.mojom.String16 password_element;
-  mojo_base.mojom.String16 password_value;
-  mojo_base.mojom.String16 new_password_element;
-  mojo_base.mojom.String16 new_password_value;
-  mojo_base.mojom.String16 confirmation_password_element;
-  mojo_base.mojom.Time date_created;
-  mojo_base.mojom.Time date_synced;
-  bool blocked_by_user;
-  Type type;
-  int32 times_used;
-  FormData form_data;
-  GenerationUploadStatus generation_upload_status;
-  mojo_base.mojom.String16 display_name;
-  url.mojom.Url icon_url;
-  url.mojom.Origin federation_origin;
-  bool skip_zero_click;
-  bool was_parsed_using_autofill_predictions;
-  bool is_public_suffix_match;
-  bool is_affiliation_based_match;
-  SubmissionIndicatorEvent submission_event;
-  bool only_for_fallback;
 };
 
 // autofill::ParsingResult

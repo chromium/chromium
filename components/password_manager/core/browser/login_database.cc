@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -593,6 +594,16 @@ PasswordForm GetFormForRemoval(const sql::Statement& statement) {
   return form;
 }
 #endif
+
+// This converts `i` to type `Enum`. Terminates in case `i` is outside the valid
+// ranges for `Enum`. Requires `Enum::kMinValue` and `Enum::kMaxValue` to exist
+// and have correct semantics.
+template <typename Enum>
+Enum ToEnumOrDie(int i) {
+  CHECK_LE(static_cast<int>(Enum::kMinValue), i);
+  CHECK_GE(static_cast<int>(Enum::kMaxValue), i);
+  return static_cast<Enum>(i);
+}
 
 }  // namespace
 
@@ -1422,12 +1433,9 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
   form->date_created =
       base::Time::FromInternalValue(s.ColumnInt64(COLUMN_DATE_CREATED));
   form->blocked_by_user = (s.ColumnInt(COLUMN_BLACKLISTED_BY_USER) > 0);
-  int scheme_int = s.ColumnInt(COLUMN_SCHEME);
-  form->scheme = static_cast<PasswordForm::Scheme>(scheme_int);
-  DCHECK(autofill::mojom::IsKnownEnumValue(form->scheme));
-  int type_int = s.ColumnInt(COLUMN_PASSWORD_TYPE);
-  form->type = static_cast<PasswordForm::Type>(type_int);
-  DCHECK(autofill::mojom::IsKnownEnumValue(form->type));
+  form->scheme = ToEnumOrDie<PasswordForm::Scheme>(s.ColumnInt(COLUMN_SCHEME));
+  form->type =
+      ToEnumOrDie<PasswordForm::Type>(s.ColumnInt(COLUMN_PASSWORD_TYPE));
   if (s.ColumnByteLength(COLUMN_POSSIBLE_USERNAME_PAIRS)) {
     base::Pickle pickle(
         static_cast<const char*>(s.ColumnBlob(COLUMN_POSSIBLE_USERNAME_PAIRS)),
@@ -1454,11 +1462,9 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
   form->federation_origin =
       url::Origin::Create(GURL(s.ColumnString(COLUMN_FEDERATION_URL)));
   form->skip_zero_click = (s.ColumnInt(COLUMN_SKIP_ZERO_CLICK) > 0);
-  int generation_upload_status_int =
-      s.ColumnInt(COLUMN_GENERATION_UPLOAD_STATUS);
   form->generation_upload_status =
-      static_cast<PasswordForm::GenerationUploadStatus>(
-          generation_upload_status_int);
+      ToEnumOrDie<PasswordForm::GenerationUploadStatus>(
+          s.ColumnInt(COLUMN_GENERATION_UPLOAD_STATUS));
   form->date_last_used = base::Time::FromDeltaSinceWindowsEpoch(
       base::TimeDelta::FromMicroseconds(s.ColumnInt64(COLUMN_DATE_LAST_USED)));
   if (s.ColumnByteLength(COLUMN_MOVING_BLOCKED_FOR)) {
@@ -1467,8 +1473,6 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
         s.ColumnByteLength(COLUMN_MOVING_BLOCKED_FOR));
     form->moving_blocked_for_list = DeserializeGaiaIdHashVector(pickle);
   }
-
-  DCHECK(autofill::mojom::IsKnownEnumValue(form->generation_upload_status));
   return ENCRYPTION_RESULT_SUCCESS;
 }
 

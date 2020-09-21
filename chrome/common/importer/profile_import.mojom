@@ -4,7 +4,6 @@
 
 module chrome.mojom;
 
-import "components/autofill/core/common/mojom/autofill_types.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
@@ -32,6 +31,27 @@ struct ImporterIE7PasswordInfo;
 [Native]
 enum ImportItem;
 
+// Represents information about an imported password form. Typemapped to
+// autofill::PasswordForm.
+struct ImportedPasswordForm {
+  // Enum to differentiate between HTML form based authentication, and dialogs
+  // using basic or digest schemes. Default is kHtml.
+  enum Scheme {
+    kHtml,
+    kBasic,
+  };
+
+  Scheme scheme;
+  string signon_realm;
+  url.mojom.Url url;
+  url.mojom.Url action;
+  mojo_base.mojom.String16 username_element;
+  mojo_base.mojom.String16 username_value;
+  mojo_base.mojom.String16 password_element;
+  mojo_base.mojom.String16 password_value;
+  bool blocked_by_user;
+};
+
 // These are messages sent from the profile import process to the browser.
 // These messages send information about the status of the import and individual
 // import tasks.
@@ -54,7 +74,7 @@ interface ProfileImportObserver {
   OnBookmarksImportGroup(array<ImportedBookmarkEntry> bookmarks_group);
   OnFaviconsImportStart(uint32 total_favicons_count);
   OnFaviconsImportGroup(FaviconUsageDataList favicons_group);
-  OnPasswordFormImportReady(autofill.mojom.PasswordForm form);
+  OnPasswordFormImportReady(ImportedPasswordForm form);
   OnKeywordsImportReady(
       array<SearchEngineInfo> search_engines,
       bool unique_on_host_and_path);

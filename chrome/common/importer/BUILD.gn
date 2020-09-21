@@ -48,17 +48,27 @@ mojom("interfaces") {
           mojom = "chrome.mojom.ImportItem"
           cpp = "::importer::ImportItem"
         },
+        {
+          mojom = "chrome.mojom.ImportedPasswordForm"
+          cpp = "::autofill::PasswordForm"
+        },
       ]
       traits_headers = [
         "//chrome/common/importer/imported_bookmark_entry.h",
         "//chrome/common/importer/importer_autofill_form_data_entry.h",
         "//chrome/common/importer/importer_data_types.h",
         "//chrome/common/importer/importer_url_row.h",
+        "//components/autofill/core/common/password_form.h",
         "//components/favicon_base/favicon_usage_data.h",
       ]
-      traits_private_headers = [ "profile_import_process_param_traits.h" ]
+      traits_private_headers = [
+        "profile_import_process_param_traits.h",
+        "profile_import_process_param_traits_macros.h",
+      ]
+      traits_sources = [ "profile_import_process_param_traits.cc" ]
       traits_public_deps = [
         "//chrome/common",
+        "//components/autofill/core/common",
         "//components/favicon_base",
         "//ipc",
       ]
@@ -90,9 +100,6 @@ source_set("importer") {
     "importer_type.h",
     "importer_url_row.cc",
     "importer_url_row.h",
-    "profile_import_process_param_traits.cc",
-    "profile_import_process_param_traits.h",
-    "profile_import_process_param_traits_macros.h",
     "pstore_declarations.h",
     "safari_importer_utils.h",
     "safari_importer_utils.mm",
