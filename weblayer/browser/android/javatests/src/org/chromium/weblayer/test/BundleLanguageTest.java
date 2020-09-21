@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.Build.VERSION_CODES;
 import android.util.SparseArray;
 
 import androidx.test.filters.SmallTest;
@@ -18,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.weblayer.TestWebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
@@ -46,6 +48,8 @@ public class BundleLanguageTest {
 
     @Test
     @SmallTest
+    @DisableIf.
+    Build(sdk_is_greater_than = VERSION_CODES.O_MR1, message = "https://crbug.com/1130660")
     public void testWebLayerString() throws Exception {
         // The bundle tests have both "es" and "fr" splits installed, so each of these should have a
         // separate translation.
@@ -62,6 +66,8 @@ public class BundleLanguageTest {
 
     @Test
     @SmallTest
+    @DisableIf.
+    Build(sdk_is_greater_than = VERSION_CODES.O_MR1, message = "https://crbug.com/1130660")
     public void testSharedString() throws Exception {
         // This string is shared with WebView, so should have a separate translation for all
         // locales, even locales without splits installed.
