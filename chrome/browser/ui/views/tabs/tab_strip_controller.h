@@ -102,6 +102,7 @@ class TabStripController {
   // not successfully switched.
   virtual bool ToggleTabGroupCollapsedState(
       const tab_groups::TabGroupId group,
+      bool from_mouse_event,
       bool record_user_action = false) = 0;
 
   // Shows a context menu for the tab at the specified point in screen coords.

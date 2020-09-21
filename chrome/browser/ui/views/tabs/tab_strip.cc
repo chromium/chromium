@@ -1383,7 +1383,7 @@ void TabStrip::AddTabToGroup(base::Optional<tab_groups::TabGroupId> group,
   // active tab is not in the group.
   if (model_index == selected_tabs_.active() && group.has_value() &&
       controller()->IsGroupCollapsed(group.value())) {
-    controller()->ToggleTabGroupCollapsedState(group.value());
+    controller()->ToggleTabGroupCollapsedState(group.value(), false);
   }
 
   ExitTabClosingMode();
@@ -1418,6 +1418,33 @@ void TabStrip::OnGroupVisualsChanged(const tab_groups::TabGroupId& group) {
   // The group title may have changed size, so update bounds.
   UpdateIdealBounds();
   AnimateToIdealBounds();
+}
+
+void TabStrip::ToggleTabGroup(const tab_groups::TabGroupId& group,
+                              bool is_collapsing,
+                              bool from_mouse_event) {
+  if (is_collapsing && from_mouse_event) {
+    in_tab_close_ = true;
+    if (GetWidget())
+      AddMessageLoopObserver();
+
+    // The current group header is expanded which is slightly smaller than the
+    // size when the header is collapsed. Calculate the size of the header once
+    // collapsed for maintaining its position. See
+    // TabGroupHeader::CalculateWidth() for more details.
+    const int empty_group_title_adjustment =
+        GetGroupTitle(group).empty() ? 2 : -2;
+    const int title_chip_width =
+        group_views_[group]->header()->GetTabSizeInfo().standard_width -
+        2 * TabStyle::GetTabOverlap() - empty_group_title_adjustment;
+    const int collapsed_header_width =
+        title_chip_width + 2 * TabGroupUnderline::GetStrokeInset();
+    override_available_width_for_tabs_ =
+        ideal_bounds(GetModelCount() - 1).right() -
+        group_views_[group]->GetBounds().width() + collapsed_header_width;
+  } else {
+    ExitTabClosingMode();
+  }
 }
 
 void TabStrip::OnGroupMoved(const tab_groups::TabGroupId& group) {
@@ -1566,7 +1593,7 @@ void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
       // If the tab that is about to be activated is in a collapsed group,
       // automatically expand the group.
       if (controller()->IsGroupCollapsed(new_group))
-        controller()->ToggleTabGroupCollapsedState(new_group);
+        controller()->ToggleTabGroupCollapsedState(new_group, false);
       UpdateTabGroupVisuals(new_group);
     }
 

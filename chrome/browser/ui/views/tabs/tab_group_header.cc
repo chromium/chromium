@@ -121,7 +121,7 @@ bool TabGroupHeader::OnKeyPressed(const ui::KeyEvent& event) {
       // editor bubble to toggling the collapsed state of the group.
       bool successful_toggle =
           tab_strip_->controller()->ToggleTabGroupCollapsedState(
-              group().value(), true);
+              group().value(), false);
       if (successful_toggle) {
 #if defined(OS_WIN)
         NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);

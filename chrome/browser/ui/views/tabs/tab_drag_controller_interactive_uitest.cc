@@ -2278,7 +2278,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_THAT(model->group_model()->GetTabGroup(group)->ListTabs(),
               testing::ElementsAre(1, 2));
   EXPECT_FALSE(model->IsGroupCollapsed(group));
-  tab_strip->controller()->ToggleTabGroupCollapsedState(group);
+  tab_strip->controller()->ToggleTabGroupCollapsedState(group, false);
   StopAnimating(tab_strip);
   EXPECT_TRUE(model->IsGroupCollapsed(group));
 
@@ -2313,7 +2313,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_THAT(model->group_model()->GetTabGroup(group)->ListTabs(),
               testing::ElementsAre(1, 2));
   EXPECT_FALSE(model->IsGroupCollapsed(group));
-  tab_strip->controller()->ToggleTabGroupCollapsedState(group);
+  tab_strip->controller()->ToggleTabGroupCollapsedState(group, false);
   StopAnimating(tab_strip);
   EXPECT_TRUE(model->IsGroupCollapsed(group));
 
@@ -2344,7 +2344,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(model->IsGroupCollapsed(group));
   EnsureFocusToTabStrip(tab_strip);
 
-  tab_strip->controller()->ToggleTabGroupCollapsedState(group);
+  tab_strip->controller()->ToggleTabGroupCollapsedState(group, false);
   StopAnimating(tab_strip);
   EXPECT_TRUE(model->IsGroupCollapsed(group));
 
@@ -2378,7 +2378,7 @@ IN_PROC_BROWSER_TEST_P(
   AddTabsAndResetBrowser(browser(), 3);
   tab_groups::TabGroupId group1 = model->AddToNewGroup({0, 1});
   EXPECT_FALSE(model->IsGroupCollapsed(group1));
-  tab_strip->controller()->ToggleTabGroupCollapsedState(group1);
+  tab_strip->controller()->ToggleTabGroupCollapsedState(group1, false);
   StopAnimating(tab_strip);
   EXPECT_TRUE(model->IsGroupCollapsed(group1));
   tab_groups::TabGroupId group2 = model->AddToNewGroup({2, 3});
@@ -2433,7 +2433,7 @@ IN_PROC_BROWSER_TEST_P(
   tab_groups::TabGroupId group2 = model->AddToNewGroup({2, 3});
 
   EXPECT_FALSE(model->IsGroupCollapsed(group2));
-  tab_strip->controller()->ToggleTabGroupCollapsedState(group2);
+  tab_strip->controller()->ToggleTabGroupCollapsedState(group2, false);
   StopAnimating(tab_strip);
   EXPECT_TRUE(model->IsGroupCollapsed(group2));
 
@@ -2480,7 +2480,7 @@ IN_PROC_BROWSER_TEST_P(
   AddTabsAndResetBrowser(browser(), 2);
   tab_groups::TabGroupId group = model->AddToNewGroup({0, 1});
   EXPECT_FALSE(model->IsGroupCollapsed(group));
-  tab_strip->controller()->ToggleTabGroupCollapsedState(group);
+  tab_strip->controller()->ToggleTabGroupCollapsedState(group, false);
   StopAnimating(tab_strip);
   EXPECT_TRUE(model->IsGroupCollapsed(group));
 

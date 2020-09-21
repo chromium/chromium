@@ -189,6 +189,11 @@ class TabStrip : public views::AccessiblePaneView,
   // |TabStripController::GetGroupColorId(group)| changes.
   void OnGroupVisualsChanged(const tab_groups::TabGroupId& group);
 
+  // Handles animations relating to toggling the collapsed state of a group.
+  void ToggleTabGroup(const tab_groups::TabGroupId& group,
+                      bool is_collapsing,
+                      bool from_mouse_event);
+
   // Updates the ordering of the group header when the whole group is moved.
   // Needed to ensure display and focus order of the group header view.
   void OnGroupMoved(const tab_groups::TabGroupId& group);

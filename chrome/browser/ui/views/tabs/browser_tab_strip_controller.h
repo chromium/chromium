@@ -82,6 +82,7 @@ class BrowserTabStripController : public TabStripController,
   void MoveTab(int start_index, int final_index) override;
   void MoveGroup(const tab_groups::TabGroupId& group, int final_index) override;
   bool ToggleTabGroupCollapsedState(const tab_groups::TabGroupId group,
+                                    bool from_mouse_event,
                                     bool record_user_action) override;
   void ShowContextMenuForTab(Tab* tab,
                              const gfx::Point& p,

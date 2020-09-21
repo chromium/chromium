@@ -385,6 +385,7 @@ void BrowserTabStripController::MoveGroup(const tab_groups::TabGroupId& group,
 
 bool BrowserTabStripController::ToggleTabGroupCollapsedState(
     const tab_groups::TabGroupId group,
+    bool from_mouse_event,
     bool record_user_action) {
   const bool is_currently_collapsed = IsGroupCollapsed(group);
   if (is_currently_collapsed) {
@@ -418,6 +419,7 @@ bool BrowserTabStripController::ToggleTabGroupCollapsedState(
           base::UserMetricsAction("TabGroups_TabGroupHeader_Collapsed"));
     }
   }
+  tabstrip_->ToggleTabGroup(group, !is_currently_collapsed, from_mouse_event);
 
   std::vector<int> tabs_in_group = ListTabsInGroup(group);
   for (int i : tabs_in_group) {
