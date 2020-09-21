@@ -274,6 +274,7 @@ void HttpFirewallRoutine::AttemptSocketConnections() {
       static_cast<double>(num_hostnames_to_query_);
   if (dns_resolution_success_rate < kDnsResolutionSuccessRateThreshold) {
     AnalyzeResultsAndExecuteCallback();
+    return;
   }
 
   // Create a socket for each address and port combination.
