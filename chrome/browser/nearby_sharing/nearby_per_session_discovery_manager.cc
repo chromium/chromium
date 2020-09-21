@@ -53,7 +53,15 @@ NearbyPerSessionDiscoveryManager::~NearbyPerSessionDiscoveryManager() {
 void NearbyPerSessionDiscoveryManager::OnTransferUpdate(
     const ShareTarget& share_target,
     const TransferMetadata& transfer_metadata) {
-  DCHECK(transfer_update_listener_.is_bound());
+  if (!transfer_update_listener_.is_bound()) {
+    // This can happen when registering the send surface and an existing
+    // transfer is happening or recently happened.
+    NS_LOG(VERBOSE) << __func__
+                    << ": transfer_update_listener_ is not is_bound(), cannot "
+                       "forward transfer updates";
+    return;
+  }
+
   NS_LOG(VERBOSE) << __func__ << ": Nearby per-session discovery manager: "
                   << "Transfer update for share target with ID "
                   << share_target.id << ": "
@@ -62,8 +70,12 @@ void NearbyPerSessionDiscoveryManager::OnTransferUpdate(
 
   base::Optional<nearby_share::mojom::TransferStatus> status =
       GetTransferStatus(transfer_metadata);
-  if (!status)
+
+  if (!status) {
+    NS_LOG(VERBOSE) << __func__ << ": Nearby per-session discovery manager: "
+                    << " skipping status update, no mojo mapping defined yet.";
     return;
+  }
 
   transfer_update_listener_->OnTransferUpdate(*status,
                                               transfer_metadata.token());
@@ -126,6 +138,7 @@ void NearbyPerSessionDiscoveryManager::SelectShareTarget(
   // Bind update listener before calling the sharing service to get all updates.
   mojo::PendingReceiver<nearby_share::mojom::TransferUpdateListener> receiver =
       transfer_update_listener_.BindNewPipeAndPassReceiver();
+  transfer_update_listener_.reset_on_disconnect();
 
   NearbySharingService::StatusCodes status =
       nearby_sharing_service_->SendAttachments(iter->second,

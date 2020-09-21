@@ -411,3 +411,35 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, OnTransferUpdate_WaitLocal) {
   EXPECT_CALL(sharing_service(), UnregisterSendSurface(&manager(), &manager()))
       .WillOnce(testing::Return(NearbySharingService::StatusCodes::kOk));
 }
+
+TEST_F(NearbyPerSessionDiscoveryManagerTest, TransferUpdateWithoutListener) {
+  MockStartDiscoveryCallback callback;
+  EXPECT_CALL(callback, Run(/*success=*/true));
+
+  EXPECT_CALL(
+      sharing_service(),
+      RegisterSendSurface(&manager(), &manager(),
+                          NearbySharingService::SendSurfaceState::kForeground))
+      .WillOnce(testing::Return(NearbySharingService::StatusCodes::kOk));
+
+  EXPECT_CALL(sharing_service(), UnregisterSendSurface(&manager(), &manager()))
+      .Times(0);  // Should not be called!
+
+  MockShareTargetListener listener;
+  manager().StartDiscovery(listener.Bind(), callback.Get());
+
+  // It is possible that during registration if a transfer is in progress
+  // already we might get a transfer update before selecting the share target.
+  // This used to cause a crash due to transfer_update_listener_ not being
+  // bound.
+  ShareTarget share_target;
+  manager().OnTransferUpdate(
+      share_target, TransferMetadataBuilder()
+                        .set_status(TransferMetadata::Status::kComplete)
+                        .build());
+
+  // However, we do expect UnregisterSendSurface to be called from the
+  // destructor.
+  EXPECT_CALL(sharing_service(), UnregisterSendSurface(&manager(), &manager()))
+      .WillOnce(testing::Return(NearbySharingService::StatusCodes::kOk));
+}
