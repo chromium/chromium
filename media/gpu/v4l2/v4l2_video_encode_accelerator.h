@@ -281,7 +281,7 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   State encoder_state_;
 
   // For H264, for resilience, we prepend each IDR with SPS and PPS. Some
-  // devices support this via the V4L2_CID_MPEG_VIDEO_H264_SPS_PPS_BEFORE_IDR
+  // devices support this via the V4L2_CID_MPEG_VIDEO_PREPEND_SPSPPS_TO_IDR
   // control. For devices that don't, we cache the latest SPS and PPS and inject
   // them into the stream before every IDR.
   bool inject_sps_and_pps_ = false;
