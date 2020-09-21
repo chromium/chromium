@@ -37,11 +37,6 @@ class AddressAccessoryController
   static AddressAccessoryController* GetOrCreate(
       content::WebContents* web_contents);
 
-  // Returns a reference to the unique AddressAccessoryController associated
-  // with |web_contents|. Returns null if no such instance exists.
-  static AddressAccessoryController* GetIfExisting(
-      content::WebContents* web_contents);
-
   // Fetches suggestions and propagates them to the frontend.
   virtual void RefreshSuggestions() = 0;
 

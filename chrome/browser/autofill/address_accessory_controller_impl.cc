@@ -100,12 +100,6 @@ AddressAccessoryController* AddressAccessoryController::GetOrCreate(
   return AddressAccessoryControllerImpl::FromWebContents(web_contents);
 }
 
-// static
-AddressAccessoryController* AddressAccessoryController::GetIfExisting(
-    content::WebContents* web_contents) {
-  return AddressAccessoryControllerImpl::FromWebContents(web_contents);
-}
-
 void AddressAccessoryControllerImpl::OnFillingTriggered(
     const UserInfo::Field& selection) {
   // Since the data we fill is scoped to the profile and not to a frame, we can
