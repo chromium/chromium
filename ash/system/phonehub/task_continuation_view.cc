@@ -11,16 +11,17 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/view_model.h"
 
 namespace ash {
+
+using BrowserTabsModel = chromeos::phonehub::BrowserTabsModel;
 
 namespace {
 
 constexpr int kTaskContinuationHeaderSpacing = 8;
 constexpr gfx::Insets kTaskContinuationViewPadding(12, 4);
 constexpr gfx::Insets kPhoneHubSubHeaderPadding(4, 32);
-constexpr gfx::Size kTaskContinuationChipSize(170, 50);
+constexpr gfx::Size kTaskContinuationChipSize(170, 80);
 constexpr int kTaskContinuationChipsInRow = 2;
 constexpr int kTaskContinuationChipSpacing = 8;
 constexpr int kTaskContinuationChipVerticalPadding = 5;
@@ -46,77 +47,13 @@ class HeaderView : public views::View {
   const char* GetClassName() const override { return "HeaderView"; }
 };
 
-class ChipsView : public views::View {
- public:
-  ChipsView() {
-    // TODO(leandre): Add task chip to bubble using real data from phone.
-    AddTaskChip(new ContinueBrowsingChip());
-    AddTaskChip(new ContinueBrowsingChip());
-    AddTaskChip(new ContinueBrowsingChip());
-    AddTaskChip(new ContinueBrowsingChip());
-  }
-
-  ~ChipsView() override = default;
-  ChipsView(ChipsView&) = delete;
-  ChipsView operator=(ChipsView&) = delete;
-
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override {
-    int width =
-        kTaskContinuationChipSize.width() * kTaskContinuationChipsInRow +
-        kTaskContinuationChipSpacing;
-    int rows_num = std::ceil(
-        (double)(task_chips_.view_size() / kTaskContinuationChipsInRow));
-    int height = (kTaskContinuationChipSize.height() +
-                  kTaskContinuationChipVerticalPadding) *
-                     std::max(0, rows_num - 1) +
-                 kTaskContinuationChipSize.height();
-    return gfx::Size(width, height);
-  }
-
-  void Layout() override {
-    views::View::Layout();
-    CalculateIdealBounds();
-    for (int i = 0; i < task_chips_.view_size(); ++i) {
-      auto* button = task_chips_.view_at(i);
-      button->SetBoundsRect(task_chips_.ideal_bounds(i));
-    }
-  }
-
-  const char* GetClassName() const override { return "ChipsView"; }
-
- private:
-  gfx::Point GetButtonPosition(int index) {
-    int row = index / kTaskContinuationChipsInRow;
-    int column = index % kTaskContinuationChipsInRow;
-    int x = (kTaskContinuationChipSize.width() + kTaskContinuationChipSpacing) *
-            column;
-    int y = (kTaskContinuationChipSize.height() +
-             kTaskContinuationChipVerticalPadding) *
-            row;
-    return gfx::Point(x, y);
-  }
-
-  void CalculateIdealBounds() {
-    for (int i = 0; i < task_chips_.view_size(); ++i) {
-      gfx::Rect tile_bounds =
-          gfx::Rect(GetButtonPosition(i), kTaskContinuationChipSize);
-      task_chips_.set_ideal_bounds(i, tile_bounds);
-    }
-  }
-
-  void AddTaskChip(views::View* task_chip) {
-    int view_size = task_chips_.view_size();
-    task_chips_.Add(task_chip, view_size);
-    AddChildView(task_chip);
-  }
-
-  views::ViewModelT<views::View> task_chips_;
-};
-
 }  // namespace
 
-TaskContinuationView::TaskContinuationView() {
+TaskContinuationView::TaskContinuationView(
+    chromeos::phonehub::PhoneModel* phone_model)
+    : phone_model_(phone_model) {
+  phone_model_->AddObserver(this);
+
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kTaskContinuationViewPadding,
       kTaskContinuationHeaderSpacing));
@@ -124,13 +61,105 @@ TaskContinuationView::TaskContinuationView() {
       views::BoxLayout::CrossAxisAlignment::kStart);
 
   AddChildView(std::make_unique<HeaderView>());
-  AddChildView(std::make_unique<ChipsView>());
+  chips_view_ = AddChildView(std::make_unique<TaskChipsView>());
+
+  Update();
 }
 
-TaskContinuationView::~TaskContinuationView() = default;
+TaskContinuationView::~TaskContinuationView() {
+  phone_model_->RemoveObserver(this);
+}
+
+void TaskContinuationView::OnModelChanged() {
+  Update();
+}
 
 const char* TaskContinuationView::GetClassName() const {
   return "TaskContinuationView";
+}
+
+TaskContinuationView::TaskChipsView::TaskChipsView() = default;
+
+TaskContinuationView::TaskChipsView::~TaskChipsView() = default;
+
+void TaskContinuationView::TaskChipsView::AddTaskChip(views::View* task_chip) {
+  int view_size = task_chips_.view_size();
+  task_chips_.Add(task_chip, view_size);
+  AddChildView(task_chip);
+}
+
+// views::View:
+gfx::Size TaskContinuationView::TaskChipsView::CalculatePreferredSize() const {
+  int width = kTaskContinuationChipSize.width() * kTaskContinuationChipsInRow +
+              kTaskContinuationChipSpacing;
+  int rows_num =
+      std::ceil((double)task_chips_.view_size() / kTaskContinuationChipsInRow);
+  int height = (kTaskContinuationChipSize.height() +
+                kTaskContinuationChipVerticalPadding) *
+                   std::max(0, rows_num - 1) +
+               kTaskContinuationChipSize.height();
+  return gfx::Size(width, height);
+}
+
+void TaskContinuationView::TaskChipsView::Layout() {
+  views::View::Layout();
+  CalculateIdealBounds();
+  for (int i = 0; i < task_chips_.view_size(); ++i) {
+    auto* button = task_chips_.view_at(i);
+    button->SetBoundsRect(task_chips_.ideal_bounds(i));
+  }
+}
+
+const char* TaskContinuationView::TaskChipsView::GetClassName() const {
+  return "TaskChipsView";
+}
+
+void TaskContinuationView::TaskChipsView::Reset() {
+  task_chips_.Clear();
+  RemoveAllChildViews(true /* delete_children */);
+}
+
+gfx::Point TaskContinuationView::TaskChipsView::GetButtonPosition(int index) {
+  int row = index / kTaskContinuationChipsInRow;
+  int column = index % kTaskContinuationChipsInRow;
+  int x = (kTaskContinuationChipSize.width() + kTaskContinuationChipSpacing) *
+          column;
+  int y = (kTaskContinuationChipSize.height() +
+           kTaskContinuationChipVerticalPadding) *
+          row;
+  return gfx::Point(x, y);
+}
+
+void TaskContinuationView::TaskChipsView::CalculateIdealBounds() {
+  for (int i = 0; i < task_chips_.view_size(); ++i) {
+    gfx::Rect tile_bounds =
+        gfx::Rect(GetButtonPosition(i), kTaskContinuationChipSize);
+    task_chips_.set_ideal_bounds(i, tile_bounds);
+  }
+}
+
+void TaskContinuationView::Update() {
+  if (!phone_model_->browser_tabs_model()) {
+    SetVisible(false);
+    return;
+  }
+
+  const BrowserTabsModel& browser_tabs =
+      phone_model_->browser_tabs_model().value();
+
+  if (!browser_tabs.is_tab_sync_enabled() ||
+      browser_tabs.most_recent_tabs().empty()) {
+    SetVisible(false);
+    return;
+  }
+
+  chips_view_->Reset();
+  for (const BrowserTabsModel::BrowserTabMetadata& metadata :
+       browser_tabs.most_recent_tabs()) {
+    chips_view_->AddTaskChip(new ContinueBrowsingChip(metadata));
+  }
+
+  SetVisible(true);
 }
 
 }  // namespace ash

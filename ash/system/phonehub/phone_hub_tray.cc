@@ -71,8 +71,10 @@ class PhoneHubView : public views ::View {
 
     AddSeparator();
 
-    setup_layered_view(
-        bubble_view_->AddChildView(std::make_unique<TaskContinuationView>()));
+    if (phone_model) {
+      setup_layered_view(bubble_view->AddChildView(
+          std::make_unique<TaskContinuationView>(phone_model)));
+    }
   }
   ~PhoneHubView() override = default;
 
