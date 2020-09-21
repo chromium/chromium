@@ -13,6 +13,7 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/controls/table/table_view.h"
+#include "ui/views/controls/table/table_view_observer.h"
 
 namespace {
 
@@ -57,6 +58,9 @@ void DesktopMediaPickerViewsTestApi::PressMouseOnSourceAtIndex(
     // within a larger view would be breakage-prone; just ask the TableView to
     // to select.
     GetTableView()->Select(index);
+    if (double_click) {
+      GetTableView()->observer()->OnDoubleClick();
+    }
   }
 }
 
