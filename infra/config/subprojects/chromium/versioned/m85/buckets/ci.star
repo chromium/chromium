@@ -306,6 +306,7 @@ ci.dawn_builder(
         category = "DEPS|Linux|Builder",
         short_name = "x64",
     ),
+    pool = "luci.chromium.gpu.ci",
 )
 
 ci.dawn_builder(
@@ -468,6 +469,7 @@ ci.gpu_builder(
     ),
     cores = None,
     os = os.MAC_ANY,
+    pool = "luci.chromium.ci",
 )
 
 ci.gpu_builder(
