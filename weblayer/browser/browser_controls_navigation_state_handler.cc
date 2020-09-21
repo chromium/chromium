@@ -61,8 +61,10 @@ void BrowserControlsNavigationStateHandler::DidStartNavigation(
 void BrowserControlsNavigationStateHandler::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsInMainFrame()) {
-    if (navigation_handle->HasCommitted())
-      is_showing_error_page_ = navigation_handle->IsErrorPage();
+    if (!navigation_handle->HasCommitted()) {
+      // There will be no DidFinishLoad or DidFailLoad, so hide the topview
+      ScheduleStopDelayedForceShow();
+    }
     delegate_->OnUpdateBrowserControlsStateBecauseOfProcessSwitch(
         navigation_handle->HasCommitted());
   }
@@ -81,6 +83,10 @@ void BrowserControlsNavigationStateHandler::DidFailLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url,
     int error_code) {
+  const bool is_main_frame =
+      render_frame_host->GetMainFrame() == render_frame_host;
+  if (is_main_frame)
+    ScheduleStopDelayedForceShow();
   if (render_frame_host->IsCurrent() &&
       (render_frame_host == web_contents()->GetMainFrame())) {
     UpdateState();
