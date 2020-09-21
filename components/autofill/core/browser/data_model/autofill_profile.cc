@@ -461,8 +461,11 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
       return 1;
   }
 
+  // TODO(crbug.com/1130194): Remove feature check once structured addresses are
+  // fully launched.
   if (base::FeatureList::IsEnabled(
-          features::kAutofillAddressEnhancementVotes)) {
+          features::kAutofillAddressEnhancementVotes) ||
+      structured_address::StructuredAddressesEnabled()) {
     const ServerFieldType new_types[] = {
         ADDRESS_HOME_HOUSE_NUMBER,
         ADDRESS_HOME_STREET_NAME,
@@ -1342,6 +1345,21 @@ std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
          << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_LINE1)) << " "
          << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_LINE2)) << " "
          << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_LINE3)) << " "
+         << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS)) << " "
+         << "("
+         << base::NumberToString(
+                profile.GetVerificationStatusInt(ADDRESS_HOME_STREET_ADDRESS))
+         << ") " << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_STREET_NAME))
+         << " "
+         << "("
+         << base::NumberToString(
+                profile.GetVerificationStatusInt(ADDRESS_HOME_STREET_NAME))
+         << ") " << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER))
+         << " "
+         << "("
+         << base::NumberToString(
+                profile.GetVerificationStatusInt(ADDRESS_HOME_HOUSE_NUMBER))
+         << ") "
          << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY))
          << " " << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_CITY)) << " "
          << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_STATE)) << " "
@@ -1358,6 +1376,8 @@ std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
 bool AutofillProfile::FinalizeAfterImport() {
   bool success = true;
   if (!name_.FinalizeAfterImport(IsVerified()))
+    success = false;
+  if (!address_.FinalizeAfterImport(IsVerified()))
     success = false;
 
   return success;

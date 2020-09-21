@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/strings/string16.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
 
 namespace autofill {
@@ -37,6 +38,27 @@ class Address : public FormGroup {
 
   void ResetStructuredTokes();
 
+  // Derives all missing tokens in the structured representation of the address
+  // either parsing missing tokens from their assigned parent or by formatting
+  // them from their assigned children.
+  bool FinalizeAfterImport(bool profile_is_verified);
+
+  // Convenience wrapper to invoke finalization for unverified profiles.
+  bool FinalizeAfterImport() { return FinalizeAfterImport(false); }
+
+  // For structured addresses, merges |newer| into |this|. For some values
+  // within the structured address tree the more recently used profile gets
+  // precedence. |newer_was_more_recently_used| indicates if the newer was also
+  // more recently used.
+  bool MergeStructuredAddress(const Address& newer,
+                              bool newer_was_more_recently_used);
+
+  // For structured addresses, returns true if |this| is mergeable with |newer|.
+  bool IsStructuredAddressMergeable(const Address& newer) const;
+
+  // Returns a constant reference to |structured_address_|.
+  const structured_address::Address& GetStructuredAddress() const;
+
  private:
   // FormGroup:
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
@@ -48,9 +70,15 @@ class Address : public FormGroup {
       const std::string& locale,
       structured_address::VerificationStatus status) override;
 
+  // Return the verification status of a structured name value.
+  structured_address::VerificationStatus GetVerificationStatusImpl(
+      ServerFieldType type) const override;
+
   // Trims any trailing newlines from |street_address_|.
   void TrimStreetAddress();
 
+  // TODO(crbug.com/1130194): Clean legacy implementation once structured
+  // addresses are fully launched.
   // The lines of the street address.
   std::vector<base::string16> street_address_;
   // A subdivision of city, e.g. inner-city district or suburb.
@@ -73,6 +101,10 @@ class Address : public FormGroup {
   // The ISO 3166 2-letter country code, or an empty string if there is no
   // country data specified for this address.
   std::string country_code_;
+
+  // This data structure holds the address information if the structured address
+  // feature is enabled.
+  structured_address::Address structured_address_;
 };
 
 }  // namespace autofill

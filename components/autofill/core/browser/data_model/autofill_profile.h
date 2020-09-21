@@ -296,6 +296,9 @@ class AutofillProfile : public AutofillDataModel {
   // Returns a constant reference to the |name_| field.
   const NameInfo& GetNameInfo() const { return name_; }
 
+  // Returns a constant reference to the |address_| field.
+  const Address& GetAddress() const { return address_; }
+
  private:
   typedef std::vector<const FormGroup*> FormGroupList;
 
