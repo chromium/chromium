@@ -13,6 +13,9 @@
 // -wrap linker flags (e.g., libchrome.so) will be rewritten to the
 // linker as references to __wrap_malloc, __wrap_free, which are defined here.
 
+#include <algorithm>
+#include <cstring>
+
 #include "base/allocator/allocator_shim_internals.h"
 
 extern "C" {
@@ -49,6 +52,26 @@ SHIM_ALWAYS_EXPORT void* __wrap_realloc(void* address, size_t size) {
 
 SHIM_ALWAYS_EXPORT void* __wrap_valloc(size_t size) {
   return ShimValloc(size, nullptr);
+}
+
+// Override <string.h> functions
+
+SHIM_ALWAYS_EXPORT char* __wrap_strdup(const char* str) {
+  std::size_t length = std::strlen(str) + 1;
+  void* buffer = ShimMalloc(length, nullptr);
+  if (!buffer)
+    return nullptr;
+  return reinterpret_cast<char*>(std::memcpy(buffer, str, length));
+}
+
+SHIM_ALWAYS_EXPORT char* __wrap_strndup(const char* str, size_t n) {
+  std::size_t length = std::min(std::strlen(str), n);
+  char* buffer = reinterpret_cast<char*>(ShimMalloc(length + 1, nullptr));
+  if (!buffer)
+    return nullptr;
+  std::memcpy(buffer, str, length);
+  buffer[length] = '\0';
+  return buffer;
 }
 
 }  // extern "C"

@@ -296,5 +296,9 @@ config("wrap_malloc_symbols") {
     "-Wl,-wrap,pvalloc",
     "-Wl,-wrap,realloc",
     "-Wl,-wrap,valloc",
+
+    # <string.h> functions
+    "-Wl,-wrap,strdup",
+    "-Wl,-wrap,strndup",
   ]
 }
