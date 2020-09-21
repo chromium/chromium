@@ -375,7 +375,7 @@ var TelemetryExtensionUIWithProbeServiceErrorsBrowserTest =
 // Example: ['UntrustedAwesomeTest', 'MyAwesomeTestClass']
 const untrustedTests = [
   ['UntrustedCanSpawnWorkers'],
-  ['UntrustedRequestAvailableRoutines'],
+  ['UntrustedDiagnosticsRequestAvailableRoutines'],
   ['UntrustedDiagnosticsRequestRoutineUpdateUnknownArguments'],
   ['UntrustedDiagnosticsRequestRunBatteryCapacityRoutine'],
   ['UntrustedDiagnosticsRequestRunBatteryHealthRoutine'],

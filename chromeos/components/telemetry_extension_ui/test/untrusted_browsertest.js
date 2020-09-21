@@ -52,7 +52,7 @@ UNTRUSTED_TEST('UntrustedCanSpawnWorkers', async () => {
 
 // Tests that array of available routines can be successfully
 // requested from chrome-untrusted://.
-UNTRUSTED_TEST('UntrustedRequestAvailableRoutines', async () => {
+UNTRUSTED_TEST('UntrustedDiagnosticsRequestAvailableRoutines', async () => {
   const response = await chromeos.diagnostics.getAvailableRoutines();
   assertDeepEquals(response, [
     'battery-capacity',
