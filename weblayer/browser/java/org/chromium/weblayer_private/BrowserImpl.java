@@ -479,9 +479,6 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
     public void onFragmentStop(boolean forConfigurationChange) {
         mFragmentStoppedForConfigurationChange = forConfigurationChange;
         mFragmentStarted = false;
-        if (mFragmentStoppedForConfigurationChange) {
-            destroyAttachmentState();
-        }
         updateAllTabs();
     }
 
