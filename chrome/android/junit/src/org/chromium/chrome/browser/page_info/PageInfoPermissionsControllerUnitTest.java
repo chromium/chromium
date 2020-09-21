@@ -46,6 +46,8 @@ public class PageInfoPermissionsControllerUnitTest {
     private static final PermissionRowParams SOUND_BLOCKED = createPermission("Sound", false, 0);
     private static final PermissionRowParams VR_ALLOWED = createPermission("VR", true, 0);
     private static final PermissionRowParams VR_BLOCKED = createPermission("VR", false, 0);
+    private static final PermissionRowParams AR_ALLOWED = createPermission("AR", true, 0);
+    private static final PermissionRowParams AR_BLOCKED = createPermission("AR", false, 0);
 
     private Context mContext;
     private String mTestName;
@@ -73,17 +75,27 @@ public class PageInfoPermissionsControllerUnitTest {
                         "Location and Sound blocked"},
                 {"Two Permissions Mixed", Arrays.asList(LOCATION_ALLOWED, SOUND_BLOCKED),
                         "Location allowed, Sound blocked"},
-                {"Two Permissions Mixed 2", Arrays.asList(LOCATION_BLOCKED, SOUND_ALLOWED),
+                {"Two Permissions Mixed Reverse Order",
+                        Arrays.asList(LOCATION_BLOCKED, SOUND_ALLOWED),
                         "Sound allowed, Location blocked"},
                 {"Multiple Permissions Allowed",
                         Arrays.asList(LOCATION_ALLOWED, SOUND_ALLOWED, VR_ALLOWED),
                         "Location, Sound, and 1 more allowed"},
+                {"Multiple Permissions Allowed 2",
+                        Arrays.asList(LOCATION_ALLOWED, SOUND_ALLOWED, VR_ALLOWED, AR_ALLOWED),
+                        "Location, Sound, and 2 more allowed"},
                 {"Multiple Permissions Blocked",
                         Arrays.asList(LOCATION_BLOCKED, SOUND_BLOCKED, VR_BLOCKED),
                         "Location, Sound, and 1 more blocked"},
+                {"Multiple Permissions Blocked 2",
+                        Arrays.asList(LOCATION_BLOCKED, SOUND_BLOCKED, VR_BLOCKED, AR_BLOCKED),
+                        "Location, Sound, and 2 more blocked"},
                 {"Multiple Permissions Mixed",
                         Arrays.asList(LOCATION_ALLOWED, SOUND_BLOCKED, VR_BLOCKED),
-                        "Location, Sound, and 1 more"}});
+                        "Location, Sound, and 1 more"},
+                {"Multiple Permissions Mixed 2",
+                        Arrays.asList(LOCATION_ALLOWED, SOUND_BLOCKED, VR_BLOCKED, AR_BLOCKED),
+                        "Location, Sound, and 2 more"}});
     }
 
     @Test

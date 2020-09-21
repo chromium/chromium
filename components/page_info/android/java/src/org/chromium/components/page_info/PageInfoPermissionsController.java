@@ -127,13 +127,13 @@ public class PageInfoPermissionsController implements PageInfoSubpageController 
 
         // More than 2 permissions.
         if (same) {
-            int resId = perm1.allowed ? R.string.page_info_permissions_summary_more_allowed
-                                      : R.string.page_info_permissions_summary_more_blocked;
-            return resources.getString(
-                    resId, perm1.name.toString(), perm2.name.toString(), numPermissions - 2);
+            int resId = perm1.allowed ? R.plurals.page_info_permissions_summary_more_allowed
+                                      : R.plurals.page_info_permissions_summary_more_blocked;
+            return resources.getQuantityString(resId, numPermissions - 2, perm1.name.toString(),
+                    perm2.name.toString(), numPermissions - 2);
         }
-        int resId = R.string.page_info_permissions_summary_more_mixed;
-        return resources.getString(
-                resId, perm1.name.toString(), perm2.name.toString(), numPermissions - 2);
+        int resId = R.plurals.page_info_permissions_summary_more_mixed;
+        return resources.getQuantityString(resId, numPermissions - 2, perm1.name.toString(),
+                perm2.name.toString(), numPermissions - 2);
     }
 }
