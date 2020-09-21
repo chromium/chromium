@@ -4396,9 +4396,10 @@ void LayoutBlockFlow::CreateOrDestroyMultiColumnFlowThreadIfNeeded(
   if (IsFieldsetIncludingNG())
     return;
 
-  // Form controls are replaced content, and are therefore not supposed to
-  // support multicol.
-  if (IsFileUploadControl() || IsTextControl() || IsListBox(this))
+  // Form controls are replaced content (also when implemented as a regular
+  // block), and are therefore not supposed to support multicol.
+  const auto* element = DynamicTo<Element>(GetNode());
+  if (element && element->IsFormControlElement())
     return;
 
   // We don't allow custom layout and multicol on the same object. This is
