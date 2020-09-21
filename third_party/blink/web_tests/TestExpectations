@@ -1073,7 +1073,6 @@ crbug.com/1058792 virtual/layout_ng_block_frag/fast/multicol/composited-layer-wi
 crbug.com/1058792 virtual/layout_ng_block_frag/fast/multicol/composited-inner-multicol.html [ Failure ]
 crbug.com/1058792 virtual/layout_ng_block_frag/fast/multicol/composited-opacity-2nd-and-3rd-column.html [ Failure ]
 crbug.com/1058792 virtual/layout_ng_block_frag/fast/multicol/composited-with-overflow-in-next-column.html [ Failure ]
-crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/doubly-nested-with-top-padding-crossing-row-boundaries.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/dynamic/change-second-row-height.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/dynamic/insert-spanner-into-stf-constrained-width.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/dynamic/insert-spanner-into-stf-unconstrained-width.html [ Failure ]
