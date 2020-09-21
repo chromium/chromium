@@ -24,12 +24,6 @@
 # crbug/1040088
 -org.chromium.chrome.browser.payments.PaymentRequestRetryTest.testRetryWithShippingAddressErrorsAndPayerErrors
 
-# crbug/1036553
--org.chromium.chrome.browser.translate.TranslateCompactInfoBarTest.testTabMenuDismissedOnOrientationChange
--org.chromium.chrome.browser.translate.TranslateCompactInfoBarTest.testTranslateCompactInfoBarAppears
--org.chromium.chrome.browser.translate.TranslateCompactInfoBarTest.testTranslateCompactInfoBarOverflowMenus
--org.chromium.chrome.browser.translate.TranslateCompactInfoBarTest.testTranslateCompactInfoBarReopenOnTarget
-
 # crbug.com/1059168
 -org.chromium.chrome.browser.autofill_assistant.AutofillAssistantBottomsheetTest.testNoResize
 -org.chromium.chrome.browser.autofill_assistant.AutofillAssistantBottomsheetTest.testResizeLayoutViewport
