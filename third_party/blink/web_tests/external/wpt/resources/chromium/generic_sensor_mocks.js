@@ -386,10 +386,15 @@ var GenericSensorTest = (() => {
         throw new Error('Call reset() before initialize().');
 
       // Grant sensor permissions for Chromium testdriver.
-      for (const entry of ['accelerometer', 'gyroscope',
-          'magnetometer', 'ambient-light-sensor']) {
-        await test_driver.set_permission({ name: entry }, 'granted', false);
-      };
+      // testdriver.js only works in the top-level browsing context, so do
+      // nothing if we're in e.g. an iframe.
+      if (window.parent === window) {
+        for (const entry
+                 of ['accelerometer', 'gyroscope', 'magnetometer',
+                     'ambient-light-sensor']) {
+          await test_driver.set_permission({name: entry}, 'granted', false);
+        }
+      }
 
       testInternal.sensorProvider = new MockSensorProvider;
       testInternal.initialized = true;
