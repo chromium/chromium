@@ -15,6 +15,7 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/login/login_manager_test.h"
 #include "chrome/browser/chromeos/login/login_wizard.h"
+#include "chrome/browser/chromeos/login/test/device_state_mixin.h"
 #include "chrome/browser/chromeos/login/test/embedded_test_server_mixin.h"
 #include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/chromeos/login/test/guest_session_mixin.h"
@@ -32,9 +33,11 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/test/rect_test_util.h"
@@ -78,6 +81,43 @@ class LoginOfflineTest : public LoginManagerTest {
 
  protected:
   AccountId test_account_id_;
+  LoginManagerMixin login_manager_{&mixin_host_};
+  OfflineGaiaTestMixin offline_gaia_test_mixin_{&mixin_host_};
+  // We need Fake gaia to avoid network errors that can be caused by
+  // attempts to load real GAIA.
+  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+};
+
+class LoginOfflineManagedTest : public LoginManagerTest {
+ public:
+  LoginOfflineManagedTest() {
+    login_manager_.AppendManagedUsers(1);
+    managed_user_id_ = login_manager_.users()[0].account_id;
+  }
+
+  ~LoginOfflineManagedTest() override {}
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    LoginManagerTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        chromeos::switches::kAllowFailedPolicyFetchForTest);
+  }
+
+  void ConfigurePolicy(const std::string& autocomplete_domain) {
+    std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
+        device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_login_screen_domain_auto_complete()
+        ->set_login_screen_domain_auto_complete(autocomplete_domain);
+    device_policy_update->policy_payload()
+        ->mutable_show_user_names()
+        ->set_show_user_names(false);
+  }
+
+ protected:
+  AccountId managed_user_id_;
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   LoginManagerMixin login_manager_{&mixin_host_};
   OfflineGaiaTestMixin offline_gaia_test_mixin_{&mixin_host_};
   // We need Fake gaia to avoid network errors that can be caused by
@@ -175,6 +215,41 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineTest, GaiaAuthOffline) {
   offline_gaia_test_mixin_.CheckManagedStatus(false);
   offline_gaia_test_mixin_.SubmitGaiaAuthOfflineForm(
       test_account_id_.GetUserEmail(), LoginManagerTest::kPassword,
+      true /* wait for sign-in */);
+  TestSystemTrayIsVisible(false);
+}
+
+IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, CorrectDomainCompletion) {
+  std::string domain = gaia::ExtractDomainName(managed_user_id_.GetUserEmail());
+
+  ConfigurePolicy(domain);
+
+  std::string email = managed_user_id_.GetUserEmail();
+  size_t separator_pos = email.find('@');
+  ASSERT_TRUE(separator_pos != email.npos &&
+              separator_pos < email.length() - 1);
+  std::string prefix = email.substr(0, separator_pos);
+
+  offline_gaia_test_mixin_.GoOffline();
+  offline_gaia_test_mixin_.InitOfflineLogin(managed_user_id_,
+                                            LoginManagerTest::kPassword);
+
+  offline_gaia_test_mixin_.CheckManagedStatus(true);
+
+  offline_gaia_test_mixin_.SubmitGaiaAuthOfflineForm(
+      prefix, LoginManagerTest::kPassword, true /* wait for sign-in */);
+  TestSystemTrayIsVisible(false);
+}
+
+IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, FullEmailDontMatchProvided) {
+  ConfigurePolicy("another.domain");
+
+  offline_gaia_test_mixin_.GoOffline();
+  offline_gaia_test_mixin_.InitOfflineLogin(managed_user_id_,
+                                            LoginManagerTest::kPassword);
+
+  offline_gaia_test_mixin_.SubmitGaiaAuthOfflineForm(
+      managed_user_id_.GetUserEmail(), LoginManagerTest::kPassword,
       true /* wait for sign-in */);
   TestSystemTrayIsVisible(false);
 }

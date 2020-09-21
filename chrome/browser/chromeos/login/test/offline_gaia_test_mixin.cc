@@ -24,6 +24,22 @@ namespace chromeos {
 
 namespace {
 
+const test::UIPath kOfflineLoginLink = {"error-offline-login-link"};
+
+const test::UIPath kOfflineGaiaDialog = {"gaia-signin", "offline-gaia"};
+const test::UIPath kOnlineGaiaDialog = {"gaia-signin", "signin-frame-dialog"};
+
+const test::UIPath kEmailPage = {"gaia-signin", "offline-gaia",
+                                 "email-section"};
+const test::UIPath kPasswordPage = {"gaia-signin", "offline-gaia",
+                                    "password-section"};
+const test::UIPath kEmailInput = {"gaia-signin", "offline-gaia", "emailInput"};
+const test::UIPath kPasswordInput = {"gaia-signin", "offline-gaia",
+                                     "passwordInput"};
+const test::UIPath kNextButton = {"gaia-signin", "offline-gaia", "next-button"};
+const test::UIPath kManagementDisclosure = {"gaia-signin", "offline-gaia",
+                                            "managedBy"};
+
 void SetExpectedCredentials(const AccountId& test_account_id,
                             const std::string& password) {
   UserContext user_context(user_manager::UserType::USER_TYPE_REGULAR,
@@ -70,11 +86,9 @@ void OfflineGaiaTestMixin::GoOnline() {
 
 void OfflineGaiaTestMixin::CheckManagedStatus(bool expected_is_managed) {
   if (expected_is_managed) {
-    test::OobeJS().ExpectVisiblePath(
-        {"gaia-signin", "offline-gaia", "managedBy"});
+    test::OobeJS().ExpectVisiblePath(kManagementDisclosure);
   } else {
-    test::OobeJS().ExpectHiddenPath(
-        {"gaia-signin", "offline-gaia", "managedBy"});
+    test::OobeJS().ExpectHiddenPath(kManagementDisclosure);
   }
 }
 
@@ -94,42 +108,31 @@ void OfflineGaiaTestMixin::StartGaiaAuthOffline() {
   test::OobeJS()
       .CreateWaiter("window.$ && $('error-offline-login-link')")
       ->Wait();
-  test::ExecuteOobeJS("$('error-offline-login-link').onclick();");
-  test::OobeJS()
-      .CreateVisibilityWaiter(true, {"gaia-signin", "offline-gaia"})
-      ->Wait();
+  test::OobeJS().TapLinkOnPath(kOfflineLoginLink);
+  test::OobeJS().CreateVisibilityWaiter(true, kOfflineGaiaDialog)->Wait();
 }
 
 void OfflineGaiaTestMixin::SubmitGaiaAuthOfflineForm(
     const std::string& user_email,
     const std::string& password,
     bool wait_for_signin) {
-  test::OobeJS().ExpectVisiblePath({"gaia-signin", "offline-gaia"});
-  test::OobeJS().ExpectHiddenPath({"gaia-signin", "signin-frame-dialog"});
-  test::OobeJS()
-      .CreateDisplayedWaiter(true,
-                             {"gaia-signin", "offline-gaia", "email-section"})
-      ->Wait();
-  test::OobeJS()
-      .CreateDisplayedWaiter(
-          false, {"gaia-signin", "offline-gaia", "password-section"})
-      ->Wait();
-  test::OobeJS().TypeIntoPath(user_email,
-                              {"gaia-signin", "offline-gaia", "emailInput"});
-  test::OobeJS().ClickOnPath(
-      {"gaia-signin", "offline-gaia", "next-button"});
-  test::OobeJS()
-      .CreateDisplayedWaiter(false,
-                             {"gaia-signin", "offline-gaia", "email-section"})
-      ->Wait();
-  test::OobeJS()
-      .CreateDisplayedWaiter(
-          true, {"gaia-signin", "offline-gaia", "password-section"})
-      ->Wait();
-  test::OobeJS().TypeIntoPath(password,
-                              {"gaia-signin", "offline-gaia", "passwordInput"});
-  test::OobeJS().ClickOnPath(
-      {"gaia-signin", "offline-gaia", "next-button"});
+  test::OobeJS().ExpectVisiblePath(kOfflineGaiaDialog);
+  test::OobeJS().ExpectHiddenPath(kOnlineGaiaDialog);
+
+  test::OobeJS().CreateDisplayedWaiter(true, kEmailPage)->Wait();
+  test::OobeJS().CreateDisplayedWaiter(false, kPasswordPage)->Wait();
+
+  test::OobeJS().TypeIntoPath(user_email, kEmailInput);
+
+  test::OobeJS().ClickOnPath(kNextButton);
+
+  test::OobeJS().CreateDisplayedWaiter(false, kEmailPage)->Wait();
+  test::OobeJS().CreateDisplayedWaiter(true, kPasswordPage)->Wait();
+
+  test::OobeJS().TypeIntoPath(password, kPasswordInput);
+
+  test::OobeJS().ClickOnPath(kNextButton);
+
   if (wait_for_signin) {
     SessionStateWaiter(session_manager::SessionState::LOGGED_IN_NOT_ACTIVE)
         .Wait();
