@@ -17,10 +17,12 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeState;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.IdentityServicesProvider;
@@ -104,8 +106,11 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
                 -> {
                     recordIdentityDiscUsed();
                     SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-                    settingsLauncher.launchSettingsActivity(
-                            mContext, SyncAndServicesSettings.class);
+                    settingsLauncher.launchSettingsActivity(mContext,
+                            ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
+                                    ? MainSettings.class
+                                    : SyncAndServicesSettings.class);
                 },
                 R.string.accessibility_toolbar_btn_identity_disc, false,
                 new IPHCommandBuilder(mContext.getResources(),
