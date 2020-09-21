@@ -504,13 +504,20 @@ TEST_F(VectorMathTest, Zvmul) {
       // Different optimizations may use different precisions for intermediate
       // results which may result in different rounding errors thus let's
       // expect only mostly equal floats.
+#if defined(OS_MAC)
+#if defined(ARCH_CPU_ARM64)
+      const float threshold = 1.900e-5;
+#else
+      const float threshold = 1.5e-5;
+#endif
+#endif
       for (size_t i = 0u; i < real1.size(); ++i) {
         if (std::isfinite(expected_dest_real[i])) {
 #if defined(OS_MAC)
           // On Mac, OS provided vectorized functions are used which may result
           // in bigger rounding errors than functions used on other OSes.
           EXPECT_NEAR(expected_dest_real[i], dest_real[i],
-                      1e-5 * std::abs(expected_dest_real[i]));
+                      threshold * std::abs(expected_dest_real[i]));
 #else
           EXPECT_FLOAT_EQ(expected_dest_real[i], dest_real[i]);
 #endif
