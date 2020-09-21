@@ -21,6 +21,7 @@ from symbolizer import BuildIdsPaths
 DEFAULT_TEST_SERVER_CONCURRENCY = 4
 
 TEST_RESULT_PATH = '/data/test_summary.json'
+TEST_PERF_RESULT_PATH = '/data/test_perf_summary.json'
 TEST_FILTER_PATH = '/data/test_filter.txt'
 
 def main():
@@ -79,6 +80,10 @@ def main():
                       help='Arguments for the test process.')
   parser.add_argument('child_args', nargs='*',
                       help='Arguments for the test process.')
+  parser.add_argument('--isolated-script-test-output',
+                      help='If present, store test results on this path.')
+  parser.add_argument('--isolated-script-test-perf-output',
+                      help='If present, store chartjson results on this path.')
   args = parser.parse_args()
 
   # Flag out_dir is required for tests launched with this script.
@@ -130,6 +135,11 @@ def main():
     child_args.append('--gtest_break_on_failure')
   if args.test_launcher_summary_output:
     child_args.append('--test-launcher-summary-output=' + TEST_RESULT_PATH)
+  if args.isolated_script_test_output:
+    child_args.append('--isolated-script-test-output=' + TEST_RESULT_PATH)
+  if args.isolated_script_test_perf_output:
+    child_args.append('--isolated-script-test-perf-output=' +
+                      TEST_PERF_RESULT_PATH)
 
   if args.child_arg:
     child_args.extend(args.child_arg)
@@ -166,6 +176,16 @@ def main():
       if args.test_launcher_summary_output:
         target.GetFile(TEST_RESULT_PATH, args.test_launcher_summary_output,
                       for_package=args.package_name)
+
+      if args.isolated_script_test_output:
+        target.GetFile(TEST_RESULT_PATH,
+                       args.isolated_script_test_output,
+                       for_package=args.package_name)
+
+      if args.isolated_script_test_perf_output:
+        target.GetFile(TEST_PERF_RESULT_PATH,
+                       args.isolated_script_test_perf_output,
+                       for_package=args.package_name)
 
       return returncode
 

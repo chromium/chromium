@@ -1322,9 +1322,6 @@
       'accessibility_unittests': {
         'mixins': ['fuchsia_runner_logs'],
       },
-      'angle_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
       'aura_unittests': {
         'mixins': ['fuchsia_runner_logs'],
         'args': [
@@ -2745,18 +2742,24 @@
       },
     },
 
+    'gpu_standalone_angle_fuchsia_unittests_isolated_scripts': {
+      'standalone_angle_unittests': {
+        'args': [
+          'bin/run_standalone_angle_unittests',
+        ],
+        'should_retry_with_patch': False,
+        'mixins': ['fuchsia_runner_logs'],
+      },
+    },
+
     'gpu_standalone_angle_unittests_isolated_scripts': {
       'standalone_angle_unittests': {
-        'desktop_args': [
-          '--use-gpu-in-tests',
-          # ANGLE test retries deliberately disabled to prevent flakiness.
-          # http://crbug.com/669196
-          '--test-launcher-retry-limit=0'
+        'args': [
+          'standalone_angle_unittests',
         ],
         'android_args': [
           '-v',
         ],
-        'linux_args': ['--no-xvfb'],
         'should_retry_with_patch': False,
       },
     },
@@ -4863,6 +4866,11 @@
     'devtools_gtests': [
       'devtools_browser_tests',
       'layout_ng_gtests',
+    ],
+
+    'fuchsia_x64_isolated_scripts': [
+      'chromium_webkit_isolated_scripts',
+      'gpu_standalone_angle_fuchsia_unittests_isolated_scripts'
     ],
 
     # BEGIN composition test suites used by the GPU bots

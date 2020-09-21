@@ -2036,6 +2036,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'fuchsia_gtests',
+          'isolated_scripts': 'gpu_standalone_angle_fuchsia_unittests_isolated_scripts',
         },
         'mixins': [
           'arm64',
@@ -2049,6 +2050,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'fuchsia_gtests',
+          'isolated_scripts': 'gpu_standalone_angle_fuchsia_unittests_isolated_scripts',
         },
         'mixins': [
           'arm64',
@@ -2072,6 +2074,7 @@
         },
         'test_suites': {
           'gtest_tests': 'fuchsia_gtests',
+          'isolated_scripts': 'gpu_standalone_angle_fuchsia_unittests_isolated_scripts',
         },
       },
       'fuchsia-fyi-x64-rel': {
@@ -2092,7 +2095,7 @@
         },
         'test_suites': {
           'gtest_tests': 'fuchsia_gtests',
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+          'isolated_scripts': 'fuchsia_x64_isolated_scripts',
           'gpu_telemetry_tests': 'fuchsia_gpu_telemetry_tests',
         },
       },
@@ -4280,6 +4283,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'fuchsia_gtests',
+          'isolated_scripts': 'gpu_standalone_angle_fuchsia_unittests_isolated_scripts',
         },
         'mixins': [
           'arm64',
@@ -4305,7 +4309,7 @@
         },
         'test_suites': {
           'gtest_tests': 'fuchsia_gtests',
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+          'isolated_scripts': 'fuchsia_x64_isolated_scripts',
           'gpu_telemetry_tests': 'fuchsia_gpu_telemetry_tests',
         },
       },

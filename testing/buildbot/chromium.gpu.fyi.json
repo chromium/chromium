@@ -386,9 +386,7 @@
       },
       {
         "args": [
-          "--use-gpu-in-tests",
-          "--test-launcher-retry-limit=0",
-          "--no-xvfb"
+          "standalone_angle_unittests"
         ],
         "isolate_name": "standalone_angle_unittests",
         "merge": {
@@ -801,9 +799,7 @@
       },
       {
         "args": [
-          "--use-gpu-in-tests",
-          "--test-launcher-retry-limit=0",
-          "--no-xvfb"
+          "standalone_angle_unittests"
         ],
         "isolate_name": "standalone_angle_unittests",
         "merge": {
@@ -1172,8 +1168,7 @@
       },
       {
         "args": [
-          "--use-gpu-in-tests",
-          "--test-launcher-retry-limit=0"
+          "standalone_angle_unittests"
         ],
         "isolate_name": "standalone_angle_unittests",
         "merge": {
@@ -1550,8 +1545,7 @@
       },
       {
         "args": [
-          "--use-gpu-in-tests",
-          "--test-launcher-retry-limit=0"
+          "standalone_angle_unittests"
         ],
         "isolate_name": "standalone_angle_unittests",
         "merge": {
@@ -2054,8 +2048,7 @@
       },
       {
         "args": [
-          "--use-gpu-in-tests",
-          "--test-launcher-retry-limit=0"
+          "standalone_angle_unittests"
         ],
         "isolate_name": "standalone_angle_unittests",
         "merge": {
@@ -2491,8 +2484,7 @@
       },
       {
         "args": [
-          "--use-gpu-in-tests",
-          "--test-launcher-retry-limit=0"
+          "standalone_angle_unittests"
         ],
         "isolate_name": "standalone_angle_unittests",
         "merge": {
@@ -2850,6 +2842,7 @@
       },
       {
         "args": [
+          "standalone_angle_unittests",
           "-v"
         ],
         "isolate_name": "standalone_angle_unittests",
@@ -3389,6 +3382,7 @@
       },
       {
         "args": [
+          "standalone_angle_unittests",
           "-v"
         ],
         "isolate_name": "standalone_angle_unittests",
@@ -33863,8 +33857,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--use-gpu-in-tests",
-          "--test-launcher-retry-limit=0"
+          "standalone_angle_unittests"
         ],
         "isolate_name": "standalone_angle_unittests",
         "merge": {
