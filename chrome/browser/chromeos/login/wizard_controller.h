@@ -104,6 +104,8 @@ class WizardController {
   // Zero-Touch Hands-Off Enrollment Flow.
   static bool UsingHandsOffEnrollment();
 
+  static bool IsBrandedBuildForTesting() { return is_branded_build_; }
+
   bool is_initialized() { return is_initialized_; }
 
   // Shows the first screen defined by |first_screen| or by default if the

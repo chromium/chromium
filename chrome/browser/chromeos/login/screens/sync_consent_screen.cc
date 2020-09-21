@@ -278,6 +278,11 @@ SyncConsentScreen::ForceBrandedBuildForTesting(bool value) {
   return std::make_unique<base::AutoReset<bool>>(&g_is_branded_build, value);
 }
 
+// static
+bool SyncConsentScreen::IsBrandedBuildForTesting() {
+  return g_is_branded_build;
+}
+
 void SyncConsentScreen::SetDelegateForTesting(
     SyncConsentScreen::SyncConsentScreenTestDelegate* delegate) {
   test_delegate_ = delegate;

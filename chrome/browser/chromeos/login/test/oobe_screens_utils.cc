@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/login/test/oobe_screens_utils.h"
 
-#include "build/branding_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
 #include "chrome/browser/chromeos/login/screens/sync_consent_screen.h"
@@ -151,25 +150,26 @@ void WaitForLastScreenAndTapGetStarted() {
 }
 
 void WaitForEulaScreen() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (!WizardController::IsBrandedBuildForTesting())
+    return;
   WaitFor(EulaView::kScreenId);
-#endif
 }
 
 void TapEulaAccept() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (!WizardController::IsBrandedBuildForTesting())
+    return;
   test::OobeJS().TapOnPath({"oobe-eula-md", "acceptButton"});
-#endif
 }
 
 void WaitForSyncConsentScreen() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (!SyncConsentScreen::IsBrandedBuildForTesting())
+    return;
   WaitFor(SyncConsentScreenView::kScreenId);
-#endif
 }
 
 void ExitScreenSyncConsent() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (!SyncConsentScreen::IsBrandedBuildForTesting())
+    return;
   SyncConsentScreen* screen = static_cast<SyncConsentScreen*>(
       WizardController::default_controller()->GetScreen(
           SyncConsentScreenView::kScreenId));
@@ -177,7 +177,6 @@ void ExitScreenSyncConsent() {
   screen->SetProfileSyncDisabledByPolicyForTesting(true);
   screen->OnStateChanged(nullptr);
   WaitForExit(SyncConsentScreenView::kScreenId);
-#endif
 }
 
 LanguageReloadObserver::LanguageReloadObserver(WelcomeScreen* welcome_screen)
