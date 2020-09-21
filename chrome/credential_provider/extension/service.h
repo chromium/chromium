@@ -7,8 +7,8 @@
 
 #include <windows.h>
 
+#include "base/callback.h"
 #include "base/macros.h"
-#include "base/synchronization/waitable_event.h"
 
 namespace credential_provider {
 namespace extension {
@@ -59,8 +59,8 @@ class Service {
   // The service status handle which is used with SetServiceStatus API.
   SERVICE_STATUS_HANDLE service_status_handle_;
 
-  // Primitive that controls when to finish running service main.
-  base::WaitableEvent stop_event_;
+  // Callback to end running periodic tasks.
+  base::OnceClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(Service);
 };

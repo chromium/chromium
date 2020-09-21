@@ -8,6 +8,7 @@ import("//testing/test.gni")
 test("gcp_unittests") {
   sources = [
     "../extension/service_unittests.cc",
+    "../extension/task_manager_unittests.cc",
     "../gaiacp/associated_user_validator_unittests.cc",
     "../gaiacp/device_policies_manager_unittests.cc",
     "../gaiacp/gaia_credential_base_unittests.cc",

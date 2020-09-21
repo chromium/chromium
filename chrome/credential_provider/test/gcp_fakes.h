@@ -18,6 +18,7 @@
 #include "base/test/test_reg_util_win.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/credential_provider/extension/os_service_manager.h"
+#include "chrome/credential_provider/extension/task_manager.h"
 #include "chrome/credential_provider/gaiacp/associated_user_validator.h"
 #include "chrome/credential_provider/gaiacp/chrome_availability_checker.h"
 #include "chrome/credential_provider/gaiacp/device_policies_manager.h"
@@ -704,6 +705,25 @@ class FakeOSServiceManager : public extension::OSServiceManager {
   // Original instance of OSServiceManager.
   extension::OSServiceManager* os_service_manager_ = nullptr;
   std::map<base::string16, ServiceInfo> service_lookup_from_name_;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+class FakeTaskManager : public extension::TaskManager {
+ public:
+  FakeTaskManager();
+  ~FakeTaskManager() override;
+
+  int NumOfTimesExecuted() { return num_of_times_executed_; }
+
+ private:
+  void RunTasksInternal() override;
+
+  // Original instance of TaskManager.
+  extension::TaskManager* task_manager_ = nullptr;
+
+  int num_of_times_executed_;
+  base::Time start_time_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

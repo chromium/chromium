@@ -46,6 +46,11 @@ source_set("extension_lib") {
   sources = [
     "service.cc",
     "service.h",
+    "task.h",
+    "task_manager.cc",
+    "task_manager.h",
+    "user_device_context.cc",
+    "user_device_context.h",
   ]
   deps = [
     ":common",

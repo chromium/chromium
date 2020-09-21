@@ -51,9 +51,6 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
   // Set the event logging source and category for GCPW Extension.
   logging::SetEventSource("GCPW", GCPW_EXTENSION_CATEGORY, MSG_LOG_MESSAGE);
 
-  // This initializes and starts ThreadPoolInstance with default params.
-  base::ThreadPoolInstance::CreateAndStartWithDefaultParams("gcpw_extension");
-
   credential_provider::extension::Service::Get()->Run();
 
   return 0;
