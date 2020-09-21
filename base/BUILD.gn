@@ -207,6 +207,7 @@ component("base") {
     "containers/id_map.h",
     "containers/intrusive_heap.cc",
     "containers/intrusive_heap.h",
+    "containers/linked_list.cc",
     "containers/linked_list.h",
     "containers/mru_cache.h",
     "containers/small_map.h",

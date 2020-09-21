@@ -4,6 +4,7 @@
 
 #include "base/containers/linked_list.h"
 #include "base/stl_util.h"
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -343,6 +344,38 @@ TEST(LinkedList, NodeMoveConstructor) {
   EXPECT_EQ(&n3, n2_new.next());
   EXPECT_EQ(&n2_new, n3.previous());
   EXPECT_EQ(2, n2_new.id());
+}
+
+TEST(LinkedListDeathTest, ChecksOnInsertBeforeWhenInList) {
+  LinkedList<Node> list1;
+  LinkedList<Node> list2;
+
+  Node n1(1);
+  Node n2(2);
+  Node n3(3);
+
+  list1.Append(&n1);
+
+  list2.Append(&n2);
+  list2.Append(&n3);
+
+  EXPECT_CHECK_DEATH(n1.InsertBefore(&n3));
+}
+
+TEST(LinkedListDeathTest, ChecksOnInsertAfterWhenInList) {
+  LinkedList<Node> list1;
+  LinkedList<Node> list2;
+
+  Node n1(1);
+  Node n2(2);
+  Node n3(3);
+
+  list1.Append(&n1);
+
+  list2.Append(&n2);
+  list2.Append(&n3);
+
+  EXPECT_CHECK_DEATH(n1.InsertAfter(&n2));
 }
 
 }  // namespace
