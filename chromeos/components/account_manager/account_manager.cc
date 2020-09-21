@@ -600,12 +600,6 @@ void AccountManager::RemoveObserver(AccountManager::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-scoped_refptr<network::SharedURLLoaderFactory>
-AccountManager::GetUrlLoaderFactory() {
-  DCHECK(url_loader_factory_);
-  return url_loader_factory_;
-}
-
 void AccountManager::SetUrlLoaderFactoryForTests(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   url_loader_factory_ = url_loader_factory;
@@ -614,7 +608,6 @@ void AccountManager::SetUrlLoaderFactoryForTests(
 std::unique_ptr<OAuth2AccessTokenFetcher>
 AccountManager::CreateAccessTokenFetcher(
     const AccountKey& account_key,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     OAuth2AccessTokenConsumer* consumer) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -624,7 +617,7 @@ AccountManager::CreateAccessTokenFetcher(
   }
 
   return std::make_unique<OAuth2AccessTokenFetcherImpl>(
-      consumer, url_loader_factory, it->second.token);
+      consumer, url_loader_factory_, it->second.token);
 }
 
 bool AccountManager::IsTokenAvailable(const AccountKey& account_key) const {
@@ -657,7 +650,7 @@ void AccountManager::RevokeGaiaTokenOnServer(const std::string& refresh_token) {
 
   pending_token_revocation_requests_.emplace_back(
       std::make_unique<GaiaTokenRevocationRequest>(
-          GetUrlLoaderFactory(), delay_network_call_runner_, refresh_token,
+          url_loader_factory_, delay_network_call_runner_, refresh_token,
           weak_factory_.GetWeakPtr()));
 }
 

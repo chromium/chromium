@@ -124,7 +124,7 @@ ProfileOAuth2TokenServiceDelegateChromeOS::CreateAccessTokenFetcher(
           account_tracker_service_->GetAccountInfo(account_id).gaia,
           chromeos::account_manager::AccountType::
               ACCOUNT_TYPE_GAIA} /* account_key */,
-      url_loader_factory, consumer);
+      consumer);
 }
 
 // Note: This method should use the same logic for filtering accounts as
@@ -253,23 +253,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::UpdateCredentials(
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ProfileOAuth2TokenServiceDelegateChromeOS::GetURLLoaderFactory() const {
-  if (!is_regular_profile_) {
-    // Signin and Lock Screen profiles (non-|is_regular_profile_|s) have weird
-    // expectations around token loading. They do not have an account associated
-    // with them but expect calls like |LoadCredentials| and
-    // |GetURLLoaderFactory| to successfully complete.
-    // We *can* return a |nullptr| here because the return value of
-    // |GetURLLoaderFactory| is never used by Signin and Lock Screen profiles.
-    // They get a hard-coded |GoogleServiceAuthError::USER_NOT_SIGNED_UP| error
-    // returned to them by access token fetchers.
-    // We *must* return a |nullptr| here because otherwise |AccountManager|
-    // DCHECKs as it has not been initialized for non-|is_regular_profile_| and
-    // crashes for this weird case (Non-regular profiles expecting to act on
-    // accounts).
-    // See https://crbug.com/996615 for details.
     return nullptr;
-  }
-  return account_manager_->GetUrlLoaderFactory();
 }
 
 void ProfileOAuth2TokenServiceDelegateChromeOS::OnGetAccounts(
