@@ -125,4 +125,8 @@ public final class TestWebLayer {
     public static void disableWebViewCompatibilityMode() {
         WebLayer.disableWebViewCompatibilityMode();
     }
+
+    public boolean didShowFullscreenToast(Tab tab) throws RemoteException {
+        return mITestWebLayer.didShowFullscreenToast(tab.getITab());
+    }
 }

@@ -50,4 +50,7 @@ interface ITestWebLayer {
   // Returns the target language of the currently-showing translate infobar, or null if no translate
   // infobar is currently showing.
   String getTranslateInfoBarTargetLanguage(in ITab tab) = 16;
+
+  // Returns true if a fullscreen toast was shown for |tab|.
+  boolean didShowFullscreenToast(in ITab tab) = 17;
 }

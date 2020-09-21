@@ -162,7 +162,7 @@ public final class BrowserViewController
         return mContentViewRenderView;
     }
 
-    public ViewGroup getContentView() {
+    public ContentView getContentView() {
         return mContentView;
     }
 
