@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/files/file.h"
+#include "base/timer/elapsed_timer.h"
 
 #include "third_party/blink/public/common/font_unique_name_lookup/icu_fold_case_util.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/fonts/android/font_unique_name_lookup_android.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 #include "third_party/skia/include/core/SkData.h"
@@ -137,20 +139,34 @@ FontUniqueNameLookupAndroid::MatchUniqueNameFromDownloadableFonts(
     return nullptr;
   }
 
+  DEFINE_STATIC_LOCAL_IMPL(
+      CustomCountHistogram, lookup_latency_histogram_success,
+      ("Android.FontLookup.Blink.DLFontsLatencySuccess", 0, 10000000, 50),
+      false);
+  DEFINE_STATIC_LOCAL_IMPL(
+      CustomCountHistogram, lookup_latency_histogram_failure,
+      ("Android.FontLookup.Blink.DLFontsLatencySuccess", 0, 10000000, 50),
+      false);
+
   base::File font_file;
   String case_folded_unique_font_name =
       String::FromUTF8(IcuFoldCase(font_unique_name.Utf8()).c_str());
+
+  base::ElapsedTimer elapsed_timer;
+
   if (!android_font_lookup_service_->MatchLocalFontByUniqueName(
           case_folded_unique_font_name, &font_file)) {
     LOG(ERROR)
         << "Mojo method returned false for case-folded unique font name: "
         << case_folded_unique_font_name;
+    lookup_latency_histogram_failure.CountMicroseconds(elapsed_timer.Elapsed());
     return nullptr;
   }
 
   if (!font_file.IsValid()) {
     LOG(ERROR) << "Received platform font handle invalid, fd: "
                << font_file.GetPlatformFile();
+    lookup_latency_histogram_failure.CountMicroseconds(elapsed_timer.Elapsed());
     return nullptr;
   }
 
@@ -158,13 +174,18 @@ FontUniqueNameLookupAndroid::MatchUniqueNameFromDownloadableFonts(
 
   if (font_data->isEmpty()) {
     LOG(ERROR) << "Received file descriptor has 0 size.";
+    lookup_latency_histogram_failure.CountMicroseconds(elapsed_timer.Elapsed());
     return nullptr;
   }
 
   sk_sp<SkTypeface> return_typeface(SkTypeface::MakeFromData(font_data));
 
-  if (!return_typeface)
+  if (!return_typeface) {
+    lookup_latency_histogram_failure.CountMicroseconds(elapsed_timer.Elapsed());
     LOG(ERROR) << "Cannot instantiate SkTypeface from font blob SkData.";
+  }
+
+  lookup_latency_histogram_success.CountMicroseconds(elapsed_timer.Elapsed());
   return return_typeface;
 }
 
