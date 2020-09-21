@@ -8328,10 +8328,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // TODO(arthursonzogni): Updating this flag for same-document or bfcache
   // navigation might not be right. Should this be moved to
   // DidCommitNewDocument()?
-  last_http_status_code_ = params->http_status_code;
-  // TODO(arthursonzogni): Updating this flag for same-document or bfcache
-  // navigation might not be right. Should this be moved to
-  // DidCommitNewDocument()?
   last_http_method_ = params->method;
 
   UpdateSiteURL(params->url, params->url_is_unreachable);
@@ -8463,6 +8459,11 @@ void RenderFrameHostImpl::DidCommitNewDocument(
 
   DCHECK(params.embedding_token.has_value());
   SetEmbeddingToken(params.embedding_token.value());
+
+  // TODO(arthursonzogni): Stop relying on DidCommitProvisionalLoad_Params. Use
+  // the NavigationRequest instead. The browser process doesn't need to rely on
+  // the renderer process.
+  last_http_status_code_ = params.http_status_code;
 
   renderer_reported_scheduler_tracked_features_ = 0;
   browser_reported_scheduler_tracked_features_ = 0;

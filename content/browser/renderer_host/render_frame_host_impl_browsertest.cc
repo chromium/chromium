@@ -4772,4 +4772,16 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, RemoteObjectRelease) {
 }
 
 #endif  // OS_ANDROID
+
+// The RenderFrameHost's last HTTP status code shouldn't change after
+// same-document navigations.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       HttpStatusCodeAfterSameDocumentNavigation) {
+  GURL url_201(embedded_test_server()->GetURL("/echo?status=201"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_201));
+  EXPECT_EQ(201, root_frame_host()->last_http_status_code());
+  EXPECT_TRUE(ExecJs(root_frame_host(), "location.href = '#'"));
+  EXPECT_EQ(201, root_frame_host()->last_http_status_code());
+}
+
 }  // namespace content
