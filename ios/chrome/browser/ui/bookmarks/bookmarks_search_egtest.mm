@@ -345,7 +345,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Invoke Edit through context menu.
   [BookmarkEarlGreyUI
-      tapOnLongPressContextMenuButton:IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT
+      tapOnLongPressContextMenuButton:chrome_test_util::
+                                          BookmarksContextMenuEditButton()
                                onItem:TappableBookmarkNodeWithLabel(
                                           @"First URL")
                            openEditor:kBookmarkEditViewContainerIdentifier
@@ -386,9 +387,12 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                           existingFolderTitle)]
       performAction:grey_longPress()];
 
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT_FOLDER)]
+  id<GREYMatcher> editFolderAction =
+      [ChromeEarlGrey isNativeContextMenusEnabled]
+          ? chrome_test_util::BookmarksContextMenuEditButton()
+          : ButtonWithAccessibilityLabelId(
+                IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT_FOLDER);
+  [[EarlGrey selectElementWithMatcher:editFolderAction]
       performAction:grey_tap()];
 
   // Verify that the editor is present.

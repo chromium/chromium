@@ -492,8 +492,12 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   // Long press the entry, and open it offline.
   LongPressEntry(kDistillableTitle);
 
-  TapContextMenuButtonWithA11yLabelID(
-      IDS_IOS_READING_LIST_CONTENT_CONTEXT_OFFLINE);
+  int offlineStringId = IDS_IOS_READING_LIST_CONTENT_CONTEXT_OFFLINE;
+  if ([ChromeEarlGrey isNativeContextMenusEnabled]) {
+    offlineStringId = IDS_IOS_READING_LIST_OPEN_OFFLINE_BUTTON;
+  }
+
+  TapContextMenuButtonWithA11yLabelID(offlineStringId);
   [ChromeEarlGrey waitForPageToFinishLoading];
   base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(1));
   AssertIsShowingDistillablePage(false, distillablePageURL);

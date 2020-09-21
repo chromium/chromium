@@ -949,6 +949,10 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   return [ChromeEarlGreyAppInterface isIllustratedEmptyStatesEnabled];
 }
 
+- (BOOL)isNativeContextMenusEnabled {
+  return [ChromeEarlGreyAppInterface isNativeContextMenusEnabled];
+}
+
 #pragma mark - ScopedBlockPopupsPref
 
 - (ContentSetting)popupPrefValue {

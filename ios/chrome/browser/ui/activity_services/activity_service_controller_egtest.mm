@@ -112,7 +112,7 @@ id<GREYMatcher> ShareMenuCollectionView() {
   GURL kURL("chrome://version");
   [ChromeEarlGrey loadURL:kURL];
   // Verify that the share button is disabled.
-  id<GREYMatcher> share_button = chrome_test_util::ShareButton();
+  id<GREYMatcher> share_button = chrome_test_util::TabShareButton();
   [[EarlGrey selectElementWithMatcher:share_button]
       assertWithMatcher:grey_accessibilityTrait(
                             UIAccessibilityTraitNotEnabled)];

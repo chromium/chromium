@@ -168,8 +168,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [[EarlGrey
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"First URL")]
       performAction:grey_longPress()];
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT)]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          BookmarksContextMenuEditButton()]
       performAction:grey_tap()];
 
   // Tap the Folder button.

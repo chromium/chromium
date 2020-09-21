@@ -239,7 +239,7 @@ id<GREYMatcher> SearchCopiedTextButton() {
   [self openPage1];
 
   if ([ChromeEarlGrey isCompactWidth]) {
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::ShareButton()]
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
         assertWithMatcher:grey_sufficientlyVisible()];
   }
 }

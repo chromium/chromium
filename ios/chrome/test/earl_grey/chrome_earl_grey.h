@@ -526,6 +526,9 @@ id ExecuteJavaScript(NSString* javascript, NSError* __autoreleasing* out_error);
 // Returns whether the illustrated empty stated feature is enabled.
 - (BOOL)isIllustratedEmptyStatesEnabled;
 
+// Returns whether the native context menus feature is enabled or not.
+- (BOOL)isNativeContextMenusEnabled;
+
 #pragma mark - Popup Blocking
 
 // Gets the current value of the popup content setting preference for the

@@ -33,10 +33,11 @@
 #endif
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
-using chrome_test_util::ContextMenuCopyButton;
+using chrome_test_util::CopyLinkButton;
 using chrome_test_util::HistoryEntry;
 using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::OpenLinkInNewTabButton;
+using chrome_test_util::OpenLinkInIncognitoButton;
 using chrome_test_util::OpenLinkInNewWindowButton;
 
 namespace {
@@ -68,11 +69,6 @@ id<GREYMatcher> SearchIconButton() {
 // Matcher for the cancel button.
 id<GREYMatcher> CancelButton() {
   return grey_accessibilityID(kHistoryToolbarCancelButtonIdentifier);
-}
-// Matcher for the Open in New Incognito Tab option in the context menu.
-id<GREYMatcher> OpenInNewIncognitoTabButton() {
-  return ButtonWithAccessibilityLabelId(
-      IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB);
 }
 // Matcher for the empty TableView background
 id<GREYMatcher> EmptyTableViewBackground() {
@@ -448,7 +444,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Select "Open in New Incognito Tab" and confirm that new tab is opened in
   // incognito with the selected URL.
-  [[EarlGrey selectElementWithMatcher:OpenInNewIncognitoTabButton()]
+  [[EarlGrey selectElementWithMatcher:OpenLinkInIncognitoButton([ChromeEarlGrey
+                                          isNativeContextMenusEnabled])]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
                                           _URL1.GetContent())]
@@ -481,7 +478,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_longPress()];
 
   // Tap "Copy URL" and wait for the URL to be copied to the pasteboard.
-  [[EarlGrey selectElementWithMatcher:ContextMenuCopyButton()]
+  [[EarlGrey selectElementWithMatcher:CopyLinkButton([ChromeEarlGrey
+                                          isNativeContextMenusEnabled])]
       performAction:grey_tap()];
   bool success = base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^{

@@ -140,6 +140,10 @@ id<GREYMatcher> ShareButton() {
   return [ChromeMatchersAppInterface shareButton];
 }
 
+id<GREYMatcher> TabShareButton() {
+  return [ChromeMatchersAppInterface tabShareButton];
+}
+
 id<GREYMatcher> ShowTabsButton() {
   return [ChromeMatchersAppInterface showTabsButton];
 }
@@ -166,6 +170,11 @@ id<GREYMatcher> SyncSwitchCell(NSString* accessibility_label,
 
 id<GREYMatcher> OpenLinkInNewTabButton() {
   return [ChromeMatchersAppInterface openLinkInNewTabButton];
+}
+
+id<GREYMatcher> OpenLinkInIncognitoButton(BOOL use_new_string) {
+  return [ChromeMatchersAppInterface
+      openLinkInIncognitoButtonWithUseNewString:use_new_string];
 }
 
 id<GREYMatcher> OpenLinkInNewWindowButton() {
@@ -390,6 +399,23 @@ id<GREYMatcher> SystemSelectionCallout() {
 
 id<GREYMatcher> SystemSelectionCalloutCopyButton() {
   return [ChromeMatchersAppInterface systemSelectionCalloutCopyButton];
+}
+
+id<GREYMatcher> CopyLinkButton(BOOL use_new_string) {
+  return [ChromeMatchersAppInterface
+      copyLinkButtonWithUseNewString:use_new_string];
+}
+
+id<GREYMatcher> EditButton(BOOL use_new_string) {
+  return [ChromeMatchersAppInterface editButtonWithUseNewString:use_new_string];
+}
+
+id<GREYMatcher> MoveButton() {
+  return [ChromeMatchersAppInterface moveButton];
+}
+
+id<GREYMatcher> DeleteButton() {
+  return [ChromeMatchersAppInterface deleteButton];
 }
 
 id<GREYMatcher> ContextMenuCopyButton() {

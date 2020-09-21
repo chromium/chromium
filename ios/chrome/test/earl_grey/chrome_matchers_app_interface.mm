@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
+#import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_steady_view.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views_utils.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
@@ -344,6 +345,13 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
   return grey_allOf(
       [ChromeMatchersAppInterface
           buttonWithAccessibilityLabelID:(IDS_IOS_TOOLS_MENU_SHARE)],
+      grey_not([self tabShareButton]), grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabShareButton {
+  return grey_allOf(
+      grey_anyOf(grey_accessibilityID(kToolbarShareButtonIdentifier),
+                 grey_accessibilityID(kOmniboxShareButtonIdentifier), nil),
       grey_sufficientlyVisible(), nil);
 }
 
@@ -385,6 +393,13 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
 + (id<GREYMatcher>)openLinkInNewTabButton {
   return [ChromeMatchersAppInterface
       buttonWithAccessibilityLabelID:(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB)];
+}
+
++ (id<GREYMatcher>)openLinkInIncognitoButtonWithUseNewString:
+    (BOOL)useNewString {
+  int stringId = useNewString ? IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE
+                              : IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB;
+  return [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:(stringId)];
 }
 
 + (id<GREYMatcher>)openLinkInNewWindowButton {
@@ -673,6 +688,28 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
 + (id<GREYMatcher>)systemSelectionCalloutCopyButton {
   return grey_allOf(grey_accessibilityLabel(@"Copy"),
                     [self systemSelectionCallout], nil);
+}
+
++ (id<GREYMatcher>)copyLinkButtonWithUseNewString:(BOOL)useNewString {
+  int stringId = useNewString ? IDS_IOS_COPY_LINK_ACTION_TITLE
+                              : IDS_IOS_CONTENT_CONTEXT_COPY;
+  return [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:stringId];
+}
+
++ (id<GREYMatcher>)editButtonWithUseNewString:(BOOL)useNewString {
+  int stringId = useNewString ? IDS_IOS_EDIT_ACTION_TITLE
+                              : IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT;
+  return [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:stringId];
+}
+
++ (id<GREYMatcher>)moveButton {
+  return [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE];
+}
+
++ (id<GREYMatcher>)deleteButton {
+  return [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:IDS_IOS_DELETE_ACTION_TITLE];
 }
 
 + (id<GREYMatcher>)contextMenuCopyButton {

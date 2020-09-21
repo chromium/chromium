@@ -31,6 +31,9 @@ bool DisableUpdateService() {
 bool DisableMainThreadFreezeDetection() {
   return false;
 }
+bool DisableTableDragAndDrop() {
+  return false;
+}
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider() {
   return nullptr;
 }

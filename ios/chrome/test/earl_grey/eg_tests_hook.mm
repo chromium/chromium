@@ -42,6 +42,10 @@ bool DisableMainThreadFreezeDetection() {
   return true;
 }
 
+bool DisableTableDragAndDrop() {
+  return true;
+}
+
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           "com.apple.configuration.managed")) {

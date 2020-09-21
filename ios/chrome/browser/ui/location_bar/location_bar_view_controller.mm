@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
+#import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #include "ios/chrome/browser/ui/location_bar/location_bar_steady_view.h"
 #import "ios/chrome/browser/ui/orchestrator/location_bar_offset_provider.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -486,6 +487,8 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
           forState:UIControlStateNormal];
       self.locationBarSteadyView.trailingButton.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SHARE);
+      self.locationBarSteadyView.trailingButton.accessibilityIdentifier =
+          kOmniboxShareButtonIdentifier;
       [self.locationBarSteadyView enableTrailingButton:self.shareButtonEnabled];
       break;
     };
@@ -505,6 +508,8 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
           forState:UIControlStateNormal];
       self.locationBarSteadyView.trailingButton.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_VOICE_SEARCH);
+      self.locationBarSteadyView.trailingButton.accessibilityIdentifier =
+          kOmniboxVoiceSearchButtonIdentifier;
       [self.locationBarSteadyView enableTrailingButton:YES];
     }
   }

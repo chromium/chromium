@@ -25,6 +25,7 @@
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ContextBarLeadingButtonWithLabel;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
+using chrome_test_util::MoveButton;
 
 // Bookmark accessibility tests for Chrome.
 @interface BookmarksAccessibilityTestCase : WebHttpServerChromeTestCase
@@ -76,9 +77,12 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
       performAction:grey_longPress()];
 
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT_FOLDER)]
+  id<GREYMatcher> editFolderMatcher =
+      [ChromeEarlGrey isNativeContextMenusEnabled]
+          ? chrome_test_util::BookmarksContextMenuEditButton()
+          : ButtonWithAccessibilityLabelId(
+                IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT_FOLDER);
+  [[EarlGrey selectElementWithMatcher:editFolderMatcher]
       performAction:grey_tap()];
 
   // Verify that the editor is present.
@@ -106,8 +110,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Second URL")]
       performAction:grey_longPress()];
 
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT)]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          BookmarksContextMenuEditButton()]
       performAction:grey_tap()];
 
   // Wait until screen appears.
@@ -138,9 +142,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
       performAction:grey_longPress()];
 
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:MoveButton()] performAction:grey_tap()];
 
   // Wait until screen appears.
   id<GREYMatcher> screenTitleMatcher = grey_accessibilityLabel(
@@ -171,9 +173,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
       performAction:grey_longPress()];
 
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:MoveButton()] performAction:grey_tap()];
 
   // Tap on "Create New Folder."
   [[EarlGrey

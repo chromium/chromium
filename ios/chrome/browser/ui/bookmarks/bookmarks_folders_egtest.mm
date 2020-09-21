@@ -372,17 +372,10 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   [BookmarkEarlGreyUI verifyContextMenuForSingleFolderWithEditEnabled:YES];
 
-  // Dismiss the context menu. On non compact width tap the Bookmarks TableView
-  // to dismiss, since there might not be a cancel button.
-  if ([ChromeEarlGrey isCompactWidth]) {
-    [[EarlGrey
-        selectElementWithMatcher:ButtonWithAccessibilityLabelId(IDS_CANCEL)]
-        performAction:grey_tap()];
-  } else {
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kBookmarkHomeTableViewIdentifier)]
-        performAction:grey_tap()];
-  }
+  [BookmarkEarlGreyUI dismissContextMenu];
+
+  [ChromeEarlGrey waitForMatcher:grey_allOf(BookmarksNavigationBarBackButton(),
+                                            grey_interactable(), nil)];
 
   // Come back to the root.
   [[EarlGrey selectElementWithMatcher:BookmarksNavigationBarBackButton()]
@@ -395,9 +388,17 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Verify it doesn't show the context menu. (long press is disabled on
   // permanent node.)
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeContextMenuIdentifier)]
-      assertWithMatcher:grey_nil()];
+  if ([ChromeEarlGrey isNativeContextMenusEnabled]) {
+    // We cannot locate new context menus any way, therefore we'll use the
+    // 'Edit' action presence as proxy.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                            BookmarksContextMenuEditButton()]
+        assertWithMatcher:grey_nil()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kBookmarkHomeContextMenuIdentifier)]
+        assertWithMatcher:grey_nil()];
+  }
 }
 
 // Verify Edit functionality for single folder selection.
@@ -413,9 +414,12 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
       performAction:grey_longPress()];
 
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT_FOLDER)]
+  id<GREYMatcher> editFolderMatcher =
+      [ChromeEarlGrey isNativeContextMenusEnabled]
+          ? chrome_test_util::BookmarksContextMenuEditButton()
+          : ButtonWithAccessibilityLabelId(
+                IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT_FOLDER);
+  [[EarlGrey selectElementWithMatcher:editFolderMatcher]
       performAction:grey_tap()];
 
   // Verify that the editor is present.
@@ -817,8 +821,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [[EarlGrey
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"First URL")]
       performAction:grey_longPress()];
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT)]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          BookmarksContextMenuEditButton()]
       performAction:grey_tap()];
 
   // Tap the Folder button.

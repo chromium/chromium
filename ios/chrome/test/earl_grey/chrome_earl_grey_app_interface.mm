@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/toolbar/public/features.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/util/menu_util.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
@@ -772,6 +773,10 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
 
 + (BOOL)isIllustratedEmptyStatesEnabled {
   return base::FeatureList::IsEnabled(kIllustratedEmptyStates);
+}
+
++ (BOOL)isNativeContextMenusEnabled {
+  return IsNativeContextMenuEnabled();
 }
 
 #pragma mark - ScopedBlockPopupsPref

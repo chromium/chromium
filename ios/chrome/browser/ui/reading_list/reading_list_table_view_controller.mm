@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/stl_util.h"
 #include "components/strings/grit/components_strings.h"
+#import "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/drag_and_drop/drag_and_drop_flag.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/table_view_url_drag_drop_handler.h"
@@ -230,7 +231,8 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     self.dragDropHandler.origin = WindowActivityReadingListOrigin;
     self.dragDropHandler.dragDataSource = self;
     self.tableView.dragDelegate = self.dragDropHandler;
-    self.tableView.dragInteractionEnabled = YES;
+    self.tableView.dragInteractionEnabled =
+        !tests_hook::DisableTableDragAndDrop();
   }
 }
 

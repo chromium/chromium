@@ -13,6 +13,7 @@
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#import "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
@@ -494,7 +495,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     self.dragDropHandler.dropDelegate = self;
     self.tableView.dragDelegate = self.dragDropHandler;
     self.tableView.dropDelegate = self.dragDropHandler;
-    self.tableView.dragInteractionEnabled = YES;
+    self.tableView.dragInteractionEnabled =
+        !tests_hook::DisableTableDragAndDrop();
   }
 
   // Configure the table view.

@@ -85,6 +85,7 @@ source_set("history_ui") {
     "//components/strings",
     "//components/url_formatter",
     "//components/url_formatter",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",

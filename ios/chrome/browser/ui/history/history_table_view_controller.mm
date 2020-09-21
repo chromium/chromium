@@ -11,6 +11,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
+#import "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/drag_and_drop/drag_and_drop_flag.h"
@@ -198,7 +199,8 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     self.dragDropHandler.origin = WindowActivityHistoryOrigin;
     self.dragDropHandler.dragDataSource = self;
     self.tableView.dragDelegate = self.dragDropHandler;
-    self.tableView.dragInteractionEnabled = YES;
+    self.tableView.dragInteractionEnabled =
+        !tests_hook::DisableTableDragAndDrop();
   }
 
   // NavigationController configuration.

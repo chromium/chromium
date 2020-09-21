@@ -23,6 +23,7 @@
 #error "This file requires ARC support."
 #endif
 
+using chrome_test_util::BookmarksContextMenuEditButton;
 using chrome_test_util::BookmarksDeleteSwipeButton;
 using chrome_test_util::BookmarksNavigationBarBackButton;
 using chrome_test_util::BookmarksSaveEditFolderButton;
@@ -31,6 +32,9 @@ using chrome_test_util::ContextBarCenterButtonWithLabel;
 using chrome_test_util::ContextBarLeadingButtonWithLabel;
 using chrome_test_util::ContextMenuCopyButton;
 using chrome_test_util::OmniboxText;
+using chrome_test_util::OpenLinkInNewTabButton;
+using chrome_test_util::OpenLinkInIncognitoButton;
+using chrome_test_util::OpenLinkInNewWindowButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Bookmark entries integration tests for Chrome.
@@ -178,7 +182,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_notNil()];
 }
 
-- (void)testContextMenuForSingleURLSelection {
+- (void)testActionSheetsForSingleURLSelection {
 #if defined(CHROME_EARL_GREY_1)
   // TODO(crbug.com/1035764): EG1 Test fails on iOS 12.
   if (!base::ios::IsRunningOnIOS13OrLater()) {
@@ -200,13 +204,13 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Second URL")]
       performAction:grey_tap()];
 
-  // Tap context menu.
+  // Tap More...
   [[EarlGrey
       selectElementWithMatcher:ContextBarCenterButtonWithLabel(
                                    [BookmarkEarlGreyUI contextBarMoreString])]
       performAction:grey_tap()];
 
-  [BookmarkEarlGreyUI verifyContextMenuForSingleURLWithEditEnabled:YES];
+  [BookmarkEarlGreyUI verifyActionSheetsForSingleURLWithEditEnabled:YES];
 }
 
 // Tests display and selection of 'Open in New Window' in a context menu on a
@@ -232,9 +236,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Open a bookmark in a new window (through a long press).
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"First URL")]
       performAction:grey_longPress()];
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW)]
+  [[EarlGrey selectElementWithMatcher:OpenLinkInNewWindowButton()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
@@ -600,9 +602,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Open a bookmark in new tab from a normal session (through a long press).
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Second URL")]
       performAction:grey_longPress()];
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB)]
+  [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
       performAction:grey_tap()];
 
   // Verify there is 1 new normal tab created and no new incognito tab created.
@@ -618,11 +618,11 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Open a bookmark in an incognito tab from a normal session (through a long
   // press).
+  BOOL newMenusEnabled = [ChromeEarlGrey isNativeContextMenusEnabled];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"French URL")]
       performAction:grey_longPress()];
-  [[EarlGrey selectElementWithMatcher:
-                 ButtonWithAccessibilityLabelId(
-                     IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB)]
+  [[EarlGrey
+      selectElementWithMatcher:OpenLinkInIncognitoButton(newMenusEnabled)]
       performAction:grey_tap()];
 
   // Verify there is 1 incognito tab created and no new normal tab created.
@@ -664,9 +664,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // long press).
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Second URL")]
       performAction:grey_longPress()];
-  [[EarlGrey selectElementWithMatcher:
-                 ButtonWithAccessibilityLabelId(
-                     IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB)]
+  [[EarlGrey
+      selectElementWithMatcher:OpenLinkInIncognitoButton(newMenusEnabled)]
       performAction:grey_tap()];
 
   // Verify a new incognito tab is created.
@@ -688,9 +687,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // long press).
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"French URL")]
       performAction:grey_longPress()];
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB)]
+  [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
       performAction:grey_tap()];
 
   // Verify a new normal tab is created and no incognito tab is created.
@@ -1164,8 +1161,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"First URL")]
       performAction:grey_longPress()];
 
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT)]
+  [[EarlGrey selectElementWithMatcher:BookmarksContextMenuEditButton()]
       performAction:grey_tap()];
 
   // Tap on Folder to open folder picker.
@@ -1195,8 +1191,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"First URL")]
       performAction:grey_longPress()];
 
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT)]
+  [[EarlGrey selectElementWithMatcher:BookmarksContextMenuEditButton()]
       performAction:grey_tap()];
 
   // Swipe EditBookmark down.

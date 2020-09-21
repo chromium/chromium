@@ -31,6 +31,9 @@ namespace chrome_test_util {
 // Matcher for bookmarks tool tip star. (used in iPad)
 id<GREYMatcher> StarButton();
 
+// Matcher for the Edit button in the Bookmark context menu.
+id<GREYMatcher> BookmarksContextMenuEditButton();
+
 // Matcher for the Delete button on the bookmarks UI.
 id<GREYMatcher> BookmarksDeleteSwipeButton();
 
@@ -100,6 +103,12 @@ id<GREYMatcher> SearchIconButton();
 
 - (void)dismissContextMenu;
 
+- (void)verifyActionSheetsForSingleURLWithEditEnabled:(BOOL)editEnabled;
+
+- (void)verifyActionSheetsForSingleFolderWithEditEnabled:(BOOL)editEnabled;
+
+- (void)dismissActionSheets;
+
 - (void)verifyContextBarInDefaultStateWithSelectEnabled:(BOOL)selectEnabled
                                        newFolderEnabled:(BOOL)newFolderEnabled;
 
@@ -124,7 +133,7 @@ id<GREYMatcher> SearchIconButton();
              setParentFolderTo:(NSString*)destinationFolder
                           from:(NSString*)sourceFolder;
 
-- (void)tapOnLongPressContextMenuButton:(int)menuButtonId
+- (void)tapOnLongPressContextMenuButton:(id<GREYMatcher>)actionMatcher
                                  onItem:(id<GREYMatcher>)item
                              openEditor:(NSString*)editorId
                         modifyTextField:(NSString*)textFieldId

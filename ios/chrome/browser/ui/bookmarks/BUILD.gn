@@ -68,6 +68,7 @@ source_set("bookmarks") {
     "//components/strings",
     "//components/undo",
     "//components/url_formatter",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
     "//ios/chrome/browser",

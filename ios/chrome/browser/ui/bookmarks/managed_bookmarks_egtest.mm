@@ -75,8 +75,11 @@ void VerifyBookmarkContextBarEditButtonDisabled() {
 }
 
 void LongPressBookmarkNodeWithLabel(NSString* bookmark_node_label) {
-  [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
-                                          bookmark_node_label)]
+  id<GREYMatcher> nodeMatcher =
+      TappableBookmarkNodeWithLabel(bookmark_node_label);
+  [ChromeEarlGrey
+      waitForMatcher:grey_allOf(nodeMatcher, grey_interactable(), nil)];
+  [[EarlGrey selectElementWithMatcher:nodeMatcher]
       performAction:grey_longPress()];
 }
 
@@ -252,8 +255,11 @@ void SearchBookmarksForText(NSString* search_text) {
 }
 
 - (void)openCustomManagedSubFolder {
-  [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
-                                          @"Managed_Sub_Folder")]
+  id<GREYMatcher> subFolderMatcher =
+      TappableBookmarkNodeWithLabel(@"Managed_Sub_Folder");
+  [ChromeEarlGrey
+      waitForMatcher:grey_allOf(subFolderMatcher, grey_interactable(), nil)];
+  [[EarlGrey selectElementWithMatcher:subFolderMatcher]
       performAction:grey_tap()];
 }
 
