@@ -168,12 +168,10 @@ ShapingLineBreaker::PreviousBreakOpportunity(unsigned offset,
   // end of non-hangable character (i.e., start of the space run).
   unsigned break_offset =
       break_iterator_->PreviousBreakOpportunity(offset, start);
-  unsigned non_hangable_run_end =
-      IsBreakableSpace(text[break_offset - 1])
-          ? FindNonHangableEnd(text, break_offset - 1)
-          : break_offset;
+  if (IsBreakableSpace(text[break_offset - 1]))
+    return {break_offset, FindNonHangableEnd(text, break_offset - 1), false};
 
-  return {break_offset, non_hangable_run_end, false};
+  return {break_offset, false};
 }
 
 ShapingLineBreaker::BreakOpportunity ShapingLineBreaker::NextBreakOpportunity(
@@ -196,12 +194,10 @@ ShapingLineBreaker::BreakOpportunity ShapingLineBreaker::NextBreakOpportunity(
   // end of non-hangable character (i.e., start of the space run),
   // which may be useful to avoid reshaping.
   unsigned break_offset = break_iterator_->NextBreakOpportunity(offset, len);
-  unsigned non_hangable_run_end =
-      IsBreakableSpace(text[break_offset - 1])
-          ? FindNonHangableEnd(text, break_offset - 1)
-          : break_offset;
+  if (IsBreakableSpace(text[break_offset - 1]))
+    return {break_offset, FindNonHangableEnd(text, break_offset - 1), false};
 
-  return {break_offset, non_hangable_run_end, false};
+  return {break_offset, false};
 }
 
 // Shapes a line of text by finding a valid and appropriate break opportunity
