@@ -8,6 +8,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -15,6 +16,7 @@ import android.os.Looper;
 import android.os.Parcelable;
 import android.os.Process;
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
@@ -27,7 +29,9 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.memory.MemoryPressureMonitor;
+import org.chromium.base.metrics.RecordHistogram;
 
 import java.util.List;
 
@@ -274,6 +278,17 @@ public class ChildProcessService {
                     }
                     throw new RuntimeException(e);
                 }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    // Record process startup time histograms.
+                    long startTime =
+                            SystemClock.uptimeMillis() - ApiHelperForN.getStartUptimeMillis();
+                    String baseHistogramName = "Android.ChildProcessStartTime";
+                    String suffix = ContextUtils.isIsolatedProcess() ? ".Isolated" : ".NotIsolated";
+                    RecordHistogram.recordTimesHistogram(baseHistogramName + ".All", startTime);
+                    RecordHistogram.recordTimesHistogram(baseHistogramName + suffix, startTime);
+                }
+
                 mDelegate.runMain();
                 try {
                     mParentProcess.reportCleanExit();
