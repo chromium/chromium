@@ -200042,6 +200042,7 @@ regressions. -->
   <affected-histogram name="CompositorLatency"/>
   <affected-histogram name="CompositorLatency.CompositorAnimation"/>
   <affected-histogram name="CompositorLatency.DroppedFrame"/>
+  <affected-histogram name="CompositorLatency.DroppedFrame.Canvas"/>
   <affected-histogram
       name="CompositorLatency.DroppedFrame.CompositorAnimation"/>
   <affected-histogram
@@ -200053,6 +200054,7 @@ regressions. -->
   <affected-histogram name="CompositorLatency.DroppedFrame.WheelScroll"/>
   <affected-histogram name="CompositorLatency.MainThreadAnimation"/>
   <affected-histogram name="CompositorLatency.MissedDeadlineFrame"/>
+  <affected-histogram name="CompositorLatency.MissedDeadlineFrame.Canvas"/>
   <affected-histogram
       name="CompositorLatency.MissedDeadlineFrame.CompositorAnimation"/>
   <affected-histogram
@@ -200317,6 +200319,7 @@ regressions. -->
       label="The total time starting from BeginImplFrame to when
              CompositorFramePresentation is done."/>
   <affected-histogram name="CompositorLatency.CompositorOnlyFrame"/>
+  <affected-histogram name="CompositorLatency.CompositorOnlyFrame.Canvas"/>
   <affected-histogram
       name="CompositorLatency.CompositorOnlyFrame.CompositorAnimation"/>
   <affected-histogram
@@ -214620,6 +214623,7 @@ regressions. -->
 </histogram_suffixes>
 
 <histogram_suffixes name="SmoothnessSequenceTypes" separator=".">
+  <suffix name="Canvas" label="Main-thread canvas"/>
   <suffix name="CompositorAnimation" label="Compositor-driven animation"/>
   <suffix name="MainThreadAnimation" label="Main-thread driven animation"/>
   <suffix name="PinchZoom" label="Pinch-to-zoom interaction"/>

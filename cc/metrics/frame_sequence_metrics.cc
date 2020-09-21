@@ -158,6 +158,7 @@ FrameSequenceMetrics::ThreadType FrameSequenceMetrics::GetEffectiveThread()
       return scrolling_thread_;
 
     case FrameSequenceTrackerType::kCustom:
+    case FrameSequenceTrackerType::kCanvas:
       return ThreadType::kMain;
 
     case FrameSequenceTrackerType::kMaxType:

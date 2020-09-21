@@ -164,6 +164,7 @@ class MutatorHost {
   virtual bool HasCustomPropertyAnimations() const = 0;
   virtual bool CurrentFrameHadRAF() const = 0;
   virtual bool NextFrameHasPendingRAF() const = 0;
+  virtual bool HasCanvasInvalidation() const = 0;
 
   using TrackedAnimationSequenceId = size_t;
   struct PendingThroughputTrackerInfo {

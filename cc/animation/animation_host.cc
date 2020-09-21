@@ -128,9 +128,11 @@ void AnimationHost::RemoveAnimationTimeline(
 }
 
 void AnimationHost::SetHasCanvasInvalidation(bool has_canvas_invalidation) {
-  // TODO(crbug.com/1111392): send this value to LayerTreeHostImpl for
-  // constructing a canvas frame sequence tracker.
   has_canvas_invalidation_ = has_canvas_invalidation;
+}
+
+bool AnimationHost::HasCanvasInvalidation() const {
+  return has_canvas_invalidation_;
 }
 
 void AnimationHost::SetHasInlineStyleMutation(bool has_inline_style_mutation) {

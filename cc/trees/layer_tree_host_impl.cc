@@ -607,6 +607,8 @@ void LayerTreeHostImpl::CommitComplete() {
 
   if (mutator_host_->CurrentFrameHadRAF())
     frame_trackers_.StartSequence(FrameSequenceTrackerType::kRAF);
+  if (mutator_host_->HasCanvasInvalidation())
+    frame_trackers_.StartSequence(FrameSequenceTrackerType::kCanvas);
 
   if (mutator_host_->MainThreadAnimationsCount() > 0) {
     frame_trackers_.StartSequence(
@@ -2340,6 +2342,8 @@ bool LayerTreeHostImpl::DrawLayers(FrameData* frame) {
 
   if (!mutator_host_->NextFrameHasPendingRAF())
     frame_trackers_.StopSequence(FrameSequenceTrackerType::kRAF);
+  if (!mutator_host_->HasCanvasInvalidation())
+    frame_trackers_.StopSequence(FrameSequenceTrackerType::kCanvas);
 
   if (mutator_host_->MainThreadAnimationsCount() == 0) {
     frame_trackers_.StopSequence(

@@ -60,6 +60,8 @@ const char* FrameSequenceTracker::GetFrameSequenceTrackerTypeName(
       return "ScrollbarScroll";
     case FrameSequenceTrackerType::kCustom:
       return "Custom";
+    case FrameSequenceTrackerType::kCanvas:
+      return "Canvas";
     case FrameSequenceTrackerType::kMaxType:
       return "";
   }

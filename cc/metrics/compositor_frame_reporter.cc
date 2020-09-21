@@ -569,6 +569,10 @@ void CompositorFrameReporter::ReportCompositorLatencyHistograms() const {
           UMA_HISTOGRAM_ENUMERATION("CompositorLatency.Type.ScrollbarScroll",
                                     report_type);
           break;
+        case FrameSequenceTrackerType::kCanvas:
+          UMA_HISTOGRAM_ENUMERATION("CompositorLatency.Type.Canvas",
+                                    report_type);
+          break;
         case FrameSequenceTrackerType::kCustom:
         case FrameSequenceTrackerType::kMaxType:
           NOTREACHED();

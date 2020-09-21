@@ -103,6 +103,7 @@ class MockMutatorHost : public MutatorHost {
   MOCK_CONST_METHOD0(NextFrameHasPendingRAF, bool());
   MOCK_METHOD0(TakePendingThroughputTrackerInfos,
                PendingThroughputTrackerInfos());
+  MOCK_CONST_METHOD0(HasCanvasInvalidation, bool());
 };
 
 }  // namespace cc
