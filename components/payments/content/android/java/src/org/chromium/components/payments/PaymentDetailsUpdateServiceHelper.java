@@ -153,17 +153,7 @@ public class PaymentDetailsUpdateServiceHelper {
      */
     public void reset() {
         ThreadUtils.assertOnUiThread();
-        if (sInstance != null) sInstance = null;
-    }
-
-    /**
-     * Resets singleton instance if it is not destroyed.
-     *
-     * @see java.lang.Object#finalize()
-     */
-    @Override
-    public void finalize() throws Throwable {
-        reset();
+        sInstance = null;
     }
 
     /**

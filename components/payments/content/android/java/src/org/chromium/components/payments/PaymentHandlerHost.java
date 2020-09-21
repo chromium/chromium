@@ -73,20 +73,8 @@ public class PaymentHandlerHost {
 
     /** Destroys the native bridge. This object shouldn't be used afterwards. */
     public void destroy() {
-        if (mNativePointer != 0) {
-            PaymentHandlerHostJni.get().destroy(mNativePointer);
-            mNativePointer = 0;
-        }
-    }
-
-    /**
-     * Destroys native object if owned object is not destroyed.
-     *
-     * @see java.lang.Object#finalize()
-     */
-    @Override
-    public void finalize() throws Throwable {
-        destroy();
+        PaymentHandlerHostJni.get().destroy(mNativePointer);
+        mNativePointer = 0;
     }
 
     /**
