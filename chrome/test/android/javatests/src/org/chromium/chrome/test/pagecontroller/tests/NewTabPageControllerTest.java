@@ -7,6 +7,8 @@ package org.chromium.chrome.test.pagecontroller.tests;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import android.os.Build.VERSION_CODES;
+
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
 
@@ -19,6 +21,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.test.pagecontroller.controllers.ntp.ChromeMenu;
 import org.chromium.chrome.test.pagecontroller.controllers.ntp.NewTabPageController;
@@ -61,6 +64,8 @@ public class NewTabPageControllerTest {
 
     @LargeTest
     @Test
+    @DisableIf.
+    Build(sdk_is_greater_than = VERSION_CODES.O_MR1, message = "https://crbug.com/1130617")
     public void testScrollPage() {
         mController.scrollToTop();
         assertTrue(mController.hasScrolledToTop());
