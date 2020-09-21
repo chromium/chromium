@@ -269,8 +269,8 @@ AudioInputStream* AudioManagerBase::MakeAudioInputStream(
 
   if (!params.IsValid() || (params.channels() > kMaxInputChannels) ||
       device_id.empty()) {
-    DLOG(ERROR) << "Audio parameters are invalid for device " << device_id;
-    VLOG(1) << params.AsHumanReadableString();
+    DLOG(ERROR) << "Audio parameters are invalid for device " << device_id
+                << ", params: " << params.AsHumanReadableString();
     return nullptr;
   }
 
