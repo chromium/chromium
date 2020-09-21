@@ -2468,8 +2468,9 @@ void AutofillMetrics::LogWebOTPPhoneCollectionMetricStateUkm(
     ukm::UkmRecorder* recorder,
     ukm::SourceId source_id,
     uint32_t phone_collection_metric_state) {
-  DCHECK(recorder);
-  DCHECK_NE(source_id, ukm::kInvalidSourceId);
+  // UKM recording is not supported for WebViews.
+  if (!recorder || source_id == ukm::kInvalidSourceId)
+    return;
 
   ukm::builders::WebOTPImpact builder(source_id);
   builder.SetPhoneCollection(phone_collection_metric_state);
