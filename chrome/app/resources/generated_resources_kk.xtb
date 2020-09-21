@@ -2230,7 +2230,6 @@
 <translation id="3650845953328929506">Журналды жүктеп салу кезекте.</translation>
 <translation id="3650952250015018111">"<ph name="APP_NAME" />" қолданбасына кіруге рұқсат беру:</translation>
 <translation id="3651488188562686558">Wi-Fi желісінен ажырату</translation>
-<translation id="3651952061994655768">Атауын өзгерту</translation>
 <translation id="3652817283076144888">Жұмысқа дайындалуда</translation>
 <translation id="3653160965917900914">Желінің ортақ каталогтері</translation>
 <translation id="3653842108912548333">Assistant қолданбасына Voice Match арқылы кіру</translation>
@@ -3575,7 +3574,6 @@
 <translation id="5315873049536339193">Идентификация мәліметі</translation>
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5319359161174645648">Google қызметі Chrome браузерін ұсынады</translation>
-<translation id="5320135788267874712">Жаңа құрылғы атауы</translation>
 <translation id="532247166573571973">Сервер қолжетімді емес. Әрекетті кейінірек қайталаңыз.</translation>
 <translation id="5324780743567488672">Орныңызды пайдаланып, уақыт белдеуін автоматты орнату</translation>
 <translation id="5327248766486351172">Аты</translation>
@@ -4327,6 +4325,7 @@
 <translation id="6227280783235722609">кеңейтім</translation>
 <translation id="6229849828796482487">Wi-Fi желісін ажырату</translation>
 <translation id="6229890768313448549">Google Play қызмет көрсету шарттары жүктелмейді. Әрекетті қайталаңыз.</translation>
+<translation id="6231782223312638214">Ұсынылған</translation>
 <translation id="6231881193380278751">Бетті автоматты жаңарту үшін URL мекенжайында сұрау параметрін қосыңыз: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Батарея</translation>
 <translation id="6232116551750539448"><ph name="NAME" /> байланысы үзілді</translation>

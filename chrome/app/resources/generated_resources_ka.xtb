@@ -2232,7 +2232,6 @@
 <translation id="3650845953328929506">ჟურნალის ატვირთვა მოლოდინის რეჟიმშია.</translation>
 <translation id="3650952250015018111">„<ph name="APP_NAME" />“ შეძლებს წვდომას შემდეგზე:</translation>
 <translation id="3651488188562686558">Wi-Fi-თან კავშირის გაწყვეტა</translation>
-<translation id="3651952061994655768">სახელის შეცვლა</translation>
 <translation id="3652817283076144888">მიმდინარეობს ინიციალიზაცია</translation>
 <translation id="3653160965917900914">ქსელში გაზიარებული ფაილები</translation>
 <translation id="3653842108912548333">იქონიეთ წვდომა თქვენს ასისტენტზე Voice Match-ის მეშვეობით</translation>
@@ -3577,7 +3576,6 @@
 <translation id="5315873049536339193">მოწმობა</translation>
 <translation id="5317780077021120954">შენახვა</translation>
 <translation id="5319359161174645648">Google გირჩევთ Chrome-ს</translation>
-<translation id="5320135788267874712">მოწყობილობის ახალი სახელი</translation>
 <translation id="532247166573571973">სერვერი შეიძლება მიუწვდომელი იყოს. ცადეთ მოგვიანებით.</translation>
 <translation id="5324780743567488672">თქვენი მდებარეობის გამოყენებით, დროის სარტყელის ავტომატური დაყენება</translation>
 <translation id="5327248766486351172">სახელი</translation>
@@ -4329,6 +4327,7 @@
 <translation id="6227280783235722609">გაფართოება</translation>
 <translation id="6229849828796482487">Wi-Fi ქსელის გათიშვა</translation>
 <translation id="6229890768313448549">Google Play-ს მომსახურების პირობები ვერ ჩაიტვირთა. გთხოვთ, ცადოთ ხელახლა.</translation>
+<translation id="6231782223312638214">შემოთავაზებული</translation>
 <translation id="6231881193380278751">URL-ში დაამატეთ მოთხოვნის პარამეტრი, გვერდის ავტომატური განახლებისათვის: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">ბატარეა</translation>
 <translation id="6232116551750539448"><ph name="NAME" />-თან კავშირი გაწყდა</translation>

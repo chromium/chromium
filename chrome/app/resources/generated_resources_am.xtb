@@ -2232,7 +2232,6 @@
 <translation id="3650845953328929506">የምዝግብ ማስታወሻ ሰቀላ በመጠባበቅ ላይ።</translation>
 <translation id="3650952250015018111">«<ph name="APP_NAME" />» ይህን እንዲደርስ ይፍቀዱ፦</translation>
 <translation id="3651488188562686558">ከWi-Fi ግንኙነት አቋርጥ</translation>
-<translation id="3651952061994655768">ስም ለውጥ</translation>
 <translation id="3652817283076144888">በማስጀመር ላይ</translation>
 <translation id="3653160965917900914">የአውታረ መረብ ፋይል ማጋራቶች</translation>
 <translation id="3653842108912548333">የእርስዎን ረዳት በVoice Match ይድረሱበት</translation>
@@ -3575,7 +3574,6 @@
 <translation id="5315873049536339193">ማንነት</translation>
 <translation id="5317780077021120954">አስቀምጥ</translation>
 <translation id="5319359161174645648">Google Chromeን ይመክራል</translation>
-<translation id="5320135788267874712">አዲስ የመሣሪያ ስም</translation>
 <translation id="532247166573571973">አገልጋዩ የማይደረስበት ሊሆን ይችላል። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="5324780743567488672">የእርስዎን መገኛ አካባቢ በመጠቀም በራስ-ሰር የጊዜ ቀጠናን ያዘጋጃል</translation>
 <translation id="5327248766486351172">ስም</translation>
@@ -4327,6 +4325,7 @@
 <translation id="6227280783235722609">ቅጥያ</translation>
 <translation id="6229849828796482487">የWi-Fi አውታረ መረብ ግንኙነትን አቋርጥ</translation>
 <translation id="6229890768313448549">የGoogle Play አገልግሎት ውል ሊጫን አልቻለም። እባክዎ እንደገና ይሞክሩ።</translation>
+<translation id="6231782223312638214">በአስተያየት የተጠቆሙ</translation>
 <translation id="6231881193380278751">ገጹን በራስ-ለማደስ በዩአርኤል ውስጥ የመጠይቅ ልኬት ያክሉ፦ chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">ባትሪ</translation>
 <translation id="6232116551750539448">ወደ <ph name="NAME" /> ግንኙነት ጠፍቷል</translation>

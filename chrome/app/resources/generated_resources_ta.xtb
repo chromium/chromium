@@ -2233,7 +2233,6 @@
 <translation id="3650845953328929506">பதிவை ஏற்றுவது நிலுவையிலுள்ளது.</translation>
 <translation id="3650952250015018111">இவற்றை அணுக "<ph name="APP_NAME" />"ஐ அனுமதி:</translation>
 <translation id="3651488188562686558">வைஃபை இணைப்பைத் துண்டி</translation>
-<translation id="3651952061994655768">பெயரை மாற்று</translation>
 <translation id="3652817283076144888">துவக்குகிறது</translation>
 <translation id="3653160965917900914">நெட்வொர்க் கோப்புப் பகிர்வுகள்</translation>
 <translation id="3653842108912548333">Voice Match மூலம் அசிஸ்டண்ட்டை அணுகுதல்</translation>
@@ -3578,7 +3577,6 @@
 <translation id="5315873049536339193">அடையாளம்</translation>
 <translation id="5317780077021120954">சேமி</translation>
 <translation id="5319359161174645648">Google ஆனது Chromeஐப் பரிந்துரைக்கிறது</translation>
-<translation id="5320135788267874712">புதிய சாதனத்தின் பெயர்</translation>
 <translation id="532247166573571973">சேவையகத்தைத் தொடர்புகொள்ள முடியாதிருக்கலாம். மீண்டும் முயலவும்.</translation>
 <translation id="5324780743567488672">எனது இருப்பிடத்தைப் பயன்படுத்தி, தானாகவே நேர மண்டலத்தை அமை</translation>
 <translation id="5327248766486351172">பெயர்</translation>
@@ -4331,6 +4329,7 @@
 <translation id="6227280783235722609">நீட்டிப்பு</translation>
 <translation id="6229849828796482487">வைஃபை நெட்வொர்க்கைத் துண்டி</translation>
 <translation id="6229890768313448549">Google Play சேவை விதிமுறைகளை ஏற்ற முடியவில்லை. மீண்டும் முயலவும்.</translation>
+<translation id="6231782223312638214">பரிந்துரைக்கப்படுவது</translation>
 <translation id="6231881193380278751">பக்கத்தைத் தானாகப் புதுப்பிக்க, URL இல் வினவல் அளவுருவைச் சேர்க்கவும்: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">பேட்டரி</translation>
 <translation id="6232116551750539448"><ph name="NAME" /> உடனான இணைப்பு துண்டிக்கப்பட்டது</translation>

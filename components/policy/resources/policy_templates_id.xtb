@@ -741,17 +741,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="2168397434410358693">Menunda waktu menganggur saat menggunakan daya AC</translation>
 <translation id="217013996107840632">Parameter command line untuk beralih dari browser alternatif.</translation>
 <translation id="2170233653554726857">Aktifkan pengoptimalan WPAD</translation>
-<translation id="2172774896158845977">Mengonfigurasi jenis halaman beranda default di <ph name="PRODUCT_NAME" /> dan mencegah pengguna mengubah preferensi halaman beranda. Halaman beranda dapat disetel ke URL yang Anda tetapkan, atau disetel ke Halaman Tab Baru.
-
-          Jika Anda mengaktifkan setelan ini, Halaman Tab Baru akan selalu digunakan untuk halaman beranda, dan lokasi URL halaman beranda akan diabaikan.
-
-          Jika Anda menonaktifkan setelan ini, halaman beranda pengguna tidak akan pernah menjadi Halaman Tab Baru, kecuali URL-nya disetel ke 'chrome://newtab'.
-
-          Jika Anda mengaktifkan atau menonaktifkan setelan ini, pengguna tidak dapat mengubah jenis halaman berandanya di <ph name="PRODUCT_NAME" />.
-
-          Jika kebijakan ini tidak disetel, pengguna akan dapat menentukan sendiri apakah halaman tab baru menjadi halaman beranda mereka atau tidak.
-
-          Kebijakan ini hanya tersedia pada instance Windows yang dihubungkan ke domain <ph name="MS_AD_NAME" />, atau instance Windows 10 Pro atau Enterprise yang terdaftar untuk pengelolaan perangkat, dan instance macOS yang dikelola melalui MDM atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="2178899310296064282">Terapkan setidaknya Mode Terbatas Menengah di YouTube</translation>
 <translation id="2182291258410176649">Pengguna memutuskan apakah akan mengaktifkan opsi pencadangan dan pemulihan</translation>
 <translation id="2183294522275408937">Setelan ini mengontrol seberapa sering layar kunci akan meminta sandi dimasukkan guna melanjutkan penggunaan buka kunci cepat. Setiap kali masuk ke layar kunci, jika entri sandi terakhir melebihi setelan ini, buka kunci cepat tidak akan tersedia untuk masuk ke layar kunci. Jika pengguna membiarkan layar kunci melewati periode ini, sandi akan diminta lagi nantinya apabila pengguna salah memasukkan kode, atau masuk ke layar kunci lagi, mana saja yang muncul terlebih dahulu.
@@ -1347,20 +1336,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       URL harus berisi skema HTTPS, misalnya "https://example.com".
 
       Untuk informasi mendetail tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="2976992705655394547">Memungkinkan Anda menentukan perilaku saat memulai.
-
-          Jika Anda memilih 'Buka Halaman Tab Baru', Halaman Tab Baru akan selalu dibuka saat Anda memulai <ph name="PRODUCT_NAME" />.
-
-          Jika Anda memilih 'Pulihkan sesi terakhir', URL yang dibuka saat <ph name="PRODUCT_NAME" /> terakhir ditutup akan kembali dibuka dan sesi penjelajahan akan dipulihkan seperti saat ditinggalkan.
-          Memilih opsi ini akan menonaktifkan beberapa setelan yang mengandalkan sesi atau yang melakukan tindakan saat keluar (misalnya Hapus data penjelajahan saat keluar atau cookie khusus sesi).
-
-          Jika Anda memilih 'Buka daftar URL', daftar 'URL yang akan dibuka saat mulai' akan dibuka saat pengguna memulai <ph name="PRODUCT_NAME" />.
-
-          Jika Anda mengaktifkan setelan ini, pengguna tidak dapat mengubah atau menggantinya di <ph name="PRODUCT_NAME" />.
-
-          Menonaktifkan setelan ini sama dengan tidak mengonfigurasinya. Pengguna masih dapat mengubahnya di <ph name="PRODUCT_NAME" />.
-
-          Kebijakan ini hanya tersedia pada instance Windows yang dihubungkan ke domain <ph name="MS_AD_NAME" />, atau instance Windows 10 Pro atau Enterprise yang terdaftar untuk pengelolaan perangkat, dan instance macOS yang dikelola melalui MDM atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="2985927503455169394">Gunakan mode default pengalaman aktivasi Asisten</translation>
 <translation id="2987155890997901449">Aktifkan ARC</translation>
 <translation id="2987227569419001736">Mengontrol penggunaan API Bluetooth Web</translation>
@@ -2380,7 +2355,6 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="4474167089968829729">Aktifkan penyimpanan sandi di pengelola sandi</translation>
 <translation id="4476769083125004742">Jika kebijakan ini disetel ke <ph name="BLOCK_GEOLOCATION_SETTING" />, aplikasi Android tidak dapat mengakses informasi lokasi. Jika Anda menyetel kebijakan ini ke nilai lain atau tidak menyetel kebijakan, pengguna akan dimintai persetujuan ketika aplikasi Android ingin mengakses informasi lokasi.</translation>
 <translation id="4480694116501920047">Paksakan SafeSearch</translation>
-<translation id="4482640907922304445">Menampilkan tombol Beranda di bilah alat <ph name="PRODUCT_NAME" />. Jika Anda mengaktifkan setelan ini, tombol Beranda akan selalu ditampilkan. Jika Anda menonaktifkan setelan ini, tombol Beranda tidak akan pernah ditampilkan. Jika Anda mengaktifkan atau menonaktifkan setelan ini, pengguna tidak dapat mengubah atau menimpa setelan ini di <ph name="PRODUCT_NAME" />. Membiarkan kebijakan ini tidak disetel akan memungkinkan pengguna memilih apakah akan menampilkan tombol beranda.</translation>
 <translation id="4483649828988077221">Nonaktifkan Update Otomatis</translation>
 <translation id="4485425108474077672">Mengonfigurasi URL halaman Tab Baru</translation>
 <translation id="4492287494009043413">Menonaktifkan pengambilan screenshot</translation>
@@ -2678,11 +2652,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="5017369989680827157">Jika kebijakan ditetapkan ke Benar (True) atau tidak ditetapkan, pengguna akan dapat mengontrol fitur Isi otomatis alamat di UI.
 
       Jika kebijakan ditetapkan ke Salah (False), Isi otomatis tidak akan menyarankan atau mengisi informasi alamat, juga tidak akan menyimpan informasi alamat tambahan yang dikirimkan pengguna saat menjelajahi web.</translation>
-<translation id="5022551015331996656">Jika 'Buka daftar URL' dipilih sebagai tindakan saat memulai, Anda dapat menentukan daftar URL yang dibuka. Jika dibiarkan tidak disetel, tidak ada URL yang akan dibuka saat memulai.
-
-          Kebijakan ini hanya akan berfungsi jika kebijakan 'RestoreOnStartup' disetel ke 'RestoreOnStartupIsURLs'.
-
-          Kebijakan ini hanya tersedia pada instance Windows yang dihubungkan ke domain <ph name="MS_AD_NAME" />, atau instance Windows 10 Pro atau Enterprise yang terdaftar untuk pengelolaan perangkat, dan instance macOS yang dikelola melalui MDM atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="5023555740504506178">Jika diaktifkan atau tidak dikonfigurasi (default), suatu Halaman web dapat menggunakan API berbagi layar (mis. getDisplayMedia() atau API ekstensi Desktop Capture) untuk meminta pengguna memilih tab, jendela, atau desktop yang akan direkam.
 
       Ketika kebijakan ini dinonaktifkan, setiap panggilan untuk API berbagi layar akan gagal dengan error.</translation>
@@ -3080,19 +3049,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Jika kebijakan disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak dapat menampilkan informasi produk sebagai konten tab penuh.
 
       Menyetel kebijakan akan mengontrol penyajian informasi promosi tab penuh. Hal ini termasuk konten seperti halaman sambutan yang membantu pengguna login ke <ph name="PRODUCT_NAME" />, menyetel <ph name="PRODUCT_NAME" /> sebagai browser default pengguna, atau menginformasikan fitur produk kepada pengguna.</translation>
-<translation id="5450893456912604446">Mengonfigurasi URL halaman beranda default di <ph name="PRODUCT_NAME" /> dan mencegah pengguna mengubahnya.
-
-          Halaman beranda adalah halaman yang dibuka oleh tombol Layar Utama. Di desktop, halaman yang terbuka saat browser diluncurkan akan dikontrol oleh kebijakan RestoreOnStartup.
-
-          Jenis halaman beranda dapat disetel ke URL yang Anda tentukan di sini atau disetel ke Halaman Tab Baru. Jika Anda memilih Halaman Tab Baru, kebijakan ini tidak akan berpengaruh.
-
-          Jika Anda mengaktifkan setelan ini, pengguna tidak dapat mengubah URL halaman beranda di <ph name="PRODUCT_NAME" />, tetapi mereka tetap dapat memilih Halaman Tab Baru sebagai halaman beranda.
-
-          Jika kebijakan ini dan <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> tidak disetel, pengguna akan dapat memilih halaman berandanya sendiri.
-
-          URL harus berisi skema standar, misalnya "http://example.com" atau "https://example.com".
-
-          Kebijakan ini hanya tersedia pada instance Windows yang dihubungkan ke domain <ph name="MS_AD_NAME" />, atau instance Windows 10 Pro atau Enterprise yang terdaftar untuk pengelolaan perangkat, dan instance macOS yang dikelola melalui MDM atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="5457065417344056871">Mengaktifkan mode tamu dalam browser</translation>
 <translation id="5457387982448145430">Jika kebijakan disetel ke Aktif, sandi yang tersimpan akan diimpor dari browser default sebelumnya saat pertama kali dijalankan. Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak ada sandi tersimpan yang akan diimpor saat pertama kali dijalankan.
 
@@ -4748,15 +4704,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="7713608076604149344">Batasan download</translation>
 <translation id="7715711044277116530">Persentase yang digunakan untuk menskalakan penundaan layar redup dalam mode presentasi</translation>
 <translation id="7717938661004793600">Mengonfigurasikan fitur aksesibilitas <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="772061142236146688">Mengonfigurasi URL halaman Tab Baru default dan mencegah pengguna mengubahnya.
-
-          Halaman Tab Baru adalah halaman yang terbuka saat tab baru dibuat (termasuk yang dibuka di jendela baru).
-
-          Kebijakan ini tidak menentukan halaman mana yang dibuka saat browser mulai dijalankan. Halaman tersebut dikontrol oleh kebijakan <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />. Namun, kebijakan ini memengaruhi Halaman Beranda dan halaman awal jika disetel untuk membuka halaman Tab Baru.
-
-          Jika kebijakan tidak disetel atau dibiarkan kosong, halaman tab baru default akan digunakan.
-
-          Kebijakan ini hanya tersedia pada instance Windows yang dihubungkan ke domain <ph name="MS_AD_NAME" />, atau instance Windows 10 Pro atau Enterprise yang terdaftar untuk pengelolaan perangkat, dan instance macOS yang dikelola melalui MDM atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="7721944091689270995">ID pengguna <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Jika kebijakan disetel ke 1, situs akan menampilkan pop-up. Jika kebijakan disetel ke 2, pop-up tidak dapat ditampilkan.
 

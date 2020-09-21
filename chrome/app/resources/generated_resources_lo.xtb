@@ -2231,7 +2231,6 @@
 <translation id="3650845953328929506">ການອັບໂຫຼດບັນທຶກຍັງຄ້າງຢູ່.</translation>
 <translation id="3650952250015018111">ອະນຸຍາດໃຫ້ "<ph name="APP_NAME" />" ເຂົ້າເຖິງ:</translation>
 <translation id="3651488188562686558">ຕັດການເຊື່ອມຕໍ່ຈາກ Wi-Fi</translation>
-<translation id="3651952061994655768">ປ່ຽນຊື່</translation>
 <translation id="3652817283076144888">ກຳລັງເລີ່ມຕົ້ນ</translation>
 <translation id="3653160965917900914">ການແບ່ງປັນໄຟລ໌ຜ່ານເຄືອຂ່າຍ</translation>
 <translation id="3653842108912548333">ເຂົ້າເຖິງຜູ້ຊ່ວຍຂອງທ່ານດ້ວຍ Voice Match</translation>
@@ -3576,7 +3575,6 @@
 <translation id="5315873049536339193">ລະບຸຕົວຕົນ</translation>
 <translation id="5317780077021120954">ບັນທຶກ</translation>
 <translation id="5319359161174645648">Google ແນະນຳໃຫ້ໃຊ້ Chrome</translation>
-<translation id="5320135788267874712">ຊື່ອຸປະກອນໃໝ່</translation>
 <translation id="532247166573571973">ເຊີບເວີອາດຈະບໍ່ສາມາດຕິດຕໍ່ຫາໄດ້. ລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="5324780743567488672">ຕັ້ງ​ເຂດ​ເວ​ລາ​ອັດ​ຕະ​ໂນ​ມັດ​ດ້ວຍ​ການ​ໃຊ້​ທີ່​ຕັ້ງ​ຂອງ​ທ່ານ</translation>
 <translation id="5327248766486351172">ຊື່</translation>
@@ -4328,6 +4326,7 @@
 <translation id="6227280783235722609">ສ່ວນຂະຫຍາຍ</translation>
 <translation id="6229849828796482487">ຕັດການເຊື່ອມຕໍ່ເຄືອຂ່າຍ Wi-Fi</translation>
 <translation id="6229890768313448549">ບໍ່ສາມາດໂຫຼດຂໍ້ກຳນົດການບໍລິການຂອງ Google Play ໄດ້. ກະລຸນາລອງໃໝ່.</translation>
+<translation id="6231782223312638214">ແນະ​ນໍາແລ້ວ</translation>
 <translation id="6231881193380278751">ເພີ່ມ​ຕົວ​ລັບ​ການ​ສອບ​ຖາມ​ຢູ່​ໃນ URL ເພື່ອ​ຣີ​ເຟ​ຣ​ຊ​ໜ້າ​ອັດ​ຕະ​ໂນ​ມັດ: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">ແບັດເຕີຣີ</translation>
 <translation id="6232116551750539448">ການ​ເຊື່ອມ​ຕໍ່​ກັບ <ph name="NAME" /> ຖືກ​ຕັດ​ໄປ​ແລ້ວ</translation>

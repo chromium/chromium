@@ -2229,7 +2229,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3650845953328929506">Protokoll-Upload steht aus.</translation>
 <translation id="3650952250015018111">"<ph name="APP_NAME" />" Zugriff erlauben auf:</translation>
 <translation id="3651488188562686558">Die WLAN-Verbindung trennen</translation>
-<translation id="3651952061994655768">Name ändern</translation>
 <translation id="3652817283076144888">Initialisierung läuft</translation>
 <translation id="3653160965917900914">Netzwerkfreigaben</translation>
 <translation id="3653842108912548333">Mit Voice Match auf Assistant zugreifen</translation>
@@ -3574,7 +3573,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5315873049536339193">Identität</translation>
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5319359161174645648">Google empfiehlt Chrome</translation>
-<translation id="5320135788267874712">Neuer Gerätename</translation>
 <translation id="532247166573571973">Der Server ist eventuell nicht erreichbar. Versuchen Sie es später noch einmal.</translation>
 <translation id="5324780743567488672">Zeitzone automatisch anhand des Standorts einstellen</translation>
 <translation id="5327248766486351172">Name</translation>
@@ -4326,6 +4324,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6227280783235722609">Erweiterung</translation>
 <translation id="6229849828796482487">WLAN-Verbindung trennen</translation>
 <translation id="6229890768313448549">Fehler beim Laden der Google Play-Nutzungsbedingungen. Bitte versuchen Sie es erneut.</translation>
+<translation id="6231782223312638214">Vorgeschlagen</translation>
 <translation id="6231881193380278751">Abfrageparameter in URL zum automatischen Aktualisieren der Seite hinzufügen: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Akku</translation>
 <translation id="6232116551750539448">Verbindung mit <ph name="NAME" /> wurde unterbrochen.</translation>

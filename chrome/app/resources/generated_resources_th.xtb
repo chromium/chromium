@@ -2233,7 +2233,6 @@
 <translation id="3650845953328929506">กำลังรออัปโหลดบันทึก</translation>
 <translation id="3650952250015018111">อนุญาตให้ "<ph name="APP_NAME" />" เข้าถึง:</translation>
 <translation id="3651488188562686558">ยกเลิกการเชื่อมต่อ Wi-Fi</translation>
-<translation id="3651952061994655768">เปลี่ยนชื่อ</translation>
 <translation id="3652817283076144888">กำลังเริ่มต้น</translation>
 <translation id="3653160965917900914">พื้นที่แชร์ไฟล์ของเครือข่าย</translation>
 <translation id="3653842108912548333">เปิด Assistant ด้วย Voice Match</translation>
@@ -3578,7 +3577,6 @@
 <translation id="5315873049536339193">ข้อมูลประจำตัว</translation>
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5319359161174645648">Google ขอแนะนำ Chrome</translation>
-<translation id="5320135788267874712">ชื่ออุปกรณ์ใหม่</translation>
 <translation id="532247166573571973">อาจไม่สามารถเข้าถึงเซิร์ฟเวอร์ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="5324780743567488672">ตั้งค่าเขตเวลาโดยอัตโนมัติโดยใช้ตำแหน่งของคุณ</translation>
 <translation id="5327248766486351172">ชื่อ</translation>
@@ -4330,6 +4328,7 @@
 <translation id="6227280783235722609">ส่วนขยาย</translation>
 <translation id="6229849828796482487">ยกเลิกการเชื่อมต่อเครือข่าย Wi-Fi</translation>
 <translation id="6229890768313448549">ไม่สามารถโหลดข้อกำหนดในการให้บริการของ Google Play โปรดลองอีกครั้ง</translation>
+<translation id="6231782223312638214">แนะนำ</translation>
 <translation id="6231881193380278751">เพิ่มพารามิเตอร์ข้อความค้นหาใน URL เพื่อรีเฟรชหน้าโดยอัตโนมัติ: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">แบตเตอรี่</translation>
 <translation id="6232116551750539448">ขาดการเชื่อมต่อกับ <ph name="NAME" /></translation>

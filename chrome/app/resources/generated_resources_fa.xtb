@@ -2230,7 +2230,6 @@
 <translation id="3650845953328929506">بارگذاری گزارش درانتظار انجام است.</translation>
 <translation id="3650952250015018111">اجازه به «<ph name="APP_NAME" />» برای دسترسی به:</translation>
 <translation id="3651488188562686558">‏قطع اتصال Wi-Fi</translation>
-<translation id="3651952061994655768">تغییر نام</translation>
 <translation id="3652817283076144888">مقداردهی اولیه</translation>
 <translation id="3653160965917900914">دستگاه ذخیره‌سازی متصل به شبکه</translation>
 <translation id="3653842108912548333">‏دسترسی به دستیار با استفاده از Voice Match</translation>
@@ -3575,7 +3574,6 @@
 <translation id="5315873049536339193">هویت</translation>
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5319359161174645648">‏Google،‏ Chrome را توصیه می‌کند</translation>
-<translation id="5320135788267874712">نام دستگاه جدید</translation>
 <translation id="532247166573571973">ممکن است سرور در دسترس نباشد. بعداً دوباره امتحان کنید.</translation>
 <translation id="5324780743567488672">تنظیم خودکار منطقه زمانی با استفاده از موقعیت مکانی شما</translation>
 <translation id="5327248766486351172">نام</translation>
@@ -4327,6 +4325,7 @@
 <translation id="6227280783235722609">افزونه</translation>
 <translation id="6229849828796482487">‏قطع اتصال شبکه Wi-Fi</translation>
 <translation id="6229890768313448549">‏شرایط و ضوابط Google Play نمی‌تواند بارگیری شود. لطفاً دوباره امتحان کنید.</translation>
+<translation id="6231782223312638214">پیشنهاد شده</translation>
 <translation id="6231881193380278751">‏افزودن پارامتر جستار در نشانی وب برای بازخوانی خودکار صفحه: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">باتری</translation>
 <translation id="6232116551750539448">اتصال به <ph name="NAME" /> قطع شده است</translation>

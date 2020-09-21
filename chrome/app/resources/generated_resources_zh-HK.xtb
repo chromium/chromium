@@ -2232,7 +2232,6 @@
 <translation id="3650845953328929506">正在等待記錄上載。</translation>
 <translation id="3650952250015018111">允許「<ph name="APP_NAME" />」存取：</translation>
 <translation id="3651488188562686558">中斷 Wi-Fi 連線</translation>
-<translation id="3651952061994655768">變更名稱</translation>
 <translation id="3652817283076144888">正在初始化</translation>
 <translation id="3653160965917900914">網絡檔案共用</translation>
 <translation id="3653842108912548333">透過 Voice Match 存取「Google 助理」</translation>
@@ -3577,7 +3576,6 @@
 <translation id="5315873049536339193">身分</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5319359161174645648">Google 建議使用 Chrome</translation>
-<translation id="5320135788267874712">新的裝置名稱</translation>
 <translation id="532247166573571973">可能無法連接伺服器，請稍後再試。</translation>
 <translation id="5324780743567488672">自動使用您的位置設定時區</translation>
 <translation id="5327248766486351172">名稱</translation>
@@ -4329,6 +4327,7 @@
 <translation id="6227280783235722609">擴充程式</translation>
 <translation id="6229849828796482487">解除連接 Wi-Fi 網絡</translation>
 <translation id="6229890768313448549">無法載入 Google Play《服務條款》，請重試。</translation>
+<translation id="6231782223312638214">建議</translation>
 <translation id="6231881193380278751">在網址中新增查詢參數以自動重新整理網頁：chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">電池</translation>
 <translation id="6232116551750539448">與 <ph name="NAME" /> 的連線已中斷</translation>

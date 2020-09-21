@@ -2260,7 +2260,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3650845953328929506">Log upload pending.</translation>
 <translation id="3650952250015018111">Allow '<ph name="APP_NAME" />' to access:</translation>
 <translation id="3651488188562686558">Disconnect from Wi-Fi</translation>
-<translation id="3651952061994655768">Change name</translation>
 <translation id="3652817283076144888">Initialising</translation>
 <translation id="3653160965917900914">Network file shares</translation>
 <translation id="3653842108912548333">Access your Assistant with Voice Match</translation>
@@ -3629,7 +3628,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5315873049536339193">Identity</translation>
 <translation id="5317780077021120954">Save</translation>
 <translation id="5319359161174645648">Google recommends Chrome</translation>
-<translation id="5320135788267874712">New device name</translation>
 <translation id="532247166573571973">The server may be unreachable. Try again later.</translation>
 <translation id="5324780743567488672">Set time zone automatically using your location</translation>
 <translation id="5327248766486351172">Name</translation>
@@ -4389,6 +4387,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6227280783235722609">extension</translation>
 <translation id="6229849828796482487">Disconnect Wi-Fi network</translation>
 <translation id="6229890768313448549">Google Play Terms of Service cannot be loaded. Please retry.</translation>
+<translation id="6231782223312638214">Suggested</translation>
 <translation id="6231881193380278751">Add a QueryParam in URL to auto-refresh the page: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Battery</translation>
 <translation id="6232116551750539448">Connection to <ph name="NAME" /> has been lost</translation>

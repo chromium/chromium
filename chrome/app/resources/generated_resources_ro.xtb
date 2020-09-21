@@ -2233,7 +2233,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3650845953328929506">Încărcarea jurnalului este în așteptare.</translation>
 <translation id="3650952250015018111">Permite accesul „<ph name="APP_NAME" />” la:</translation>
 <translation id="3651488188562686558">se va deconecta de la Wi-Fi.</translation>
-<translation id="3651952061994655768">Schimbă numele</translation>
 <translation id="3652817283076144888">Se inițializează</translation>
 <translation id="3653160965917900914">Spații comune de stocare fișiere în rețea</translation>
 <translation id="3653842108912548333">Accesează Asistentul folosind Voice Match</translation>
@@ -3578,7 +3577,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5315873049536339193">Identitate</translation>
 <translation id="5317780077021120954">Salvează</translation>
 <translation id="5319359161174645648">Google recomandă Chrome</translation>
-<translation id="5320135788267874712">Noul nume al dispozitivului</translation>
 <translation id="532247166573571973">Este posibil ca serverul să nu poată fi accesat. Încearcă din nou mai târziu.</translation>
 <translation id="5324780743567488672">Setează automat fusul orar folosind locația</translation>
 <translation id="5327248766486351172">Nume</translation>
@@ -4330,6 +4328,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6227280783235722609">extensie</translation>
 <translation id="6229849828796482487">Deconectează rețeaua Wi-Fi</translation>
 <translation id="6229890768313448549">Nu se pot încărca Termenii și condițiile Google Play. Încearcă din nou.</translation>
+<translation id="6231782223312638214">Sugestii</translation>
 <translation id="6231881193380278751">Adaugă un parametru de interogare în adresa URL pentru a actualiza automat pagina: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Baterie</translation>
 <translation id="6232116551750539448">S-a pierdut conexiunea la <ph name="NAME" /></translation>

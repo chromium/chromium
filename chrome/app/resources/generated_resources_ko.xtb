@@ -2233,7 +2233,6 @@
 <translation id="3650845953328929506">로그 업데이트가 대기 중입니다.</translation>
 <translation id="3650952250015018111">'<ph name="APP_NAME" />'이(가) 다음 기기에 액세스하도록 허용합니다.</translation>
 <translation id="3651488188562686558">Wi-Fi 연결 해제</translation>
-<translation id="3651952061994655768">이름 변경</translation>
 <translation id="3652817283076144888">초기화 중</translation>
 <translation id="3653160965917900914">네트워크 파일 공유</translation>
 <translation id="3653842108912548333">Voice Match로 어시스턴트에 액세스</translation>
@@ -3576,7 +3575,6 @@
 <translation id="5315873049536339193">주소</translation>
 <translation id="5317780077021120954">저장</translation>
 <translation id="5319359161174645648">Google에서 추천하는 Chrome</translation>
-<translation id="5320135788267874712">새 기기 이름</translation>
 <translation id="532247166573571973">서버 접속이 불가능할 수 있습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="5324780743567488672">사용자 위치를 사용하여 자동으로 시간대 설정</translation>
 <translation id="5327248766486351172">이름</translation>
@@ -4328,6 +4326,7 @@
 <translation id="6227280783235722609">확장 프로그램</translation>
 <translation id="6229849828796482487">Wi-Fi 네트워크 연결 해제</translation>
 <translation id="6229890768313448549">Google Play 서비스 약관을 로드할 수 없습니다. 다시 시도해 주세요.</translation>
+<translation id="6231782223312638214">추천</translation>
 <translation id="6231881193380278751">검색어 매개변수를 URL에 추가하여 다음 페이지를 자동으로 새로고침하세요. chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">배터리</translation>
 <translation id="6232116551750539448"><ph name="NAME" /> 연결이 끊어졌습니다.</translation>

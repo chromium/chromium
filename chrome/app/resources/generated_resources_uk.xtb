@@ -2233,7 +2233,6 @@
 <translation id="3650845953328929506">Очікується завантаження журналу.</translation>
 <translation id="3650952250015018111">Надати додатку "<ph name="APP_NAME" />" доступ:</translation>
 <translation id="3651488188562686558">Відключитися від Wi-Fi</translation>
-<translation id="3651952061994655768">Змінити назву</translation>
 <translation id="3652817283076144888">Ініціалізація</translation>
 <translation id="3653160965917900914">Мережеві файлообмінники</translation>
 <translation id="3653842108912548333">Відкривайте Асистент за допомогою Voice Match</translation>
@@ -3578,7 +3577,6 @@
 <translation id="5315873049536339193">Ідентифікаційна інформація</translation>
 <translation id="5317780077021120954">Зберегти</translation>
 <translation id="5319359161174645648">Google рекомендує Chrome</translation>
-<translation id="5320135788267874712">Нова назва пристрою</translation>
 <translation id="532247166573571973">Можливо, сервер недоступний. Спробуйте пізніше.</translation>
 <translation id="5324780743567488672">Автоматично визначати часовий пояс на основі ваших геоданих</translation>
 <translation id="5327248766486351172">Назва</translation>
@@ -4330,6 +4328,7 @@
 <translation id="6227280783235722609">розширення</translation>
 <translation id="6229849828796482487">Від'єднати мережу Wi-Fi</translation>
 <translation id="6229890768313448549">Не вдається завантажити Умови використання Google Play. Повторіть спробу.</translation>
+<translation id="6231782223312638214">Пропозиції</translation>
 <translation id="6231881193380278751">Додайте в URL-адресу параметр запиту для автоматичного оновлення сторінки: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Акумулятор</translation>
 <translation id="6232116551750539448">З’єднання з мережею "<ph name="NAME" />" утрачено</translation>

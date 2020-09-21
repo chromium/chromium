@@ -2231,7 +2231,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3650845953328929506">Jurnal yuklanishi kutilmoqda</translation>
 <translation id="3650952250015018111">“<ph name="APP_NAME" />” uchun quyidagi qurilmaga kirishiga ruxsatni bering:</translation>
 <translation id="3651488188562686558">Wi-Fi tarmoqdan uzish</translation>
-<translation id="3651952061994655768">Ismni almashtirish</translation>
 <translation id="3652817283076144888">Ishga tushirilmoqda</translation>
 <translation id="3653160965917900914">Fayllarni tarmoqda ulashish</translation>
 <translation id="3653842108912548333">Voice Match va Assistent</translation>
@@ -3576,7 +3575,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="5315873049536339193">Alohida belgilari</translation>
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5319359161174645648">Google Chrome brauzerini  tavsiya qiladi</translation>
-<translation id="5320135788267874712">Yangi qurilma nomi</translation>
 <translation id="532247166573571973">Server bilan aloqa o‘rnatib bo‘lmadi. Keyinroq qayta urinib ko‘ring.</translation>
 <translation id="5324780743567488672">Vaqt mintaqasini geo-ma’lumotlari asosida avtomatik aniqlash</translation>
 <translation id="5327248766486351172">Nomi</translation>
@@ -4328,6 +4326,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6227280783235722609">kengaytma</translation>
 <translation id="6229849828796482487">Wi-Fi tarmoqni uzish</translation>
 <translation id="6229890768313448549">Google Play xizmatidan foydalanish shartlarini yuklab bo‘lmadi. Keyinroq qayta urinib ko‘ring.</translation>
+<translation id="6231782223312638214">Tavsiya etiladi</translation>
 <translation id="6231881193380278751">Sahifa avtomatik yangilanishi uchun URL manzilga so‘rov parametrini qo‘shing: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Batareya</translation>
 <translation id="6232116551750539448"><ph name="NAME" /> tarmog‘iga ulanish uzilib qoldi</translation>

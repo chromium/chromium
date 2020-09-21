@@ -2233,7 +2233,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3650845953328929506">Đang chờ tải nhật ký lên.</translation>
 <translation id="3650952250015018111">Cho phép "<ph name="APP_NAME" />" truy cập vào:</translation>
 <translation id="3651488188562686558">Ngắt kết nối khỏi Wi-Fi</translation>
-<translation id="3651952061994655768">Đổi tên</translation>
 <translation id="3652817283076144888">Đang khởi chạy</translation>
 <translation id="3653160965917900914">Chia sẻ tệp trong mạng</translation>
 <translation id="3653842108912548333">Sử dụng Trợ lý của bạn bằng tính năng Voice Match</translation>
@@ -3578,7 +3577,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5315873049536339193">Nhận dạng</translation>
 <translation id="5317780077021120954">Lưu</translation>
 <translation id="5319359161174645648">Google đề xuất Chrome</translation>
-<translation id="5320135788267874712">Tên mới của thiết bị</translation>
 <translation id="532247166573571973">Máy chủ có thể không truy cập được. Hãy thử lại sau.</translation>
 <translation id="5324780743567488672">Tự động đặt múi giờ bằng cách sử dụng vị trí của bạn</translation>
 <translation id="5327248766486351172">Tên</translation>
@@ -4330,6 +4328,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6227280783235722609">tiện ích</translation>
 <translation id="6229849828796482487">Ngắt kết nối mạng Wi-Fi</translation>
 <translation id="6229890768313448549">Không thể tải Điều khoản dịch vụ của Google. Vui lòng thử lại.</translation>
+<translation id="6231782223312638214">Ðược đề xuất</translation>
 <translation id="6231881193380278751">Thêm thông số truy vấn trong URL để tự động làm mới trang: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Pin</translation>
 <translation id="6232116551750539448">Đã mất kết nối với <ph name="NAME" /></translation>

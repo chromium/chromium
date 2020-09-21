@@ -2233,7 +2233,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3650845953328929506">Čekanje na otpremanje zapisnika.</translation>
 <translation id="3650952250015018111">Dozvoli da "<ph name="APP_NAME" />" pristupi:</translation>
 <translation id="3651488188562686558">Prekini vezu s WiFi mrežom</translation>
-<translation id="3651952061994655768">Promijeni naziv</translation>
 <translation id="3652817283076144888">Pokretanje</translation>
 <translation id="3653160965917900914">Dijeljenje fajlova na mreži</translation>
 <translation id="3653842108912548333">Pristupite Asistentu pomoću Voice Matcha</translation>
@@ -3578,7 +3577,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="5315873049536339193">Identitet</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5319359161174645648">Google preporučuje Chrome</translation>
-<translation id="5320135788267874712">Novi naziv uređaja</translation>
 <translation id="532247166573571973">Možda nije moguće doprijeti do servera. Pokušajte ponovo kasnije.</translation>
 <translation id="5324780743567488672">Automatski postavi vremensku zonu pomoću moje lokacije</translation>
 <translation id="5327248766486351172">Ime</translation>
@@ -4330,6 +4328,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="6227280783235722609">ekstenzija</translation>
 <translation id="6229849828796482487">Prekini povezanost s WiFi mrežom</translation>
 <translation id="6229890768313448549">Učitavanje Uvjeta pružanja usluge Google Playa nije uspjelo. Pokušajte ponovo.</translation>
+<translation id="6231782223312638214">Predloženo</translation>
 <translation id="6231881193380278751">Dodajte parametar upita u URL za automatsko osvježavanje stranice: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Baterija</translation>
 <translation id="6232116551750539448">Veza s mrežom <ph name="NAME" /> je prekinuta</translation>

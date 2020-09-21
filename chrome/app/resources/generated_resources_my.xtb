@@ -2234,7 +2234,6 @@
 <translation id="3650845953328929506">မှတ်တမ်းကို အပ်လုဒ်လုပ်ရန် စောင့်နေသည်။</translation>
 <translation id="3650952250015018111">"<ph name="APP_NAME" />" အား အသုံးပြုခွင့်ပေးရန်−</translation>
 <translation id="3651488188562686558">Wi−Fi မှ ချိတ်ဆက်မှုကို ဖြုတ်ပါ</translation>
-<translation id="3651952061994655768">အမည်ပြောင်းရန်</translation>
 <translation id="3652817283076144888">စတင်နေသည်</translation>
 <translation id="3653160965917900914">ကွန်ရက် ဖိုင်မျှဝေမှုများ</translation>
 <translation id="3653842108912548333">Voice Match ဖြင့် သင့် Assistant ကို အသုံးပြုပါ</translation>
@@ -3578,7 +3577,6 @@
 <translation id="5315873049536339193">အထောက်အထား</translation>
 <translation id="5317780077021120954">သိမ်းရန်</translation>
 <translation id="5319359161174645648">Google က Chrome ကို အသုံးပြုရန် အကြံပြုထားပါသည်</translation>
-<translation id="5320135788267874712">စက်ပစ္စည်းအသစ်အမည်</translation>
 <translation id="532247166573571973">ဆာဗာကိုဆက်သွယ်၍မရသေးပါ။ နောက်မှထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="5324780743567488672">သင့်တည်နေရာကို အသုံးပြု၍ စံတော်ချိန်ကို အလိုအလျောက်သတ်မှတ်မည်</translation>
 <translation id="5327248766486351172">အမည်</translation>
@@ -4329,6 +4327,7 @@
 <translation id="6227280783235722609">နောက်ဆက်တွဲ</translation>
 <translation id="6229849828796482487">Wi-Fi ကွန်ရက် ချိတ်ဆက်မှုဖြုတ်ရန်</translation>
 <translation id="6229890768313448549">Google Play ဝန်ဆောင်မှု စည်းမျဉ်းများကို ဖွင့်၍မရပါ။ ထပ်လုပ်ကြည့်ပါ။</translation>
+<translation id="6231782223312638214">အကြံပေးထား</translation>
 <translation id="6231881193380278751">စာမျက်နှာအား အလိုလျောက် ပြန်လည်ဆန်းသစ်စေရန် URLတွင် မှတ်သားမှုကန့်သတ်ချက်ဘောင် များထည့်သွင်းထားပါ။:
  chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">ဘက်ထရီ</translation>

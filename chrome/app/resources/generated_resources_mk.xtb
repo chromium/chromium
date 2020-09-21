@@ -2233,7 +2233,6 @@
 <translation id="3650845953328929506">Прикачувањето на евиденцијата чека на ред.</translation>
 <translation id="3650952250015018111">Дозволете ѝ пристап на "<ph name="APP_NAME" />" до:</translation>
 <translation id="3651488188562686558">Исклучи се од Wi-Fi</translation>
-<translation id="3651952061994655768">Променете го името</translation>
 <translation id="3652817283076144888">Се иницијализира</translation>
 <translation id="3653160965917900914">Мрежни споделувања</translation>
 <translation id="3653842108912548333">Пристапете до вашиот „Помошник“ со Voice Match</translation>
@@ -3578,7 +3577,6 @@
 <translation id="5315873049536339193">Идентитет</translation>
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5319359161174645648">Google го препорачува Chrome</translation>
-<translation id="5320135788267874712">Ново име на уредот</translation>
 <translation id="532247166573571973">Серверот може да е недостапен. Обидете се повторно подоцна.</translation>
 <translation id="5324780743567488672">Автоматско поставување на часовната зона преку вашата локација</translation>
 <translation id="5327248766486351172">Име</translation>
@@ -4330,6 +4328,7 @@
 <translation id="6227280783235722609">екстензија</translation>
 <translation id="6229849828796482487">Исклучување Wi-Fi мрежа</translation>
 <translation id="6229890768313448549">Условите за користење на Google Play не може да се вчитаат. Обидете се повторно.</translation>
+<translation id="6231782223312638214">Предложено</translation>
 <translation id="6231881193380278751">Додајте параметар на барањето во URL за автоматско освежување на страницата: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Батерија</translation>
 <translation id="6232116551750539448">Поврзувањето со <ph name="NAME" /> се загуби</translation>

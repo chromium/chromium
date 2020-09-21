@@ -2233,7 +2233,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3650845953328929506">Függőben lévő naplófeltöltés.</translation>
 <translation id="3650952250015018111">A következőhöz való hozzáférés engedélyezése a(z) „<ph name="APP_NAME" />” számára:</translation>
 <translation id="3651488188562686558">Wi-Fi-kapcsolat bontása</translation>
-<translation id="3651952061994655768">Név módosítása</translation>
 <translation id="3652817283076144888">Inicializálás…</translation>
 <translation id="3653160965917900914">Hálózati fájlmegosztások</translation>
 <translation id="3653842108912548333">Hozzáférés Segédjéhez a Voice Match segítségével</translation>
@@ -3578,7 +3577,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="5315873049536339193">Azonosítás</translation>
 <translation id="5317780077021120954">Mentés</translation>
 <translation id="5319359161174645648">A Google a Chrome-ot ajánlja</translation>
-<translation id="5320135788267874712">Új eszköz neve</translation>
 <translation id="532247166573571973">Lehet, hogy nem áll rendelkezésre a szerver. Próbálja újra később.</translation>
 <translation id="5324780743567488672">Időzóna automatikus beállítása a tartózkodási hely alapján</translation>
 <translation id="5327248766486351172">Név</translation>
@@ -4331,6 +4329,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6227280783235722609">bővítményt</translation>
 <translation id="6229849828796482487">Lecsatlakozás a Wi-Fi-hálózatról</translation>
 <translation id="6229890768313448549">A Google Play Általános Szerződési Feltételeit nem sikerült betölteni. Próbálja újra.</translation>
+<translation id="6231782223312638214">Javasolt</translation>
 <translation id="6231881193380278751">Adjon meg egy lekérdezési paramétert az URL-ben az oldal automatikus frissítéséhez: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Akkumulátor</translation>
 <translation id="6232116551750539448">Megszűnt a kapcsolat a következővel: <ph name="NAME" /></translation>

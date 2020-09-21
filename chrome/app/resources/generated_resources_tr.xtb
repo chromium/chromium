@@ -2233,7 +2233,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3650845953328929506">Günlük yükleme işlemi beklemede.</translation>
 <translation id="3650952250015018111">"<ph name="APP_NAME" />" uygulamasının şu öğeye erişmesine izin ver:</translation>
 <translation id="3651488188562686558">Kablosuz bağlantıyı kes</translation>
-<translation id="3651952061994655768">Adı değiştir</translation>
 <translation id="3652817283076144888">Başlatılıyor</translation>
 <translation id="3653160965917900914">Ağ dosya paylaşımları</translation>
 <translation id="3653842108912548333">Voice Match özelliğini kullanarak Asistanınıza erişin</translation>
@@ -3578,7 +3577,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5315873049536339193">Kimlik</translation>
 <translation id="5317780077021120954">Kaydet</translation>
 <translation id="5319359161174645648">Google, Chrome'u önerir</translation>
-<translation id="5320135788267874712">Yeni cihaz adı</translation>
 <translation id="532247166573571973">Sunucuya ulaşılamıyor olabilir. Daha sonra tekrar deneyin.</translation>
 <translation id="5324780743567488672">Konumumu kullanarak saat dilimini otomatik olarak ayarla</translation>
 <translation id="5327248766486351172">Ad</translation>
@@ -4331,6 +4329,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6227280783235722609">uzantı</translation>
 <translation id="6229849828796482487">Kablosuz ağ bağlantısını kes</translation>
 <translation id="6229890768313448549">Google Play Hizmet Şartları yüklenemiyor. Lütfen tekrar deneyin.</translation>
+<translation id="6231782223312638214">Önerilen</translation>
 <translation id="6231881193380278751">Sayfayı otomatik yenilemek için URL'ye bir sorgu parametresi ekleyin: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Pil</translation>
 <translation id="6232116551750539448"><ph name="NAME" /> bağlantısı kaybedildi</translation>

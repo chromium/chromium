@@ -2233,7 +2233,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3650845953328929506">Laukiama, kol žurnalas bus įkeltas.</translation>
 <translation id="3650952250015018111">Leidimas „<ph name="APP_NAME" />“ pasiekti:</translation>
 <translation id="3651488188562686558">Atsijungti nuo „Wi-Fi“</translation>
-<translation id="3651952061994655768">Keisti pavadinimą</translation>
 <translation id="3652817283076144888">Inicijuojama</translation>
 <translation id="3653160965917900914">Tinklo failų bendrinimas</translation>
 <translation id="3653842108912548333">Padėjėjo pasiekimas naudojant „Voice Match“</translation>
@@ -3578,7 +3577,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5315873049536339193">Tapatybė</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
 <translation id="5319359161174645648">„Google“ rekomenduoja „Chrome“</translation>
-<translation id="5320135788267874712">Naujas įrenginio pavadinimas</translation>
 <translation id="532247166573571973">Serveris gali būti nepasiekiamas. Vėliau bandykite dar kartą.</translation>
 <translation id="5324780743567488672">Automatiškai nustatyti laiko juostą pagal jūsų vietovę</translation>
 <translation id="5327248766486351172">Pavadinimas</translation>
@@ -4331,6 +4329,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6227280783235722609">plėtinys</translation>
 <translation id="6229849828796482487">Atsijungti nuo „Wi-Fi“ tinklo</translation>
 <translation id="6229890768313448549">Nepavyksta įkelti „Google Play“ paslaugų teikimo sąlygų. Bandykite dar kartą.</translation>
+<translation id="6231782223312638214">Siūloma</translation>
 <translation id="6231881193380278751">Kad puslapis būtų atnaujintas automatiškai, pridėkite šį užklausos parametrą prie URL: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Akumuliatorius</translation>
 <translation id="6232116551750539448">Ryšys su „<ph name="NAME" />“ nutrūko</translation>

@@ -2228,7 +2228,6 @@
 <translation id="3650845953328929506">Лог байршуулахыг хүлээж байна.</translation>
 <translation id="3650952250015018111">"<ph name="APP_NAME" />"-н хандалтыг зөвшөөрөх:</translation>
 <translation id="3651488188562686558">Wi-Fi-с салгах</translation>
-<translation id="3651952061994655768">Нэр өөрчлөх</translation>
 <translation id="3652817283076144888">Эхлүүлж байна</translation>
 <translation id="3653160965917900914">Сүлжээний файлыг хуваалцах</translation>
 <translation id="3653842108912548333">Туслахдаа Voice Match-р хандах</translation>
@@ -3572,7 +3571,6 @@
 <translation id="5315873049536339193">Таниулбар</translation>
 <translation id="5317780077021120954">Хадгалах</translation>
 <translation id="5319359161174645648">Google нь Chrome-г санал болгож байна</translation>
-<translation id="5320135788267874712">Шинэ төхөөрөмжийн нэр</translation>
 <translation id="532247166573571973">Энэ серверт холбогдох боломжгүй байна. Дараа дахин оролдоно уу.</translation>
 <translation id="5324780743567488672">Таны байршлын мэдээллийг ашиглан цагийн бүсийг автоматаар тохируулах</translation>
 <translation id="5327248766486351172">Нэр</translation>
@@ -4324,6 +4322,7 @@
 <translation id="6227280783235722609">өргөтгөл</translation>
 <translation id="6229849828796482487">Wi-Fi сүлжээг салгах</translation>
 <translation id="6229890768313448549">Google Play үйлчилгээний нөхцөлийг ачаалах боломжгүй байна. Дахин оролдоно уу.</translation>
+<translation id="6231782223312638214">Зөвлөсөн</translation>
 <translation id="6231881193380278751">Хуудсыг автоматаар сэргээх үүднээс асуулгын парамыг нэмэх: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Баттерей</translation>
 <translation id="6232116551750539448"><ph name="NAME" />-ийн интернет холболт салсан байна.</translation>

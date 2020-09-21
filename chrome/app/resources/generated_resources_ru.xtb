@@ -2231,7 +2231,6 @@
 <translation id="3650845953328929506">Журнал в очереди загрузки.</translation>
 <translation id="3650952250015018111">Разрешить приложению "<ph name="APP_NAME" />" доступ к этому устройству:</translation>
 <translation id="3651488188562686558">Отключится от сети Wi-Fi</translation>
-<translation id="3651952061994655768">Переименовать</translation>
 <translation id="3652817283076144888">Инициализация…</translation>
 <translation id="3653160965917900914">Общие папки сети</translation>
 <translation id="3653842108912548333">Voice Match и Ассистент</translation>
@@ -3576,7 +3575,6 @@
 <translation id="5315873049536339193">Идентификационные данные</translation>
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5319359161174645648">Google рекомендует браузер Chrome</translation>
-<translation id="5320135788267874712">Введите название</translation>
 <translation id="532247166573571973">Сервер недоступен. Повторите попытку позже.</translation>
 <translation id="5324780743567488672">Автоматически определять часовой пояс на основе геоданных</translation>
 <translation id="5327248766486351172">Название</translation>
@@ -4328,6 +4326,7 @@
 <translation id="6227280783235722609">расширение</translation>
 <translation id="6229849828796482487">Отключить сеть Wi-Fi</translation>
 <translation id="6229890768313448549">Не удалось скачать Условия использования Google Play. Повторите попытку.</translation>
+<translation id="6231782223312638214">Рекомендуется</translation>
 <translation id="6231881193380278751">Добавьте в URL параметр запроса для автоматического обновления страницы: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Аккумулятор</translation>
 <translation id="6232116551750539448">Соединение с <ph name="NAME" /> прервано</translation>

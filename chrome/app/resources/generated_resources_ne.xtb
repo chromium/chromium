@@ -2230,7 +2230,6 @@
 <translation id="3650845953328929506">लग अपलोड गर्ने कार्य विचाराधीन छ</translation>
 <translation id="3650952250015018111">"<ph name="APP_NAME" />" लाई निम्नमाथि पहुँँच राख्न दिनुहोस्‌:</translation>
 <translation id="3651488188562686558">Wi-Fi बाट विच्छेद गर्नुहोस्</translation>
-<translation id="3651952061994655768">नाम बदल्नुहोस्</translation>
 <translation id="3652817283076144888">सुरुवात गर्दै</translation>
 <translation id="3653160965917900914">नेटवर्कको फाइल आदान प्रदान गर्ने कार्य</translation>
 <translation id="3653842108912548333">Voice Match मार्फत आफ्नो सहायकमाथि पहुँच राख्नुहोस्</translation>
@@ -3574,7 +3573,6 @@
 <translation id="5315873049536339193">पहिचान</translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5319359161174645648">Google ले Chrome प्रयोग गर्ने सुझाव दिन्छ</translation>
-<translation id="5320135788267874712">यन्त्रको नयाँ नाम</translation>
 <translation id="532247166573571973">सर्भर पहुँचयोग्य नहुन सक्छ। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="5324780743567488672">तपाईँको स्थान प्रयोग गरेर समय क्षेत्र सेट गर्नुहोस्</translation>
 <translation id="5327248766486351172">नाम</translation>
@@ -4325,6 +4323,7 @@
 <translation id="6227280783235722609">एक्स्टेन्सन</translation>
 <translation id="6229849828796482487">Wi-Fi इन्टरनेट डिस्कनेक्ट गर्नुहोस्</translation>
 <translation id="6229890768313448549">Google Play का सेवाका सर्तहरू लोड गर्न सकिँदैन। कृपया पुन:प्रयास गर्नुहोस्।</translation>
+<translation id="6231782223312638214">सुझाव गरिएको</translation>
 <translation id="6231881193380278751">पृष्ठ स्वत:-रिफ्रेस गर्न URL मा क्वेरि पाराम थप्नुहोस्: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">ब्याटरी</translation>
 <translation id="6232116551750539448"><ph name="NAME" />सँगको जडान हराएको छ</translation>

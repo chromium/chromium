@@ -743,17 +743,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="2168397434410358693">Délai d'inactivité (secteur)</translation>
 <translation id="217013996107840632">Paramètres de ligne de commande pour basculer vers Chrome à partir du navigateur secondaire.</translation>
 <translation id="2170233653554726857">Activer l'optimisation WPAD</translation>
-<translation id="2172774896158845977">Permet de configurer le type de page d'accueil par défaut dans <ph name="PRODUCT_NAME" /> et d'empêcher les utilisateurs de modifier les préférences de page d'accueil. Vous pouvez définir la page d'accueil sur une URL que vous spécifiez ou sur la page Nouvel onglet.
-
-          Si vous activez ce paramètre, la page Nouvel onglet est systématiquement utilisée comme page d'accueil, et l'URL de la page d'accueil est ignorée.
-
-          Si vous désactivez ce paramètre, la page d'accueil de l'utilisateur ne sera jamais la page Nouvel onglet, sauf si l'URL de la page d'accueil est définie sur "chrome://newtab".
-
-          Dans les deux cas, les utilisateurs ne peuvent pas modifier le type de page d'accueil dans <ph name="PRODUCT_NAME" />.
-
-          Si cette règle n'est pas configurée, l'utilisateur peut choisir lui-même d'utiliser la page Nouvel onglet comme page d'accueil.
-
-          Cette règle n'est disponible que sur les instances Windows qui sont associées à un domaine <ph name="MS_AD_NAME" />, les instances Windows 10 Pro ou Windows Enterprise qui sont enregistrées pour bénéficier de la gestion des appareils, ou les instances macOS qui sont gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="2178899310296064282">Appliquer au moins le mode restreint modéré sur YouTube</translation>
 <translation id="2182291258410176649">L'utilisateur décide d'activer ou non le service de sauvegarde et de restauration</translation>
 <translation id="2183294522275408937">Ce paramètre définit la fréquence à laquelle l'utilisateur sera invité à saisir le mot de passe dans l'écran de verrouillage pour pouvoir continuer à utiliser le déverrouillage rapide. Chaque fois que l'écran de verrouillage est activé, si la dernière saisie du mot de passe est antérieure à ce paramètre, le déverrouillage rapide n'est pas disponible. Si l'utilisateur reste sur l'écran de verrouillage au-delà de cette période, il sera invité à saisir un mot de passe la prochaine fois qu'il indiquera un code erroné ou accédera à nouveau à l'écran de verrouillage, selon l'événement qui survient en premier.
@@ -1353,20 +1342,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Les URL doivent être au format HTTPS, comme "https://example.com".
 
       Pour en savoir plus sur les formats d'URL valides, consultez cette page : https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="2976992705655394547">Permet de spécifier le comportement du navigateur au démarrage.
-
-          Si vous sélectionnez "Ouvrir la page Nouvel onglet", celle-ci s'affiche chaque fois que vous lancez <ph name="PRODUCT_NAME" />.
-
-          Si vous sélectionnez "Restaurer la dernière session", les pages restées ouvertes lorsque le navigateur <ph name="PRODUCT_NAME" /> a été fermé pour la dernière fois s'affichent de nouveau. La session de navigation est restaurée telle que vous l'avez laissée.
-          En sélectionnant cette option, vous désactivez certains paramètres basés sur les sessions de navigation ou qui entraînent l'exécution d'actions à la fermeture du navigateur, comme la suppression des données de navigation ou des cookies d'une session.
-
-          Si vous sélectionnez "Ouvrir une liste d'URL", la liste des URL à charger au démarrage s'ouvre lorsque l'utilisateur lance <ph name="PRODUCT_NAME" />.
-
-          Si vous activez ce paramètre, l'utilisateur ne peut pas le modifier, ni l'ignorer dans <ph name="PRODUCT_NAME" />.
-
-          Si vous désactivez ce paramètre, cela revient à ne pas configurer cette règle. L'utilisateur peut quand même le modifier dans <ph name="PRODUCT_NAME" />.
-
-          Cette règle n'est disponible que sur les instances Windows qui sont associées à un domaine <ph name="MS_AD_NAME" />, les instances Windows 10 Pro ou Windows Enterprise qui sont enregistrées pour bénéficier de la gestion des appareils, ou les instances macOS qui sont gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="2985927503455169394">Utiliser le mode par défaut du processus de prise en main de l'Assistant</translation>
 <translation id="2987155890997901449">Activer ARC</translation>
 <translation id="2987227569419001736">Contrôler l'utilisation de l'API Web Bluetooth</translation>
@@ -2380,15 +2355,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="4474167089968829729">Activer l'enregistrement des mots de passe dans le gestionnaire de mots de passe</translation>
 <translation id="4476769083125004742">Si cette règle est définie sur "<ph name="BLOCK_GEOLOCATION_SETTING" />", les applications Android n'ont pas accès aux informations de localisation. Si vous la définissez sur une autre valeur ou si vous ne la modifiez pas, l'utilisateur est invité à donner son autorisation lorsqu'une application Android requiert ces informations.</translation>
 <translation id="4480694116501920047">Forcer SafeSearch</translation>
-<translation id="4482640907922304445">Affiche le bouton Accueil sur la barre d'outils <ph name="PRODUCT_NAME" />. 
-
-Si vous activez ce paramètre, le bouton Accueil est toujours affiché. 
-
-Si vous le désactivez, le bouton Accueil ne s'affiche jamais. 
-
-Dans les deux cas, les utilisateurs ne peuvent pas le modifier, ni le remplacer dans <ph name="PRODUCT_NAME" />. 
-
-Si cette règle n'est pas configurée, l'utilisateur peut décider d'afficher ou non le bouton Accueil.</translation>
 <translation id="4483649828988077221">Désactiver les mises à jour automatiques</translation>
 <translation id="4485425108474077672">Configurer l'URL de la page "Nouvel onglet"</translation>
 <translation id="4492287494009043413">Désactiver les captures d'écran</translation>
@@ -2684,11 +2650,6 @@ Si cette règle n'est pas configurée, l'utilisateur peut décider d'afficher ou
 <translation id="5017369989680827157">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les utilisateurs contrôlent la saisie automatique des adresses dans l'interface utilisateur.
 
       Si cette règle est définie sur "False", les adresses ne sont jamais suggérées ni saisies automatiquement. De même, les informations complémentaires liées à une adresse que les utilisateurs fournissent sur une page Web ne sont pas enregistrées.</translation>
-<translation id="5022551015331996656">Si l'option "Ouvrir une liste d'URL" est sélectionnée comme action de démarrage, vous pouvez spécifier la liste des URL qui sont ouvertes. Si cette règle n'est pas configurée, aucune URL ne sera ouverte au démarrage.
-
-          Cette règle ne fonctionne que si la règle RestoreOnStartup est définie sur RestoreOnStartupIsURLs.
-
-          Cette règle n'est disponible que sur les instances Windows qui sont associées à un domaine <ph name="MS_AD_NAME" />, les instances Windows 10 Pro ou Windows Enterprise qui sont enregistrées pour bénéficier de la gestion des appareils, ou les instances macOS qui sont gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="5023555740504506178">Si cette règle est activée ou si elle n'est pas configurée (par défaut), une page Web peut utiliser
       des API de partage d'écran (par exemple, getDisplayMedia() ou l'API Desktop Capture Extension)
       pour inviter l'utilisateur à sélectionner un onglet, une fenêtre ou un écran dont il souhaite faire une capture.
@@ -3084,19 +3045,6 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> ignore toutes les opti
       Si cette règle est définie sur "False", <ph name="PRODUCT_NAME" /> ne peut pas présenter ces informations dans ce mode.
 
       Cette règle permet de contrôler la présentation des pages de bienvenue qui aident les utilisateurs à se connecter à <ph name="PRODUCT_NAME" />, de définir <ph name="PRODUCT_NAME" /> comme leur navigateur par défaut ou de les informer des fonctionnalités du produit.</translation>
-<translation id="5450893456912604446">Permet de configurer l'URL de la page d'accueil par défaut dans <ph name="PRODUCT_NAME" /> et d'empêcher les utilisateurs de la modifier.
-
-          La page d'accueil est la page qui s'ouvre lorsque l'utilisateur clique sur le bouton "Accueil". Sur ordinateur, les pages qui s'affichent au démarrage sont gérées par les règles RestoreOnStartup.
-
-          La page d'accueil peut renvoyer vers une URL que vous définissez ici ou vers une page Nouvel onglet. Dans ce dernier cas, cette règle ne s'applique pas.
-
-          Si vous activez ce paramètre, les utilisateurs ne peuvent pas modifier l'URL de leur page d'accueil dans <ph name="PRODUCT_NAME" />. Toutefois, ils peuvent définir la page Nouvel onglet comme page d'accueil.
-
-          Si cette règle n'est pas configurée, les utilisateurs peuvent choisir eux-mêmes leur page d'accueil, à condition que la règle <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> ne soit pas également définie.
-
-          L'URL doit avoir un format standard, comme "http://example.com" ou "https://example.com".
-
-          Cette règle n'est disponible que sur les instances Windows qui sont associées à un domaine <ph name="MS_AD_NAME" />, les instances Windows 10 Pro ou Windows Enterprise qui sont enregistrées pour bénéficier de la gestion des appareils, ou les instances macOS qui sont gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="5457065417344056871">Activer le mode Invité dans le navigateur</translation>
 <translation id="5457387982448145430">Si cette règle est activée, les mots de passe enregistrés dans le précédent navigateur par défaut sont importés lors de la première exécution. Si cette règle est désactivée ou qu'elle n'est pas configurée, les mots de passe enregistrés ne sont pas importés lors de la première exécution.
 
@@ -4750,15 +4698,6 @@ au maximum si un utilisateur se sert de l'appareil.
 <translation id="7713608076604149344">Restrictions de téléchargement</translation>
 <translation id="7715711044277116530">Pourcentage d'adaptation du délai d'assombrissement de l'écran en mode Présentation</translation>
 <translation id="7717938661004793600">Permet de configurer les fonctionnalités d'accessibilité de <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="772061142236146688">Permet de configurer l'URL de la page Nouvel onglet par défaut et d'empêcher les utilisateurs de la modifier.
-
-          La page Nouvel onglet est celle qui s'affiche lors de la création d'un onglet (dans la fenêtre existante ou dans une nouvelle fenêtre).
-
-          Cette règle ne détermine pas quelles pages seront ouvertes au démarrage, lesquelles sont gérées par les règles <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />. Toutefois, cette règle affecte la page d'accueil et/ou la page de démarrage si elle est configurée pour ouvrir la page Nouvel onglet.
-
-          Si cette règle n'est pas configurée, la page Nouvel onglet par défaut est utilisée.
-
-          Cette règle n'est disponible que sur les instances Windows qui sont associées à un domaine <ph name="MS_AD_NAME" />, les instances Windows 10 Pro ou Windows Enterprise qui sont enregistrées pour bénéficier de la gestion des appareils, ou les instances macOS qui sont gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="7721944091689270995">ID utilisateur <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Si cette règle est définie sur "1", les sites Web peuvent afficher des pop-up. Si cette règle est définie sur "2", les sites ne sont pas autorisés à afficher de pop-up.
 

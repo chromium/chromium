@@ -742,17 +742,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 <translation id="2168397434410358693">Độ trễ lúc không sử dụng khi chạy trên nguồn AC</translation>
 <translation id="217013996107840632">Các tham số dòng lệnh để chuyển từ trình duyệt thay thế.</translation>
 <translation id="2170233653554726857">Bật tối ưu hóa WPAD</translation>
-<translation id="2172774896158845977">Định cấu hình loại trang chủ mặc định trong <ph name="PRODUCT_NAME" /> và ngăn không cho người dùng thay đổi các tùy chọn trang chủ. Bạn có thể đặt trang chủ thành một URL mà bạn chỉ định hoặc đặt thành trang Thẻ mới.
-
-          Nếu bạn bật tùy chọn cài đặt này, thì trang Thẻ mới luôn được dùng cho trang chủ và vị trí URL trang chủ sẽ bị bỏ qua.
-
-          Nếu bạn tắt tùy chọn cài đặt này, thì trang chủ của người dùng sẽ không bao giờ là trang Thẻ mới trừ khi bạn đặt URL trang chủ thành "chrome://newtab".
-
-          Nếu bạn bật hoặc tắt tùy chọn cài đặt này, thì người dùng không thể thay đổi loại trang chủ của họ trong <ph name="PRODUCT_NAME" />.
-
-          Nếu bạn không đặt chính sách này, thì người dùng được phép chọn có dùng trang chủ của họ khi mở trang Thẻ mới hay không.
-
-          Chính sách này chỉ có trên các phiên bản Windows liên kết với miền <ph name="MS_AD_NAME" /> hoặc phiên bản Windows 10 Pro hay Enterprise đã đăng ký dịch vụ quản lý thiết bị, cũng như phiên bản macOS được quản lý thông qua phần mềm MDM (Quản lý thiết bị di động) hoặc đã liên kết với miền qua MCX.</translation>
 <translation id="2178899310296064282">Buộc sử dụng ít nhất Chế độ hạn chế trung bình trên YouTube</translation>
 <translation id="2182291258410176649">Người dùng sẽ quyết định có bật tính năng sao lưu và khôi phục hay không</translation>
 <translation id="2183294522275408937">Cài đặt này kiểm soát tần suất màn hình khóa yêu cầu nhập mật khẩu để tiếp tục sử dụng mở khóa nhanh. Mỗi khi truy cập màn hình khóa, nếu mục nhập mật khẩu cuối cùng không thuộc cài đặt này, thì tính năng mở khóa nhanh sẽ không khả dụng khi truy cập màn hình khóa. Nếu người dùng ở trên màn hình khóa quá khoảng thời gian này, mật khẩu sẽ được yêu cầu vào lần tiếp theo người dùng nhập sai mã hoặc truy cập lại màn hình khóa, tùy theo trường hợp nào đến trước.
@@ -1347,20 +1336,6 @@ Khi chính sách này được đặt thành false hoặc không được địn
       Các URL phải có giao thức HTTPS, ví dụ: "https://example.com".
 
       Để biết thông tin chi tiết về mẫu URL hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="2976992705655394547">Cho phép bạn chỉ định hành vi khi khởi động.
-
-          Nếu bạn chọn "Mở trang Thẻ mới", thì trang Thẻ mới sẽ luôn mở ra khi bạn khởi động <ph name="PRODUCT_NAME" />.
-
-          Nếu bạn chọn "Khôi phục phiên trước đó", thì URL đã mở vào lần đóng <ph name="PRODUCT_NAME" /> gần đây nhất sẽ được mở lại và phiên duyệt web sẽ được khôi phục tại nơi đã dừng lại.
-          Việc chọn tùy chọn này sẽ vô hiệu hóa một số tùy chọn cài đặt dựa trên các phiên duyệt web hoặc thực hiện các hành động khi thoát (chẳng hạn như Xóa dữ liệu duyệt web khi thoát hoặc cookie chỉ trong phiên duyệt web).
-
-          Nếu bạn chọn "Mở một danh sách URL", thì danh sách "Các URL sẽ mở khi khởi động" sẽ mở ra khi người dùng khởi động <ph name="PRODUCT_NAME" />.
-
-          Nếu bạn bật tùy chọn cài đặt này, thì người dùng không thể thay đổi hoặc ghi đè tùy chọn cài đặt này trong <ph name="PRODUCT_NAME" />.
-
-          Tùy chọn cài đặt này không được định cấu hình nếu bạn tắt tùy chọn cài đặt này. Người dùng vẫn có thể thay đổi tùy chọn cài đặt này trong <ph name="PRODUCT_NAME" />.
-
-          Chính sách này chỉ có trên các phiên bản Windows liên kết với miền <ph name="MS_AD_NAME" /> hoặc phiên bản Windows 10 Pro hay Enterprise đã đăng ký dịch vụ quản lý thiết bị, cũng như phiên bản macOS được quản lý thông qua phần mềm MDM (Quản lý thiết bị di động) hoặc đã liên kết với miền qua MCX.</translation>
 <translation id="2985927503455169394">Sử dụng chế độ mặc định của trải nghiệm làm quen với Trợ lý</translation>
 <translation id="2987155890997901449">Bật ARC</translation>
 <translation id="2987227569419001736">Kiểm soát việc sử dụng API Web Bluetooth</translation>
@@ -2379,15 +2354,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="4474167089968829729">Bật lưu mật khẩu cho trình quản lý mật khẩu</translation>
 <translation id="4476769083125004742">Nếu chính sách này được đặt thành <ph name="BLOCK_GEOLOCATION_SETTING" />, các ứng dụng Android sẽ không thể truy cập thông tin vị trí. Nếu bạn đặt chính sách này thành một giá trị bất kỳ nào khác hoặc không đặt chính sách này thì người dùng sẽ được yêu cầu đồng ý khi ứng dụng Android muốn truy cập thông tin vị trí.</translation>
 <translation id="4480694116501920047">Buộc Tìm kiếm an toàn</translation>
-<translation id="4482640907922304445">Hiển thị nút Trang chủ trên thanh công cụ của <ph name="PRODUCT_NAME" />.
-
-      Nếu bạn bật cài đặt này, nút Trang chủ sẽ luôn được hiển thị.
-
-      Nếu bạn tắt cài đặt này, nút Trang chủ sẽ không bao giờ được hiển thị.
-
-      Nếu bạn bật hoặc tắt cài đặt này, người dùng không thể thay đổi hoặc ghi đè cài đặt này trong  <ph name="PRODUCT_NAME" />.
-
-      Không thiết lập chính sách này sẽ cho phép người dùng chọn có hiển thị nút trang chủ hay không.</translation>
 <translation id="4483649828988077221">Tắt tính năng tự động cập nhật</translation>
 <translation id="4485425108474077672">Định cấu hình URL trang Thẻ mới</translation>
 <translation id="4492287494009043413">Tắt tính năng chụp ảnh chụp màn hình</translation>
@@ -2685,11 +2651,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="5017369989680827157">Nếu bạn đặt chính sách này thành True hoặc không đặt chính sách này, thì người dùng sẽ có quyền kiểm soát tính năng Tự động điền cho địa chỉ trong giao diện người dùng.
 
       Nếu bạn đặt chính sách này thành False, thì tính năng Tự động điền sẽ không bao giờ gợi ý hoặc điền thông tin địa chỉ hay lưu thông tin địa chỉ bổ sung mà người dùng gửi trong khi duyệt web.</translation>
-<translation id="5022551015331996656">Nếu chọn "Mở một danh sách URL" làm thao tác khởi động, thì bạn có thể chỉ định danh sách URL sẽ được mở. Nếu bạn không đặt chính sách này, thì sẽ không có URL nào mở khi khởi động.
-
-          Chính sách này chỉ hoạt động nếu bạn đặt chính sách "RestoreOnStartup" thành "RestoreOnStartupIsURLs".
-
-          Chính sách này chỉ có trên các phiên bản Windows liên kết với miền <ph name="MS_AD_NAME" /> hoặc phiên bản Windows 10 Pro hay Enterprise đã đăng ký dịch vụ quản lý thiết bị, cũng như phiên bản macOS được quản lý thông qua phần mềm MDM (Quản lý thiết bị di động) hoặc đã liên kết với miền qua MCX.</translation>
 <translation id="5023555740504506178">Nếu bạn bật hoặc không định cấu hình (mặc định), thì trang web có thể dùng
       các API chia sẻ màn hình (ví dụ: getDisplayMedia() hoặc API tiện ích Chụp màn hình)
       để nhắc người dùng chọn thẻ, cửa sổ hoặc màn hình cần chụp.
@@ -3093,19 +3054,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu bạn đặt chính sách này thành False, thì <ph name="PRODUCT_NAME" /> sẽ không hiển thị thông tin sản phẩm dưới dạng nội dung toàn bộ thẻ.
 
       Việc đặt chính sách này sẽ kiểm soát cách trình bày trang chào mừng nhằm giúp người dùng đăng nhập vào <ph name="PRODUCT_NAME" />, đặt <ph name="PRODUCT_NAME" /> làm trình duyệt mặc định của người dùng hoặc thông báo cho người dùng về các tính năng của sản phẩm.</translation>
-<translation id="5450893456912604446">Định cấu hình URL trang chủ mặc định trong <ph name="PRODUCT_NAME" /> và ngăn không cho người dùng thay đổi URL đó.
-
-          Trang chủ là trang mở ra khi người dùng nhấn nút Trang chủ. Trên màn hình, các trang mở ra khi khởi động chịu sự kiểm soát của chính sách RestoreOnStartup.
-
-          Bạn có thể đặt loại trang chủ thành một URL mà bạn chỉ định tại đây hoặc đặt thành trang Thẻ mới. Nếu bạn chọn trang thẻ mới, thì chính sách này sẽ không có hiệu lực.
-
-          Nếu bạn bật tùy chọn cài đặt này, thì người dùng không thể thay đổi URL trang chủ trong <ph name="PRODUCT_NAME" /> nhưng vẫn có thể chọn trang Thẻ mới làm trang chủ.
-
-          Nếu bạn không đặt chính sách này và cũng không đặt chính sách <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />, thì người dùng sẽ được phép tự chọn trang chủ.
-
-          URL phải chứa tên giao thức chuẩn, chẳng hạn như: "http://example.com" hoặc "https://example.com".
-
-          Chính sách này chỉ có trên các phiên bản Windows liên kết với miền <ph name="MS_AD_NAME" /> hoặc phiên bản Windows 10 Pro hay Enterprise đã đăng ký dịch vụ quản lý thiết bị, cũng như phiên bản macOS được quản lý thông qua phần mềm MDM (Quản lý thiết bị di động) hoặc đã liên kết với miền qua MCX.</translation>
 <translation id="5457065417344056871">Bật chế độ khách trong trình duyệt</translation>
 <translation id="5457387982448145430">Nếu bạn đặt chính sách này thành Bật, thì các mật khẩu đã lưu trên trình duyệt mặc định trước sẽ được nhập trong lần chạy đầu tiên. Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính sách này, thì các mật khẩu đã lưu sẽ không được nhập trong lần chạy đầu tiên.
 
@@ -4764,15 +4712,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="7713608076604149344">Hạn chế tải xuống</translation>
 <translation id="7715711044277116530">Tỷ lệ phần trăm theo đó xác định độ trễ mờ màn hình ở chế độ bản trình bày</translation>
 <translation id="7717938661004793600">Định cấu hình các tính năng hỗ trợ tiếp cận của <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="772061142236146688">Định cấu hình URL trang Thẻ mới mặc định và ngăn không cho người dùng thay đổi URL đó.
-
-          Trang Thẻ mới là trang mở ra khi các thẻ mới được tạo (bao gồm cả trang mở trong cửa sổ mới).
-
-          Chính sách này không quyết định trang nào sẽ được mở khi khởi động. Những trang đó do chính sách <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> kiểm soát. Nhưng chính sách này có ảnh hưởng đến Trang chủ cũng như trang khởi động nếu bạn đặt chính sách thành mở trang Thẻ mới.
-
-          Nếu bạn không đặt chính sách này hoặc để trống thì trang thẻ mới mặc định sẽ được sử dụng.
-
-          Chính sách này chỉ có trên các phiên bản Windows liên kết với miền <ph name="MS_AD_NAME" /> hoặc phiên bản Windows 10 Pro hay Enterprise đã đăng ký dịch vụ quản lý thiết bị, cũng như phiên bản macOS được quản lý thông qua phần mềm MDM (Quản lý thiết bị di động) hoặc đã liên kết với miền qua MCX.</translation>
 <translation id="7721944091689270995">Mã người dùng <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Nếu bạn đặt chính sách này thành 1, thì các trang web có thể hiển thị cửa sổ bật lên. Nếu bạn đặt chính sách này thành 2, thì các trang web không thể hiển thị cửa sổ bật lên.
 

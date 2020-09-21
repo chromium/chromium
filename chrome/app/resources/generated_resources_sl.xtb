@@ -2233,7 +2233,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3650845953328929506">Nalaganje dnevnika je na čakanju.</translation>
 <translation id="3650952250015018111">Dovolite aplikaciji »<ph name="APP_NAME" />« dostop do tega:</translation>
 <translation id="3651488188562686558">Prekinitev povezave z omrežjem Wi-Fi</translation>
-<translation id="3651952061994655768">Spremeni ime</translation>
 <translation id="3652817283076144888">Inicializacija</translation>
 <translation id="3653160965917900914">Omrežna datotečna sredstva v skupni rabi</translation>
 <translation id="3653842108912548333">Dostop do Pomočnika s funkcijo Voice Match</translation>
@@ -3578,7 +3577,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="5315873049536339193">Identiteta</translation>
 <translation id="5317780077021120954">Shrani</translation>
 <translation id="5319359161174645648">Google priporoča Chrome</translation>
-<translation id="5320135788267874712">Novo ime naprave</translation>
 <translation id="532247166573571973">Strežnik morda ni dosegljiv. Poskusite znova pozneje.</translation>
 <translation id="5324780743567488672">Samodejna nastavitev časovnega pasu na podlagi vaše lokacije</translation>
 <translation id="5327248766486351172">Ime</translation>
@@ -4332,6 +4330,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6227280783235722609">razširitev</translation>
 <translation id="6229849828796482487">Prekinitev povezave z omrežjem Wi-Fi</translation>
 <translation id="6229890768313448549">Pogojev storitve za Google Play ni mogoče naložiti. Poskusite znova.</translation>
+<translation id="6231782223312638214">Predlagano</translation>
 <translation id="6231881193380278751">Če želite, da se stran samodejno osveži, v URL-ju dodajte parameter iskalne poizvedbe: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Baterija</translation>
 <translation id="6232116551750539448">Povezava z omrežjem <ph name="NAME" /> je prekinjena</translation>

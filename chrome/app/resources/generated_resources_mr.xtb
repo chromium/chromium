@@ -2232,7 +2232,6 @@
 <translation id="3650845953328929506">लॉग अपलोड बाकी आहे.</translation>
 <translation id="3650952250015018111">"<ph name="APP_NAME" />" ला अ‍ॅक्सेसची परवानगी  द्या:</translation>
 <translation id="3651488188562686558">वाय-फाय वरून डिस्कनेक्ट करा</translation>
-<translation id="3651952061994655768">नाव बदला</translation>
 <translation id="3652817283076144888">सुरू होत आहे</translation>
 <translation id="3653160965917900914">नेटवर्क फाइल शेअर</translation>
 <translation id="3653842108912548333">Voice Match सह असिस्टंट अ‍ॅक्सेस करा</translation>
@@ -3575,7 +3574,6 @@
 <translation id="5315873049536339193">ओळख</translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5319359161174645648">Google Chrome ची शिफारस करते</translation>
-<translation id="5320135788267874712">नवीन डिव्हाइसचे नाव</translation>
 <translation id="532247166573571973">सर्व्हर कदाचित आवाक्याबाहेर असू शकते. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="5324780743567488672">तुमचे स्थान वापरून स्वयंचलितपणे टाइम झोन सेट करा</translation>
 <translation id="5327248766486351172">नाव</translation>
@@ -4328,6 +4326,7 @@
 <translation id="6227280783235722609">एक्स्टेंशन</translation>
 <translation id="6229849828796482487">वाय-फाय नेटवर्क डिस्‍कनेक्‍ट करा</translation>
 <translation id="6229890768313448549">Google Play सेवा अटी लोड केल्या जाऊ शकत नाहीत. कृपया पुन्हा प्रयत्न करा.</translation>
+<translation id="6231782223312638214">सूचित</translation>
 <translation id="6231881193380278751">पृष्ठ स्वयं-रिफ्रेश करण्यासाठी एक क्वेरी परम जोडा: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">बॅटरी</translation>
 <translation id="6232116551750539448"><ph name="NAME" /> वरील कनेक्शन गमावले गेले आहे</translation>

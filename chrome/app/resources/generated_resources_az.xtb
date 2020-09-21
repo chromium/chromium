@@ -2228,7 +2228,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3650845953328929506">Girişin yüklənməsi gözlənilir.</translation>
 <translation id="3650952250015018111">"<ph name="APP_NAME" />" tətbiqinə giriş imkanı verin:</translation>
 <translation id="3651488188562686558">Wi-Fi şəbəkəsindən ayrıldı</translation>
-<translation id="3651952061994655768">Adı dəyişdirin</translation>
 <translation id="3652817283076144888">Başladılır</translation>
 <translation id="3653160965917900914">Şəbəkə fayl paylaşımları</translation>
 <translation id="3653842108912548333">Assistentə Voice Match ilə giriş edin</translation>
@@ -3571,7 +3570,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5315873049536339193">İdentiklik</translation>
 <translation id="5317780077021120954">Yadda saxlayın</translation>
 <translation id="5319359161174645648">Google, Chrome'u tövsiyə edir</translation>
-<translation id="5320135788267874712">Yeni cihaz adı</translation>
 <translation id="532247166573571973">Server əlçatmaz ola bilər. Sonra cəhd edin.</translation>
 <translation id="5324780743567488672">Məkanınızdan istifadə edərək saat qurşağını avtomatik ayarlayın</translation>
 <translation id="5327248766486351172">Ad</translation>
@@ -4321,6 +4319,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6227280783235722609">artırma</translation>
 <translation id="6229849828796482487">Wi‑Fi şəbəkəsini ayırın</translation>
 <translation id="6229890768313448549">Google Play Xidmət Şərtləri yüklənə bilmir. Yenidən cəhd edin.</translation>
+<translation id="6231782223312638214">Təklif edilən</translation>
 <translation id="6231881193380278751">Səhifəni avtomatik yeniləmək üçün URL-də sorğu parametri əlavə edin: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Batareya</translation>
 <translation id="6232116551750539448"><ph name="NAME" /> bağlantısı kəsildi</translation>

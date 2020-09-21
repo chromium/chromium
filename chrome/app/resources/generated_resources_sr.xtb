@@ -2230,7 +2230,6 @@
 <translation id="3650845953328929506">Отпремање евиденције је на чекању.</translation>
 <translation id="3650952250015018111">Дозволите да „<ph name="APP_NAME" />“ приступа:</translation>
 <translation id="3651488188562686558">прекинути везу са Wi-Fi-јем</translation>
-<translation id="3651952061994655768">Промените назив</translation>
 <translation id="3652817283076144888">Покреће се</translation>
 <translation id="3653160965917900914">Дељења датотека на мрежи</translation>
 <translation id="3653842108912548333">Приступајте Помоћнику помоћу Voice Match-а</translation>
@@ -3575,7 +3574,6 @@
 <translation id="5315873049536339193">Идентитет</translation>
 <translation id="5317780077021120954">Сачувај</translation>
 <translation id="5319359161174645648">Google препоручује Chrome</translation>
-<translation id="5320135788267874712">Нов назив уређај</translation>
 <translation id="532247166573571973">Сервер је можда недоступан. Пробајте поново касније.</translation>
 <translation id="5324780743567488672">Аутоматски подеси временску зону помоћу моје локације</translation>
 <translation id="5327248766486351172">Назив</translation>
@@ -4328,6 +4326,7 @@
 <translation id="6227280783235722609">додатак</translation>
 <translation id="6229849828796482487">Прекини везу са Wi-Fi мрежом</translation>
 <translation id="6229890768313448549">Услови коришћења услуге Google Play не могу да се учитају. Пробајте поново.</translation>
+<translation id="6231782223312638214">Предложено</translation>
 <translation id="6231881193380278751">Додајте параметар упита у URL да бисте аутоматски освежили страницу: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Батерија</translation>
 <translation id="6232116551750539448">Веза са мрежом <ph name="NAME" /> је прекинута</translation>

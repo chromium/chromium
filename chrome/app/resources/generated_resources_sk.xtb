@@ -2232,7 +2232,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3650845953328929506">Čaká sa na nahranie do denníka.</translation>
 <translation id="3650952250015018111">Povoľte aplikácii "<ph name="APP_NAME" />" prístup do zariadenia:</translation>
 <translation id="3651488188562686558">Odpojí sa od siete Wi‑Fi</translation>
-<translation id="3651952061994655768">Zmeniť názov</translation>
 <translation id="3652817283076144888">Inicializuje sa</translation>
 <translation id="3653160965917900914">Sieťové zdieľané úložiská</translation>
 <translation id="3653842108912548333">Získajte prístup k Asistentovi pomocou funkcie Voice Match</translation>
@@ -3577,7 +3576,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5315873049536339193">Identita</translation>
 <translation id="5317780077021120954">Uložiť</translation>
 <translation id="5319359161174645648">Google odporúča Chrome</translation>
-<translation id="5320135788267874712">Názov nového zariadenia</translation>
 <translation id="532247166573571973">Server môže byť nedostupný. Skúste to znova neskôr.</translation>
 <translation id="5324780743567488672">Nastaviť časové pásmo automaticky na základe polohy</translation>
 <translation id="5327248766486351172">Názov</translation>
@@ -4329,6 +4327,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6227280783235722609">rozšírenie</translation>
 <translation id="6229849828796482487">Odpojiť sieť Wi-Fi</translation>
 <translation id="6229890768313448549">Zmluvné podmienky služby Google Play sa nedajú načítať. Skúste to znova.</translation>
+<translation id="6231782223312638214">Navrhované</translation>
 <translation id="6231881193380278751">Pridajte do webovej adresy parameter dopytu na automatickú aktualizáciu stránky: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Batéria</translation>
 <translation id="6232116551750539448">Pripojenie k sieti <ph name="NAME" /> bolo prerušené</translation>

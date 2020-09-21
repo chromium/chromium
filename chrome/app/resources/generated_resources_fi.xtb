@@ -2233,7 +2233,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3650845953328929506">Lokin päivitys odottaa.</translation>
 <translation id="3650952250015018111">Anna sovellukselle "<ph name="APP_NAME" />" seuraava käyttöoikeus:</translation>
 <translation id="3651488188562686558">Katkaise Wi-Fi-yhteys</translation>
-<translation id="3651952061994655768">Vaihda nimi</translation>
 <translation id="3652817283076144888">Alustetaan</translation>
 <translation id="3653160965917900914">Verkkotiedostojen jakaminen</translation>
 <translation id="3653842108912548333">Käytä Assistantia Voice Matchilla</translation>
@@ -3575,7 +3574,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="5315873049536339193">Identiteetti</translation>
 <translation id="5317780077021120954">Tallenna</translation>
 <translation id="5319359161174645648">Google suosittelee Chromea</translation>
-<translation id="5320135788267874712">Laitteen uusi nimi</translation>
 <translation id="532247166573571973">Palvelimeen ei ehkä saada yhteyttä. Yritä uudelleen.</translation>
 <translation id="5324780743567488672">Aseta aikavyöhyke automaattisesti käyttämällä sijaintiasi.</translation>
 <translation id="5327248766486351172">Nimi</translation>
@@ -4329,6 +4327,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6227280783235722609">laajennus</translation>
 <translation id="6229849828796482487">Katkaise Wi-Fi-verkon yhteys</translation>
 <translation id="6229890768313448549">Google Playn käyttöehtojen lataaminen epäonnistui. Yritä uudelleen.</translation>
+<translation id="6231782223312638214">Ehdotukset</translation>
 <translation id="6231881193380278751">Lisää URL-osoitteeseen kyselyn param-arvo, jotta sivu päivitetään automaattisesti: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Akku</translation>
 <translation id="6232116551750539448">Yhteys kohteeseen <ph name="NAME" /> on katkennut.</translation>

@@ -724,17 +724,6 @@ Se você desativar esta configuração ou deixá-la sem definição, todas as p�
 <translation id="2168397434410358693">Intervalo de inatividade no funcionamento com alimentação CA</translation>
 <translation id="217013996107840632">Parâmetros de linha de comando para fazer a mudança do navegador alternativo.</translation>
 <translation id="2170233653554726857">Ativar otimização WPAD</translation>
-<translation id="2172774896158845977">Configura o tipo de página inicial padrão no <ph name="PRODUCT_NAME" /> e evita que os usuários mudem as preferências de página inicial. A página inicial pode ser definida como um URL especificado por você ou como a página "Nova guia".
-
-          Se você ativar essa configuração, a página "Nova guia" será sempre usada como página inicial, e o local do URL da página inicial será ignorado.
-
-          Se você desativar essa configuração, a página inicial do usuário nunca será a página "Nova guia", a menos que o URL seja definido como "chrome://newtab".
-
-          Se você ativar ou desativar essa configuração, os usuários não poderão mudar os próprios tipos de página inicial no <ph name="PRODUCT_NAME" />.
-
-          Se esta política não for definida, o usuário poderá escolher a própria página inicial como a página "Nova guia".
-
-          Esta política está disponível apenas em instâncias do Windows associadas a um domínio do <ph name="MS_AD_NAME" /> ou instâncias do Windows 10 Pro ou Enterprise registradas no gerenciamento de dispositivos e instâncias do macOS gerenciadas via MDM ou associadas a um domínio via MCX.</translation>
 <translation id="2178899310296064282">Aplicar pelo menos o Modo restrito moderado no YouTube</translation>
 <translation id="2182291258410176649">O usuário decide se quer ativar o backup e a restauração</translation>
 <translation id="2183294522275408937">Esta configuração controla com que frequência a tela de bloqueio solicitará que a senha seja informada para continuar usando o desbloqueio rápido. Se a senha tiver sido informada pela última vez em uma data fora do período dessa configuração, o desbloqueio rápido não estará disponível ao acessar a tela de bloqueio. Se o usuário ficar na tela de bloqueio após esse período, uma senha será solicitada na próxima vez que ele informar o código errado ou acessar novamente a tela de bloqueio, o que ocorrer primeiro.
@@ -1330,20 +1319,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Os URLs precisam ter um esquema HTTPS, como "https://example.com".
 
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="2976992705655394547">Permite que você especifique o comportamento na inicialização.
-
-          Se você escolher "Abrir Nova guia", a página "Nova guia" sempre será aberta quando você iniciar o <ph name="PRODUCT_NAME" />.
-
-          Se você escolher "Restaurar a última sessão", os URLs que estavam abertos na última vez em que o <ph name="PRODUCT_NAME" /> foi fechado serão reabertos e a sessão de navegação será restaurada para como foi deixada.
-          Ao selecionar essa opção algumas configurações que dependem de sessões ou que realizam ações ao sair são desativadas, como "Limpar dados de navegação ao sair" ou "apenas os cookies da sessão".
-
-          Se você escolher "Abrir uma lista de URLs", a lista "URLs que devem ser abertos na inicialização" será exibida quando um usuário iniciar o <ph name="PRODUCT_NAME" />.
-
-          Se você ativar essa configuração, os usuários não poderão mudá-la ou substituí-la no <ph name="PRODUCT_NAME" />.
-
-          Desativar essa configuração é o mesmo que não configurá-la. O usuário ainda poderá fazer mudanças no <ph name="PRODUCT_NAME" />.
-
-          Esta política está disponível apenas em instâncias do Windows associadas a um domínio do <ph name="MS_AD_NAME" /> ou instâncias do Windows 10 Pro ou Enterprise registradas no gerenciamento de dispositivos e instâncias do macOS gerenciadas via MDM ou associadas a um domínio via MCX.</translation>
 <translation id="2985927503455169394">Usa o modo padrão da experiência de integração do Assistente</translation>
 <translation id="2987155890997901449">Ativar ARC</translation>
 <translation id="2987227569419001736">Controla o uso da API Web Bluetooth</translation>
@@ -2355,7 +2330,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 <translation id="4474167089968829729">Ativar salvamento de senhas no gerenciador de senhas</translation>
 <translation id="4476769083125004742">Se esta política for definida como <ph name="BLOCK_GEOLOCATION_SETTING" />, os apps Android não poderão acessar as informações de local. Se você configurar essa política para qualquer outro valor ou deixá-la sem definição, será solicitado o consentimento do usuário quando um app Android quiser acessar as informações de local.</translation>
 <translation id="4480694116501920047">Forçar SafeSearch</translation>
-<translation id="4482640907922304445">Mostra o botão "Página inicial" na barra de ferramentas de <ph name="PRODUCT_NAME" />. Se ativar esta configuração, o botão "Página inicial" será sempre exibido. Se desativar esta configuração, o botão "Página inicial" nunca será exibido. Se ativar ou desativar esta configuração, os usuários não podem alterá-la ou substituí-la em <ph name="PRODUCT_NAME" />. Deixar esta política sem definição permitirá ao usuário escolher se deseja exibir o botão "Página inicial".</translation>
 <translation id="4483649828988077221">Desativar a atualização automática</translation>
 <translation id="4485425108474077672">Configurar o URL da página "Nova guia"</translation>
 <translation id="4492287494009043413">Desativar captura de tela</translation>
@@ -2651,11 +2625,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 <translation id="5017369989680827157">Se a política for definida como verdadeira ou não for definida, os usuários poderão controlar o preenchimento automático de endereços na IU.
 
       Se ela for definida como falsa, o preenchimento automático nunca fará sugestões ou preencherá informações de endereço nem salvará outros dados desse tipo que os usuários enviarem ao navegar na Web.</translation>
-<translation id="5022551015331996656">Se "Abrir uma lista de URLs" for selecionada como a ação de inicialização, isso permitirá que você especifique a lista de URLs que serão abertos. Se não for definida, nenhum URL será aberto na inicialização.
-
-          Esta política só funcionará se a política RestoreOnStartup for definida como RestoreOnStartupIsURLs.
-
-          Esta política está disponível apenas em instâncias do Windows associadas a um domínio do <ph name="MS_AD_NAME" /> ou instâncias do Windows 10 Pro ou Enterprise registradas no gerenciamento de dispositivos e instâncias do macOS gerenciadas via MDM ou associadas a um domínio via MCX.</translation>
 <translation id="5023555740504506178">Se ativada ou não configurada (padrão), uma página da Web poderá usar APIs de compartilhamento de tela (por exemplo, getDisplayMedia() ou a API de extensão Desktop Capture) para pedir que o usuário selecione uma guia, janela ou área de trabalho para captura.
 
       Quando esta política estiver desativada, as chamadas para APIs de compartilhamento de tela falharão com erro.</translation>
@@ -3042,19 +3011,6 @@ O campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> permite que você especifi
       Se ela for definida como falsa, o <ph name="PRODUCT_NAME" /> não poderá mostrar informações do produto como conteúdo em guia cheia.
 
       Esta política controla a apresentação das informações promocionais em uma guia inteira. Isso inclui conteúdo como as páginas de boas-vindas que ajudam os usuários a fazer login em <ph name="PRODUCT_NAME" />, definir <ph name="PRODUCT_NAME" /> como navegador padrão ou descobrir os recursos do produto.</translation>
-<translation id="5450893456912604446">Configura o URL padrão da página inicial no <ph name="PRODUCT_NAME" /> e impede que os usuários o modifiquem.
-
-          A página inicial é aquela aberta pelo botão "Página inicial". No computador, as páginas que são abertas na inicialização são controladas pelas políticas RestoreOnStartup.
-
-          O tipo da página inicial pode ser configurado como um URL que você especifica aqui ou como a página "Nova guia". Se você selecionar a página "Nova guia", esta política não terá efeito.
-
-          Se você ativar essa configuração, os usuários não poderão mudar o URL da página inicial no <ph name="PRODUCT_NAME" />, mas ainda poderão escolher a página "Nova guia" como a inicial.
-
-          Se esta política não for definida, o usuário poderá escolher a própria página inicial caso <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> também não esteja definida.
-
-          O URL precisa ter um esquema padrão, como "http://example.com" ou "https://example.com".
-
-          Esta política está disponível apenas em instâncias do Windows associadas a um domínio do <ph name="MS_AD_NAME" /> ou instâncias do Windows 10 Pro ou Enterprise registradas no gerenciamento de dispositivos e instâncias do macOS gerenciadas via MDM ou associadas a um domínio via MCX.</translation>
 <translation id="5457065417344056871">Ativar o modo visitante no navegador</translation>
 <translation id="5457387982448145430">Se a política for definida como ativada, as senhas salvas serão importadas do navegador padrão anterior durante a primeira execução. Se a política for definida como desativada ou não for definida, nenhuma senha será importada durante a primeira execução.
 
@@ -4704,15 +4660,6 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 <translation id="7713608076604149344">Restrições de downloads</translation>
 <translation id="7715711044277116530">Percentual pelo qual calcular o intervalo de escurecimento da tela no modo de apresentação</translation>
 <translation id="7717938661004793600">Configurar recursos de acessibilidade do <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="772061142236146688">Configura o URL padrão da página "Nova guia" e impede que os usuários o modifiquem.
-
-          A página "Nova guia" é aquela que é aberta quando novas guias são criadas, incluindo aquelas abertas em novas janelas.
-
-          Esta política não decide quais páginas são abertas na inicialização. Isso é controlado pelas políticas <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />. No entanto, esta política afetará a página inicial e de inicialização se elas estiverem configuradas para abrir a página "Nova guia".
-
-          Se a política não for configurada ou for deixada em branco, a página "Nova guia" padrão será usada.
-
-          Esta política está disponível apenas em instâncias do Windows associadas a um domínio do <ph name="MS_AD_NAME" /> ou instâncias do Windows 10 Pro ou Enterprise registradas no gerenciamento de dispositivos e instâncias do macOS gerenciadas via MDM ou associadas a um domínio via MCX.</translation>
 <translation id="7721944091689270995">ID do usuário do <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Se a política for definida como 1, os sites poderão exibir pop-ups. Se ela for definida como 2, os pop-ups serão negados.
 

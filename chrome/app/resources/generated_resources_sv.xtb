@@ -2233,7 +2233,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3650845953328929506">Uppladdning av loggfil väntar.</translation>
 <translation id="3650952250015018111">Ge ”<ph name="APP_NAME" />” åtkomstbehörighet till:</translation>
 <translation id="3651488188562686558">Enheten kopplas från Wi-Fi</translation>
-<translation id="3651952061994655768">Byt namn</translation>
 <translation id="3652817283076144888">Initierar</translation>
 <translation id="3653160965917900914">Filresurser i nätverk</translation>
 <translation id="3653842108912548333">Få åtkomst till assistenten med Voice Match</translation>
@@ -3578,7 +3577,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5315873049536339193">Identitet</translation>
 <translation id="5317780077021120954">Spara</translation>
 <translation id="5319359161174645648">Google rekommenderar Chrome</translation>
-<translation id="5320135788267874712">Nytt enhetsnamn</translation>
 <translation id="532247166573571973">Servern kanske inte kan nås. Försök igen senare.</translation>
 <translation id="5324780743567488672">Ange tidszon automatiskt genom att använda din plats</translation>
 <translation id="5327248766486351172">Namn</translation>
@@ -4330,6 +4328,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6227280783235722609">tillägg</translation>
 <translation id="6229849828796482487">Koppla från Wi-Fi-nätverk</translation>
 <translation id="6229890768313448549">Det gick inte att läsa in användarvillkoren för Google Play. Försök igen.</translation>
+<translation id="6231782223312638214">Förslag</translation>
 <translation id="6231881193380278751">Lägg till en frågeparameter i webbadressen för att automatiskt uppdatera sidan: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Batteri</translation>
 <translation id="6232116551750539448">Anslutningen till <ph name="NAME" /> har brutits</translation>

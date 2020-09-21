@@ -719,17 +719,6 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 <translation id="2168397434410358693">Ritardo inattività in caso di utilizzo di CA</translation>
 <translation id="217013996107840632">Parametri della riga di comando per cambiare il browser alternativo.</translation>
 <translation id="2170233653554726857">Attiva ottimizzazione WPAD</translation>
-<translation id="2172774896158845977">Consente di configurare il tipo di home page predefinita di <ph name="PRODUCT_NAME" /> e di impedire agli utenti di modificare le preferenze della home page. L'home page può essere impostata sull'URL specificato oppure sulla pagina Nuova scheda.
-
-          Se attivi questa impostazione, la pagina Nuova scheda verrà sempre utilizzata come home page e l'URL della home page verrà ignorato.
-
-          Se disattivi questa impostazione, la home page dell'utente non sarà mai la pagina Nuova scheda, a meno che l'URL sia impostato su "chrome://newtab".
-
-          Se attivi o disattivi questa impostazione, gli utenti non potranno modificare il tipo di home page su <ph name="PRODUCT_NAME" />.
-
-          Se il criterio non viene impostato, l'utente potrà scegliere se la home page sarà la pagina Nuova scheda.
-
-          Questo criterio è disponibile esclusivamente per le istanze di Windows che fanno parte di un dominio <ph name="MS_AD_NAME" /> così come per le istanze di Windows 10 Pro o Enterprise registrate per la gestione dei dispositivi. Inoltre è disponibile per le istanze di macOS gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="2178899310296064282">Imponi almeno il Livello medio della Modalità con restrizioni su YouTube</translation>
 <translation id="2182291258410176649">L'utente decide se abilitare il backup e il ripristino</translation>
 <translation id="2183294522275408937">Questa impostazione consente di stabilire la frequenza della richiesta di inserimento della password nella schermata di blocco per poter continuare a utilizzare lo sblocco rapido. Se il periodo di tempo trascorso dall'ultima volta che è stata inserita la password è superiore alla frequenza impostata, lo sblocco rapido non sarà disponibile quando si accede alla schermata di blocco. Se l'utente rimane nella schermata di blocco per un periodo superiore a quello impostato, verrà richiesta la password la volta successiva che l'utente inserirà il codice sbagliato o accederà di nuovo alla schermata di blocco.
@@ -1326,20 +1315,6 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
       Gli URL devono avere uno schema HTTPS, ad esempio "https://example.com".
 
       Per informazioni dettagliate sui pattern URL validi, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="2976992705655394547">Consente di specificare il comportamento all'avvio.
-
-          Se viene selezionata l'opzione "Apri la pagina Nuova scheda", all'avvio di <ph name="PRODUCT_NAME" /> verrà sempre aperta la pagina Nuova scheda.
-
-          Se viene selezionata l'opzione "Ripristina l'ultima sessione", verranno riaperti gli URL che erano aperti all'ultima chiusura di <ph name="PRODUCT_NAME" /> e la sessione di navigazione verrà ripristinata così com'era.
-          Se questa opzione è selezionata, vengono disattivate alcune impostazioni basate sulle sessioni o che compiono azioni all'uscita, ad esempio la cancellazione dei dati di navigazione alla chiusura o dei cookie della sessione.
-
-          Se selezioni "Apri un elenco di URL", quando un utente avvia <ph name="PRODUCT_NAME" /> viene aperto l'elenco di "URL da aprire all'avvio".
-
-          Se attivi questa impostazione, gli utenti non potranno modificarla o ignorarla in <ph name="PRODUCT_NAME" />.
-
-          Disattivare questa impostazione equivale a non configurarla. Gli utenti potranno comunque modificarla su <ph name="PRODUCT_NAME" />.
-
-          Questo criterio è disponibile esclusivamente per le istanze di Windows che fanno parte di un dominio <ph name="MS_AD_NAME" /> così come per le istanze di Windows 10 Pro o Enterprise registrate per la gestione dei dispositivi. Inoltre è disponibile per le istanze di macOS gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="2985927503455169394">Usa la modalità predefinita dell'esperienza di onboarding dell'assistente</translation>
 <translation id="2987155890997901449">Attiva ARC</translation>
 <translation id="2987227569419001736">Controlla l'utilizzo dell'API Web Bluetooth</translation>
@@ -2357,7 +2332,6 @@ Il valore della norma dovrebbe essere specificato in secondi. Il valore minimo d
 <translation id="4474167089968829729">Attiva il salvataggio delle password in Gestione password</translation>
 <translation id="4476769083125004742">Se la norma viene impostata su <ph name="BLOCK_GEOLOCATION_SETTING" />, le app Android non possono accedere ai dati sulla posizione. Se la norma viene impostata su qualsiasi altro valore o non viene impostata, all'utente viene chiesta l'autorizzazione quando un'app Android vuole accedere ai dati sulla posizione.</translation>
 <translation id="4480694116501920047">Forza SafeSearch</translation>
-<translation id="4482640907922304445">Consente di visualizzare il pulsante Pagina iniziale sulla barra degli strumenti di <ph name="PRODUCT_NAME" />. Se attivi questa impostazione il pulsante Pagina iniziale verrà sempre visualizzato, in caso contrario non verrà mai visualizzato. Se questa impostazione viene attivata o disattivata, gli utenti non potranno modificarla o sostituirla in <ph name="PRODUCT_NAME" />. Se non imposti questa norma gli utenti potranno scegliere se visualizzare o meno il pulsante Pagina iniziale.</translation>
 <translation id="4483649828988077221">Disattiva l'aggiornamento automatico</translation>
 <translation id="4485425108474077672">Configura l'URL per la pagina Nuova scheda</translation>
 <translation id="4492287494009043413">Disabilita l'acquisizione di screenshot</translation>
@@ -2656,11 +2630,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="5017369989680827157">Se il criterio è impostato su True o se non viene configurato, gli utenti possono controllare la compilazione automatica per gli indirizzi nella UI.
 
       Se il criterio è impostato su False, la compilazione automatica non fornisce mai suggerimenti né compila le informazioni relative agli indirizzi, né salva le nuove informazioni inviate dagli utenti durante la navigazione sul Web.</translation>
-<translation id="5022551015331996656">Se come azione all'avvio è stato impostato "Apri un elenco di URL", puoi specificare l'elenco degli URL che vengono aperti. Se questo criterio non è impostato, all'avvio non verrà aperto alcun URL.
-
-          Questo criterio funziona soltanto se il criterio "RestoreOnStartup" viene impostato su "RestoreOnStartupIsURLs".
-
-          Questo criterio è disponibile esclusivamente per le istanze di Windows che fanno parte di un dominio <ph name="MS_AD_NAME" /> così come per le istanze di Windows 10 Pro o Enterprise registrate per la gestione dei dispositivi. Inoltre è disponibile per le istanze di macOS gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="5023555740504506178">Se il criterio è attivato o non configurato (impostazione predefinita), una pagina web può usare le API di condivisione schermo (ad esempio, getDisplayMedia() o l'API dell'estensione Desktop Capture) per richiedere all'utente di selezionare una scheda, una finestra o un desktop da acquisire.
 
       Se questo criterio viene disattivato, le chiamate alle API di condivisione schermo restituiranno un errore.</translation>
@@ -3057,19 +3026,6 @@ Se questa impostazione viene disattivata o non viene impostata, sia gli utenti l
       Se il criterio viene impostato su false, <ph name="PRODUCT_NAME" /> non può mostrare le informazioni sul prodotto come contenuti a scheda intera.
 
       La configurazione del criterio consente di controllare la presentazione delle pagine di benvenuto che aiutano gli utenti ad accedere a <ph name="PRODUCT_NAME" />, di impostare <ph name="PRODUCT_NAME" /> come browser predefinito degli utenti oppure di fornire informazioni sulle caratteristiche del prodotto.</translation>
-<translation id="5450893456912604446">Consente di configurare l'URL predefinito della home page di <ph name="PRODUCT_NAME" /> e di impedire agli utenti di modificarlo.
-
-          La home page è la pagina che viene aperta facendo clic sul pulsante Home. Sui computer desktop, le pagine che si aprono all'avvio vengono stabilite dai criteri RestoreOnStartup.
-
-          La home page può essere un URL specificato qui oppure la pagina Nuova scheda. Se selezioni la pagina Nuova scheda, questo criterio non viene applicato.
-
-          Se attivi questa impostazione, gli utenti non possono cambiare l'URL della home page di <ph name="PRODUCT_NAME" />, ma possono scegliere come home page la pagina Nuova scheda.
-
-          Se questo criterio non è impostato e non viene impostato nemmeno il criterio <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />, l'utente potrà scegliere la home page che preferisce.
-
-          L'URL deve avere uno schema standard, ad esempio "http://example.com" o "https://example.com".
-
-          Questo criterio è disponibile esclusivamente per le istanze di Windows che fanno parte di un dominio <ph name="MS_AD_NAME" /> così come per le istanze di Windows 10 Pro o Enterprise registrate per la gestione dei dispositivi. Inoltre è disponibile per le istanze di macOS gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="5457065417344056871">Attiva modalità ospite nel browser</translation>
 <translation id="5457387982448145430">Se il criterio viene impostato su Attivato, le password salvate nel precedente browser predefinito verranno importate alla prima esecuzione. Se il criterio viene impostato su Disattivato o se non viene configurato, nessuna password salvata errà importata alla prima esecuzione.
 
@@ -4721,15 +4677,6 @@ Nota. Attualmente i riavvii automatici vengono attivati soltanto durante la visu
 <translation id="7713608076604149344">Limitazioni dei download</translation>
 <translation id="7715711044277116530">Percentuale di regolazione del ritardo di oscuramento dello schermo in modalità di presentazione</translation>
 <translation id="7717938661004793600">Configura le funzioni di accessibilità di <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="772061142236146688">Consente di configurare l'URL predefinito della pagina Nuova scheda e impedisce agli utenti di modificarlo.
-
-          La pagina Nuova scheda è la pagina che si apre quando vengono create nuove schede, inclusa quella aperta in una nuova finestra.
-
-          Questo criterio non stabilisce quali pagine si aprono all'avvio. Tali pagine dipendono infatti dai criteri <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />. Questo criterio influisce tuttavia sulla home page e sulla pagina iniziale se sono impostate per l'apertura della pagina Nuova scheda.
-
-          Se il criterio non è impostato o risulta vuoto, viene utilizzata la pagina predefinita Nuova scheda.
-
-          Questo criterio è disponibile esclusivamente per le istanze di Windows che fanno parte di un dominio <ph name="MS_AD_NAME" /> così come per le istanze di Windows 10 Pro o Enterprise registrate per la gestione dei dispositivi. Inoltre è disponibile per le istanze di macOS gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="7721944091689270995">ID utente <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Se il criterio è impostato su 1, i siti web possono mostrare i popup. Se il criterio è impostato su 2, i popup vengono negati.
 

@@ -2233,7 +2233,6 @@
 <translation id="3650845953328929506">Մատյանի վերբեռնումը դեռ չի սկսվել:</translation>
 <translation id="3650952250015018111">«<ph name="APP_NAME" />» հավելվածին հասանելի դարձրեք հետևյալ սարք(եր)ը՝</translation>
 <translation id="3651488188562686558">Դուրս գալ Wi-Fi ցանցից</translation>
-<translation id="3651952061994655768">Փոխել անվանումը</translation>
 <translation id="3652817283076144888">Նախապատրաստվում է</translation>
 <translation id="3653160965917900914">Ցանցային պահեստ</translation>
 <translation id="3653842108912548333">Օգտագործեք Օգնականը Voice Match-ի միջոցով</translation>
@@ -3581,7 +3580,6 @@
 <translation id="5315873049536339193">Ինքնություն</translation>
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5319359161174645648">Google-ը խորհուրդ է տալիս Chrome դիտարկիչը</translation>
-<translation id="5320135788267874712">Սարքի նոր անվանումը</translation>
 <translation id="532247166573571973">Սերվերն անհասանելի է: Փորձեք մի փոքր ուշ:</translation>
 <translation id="5324780743567488672">Սահմանել ժամային գոտին ավտոմատ՝ ձեր տեղադրության հիման վրա</translation>
 <translation id="5327248766486351172">Անուն</translation>
@@ -4333,6 +4331,7 @@
 <translation id="6227280783235722609">ընդլայնում</translation>
 <translation id="6229849828796482487">Անջատել Wi-Fi ցանցը</translation>
 <translation id="6229890768313448549">Չհաջողվեց բեռնել Google Play-ի օգտագործման պայմանները: Նորից փորձեք:</translation>
+<translation id="6231782223312638214">Առաջարկվում է</translation>
 <translation id="6231881193380278751">URL-ում ավելացրեք հարցման հարաչափը՝ էջը ինքնաթարմացնելու համար՝ chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Մարտկոց</translation>
 <translation id="6232116551750539448"><ph name="NAME" />-ի կապակցումը խափանվեց</translation>

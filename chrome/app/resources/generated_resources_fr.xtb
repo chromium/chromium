@@ -2233,7 +2233,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3650845953328929506">Importation du journal en attente.</translation>
 <translation id="3650952250015018111">Autoriser "<ph name="APP_NAME" />" à accéder à l'appareil suivant :</translation>
 <translation id="3651488188562686558">Se déconnectera du Wi-Fi</translation>
-<translation id="3651952061994655768">Changer de nom</translation>
 <translation id="3652817283076144888">Initialisation…</translation>
 <translation id="3653160965917900914">Partages de fichiers en réseau</translation>
 <translation id="3653842108912548333">Accéder à l'Assistant grâce à Voice Match</translation>
@@ -3578,7 +3577,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5315873049536339193">Identité</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5319359161174645648">Google recommande Chrome</translation>
-<translation id="5320135788267874712">Nouveau nom de l'appareil</translation>
 <translation id="532247166573571973">Le serveur peut être inaccessible. Veuillez réessayer plus tard.</translation>
 <translation id="5324780743567488672">Définir le fuseau horaire automatiquement à l'aide de votre position</translation>
 <translation id="5327248766486351172">Nom</translation>
@@ -4331,6 +4329,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6227280783235722609">extension</translation>
 <translation id="6229849828796482487">Se déconnecter du réseau Wi-Fi</translation>
 <translation id="6229890768313448549">Impossible de charger les conditions d'utilisation de Google Play. Veuillez réessayer.</translation>
+<translation id="6231782223312638214">Suggestions</translation>
 <translation id="6231881193380278751">Ajoutez un paramètre de requête dans l'URL pour une actualisation automatique de la page : chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Batterie</translation>
 <translation id="6232116551750539448">La connexion à "<ph name="NAME" />" a été interrompue.</translation>

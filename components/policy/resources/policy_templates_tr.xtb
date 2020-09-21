@@ -722,17 +722,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 <translation id="2168397434410358693">AC güçle çalışırken boşta kalma gecikmesi</translation>
 <translation id="217013996107840632">Alternatif tarayıcıdan geçiş yapmak için komut satırı parametreleri.</translation>
 <translation id="2170233653554726857">WPAD optimizasyonunu etkinleştir</translation>
-<translation id="2172774896158845977"><ph name="PRODUCT_NAME" /> ürününde varsayılan ana sayfa türünü yapılandırır ve kullanıcıların ana sayfa tercihlerini değiştirmesini engeller. Ana sayfa sizin belirttiğiniz bir URL'ye veya Yeni Sekme Sayfası'na ayarlanabilir.
-
-          Bu ayarı etkinleştirirseniz ana sayfa için her zaman Yeni Sekme Sayfası kullanılır ve ana sayfa URL konumu yok sayılır.
-
-          Bu ayarı devre dışı bırakırsanız, kullanıcının ana sayfası (URL'si "chrome://newtab" olarak ayarlanmadığı sürece) hiçbir zaman Yeni Sekme Sayfası olmaz.
-
-          Bu ayarı etkinleştirir veya devre dışı bırakırsanız, kullanıcılar <ph name="PRODUCT_NAME" /> ürününde ana sayfalarının türünü değiştiremezler.
-
-          Bu politikanın ayarlanmadan bırakılması kullanıcının yeni sekme sayfasını ana sayfa olarak seçmesine izin verir.
-
-          Bu politika yalnızca bir <ph name="MS_AD_NAME" /> alan adına katılmış Windows örneklerinde veya cihaz yönetimine kaydolmuş Windows 10 Pro ya da Enterprise örneklerinde ve MDM ile çalışan veya MCX aracılığıyla bir alan adına katılmış macOS örneklerinde kullanılabilir.</translation>
 <translation id="2178899310296064282">YouTube'da en azından Orta Düzey Kısıtlı Mod'u zorunlu kıl</translation>
 <translation id="2182291258410176649">Yedekleme ve geri yüklemenin etkinleştirilip etkinleştirilmeyeceğine kullanıcı karar verir</translation>
 <translation id="2183294522275408937">Bu ayar, hızlı kilit açmanın kullanılmaya devam edilebilmesi için kilit ekranında ne sıklıkta şifre sorulacağını kontrol eder. Kilit ekranına her girildiğinde, son şifre girişi bu ayarda belirtilen süreden daha uzun zaman önce yapılmışsa, kilit ekranına girişte hızlı kilit açma kullanılamaz. Kullanıcı bu süreden daha uzun süre kilit ekranında kalırsa, yanlış kod girdiğinde veya kilit ekranına tekrar girdiğinde (hangisi önce olursa) şifre sorulur.
@@ -1328,20 +1317,6 @@ Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" /> varsayılan 10.000 milisaniy
       URL'lerin HTTPS şeması olması gerekir, ör. "https://example.com".
 
       Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz.</translation>
-<translation id="2976992705655394547">Başlangıçtaki davranışı belirlemenize olanak tanır.
-
-          Yeni Sekme Sayfası Aç" seçeneğini seçerseniz <ph name="PRODUCT_NAME" /> başlatıldığında her zaman Yeni Sekme Sayfası açılır.
-
-          "Son oturumu geri yükle"yi seçerseniz, <ph name="PRODUCT_NAME" /> en son kapatıldığında açık olan URL'ler tekrar açılır ve göz atma oturumu kaldığı yerden geri yüklenir.
-          Bu seçenek belirtildiğinde oturumlarla ilişkili olan veya çıkışta çeşitli işlemler yapan bazı ayarlar (Çıkışta tarama verilerini temizleme veya salt oturum çerezlerini temizleme gibi) devre dışı kalır.
-
-          "URL listesi aç"ı seçerseniz bir kullanıcı <ph name="PRODUCT_NAME" /> ürününü başlattığında "Başlangıçta açılacak URL'lerin listesi" açılır.
-
-          Bu ayarı etkinleştirirseniz kullanıcılar onu <ph name="PRODUCT_NAME" /> ürününde değiştiremez veya geçersiz kılamaz.
-
-          Bu ayarı devre dışı bırakmak, yapılandırılmamış olarak bırakmakla aynı şeydir. Kullanıcı isterse <ph name="PRODUCT_NAME" /> ürününden bu ayarı değiştirebilir.
-
-          Bu politika yalnızca bir <ph name="MS_AD_NAME" /> alan adına katılmış Windows örneklerinde veya cihaz yönetimine kaydolmuş Windows 10 Pro ya da Enterprise örneklerinde ve MDM ile çalışan veya MCX aracılığıyla bir alan adına katılmış macOS örneklerinde kullanılabilir.</translation>
 <translation id="2985927503455169394">Asistan ilk katılım deneyiminin varsayılan modunu kullanma</translation>
 <translation id="2987155890997901449">ARC'yi etkinleştir</translation>
 <translation id="2987227569419001736">Web Bluetooth API'sının kullanımını kontrol et</translation>
@@ -2358,15 +2333,6 @@ politikayı geçersiz kılamaz.
 <translation id="4474167089968829729">Şifrelerin, şifre yöneticisine kaydedilmesini etkinleştir</translation>
 <translation id="4476769083125004742">Bu politika <ph name="BLOCK_GEOLOCATION_SETTING" /> seçeneğine ayarlanırsa Android uygulamaları konum bilgisine erişemez. Bu politikayı başka bir değere ayarlar veya ayarlamadan bırakırsanız, bir Android uygulaması konum bilgisine erişmek istediğinde kullanıcıdan izin istenir.</translation>
 <translation id="4480694116501920047">Güvenli Arama'nın kullanılmasını zorunlu tut</translation>
-<translation id="4482640907922304445"><ph name="PRODUCT_NAME" /> araç çubuğunda Ana Sayfa düğmesini gösterir.
-
-      Bu ayarı etkinleştirirseniz, Ana Sayfa düğmesi her zaman gösterilir.
-
-      Bu ayarı devre dışı bırakırsanız, Ana Sayfa düğmesi hiçbir zaman gösterilmez.
-
-      Bu ayarı etkinleştirir veya devre dışı bırakırsanız, kullanıcılar <ph name="PRODUCT_NAME" /> ürününde bu ayarı değiştiremez veya geçersiz kılamaz.
-
-      Bu politika ayarlanmadan bırakılırsa, kullanıcı ana sayfa düğmesinin gösterilip gösterilmeyeceğini seçebilir.</translation>
 <translation id="4483649828988077221">Otomatik Güncelleme'yi devre dışı bırak</translation>
 <translation id="4485425108474077672">Yeni Sekme sayfasının URL'sini yapılandır</translation>
 <translation id="4492287494009043413">Ekran görüntüleri almayı devre dışı bırak</translation>
@@ -2663,11 +2629,6 @@ politikayı geçersiz kılamaz.
 <translation id="5017369989680827157">Politikayı True (Doğru) değerine ayarlamak veya ayarlamadan bırakmak, kullanıcı arayüzünde adresler için Otomatik doldurma kontrolünü kullanıcıya verir.
 
       Politikayı False (Yanlış) değerine ayarlamak, Otomatik doldurmanın hiçbir zaman öneride bulunmayacağı, adres bilgilerini doldurmayacağı ve kullanıcının web'e göz atarken gönderdiği ek adres bilgilerini kaydetmeyeceği anlamına gelir.</translation>
-<translation id="5022551015331996656">Başlangıç işlemi olarak "Bir URL listesi aç" seçildiyse bu politika, açılan URL listesini belirtmenize olanak tanır. Ayarlanmadan bırakılırsa başlangıçta herhangi bir URL açılmaz.
-
-          Bu politika yalnızca "RestoreOnStartup" politikası "RestoreOnStartupIsURLs" seçeneğine ayarlandığında çalışır.
-
-          Bu politika yalnızca bir <ph name="MS_AD_NAME" /> alan adına katılmış Windows örneklerinde veya cihaz yönetimine kaydolmuş Windows 10 Pro ya da Enterprise örneklerinde ve MDM ile çalışan veya MCX aracılığıyla bir alan adına katılmış macOS örneklerinde kullanılabilir.</translation>
 <translation id="5023555740504506178">Bu politika etkinleştirilir veya yapılandırılmazsa (varsayılan) bir web sayfası, kullanıcıdan ekran görüntüsü alınacak bir sekme, pencere veya masaüstü seçmesini istemek için ekran paylaşımı API'lerini (ör. getDisplayMedia() veya Desktop Capture uzantı API'si) kullanabilir.
 
       Bu politika devre dışı bırakıldığında, ekran paylaşımı API'lerine yapılan çağrılar bir hatayla başarısız olur.</translation>
@@ -3065,19 +3026,6 @@ politikayı geçersiz kılamaz.
       Politikayı False (Yanlış) değerine ayarlamak, <ph name="PRODUCT_NAME" /> ürününün ürün bilgilerini tam sekme içeriği olarak göstermesini önler.
 
       Bu politika, kullanıcıların <ph name="PRODUCT_NAME" /> ürününde oturum açmalarına, <ph name="PRODUCT_NAME" /> ürününü kullanıcının varsayılan tarayıcısı olarak ayarlamasına veya ürün özellikleriyle ilgili diğer bilgileri almalarına yardımcı olan karşılama sayfalarının sunulmasını kontrol eder.</translation>
-<translation id="5450893456912604446"><ph name="PRODUCT_NAME" /> ürününde varsayılan ana sayfa URL'sini yapılandırır ve kullanıcıların bu ayarı değiştirmesini önler.
-
-          Ana sayfa, Ana Sayfa düğmesine basıldığında açılan sayfadır. Masaüstünde, başlangıçta açılan sayfalar RestoreOnStartup politikalarıyla kontrol edilir.
-
-          Ana sayfa türü burada belirteceğiniz bir URL'ye ayarlanabileceği gibi, Yeni Sekme Sayfası'na da ayarlanabilir. Yeni Sekme Sayfası'nı seçerseniz bu politika geçerli olmaz.
-
-          Bu ayarı etkinleştirirseniz kullanıcılar <ph name="PRODUCT_NAME" /> ürününde ana sayfa URL'lerini değiştiremez, ancak ana sayfa olarak yine de Yeni Sekme Sayfası'nı seçebilirler.
-
-          Bu politikanın ayarlanmadan bırakılması, <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> politikası da ayarlanmamışsa kullanıcının kendi ana sayfasını seçmesine olanak tanır.
-
-          URL'nin standart şeması olması gerekir. Ör. "http://example.com" veya "https://example.com".
-
-          Bu politika yalnızca bir <ph name="MS_AD_NAME" /> alan adına katılmış Windows örneklerinde veya cihaz yönetimine kaydolmuş Windows 10 Pro ya da Enterprise örneklerinde ve MDM ile çalışan veya MCX aracılığıyla bir alan adına katılmış macOS örneklerinde kullanılabilir.</translation>
 <translation id="5457065417344056871">Tarayıcıda misafir modunu etkinleştir</translation>
 <translation id="5457387982448145430">Politika Etkin değerine ayarlanırsa önceki varsayılan tarayıcıda kayıtlı şifreler ilk çalıştırmada içe aktarılır. Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı şifreler ilk çalıştırmada aktarılmaz.
 
@@ -4732,15 +4680,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7713608076604149344">İndirme kısıtlamaları</translation>
 <translation id="7715711044277116530">Sunum modunda ekranın kararma gecikmesinin ölçekleneceği yüzde</translation>
 <translation id="7717938661004793600"><ph name="PRODUCT_OS_NAME" /> erişilebilirlik özelliklerini yapılandır.</translation>
-<translation id="772061142236146688">Varsayılan Yeni Sekme sayfasının URL'sini yapılandırır ve kullanıcıların değiştirmesini önler.
-
-          Yeni Sekme sayfası, yeni sekme oluşturulduğunda (yeni pencerede açılmış olanlar dahil) açılan sayfadır.
-
-          Bu politika başlangıçta hangi sayfaların açılacağını belirlemez. Bu sayfalar <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> politikaları ile kontrol edilir. Ancak bu politika, Yeni Sekme sayfasını açacak şekilde ayarlanmışsa Ana Sayfa'yı etkiler. Aynı şekilde Yeni Sekme sayfasını açacak şekilde ayarlanmışsa başlangıç sayfasını da etkiler.
-
-          Politika ayarlanmaz veya boş bırakılırsa varsayılan yeni sekme sayfası kullanılır.
-
-          Bu politika yalnızca bir <ph name="MS_AD_NAME" /> alan adına katılmış Windows örneklerinde veya cihaz yönetimine kaydolmuş Windows 10 Pro ya da Enterprise örneklerinde ve MDM ile çalışan veya MCX aracılığıyla bir alan adına katılmış macOS örneklerinde kullanılabilir.</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" /> kullanıcı kimliği</translation>
 <translation id="7724161903134898864">Politikayı 1 değerine ayarlamak web sitelerinde pop-up'lara izin verir. Politikayı 2 değerine ayarlamak pop-up'ları engeller.
 

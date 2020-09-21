@@ -2233,7 +2233,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3650845953328929506">Nakabinbin ang pag-upload ng log.</translation>
 <translation id="3650952250015018111">Payagan ang "<ph name="APP_NAME" />" na ma-access ang:</translation>
 <translation id="3651488188562686558">Idiskonekta sa Wi-Fi</translation>
-<translation id="3651952061994655768">Palitan ang pangalan</translation>
 <translation id="3652817283076144888">Sinisimulan</translation>
 <translation id="3653160965917900914">Mga file share ng network</translation>
 <translation id="3653842108912548333">I-access ang iyong Assistant gamit ang Voice Match</translation>
@@ -3578,7 +3577,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="5315873049536339193">Pagkatao</translation>
 <translation id="5317780077021120954">I-save</translation>
 <translation id="5319359161174645648">Inirerekomenda ng Google ang Chrome</translation>
-<translation id="5320135788267874712">Bagong pangalan ng device</translation>
 <translation id="532247166573571973">Maaaring hindi makakonekta sa server. Subukang muli sa ibang pagkakataon.</translation>
 <translation id="5324780743567488672">Awtomatikong itakda ang time zone gamit ang iyong lokasyon</translation>
 <translation id="5327248766486351172">Pangalan</translation>
@@ -4330,6 +4328,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="6227280783235722609">extension</translation>
 <translation id="6229849828796482487">Idiskonekta ang Wi-Fi network</translation>
 <translation id="6229890768313448549">Hindi ma-load ang Mga Tuntunin ng Serbisyo ng Google Play. Pakisubukang muli.</translation>
+<translation id="6231782223312638214">Iminungkahi</translation>
 <translation id="6231881193380278751">Magdagdag ng query param sa URL upang awtomatikong i-refresh ang page: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Baterya</translation>
 <translation id="6232116551750539448">Naputol ang koneksyon sa <ph name="NAME" /></translation>

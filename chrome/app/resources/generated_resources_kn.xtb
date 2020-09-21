@@ -2233,7 +2233,6 @@
 <translation id="3650845953328929506">ಲಾಗ್ ಅಪ್‌ಲೋಡ್‌ ಬಾಕಿ ಉಳಿದಿದೆ.</translation>
 <translation id="3650952250015018111">ಇದನ್ನು ಪ್ರವೇಶಿಸಲು "<ph name="APP_NAME" />" ಅನ್ನು ಅನುಮತಿಸಿ:</translation>
 <translation id="3651488188562686558">ವೈ-ಫೈ ನಿಂದ ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಿ</translation>
-<translation id="3651952061994655768">ಹೆಸರನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="3652817283076144888">ಆರಂಭಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3653160965917900914">ನೆಟ್‌ವರ್ಕ್‌ ಫೈಲ್‌ ಹಂಚಿಕೆಗಳು</translation>
 <translation id="3653842108912548333">ಧ್ವನಿ ಹೊಂದಾಣಿಕೆಯ ಮೂಲಕ ನಿಮ್ಮ ಅಸಿಸ್ಟೆಂಟ್‌ಗೆ ಪ್ರವೇಶಿಸಿ</translation>
@@ -3579,7 +3578,6 @@
 <translation id="5315873049536339193">ಗುರುತು</translation>
 <translation id="5317780077021120954">ಉಳಿಸು</translation>
 <translation id="5319359161174645648">Chrome ಅನ್ನು Google ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ</translation>
-<translation id="5320135788267874712">ಹೊಸ ಸಾಧನದ ಹೆಸರು</translation>
 <translation id="532247166573571973">ಸರ್ವರ್ ತಲುಪಲಾಗದೇ ಇರಬಹುದು. ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="5324780743567488672">ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಬಳಸುವ ಮೂಲಕ ಸಮಯ ವಲಯವನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಹೊಂದಿಸಿ</translation>
 <translation id="5327248766486351172">ಹೆಸರು</translation>
@@ -4332,6 +4330,7 @@
 <translation id="6227280783235722609">ವಿಸ್ತರಣೆ</translation>
 <translation id="6229849828796482487">ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ನ ಕನೆಕ್ಷನ್ ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="6229890768313448549">Google Play ಸೇವೆಯ ನಿಯಮಗಳನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ದಯವಿಟ್ಟು ಮರುಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="6231782223312638214">ಸಲಹೆ ಮಾಡಿರುವುದು</translation>
 <translation id="6231881193380278751">ಪುಟವನ್ನು ಸ್ವಯಂ-ರಿಫ್ರೆಶ್ ಮಾಡಲು ಪ್ರಶ್ನೆಯ ಪರಮ್ ಸೇರಿಸಿ: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">ಬ್ಯಾಟರಿ</translation>
 <translation id="6232116551750539448"><ph name="NAME" /> ಗೆ ಸಂಪರ್ಕ ಕಡಿದು ಹೋಗಿದೆ</translation>

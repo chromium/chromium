@@ -2233,7 +2233,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3650845953328929506">Таржымалды жүктөп берүү күтүлүүдө.</translation>
 <translation id="3650952250015018111">"<ph name="APP_NAME" />" колдонмосуна төмөнкүгө кирүүгө уруксат берүү:</translation>
 <translation id="3651488188562686558">Wi-Fi тармагынан ажыратылат</translation>
-<translation id="3651952061994655768">Аталышын өзгөртүү</translation>
 <translation id="3652817283076144888">Баштапкы мааниси берилүүдө</translation>
 <translation id="3653160965917900914">Тармактын жалпы файлдарды</translation>
 <translation id="3653842108912548333">Жардамчыңызга Voice Match аркылуу кайрылыңыз</translation>
@@ -3578,7 +3577,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5315873049536339193">Идентификация</translation>
 <translation id="5317780077021120954">Сактоо</translation>
 <translation id="5319359161174645648">Google Chrome'ду сунуштайт</translation>
-<translation id="5320135788267874712">Түзмөктүн жаңы аталышы</translation>
 <translation id="532247166573571973">Серверге туташуу мүмкүн эмес окшойт. Бир аздан кийин кайталап көрүңүз.</translation>
 <translation id="5324780743567488672">Жайгашкан жериңиз аркылуу убакыт алкагын автоматтык түрдө коюу</translation>
 <translation id="5327248766486351172">Аты:</translation>
@@ -4330,6 +4328,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6227280783235722609">кеңейтүү</translation>
 <translation id="6229849828796482487">Wi-Fi тармагын ажыратуу</translation>
 <translation id="6229890768313448549">Google Play Тейлөө шарттары жүктөлбөй жатат. Кайталап көрүңүз.</translation>
+<translation id="6231782223312638214">Сунушталат</translation>
 <translation id="6231881193380278751">Баракты авто-жаңылоо үчүн URL'ге сурам параметрин кошуңуз: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Батарея</translation>
 <translation id="6232116551750539448"><ph name="NAME" /> менен туташуу жоготулду</translation>

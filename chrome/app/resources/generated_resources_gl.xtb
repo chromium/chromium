@@ -2232,7 +2232,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3650845953328929506">A carga do rexistro está pendente.</translation>
 <translation id="3650952250015018111">Permite que "<ph name="APP_NAME" />" acceda a:</translation>
 <translation id="3651488188562686558">Desconectar da wifi</translation>
-<translation id="3651952061994655768">Cambiar nome</translation>
 <translation id="3652817283076144888">Iniciando</translation>
 <translation id="3653160965917900914">Sistemas de ficheiros compartidos en rede</translation>
 <translation id="3653842108912548333">Acceder ao teu Asistente con Voice Match</translation>
@@ -3577,7 +3576,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5315873049536339193">Identidade</translation>
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5319359161174645648">Google recomenda Chrome</translation>
-<translation id="5320135788267874712">Novo nome do dispositivo</translation>
 <translation id="532247166573571973">É posible que non se poida acceder ao servidor. Téntao de novo máis tarde.</translation>
 <translation id="5324780743567488672">Definir o fuso horario automaticamente a través da túa localización</translation>
 <translation id="5327248766486351172">Nome</translation>
@@ -4329,6 +4327,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6227280783235722609">extensión</translation>
 <translation id="6229849828796482487">Desconectar rede wifi</translation>
 <translation id="6229890768313448549">Non se poden cargar as Condicións de servizo de Google Play. Téntao de novo.</translation>
+<translation id="6231782223312638214">Suxerido</translation>
 <translation id="6231881193380278751">Introduce un parámetro de consulta no URL para actualizar automaticamente a páxina: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Batería</translation>
 <translation id="6232116551750539448">Perdeuse a conexión a <ph name="NAME" /></translation>

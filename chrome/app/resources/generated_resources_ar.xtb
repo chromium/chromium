@@ -2233,7 +2233,6 @@
 <translation id="3650845953328929506">تحميل السجلّ مُعلّق.</translation>
 <translation id="3650952250015018111">السماح لتطبيق "<ph name="APP_NAME" />" بالوصول:</translation>
 <translation id="3651488188562686558">‏قطع الاتصال بشبكة Wi-Fi</translation>
-<translation id="3651952061994655768">تغيير الاسم</translation>
 <translation id="3652817283076144888">تجري التهيئة</translation>
 <translation id="3653160965917900914">مشاركات ملفات الشبكة</translation>
 <translation id="3653842108912548333">‏الوصول إلى "مساعد Google" باستخدام ميزة Voice Match</translation>
@@ -3575,7 +3574,6 @@
 <translation id="5315873049536339193">الهوية</translation>
 <translation id="5317780077021120954">حفظ</translation>
 <translation id="5319359161174645648">‏توصي Google باستخدام Chrome</translation>
-<translation id="5320135788267874712">الاسم الجديد للجهاز</translation>
 <translation id="532247166573571973">قد يتعذر الوصول إلى الخادم. حاول مرة أخرى.</translation>
 <translation id="5324780743567488672">تعيين المنطقة الزمنية تلقائيا باستخدام موقعك</translation>
 <translation id="5327248766486351172">الاسم</translation>
@@ -4329,6 +4327,7 @@
 <translation id="6227280783235722609">إضافة</translation>
 <translation id="6229849828796482487">‏إلغاء الاتصال بشبكة Wi-Fi</translation>
 <translation id="6229890768313448549">‏لا يمكن تحميل بنود خدمة Google Play. يُرجى إعادة المحاولة.</translation>
+<translation id="6231782223312638214">مقترح</translation>
 <translation id="6231881193380278751">‏أضف معلمة طلب بحث في عنوان URL لإجراء تحديث تلقائية لصفحة: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">البطارية</translation>
 <translation id="6232116551750539448">انقطع الاتصال بـ <ph name="NAME" /></translation>

@@ -2233,7 +2233,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3650845953328929506">De upload van het logboek is in behandeling.</translation>
 <translation id="3650952250015018111">"<ph name="APP_NAME" />" toegang verlenen:</translation>
 <translation id="3651488188562686558">Verbinding met wifi-netwerk verbreken</translation>
-<translation id="3651952061994655768">Naam wijzigen</translation>
 <translation id="3652817283076144888">Initialiseren</translation>
 <translation id="3653160965917900914">Fileshares via netwerk</translation>
 <translation id="3653842108912548333">Toegang krijgen tot de Assistent via Voice Match</translation>
@@ -3578,7 +3577,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5315873049536339193">Identiteit</translation>
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5319359161174645648">Google beveelt Chrome aan</translation>
-<translation id="5320135788267874712">Nieuwe apparaatnaam</translation>
 <translation id="532247166573571973">De server is mogelijk niet bereikbaar. Probeer het later opnieuw.</translation>
 <translation id="5324780743567488672">Tijdzone automatisch instellen op basis van je locatie</translation>
 <translation id="5327248766486351172">Naam</translation>
@@ -4330,6 +4328,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6227280783235722609">extensie</translation>
 <translation id="6229849828796482487">Verbinding met wifi-netwerk verbreken</translation>
 <translation id="6229890768313448549">De Servicevoorwaarden van Google Play kunnen niet worden geladen. Probeer het opnieuw.</translation>
+<translation id="6231782223312638214">Voorgesteld</translation>
 <translation id="6231881193380278751">Voeg een queryparameter aan de URL toe om de pagina automatisch te laten vernieuwen: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Batterij</translation>
 <translation id="6232116551750539448">Verbinding met <ph name="NAME" /> is verbroken</translation>

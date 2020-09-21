@@ -2233,7 +2233,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3650845953328929506">Loglêeroplaai is hangende.</translation>
 <translation id="3650952250015018111">Laat "<ph name="APP_NAME" />" toe om toegang te kry tot:</translation>
 <translation id="3651488188562686558">Van Wi-Fi ontkoppel</translation>
-<translation id="3651952061994655768">Verander naam</translation>
 <translation id="3652817283076144888">Inisieer tans</translation>
 <translation id="3653160965917900914">Netwerklêerdelings</translation>
 <translation id="3653842108912548333">Gaan by jou Assistent in met Voice Match</translation>
@@ -3578,7 +3577,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="5315873049536339193">Identiteit</translation>
 <translation id="5317780077021120954">Berg</translation>
 <translation id="5319359161174645648">Google beveel Chrome aan</translation>
-<translation id="5320135788267874712">Nuwe toestelnaam</translation>
 <translation id="532247166573571973">Die bediener is dalk onbereikbaar. Probeer later weer.</translation>
 <translation id="5324780743567488672">Tydsone is outomaties gestel deur jou ligging te gebruik</translation>
 <translation id="5327248766486351172">Naam</translation>
@@ -4331,6 +4329,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6227280783235722609">uitbreiding</translation>
 <translation id="6229849828796482487">Ontkoppel Wi-Fi-netwerk</translation>
 <translation id="6229890768313448549">Google Play se diensbepalings kan nie gelaai word nie. Probeer asseblief weer.</translation>
+<translation id="6231782223312638214">Voorgestelde</translation>
 <translation id="6231881193380278751">Voeg 'n navraagparameter in URL by om die bladsy te outoherlaai: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Battery</translation>
 <translation id="6232116551750539448">Verbinding aan <ph name="NAME" /> is verlore</translation>

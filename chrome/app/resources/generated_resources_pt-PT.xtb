@@ -2233,7 +2233,6 @@ Pretende pará-lo?</translation>
 <translation id="3650845953328929506">Carregamento de registos pendente.</translation>
 <translation id="3650952250015018111">Permitir que o "<ph name="APP_NAME" />" tenha acesso:</translation>
 <translation id="3651488188562686558">Desligar-se da rede Wi-Fi</translation>
-<translation id="3651952061994655768">Alterar nome</translation>
 <translation id="3652817283076144888">A inicializar</translation>
 <translation id="3653160965917900914">Partilhas de ficheiros na rede</translation>
 <translation id="3653842108912548333">Aceder ao Assistente com o Voice Match</translation>
@@ -3578,7 +3577,6 @@ Pretende pará-lo?</translation>
 <translation id="5315873049536339193">Identidade</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5319359161174645648">A Google recomenda o Chrome</translation>
-<translation id="5320135788267874712">Nome do dispositivo novo</translation>
 <translation id="532247166573571973">O servidor pode estar inacessível. Tente novamente mais tarde.</translation>
 <translation id="5324780743567488672">Definir automaticamente o fuso horário com base na localização</translation>
 <translation id="5327248766486351172">Nome</translation>
@@ -4331,6 +4329,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6227280783235722609">extensão</translation>
 <translation id="6229849828796482487">Desligar rede Wi-Fi</translation>
 <translation id="6229890768313448549">Não é possível carregar os Termos de Utilização do Google Play. Tente novamente.</translation>
+<translation id="6231782223312638214">Sugerido</translation>
 <translation id="6231881193380278751">Adicione um parâmetro de consulta no URL para atualizar automaticamente a página: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6232116551750539448">Perdeu-se a ligação a <ph name="NAME" /></translation>

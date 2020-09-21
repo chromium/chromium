@@ -2233,7 +2233,6 @@
 <translation id="3650845953328929506">Η μεταφόρτωση του αρχείου καταγραφής είναι σε εκκρεμότητα.</translation>
 <translation id="3650952250015018111">Να επιτρέπεται στην εφαρμογή "<ph name="APP_NAME" />" η πρόσβαση σε:</translation>
 <translation id="3651488188562686558">Αποσυνδεθεί από το Wi-Fi</translation>
-<translation id="3651952061994655768">Αλλαγή ονόματος</translation>
 <translation id="3652817283076144888">Προετοιμασία</translation>
 <translation id="3653160965917900914">Κοινή χρήση αρχείων δικτύου</translation>
 <translation id="3653842108912548333">Μετάβαση στον Βοηθό με το Voice Match</translation>
@@ -3578,7 +3577,6 @@
 <translation id="5315873049536339193">Ταυτότητα</translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5319359161174645648">Η Google συνιστά το Chrome</translation>
-<translation id="5320135788267874712">Νέο όνομα συσκευής</translation>
 <translation id="532247166573571973">Ο διακομιστής μπορεί να μην είναι προσβάσιμος. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="5324780743567488672">Αυτόματη ρύθμιση ζώνης ώρας με χρήση της τοποθεσίας σας</translation>
 <translation id="5327248766486351172">Όνομα</translation>
@@ -4331,6 +4329,7 @@
 <translation id="6227280783235722609">επέκταση</translation>
 <translation id="6229849828796482487">Αποσύνδεση δικτύου Wi-Fi.</translation>
 <translation id="6229890768313448549">Δεν είναι δυνατή η φόρτωση των Όρων Παροχής Υπηρεσιών του Google Play. Δοκιμάστε ξανά.</translation>
+<translation id="6231782223312638214">Προτεινόμενο</translation>
 <translation id="6231881193380278751">Προσθέστε μια παράμετρο ερωτήματος στη διεύθυνση URL για αυτόματη ανανέωση της σελίδας: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Μπαταρία</translation>
 <translation id="6232116551750539448">Η σύνδεση με το <ph name="NAME" /> χάθηκε</translation>

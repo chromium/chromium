@@ -2230,7 +2230,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3650845953328929506">Ngarkimi i evidencës në pritje.</translation>
 <translation id="3650952250015018111">Lejo që "<ph name="APP_NAME" />" të ketë qasje te:</translation>
 <translation id="3651488188562686558">Do të shkëputet nga Wi-Fi</translation>
-<translation id="3651952061994655768">Ndrysho emrin</translation>
 <translation id="3652817283076144888">Po fillon</translation>
 <translation id="3653160965917900914">Ndarjet e skedarëve në rrjet</translation>
 <translation id="3653842108912548333">Qasu tek "Asistenti" me Voice Match</translation>
@@ -3575,7 +3574,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5315873049536339193">Identiteti</translation>
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5319359161174645648">Google rekomandon Chrome</translation>
-<translation id="5320135788267874712">Emri i ri i pajisjes</translation>
 <translation id="532247166573571973">Serveri mund të jetë i paarritshëm. Provo përsëri më vonë.</translation>
 <translation id="5324780743567488672">Caktoje automatikisht brezin orar duke përdorur vendndodhjen tënde</translation>
 <translation id="5327248766486351172">Emri</translation>
@@ -4327,6 +4325,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6227280783235722609">shtesë</translation>
 <translation id="6229849828796482487">Shkëput rrjetin Wi-Fi</translation>
 <translation id="6229890768313448549">Kushtet e shërbimit të Google Play nuk mund të ngarkohen. Provo përsëri.</translation>
+<translation id="6231782223312638214">Sugjerimet</translation>
 <translation id="6231881193380278751">Shto një parametër të kërkesës në URL për të rifreskuar automatikisht faqen: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6232116551750539448">Lidhja me <ph name="NAME" /> ka humbur</translation>

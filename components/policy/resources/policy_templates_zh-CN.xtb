@@ -710,17 +710,6 @@
 <translation id="2168397434410358693">使用交流电源供电时的闲置延迟时间</translation>
 <translation id="217013996107840632">用于从替代浏览器切换至 Chrome 的命令行参数。</translation>
 <translation id="2170233653554726857">启用WPAD优化</translation>
-<translation id="2172774896158845977">配置 <ph name="PRODUCT_NAME" /> 中的默认主页的类型，并禁止用户更改主页偏好设置。您可以将主页设为指定的网址，也可以将其设为“新标签页”页面。
-
-          如果您启用了此设置，该浏览器将会始终使用“新标签页”页面作为主页，并会忽略主页网址。
-
-          如果您停用了此设置，那么除非用户的主页网址设为“chrome://newtab”，否则该浏览器始终不会使用“新标签页”页面作为主页。
-
-          如果您启用或停用了此设置，用户将无法更改 <ph name="PRODUCT_NAME" /> 中的主页类型。
-
-          如果此政策未设置，用户将可以自行选择是否使用“新标签页”页面作为主页。
-
-          此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的 Windows 实例，或者已注册设备管理服务的 Windows 10 专业版或企业版实例，以及通过 MDM 进行管理或通过 MCX 加入网域的 macOS 实例。</translation>
 <translation id="2178899310296064282">至少强制启用 YouTube“适中”受限模式</translation>
 <translation id="2182291258410176649">用户可决定是否启用备份和恢复服务</translation>
 <translation id="2183294522275408937">此设置可控制锁定屏幕将会按什么样的频率要求用户输入密码以便继续使用“快速解锁”功能。每当进入锁定屏幕时，如果与上次密码输入时间之间的间隔超过了此设置中设定的时间段，则无法使用“快速解锁”进入锁定屏幕。如果用户停留在已超过此时间段的锁定屏幕上，那么当用户下次输错代码或重新进入锁定屏幕时（无论哪个在先），系统都会要求输入密码。
@@ -1316,20 +1305,6 @@
       网址必须采用 HTTPS 架构，例如：“https://example.com”。
 
       要详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
-<translation id="2976992705655394547">让您能够指定启动时的行为。
-
-          如果您选择“打开新的标签页”，每当您启动 <ph name="PRODUCT_NAME" /> 时，系统都会打开“新标签页”页面。
-
-          如果您选择“恢复上次的会话”，系统会重新打开 <ph name="PRODUCT_NAME" /> 上次关闭时打开着的网址，并会将浏览会话恢复到该浏览器上次关闭时的状态。
-          如果您选择此选项，某些依赖于会话的设置或用于指定退出时应执行什么操作的设置（例如：退出时清除浏览数据，或仅在会话期间有效的 Cookie）便会被停用。
-
-          如果您选择“打开网址列表”，系统会在用户启动 <ph name="PRODUCT_NAME" /> 时打开“启动时打开的网址”列表。
-
-          如果您启用了此设置，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改或覆盖它。
-
-          停用此设置与未配置此设置的效果相同。用户仍能在 <ph name="PRODUCT_NAME" /> 中更改它。
-
-          此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的 Windows 实例，或者已注册设备管理服务的 Windows 10 专业版或企业版实例，以及通过 MDM 进行管理或通过 MCX 加入网域的 macOS 实例。</translation>
 <translation id="2985927503455169394">使用 Google 助理新手入门体验的默认模式</translation>
 <translation id="2987155890997901449">启用 ARC</translation>
 <translation id="2987227569419001736">控制对 Web Bluetooth API 的使用</translation>
@@ -2339,7 +2314,6 @@
 <translation id="4474167089968829729">允许将密码保存到密码管理器</translation>
 <translation id="4476769083125004742">如果此政策设为 <ph name="BLOCK_GEOLOCATION_SETTING" />，Android 应用将无法使用位置信息。如果此政策设为任何其他值或未设置，那么当 Android 应用想使用位置信息时，它会询问用户是否同意。</translation>
 <translation id="4480694116501920047">强制使用安全搜索</translation>
-<translation id="4482640907922304445">在 <ph name="PRODUCT_NAME" />的工具栏上显示“主页”按钮。如果您启用了此设置，则会始终显示“主页”按钮。如果您停用了此设置，则从不显示“主页”按钮。如果您启用或停用了此设置，用户就无法在 <ph name="PRODUCT_NAME" />中更改或替换此设置。如果未设置此政策，用户就可以选择是否显示“主页”按钮。</translation>
 <translation id="4483649828988077221">停用自动更新功能</translation>
 <translation id="4485425108474077672">配置“打开新的标签页”页面网址</translation>
 <translation id="4492287494009043413">停用截取屏幕截图功能</translation>
@@ -2635,11 +2609,6 @@
 <translation id="5017369989680827157">如果此政策设为 True 或未设置，用户可以控制是否在界面中自动填充地址。
 
       如果此政策设为 False，“自动填充”功能一律不会建议或填充地址信息，也不会保存用户在浏览网页时提交的其他地址信息。</translation>
-<translation id="5022551015331996656">如果选择“打开网址列表”作为启动时的操作，您就能以列表形式指定要打开的网址。如果此政策未设置，系统在启动 Chrome 时将不会打开任何网址。
-
-          仅当“RestoreOnStartup”政策设为“RestoreOnStartupIsURLs”时，此政策才有效。
-
-          此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的 Windows 实例，或者已注册设备管理服务的 Windows 10 专业版或企业版实例，以及通过 MDM 进行管理或通过 MCX 加入网域的 macOS 实例。</translation>
 <translation id="5023555740504506178">如果此政策已启用或未配置（默认），网页可以使用屏幕共享 API（例如 getDisplayMedia() 或 Desktop Capture Extension API）提示用户选择要截取的标签页、窗口或桌面。
 
       如果此政策已停用，对屏幕共享 API 的所有调用都会失败并会返回错误。</translation>
@@ -3028,19 +2997,6 @@
       如果此政策设为 False，则 <ph name="PRODUCT_NAME" /> 不会使用整个标签页显示产品信息。
 
       此政策的设置将控制欢迎页面的展示方式，欢迎页面会帮助用户登录 <ph name="PRODUCT_NAME" />、将 <ph name="PRODUCT_NAME" /> 设置为用户的默认浏览器或向用户介绍产品功能。</translation>
-<translation id="5450893456912604446">配置 <ph name="PRODUCT_NAME" /> 中的默认主页网址，并禁止用户更改此配置。
-
-          主页是由“主页”按钮打开的网页。在桌面设备上，启动时打开的网页是由 RestoreOnStartup 政策控制的。
-
-          您既可将主页类型设为在此处指定的网址，也可将其设为“新标签页”。如果您选择“新标签页”，此政策将不会产生任何效力。
-
-          如果您启用了此设置，用户将无法更改 <ph name="PRODUCT_NAME" /> 中的主页网址，但仍可选择“新标签页”作为主页。
-
-          如果您既不设置此政策，也不设置 <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />，用户将能自行选择主页。
-
-          此网址必须是采用标准架构的网址，例如“http://example.com”或“https://example.com”。
-
-          此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的 Windows 实例，或者已注册设备管理服务的 Windows 10 专业版或企业版实例，以及通过 MDM 进行管理或通过 MCX 加入网域的 macOS 实例。</translation>
 <translation id="5457065417344056871">在浏览器中启用访客模式</translation>
 <translation id="5457387982448145430">如果此政策已启用，当首次运行浏览器时，系统将会从先前的默认浏览器导入已保存的密码。如果此政策已停用或未设置，当首次运行浏览器时，系统不会导入任何已保存的密码。
 
@@ -4689,15 +4645,6 @@
 <translation id="7713608076604149344">下载限制</translation>
 <translation id="7715711044277116530">演示模式下屏幕变暗延迟时间的调整幅度（百分比）</translation>
 <translation id="7717938661004793600">配置 <ph name="PRODUCT_OS_NAME" />辅助功能。</translation>
-<translation id="772061142236146688">配置默认的“新标签页”页面网址，并禁止用户更改此设置。
-
-          “新标签页”页面是系统在创建新标签页时打开的页面（包括在新窗口中打开的页面）。
-
-          此政策不影响在启动时会打开哪些页面。启动时打开的页面是由 <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 政策控制的。不过，如果主页被设为“打开新的标签页”，此政策就会影响主页；如果启动页被设为“打开新的标签页”，此政策则会影响启动页。
-
-          如果此政策未设置或留空，系统便会使用默认的“新标签页”页面。
-
-          此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的 Windows 实例，或者已注册设备管理服务的 Windows 10 专业版或企业版实例，以及通过 MDM 进行管理或通过 MCX 加入网域的 macOS 实例。</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" /> 用户 ID</translation>
 <translation id="7724161903134898864">如果此政策设为 1，系统会允许网站显示弹出式窗口。如果此政策设为 2，系统会禁止网站显示弹出式窗口。
 

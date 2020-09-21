@@ -2230,7 +2230,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3650845953328929506">La carga del registro está pendiente.</translation>
 <translation id="3650952250015018111">Permitir que "<ph name="APP_NAME" />" acceda a:</translation>
 <translation id="3651488188562686558">Se desconecta de Wi-Fi.</translation>
-<translation id="3651952061994655768">Cambiar el nombre</translation>
 <translation id="3652817283076144888">Inicializando</translation>
 <translation id="3653160965917900914">Sistema de archivos compartidos en red</translation>
 <translation id="3653842108912548333">Acceder a tu Asistente con "Voice Match"</translation>
@@ -3575,7 +3574,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5315873049536339193">Identidad</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5319359161174645648">Google recomienda Chrome</translation>
-<translation id="5320135788267874712">Nombre del nuevo dispositivo</translation>
 <translation id="532247166573571973">Es posible que no se pueda acceder al servidor. Vuelve a intentarlo más tarde.</translation>
 <translation id="5324780743567488672">Configurar la zona horaria automáticamente mediante la ubicación</translation>
 <translation id="5327248766486351172">Nombre</translation>
@@ -4327,6 +4325,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6227280783235722609">extensión</translation>
 <translation id="6229849828796482487">Desconectar la red Wi-Fi</translation>
 <translation id="6229890768313448549">No se pueden cargar las Condiciones del Servicio de Google Play. Vuelve a intentarlo.</translation>
+<translation id="6231782223312638214">Sugerida</translation>
 <translation id="6231881193380278751">Agregar un parámetro de consulta en la URL para actualizar automáticamente la página: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Batería</translation>
 <translation id="6232116551750539448">Se perdió la conexión a <ph name="NAME" />.</translation>

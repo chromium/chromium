@@ -2233,7 +2233,6 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3650845953328929506">Tiek gaidīta žurnāla augšupielāde.</translation>
 <translation id="3650952250015018111">Atļaujiet lietotnei “<ph name="APP_NAME" />” piekļūt šādai ierīcei:</translation>
 <translation id="3651488188562686558">tiks atvienots Wi-Fi.</translation>
-<translation id="3651952061994655768">Mainīt nosaukumu</translation>
 <translation id="3652817283076144888">Inicializēšana</translation>
 <translation id="3653160965917900914">Tīkla failu kopīgošana</translation>
 <translation id="3653842108912548333">Piekļuve Asistentam, izmantojot Voice Match</translation>
@@ -3578,7 +3577,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5315873049536339193">Identitāte</translation>
 <translation id="5317780077021120954">Saglabāt</translation>
 <translation id="5319359161174645648">Google iesaka pārlūku Chrome</translation>
-<translation id="5320135788267874712">Jaunais ierīces nosaukums</translation>
 <translation id="532247166573571973">Iespējams, serveris nav sasniedzams. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="5324780743567488672">Automātiski iestatīt laika joslu, izmantojot atrašanās vietu</translation>
 <translation id="5327248766486351172">Nosaukums</translation>
@@ -4330,6 +4328,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6227280783235722609">paplašinājums</translation>
 <translation id="6229849828796482487">Wi-Fi tīkla atvienošana</translation>
 <translation id="6229890768313448549">Google Play pakalpojumu sniegšanas noteikumus nevar ielādēt. Lūdzu, mēģiniet vēlreiz.</translation>
+<translation id="6231782223312638214">Ieteikts</translation>
 <translation id="6231881193380278751">Vietrādī URL pievienojiet vaicājuma parametru, lai automātiski atsvaidzinātu lapu: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Akumulators</translation>
 <translation id="6232116551750539448">Savienojums ar “<ph name="NAME" />” tika pārtraukts.</translation>

@@ -717,17 +717,6 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
 <translation id="2168397434410358693">Inactieve vertraging wanneer op netstroom wordt gewerkt</translation>
 <translation id="217013996107840632">Opdrachtregelparameters voor overschakeling vanaf de alternatieve browser.</translation>
 <translation id="2170233653554726857">WPAD-optimalisatie inschakelen</translation>
-<translation id="2172774896158845977">Hiermee configureer je het type standaardhomepage in <ph name="PRODUCT_NAME" /> en voorkom je dat gebruikers de voorkeuren voor de homepage wijzigen. De homepage kan worden ingesteld op een URL of op de pagina 'Nieuw tabblad'.
-
-          Als je deze instelling inschakelt, wordt altijd de pagina 'Nieuw tabblad' gebruikt voor de homepage en wordt de URL voor de homepage genegeerd.
-
-          Als je deze instelling uitschakelt, wordt de pagina 'Nieuw tabblad' nooit weergegeven als homepage van de gebruiker, tenzij de URL is ingesteld op 'chrome://newtab'.
-
-          Als je deze instelling in- of uitschakelt, kunnen gebruikers het type homepage niet aanpassen in <ph name="PRODUCT_NAME" />.
-
-          Als je dit beleid niet instelt, kan de gebruiker ervoor kiezen de pagina 'Nieuw tabblad' als homepage te gebruiken of een eigen pagina als homepage te gebruiken.
-
-          Dit beleid is alleen beschikbaar voor Windows-instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, voor Windows 10 Pro- of Enterprise-instanties die zijn ingeschreven voor apparaatbeheer en voor macOS-instanties die worden beheerd via MDM of aan een domein zijn gekoppeld via MCX.</translation>
 <translation id="2178899310296064282">Minimaal de gemiddelde 'Beperkte modus' op YouTube afdwingen</translation>
 <translation id="2182291258410176649">De gebruiker beslist of back-up maken en terugzetten moet worden ingeschakeld</translation>
 <translation id="2183294522275408937">Met deze instelling wordt bepaald hoe vaak het wachtwoord voor het vergrendelscherm moet worden opgegeven om de functie voor snel ontgrendelen te kunnen blijven gebruiken. Telkens wanneer het vergrendelscherm wordt weergegeven en het wachtwoord nog niet is opgegeven gedurende de ingestelde periode, is de functie voor snel ontgrendelen niet beschikbaar om het vergrendelscherm te ontgrendelen. Wanneer het vergrendelscherm niet wordt ontgrendeld gedurende de ingestelde periode, moet de volgende keer dat de gebruiker een verkeerde code invoert of het vergrendelscherm opnieuw opent een wachtwoord worden opgegeven.
@@ -1323,20 +1312,6 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
       URL's moeten een HTTPS-schema hebben, zoals 'https://example.com'.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.</translation>
-<translation id="2976992705655394547">Hiermee kun je het gedrag bij opstarten opgeven.
-
-          Kies je 'De pagina 'Nieuw tabblad' openen', dan wordt altijd de pagina 'Nieuw tabblad' geopend als je <ph name="PRODUCT_NAME" /> start.
-
-          Als je 'De laatste sessie herstellen' kiest, worden de URL's heropend die open waren toen <ph name="PRODUCT_NAME" /> voor het laatst werd gesloten en wordt de browsersessie hervat.
-          Als je deze optie kiest, worden bepaalde instellingen uitgeschakeld die afhankelijk zijn van sessies of waarmee bij het afsluiten acties worden uitgevoerd (zoals browsergegevens wissen bij afsluiten of sessiecookies).
-
-          Kies je 'Een lijst met URL's openen' kiest, dan wordt de lijst met URL's geopend die ook worden geopend als een gebruiker <ph name="PRODUCT_NAME" /> start.
-
-          Als je de instelling inschakelt, kunnen gebruikers deze niet wijzigen of overschrijven in <ph name="PRODUCT_NAME" />.
-
-          Als je deze instelling uitschakelt, heeft dit hetzelfde effect als wanneer de instelling niet is geconfigureerd. De gebruiker kan de instelling nog wel steeds wijzigen in <ph name="PRODUCT_NAME" />.
-
-          Dit beleid is alleen beschikbaar voor Windows-instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, voor Windows 10 Pro- of Enterprise-instanties die zijn ingeschreven voor apparaatbeheer en voor macOS-instanties die worden beheerd via MDM of aan een domein zijn gekoppeld via MCX.</translation>
 <translation id="2985927503455169394">De standaard modus voor introductie van de Assistent gebruiken</translation>
 <translation id="2987155890997901449">ARC inschakelen</translation>
 <translation id="2987227569419001736">Gebruik van de Web Bluetooth API beheren</translation>
@@ -2351,15 +2326,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="4474167089968829729">Opslaan van wachtwoorden in Wachtwoordmanager inschakelen</translation>
 <translation id="4476769083125004742">Als dit beleid wordt ingesteld op <ph name="BLOCK_GEOLOCATION_SETTING" />, hebben de Android-apps geen toegang tot locatiegegevens. Als je een andere waarde voor dit beleid instelt of het beleid niet instelt, wordt de gebruiker om toestemming gevraagd wanneer een Android-app toegang tot locatiegegevens probeert te krijgen.</translation>
 <translation id="4480694116501920047">SafeSearch afdwingen</translation>
-<translation id="4482640907922304445">Hiermee wordt de knop 'Homepage' weergegeven in de werkbalk van <ph name="PRODUCT_NAME" />.
-
-      Als je deze instelling inschakelt, wordt de knop 'Homepage' altijd weergegeven.
-
-      Als je deze instelling uitschakelt, wordt de knop 'Homepage' nooit weergegeven.
-
-      Als je deze instelling in- of uitschakelt, kunnen gebruikers de instelling niet aanpassen of negeren in <ph name="PRODUCT_NAME" />.
-
-      Als dit beleid niet wordt ingesteld, kan de gebruiker kiezen of de knop 'Homepage' wel of niet wordt weergegeven.</translation>
 <translation id="4483649828988077221">Automatisch updaten uitschakelen</translation>
 <translation id="4485425108474077672">De URL van de pagina 'Nieuw tabblad' configureren</translation>
 <translation id="4492287494009043413">Het maken van screenshots uitschakelen</translation>
@@ -2656,11 +2622,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="5017369989680827157">Als je het beleid instelt op 'True' of niet instelt, krijgen gebruikers de controle over 'Automatisch invullen' voor adressen in de UI.
 
       Als je het beleid instelt op 'False', wordt er nooit adresinformatie voorgesteld of ingevuld door 'Automatisch invullen'. Ook wordt er geen aanvullende adresinformatie opgeslagen die gebruikers opgeven als ze internetten.</translation>
-<translation id="5022551015331996656">Als 'Een lijst met URL's openen' voor het opstarten is geselecteerd, kun je hier de lijst met URL's specificeren die worden geopend. Als je dit niet instelt, worden er geen URL's geopend na het opstarten.
-
-          Dit beleid functioneert alleen als het beleid RestoreOnStartup is ingesteld op RestoreOnStartupIsURLs.
-
-          Dit beleid is alleen beschikbaar voor Windows-instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, voor Windows 10 Pro- of Enterprise-instanties die zijn ingeschreven voor apparaatbeheer en voor macOS-instanties die worden beheerd via MDM of aan een domein zijn gekoppeld via MCX.</translation>
 <translation id="5023555740504506178">Als dit beleid is ingeschakeld of niet is geconfigureerd (standaard), kan een webpagina API's voor het delen van schermen (bijvoorbeeld getDisplayMedia() of de API voor de extensie 'Bureaublad streamen') de gebruiker vragen om een tabblad, venster of bureaublad te selecteren om vast te leggen.
 
       Als dit beleid is ingeschakeld, mislukken aanroepen aan API's voor het delen van schermen en wordt er een fout weergegeven.</translation>
@@ -3056,19 +3017,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Als je het beleid instelt op False, kan <ph name="PRODUCT_NAME" /> geen productinformatie op een volledig tabblad weergeven.
 
       Deze instelling bepaalt de presentatie van de welkomstpagina's waar gebruikers kunnen inloggen op <ph name="PRODUCT_NAME" />, <ph name="PRODUCT_NAME" /> kunnen instellen als standaardbrowser van de gebruiker of anderszins kunnen worden geïnformeerd over productfuncties.</translation>
-<translation id="5450893456912604446">Hiermee stel je de standaard-URL voor de homepage in <ph name="PRODUCT_NAME" /> in en voorkom je dat gebruikers deze kunnen wijzigen.
-
-          De homepage is de pagina die wordt geopend met de startknop. Op desktop bepaalt het beleid RestoreOnStartup welke pagina's worden geopend als de browser wordt opgestart.
-
-          Het type homepage kan worden ingesteld op een URL die je hier opgeeft of op de pagina 'Nieuw tabblad'. Als je de pagina 'Nieuw tabblad' selecteert, wordt dit beleid niet toegepast.
-
-          Als je deze instelling inschakelt, kunnen gebruikers hun homepage-URL in <ph name="PRODUCT_NAME" /> niet wijzigen, maar kunnen ze wel gewoon de pagina 'Nieuw tabblad' als homepage kiezen.
-
-          Als je dit beleid niet instelt, kunnen gebruikers zelf hun homepage kiezen als <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> ook niet is ingesteld.
-
-          De URL moet een standaardschema hebben zoals 'http://example.com' of 'https://example.com'.
-
-          Dit beleid is alleen beschikbaar voor Windows-instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, voor Windows 10 Pro- of Enterprise-instanties die zijn ingeschreven voor apparaatbeheer en voor macOS-instanties die worden beheerd via MDM of aan een domein zijn gekoppeld via MCX.</translation>
 <translation id="5457065417344056871">De gastmodus inschakelen in browser</translation>
 <translation id="5457387982448145430">Als je het beleid inschakelt, worden opgeslagen wachtwoorden van de vorige standaardbrowser geïmporteerd bij de eerste uitvoering. Als je het beleid uitschakelt of niet instelt, worden er geen opgeslagen wachtwoorden geïmporteerd bij de eerste uitvoering.
 
@@ -4723,15 +4671,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="7713608076604149344">Downloadbeperkingen</translation>
 <translation id="7715711044277116530">Percentage waarmee de dimvertraging van het scherm in de presentatiemodus wordt geschaald</translation>
 <translation id="7717938661004793600">Toegankelijkheidsfuncties van <ph name="PRODUCT_OS_NAME" /> configureren.</translation>
-<translation id="772061142236146688">Hiermee configureer je de standaard-URL van de pagina 'Nieuw tabblad' en voorkom je dat gebruikers deze wijzigen.
-
-          De pagina 'Nieuw tabblad' is de pagina die wordt geopend als nieuwe tabbladen worden gemaakt (waaronder tabbladen die worden geopend in nieuwe vensters).
-
-          Dit beleid bepaalt niet welke pagina's worden geopend als de browser wordt gestart. Deze pagina's worden beheerd door het <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />-beleid. Dit beleid is echter wel van invloed op de homepage als hiervoor is ingesteld dat de pagina 'Nieuw tabblad' moet worden geopend, evenals voor de startpagina als deze is ingesteld op de pagina 'Nieuw tabblad'.
-
-          Als het beleid niet is ingesteld of leeg is gelaten, wordt de standaardpagina 'Nieuw tabblad' gebruikt.
-
-          Dit beleid is alleen beschikbaar voor Windows-instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, voor Windows 10 Pro- of Enterprise-instanties die zijn ingeschreven voor apparaatbeheer en voor macOS-instanties die worden beheerd via MDM of aan een domein zijn gekoppeld via MCX.</translation>
 <translation id="7721944091689270995">Gebruikers-ID voor <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Als je het beleid instelt op 1, kunnen websites pop-ups weergeven. Als je het beleid instelt op 2, worden pop-ups geblokkeerd.
 

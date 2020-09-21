@@ -717,17 +717,6 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="2168397434410358693">Inaktivitätsverzögerung im Netzbetrieb</translation>
 <translation id="217013996107840632">Befehlszeilenparameter für den Wechsel vom alternativen Browser.</translation>
 <translation id="2170233653554726857">WPAD-Optimierung aktivieren</translation>
-<translation id="2172774896158845977">Konfiguriert den Typ der Standard-Startseite in <ph name="PRODUCT_NAME" /> und verhindert, dass Nutzer die Startseiteneinstellungen ändern. Als Startseite kann entweder eine URL oder die "Neuer Tab"-Seite festgelegt werden.
-
-          Wenn diese Einstellung aktiviert ist, wird immer die Seite "Neuer Tab" als Startseite verwendet. Die Startseiten-URL wird in diesem Fall ignoriert.
-
-          Ist diese Einstellung deaktiviert, ist die "Neuer Tab"-Seite nie die Startseite des Nutzers, es sei denn, es wurde als URL "chrome://newtab" festgelegt.
-
-          Wenn Sie diese Einstellung aktivieren oder deaktivieren, können Nutzer den Typ ihrer Startseite in <ph name="PRODUCT_NAME" /> nicht ändern.
-
-          Wenn die Richtlinie nicht konfiguriert ist, können Nutzer auswählen, ob die "Neuer Tab"-Seite als Startseite verwendet werden soll.
-
-          Diese Richtlinie steht nur bei Windows-Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, oder bei Windows 10 Pro- oder Enterprise-Instanzen, die für die Geräteverwaltung angemeldet sind, sowie macOS-Instanzen, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="2178899310296064282">Mindestens den moderaten eingeschränkten Modus auf YouTube erzwingen</translation>
 <translation id="2182291258410176649">Der Nutzer entscheidet, ob "Sicherung und Wiederherstellung" aktiviert werden soll</translation>
 <translation id="2183294522275408937">Mit dieser Einstellung wird festgelegt, wie oft Sie auf dem Sperrbildschirm dazu aufgefordert werden, das Passwort einzugeben, um das schnelle Entsperren weiterhin verwenden zu können. Jedes Mal, wenn der Sperrbildschirm aktiviert wird, und die letzte Passworteingabe länger her ist als in dieser Einstellung festgelegt, ist das schnelle Entsperren beim Eintreten in den Sperrmodus nicht mehr verfügbar. Sollte sich der Nutzer nach diesem Zeitraum noch auf dem Sperrbildschirm befinden, wird ein Passwort angefordert, wenn der Nutzer das nächste Mal einen falschen Code eingibt oder erneut in den Sperrmodus wechselt, je nachdem, welcher Fall zuerst eintritt.
@@ -1323,20 +1312,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       URLs müssen dem HTTPS-Schema folgen (Beispiel: "https://example.com").
 
       Genaue Informationen zu gültigen URL-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="2976992705655394547">Ermöglicht die Konfiguration des Verhaltens beim Start.
-
-          Wenn Sie "'Neuer Tab'-Seite öffnen" wählen, wird die "Neuer Tab"-Seite bei jedem Start von <ph name="PRODUCT_NAME" /> geöffnet.
-
-          Wenn Sie "Letzte Sitzung wiederherstellen" wählen, werden die URLs, die beim letzten Schließen von <ph name="PRODUCT_NAME" /> geöffnet waren, nochmals geöffnet und die Browsersitzung wird wiederhergestellt.
-          Mit dieser Option werden einige Einstellungen deaktiviert, die während oder beim Beenden einer Sitzung ausgeführt werden, wie das Löschen von Browserdaten beim Schließen oder Sitzungscookies für bestimmte Sitzungen.
-
-          Wenn Sie "Liste der URLs öffnen" wählen, wird die Liste "Beim Start zu öffnende URLs" geöffnet, sobald ein Nutzer <ph name="PRODUCT_NAME" /> startet.
-
-          Sollten Sie diese Einstellung aktivieren, kann sie von Nutzern in <ph name="PRODUCT_NAME" /> nicht geändert oder überschrieben werden.
-
-          Die Deaktivierung dieser Einstellung entspricht einer nicht konfigurierten Option. Nutzer können diese Einstellung in <ph name="PRODUCT_NAME" /> ändern.
-
-          Diese Richtlinie steht nur bei Windows-Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, oder bei Windows 10 Pro- oder Enterprise-Instanzen, die für die Geräteverwaltung angemeldet sind, sowie macOS-Instanzen, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="2985927503455169394">Standardmodus für das Einrichten von Assistant verwenden</translation>
 <translation id="2987155890997901449">ARC aktivieren</translation>
 <translation id="2987227569419001736">Verwendung der Web Bluetooth API steuern</translation>
@@ -2353,7 +2328,6 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
 <translation id="4474167089968829729">Aktiviert das Speichern von Passwörtern im Passwortmanager</translation>
 <translation id="4476769083125004742">Wenn diese Richtlinie auf <ph name="BLOCK_GEOLOCATION_SETTING" /> gesetzt ist, haben Android-Apps keinen Zugriff auf Standortdaten. Wenn Sie diese Richtlinie auf einen anderen Wert setzen oder sie nicht konfigurieren, wird der Nutzer um seine Zustimmung gebeten, wenn eine Android-App auf Standortdaten zugreifen möchte.</translation>
 <translation id="4480694116501920047">SafeSearch erzwingen</translation>
-<translation id="4482640907922304445">Zeigt die Schaltfläche "Startseite" in der Symbolleiste von <ph name="PRODUCT_NAME" /> an. Wenn Sie diese Einstellung aktivieren, so wird die Schaltfläche "Startseite" immer angezeigt. Sollten Sie sie deaktivieren, erscheint die Schaltfläche nicht. Ist diese Einstellung aktiviert oder deaktiviert, können Nutzer sie in <ph name="PRODUCT_NAME" /> nicht ändern oder außer Kraft setzen. Ist die Richtlinie nicht konfiguriert, so kann der Nutzer selbst bestimmen, ob die Schaltfläche "Startseite" zur Verfügung stehen soll.</translation>
 <translation id="4483649828988077221">Automatische Updates deaktivieren</translation>
 <translation id="4485425108474077672">URL für "Neuer Tab"-Seite konfigurieren</translation>
 <translation id="4492287494009043413">Aufnahme von Screenshots deaktivieren</translation>
@@ -2649,11 +2623,6 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
 <translation id="5017369989680827157">Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutzer die Funktion "Automatisches Ausfüllen" für Adressen in der UI steuern.
 
       Ist sie auf "False" gesetzt, schlägt "Automatisches Ausfüllen" keine Adressinformationen vor und füllt entsprechende Felder auch nicht automatisch aus. Außerdem werden keine zusätzlichen Adressinformationen gespeichert, die Nutzer beim Surfen im Internet senden.</translation>
-<translation id="5022551015331996656">Ist "URL-Liste öffnen" als Startaktion ausgewählt, können Sie die Liste der URLs angeben, die geöffnet werden. Ist die Richtlinie nicht konfiguriert, wird keine URL beim Start geöffnet.
-
-          Die Richtlinie wird nur umgesetzt, wenn für die Richtlinie RestoreOnStartup die Option RestoreOnStartupIsURLs festgelegt ist.
-
-          Diese Richtlinie steht nur bei Windows-Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, oder bei Windows 10 Pro- oder Enterprise-Instanzen, die für die Geräteverwaltung angemeldet sind, sowie macOS-Instanzen, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="5023555740504506178">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist (Standard), können Webseiten
       Bildschirmfreigabe-APIs (z. B. "getDisplayMedia()" oder die Desktop Capture-Erweiterungs-API) verwenden,
       um den Nutzer aufzufordern, einen Tab, ein Fenster oder einen Desktop für die Aufnahme auszuwählen.
@@ -3052,19 +3021,6 @@ Wenn die in der Richtlinie <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> ange
       Ist sie auf "False" gesetzt, dürfen in <ph name="PRODUCT_NAME" /> keine Produktinformationen auf einem ganzen Tab angezeigt werden.
 
       Diese Einstellung steuert die Darstellung von Begrüßungsseiten, die Nutzern Hilfe bei der Anmeldung in <ph name="PRODUCT_NAME" /> bieten, <ph name="PRODUCT_NAME" /> als Standardbrowser des Nutzers festlegen oder die Nutzer auf andere Weise über Produktfunktionen informieren.</translation>
-<translation id="5450893456912604446">Hiermit wird die Standard-URL für die Startseite in <ph name="PRODUCT_NAME" /> konfiguriert und verhindert, dass diese von Nutzern geändert werden kann.
-
-          Die Startseite wird über die Schaltfläche "Startseite" geöffnet. Auf dem Desktop werden die Seiten, die beim Hochfahren geöffnet werden, über die Richtlinien "RestoreOnStartup" kontrolliert.
-
-          Der Startseitentyp kann entweder auf eine URL, die Sie hier angeben, oder auf die Seite "Neuer Tab" eingestellt werden. Wenn Sie sich für die Seite "Neuer Tab" entscheiden, wird diese Richtlinie nicht angewendet.
-
-          Wenn Sie diese Einstellung aktivieren, können Nutzer ihre Startseiten-URL in <ph name="PRODUCT_NAME" /> nicht ändern, jedoch weiterhin ihre Startseite auf die Seite "Neuer Tab" umstellen.
-
-          Ist diese Richtlinie nicht konfiguriert, können die Nutzer selbst eine Startseite wählen, sofern <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> ebenfalls nicht konfiguriert ist.
-
-          Die URL muss ein Standardschema haben, z. B. "http://example.com" oder "https://example.com".
-
-          Diese Richtlinie steht nur bei Windows-Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, oder bei Windows 10 Pro- oder Enterprise-Instanzen, die für die Geräteverwaltung angemeldet sind, sowie macOS-Instanzen, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="5457065417344056871">Gastmodus im Browser aktivieren</translation>
 <translation id="5457387982448145430">Wenn die Richtlinie aktiviert ist, werden gespeicherte Passwörter bei der ersten Ausführung aus dem vorherigen Standardbrowser importiert. Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden bei der ersten Ausführung keine gespeicherten Passwörter importiert.
 
@@ -4720,15 +4676,6 @@ Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen
 <translation id="7713608076604149344">Download-Einschränkungen</translation>
 <translation id="7715711044277116530">Prozentsatz für die Skalierung der Spanne für die Bildschirmabdunkelung im Präsentationsmodus</translation>
 <translation id="7717938661004793600">Hiermit konfigurieren Sie die Zugänglichkeitsfunktionen für <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="772061142236146688">Konfiguriert die standardmäßige URL zur "Neuer Tab"-Seite und hindert Nutzer daran, sie zu ändern.
-
-          Die "Neuer Tab"-Seite wird geöffnet, wenn ein neuer Tab erstellt oder ein neues Fenster geöffnet wird.
-
-          Diese Richtlinie legt nicht fest, welche Seiten beim Start geöffnet werden. Diese werden von den Richtlinien <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> gesteuert. Diese Richtlinie hat auch Auswirkungen auf die Startseite und auf die "Beim Start"-Seite, falls für diese festgelegt wurde, dass die "Neuer Tab"-Seite geöffnet werden soll.
-
-          Wird die Richtlinie nicht konfiguriert oder leer gelassen, wird die standardmäßige "Neuer Tab"-Seite verwendet.
-
-          Diese Richtlinie steht nur bei Windows-Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, oder bei Windows 10 Pro- oder Enterprise-Instanzen, die für die Geräteverwaltung angemeldet sind, sowie macOS-Instanzen, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" />-Nutzer-ID</translation>
 <translation id="7724161903134898864">Wenn die Richtlinie auf "1" gesetzt ist, können Websites Pop-ups anzeigen. Wenn die Richtlinie auf "2" gesetzt ist, werden Pop-ups blockiert.
 

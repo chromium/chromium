@@ -2232,7 +2232,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3650845953328929506">Čeká se na nahrání protokolu.</translation>
 <translation id="3650952250015018111">Povolte aplikaci "<ph name="APP_NAME" />" tyto přístupy:</translation>
 <translation id="3651488188562686558">Bude odpojen od sítě Wi-Fi</translation>
-<translation id="3651952061994655768">Změnit název</translation>
 <translation id="3652817283076144888">Probíhá inicializace</translation>
 <translation id="3653160965917900914">Sdílená úložiště na síti</translation>
 <translation id="3653842108912548333">Aktivace Asistenta pomocí funkce Voice Match</translation>
@@ -3576,7 +3575,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5315873049536339193">Identita</translation>
 <translation id="5317780077021120954">Uložit</translation>
 <translation id="5319359161174645648">Google doporučuje prohlížeč Chrome</translation>
-<translation id="5320135788267874712">Nový název zařízení</translation>
 <translation id="532247166573571973">Server pravděpodobně není dostupný. Zkuste to znovu později.</translation>
 <translation id="5324780743567488672">Nastavit časové pásmo automaticky podle polohy</translation>
 <translation id="5327248766486351172">Jméno</translation>
@@ -4328,6 +4326,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6227280783235722609">rozšíření</translation>
 <translation id="6229849828796482487">Odpojit síť Wi-Fi</translation>
 <translation id="6229890768313448549">Smluvní podmínky služby Google Play nelze načíst. Zkuste to prosím znovu.</translation>
+<translation id="6231782223312638214">Navrženo</translation>
 <translation id="6231881193380278751">Přidejte do adresy URL parametr dotazu pro automatickou aktualizaci stránky: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Baterie</translation>
 <translation id="6232116551750539448">Připojení k síti <ph name="NAME" /> bylo ztraceno</translation>

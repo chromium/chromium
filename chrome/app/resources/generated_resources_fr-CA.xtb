@@ -2234,7 +2234,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3650845953328929506">Téléversement du journal en attente.</translation>
 <translation id="3650952250015018111">Autoriser « <ph name="APP_NAME" /> » à accéder à l'appareil suivant :</translation>
 <translation id="3651488188562686558">Se déconnectera du Wi-Fi</translation>
-<translation id="3651952061994655768">Modifier le nom</translation>
 <translation id="3652817283076144888">Initialisation en cours…</translation>
 <translation id="3653160965917900914">Partages de fichiers sur le réseau</translation>
 <translation id="3653842108912548333">Accéder à l'Assistant Google avec Voice Match</translation>
@@ -3579,7 +3578,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5315873049536339193">Identité</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5319359161174645648">Google recommande Chrome</translation>
-<translation id="5320135788267874712">Nouveau nom de l'appareil</translation>
 <translation id="532247166573571973">Le serveur est peut-être inaccessible. Réessayez plus tard.</translation>
 <translation id="5324780743567488672">Régler automatiquement le fuseau horaire en fonction de votre emplacement</translation>
 <translation id="5327248766486351172">Nom</translation>
@@ -4331,6 +4329,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6227280783235722609">extension</translation>
 <translation id="6229849828796482487">Se déconnecter du réseau Wi-Fi</translation>
 <translation id="6229890768313448549">Impossible de charger les conditions d'utilisation de Google Play. Veuillez réessayer.</translation>
+<translation id="6231782223312638214">Suggéré</translation>
 <translation id="6231881193380278751">Ajouter un paramètre de demande dans l’URL pour actualiser la page : chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Pile</translation>
 <translation id="6232116551750539448">La connexion à <ph name="NAME" /> a été perdue</translation>

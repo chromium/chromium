@@ -2234,7 +2234,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3650845953328929506">Upload de registro pendente.</translation>
 <translation id="3650952250015018111">Permitir que o app "<ph name="APP_NAME" />" acesse:</translation>
 <translation id="3651488188562686558">Desconectar do Wi-Fi</translation>
-<translation id="3651952061994655768">Mudar nome</translation>
 <translation id="3652817283076144888">Inicializando</translation>
 <translation id="3653160965917900914">Compartilhamentos de arquivos de rede</translation>
 <translation id="3653842108912548333">Acessar o Assistente com o Voice Match</translation>
@@ -3579,7 +3578,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="5315873049536339193">Identidade</translation>
 <translation id="5317780077021120954">Salvar</translation>
 <translation id="5319359161174645648">O Google recomenda o Chrome</translation>
-<translation id="5320135788267874712">Novo nome do dispositivo</translation>
 <translation id="532247166573571973">É possível que o servidor esteja inacessível. Tente novamente mais tarde.</translation>
 <translation id="5324780743567488672">Define o fuso horário automaticamente utilizando seu local</translation>
 <translation id="5327248766486351172">Nome</translation>
@@ -4333,6 +4331,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6227280783235722609">extensão</translation>
 <translation id="6229849828796482487">Desconectar rede Wi-Fi</translation>
 <translation id="6229890768313448549">Não é possível carregar os Termos de Serviço do Google Play. Tente novamente.</translation>
+<translation id="6231782223312638214">Sugerido</translation>
 <translation id="6231881193380278751">Adicionar um parâmetro de consulta no URL para atualizar automaticamente a página: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6232116551750539448">A conexão com <ph name="NAME" /> foi perdida</translation>

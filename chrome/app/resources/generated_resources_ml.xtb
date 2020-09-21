@@ -2230,7 +2230,6 @@
 <translation id="3650845953328929506">ലോഗ് അപ്‌ലോഡ് തീർപ്പാക്കിയിട്ടില്ല.</translation>
 <translation id="3650952250015018111">ആക്‌സസ് ചെയ്യാൻ "<ph name="APP_NAME" />" ആപ്പിനെ അനുവദിക്കുക:</translation>
 <translation id="3651488188562686558">Wi-Fi-യിൽ നിന്ന് വിച്ഛേദിക്കുക</translation>
-<translation id="3651952061994655768">പേര് മാറ്റുക</translation>
 <translation id="3652817283076144888">സമാരംഭിക്കുന്നു</translation>
 <translation id="3653160965917900914">നെറ്റ്‌വർക്ക് ഫയൽ പങ്കിടലുകൾ</translation>
 <translation id="3653842108912548333">Voice Match ഉപയോഗിച്ച് നിങ്ങളുടെ അസിസ്‌റ്റന്‍റിനെ ആക്‌സസ് ചെയ്യുക</translation>
@@ -3574,7 +3573,6 @@
 <translation id="5315873049536339193">വ്യക്തിത്വം</translation>
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
 <translation id="5319359161174645648">Google ശുപാർശചെയ്യുന്നത് Chrome ആണ്</translation>
-<translation id="5320135788267874712">ഉപകരണത്തിന്റെ പുതിയ പേര്</translation>
 <translation id="532247166573571973">സെർവർ ലഭ്യമല്ലായിരിക്കാം. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="5324780743567488672">നിങ്ങളുടെ ലൊക്കേഷൻ ഉപയോഗിച്ച് സമയ മേഖല സ്വയമേവ സജ്ജമാക്കുക</translation>
 <translation id="5327248766486351172">പേര്</translation>
@@ -4328,6 +4326,7 @@
 <translation id="6227280783235722609">വിപുലീകരണം</translation>
 <translation id="6229849828796482487">വൈഫൈ നെറ്റ്‌വർക്ക് വിച്ഛേദിക്കുക</translation>
 <translation id="6229890768313448549">Google Play സേവന നിബന്ധനകൾ ലോഡ് ചെയ്യാനാവില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
+<translation id="6231782223312638214">നിര്‍‌ദ്ദേശിച്ചത്</translation>
 <translation id="6231881193380278751">പേജ് സ്വയമേ പുതുക്കുന്നതിന് URL-ൽ ചോദ്യ param ചേർക്കുക: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">ബാറ്ററി</translation>
 <translation id="6232116551750539448"><ph name="NAME" /> എന്നതിലേക്കുള്ള കണക്ഷൻ നഷ്‌ടമായി</translation>

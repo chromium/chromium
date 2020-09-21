@@ -1287,7 +1287,7 @@
 <translation id="2505127913256479918">החשבון הזה בפיקוח יוסר בקרוב</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{מסך #}two{מסך #}many{מסך #}other{מסך #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> מתוך <ph name="TOTAL_SIZE" /></translation>
-<translation id="250642123108534012">המכשירים בקרבתך כאשר התכונה 'שיתוף בקרבת מקום' פועלת בהם</translation>
+<translation id="250642123108534012">מכשירים בקרבתך כאשר התכונה 'שיתוף בקרבת מקום' פועלת בהם</translation>
 <translation id="250704661983564564">פריסת מסכים</translation>
 <translation id="2507253002925770350">הכרטיס הוסר</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> הושהה</translation>
@@ -2231,7 +2231,6 @@
 <translation id="3650845953328929506">העלאת היומן בהמתנה.</translation>
 <translation id="3650952250015018111">הענקת גישה ל-"<ph name="APP_NAME" />":</translation>
 <translation id="3651488188562686558">‏נתק את חיבור ה-Wi-Fi</translation>
-<translation id="3651952061994655768">שינוי השם</translation>
 <translation id="3652817283076144888">מתבצע אתחול</translation>
 <translation id="3653160965917900914">התקני רשת לשיתוף קבצים</translation>
 <translation id="3653842108912548333">‏גישה ל-Assistant באמצעות Voice Match</translation>
@@ -3576,7 +3575,6 @@
 <translation id="5315873049536339193">זהות</translation>
 <translation id="5317780077021120954">שמור</translation>
 <translation id="5319359161174645648">‏Google ממליצה על Chrome</translation>
-<translation id="5320135788267874712">השם החדש של המכשיר</translation>
 <translation id="532247166573571973">ייתכן שהשרת אינו נגיש. נסה שוב מאוחר יותר.</translation>
 <translation id="5324780743567488672">היעזר במיקום להגדרה אוטומטית של אזור הזמן</translation>
 <translation id="5327248766486351172">שם</translation>
@@ -3978,7 +3976,7 @@
 <translation id="5804241973901381774">הרשאות</translation>
 <translation id="5805697420284793859">מנהל החלונות</translation>
 <translation id="5806773519584576205">0° (ברירת מחדל)</translation>
-<translation id="5808664694611589238">{0,plural, =1{סגירת חלון אורח}two{סגירת חלונות אורח}many{סגירת חלונות אורח}other{סגירת חלונות אורח}}</translation>
+<translation id="5808664694611589238">{0,plural, =1{סגירת חלון האורח}two{סגירת חלונות האורח}many{סגירת חלונות האורח}other{סגירת חלונות האורח}}</translation>
 <translation id="5810809306422959727">החשבון הזה לא מתאים לבקרת הורים</translation>
 <translation id="5812674658566766066">הרחבת הכול</translation>
 <translation id="5814126672212206791">סוג חיבור</translation>
@@ -4328,6 +4326,7 @@
 <translation id="6227280783235722609">תוסף</translation>
 <translation id="6229849828796482487">‏ניתוק רשת ה-Wi-Fi</translation>
 <translation id="6229890768313448549">‏לא ניתן לטעון את התנאים וההגבלות של Google Play. נסה שוב.</translation>
+<translation id="6231782223312638214">מוצע</translation>
 <translation id="6231881193380278751">‏הוסף פרמטר שאילתה בכתובת האתר כדי לרענן את הדף באופן אוטומטי: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">סוללה</translation>
 <translation id="6232116551750539448">החיבור אל <ph name="NAME" /> נותק</translation>
@@ -5670,7 +5669,7 @@
 <translation id="786073089922909430">שירות: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;הורדות</translation>
 <translation id="7864539943188674973">‏השבת Bluetooth</translation>
-<translation id="7866352732146932341">המכשירים בקרבתך כאשר התכונה 'שיתוף בקרבת מקום' פועלת במכשיר שלך</translation>
+<translation id="7866352732146932341">מכשירים בקרבתך כאשר התכונה 'שיתוף בקרבת מקום' פועלת במכשיר שלך</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - מותאם</translation>
 <translation id="7870730066603611552">בדיקת אפשרויות הסינכרון אחרי ההגדרה</translation>
 <translation id="7870790288828963061">לא נמצאו אפליקציות קיוסק בגרסה חדשה יותר. אין צורך בעדכון. הסר את הדיסק און קי.</translation>

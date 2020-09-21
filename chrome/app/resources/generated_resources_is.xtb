@@ -2233,7 +2233,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3650845953328929506">Upphleðsla annáls í bið.</translation>
 <translation id="3650952250015018111">Leyfa „<ph name="APP_NAME" />“ að fá aðgang að:</translation>
 <translation id="3651488188562686558">Aftengjast Wi-Fi</translation>
-<translation id="3651952061994655768">Breyta heiti</translation>
 <translation id="3652817283076144888">Frumstillir</translation>
 <translation id="3653160965917900914">Samnýttar skráageymslur</translation>
 <translation id="3653842108912548333">Opnaðu hjálparann með Voice Match</translation>
@@ -3578,7 +3577,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5315873049536339193">Auðkenni</translation>
 <translation id="5317780077021120954">Vista</translation>
 <translation id="5319359161174645648">Google mælir með Chrome</translation>
-<translation id="5320135788267874712">Nýtt heiti tækis</translation>
 <translation id="532247166573571973">Hugsanlega er ekki hægt að ná í þjóninn. Reyndu aftur síðar.</translation>
 <translation id="5324780743567488672">Stilla tímabelti sjálfkrafa eftir staðsetningunni þinni</translation>
 <translation id="5327248766486351172">Heiti</translation>
@@ -4330,6 +4328,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6227280783235722609">viðbót</translation>
 <translation id="6229849828796482487">Aftengja Wi-Fi net</translation>
 <translation id="6229890768313448549">Ekki er hægt að sækja þjónustuskilmála Google Play. Reyndu aftur.</translation>
+<translation id="6231782223312638214">Tillögur</translation>
 <translation id="6231881193380278751">Bættu fyrirspurnarbreytu við vefslóðina til að endurnýja síðuna sjálfkrafa: chrome://device-log/?refresh=&lt;sek.&gt;</translation>
 <translation id="6232017090690406397">Rafhlaða</translation>
 <translation id="6232116551750539448">Tengingin við <ph name="NAME" /> hefur rofnað</translation>

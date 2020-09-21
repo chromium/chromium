@@ -2233,7 +2233,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3650845953328929506">Erregistroa kargatzeko zain dago.</translation>
 <translation id="3650952250015018111">Eman hauek atzitzeko baimena "<ph name="APP_NAME" />" aplikazioari:</translation>
 <translation id="3651488188562686558">Deskonektatu wifi-saretik</translation>
-<translation id="3651952061994655768">Aldatu izena</translation>
 <translation id="3652817283076144888">Hasieratzen</translation>
 <translation id="3653160965917900914">Sareko fitxategiak partekatzeko biltegiak</translation>
 <translation id="3653842108912548333">Atzitu Laguntzailea Voice Match bidez</translation>
@@ -3578,7 +3577,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5315873049536339193">Identitatea</translation>
 <translation id="5317780077021120954">Gorde</translation>
 <translation id="5319359161174645648">Google-k Chrome gomendatzen dizu</translation>
-<translation id="5320135788267874712">Gailuaren izen berria</translation>
 <translation id="532247166573571973">Baliteke zerbitzarira konektatu ezin izatea. Saiatu berriro geroago.</translation>
 <translation id="5324780743567488672">Ezarri ordu-zona automatikoki kokapenaren arabera</translation>
 <translation id="5327248766486351172">Izena</translation>
@@ -4330,6 +4328,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6227280783235722609">luzapena</translation>
 <translation id="6229849828796482487">Deskonektatu wifi-sarea</translation>
 <translation id="6229890768313448549">Ezin dira kargatu Google Play-ren Zerbitzu-baldintzak. Saiatu berriro.</translation>
+<translation id="6231782223312638214">Iradokitakoak</translation>
 <translation id="6231881193380278751">Gehitu kontsulta-parametroa URLan orria automatikoki freskatzeko: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6232116551750539448">Galdu egin da <ph name="NAME" /> sarerako konexioa</translation>

@@ -2231,7 +2231,6 @@
 <translation id="3650845953328929506">Качването на регистрационния файл предстои.</translation>
 <translation id="3650952250015018111">Разрешаване на "<ph name="APP_NAME" />" да има достъп до:</translation>
 <translation id="3651488188562686558">прекрати връзката си с Wi-Fi</translation>
-<translation id="3651952061994655768">Промяна на името</translation>
 <translation id="3652817283076144888">Подготвя се за работа</translation>
 <translation id="3653160965917900914">Споделени хранилища в мрежата</translation>
 <translation id="3653842108912548333">Работете със своя Асистент с помощта на Voice Match</translation>
@@ -3577,7 +3576,6 @@
 <translation id="5315873049536339193">Самоличност</translation>
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5319359161174645648">Google препоръчва Chrome</translation>
-<translation id="5320135788267874712">Ново име на устройството</translation>
 <translation id="532247166573571973">Възможно е да няма достъп до сървъра. Опитайте отново по-късно.</translation>
 <translation id="5324780743567488672">Автоматично задаване на часовата зона въз основа на местоположението ви</translation>
 <translation id="5327248766486351172">Име</translation>
@@ -4330,6 +4328,7 @@
 <translation id="6227280783235722609">разширение</translation>
 <translation id="6229849828796482487">Прекратяване на връзката с Wi-Fi мрежата</translation>
 <translation id="6229890768313448549">Общите условия на Google Play не могат да се заредят. Моля, опитайте отново.</translation>
+<translation id="6231782223312638214">Предложени</translation>
 <translation id="6231881193380278751">За да се опреснява страницата автоматично, добавете към URL адреса параметър на заявката: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Батерия</translation>
 <translation id="6232116551750539448">Връзката с/ъс <ph name="NAME" /> прекъсна</translation>

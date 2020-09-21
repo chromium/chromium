@@ -736,17 +736,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="2168397434410358693">Demora de inactividad con alimentación de CA</translation>
 <translation id="217013996107840632">Parámetros de la línea de comandos para cambiar del navegador alternativo</translation>
 <translation id="2170233653554726857">Habilitar optimización de WPAD</translation>
-<translation id="2172774896158845977">Configura el tipo de la página principal predeterminada en <ph name="PRODUCT_NAME" /> y evita que los usuarios cambien las preferencias de la página principal. Puede establecerse la página principal para que sea una URL que especifiques o la página Nueva pestaña.
-
-          Si habilitas esta configuración, se utilizará siempre la página Nueva pestaña para la página principal y se omitirá la URL de la página principal.
-
-          Si la inhabilitas, la página principal del usuario no será nunca la página Nueva pestaña, a menos que se especifique la URL "chrome://newtab".
-
-          Si habilitas o inhabilitas esta configuración, los usuarios no podrán cambiar el tipo de la página principal en <ph name="PRODUCT_NAME" />.
-
-          Si no estableces esta política, el usuario podrá elegir que la página Nueva pestaña sea la página principal.
-
-          Esta política solo está disponible en instancias de Windows vinculadas a un dominio de <ph name="MS_AD_NAME" /> o en instancias de Windows 10 Pro o Enterprise habilitadas para la administración de dispositivos, además de instancias de macOS administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="2178899310296064282">Aplicar al menos el modo restringido moderado en YouTube</translation>
 <translation id="2182291258410176649">El usuario decide si habilita la copia de seguridad y el restablecimiento</translation>
 <translation id="2183294522275408937">Esta configuración controla la frecuencia con la que la pantalla bloqueada solicitará la contraseña para continuar usando el desbloqueo rápido. Cada vez que ingresas a la pantalla bloqueada, si el último ingreso de contraseña superó al de esta configuración, el desbloqueo rápido no estará disponible para la pantalla bloqueada. Si el usuario permanece en la pantalla bloqueada después de este período, se solicitará que el usuario ingrese una contraseña cada vez que ingrese un código incorrecto o se active la pantalla bloqueada (lo que ocurra primero).
@@ -1340,20 +1329,6 @@ Si habilitas la política, Limpiar Chrome podrá enviar los metadatos de anális
       Las URL deben tener el esquema HTTPS, p. ej., "https://example.com".
 
       Para obtener información detallada sobre los patrones de URL válidos, consulta: https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="2976992705655394547">Permite especificar el comportamiento en el inicio.
-
-          Si seleccionas la opción "Abrir la página Nueva pestaña", esta siempre se abrirá al iniciar <ph name="PRODUCT_NAME" />.
-
-          Si seleccionas la opción "Restaurar la última sesión", se volverán a abrir las URL que estaban abiertas la última vez que se cerró <ph name="PRODUCT_NAME" /> y se restaurará la sesión de navegación tal como estaba.
-          Al seleccionar esta opción, se inhabilitarán algunas opciones de configuración que se basan en las sesiones o que llevan a cabo acciones al salir, por ejemplo, borrar las cookies de esa sesión o los datos de navegación al salir.
-
-          Si seleccionas la opción "Abrir una lista de direcciones URL", cuando un usuario inicie <ph name="PRODUCT_NAME" /> se abrirán las URL de la lista "Direcciones URL que se abrirán al iniciar".
-
-          Si habilitas esta configuración, los usuarios no podrán modificarla ni anularla en <ph name="PRODUCT_NAME" />.
-
-          Inhabilitar esta configuración equivale a no establecerla en absoluto. El usuario aún podrá cambiarla en <ph name="PRODUCT_NAME" />.
-
-          Esta política solo está disponible en instancias de Windows vinculadas a un dominio de <ph name="MS_AD_NAME" /> o en instancias de Windows 10 Pro o Enterprise habilitadas para la administración de dispositivos, además de instancias de macOS administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="2985927503455169394">Usa el modo predeterminado de la experiencia de integración del Asistente</translation>
 <translation id="2987155890997901449">Habilitar ARC</translation>
 <translation id="2987227569419001736">Controlar el uso de la API de Bluetooth web</translation>
@@ -2371,7 +2346,6 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="4474167089968829729">Habilitar el guardado de contraseñas en el administrador de contraseñas</translation>
 <translation id="4476769083125004742">Si esta política se establece como <ph name="BLOCK_GEOLOCATION_SETTING" />, las apps de Android no podrán acceder a la información de la ubicación. Si estableces esta política en cualquier valor o no la estableces, se le pedirá al usuario que autorice la app de Android que quiera acceder a la información de ubicación.</translation>
 <translation id="4480694116501920047">Forzar SafeSearch</translation>
-<translation id="4482640907922304445">Muestra el botón de la Página principal en la barra de herramientas de <ph name="PRODUCT_NAME" />. Si se habilita esta configuración, el botón Página principal se mostrará siempre. Si se inhabilita esta configuración, el botón Página principal no se mostrará nunca. Si se habilita o inhabilita esta configuración, los usuarios no podrán cambiarla ni anularla en <ph name="PRODUCT_NAME" />. Si esta política no se configura, el usuario podrá elegir si desea mostrar el botón.</translation>
 <translation id="4483649828988077221">Inhabilitar la actualización automática</translation>
 <translation id="4485425108474077672">Configurar la URL de la página Nueva pestaña</translation>
 <translation id="4492287494009043413">Inhabilitar la toma de capturas de pantalla</translation>
@@ -2667,11 +2641,6 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="5017369989680827157">Si estableces la política como verdadera o no la estableces, los usuarios podrán configurar la función Autocompletar para las direcciones que aparecen en la IU.
 
       Si la estableces como falsa, la función Autocompletar nunca sugerirá ni completará datos de las direcciones, ni guardará información adicional relacionada que envíen los usuarios cuando navegan por la Web.</translation>
-<translation id="5022551015331996656">Si se selecciona "Abrir una lista de URL" como acción de inicio, esto te permitirá especificar la lista de URL que se abren. Si no se establece, no se abrirá ninguna URL en el inicio.
-
-          Esta política solo funciona si la política "RestoreOnStartup" está establecida en "RestoreOnStartupIsURLs".
-
-          Esta política solo está disponible en instancias de Windows vinculadas a un dominio de <ph name="MS_AD_NAME" /> o en instancias de Windows 10 Pro o Enterprise habilitadas para la administración de dispositivos, además de instancias de macOS administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="5023555740504506178">Si se habilita o no se configura (predeterminado), una página web podrá utilizar
       las API para compartir pantalla (p. ej., getDisplayMedia() o la API de la extensión Captura del escritorio)
       para solicitarle al usuario que seleccione una pestaña, una ventana o un escritorio para capturar.
@@ -3067,19 +3036,6 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
       Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá mostrar información de productos en pestaña completa.
 
       El establecimiento de esta política permite controlar la presentación de páginas de bienvenida que ayudan a los usuarios a acceder a <ph name="PRODUCT_NAME" />, elegir <ph name="PRODUCT_NAME" /> como navegador predeterminado o recibir información sobre funciones de productos.</translation>
-<translation id="5450893456912604446">Configura la URL de la página principal predeterminada en <ph name="PRODUCT_NAME" /> y evita que los usuarios la modifiquen.
-
-          La página principal es la que se abre con el botón Página principal. En la computadora, las páginas que se abren al inicio se controlan a través de las políticas RestoreOnStartup.
-
-          El tipo de página principal puede configurarse como una URL que se especifica aquí o establecerse en la página Nueva pestaña. Si seleccionas la página Nueva pestaña, no se aplicará esta política.
-
-          Si habilitas esta configuración, los usuarios no podrán cambiar la URL de la página principal en <ph name="PRODUCT_NAME" />, pero podrán elegir la página Nueva pestaña como principal.
-
-          Si no estableces esta política ni <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />, el usuario podrá elegir la página principal.
-
-          La URL debe tener un esquema estándar, p. ej., "http://example.com" o "https://example.com".
-
-          Esta política solo está disponible en instancias de Windows vinculadas a un dominio de <ph name="MS_AD_NAME" /> o en instancias de Windows 10 Pro o Enterprise habilitadas para la administración de dispositivos, además de instancias de macOS administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="5457065417344056871">Habilitar modo de invitado en el navegador</translation>
 <translation id="5457387982448145430">Si habilitas la política, se importarán las contraseñas guardadas del navegador predeterminado anterior en la primera ejecución. Si la inhabilitas o no la estableces, no se importarán las contraseñas guardadas en la primera ejecución.
 
@@ -4733,15 +4689,6 @@ Si estableces la política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME"
 <translation id="7713608076604149344">Restricciones de descarga</translation>
 <translation id="7715711044277116530">Indica el porcentaje en el que debe ajustarse la demora de inactividad de la pantalla en el modo de presentación.</translation>
 <translation id="7717938661004793600">Permite configurar las funciones de accesibilidad de <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="772061142236146688">Configura la URL predeterminada de la página Nueva pestaña y evita que los usuarios la modifiquen.
-
-          Nueva pestaña es la página que se abre cuando se crean nuevas pestañas (incluidas las que se abren en nuevas ventanas).
-
-          Esta política no determina las páginas que se abren en el inicio. Esa tarea está controlada por las políticas <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />. No obstante, esta política afecta tanto a la página principal como a la página de inicio (si respectivamente están configuradas para abrir la página Nueva pestaña).
-
-          Si no estableces la política o se deja vacía, se utilizará la página Nueva pestaña predeterminada.
-
-          Esta política solo está disponible en instancias de Windows vinculadas a un dominio de <ph name="MS_AD_NAME" /> o en instancias de Windows 10 Pro o Enterprise habilitadas para la administración de dispositivos, además de instancias de macOS administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="7721944091689270995">ID de usuario de <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Si estableces la política en 1, los sitios web podrán mostrar ventanas emergentes. Si la estableces en 2, se rechazarán las ventanas emergentes.
 

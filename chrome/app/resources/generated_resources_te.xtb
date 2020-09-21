@@ -2233,7 +2233,6 @@
 <translation id="3650845953328929506">లాగ్ అప్‌లోడ్ పెండింగ్‌లో ఉంది.</translation>
 <translation id="3650952250015018111">యాక్సెస్ చేయడానికి "<ph name="APP_NAME" />"ని అనుమతించండి:</translation>
 <translation id="3651488188562686558">Wi-Fi నుండి డిస్‌కనెక్ట్ చేయి</translation>
-<translation id="3651952061994655768">పేరు మార్చండి</translation>
 <translation id="3652817283076144888">ప్రారంభిస్తోంది</translation>
 <translation id="3653160965917900914">నెట్‌వర్క్ ఫైల్ షేర్‌లు</translation>
 <translation id="3653842108912548333">మీ అసిస్టెంట్‌ని Voice Match సాయంతో యాక్సెస్ చేసుకోండి</translation>
@@ -3578,7 +3577,6 @@
 <translation id="5315873049536339193">గుర్తింపు</translation>
 <translation id="5317780077021120954">సేవ్ చేయి</translation>
 <translation id="5319359161174645648">Chromeను Google సిఫార్సు చేస్తోంది</translation>
-<translation id="5320135788267874712">కొత్త పరికరం పేరు</translation>
 <translation id="532247166573571973">సర్వర్ అందుబాటులో లేకపోవచ్చు. తర్వాత మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="5324780743567488672">మీ స్థానాన్ని ఉపయోగించి సమయ మండలిని స్వయంచాలకంగా సెట్ చేయండి</translation>
 <translation id="5327248766486351172">పేరు</translation>
@@ -4330,6 +4328,7 @@
 <translation id="6227280783235722609">ఎక్స్‌టెన్షన్</translation>
 <translation id="6229849828796482487">Disconnect Wi-Fi నెట్‌వర్క్ డిస్‌కనెక్ట్ చేయడం</translation>
 <translation id="6229890768313448549">Google Play సేవా నిబంధనలను లోడ్ చేయడం సాధ్యపడదు. దయచేసి మళ్లీ ప్రయత్నించండి.</translation>
+<translation id="6231782223312638214">సూచించబడింది</translation>
 <translation id="6231881193380278751">పేజీని ఆటోమేటిక్‌గా రిఫ్రెష్ చేయడానికి URLలో ప్రశ్న పారామీట‌ర్‌ను జోడించండి: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">బ్యాటరీ</translation>
 <translation id="6232116551750539448"><ph name="NAME" />కి కనెక్షన్ కోల్పోయింది</translation>

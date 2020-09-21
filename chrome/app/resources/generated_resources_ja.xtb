@@ -2233,7 +2233,6 @@
 <translation id="3650845953328929506">ログのアップロードを保留しています。</translation>
 <translation id="3650952250015018111">「<ph name="APP_NAME" />」のアクセスを許可する:</translation>
 <translation id="3651488188562686558">Wi-Fi から切断します</translation>
-<translation id="3651952061994655768">名前を変更</translation>
 <translation id="3652817283076144888">初期化しています</translation>
 <translation id="3653160965917900914">ネットワーク ファイル共有</translation>
 <translation id="3653842108912548333">Voice Match でアシスタントにアクセス</translation>
@@ -3578,7 +3577,6 @@
 <translation id="5315873049536339193">ID</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5319359161174645648">Google は Chrome を推奨しています</translation>
-<translation id="5320135788267874712">新しいデバイス名</translation>
 <translation id="532247166573571973">サーバーへのアクセスに問題が起こっている可能性があります。しばらくしてからもう一度お試しください。</translation>
 <translation id="5324780743567488672">ユーザーの現在地情報を使用して自動的にタイムゾーンを設定する</translation>
 <translation id="5327248766486351172">名前</translation>
@@ -4330,6 +4328,7 @@
 <translation id="6227280783235722609">拡張機能</translation>
 <translation id="6229849828796482487">Wi-Fi ネットワークとの接続を切断する</translation>
 <translation id="6229890768313448549">Google Play 利用規約を読み込めません。もう一度お試しください。</translation>
+<translation id="6231782223312638214">候補</translation>
 <translation id="6231881193380278751">ページを自動更新するには URL にクエリ パラメータを追加します: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">バッテリー</translation>
 <translation id="6232116551750539448"><ph name="NAME" /> への接続が切断されました</translation>

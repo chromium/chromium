@@ -136,7 +136,7 @@
 <translation id="5197729504361054390">אנשי הקשר שייבחרו ישותפו עם <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">הצגה</translation>
 <translation id="5301954838959518834">בסדר, הבנתי</translation>
-<translation id="5308418739111119514"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" /></translation>
+<translation id="5308418739111119514"><ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" /></translation>
 <translation id="5313967007315987356">הוסף אתר</translation>
 <translation id="5317780077021120954">שמור</translation>
 <translation id="5335288049665977812">‏אפשר לאתרים להריץ JavaScript (מומלץ)</translation>
@@ -163,7 +163,7 @@
 <translation id="5771720122942595109">חסומה: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">הרשאות</translation>
 <translation id="5860033963881614850">כבוי</translation>
-<translation id="5863245810240683687">ההרשאות <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" /> פועלות</translation>
+<translation id="5863245810240683687">ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" /> פועלות</translation>
 <translation id="5876056640971328065">השהיית הסרטון</translation>
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5922853908706496913">מתבצע שיתוף מסך</translation>
@@ -203,7 +203,7 @@
 <translation id="6790428901817661496">הפעל</translation>
 <translation id="6818926723028410516">בחירת פריטים</translation>
 <translation id="6864395892908308021">‏NFC לא נתמך במכשיר הזה</translation>
-<translation id="6879016579615558281">נחסמו ההרשאות <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" /></translation>
+<translation id="6879016579615558281">נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" /></translation>
 <translation id="6910211073230771657">נמחק</translation>
 <translation id="6912998170423641340">חסימת היכולת של אתרים לקרוא טקסט ותמונות מלוח העריכה</translation>
 <translation id="6945221475159498467">בחירה</translation>

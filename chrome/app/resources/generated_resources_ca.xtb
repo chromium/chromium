@@ -2232,7 +2232,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3650845953328929506">La pujada del registre està pendent.</translation>
 <translation id="3650952250015018111">Permet que "<ph name="APP_NAME" />" accedeixi a:</translation>
 <translation id="3651488188562686558">Desconnecta de la Wi-Fi</translation>
-<translation id="3651952061994655768">Canvia el nom</translation>
 <translation id="3652817283076144888">S'està inicialitzant</translation>
 <translation id="3653160965917900914">Fitxers compartits de la xarxa</translation>
 <translation id="3653842108912548333">Accedeix a l'Assistent amb Voice Match</translation>
@@ -3577,7 +3576,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="5315873049536339193">Identitat</translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5319359161174645648">Google recomana Chrome</translation>
-<translation id="5320135788267874712">Nom del dispositiu nou</translation>
 <translation id="532247166573571973">És possible que no es pugui accedir al servidor. Torneu-ho a provar més tard.</translation>
 <translation id="5324780743567488672">Estableix la zona horària automàticament en funció de la meva ubicació</translation>
 <translation id="5327248766486351172">Nom</translation>
@@ -4330,6 +4328,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6227280783235722609">extensió</translation>
 <translation id="6229849828796482487">Desconnecta la xarxa Wi‑Fi</translation>
 <translation id="6229890768313448549">Les Condicions del servei de Google Play no es poden carregar. Torna-ho a provar.</translation>
+<translation id="6231782223312638214">Suggerida</translation>
 <translation id="6231881193380278751">Afegiu un paràmetre de consulta a l'URL per actualitzar la pàgina de manera automàtica: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6232116551750539448">S'ha perdut la connexió amb <ph name="NAME" /></translation>

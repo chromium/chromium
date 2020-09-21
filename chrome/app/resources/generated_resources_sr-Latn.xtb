@@ -2230,7 +2230,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3650845953328929506">Otpremanje evidencije je na čekanju.</translation>
 <translation id="3650952250015018111">Dozvolite da „<ph name="APP_NAME" />“ pristupa:</translation>
 <translation id="3651488188562686558">prekinuti vezu sa Wi-Fi-jem</translation>
-<translation id="3651952061994655768">Promenite naziv</translation>
 <translation id="3652817283076144888">Pokreće se</translation>
 <translation id="3653160965917900914">Deljenja datoteka na mreži</translation>
 <translation id="3653842108912548333">Pristupajte Pomoćniku pomoću Voice Match-a</translation>
@@ -3575,7 +3574,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="5315873049536339193">Identitet</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5319359161174645648">Google preporučuje Chrome</translation>
-<translation id="5320135788267874712">Nov naziv uređaj</translation>
 <translation id="532247166573571973">Server je možda nedostupan. Probajte ponovo kasnije.</translation>
 <translation id="5324780743567488672">Automatski podesi vremensku zonu pomoću moje lokacije</translation>
 <translation id="5327248766486351172">Naziv</translation>
@@ -4328,6 +4326,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6227280783235722609">dodatak</translation>
 <translation id="6229849828796482487">Prekini vezu sa Wi-Fi mrežom</translation>
 <translation id="6229890768313448549">Uslovi korišćenja usluge Google Play ne mogu da se učitaju. Probajte ponovo.</translation>
+<translation id="6231782223312638214">Predloženo</translation>
 <translation id="6231881193380278751">Dodajte parametar upita u URL da biste automatski osvežili stranicu: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Baterija</translation>
 <translation id="6232116551750539448">Veza sa mrežom <ph name="NAME" /> je prekinuta</translation>
