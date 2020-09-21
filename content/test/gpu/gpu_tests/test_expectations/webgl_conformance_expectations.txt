@@ -609,6 +609,10 @@ crbug.com/1043431 [ android qualcomm-adreno-(tm)-418 ] conformance/limits/gl-max
 crbug.com/951628 [ android qualcomm-adreno-(tm)-418 no-passthrough no-swiftshader-gl ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1083320 [ android qualcomm-adreno-(tm)-418 ] conformance/misc/uninitialized-test.html [ Skip ]
 crbug.com/1056830 [ android qualcomm-adreno-(tm)-418 ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
+crbug.com/1130440 [ android qualcomm-adreno-(tm)-418 ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ RetryOnFailure ]
+crbug.com/1130470 [ android qualcomm-adreno-(tm)-418 ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ RetryOnFailure ]
+crbug.com/1130438 [ android qualcomm-adreno-(tm)-418 ] conformance/textures/canvas/tex-2d-alpha-alpha-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1130411 [ android qualcomm-adreno-(tm)-418 ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ RetryOnFailure ]
 # Timing out on this device for unknown reasons.
 crbug.com/1099148 [ android qualcomm-adreno-(tm)-418 ] deqp/data/gles2/shaders/swizzles.html [ Skip ]
 crbug.com/1122644 [ android qualcomm-adreno-(tm)-418 ] conformance/textures/misc/texture-upload-size.html [ Skip ]
