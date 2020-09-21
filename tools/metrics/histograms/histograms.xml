@@ -95,6 +95,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Android.UserFontSizePref.Change" units="%"
+    expires_after="M90">
+  <owner>twellington@chromium.org</owner>
+  <owner>skym@chromium.org</owner>
+  <summary>
+    Records the current user font size pref when exiting accessibility settings
+    if the preference was changed. The font size ranges from 50% to 200% and can
+    be set in increments of 5%; the default is 100%.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Android.UserFontSizePref.OnStartup" units="%"
+    expires_after="M90">
+  <owner>twellington@chromium.org</owner>
+  <owner>skym@chromium.org</owner>
+  <summary>
+    Records the current user font size pref during deferred startup for
+    ChromeActivity. The font size ranges from 50% to 200% and can be set in
+    increments of 5%; the default is 100%.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.AndroidServiceInfo"
     enum="AccessibilityAndroidServiceInfoEnum" expires_after="M89">
   <owner>dmazzoni@chromium.org</owner>

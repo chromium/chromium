@@ -14,6 +14,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
@@ -35,6 +36,12 @@ public class FontSizePrefs {
      * by accessibility large text).
      */
     public static final float FORCE_ENABLE_ZOOM_THRESHOLD_MULTIPLIER = 1.3f;
+
+    @VisibleForTesting
+    public static final String FONT_SIZE_CHANGE_HISTOGRAM =
+            "Accessibility.Android.UserFontSizePref.Change";
+    private static final String FONT_SIZE_STARTUP_HISTOGRAM =
+            "Accessibility.Android.UserFontSizePref.OnStartup";
 
     private static final float EPSILON = 0.001f;
 
@@ -155,6 +162,28 @@ public class FontSizePrefs {
     public boolean getForceEnableZoom() {
         return FontSizePrefsJni.get().getForceEnableZoom(
                 mFontSizePrefsAndroidPtr, FontSizePrefs.this);
+    }
+
+    /**
+     * Record the user font setting. Intended to be logged on activity startup.
+     */
+    public void recordUserFontPrefOnStartup() {
+        recordUserFontPrefHistogram(FONT_SIZE_STARTUP_HISTOGRAM);
+    }
+
+    /**
+     * Record the user font setting when the setting is changed by the user.
+     */
+    public void recordUserFontPrefChange() {
+        recordUserFontPrefHistogram(FONT_SIZE_CHANGE_HISTOGRAM);
+    }
+
+    private void recordUserFontPrefHistogram(String histogramName) {
+        // User font size prefs range from 0.5 to 2.0 (50% to 200%) and can be updated in increments
+        // of 5% (see org.chromium.chrome.browser.accessibility.settings.TextScalePreference).
+        int sample = (int) (FontSizePrefs.getInstance().getUserFontScaleFactor() * 100);
+        assert sample >= 50 && sample <= 200 : "Unexpected font size pref";
+        RecordHistogram.recordSparseHistogram(histogramName, sample);
     }
 
     /**

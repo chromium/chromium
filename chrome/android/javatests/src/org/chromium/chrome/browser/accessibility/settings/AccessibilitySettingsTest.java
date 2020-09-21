@@ -22,6 +22,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.accessibility.FontSizePrefs;
@@ -98,6 +99,45 @@ public class AccessibilitySettingsTest {
         userSetTextScale(accessibilitySettings, textScalePref, fontSmallerThanThreshold);
         Assert.assertTrue(forceEnableZoomPref.isChecked());
         assertFontSizePrefs(true, fontSmallerThanThreshold);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    public void testChangedFontPrefSavedOnStop() {
+        AccessibilitySettings accessibilitySettings = mSettingsActivityTestRule.getFragment();
+        TextScalePreference textScalePref =
+                accessibilitySettings.findPreference(AccessibilitySettings.PREF_TEXT_SCALE);
+
+        // Change text scale a couple of times.
+        userSetTextScale(accessibilitySettings, textScalePref, 0.5f);
+        userSetTextScale(accessibilitySettings, textScalePref, 1.75f);
+
+        Assert.assertEquals("Histogram should not be recorded yet.", 0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        FontSizePrefs.FONT_SIZE_CHANGE_HISTOGRAM));
+
+        // Simulate activity stopping.
+        TestThreadUtils.runOnUiThreadBlocking(() -> accessibilitySettings.onStop());
+
+        Assert.assertEquals("Histogram should have been recorded once.", 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        FontSizePrefs.FONT_SIZE_CHANGE_HISTOGRAM));
+        Assert.assertEquals("Histogram should have recorded final value.", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        FontSizePrefs.FONT_SIZE_CHANGE_HISTOGRAM, 175));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    public void testUnchangedFontPrefNotSavedOnStop() {
+        AccessibilitySettings accessibilitySettings = mSettingsActivityTestRule.getFragment();
+        // Simulate activity stopping.
+        TestThreadUtils.runOnUiThreadBlocking(() -> accessibilitySettings.onStop());
+        Assert.assertEquals("Histogram should not have been recorded.", 0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        FontSizePrefs.FONT_SIZE_CHANGE_HISTOGRAM));
     }
 
     @Test
