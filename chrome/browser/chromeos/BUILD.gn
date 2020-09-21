@@ -191,6 +191,7 @@ source_set("chromeos") {
     "//chromeos/services/cros_healthd/public/cpp",
     "//chromeos/services/cros_healthd/public/mojom",
     "//chromeos/services/device_sync",
+    "//chromeos/services/device_sync:stub_device_sync",
     "//chromeos/services/device_sync/public/cpp",
     "//chromeos/services/ime:constants",
     "//chromeos/services/ime/public/cpp:buildflags",
