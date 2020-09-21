@@ -100,6 +100,10 @@ scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
     builder.SetIsTableCellHiddenForPaint(
         table_data.column_locations[*cell_location_start_column].is_collapsed &&
         *cell_location_start_column == cell_location_end_column);
+    builder.SetHideTableCellIfEmpty(!table_data.has_collapsed_borders &&
+                                    cell.Style().EmptyCells() ==
+                                        EEmptyCells::kHide);
+
     return builder.ToConstraintSpace();
   };
 

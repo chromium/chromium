@@ -60,8 +60,6 @@ scoped_refptr<const NGLayoutResult> NGTableSectionLayoutAlgorithm::Layout() {
     row_space_builder.SetPercentageResolutionSize(
         {container_builder_.InlineSize(), kIndefiniteSize});
     row_space_builder.SetNeedsBaseline(true);
-    row_space_builder.SetHideTableCellIfEmpty(
-        ConstraintSpace().HideTableCellIfEmpty());
     row_space_builder.SetTableRowData(&table_data, row_index);
     NGConstraintSpace row_space = row_space_builder.ToConstraintSpace();
     scoped_refptr<const NGLayoutResult> row_result = row.Layout(row_space);
