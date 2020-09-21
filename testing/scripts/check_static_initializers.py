@@ -11,10 +11,10 @@ import sys
 
 import common
 
-# A list of whitelisted files that are allowed to have static initializers.
+# A list of files that are allowed to have static initializers.
 # If something adds a static initializer, revert it. We don't accept regressions
 # in static initializers.
-_LINUX_SI_FILE_WHITELIST = {
+_LINUX_SI_FILE_ALLOWLIST = {
     'chrome': [
         'InstrProfilingRuntime.cpp',  # Only in coverage builds, not production.
         'atomicops_internals_x86.cc',  # TODO(crbug.com/973551): Remove.
@@ -24,11 +24,11 @@ _LINUX_SI_FILE_WHITELIST = {
     ],
     'nacl_helper_bootstrap': [],
 }
-_LINUX_SI_FILE_WHITELIST['nacl_helper'] = _LINUX_SI_FILE_WHITELIST['chrome']
+_LINUX_SI_FILE_ALLOWLIST['nacl_helper'] = _LINUX_SI_FILE_ALLOWLIST['chrome']
 
-# Mac can use a whitelist when a dsym is available, otherwise we will fall back
+# Mac can use this list when a dsym is available, otherwise it will fall back
 # to checking the count.
-_MAC_SI_FILE_WHITELIST = [
+_MAC_SI_FILE_ALLOWLIST = [
     'InstrProfilingRuntime.cpp', # Only in coverage builds, not in production.
     'sysinfo.cc', # Only in coverage builds, not in production.
     'iostream.cpp', # Used to setup std::cin/cout/cerr.
@@ -102,7 +102,7 @@ def main_mac(src_dir):
               [dump_static_initializers, chromium_framework_dsym])
           for line in stdout:
             if re.match('0x[0-9a-f]+', line) and not any(
-                f in line for f in _MAC_SI_FILE_WHITELIST):
+                f in line for f in _MAC_SI_FILE_ALLOWLIST):
               ret = 1
               print 'Found invalid static initializer: {}'.format(line)
           print stdout
@@ -130,7 +130,7 @@ def main_mac(src_dir):
 
 def main_linux(src_dir):
   ret = 0
-  for binary_name in _LINUX_SI_FILE_WHITELIST:
+  for binary_name in _LINUX_SI_FILE_ALLOWLIST:
     if not os.path.exists(binary_name):
       continue
 
@@ -154,7 +154,7 @@ def main_linux(src_dir):
       files_with_si.add(parts[1])
 
     for f in files_with_si:
-      if f not in _LINUX_SI_FILE_WHITELIST[binary_name]:
+      if f not in _LINUX_SI_FILE_ALLOWLIST[binary_name]:
         ret = 1
         print('Error: file "%s" is not expected to have static initializers in'
               ' binary "%s"') % (f, binary_name)
