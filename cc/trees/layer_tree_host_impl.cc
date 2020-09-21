@@ -192,14 +192,14 @@ viz::ResourceFormat TileRasterBufferFormat(
 
 void DidVisibilityChange(LayerTreeHostImpl* id, bool visible) {
   if (visible) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("cc", "LayerTreeHostImpl::SetVisible",
-                                      TRACE_ID_LOCAL(id), "LayerTreeHostImpl",
-                                      id);
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+        "cc,benchmark", "LayerTreeHostImpl::SetVisible", TRACE_ID_LOCAL(id),
+        "LayerTreeHostImpl", id);
     return;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("cc", "LayerTreeHostImpl::SetVisible",
-                                  TRACE_ID_LOCAL(id));
+  TRACE_EVENT_NESTABLE_ASYNC_END0(
+      "cc,benchmark", "LayerTreeHostImpl::SetVisible", TRACE_ID_LOCAL(id));
 }
 
 void PopulateMetadataContentColorUsage(
