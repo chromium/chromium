@@ -545,20 +545,24 @@ void UserImageManagerImpl::LoadUserImage() {
 }
 
 void UserImageManagerImpl::UserLoggedIn(bool user_is_new, bool user_is_local) {
+  // Reset the downloaded profile image as a new user logged in.
+  downloaded_profile_image_ = gfx::ImageSkia();
+  profile_image_url_ = GURL();
+  profile_image_requested_ = false;
+
+  is_random_image_set_ = false;
   const user_manager::User* user = GetUser();
   if (user_is_new) {
-    if (!user_is_local)
+    if (!user_is_local) {
       SetInitialUserImage();
+      is_random_image_set_ = true;
+      DownloadProfileImage();
+    }
   } else {
     UMA_HISTOGRAM_EXACT_LINEAR("UserImage.LoggedIn",
                                ImageIndexToHistogramIndex(user->image_index()),
                                default_user_image::kHistogramImagesCount);
   }
-
-  // Reset the downloaded profile image as a new user logged in.
-  downloaded_profile_image_ = gfx::ImageSkia();
-  profile_image_url_ = GURL();
-  profile_image_requested_ = false;
 
   user_image_sync_observer_.reset();
   TryToCreateImageSyncObserver();
@@ -589,6 +593,7 @@ void UserImageManagerImpl::UserProfileCreated() {
 }
 
 void UserImageManagerImpl::SaveUserDefaultImageIndex(int default_image_index) {
+  is_random_image_set_ = false;
   if (IsUserImageManaged())
     return;
   job_.reset(new Job(this));
@@ -762,7 +767,9 @@ void UserImageManagerImpl::OnProfileDownloadSuccess(
       gfx::ImageSkia::CreateFrom1xBitmap(downloader->GetProfilePicture());
   profile_image_url_ = GURL(downloader->GetProfilePictureURL());
 
-  if (user->image_index() == user_manager::User::USER_IMAGE_PROFILE) {
+  if (user->image_index() == user_manager::User::USER_IMAGE_PROFILE ||
+      is_random_image_set_) {
+    is_random_image_set_ = false;
     VLOG(1) << "Updating profile image for logged-in user.";
     // This will persist |downloaded_profile_image_| to disk.
     SaveUserImageFromProfileImage();

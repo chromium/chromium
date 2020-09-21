@@ -203,6 +203,10 @@ class UserImageManagerImpl : public UserImageManager,
 
   bool has_managed_image_;
 
+  // If true user image manager trying to download and set profile image instead
+  // of the random one.
+  bool is_random_image_set_ = false;
+
   base::WeakPtrFactory<UserImageManagerImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UserImageManagerImpl);
