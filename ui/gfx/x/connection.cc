@@ -322,7 +322,7 @@ void Connection::Sync() {
   if (syncing_)
     return;
   {
-    base::AutoReset<bool>(&syncing_, true);
+    base::AutoReset<bool> auto_reset(&syncing_, true);
     GetInputFocus({}).Sync();
   }
 }
