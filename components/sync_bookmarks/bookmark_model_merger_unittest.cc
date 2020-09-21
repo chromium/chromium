@@ -2100,4 +2100,50 @@ TEST(BookmarkModelMergerTest, ShouldReuploadBookmarkOnEmptyGuid) {
   EXPECT_FALSE(tracker->GetEntityForSyncId(kFolder2Id)->IsUnsynced());
 }
 
+TEST(BookmarkModelMergerTest, ShouldRemoveDifferentTypeDuplicatesByGUID) {
+  const std::string kTitle = "Title";
+
+  const std::string kGUID = base::GenerateGUID();
+
+  // The remote model has 2 duplicates, a folder and a URL.
+  //
+  // -------- The remote model --------
+  // bookmark_bar
+  //  |- folder1(GUID)
+  //    |- folder11
+  //  |- URL1(GUID)
+  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model =
+      bookmarks::TestBookmarkClient::CreateModel();
+
+  syncer::UpdateResponseDataList updates;
+  updates.push_back(CreateBookmarkBarNodeUpdateData());
+
+  updates.push_back(CreateUpdateResponseData(
+      /*server_id=*/"Id1", /*parent_id=*/kBookmarkBarId, kTitle,
+      /*url=*/"",
+      /*is_folder=*/true, MakeRandomPosition(), kGUID));
+  updates.push_back(CreateUpdateResponseData(
+      /*server_id=*/"Id11", /*parent_id=*/"Id1", "Some title",
+      /*url=*/"", /*is_folder=*/true, MakeRandomPosition()));
+
+  updates.push_back(CreateUpdateResponseData(
+      /*server_id=*/"Id2", /*parent_id=*/kBookmarkBarId, kTitle,
+      /*url=*/"http://url1.com", /*is_folder=*/false, MakeRandomPosition(),
+      kGUID));
+
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<SyncedBookmarkTracker> tracker =
+      Merge(std::move(updates), bookmark_model.get());
+  const bookmarks::BookmarkNode* bookmark_bar_node =
+      bookmark_model->bookmark_bar_node();
+  ASSERT_THAT(bookmark_bar_node->children().size(), Eq(1u));
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarksGUIDDuplicates",
+      /*sample=*/ExpectedBookmarksGUIDDuplicates::kDifferentTypes,
+      /*count=*/1);
+  EXPECT_THAT(tracker->GetEntityForSyncId("Id1"), NotNull());
+  EXPECT_THAT(tracker->GetEntityForSyncId("Id2"), IsNull());
+  EXPECT_EQ(bookmark_bar_node->children().front()->children().size(), 1u);
+}
+
 }  // namespace sync_bookmarks
