@@ -854,6 +854,8 @@ TEST(TestLauncherTools, GetTestOutputSnippetTest) {
       "Post first test output\n"
       "[ RUN      ] TestCase.SecondTest\n"
       "[  FAILED  ] TestCase.SecondTest (0 ms)\n"
+      "[ RUN      ] TestCase.ThirdTest\n"
+      "[  SKIPPED ] TestCase.ThirdTest (0 ms)\n"
       "Post second test output";
   TestResult result;
 
@@ -878,6 +880,14 @@ TEST(TestLauncherTools, GetTestOutputSnippetTest) {
   EXPECT_EQ(GetTestOutputSnippet(result, output),
             "[ RUN      ] TestCase.SecondTest\n"
             "[  FAILED  ] TestCase.SecondTest (0 ms)\n");
+
+  // test snippet of a skipped test. Note that the status is SUCCESS because
+  // the gtest XML format doesn't make a difference between SUCCESS and SKIPPED
+  result.full_name = "TestCase.ThirdTest";
+  result.status = TestResult::TEST_SUCCESS;
+  EXPECT_EQ(GetTestOutputSnippet(result, output),
+            "[ RUN      ] TestCase.ThirdTest\n"
+            "[  SKIPPED ] TestCase.ThirdTest (0 ms)\n");
 }
 
 }  // namespace

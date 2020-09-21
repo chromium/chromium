@@ -1952,12 +1952,19 @@ std::string GetTestOutputSnippet(const TestResult& result,
                                     result.full_name,
                                     run_pos);
   // Only clip the snippet to the "OK" message if the test really
-  // succeeded. It still might have e.g. crashed after printing it.
+  // succeeded or was skipped. It still might have e.g. crashed
+  // after printing it.
   if (end_pos == std::string::npos) {
     if (result.status == TestResult::TEST_SUCCESS) {
       end_pos = full_output.find(std::string("[       OK ] ") +
                                 result.full_name,
                                 run_pos);
+
+      // Also handle SKIPPED next to SUCCESS because the GTest XML output
+      // doesn't make a difference between SKIPPED and SUCCESS
+      if (end_pos == std::string::npos)
+        end_pos = full_output.find(
+            std::string("[  SKIPPED ] ") + result.full_name, run_pos);
     } else {
       // If test is not successful, include all output until subsequent test.
       end_pos = full_output.find(std::string("[ RUN      ]"), run_pos + 1);
