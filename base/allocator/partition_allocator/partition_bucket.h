@@ -86,8 +86,6 @@ struct PartitionBucket {
     return (size + SystemPageOffsetMask()) & SystemPageBaseMask();
   }
 
-  BASE_EXPORT static PartitionBucket* get_sentinel_bucket();
-
   // This helper function scans a bucket's active page list for a suitable new
   // active page.  When it finds a suitable new active page (one that has
   // free slots and is not empty), it is set as the new active page. If there
@@ -157,8 +155,6 @@ struct PartitionBucket {
   // the current bucket. If the |page| was freshly allocated, it must have been
   // passed through InitializeSlotSpan() first.
   ALWAYS_INLINE char* AllocAndFillFreelist(PartitionPage<thread_safe>* page);
-
-  static PartitionBucket sentinel_bucket_;
 };
 
 }  // namespace internal

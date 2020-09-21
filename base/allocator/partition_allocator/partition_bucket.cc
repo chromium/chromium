@@ -124,16 +124,6 @@ ALWAYS_INLINE PartitionPage<thread_safe>* PartitionDirectMap(
 
 }  // namespace
 
-// static
-template <bool thread_safe>
-PartitionBucket<thread_safe> PartitionBucket<thread_safe>::sentinel_bucket_;
-
-template <bool thread_safe>
-PartitionBucket<thread_safe>*
-PartitionBucket<thread_safe>::get_sentinel_bucket() {
-  return &sentinel_bucket_;
-}
-
 // TODO(ajwong): This seems to interact badly with
 // get_pages_per_slot_span() which rounds the value from this up to a
 // multiple of NumSystemPagesPerPartitionPage() (aka 4) anyways.
@@ -571,7 +561,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
   bool return_null = flags & PartitionAllocReturnNull;
   if (UNLIKELY(is_direct_mapped())) {
     PA_DCHECK(size > kMaxBucketed);
-    PA_DCHECK(this == get_sentinel_bucket());
+    PA_DCHECK(this == &root->sentinel_bucket);
     PA_DCHECK(active_pages_head ==
               PartitionPage<thread_safe>::get_sentinel_page());
     if (size > MaxDirectMapped()) {
@@ -665,7 +655,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
     IMMEDIATE_CRASH();  // Not required, kept as documentation.
   }
 
-  PA_DCHECK(new_page_bucket != get_sentinel_bucket());
+  PA_DCHECK(new_page_bucket != &root->sentinel_bucket);
   new_page_bucket->active_pages_head = new_page;
   new_page->set_raw_size(size);
 

@@ -241,10 +241,8 @@ void PartitionRoot<thread_safe>::Init(bool enforce_alignment,
 
   // We mark the sentinel bucket/page as free to make sure it is skipped by our
   // logic to find a new active page.
-  //
-  // This may be executed several times, once per PartitionRoot. This is not an
-  // issue, as the operation is atomic and idempotent.
-  Bucket::get_sentinel_bucket()->active_pages_head = Page::get_sentinel_page();
+  memset(&sentinel_bucket, 0, sizeof(sentinel_bucket));
+  sentinel_bucket.active_pages_head = Page::get_sentinel_page();
 
   // This is a "magic" value so we can test if a root pointer is valid.
   inverted_self = ~reinterpret_cast<uintptr_t>(this);
@@ -282,7 +280,7 @@ void PartitionRoot<thread_safe>::Init(bool enforce_alignment,
         // Use the bucket of the finest granularity for malloc(0) etc.
         *bucket_ptr++ = &buckets[0];
       } else if (order > kMaxBucketedOrder) {
-        *bucket_ptr++ = Bucket::get_sentinel_bucket();
+        *bucket_ptr++ = &sentinel_bucket;
       } else {
         Bucket* valid_bucket = bucket;
         // Skip over invalid buckets.
@@ -298,7 +296,7 @@ void PartitionRoot<thread_safe>::Init(bool enforce_alignment,
             &bucket_lookups[0] + ((kBitsPerSizeT + 1) * kNumBucketsPerOrder));
   // And there's one last bucket lookup that will be hit for e.g. malloc(-1),
   // which tries to overflow to a non-existent order.
-  *bucket_ptr = Bucket::get_sentinel_bucket();
+  *bucket_ptr = &sentinel_bucket;
 
   initialized = true;
 }

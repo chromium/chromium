@@ -412,6 +412,7 @@ struct BASE_EXPORT PartitionRoot {
   // behavior.
   Bucket* bucket_lookups[((kBitsPerSizeT + 1) * kNumBucketsPerOrder) + 1] = {};
   Bucket buckets[kNumBuckets] = {};
+  Bucket sentinel_bucket;
 
   PartitionRoot() = default;
   PartitionRoot(bool enable_tag_pointers, bool enable_thread_cache) {
@@ -546,6 +547,11 @@ static_assert(sizeof(PartitionRoot<internal::ThreadSafe>) ==
 static_assert(offsetof(PartitionRoot<internal::ThreadSafe>, buckets) ==
                   offsetof(PartitionRoot<internal::NotThreadSafe>, buckets),
               "Layouts should match");
+static_assert(offsetof(PartitionRoot<internal::ThreadSafe>, sentinel_bucket) ==
+                  offsetof(PartitionRoot<internal::ThreadSafe>, buckets) +
+                      kNumBuckets *
+                          sizeof(PartitionRoot<internal::ThreadSafe>::Bucket),
+              "sentinel_bucket must be just after the regular buckets.");
 
 template <bool thread_safe>
 ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
@@ -588,9 +594,8 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
 
     page = Page::FromPointer(ret);
     // For direct mapped allocations, |bucket| is the sentinel.
-    PA_DCHECK((page->bucket == bucket) ||
-              (page->bucket->is_direct_mapped() &&
-               (bucket == Bucket::get_sentinel_bucket())));
+    PA_DCHECK((page->bucket == bucket) || (page->bucket->is_direct_mapped() &&
+                                           (bucket == &sentinel_bucket)));
 
     *allocated_size = page->GetAllocatedSize();
   }
@@ -700,8 +705,9 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
   // Also the thread-unsafe variant doesn't have a use for a thread cache, so
   // make it statically known to the compiler.
   if (thread_safe && root->with_thread_cache &&
-      LIKELY(!page->bucket->is_direct_mapped())) {
-    PA_DCHECK(page->bucket >= root->buckets);
+      !page->bucket->is_direct_mapped()) {
+    PA_DCHECK(page->bucket >= root->buckets &&
+              page->bucket <= &root->sentinel_bucket);
     size_t bucket_index = page->bucket - root->buckets;
     auto* thread_cache = internal::ThreadCache::Get();
     if (thread_cache && thread_cache->MaybePutInCache(ptr, bucket_index))
@@ -942,33 +948,23 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(int flags,
       with_thread_cache = true;
     }
     // bucket->slot_size is 0 for direct-mapped allocations, as their bucket is
-    // the sentinel one. However, since we are touching *bucket, we may as well
-    // check it directly, rather than fetching the sentinel one, and comparing
-    // the addresses. Since the sentinel bucket is *not* part of the the buckets
-    // array, |bucket_index| is not valid for the sentinel one.
-    //
-    // TODO(lizeb): Consider making Bucket::sentinel per-PartitionRoot, at the
-    // end of the |buckets| array. This would remove this branch.
-    if (LIKELY(bucket->slot_size)) {
-      PA_DCHECK(bucket != Bucket::get_sentinel_bucket());
-      PA_DCHECK(bucket >= buckets && bucket < (buckets + kNumBuckets));
-      size_t bucket_index = bucket - buckets;
-      ret = tcache->GetFromCache(bucket_index);
-      is_already_zeroed = false;
-      allocated_size = bucket->slot_size;
+    // the sentinel one. Since |bucket_index| is going to be kNumBuckets + 1,
+    // the thread cache allocation will return nullptr.
+    PA_DCHECK(bucket >= buckets && bucket <= &sentinel_bucket);
+    size_t bucket_index = bucket - buckets;
+    ret = tcache->GetFromCache(bucket_index);
+    is_already_zeroed = false;
+    allocated_size = bucket->slot_size;
 
 #if DCHECK_IS_ON()
-      // Make sure that the allocated pointer comes from the same place it would
-      // for a non-thread cache allocation.
-      if (ret) {
-        Page* page = Page::FromPointerNoAlignmentCheck(ret);
-        PA_DCHECK(IsValidPage(page));
-        PA_DCHECK(page->bucket == &buckets[bucket_index]);
-      }
-#endif
-    } else {
-      PA_DCHECK(bucket == Bucket::get_sentinel_bucket());
+    // Make sure that the allocated pointer comes from the same place it would
+    // for a non-thread cache allocation.
+    if (ret) {
+      Page* page = Page::FromPointerNoAlignmentCheck(ret);
+      PA_DCHECK(IsValidPage(page));
+      PA_DCHECK(page->bucket == &buckets[bucket_index]);
     }
+#endif
   }
 
   if (!ret)

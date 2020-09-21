@@ -170,6 +170,12 @@ TEST_F(ThreadCacheTest, LargeAllocationsAreNotCached) {
 }
 #endif
 
+TEST_F(ThreadCacheTest, DirectMappedAllocationsAreNotCached) {
+  FillThreadCacheAndReturnIndex(1024 * 1024);
+  // The line above would crash due to out of bounds access if this wasn't
+  // properly handled.
+}
+
 TEST_F(ThreadCacheTest, MultipleThreadCaches) {
   const size_t kTestSize = 100;
   FillThreadCacheAndReturnIndex(kTestSize);
