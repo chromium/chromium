@@ -6,8 +6,7 @@
 AUTOPLAY_POLICY_NO_USER_GESTURE_REQUIRED =\
     '--autoplay-policy=no-user-gesture-required'
 DISABLE_ACCELERATED_2D_CANVAS = '--disable-accelerated-2d-canvas'
-DISABLE_DEVICE_DISCOVERY_NOTIFICATIONS =\
-    '--disable-device-discovery-notifications'
+DISABLE_DEVICE_DISCOVERY_NOTIFICATIONS = '--disable-features=MediaRouter'
 DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS = '--disable-domain-blocking-for-3d-apis'
 DISABLE_FEATURES_D3D11_VIDEO_DECODER = '--disable-features=D3D11VideoDecoder'
 DISABLE_FORCE_FULL_DAMAGE =\
