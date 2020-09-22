@@ -334,6 +334,8 @@ void UiControllerAndroid::Attach(content::WebContents* web_contents,
   Java_AssistantCollectUserDataModel_setWebContents(
       env, GetCollectUserDataModel(), java_web_contents);
   OnClientSettingsChanged(ui_delegate_->GetClientSettings());
+  Java_AssistantModel_setPeekModeDisabled(env, GetModel(),
+                                          ui_delegate->IsRunningLiteScript());
 
   if (ui_delegate->GetState() != AutofillAssistantState::INACTIVE &&
       ui_delegate->IsTabSelected()) {
@@ -918,6 +920,14 @@ bool UiControllerAndroid::OnBackButtonClicked() {
                   Metrics::DropOutReason::BACK_BUTTON_CLICKED);
   }
   return true;
+}
+
+void UiControllerAndroid::OnBottomSheetDismissed() {
+  if (ui_delegate_->IsTabSelected() && ui_delegate_->IsRunningLiteScript()) {
+    // Destroying UI here because Shutdown does not do so in all cases.
+    DestroySelf();
+    Shutdown(Metrics::DropOutReason::SHEET_CLOSED);
+  }
 }
 
 void UiControllerAndroid::CloseOrCancel(

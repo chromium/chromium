@@ -32,6 +32,7 @@ class AssistantModel extends PropertyModel {
     static final WritableFloatPropertyKey TALKBACK_SHEET_SIZE_FRACTION =
             new WritableFloatPropertyKey();
     static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey PEEK_MODE_DISABLED = new WritableBooleanPropertyKey();
 
     /** The web contents the Autofill Assistant is associated with. */
     static final WritableObjectPropertyKey<WebContents> WEB_CONTENTS =
@@ -53,7 +54,8 @@ class AssistantModel extends PropertyModel {
 
     AssistantModel(AssistantOverlayModel overlayModel) {
         super(ALLOW_SOFT_KEYBOARD, ALLOW_TALKBACK_ON_WEBSITE, BOTTOM_BAR_DELEGATE,
-                BOTTOM_SHEET_STATE, TALKBACK_SHEET_SIZE_FRACTION, VISIBLE, WEB_CONTENTS);
+                BOTTOM_SHEET_STATE, TALKBACK_SHEET_SIZE_FRACTION, VISIBLE, PEEK_MODE_DISABLED,
+                WEB_CONTENTS);
         mOverlayModel = overlayModel;
     }
 
@@ -136,6 +138,11 @@ class AssistantModel extends PropertyModel {
     @CalledByNative
     private boolean getVisible() {
         return get(VISIBLE);
+    }
+
+    @CalledByNative
+    private void setPeekModeDisabled(boolean disabled) {
+        set(PEEK_MODE_DISABLED, disabled);
     }
 
     @CalledByNative

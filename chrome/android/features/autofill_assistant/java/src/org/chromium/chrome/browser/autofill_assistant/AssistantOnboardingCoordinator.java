@@ -109,6 +109,9 @@ class AssistantOnboardingCoordinator {
                                 DropOutReason.ONBOARDING_BACK_BUTTON_CLICKED);
                         return true;
                     }
+
+                    @Override
+                    public void onBottomSheetDismissed() {}
                 });
         initContent(callback);
         BottomSheetUtils.showContentAndMaybeExpand(

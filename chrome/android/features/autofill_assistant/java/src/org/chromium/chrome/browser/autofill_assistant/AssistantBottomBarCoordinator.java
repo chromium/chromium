@@ -204,6 +204,13 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
                 if (newState != BottomSheetController.SheetState.SCROLLING) {
                     maybeShowHeaderChips();
                 }
+
+                if (newState == BottomSheetController.SheetState.HIDDEN) {
+                    AssistantBottomBarDelegate delegate = mModel.getBottomBarDelegate();
+                    if (delegate != null) {
+                        delegate.onBottomSheetDismissed();
+                    }
+                }
             }
 
             @Override
@@ -241,6 +248,8 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
                 mRootViewContainer.setTalkbackViewSizeFraction(
                         model.get(AssistantModel.TALKBACK_SHEET_SIZE_FRACTION));
                 updateVisualViewportHeight();
+            } else if (AssistantModel.PEEK_MODE_DISABLED == propertyKey) {
+                mContent.setPeekModeDisabled(model.get(AssistantModel.PEEK_MODE_DISABLED));
             }
         });
 

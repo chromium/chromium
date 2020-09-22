@@ -27,6 +27,7 @@ class AssistantBottomSheetContent implements BottomSheetContent {
     @Nullable
     private ScrollView mContentScrollableView;
     private Supplier<AssistantBottomBarDelegate> mBottomBarDelegateSupplier;
+    private boolean mPeekModeDisabled;
 
     public AssistantBottomSheetContent(
             Context context, Supplier<AssistantBottomBarDelegate> supplier) {
@@ -47,6 +48,10 @@ class AssistantBottomSheetContent implements BottomSheetContent {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         mContentView.addView(content);
         mContentScrollableView = scrollableView;
+    }
+
+    void setPeekModeDisabled(boolean disabled) {
+        mPeekModeDisabled = disabled;
     }
 
     @Override
@@ -101,6 +106,12 @@ class AssistantBottomSheetContent implements BottomSheetContent {
     @Override
     public boolean hasCustomScrimLifecycle() {
         return true;
+    }
+
+    @Override
+    public int getPeekHeight() {
+        return mPeekModeDisabled ? BottomSheetContent.HeightMode.DISABLED
+                                 : BottomSheetContent.HeightMode.DEFAULT;
     }
 
     @Override
