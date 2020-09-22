@@ -338,6 +338,9 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     @CalledByNative
     @Override
     public GURL getUrl() {
+        if (!isInitialized()) {
+            return GURL.emptyGURL();
+        }
         GURL url = getWebContents() != null ? getWebContents().getVisibleUrl() : GURL.emptyGURL();
 
         // If we have a ContentView, or a NativePage, or the url is not empty, we have a WebContents
