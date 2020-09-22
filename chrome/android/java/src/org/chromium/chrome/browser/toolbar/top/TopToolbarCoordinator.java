@@ -143,10 +143,6 @@ public class TopToolbarCoordinator implements Toolbar {
         HomepageManager.getInstance().addListener(mHomepageStateListener);
         mToolbarLayout.initialize(toolbarDataProvider, tabController, mMenuButtonCoordinator);
 
-        final MenuButton menuButtonWrapper = getMenuButtonWrapper();
-        if (menuButtonWrapper != null) {
-            menuButtonWrapper.setThemeColorProvider(normalThemeColorProvider);
-        }
         mToolbarLayout.setThemeColorProvider(normalThemeColorProvider);
         mAppMenuButtonHelperSupplier = appMenuButtonHelperSupplier;
         new OneShotCallback<>(mAppMenuButtonHelperSupplier, this::setAppMenuButtonHelper);
