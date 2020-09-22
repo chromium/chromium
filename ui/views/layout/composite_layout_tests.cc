@@ -155,12 +155,10 @@ class SimulatedExtensionsContainer : public SimulatedToolbarElement {
     main_button->SetProperty(kFlexBehaviorKey, FlexSpecification());
     layout()->SetDefaultFadeMode(
         AnimatingLayoutManager::FadeInOutMode::kSlideFromTrailingEdge);
-    target_layout()
-        ->SetFlexAllocationOrder(FlexAllocationOrder::kReverse)
-        .SetDefault(
-            kFlexBehaviorKey,
-            FlexSpecification(LayoutOrientation::kHorizontal,
-                              MinimumFlexSizeRule::kPreferredSnapToZero));
+    target_layout()->SetDefault(
+        kFlexBehaviorKey,
+        FlexSpecification(LayoutOrientation::kHorizontal,
+                          MinimumFlexSizeRule::kPreferredSnapToZero));
   }
 
   ~SimulatedExtensionsContainer() override = default;

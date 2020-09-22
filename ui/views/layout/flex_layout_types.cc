@@ -175,10 +175,7 @@ FlexSpecification::FlexSpecification(MinimumFlexSizeRule minimum_size_rule,
                                             maximum_size_rule,
                                             minimum_size_rule,
                                             maximum_size_rule,
-                                            adjust_height_for_width)) {
-  unlimited_main_axis_size_ =
-      maximum_size_rule == MaximumFlexSizeRule::kUnbounded;
-}
+                                            adjust_height_for_width)) {}
 
 FlexSpecification::FlexSpecification(
     LayoutOrientation orientation,
@@ -199,10 +196,7 @@ FlexSpecification::FlexSpecification(
           orientation == LayoutOrientation::kVertical
               ? maximum_main_axis_rule
               : kDefaultMaximumFlexSizeRule,
-          adjust_height_for_width)) {
-  unlimited_main_axis_size_ =
-      maximum_main_axis_rule == MaximumFlexSizeRule::kUnbounded;
-}
+          adjust_height_for_width)) {}
 
 FlexSpecification::FlexSpecification(const FlexSpecification& other) = default;
 

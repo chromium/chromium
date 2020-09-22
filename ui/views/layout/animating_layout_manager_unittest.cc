@@ -4146,8 +4146,8 @@ TEST_F(AnimatingLayoutManagerInFlexLayoutTest, NoAnimation) {
   const gfx::Size preferred = target_layout()->GetPreferredSize(view());
   root_view()->SetSize(preferred);
   layout()->ResetLayout();
-  root_view()->Layout();
   AnimationEventLogger logger(layout());
+  root_view()->Layout();
   EXPECT_EQ(preferred, view()->size());
   const std::vector<bool> expected_events{};
   EXPECT_EQ(expected_events, logger.events());
