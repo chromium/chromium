@@ -398,7 +398,7 @@
       {
         "name": "onScrollableBoundsForPointFound",
         "type": "function",
-        "description": "Called by the Accessibility Common extension when findScrollableBoundsForPoint has found a scrolling container. |rect| will be the bounds of the nearest scrollable ancestor of the node at the point requested using findScrollableBoundsForPoint.",
+        "description": "Called by the Accessibility Common extension when onScrollableBoundsForPointRequested has found a scrolling container. |rect| will be the bounds of the nearest scrollable ancestor of the node at the point requested using onScrollableBoundsForPointRequested.",
         "parameters": [
           {
             "name": "rect",
@@ -522,7 +522,7 @@
         "platforms": ["chromeos"]
       },
       {
-        "name": "findScrollableBoundsForPoint",
+        "name": "onScrollableBoundsForPointRequested",
         "type": "function",
         "description": "Fired when an internal component within accessibility wants to find the nearest scrolling container at a given screen coordinate. Used in Automatic Clicks.",
         "parameters": [

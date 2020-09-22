@@ -66,7 +66,7 @@ TEST_F('AutoclickE2ETest', 'HighlightsRootWebAreaIfNotScrollable', function() {
       'data:text/html;charset=utf-8,<p>Cats rock!</p>', function(desktop) {
         const node = desktop.find(
             {role: 'staticText', attributes: {name: 'Cats rock!'}});
-        this.mockAccessibilityPrivate.callFindScrollableBoundsForPoint(
+        this.mockAccessibilityPrivate.callOnScrollableBoundsForPointRequested(
             // Offset slightly into the node to ensure the hittest
             // happens within the node.
             node.location.left + 1, node.location.top + 1,
@@ -92,7 +92,7 @@ TEST_F('AutoclickE2ETest', 'HighlightsScrollableDiv', function() {
           role: 'staticText',
           attributes: {name: 'cats rock! this text wraps and overflows!'}
         });
-        this.mockAccessibilityPrivate.callFindScrollableBoundsForPoint(
+        this.mockAccessibilityPrivate.callOnScrollableBoundsForPointRequested(
             // Offset slightly into the node to ensure the hittest happens
             // within the node.
             node.location.left + 1, node.location.top + 1,
@@ -118,19 +118,20 @@ TEST_F('AutoclickE2ETest', 'RemovesAndAddsAutoclick', function() {
           chrome.accessibilityFeatures.autoclick.set({value: true}, () => {
             const node = desktop.find(
                 {role: 'staticText', attributes: {name: 'Cats rock!'}});
-            this.mockAccessibilityPrivate.callFindScrollableBoundsForPoint(
-                // Offset slightly into the node to ensure the hittest
-                // happens within the node.
-                node.location.left + 1, node.location.top + 1,
-                this.newCallback(() => {
-                  const expected = node.root.location;
-                  this.assertSameRect(
-                      this.mockAccessibilityPrivate.getScrollableBounds(),
-                      expected);
-                  this.assertSameRect(
-                      this.mockAccessibilityPrivate.getFocusRings()[0],
-                      expected);
-                }));
+            this.mockAccessibilityPrivate
+                .callOnScrollableBoundsForPointRequested(
+                    // Offset slightly into the node to ensure the hittest
+                    // happens within the node.
+                    node.location.left + 1, node.location.top + 1,
+                    this.newCallback(() => {
+                      const expected = node.root.location;
+                      this.assertSameRect(
+                          this.mockAccessibilityPrivate.getScrollableBounds(),
+                          expected);
+                      this.assertSameRect(
+                          this.mockAccessibilityPrivate.getFocusRings()[0],
+                          expected);
+                    }));
           });
         });
       });

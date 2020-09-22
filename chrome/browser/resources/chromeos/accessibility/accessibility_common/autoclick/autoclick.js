@@ -55,8 +55,8 @@ class Autoclick {
    */
   onAutoclickDisabled() {
     if (this.scrollableBoundsListener_) {
-      chrome.accessibilityPrivate.findScrollableBoundsForPoint.removeListener(
-          this.scrollableBoundsListener_);
+      chrome.accessibilityPrivate.onScrollableBoundsForPointRequested
+          .removeListener(this.scrollableBoundsListener_);
       this.scrollableBoundsListener_ = null;
     }
 
@@ -87,7 +87,7 @@ class Autoclick {
           true);
     });
 
-    chrome.accessibilityPrivate.findScrollableBoundsForPoint.addListener(
+    chrome.accessibilityPrivate.onScrollableBoundsForPointRequested.addListener(
         this.scrollableBoundsListener_);
   }
 

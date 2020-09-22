@@ -307,9 +307,9 @@ chrome.accessibilityPrivate.onSelectToSpeakStateChanged = function(state) {};
 
 /**
  * Called by the Accessibility Common extension when
- * findScrollableBoundsForPoint has found a scrolling container. |rect| will be
+ * onScrollableBoundsForPointRequested has found a scrolling container. |rect| will be
  * the bounds of the nearest scrollable ancestor of the node at the point
- * requested using findScrollableBoundsForPoint.
+ * requested using onScrollableBoundsForPointRequested.
  * @param {!chrome.accessibilityPrivate.ScreenRect} rect
  */
 chrome.accessibilityPrivate.onScrollableBoundsForPointFound = function(rect) {};
@@ -394,7 +394,7 @@ chrome.accessibilityPrivate.onAnnounceForAccessibility;
  * Clicks.
  * @type {!ChromeEvent}
  */
-chrome.accessibilityPrivate.findScrollableBoundsForPoint;
+chrome.accessibilityPrivate.onScrollableBoundsForPointRequested;
 
 /**
  * Fired when a custom spoken feedback on the active window gets enabled or

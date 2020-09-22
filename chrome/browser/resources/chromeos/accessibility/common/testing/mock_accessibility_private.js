@@ -22,9 +22,9 @@ var MockAccessibilityPrivate = {
 
   // Methods from AccessibilityPrivate API. //
 
-  findScrollableBoundsForPoint: {
+  onScrollableBoundsForPointRequested: {
     /**
-     * Adds a listener to findScrollableBoundsForPoint.
+     * Adds a listener to onScrollableBoundsForPointRequested.
      * @param {function<number, number>} listener
      */
     addListener: (listener) => {
@@ -73,7 +73,7 @@ var MockAccessibilityPrivate = {
    * @param {number} y
    * @param {!function<>} onScrollableBoundsForPointFoundCallback
    */
-  callFindScrollableBoundsForPoint:
+  callOnScrollableBoundsForPointRequested:
       (x, y, onScrollableBoundsForPointFoundCallback) => {
         onScrollableBoundsForPointFoundCallback_ =
             onScrollableBoundsForPointFoundCallback;
