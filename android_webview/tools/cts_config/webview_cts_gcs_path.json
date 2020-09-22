@@ -184,13 +184,7 @@
     },
     "test_runs": [
       {
-        "apk": "android-cts/testcases/CtsWebkitTestCases.apk",
-        "excludes": [
-          {
-            "match": "android.webkit.cts.ServiceWorkerClientTest.testServiceWorkerClientInterceptCallback",
-            "_bug_id": "crbug.com/675809"
-          }
-        ]
+        "apk": "android-cts/testcases/CtsWebkitTestCases.apk"
       },
       {
         "apk": "android-cts/testcases/CtsWidgetTestCases.apk",
@@ -217,13 +211,7 @@
     },
     "test_runs": [
       {
-        "apk": "android-cts/testcases/CtsWebkitTestCases.apk",
-        "excludes": [
-          {
-            "match": "android.webkit.cts.ServiceWorkerClientTest.testServiceWorkerClientInterceptCallback",
-            "_bug_id": "crbug.com/675809"
-          }
-        ]
+        "apk": "android-cts/testcases/CtsWebkitTestCases.apk"
       },
       {
         "apk": "android-cts/testcases/CtsWebViewStartupApp.apk"
