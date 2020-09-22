@@ -222,6 +222,7 @@
 #include "chrome/browser/first_run/android/first_run_prefs.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
+#include "chrome/browser/video_tutorials/prefs.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
 #include "components/feed/buildflags.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
@@ -622,7 +623,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ::android::RegisterPrefs(registry);
 
   registry->RegisterBooleanPref(first_run::kCCTToSDialogEnabled, true);
-#else   // defined(OS_ANDROID)
+#else  // defined(OS_ANDROID)
   enterprise_connectors::RegisterLocalStatePrefs(registry);
   enterprise_reporting::RegisterLocalStatePrefs(registry);
   gcm::RegisterPrefs(registry);
@@ -880,6 +881,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   RecentTabsPagePrefs::RegisterProfilePrefs(registry);
   usage_stats::UsageStatsBridge::RegisterProfilePrefs(registry);
   variations::VariationsService::RegisterProfilePrefs(registry);
+  video_tutorials::RegisterPrefs(registry);
   feed::prefs::RegisterFeedSharedProfilePrefs(registry);
 #if BUILDFLAG(ENABLE_FEED_IN_CHROME)
   feed::RegisterProfilePrefs(registry);
