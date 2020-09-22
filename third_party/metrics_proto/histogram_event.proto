@@ -25,6 +25,7 @@ message HistogramEventProto {
   optional int64 sum = 2;
 
   // The per-bucket data.
+  // Next tag: 5
   message Bucket {
     // Each bucket's range is bounded by min <= x < max.
     // It is valid to omit one of these two fields in a bucket, but not both.
@@ -34,12 +35,6 @@ message HistogramEventProto {
     // histogram should always include the max field.
     optional int64 min = 1;
     optional int64 max = 2;
-
-    // The bucket's index in the list of buckets, sorted in ascending order.
-    // This field was intended to provide extra redundancy to detect corrupted
-    // records, but was never used.  As of M31, it is no longer sent by Chrome
-    // clients to reduce the UMA upload size.
-    optional int32 bucket_index = 3 [deprecated = true];
 
     // The number of entries in this bucket.  As of M51, when the value of this
     // field would be 1, the field will be omitted instead.

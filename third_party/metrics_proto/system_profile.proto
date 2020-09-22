@@ -343,6 +343,7 @@ message SystemProfileProto {
       // to be used in logs processing as a more convenient way to manage the
       // ambiguous case when breaking down stats by connection_type.
       CONNECTION_AMBIGUOUS = 8;
+      CONNECTION_5G = 9;
     }
     // The connection type according to NetworkChangeNotifier.
     optional ConnectionType connection_type = 2;

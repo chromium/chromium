@@ -98,13 +98,13 @@ message OmniboxEventProto {
     // An invalid URL; shouldn't happen.
     INVALID_SPEC = 0;
 
-    // chrome://newtab/.  This can be either the built-in version or a
-    // replacement new tab page from an extension.  Note that when Instant
-    // Extended is enabled, the new tab page will be reported as either
-    // INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS or
-    // INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS below,
-    // unless an extension is replacing the new tab page, in which case
-    // it will still be reported as NTP.
+    // chrome://newtab/.  For modern versions of Chrome, this is only reported
+    // when an extension is replacing the new tab page. Otherwise, new tab
+    // page interactions will be reported as NTP_REALBOX,
+    // INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS or
+    // INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS.
+    // For old versions of Chrome, this was reported for the default New Tab
+    // Page.
     NTP = 1;
 
     // about:blank.
@@ -131,8 +131,9 @@ message OmniboxEventProto {
     // with the user having focus in the omnibox.
     INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS = 7;
 
-    // The new tab page in which this omnibox interaction first started
-    // with the user having focus in the fakebox.
+    // The new tab page in which this omnibox interaction first started with the
+    // user having focus in the fakebox. Note that this started being replaced
+    // by NTP_REALBOX in Aug 2020 and will eventually be obsolete.
     INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS = 8;
 
     // The user is on a search result page that does not do search term
@@ -285,6 +286,8 @@ message OmniboxEventProto {
                                    // suggestion.
       CLIPBOARD_TEXT = 28;         // Text based on the clipboard.
       CLIPBOARD_IMAGE = 29;        // An image based on the clipboard.
+      TILE_SUGGESTION = 30;        // A search query from Chrome Query Tiles
+                                   // feature. Only used by Android.
     }
     optional ResultType result_type = 2;
 
