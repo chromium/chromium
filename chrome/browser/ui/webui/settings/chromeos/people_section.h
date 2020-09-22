@@ -9,6 +9,7 @@
 #include "chrome/browser/chromeos/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
 #include "chromeos/components/account_manager/account_manager.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/sync/driver/sync_service_observer.h"
 
 class PrefService;
@@ -79,6 +80,7 @@ class PeopleSection : public OsSettingsSection,
   void FetchAccounts();
   void UpdateAccountManagerSearchTags(
       const std::vector<AccountManager::Account>& accounts);
+  void UpdateRemoveFingerprintSearchTags();
 
   AccountManager* account_manager_ = nullptr;
   syncer::SyncService* sync_service_;
@@ -86,6 +88,7 @@ class PeopleSection : public OsSettingsSection,
   KerberosCredentialsManager* kerberos_credentials_manager_;
   signin::IdentityManager* identity_manager_;
   PrefService* pref_service_;
+  PrefChangeRegistrar fingerprint_pref_change_registrar_;
   base::WeakPtrFactory<PeopleSection> weak_factory_{this};
 };
 

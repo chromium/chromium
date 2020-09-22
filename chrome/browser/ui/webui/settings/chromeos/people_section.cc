@@ -264,12 +264,6 @@ const std::vector<SearchConcept>& GetKerberosSearchConcepts() {
 
 const std::vector<SearchConcept>& GetFingerprintSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_FINGERPRINT_REMOVE,
-       mojom::kFingerprintSubpagePath,
-       mojom::SearchResultIcon::kFingerprint,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kRemoveFingerprint}},
       {IDS_OS_SETTINGS_TAG_FINGERPRINT_ADD,
        mojom::kFingerprintSubpagePath,
        mojom::SearchResultIcon::kFingerprint,
@@ -282,6 +276,18 @@ const std::vector<SearchConcept>& GetFingerprintSearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kFingerprint}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetRemoveFingerprintSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_FINGERPRINT_REMOVE,
+       mojom::kFingerprintSubpagePath,
+       mojom::SearchResultIcon::kFingerprint,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kRemoveFingerprint}},
   });
   return *tags;
 }
@@ -753,10 +759,18 @@ PeopleSection::PeopleSection(
   if (features::ShouldShowParentalControlSettings(profile))
     updater.AddSearchTags(GetParentalSearchConcepts());
 
-  // Fingerprint search tags are added if necessary and do not update
-  // dynamically during a user session.
-  if (AreFingerprintSettingsAllowed())
+  // Fingerprint search tags are added if necessary. Remove fingerprint search
+  // tags update dynamically during a user session.
+  if (AreFingerprintSettingsAllowed()) {
     updater.AddSearchTags(GetFingerprintSearchConcepts());
+
+    fingerprint_pref_change_registrar_.Init(pref_service_);
+    fingerprint_pref_change_registrar_.Add(
+        ::prefs::kQuickUnlockFingerprintRecord,
+        base::BindRepeating(&PeopleSection::UpdateRemoveFingerprintSearchTags,
+                            base::Unretained(this)));
+    UpdateRemoveFingerprintSearchTags();
+  }
 }
 
 PeopleSection::~PeopleSection() {
@@ -1116,6 +1130,19 @@ void PeopleSection::AddKerberosAccountsPageStrings(
 
 bool PeopleSection::AreFingerprintSettingsAllowed() {
   return chromeos::quick_unlock::IsFingerprintEnabled(profile());
+}
+
+void PeopleSection::UpdateRemoveFingerprintSearchTags() {
+  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+  updater.RemoveSearchTags(GetRemoveFingerprintSearchConcepts());
+
+  // "Remove fingerprint" search tag should exist only when 1 or more
+  // fingerprints are registered.
+  int registered_fingerprint_count =
+      pref_service_->GetInteger(::prefs::kQuickUnlockFingerprintRecord);
+  if (registered_fingerprint_count > 0) {
+    updater.AddSearchTags(GetRemoveFingerprintSearchConcepts());
+  }
 }
 
 }  // namespace settings
