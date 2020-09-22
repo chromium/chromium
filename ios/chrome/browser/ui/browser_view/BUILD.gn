@@ -136,6 +136,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/side_swipe",
     "//ios/chrome/browser/ui/snackbar",
+    "//ios/chrome/browser/ui/tab_strip",
     "//ios/chrome/browser/ui/tabs",
     "//ios/chrome/browser/ui/tabs:coordinator",
     "//ios/chrome/browser/ui/tabs/requirements",

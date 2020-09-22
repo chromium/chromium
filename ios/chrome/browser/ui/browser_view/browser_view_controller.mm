@@ -113,6 +113,7 @@
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
 #import "ios/chrome/browser/ui/side_swipe/swipe_view.h"
+#import "ios/chrome/browser/ui/tab_strip/tab_strip_coordinator.h"
 #import "ios/chrome/browser/ui/tabs/background_tab_animation_view.h"
 #import "ios/chrome/browser/ui/tabs/foreground_tab_animation_view.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_presentation.h"
@@ -133,6 +134,7 @@
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_adaptor.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/keyboard_observer_helper.h"
 #import "ios/chrome/browser/ui/util/multi_window_support.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
@@ -505,7 +507,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 @property(nonatomic, strong, nullable)
     ProceduralBlock foregroundTabWasAddedCompletionBlock;
 // Coordinator for tablet tab strip.
-@property(nonatomic, strong) TabStripLegacyCoordinator* tabStripCoordinator;
+@property(nonatomic, strong)
+    TabStripLegacyCoordinator* legacyTabStripCoordinator;
+// Coordinator for the new tablet tab strip.
+@property(nonatomic, strong) TabStripCoordinator* tabStripCoordinator;
 // Coordinator for Infobars.
 @property(nonatomic, strong)
     InfobarContainerCoordinator* infobarContainerCoordinator;
@@ -841,7 +846,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _sideSwipeController.secondaryToolbarSnapshotProvider =
         self.secondaryToolbarCoordinator;
     [_sideSwipeController setSwipeDelegate:self];
-    [_sideSwipeController setTabStripDelegate:self.tabStripCoordinator];
+    if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
+      [_sideSwipeController setTabStripDelegate:self.legacyTabStripCoordinator];
+    }
   }
   return _sideSwipeController;
 }
@@ -1312,9 +1319,14 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // Disconnect child coordinators.
   [self.popupMenuCoordinator stop];
-  [self.tabStripCoordinator stop];
-  self.tabStripCoordinator = nil;
-  self.tabStripView = nil;
+  if (base::FeatureList::IsEnabled(kModernTabStrip)) {
+    [self.tabStripCoordinator stop];
+    self.tabStripCoordinator = nil;
+  } else {
+    [self.legacyTabStripCoordinator stop];
+    self.legacyTabStripCoordinator = nil;
+    self.tabStripView = nil;
+  }
 
   [self.commandDispatcher stopDispatchingToTarget:self.bubblePresenter];
   self.bubblePresenter = nil;
@@ -1556,9 +1568,14 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _locationBarModelDelegate = nil;
     _locationBarModel = nil;
     self.helper = nil;
-    [self.tabStripCoordinator stop];
-    self.tabStripCoordinator = nil;
-    self.tabStripView = nil;
+    if (base::FeatureList::IsEnabled(kModernTabStrip)) {
+      [self.tabStripCoordinator stop];
+      self.tabStripCoordinator = nil;
+    } else {
+      [self.legacyTabStripCoordinator stop];
+      self.legacyTabStripCoordinator = nil;
+      self.tabStripView = nil;
+    }
     _sideSwipeController = nil;
   }
 }
@@ -1609,18 +1626,20 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self updateToolbar];
 
   // Update the tab strip visibility.
-  if (self.tabStripView) {
-    [self showTabStripView:self.tabStripView];
-    [self.tabStripView layoutSubviews];
-    [self.tabStripCoordinator hideTabStrip:![self canShowTabStrip]];
-    _fakeStatusBarView.hidden = ![self canShowTabStrip];
-    [self addConstraintsToPrimaryToolbar];
-    // If tabstrip is coming back due to a window resize or screen rotation,
-    // reset the full screen controller to adjust the tabstrip position.
-    if (ShouldShowCompactToolbar(previousTraitCollection) &&
-        !ShouldShowCompactToolbar()) {
-      [self
-          updateForFullscreenProgress:self.fullscreenController->GetProgress()];
+  if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
+    if (self.tabStripView) {
+      [self showTabStripView:self.tabStripView];
+      [self.tabStripView layoutSubviews];
+      [self.legacyTabStripCoordinator hideTabStrip:![self canShowTabStrip]];
+      _fakeStatusBarView.hidden = ![self canShowTabStrip];
+      [self addConstraintsToPrimaryToolbar];
+      // If tabstrip is coming back due to a window resize or screen rotation,
+      // reset the full screen controller to adjust the tabstrip position.
+      if (ShouldShowCompactToolbar(previousTraitCollection) &&
+          !ShouldShowCompactToolbar()) {
+        [self updateForFullscreenProgress:self.fullscreenController
+                                              ->GetProgress()];
+      }
     }
   }
 
@@ -1647,8 +1666,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         BrowserViewController* strongSelf = weakSelf;
         strongSelf.fullscreenController->ResizeViewport();
-        if (strongSelf.tabStripView) {
-          [strongSelf.tabStripCoordinator tabStripSizeDidChange];
+        if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
+          if (strongSelf.tabStripView) {
+            [strongSelf.legacyTabStripCoordinator tabStripSizeDidChange];
+          }
         }
       }];
 
@@ -1934,18 +1955,25 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         static_cast<id<LoadQueryCommands>>(self.commandDispatcher));
 
   if (IsIPadIdiom()) {
-    self.tabStripCoordinator = [[TabStripLegacyCoordinator alloc]
-        initWithBaseViewController:self
-                           browser:self.browser];
-    self.tabStripCoordinator.presentationProvider = self;
-    self.tabStripCoordinator.animationWaitDuration =
-        kLegacyFullscreenControllerToolbarAnimationDuration;
-    self.tabStripCoordinator.longPressDelegate = self.popupMenuCoordinator;
+    if (base::FeatureList::IsEnabled(kModernTabStrip)) {
+      self.tabStripCoordinator =
+          [[TabStripCoordinator alloc] initWithBrowser:self.browser];
+      [self.tabStripCoordinator start];
+    } else {
+      self.legacyTabStripCoordinator = [[TabStripLegacyCoordinator alloc]
+          initWithBaseViewController:self
+                             browser:self.browser];
+      self.legacyTabStripCoordinator.presentationProvider = self;
+      self.legacyTabStripCoordinator.animationWaitDuration =
+          kLegacyFullscreenControllerToolbarAnimationDuration;
+      self.legacyTabStripCoordinator.longPressDelegate =
+          self.popupMenuCoordinator;
 
-    UILayoutGuide* guide =
-        [[NamedGuide alloc] initWithName:kTabStripTabSwitcherGuide];
-    [self.view addLayoutGuide:guide];
-    [self.tabStripCoordinator start];
+      UILayoutGuide* guide =
+          [[NamedGuide alloc] initWithName:kTabStripTabSwitcherGuide];
+      [self.view addLayoutGuide:guide];
+      [self.legacyTabStripCoordinator start];
+    }
   }
 
   if (!base::FeatureList::IsEnabled(kInfobarOverlayUI)) {
@@ -2154,7 +2182,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   self.primaryToolbarCoordinator.longPressDelegate = self.popupMenuCoordinator;
   self.secondaryToolbarCoordinator.longPressDelegate =
       self.popupMenuCoordinator;
-  self.tabStripCoordinator.longPressDelegate = self.popupMenuCoordinator;
+  if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
+    self.legacyTabStripCoordinator.longPressDelegate =
+        self.popupMenuCoordinator;
+  }
 
   self.omniboxHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
@@ -2732,7 +2763,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self.thumbStripPanHandler addAnimatee:self];
 
   self.primaryToolbarCoordinator.panGestureHandler = self.thumbStripPanHandler;
-  self.tabStripCoordinator.panGestureHandler = self.thumbStripPanHandler;
+  if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
+    self.legacyTabStripCoordinator.panGestureHandler =
+        self.thumbStripPanHandler;
+  }
 }
 
 #pragma mark - ** Protocol Implementations and Helpers **
