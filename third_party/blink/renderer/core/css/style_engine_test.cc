@@ -1743,6 +1743,42 @@ TEST_F(StyleEngineTest, MediaQueriesColorSchemeOverride) {
                 GetCSSPropertyColor()));
 }
 
+TEST_F(StyleEngineTest, PreferredColorSchemeMetric) {
+  ColorSchemeHelper color_scheme_helper(GetDocument());
+  color_scheme_helper.SetPreferredColorScheme(PreferredColorScheme::kLight);
+  EXPECT_FALSE(IsUseCounted(WebFeature::kPreferredColorSchemeDark));
+  color_scheme_helper.SetPreferredColorScheme(PreferredColorScheme::kDark);
+  EXPECT_TRUE(IsUseCounted(WebFeature::kPreferredColorSchemeDark));
+}
+
+// The preferred color scheme setting can differ from the preferred color
+// scheme when forced dark mode is enabled. This is so that forced dark mode
+// does not invert pages that support dark mode.
+TEST_F(StyleEngineTest, PreferredColorSchemeSettingMetric) {
+  ColorSchemeHelper color_scheme_helper(GetDocument());
+  color_scheme_helper.SetPreferredColorScheme(PreferredColorScheme::kLight);
+  GetDocument().GetSettings()->SetForceDarkModeEnabled(false);
+  EXPECT_FALSE(IsUseCounted(WebFeature::kPreferredColorSchemeDark));
+  EXPECT_FALSE(IsUseCounted(WebFeature::kPreferredColorSchemeDarkSetting));
+
+  color_scheme_helper.SetPreferredColorScheme(PreferredColorScheme::kDark);
+  // Clear the UseCounters before they are updated by the
+  // |SetForceDarkModeEnabled| call, below.
+  ClearUseCounter(WebFeature::kPreferredColorSchemeDark);
+  ClearUseCounter(WebFeature::kPreferredColorSchemeDarkSetting);
+  GetDocument().GetSettings()->SetForceDarkModeEnabled(true);
+
+  EXPECT_FALSE(IsUseCounted(WebFeature::kPreferredColorSchemeDark));
+  EXPECT_TRUE(IsUseCounted(WebFeature::kPreferredColorSchemeDarkSetting));
+}
+
+TEST_F(StyleEngineTest, ForcedDarkModeMetric) {
+  GetDocument().GetSettings()->SetForceDarkModeEnabled(false);
+  EXPECT_FALSE(IsUseCounted(WebFeature::kForcedDarkMode));
+  GetDocument().GetSettings()->SetForceDarkModeEnabled(true);
+  EXPECT_TRUE(IsUseCounted(WebFeature::kForcedDarkMode));
+}
+
 TEST_F(StyleEngineTest, MediaQueriesReducedMotionOverride) {
   EXPECT_FALSE(GetDocument().GetSettings()->GetPrefersReducedMotion());
 

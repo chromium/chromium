@@ -2905,8 +2905,10 @@ enum WebFeature {
   kIdentifiabilityStudyReserved3575 = 3575,
   kIdentifiabilityStudyReserved3576 = 3576,
   kIdentifiabilityStudyReserved3577 = 3577,
-
   kCascadedCSSZoomNotEqualToOne = 3578,
+  kForcedDarkMode = 3579,
+  kPreferredColorSchemeDark = 3580,
+  kPreferredColorSchemeDarkSetting = 3581,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

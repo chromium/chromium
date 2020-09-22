@@ -29342,6 +29342,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3576" label="IdentifiabilityStudyReserved3576"/>
   <int value="3577" label="IdentifiabilityStudyReserved3577"/>
   <int value="3578" label="CascadedCSSZoomNotEqualToOne"/>
+  <int value="3579" label="ForcedDarkMode"/>
+  <int value="3580" label="PreferredColorSchemeDark"/>
+  <int value="3581" label="PreferredColorSchemeDarkSetting"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

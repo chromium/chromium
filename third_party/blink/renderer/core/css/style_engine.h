@@ -517,6 +517,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool SupportsDarkColorScheme();
   void UpdateForcedBackgroundColor();
 
+  void UpdateColorSchemeMetrics();
+
   void ViewportDefiningElementDidChange();
   void PropagateWritingModeAndDirectionToHTMLRoot();
 

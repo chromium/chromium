@@ -129,6 +129,7 @@ StyleEngine::StyleEngine(Document& document)
   if (auto* settings = GetDocument().GetSettings()) {
     if (!settings->GetForceDarkModeEnabled())
       preferred_color_scheme_ = settings->GetPreferredColorScheme();
+    UpdateColorSchemeMetrics();
   }
   if (Platform::Current() && Platform::Current()->ThemeEngine())
     forced_colors_ = Platform::Current()->ThemeEngine()->GetForcedColors();
@@ -2179,6 +2180,26 @@ void StyleEngine::UpdateColorScheme() {
     color_scheme_changed = true;
   }
   UpdateColorSchemeBackground(color_scheme_changed);
+
+  UpdateColorSchemeMetrics();
+}
+
+void StyleEngine::UpdateColorSchemeMetrics() {
+  auto* settings = GetDocument().GetSettings();
+  if (settings->GetForceDarkModeEnabled())
+    UseCounter::Count(GetDocument(), WebFeature::kForcedDarkMode);
+
+  // True if the preferred color scheme will match dark.
+  if (preferred_color_scheme_ == PreferredColorScheme::kDark)
+    UseCounter::Count(GetDocument(), WebFeature::kPreferredColorSchemeDark);
+
+  // This is equal to kPreferredColorSchemeDark in most cases, but can differ
+  // with forced dark mode. With the system in dark mode and forced dark mode
+  // enabled, the preferred color scheme can be light while the setting is dark.
+  if (settings->GetPreferredColorScheme() == PreferredColorScheme::kDark) {
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kPreferredColorSchemeDarkSetting);
+  }
 }
 
 void StyleEngine::ColorSchemeChanged() {
