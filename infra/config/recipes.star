@@ -118,14 +118,6 @@ build_recipe(
 )
 
 build_recipe(
-    name = "recipe:ios/try",
-)
-
-build_recipe(
-    name = "recipe:ios/unified_builder_tester",
-)
-
-build_recipe(
     name = "recipe:presubmit",
 )
 
