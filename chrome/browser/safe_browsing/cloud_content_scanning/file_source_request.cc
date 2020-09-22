@@ -95,19 +95,6 @@ FileSourceRequest::FileSourceRequest(
     const enterprise_connectors::AnalysisSettings& analysis_settings,
     base::FilePath path,
     base::FilePath file_name,
-    BinaryUploadService::Callback callback)
-    : Request(std::move(callback), analysis_settings.analysis_url),
-      has_cached_result_(false),
-      block_unsupported_types_(analysis_settings.block_unsupported_file_types),
-      path_(std::move(path)),
-      file_name_(std::move(file_name)) {
-  set_filename(file_name_.AsUTF8Unsafe());
-}
-
-FileSourceRequest::FileSourceRequest(
-    const enterprise_connectors::AnalysisSettings& analysis_settings,
-    base::FilePath path,
-    base::FilePath file_name,
     BinaryUploadService::ContentAnalysisCallback callback)
     : Request(std::move(callback), analysis_settings.analysis_url),
       has_cached_result_(false),
@@ -133,28 +120,19 @@ void FileSourceRequest::GetRequestData(DataCallback callback) {
 }
 
 bool FileSourceRequest::FileTypeUnsupportedByDlp() const {
-  if (use_legacy_proto()) {
-    return deep_scanning_request().has_dlp_scan_request() &&
-           !FileTypeSupportedForDlp(file_name_);
-  } else {
-    for (const std::string& tag : content_analysis_request().tags()) {
-      if (tag == "dlp")
-        return !FileTypeSupportedForDlp(file_name_);
-    }
-    return false;
+  for (const std::string& tag : content_analysis_request().tags()) {
+    if (tag == "dlp")
+      return !FileTypeSupportedForDlp(file_name_);
   }
+  return false;
 }
 
 bool FileSourceRequest::HasMalwareRequest() const {
-  if (use_legacy_proto()) {
-    return deep_scanning_request().has_malware_scan_request();
-  } else {
-    for (const std::string& tag : content_analysis_request().tags()) {
-      if (tag == "malware")
-        return true;
-    }
-    return false;
+  for (const std::string& tag : content_analysis_request().tags()) {
+    if (tag == "malware")
+      return true;
   }
+  return false;
 }
 
 void FileSourceRequest::OnGotFileData(

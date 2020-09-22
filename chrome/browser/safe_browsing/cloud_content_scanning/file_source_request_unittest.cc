@@ -29,37 +29,23 @@ enterprise_connectors::AnalysisSettings settings(bool block_unsupported_types) {
   return settings;
 }
 
-// Helpers to cast base::DoNothing, otherwise FileSourceRequest's ctor calls
-// would be ambiguous. This hack should be removed once only
-// ContentAnalysisResponse is supported.
+// Helper to cast base::DoNothing.
 BinaryUploadService::ContentAnalysisCallback DoNothingConnector() {
-  return base::DoNothing();
-}
-
-BinaryUploadService::Callback DoNothingLegacy() {
   return base::DoNothing();
 }
 
 }  // namespace
 
-class FileSourceRequestTest : public testing::TestWithParam<bool> {
+class FileSourceRequestTest : public testing::Test {
  public:
   FileSourceRequestTest() = default;
-
-  bool use_legacy_proto() const { return GetParam(); }
 
   std::unique_ptr<FileSourceRequest> MakeRequest(bool block_unsupported_types,
                                                  base::FilePath path,
                                                  base::FilePath file_name) {
-    if (use_legacy_proto()) {
-      return std::make_unique<FileSourceRequest>(
-          settings(block_unsupported_types), path, file_name,
-          DoNothingLegacy());
-    } else {
-      return std::make_unique<FileSourceRequest>(
-          settings(block_unsupported_types), path, file_name,
-          DoNothingConnector());
-    }
+    return std::make_unique<FileSourceRequest>(
+        settings(block_unsupported_types), path, file_name,
+        DoNothingConnector());
   }
 
   void GetResultsForFileContents(const std::string& file_contents,
@@ -92,9 +78,7 @@ class FileSourceRequestTest : public testing::TestWithParam<bool> {
  private:
 };
 
-INSTANTIATE_TEST_SUITE_P(, FileSourceRequestTest, testing::Bool());
-
-TEST_P(FileSourceRequestTest, InvalidFiles) {
+TEST_F(FileSourceRequestTest, InvalidFiles) {
   base::test::TaskEnvironment task_environment;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -149,7 +133,7 @@ TEST_P(FileSourceRequestTest, InvalidFiles) {
   }
 }
 
-TEST_P(FileSourceRequestTest, NormalFiles) {
+TEST_F(FileSourceRequestTest, NormalFiles) {
   base::test::TaskEnvironment task_environment;
 
   BinaryUploadService::Result result;
@@ -175,7 +159,7 @@ TEST_P(FileSourceRequestTest, NormalFiles) {
             "4F0E9C6A1A9A90F35B884D0F0E7343459C21060EEFEC6C0F2FA9DC1118DBE5BE");
 }
 
-TEST_P(FileSourceRequestTest, LargeFiles) {
+TEST_F(FileSourceRequestTest, LargeFiles) {
   base::test::TaskEnvironment task_environment;
 
   BinaryUploadService::Result result;
@@ -204,7 +188,7 @@ TEST_P(FileSourceRequestTest, LargeFiles) {
             "CEE41E98D0A6AD65CC0EC77A2BA50BF26D64DC9007F7F1C7D7DF68B8B71291A6");
 }
 
-TEST_P(FileSourceRequestTest, PopulatesDigest) {
+TEST_F(FileSourceRequestTest, PopulatesDigest) {
   base::test::TaskEnvironment task_environment;
   std::string file_contents = "Normal file contents";
   base::ScopedTempDir temp_dir;
@@ -231,7 +215,7 @@ TEST_P(FileSourceRequestTest, PopulatesDigest) {
             "29644C10BD036866FCFD2BDACFF340DB5DE47A90002D6AB0C42DE6A22C26158B");
 }
 
-TEST_P(FileSourceRequestTest, PopulatesFilename) {
+TEST_F(FileSourceRequestTest, PopulatesFilename) {
   base::test::TaskEnvironment task_environment;
   std::string file_contents = "contents";
   base::ScopedTempDir temp_dir;
@@ -256,7 +240,7 @@ TEST_P(FileSourceRequestTest, PopulatesFilename) {
   EXPECT_EQ(request->filename(), "foo.doc");
 }
 
-TEST_P(FileSourceRequestTest, CachesResults) {
+TEST_F(FileSourceRequestTest, CachesResults) {
   base::test::TaskEnvironment task_environment;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -304,7 +288,7 @@ TEST_P(FileSourceRequestTest, CachesResults) {
   EXPECT_EQ(sync_data.hash, async_data.hash);
 }
 
-TEST_P(FileSourceRequestTest, Encrypted) {
+TEST_F(FileSourceRequestTest, Encrypted) {
   content::BrowserTaskEnvironment browser_task_environment;
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
   base::ScopedTempDir temp_dir;
@@ -345,7 +329,7 @@ TEST_P(FileSourceRequestTest, Encrypted) {
   EXPECT_EQ(request->digest(), data.hash);
 }
 
-TEST_P(FileSourceRequestTest, UnsupportedFileTypeBlock) {
+TEST_F(FileSourceRequestTest, UnsupportedFileTypeBlock) {
   base::test::TaskEnvironment task_environment;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -356,13 +340,8 @@ TEST_P(FileSourceRequestTest, UnsupportedFileTypeBlock) {
 
   auto request = MakeRequest(/*block_unsupported_types=*/true, file_path,
                              file_path.BaseName());
-  if (request->use_legacy_proto()) {
-    request->set_request_dlp_scan(DlpDeepScanningClientRequest());
-    request->set_request_malware_scan(MalwareDeepScanningClientRequest());
-  } else {
-    request->add_tag("dlp");
-    request->add_tag("malware");
-  }
+  request->add_tag("dlp");
+  request->add_tag("malware");
 
   bool called = false;
   base::RunLoop run_loop;
@@ -391,7 +370,7 @@ TEST_P(FileSourceRequestTest, UnsupportedFileTypeBlock) {
   EXPECT_EQ(request->digest(), data.hash);
 }
 
-TEST_P(FileSourceRequestTest, UnsupportedFileTypeNoBlock) {
+TEST_F(FileSourceRequestTest, UnsupportedFileTypeNoBlock) {
   base::test::TaskEnvironment task_environment;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -402,13 +381,8 @@ TEST_P(FileSourceRequestTest, UnsupportedFileTypeNoBlock) {
 
   auto request = MakeRequest(/*block_unsupported_types=*/false, file_path,
                              file_path.BaseName());
-  if (request->use_legacy_proto()) {
-    request->set_request_dlp_scan(DlpDeepScanningClientRequest());
-    request->set_request_malware_scan(MalwareDeepScanningClientRequest());
-  } else {
-    request->add_tag("dlp");
-    request->add_tag("malware");
-  }
+  request->add_tag("dlp");
+  request->add_tag("malware");
 
   bool called = false;
   base::RunLoop run_loop;
@@ -428,12 +402,8 @@ TEST_P(FileSourceRequestTest, UnsupportedFileTypeNoBlock) {
   ASSERT_TRUE(called);
 
   // The dlp request should have been removed since the type is unsupported.
-  if (request->use_legacy_proto()) {
-    EXPECT_FALSE(request->deep_scanning_request().has_dlp_scan_request());
-  } else {
-    for (const std::string& tag : request->content_analysis_request().tags())
-      EXPECT_NE("dlp", tag);
-  }
+  for (const std::string& tag : request->content_analysis_request().tags())
+    EXPECT_NE("dlp", tag);
   EXPECT_EQ(result, BinaryUploadService::Result::SUCCESS);
   EXPECT_EQ(data.contents, normal_contents);
   EXPECT_EQ(data.size, normal_contents.size());

@@ -20,11 +20,6 @@ class FileSourceRequest : public BinaryUploadService::Request {
       const enterprise_connectors::AnalysisSettings& analysis_settings,
       base::FilePath path,
       base::FilePath file_name,
-      BinaryUploadService::Callback callback);
-  FileSourceRequest(
-      const enterprise_connectors::AnalysisSettings& analysis_settings,
-      base::FilePath path,
-      base::FilePath file_name,
       BinaryUploadService::ContentAnalysisCallback callback);
   FileSourceRequest(const FileSourceRequest&) = delete;
   FileSourceRequest& operator=(const FileSourceRequest&) = delete;
@@ -42,7 +37,7 @@ class FileSourceRequest : public BinaryUploadService::Request {
                               Data data,
                               const ArchiveAnalyzerResults& analyzer_result);
 
-  // Helper functions to access the correct request proto.
+  // Helper functions to access the request proto.
   bool FileTypeUnsupportedByDlp() const;
   bool HasMalwareRequest() const;
 
