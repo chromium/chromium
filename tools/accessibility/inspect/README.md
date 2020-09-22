@@ -20,32 +20,50 @@ This tool helps to inspect accessibility trees of applications. Trees are dumped
 
 `autoninja -C out/Default ax_dump_tree`
 
+This will generate `ax_dump_tree` executable in `out/Default` directory.
+
+### Prerequesties
+
+#### Mac
+
+1) Turn on Accessibility for Terminal in Security & Privacy System Preferences.
+
+2) Some applications keep accessibility inactive, which prevents them to generate accessible trees. Thus either:
+* start VoiceOver (`CMD+F5`) or
+* use application specific runtime flags
+** Chromium: `Chromium.app/Contents/MacOS/Chromium --force-renderer-accessibility`
+
 ### Run
 
-On Windows run
-`ax_dump_tree --window=id`
-where `id` is HWND of a window to dump accessible tree for.
+To dump an accessible tree, run:
+`ax_dump_tree <options>`
 
-On Mac and Linux, run
-`ax_dump_tree --pid=id`
-where `pid` is process id of an application to dump accessible tree for.
-
-Alternatively, you can indicate an application by its title:
-`ax_dump_tree --pattern=title`
-
-Also these pre-defined application selectors are available:
+At your convenience the number of pre-defined application selectors are available:
 `--chrome` for Chrome browser
-`--chromium` for Chrome browser
+`--chromium` for Chromium browser
 `--firefox` for Firefox browser
 `--safari` for Safari browser
+`--active-tab` to dump a tree of active tab of selected browser.
 
-Notes:
-* To use a hex window handle prefix it with `0x`.
-* For json output, use the `--json` option
-* To filter certain properties, use `--filters=[absolute-path-to-filters.txt]` where the filters text file has a series of `@ALLOW` and/or `@DENY` lines. See example-tree-filters.txt in tools/accessibility/inspect.
-* [Mac] You have to turn on Accessibility for Terminal in Security & Privacy System Preferences.
+You can also specify an application by its title:
+`ax_dump_tree --pattern=title`
+
+Alternatively you can dump a tree by HWDN on Windows:
+`--window=HWDN`
+Note, to use a hex window handle prefix it with `0x`.
+
+Or by application PID on Mac and Linux:
+`--pid=process_id`
+
+Other options:
+`--json` to output a tree in JSON format
+`--filters=absolute_path_to_filters.txt` to filter properties, use where the filters text file has a series of `@ALLOW` and/or `@DENY` lines. See example-tree-filters.txt in tools/accessibility/inspect.
+`--help` for help
+
 
 ## Convenience PowerShell scripts
+
+Note: Windows only.
 
 Run these scripts to avoid the difficulty of looking up the process id or window handle you want to inspect.
 Sometimes there may be several windows open for the given app, and disambuation. In this case, after you run the script, it will list top level windows/processes and ask you to re-run with an argument that includes a substring from the window title you want to inspect the tree/events for. For example, `chrome-tree live` will inspect a tab with the name "Live region tests" (the title matcher is case insensitive).

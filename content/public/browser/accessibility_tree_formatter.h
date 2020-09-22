@@ -103,17 +103,18 @@ class CONTENT_EXPORT AccessibilityTreeFormatter
   // an accessible name of a root of some accessible subtree.
   struct TreeSelector {
     enum Type {
-      None,
-      Chrome,
-      Chromium,
-      Firefox,
-      Safari,
+      None = 0,
+      ActiveTab = 1 << 0,
+      Chrome = 1 << 1,
+      Chromium = 1 << 2,
+      Firefox = 1 << 3,
+      Safari = 1 << 4,
     };
-    Type type;
+    int types;
     std::string pattern;
 
-    TreeSelector(Type type, const std::string& pattern)
-        : type(type), pattern(pattern) {}
+    TreeSelector(int types, const std::string& pattern)
+        : types(types), pattern(pattern) {}
   };
 
   // Create the appropriate native subclass of AccessibilityTreeFormatter.

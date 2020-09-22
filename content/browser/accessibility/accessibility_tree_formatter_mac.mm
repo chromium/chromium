@@ -23,7 +23,6 @@
 using base::StringPrintf;
 using base::SysNSStringToUTF8;
 using base::SysNSStringToUTF16;
-using base::SysUTF16ToNSString;
 using content::a11y::AttributeInvoker;
 using content::a11y::AttributeNamesOf;
 using content::a11y::AttributeValueOf;
@@ -75,6 +74,13 @@ class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBase {
       const TreeSelector& selector) override;
 
  private:
+  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForAXUIElement(
+      AXUIElementRef node) const;
+
+  // Return AXElement in a tree by a given criteria
+  using FindCriteria = base::RepeatingCallback<bool(id)>;
+  id FindAXUIElement(const id node, const FindCriteria& criteria) const;
+
   void RecursiveBuildAccessibilityTree(const id node,
                                        const LineIndexer* line_indexer,
                                        base::DictionaryValue* dict) const;
@@ -164,12 +170,8 @@ AccessibilityTreeFormatterMac::BuildAccessibilityTree(
 std::unique_ptr<base::DictionaryValue>
 AccessibilityTreeFormatterMac::BuildAccessibilityTreeForWindow(
     gfx::AcceleratedWidget widget) {
-  AXUIElementRef application = AXUIElementCreateApplication(widget);
-  LineIndexer line_indexer(static_cast<id>(application));
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-  RecursiveBuildAccessibilityTree(static_cast<id>(application), &line_indexer,
-                                  dict.get());
-  return dict;
+  return BuildAccessibilityTreeForAXUIElement(
+      AXUIElementCreateApplication(widget));
 }
 
 std::unique_ptr<base::DictionaryValue>
@@ -179,34 +181,74 @@ AccessibilityTreeFormatterMac::BuildAccessibilityTreeForSelector(
       kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements,
       kCGNullWindowID);
 
-  std::string title = selector.pattern;
-  switch (selector.type) {
-    case TreeSelector::Chrome:
-      title = kChromeTitle;
-      break;
-    case TreeSelector::Chromium:
-      title = kChromiumTitle;
-      break;
-    case TreeSelector::Firefox:
-      title = kFirefoxTitle;
-      break;
-    case TreeSelector::Safari:
-      title = kSafariTitle;
-      break;
-    default:
-      break;
+  std::string title;
+  if (selector.types & TreeSelector::Chrome) {
+    title = kChromeTitle;
+  } else if (selector.types & TreeSelector::Chromium) {
+    title = kChromiumTitle;
+  } else if (selector.types & TreeSelector::Firefox) {
+    title = kFirefoxTitle;
+  } else if (selector.types & TreeSelector::Safari) {
+    title = kSafariTitle;
   }
 
   for (NSDictionary* window_info in windows) {
-    NSString* window_name =
-        (NSString*)[window_info objectForKey:@"kCGWindowOwnerName"];
-    if (SysNSStringToUTF8(window_name) == title) {
-      NSNumber* pid =
-          (NSNumber*)[window_info objectForKey:@"kCGWindowOwnerPID"];
+    NSNumber* pid =
+        static_cast<NSNumber*>([window_info objectForKey:@"kCGWindowOwnerPID"]);
+    std::string window_name = SysNSStringToUTF8(static_cast<NSString*>(
+        [window_info objectForKey:@"kCGWindowOwnerName"]));
+
+    if (window_name == selector.pattern) {
       return BuildAccessibilityTreeForWindow([pid intValue]);
+    }
+
+    if (window_name == title) {
+      AXUIElementRef node = AXUIElementCreateApplication([pid intValue]);
+      if (selector.types & TreeSelector::ActiveTab) {
+        node = static_cast<AXUIElementRef>(FindAXUIElement(
+            static_cast<id>(node), base::BindRepeating([](const id node) {
+              // Only active tab in exposed in browsers, thus find first
+              // AXWebArea role.
+              NSString* role =
+                  AttributeValueOf(node, NSAccessibilityRoleAttribute);
+              return SysNSStringToUTF8(role) == "AXWebArea";
+            })));
+      }
+
+      if (node) {
+        return BuildAccessibilityTreeForAXUIElement(node);
+      }
     }
   }
   return nullptr;
+}
+
+std::unique_ptr<base::DictionaryValue>
+AccessibilityTreeFormatterMac::BuildAccessibilityTreeForAXUIElement(
+    AXUIElementRef node) const {
+  LineIndexer line_indexer(static_cast<id>(node));
+  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
+  RecursiveBuildAccessibilityTree(static_cast<id>(node), &line_indexer,
+                                  dict.get());
+  return dict;
+}
+
+id AccessibilityTreeFormatterMac::FindAXUIElement(
+    const id node,
+    const FindCriteria& criteria) const {
+  if (criteria.Run(node)) {
+    return node;
+  }
+
+  NSArray* children = ChildrenOf(node);
+  for (id child in children) {
+    id found = FindAXUIElement(child, criteria);
+    if (found != nil) {
+      return found;
+    }
+  }
+
+  return nil;
 }
 
 void AccessibilityTreeFormatterMac::RecursiveBuildAccessibilityTree(

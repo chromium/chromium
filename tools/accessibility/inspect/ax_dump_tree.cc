@@ -25,6 +25,7 @@ char kFiltersSwitch[] = "filters";
 char kJsonSwitch[] = "json";
 char kHelpSwitch[] = "help";
 
+char kActiveTabSwitch[] = "active-tab";
 char kChromeSwitch[] = "chrome";
 char kChromiumSwitch[] = "chromium";
 char kFirefoxSwitch[] = "firefox";
@@ -75,6 +76,7 @@ void PrintHelp() {
   printf("    --chromium\tChromium browser\n");
   printf("    --firefox\tFirefox browser\n");
   printf("    --safari\tSafari browser\n");
+  printf("    --active-tab\tActive tab of a choosen browser\n");
   printf(
       "  --filters\tfile containing property filters used to filter out\n"
       "  \t\taccessible tree, see example-tree-filters.txt as an example\n");
@@ -114,21 +116,24 @@ int main(int argc, char** argv) {
     return 0;
   }
 
-  TreeSelector::Type selector_type = TreeSelector::None;
+  int selectors = TreeSelector::None;
   if (command_line->HasSwitch(kChromeSwitch)) {
-    selector_type = TreeSelector::Chrome;
+    selectors = TreeSelector::Chrome;
   } else if (command_line->HasSwitch(kChromiumSwitch)) {
-    selector_type = TreeSelector::Chromium;
+    selectors = TreeSelector::Chromium;
   } else if (command_line->HasSwitch(kFirefoxSwitch)) {
-    selector_type = TreeSelector::Firefox;
+    selectors = TreeSelector::Firefox;
   } else if (command_line->HasSwitch(kSafariSwitch)) {
-    selector_type = TreeSelector::Safari;
+    selectors = TreeSelector::Safari;
+  }
+  if (command_line->HasSwitch(kActiveTabSwitch)) {
+    selectors |= TreeSelector::ActiveTab;
   }
 
   std::string pattern_str = command_line->GetSwitchValueASCII(kPatternSwitch);
-  if (selector_type != TreeSelector::None || !pattern_str.empty()) {
+  if (selectors != TreeSelector::None || !pattern_str.empty()) {
     std::unique_ptr<content::AXTreeServer> server(new content::AXTreeServer(
-        TreeSelector(selector_type, pattern_str), filters_path, use_json));
+        TreeSelector(selectors, pattern_str), filters_path, use_json));
     return 0;
   }
 
