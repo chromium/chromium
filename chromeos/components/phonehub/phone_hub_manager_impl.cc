@@ -9,6 +9,7 @@
 #include "chromeos/components/phonehub/do_not_disturb_controller_impl.h"
 #include "chromeos/components/phonehub/feature_status_provider_impl.h"
 #include "chromeos/components/phonehub/find_my_device_controller_impl.h"
+#include "chromeos/components/phonehub/message_receiver_impl.h"
 #include "chromeos/components/phonehub/message_sender_impl.h"
 #include "chromeos/components/phonehub/mutable_phone_model.h"
 #include "chromeos/components/phonehub/notification_access_manager_impl.h"
@@ -34,6 +35,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           device_sync_client,
           multidevice_setup_client,
           connection_manager_.get())),
+      message_receiver_(
+          std::make_unique<MessageReceiverImpl>(connection_manager_.get())),
       message_sender_(
           std::make_unique<MessageSenderImpl>(connection_manager_.get())),
       connection_scheduler_(std::make_unique<ConnectionSchedulerImpl>(
@@ -97,6 +100,7 @@ void PhoneHubManagerImpl::Shutdown() {
   find_my_device_controller_.reset();
   connection_scheduler_.reset();
   message_sender_.reset();
+  message_receiver_.reset();
   feature_status_provider_.reset();
   connection_manager_.reset();
   do_not_disturb_controller_.reset();

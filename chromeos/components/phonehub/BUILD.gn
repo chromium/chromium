@@ -31,6 +31,10 @@ static_library("phonehub") {
     "find_my_device_controller.h",
     "find_my_device_controller_impl.cc",
     "find_my_device_controller_impl.h",
+    "message_receiver.cc",
+    "message_receiver.h",
+    "message_receiver_impl.cc",
+    "message_receiver_impl.h",
     "message_sender.h",
     "message_sender_impl.cc",
     "message_sender_impl.h",
@@ -119,6 +123,7 @@ static_library("test_support") {
   sources = [
     "fake_connection_manager.cc",
     "fake_connection_manager.h",
+    "fake_message_receiver.h",
     "fake_message_sender.cc",
     "fake_message_sender.h",
     "phone_model_test_util.cc",
@@ -130,7 +135,10 @@ static_library("test_support") {
     ":phonehub",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chromeos/components/phonehub/proto",
+  ]
 }
 
 source_set("unit_tests") {
@@ -143,6 +151,7 @@ source_set("unit_tests") {
     "do_not_disturb_controller_impl_unittest.cc",
     "feature_status_provider_impl_unittest.cc",
     "find_my_device_controller_impl_unittest.cc",
+    "message_receiver_unittest.cc",
     "message_sender_unittest.cc",
     "mutable_phone_model_unittest.cc",
     "notification_access_manager_impl_unittest.cc",
