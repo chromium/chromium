@@ -12,12 +12,6 @@
 
 namespace {
 
-const char kDeviceIdPrefix[] = "users/me/devices/";
-
-void RecordGetDeviceStateResultMetrics(NearbyShareHttpResult result) {
-  // TODO(https://crbug.com/1105579): Record a histogram value for each result.
-}
-
 void RecordListContactPeopleResultMetrics(NearbyShareHttpResult result,
                                           size_t current_page_number) {
   // TODO(https://crbug.com/1105579): Record a histogram value for each result.
@@ -34,20 +28,19 @@ NearbyShareContactDownloaderImpl::Factory*
 // static
 std::unique_ptr<NearbyShareContactDownloader>
 NearbyShareContactDownloaderImpl::Factory::Create(
-    bool only_download_if_changed,
     const std::string& device_id,
     base::TimeDelta timeout,
     NearbyShareClientFactory* client_factory,
     SuccessCallback success_callback,
     FailureCallback failure_callback) {
   if (test_factory_)
-    return test_factory_->CreateInstance(
-        only_download_if_changed, device_id, timeout, client_factory,
-        std::move(success_callback), std::move(failure_callback));
+    return test_factory_->CreateInstance(device_id, timeout, client_factory,
+                                         std::move(success_callback),
+                                         std::move(failure_callback));
 
   return base::WrapUnique(new NearbyShareContactDownloaderImpl(
-      only_download_if_changed, device_id, timeout, client_factory,
-      std::move(success_callback), std::move(failure_callback)));
+      device_id, timeout, client_factory, std::move(success_callback),
+      std::move(failure_callback)));
 }
 
 // static
@@ -59,14 +52,12 @@ void NearbyShareContactDownloaderImpl::Factory::SetFactoryForTesting(
 NearbyShareContactDownloaderImpl::Factory::~Factory() = default;
 
 NearbyShareContactDownloaderImpl::NearbyShareContactDownloaderImpl(
-    bool only_download_if_changed,
     const std::string& device_id,
     base::TimeDelta timeout,
     NearbyShareClientFactory* client_factory,
     SuccessCallback success_callback,
     FailureCallback failure_callback)
-    : NearbyShareContactDownloader(only_download_if_changed,
-                                   device_id,
+    : NearbyShareContactDownloader(device_id,
                                    std::move(success_callback),
                                    std::move(failure_callback)),
       timeout_(timeout),
@@ -76,67 +67,7 @@ NearbyShareContactDownloaderImpl::~NearbyShareContactDownloaderImpl() = default;
 
 void NearbyShareContactDownloaderImpl::OnRun() {
   NS_LOG(VERBOSE) << __func__ << ": Starting contacts download.";
-  CheckIfContactsChanged();
-}
-
-void NearbyShareContactDownloaderImpl::CheckIfContactsChanged() {
-  NS_LOG(VERBOSE) << __func__
-                  << ": Checking if contacts have changed since last upload.";
-  timer_.Start(
-      FROM_HERE, timeout_,
-      base::BindOnce(&NearbyShareContactDownloaderImpl::OnGetDeviceStateTimeout,
-                     base::Unretained(this)));
-
-  nearbyshare::proto::GetDeviceStateRequest request;
-  request.set_parent(kDeviceIdPrefix + device_id());
-
-  client_ = client_factory_->CreateInstance();
-  client_->GetDeviceState(
-      request,
-      base::BindOnce(&NearbyShareContactDownloaderImpl::OnGetDeviceStateSuccess,
-                     base::Unretained(this)),
-      base::BindOnce(&NearbyShareContactDownloaderImpl::OnGetDeviceStateFailure,
-                     base::Unretained(this)));
-}
-
-void NearbyShareContactDownloaderImpl::OnGetDeviceStateSuccess(
-    const nearbyshare::proto::GetDeviceStateResponse& response) {
-  timer_.Stop();
-
-  did_contacts_change_since_last_upload_ = response.are_contacts_changed();
-  NS_LOG(VERBOSE) << __func__ << ": Did contacts change since last upload? "
-                  << (did_contacts_change_since_last_upload_ ? "Yes." : "No.");
-
-  client_.reset();
-  RecordGetDeviceStateResultMetrics(NearbyShareHttpResult::kSuccess);
-
-  if (only_download_if_changed() && !did_contacts_change_since_last_upload_) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": Contacts did not change; no download needed.";
-    Succeed(did_contacts_change_since_last_upload_, /*contacts=*/base::nullopt);
-    return;
-  }
-
   CallListContactPeople(/*next_page_token=*/base::nullopt);
-}
-
-void NearbyShareContactDownloaderImpl::OnGetDeviceStateFailure(
-    NearbyShareHttpError error) {
-  timer_.Stop();
-  client_.reset();
-  RecordGetDeviceStateResultMetrics(NearbyShareHttpErrorToResult(error));
-
-  NS_LOG(ERROR) << __func__ << ": GetDeviceState RPC failed with error "
-                << error;
-  Fail();
-}
-
-void NearbyShareContactDownloaderImpl::OnGetDeviceStateTimeout() {
-  client_.reset();
-  RecordGetDeviceStateResultMetrics(NearbyShareHttpResult::kTimeout);
-
-  NS_LOG(ERROR) << __func__ << ": GetDeviceState RPC timed out.";
-  Fail();
 }
 
 void NearbyShareContactDownloaderImpl::CallListContactPeople(
@@ -185,15 +116,13 @@ void NearbyShareContactDownloaderImpl::OnListContactPeopleSuccess(
     return;
   }
 
-  NS_LOG(VERBOSE)
-      << __func__ << ": Download of " << contacts_.size()
-      << " contacts succeeded. Did contacts change since last upload? "
-      << (did_contacts_change_since_last_upload_ ? "Yes." : "No.");
+  NS_LOG(VERBOSE) << __func__ << ": Download of " << contacts_.size()
+                  << " contacts succeeded.";
 
   // TODO(https://crbug.com/1105579): Record a histogram for the total number of
   // pages needed.
 
-  Succeed(did_contacts_change_since_last_upload_, std::move(contacts_));
+  Succeed(std::move(contacts_));
 }
 
 void NearbyShareContactDownloaderImpl::OnListContactPeopleFailure(

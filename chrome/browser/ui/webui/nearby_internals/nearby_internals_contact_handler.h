@@ -46,8 +46,6 @@ class NearbyInternalsContactHandler
   void InitializeContents(const base::ListValue* args);
 
   // NearbyShareContactManager::Observer:
-  void OnAllowlistChanged(bool were_contacts_added_to_allowlist,
-                          bool were_contacts_removed_from_allowlist) override;
   void OnContactsDownloaded(
       const std::set<std::string>& allowed_contact_ids,
       const std::vector<nearbyshare::proto::ContactRecord>& contacts) override;

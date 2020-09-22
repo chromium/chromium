@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader.h"
@@ -21,11 +22,12 @@
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom-shared.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "components/prefs/pref_service.h"
+#include "crypto/secure_hash.h"
 
 namespace {
 
 constexpr base::TimeDelta kContactDownloadPeriod =
-    base::TimeDelta::FromHours(1);
+    base::TimeDelta::FromHours(12);
 constexpr base::TimeDelta kContactDownloadRpcTimeout =
     base::TimeDelta::FromSeconds(60);
 
@@ -57,6 +59,26 @@ std::vector<nearbyshare::proto::Contact> ContactRecordsToContacts(
     }
   }
   return contacts;
+}
+
+// Creates a hex-encoded hash of the contact data, implicitly including the
+// allowlist, to be sent to the Nearby Share server. This hash is persisted and
+// used to detect any changes to the user's contact list or allowlist since the
+// last successful upload to the server.
+std::string ComputeHash(
+    const std::vector<nearbyshare::proto::Contact>& contacts) {
+  std::unique_ptr<crypto::SecureHash> hasher =
+      crypto::SecureHash::Create(crypto::SecureHash::Algorithm::SHA256);
+
+  for (const nearbyshare::proto::Contact& contact : contacts) {
+    std::string serialized = contact.SerializeAsString();
+    hasher->Update(serialized.data(), serialized.size());
+  }
+
+  std::vector<uint8_t> hash(hasher->GetHashLength());
+  hasher->Finish(hash.data(), hash.size());
+
+  return base::HexEncode(hash);
 }
 
 nearby_share::mojom::ContactIdentifierPtr ProtoToMojo(
@@ -140,56 +162,40 @@ NearbyShareContactManagerImpl::NearbyShareContactManagerImpl(
     : pref_service_(pref_service),
       http_client_factory_(http_client_factory),
       local_device_data_manager_(local_device_data_manager),
-      contact_download_scheduler_(
+      contact_download_and_upload_scheduler_(
           NearbyShareSchedulerFactory::CreatePeriodicScheduler(
               kContactDownloadPeriod,
               /*retry_failures=*/true,
               /*require_connectivity=*/true,
-              prefs::kNearbySharingSchedulerContactDownloadPrefName,
+              prefs::kNearbySharingSchedulerContactDownloadAndUploadPrefName,
               pref_service_,
               base::BindRepeating(
                   &NearbyShareContactManagerImpl::OnContactsDownloadRequested,
-                  base::Unretained(this)))),
-      contact_upload_scheduler_(
-          NearbyShareSchedulerFactory::CreateOnDemandScheduler(
-              /*retry_failures=*/true,
-              /*require_connectivity=*/true,
-              prefs::kNearbySharingSchedulerContactUploadPrefName,
-              pref_service_,
-              base::BindRepeating(
-                  &NearbyShareContactManagerImpl::OnContactsUploadRequested,
                   base::Unretained(this)))) {}
 
 NearbyShareContactManagerImpl::~NearbyShareContactManagerImpl() = default;
 
-void NearbyShareContactManagerImpl::DownloadContacts(
-    bool only_download_if_changed) {
-  // A request for a full download always takes priority.
-  if (!only_download_if_changed)
-    only_download_if_changed_ = false;
-
-  // Make sure the schedulers are running so we can retrieve contacts while
+void NearbyShareContactManagerImpl::DownloadContacts() {
+  // Make sure the scheduler is running so we can retrieve contacts while
   // onboarding.
   Start();
 
-  contact_download_scheduler_->MakeImmediateRequest();
+  contact_download_and_upload_scheduler_->MakeImmediateRequest();
 }
 
 void NearbyShareContactManagerImpl::SetAllowedContacts(
     const std::set<std::string>& allowed_contact_ids) {
   // If the allowlist changed, re-upload contacts to Nearby server.
   if (SetAllowlist(allowed_contact_ids))
-    contact_upload_scheduler_->MakeImmediateRequest();
+    contact_download_and_upload_scheduler_->MakeImmediateRequest();
 }
 
 void NearbyShareContactManagerImpl::OnStart() {
-  contact_download_scheduler_->Start();
-  contact_upload_scheduler_->Start();
+  contact_download_and_upload_scheduler_->Start();
 }
 
 void NearbyShareContactManagerImpl::OnStop() {
-  contact_download_scheduler_->Stop();
-  contact_upload_scheduler_->Stop();
+  contact_download_and_upload_scheduler_->Stop();
 }
 
 void NearbyShareContactManagerImpl::Bind(
@@ -201,10 +207,6 @@ void NearbyShareContactManagerImpl::AddDownloadContactsObserver(
     ::mojo::PendingRemote<nearby_share::mojom::DownloadContactsObserver>
         observer) {
   observers_set_.Add(std::move(observer));
-}
-
-void NearbyShareContactManagerImpl::DownloadContacts() {
-  DownloadContacts(/*only_download_if_changed=*/false);
 }
 
 std::set<std::string> NearbyShareContactManagerImpl::GetAllowedContacts()
@@ -223,8 +225,8 @@ void NearbyShareContactManagerImpl::OnContactsDownloadRequested() {
 
   DCHECK(!contact_downloader_);
   contact_downloader_ = NearbyShareContactDownloaderImpl::Factory::Create(
-      only_download_if_changed_, local_device_data_manager_->GetId(),
-      kContactDownloadRpcTimeout, http_client_factory_,
+      local_device_data_manager_->GetId(), kContactDownloadRpcTimeout,
+      http_client_factory_,
       base::BindOnce(&NearbyShareContactManagerImpl::OnContactsDownloadSuccess,
                      base::Unretained(this)),
       base::BindOnce(&NearbyShareContactManagerImpl::OnContactsDownloadFailure,
@@ -233,60 +235,41 @@ void NearbyShareContactManagerImpl::OnContactsDownloadRequested() {
 }
 
 void NearbyShareContactManagerImpl::OnContactsDownloadSuccess(
-    bool did_contacts_change_since_last_upload,
-    base::Optional<std::vector<nearbyshare::proto::ContactRecord>> contacts) {
+    std::vector<nearbyshare::proto::ContactRecord> contacts) {
   contact_downloader_.reset();
 
-  NS_LOG(VERBOSE) << __func__ << ": Nearby Share contacts download succeeded."
-                  << "\n  Did contacts change since last upload? "
-                  << (did_contacts_change_since_last_upload ? "Yes." : "No.")
-                  << "\n  Were contacts returned? "
-                  << (contacts.has_value() ? "Yes." : "No.")
-                  << "\n  Number of contacts returned: "
-                  << (contacts.has_value() ? contacts->size() : 0u);
-  if (contacts) {
-    // A complete list of contacts was returned. Do not download list again
-    // until contacts change or until explicitly requested.
-    only_download_if_changed_ = true;
+  NS_LOG(VERBOSE) << __func__ << ": Nearby Share download of "
+                  << contacts.size() << " contacts succeeded.";
 
-    // Remove contacts from the allowlist that are no longer in the contact
-    // list.
-    bool did_allowlist_change =
-        SetAllowlist(RemoveNonexistentContactsFromAllowlist(
-            GetAllowedContacts(), *contacts));
+  // Remove contacts from the allowlist that are not in the contact list.
+  SetAllowlist(
+      RemoveNonexistentContactsFromAllowlist(GetAllowedContacts(), contacts));
 
-    // Notify observers that the contact list was downloaded.
-    std::set<std::string> allowed_contact_ids = GetAllowedContacts();
-    NotifyContactsDownloaded(allowed_contact_ids, *contacts);
-    NotifyMojoObserverContactsDownloaded(allowed_contact_ids, *contacts);
+  // Notify observers that the contact list was downloaded.
+  std::set<std::string> allowed_contact_ids = GetAllowedContacts();
+  NotifyContactsDownloaded(allowed_contact_ids, contacts);
+  NotifyMojoObserverContactsDownloaded(allowed_contact_ids, contacts);
 
-    // Request a contacts upload if needed, or process an existing upload
-    // request now that we have the access to the full contacts list.
-    switch (upload_state_) {
-      case UploadState::kIdle:
-        if (did_contacts_change_since_last_upload || did_allowlist_change) {
-          contact_upload_scheduler_->MakeImmediateRequest();
-        }
-        break;
-      case UploadState::kWaitingForDownload:
-        StartContactsUpload(did_contacts_change_since_last_upload, *contacts);
-        break;
-      case UploadState::kInProgress:
-        // The current upload has a stale allowlist; request another upload.
-        if (did_allowlist_change) {
-          contact_upload_scheduler_->MakeImmediateRequest();
-        }
-        // NOTE: We have no way of knowing if the contact list has changed since
-        // we started our current upload--something that could only happen in a
-        // very narrow window of time; we only know if the list has changed
-        // since the last successful upload. We do not handle this edge case,
-        // instead relying on a subsequent (periodic) download to detect that
-        // the list needs to be re-uploaded.
-        break;
-    }
+  // Only request a contacts upload if the contact list or allowlist has changed
+  // since the last successful upload.
+  std::vector<nearbyshare::proto::Contact> contacts_to_upload =
+      ContactRecordsToContacts(GetAllowedContacts(), contacts);
+  std::string contact_upload_hash = ComputeHash(contacts_to_upload);
+  if (contact_upload_hash ==
+      pref_service_->GetString(
+          prefs::kNearbySharingContactUploadHashPrefName)) {
+    contact_download_and_upload_scheduler_->HandleResult(/*success=*/true);
+    return;
   }
 
-  contact_download_scheduler_->HandleResult(/*success=*/true);
+  NS_LOG(VERBOSE) << __func__
+                  << ": Contact list or allowlist changed since last "
+                  << "successful upload to the Nearby Share server. "
+                  << "Starting contacts upload.";
+  local_device_data_manager_->UploadContacts(
+      std::move(contacts_to_upload),
+      base::BindOnce(&NearbyShareContactManagerImpl::OnContactsUploadFinished,
+                     weak_ptr_factory_.GetWeakPtr(), contact_upload_hash));
 }
 
 void NearbyShareContactManagerImpl::OnContactsDownloadFailure() {
@@ -299,61 +282,27 @@ void NearbyShareContactManagerImpl::OnContactsDownloadFailure() {
     remote->OnContactsDownloadFailed();
   }
 
-  contact_download_scheduler_->HandleResult(/*success=*/false);
-}
-
-void NearbyShareContactManagerImpl::OnContactsUploadRequested() {
-  DCHECK_EQ(UploadState::kIdle, upload_state_);
-
-  NS_LOG(VERBOSE) << __func__
-                  << ": Nearby Share contact upload requested. Waiting to "
-                  << "download full contact list.";
-
-  // Because the user's contact list is not persisted locally, we have to
-  // retrieve the full contact list ContactRecord protos from the server
-  // before uploading the list of Contact protos to the server.
-  upload_state_ = UploadState::kWaitingForDownload;
-  DownloadContacts(/*only_download_if_changed=*/false);
-}
-
-void NearbyShareContactManagerImpl::StartContactsUpload(
-    bool did_contacts_change_since_last_upload,
-    const std::vector<nearbyshare::proto::ContactRecord>& contacts) {
-  NS_LOG(VERBOSE) << __func__
-                  << ": Starting contacts upload to Nearby Share server.";
-  upload_state_ = UploadState::kInProgress;
-  local_device_data_manager_->UploadContacts(
-      ContactRecordsToContacts(GetAllowedContacts(), contacts),
-      base::BindOnce(&NearbyShareContactManagerImpl::OnContactsUploadFinished,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     did_contacts_change_since_last_upload));
+  contact_download_and_upload_scheduler_->HandleResult(/*success=*/false);
 }
 
 void NearbyShareContactManagerImpl::OnContactsUploadFinished(
-    bool did_contacts_change_since_last_upload,
+    const std::string& contact_upload_hash,
     bool success) {
   NS_LOG(VERBOSE) << __func__ << ": Upload of contacts to Nearby Share server "
                   << (success ? "succeeded." : "failed.")
-                  << " Did contacts change since last upload? "
-                  << (did_contacts_change_since_last_upload ? "Yes." : "No.");
+                  << " Contact upload hash: " << contact_upload_hash;
   if (success) {
-    NotifyContactsUploaded(did_contacts_change_since_last_upload);
+    pref_service_->SetString(prefs::kNearbySharingContactUploadHashPrefName,
+                             contact_upload_hash);
+    NotifyContactsUploaded(/*did_contacts_change_since_last_upload=*/true);
   }
-  upload_state_ = UploadState::kIdle;
-  contact_upload_scheduler_->HandleResult(success);
+
+  contact_download_and_upload_scheduler_->HandleResult(success);
 }
 
 bool NearbyShareContactManagerImpl::SetAllowlist(
     const std::set<std::string>& new_allowlist) {
-  std::set<std::string> old_allowlist = GetAllowedContacts();
-  bool were_contacts_added =
-      !std::includes(old_allowlist.begin(), old_allowlist.end(),
-                     new_allowlist.begin(), new_allowlist.end());
-  bool were_contacts_removed =
-      !std::includes(new_allowlist.begin(), new_allowlist.end(),
-                     old_allowlist.begin(), old_allowlist.end());
-
-  if (!were_contacts_added && !were_contacts_removed)
+  if (new_allowlist == GetAllowedContacts())
     return false;
 
   base::Value allowlist_value(base::Value::Type::LIST);
@@ -362,8 +311,6 @@ bool NearbyShareContactManagerImpl::SetAllowlist(
   }
   pref_service_->Set(prefs::kNearbySharingAllowedContactsPrefName,
                      std::move(allowlist_value));
-
-  NotifyAllowlistChanged(were_contacts_added, were_contacts_removed);
 
   return true;
 }

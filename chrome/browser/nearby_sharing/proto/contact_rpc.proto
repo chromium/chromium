@@ -14,25 +14,6 @@ option optimize_for = LITE_RUNTIME;
 
 import "rpc_resources.proto";
 
-// Request to get contacts reachability and recommendation for sharing.
-message CheckContactsReachabilityRequest {
-  message ReachableContact {
-    string contact_id = 1;
-    repeated string phone_numbers = 2;
-    repeated string emails = 3;
-  }
-  repeated ReachableContact contacts = 1;
-}
-
-message CheckContactsReachabilityResponse {
-  message Result {
-    string contact_id = 1;
-    bool is_reachable = 2;
-    bool is_recommended = 3;
-  }
-  repeated Result results = 1;
-}
-
 // Request to list ContactRecord of a user.
 message ListContactPeopleRequest {
   // Optional limit on the number of ContactRecord in

@@ -29,11 +29,7 @@ base::Value GetJavascriptTimestamp() {
 
 // Keys in the JSON representation of a contact message
 const char kContactMessageTimeKey[] = "time";
-const char kContactMessageContactListChangedKey[] = "contactListChanged";
-const char kContactMessageContactsAddedToAllowedListKey[] =
-    "contactsAddedToAllowlist";
-const char kContactMessageContactsRemovedFromAllowedListKey[] =
-    "contactsRemovedFromAllowlist";
+const char kContactMessageContactsChangedKey[] = "contactsChanged";
 const char kContactMessageAllowedIdsKey[] = "allowedIds";
 const char kContactMessageContactRecordKey[] = "contactRecords";
 
@@ -44,8 +40,6 @@ const char kContactMessageContactRecordKey[] = "contactRecords";
 // will require changes at the javascript layer as well.
 base::Value ContactMessageToDictionary(
     base::Optional<bool> did_contacts_change_since_last_upload,
-    base::Optional<bool> were_contacts_added_to_allowlist,
-    base::Optional<bool> were_contacts_removed_from_allowlist,
     const base::Optional<std::set<std::string>>& allowed_contact_ids,
     const base::Optional<std::vector<nearbyshare::proto::ContactRecord>>&
         contacts) {
@@ -53,16 +47,8 @@ base::Value ContactMessageToDictionary(
 
   dictionary.SetKey(kContactMessageTimeKey, GetJavascriptTimestamp());
   if (did_contacts_change_since_last_upload.has_value()) {
-    dictionary.SetBoolKey(kContactMessageContactListChangedKey,
+    dictionary.SetBoolKey(kContactMessageContactsChangedKey,
                           *did_contacts_change_since_last_upload);
-  }
-  if (were_contacts_added_to_allowlist.has_value()) {
-    dictionary.SetBoolKey(kContactMessageContactsAddedToAllowedListKey,
-                          *were_contacts_added_to_allowlist);
-  }
-  if (were_contacts_removed_from_allowlist.has_value()) {
-    dictionary.SetBoolKey(kContactMessageContactsRemovedFromAllowedListKey,
-                          *were_contacts_removed_from_allowlist);
   }
   if (allowed_contact_ids) {
     base::Value::ListStorage allowed_ids_list;
@@ -131,24 +117,10 @@ void NearbyInternalsContactHandler::HandleDownloadContacts(
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (service_) {
-    const bool only_download_if_contacts_changed = args->GetList()[0].GetBool();
-    service_->GetContactManager()->DownloadContacts(
-        only_download_if_contacts_changed);
+    service_->GetContactManager()->DownloadContacts();
   } else {
     NS_LOG(ERROR) << "No NearbyShareService instance to call.";
   }
-}
-
-void NearbyInternalsContactHandler::OnAllowlistChanged(
-    bool were_contacts_added_to_allowlist,
-    bool were_contacts_removed_from_allowlist) {
-  FireWebUIListener(
-      "contacts-updated",
-      ContactMessageToDictionary(
-          /*did_contacts_change_since_last_upload=*/base::nullopt,
-          were_contacts_added_to_allowlist,
-          were_contacts_removed_from_allowlist,
-          /*allowed_contact_ids=*/base::nullopt, /*contacts=*/base::nullopt));
 }
 
 void NearbyInternalsContactHandler::OnContactsDownloaded(
@@ -157,8 +129,6 @@ void NearbyInternalsContactHandler::OnContactsDownloaded(
   FireWebUIListener("contacts-updated",
                     ContactMessageToDictionary(
                         /*did_contacts_change_since_last_upload=*/base::nullopt,
-                        /*were_contacts_added_to_allowlist=*/base::nullopt,
-                        /*were_contacts_removed_from_allowlist=*/base::nullopt,
                         allowed_contact_ids, contacts));
 }
 
@@ -166,9 +136,7 @@ void NearbyInternalsContactHandler::OnContactsUploaded(
     bool did_contacts_change_since_last_upload) {
   FireWebUIListener(
       "contacts-updated",
-      ContactMessageToDictionary(
-          did_contacts_change_since_last_upload,
-          /*were_contacts_added_to_allowlist=*/base::nullopt,
-          /*were_contacts_removed_from_allowlist=*/base::nullopt,
-          /*allowed_contact_ids=*/base::nullopt, /*contacts=*/base::nullopt));
+      ContactMessageToDictionary(did_contacts_change_since_last_upload,
+                                 /*allowed_contact_ids=*/base::nullopt,
+                                 /*contacts=*/base::nullopt));
 }

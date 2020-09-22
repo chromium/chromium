@@ -7,12 +7,9 @@
     float: right;
   }
 </style>
-<cr-button on-click="onDownloadContactsIfChangedClicked_"
+<cr-button on-click="onDownloadContacts_"
     class="internals-button">
-  Download Contacts If Changed
-</cr-button>
-<cr-button on-click="onForceDownloadContactsClicked_" class="internals-button">
-  Force Contacts Download
+  Download Contacts
 </cr-button>
 <cr-button on-click="onClearMessagesButtonClicked_" class="internals-button"
     id="clearButton" disabled="[[!contactList_.length]]">

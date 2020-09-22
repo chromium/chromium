@@ -13,10 +13,6 @@
 
 namespace nearbyshare {
 namespace proto {
-class CheckContactsReachabilityRequest;
-class CheckContactsReachabilityResponse;
-class GetDeviceStateRequest;
-class GetDeviceStateResponse;
 class ListContactPeopleRequest;
 class ListContactPeopleResponse;
 class ListPublicCertificatesRequest;
@@ -32,11 +28,7 @@ class UpdateDeviceResponse;
 // instance for each request you make. DO NOT REUSE.
 class NearbyShareClient {
  public:
-  using CheckContactsReachabilityCallback = base::OnceCallback<void(
-      const nearbyshare::proto::CheckContactsReachabilityResponse&)>;
   using ErrorCallback = base::OnceCallback<void(NearbyShareHttpError)>;
-  using GetDeviceStateCallback = base::OnceCallback<void(
-      const nearbyshare::proto::GetDeviceStateResponse&)>;
   using ListContactPeopleCallback = base::OnceCallback<void(
       const nearbyshare::proto::ListContactPeopleResponse&)>;
   using ListPublicCertificatesCallback = base::OnceCallback<void(
@@ -51,18 +43,6 @@ class NearbyShareClient {
   virtual void UpdateDevice(
       const nearbyshare::proto::UpdateDeviceRequest& request,
       UpdateDeviceCallback&& callback,
-      ErrorCallback&& error_callback) = 0;
-
-  // NearbyShareService v1: GetDeviceState
-  virtual void GetDeviceState(
-      const nearbyshare::proto::GetDeviceStateRequest& request,
-      GetDeviceStateCallback&& callback,
-      ErrorCallback&& error_callback) = 0;
-
-  // NearbyShareService v1: CheckContactsReachability
-  virtual void CheckContactsReachability(
-      const nearbyshare::proto::CheckContactsReachabilityRequest& request,
-      CheckContactsReachabilityCallback&& callback,
       ErrorCallback&& error_callback) = 0;
 
   // NearbyShareService v1: ListContactPeople

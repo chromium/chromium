@@ -11,14 +11,9 @@
 namespace {
 
 void RecordSuccessMetrics(
-    bool did_contacts_change_since_last_upload,
-    const base::Optional<std::vector<nearbyshare::proto::ContactRecord>>&
-        contacts) {
+    const std::vector<nearbyshare::proto::ContactRecord>& contacts) {
   // TODO(https://crbug.com/1105579): Record a success/failure histogram value.
-  // TODO(https://crbug.com/1105579): Record if contacts changed.
-  // TODO(https://crbug.com/1105579): Record if contacts were downloaded.
-  // TODO(https://crbug.com/1105579): If contacts were downloaded, record total
-  // number of contacts returned.
+  // TODO(https://crbug.com/1105579): Record total number of contacts returned.
 }
 
 void RecordFailureMetrics() {
@@ -28,12 +23,10 @@ void RecordFailureMetrics() {
 }  // namespace
 
 NearbyShareContactDownloader::NearbyShareContactDownloader(
-    bool only_download_if_changed,
     const std::string& device_id,
     SuccessCallback success_callback,
     FailureCallback failure_callback)
-    : only_download_if_changed_(only_download_if_changed),
-      device_id_(device_id),
+    : device_id_(device_id),
       success_callback_(std::move(success_callback)),
       failure_callback_(std::move(failure_callback)) {}
 
@@ -47,14 +40,12 @@ void NearbyShareContactDownloader::Run() {
 }
 
 void NearbyShareContactDownloader::Succeed(
-    bool did_contacts_change_since_last_upload,
-    base::Optional<std::vector<nearbyshare::proto::ContactRecord>> contacts) {
+    std::vector<nearbyshare::proto::ContactRecord> contacts) {
   DCHECK(was_run_);
   DCHECK(success_callback_);
-  RecordSuccessMetrics(did_contacts_change_since_last_upload, contacts);
+  RecordSuccessMetrics(contacts);
 
-  std::move(success_callback_)
-      .Run(did_contacts_change_since_last_upload, std::move(contacts));
+  std::move(success_callback_).Run(std::move(contacts));
 }
 
 void NearbyShareContactDownloader::Fail() {

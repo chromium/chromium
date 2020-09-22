@@ -44,7 +44,6 @@ class FakeNearbyShareContactDownloader : public NearbyShareContactDownloader {
    private:
     // NearbyShareContactDownloaderImpl::Factory:
     std::unique_ptr<NearbyShareContactDownloader> CreateInstance(
-        bool only_download_if_changed,
         const std::string& device_id,
         base::TimeDelta timeout,
         NearbyShareClientFactory* client_factory,
@@ -56,8 +55,7 @@ class FakeNearbyShareContactDownloader : public NearbyShareContactDownloader {
     NearbyShareClientFactory* latest_client_factory_;
   };
 
-  FakeNearbyShareContactDownloader(bool only_download_if_changed,
-                                   const std::string& device_id,
+  FakeNearbyShareContactDownloader(const std::string& device_id,
                                    SuccessCallback success_callback,
                                    FailureCallback failure_callback);
   ~FakeNearbyShareContactDownloader() override;
@@ -68,7 +66,6 @@ class FakeNearbyShareContactDownloader : public NearbyShareContactDownloader {
   // Make protected methods from base class public in this fake class.
   using NearbyShareContactDownloader::device_id;
   using NearbyShareContactDownloader::Fail;
-  using NearbyShareContactDownloader::only_download_if_changed;
   using NearbyShareContactDownloader::Succeed;
 };
 

@@ -27,9 +27,8 @@ FakeNearbyShareContactManager::FakeNearbyShareContactManager() = default;
 
 FakeNearbyShareContactManager::~FakeNearbyShareContactManager() = default;
 
-void FakeNearbyShareContactManager::DownloadContacts(
-    bool only_download_if_changed) {
-  download_contacts_calls_.push_back(only_download_if_changed);
+void FakeNearbyShareContactManager::DownloadContacts() {
+  ++num_download_contacts_calls_;
 }
 
 void FakeNearbyShareContactManager::SetAllowedContacts(
@@ -47,5 +46,3 @@ void FakeNearbyShareContactManager::Bind(
 void FakeNearbyShareContactManager::AddDownloadContactsObserver(
     ::mojo::PendingRemote<nearby_share::mojom::DownloadContactsObserver>
         observer) {}
-
-void FakeNearbyShareContactManager::DownloadContacts() {}

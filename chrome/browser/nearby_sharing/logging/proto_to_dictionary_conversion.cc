@@ -89,56 +89,6 @@ base::Value TimestampToReadableDictionary(
   return dict;
 }
 
-base::Value CheckContactReachabilityRequestToReadableDictionary(
-    const nearbyshare::proto::CheckContactsReachabilityRequest& request) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  base::Value contacts_list(base::Value::Type::LIST);
-  for (const auto& contact : request.contacts()) {
-    contacts_list.Append(ReachableContactToReadableDictionary(contact));
-  }
-  dict.SetKey("contacts", std::move(contacts_list));
-  return dict;
-}
-
-base::Value ReachableContactToReadableDictionary(
-    const nearbyshare::proto::CheckContactsReachabilityRequest::
-        ReachableContact& contact) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("contact_id", contact.contact_id());
-  base::Value phone_numbers_list(base::Value::Type::LIST);
-  for (const auto& phone_number : contact.phone_numbers()) {
-    phone_numbers_list.Append(phone_number);
-  }
-  dict.SetKey("phone_numbers", std::move(phone_numbers_list));
-  base::Value emails_list(base::Value::Type::LIST);
-  for (const auto& email : contact.emails()) {
-    emails_list.Append(email);
-  }
-  dict.SetKey("emails", std::move(emails_list));
-  return dict;
-}
-
-base::Value CheckContactReachabilityResponseToReadableDictionary(
-    const nearbyshare::proto::CheckContactsReachabilityResponse& response) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  base::Value results_list(base::Value::Type::LIST);
-  for (const auto& result : response.results()) {
-    results_list.Append(ResultToReadableDictionary(result));
-  }
-  dict.SetKey("results", std::move(results_list));
-  return dict;
-}
-
-base::Value ResultToReadableDictionary(
-    const nearbyshare::proto::CheckContactsReachabilityResponse::Result&
-        result) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("contact_id", result.contact_id());
-  dict.SetBoolKey("is_reachable", result.is_reachable());
-  dict.SetBoolKey("is_recommended", result.is_recommended());
-  return dict;
-}
-
 base::Value ListContactPeopleRequestToReadableDictionary(
     const nearbyshare::proto::ListContactPeopleRequest& request) {
   base::Value dict(base::Value::Type::DICTIONARY);
@@ -253,19 +203,5 @@ base::Value EncryptedMetadataToReadableDictionary(
   dict.SetStringKey("bluetooth_mac_address",
                     TruncateString(Encode(data.bluetooth_mac_address())));
   dict.SetStringKey("obfuscated_gaia_id", data.obfuscated_gaia_id());
-  return dict;
-}
-
-base::Value GetDeviceStateRequestToReadableDictionary(
-    const nearbyshare::proto::GetDeviceStateRequest& request) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("parent", request.parent());
-  return dict;
-}
-
-base::Value GetDeviceStateResponseToReadableDictionary(
-    const nearbyshare::proto::GetDeviceStateResponse& response) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetBoolKey("are_contacts_changed", response.are_contacts_changed());
   return dict;
 }

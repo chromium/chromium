@@ -30,17 +30,13 @@
 
 namespace {
 
-// State for whether an upload is started, requested, or neither after a
-// successful download of contacts.
-enum class UploadAction { kNone, kRequest, kStart };
-
 const char kTestContactIdPrefix[] = "id_";
 const char kTestContactEmailPrefix[] = "email_";
 const char kTestContactPhonePrefix[] = "phone_";
 
 // From nearby_share_contact_manager_impl.cc.
 constexpr base::TimeDelta kContactDownloadPeriod =
-    base::TimeDelta::FromHours(1);
+    base::TimeDelta::FromHours(12);
 constexpr base::TimeDelta kContactDownloadRpcTimeout =
     base::TimeDelta::FromSeconds(60);
 
@@ -173,95 +169,67 @@ class NearbyShareContactManagerImplTest
     NearbyShareContactDownloaderImpl::Factory::SetFactoryForTesting(nullptr);
   }
 
-  void StartSchedulers() { manager_->Start(); }
-
-  void DownloadContacts(bool only_download_if_changed) {
+  void DownloadContacts() {
     // Manually reset these before each download.
     mojo_observer_.on_contacts_downloaded_called_ = false;
     mojo_observer_.on_contacts_download_failed_called_ = false;
 
-    // Verify that the download scheduler is sent request.
-    size_t num_requests = download_scheduler()->num_immediate_requests();
-    manager_->DownloadContacts(only_download_if_changed);
-    EXPECT_EQ(num_requests + 1, download_scheduler()->num_immediate_requests());
+    // Verify that the scheduler is sent a request.
+    size_t num_requests =
+        download_and_upload_scheduler()->num_immediate_requests();
+    manager_->DownloadContacts();
+    EXPECT_EQ(num_requests + 1,
+              download_and_upload_scheduler()->num_immediate_requests());
   }
 
   void SucceedDownload(
-      bool did_contacts_change_since_last_upload,
-      const base::Optional<std::vector<nearbyshare::proto::ContactRecord>>&
-          contacts,
-      bool expected_only_download_if_changed,
-      bool expected_were_contacts_removed_from_allowlist,
+      const std::vector<nearbyshare::proto::ContactRecord>& contacts,
       const std::set<std::string>& expected_allowed_contact_ids,
-      UploadAction expected_upload_action) {
-    TriggerDownloadScheduler(expected_only_download_if_changed);
+      bool expect_upload) {
+    TriggerScheduler();
 
-    size_t num_handled_results = download_scheduler()->handled_results().size();
-    size_t num_allowlist_notifications =
-        allowlist_changed_notifications_.size();
+    size_t num_handled_results =
+        download_and_upload_scheduler()->handled_results().size();
     size_t num_download_notifications =
         contacts_downloaded_notifications_.size();
-    size_t num_upload_requests = upload_scheduler()->num_immediate_requests();
     size_t num_upload_contacts_calls =
         local_device_data_manager_.upload_contacts_calls().size();
 
-    latest_downloader()->Succeed(did_contacts_change_since_last_upload,
-                                 contacts);
+    latest_downloader()->Succeed(contacts);
 
-    // Verify allowlist notification sent if contacts were removed from the
-    // allowlist because they no longer exist in the full contacts list.
-    VerifyAllowlistNotificationSentIfNecessary(
-        /*initial_num_notifications=*/num_allowlist_notifications,
-        /*expected_were_contacts_added_to_allowlist=*/false,
-        expected_were_contacts_removed_from_allowlist);
-
-    VerifyDownloadNotificationSentIfNecessary(
+    VerifyDownloadNotificationSent(
         /*initial_num_notifications=*/num_download_notifications,
         expected_allowed_contact_ids, contacts);
 
-    // Verify if any uploads were requested or started.
-    if (contacts) {
-      switch (expected_upload_action) {
-        case UploadAction::kNone:
-          break;
-        case UploadAction::kRequest:
-          ++num_upload_requests;
-          break;
-        case UploadAction::kStart:
-          ++num_upload_contacts_calls;
-          break;
-      }
-    }
-    EXPECT_EQ(num_upload_requests,
-              upload_scheduler()->num_immediate_requests());
-    EXPECT_EQ(num_upload_contacts_calls,
+    // Verify the mojo observer was called.
+    mojo_observer_.receiver_.FlushForTesting();
+    EXPECT_TRUE(mojo_observer_.on_contacts_downloaded_called_);
+    EXPECT_FALSE(mojo_observer_.on_contacts_download_failed_called_);
+    VerifyMojoContacts(contacts, mojo_observer_.contacts_);
+
+    // Verify that contacts start uploading if the needed.
+    EXPECT_EQ(num_upload_contacts_calls + (expect_upload ? 1 : 0),
               local_device_data_manager_.upload_contacts_calls().size());
 
-    // Verify that the download success/failure result is sent to the
-    // scheduler.
-    EXPECT_EQ(num_handled_results + 1,
-              download_scheduler()->handled_results().size());
-    EXPECT_TRUE(download_scheduler()->handled_results().back());
-
-    // Verify the mojo observer was called if we had contacts.
-    mojo_observer_.receiver_.FlushForTesting();
-    EXPECT_EQ(contacts.has_value(),
-              mojo_observer_.on_contacts_downloaded_called_);
-    EXPECT_FALSE(mojo_observer_.on_contacts_download_failed_called_);
-    if (contacts) {
-      VerifyMojoContacts(contacts.value(), mojo_observer_.contacts_);
+    // Verify that the success result is sent to the download/upload scheduler
+    // if a subsequent upload isn't required.
+    EXPECT_EQ(num_handled_results + (expect_upload ? 0 : 1),
+              download_and_upload_scheduler()->handled_results().size());
+    if (!expect_upload) {
+      EXPECT_TRUE(download_and_upload_scheduler()->handled_results().back());
     }
   }
 
-  void FailDownload(bool expected_only_download_if_changed) {
-    TriggerDownloadScheduler(expected_only_download_if_changed);
+  void FailDownload() {
+    TriggerScheduler();
 
     // Fail download and verify that the result is sent to the scheduler.
-    size_t num_handled_results = download_scheduler()->handled_results().size();
+    size_t num_handled_results =
+        download_and_upload_scheduler()->handled_results().size();
     latest_downloader()->Fail();
     EXPECT_EQ(num_handled_results + 1,
-              download_scheduler()->handled_results().size());
-    EXPECT_FALSE(download_scheduler()->handled_results().back());
+              download_and_upload_scheduler()->handled_results().size());
+    EXPECT_FALSE(download_and_upload_scheduler()->handled_results().back());
 
     // Verify the mojo observer was called as well.
     mojo_observer_.receiver_.FlushForTesting();
@@ -269,13 +237,8 @@ class NearbyShareContactManagerImplTest
     EXPECT_TRUE(mojo_observer_.on_contacts_download_failed_called_);
   }
 
-  void TriggerUploadFromScheduler() {
-    upload_scheduler()->InvokeRequestCallback();
-  }
-
   void FinishUpload(
       bool success,
-      bool expected_did_contacts_change_since_last_upload,
       const std::vector<nearbyshare::proto::Contact>& expected_contacts) {
     FakeNearbyShareLocalDeviceDataManager::UploadContactsCall& call =
         local_device_data_manager_.upload_contacts_calls().back();
@@ -285,69 +248,46 @@ class NearbyShareContactManagerImplTest
                 call.contacts[i].SerializeAsString());
     }
 
-    // Invoke upload callback from local device data manager, verify that
-    // upload notification was sent, and verify that result was sent back to
-    // the upload scheduler.
+    // Invoke upload callback from local device data manager.
     size_t num_upload_notifications = contacts_uploaded_notifications_.size();
-    size_t num_handled_results = upload_scheduler()->handled_results().size();
+    size_t num_handled_results =
+        download_and_upload_scheduler()->handled_results().size();
     std::move(call.callback).Run(success);
+
+    // Verify upload notification was sent on success.
+    EXPECT_EQ(num_upload_notifications + (success ? 1 : 0),
+              contacts_uploaded_notifications_.size());
     if (success) {
-      EXPECT_EQ(num_upload_notifications + 1,
-                contacts_uploaded_notifications_.size());
-      EXPECT_EQ(expected_did_contacts_change_since_last_upload,
-                contacts_uploaded_notifications_.back()
-                    .did_contacts_change_since_last_upload);
-    } else {
-      EXPECT_EQ(num_upload_notifications,
-                contacts_uploaded_notifications_.size());
+      // We only expect uploads to occur if contacts have changed since the last
+      // upload.
+      EXPECT_TRUE(contacts_uploaded_notifications_.back()
+                      .did_contacts_change_since_last_upload);
     }
+
+    // Verify that result is sent to download/upload scheduler.
     EXPECT_EQ(num_handled_results + 1,
-              upload_scheduler()->handled_results().size());
-    EXPECT_EQ(success, upload_scheduler()->handled_results().back());
+              download_and_upload_scheduler()->handled_results().size());
+    EXPECT_EQ(success,
+              download_and_upload_scheduler()->handled_results().back());
   }
 
   void SetAllowedContacts(const std::set<std::string>& allowed_contact_ids,
-                          bool expected_were_contacts_added_to_allowlist,
-                          bool expected_were_contacts_removed_from_allowlist) {
-    size_t num_allowlist_notifications =
-        allowlist_changed_notifications_.size();
-    size_t num_upload_requests = upload_scheduler()->num_immediate_requests();
+                          bool expect_allowlist_changed) {
+    size_t num_download_and_upload_requests =
+        download_and_upload_scheduler()->num_immediate_requests();
 
     manager_->SetAllowedContacts(allowed_contact_ids);
 
-    // Verify allowlist notification sent and upload requested if contacts were
-    // added or removed.
-    if (expected_were_contacts_added_to_allowlist ||
-        expected_were_contacts_removed_from_allowlist) {
-      EXPECT_EQ(num_allowlist_notifications + 1,
-                allowlist_changed_notifications_.size());
-      EXPECT_EQ(expected_were_contacts_added_to_allowlist,
-                allowlist_changed_notifications_.back()
-                    .were_contacts_added_to_allowlist);
-      EXPECT_EQ(expected_were_contacts_removed_from_allowlist,
-                allowlist_changed_notifications_.back()
-                    .were_contacts_removed_from_allowlist);
-      EXPECT_EQ(num_upload_requests + 1,
-                upload_scheduler()->num_immediate_requests());
-    } else {
-      EXPECT_EQ(num_allowlist_notifications,
-                allowlist_changed_notifications_.size());
-      EXPECT_EQ(num_upload_requests,
-                upload_scheduler()->num_immediate_requests());
-    }
+    // Verify download/upload requested if allowlist changed.
+    EXPECT_EQ(
+        num_download_and_upload_requests + (expect_allowlist_changed ? 1 : 0),
+        download_and_upload_scheduler()->num_immediate_requests());
   }
+
+  PrefService* pref_service() { return &pref_service_; }
 
  private:
   // NearbyShareContactManager::Observer:
-  void OnAllowlistChanged(bool were_contacts_added_to_allowlist,
-                          bool were_contacts_removed_from_allowlist) override {
-    AllowlistChangedNotification notification;
-    notification.were_contacts_added_to_allowlist =
-        were_contacts_added_to_allowlist;
-    notification.were_contacts_removed_from_allowlist =
-        were_contacts_removed_from_allowlist;
-    allowlist_changed_notifications_.push_back(notification);
-  }
   void OnContactsDownloaded(
       const std::set<std::string>& allowed_contact_ids,
       const std::vector<nearbyshare::proto::ContactRecord>& contacts) override {
@@ -367,95 +307,54 @@ class NearbyShareContactManagerImplTest
     return downloader_factory_.instances().back();
   }
 
-  FakeNearbyShareScheduler* download_scheduler() {
+  FakeNearbyShareScheduler* download_and_upload_scheduler() {
     return scheduler_factory_.pref_name_to_periodic_instance()
-        .at(prefs::kNearbySharingSchedulerContactDownloadPrefName)
-        .fake_scheduler;
-  }
-
-  FakeNearbyShareScheduler* upload_scheduler() {
-    return scheduler_factory_.pref_name_to_on_demand_instance()
-        .at(prefs::kNearbySharingSchedulerContactUploadPrefName)
+        .at(prefs::kNearbySharingSchedulerContactDownloadAndUploadPrefName)
         .fake_scheduler;
   }
 
   void VerifySchedulerInitialization() {
-    // Verify download scheduler input parameters.
+    // Verify scheduler input parameters.
     FakeNearbyShareSchedulerFactory::PeriodicInstance
-        download_scheduler_instance =
+        download_and_upload_scheduler_instance =
             scheduler_factory_.pref_name_to_periodic_instance().at(
-                prefs::kNearbySharingSchedulerContactDownloadPrefName);
-    EXPECT_TRUE(download_scheduler_instance.fake_scheduler);
+                prefs::kNearbySharingSchedulerContactDownloadAndUploadPrefName);
+    EXPECT_TRUE(download_and_upload_scheduler_instance.fake_scheduler);
     EXPECT_EQ(kContactDownloadPeriod,
-              download_scheduler_instance.request_period);
-    EXPECT_TRUE(download_scheduler_instance.retry_failures);
-    EXPECT_TRUE(download_scheduler_instance.require_connectivity);
-    EXPECT_EQ(&pref_service_, download_scheduler_instance.pref_service);
-
-    // Verify upload scheduler input parameters.
-    FakeNearbyShareSchedulerFactory::OnDemandInstance
-        upload_scheduler_instance =
-            scheduler_factory_.pref_name_to_on_demand_instance().at(
-                prefs::kNearbySharingSchedulerContactUploadPrefName);
-    EXPECT_TRUE(upload_scheduler_instance.fake_scheduler);
-    EXPECT_TRUE(upload_scheduler_instance.retry_failures);
-    EXPECT_TRUE(upload_scheduler_instance.require_connectivity);
-    EXPECT_EQ(&pref_service_, upload_scheduler_instance.pref_service);
+              download_and_upload_scheduler_instance.request_period);
+    EXPECT_TRUE(download_and_upload_scheduler_instance.retry_failures);
+    EXPECT_TRUE(download_and_upload_scheduler_instance.require_connectivity);
+    EXPECT_EQ(&pref_service_,
+              download_and_upload_scheduler_instance.pref_service);
   }
 
-  void TriggerDownloadScheduler(bool expected_only_download_if_changed) {
-    // Fire download scheduler and verify downloader creation.
+  void TriggerScheduler() {
+    // Fire scheduler and verify downloader creation.
     size_t num_downloaders = downloader_factory_.instances().size();
-    download_scheduler()->InvokeRequestCallback();
+    download_and_upload_scheduler()->InvokeRequestCallback();
     EXPECT_EQ(num_downloaders + 1, downloader_factory_.instances().size());
     EXPECT_EQ(kContactDownloadRpcTimeout, downloader_factory_.latest_timeout());
     EXPECT_EQ(&http_client_factory_,
               downloader_factory_.latest_client_factory());
     EXPECT_EQ(local_device_data_manager_.GetId(),
               latest_downloader()->device_id());
-    EXPECT_EQ(expected_only_download_if_changed,
-              latest_downloader()->only_download_if_changed());
   }
 
-  void VerifyAllowlistNotificationSentIfNecessary(
-      size_t initial_num_notifications,
-      bool expected_were_contacts_added_to_allowlist,
-      bool expected_were_contacts_removed_from_allowlist) {
-    if (expected_were_contacts_removed_from_allowlist) {
-      EXPECT_EQ(initial_num_notifications + 1,
-                allowlist_changed_notifications_.size());
-      EXPECT_FALSE(allowlist_changed_notifications_.back()
-                       .were_contacts_added_to_allowlist);
-      EXPECT_TRUE(allowlist_changed_notifications_.back()
-                      .were_contacts_removed_from_allowlist);
-    } else {
-      EXPECT_EQ(initial_num_notifications,
-                allowlist_changed_notifications_.size());
-    }
-  }
-
-  void VerifyDownloadNotificationSentIfNecessary(
+  void VerifyDownloadNotificationSent(
       size_t initial_num_notifications,
       const std::set<std::string>& expected_allowed_contact_ids,
-      const base::Optional<std::vector<nearbyshare::proto::ContactRecord>>&
-          contacts) {
-    // Notification should only be sent if contact list is available.
-    if (contacts) {
-      EXPECT_EQ(initial_num_notifications + 1,
-                contacts_downloaded_notifications_.size());
-      EXPECT_EQ(expected_allowed_contact_ids,
-                contacts_downloaded_notifications_.back().allowed_contact_ids);
-      EXPECT_EQ(contacts->size(),
-                contacts_downloaded_notifications_.back().contacts.size());
-      for (size_t i = 0; i < contacts->size(); ++i) {
-        EXPECT_EQ(contacts->at(i).SerializeAsString(),
-                  contacts_downloaded_notifications_.back()
-                      .contacts[i]
-                      .SerializeAsString());
-      }
-    } else {
-      EXPECT_EQ(initial_num_notifications,
-                contacts_downloaded_notifications_.size());
+      const std::vector<nearbyshare::proto::ContactRecord>& contacts) {
+    EXPECT_EQ(initial_num_notifications + 1,
+              contacts_downloaded_notifications_.size());
+    EXPECT_EQ(expected_allowed_contact_ids,
+              contacts_downloaded_notifications_.back().allowed_contact_ids);
+    EXPECT_EQ(contacts.size(),
+              contacts_downloaded_notifications_.back().contacts.size());
+    for (size_t i = 0; i < contacts.size(); ++i) {
+      EXPECT_EQ(contacts[i].SerializeAsString(),
+                contacts_downloaded_notifications_.back()
+                    .contacts[i]
+                    .SerializeAsString());
     }
   }
 
@@ -518,289 +417,138 @@ class NearbyShareContactManagerImplTest
 TEST_F(NearbyShareContactManagerImplTest, SetAllowlist) {
   // Add initial allowed contacts.
   SetAllowedContacts(TestContactIds(/*num_contacts=*/3u),
-                     /*expected_were_contacts_added_to_allowlist=*/true,
-                     /*expected_were_contacts_removed_from_allowlist=*/false);
+                     /*expect_allowlist_changed=*/true);
   // Remove last allowed contact.
   SetAllowedContacts(TestContactIds(/*num_contacts=*/2u),
-                     /*expected_were_contacts_added_to_allowlist=*/false,
-                     /*expected_were_contacts_removed_from_allowlist=*/true);
+                     /*expect_allowlist_changed=*/true);
   // Add back last allowed contact.
   SetAllowedContacts(TestContactIds(/*num_contacts=*/3u),
-                     /*expected_were_contacts_added_to_allowlist=*/true,
-                     /*expected_were_contacts_removed_from_allowlist=*/false);
+                     /*expect_allowlist_changed=*/true);
   // Set list without any changes.
   SetAllowedContacts(TestContactIds(/*num_contacts=*/3u),
-                     /*expected_were_contacts_added_to_allowlist=*/false,
-                     /*expected_were_contacts_removed_from_allowlist=*/false);
+                     /*expect_allowlist_changed=*/false);
+}
+
+TEST_F(NearbyShareContactManagerImplTest, DownloadContacts_WithUpload) {
+  std::vector<nearbyshare::proto::ContactRecord> contact_records =
+      TestContactRecordList(/*num_contacts=*/3u);
+  std::set<std::string> allowlist = TestContactIds(/*num_contacts=*/2u);
+  SetAllowedContacts(allowlist, /*expect_allowlist_changed=*/true);
+
+  // Because contacts have never been uploaded, a subsequent upload should be
+  // requested, which succeeds.
+  DownloadContacts();
+  SucceedDownload(contact_records, allowlist, /*expect_upload=*/true);
+  FinishUpload(/*success=*/true, /*expected_contacts=*/ContactRecordsToContacts(
+                   allowlist, contact_records));
+
+  // When contacts are downloaded again, we decect that contacts have not
+  // changed, so no upload should be made
+  DownloadContacts();
+  SucceedDownload(contact_records, allowlist, /*expect_upload=*/false);
 }
 
 TEST_F(NearbyShareContactManagerImplTest,
-       DownloadContacts_Success_ChangedContactListSent_AllowlistUnchanged) {
-  DownloadContacts(/*only_download_if_changed=*/false);
+       DownloadContacts_DetectContactListChanged) {
+  std::vector<nearbyshare::proto::ContactRecord> contact_records =
+      TestContactRecordList(/*num_contacts=*/3u);
+  std::set<std::string> allowlist = TestContactIds(/*num_contacts=*/2u);
+  SetAllowedContacts(allowlist, /*expect_allowlist_changed=*/true);
 
-  // Because contacts changed since last upload, a subsequent upload should be
-  // requested.
-  SucceedDownload(
-      /*did_contacts_change_since_last_upload=*/true,
-      TestContactRecordList(/*num_contacts=*/3u),
-      /*expected_only_download_if_changed=*/false,
-      /*expected_were_contacts_removed_from_allowlist=*/false,
-      /*expected_allowed_contact_ids=*/std::set<std::string>(),
-      /*expected_upload_action=*/UploadAction::kRequest);
+  // Because contacts have never been uploaded, a subsequent upload is
+  // requested, which succeeds.
+  DownloadContacts();
+  SucceedDownload(contact_records, allowlist, /*expect_upload=*/true);
+  FinishUpload(/*success=*/true, /*expected_contacts=*/ContactRecordsToContacts(
+                   allowlist, contact_records));
+
+  // When contacts are downloaded again, we decect that contacts have changed
+  // since the last upload.
+  contact_records = TestContactRecordList(/*num_contacts=*/4u);
+  DownloadContacts();
+  SucceedDownload(contact_records, allowlist, /*expect_upload=*/true);
+  FinishUpload(/*success=*/true, /*expected_contacts=*/ContactRecordsToContacts(
+                   allowlist, contact_records));
 }
 
 TEST_F(NearbyShareContactManagerImplTest,
-       DownloadContacts_Success_UnchangedContactListSent_AllowlistUnchanged) {
-  DownloadContacts(/*only_download_if_changed=*/false);
+       DownloadContacts_DetectAllowlistChanged) {
+  std::vector<nearbyshare::proto::ContactRecord> contact_records =
+      TestContactRecordList(/*num_contacts=*/3u);
+  std::set<std::string> allowlist = TestContactIds(/*num_contacts=*/2u);
+  SetAllowedContacts(allowlist, /*expect_allowlist_changed=*/true);
 
-  // Because neither the contact list nor the allowlist changed, a subsequent
-  // upload is not needed.
-  SucceedDownload(
-      /*did_contacts_change_since_last_upload=*/false,
-      TestContactRecordList(/*num_contacts=*/3u),
-      /*expected_only_download_if_changed=*/false,
-      /*expected_were_contacts_removed_from_allowlist=*/false,
-      /*expected_allowed_contact_ids=*/std::set<std::string>(),
-      /*expected_upload_action=*/UploadAction::kNone);
+  // Because contacts have never been uploaded, a subsequent upload is
+  // requested, which succeeds.
+  DownloadContacts();
+  SucceedDownload(contact_records, allowlist, /*expect_upload=*/true);
+  FinishUpload(/*success=*/true, /*expected_contacts=*/ContactRecordsToContacts(
+                   allowlist, contact_records));
+
+  // When contacts are downloaded again, we decect that the allowlist has
+  // changed since the last upload.
+  allowlist = TestContactIds(/*num_contacts=*/1u);
+  SetAllowedContacts(allowlist, /*expect_allowlist_changed=*/true);
+  DownloadContacts();
+  SucceedDownload(contact_records, allowlist, /*expect_upload=*/true);
+  FinishUpload(/*success=*/true, /*expected_contacts=*/ContactRecordsToContacts(
+                   allowlist, contact_records));
 }
 
-TEST_F(NearbyShareContactManagerImplTest,
-       DownloadContacts_Success_UnchangedContactListSent_AllowlistChanged) {
-  // Add initial allowed contacts.
-  SetAllowedContacts(TestContactIds(/*num_contacts=*/3u),
-                     /*expected_were_contacts_added_to_allowlist=*/true,
-                     /*expected_were_contacts_removed_from_allowlist=*/false);
-
-  DownloadContacts(/*only_download_if_changed=*/false);
-
-  // Because a contact will be removed from the allowlist because it doesn't
-  // exist in the returned contact list, a subsequent upload should be
-  // requested.
-  SucceedDownload(
-      /*did_contacts_change_since_last_upload=*/false,
-      TestContactRecordList(/*num_contacts=*/2u),
-      /*expected_only_download_if_changed=*/false,
-      /*expected_were_contacts_removed_from_allowlist=*/true,
-      /*expected_allowed_contact_ids=*/TestContactIds(/*num_contacts=*/2u),
-      /*expected_upload_action=*/UploadAction::kRequest);
+TEST_F(NearbyShareContactManagerImplTest, DownloadContacts_FailDownload) {
+  DownloadContacts();
+  FailDownload();
 }
 
-TEST_F(NearbyShareContactManagerImplTest,
-       DownloadContacts_Success_ContactListNotSent) {
-  // Add initial allowed contacts to make sure they're not removed.
-  SetAllowedContacts(TestContactIds(/*num_contacts=*/3u),
-                     /*expected_were_contacts_added_to_allowlist=*/true,
-                     /*expected_were_contacts_removed_from_allowlist=*/false);
+TEST_F(NearbyShareContactManagerImplTest, DownloadContacts_RetryFailedUpload) {
+  std::vector<nearbyshare::proto::ContactRecord> contact_records =
+      TestContactRecordList(/*num_contacts=*/3u);
+  std::set<std::string> allowlist = TestContactIds(/*num_contacts=*/2u);
+  SetAllowedContacts(allowlist, /*expect_allowlist_changed=*/true);
 
-  DownloadContacts(/*only_download_if_changed=*/true);
+  // Because contacts have never been uploaded, a subsequent upload is
+  // requested, which succeeds.
+  DownloadContacts();
+  SucceedDownload(contact_records, allowlist, /*expect_upload=*/true);
+  FinishUpload(/*success=*/true, /*expected_contacts=*/ContactRecordsToContacts(
+                   allowlist, contact_records));
 
-  // No contacts were downloaded (in practice because contact didn't change and
-  // we didn't request a full download).
-  SucceedDownload(
-      /*did_contacts_change_since_last_upload=*/false,
-      /*contacts=*/base::nullopt,
-      /*expected_only_download_if_changed=*/true,
-      /*expected_were_contacts_removed_from_allowlist=*/false,
-      /*expected_allowed_contact_ids=*/TestContactIds(/*num_contacts=*/3u),
-      /*expected_upload_action=*/UploadAction::kNone);
+  // When contacts are downloaded again, we decect that contacts have changed
+  // since the last upload. Fail this upload.
+  contact_records = TestContactRecordList(/*num_contacts=*/4u);
+  DownloadContacts();
+  SucceedDownload(contact_records, allowlist, /*expect_upload=*/true);
+  FinishUpload(/*success=*/false,
+               /*expected_contacts=*/ContactRecordsToContacts(allowlist,
+                                                              contact_records));
+
+  // When contacts are downloaded again, we should continue to indicate that
+  // contacts have changed since the last upload, and attempt another upload.
+  // (In other words, this tests that the contact-upload hash isn't updated
+  // prematurely.)
+  DownloadContacts();
+  SucceedDownload(contact_records, allowlist, /*expect_upload=*/true);
+  FinishUpload(/*success=*/true,
+               /*expected_contacts=*/ContactRecordsToContacts(allowlist,
+                                                              contact_records));
 }
 
-TEST_F(NearbyShareContactManagerImplTest,
-       DownloadContacts_Success_OverrideOnlyDownloadIfChanged) {
-  // Do not force a contacts download if the list hasn't changed since the last
-  // upload.
-  DownloadContacts(/*only_download_if_changed=*/true);
+TEST_F(NearbyShareContactManagerImplTest, ContactUploadHash) {
+  EXPECT_EQ(std::string(), pref_service()->GetString(
+                               prefs::kNearbySharingContactUploadHashPrefName));
 
-  // Before the first request can run, request a forced contacts download even
-  // if contacts haven't changed.
-  DownloadContacts(/*only_download_if_changed=*/false);
+  std::vector<nearbyshare::proto::ContactRecord> contact_records =
+      TestContactRecordList(/*num_contacts=*/3u);
+  std::set<std::string> allowlist = TestContactIds(/*num_contacts=*/2u);
+  SetAllowedContacts(allowlist, /*expect_allowlist_changed=*/true);
+  DownloadContacts();
+  SucceedDownload(contact_records, allowlist, /*expect_upload=*/true);
+  FinishUpload(/*success=*/true, /*expected_contacts=*/ContactRecordsToContacts(
+                   allowlist, contact_records));
 
-  // Now, request a download only if contacts have changed.
-  DownloadContacts(/*only_download_if_changed=*/true);
-
-  // Because there was an outstanding request for a forced download when a
-  // non-forced download was requested, the forced download request will take
-  // priority.
-  SucceedDownload(
-      /*did_contacts_change_since_last_upload=*/false,
-      TestContactRecordList(/*num_contacts=*/3u),
-      /*expected_only_download_if_changed=*/false,
-      /*expected_were_contacts_removed_from_allowlist=*/false,
-      /*expected_allowed_contact_ids=*/std::set<std::string>(),
-      /*expected_upload_action=*/UploadAction::kNone);
-
-  // Now, because the request to force a contact download was fulfilled, we can
-  // request a download only if contacts have changed without being trumped by a
-  // previous forced-download request.
-  DownloadContacts(/*only_download_if_changed=*/true);
-  SucceedDownload(
-      /*did_contacts_change_since_last_upload=*/false,
-      /*contacts=*/base::nullopt,
-      /*expected_only_download_if_changed=*/true,
-      /*expected_were_contacts_removed_from_allowlist=*/false,
-      /*expected_allowed_contact_ids=*/TestContactIds(/*num_contacts=*/3u),
-      /*expected_upload_action=*/UploadAction::kNone);
-}
-
-TEST_F(NearbyShareContactManagerImplTest, DownloadContacts_Failure) {
-  DownloadContacts(/*only_download_if_changed=*/false);
-  FailDownload(/*expected_only_download_if_changed=*/false);
-
-  // Fail twice to ensure that the downloader is reset properly.
-  DownloadContacts(/*only_download_if_changed=*/false);
-  FailDownload(/*expected_only_download_if_changed=*/false);
-}
-
-TEST_F(NearbyShareContactManagerImplTest,
-       UploadContacts_Success_FromContactListChanged) {
-  // During a regular download, notice that the contact list has changed since
-  // the last upload.
-  DownloadContacts(/*only_download_if_changed=*/true);
-  SucceedDownload(
-      /*did_contacts_change_since_last_upload=*/true,
-      TestContactRecordList(/*num_contacts=*/2u),
-      /*expected_only_download_if_changed=*/true,
-      /*expected_were_contacts_removed_from_allowlist=*/false,
-      /*expected_allowed_contact_ids=*/std::set<std::string>(),
-      /*expected_upload_action=*/UploadAction::kRequest);
-
-  // Before contacts can be uploaded, we need to first (force) re-download the
-  // complete contact list.
-  TriggerUploadFromScheduler();
-  SucceedDownload(
-      /*did_contacts_change_since_last_upload=*/true,
-      TestContactRecordList(/*num_contacts=*/2u),
-      /*expected_only_download_if_changed=*/false,
-      /*expected_were_contacts_removed_from_allowlist=*/false,
-      /*expected_allowed_contact_ids=*/std::set<std::string>(),
-      /*expected_upload_action=*/UploadAction::kStart);
-
-  // Finish the upload successfully.
-  FinishUpload(
-      /*success=*/true,
-      /*expected_did_contacts_change_since_last_upload=*/true,
-      /*expected_contacts=*/
-      ContactRecordsToContacts(TestContactIds(/*num_contacts=*/0u),
-                               TestContactRecordList(/*num_contacts=*/2u)));
-}
-
-TEST_F(NearbyShareContactManagerImplTest,
-       UploadContacts_Success_FromAllowlistChanged) {
-  // We need to manually start the schedulers first.
-  StartSchedulers();
-  // Add contacts to the allowlist, resulting in an upload request.
-  std::set<std::string> allowlist = TestContactIds(/*num_contacts=*/1u);
-  SetAllowedContacts(allowlist,
-                     /*expected_were_contacts_added_to_allowlist=*/true,
-                     /*expected_were_contacts_removed_from_allowlist=*/false);
-
-  // Before contacts can be uploaded, we need to first (force) download the
-  // complete contact list.
-  TriggerUploadFromScheduler();
-  SucceedDownload(
-      /*did_contacts_change_since_last_upload=*/false,
-      TestContactRecordList(/*num_contacts=*/2u),
-      /*expected_only_download_if_changed=*/false,
-      /*expected_were_contacts_removed_from_allowlist=*/false,
-      /*expected_allowed_contact_ids=*/allowlist,
-      /*expected_upload_action=*/UploadAction::kStart);
-
-  // Finish the upload successfully.
-  FinishUpload(
-      /*success=*/true,
-      /*expected_did_contacts_change_since_last_upload=*/false,
-      /*expected_contacts=*/
-      ContactRecordsToContacts(TestContactIds(/*num_contacts=*/1u),
-                               TestContactRecordList(/*num_contacts=*/2u)));
-}
-
-TEST_F(NearbyShareContactManagerImplTest,
-       UploadContacts_Success_DownloadRequestedWhileUploadInProgress) {
-  // We need to manually start the schedulers here.
-  StartSchedulers();
-  // Add contacts to the allowlist, resulting in an upload request.
-  SetAllowedContacts(TestContactIds(/*num_contacts=*/2u),
-                     /*expected_were_contacts_added_to_allowlist=*/true,
-                     /*expected_were_contacts_removed_from_allowlist=*/false);
-
-  // Before contacts can be uploaded, we need to first (force) download the
-  // complete contact list. Following a successful download, the upload will be
-  // started.
-  TriggerUploadFromScheduler();
-  SucceedDownload(
-      /*did_contacts_change_since_last_upload=*/false,
-      TestContactRecordList(/*num_contacts=*/2u),
-      /*expected_only_download_if_changed=*/false,
-      /*expected_were_contacts_removed_from_allowlist=*/false,
-      /*expected_allowed_contact_ids=*/TestContactIds(/*num_contacts=*/2u),
-      /*expected_upload_action=*/UploadAction::kStart);
-
-  // Make a download request while the upload is in progress. Because a member
-  // of the allowlist was removed as a request, another upload should be
-  // requested.
-  DownloadContacts(/*only_download_if_changed=*/false);
-  SucceedDownload(
-      /*did_contacts_change_since_last_upload=*/false,
-      TestContactRecordList(/*num_contacts=*/1u),
-      /*expected_only_download_if_changed=*/false,
-      /*expected_were_contacts_removed_from_allowlist=*/true,
-      /*expected_allowed_contact_ids=*/TestContactIds(/*num_contacts=*/1u),
-      /*expected_upload_action=*/UploadAction::kRequest);
-
-  // Finish the first upload successfully, expecting the old contact list and
-  // allowlist to have been used.
-  FinishUpload(
-      /*success=*/true,
-      /*expected_did_contacts_change_since_last_upload=*/false,
-      /*expected_contacts=*/
-      ContactRecordsToContacts(TestContactIds(/*num_contacts=*/2u),
-                               TestContactRecordList(/*num_contacts=*/2u)));
-
-  // Run the second upload with the new contact list and allowlist.
-  TriggerUploadFromScheduler();
-  SucceedDownload(
-      /*did_contacts_change_since_last_upload=*/false,
-      TestContactRecordList(/*num_contacts=*/1u),
-      /*expected_only_download_if_changed=*/false,
-      /*expected_were_contacts_removed_from_allowlist=*/false,
-      /*expected_allowed_contact_ids=*/TestContactIds(/*num_contacts=*/1u),
-      /*expected_upload_action=*/UploadAction::kStart);
-  FinishUpload(
-      /*success=*/true,
-      /*expected_did_contacts_change_since_last_upload=*/false,
-      /*expected_contacts=*/
-      ContactRecordsToContacts(TestContactIds(/*num_contacts=*/1u),
-                               TestContactRecordList(/*num_contacts=*/1u)));
-}
-
-TEST_F(NearbyShareContactManagerImplTest, UploadContacts_Failure) {
-  // During a regular download, notice that the contact list has changed since
-  // the last upload.
-  DownloadContacts(/*only_download_if_changed=*/true);
-  SucceedDownload(
-      /*did_contacts_change_since_last_upload=*/true,
-      TestContactRecordList(/*num_contacts=*/2u),
-      /*expected_only_download_if_changed=*/true,
-      /*expected_were_contacts_removed_from_allowlist=*/false,
-      /*expected_allowed_contact_ids=*/std::set<std::string>(),
-      /*expected_upload_action=*/UploadAction::kRequest);
-
-  // Before contacts can be uploaded, we need to first (force) re-download the
-  // complete contact list.
-  TriggerUploadFromScheduler();
-  SucceedDownload(
-      /*did_contacts_change_since_last_upload=*/true,
-      TestContactRecordList(/*num_contacts=*/2u),
-      /*expected_only_download_if_changed=*/false,
-      /*expected_were_contacts_removed_from_allowlist=*/false,
-      /*expected_allowed_contact_ids=*/std::set<std::string>(),
-      /*expected_upload_action=*/UploadAction::kStart);
-
-  // Fail the upload.
-  FinishUpload(
-      /*success=*/false,
-      /*expected_did_contacts_change_since_last_upload=*/true,
-      /*expected_contacts=*/
-      ContactRecordsToContacts(TestContactIds(/*num_contacts=*/0u),
-                               TestContactRecordList(/*num_contacts=*/2u)));
+  // Hardcode expected contact upload hash to ensure that hashed value is
+  // consistent across process starts.
+  EXPECT_EQ("DB408F2F01561308A97E9B6A1DB28536BEE33283D3E5B3842EFADAD4034E79DE",
+            pref_service()->GetString(
+                prefs::kNearbySharingContactUploadHashPrefName));
 }

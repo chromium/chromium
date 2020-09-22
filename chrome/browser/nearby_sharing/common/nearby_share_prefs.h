@@ -12,6 +12,7 @@ namespace prefs {
 extern const char kNearbySharingActiveProfilePrefName[];
 extern const char kNearbySharingAllowedContactsPrefName[];
 extern const char kNearbySharingBackgroundVisibilityName[];
+extern const char kNearbySharingContactUploadHashPrefName[];
 extern const char kNearbySharingDataUsageName[];
 extern const char kNearbySharingDeviceIdPrefName[];
 extern const char kNearbySharingDeviceNamePrefName[];
@@ -21,8 +22,7 @@ extern const char kNearbySharingIconUrlPrefName[];
 extern const char kNearbySharingOnboardingDismissedTimePrefName[];
 extern const char kNearbySharingPrivateCertificateListPrefName[];
 extern const char kNearbySharingPublicCertificateExpirationDictPrefName[];
-extern const char kNearbySharingSchedulerContactDownloadPrefName[];
-extern const char kNearbySharingSchedulerContactUploadPrefName[];
+extern const char kNearbySharingSchedulerContactDownloadAndUploadPrefName[];
 extern const char kNearbySharingSchedulerDownloadDeviceDataPrefName[];
 extern const char kNearbySharingSchedulerDownloadPublicCertificatesPrefName[];
 extern const char kNearbySharingSchedulerPrivateCertificateExpirationPrefName[];

@@ -40,18 +40,3 @@ message UpdateDeviceResponse {
   // share target.
   string image_url = 3;
 }
-
-// Request to get a device's state.
-message GetDeviceStateRequest {
-  // Required. The resource name determines which device's contact change
-  // history to check. The special prefix "users/me" lists the requester's own
-  // contacts. This is of the format "users/*/devices/*".
-  string parent = 1;
-}
-
-// Response from a GetDeviceStateRequest.
-message GetDeviceStateResponse {
-  // True if the device's contacts have changed (out of sync) since last
-  // UpdateDevice call with contacts path.
-  bool are_contacts_changed = 1;
-}

@@ -26,6 +26,7 @@ source_set("contacts") {
     "//chrome/browser/nearby_sharing/scheduling",
     "//chrome/browser/ui/webui/nearby_share/public/mojom",
     "//components/prefs",
+    "//crypto",
   ]
 }
 

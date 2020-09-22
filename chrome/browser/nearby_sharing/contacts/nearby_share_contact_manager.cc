@@ -40,15 +40,6 @@ void NearbyShareContactManager::SetAllowedContacts(
   SetAllowedContacts(set);
 }
 
-void NearbyShareContactManager::NotifyAllowlistChanged(
-    bool were_contacts_added_to_allowlist,
-    bool were_contacts_removed_from_allowlist) {
-  for (auto& observer : observers_) {
-    observer.OnAllowlistChanged(were_contacts_added_to_allowlist,
-                                were_contacts_removed_from_allowlist);
-  }
-}
-
 void NearbyShareContactManager::NotifyContactsDownloaded(
     const std::set<std::string>& allowed_contact_ids,
     const std::vector<nearbyshare::proto::ContactRecord>& contacts) {

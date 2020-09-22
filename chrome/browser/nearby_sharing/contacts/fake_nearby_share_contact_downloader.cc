@@ -12,7 +12,6 @@ FakeNearbyShareContactDownloader::Factory::~Factory() = default;
 
 std::unique_ptr<NearbyShareContactDownloader>
 FakeNearbyShareContactDownloader::Factory::CreateInstance(
-    bool only_download_if_changed,
     const std::string& device_id,
     base::TimeDelta timeout,
     NearbyShareClientFactory* client_factory,
@@ -22,20 +21,17 @@ FakeNearbyShareContactDownloader::Factory::CreateInstance(
   latest_client_factory_ = client_factory;
 
   auto instance = std::make_unique<FakeNearbyShareContactDownloader>(
-      only_download_if_changed, device_id, std::move(success_callback),
-      std::move(failure_callback));
+      device_id, std::move(success_callback), std::move(failure_callback));
   instances_.push_back(instance.get());
 
   return instance;
 }
 
 FakeNearbyShareContactDownloader::FakeNearbyShareContactDownloader(
-    bool only_download_if_changed,
     const std::string& device_id,
     SuccessCallback success_callback,
     FailureCallback failure_callback)
-    : NearbyShareContactDownloader(only_download_if_changed,
-                                   device_id,
+    : NearbyShareContactDownloader(device_id,
                                    std::move(success_callback),
                                    std::move(failure_callback)) {}
 

@@ -10,22 +10,14 @@ import {ContactUpdate} from './types.js';
  * Contacts tab.
  */
 export class NearbyContactBrowserProxy {
-  /**
-   * Initializes web contents in the WebUI handler.
-   */
+  /** Initializes web contents in the WebUI handler. */
   initialize() {
     chrome.send('initializeContacts');
   }
 
-  /**
-   * Downloads the user's contact list from the Nearby Share server. We can
-   * force a download by passing |onlyDownloadIfContactsChanged| as false,
-   * or we can choose to only download contacts if they have changed since the
-   * last RPC call by passing in true.
-   * @param {boolean} onlyDownloadIfContactsChanged
-   */
-  downloadContacts(onlyDownloadIfContactsChanged) {
-    chrome.send('downloadContacts', [onlyDownloadIfContactsChanged]);
+  /** Downloads the user's contact list from the Nearby Share server. */
+  downloadContacts() {
+    chrome.send('downloadContacts');
   }
 }
 

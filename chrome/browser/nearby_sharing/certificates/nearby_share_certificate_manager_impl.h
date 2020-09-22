@@ -52,10 +52,9 @@ class ListPublicCertificatesResponse;
 //   2) downloading, storing, and decrypting public certificates from trusted
 //      contacts, as well as removing expired public certificates.
 //
-// This implementation destroys and recreates all private certificates if either
-//   a) the user's contact list has changed, or
-//   b) contacts are removed from the allowlist--relevant to selected-contacts
-//      visibility mode.
+// This implementation destroys and recreates all private certificates if there
+// are any changes to the user's contact list or allowlist, or if there are any
+// changes to the local device data, such as the device name.
 class NearbyShareCertificateManagerImpl
     : public NearbyShareCertificateManager,
       public NearbyShareContactManager::Observer,
@@ -116,8 +115,6 @@ class NearbyShareCertificateManagerImpl
       const NearbySharePrivateCertificate& private_certificate) override;
 
   // NearbyShareContactManager::Observer:
-  void OnAllowlistChanged(bool were_contacts_added_to_allowlist,
-                          bool were_contacts_removed_from_allowlist) override;
   void OnContactsDownloaded(
       const std::set<std::string>& allowed_contact_ids,
       const std::vector<nearbyshare::proto::ContactRecord>& contacts) override;

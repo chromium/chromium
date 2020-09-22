@@ -36,8 +36,6 @@ const char kDefaultNearbyShareV1HTTPHost[] =
 
 const char kNearbyShareV1Path[] = "v1/";
 
-const char kCheckContactsReachabilityPath[] = "contactsReachability:check";
-const char kGetDeviceStatePath[] = "deviceState";
 const char kListContactPeoplePath[] = "contactRecords";
 const char kListPublicCertificatesPath[] = "publicCertificates";
 
@@ -244,34 +242,6 @@ void NearbyShareClientImpl::UpdateDevice(
               /*request_as_query_parameters=*/base::nullopt,
               std::move(callback), std::move(error_callback),
               GetUpdateDeviceAnnotation());
-}
-
-void NearbyShareClientImpl::GetDeviceState(
-    const nearbyshare::proto::GetDeviceStateRequest& request,
-    GetDeviceStateCallback&& callback,
-    ErrorCallback&& error_callback) {
-  notifier_->NotifyOfRequest(request);
-
-  // NOTE: No query parameters are needed because the lone field, "parent", of
-  // the GetDeviceState request is bound by the URL path template defined by the
-  // Nearby Share server.
-  MakeApiCall(CreateV1RequestUrl(request.parent() + "/" + kGetDeviceStatePath),
-              RequestType::kGet,
-              /*serialized_request=*/base::nullopt,
-              NearbyShareApiCallFlow::QueryParameters(), std::move(callback),
-              std::move(error_callback), GetContactsAnnotation());
-}
-
-void NearbyShareClientImpl::CheckContactsReachability(
-    const nearbyshare::proto::CheckContactsReachabilityRequest& request,
-    CheckContactsReachabilityCallback&& callback,
-    ErrorCallback&& error_callback) {
-  notifier_->NotifyOfRequest(request);
-  MakeApiCall(CreateV1RequestUrl(kCheckContactsReachabilityPath),
-              RequestType::kPost, request.SerializeAsString(),
-              /*request_as_query_parameters=*/base::nullopt,
-              std::move(callback), std::move(error_callback),
-              GetContactsAnnotation());
 }
 
 void NearbyShareClientImpl::ListContactPeople(

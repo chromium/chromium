@@ -52,23 +52,11 @@ Polymer({
   },
 
   /**
-   * Checks with the Nearby Server if contacts have changed since the last RPC
-   * call and downloads the contacts if they have.
+   * Downloads contacts from the Nearby Share server.
    * @private
    */
-  onDownloadContactsIfChangedClicked_() {
-    this.browserProxy_.downloadContacts(
-        /*onlyDownloadIfContactsChanged=*/true);
-  },
-
-  /**
-   * Downloads contacts from the Nearby Share server, regardless of whether or
-   * not they have changed since the last RPC call
-   * @private
-   */
-  onForceDownloadContactsClicked_() {
-    this.browserProxy_.downloadContacts(
-        /*onlyDownloadIfContactsChanged=*/false);
+  onDownloadContacts() {
+    this.browserProxy_.downloadContacts();
   },
 
   /**

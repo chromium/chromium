@@ -23,16 +23,6 @@ base::Value PublicCertificateToReadableDictionary(
     const nearbyshare::proto::PublicCertificate& certificate);
 base::Value TimestampToReadableDictionary(
     const nearbyshare::proto::Timestamp& timestamp);
-base::Value CheckContactReachabilityRequestToReadableDictionary(
-    const nearbyshare::proto::CheckContactsReachabilityRequest& request);
-base::Value ReachableContactToReadableDictionary(
-    const nearbyshare::proto::CheckContactsReachabilityRequest::
-        ReachableContact& contact);
-base::Value CheckContactReachabilityResponseToReadableDictionary(
-    const nearbyshare::proto::CheckContactsReachabilityResponse& response);
-base::Value ResultToReadableDictionary(
-    const nearbyshare::proto::CheckContactsReachabilityResponse::Result&
-        result);
 base::Value ListContactPeopleRequestToReadableDictionary(
     const nearbyshare::proto::ListContactPeopleRequest& request);
 base::Value ListContactPeopleResponseToReadableDictionary(
@@ -53,9 +43,5 @@ base::Value UpdateDeviceResponseToReadableDictionary(
     const nearbyshare::proto::UpdateDeviceResponse& response);
 base::Value EncryptedMetadataToReadableDictionary(
     const nearbyshare::proto::EncryptedMetadata& data);
-base::Value GetDeviceStateRequestToReadableDictionary(
-    const nearbyshare::proto::GetDeviceStateRequest& request);
-base::Value GetDeviceStateResponseToReadableDictionary(
-    const nearbyshare::proto::GetDeviceStateResponse& response);
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_LOGGING_PROTO_TO_DICTIONARY_CONVERSION_H_

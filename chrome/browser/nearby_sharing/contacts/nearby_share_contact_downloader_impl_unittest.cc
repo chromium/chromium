@@ -16,13 +16,11 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader_impl.h"
 #include "chrome/browser/nearby_sharing/proto/contact_rpc.pb.h"
-#include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-const char kDeviceIdPrefix[] = "users/me/devices/";
 const char kTestDeviceId[] = "test_device_id";
 const char kTestContactRecordId1[] = "contact_id_1";
 const char kTestContactRecordId2[] = "contact_id_2";
@@ -61,60 +59,25 @@ nearbyshare::proto::ListContactPeopleResponse CreateListContactPeopleResponse(
 
 }  // namespace
 
-// Runs tests 4 times with all possible combinations of contact-change-related
-// booleans.
 class NearbyShareContactDownloaderImplTest
     : public ::testing::TestWithParam<std::tuple<bool, bool>> {
  protected:
   struct Result {
     bool success;
-    base::Optional<bool> did_contacts_change_since_last_upload;
     base::Optional<std::vector<nearbyshare::proto::ContactRecord>> contacts;
   };
 
   NearbyShareContactDownloaderImplTest() = default;
   ~NearbyShareContactDownloaderImplTest() override = default;
 
-  bool ShouldSkipDownload() {
-    return only_download_if_changed() &&
-           !did_contacts_change_since_last_upload();
-  }
-
   void RunDownload() {
     downloader_ = NearbyShareContactDownloaderImpl::Factory::Create(
-        only_download_if_changed(), kTestDeviceId, kTestTimeout,
-        &fake_client_factory_,
+        kTestDeviceId, kTestTimeout, &fake_client_factory_,
         base::BindOnce(&NearbyShareContactDownloaderImplTest::OnSuccess,
                        base::Unretained(this)),
         base::BindOnce(&NearbyShareContactDownloaderImplTest::OnFailure,
                        base::Unretained(this)));
     downloader_->Run();
-  }
-
-  void SucceedGetDeviceStateRequest() {
-    VerifyGetDeviceStateRequest();
-
-    nearbyshare::proto::GetDeviceStateResponse response;
-    response.set_are_contacts_changed(did_contacts_change_since_last_upload());
-    EXPECT_FALSE(result_);
-    FakeNearbyShareClient* client = fake_client_factory_.instances().back();
-    std::move(client->get_device_state_requests()[0].callback).Run(response);
-  }
-
-  void FailGetDeviceStateRequest() {
-    VerifyGetDeviceStateRequest();
-
-    EXPECT_FALSE(result_);
-    FakeNearbyShareClient* client = fake_client_factory_.instances().back();
-    std::move(client->get_device_state_requests()[0].error_callback)
-        .Run(NearbyShareHttpError::kBadRequest);
-  }
-
-  void TimeoutGetDeviceStateRequest() {
-    VerifyGetDeviceStateRequest();
-
-    EXPECT_FALSE(result_);
-    FastForward(kTestTimeout);
   }
 
   void SucceedListContactPeopleRequest(
@@ -146,20 +109,14 @@ class NearbyShareContactDownloaderImplTest
   }
 
   void VerifySuccess(
-      const base::Optional<std::vector<nearbyshare::proto::ContactRecord>>&
-          expected_contacts) {
+      const std::vector<nearbyshare::proto::ContactRecord>& expected_contacts) {
     ASSERT_TRUE(result_);
     EXPECT_TRUE(result_->success);
-    EXPECT_EQ(did_contacts_change_since_last_upload(),
-              result_->did_contacts_change_since_last_upload);
-    ASSERT_EQ(expected_contacts.has_value(), result_->contacts.has_value());
+    ASSERT_TRUE(result_->contacts);
 
-    if (!expected_contacts.has_value())
-      return;
-
-    ASSERT_EQ(expected_contacts->size(), result_->contacts->size());
-    for (size_t i = 0; i < expected_contacts->size(); ++i) {
-      EXPECT_EQ(expected_contacts->at(i).SerializeAsString(),
+    ASSERT_EQ(expected_contacts.size(), result_->contacts->size());
+    for (size_t i = 0; i < expected_contacts.size(); ++i) {
+      EXPECT_EQ(expected_contacts[i].SerializeAsString(),
                 result_->contacts->at(i).SerializeAsString());
     }
   }
@@ -170,25 +127,9 @@ class NearbyShareContactDownloaderImplTest
   }
 
  private:
-  bool only_download_if_changed() { return std::get<0>(GetParam()); }
-
-  bool did_contacts_change_since_last_upload() {
-    return std::get<1>(GetParam());
-  }
-
   // Fast-forwards mock time by |delta| and fires relevant timers.
   void FastForward(base::TimeDelta delta) {
     task_environment_.FastForwardBy(delta);
-  }
-
-  void VerifyGetDeviceStateRequest() {
-    ASSERT_FALSE(fake_client_factory_.instances().empty());
-    FakeNearbyShareClient* client = fake_client_factory_.instances().back();
-    ASSERT_EQ(1u, client->get_device_state_requests().size());
-
-    const nearbyshare::proto::GetDeviceStateRequest& request =
-        client->get_device_state_requests()[0].request;
-    EXPECT_EQ(std::string(kDeviceIdPrefix) + kTestDeviceId, request.parent());
   }
 
   void VerifyListContactPeopleRequest(
@@ -204,13 +145,9 @@ class NearbyShareContactDownloaderImplTest
   }
 
   // The callbacks passed into NearbyShareContactDownloader ctor.
-  void OnSuccess(
-      bool did_contacts_change_since_last_upload,
-      base::Optional<std::vector<nearbyshare::proto::ContactRecord>> contacts) {
+  void OnSuccess(std::vector<nearbyshare::proto::ContactRecord> contacts) {
     result_ = Result();
     result_->success = true;
-    result_->did_contacts_change_since_last_upload =
-        did_contacts_change_since_last_upload;
     result_->contacts = std::move(contacts);
   }
   void OnFailure() {
@@ -225,14 +162,8 @@ class NearbyShareContactDownloaderImplTest
   std::unique_ptr<NearbyShareContactDownloader> downloader_;
 };
 
-TEST_P(NearbyShareContactDownloaderImplTest, Success) {
+TEST_F(NearbyShareContactDownloaderImplTest, Success) {
   RunDownload();
-
-  SucceedGetDeviceStateRequest();
-  if (ShouldSkipDownload()) {
-    VerifySuccess(/*expected_contacts=*/base::nullopt);
-    return;
-  }
 
   // Contacts are sent in two ListContactPeople responses.
   SucceedListContactPeopleRequest(
@@ -253,26 +184,8 @@ TEST_P(NearbyShareContactDownloaderImplTest, Success) {
   VerifySuccess(/*expected_contacts=*/TestContactRecordList());
 }
 
-TEST_P(NearbyShareContactDownloaderImplTest, Failure_GetDeviceState) {
+TEST_F(NearbyShareContactDownloaderImplTest, Failure_ListContactPeople) {
   RunDownload();
-  FailGetDeviceStateRequest();
-  VerifyFailure();
-}
-
-TEST_P(NearbyShareContactDownloaderImplTest, Timeout_GetDeviceState) {
-  RunDownload();
-  TimeoutGetDeviceStateRequest();
-  VerifyFailure();
-}
-
-TEST_P(NearbyShareContactDownloaderImplTest, Failure_ListContactPeople) {
-  RunDownload();
-
-  SucceedGetDeviceStateRequest();
-  if (ShouldSkipDownload()) {
-    VerifySuccess(/*expected_contacts=*/base::nullopt);
-    return;
-  }
 
   // Contacts should be sent in two ListContactPeople responses, but second
   // request fails.
@@ -289,14 +202,8 @@ TEST_P(NearbyShareContactDownloaderImplTest, Failure_ListContactPeople) {
   VerifyFailure();
 }
 
-TEST_P(NearbyShareContactDownloaderImplTest, Timeout_ListContactPeople) {
+TEST_F(NearbyShareContactDownloaderImplTest, Timeout_ListContactPeople) {
   RunDownload();
-
-  SucceedGetDeviceStateRequest();
-  if (ShouldSkipDownload()) {
-    VerifySuccess(/*expected_contacts=*/base::nullopt);
-    return;
-  }
 
   // Contacts should be sent in two ListContactPeople responses. Timeout before
   // second response.
@@ -312,8 +219,3 @@ TEST_P(NearbyShareContactDownloaderImplTest, Timeout_ListContactPeople) {
 
   VerifyFailure();
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         NearbyShareContactDownloaderImplTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));

@@ -42,10 +42,6 @@ class NearbyInternalsHttpHandler : public content::WebUIMessageHandler,
       const nearbyshare::proto::UpdateDeviceRequest& request) override;
   void OnUpdateDeviceResponse(
       const nearbyshare::proto::UpdateDeviceResponse& response) override;
-  void OnGetDeviceStateRequest(
-      const nearbyshare::proto::GetDeviceStateRequest& request) override;
-  void OnGetDeviceStateResponse(
-      const nearbyshare::proto::GetDeviceStateResponse& response) override;
   void OnListContactPeopleRequest(
       const nearbyshare::proto::ListContactPeopleRequest& request) override;
   void OnListContactPeopleResponse(
@@ -55,12 +51,6 @@ class NearbyInternalsHttpHandler : public content::WebUIMessageHandler,
       override;
   void OnListPublicCertificatesResponse(
       const nearbyshare::proto::ListPublicCertificatesResponse& response)
-      override;
-  void OnCheckContactsReachabilityRequest(
-      const nearbyshare::proto::CheckContactsReachabilityRequest& request)
-      override;
-  void OnCheckContactsReachabilityResponse(
-      const nearbyshare::proto::CheckContactsReachabilityResponse& response)
       override;
 
  private:

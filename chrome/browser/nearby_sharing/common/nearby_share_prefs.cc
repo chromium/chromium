@@ -20,6 +20,8 @@ const char kNearbySharingAllowedContactsPrefName[] =
     "nearby_sharing.allowed_contacts";
 const char kNearbySharingBackgroundVisibilityName[] =
     "nearby_sharing.background_visibility";
+const char kNearbySharingContactUploadHashPrefName[] =
+    "nearby_sharing.contact_upload_hash";
 const char kNearbySharingDataUsageName[] = "nearby_sharing.data_usage";
 const char kNearbySharingDeviceIdPrefName[] = "nearby_sharing.device_id";
 const char kNearbySharingDeviceNamePrefName[] = "nearby_sharing.device_name";
@@ -32,10 +34,8 @@ const char kNearbySharingPublicCertificateExpirationDictPrefName[] =
     "nearbyshare.public_certificate_expiration_dict";
 const char kNearbySharingPrivateCertificateListPrefName[] =
     "nearbyshare.private_certificate_list";
-const char kNearbySharingSchedulerContactDownloadPrefName[] =
-    "nearby_sharing.scheduler.contact_download";
-const char kNearbySharingSchedulerContactUploadPrefName[] =
-    "nearby_sharing.scheduler.contact_upload";
+const char kNearbySharingSchedulerContactDownloadAndUploadPrefName[] =
+    "nearby_sharing.scheduler.contact_download_and_upload";
 const char kNearbySharingSchedulerDownloadDeviceDataPrefName[] =
     "nearby_sharing.scheduler.download_device_data";
 const char kNearbySharingSchedulerDownloadPublicCertificatesPrefName[] =
@@ -64,6 +64,8 @@ void RegisterNearbySharingPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kNearbySharingDataUsageName,
       /*default_value=*/static_cast<int>(DataUsage::kWifiOnly));
+  registry->RegisterStringPref(prefs::kNearbySharingContactUploadHashPrefName,
+                               /*default_value=*/std::string());
   registry->RegisterStringPref(prefs::kNearbySharingDeviceIdPrefName,
                                /*default_value=*/std::string());
   registry->RegisterStringPref(prefs::kNearbySharingDeviceNamePrefName,
@@ -81,9 +83,7 @@ void RegisterNearbySharingPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(
       prefs::kNearbySharingPrivateCertificateListPrefName);
   registry->RegisterDictionaryPref(
-      prefs::kNearbySharingSchedulerContactDownloadPrefName);
-  registry->RegisterDictionaryPref(
-      prefs::kNearbySharingSchedulerContactUploadPrefName);
+      prefs::kNearbySharingSchedulerContactDownloadAndUploadPrefName);
   registry->RegisterDictionaryPref(
       prefs::kNearbySharingSchedulerDownloadDeviceDataPrefName);
   registry->RegisterDictionaryPref(

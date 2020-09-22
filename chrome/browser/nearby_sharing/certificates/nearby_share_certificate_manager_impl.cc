@@ -336,24 +336,6 @@ void NearbyShareCertificateManagerImpl::UpdatePrivateCertificateInStorage(
   certificate_storage_->UpdatePrivateCertificate(private_certificate);
 }
 
-void NearbyShareCertificateManagerImpl::OnAllowlistChanged(
-    bool were_contacts_added_to_allowlist,
-    bool were_contacts_removed_from_allowlist) {
-  // Contacts that are newly added to the allowlist can use the existing set of
-  // selected-contacts visibility certificates. The existing certificates will
-  // be distributed to the newly allowed contacts as soon as they check in with
-  // the Nearby Share server.
-  if (!were_contacts_removed_from_allowlist)
-    return;
-
-  // We do not want to continue using the current selected-contacts visibility
-  // certificates because they might have been shared with contacts no longer on
-  // the allowlist.
-  certificate_storage_->ClearPrivateCertificatesOfVisibility(
-      nearby_share::mojom::Visibility::kSelectedContacts);
-  private_certificate_expiration_scheduler_->MakeImmediateRequest();
-}
-
 void NearbyShareCertificateManagerImpl::OnContactsDownloaded(
     const std::set<std::string>& allowed_contact_ids,
     const std::vector<nearbyshare::proto::ContactRecord>& contacts) {}
@@ -363,13 +345,15 @@ void NearbyShareCertificateManagerImpl::OnContactsUploaded(
   if (!did_contacts_change_since_last_upload)
     return;
 
-  // If the contact list changed, all-contacts visibility certificates need to
-  // be recreated because the current certificates might have been shared with
-  // people no longer on the user's contact list. (Ideally, we would only
-  // recreate all-contacts visibility certificates when contacts are *removed*
-  // from the contact list, but we do not have this information.)
-  certificate_storage_->ClearPrivateCertificatesOfVisibility(
-      nearby_share::mojom::Visibility::kAllContacts);
+  // If any of the uploaded contact data--the contact list or the allowlist--has
+  // changed since the previous successful upload, recreate certificates. We do
+  // not want to continue using the current certificates because they might have
+  // been shared with contacts no longer on the contact list or allowlist. NOTE:
+  // Ideally, we would only recreate all-contacts visibility certificates when
+  // contacts are removed from the contact list, and we would only recreate
+  // selected-contacts visibility certificates when contacts are removed from
+  // the allowlist, but our information is not that granular.
+  certificate_storage_->ClearPrivateCertificates();
   private_certificate_expiration_scheduler_->MakeImmediateRequest();
 }
 

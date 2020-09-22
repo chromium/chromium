@@ -137,8 +137,7 @@ void NearbyInternalsHttpHandler::ListContactPeople(
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (service_) {
-    service_->GetContactManager()->DownloadContacts(
-        /*only_download_if_contacts_changed=*/false);
+    service_->GetContactManager()->DownloadContacts();
   } else {
     NS_LOG(ERROR) << "No NearbyShareService instance to call.";
   }
@@ -158,22 +157,6 @@ void NearbyInternalsHttpHandler::OnUpdateDeviceResponse(
                     HttpMessageToDictionary(
                         UpdateDeviceResponseToReadableDictionary(response),
                         Direction::kResponse, Rpc::kDevice));
-}
-
-void NearbyInternalsHttpHandler::OnGetDeviceStateRequest(
-    const nearbyshare::proto::GetDeviceStateRequest& request) {
-  FireWebUIListener(kHttpMessageAdded,
-                    HttpMessageToDictionary(
-                        GetDeviceStateRequestToReadableDictionary(request),
-                        Direction::kRequest, Rpc::kDeviceState));
-}
-
-void NearbyInternalsHttpHandler::OnGetDeviceStateResponse(
-    const nearbyshare::proto::GetDeviceStateResponse& response) {
-  FireWebUIListener(kHttpMessageAdded,
-                    HttpMessageToDictionary(
-                        GetDeviceStateResponseToReadableDictionary(response),
-                        Direction::kResponse, Rpc::kDeviceState));
 }
 
 void NearbyInternalsHttpHandler::OnListContactPeopleRequest(
@@ -208,16 +191,4 @@ void NearbyInternalsHttpHandler::OnListPublicCertificatesResponse(
       HttpMessageToDictionary(
           ListPublicCertificatesResponseToReadableDictionary(response),
           Direction::kResponse, Rpc::kCertificate));
-}
-
-void NearbyInternalsHttpHandler::OnCheckContactsReachabilityRequest(
-    const nearbyshare::proto::CheckContactsReachabilityRequest& request) {
-  // No FireWebUIListener() because internal debug page does not support
-  // CheckContactsReachabilityRequest.
-}
-
-void NearbyInternalsHttpHandler::OnCheckContactsReachabilityResponse(
-    const nearbyshare::proto::CheckContactsReachabilityResponse& response) {
-  // No FireWebUIListener() because internal debug page does not support
-  // CheckContactsReachabilityResponse.
 }

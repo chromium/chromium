@@ -22,10 +22,6 @@ class NearbyShareHttpNotifier {
         const nearbyshare::proto::UpdateDeviceRequest& request) = 0;
     virtual void OnUpdateDeviceResponse(
         const nearbyshare::proto::UpdateDeviceResponse& response) = 0;
-    virtual void OnGetDeviceStateRequest(
-        const nearbyshare::proto::GetDeviceStateRequest& request) = 0;
-    virtual void OnGetDeviceStateResponse(
-        const nearbyshare::proto::GetDeviceStateResponse& response) = 0;
     virtual void OnListContactPeopleRequest(
         const nearbyshare::proto::ListContactPeopleRequest& request) = 0;
     virtual void OnListContactPeopleResponse(
@@ -34,12 +30,6 @@ class NearbyShareHttpNotifier {
         const nearbyshare::proto::ListPublicCertificatesRequest& request) = 0;
     virtual void OnListPublicCertificatesResponse(
         const nearbyshare::proto::ListPublicCertificatesResponse& response) = 0;
-    virtual void OnCheckContactsReachabilityRequest(
-        const nearbyshare::proto::CheckContactsReachabilityRequest&
-            request) = 0;
-    virtual void OnCheckContactsReachabilityResponse(
-        const nearbyshare::proto::CheckContactsReachabilityResponse&
-            response) = 0;
   };
 
   NearbyShareHttpNotifier();
@@ -53,10 +43,6 @@ class NearbyShareHttpNotifier {
   // Sends |request| to all observers.
   void NotifyOfRequest(const nearbyshare::proto::UpdateDeviceRequest& request);
   void NotifyOfRequest(
-      const nearbyshare::proto::GetDeviceStateRequest& request);
-  void NotifyOfRequest(
-      const nearbyshare::proto::CheckContactsReachabilityRequest& request);
-  void NotifyOfRequest(
       const nearbyshare::proto::ListContactPeopleRequest& request);
   void NotifyOfRequest(
       const nearbyshare::proto::ListPublicCertificatesRequest& request);
@@ -65,13 +51,9 @@ class NearbyShareHttpNotifier {
   void NotifyOfResponse(
       const nearbyshare::proto::UpdateDeviceResponse& response);
   void NotifyOfResponse(
-      const nearbyshare::proto::GetDeviceStateResponse& response);
-  void NotifyOfResponse(
       const nearbyshare::proto::ListContactPeopleResponse& response);
   void NotifyOfResponse(
       const nearbyshare::proto::ListPublicCertificatesResponse& response);
-  void NotifyOfResponse(
-      const nearbyshare::proto::CheckContactsReachabilityResponse& response);
 
  private:
   base::ObserverList<Observer> observers_;
