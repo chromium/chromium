@@ -1548,11 +1548,6 @@ var OSSettingsCupsPrinterPageTest = class extends OSSettingsBrowserTest {
   }
 
   /** @override */
-  get featureList() {
-    return {enabled: ['features::kPrintServerUi']};
-  }
-
-  /** @override */
   get extraLibraries() {
     return super.extraLibraries.concat([
       '//ui/webui/resources/js/assert.js',

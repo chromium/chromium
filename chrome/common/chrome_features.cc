@@ -598,12 +598,6 @@ const base::Feature kPredictivePrefetchingAllowedOnAllConnectionTypes{
 const base::Feature kPrerenderFallbackToPreconnect{
     "PrerenderFallbackToPreconnect", base::FEATURE_ENABLED_BY_DEFAULT};
 
-#if defined(OS_CHROMEOS)
-// Enable adding a print server on Chrome OS.
-const base::Feature kPrintServerUi{"PrintServerUi",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
 #if defined(OS_ANDROID)
 const base::Feature kPrivacyElevatedAndroid{"PrivacyElevatedAndroid",
                                             base::FEATURE_ENABLED_BY_DEFAULT};

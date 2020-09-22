@@ -4227,10 +4227,6 @@ const char kPhoneHubDescription[] =
     "Provides a UI for users to view information about their Android phone"
     "and perform phone-side actions within Chrome OS.";
 
-const char kPrintServerUiName[] = "Print Server UI";
-const char kPrintServerUiDescription[] =
-    "Enables users to add their own print server in the printer settings page.";
-
 const char kReduceDisplayNotificationsName[] = "Reduce display notifications";
 const char kReduceDisplayNotificationsDescription[] =
     "If enabled, notifications for display rotation, display removed, display "

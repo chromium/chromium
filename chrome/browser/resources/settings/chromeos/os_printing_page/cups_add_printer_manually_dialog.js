@@ -52,9 +52,6 @@ Polymer({
       type: String,
       value: '',
     },
-
-    /** @type {boolean} */
-    printServersUiEnabled: Boolean,
   },
 
   observers: [

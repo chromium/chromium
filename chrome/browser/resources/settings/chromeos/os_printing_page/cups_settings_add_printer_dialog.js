@@ -85,14 +85,6 @@ Polymer({
       type: Boolean,
       value: false,
     },
-
-    /** @private {boolean} */
-    printServersUiEnabled_: {
-      type: Boolean,
-      value: function() {
-        return loadTimeData.getBoolean('consumerPrintServerUiEnabled');
-      }
-    },
   },
 
   listeners: {

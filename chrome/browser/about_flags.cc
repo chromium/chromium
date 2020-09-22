@@ -5194,10 +5194,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMeteredShowToggleDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kMeteredShowToggle)},
 
-    {"enable-print-server-ui", flag_descriptions::kPrintServerUiName,
-     flag_descriptions::kPrintServerUiDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kPrintServerUi)},
-
     {"printer-status", flag_descriptions::kPrinterStatusName,
      flag_descriptions::kPrinterStatusDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kPrinterStatus)},

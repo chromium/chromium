@@ -62,47 +62,26 @@
           </cr-input>
         </div>
       </div>
-      <template is="dom-if" if="[[printServersUiEnabled]]">
-        <div slot="dialog-buttons">
-          <!-- Left Group -->
-          <div>
-            <cr-button id="print-server-button" on-click="onPrintServerTap_">
-              $i18n{printServerButtonText}
-            </cr-button>
-          </div>
-          <!-- Right Group -->
-          <div>
-            <cr-button class="cancel-button" on-click="onCancelTap_">
-              $i18n{cancel}
-            </cr-button>
-            <cr-button id="addPrinterButton" class="action-button"
-                on-click="addPressed_"
-                disabled="[[!canAddPrinter_(newPrinter.*,
-                                            addPrinterInProgress_)]]">
-              $i18n{addPrinterButtonText}
-            </cr-button>
-          </div>
+      <div slot="dialog-buttons">
+        <!-- Left Group -->
+        <div>
+          <cr-button id="print-server-button" on-click="onPrintServerTap_">
+            $i18n{printServerButtonText}
+          </cr-button>
         </div>
-      </template>
-      <template is="dom-if" if="[[!printServersUiEnabled]]">
-        <div slot="dialog-buttons">
-          <!-- Left Group -->
-          <div>
-            <cr-button class="cancel-button" on-click="onCancelTap_">
-              $i18n{cancel}
-            </cr-button>
-          </div>
-          <!-- Right Group -->
-          <div>
-            <cr-button id="addPrinterButton" class="action-button"
-                on-click="addPressed_"
-                disabled="[[!canAddPrinter_(newPrinter.*,
-                                            addPrinterInProgress_)]]">
-              $i18n{addPrinterButtonText}
-            </cr-button>
-          </div>
+        <!-- Right Group -->
+        <div>
+          <cr-button class="cancel-button" on-click="onCancelTap_">
+            $i18n{cancel}
+          </cr-button>
+          <cr-button id="addPrinterButton" class="action-button"
+              on-click="addPressed_"
+              disabled="[[!canAddPrinter_(newPrinter.*,
+                                          addPrinterInProgress_)]]">
+            $i18n{addPrinterButtonText}
+          </cr-button>
         </div>
-      </template>
+      </div>
     </add-printer-dialog>
   </template>
   <script src="cups_add_printer_manually_dialog.js"></script>

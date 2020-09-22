@@ -17,8 +17,7 @@
 
     <!-- Manually Add Printer Dialog -->
     <template is="dom-if" if="[[showManuallyAddDialog_]]" restamp>
-      <add-printer-manually-dialog new-printer="{{newPrinter}}"
-          print-servers-ui-enabled="[[printServersUiEnabled_]]">
+      <add-printer-manually-dialog new-printer="{{newPrinter}}">
       </add-printer-manually-dialog>
     </template>
 
@@ -29,10 +28,8 @@
     </template>
 
     <!-- Add Print Server Dialog -->
-    <template is="dom-if" if="[[printServersUiEnabled_]]">
-      <template is="dom-if" if="[[showAddPrintServerDialog_]]" restamp>
-        <add-print-server-dialog></add-print-server-dialog>
-      </template>
+    <template is="dom-if" if="[[showAddPrintServerDialog_]]" restamp>
+      <add-print-server-dialog></add-print-server-dialog>
     </template>
 
   </template>

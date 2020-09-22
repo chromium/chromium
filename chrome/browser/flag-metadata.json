@@ -1948,11 +1948,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-print-server-ui",
-    "owners": [ "jimmyxgong" ],
-    "expiry_milestone": 84
-  },
-  {
     "name": "enable-process-sharing-with-default-site-instances",
     "owners": [ "acolwell" ],
     "expiry_milestone": 81
