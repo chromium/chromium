@@ -696,7 +696,8 @@ class NavigationListModel extends cr.EventTarget {
     // Add REMOVABLE volumes and partitions.
     const removableModels = new Map();
     for (const [devicePath, removableGroup] of groupRemovables().entries()) {
-      if (removableGroup.length == 1) {
+      if (removableGroup.length == 1 &&
+          !util.isSinglePartitionFormatEnabled()) {
         // Add unpartitioned removable device as a regular volume.
         this.navigationItems_.push(removableGroup[0]);
         removableGroup[0].section = NavigationSection.REMOVABLE;

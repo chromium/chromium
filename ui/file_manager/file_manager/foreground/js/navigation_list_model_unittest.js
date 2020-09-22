@@ -201,6 +201,14 @@ function testAddAndRemoveShortcuts() {
 }
 
 /**
+ * Tests testAddAndRemoveVolumes test with SinglePartitionFormat flag is on.
+ */
+function testAddAndRemoveVolumesWhenSinglePartitionOn() {
+  window.loadTimeData.data_['FILES_SINGLE_PARTITION_FORMAT_ENABLED'] = true;
+  testAddAndRemoveVolumes();
+}
+
+/**
  * Tests adding and removing volumes.
  */
 function testAddAndRemoveVolumes() {
@@ -229,9 +237,17 @@ function testAddAndRemoveVolumes() {
   assertEquals(
       'drive', /** @type {!NavigationModelVolumeItem} */
       (model.item(2)).volumeInfo.volumeId);
-  assertEquals(
-      'removable:hoge', /** @type {!NavigationModelVolumeItem} */
-      (model.item(3)).volumeInfo.volumeId);
+  if (util.isSinglePartitionFormatEnabled()) {
+    const drive = model.item(3);
+    assertEquals('External Drive', drive.label);
+    assertEquals(
+        'removable:hoge', /** @type {!NavigationModelFakeItem} */
+        (drive).entry.getUIChildren()[0].volumeInfo.volumeId);
+  } else {
+    assertEquals(
+        'removable:hoge', /** @type {!NavigationModelVolumeItem} */
+        (model.item(3)).volumeInfo.volumeId);
+  }
 
   // Mount removable volume 'fuga'. Not a partition, so set a different device
   // path to 'hoge'.
@@ -247,12 +263,25 @@ function testAddAndRemoveVolumes() {
   assertEquals(
       'drive', /** @type {!NavigationModelVolumeItem} */
       (model.item(2)).volumeInfo.volumeId);
-  assertEquals(
-      'removable:hoge', /** @type {!NavigationModelVolumeItem} */
-      (model.item(3)).volumeInfo.volumeId);
-  assertEquals(
-      'removable:fuga', /** @type {!NavigationModelVolumeItem} */
-      (model.item(4)).volumeInfo.volumeId);
+  if (util.isSinglePartitionFormatEnabled()) {
+    const drive1 = model.item(3);
+    const drive2 = model.item(4);
+    assertEquals('External Drive', drive1.label);
+    assertEquals('External Drive', drive2.label);
+    assertEquals(
+        'removable:hoge', /** @type {!NavigationModelFakeItem} */
+        (drive1).entry.getUIChildren()[0].volumeInfo.volumeId);
+    assertEquals(
+        'removable:fuga', /** @type {!NavigationModelFakeItem} */
+        (drive2).entry.getUIChildren()[0].volumeInfo.volumeId);
+  } else {
+    assertEquals(
+        'removable:hoge', /** @type {!NavigationModelVolumeItem} */
+        (model.item(3)).volumeInfo.volumeId);
+    assertEquals(
+        'removable:fuga', /** @type {!NavigationModelVolumeItem} */
+        (model.item(4)).volumeInfo.volumeId);
+  }
 
   // Create a shortcut on the 'hoge' volume.
   shortcutListModel.splice(1, 0, MockFileEntry.create(hoge, '/shortcut2'));
@@ -268,12 +297,25 @@ function testAddAndRemoveVolumes() {
   assertEquals(
       'drive', /** @type {!NavigationModelVolumeItem} */
       (model.item(3)).volumeInfo.volumeId);
-  assertEquals(
-      'removable:hoge', /** @type {!NavigationModelVolumeItem} */
-      (model.item(4)).volumeInfo.volumeId);
-  assertEquals(
-      'removable:fuga', /** @type {!NavigationModelVolumeItem} */
-      (model.item(5)).volumeInfo.volumeId);
+  if (util.isSinglePartitionFormatEnabled()) {
+    assertEquals('External Drive', model.item(4).label);
+    assertEquals('External Drive', model.item(5).label);
+  } else {
+    assertEquals(
+        'removable:hoge', /** @type {!NavigationModelVolumeItem} */
+        (model.item(4)).volumeInfo.volumeId);
+    assertEquals(
+        'removable:fuga', /** @type {!NavigationModelVolumeItem} */
+        (model.item(5)).volumeInfo.volumeId);
+  }
+}
+
+/**
+ * Tests testOrderAndNestItems test with SinglePartitionFormat flag is on.
+ */
+function testOrderAndNestItemsWhenSinglePartitionOn() {
+  window.loadTimeData.data_['FILES_SINGLE_PARTITION_FORMAT_ENABLED'] = true;
+  testOrderAndNestItems();
 }
 
 /**
@@ -379,8 +421,13 @@ function testOrderAndNestItems() {
   assertEquals('provided:prov1', model.item(9).label);
   assertEquals('provided:prov2', model.item(10).label);
 
-  assertEquals('removable:hoge', model.item(11).label);
-  assertEquals('removable:fuga', model.item(12).label);
+  if (util.isSinglePartitionFormatEnabled()) {
+    assertEquals('External Drive', model.item(11).label);
+    assertEquals('External Drive', model.item(12).label);
+  } else {
+    assertEquals('removable:hoge', model.item(11).label);
+    assertEquals('removable:fuga', model.item(12).label);
+  }
 
   assertEquals('archive:a-rar', model.item(13).label);
   assertEquals('mtp:a-phone', model.item(14).label);
