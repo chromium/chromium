@@ -77,13 +77,15 @@ base::TimeDelta ProbeBase::Duration() const {
 AsyncTask::AsyncTask(ExecutionContext* context,
                      AsyncTaskId* task,
                      const char* step,
-                     bool enabled)
+                     bool enabled,
+                     AdTrackingType ad_tracking_type)
     : debugger_(enabled && context ? ThreadDebugger::From(context->GetIsolate())
                                    : nullptr),
       task_(task),
       recurring_(step),
-      ad_tracker_(enabled ? AdTracker::FromExecutionContext(context)
-                          : nullptr) {
+      ad_tracker_(enabled && ad_tracking_type == AdTrackingType::kReport
+                      ? AdTracker::FromExecutionContext(context)
+                      : nullptr) {
   if (recurring_) {
     TRACE_EVENT_FLOW_STEP0("devtools.timeline.async", "AsyncTask",
                            TRACE_ID_LOCAL(reinterpret_cast<uintptr_t>(task)),
