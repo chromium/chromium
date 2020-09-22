@@ -33,6 +33,45 @@ InspectableViewsFinder::InspectableViewsFinder(Profile* profile)
 InspectableViewsFinder::~InspectableViewsFinder() {
 }
 
+api::developer_private::ViewType ConvertViewType(const ViewType type) {
+  api::developer_private::ViewType developer_private_type;
+  switch (type) {
+    case VIEW_TYPE_APP_WINDOW:
+      developer_private_type = api::developer_private::VIEW_TYPE_APP_WINDOW;
+      break;
+    case VIEW_TYPE_BACKGROUND_CONTENTS:
+      developer_private_type =
+          api::developer_private::VIEW_TYPE_BACKGROUND_CONTENTS;
+      break;
+    case VIEW_TYPE_COMPONENT:
+      developer_private_type = api::developer_private::VIEW_TYPE_COMPONENT;
+      break;
+    case VIEW_TYPE_EXTENSION_BACKGROUND_PAGE:
+      developer_private_type =
+          api::developer_private::VIEW_TYPE_EXTENSION_BACKGROUND_PAGE;
+      break;
+    case VIEW_TYPE_EXTENSION_DIALOG:
+      developer_private_type =
+          api::developer_private::VIEW_TYPE_EXTENSION_DIALOG;
+      break;
+    case VIEW_TYPE_EXTENSION_GUEST:
+      developer_private_type =
+          api::developer_private::VIEW_TYPE_EXTENSION_GUEST;
+      break;
+    case VIEW_TYPE_EXTENSION_POPUP:
+      developer_private_type =
+          api::developer_private::VIEW_TYPE_EXTENSION_POPUP;
+      break;
+    case VIEW_TYPE_TAB_CONTENTS:
+      developer_private_type = api::developer_private::VIEW_TYPE_TAB_CONTENTS;
+      break;
+    default:
+      developer_private_type = api::developer_private::VIEW_TYPE_NONE;
+      NOTREACHED();
+  }
+  return developer_private_type;
+}
+
 // static
 InspectableViewsFinder::View InspectableViewsFinder::ConstructView(
     const GURL& url,
@@ -40,7 +79,7 @@ InspectableViewsFinder::View InspectableViewsFinder::ConstructView(
     int render_frame_id,
     bool incognito,
     bool is_iframe,
-    ViewType type) {
+    api::developer_private::ViewType type) {
   api::developer_private::ExtensionView view;
   view.url = url.spec();
   view.render_process_id = render_process_id;
@@ -49,34 +88,7 @@ InspectableViewsFinder::View InspectableViewsFinder::ConstructView(
   view.render_view_id = render_frame_id;
   view.incognito = incognito;
   view.is_iframe = is_iframe;
-  switch (type) {
-    case VIEW_TYPE_APP_WINDOW:
-      view.type = api::developer_private::VIEW_TYPE_APP_WINDOW;
-      break;
-    case VIEW_TYPE_BACKGROUND_CONTENTS:
-      view.type = api::developer_private::VIEW_TYPE_BACKGROUND_CONTENTS;
-      break;
-    case VIEW_TYPE_COMPONENT:
-      view.type = api::developer_private::VIEW_TYPE_COMPONENT;
-      break;
-    case VIEW_TYPE_EXTENSION_BACKGROUND_PAGE:
-      view.type = api::developer_private::VIEW_TYPE_EXTENSION_BACKGROUND_PAGE;
-      break;
-    case VIEW_TYPE_EXTENSION_DIALOG:
-      view.type = api::developer_private::VIEW_TYPE_EXTENSION_DIALOG;
-      break;
-    case VIEW_TYPE_EXTENSION_GUEST:
-      view.type = api::developer_private::VIEW_TYPE_EXTENSION_GUEST;
-      break;
-    case VIEW_TYPE_EXTENSION_POPUP:
-      view.type = api::developer_private::VIEW_TYPE_EXTENSION_POPUP;
-      break;
-    case VIEW_TYPE_TAB_CONTENTS:
-      view.type = api::developer_private::VIEW_TYPE_TAB_CONTENTS;
-      break;
-    default:
-      NOTREACHED();
-  }
+  view.type = type;
   return view;
 }
 
@@ -120,17 +132,23 @@ void InspectableViewsFinder::GetViewsForExtensionForProfile(
        !IncognitoInfo::IsSplitMode(&extension))) {
     include_lazy_background = false;
   }
-  if (include_lazy_background &&
-      BackgroundInfo::HasLazyBackgroundPage(&extension) &&
-      is_enabled &&
+
+  // Get inactive backgrounds.
+  if (!include_lazy_background || !is_enabled)
+    return;
+  if (BackgroundInfo::HasLazyBackgroundPage(&extension) &&
       !process_manager->GetBackgroundHostForExtension(extension.id())) {
     result->push_back(ConstructView(
-        BackgroundInfo::GetBackgroundURL(&extension),
-        -1,
-        -1,
-        is_incognito,
-        false,
-        VIEW_TYPE_EXTENSION_BACKGROUND_PAGE));
+        BackgroundInfo::GetBackgroundURL(&extension), -1, -1, is_incognito,
+        false, api::developer_private::VIEW_TYPE_EXTENSION_BACKGROUND_PAGE));
+  }
+  if (BackgroundInfo::IsServiceWorkerBased(&extension) &&
+      process_manager->GetServiceWorkersForExtension(extension.id()).empty()) {
+    result->push_back(ConstructView(
+        extension.GetResourceURL(
+            BackgroundInfo::GetBackgroundServiceWorkerScript(&extension)),
+        -1, -1, is_incognito, false,
+        api::developer_private::VIEW_TYPE_EXTENSION_SERVICE_WORKER_BACKGROUND));
   }
 }
 
@@ -165,7 +183,18 @@ void InspectableViewsFinder::GetViewsForExtensionProcess(
     bool is_iframe = web_contents->GetMainFrame() != host;
     content::RenderProcessHost* process = host->GetProcess();
     result->push_back(ConstructView(url, process->GetID(), host->GetRoutingID(),
-                                    is_incognito, is_iframe, host_type));
+                                    is_incognito, is_iframe,
+                                    ConvertViewType(host_type)));
+  }
+
+  std::vector<WorkerId> service_worker_ids =
+      process_manager->GetServiceWorkersForExtension(extension.id());
+  for (const WorkerId& service_worker_id : service_worker_ids) {
+    result->push_back(ConstructView(
+        extension.GetResourceURL(
+            BackgroundInfo::GetBackgroundServiceWorkerScript(&extension)),
+        service_worker_id.render_process_id, -1, is_incognito, false,
+        api::developer_private::VIEW_TYPE_EXTENSION_SERVICE_WORKER_BACKGROUND));
   }
 }
 
@@ -189,9 +218,9 @@ void InspectableViewsFinder::GetAppWindowViewsForExtension(
       url = window->initial_url();
 
     content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
-    result->push_back(ConstructView(url, main_frame->GetProcess()->GetID(),
-                                    main_frame->GetRoutingID(), false, false,
-                                    GetViewType(web_contents)));
+    result->push_back(ConstructView(
+        url, main_frame->GetProcess()->GetID(), main_frame->GetRoutingID(),
+        false, false, ConvertViewType(GetViewType(web_contents))));
   }
 }
 

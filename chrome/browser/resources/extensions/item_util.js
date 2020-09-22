@@ -144,6 +144,9 @@ export function computeInspectableViewLabel(view) {
   if (label === '_generated_background_page.html') {
     label = loadTimeData.getString('viewBackgroundPage');
   }
+  if (view.type === 'EXTENSION_SERVICE_WORKER_BACKGROUND') {
+    label = loadTimeData.getString('viewServiceWorker');
+  }
   // Add any qualifiers.
   if (view.incognito) {
     label += ' ' + loadTimeData.getString('viewIncognito');

@@ -254,6 +254,7 @@ export class Service {
       renderProcessId: view.renderProcessId,
       renderViewId: view.renderViewId,
       incognito: view.incognito,
+      isServiceWorker: view.type === 'EXTENSION_SERVICE_WORKER_BACKGROUND',
     });
   }
 

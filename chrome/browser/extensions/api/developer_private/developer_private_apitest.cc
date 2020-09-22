@@ -14,6 +14,8 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/test/result_catcher.h"
 
 namespace extensions {
 
@@ -129,6 +131,70 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
   content::WebContents* wc = content::WebContents::FromRenderFrameHost(rfh);
   ASSERT_TRUE(wc);
   EXPECT_TRUE(DevToolsWindow::GetInstanceForInspectedWebContents(wc));
+}
+
+IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
+                       InspectActiveServiceWorkerBackground) {
+  ResultCatcher result_catcher;
+  // Load an extension that is service worker based.
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("service_worker")
+                        .AppendASCII("worker_based_background")
+                        .AppendASCII("inspect"));
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(result_catcher.GetNextResult());
+
+  // Get the info about the extension, including the inspectable views.
+  auto get_info_function =
+      base::MakeRefCounted<api::DeveloperPrivateGetExtensionInfoFunction>();
+  std::unique_ptr<base::Value> result(
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          get_info_function.get(),
+          base::StringPrintf("[\"%s\"]", extension->id().c_str()), browser()));
+  ASSERT_TRUE(result);
+  std::unique_ptr<api::developer_private::ExtensionInfo> info =
+      api::developer_private::ExtensionInfo::FromValue(*result);
+  ASSERT_TRUE(info);
+
+  // There should be a worker based background for the extension.
+  ASSERT_EQ(1u, info->views.size());
+  const api::developer_private::ExtensionView& view = info->views[0];
+  EXPECT_EQ(
+      api::developer_private::VIEW_TYPE_EXTENSION_SERVICE_WORKER_BACKGROUND,
+      view.type);
+  EXPECT_NE(-1, view.render_process_id);
+
+  // Inspect the service worker page.
+  auto dev_tools_function =
+      base::MakeRefCounted<api::DeveloperPrivateOpenDevToolsFunction>();
+  extension_function_test_utils::RunFunction(
+      dev_tools_function.get(),
+      base::StringPrintf(
+          R"([{"renderViewId": -1,
+               "renderProcessId": %d,
+               "isServiceWorker": true,
+               "extensionId": "%s"
+            }])",
+          info->views[0].render_process_id, extension->id().c_str()),
+      browser(), api_test_utils::NONE);
+
+  // Find the service worker background host.
+  content::DevToolsAgentHost::List targets =
+      content::DevToolsAgentHost::GetOrCreateAll();
+  scoped_refptr<content::DevToolsAgentHost> service_worker_host;
+  for (const scoped_refptr<content::DevToolsAgentHost>& host : targets) {
+    if (host->GetType() == content::DevToolsAgentHost::kTypeServiceWorker &&
+        host->GetURL() ==
+            extension->GetResourceURL(
+                BackgroundInfo::GetBackgroundServiceWorkerScript(extension))) {
+      EXPECT_FALSE(service_worker_host);
+      service_worker_host = host;
+    }
+  }
+
+  // Verify that dev tools opened.
+  ASSERT_TRUE(service_worker_host);
+  EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(service_worker_host.get()));
 }
 
 }  // namespace extensions

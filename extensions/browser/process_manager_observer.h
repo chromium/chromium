@@ -44,6 +44,9 @@ class ProcessManagerObserver : public base::CheckedObserver {
       const std::string& extension_id,
       content::RenderFrameHost* render_frame_host) {}
 
+  // Called when a service worker is started.
+  virtual void OnServiceWorkerRegistered(const WorkerId& worker_id) {}
+
   // Called when a service worker is no longer part of an extension process.
   virtual void OnServiceWorkerUnregistered(const WorkerId& worker_id) {}
 

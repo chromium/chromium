@@ -12,6 +12,7 @@
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_handlers/background_info.h"
 
 namespace extensions {
 namespace devtools_util {
@@ -26,6 +27,23 @@ void InspectExtensionHost(
 }
 
 }  // namespace
+
+// Helper to inspect a service worker after it has been started.
+void InspectServiceWorkerBackground(const Extension* extension,
+                                    Profile* profile) {
+  DCHECK(BackgroundInfo::IsServiceWorkerBased(extension));
+  content::DevToolsAgentHost::List targets =
+      content::DevToolsAgentHost::GetOrCreateAll();
+  for (const scoped_refptr<content::DevToolsAgentHost>& host : targets) {
+    if (host->GetType() == content::DevToolsAgentHost::kTypeServiceWorker &&
+        host->GetURL() ==
+            extension->GetResourceURL(
+                BackgroundInfo::GetBackgroundServiceWorkerScript(extension))) {
+      DevToolsWindow::OpenDevToolsWindow(host, profile);
+      break;
+    }
+  }
+}
 
 void InspectBackgroundPage(const Extension* extension, Profile* profile) {
   DCHECK(extension);

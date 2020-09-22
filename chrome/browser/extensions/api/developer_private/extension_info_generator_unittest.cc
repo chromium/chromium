@@ -395,10 +395,10 @@ TEST_F(ExtensionInfoGeneratorUnitTest, GenerateExtensionsJSONData) {
     InspectableViewsFinder::ViewList views;
     views.push_back(InspectableViewsFinder::ConstructView(
         GURL("chrome-extension://behllobkkfkfnphdnhnkndlbkcpglgmj/bar.html"),
-        42, 88, true, false, VIEW_TYPE_TAB_CONTENTS));
+        42, 88, true, false, api::developer_private::VIEW_TYPE_TAB_CONTENTS));
     views.push_back(InspectableViewsFinder::ConstructView(
         GURL("chrome-extension://behllobkkfkfnphdnhnkndlbkcpglgmj/dog.html"), 0,
-        0, false, true, VIEW_TYPE_TAB_CONTENTS));
+        0, false, true, api::developer_private::VIEW_TYPE_TAB_CONTENTS));
 
     CompareExpectedAndActualOutput(
         extension_path, std::move(views),
@@ -418,10 +418,10 @@ TEST_F(ExtensionInfoGeneratorUnitTest, GenerateExtensionsJSONData) {
     InspectableViewsFinder::ViewList views;
     views.push_back(InspectableViewsFinder::ConstructView(
         GURL("chrome-extension://hpiknbiabeeppbpihjehijgoemciehgk/bar.html"),
-        42, 88, true, false, VIEW_TYPE_TAB_CONTENTS));
+        42, 88, true, false, api::developer_private::VIEW_TYPE_TAB_CONTENTS));
     views.push_back(InspectableViewsFinder::ConstructView(
         GURL("chrome-extension://hpiknbiabeeppbpihjehijgoemciehgk/bar.html"), 0,
-        0, false, true, VIEW_TYPE_TAB_CONTENTS));
+        0, false, true, api::developer_private::VIEW_TYPE_TAB_CONTENTS));
 
     CompareExpectedAndActualOutput(
         extension_path, std::move(views),

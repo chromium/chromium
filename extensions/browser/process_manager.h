@@ -234,6 +234,11 @@ class ProcessManager : public KeyedService,
   std::vector<WorkerId> GetServiceWorkers(const ExtensionId& extension_id,
                                           int render_process_id) const;
 
+  // Returns all the Service Worker infos that is active for the extension with
+  // |extension_id|.
+  std::vector<WorkerId> GetServiceWorkersForExtension(
+      const ExtensionId& extension_id) const;
+
   bool startup_background_hosts_created_for_test() const {
     return startup_background_hosts_created_;
   }

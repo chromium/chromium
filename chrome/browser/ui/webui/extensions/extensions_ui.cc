@@ -264,6 +264,7 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
     {"viewIncognito", IDS_EXTENSIONS_VIEW_INCOGNITO},
     {"viewInactive", IDS_EXTENSIONS_VIEW_INACTIVE},
     {"viewIframe", IDS_EXTENSIONS_VIEW_IFRAME},
+    {"viewServiceWorker", IDS_EXTENSIONS_SERVICE_WORKER_BACKGROUND},
 
 #if defined(OS_CHROMEOS)
     {"manageKioskApp", IDS_EXTENSIONS_MANAGE_KIOSK_APP},

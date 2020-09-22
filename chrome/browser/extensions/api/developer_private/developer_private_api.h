@@ -103,6 +103,8 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
   void OnExtensionFrameUnregistered(
       const std::string& extension_id,
       content::RenderFrameHost* render_frame_host) override;
+  void OnServiceWorkerRegistered(const WorkerId& worker_id) override;
+  void OnServiceWorkerUnregistered(const WorkerId& worker_id) override;
 
   // AppWindowRegistry::Observer:
   void OnAppWindowAdded(AppWindow* window) override;

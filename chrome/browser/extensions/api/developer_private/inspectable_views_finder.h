@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "chrome/common/extensions/api/developer_private.h"
 #include "extensions/common/view_type.h"
 
 class Profile;
@@ -39,7 +40,7 @@ class InspectableViewsFinder {
                             int render_view_id,
                             bool incognito,
                             bool is_iframe,
-                            ViewType type);
+                            api::developer_private::ViewType type);
 
   // Return a list of inspectable views for the given |extension|.
   ViewList GetViewsForExtension(const Extension& extension, bool is_enabled);

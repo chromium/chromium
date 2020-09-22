@@ -67,6 +67,7 @@ namespace developerPrivate {
     EXTENSION_DIALOG,
     EXTENSION_GUEST,
     EXTENSION_POPUP,
+    EXTENSION_SERVICE_WORKER_BACKGROUND,
     TAB_CONTENTS
   };
 
@@ -386,7 +387,9 @@ namespace developerPrivate {
     WARNINGS_CHANGED,
     COMMAND_ADDED,
     COMMAND_REMOVED,
-    PERMISSIONS_CHANGED
+    PERMISSIONS_CHANGED,
+    SERVICE_WORKER_STARTED,
+    SERVICE_WORKER_STOPPED
   };
 
   dictionary PackDirectoryResponse {
@@ -484,8 +487,9 @@ namespace developerPrivate {
   };
 
   dictionary OpenDevToolsProperties {
-    // The ID of the extension. This is only needed if opening the background
-    // page (where renderViewId and renderProcessId are -1).
+    // The ID of the extension. This is only needed if opening its background
+    // page or its background service worker (where renderViewId and
+    // renderProcessId are -1).
     DOMString? extensionId;
 
     // The ID of the render frame in which the error occurred.
@@ -494,6 +498,9 @@ namespace developerPrivate {
 
     // The ID of the process in which the error occurred.
     long renderProcessId;
+
+    // Whether or not the background is service worker based.
+    boolean? isServiceWorker;
 
     boolean? incognito;
 
