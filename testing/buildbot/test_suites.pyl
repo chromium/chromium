@@ -4517,6 +4517,25 @@
         },
       },
     },
+
+    'wpt_web_tests_identity': {
+      'wpt_tests_suite': {
+        'args': [
+          'webauthn/',
+        ],
+        'merge': {
+          'args': [
+            '--verbose',
+          ],
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+        },
+        'isolate_name': 'wpt_tests_isolate',
+        'results_handler': 'layout tests',
+        'swarming': {
+          'shards': 1,
+        },
+      },
+    },
   },
 
   ##############################################################################

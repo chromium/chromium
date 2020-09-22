@@ -935,6 +935,10 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "linux-wpt-identity-fyi-rel",
+)
+
+try_.chromium_linux_builder(
     name = "linux_chromium_analysis",
 )
 
