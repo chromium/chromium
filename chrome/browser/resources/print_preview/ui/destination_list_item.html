@@ -70,6 +70,10 @@
       printer-status-icon-cros {
         padding-inline-end: 12px;
       }
+
+      :host([is-destination-cros-local_]) .connection-status {
+        color: var(--google-red-600);
+      }
 </if>
     </style>
     <iron-icon icon$="[[destination.icon]]"
@@ -81,10 +85,11 @@
     </printer-status-icon-cros>
 </if>
     <span class="name searchable">[[destination.displayName]]</span>
-    <span class="search-hint searchable">[[searchHint_]]</span>
-    <span class="connection-status"
-        hidden$="[[!destination.isOfflineOrInvalid]]">
-      [[destination.connectionStatusText]]
+    <span class="search-hint searchable" hidden="[[!searchHint_]]">
+      [[searchHint_]]
+    </span>
+    <span class="connection-status">
+      [[statusText_]]
     </span>
     <a href="$i18n{gcpCertificateErrorLearnMoreURL}"
         target="_blank" class="learn-more-link"

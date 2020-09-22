@@ -140,7 +140,8 @@ suite(destination_item_test.suiteName, function() {
     // Search hint should be have the description and be highlighted.
     const hint = item.$$('.search-hint');
     assertEquals(
-        params.description + params.description, hint.textContent.trim());
+        params.description + '\n    \n      ' + params.description,
+        hint.textContent.trim());
     const searchHits = hint.querySelectorAll('.search-highlight-hit');
     assertEquals(1, searchHits.length);
     assertEquals('ABC', searchHits[0].textContent);
