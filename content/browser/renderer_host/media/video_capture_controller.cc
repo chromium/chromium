@@ -294,7 +294,8 @@ void VideoCaptureController::AddClient(
   if (!params.IsValid() ||
       !(params.requested_format.pixel_format == media::PIXEL_FORMAT_I420 ||
         params.requested_format.pixel_format == media::PIXEL_FORMAT_Y16 ||
-        params.requested_format.pixel_format == media::PIXEL_FORMAT_ARGB)) {
+        params.requested_format.pixel_format == media::PIXEL_FORMAT_ARGB ||
+        params.requested_format.pixel_format == media::PIXEL_FORMAT_NV12)) {
     // Crash in debug builds since the renderer should not have asked for
     // invalid or unsupported parameters.
     LOG(DFATAL) << "Invalid or unsupported video capture parameters requested: "
