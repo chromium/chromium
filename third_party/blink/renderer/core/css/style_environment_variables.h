@@ -26,8 +26,9 @@ enum class UADefinedVariable {
   kSafeAreaInsetBottom,
   kSafeAreaInsetRight,
 
-  // The keyboard area insets are four environment variables that define a
-  // virtual keyboard rectangle by its top, right, bottom, and left insets
+  // The keyboard area insets are six environment variables that define a
+  // virtual keyboard rectangle by its top, right, bottom, left, width and
+  // height insets
   // from the edge of the viewport.
   // Explainers:
   // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/VirtualKeyboardAPI/explainer.md
@@ -35,6 +36,8 @@ enum class UADefinedVariable {
   kKeyboardInsetLeft,
   kKeyboardInsetBottom,
   kKeyboardInsetRight,
+  kKeyboardInsetWidth,
+  kKeyboardInsetHeight,
 
   // The fold environment variables define a rectangle that is splitting the
   // layout viewport.

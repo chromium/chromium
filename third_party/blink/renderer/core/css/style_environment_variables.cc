@@ -36,6 +36,10 @@ void SetDefaultEnvironmentVariables(StyleEnvironmentVariables* instance) {
                           kKeyboardInsetDefault);
     instance->SetVariable(UADefinedVariable::kKeyboardInsetRight,
                           kKeyboardInsetDefault);
+    instance->SetVariable(UADefinedVariable::kKeyboardInsetWidth,
+                          kKeyboardInsetDefault);
+    instance->SetVariable(UADefinedVariable::kKeyboardInsetHeight,
+                          kKeyboardInsetDefault);
   }
 }
 
@@ -87,6 +91,12 @@ const AtomicString StyleEnvironmentVariables::GetVariableName(
     case UADefinedVariable::kKeyboardInsetRight:
       DCHECK(RuntimeEnabledFeatures::VirtualKeyboardEnabled());
       return "keyboard-inset-right";
+    case UADefinedVariable::kKeyboardInsetWidth:
+      DCHECK(RuntimeEnabledFeatures::VirtualKeyboardEnabled());
+      return "keyboard-inset-width";
+    case UADefinedVariable::kKeyboardInsetHeight:
+      DCHECK(RuntimeEnabledFeatures::VirtualKeyboardEnabled());
+      return "keyboard-inset-height";
     case UADefinedVariable::kFoldTop:
       DCHECK(RuntimeEnabledFeatures::CSSFoldablesEnabled());
       return "fold-top";

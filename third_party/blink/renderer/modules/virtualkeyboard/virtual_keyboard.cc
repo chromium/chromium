@@ -77,6 +77,12 @@ void VirtualKeyboard::VirtualKeyboardOverlayChanged(
     vars.SetVariable(
         UADefinedVariable::kKeyboardInsetRight,
         StyleEnvironmentVariables::FormatPx(keyboard_rect.right()));
+    vars.SetVariable(
+        UADefinedVariable::kKeyboardInsetWidth,
+        StyleEnvironmentVariables::FormatPx(keyboard_rect.width()));
+    vars.SetVariable(
+        UADefinedVariable::kKeyboardInsetHeight,
+        StyleEnvironmentVariables::FormatPx(keyboard_rect.height()));
   }
   DispatchEvent(*(MakeGarbageCollected<VirtualKeyboardGeometryChangeEvent>(
       event_type_names::kGeometrychange, bounding_rect_)));

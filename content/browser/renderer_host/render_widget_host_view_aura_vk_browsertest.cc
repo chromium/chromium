@@ -470,6 +470,98 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
 }
 
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
+                       VirtualKeyboardCSSEnvVarWidthAndHeightIntegrationTest) {
+  // The keyboard input pane events are not supported on Win7.
+  if (base::win::GetVersion() <= base::win::Version::WIN7) {
+    return;
+  }
+
+  const char kVirtualKeyboardDataURL[] =
+      "data:text/html,<!DOCTYPE html>"
+      "<style>"
+      "  .target {"
+      "    width: env(keyboard-inset-width);"
+      "    height: env(keyboard-inset-height);"
+      "  }"
+      "</style>"
+      "<body>"
+      "<div class='target'></div>"
+      "<script>"
+      "  let numEvents = 0;"
+      "  navigator.virtualKeyboard.overlaysContent = true;"
+      "  const e = document.getElementsByClassName('target')[0];"
+      "  const style = window.getComputedStyle(e, null);"
+      "  navigator.virtualKeyboard.addEventListener('geometrychange',"
+      "   evt => {"
+      "     numEvents++;"
+      "   }, false);"
+      "</script></body>";
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kVirtualKeyboardDataURL)));
+
+  EXPECT_EQ("0px",
+            EvalJs(shell(), "style.getPropertyValue('width')").ExtractString());
+  EXPECT_EQ(
+      "0px",
+      EvalJs(shell(), "style.getPropertyValue('height')").ExtractString());
+
+  RenderWidgetHostViewAura* rwhvi = GetRenderWidgetHostView();
+
+  // Send a touch event so that RenderWidgetHostViewAura will create the
+  // keyboard observer (requires last_pointer_type_ to be TOUCH).
+  ui::TouchEvent press(ui::ET_TOUCH_PRESSED, gfx::Point(30, 30),
+                       base::TimeTicks::Now(),
+                       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+  rwhvi->OnTouchEvent(&press);
+
+  // Emulate input type text focus in the root frame (the only frame), by
+  // setting frame focus and updating TextInputState. This is a more direct way
+  // of triggering focus in a textarea in the web page.
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  auto* root = web_contents->GetFrameTree()->root();
+  web_contents->GetFrameTree()->SetFocusedFrame(
+      root, root->current_frame_host()->GetSiteInstance());
+
+  ui::mojom::TextInputState text_input_state;
+  text_input_state.show_ime_if_needed = true;
+  text_input_state.type = ui::TEXT_INPUT_TYPE_TEXT;
+
+  TextInputManager* text_input_manager = rwhvi->GetTextInputManager();
+  text_input_manager->UpdateTextInputState(rwhvi, text_input_state);
+
+  // Send through a keyboard showing event with a rect, and verify the
+  // javascript event fires with the appropriate values.
+  constexpr int kKeyboardX = 0;
+  constexpr int kKeyboardY = 200;
+  constexpr int kKeyboardWidth = 200;
+  constexpr int kKeyboardHeight = 200;
+  gfx::Rect keyboard_rect(kKeyboardX, kKeyboardY, kKeyboardWidth,
+                          kKeyboardHeight);
+  input_method_->GetMockKeyboardController()->NotifyObserversOnKeyboardShown(
+      keyboard_rect);
+
+  // There are x and y-offsets for the main frame in content_browsertest
+  // hosting. We need to take these into account for the expected values.
+  gfx::PointF root_widget_origin(0.f, 0.f);
+  rwhvi->TransformPointToRootSurface(&root_widget_origin);
+
+  EXPECT_EQ(1, EvalJs(shell(), "numEvents"));
+  EXPECT_EQ("198px",
+            EvalJs(shell(), "style.getPropertyValue('width')").ExtractString());
+  EXPECT_EQ(
+      "200px",
+      EvalJs(shell(), "style.getPropertyValue('height')").ExtractString());
+
+  input_method_->GetMockKeyboardController()->NotifyObserversOnKeyboardHidden();
+  EXPECT_EQ(2, EvalJs(shell(), "numEvents"));
+  EXPECT_EQ("0px",
+            EvalJs(shell(), "style.getPropertyValue('width')").ExtractString());
+  EXPECT_EQ(
+      "0px",
+      EvalJs(shell(), "style.getPropertyValue('height')").ExtractString());
+}
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
                        VirtualKeyboardAccessibilityFocusTest) {
   // The keyboard input pane events are not supported on Win7.
   if (base::win::GetVersion() <= base::win::Version::WIN7) {
