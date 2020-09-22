@@ -50,7 +50,7 @@
 #include "updater_idl.h"
 
 #define TYPE_FORMAT_STRING_SIZE   1141                              
-#define PROC_FORMAT_STRING_SIZE   2053                              
+#define PROC_FORMAT_STRING_SIZE   2089                              
 #define EXPR_FORMAT_STRING_SIZE   1                                 
 #define TRANSMIT_AS_TABLE_SIZE    0            
 #define WIRE_MARSHAL_TABLE_SIZE   2            
@@ -1948,6 +1948,36 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 /* 2050 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
+	/* Procedure InitializeUpdateService */
+
+/* 2052 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 2054 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 2058 */	NdrFcShort( 0x4 ),	/* 4 */
+/* 2060 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 2062 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 2064 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 2066 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x2,		/* 2 */
+/* 2068 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 2070 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 2072 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 2074 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Parameter observer */
+
+/* 2076 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 2078 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 2080 */	NdrFcShort( 0x462 ),	/* Type Offset=1122 */
+
+	/* Return value */
+
+/* 2082 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 2084 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 2086 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
 			0x0
         }
     };
@@ -3400,7 +3430,8 @@ const CInterfaceStubVtbl _IUpdaterStubVtbl =
 #pragma code_seg(".orpc")
 static const unsigned short IUpdaterControl_FormatStringOffsetTable[] =
     {
-    2016
+    2016,
+    2052
     };
 
 static const MIDL_STUBLESS_PROXY_INFO IUpdaterControl_ProxyInfo =
@@ -3424,21 +3455,22 @@ static const MIDL_SERVER_INFO IUpdaterControl_ServerInfo =
     0,
     0,
     0};
-CINTERFACE_PROXY_VTABLE(4) _IUpdaterControlProxyVtbl = 
+CINTERFACE_PROXY_VTABLE(5) _IUpdaterControlProxyVtbl = 
 {
     &IUpdaterControl_ProxyInfo,
     &IID_IUpdaterControl,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    (void *) (INT_PTR) -1 /* IUpdaterControl::Run */
+    (void *) (INT_PTR) -1 /* IUpdaterControl::Run */ ,
+    (void *) (INT_PTR) -1 /* IUpdaterControl::InitializeUpdateService */
 };
 
 const CInterfaceStubVtbl _IUpdaterControlStubVtbl =
 {
     &IID_IUpdaterControl,
     &IUpdaterControl_ServerInfo,
-    4,
+    5,
     0, /* pure interpreted */
     CStdStubBuffer_METHODS
 };

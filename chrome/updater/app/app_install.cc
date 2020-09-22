@@ -118,20 +118,12 @@ void AppInstall::InstallCandidateDone(int result) {
   // instance of |CreateControlService| has sequence affinity. Bind it in the
   // closure to ensure it is released in this sequence.
   scoped_refptr<ControlService> control_service = CreateControlService();
-  control_service->
-#if defined(OS_MAC)
-      InitializeUpdateService
-#else
-      // TODO(crbug.com/1128397): As substitute the call to Run with a call to
-      // InitializeUpdateService on Win.
-      Run
-#endif
-      (base::BindOnce(
-          [](scoped_refptr<ControlService> /*control_service*/,
-             scoped_refptr<AppInstall> app_install) {
-            app_install->RegisterUpdater();
-          },
-          control_service, base::WrapRefCounted(this)));
+  control_service->InitializeUpdateService(base::BindOnce(
+      [](scoped_refptr<ControlService> /*control_service*/,
+         scoped_refptr<AppInstall> app_install) {
+        app_install->RegisterUpdater();
+      },
+      control_service, base::WrapRefCounted(this)));
 }
 
 void AppInstall::RegisterUpdater() {

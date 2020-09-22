@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/version.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
@@ -32,14 +33,18 @@ base::OnceClosure AppServer::ModeCheck() {
                           kErrorFailedToLockPrefsMutex);
   }
 
-  base::Version this_version(UPDATER_VERSION_STRING);
-  base::Version active_version(global_prefs->GetActiveVersion());
+  const base::Version this_version(UPDATER_VERSION_STRING);
+  const base::Version active_version(global_prefs->GetActiveVersion());
+
+  VLOG(2) << "This version: " << this_version.GetString()
+          << ", active version: " << active_version.GetString();
+
   if (this_version < active_version) {
     global_prefs = nullptr;
     return base::BindOnce(&AppServer::UninstallSelf, this);
   }
 
-  if (active_version != base::Version("0")) {
+  if (active_version != base::Version("0") && active_version != this_version) {
     std::unique_ptr<LocalPrefs> local_prefs = CreateLocalPrefs();
     if (!local_prefs->GetQualified()) {
       global_prefs = nullptr;
@@ -67,6 +72,7 @@ void AppServer::FirstTaskRun() {
 
 void AppServer::Qualify(std::unique_ptr<LocalPrefs> local_prefs) {
   // For now, assume qualification succeeds.
+  DVLOG(2) << __func__;
   local_prefs->SetQualified(true);
   PrefsCommitPendingWrites(local_prefs->GetPrefService());
   Shutdown(kErrorQualificationExit);

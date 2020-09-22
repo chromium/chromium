@@ -114,6 +114,7 @@ class UpdaterControlImpl
 
   // Overrides for IUpdaterControl.
   IFACEMETHODIMP Run(IUpdaterObserver* observer) override;
+  IFACEMETHODIMP InitializeUpdateService(IUpdaterObserver* observer) override;
 
  private:
   ~UpdaterControlImpl() override = default;

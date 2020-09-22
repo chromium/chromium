@@ -27,12 +27,6 @@ void ExpectActiveVersion(std::string expected) {
   EXPECT_EQ(CreateGlobalPrefs()->GetActiveVersion(), expected);
 }
 
-#if defined(OS_MAC)
-void ExpectQualified() {
-  EXPECT_TRUE(CreateLocalPrefs()->GetQualified());
-}
-#endif
-
 }  // namespace
 
 class IntegrationTest : public ::testing::Test {
@@ -64,7 +58,6 @@ TEST_F(IntegrationTest, InstallUninstall) {
 TEST_F(IntegrationTest, RegisterTestApp) {
   RegisterTestApp();
   ExpectInstalled();
-  ExpectQualified();
   ExpectActiveVersion(UPDATER_VERSION_STRING);
   ExpectActive();
   Uninstall();

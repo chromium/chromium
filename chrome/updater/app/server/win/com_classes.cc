@@ -160,8 +160,8 @@ HRESULT UpdaterImpl::Update(const base::char16* app_id,
                               Microsoft::WRL::Make<CompleteStatusImpl>(
                                   static_cast<int>(result), L"")),
                           base::BindOnce([](HRESULT hr) {
-                            DVLOG(2) << "IUpdaterObserver::OnComplete returned "
-                                     << std::hex << hr;
+                            DVLOG(2) << "UpdaterImpl::Update "
+                                     << "callback returned " << std::hex << hr;
                           }));
                     },
                     task_runner, observer));
@@ -203,8 +203,8 @@ HRESULT UpdaterImpl::UpdateAll(IUpdaterObserver* observer) {
                               Microsoft::WRL::Make<CompleteStatusImpl>(
                                   static_cast<int>(result), L"")),
                           base::BindOnce([](HRESULT hr) {
-                            DVLOG(2) << "IUpdaterObserver::OnComplete returned "
-                                     << std::hex << hr;
+                            DVLOG(2) << "UpdaterImpl::UpdateAll "
+                                     << "callback returned " << std::hex << hr;
                           }));
                     },
                     task_runner, observer));
@@ -240,8 +240,46 @@ HRESULT UpdaterControlImpl::Run(IUpdaterObserver* observer) {
                           &IUpdaterObserver::OnComplete, observer,
                           Microsoft::WRL::Make<CompleteStatusImpl>(0, L"")),
                       base::BindOnce([](HRESULT hr) {
-                        DVLOG(2) << "IUpdaterObserver::OnComplete returned "
-                                 << std::hex << hr;
+                        DVLOG(2) << "UpdaterControlImpl::Run "
+                                 << "callback returned " << std::hex << hr;
+                      }));
+                },
+                task_runner, observer));
+          },
+          com_server->control_service(), task_runner,
+          IUpdaterObserverPtr(observer)));
+
+  // Always return S_OK from this function. Errors must be reported using the
+  // observer interface.
+  return S_OK;
+}
+
+HRESULT UpdaterControlImpl::InitializeUpdateService(
+    IUpdaterObserver* observer) {
+  using IUpdaterObserverPtr = Microsoft::WRL::ComPtr<IUpdaterObserver>;
+  scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();
+
+  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+
+  com_server->main_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<ControlService> control_service,
+             scoped_refptr<base::SequencedTaskRunner> task_runner,
+             IUpdaterObserverPtr observer) {
+            control_service->InitializeUpdateService(base::BindOnce(
+                [](scoped_refptr<base::SequencedTaskRunner> task_runner,
+                   IUpdaterObserverPtr observer) {
+                  task_runner->PostTaskAndReplyWithResult(
+                      FROM_HERE,
+                      base::BindOnce(
+                          &IUpdaterObserver::OnComplete, observer,
+                          Microsoft::WRL::Make<CompleteStatusImpl>(0, L"")),
+                      base::BindOnce([](HRESULT hr) {
+                        DVLOG(2)
+                            << "UpdaterControlImpl::InitializeUpdateService "
+                            << "callback returned " << std::hex << hr;
                       }));
                 },
                 task_runner, observer));

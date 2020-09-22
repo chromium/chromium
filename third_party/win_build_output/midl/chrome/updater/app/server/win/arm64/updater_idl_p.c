@@ -47,7 +47,7 @@
 #include "updater_idl.h"
 
 #define TYPE_FORMAT_STRING_SIZE   1091                              
-#define PROC_FORMAT_STRING_SIZE   2379                              
+#define PROC_FORMAT_STRING_SIZE   2421                              
 #define EXPR_FORMAT_STRING_SIZE   1                                 
 #define TRANSMIT_AS_TABLE_SIZE    0            
 #define WIRE_MARSHAL_TABLE_SIZE   2            
@@ -2206,6 +2206,41 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 /* 2376 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
+	/* Procedure InitializeUpdateService */
+
+/* 2378 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 2380 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 2384 */	NdrFcShort( 0x4 ),	/* 4 */
+/* 2386 */	NdrFcShort( 0x18 ),	/* ARM64 Stack size/offset = 24 */
+/* 2388 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 2390 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 2392 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x2,		/* 2 */
+/* 2394 */	0xe,		/* 14 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 2396 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 2398 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 2400 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 2402 */	NdrFcShort( 0x2 ),	/* 2 */
+/* 2404 */	0x2,		/* 2 */
+			0x80,		/* 128 */
+/* 2406 */	0x81,		/* 129 */
+			0x0,		/* 0 */
+
+	/* Parameter observer */
+
+/* 2408 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 2410 */	NdrFcShort( 0x8 ),	/* ARM64 Stack size/offset = 8 */
+/* 2412 */	NdrFcShort( 0x430 ),	/* Type Offset=1072 */
+
+	/* Return value */
+
+/* 2414 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 2416 */	NdrFcShort( 0x10 ),	/* ARM64 Stack size/offset = 16 */
+/* 2418 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
 			0x0
         }
     };
@@ -3587,7 +3622,8 @@ const CInterfaceStubVtbl _IUpdaterStubVtbl =
 #pragma code_seg(".orpc")
 static const unsigned short IUpdaterControl_FormatStringOffsetTable[] =
     {
-    2336
+    2336,
+    2378
     };
 
 static const MIDL_STUBLESS_PROXY_INFO IUpdaterControl_ProxyInfo =
@@ -3611,21 +3647,22 @@ static const MIDL_SERVER_INFO IUpdaterControl_ServerInfo =
     0,
     0,
     0};
-CINTERFACE_PROXY_VTABLE(4) _IUpdaterControlProxyVtbl = 
+CINTERFACE_PROXY_VTABLE(5) _IUpdaterControlProxyVtbl = 
 {
     &IUpdaterControl_ProxyInfo,
     &IID_IUpdaterControl,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    (void *) (INT_PTR) -1 /* IUpdaterControl::Run */
+    (void *) (INT_PTR) -1 /* IUpdaterControl::Run */ ,
+    (void *) (INT_PTR) -1 /* IUpdaterControl::InitializeUpdateService */
 };
 
 const CInterfaceStubVtbl _IUpdaterControlStubVtbl =
 {
     &IID_IUpdaterControl,
     &IUpdaterControl_ServerInfo,
-    4,
+    5,
     0, /* pure interpreted */
     CStdStubBuffer_METHODS
 };

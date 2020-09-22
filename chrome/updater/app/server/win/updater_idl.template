@@ -281,7 +281,8 @@ interface IUpdater : IUnknown {
   pointer_default(unique)
 ]
 interface IUpdaterControl : IUnknown {
-  HRESULT Run([in] IUpdaterObserver * observer);
+  HRESULT Run([in] IUpdaterObserver* observer);
+  HRESULT InitializeUpdateService([in] IUpdaterObserver* observer);
 };
 
 [

@@ -1599,6 +1599,9 @@ EXTERN_C const IID IID_IUpdaterControl;
         virtual HRESULT STDMETHODCALLTYPE Run( 
             /* [in] */ IUpdaterObserver *observer) = 0;
         
+        virtual HRESULT STDMETHODCALLTYPE InitializeUpdateService( 
+            /* [in] */ IUpdaterObserver *observer) = 0;
+        
     };
     
     
@@ -1621,6 +1624,10 @@ EXTERN_C const IID IID_IUpdaterControl;
             IUpdaterControl * This);
         
         HRESULT ( STDMETHODCALLTYPE *Run )( 
+            IUpdaterControl * This,
+            /* [in] */ IUpdaterObserver *observer);
+        
+        HRESULT ( STDMETHODCALLTYPE *InitializeUpdateService )( 
             IUpdaterControl * This,
             /* [in] */ IUpdaterObserver *observer);
         
@@ -1649,6 +1656,9 @@ EXTERN_C const IID IID_IUpdaterControl;
 
 #define IUpdaterControl_Run(This,observer)	\
     ( (This)->lpVtbl -> Run(This,observer) ) 
+
+#define IUpdaterControl_InitializeUpdateService(This,observer)	\
+    ( (This)->lpVtbl -> InitializeUpdateService(This,observer) ) 
 
 #endif /* COBJMACROS */
 

@@ -158,13 +158,6 @@ void ControlServiceOutOfProcess::Run(base::OnceClosure callback) {
               base::SequencedTaskRunnerHandle::Get(), std::move(callback))));
 }
 
-void ControlServiceOutOfProcess::InitializeUpdateService(
-    base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // TODO(crbug.com/1128397): Implement.
-}
-
 void ControlServiceOutOfProcess::RunOnSTA(base::OnceClosure callback) {
   DCHECK(com_task_runner_->BelongsToCurrentThread());
 
@@ -211,4 +204,54 @@ void ControlServiceOutOfProcess::RunOnSTA(base::OnceClosure callback) {
   }
 }
 
+void ControlServiceOutOfProcess::InitializeUpdateService(
+    base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  com_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &ControlServiceOutOfProcess::InitializeUpdateServiceOnSTA, this,
+          base::BindOnce(
+              [](scoped_refptr<base::SequencedTaskRunner> taskrunner,
+                 base::OnceClosure callback) {
+                taskrunner->PostTask(FROM_HERE,
+                                     base::BindOnce(std::move(callback)));
+              },
+              base::SequencedTaskRunnerHandle::Get(), std::move(callback))));
+}
+
+void ControlServiceOutOfProcess::InitializeUpdateServiceOnSTA(
+    base::OnceClosure callback) {
+  DCHECK(com_task_runner_->BelongsToCurrentThread());
+
+  Microsoft::WRL::ComPtr<IUnknown> server;
+  HRESULT hr = ::CoCreateInstance(CLSID_UpdaterControlServiceClass, nullptr,
+                                  CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
+  if (FAILED(hr)) {
+    DVLOG(2) << "Failed to instantiate the updater control server. " << std::hex
+             << hr;
+    std::move(callback).Run();
+    return;
+  }
+
+  Microsoft::WRL::ComPtr<IUpdaterControl> updater_control;
+  hr = server.As(&updater_control);
+  if (FAILED(hr)) {
+    DVLOG(2) << "Failed to query the updater_control interface. " << std::hex
+             << hr;
+    std::move(callback).Run();
+    return;
+  }
+
+  auto observer = Microsoft::WRL::Make<UpdaterControlObserver>(
+      updater_control, std::move(callback));
+  hr = updater_control->InitializeUpdateService(observer.Get());
+  if (FAILED(hr)) {
+    DVLOG(2) << "Failed to call IUpdaterControl::InitializeUpdateService"
+             << std::hex << hr;
+    observer->Disconnect().Run();
+    return;
+  }
+}
 }  // namespace updater
