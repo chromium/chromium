@@ -4032,6 +4032,12 @@ const char kFilesAppCopyImageName[] = "Enable Copy Images from Files App";
 const char kFilesAppCopyImageDescription[] =
     "Enables the Files App to copy images selected to the system clipboard";
 
+const char kFilesCameraFolderName[] =
+    "Enable Camera folder handling in Files App";
+const char kFilesCameraFolderDescription[] =
+    "Enables the Files App to display Camera folder with i18n name and make it "
+    "nonmodifiable";
+
 const char kFilesNGName[] = "Enable Files App. NG.";
 const char kFilesNGDescription[] =
     "Enable the next generation UI style of the file manager.";

@@ -41189,6 +41189,7 @@ from previous Chrome versions.
   <int value="-1596859081" label="WebAuthenticationPINSupport:enabled"/>
   <int value="-1596559650" label="max-tiles-for-interest-area"/>
   <int value="-1596489715" label="AutoScreenBrightness:enabled"/>
+  <int value="-1594964830" label="FilesCameraFolder:disabled"/>
   <int value="-1594298767" label="FullscreenToolbarReveal:enabled"/>
   <int value="-1586642651" label="MaterialDesignExtensions:disabled"/>
   <int value="-1585733447" label="ContextualSearchUnityIntegration:disabled"/>
@@ -43714,6 +43715,7 @@ from previous Chrome versions.
   <int value="1008677979"
       label="AutofillUseImprovedLabelDisambiguation:disabled"/>
   <int value="1012942422" label="HorizontalTabSwitcherAndroid:disabled"/>
+  <int value="1014740148" label="FilesCameraFolder:enabled"/>
   <int value="1015012662" label="ChromeOSDirectVideoDecoder:enabled"/>
   <int value="1015895665" label="drop-sync-credential:enabled"/>
   <int value="1017364362" label="VrIconInDaydreamHome:enabled"/>

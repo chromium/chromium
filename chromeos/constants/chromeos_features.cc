@@ -229,6 +229,10 @@ const base::Feature kExoOrdinalMotion{"ExoOrdinalMotion",
 const base::Feature kExoPointerLock{"ExoPointerLock",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the camera folder handling in files app.
+const base::Feature kFilesCameraFolder{"FilesCameraFolder",
+                                       base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables the next generation file manager.
 const base::Feature kFilesNG{"FilesNG", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -437,8 +441,8 @@ const base::Feature kQuickAnswersTranslation{"QuickAnswersTranslation",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether the PIN auto submit feature is enabled.
-const base::Feature kQuickUnlockPinAutosubmit{
-    "QuickUnlockPinAutosubmit", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kQuickUnlockPinAutosubmit{"QuickUnlockPinAutosubmit",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 // TODO(crbug.com/1104164) - Remove this once most
 // users have their preferences backfilled.

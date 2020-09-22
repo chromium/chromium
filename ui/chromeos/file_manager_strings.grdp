@@ -114,6 +114,9 @@
   <message name="IDS_FILE_BROWSER_EXTERNAL_LINK_MESSAGE" desc="Message read by Chromevox/screenreader when focusing a link that launches an external application.">
     External link
   </message>
+  <message name="IDS_FILE_BROWSER_CAMERA_DIRECTORY_LABEL" desc="Camera local directory label.">
+    Camera
+  </message>
 
   <!-- File selection a11y -->
   <message name="IDS_FILE_BROWSER_SELECTION_ADD_SINGLE_ENTRY" desc="Message spoken by Chromevox/screenreader when adding a single entry (file or folder) to the existing selection.">

@@ -2335,6 +2335,9 @@ extern const char kExperimentalAccessibilityCursorColorsDescription[];
 extern const char kFilesAppCopyImageName[];
 extern const char kFilesAppCopyImageDescription[];
 
+extern const char kFilesCameraFolderName[];
+extern const char kFilesCameraFolderDescription[];
+
 extern const char kFilesNGName[];
 extern const char kFilesNGDescription[];
 

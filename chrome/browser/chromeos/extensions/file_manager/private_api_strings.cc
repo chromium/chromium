@@ -45,6 +45,9 @@ ExtensionFunction::ResponseAction FileManagerPrivateGetStringsFunction::Run() {
   dict->SetBoolean("PLUGIN_VM_ENABLED",
                    plugin_vm::PluginVmFeatures::Get()->IsEnabled(
                        Profile::FromBrowserContext(browser_context())));
+  dict->SetBoolean(
+      "FILES_CAMERA_FOLDER_ENABLED",
+      base::FeatureList::IsEnabled(chromeos::features::kFilesCameraFolder));
   dict->SetBoolean("FILES_NG_ENABLED",
                    base::FeatureList::IsEnabled(chromeos::features::kFilesNG));
   dict->SetBoolean("COPY_IMAGE_ENABLED",

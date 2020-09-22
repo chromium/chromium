@@ -1187,7 +1187,7 @@ util.getEntryLabel = (locationInfo, entry) => {
     }
   }
 
-  // Special case for MyFiles/Downloads and MyFiles/PvmDefault.
+  // Special case for MyFiles/Downloads, MyFiles/PvmDefault and MyFiles/Camera.
   if (locationInfo &&
       locationInfo.rootType == VolumeManagerCommon.RootType.DOWNLOADS) {
     if (entry.fullPath == '/Downloads') {
@@ -1196,6 +1196,9 @@ util.getEntryLabel = (locationInfo, entry) => {
     if (entry.fullPath == '/PvmDefault') {
       return str('PLUGIN_VM_DIRECTORY_LABEL');
     }
+    if (util.isFilesCameraFolderEnabled() && entry.fullPath == '/Camera') {
+      return str('CAMERA_DIRECTORY_LABEL');
+    }
   }
 
   return entry.name;
@@ -1203,8 +1206,8 @@ util.getEntryLabel = (locationInfo, entry) => {
 
 /**
  * Returns true if specified entry is a special entry such as MyFiles/Downloads,
- * MyFiles/PvmDefault or Linux files root which cannot be modified such as
- * deleted/cut or renamed.
+ * MyFiles/PvmDefault, MyFiles/Camera or Linux files root which cannot be
+ * modified such as deleted/cut or renamed.
  *
  * @param {!VolumeManager} volumeManager
  * @param {(Entry|FakeEntry)} entry Entry or a fake entry.
@@ -1233,6 +1236,9 @@ util.isNonModifiable = (volumeManager, entry) => {
       return true;
     }
     if (util.isPluginVmEnabled() && entry.fullPath === '/PvmDefault') {
+      return true;
+    }
+    if (util.isFilesCameraFolderEnabled() && entry.fullPath === '/Camera') {
       return true;
     }
   }
@@ -1390,6 +1396,14 @@ util.timeoutPromise = (promise, ms, opt_message) => {
       throw new Error(opt_message || 'Operation timed out.');
     })
   ]);
+};
+
+/**
+ * Returns true when FilesCameraFolder is enabled.
+ * @return {boolean}
+ */
+util.isFilesCameraFolderEnabled = () => {
+  return loadTimeData.getBoolean('FILES_CAMERA_FOLDER_ENABLED');
 };
 
 /**

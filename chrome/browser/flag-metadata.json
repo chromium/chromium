@@ -2476,6 +2476,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "files-camera-folder",
+    "owners": [ "wtlee", "chromeos-camera-eng@google.com" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "files-filters-in-recents",
     "owners": [ "fukino", "weifangsun" ],
     "expiry_milestone": 90
