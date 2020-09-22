@@ -266,6 +266,37 @@ Still reading?
     <ignore regexp="The resource `R.string.tab_strip_info_bar_question` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_strip_info_bar_no_reshow` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_strip_info_bar_reshow` appears to be unused"/>
+    <!-- crbug.com/1117145 remove this line and the following 23 lines after the bug is resolved -->
+    <ignore regexp="The resource `R.string.video_tutorials_accessibility_close` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_accessibility_share` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_card_all_videos` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_card_chrome_intro` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_card_download` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_card_search` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_card_voice_search` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_change_language` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_iph_tap_here_to_start` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_iph_tap_voice_icon_to_start` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_language_english` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_language_hindi` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_language_kannada` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_language_tamil` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_language_telugu` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_language_english_native_text` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_language_hindi_native_text` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_language_kannada_native_text` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_language_tamil_native_text` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_language_telugu_native_text` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_language_picker_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_learn_chrome` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_popular_videos` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_tile_chrome_intro` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_tile_download` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_tile_search` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_tile_voice_search` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_try_now` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_watch` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_watch_next_video` appears to be unused"/>
     <!-- crbug.com/1076538 remove this line and the following two lines after the bug is resolved -->
     <ignore regexp="The resource `R.string.accessibility_tab_suggestion_group_tabs_message` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_suggestion_group_tabs_message` appears to be unused"/>
