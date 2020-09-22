@@ -185,12 +185,6 @@ FontEnumerationCache* FontEnumerationCache::GetInstance() {
   return instance.get();
 }
 
-bool FontEnumerationCacheWin::IsFontEnumerationCacheReady() {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));
-
-  return enumeration_cache_built_.IsSet() && IsFontEnumerationCacheValid();
-}
-
 void FontEnumerationCacheWin::InitializeDirectWrite() {
   if (direct_write_initialized_)
     return;

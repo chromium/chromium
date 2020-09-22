@@ -43,6 +43,12 @@ void FontEnumerationCache::QueueShareMemoryRegionWhenReady(
   }
 }
 
+bool FontEnumerationCache::IsFontEnumerationCacheReady() {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));
+
+  return enumeration_cache_built_.IsSet() && IsFontEnumerationCacheValid();
+}
+
 void FontEnumerationCache::ResetStateForTesting() {
   callbacks_task_runner_ =
       base::MakeRefCounted<base::DeferredSequencedTaskRunner>();

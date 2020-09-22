@@ -45,7 +45,7 @@ class CONTENT_EXPORT FontEnumerationCache {
 
   // Returns whether the cache population has completed and the shared memory
   // region is ready.
-  virtual bool IsFontEnumerationCacheReady() = 0;
+  bool IsFontEnumerationCacheReady();
 
   void ResetStateForTesting();
 

@@ -45,9 +45,6 @@ class CONTENT_EXPORT FontEnumerationCacheWin : public FontEnumerationCache {
   };
   static FontEnumerationCacheWin* GetInstance();
 
-  // FontEnumerationCache interface.
-  bool IsFontEnumerationCacheReady() override;
-
  protected:
   // FontEnumerationCache interface.
   void SchedulePrepareFontEnumerationCache() override;

@@ -31,9 +31,6 @@ class CONTENT_EXPORT FontEnumerationCacheMac : public FontEnumerationCache {
 
   static FontEnumerationCacheMac* GetInstance();
 
-  // FontEnumerationCache interface.
-  bool IsFontEnumerationCacheReady() override;
-
  protected:
   // FontEnumerationCache interface.
   void SchedulePrepareFontEnumerationCache() override;
