@@ -96,6 +96,7 @@ void OfflineAudioDestinationHandler::Uninitialize() {
   if (render_thread_)
     render_thread_.reset();
 
+  DisablePullingAudioGraph();
   AudioHandler::Uninitialize();
 }
 
@@ -115,6 +116,7 @@ void OfflineAudioDestinationHandler::StartRendering() {
   // Rendering was not started. Starting now.
   if (!is_rendering_started_) {
     is_rendering_started_ = true;
+    EnablePullingAudioGraph();
     PostCrossThreadTask(
         *render_thread_task_runner_, FROM_HERE,
         CrossThreadBindOnce(
@@ -296,20 +298,34 @@ bool OfflineAudioDestinationHandler::RenderIfNotSuspended(
 
   DCHECK_GE(NumberOfInputs(), 1u);
 
-  // This will cause the node(s) connected to us to process, which in turn will
-  // pull on their input(s), all the way backwards through the rendering graph.
-  scoped_refptr<AudioBus> rendered_bus =
-      Input(0).Pull(destination_bus, number_of_frames);
+  {
+    // The entire block that relies on |IsPullingAudioGraphAllowed| needs
+    // locking to prevent pulling audio graph being disallowed (i.e. a
+    // destruction started) in the middle of processing
+    MutexTryLocker try_locker(allow_pulling_audio_graph_mutex_);
 
-  if (!rendered_bus) {
-    destination_bus->Zero();
-  } else if (rendered_bus != destination_bus) {
-    // in-place processing was not possible - so copy
-    destination_bus->CopyFrom(*rendered_bus);
+    if (IsPullingAudioGraphAllowed() && try_locker.Locked()) {
+      // This will cause the node(s) connected to us to process, which in turn
+      // will pull on their input(s), all the way backwards through the
+      // rendering graph.
+      scoped_refptr<AudioBus> rendered_bus =
+          Input(0).Pull(destination_bus, number_of_frames);
+
+      if (!rendered_bus) {
+        destination_bus->Zero();
+      } else if (rendered_bus != destination_bus) {
+        // in-place processing was not possible - so copy
+        destination_bus->CopyFrom(*rendered_bus);
+      }
+
+    } else {
+      // Not allowed to pull on the graph or couldn't get the lock.
+      destination_bus->Zero();
+    }
   }
 
-  // Process nodes which need a little extra help because they are not connected
-  // to anything, but still need to process.
+  // Process nodes which need a little extra help because they are not
+  // connected to anything, but still need to process.
   Context()->GetDeferredTaskHandler().ProcessAutomaticPullNodes(
       number_of_frames);
 

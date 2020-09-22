@@ -71,6 +71,53 @@ class AudioDestinationHandler : public AudioHandler {
     return is_execution_context_destroyed_;
   }
 
+  // Should only be called from
+  // RealtimeAudioDestinationHandler::StartPlatformDestination for a realtime
+  // context or OfflineAudioDestinationHandler::StartRendering for an offline
+  // context---basically wherever the context has started rendering.
+  // TODO(crbug.com/1128121): Consider removing this if possible
+  void EnablePullingAudioGraph() {
+    MutexLocker lock(allow_pulling_audio_graph_mutex_);
+    allow_pulling_audio_graph_.store(true, std::memory_order_release);
+  }
+
+  // Should only be called from
+  // RealtimeAudioDestinationHandler::StopPlatformDestination for a realtime
+  // context or from OfflineAudioDestinationHandler::Uninitialize for an offline
+  // context---basically whenever the context is being stopped.
+  // TODO(crbug.com/1128121): Consider removing this if possible
+  void DisablePullingAudioGraph() {
+    MutexLocker lock(allow_pulling_audio_graph_mutex_);
+    allow_pulling_audio_graph_.store(false, std::memory_order_release);
+  }
+
+  // TODO(crbug.com/1128121): Consider removing this if possible
+  bool IsPullingAudioGraphAllowed() const {
+    return allow_pulling_audio_graph_.load(std::memory_order_acquire);
+  }
+
+  // If true, the audio graph will be pulled to get new data.  Otherwise, the
+  // graph is not pulled, even if the audio thread is still running and
+  // requesting data.
+  //
+  // For an AudioContext, this MUST be modified only in
+  // RealtimeAudioDestinationHandler::StartPlatformDestination (via
+  // AudioDestinationHandler::EnablePullingAudioGraph) or
+  // RealtimeAudioDestinationHandler::StopPlatformDestination (via
+  // AudioDestinationHandler::DisablePullingAudioGraph), including destroying
+  // the the realtime context.
+  //
+  // For an OfflineAudioContext, this MUST be modified only when the the context
+  // is started or it has stopped rendering, including destroying the offline
+  // context.
+
+  // TODO(crbug.com/1128121): Consider removing this if possible
+  std::atomic_bool allow_pulling_audio_graph_;
+
+  // Protects allow_pulling_audio_graph_ from race conditions.  Must use try
+  // lock on the audio thread.
+  mutable Mutex allow_pulling_audio_graph_mutex_;
+
  protected:
   void AdvanceCurrentSampleFrame(size_t number_of_frames) {
     current_sample_frame_.fetch_add(number_of_frames,
