@@ -1501,11 +1501,11 @@ mojom::XRDepthDataPtr ArCoreImpl::GetDepthData() {
   CHECK_EQ(num_planes, 1) << "Depth image must have 1 plane, found: "
                           << num_planes;
 
-  mojom::XRDepthDataPtr result = mojom::XRDepthData::New();
-
-  result->time_delta = time_delta;
-
   if (time_delta > previous_depth_data_time_) {
+    mojom::XRDepthDataUpdatedPtr result = mojom::XRDepthDataUpdated::New();
+
+    result->time_delta = time_delta;
+
     int32_t width = 0, height = 0;
     ArImage_getWidth(arcore_session_.get(), ar_image.get(), &width);
     ArImage_getHeight(arcore_session_.get(), ar_image.get(), &height);
@@ -1540,12 +1540,15 @@ mojom::XRDepthDataPtr ArCoreImpl::GetDepthData() {
     result->size = gfx::Size(width, height);
 
     DVLOG(3) << __func__ << ": norm_texture_from_norm_view=\n"
-             << result->norm_texture_from_norm_view->ToString();
+             << result->norm_texture_from_norm_view.ToString();
 
     previous_depth_data_time_ = time_delta;
+
+    return mojom::XRDepthData::NewUpdatedDepthData(std::move(result));
   }
 
-  return result;
+  return mojom::XRDepthData::NewDataStillValid(
+      mojom::XRDepthDataStillValid::New());
 }
 
 bool ArCoreImpl::IsOnGlThread() const {

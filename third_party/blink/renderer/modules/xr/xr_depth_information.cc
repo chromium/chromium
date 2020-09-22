@@ -21,20 +21,20 @@ constexpr char kOutOfBoundsAccess[] =
 namespace blink {
 
 XRDepthInformation::XRDepthInformation(
-    const device::mojom::blink::XRDepthData& depth_data)
+    const device::mojom::blink::XRDepthDataUpdated& depth_data)
     : width_(depth_data.size.width()),
       height_(depth_data.size.height()),
-      norm_texture_from_norm_view_(*depth_data.norm_texture_from_norm_view) {
+      norm_texture_from_norm_view_(depth_data.norm_texture_from_norm_view) {
   DVLOG(3) << __func__ << ": width_=" << width_ << ", height_=" << height_
            << ", norm_texture_from_norm_view_="
            << norm_texture_from_norm_view_.ToString();
 
   CHECK_EQ(base::CheckMul(2, width_, height_).ValueOrDie(),
-           depth_data.pixel_data->size());
+           depth_data.pixel_data.size());
 
   base::span<const uint16_t> pixel_data = base::make_span(
-      reinterpret_cast<const uint16_t*>(depth_data.pixel_data->data()),
-      depth_data.pixel_data->size() / 2);
+      reinterpret_cast<const uint16_t*>(depth_data.pixel_data.data()),
+      depth_data.pixel_data.size() / 2);
 
   // Copy the underlying pixel data into DOMUint16Array:
   data_ = DOMUint16Array::Create(pixel_data.data(), pixel_data.size());

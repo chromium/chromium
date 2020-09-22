@@ -21,7 +21,7 @@ class XRDepthInformation final : public ScriptWrappable {
 
  public:
   explicit XRDepthInformation(
-      const device::mojom::blink::XRDepthData& depth_data);
+      const device::mojom::blink::XRDepthDataUpdated& depth_data);
 
   DOMUint16Array* data() const;
 

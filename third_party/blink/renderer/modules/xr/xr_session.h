@@ -553,7 +553,7 @@ class XRSession final
   std::unique_ptr<TransformationMatrix> mojo_from_viewer_;
 
   // Current depth data buffer.
-  device::mojom::blink::XRDepthDataPtr depth_data_;
+  device::mojom::blink::XRDepthDataUpdatedPtr depth_data_;
 
   bool pending_frame_ = false;
   bool resolving_frame_ = false;

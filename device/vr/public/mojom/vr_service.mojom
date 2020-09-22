@@ -537,22 +537,34 @@ struct XRLightEstimationData {
   XRReflectionProbe? reflection_probe;
 };
 
-struct XRDepthData {
-  // Timestamp of the returned data, in unspecified base. In case the data is
-  // equal to the one returned on a previous frame (for example because the
-  // latest depth data is unavailable), the pixel_data member will be null and
-  // the timestamp will match the timestamp of the previously returned depth
-  // data.
+// Structure that signifies that the depth data is still valid, no additional
+// information is provided. See |XRDepthData| for more details.
+struct XRDepthDataStillValid {};
+
+// Structure that signifies that the Depth data was updated. Provides
+// information about current depth data. See |XRDepthData| for more details.
+struct XRDepthDataUpdated {
+  // Timestamp of the returned data, in unspecified base.
   mojo_base.mojom.TimeDelta time_delta;
   // Array of 16-bit numbers representing depth in millimeters from the camera
   // plane.
-  mojo_base.mojom.BigBuffer? pixel_data;
+  mojo_base.mojom.BigBuffer pixel_data;
   // Transform that needs to be applied when indexing into pixel_data when using
   // normalized view coordinates (with origin at bottom left corner of the
   // screen).
-  gfx.mojom.Transform? norm_texture_from_norm_view;
+  gfx.mojom.Transform norm_texture_from_norm_view;
   // Size of the pixel array. Valid iff pixel_data is not null.
   gfx.mojom.Size size;
+};
+
+// Depth data may be the same as the one returned in the previous frame - it is
+// represented as a union of (empty) XRDepthDataStillValid structure that
+// conveys no additional information except that the previously returned depth
+// data is still valid, and the XRDepthDataUpdated structure that signifies that
+// the depth data was updated & carries all information about it.
+union XRDepthData {
+  XRDepthDataStillValid data_still_valid;
+  XRDepthDataUpdated updated_depth_data;
 };
 
 // The data needed for each animation frame of an XRSession.
@@ -575,7 +587,8 @@ struct XRFrameData {
 
   // Depth data (if the device supports it and the environment integration is
   // enabled). This assumes that depth information is provided from a single
-  // sensor.
+  // sensor. If for any reason the latest depth data could not be obtained, it
+  // will be set to null.
   XRDepthData? depth_data;
 
   // Indicates that there has been a significant discontinuity in the mojo space

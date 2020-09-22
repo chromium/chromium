@@ -1154,14 +1154,23 @@ void XRSession::ProcessDepthData(
     device::mojom::blink::XRDepthDataPtr depth_data) {
   DVLOG(3) << __func__ << ": depth_data valid? " << !!depth_data;
 
-  if (depth_data && depth_data->pixel_data) {
-    // Just store the current depth data as a member - we will need to construct
-    // instances of XRDepthInformation once the app requests them anyway.
-    depth_data_ = std::move(depth_data);
+  if (depth_data) {
+    switch (depth_data->which()) {
+      case device::mojom::blink::XRDepthData::Tag::DATA_STILL_VALID:
+        // Stale depth buffer is still the most recent information we have.
+        // Current API shape is not well-suited to return data pertaining to
+        // older frames, so just discard what we have.
+        depth_data_ = nullptr;
+        break;
+      case device::mojom::blink::XRDepthData::Tag::UPDATED_DEPTH_DATA:
+        // Just store the current depth data as a member - we will need to
+        // construct instances of XRDepthInformation once the app requests them
+        // anyway.
+        depth_data_ = std::move(depth_data->get_updated_depth_data());
+        break;
+    }
   } else {
-    // Device did not return new pixel data - stale depth buffer is still the
-    // most recent information we have. Current API shape is not well-suited to
-    // return data pertaining to older frames, so just discard what we have.
+    // Device did not return new pixel data.
     depth_data_ = nullptr;
   }
 }
