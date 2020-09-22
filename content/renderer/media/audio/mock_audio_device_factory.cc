@@ -16,7 +16,7 @@ void MockCapturerSource::SetOutputDeviceForAec(
     const std::string& output_device_id) {}
 
 MockAudioDeviceFactory::MockAudioDeviceFactory()
-    : AudioDeviceFactory(), mock_capturer_source_(new MockCapturerSource()),
+    : mock_capturer_source_(new MockCapturerSource()),
       did_create_once_(false) {}
 
 MockAudioDeviceFactory::~MockAudioDeviceFactory() {}

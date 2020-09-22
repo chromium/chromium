@@ -18,7 +18,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_renderer_sink.h"
-#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/web_audio_device_factory.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"

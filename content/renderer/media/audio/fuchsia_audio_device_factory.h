@@ -6,11 +6,11 @@
 #define CONTENT_RENDERER_MEDIA_AUDIO_FUCHSIA_AUDIO_DEVICE_FACTORY_H_
 
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/web_audio_device_factory.h"
 
 namespace content {
 
-class FuchsiaAudioDeviceFactory : public blink::AudioDeviceFactory {
+class FuchsiaAudioDeviceFactory : public blink::WebAudioDeviceFactory {
  public:
   FuchsiaAudioDeviceFactory();
   ~FuchsiaAudioDeviceFactory() final;

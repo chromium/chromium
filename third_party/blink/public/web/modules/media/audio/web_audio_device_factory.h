@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_AUDIO_DEVICE_FACTORY_H_
-#define THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_AUDIO_DEVICE_FACTORY_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_WEB_AUDIO_DEVICE_FACTORY_H_
+#define THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_WEB_AUDIO_DEVICE_FACTORY_H_
 
 #include <string>
 
@@ -33,7 +33,7 @@ namespace blink {
 // AudioCapturerSourceFactory.
 //
 // TODO(https://crrev.com/787252): Add a 'Web' prefix to the class name.
-class BLINK_MODULES_EXPORT AudioDeviceFactory {
+class BLINK_MODULES_EXPORT WebAudioDeviceFactory {
  public:
   // Maps the source type to the audio latency it requires.
   static media::AudioLatency::LatencyType GetSourceLatencyType(
@@ -80,8 +80,8 @@ class BLINK_MODULES_EXPORT AudioDeviceFactory {
       const media::AudioSourceParameters& params);
 
  protected:
-  AudioDeviceFactory();
-  virtual ~AudioDeviceFactory();
+  WebAudioDeviceFactory();
+  virtual ~WebAudioDeviceFactory();
 
   // You can derive from this class and specify an implementation for these
   // functions to provide alternate audio device implementations.
@@ -114,16 +114,16 @@ class BLINK_MODULES_EXPORT AudioDeviceFactory {
  private:
   // The current globally registered factory. This is NULL when we should
   // create the default AudioRendererSinks.
-  static AudioDeviceFactory* factory_;
+  static WebAudioDeviceFactory* factory_;
 
   static scoped_refptr<media::AudioRendererSink> NewFinalAudioRendererSink(
       const LocalFrameToken& frame_token,
       const media::AudioSinkParameters& params,
       base::TimeDelta auth_timeout);
 
-  DISALLOW_COPY_AND_ASSIGN(AudioDeviceFactory);
+  DISALLOW_COPY_AND_ASSIGN(WebAudioDeviceFactory);
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_AUDIO_DEVICE_FACTORY_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_WEB_AUDIO_DEVICE_FACTORY_H_

@@ -106,7 +106,7 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/web_audio_device_factory.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
@@ -2497,7 +2497,7 @@ PP_Var PepperPluginInstanceImpl::ExecuteScript(PP_Instance instance,
 uint32_t PepperPluginInstanceImpl::GetAudioHardwareOutputSampleRate(
     PP_Instance instance) {
   return render_frame()
-             ? blink::AudioDeviceFactory::GetOutputDeviceInfo(
+             ? blink::WebAudioDeviceFactory::GetOutputDeviceInfo(
                    render_frame()->GetWebFrame()->GetLocalFrameToken(),
                    media::AudioSinkParameters())
                    .output_params()
@@ -2508,7 +2508,7 @@ uint32_t PepperPluginInstanceImpl::GetAudioHardwareOutputSampleRate(
 uint32_t PepperPluginInstanceImpl::GetAudioHardwareOutputBufferSize(
     PP_Instance instance) {
   return render_frame()
-             ? blink::AudioDeviceFactory::GetOutputDeviceInfo(
+             ? blink::WebAudioDeviceFactory::GetOutputDeviceInfo(
                    render_frame()->GetWebFrame()->GetLocalFrameToken(),
                    media::AudioSinkParameters())
                    .output_params()

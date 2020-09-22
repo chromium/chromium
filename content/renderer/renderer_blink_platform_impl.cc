@@ -88,7 +88,7 @@
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/web_audio_device_factory.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/sqlite/sqlite3.h"
 #include "ui/base/ui_base_switches.h"
@@ -130,7 +130,7 @@ media::AudioParameters GetAudioHardwareParams() {
   if (!render_frame)
     return media::AudioParameters::UnavailableDeviceParams();
 
-  return blink::AudioDeviceFactory::GetOutputDeviceInfo(
+  return blink::WebAudioDeviceFactory::GetOutputDeviceInfo(
              render_frame->GetWebFrame()->GetLocalFrameToken(),
              media::AudioSinkParameters())
       .output_params();
@@ -496,7 +496,7 @@ scoped_refptr<media::AudioCapturerSource>
 RendererBlinkPlatformImpl::NewAudioCapturerSource(
     blink::WebLocalFrame* web_frame,
     const media::AudioSourceParameters& params) {
-  return blink::AudioDeviceFactory::NewAudioCapturerSource(
+  return blink::WebAudioDeviceFactory::NewAudioCapturerSource(
       web_frame->GetLocalFrameToken(), params);
 }
 
@@ -530,14 +530,14 @@ RendererBlinkPlatformImpl::NewAudioRendererSink(
     blink::WebAudioDeviceSourceType source_type,
     blink::WebLocalFrame* web_frame,
     const media::AudioSinkParameters& params) {
-  return blink::AudioDeviceFactory::NewAudioRendererSink(
+  return blink::WebAudioDeviceFactory::NewAudioRendererSink(
       source_type, web_frame->GetLocalFrameToken(), params);
 }
 
 media::AudioLatency::LatencyType
 RendererBlinkPlatformImpl::GetAudioSourceLatencyType(
     blink::WebAudioDeviceSourceType source_type) {
-  return blink::AudioDeviceFactory::GetSourceLatencyType(source_type);
+  return blink::WebAudioDeviceFactory::GetSourceLatencyType(source_type);
 }
 
 base::Optional<std::string>
