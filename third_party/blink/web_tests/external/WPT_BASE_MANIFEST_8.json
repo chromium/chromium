@@ -56549,6 +56549,19 @@
        {}
       ]
      ],
+     "display-math-on-pseudo-elements-002.html": [
+      "426adb6a23bc3faa8c83dc20eddb3a7e21a7e19e",
+      [
+       null,
+       [
+        [
+         "/css/css-display/display-math-on-pseudo-elements-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "display-none-inline-img.html": [
       "f97ca7bbd3519453b362405c542a065a25c43368",
       [
@@ -176632,6 +176645,10 @@
       "5f6e4297807904a219245c4d5a2e76861e8271be",
       []
      ],
+     "display-math-on-pseudo-elements-002-ref.html": [
+      "7d7ba376372b47083f4702df51b1a3cfb1440efd",
+      []
+     ],
      "display-none-inline-img-ref.html": [
       "a3e7369afbae5c35cabbda9aa1a0fe8ab4521af4",
       []
@@ -210557,7 +210574,7 @@
       []
      ],
      "window-tests-enumeration.js": [
-      "477d973a3a9e770030cb7a52b1fdc5794dd3b789",
+      "441199c8ecfb0d5fb69479bbb04e2eb15d238a49",
       []
      ]
     }
@@ -279567,6 +279584,13 @@
      ],
      "display-math-on-non-mathml-elements.html": [
       "2d117cfff575becd824ddefa2f98f6690913197f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "display-math-on-pseudo-elements-001.html": [
+      "88298799db52a7b31cbae0b48ee1fbf63550479c",
       [
        null,
        {}
@@ -358944,7 +358968,7 @@
         ]
        ],
        "dir.html": [
-        "8edd9b8ab2b19569e4ea20f66cc9d7b1b32f0c27",
+        "fb2a10e0ca303761bf90392a16b3996482bf0f21",
         [
          null,
          {}
