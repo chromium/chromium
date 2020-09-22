@@ -4872,6 +4872,7 @@
                         "OmniboxCompactSuggestions",
                         "OmniboxMaxURLMatches",
                         "OmniboxMaxZeroSuggestMatches",
+                        "OmniboxOnFocusSuggestionsContextualWebOnContent",
                         "OmniboxUIExperimentMaxAutocompleteMatches"
                     ]
                 }
