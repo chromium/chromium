@@ -26,7 +26,7 @@
 
   async function isFilteredOut(request) {
     var node = await NetworkTestRunner.waitForNetworkLogViewNodeForRequest(request);
-    return !!node[Network.NetworkLogView._isFilteredOutSymbol];
+    return Network.NetworkLogView.isRequestFilteredOut(node);
   }
 
   TestRunner.addResult('');

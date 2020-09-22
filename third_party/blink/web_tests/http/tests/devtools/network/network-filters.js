@@ -65,7 +65,7 @@
     const nodes = UI.panels.network._networkLogView.flatNodesList();
     let foundNodesCount = 0;
     for (let i = 0; i < nodes.length; i++) {
-      if (!nodes[i][Network.NetworkLogView._isFilteredOutSymbol])
+      if (!Network.NetworkLogView.isRequestFilteredOut(nodes[i]))
         foundNodesCount++;
     }
 

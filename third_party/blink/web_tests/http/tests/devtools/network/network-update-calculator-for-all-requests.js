@@ -21,7 +21,8 @@
     TestRunner.networkManager._dispatcher._startNetworkRequest(request);
     target._refresh();
 
-    var isFilteredOut = !!target.nodeForRequest(request)[Network.NetworkLogView._isFilteredOutSymbol];
+    var isFilteredOut = Network.NetworkLogView.isRequestFilteredOut(
+        target.nodeForRequest(request));
     TestRunner.addResult('');
     TestRunner.addResult(
         'Appended request [' + request.requestId() + '] of type \'' + request.resourceType().name() +

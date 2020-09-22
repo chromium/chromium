@@ -50,7 +50,7 @@
     UI.panels.network._networkLogView._filterChanged(/* event */ null);
 
     for (const node of UI.panels.network._networkLogView.flatNodesList()) {
-      if (node[Network.NetworkLogView._isFilteredOutSymbol])
+      if (Network.NetworkLogView.isRequestFilteredOut(node))
         continue;
 
       const request = node.requestOrFirstKnownChildRequest();

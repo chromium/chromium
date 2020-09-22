@@ -38,7 +38,7 @@
     var nodes = UI.panels.network._networkLogView.flatNodesList();
     var foundNodesCount = 0;
     for (var i = 0; i < nodes.length; i++) {
-      if (!nodes[i][Network.NetworkLogView._isFilteredOutSymbol])
+      if (!Network.NetworkLogView.isRequestFilteredOut(nodes[i]))
         foundNodesCount++;
     }
 
