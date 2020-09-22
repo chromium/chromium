@@ -1119,6 +1119,12 @@ class FakeVideoCaptureDeviceFactoryWin : public VideoCaptureDeviceFactoryWin {
             &symbolic_link[0], length + 1, &length))) {
       return false;
     }
+    const bool has_dxgi_device_manager =
+        static_cast<bool>(dxgi_device_manager_for_testing());
+    if (use_d3d11_with_media_foundation_for_testing() !=
+        has_dxgi_device_manager) {
+      return false;
+    }
     *source =
         AddReference(new StubMFMediaSource(base::SysWideToUTF8(symbolic_link)));
     return true;
@@ -1205,16 +1211,19 @@ class VideoCaptureDeviceFactoryWinTest : public ::testing::Test {
 };
 
 class VideoCaptureDeviceFactoryMFWinTest
-    : public VideoCaptureDeviceFactoryWinTest {
+    : public VideoCaptureDeviceFactoryWinTest,
+      public testing::WithParamInterface<bool> {
   void SetUp() override {
     VideoCaptureDeviceFactoryWinTest::SetUp();
     factory_.set_use_media_foundation_for_testing(true);
   }
 };
 
-TEST_F(VideoCaptureDeviceFactoryMFWinTest, GetDevicesInfo) {
+TEST_P(VideoCaptureDeviceFactoryMFWinTest, GetDevicesInfo) {
   if (ShouldSkipMFTest())
     return;
+
+  factory_.set_use_d3d11_with_media_foundation_for_testing(GetParam());
 
   std::vector<VideoCaptureDeviceInfo> devices_info;
   base::RunLoop run_loop;
@@ -1297,5 +1306,9 @@ TEST_F(VideoCaptureDeviceFactoryMFWinTest, GetDevicesInfo) {
             base::SysWideToUTF8(kDirectShowDeviceName6));
   EXPECT_TRUE(it->descriptor.pan_tilt_zoom_supported());
 }
+
+INSTANTIATE_TEST_SUITE_P(VideoCaptureDeviceFactoryMFWinTests,
+                         VideoCaptureDeviceFactoryMFWinTest,
+                         testing::Bool());
 
 }  // namespace media
