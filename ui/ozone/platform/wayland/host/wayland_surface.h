@@ -39,6 +39,11 @@ class WaylandSurface {
   // This may return false if a wl_surface could not be created, for example.
   bool Initialize();
 
+  // Unsets |root_window_|. This is intended to be used in special cases, where
+  // the underlying wl_surface must be kept alive with no root window associated
+  // (e.g: window/tab dragging sessions).
+  void UnsetRootWindow();
+
   // Attaches the given wl_buffer to the underlying wl_surface at (0, 0).
   void AttachBuffer(wl_buffer* buffer);
 
@@ -62,7 +67,7 @@ class WaylandSurface {
 
  private:
   WaylandConnection* const connection_;
-  WaylandWindow* const root_window_;
+  WaylandWindow* root_window_ = nullptr;
   wl::Object<wl_surface> surface_;
 
   // Wayland's scale factor for the output that this window currently belongs

@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 
+#include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
@@ -24,7 +25,7 @@ uint32_t WaylandSurface::GetSurfaceId() const {
 }
 
 gfx::AcceleratedWidget WaylandSurface::GetWidget() const {
-  return root_window_->GetWidget();
+  return root_window_ ? root_window_->GetWidget() : gfx::kNullAcceleratedWidget;
 }
 
 bool WaylandSurface::Initialize() {
@@ -38,6 +39,11 @@ bool WaylandSurface::Initialize() {
   wl_surface_add_listener(surface_.get(), &surface_listener, this);
 
   return true;
+}
+
+void WaylandSurface::UnsetRootWindow() {
+  DCHECK(surface_);
+  root_window_ = nullptr;
 }
 
 void WaylandSurface::AttachBuffer(wl_buffer* buffer) {
@@ -95,7 +101,7 @@ void WaylandSurface::SetBufferScale(int32_t new_scale, bool update_bounds) {
 void WaylandSurface::SetBounds(const gfx::Rect& bounds_px) {
   // It's important to set opaque region for opaque windows (provides
   // optimization hint for the Wayland compositor).
-  if (!root_window_->IsOpaqueWindow())
+  if (!root_window_ || !root_window_->IsOpaqueWindow())
     return;
 
   wl::Object<wl_region> region(
@@ -121,15 +127,16 @@ wl::Object<wl_subsurface> WaylandSurface::CreateSubsurface(
 void WaylandSurface::Enter(void* data,
                            struct wl_surface* wl_surface,
                            struct wl_output* output) {
-  static_cast<WaylandSurface*>(data)->root_window_->AddEnteredOutputId(output);
+  if (auto* root_window = static_cast<WaylandSurface*>(data)->root_window_)
+    root_window->AddEnteredOutputId(output);
 }
 
 // static
 void WaylandSurface::Leave(void* data,
                            struct wl_surface* wl_surface,
                            struct wl_output* output) {
-  static_cast<WaylandSurface*>(data)->root_window_->RemoveEnteredOutputId(
-      output);
+  if (auto* root_window = static_cast<WaylandSurface*>(data)->root_window_)
+    root_window->RemoveEnteredOutputId(output);
 }
 
 }  // namespace ui

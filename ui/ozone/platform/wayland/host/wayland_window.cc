@@ -484,6 +484,7 @@ uint32_t WaylandWindow::DispatchEventToDelegate(
 std::unique_ptr<WaylandSurface> WaylandWindow::TakeWaylandSurface() {
   DCHECK(shutting_down_);
   DCHECK(root_surface_);
+  root_surface_->UnsetRootWindow();
   return std::move(root_surface_);
 }
 
