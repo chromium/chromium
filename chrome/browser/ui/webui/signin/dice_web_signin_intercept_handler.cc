@@ -38,7 +38,6 @@ DiceWebSigninInterceptHandler::DiceWebSigninInterceptHandler(
     base::OnceCallback<void(bool)> callback)
     : bubble_parameters_(bubble_parameters), callback_(std::move(callback)) {
   DCHECK(callback_);
-  DCHECK_NE(intercepted_account().account_id, primary_account().account_id);
 }
 
 DiceWebSigninInterceptHandler::~DiceWebSigninInterceptHandler() = default;
@@ -195,9 +194,8 @@ std::string DiceWebSigninInterceptHandler::GetBodyTitle() {
       return l10n_util::GetStringUTF8(
           IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_TITLE);
     case DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
-      // This interception bubble is not implemented yet.
-      NOTREACHED();
-      return "";
+      // TODO: use localized string once it's available.
+      return "Switch profile";
   }
 }
 
@@ -224,8 +222,10 @@ std::string DiceWebSigninInterceptHandler::GetBodyText() {
           IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC,
           base::UTF8ToUTF16(intercepted_account().given_name));
     case DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
-      // This interception bubble is not implemented yet.
-      NOTREACHED();
-      return "";
+      // TODO: use localized string once it's available.
+      return base::StringPrintf(
+          "This account is already signed in in a different profile. Would "
+          "you like to switch to %s's profile?",
+          intercepted_account().given_name.c_str());
   }
 }

@@ -5,9 +5,11 @@
 #include "chrome/browser/signin/dice_signed_in_profile_creator.h"
 
 #include "base/check.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/string16.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -149,44 +151,67 @@ DiceSignedInProfileCreator::DiceSignedInProfileCreator(
                           weak_pointer_factory_.GetWeakPtr()));
 }
 
+DiceSignedInProfileCreator::DiceSignedInProfileCreator(
+    Profile* source_profile,
+    CoreAccountId account_id,
+    const base::FilePath& target_profile_path,
+    base::OnceCallback<void(Profile*)> callback)
+    : source_profile_(source_profile),
+      account_id_(account_id),
+      callback_(std::move(callback)) {
+  // Make sure the callback is not called synchronously.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          base::IgnoreResult(&ProfileManager::LoadProfileByPath),
+          base::Unretained(g_browser_process->profile_manager()),
+          target_profile_path, /*incognito=*/false,
+          base::BindOnce(&DiceSignedInProfileCreator::OnNewProfileInitialized,
+                         weak_pointer_factory_.GetWeakPtr())));
+}
+
 DiceSignedInProfileCreator::~DiceSignedInProfileCreator() = default;
 
 void DiceSignedInProfileCreator::OnNewProfileCreated(
     Profile* new_profile,
     Profile::CreateStatus status) {
   switch (status) {
+    case Profile::CREATE_STATUS_CREATED:
+      // Ignore this, wait for profile to be initialized.
+      return;
+    case Profile::CREATE_STATUS_INITIALIZED:
+      OnNewProfileInitialized(new_profile);
+      return;
+    case Profile::CREATE_STATUS_REMOTE_FAIL:
+    case Profile::CREATE_STATUS_CANCELED:
+    case Profile::MAX_CREATE_STATUS:
+      NOTREACHED() << "Invalid profile creation status";
+      FALLTHROUGH;
     case Profile::CREATE_STATUS_LOCAL_FAIL:
       NOTREACHED() << "Error creating new profile";
       if (callback_)
         std::move(callback_).Run(nullptr);
-      break;
-    case Profile::CREATE_STATUS_CREATED:
-      // Ignore this, wait for profile to be initialized.
-      break;
-    case Profile::CREATE_STATUS_INITIALIZED: {
-      DCHECK(!tokens_loaded_callback_runner_);
-      // base::Unretained is fine because the runner is owned by this.
-      auto tokens_loaded_callback_runner =
-          TokensLoadedCallbackRunner::RunWhenLoaded(
-              new_profile,
-              base::BindOnce(
-                  &DiceSignedInProfileCreator::OnNewProfileTokensLoaded,
-                  base::Unretained(this)));
-      // If the callback was called synchronously, |this| may have been deleted.
-      if (tokens_loaded_callback_runner) {
-        tokens_loaded_callback_runner_ =
-            std::move(tokens_loaded_callback_runner);
-      }
-      break;
-    }
-    case Profile::CREATE_STATUS_REMOTE_FAIL:
-    case Profile::CREATE_STATUS_CANCELED:
-    case Profile::MAX_CREATE_STATUS: {
-      NOTREACHED() << "Invalid profile creation status";
-      if (callback_)
-        std::move(callback_).Run(nullptr);
-      break;
-    }
+      return;
+  }
+}
+
+void DiceSignedInProfileCreator::OnNewProfileInitialized(Profile* new_profile) {
+  if (!new_profile) {
+    if (callback_)
+      std::move(callback_).Run(nullptr);
+    return;
+  }
+
+  DCHECK(!tokens_loaded_callback_runner_);
+  // base::Unretained is fine because the runner is owned by this.
+  auto tokens_loaded_callback_runner =
+      TokensLoadedCallbackRunner::RunWhenLoaded(
+          new_profile,
+          base::BindOnce(&DiceSignedInProfileCreator::OnNewProfileTokensLoaded,
+                         base::Unretained(this)));
+  // If the callback was called synchronously, |this| may have been deleted.
+  if (tokens_loaded_callback_runner) {
+    tokens_loaded_callback_runner_ = std::move(tokens_loaded_callback_runner);
   }
 }
 

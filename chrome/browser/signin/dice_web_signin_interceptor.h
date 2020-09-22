@@ -11,6 +11,7 @@
 #include "base/cancelable_callback.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -18,6 +19,10 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "third_party/skia/include/core/SkColor.h"
+
+namespace base {
+class FilePath;
+}
 
 namespace content {
 class WebContents;
@@ -27,6 +32,7 @@ struct AccountInfo;
 class DiceSignedInProfileCreator;
 class DiceInterceptedSessionStartupHelper;
 class Profile;
+class ProfileAttributesEntry;
 class ProfileAttributesStorage;
 
 // Outcome of the interception heuristic (decision whether the interception
@@ -160,7 +166,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   void Reset();
 
   // Helper functions to determine which interception UI should be shown.
-  bool ShouldShowProfileSwitchBubble(
+  const ProfileAttributesEntry* ShouldShowProfileSwitchBubble(
       const CoreAccountInfo& intercepted_account_info,
       ProfileAttributesStorage* profile_attribute_storage);
   bool ShouldShowEnterpriseBubble(const AccountInfo& intercepted_account_info);
@@ -176,10 +182,14 @@ class DiceWebSigninInterceptor : public KeyedService,
   void OnProfileCreationChoice(SkColor profile_color, bool create);
   // Called after the user chose whether the session should continue in a new
   // profile.
-  void OnProfileSwitchChoice(bool switch_profile);
+  void OnProfileSwitchChoice(const base::FilePath& profile_path,
+                             bool switch_profile);
 
-  // Called when the new profile is created.
-  void OnNewSignedInProfileCreated(SkColor profile_color, Profile* new_profile);
+  // Called when the new profile is created or loaded from disk.
+  // `profile_color` is set as theme color for the profile ; it should be
+  // nullopt if the profile is not new (loaded from disk).
+  void OnNewSignedInProfileCreated(base::Optional<SkColor> profile_color,
+                                   Profile* new_profile);
 
   // Deletes session_startup_helper_
   void DeleteSessionStartupHelper();

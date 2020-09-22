@@ -31,6 +31,14 @@ class DiceSignedInProfileCreator {
                              base::Optional<size_t> icon_index,
                              base::OnceCallback<void(Profile*)> callback);
 
+  // Uses this version when the profile already exists at `target_profile_path`
+  // but may not be loaded in memory. The profile is loaded if necessary, and
+  // the account is moved.
+  DiceSignedInProfileCreator(Profile* source_profile,
+                             CoreAccountId account_id,
+                             const base::FilePath& target_profile_path,
+                             base::OnceCallback<void(Profile*)> callback);
+
   ~DiceSignedInProfileCreator();
 
   DiceSignedInProfileCreator(const DiceSignedInProfileCreator&) = delete;
@@ -41,6 +49,9 @@ class DiceSignedInProfileCreator {
   // Callback invoked once a profile is created, so we can transfer the
   // credentials.
   void OnNewProfileCreated(Profile* new_profile, Profile::CreateStatus status);
+
+  // Called when the profile is initialized.
+  void OnNewProfileInitialized(Profile* new_profile);
 
   // Callback invoked once the token service is ready for the new profile.
   void OnNewProfileTokensLoaded(Profile* new_profile);

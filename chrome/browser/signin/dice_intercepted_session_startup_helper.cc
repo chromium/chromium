@@ -9,11 +9,13 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -49,6 +51,7 @@ DiceInterceptedSessionStartupHelper::~DiceInterceptedSessionStartupHelper() =
 
 void DiceInterceptedSessionStartupHelper::Startup(base::OnceClosure callback) {
   callback_ = std::move(callback);
+  session_startup_time_ = base::TimeTicks::Now();
 
   // Wait until the account is set in cookies of the newly created profile
   // before opening the URL, so that the user is signed-in in content area. If
@@ -62,6 +65,11 @@ void DiceInterceptedSessionStartupHelper::Startup(base::OnceClosure callback) {
       CookieInfoContains(cookie_info, account_id_)) {
     MoveTab();
   } else {
+    // TODO(https://crbug.com/1051864): cookie notifications are not triggered
+    // when the account is added by the reconcilor. Force an explicit cookie
+    // update.
+    identity_manager->GetAccountsCookieMutator()->TriggerCookieJarUpdate();
+
     accounts_in_cookie_observer_.Add(identity_manager);
     on_cookie_update_timeout_.Reset(base::BindOnce(
         &DiceInterceptedSessionStartupHelper::MoveTab, base::Unretained(this)));
@@ -99,6 +107,9 @@ void DiceInterceptedSessionStartupHelper::MoveTab() {
   NavigateParams params(profile_, url_to_open_,
                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   Navigate(&params);
+
+  base::UmaHistogramTimes("Signin.Intercept.SessionStartupDuration",
+                          base::TimeTicks::Now() - session_startup_time_);
 
   if (callback_)
     std::move(callback_).Run();

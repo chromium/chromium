@@ -162,18 +162,6 @@ void DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubbleInternal(
         bubble_parameters,
     base::OnceCallback<void(bool)> callback) {
   DCHECK(browser);
-
-  if (bubble_parameters.interception_type ==
-      DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch) {
-    // The bubble for profile switch is not implemented.
-    DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
-        bubble_parameters, browser->profile(),
-        DiceWebSigninInterceptionBubbleView::SigninInterceptionResult::
-            kNotDisplayed);
-    std::move(callback).Run(false);
-    return;
-  }
-
   views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(browser)
                                  ->toolbar_button_provider()
                                  ->GetAvatarToolbarButton();

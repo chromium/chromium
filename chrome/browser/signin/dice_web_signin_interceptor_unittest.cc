@@ -199,8 +199,10 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldShowProfileSwitchBubble) {
   // Change the account to match.
   entry->SetAuthInfo(account_info.gaia, base::UTF8ToUTF16("Bob"),
                      /*is_consented_primary_account=*/false);
-  EXPECT_TRUE(interceptor()->ShouldShowProfileSwitchBubble(
-      account_info, profile_attributes_storage()));
+  const ProfileAttributesEntry* switch_to_entry =
+      interceptor()->ShouldShowProfileSwitchBubble(
+          account_info, profile_attributes_storage());
+  EXPECT_EQ(entry, switch_to_entry);
 }
 
 TEST_F(DiceWebSigninInterceptorTest, NoBubbleWithSingleAccount) {

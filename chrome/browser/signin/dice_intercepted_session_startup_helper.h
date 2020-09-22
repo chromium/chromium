@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
 #include "base/scoped_observer.h"
+#include "base/time/time.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -67,6 +68,7 @@ class DiceInterceptedSessionStartupHelper
   base::OnceClosure callback_;
   ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
       accounts_in_cookie_observer_{this};
+  base::TimeTicks session_startup_time_;
   // Timeout while waiting for the account to be added to the cookies in the new
   // profile.
   base::CancelableOnceCallback<void()> on_cookie_update_timeout_;
