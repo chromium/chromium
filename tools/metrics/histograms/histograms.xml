@@ -138515,6 +138515,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Printing.CUPS.PrintJobDatabaseEntries" units="entries"
     expires_after="2020-09-11">
+  <obsolete>
+    Removed 09/2020 as it is no longer needed for analysis.
+  </obsolete>
   <owner>nikitapodguzov@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <summary>
@@ -138525,6 +138528,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Printing.CUPS.PrintJobDatabaseEntrySize" units="bytes"
     expires_after="2020-09-11">
+  <obsolete>
+    Removed 09/2020 as it is no longer needed for analysis.
+  </obsolete>
   <owner>nikitapodguzov@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <summary>
@@ -138535,6 +138541,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Printing.CUPS.PrintJobDatabaseLoadTime" units="ms"
     expires_after="2020-09-11">
+  <obsolete>
+    Removed 09/2020 as it is no longer needed for analysis.
+  </obsolete>
   <owner>nikitapodguzov@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <summary>
@@ -138544,6 +138553,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Printing.CUPS.PrintJobDatabasePrintJobSaved"
     enum="BooleanSuccess" expires_after="2020-09-11">
+  <obsolete>
+    Removed 09/2020 as it is no longer needed for analysis.
+  </obsolete>
   <owner>nikitapodguzov@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <summary>
@@ -138554,6 +138566,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Printing.CUPS.PrintJobDatabasePrintJobsDeleted"
     enum="BooleanSuccess" expires_after="2020-09-11">
+  <obsolete>
+    Removed 09/2020 as it is no longer needed for analysis.
+  </obsolete>
   <owner>nikitapodguzov@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <summary>

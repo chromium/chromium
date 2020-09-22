@@ -25,11 +25,6 @@ namespace chromeos {
 
 class PrintJobDatabaseImpl : public PrintJobDatabase {
  public:
-  // UMA histogram names
-  static const char* const kPrintJobDatabaseEntries;
-  static const char* const kPrintJobDatabaseEntrySize;
-  static const char* const kPrintJobDatabaseLoadTime;
-
   PrintJobDatabaseImpl(leveldb_proto::ProtoDatabaseProvider* database_provider,
                        base::FilePath profile_path);
   ~PrintJobDatabaseImpl() override;

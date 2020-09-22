@@ -116,8 +116,6 @@ void PrintJobHistoryCleaner::OnPrintJobsRetrieved(
 
 void PrintJobHistoryCleaner::OnPrintJobsDeleted(base::OnceClosure callback,
                                                 bool success) {
-  base::UmaHistogramBoolean("Printing.CUPS.PrintJobDatabasePrintJobsDeleted",
-                            success);
   base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                    std::move(callback));
 }

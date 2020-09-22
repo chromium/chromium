@@ -31,13 +31,6 @@ const int kMaxInitializeAttempts = 3;
 
 }  // namespace
 
-const char* const PrintJobDatabaseImpl::kPrintJobDatabaseEntries =
-    "Printing.CUPS.PrintJobDatabaseEntries";
-const char* const PrintJobDatabaseImpl::kPrintJobDatabaseEntrySize =
-    "Printing.CUPS.PrintJobDatabaseEntrySize";
-const char* const PrintJobDatabaseImpl::kPrintJobDatabaseLoadTime =
-    "Printing.CUPS.PrintJobDatabaseLoadTime";
-
 PrintJobDatabaseImpl::PrintJobDatabaseImpl(
     leveldb_proto::ProtoDatabaseProvider* database_provider,
     base::FilePath profile_path)
@@ -87,8 +80,6 @@ void PrintJobDatabaseImpl::SavePrintJob(
   }
 
   cache_[print_job_info.id()] = print_job_info;
-  base::UmaHistogramCounts1000(kPrintJobDatabaseEntrySize,
-                               print_job_info.ByteSizeLong());
 
   auto entries_to_save = std::make_unique<EntryVector>();
   entries_to_save->push_back(
@@ -169,13 +160,10 @@ void PrintJobDatabaseImpl::GetPrintJobs(GetPrintJobsCallback callback) {
     return;
   }
 
-  base::Time start_time = base::Time::Now();
   std::vector<printing::proto::PrintJobInfo> entries;
   entries.reserve(cache_.size());
   for (const auto& pair : cache_)
     entries.push_back(pair.second);
-  base::UmaHistogramTimes(kPrintJobDatabaseLoadTime,
-                          base::Time::Now() - start_time);
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true, std::move(entries)));
@@ -215,7 +203,6 @@ void PrintJobDatabaseImpl::OnKeysAndEntriesLoaded(
         entries) {
   if (success)
     cache_.insert(entries->begin(), entries->end());
-  base::UmaHistogramCounts10000(kPrintJobDatabaseEntries, cache_.size());
   FinishInitialization(std::move(callback), success);
 }
 

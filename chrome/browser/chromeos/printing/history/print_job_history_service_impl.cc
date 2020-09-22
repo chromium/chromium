@@ -87,7 +87,6 @@ void PrintJobHistoryServiceImpl::OnPrintJobDatabaseInitialized(bool success) {
 void PrintJobHistoryServiceImpl::OnPrintJobSaved(
     const printing::proto::PrintJobInfo& print_job_info,
     bool success) {
-  UMA_HISTOGRAM_BOOLEAN("Printing.CUPS.PrintJobDatabasePrintJobSaved", success);
   for (auto& observer : observers_) {
     observer.OnPrintJobFinished(print_job_info);
   }

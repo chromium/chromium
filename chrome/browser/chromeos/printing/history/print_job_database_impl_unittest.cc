@@ -252,22 +252,4 @@ TEST_F(PrintJobDatabaseImplTest, RequestsBeforeInitialization) {
   EXPECT_EQ(kTitle1, print_job_entries[0].title());
 }
 
-TEST_F(PrintJobDatabaseImplTest, Histograms) {
-  Initialize();
-  PrintJobInfo print_job_info = ConstructPrintJobInfo(kId1, kTitle1);
-  SavePrintJob(print_job_info);
-  GetPrintJobs();
-  histogram_tester_.ExpectTotalCount(
-      PrintJobDatabaseImpl::kPrintJobDatabaseEntries, 1);
-  histogram_tester_.ExpectUniqueSample(
-      PrintJobDatabaseImpl::kPrintJobDatabaseEntries, 0, 1);
-  histogram_tester_.ExpectTotalCount(
-      PrintJobDatabaseImpl::kPrintJobDatabaseEntrySize, 1);
-  histogram_tester_.ExpectUniqueSample(
-      PrintJobDatabaseImpl::kPrintJobDatabaseEntrySize,
-      print_job_info.ByteSizeLong(), 1);
-  histogram_tester_.ExpectTotalCount(
-      PrintJobDatabaseImpl::kPrintJobDatabaseLoadTime, 1);
-}
-
 }  // namespace chromeos
