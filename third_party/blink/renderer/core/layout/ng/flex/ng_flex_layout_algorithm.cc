@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/layout_button.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_child_iterator.h"
+#include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -407,6 +409,61 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForFlexBasis(
   return space_builder.ToConstraintSpace();
 }
 
+namespace {
+
+// This function will be superseded by
+// NGReplacedLayoutAlgorithm.ComputeMinMaxSizes, when such method exists.
+LayoutUnit ComputeIntrinsicInlineSizeForAspectRatioElement(
+    const NGBlockNode& node,
+    const NGConstraintSpace& space,
+    const MinMaxSizes& used_min_max_block_sizes) {
+  DCHECK(node.HasAspectRatio());
+  LogicalSize aspect_ratio = node.GetAspectRatio();
+  const ComputedStyle& style = node.Style();
+  NGBoxStrut border_padding =
+      ComputeBorders(space, node) + ComputePadding(space, style);
+
+  DCHECK_NE(style.LogicalHeight().GetType(), Length::Type::kFixed)
+      << "Flex will not use this function if the block size of the replaced "
+         "element is definite.";
+
+  base::Optional<LayoutUnit> intrinsic_inline;
+  base::Optional<LayoutUnit> intrinsic_block;
+  node.IntrinsicSize(&intrinsic_inline, &intrinsic_block);
+
+  // intrinsic_inline and intrinsic_block can be empty independent of each
+  // other.
+  if (intrinsic_inline) {
+    MinMaxSizes inline_min_max = ComputeTransferredMinMaxInlineSizes(
+        aspect_ratio, used_min_max_block_sizes, border_padding,
+        EBoxSizing::kContentBox);
+    LayoutUnit intrinsic_inline_border_box =
+        *intrinsic_inline + border_padding.InlineSum();
+    return inline_min_max.ClampSizeToMinAndMax(intrinsic_inline_border_box);
+  }
+
+  if (intrinsic_block) {
+    intrinsic_block = *intrinsic_block + border_padding.BlockSum();
+    intrinsic_block =
+        used_min_max_block_sizes.ClampSizeToMinAndMax(*intrinsic_block);
+    return InlineSizeFromAspectRatio(border_padding, aspect_ratio,
+                                     EBoxSizing::kContentBox, *intrinsic_block);
+  }
+
+  // If control flow reaches here, the item has aspect ratio only, no natural
+  // sizes. Spec says:
+  // * If the available space is definite in the inline axis, use the stretch
+  // fit into that size for the inline size and calculate the block size using
+  // the aspect ratio.
+  // https://drafts.csswg.org/css-sizing-3/#intrinsic-sizes
+  DCHECK_NE(space.AvailableSize().inline_size, kIndefiniteSize);
+  NGBoxStrut margins = ComputeMarginsForSelf(space, style);
+  return (space.AvailableSize().inline_size - margins.InlineSum())
+      .ClampNegativeToZero();
+}
+
+}  // namespace
+
 void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
   NGFlexChildIterator iterator(Node());
   for (NGBlockNode child = iterator.NextChild(); child;
@@ -564,16 +621,28 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
         // containers AND children) row flex containers. I _think_ the C and D
         // cases are correctly handled by this code, which was originally
         // written for case E.
-        if (child.HasAspectRatio()) {
-          // Legacy uses child.PreferredLogicalWidths() for this case, which
-          // is not exactly correct.
-          // TODO(dgrogan): Replace with a variant of ComputeReplacedSize that
-          // ignores min-width, width, max-width.
-          MinMaxSizesInput input(child_percentage_size_.block_size,
-                                 MinMaxSizesType::kContent);
-          flex_base_border_box =
-              ComputeMinAndMaxContentContribution(Style(), child, input)
-                  .sizes.max_size;
+
+        // Non-replaced AspectRatio items work fine using
+        // MinMaxSizesFunc(MinMaxSizesType::kContent).sizes.max_size below, so
+        // they don't need to use
+        // ComputeIntrinsicInlineSizeForAspectRatioElement.
+        // Also, ComputeIntrinsicInlineSizeForAspectRatioElement DCHECKs for
+        // non-replaced items.
+        if (child.HasAspectRatio() && child.IsReplaced()) {
+          if (RuntimeEnabledFeatures::FlexAspectRatioEnabled()) {
+            // Legacy uses child.PreferredLogicalWidths() for this case, which
+            // is not exactly correct.
+            flex_base_border_box =
+                ComputeIntrinsicInlineSizeForAspectRatioElement(
+                    child, flex_basis_space,
+                    min_max_sizes_in_cross_axis_direction);
+          } else {
+            MinMaxSizesInput input(child_percentage_size_.block_size,
+                                   MinMaxSizesType::kContent);
+            flex_base_border_box =
+                ComputeMinAndMaxContentContribution(Style(), child, input)
+                    .sizes.max_size;
+          }
         } else {
           flex_base_border_box =
               MinMaxSizesFunc(MinMaxSizesType::kContent).sizes.max_size;

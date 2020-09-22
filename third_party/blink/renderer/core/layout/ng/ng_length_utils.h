@@ -318,8 +318,17 @@ MinMaxSizes ComputeMinMaxBlockSize(
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max =
         nullptr);
 
+MinMaxSizes ComputeTransferredMinMaxInlineSizes(
+    const LogicalSize& ratio,
+    const MinMaxSizes& block_min_max,
+    const NGBoxStrut& border_padding,
+    const EBoxSizing sizing);
+
 // Computes the transferred min/max inline sizes from the min/max block
 // sizes and the aspect ratio.
+// This will compute the min/max block sizes for you, but it only works with
+// styles that have a LogicalAspectRatio. It doesn't work if the aspect ratio is
+// coming from a replaced element.
 MinMaxSizes ComputeMinMaxInlineSizesFromAspectRatio(
     const NGConstraintSpace&,
     const ComputedStyle&,

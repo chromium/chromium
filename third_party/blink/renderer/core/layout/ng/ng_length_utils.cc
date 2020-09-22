@@ -495,6 +495,26 @@ MinMaxSizes ComputeMinMaxBlockSize(
   return result;
 }
 
+MinMaxSizes ComputeTransferredMinMaxInlineSizes(
+    const LogicalSize& ratio,
+    const MinMaxSizes& block_min_max,
+    const NGBoxStrut& border_padding,
+    const EBoxSizing sizing) {
+  MinMaxSizes transferred_min_max = {LayoutUnit(), LayoutUnit::Max()};
+  if (block_min_max.min_size > LayoutUnit()) {
+    transferred_min_max.min_size = InlineSizeFromAspectRatio(
+        border_padding, ratio, sizing, block_min_max.min_size);
+  }
+  if (block_min_max.max_size != LayoutUnit::Max()) {
+    transferred_min_max.max_size = InlineSizeFromAspectRatio(
+        border_padding, ratio, sizing, block_min_max.max_size);
+  }
+  // Minimum size wins over maximum size.
+  transferred_min_max.max_size =
+      std::max(transferred_min_max.max_size, transferred_min_max.min_size);
+  return transferred_min_max;
+}
+
 MinMaxSizes ComputeMinMaxInlineSizesFromAspectRatio(
     const NGConstraintSpace& constraint_space,
     const ComputedStyle& style,
@@ -514,19 +534,8 @@ MinMaxSizes ComputeMinMaxInlineSizesFromAspectRatio(
   MinMaxSizes block_min_max =
       ComputeMinMaxBlockSize(constraint_space, style, border_padding,
                              /* content_size */ kIndefiniteSize);
-  MinMaxSizes transferred_min_max = {LayoutUnit(), LayoutUnit::Max()};
-  if (block_min_max.min_size > LayoutUnit()) {
-    transferred_min_max.min_size = InlineSizeFromAspectRatio(
-        border_padding, ratio, style.BoxSizing(), block_min_max.min_size);
-  }
-  if (block_min_max.max_size != LayoutUnit::Max()) {
-    transferred_min_max.max_size = InlineSizeFromAspectRatio(
-        border_padding, ratio, style.BoxSizing(), block_min_max.max_size);
-  }
-  // Minimum size wins over maximum size.
-  transferred_min_max.max_size =
-      std::max(transferred_min_max.max_size, transferred_min_max.min_size);
-  return transferred_min_max;
+  return ComputeTransferredMinMaxInlineSizes(ratio, block_min_max,
+                                             border_padding, style.BoxSizing());
 }
 
 namespace {
