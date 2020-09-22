@@ -503,8 +503,8 @@ config("compiler") {
 
     # Pinned clang has enable-dse-memoryssa enabled by default but it's broken,
     # so we have to force it off.
-    # Trunk clang has it disabled by default but it might work, so we force it on
-    # so the ToT bots can check if it works now.
+    # Trunk clang has it disabled by default but it might work, so we force it
+    # on so the ToT bots can check if it works now.
     if (!llvm_force_head_revision) {
       cflags += [
         # TODO(https://crbug.com/1127713): Investigate, remove.
