@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.privacy.settings;
 
 import android.os.Bundle;
+import android.text.SpannableString;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -25,12 +26,16 @@ import org.chromium.chrome.browser.safe_browsing.settings.SecuritySettingsFragme
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.signin.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
+import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncAndServicesSettings;
 import org.chromium.chrome.browser.usage_stats.UsageStatsConsentDialog;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -107,16 +112,44 @@ public class PrivacySettings
         secureDnsPref.setVisible(SecureDnsSettings.isUiEnabled());
 
         Preference syncAndServicesLink = findPreference(PREF_SYNC_AND_SERVICES_LINK);
-        NoUnderlineClickableSpan linkSpan = new NoUnderlineClickableSpan(getResources(), view -> {
-            SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-            settingsLauncher.launchSettingsActivity(getActivity(), SyncAndServicesSettings.class,
-                    SyncAndServicesSettings.createArguments(false));
-        });
-        syncAndServicesLink.setSummary(
-                SpanApplier.applySpans(getString(R.string.privacy_sync_and_services_link),
-                        new SpanApplier.SpanInfo("<link>", "</link>", linkSpan)));
+        syncAndServicesLink.setSummary(buildSyncAndServicesLink());
 
         updateSummaries();
+    }
+
+    private SpannableString buildSyncAndServicesLink() {
+        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
+            NoUnderlineClickableSpan syncAndServicesLink =
+                    new NoUnderlineClickableSpan(getResources(), v -> {
+                        settingsLauncher.launchSettingsActivity(getActivity(),
+                                SyncAndServicesSettings.class,
+                                SyncAndServicesSettings.createArguments(false));
+                    });
+            return SpanApplier.applySpans(getString(R.string.privacy_sync_and_services_link_legacy),
+                    new SpanApplier.SpanInfo("<link>", "</link>", syncAndServicesLink));
+        }
+
+        NoUnderlineClickableSpan servicesLink = new NoUnderlineClickableSpan(getResources(), v -> {
+            settingsLauncher.launchSettingsActivity(getActivity(), GoogleServicesSettings.class);
+        });
+        if (IdentityServicesProvider.get()
+                        .getIdentityManager(Profile.getLastUsedRegularProfile())
+                        .getPrimaryAccountInfo(ConsentLevel.SYNC)
+                == null) {
+            // Sync is off, show the string with one link to "Google Services".
+            return SpanApplier.applySpans(
+                    getString(R.string.privacy_sync_and_services_link_sync_off),
+                    new SpanApplier.SpanInfo("<link>", "</link>", servicesLink));
+        }
+        // Otherwise, show the string with both links to "Sync" and "Google Services".
+        NoUnderlineClickableSpan syncLink = new NoUnderlineClickableSpan(getResources(), v -> {
+            settingsLauncher.launchSettingsActivity(getActivity(), ManageSyncSettings.class,
+                    ManageSyncSettings.createArguments(false));
+        });
+        return SpanApplier.applySpans(getString(R.string.privacy_sync_and_services_link_sync_on),
+                new SpanApplier.SpanInfo("<link1>", "</link1>", syncLink),
+                new SpanApplier.SpanInfo("<link2>", "</link2>", servicesLink));
     }
 
     @Override

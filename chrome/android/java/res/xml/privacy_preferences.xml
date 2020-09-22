@@ -47,7 +47,7 @@
         android:order="6"/>
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="sync_and_services_link"
-        android:summary="@string/privacy_sync_and_services_link"
+        android:summary="@string/privacy_sync_and_services_link_legacy"
         app:allowDividerBelow="false"
         android:order="7"/>
 </PreferenceScreen>
