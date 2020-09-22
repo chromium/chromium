@@ -6,7 +6,7 @@
 
 #include "ash/shell.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/compositor/dip_util.h"
+#include "ui/compositor/layer.h"
 
 namespace remoting {
 
@@ -28,7 +28,7 @@ void PointTransformer::OnWindowTargetTransformChanging(
   CHECK_EQ(window, root_window_);
 
   ui::Layer* layer = root_window_->layer();
-  float scale = ui::GetDeviceScaleFactor(layer);
+  float scale = layer->device_scale_factor();
 
   gfx::Transform to_device_pixels;
   gfx::Transform to_dip;

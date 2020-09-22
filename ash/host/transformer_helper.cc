@@ -11,6 +11,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/dip_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -99,8 +100,8 @@ void TransformerHelper::SetRootWindowTransformer(
 }
 
 gfx::Transform TransformerHelper::GetTransform() const {
-  float scale = ui::GetDeviceScaleFactor(
-      ash_host_->AsWindowTreeHost()->window()->layer());
+  float scale =
+      ash_host_->AsWindowTreeHost()->window()->layer()->device_scale_factor();
   gfx::Transform transform;
   transform.Scale(scale, scale);
   transform *= transformer_->GetTransform();
@@ -108,8 +109,8 @@ gfx::Transform TransformerHelper::GetTransform() const {
 }
 
 gfx::Transform TransformerHelper::GetInverseTransform() const {
-  float scale = ui::GetDeviceScaleFactor(
-      ash_host_->AsWindowTreeHost()->window()->layer());
+  float scale =
+      ash_host_->AsWindowTreeHost()->window()->layer()->device_scale_factor();
   gfx::Transform transform;
   transform.Scale(1.0f / scale, 1.0f / scale);
   return transformer_->GetInverseTransform() * transform;

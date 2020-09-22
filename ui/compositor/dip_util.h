@@ -17,8 +17,6 @@ class Rect;
 namespace ui {
 class Layer;
 
-COMPOSITOR_EXPORT float GetDeviceScaleFactor(const Layer* layer);
-
 // Utility functions that convert point/size/rect between
 // DIP and pixel coordinates system.
 COMPOSITOR_EXPORT gfx::Point ConvertPointToDIP(

@@ -23,43 +23,39 @@
 
 namespace ui {
 
-float GetDeviceScaleFactor(const Layer* layer) {
-  return layer->device_scale_factor();
-}
-
 gfx::Point ConvertPointToDIP(const Layer* layer,
                              const gfx::Point& point_in_pixel) {
-  return gfx::ConvertPointToDIP(GetDeviceScaleFactor(layer), point_in_pixel);
+  return gfx::ConvertPointToDIP(layer->device_scale_factor(), point_in_pixel);
 }
 
 gfx::PointF ConvertPointToDIP(const Layer* layer,
                               const gfx::PointF& point_in_pixel) {
-  return gfx::ConvertPointToDIP(GetDeviceScaleFactor(layer), point_in_pixel);
+  return gfx::ConvertPointToDIP(layer->device_scale_factor(), point_in_pixel);
 }
 
 gfx::Size ConvertSizeToDIP(const Layer* layer,
                            const gfx::Size& size_in_pixel) {
-  return gfx::ConvertSizeToDIP(GetDeviceScaleFactor(layer), size_in_pixel);
+  return gfx::ConvertSizeToDIP(layer->device_scale_factor(), size_in_pixel);
 }
 
 gfx::Rect ConvertRectToDIP(const Layer* layer,
                            const gfx::Rect& rect_in_pixel) {
-  return gfx::ConvertRectToDIP(GetDeviceScaleFactor(layer), rect_in_pixel);
+  return gfx::ConvertRectToDIP(layer->device_scale_factor(), rect_in_pixel);
 }
 
 gfx::Point ConvertPointToPixel(const Layer* layer,
                                const gfx::Point& point_in_dip) {
-  return gfx::ConvertPointToPixel(GetDeviceScaleFactor(layer), point_in_dip);
+  return gfx::ConvertPointToPixel(layer->device_scale_factor(), point_in_dip);
 }
 
 gfx::Size ConvertSizeToPixel(const Layer* layer,
                              const gfx::Size& size_in_dip) {
-  return gfx::ConvertSizeToPixel(GetDeviceScaleFactor(layer), size_in_dip);
+  return gfx::ConvertSizeToPixel(layer->device_scale_factor(), size_in_dip);
 }
 
 gfx::Rect ConvertRectToPixel(const Layer* layer,
                              const gfx::Rect& rect_in_dip) {
-  return gfx::ConvertRectToPixel(GetDeviceScaleFactor(layer), rect_in_dip);
+  return gfx::ConvertRectToPixel(layer->device_scale_factor(), rect_in_dip);
 }
 
 }  // namespace ui
