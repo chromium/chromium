@@ -46,7 +46,7 @@ class CastBluetoothChooser : public content::BluetoothChooser,
 
   // Runs the event_handler and resets the client receiver. After this is
   // called, this class should not be used.
-  void RunEventHandlerAndResetReceiver(content::BluetoothChooser::Event event,
+  void RunEventHandlerAndResetReceiver(content::BluetoothChooserEvent event,
                                        std::string address);
 
   // Called when the remote connection held by |receiver_| is torn down.

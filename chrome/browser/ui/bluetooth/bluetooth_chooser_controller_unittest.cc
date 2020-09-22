@@ -25,7 +25,7 @@ class BluetoothChooserControllerTest : public testing::Test {
   }
 
  protected:
-  void OnBluetoothChooserEvent(content::BluetoothChooser::Event event,
+  void OnBluetoothChooserEvent(content::BluetoothChooserEvent event,
                                const std::string& device_id) {
     last_event_ = event;
     last_device_id_ = device_id;
@@ -33,7 +33,7 @@ class BluetoothChooserControllerTest : public testing::Test {
 
   BluetoothChooserController bluetooth_chooser_controller_;
   MockChooserControllerView mock_bluetooth_chooser_view_;
-  content::BluetoothChooser::Event last_event_;
+  content::BluetoothChooserEvent last_event_;
   std::string last_device_id_;
 
  private:
@@ -326,7 +326,7 @@ TEST_F(BluetoothChooserControllerWithDevicesAddedTest, FailedToStartState) {
 TEST_F(BluetoothChooserControllerWithDevicesAddedTest, RefreshOptions) {
   bluetooth_chooser_controller_.RefreshOptions();
   EXPECT_EQ(0u, bluetooth_chooser_controller_.NumOptions());
-  EXPECT_EQ(content::BluetoothChooser::Event::RESCAN, last_event_);
+  EXPECT_EQ(content::BluetoothChooserEvent::RESCAN, last_event_);
   EXPECT_EQ(std::string(), last_device_id_);
 }
 
@@ -334,20 +334,20 @@ TEST_F(BluetoothChooserControllerWithDevicesAddedTest,
        SelectingOneDeviceShouldCallEventHandler) {
   std::vector<size_t> indices{0};
   bluetooth_chooser_controller_.Select(indices);
-  EXPECT_EQ(content::BluetoothChooser::Event::SELECTED, last_event_);
+  EXPECT_EQ(content::BluetoothChooserEvent::SELECTED, last_event_);
   EXPECT_EQ("id_a", last_device_id_);
 }
 
 TEST_F(BluetoothChooserControllerWithDevicesAddedTest,
        CancelShouldCallEventHandler) {
   bluetooth_chooser_controller_.Cancel();
-  EXPECT_EQ(content::BluetoothChooser::Event::CANCELLED, last_event_);
+  EXPECT_EQ(content::BluetoothChooserEvent::CANCELLED, last_event_);
   EXPECT_EQ(std::string(), last_device_id_);
 }
 
 TEST_F(BluetoothChooserControllerWithDevicesAddedTest,
        CloseShouldCallEventHandler) {
   bluetooth_chooser_controller_.Close();
-  EXPECT_EQ(content::BluetoothChooser::Event::CANCELLED, last_event_);
+  EXPECT_EQ(content::BluetoothChooserEvent::CANCELLED, last_event_);
   EXPECT_EQ(std::string(), last_device_id_);
 }

@@ -13,41 +13,34 @@
 
 namespace content {
 
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content_public.browser.bluetooth
+enum class BluetoothChooserEvent {
+  DENIED_PERMISSION,
+  CANCELLED,
+  SELECTED,
+  RESCAN,
+  SHOW_OVERVIEW_HELP,
+  SHOW_ADAPTER_OFF_HELP,
+  SHOW_NEED_LOCATION_HELP,
+};
+
 // Represents a way to ask the user to select a Bluetooth device from a list of
 // options.
 class CONTENT_EXPORT BluetoothChooser {
  public:
-  enum class Event {
-    // Chromium can't ask for permission to scan for Bluetooth devices.
-    DENIED_PERMISSION,
-    // The user cancelled the chooser instead of selecting a device.
-    CANCELLED,
-    // The user selected device |opt_device_id|.
-    SELECTED,
-    // The user asked for a new Bluetooth discovery session to start.
-    RESCAN,
-    // Show overview page for Bluetooth.
-    SHOW_OVERVIEW_HELP,
-    // Show help page explaining why scanning failed because Bluetooth is off.
-    SHOW_ADAPTER_OFF_HELP,
-    // Show help page explaining why Chromium needs the Location permission to
-    // scan for Bluetooth devices. Only used on Android.
-    SHOW_NEED_LOCATION_HELP,
-
-    // As the dialog implementations grow more user-visible buttons and knobs,
-    // we'll add enumerators here to support them.
-  };
-
   // Chooser implementations are constructed with an |EventHandler| and report
   // user interaction with the chooser through it. |opt_device_id| is an empty
-  // string except for Event::SELECTED.
+  // string except for BluetoothChooserEvent::SELECTED.
   //
   // The EventHandler won't be called after the chooser object is destroyed.
   //
-  // After the EventHandler is called with Event::CANCELLED, Event::SELECTED,
-  // Event::DENIED_PERMISSION or Event::SHOW_*, it won't be called again, and
+  // After the EventHandler is called with BluetoothChooserEvent::CANCELLED,
+  // BluetoothChooserEvent::SELECTED, BluetoothChooserEvent::DENIED_PERMISSION
+  // or BluetoothChooserEvent::SHOW_*, it won't be called again, and
   // users must not call any more BluetoothChooser methods.
-  typedef base::RepeatingCallback<void(Event, const std::string& opt_device_id)>
+  typedef base::RepeatingCallback<void(BluetoothChooserEvent,
+                                       const std::string& opt_device_id)>
       EventHandler;
 
   BluetoothChooser() {}

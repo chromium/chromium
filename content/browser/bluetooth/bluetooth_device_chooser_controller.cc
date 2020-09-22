@@ -197,25 +197,25 @@ void StopDiscoverySession(
   discovery_session->Stop();
 }
 
-UMARequestDeviceOutcome OutcomeFromChooserEvent(BluetoothChooser::Event event) {
+UMARequestDeviceOutcome OutcomeFromChooserEvent(BluetoothChooserEvent event) {
   switch (event) {
-    case BluetoothChooser::Event::DENIED_PERMISSION:
+    case BluetoothChooserEvent::DENIED_PERMISSION:
       return UMARequestDeviceOutcome::BLUETOOTH_CHOOSER_DENIED_PERMISSION;
-    case BluetoothChooser::Event::CANCELLED:
+    case BluetoothChooserEvent::CANCELLED:
       return UMARequestDeviceOutcome::BLUETOOTH_CHOOSER_CANCELLED;
-    case BluetoothChooser::Event::SHOW_OVERVIEW_HELP:
+    case BluetoothChooserEvent::SHOW_OVERVIEW_HELP:
       return UMARequestDeviceOutcome::BLUETOOTH_OVERVIEW_HELP_LINK_PRESSED;
-    case BluetoothChooser::Event::SHOW_ADAPTER_OFF_HELP:
+    case BluetoothChooserEvent::SHOW_ADAPTER_OFF_HELP:
       return UMARequestDeviceOutcome::ADAPTER_OFF_HELP_LINK_PRESSED;
-    case BluetoothChooser::Event::SHOW_NEED_LOCATION_HELP:
+    case BluetoothChooserEvent::SHOW_NEED_LOCATION_HELP:
       return UMARequestDeviceOutcome::NEED_LOCATION_HELP_LINK_PRESSED;
-    case BluetoothChooser::Event::SELECTED:
+    case BluetoothChooserEvent::SELECTED:
       // We can't know if we are going to send a success message yet because
       // the device could have vanished. This event should be histogramed
       // manually after checking if the device is still around.
       NOTREACHED();
       return UMARequestDeviceOutcome::SUCCESS;
-    case BluetoothChooser::Event::RESCAN:
+    case BluetoothChooserEvent::RESCAN:
       return UMARequestDeviceOutcome::BLUETOOTH_CHOOSER_RESCAN;
   }
   NOTREACHED();
@@ -335,7 +335,7 @@ void BluetoothDeviceChooserController::GetDevice(
 
   if (!chooser_->CanAskForScanningPermission()) {
     DVLOG(1) << "Closing immediately because Chooser cannot obtain permission.";
-    OnBluetoothChooserEvent(BluetoothChooser::Event::DENIED_PERMISSION,
+    OnBluetoothChooserEvent(BluetoothChooserEvent::DENIED_PERMISSION,
                             "" /* device_address */);
     return;
   }
@@ -385,7 +385,7 @@ void BluetoothDeviceChooserController::AdapterPoweredChanged(bool powered) {
         powered ? BluetoothChooser::AdapterPresence::POWERED_ON
                 : BluetoothChooser::AdapterPresence::POWERED_OFF);
     if (powered) {
-      OnBluetoothChooserEvent(BluetoothChooser::Event::RESCAN,
+      OnBluetoothChooserEvent(BluetoothChooserEvent::RESCAN,
                               "" /* device_address */);
     }
   }
@@ -495,14 +495,14 @@ void BluetoothDeviceChooserController::OnStartDiscoverySessionFailed() {
 }
 
 void BluetoothDeviceChooserController::OnBluetoothChooserEvent(
-    BluetoothChooser::Event event,
+    BluetoothChooserEvent event,
     const std::string& device_address) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Shouldn't recieve an event from a closed chooser.
   DCHECK(chooser_);
 
   switch (event) {
-    case BluetoothChooser::Event::RESCAN:
+    case BluetoothChooserEvent::RESCAN:
       RecordRequestDeviceOutcome(OutcomeFromChooserEvent(event));
       device_ids_.clear();
       PopulateConnectedDevices();
@@ -510,31 +510,31 @@ void BluetoothDeviceChooserController::OnBluetoothChooserEvent(
       StartDeviceDiscovery();
       // No need to close the chooser so we return.
       return;
-    case BluetoothChooser::Event::DENIED_PERMISSION:
+    case BluetoothChooserEvent::DENIED_PERMISSION:
       RecordRequestDeviceOutcome(OutcomeFromChooserEvent(event));
       PostErrorCallback(
           WebBluetoothResult::CHOOSER_NOT_SHOWN_USER_DENIED_PERMISSION_TO_SCAN);
       break;
-    case BluetoothChooser::Event::CANCELLED:
+    case BluetoothChooserEvent::CANCELLED:
       RecordRequestDeviceOutcome(OutcomeFromChooserEvent(event));
       PostErrorCallback(WebBluetoothResult::CHOOSER_CANCELLED);
       break;
-    case BluetoothChooser::Event::SHOW_OVERVIEW_HELP:
+    case BluetoothChooserEvent::SHOW_OVERVIEW_HELP:
       DVLOG(1) << "Overview Help link pressed.";
       RecordRequestDeviceOutcome(OutcomeFromChooserEvent(event));
       PostErrorCallback(WebBluetoothResult::CHOOSER_CANCELLED);
       break;
-    case BluetoothChooser::Event::SHOW_ADAPTER_OFF_HELP:
+    case BluetoothChooserEvent::SHOW_ADAPTER_OFF_HELP:
       DVLOG(1) << "Adapter Off Help link pressed.";
       RecordRequestDeviceOutcome(OutcomeFromChooserEvent(event));
       PostErrorCallback(WebBluetoothResult::CHOOSER_CANCELLED);
       break;
-    case BluetoothChooser::Event::SHOW_NEED_LOCATION_HELP:
+    case BluetoothChooserEvent::SHOW_NEED_LOCATION_HELP:
       DVLOG(1) << "Need Location Help link pressed.";
       RecordRequestDeviceOutcome(OutcomeFromChooserEvent(event));
       PostErrorCallback(WebBluetoothResult::CHOOSER_CANCELLED);
       break;
-    case BluetoothChooser::Event::SELECTED:
+    case BluetoothChooserEvent::SELECTED:
       RecordNumOfDevices(options_->accept_all_devices, device_ids_.size());
       // RecordRequestDeviceOutcome is called in the callback, because the
       // device may have vanished.

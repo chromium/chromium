@@ -559,6 +559,9 @@ if (is_android) {
   java_cpp_enum("contacts_picker_properties_requested_javagen") {
     sources = [ "contacts_picker_properties_requested.h" ]
   }
+  java_cpp_enum("bluetooth_chooser_event_javagen") {
+    sources = [ "bluetooth_chooser.h" ]
+  }
 }
 
 proto_library("proto") {

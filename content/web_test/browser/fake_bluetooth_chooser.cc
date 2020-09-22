@@ -44,12 +44,12 @@ void FakeBluetoothChooser::OnRunBluetoothChooser(
 void FakeBluetoothChooser::SelectPeripheral(
     const std::string& peripheral_address) {
   DCHECK(event_handler_);
-  event_handler_.Run(BluetoothChooser::Event::SELECTED, peripheral_address);
+  event_handler_.Run(BluetoothChooserEvent::SELECTED, peripheral_address);
 }
 
 void FakeBluetoothChooser::Cancel() {
   DCHECK(event_handler_);
-  event_handler_.Run(BluetoothChooser::Event::CANCELLED, std::string());
+  event_handler_.Run(BluetoothChooserEvent::CANCELLED, std::string());
   client_->OnEvent(mojom::FakeBluetoothChooserEvent::New(
       mojom::ChooserEventType::CHOOSER_CLOSED, /*origin=*/base::nullopt,
       /*peripheral_address=*/base::nullopt));
@@ -57,7 +57,7 @@ void FakeBluetoothChooser::Cancel() {
 
 void FakeBluetoothChooser::Rescan() {
   DCHECK(event_handler_);
-  event_handler_.Run(BluetoothChooser::Event::RESCAN, std::string());
+  event_handler_.Run(BluetoothChooserEvent::RESCAN, std::string());
   client_->OnEvent(mojom::FakeBluetoothChooserEvent::New(
       mojom::ChooserEventType::DISCOVERING, /*origin=*/base::nullopt,
       /*peripheral_address=*/base::nullopt));

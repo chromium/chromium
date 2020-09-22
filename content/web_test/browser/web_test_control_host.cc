@@ -1777,13 +1777,13 @@ void WebTestControlHost::SendBluetoothManualChooserEvent(
         "sendBluetoothManualChooserEvent.");
     return;
   }
-  BluetoothChooser::Event event;
+  BluetoothChooserEvent event;
   if (event_name == "cancelled") {
-    event = BluetoothChooser::Event::CANCELLED;
+    event = BluetoothChooserEvent::CANCELLED;
   } else if (event_name == "selected") {
-    event = BluetoothChooser::Event::SELECTED;
+    event = BluetoothChooserEvent::SELECTED;
   } else if (event_name == "rescan") {
-    event = BluetoothChooser::Event::RESCAN;
+    event = BluetoothChooserEvent::RESCAN;
   } else {
     printer_->AddErrorMessage(base::StringPrintf(
         "FAIL: Unexpected sendBluetoothManualChooserEvent() event name '%s'.",

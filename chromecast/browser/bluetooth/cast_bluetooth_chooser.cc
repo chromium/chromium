@@ -31,7 +31,8 @@ void CastBluetoothChooser::GrantAccess(const std::string& address) {
   }
 
   if (available_devices_.find(address) != available_devices_.end()) {
-    RunEventHandlerAndResetReceiver(Event::SELECTED, address);
+    RunEventHandlerAndResetReceiver(content::BluetoothChooserEvent::SELECTED,
+                                    address);
     return;
   }
   approved_devices_.insert(address);
@@ -42,7 +43,7 @@ void CastBluetoothChooser::GrantAccessToAllDevices() {
 
   all_devices_approved_ = true;
   if (!available_devices_.empty()) {
-    RunEventHandlerAndResetReceiver(Event::SELECTED,
+    RunEventHandlerAndResetReceiver(content::BluetoothChooserEvent::SELECTED,
                                     *available_devices_.begin());
   }
 }
@@ -58,14 +59,15 @@ void CastBluetoothChooser::AddOrUpdateDevice(const std::string& device_id,
   // Note: |device_id| is just a canonical Bluetooth address.
   if (all_devices_approved_ ||
       approved_devices_.find(device_id) != approved_devices_.end()) {
-    RunEventHandlerAndResetReceiver(Event::SELECTED, device_id);
+    RunEventHandlerAndResetReceiver(content::BluetoothChooserEvent::SELECTED,
+                                    device_id);
     return;
   }
   available_devices_.insert(device_id);
 }
 
 void CastBluetoothChooser::RunEventHandlerAndResetReceiver(
-    content::BluetoothChooser::Event event,
+    content::BluetoothChooserEvent event,
     std::string address) {
   DCHECK(event_handler_);
   std::move(event_handler_).Run(event, std::move(address));
@@ -77,7 +79,8 @@ void CastBluetoothChooser::OnClientConnectionError() {
   // tear down the client immediately. In this case, do not run the event
   // handler, as we may have not had the opportunity to select a device.
   if (!all_devices_approved_ && event_handler_) {
-    RunEventHandlerAndResetReceiver(Event::CANCELLED, "");
+    RunEventHandlerAndResetReceiver(content::BluetoothChooserEvent::CANCELLED,
+                                    "");
   }
 }
 

@@ -27,7 +27,7 @@ class WebTestBluetoothChooserFactory {
 
   std::vector<std::string> GetAndResetEvents();
 
-  void SendEvent(BluetoothChooser::Event event, const std::string& device_id);
+  void SendEvent(BluetoothChooserEvent event, const std::string& device_id);
 
  private:
   class Chooser;

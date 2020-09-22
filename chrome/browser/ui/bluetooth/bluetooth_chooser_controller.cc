@@ -104,7 +104,7 @@ void BluetoothChooserController::RefreshOptions() {
   if (event_handler_.is_null())
     return;
   ClearAllDevices();
-  event_handler_.Run(content::BluetoothChooser::Event::RESCAN, std::string());
+  event_handler_.Run(content::BluetoothChooserEvent::RESCAN, std::string());
 }
 
 void BluetoothChooserController::OpenAdapterOffHelpUrl() const {
@@ -134,7 +134,7 @@ void BluetoothChooserController::Select(const std::vector<size_t>& indices) {
     return;
   }
   DCHECK_LT(index, devices_.size());
-  event_handler_.Run(content::BluetoothChooser::Event::SELECTED,
+  event_handler_.Run(content::BluetoothChooserEvent::SELECTED,
                      devices_[index].id);
 }
 
@@ -142,16 +142,14 @@ void BluetoothChooserController::Cancel() {
   RecordInteractionWithChooser(event_handler_.is_null());
   if (event_handler_.is_null())
     return;
-  event_handler_.Run(content::BluetoothChooser::Event::CANCELLED,
-                     std::string());
+  event_handler_.Run(content::BluetoothChooserEvent::CANCELLED, std::string());
 }
 
 void BluetoothChooserController::Close() {
   RecordInteractionWithChooser(event_handler_.is_null());
   if (event_handler_.is_null())
     return;
-  event_handler_.Run(content::BluetoothChooser::Event::CANCELLED,
-                     std::string());
+  event_handler_.Run(content::BluetoothChooserEvent::CANCELLED, std::string());
 }
 
 void BluetoothChooserController::OpenHelpCenterUrl() const {

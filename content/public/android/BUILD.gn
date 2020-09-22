@@ -125,6 +125,7 @@ android_library("content_java") {
     ":generate_sandboxed_service_srcjar",
     ":is_ready_to_pay_service_aidl",
     "//content/browser/accessibility:content_browser_accessibility_java_enums_srcjar",
+    "//content/public/browser:bluetooth_chooser_event_javagen",
     "//ui/touch_selection:ui_touch_handle_orientation_srcjar",
     "//ui/touch_selection:ui_touch_selection_enums_srcjar",
   ]

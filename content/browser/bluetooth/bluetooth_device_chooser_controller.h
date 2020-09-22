@@ -114,7 +114,7 @@ class CONTENT_EXPORT BluetoothDeviceChooserController final {
   // Runs |error_callback_| if the chooser was cancelled or if we weren't able
   // to show the chooser. Otherwise runs |success_callback_| with
   // |device_address|.
-  void OnBluetoothChooserEvent(BluetoothChooser::Event event,
+  void OnBluetoothChooserEvent(BluetoothChooserEvent event,
                                const std::string& device_address);
 
   // Helper function to asynchronously run success_callback_.

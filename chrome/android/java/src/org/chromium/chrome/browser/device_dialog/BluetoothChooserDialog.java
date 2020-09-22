@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
+import org.chromium.content_public.browser.bluetooth.BluetoothChooserEvent;
 import org.chromium.ui.base.PermissionCallback;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -62,15 +63,6 @@ public class BluetoothChooserDialog
         int DISCOVERY_FAILED_TO_START = 0;
         int DISCOVERING = 1;
         int DISCOVERY_IDLE = 2;
-    }
-
-    // Values passed to nativeOnDialogFinished:eventType, and only used in the native function.
-    @IntDef({DialogFinished.DENIED_PERMISSION, DialogFinished.CANCELLED, DialogFinished.SELECTED})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface DialogFinished {
-        int DENIED_PERMISSION = 0;
-        int CANCELLED = 1;
-        int SELECTED = 2;
     }
 
     // The window that owns this dialog.
@@ -253,9 +245,9 @@ public class BluetoothChooserDialog
     @Override
     public void onItemSelected(String id) {
         if (id.isEmpty()) {
-            finishDialog(DialogFinished.CANCELLED, "");
+            finishDialog(BluetoothChooserEvent.CANCELLED, "");
         } else {
-            finishDialog(DialogFinished.SELECTED, id);
+            finishDialog(BluetoothChooserEvent.SELECTED, id);
         }
     }
 
@@ -288,7 +280,7 @@ public class BluetoothChooserDialog
                 && !mWindowAndroid.canRequestPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
             // Immediately close the dialog because the user has asked Chrome not to request the
             // location permission.
-            finishDialog(DialogFinished.DENIED_PERMISSION, "");
+            finishDialog(BluetoothChooserEvent.DENIED_PERMISSION, "");
             return false;
         }
 

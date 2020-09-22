@@ -21,7 +21,7 @@ void WebTestFirstDeviceBluetoothChooser::SetAdapterPresence(
     case AdapterPresence::POWERED_OFF:
       // Without a user-visible dialog, if the adapter is off, there's no way to
       // ask the user to turn it on again, so we should cancel.
-      event_handler_.Run(Event::CANCELLED, "");
+      event_handler_.Run(BluetoothChooserEvent::CANCELLED, "");
       break;
     case AdapterPresence::POWERED_ON:
       break;
@@ -37,7 +37,7 @@ void WebTestFirstDeviceBluetoothChooser::ShowDiscoveryState(
       // device, we'll never find one, so we should cancel.
       VLOG(1) << "WebTestFirstDeviceBluetoothChooser found nothing before "
                  "going idle.";
-      event_handler_.Run(Event::CANCELLED, "");
+      event_handler_.Run(BluetoothChooserEvent::CANCELLED, "");
       break;
     case DiscoveryState::DISCOVERING:
       break;
@@ -51,7 +51,7 @@ void WebTestFirstDeviceBluetoothChooser::AddOrUpdateDevice(
     bool is_gatt_connected,
     bool is_paired,
     int signal_strength_level) {
-  event_handler_.Run(Event::SELECTED, device_id);
+  event_handler_.Run(BluetoothChooserEvent::SELECTED, device_id);
 }
 
 }  // namespace content

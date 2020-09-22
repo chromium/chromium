@@ -35,6 +35,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.content_public.browser.bluetooth.BluetoothChooserEvent;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -210,7 +211,7 @@ public class BluetoothChooserDialogTest {
 
         CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mFinishedEventType, Matchers.not(-1)));
 
-        Assert.assertEquals(BluetoothChooserDialog.DialogFinished.CANCELLED, mFinishedEventType);
+        Assert.assertEquals(BluetoothChooserEvent.CANCELLED, mFinishedEventType);
         Assert.assertEquals("", mFinishedDeviceId);
     }
 
@@ -267,7 +268,7 @@ public class BluetoothChooserDialogTest {
 
         selectItem(2);
 
-        Assert.assertEquals(BluetoothChooserDialog.DialogFinished.SELECTED, mFinishedEventType);
+        Assert.assertEquals(BluetoothChooserEvent.SELECTED, mFinishedEventType);
         Assert.assertEquals("id-2", mFinishedDeviceId);
     }
 

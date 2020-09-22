@@ -91,7 +91,7 @@ class WebTestBluetoothChooserFactory::Chooser : public BluetoothChooser {
 WebTestBluetoothChooserFactory::WebTestBluetoothChooserFactory() {}
 
 WebTestBluetoothChooserFactory::~WebTestBluetoothChooserFactory() {
-  SendEvent(BluetoothChooser::Event::CANCELLED, "");
+  SendEvent(BluetoothChooserEvent::CANCELLED, "");
 }
 
 std::unique_ptr<BluetoothChooser>
@@ -113,7 +113,7 @@ std::vector<std::string> WebTestBluetoothChooserFactory::GetAndResetEvents() {
   return result;
 }
 
-void WebTestBluetoothChooserFactory::SendEvent(BluetoothChooser::Event event,
+void WebTestBluetoothChooserFactory::SendEvent(BluetoothChooserEvent event,
                                                const std::string& device_id) {
   // Copy |choosers_| to make sure event handler executions that modify
   // |choosers_| don't invalidate iterators.
