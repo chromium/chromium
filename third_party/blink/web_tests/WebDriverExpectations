@@ -178,3 +178,5 @@ crbug.com/1065297 [ Linux ] external/wpt/webdriver/tests/perform_actions/pointer
 crbug.com/1065297 [ Linux ] external/wpt/webdriver/tests/perform_actions/pointer.py>>test_drag_and_drop_with_draggable_element[0] [ Failure ]
 crbug.com/1065297 [ Linux ] external/wpt/webdriver/tests/perform_actions/pointer.py>>test_drag_and_drop_with_draggable_element[300] [ Failure ]
 crbug.com/1065297 [ Linux ] external/wpt/webdriver/tests/perform_actions/key_shortcuts.py>>test_mod_a_mod_c_right_mod_v_pastes_text [ Failure ]
+crbug.com/1128104 [ Linux ] external/wpt/webdriver/tests/release_actions/sequence.py>>test_no_release_mouse_sequence_keeps_dblclick_state [ Failure ]
+
