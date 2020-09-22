@@ -6,6 +6,8 @@
 
 #include "base/bind.h"
 #include "content/browser/devtools/devtools_session.h"
+#include "content/browser/devtools/protocol/io_handler.h"
+#include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/protocol/target_handler.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/public/common/child_process_host.h"
@@ -81,6 +83,7 @@ bool WorkerDevToolsAgentHost::Close() {
 
 bool WorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
                                             bool acquire_wake_lock) {
+  session->AddHandler(std::make_unique<protocol::IOHandler>(GetIOContext()));
   session->AddHandler(std::make_unique<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
       GetRendererChannel(), session->GetRootSession()));

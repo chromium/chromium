@@ -12,6 +12,7 @@
 #include "content/browser/devtools/devtools_session.h"
 #include "content/browser/devtools/protocol/fetch_handler.h"
 #include "content/browser/devtools/protocol/inspector_handler.h"
+#include "content/browser/devtools/protocol/io_handler.h"
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/protocol/protocol.h"
 #include "content/browser/devtools/protocol/schema_handler.h"
@@ -129,15 +130,16 @@ ServiceWorkerDevToolsAgentHost::~ServiceWorkerDevToolsAgentHost() {
 
 bool ServiceWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
                                                    bool acquire_wake_lock) {
-  session->AddHandler(base::WrapUnique(new protocol::InspectorHandler()));
-  session->AddHandler(base::WrapUnique(new protocol::NetworkHandler(
-      GetId(), devtools_worker_token_, GetIOContext(), base::DoNothing())));
-  session->AddHandler(base::WrapUnique(new protocol::FetchHandler(
+  session->AddHandler(std::make_unique<protocol::IOHandler>(GetIOContext()));
+  session->AddHandler(std::make_unique<protocol::InspectorHandler>());
+  session->AddHandler(std::make_unique<protocol::NetworkHandler>(
+      GetId(), devtools_worker_token_, GetIOContext(), base::DoNothing()));
+  session->AddHandler(std::make_unique<protocol::FetchHandler>(
       GetIOContext(),
       base::BindRepeating(
           &ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories,
-          base::Unretained(this)))));
-  session->AddHandler(base::WrapUnique(new protocol::SchemaHandler()));
+          base::Unretained(this))));
+  session->AddHandler(std::make_unique<protocol::SchemaHandler>());
   session->AddHandler(std::make_unique<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
       GetRendererChannel(), session->GetRootSession()));
