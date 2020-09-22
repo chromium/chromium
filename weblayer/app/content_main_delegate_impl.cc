@@ -161,18 +161,23 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
     ::features::kWebXrHitTest,
     // TODO(crbug.com/1057770): make Background Fetch work with WebLayer.
     ::features::kBackgroundFetch,
+    // TODO(crbug.com/1130989): Support GetInstalledRelatedApps on WebLayer.
     ::features::kInstalledApp,
     // TODO(crbug.com/1091212): make Notification triggers work with
     // WebLayer.
     ::features::kNotificationTriggers,
     // TODO(crbug.com/1091211): Support PeriodicBackgroundSync on WebLayer.
     ::features::kPeriodicBackgroundSync,
+    // TODO(crbug.com/1131017): Support SurfaceViews on WebLayer.
     media::kOverlayFullscreenVideo,
 #if defined(OS_ANDROID)
+    // TODO(crbug.com/1131016): Support Picture in Picture API on WebLayer.
     media::kPictureInPictureAPI,
+
     ::features::kDisableDeJelly,
     ::features::kDynamicColorGamut,
 #else
+    // TODO(crbug.com/1131021): Support SMS Receiver on WebLayer.
     ::features::kSmsReceiver,
 #endif
   };
