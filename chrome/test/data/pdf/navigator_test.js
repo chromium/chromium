@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NavigatorDelegate, PdfNavigator} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/navigator.js';
+import {NavigatorDelegate, PdfNavigator, WindowOpenDisposition} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/navigator.js';
 import {OpenPdfParamsParser} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/open_pdf_params_parser.js';
 import {PDFScriptingAPI} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_scripting_api.js';
 
@@ -50,7 +50,7 @@ class MockNavigatorDelegate {
  * and that the navigation to |expectedResultUrl| happened.
  * @param {!PdfNavigator} navigator
  * @param {string} url
- * @param {!PdfNavigator.WindowOpenDisposition} disposition
+ * @param {!WindowOpenDisposition} disposition
  * @param {(string|undefined)} expectedResultUrl
  * @param {!MockViewportChangedCallback} viewportChangedCallback
  * @param {!MockNavigatorDelegate} navigatorDelegate
@@ -67,13 +67,13 @@ function doNavigationUrlTest(
     return;
   }
   switch (disposition) {
-    case PdfNavigator.WindowOpenDisposition.CURRENT_TAB:
+    case WindowOpenDisposition.CURRENT_TAB:
       chrome.test.assertTrue(navigatorDelegate.navigateInCurrentTabCalled);
       break;
-    case PdfNavigator.WindowOpenDisposition.NEW_BACKGROUND_TAB:
+    case WindowOpenDisposition.NEW_BACKGROUND_TAB:
       chrome.test.assertTrue(navigatorDelegate.navigateInNewTabCalled);
       break;
-    case PdfNavigator.WindowOpenDisposition.NEW_WINDOW:
+    case WindowOpenDisposition.NEW_WINDOW:
       chrome.test.assertTrue(navigatorDelegate.navigateInNewWindowCalled);
       break;
     default:
@@ -104,14 +104,14 @@ function doNavigationUrlTests(originalUrl, url, expectedResultUrl) {
       new PdfNavigator(originalUrl, viewport, paramsParser, navigatorDelegate);
 
   doNavigationUrlTest(
-      navigator, url, PdfNavigator.WindowOpenDisposition.CURRENT_TAB,
+      navigator, url, WindowOpenDisposition.CURRENT_TAB, expectedResultUrl,
+      mockViewportChangedCallback, navigatorDelegate);
+  doNavigationUrlTest(
+      navigator, url, WindowOpenDisposition.NEW_BACKGROUND_TAB,
       expectedResultUrl, mockViewportChangedCallback, navigatorDelegate);
   doNavigationUrlTest(
-      navigator, url, PdfNavigator.WindowOpenDisposition.NEW_BACKGROUND_TAB,
-      expectedResultUrl, mockViewportChangedCallback, navigatorDelegate);
-  doNavigationUrlTest(
-      navigator, url, PdfNavigator.WindowOpenDisposition.NEW_WINDOW,
-      expectedResultUrl, mockViewportChangedCallback, navigatorDelegate);
+      navigator, url, WindowOpenDisposition.NEW_WINDOW, expectedResultUrl,
+      mockViewportChangedCallback, navigatorDelegate);
 }
 
 const tests = [
@@ -150,8 +150,7 @@ const tests = [
 
     mockCallback.reset();
     // This should move viewport to page 0.
-    navigator.navigate(
-        url + '#US', PdfNavigator.WindowOpenDisposition.CURRENT_TAB);
+    navigator.navigate(url + '#US', WindowOpenDisposition.CURRENT_TAB);
     chrome.test.assertTrue(mockCallback.wasCalled);
     chrome.test.assertEq(0, viewport.position.x);
     chrome.test.assertEq(0, viewport.position.y);
@@ -160,8 +159,7 @@ const tests = [
     navigatorDelegate.reset();
     // This should open "http://xyz.pdf#US" in a new tab. So current tab
     // viewport should not update and viewport position should remain same.
-    navigator.navigate(
-        url + '#US', PdfNavigator.WindowOpenDisposition.NEW_BACKGROUND_TAB);
+    navigator.navigate(url + '#US', WindowOpenDisposition.NEW_BACKGROUND_TAB);
     chrome.test.assertFalse(mockCallback.wasCalled);
     chrome.test.assertTrue(navigatorDelegate.navigateInNewTabCalled);
     chrome.test.assertEq(0, viewport.position.x);
@@ -169,8 +167,7 @@ const tests = [
 
     mockCallback.reset();
     // This should move viewport to page 2.
-    navigator.navigate(
-        url + '#UY', PdfNavigator.WindowOpenDisposition.CURRENT_TAB);
+    navigator.navigate(url + '#UY', WindowOpenDisposition.CURRENT_TAB);
     chrome.test.assertTrue(mockCallback.wasCalled);
     chrome.test.assertEq(0, viewport.position.x);
     chrome.test.assertEq(300, viewport.position.y);
@@ -180,8 +177,7 @@ const tests = [
     // #ABC is not a named destination in the page so viewport should not
     // update and viewport position should remain same. As this link will open
     // in the same tab.
-    navigator.navigate(
-        url + '#ABC', PdfNavigator.WindowOpenDisposition.CURRENT_TAB);
+    navigator.navigate(url + '#ABC', WindowOpenDisposition.CURRENT_TAB);
     chrome.test.assertFalse(mockCallback.wasCalled);
     chrome.test.assertTrue(navigatorDelegate.navigateInCurrentTabCalled);
     chrome.test.assertEq(0, viewport.position.x);

@@ -4,7 +4,7 @@
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PDFMetrics} from '../metrics.js';
+import {PDFMetrics, UserAction} from '../metrics.js';
 import {PAGE_SHADOW, Viewport} from '../viewport.js';
 
 /** @enum {string} */
@@ -173,19 +173,18 @@ Polymer({
       if (e.type === 'pointerup') {
         this.dispatchEvent(new CustomEvent('stroke-added'));
         if (e.pointerType === 'mouse') {
-          PDFMetrics.record(PDFMetrics.UserAction.ANNOTATE_STROKE_DEVICE_MOUSE);
+          PDFMetrics.record(UserAction.ANNOTATE_STROKE_DEVICE_MOUSE);
         } else if (e.pointerType === 'pen') {
-          PDFMetrics.record(PDFMetrics.UserAction.ANNOTATE_STROKE_DEVICE_PEN);
+          PDFMetrics.record(UserAction.ANNOTATE_STROKE_DEVICE_PEN);
         } else if (e.pointerType === 'touch') {
-          PDFMetrics.record(PDFMetrics.UserAction.ANNOTATE_STROKE_DEVICE_TOUCH);
+          PDFMetrics.record(UserAction.ANNOTATE_STROKE_DEVICE_TOUCH);
         }
         if (this.tool_.tool === 'eraser') {
-          PDFMetrics.record(PDFMetrics.UserAction.ANNOTATE_STROKE_TOOL_ERASER);
+          PDFMetrics.record(UserAction.ANNOTATE_STROKE_TOOL_ERASER);
         } else if (this.tool_.tool === 'pen') {
-          PDFMetrics.record(PDFMetrics.UserAction.ANNOTATE_STROKE_TOOL_PEN);
+          PDFMetrics.record(UserAction.ANNOTATE_STROKE_TOOL_PEN);
         } else if (this.tool_.tool === 'highlighter') {
-          PDFMetrics.record(
-              PDFMetrics.UserAction.ANNOTATE_STROKE_TOOL_HIGHLIGHTER);
+          PDFMetrics.record(UserAction.ANNOTATE_STROKE_TOOL_HIGHLIGHTER);
         }
       }
     }

@@ -142,8 +142,8 @@ export class Viewport {
     /** @private {number} */
     this.prevScale_ = 1;
 
-    /** @private {!Viewport.PinchPhase} */
-    this.pinchPhase_ = Viewport.PinchPhase.PINCH_NONE;
+    /** @private {!PinchPhase} */
+    this.pinchPhase_ = PinchPhase.PINCH_NONE;
 
     /** @private {?Point} */
     this.pinchPanVector_ = null;
@@ -514,7 +514,7 @@ export class Viewport {
   }
 
   /**
-   * @return {!Viewport.PinchPhase} The phase of the current pinch gesture for
+   * @return {!PinchPhase} The phase of the current pinch gesture for
    *    the viewport.
    */
   get pinchPhase() {
@@ -1403,8 +1403,8 @@ export class Viewport {
       this.mightZoom_(() => {
         const {direction, center, startScaleRatio} = e.detail;
         this.pinchPhase_ = direction === 'out' ?
-            Viewport.PinchPhase.PINCH_UPDATE_ZOOM_OUT :
-            Viewport.PinchPhase.PINCH_UPDATE_ZOOM_IN;
+            PinchPhase.PINCH_UPDATE_ZOOM_OUT :
+            PinchPhase.PINCH_UPDATE_ZOOM_IN;
 
         const scaleDelta = startScaleRatio / this.prevScale_;
         if (this.firstPinchCenterInFrame_ != null) {
@@ -1456,7 +1456,7 @@ export class Viewport {
     window.requestAnimationFrame(() => {
       this.mightZoom_(() => {
         const {center, startScaleRatio} = e.detail;
-        this.pinchPhase_ = Viewport.PinchPhase.PINCH_END;
+        this.pinchPhase_ = PinchPhase.PINCH_END;
         const scaleDelta = startScaleRatio / this.prevScale_;
         this.pinchCenter_ = /** @type {!Point} */ (center);
 
@@ -1465,7 +1465,7 @@ export class Viewport {
         this.updateViewport_();
       });
 
-      this.pinchPhase_ = Viewport.PinchPhase.PINCH_NONE;
+      this.pinchPhase_ = PinchPhase.PINCH_NONE;
       this.pinchPanVector_ = null;
       this.pinchCenter_ = null;
       this.firstPinchCenterInFrame_ = null;
@@ -1481,7 +1481,7 @@ export class Viewport {
     // We also use rAF for pinch start, so that if there is a pinch end event
     // scheduled by rAF, this pinch start will be sent after.
     window.requestAnimationFrame(() => {
-      this.pinchPhase_ = Viewport.PinchPhase.PINCH_START;
+      this.pinchPhase_ = PinchPhase.PINCH_START;
       this.prevScale_ = 1;
       this.oldCenterInContent_ =
           this.frameToContent_(this.frameToPluginCoordinate_(e.detail.center));
@@ -1505,7 +1505,7 @@ export class Viewport {
  * This should match PinchPhase enum in pdf/out_of_process_instance.h
  * @enum {number}
  */
-Viewport.PinchPhase = {
+export const PinchPhase = {
   PINCH_NONE: 0,
   PINCH_START: 1,
   PINCH_UPDATE_ZOOM_OUT: 2,

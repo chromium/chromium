@@ -29,8 +29,8 @@ import {ViewerPdfToolbarNewElement} from './elements/viewer-pdf-toolbar-new.js';
 import {InkController} from './ink_controller.js';
 //</if>
 import {LocalStorageProxyImpl} from './local_storage_proxy.js';
-import {PDFMetrics} from './metrics.js';
-import {NavigatorDelegateImpl, PdfNavigator} from './navigator.js';
+import {PDFMetrics, UserAction} from './metrics.js';
+import {NavigatorDelegateImpl, PdfNavigator, WindowOpenDisposition} from './navigator.js';
 import {OpenPdfParamsParser} from './open_pdf_params_parser.js';
 import {DeserializeKeyEvent, LoadState, SerializeKeyEvent} from './pdf_scripting_api.js';
 import {PDFViewerBaseElement} from './pdf_viewer_base.js';
@@ -42,7 +42,7 @@ import {ToolbarManager} from './toolbar_manager.js';
  * @typedef {{
  *   type: string,
  *   url: string,
- *   disposition: !PdfNavigator.WindowOpenDisposition,
+ *   disposition: !WindowOpenDisposition,
  * }}
  */
 let NavigateMessageData;
@@ -555,7 +555,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
           return;
         }
       }
-      PDFMetrics.record(PDFMetrics.UserAction.ENTER_ANNOTATION_MODE);
+      PDFMetrics.record(UserAction.ENTER_ANNOTATION_MODE);
       this.annotationMode_ = true;
       this.hasEnteredAnnotationMode_ = true;
       // TODO(dstockwell): feed real progress data from the Ink component
@@ -566,7 +566,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       this.updateProgress(100);
     } else {
       // Exit annotation mode.
-      PDFMetrics.record(PDFMetrics.UserAction.EXIT_ANNOTATION_MODE);
+      PDFMetrics.record(UserAction.EXIT_ANNOTATION_MODE);
       assert(this.currentController === this.inkController_);
       // TODO(dstockwell): set ink read-only, begin transition
       this.updateProgress(0);
@@ -669,7 +669,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   goToPageAndXY_(origin, page, message) {
     this.viewport.goToPageAndXY(page, message.x, message.y);
     if (origin === 'bookmark') {
-      PDFMetrics.record(PDFMetrics.UserAction.FOLLOW_BOOKMARK);
+      PDFMetrics.record(UserAction.FOLLOW_BOOKMARK);
     }
   }
 
@@ -878,7 +878,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   /**
    * Handles a navigation request from the current controller.
    * @param {string} url
-   * @param {!PdfNavigator.WindowOpenDisposition} disposition
+   * @param {!WindowOpenDisposition} disposition
    * @private
    */
   handleNavigate_(url, disposition) {
@@ -993,11 +993,11 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   onChangePage_(e) {
     this.viewport.goToPage(e.detail.page);
     if (e.detail.origin === 'bookmark') {
-      PDFMetrics.record(PDFMetrics.UserAction.FOLLOW_BOOKMARK);
+      PDFMetrics.record(UserAction.FOLLOW_BOOKMARK);
     } else if (e.detail.origin === 'pageselector') {
-      PDFMetrics.record(PDFMetrics.UserAction.PAGE_SELECTOR_NAVIGATE);
+      PDFMetrics.record(UserAction.PAGE_SELECTOR_NAVIGATE);
     } else if (e.detail.origin === 'thumbnail') {
-      PDFMetrics.record(PDFMetrics.UserAction.THUMBNAIL_NAVIGATE);
+      PDFMetrics.record(UserAction.THUMBNAIL_NAVIGATE);
     }
   }
 
@@ -1017,7 +1017,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    */
   onDropdownOpened_(e) {
     if (e.detail === 'bookmarks') {
-      PDFMetrics.record(PDFMetrics.UserAction.OPEN_BOOKMARKS_PANEL);
+      PDFMetrics.record(UserAction.OPEN_BOOKMARKS_PANEL);
     }
   }
 
@@ -1027,8 +1027,8 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    */
   onNavigate_(e) {
     const disposition = e.detail.newtab ?
-        PdfNavigator.WindowOpenDisposition.NEW_BACKGROUND_TAB :
-        PdfNavigator.WindowOpenDisposition.CURRENT_TAB;
+        WindowOpenDisposition.NEW_BACKGROUND_TAB :
+        WindowOpenDisposition.CURRENT_TAB;
     this.navigator_.navigate(e.detail.uri, disposition);
   }
 
@@ -1046,13 +1046,13 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    * @private
    */
   async save_(requestType) {
-    PDFMetrics.record(PDFMetrics.UserAction.SAVE);
+    PDFMetrics.record(UserAction.SAVE);
     // If we have entered annotation mode we must require the local
     // contents to ensure annotations are saved, unless the user specifically
     // requested the original document. Otherwise we would save the cached
     // remote copy without annotations.
     if (requestType === SaveRequestType.ANNOTATION) {
-      PDFMetrics.record(PDFMetrics.UserAction.SAVE_WITH_ANNOTATION);
+      PDFMetrics.record(UserAction.SAVE_WITH_ANNOTATION);
     }
     // Always send requests of type ORIGINAL to the plugin controller, not the
     // ink controller. The ink controller always saves the edited document.
@@ -1112,7 +1112,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
   /** @private */
   async onPrint_() {
-    PDFMetrics.record(PDFMetrics.UserAction.PRINT);
+    PDFMetrics.record(UserAction.PRINT);
     // <if expr="chromeos">
     await this.exitAnnotationMode_();
     // </if>

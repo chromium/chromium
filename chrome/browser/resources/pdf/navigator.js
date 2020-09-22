@@ -109,7 +109,7 @@ export class PdfNavigator {
    * Function to navigate to the given URL. This might involve navigating
    * within the PDF page or opening a new url (in the same tab or a new tab).
    * @param {string} urlString The URL to navigate to.
-   * @param {!PdfNavigator.WindowOpenDisposition} disposition The window open
+   * @param {!WindowOpenDisposition} disposition The window open
    *     disposition when navigating to the new URL.
    */
   navigate(urlString, disposition) {
@@ -144,20 +144,20 @@ export class PdfNavigator {
     }
 
     switch (disposition) {
-      case PdfNavigator.WindowOpenDisposition.CURRENT_TAB:
+      case WindowOpenDisposition.CURRENT_TAB:
         this.paramsParser_.getViewportFromUrlParams(
             url.href, this.onViewportReceived_.bind(this));
         break;
-      case PdfNavigator.WindowOpenDisposition.NEW_BACKGROUND_TAB:
+      case WindowOpenDisposition.NEW_BACKGROUND_TAB:
         this.navigatorDelegate_.navigateInNewTab(url.href, false);
         break;
-      case PdfNavigator.WindowOpenDisposition.NEW_FOREGROUND_TAB:
+      case WindowOpenDisposition.NEW_FOREGROUND_TAB:
         this.navigatorDelegate_.navigateInNewTab(url.href, true);
         break;
-      case PdfNavigator.WindowOpenDisposition.NEW_WINDOW:
+      case WindowOpenDisposition.NEW_WINDOW:
         this.navigatorDelegate_.navigateInNewWindow(url.href);
         break;
-      case PdfNavigator.WindowOpenDisposition.SAVE_TO_DISK:
+      case WindowOpenDisposition.SAVE_TO_DISK:
         // TODO(jaepark): Alt + left clicking a link in PDF should
         // download the link.
         this.paramsParser_.getViewportFromUrlParams(
@@ -268,7 +268,7 @@ export class PdfNavigator {
  * the only values that are passed from Plugin.
  * @enum {number}
  */
-PdfNavigator.WindowOpenDisposition = {
+export const WindowOpenDisposition = {
   CURRENT_TAB: 1,
   NEW_FOREGROUND_TAB: 3,
   NEW_BACKGROUND_TAB: 4,
@@ -279,3 +279,4 @@ PdfNavigator.WindowOpenDisposition = {
 // Export on |window| such that scripts injected from pdf_extension_test.cc can
 // access it.
 window.PdfNavigator = PdfNavigator;
+window.WindowOpenDisposition = WindowOpenDisposition;

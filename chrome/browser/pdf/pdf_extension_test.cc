@@ -1715,11 +1715,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, NavigationOnCorrectTab) {
   content::TestNavigationObserver active_navigation_observer(
       active_web_contents);
   content::TestNavigationObserver navigation_observer(web_contents);
-  ASSERT_TRUE(content::ExecuteScript(
-      guest_contents,
-      "viewer.navigator_.navigate("
-      "    'www.example.com',"
-      "    PdfNavigator.WindowOpenDisposition.CURRENT_TAB);"));
+  ASSERT_TRUE(
+      content::ExecuteScript(guest_contents,
+                             "viewer.navigator_.navigate("
+                             "    'www.example.com',"
+                             "    WindowOpenDisposition.CURRENT_TAB);"));
   navigation_observer.Wait();
 
   EXPECT_FALSE(navigation_observer.last_navigation_url().is_empty());

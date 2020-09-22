@@ -4,7 +4,7 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
-import {BrowserApi} from './browser_api.js';
+import {BrowserApi, ZoomBehavior} from './browser_api.js';
 
 // Abstract parent of classes that manage updating the browser with zoom changes
 // and/or updating the viewer's zoom when the browser zoom changes.
@@ -36,7 +36,7 @@ export class ZoomManager {
 
   /**
    * Creates the appropriate kind of zoom manager given the zoom behavior.
-   * @param {BrowserApi.ZoomBehavior} zoomBehavior How to manage zoom.
+   * @param {ZoomBehavior} zoomBehavior How to manage zoom.
    * @param {function():number} getViewportZoom A function that gets the current
    *     viewport zoom.
    * @param {function(number):Promise} setBrowserZoomFunction A function that
@@ -46,10 +46,10 @@ export class ZoomManager {
   static create(
       zoomBehavior, getViewportZoom, setBrowserZoomFunction, initialZoom) {
     switch (zoomBehavior) {
-      case BrowserApi.ZoomBehavior.MANAGE:
+      case ZoomBehavior.MANAGE:
         return new ActiveZoomManager(
             getViewportZoom, setBrowserZoomFunction, initialZoom);
-      case BrowserApi.ZoomBehavior.PROPAGATE_PARENT:
+      case ZoomBehavior.PROPAGATE_PARENT:
         return new EmbeddedZoomManager(getViewportZoom, initialZoom);
       default:
         return new InactiveZoomManager(getViewportZoom, initialZoom);

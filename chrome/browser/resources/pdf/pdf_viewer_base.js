@@ -8,10 +8,10 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserApi} from './browser_api.js';
+import {BrowserApi, ZoomBehavior} from './browser_api.js';
 import {FittingType, Point} from './constants.js';
 import {ContentController, MessageData, PluginController} from './controller.js';
-import {PDFMetrics} from './metrics.js';
+import {PDFMetrics, UserAction} from './metrics.js';
 import {OpenPdfParamsParser} from './open_pdf_params_parser.js';
 import {LoadState} from './pdf_scripting_api.js';
 import {DocumentDimensionsMessageData, MessageObject} from './pdf_viewer_utils.js';
@@ -219,7 +219,7 @@ export class PDFViewerBaseElement extends PolymerElement {
     this.browserApi = browserApi;
     this.originalUrl = this.browserApi.getStreamInfo().originalUrl;
 
-    PDFMetrics.record(PDFMetrics.UserAction.DOCUMENT_OPENED);
+    PDFMetrics.record(UserAction.DOCUMENT_OPENED);
 
     // Parse open pdf parameters.
     this.paramsParser = new OpenPdfParamsParser(destination => {
@@ -245,7 +245,7 @@ export class PDFViewerBaseElement extends PolymerElement {
 
     // Create the viewport.
     const defaultZoom =
-        this.browserApi.getZoomBehavior() === BrowserApi.ZoomBehavior.MANAGE ?
+        this.browserApi.getZoomBehavior() === ZoomBehavior.MANAGE ?
         this.browserApi.getDefaultZoom() :
         1.0;
 
@@ -619,7 +619,7 @@ export class PDFViewerBaseElement extends PolymerElement {
    */
   onZoomChanged(e) {
     this.viewport_.setZoom(e.detail / 100);
-    PDFMetrics.record(PDFMetrics.UserAction.ZOOM_CUSTOM);
+    PDFMetrics.record(UserAction.ZOOM_CUSTOM);
   }
 
   /** @protected */
@@ -648,14 +648,14 @@ export class PDFViewerBaseElement extends PolymerElement {
 
   /** @protected */
   rotateClockwise() {
-    PDFMetrics.record(PDFMetrics.UserAction.ROTATE);
+    PDFMetrics.record(UserAction.ROTATE);
     this.viewport_.rotateClockwise();
     this.currentController.rotateClockwise();
   }
 
   /** @protected */
   rotateCounterclockwise() {
-    PDFMetrics.record(PDFMetrics.UserAction.ROTATE);
+    PDFMetrics.record(UserAction.ROTATE);
     this.viewport_.rotateCounterclockwise();
     this.currentController.rotateCounterclockwise();
   }

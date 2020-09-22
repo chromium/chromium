@@ -53,7 +53,7 @@ export class BrowserApi {
    * @param {number} defaultZoom The default browser zoom.
    * @param {number} initialZoom The initial browser zoom
    *     upon starting the plugin.
-   * @param {BrowserApi.ZoomBehavior} zoomBehavior How to manage zoom.
+   * @param {ZoomBehavior} zoomBehavior How to manage zoom.
    */
   constructor(streamInfo, defaultZoom, initialZoom, zoomBehavior) {
     this.streamInfo_ = streamInfo;
@@ -65,7 +65,7 @@ export class BrowserApi {
   /**
    * @param {!Object} streamInfo The stream object pointing to the data
    *     contained in the PDF.
-   * @param {BrowserApi.ZoomBehavior} zoomBehavior How to manage zoom.
+   * @param {ZoomBehavior} zoomBehavior How to manage zoom.
    * @return {Promise<BrowserApi>} A promise to a BrowserApi.
    */
   static create(streamInfo, zoomBehavior) {
@@ -93,7 +93,7 @@ export class BrowserApi {
    */
   setZoom(zoom) {
     assert(
-        this.zoomBehavior_ === BrowserApi.ZoomBehavior.MANAGE,
+        this.zoomBehavior_ === ZoomBehavior.MANAGE,
         'Viewer does not manage browser zoom.');
     return new Promise((resolve, reject) => {
       chrome.tabs.setZoom(this.streamInfo_.tabId, zoom, resolve);
@@ -110,7 +110,7 @@ export class BrowserApi {
     return this.initialZoom_;
   }
 
-  /** @return {BrowserApi.ZoomBehavior} How to manage zoom. */
+  /** @return {ZoomBehavior} How to manage zoom. */
   getZoomBehavior() {
     return this.zoomBehavior_;
   }
@@ -122,8 +122,8 @@ export class BrowserApi {
    *     factor.
    */
   addZoomEventListener(listener) {
-    if (!(this.zoomBehavior_ === BrowserApi.ZoomBehavior.MANAGE ||
-          this.zoomBehavior_ === BrowserApi.ZoomBehavior.PROPAGATE_PARENT)) {
+    if (!(this.zoomBehavior_ === ZoomBehavior.MANAGE ||
+          this.zoomBehavior_ === ZoomBehavior.PROPAGATE_PARENT)) {
       return;
     }
 
@@ -142,7 +142,7 @@ export class BrowserApi {
  * Enumeration of ways to manage zoom changes.
  * @enum {number}
  */
-BrowserApi.ZoomBehavior = {
+export const ZoomBehavior = {
   NONE: 0,
   MANAGE: 1,
   PROPAGATE_PARENT: 2
@@ -159,11 +159,10 @@ function createBrowserApiForMimeHandlerView() {
          })
       .then(function(streamInfo) {
         const promises = [];
-        let zoomBehavior = BrowserApi.ZoomBehavior.NONE;
+        let zoomBehavior = ZoomBehavior.NONE;
         if (streamInfo.tabId !== -1) {
-          zoomBehavior = streamInfo.embedded ?
-              BrowserApi.ZoomBehavior.PROPAGATE_PARENT :
-              BrowserApi.ZoomBehavior.MANAGE;
+          zoomBehavior = streamInfo.embedded ? ZoomBehavior.PROPAGATE_PARENT :
+                                               ZoomBehavior.MANAGE;
           promises.push(new Promise(function(resolve) {
                           chrome.tabs.get(streamInfo.tabId, resolve);
                         }).then(function(tab) {
@@ -172,7 +171,7 @@ function createBrowserApiForMimeHandlerView() {
             }
           }));
         }
-        if (zoomBehavior === BrowserApi.ZoomBehavior.MANAGE) {
+        if (zoomBehavior === ZoomBehavior.MANAGE) {
           promises.push(new Promise(function(resolve) {
             chrome.tabs.setZoomSettings(
                 streamInfo.tabId, {mode: 'manual', scope: 'per-tab'}, resolve);
@@ -210,7 +209,7 @@ function createBrowserApiForPrintPreview() {
            });
          })
       .then(function() {
-        return BrowserApi.create(streamInfo, BrowserApi.ZoomBehavior.NONE);
+        return BrowserApi.create(streamInfo, ZoomBehavior.NONE);
       });
 }
 

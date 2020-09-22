@@ -12,9 +12,9 @@ export class PDFMetrics {
    */
   static recordFitTo(fittingType) {
     if (fittingType === FittingType.FIT_TO_PAGE) {
-      PDFMetrics.record(PDFMetrics.UserAction.FIT_TO_PAGE);
+      PDFMetrics.record(UserAction.FIT_TO_PAGE);
     } else if (fittingType === FittingType.FIT_TO_WIDTH) {
-      PDFMetrics.record(PDFMetrics.UserAction.FIT_TO_WIDTH);
+      PDFMetrics.record(UserAction.FIT_TO_WIDTH);
     }
     // There is no user action to do a fit-to-height, this only happens with
     // the open param "view=FitV".
@@ -26,8 +26,8 @@ export class PDFMetrics {
    */
   static recordTwoUpViewEnabled(enabled) {
     PDFMetrics.record(
-        enabled ? PDFMetrics.UserAction.TWO_UP_VIEW_ENABLE :
-                  PDFMetrics.UserAction.TWO_UP_VIEW_DISABLE);
+        enabled ? UserAction.TWO_UP_VIEW_ENABLE :
+                  UserAction.TWO_UP_VIEW_DISABLE);
   }
 
   /**
@@ -36,14 +36,12 @@ export class PDFMetrics {
    *     the action is zooming out.
    */
   static recordZoomAction(isZoomIn) {
-    PDFMetrics.record(
-        isZoomIn ? PDFMetrics.UserAction.ZOOM_IN :
-                   PDFMetrics.UserAction.ZOOM_OUT);
+    PDFMetrics.record(isZoomIn ? UserAction.ZOOM_IN : UserAction.ZOOM_OUT);
   }
 
   /**
    * Records the given action to chrome.metricsPrivate.
-   * @param {PDFMetrics.UserAction} action
+   * @param {UserAction} action
    */
   static record(action) {
     if (!chrome.metricsPrivate) {
@@ -54,8 +52,8 @@ export class PDFMetrics {
         'metricName': 'PDF.Actions',
         'type': chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
         'min': 1,
-        'max': PDFMetrics.UserAction.NUMBER_OF_ACTIONS,
-        'buckets': PDFMetrics.UserAction.NUMBER_OF_ACTIONS + 1
+        'max': UserAction.NUMBER_OF_ACTIONS,
+        'buckets': UserAction.NUMBER_OF_ACTIONS + 1
       };
     }
     chrome.metricsPrivate.recordValue(PDFMetrics.actionsMetric_, action);
@@ -91,7 +89,7 @@ PDFMetrics.firstActionRecorded_ = new Set();
  * on the first instance.
  * @enum {number}
  */
-PDFMetrics.UserAction = {
+export const UserAction = {
   // Recorded when the document is first loaded. This event serves as
   // denominator to determine percentages of documents in which an action was
   // taken as well as average number of each action per document.
@@ -193,95 +191,95 @@ PDFMetrics.UserAction = {
 /** @private Map<number, number> */
 PDFMetrics.firstMap_ = new Map([
   [
-    PDFMetrics.UserAction.ROTATE,
-    PDFMetrics.UserAction.ROTATE_FIRST,
+    UserAction.ROTATE,
+    UserAction.ROTATE_FIRST,
   ],
   [
-    PDFMetrics.UserAction.FIT_TO_WIDTH,
-    PDFMetrics.UserAction.FIT_TO_WIDTH_FIRST,
+    UserAction.FIT_TO_WIDTH,
+    UserAction.FIT_TO_WIDTH_FIRST,
   ],
   [
-    PDFMetrics.UserAction.FIT_TO_PAGE,
-    PDFMetrics.UserAction.FIT_TO_PAGE_FIRST,
+    UserAction.FIT_TO_PAGE,
+    UserAction.FIT_TO_PAGE_FIRST,
   ],
   [
-    PDFMetrics.UserAction.OPEN_BOOKMARKS_PANEL,
-    PDFMetrics.UserAction.OPEN_BOOKMARKS_PANEL_FIRST,
+    UserAction.OPEN_BOOKMARKS_PANEL,
+    UserAction.OPEN_BOOKMARKS_PANEL_FIRST,
   ],
   [
-    PDFMetrics.UserAction.FOLLOW_BOOKMARK,
-    PDFMetrics.UserAction.FOLLOW_BOOKMARK_FIRST,
+    UserAction.FOLLOW_BOOKMARK,
+    UserAction.FOLLOW_BOOKMARK_FIRST,
   ],
   [
-    PDFMetrics.UserAction.PAGE_SELECTOR_NAVIGATE,
-    PDFMetrics.UserAction.PAGE_SELECTOR_NAVIGATE_FIRST,
+    UserAction.PAGE_SELECTOR_NAVIGATE,
+    UserAction.PAGE_SELECTOR_NAVIGATE_FIRST,
   ],
   [
-    PDFMetrics.UserAction.SAVE,
-    PDFMetrics.UserAction.SAVE_FIRST,
+    UserAction.SAVE,
+    UserAction.SAVE_FIRST,
   ],
   [
-    PDFMetrics.UserAction.SAVE_WITH_ANNOTATION,
-    PDFMetrics.UserAction.SAVE_WITH_ANNOTATION_FIRST,
+    UserAction.SAVE_WITH_ANNOTATION,
+    UserAction.SAVE_WITH_ANNOTATION_FIRST,
   ],
   [
-    PDFMetrics.UserAction.PRINT,
-    PDFMetrics.UserAction.PRINT_FIRST,
+    UserAction.PRINT,
+    UserAction.PRINT_FIRST,
   ],
   [
-    PDFMetrics.UserAction.ENTER_ANNOTATION_MODE,
-    PDFMetrics.UserAction.ENTER_ANNOTATION_MODE_FIRST,
+    UserAction.ENTER_ANNOTATION_MODE,
+    UserAction.ENTER_ANNOTATION_MODE_FIRST,
   ],
   [
-    PDFMetrics.UserAction.EXIT_ANNOTATION_MODE,
-    PDFMetrics.UserAction.EXIT_ANNOTATION_MODE_FIRST,
+    UserAction.EXIT_ANNOTATION_MODE,
+    UserAction.EXIT_ANNOTATION_MODE_FIRST,
   ],
   [
-    PDFMetrics.UserAction.ANNOTATE_STROKE_TOOL_PEN,
-    PDFMetrics.UserAction.ANNOTATE_STROKE_TOOL_PEN_FIRST,
+    UserAction.ANNOTATE_STROKE_TOOL_PEN,
+    UserAction.ANNOTATE_STROKE_TOOL_PEN_FIRST,
   ],
   [
-    PDFMetrics.UserAction.ANNOTATE_STROKE_TOOL_ERASER,
-    PDFMetrics.UserAction.ANNOTATE_STROKE_TOOL_ERASER_FIRST,
+    UserAction.ANNOTATE_STROKE_TOOL_ERASER,
+    UserAction.ANNOTATE_STROKE_TOOL_ERASER_FIRST,
   ],
   [
-    PDFMetrics.UserAction.ANNOTATE_STROKE_TOOL_HIGHLIGHTER,
-    PDFMetrics.UserAction.ANNOTATE_STROKE_TOOL_HIGHLIGHTER_FIRST,
+    UserAction.ANNOTATE_STROKE_TOOL_HIGHLIGHTER,
+    UserAction.ANNOTATE_STROKE_TOOL_HIGHLIGHTER_FIRST,
   ],
   [
-    PDFMetrics.UserAction.ANNOTATE_STROKE_DEVICE_TOUCH,
-    PDFMetrics.UserAction.ANNOTATE_STROKE_DEVICE_TOUCH_FIRST,
+    UserAction.ANNOTATE_STROKE_DEVICE_TOUCH,
+    UserAction.ANNOTATE_STROKE_DEVICE_TOUCH_FIRST,
   ],
   [
-    PDFMetrics.UserAction.ANNOTATE_STROKE_DEVICE_MOUSE,
-    PDFMetrics.UserAction.ANNOTATE_STROKE_DEVICE_MOUSE_FIRST,
+    UserAction.ANNOTATE_STROKE_DEVICE_MOUSE,
+    UserAction.ANNOTATE_STROKE_DEVICE_MOUSE_FIRST,
   ],
   [
-    PDFMetrics.UserAction.ANNOTATE_STROKE_DEVICE_PEN,
-    PDFMetrics.UserAction.ANNOTATE_STROKE_DEVICE_PEN_FIRST,
+    UserAction.ANNOTATE_STROKE_DEVICE_PEN,
+    UserAction.ANNOTATE_STROKE_DEVICE_PEN_FIRST,
   ],
   [
-    PDFMetrics.UserAction.TWO_UP_VIEW_ENABLE,
-    PDFMetrics.UserAction.TWO_UP_VIEW_ENABLE_FIRST,
+    UserAction.TWO_UP_VIEW_ENABLE,
+    UserAction.TWO_UP_VIEW_ENABLE_FIRST,
   ],
   [
-    PDFMetrics.UserAction.TWO_UP_VIEW_DISABLE,
-    PDFMetrics.UserAction.TWO_UP_VIEW_DISABLE_FIRST,
+    UserAction.TWO_UP_VIEW_DISABLE,
+    UserAction.TWO_UP_VIEW_DISABLE_FIRST,
   ],
   [
-    PDFMetrics.UserAction.ZOOM_IN,
-    PDFMetrics.UserAction.ZOOM_IN_FIRST,
+    UserAction.ZOOM_IN,
+    UserAction.ZOOM_IN_FIRST,
   ],
   [
-    PDFMetrics.UserAction.ZOOM_OUT,
-    PDFMetrics.UserAction.ZOOM_OUT_FIRST,
+    UserAction.ZOOM_OUT,
+    UserAction.ZOOM_OUT_FIRST,
   ],
   [
-    PDFMetrics.UserAction.ZOOM_CUSTOM,
-    PDFMetrics.UserAction.ZOOM_CUSTOM_FIRST,
+    UserAction.ZOOM_CUSTOM,
+    UserAction.ZOOM_CUSTOM_FIRST,
   ],
   [
-    PDFMetrics.UserAction.THUMBNAIL_NAVIGATE,
-    PDFMetrics.UserAction.THUMBNAIL_NAVIGATE_FIRST,
+    UserAction.THUMBNAIL_NAVIGATE,
+    UserAction.THUMBNAIL_NAVIGATE_FIRST,
   ],
 ]);
