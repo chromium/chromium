@@ -1338,12 +1338,6 @@ bool CanvasResourceProvider::WritePixels(const SkImageInfo& orig_info,
 }
 
 void CanvasResourceProvider::Clear() {
-  // We don't have an SkCanvas in OOPR mode so we can't do the clear below, plus
-  // OOPR already clears the canvas in BeginRaster.
-  if (UseOopRasterization()) {
-    return;
-  }
-
   // Clear the background transparent or opaque, as required. This should only
   // be called when a new resource provider is created to ensure that we're
   // not leaking data or displaying bad pixels (in the case of kOpaque
@@ -1352,9 +1346,11 @@ void CanvasResourceProvider::Clear() {
   // printing operations. See crbug.com/1003114
   DCHECK(IsValid());
   if (color_params_.GetOpacityMode() == kOpaque)
-    GetSkSurface()->getCanvas()->clear(SK_ColorBLACK);
+    Canvas()->clear(SK_ColorBLACK);
   else
-    GetSkSurface()->getCanvas()->clear(SK_ColorTRANSPARENT);
+    Canvas()->clear(SK_ColorTRANSPARENT);
+
+  FlushCanvas();
 }
 
 uint32_t CanvasResourceProvider::ContentUniqueID() const {
