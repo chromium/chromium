@@ -279,15 +279,15 @@ public class PaymentRequestImpl
             mQueryForQuota.put("basic-card-payment-options", paymentMethodData);
         }
 
-        mSpec = PaymentRequestSpec.createAndValidate(
-                details, mPaymentOptions, methodData, LocaleUtils.getDefaultLocaleString());
-        if (mSpec == null
-                || !parseAndValidateDetailsForSkipToGPayHelper(mSpec.getPaymentDetails())) {
+        if (!PaymentValidator.validatePaymentDetails(details)
+                || !parseAndValidateDetailsForSkipToGPayHelper(details)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS);
             return false;
         }
 
+        mSpec = new PaymentRequestSpec(mPaymentOptions, details, methodData.values(),
+                LocaleUtils.getDefaultLocaleString());
         if (mSpec.getRawTotal() == null) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(ErrorStrings.TOTAL_REQUIRED);
@@ -754,7 +754,7 @@ public class PaymentRequestImpl
             return;
         }
 
-        if (!mSpec.parseAndValidateDetails(details)
+        if (!PaymentValidator.validatePaymentDetails(details)
                 || !parseAndValidateDetailsForSkipToGPayHelper(details)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS);
@@ -802,7 +802,7 @@ public class PaymentRequestImpl
             return;
         }
 
-        if (!mSpec.parseAndValidateDetails(details)
+        if (!PaymentValidator.validatePaymentDetails(details)
                 || !parseAndValidateDetailsForSkipToGPayHelper(details)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS);
@@ -1307,7 +1307,11 @@ public class PaymentRequestImpl
     // PaymentAppFactoryParams implementation.
     @Override
     public Map<String, PaymentMethodData> getMethodData() {
-        return mSpec.getMethodData();
+        // TODO(crbug.com/1130343): This should only get called while mSpec is not destroyed.
+        // uncomment the following assertion after fixing the issue.
+        // assert !mSpec.isDestroyed();
+        return mSpec.isDestroyed() ? new ArrayMap<String, PaymentMethodData>()
+                                   : mSpec.getMethodData();
     }
 
     // PaymentAppFactoryParams implementation.
@@ -1586,7 +1590,6 @@ public class PaymentRequestImpl
                 if (ComponentPaymentRequestImpl.getNativeObserverForTest() != null) {
                     ComponentPaymentRequestImpl.getNativeObserverForTest().onNotSupportedError();
                 }
-
                 if (TextUtils.isEmpty(mRejectShowErrorMessage) && !isInTwa()
                         && mSpec.getMethodData().get(MethodStrings.GOOGLE_PLAY_BILLING) != null) {
                     mRejectShowErrorMessage = ErrorStrings.APP_STORE_METHOD_ONLY_SUPPORTED_IN_TWA;

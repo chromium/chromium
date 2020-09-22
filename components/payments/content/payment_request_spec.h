@@ -198,6 +198,8 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
       const;
 
   const mojom::PaymentDetails& details() const { return *details_.get(); }
+  const mojom::PaymentDetailsPtr& details_ptr() const { return details_; }
+
   const std::vector<mojom::PaymentMethodDataPtr>& method_data() const {
     return method_data_;
   }

@@ -21,6 +21,7 @@ import org.chromium.payments.mojom.PaymentValidationErrors;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -32,46 +33,21 @@ import java.util.Map;
  */
 @JNINamespace("payments::android")
 public class PaymentRequestSpec {
-    // TODO(crbug.com/1124917): these parameters duplicate with those in payment_request_spec from
-    // the blink side. We need to de-dup them.
-    private final Map<String, PaymentMethodData> mMethodData;
-    private final String mId;
-    private Map<String, PaymentDetailsModifier> mModifiers = new ArrayMap<>();
-    private List<PaymentShippingOption> mRawShippingOptions;
-    private List<PaymentItem> mRawLineItems;
-    private PaymentItem mRawTotal;
     private long mNativePointer;
-    private PaymentDetails mPaymentDetails;
 
     /**
-     * Creates a valid instance of PaymentRequestSpec with payment parameters, and saves the
-     * parameters in the instance.
-     * @param details The payment details, e.g., the total amount.
+     * Stores the information received from the renderer that invoked the Payment Request API.
+     * Creates an instance of native payment_request_spec.cc with the given parameters.
      * @param options The payment options, e.g., whether shipping is requested.
-     * @param methodData The map of supported payment method identifiers and corresponding payment
+     * @param details The payment details, e.g., the total amount.
+     * @param methodData The list of supported payment method identifiers and corresponding payment
+     * method specific data.
      * @param appLocale The current application locale.
-     * @return The created instance if valid; null otherwise.
      */
-    @Nullable
-    public static PaymentRequestSpec createAndValidate(PaymentDetails details,
-            PaymentOptions options, Map<String, PaymentMethodData> methodData, String appLocale) {
-        PaymentRequestSpec spec = new PaymentRequestSpec(details, methodData);
-        if (!spec.parseAndValidateDetails(details)) return null;
-        spec.createNative(options, appLocale);
-        return spec;
-    }
-
-    private PaymentRequestSpec(PaymentDetails details, Map<String, PaymentMethodData> methodData) {
-        mPaymentDetails = details;
-        mId = mPaymentDetails.id;
-        mMethodData = methodData;
-    }
-
-    private void createNative(PaymentOptions options, String appLocale) {
-        assert mNativePointer == 0;
-        mNativePointer =
-                PaymentRequestSpecJni.get().create(options.serialize(), mPaymentDetails.serialize(),
-                        MojoStructCollection.serialize(mMethodData.values()), appLocale);
+    public PaymentRequestSpec(PaymentOptions options, PaymentDetails details,
+            Collection<PaymentMethodData> methodData, String appLocale) {
+        mNativePointer = PaymentRequestSpecJni.get().create(options.serialize(),
+                details.serialize(), MojoStructCollection.serialize(methodData), appLocale);
     }
 
     /** @return Whether destroy() has been called. */
@@ -84,7 +60,15 @@ public class PaymentRequestSpec {
      * method specific data. This value is still available after the instance is destroyed.
      */
     public Map<String, PaymentMethodData> getMethodData() {
-        return mMethodData;
+        Map<String, PaymentMethodData> methodDataMap = new ArrayMap<>();
+        byte[][] methodDataByteArrays = PaymentRequestSpecJni.get().getMethodData(mNativePointer);
+        for (int i = 0; i < methodDataByteArrays.length; i++) {
+            PaymentMethodData methodData =
+                    PaymentMethodData.deserialize(ByteBuffer.wrap(methodDataByteArrays[i]));
+            String method = methodData.supportedMethod;
+            methodDataMap.put(method, methodData);
+        }
+        return methodDataMap;
     }
 
     /**
@@ -94,7 +78,16 @@ public class PaymentRequestSpec {
      * instance is destroyed.
      */
     public Map<String, PaymentDetailsModifier> getModifiers() {
-        return mModifiers;
+        Map<String, PaymentDetailsModifier> modifiers = new ArrayMap<>();
+        PaymentDetails details = getPaymentDetails();
+        if (details.modifiers != null) {
+            for (int i = 0; i < details.modifiers.length; i++) {
+                PaymentDetailsModifier modifier = details.modifiers[i];
+                String method = modifier.methodData.supportedMethod;
+                modifiers.put(method, modifier);
+            }
+        }
+        return modifiers;
     }
 
     /**
@@ -102,7 +95,7 @@ public class PaymentRequestSpec {
      *         the instance is destroyed.
      */
     public String getId() {
-        return mId;
+        return getPaymentDetails().id;
     }
 
     /**
@@ -111,7 +104,10 @@ public class PaymentRequestSpec {
      * available after the instance is destroyed.
      */
     public List<PaymentShippingOption> getRawShippingOptions() {
-        return mRawShippingOptions;
+        PaymentDetails details = getPaymentDetails();
+        return Collections.unmodifiableList(details.shippingOptions != null
+                        ? Arrays.asList(details.shippingOptions)
+                        : new ArrayList<>());
     }
 
     /**
@@ -119,7 +115,10 @@ public class PaymentRequestSpec {
      * passed to the payment app. This value is still available after the instance is destroyed.
      */
     public List<PaymentItem> getRawLineItems() {
-        return mRawLineItems;
+        PaymentDetails details = getPaymentDetails();
+        return Collections.unmodifiableList(details.displayItems != null
+                        ? Arrays.asList(details.displayItems)
+                        : new ArrayList<>());
     }
 
     /**
@@ -127,57 +126,13 @@ public class PaymentRequestSpec {
      * to the payment app. This value is still available after the instance is destroyed.
      */
     public PaymentItem getRawTotal() {
-        return mRawTotal;
+        return getPaymentDetails().total;
     }
 
     /** @return The payment details specified in the payment request. */
     public PaymentDetails getPaymentDetails() {
-        return mPaymentDetails;
-    }
-
-    /**
-     * Sets the total, display line items, and shipping options based on input and returns the
-     * status boolean. That status is true for valid data, false for invalid data. If the input is
-     * invalid, disconnects from the client. Both raw and UI versions of data are updated.
-     *
-     * @param details The total, line items, and shipping options to parse, validate, and save in
-     *                member variables.
-     * @return True if the data is valid. False if the data is invalid.
-     */
-    public boolean parseAndValidateDetails(PaymentDetails details) {
-        if (!PaymentValidator.validatePaymentDetails(details)) return false;
-
-        if (details.total != null) {
-            mRawTotal = details.total;
-        }
-
-        if (mRawLineItems == null || details.displayItems != null) {
-            mRawLineItems = Collections.unmodifiableList(details.displayItems != null
-                            ? Arrays.asList(details.displayItems)
-                            : new ArrayList<>());
-        }
-
-        if (details.modifiers != null) {
-            if (details.modifiers.length == 0) mModifiers.clear();
-
-            for (int i = 0; i < details.modifiers.length; i++) {
-                PaymentDetailsModifier modifier = details.modifiers[i];
-                String method = modifier.methodData.supportedMethod;
-                mModifiers.put(method, modifier);
-            }
-        }
-
-        if (details.shippingOptions != null) {
-            mRawShippingOptions =
-                    Collections.unmodifiableList(Arrays.asList(details.shippingOptions));
-        } else if (mRawShippingOptions == null) {
-            mRawShippingOptions = Collections.unmodifiableList(new ArrayList<>());
-        }
-
-        assert mRawTotal != null;
-        assert mRawLineItems != null;
-
-        return true;
+        return PaymentDetails.deserialize(
+                ByteBuffer.wrap(PaymentRequestSpecJni.get().getPaymentDetails(mNativePointer)));
     }
 
     /**
@@ -186,7 +141,6 @@ public class PaymentRequestSpec {
      * @param details The updated payment details, e.g., the updated total amount.
      */
     public void updateWith(PaymentDetails details) {
-        mPaymentDetails = details;
         PaymentRequestSpecJni.get().updateWith(mNativePointer, details.serialize());
     }
 
@@ -236,5 +190,7 @@ public class PaymentRequestSpec {
         void recomputeSpecForDetails(long nativePaymentRequestSpec);
         String selectedShippingOptionError(long nativePaymentRequestSpec);
         void destroy(long nativePaymentRequestSpec);
+        byte[] getPaymentDetails(long nativePaymentRequestSpec);
+        byte[][] getMethodData(long nativePaymentRequestSpec);
     }
 }

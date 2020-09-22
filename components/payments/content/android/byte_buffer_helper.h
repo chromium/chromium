@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <vector>
 
+#include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
@@ -56,6 +57,18 @@ bool DeserializeFromJavaByteBufferArray(
     out->push_back(std::move(data));
   }
   return true;
+}
+
+// Serializes a vector of native Mojo objects into a Java byte[][].
+template <typename T>
+base::android::ScopedJavaLocalRef<jobjectArray>
+SerializeToJavaArrayOfByteArrays(JNIEnv* env,
+                                 const std::vector<mojo::StructPtr<T>>& input) {
+  std::vector<std::vector<uint8_t>> serialized_elements(input.size());
+  for (size_t i = 0; i < input.size(); i++) {
+    serialized_elements[i] = T::Serialize(&input[i]);
+  }
+  return base::android::ToJavaArrayOfByteArray(env, serialized_elements);
 }
 
 }  // namespace android
