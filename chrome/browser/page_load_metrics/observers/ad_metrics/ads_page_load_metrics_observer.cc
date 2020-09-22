@@ -192,6 +192,35 @@ bool AdsPageLoadMetricsObserver::IsSubframeSameOriginToMainFrame(
   return subframe_origin.IsSameOriginWith(mainframe_origin);
 }
 
+AdsPageLoadMetricsObserver::FrameInstance::FrameInstance()
+    : owned_frame_data_(nullptr), unowned_frame_data_(nullptr) {}
+
+AdsPageLoadMetricsObserver::FrameInstance::FrameInstance(
+    std::unique_ptr<FrameData> frame_data)
+    : owned_frame_data_(std::move(frame_data)), unowned_frame_data_(nullptr) {}
+
+AdsPageLoadMetricsObserver::FrameInstance::FrameInstance(
+    base::WeakPtr<FrameData> frame_data)
+    : owned_frame_data_(nullptr), unowned_frame_data_(frame_data) {}
+
+AdsPageLoadMetricsObserver::FrameInstance::~FrameInstance() = default;
+
+FrameData* AdsPageLoadMetricsObserver::FrameInstance::Get() {
+  if (owned_frame_data_)
+    return owned_frame_data_.get();
+  if (unowned_frame_data_)
+    return unowned_frame_data_.get();
+
+  DCHECK(!unowned_frame_data_.WasInvalidated());
+  return nullptr;
+}
+
+FrameData* AdsPageLoadMetricsObserver::FrameInstance::GetOwnedFrame() {
+  if (owned_frame_data_)
+    return owned_frame_data_.get();
+  return nullptr;
+}
+
 AdsPageLoadMetricsObserver::AggregateFrameInfo::AggregateFrameInfo()
     : bytes(0), network_bytes(0), num_frames(0) {}
 
@@ -262,9 +291,13 @@ AdsPageLoadMetricsObserver::OnCommit(
   main_frame_data_->UpdateForNavigation(navigation_handle->GetRenderFrameHost(),
                                         true /* frame_navigated */);
 
-  // The main frame is never considered an ad.
-  ad_frames_data_[navigation_handle->GetFrameTreeNodeId()] =
-      ad_frames_data_storage_.end();
+  // The main frame is never considered an ad, so it should reference an empty
+  // FrameInstance.
+  ad_frames_data_.emplace(
+      std::piecewise_construct,
+      std::forward_as_tuple(navigation_handle->GetFrameTreeNodeId()),
+      std::forward_as_tuple());
+
   ProcessOngoingNavigationResource(navigation_handle->GetRenderFrameHost());
 
   // If the frame is blocked by the subresource filter, we don't want to record
@@ -336,24 +369,25 @@ void AdsPageLoadMetricsObserver::UpdateAdFrameData(
   // If an existing subframe is navigating and it was an ad previously that
   // hasn't navigated yet, then we need to update it.
   const auto& id_and_data = ad_frames_data_.find(ad_id);
-  FrameData* previous_data = nullptr;
-  if (id_and_data != ad_frames_data_.end() &&
-      id_and_data->second != ad_frames_data_storage_.end()) {
+  FrameData* previous_data = id_and_data != ad_frames_data_.end()
+                                 ? id_and_data->second.Get()
+                                 : nullptr;
+
+  if (previous_data) {
     // We should not get new ad frame notifications for frames that have already
     // navigated unless there is a ongoing navigation in the frame.
     DCHECK(frame_navigated);
-    previous_data = &*id_and_data->second;
 
     if (should_ignore_detected_ad &&
         (ad_id == previous_data->root_frame_tree_node_id())) {
-      page_ad_density_tracker_.RemoveRect(id_and_data->first);
-      ad_frames_data_storage_.erase(id_and_data->second);
+      page_ad_density_tracker_.RemoveRect(ad_id);
       ad_frames_data_.erase(id_and_data);
 
-      // Make sure to set the ad_frame_data_ entry to the storage end iterator.
-      // This means the frame was seen by AdsPLMO and not tagged as an ad. This
+      // Replace the tracked frame with null frame reference. This
       // allows child frames to still be tracked as ads.
-      ad_frames_data_[ad_id] = ad_frames_data_storage_.end();
+      ad_frames_data_.emplace(std::piecewise_construct,
+                              std::forward_as_tuple(ad_id),
+                              std::forward_as_tuple());
       RecordAdFrameIgnoredByRestrictedAdTagging(true /* ignored */);
       return;
     }
@@ -378,13 +412,7 @@ void AdsPageLoadMetricsObserver::UpdateAdFrameData(
   if (!parent_exists)
     return;
 
-  // |ad_data_iterator->second| can point to |ad_frames_data_storage.end()|
-  // indicating that the parent of this frame is not an ad.
-  auto ad_data_iterator = parent_id_and_data->second;
-
-  FrameData* ad_data = nullptr;
-  if (parent_id_and_data->second != ad_frames_data_storage_.end())
-    ad_data = &*ad_data_iterator;
+  FrameData* ad_data = parent_id_and_data->second.Get();
 
   bool should_create_new_frame_data =
       !ad_data && is_adframe && !should_ignore_detected_ad;
@@ -413,22 +441,36 @@ void AdsPageLoadMetricsObserver::UpdateAdFrameData(
           base::TimeDelta::FromSeconds(features::kMemoryPollInterval.Get()));
       memory_request_->AddObserver(this);
     }
-    ad_frames_data_storage_.emplace_back(
+
+    // Construct a new FrameData to track this ad frame, and update it for the
+    // navigation.
+    auto frame_data = std::make_unique<FrameData>(
         ad_id,
         heavy_ad_threshold_noise_provider_->GetNetworkThresholdNoiseForFrame());
-    ad_data_iterator = --ad_frames_data_storage_.end();
-    ad_data = &*ad_data_iterator;
-    ad_data->UpdateForNavigation(ad_host, frame_navigated);
+    frame_data->UpdateForNavigation(ad_host, frame_navigated);
+    frame_data->MaybeUpdateFrameDepth(ad_host);
+
+    FrameInstance frame_instance(std::move(frame_data));
+    ad_frames_data_[ad_id] = std::move(frame_instance);
+    return;
   }
 
-  // Maybe update frame depth based on the new ad frames distance to the ad
-  // root.
   if (ad_data)
     ad_data->MaybeUpdateFrameDepth(ad_host);
 
-  // If there was previous data, then we don't want to overwrite this frame.
-  if (!previous_data)
-    ad_frames_data_[ad_id] = ad_data_iterator;
+  // Don't overwrite the frame id if it is associated with an ad.
+  if (previous_data)
+    return;
+
+  // Frames who are the children of ad frames should be associated with the
+  // ads FrameInstance. Otherwise, |ad_id| should be associated with an empty
+  // FrameInstance to indicate it is not associated with an ad, but that the
+  // frames navigation has been observed.
+  FrameInstance frame_instance;
+  if (ad_data)
+    frame_instance = FrameInstance(ad_data->AsWeakPtr());
+
+  ad_frames_data_[ad_id] = std::move(frame_instance);
 }
 
 void AdsPageLoadMetricsObserver::ReadyToCommitNextNavigation(
@@ -631,24 +673,14 @@ void AdsPageLoadMetricsObserver::OnFrameDeleted(
   if (id_and_data == ad_frames_data_.end())
     return;
 
-  FrameData* ancestor_data = nullptr;
-  if (id_and_data->second != ad_frames_data_storage_.end())
-    ancestor_data = &*id_and_data->second;
-
-  DCHECK_EQ(id_and_data->second == ad_frames_data_storage_.end(),
-            !ancestor_data);
-
-  // If the root ad frame has been deleted, flush histograms for the frame and
-  // remove it from storage. All child frames should be deleted by this point.
-  if (ancestor_data && ancestor_data->root_frame_tree_node_id() ==
-                           render_frame_host->GetFrameTreeNodeId()) {
+  // If the root ad frame has been deleted, flush histograms for the frame. All
+  // child frames should be deleted by this point.
+  if (FrameData* ancestor_data = id_and_data->second.GetOwnedFrame()) {
     RecordPerFrameMetrics(*ancestor_data, GetDelegate().GetPageUkmSourceId());
-    DCHECK(id_and_data->second != ad_frames_data_storage_.end());
-    ad_frames_data_storage_.erase(id_and_data->second);
     page_ad_density_tracker_.RemoveRect(id_and_data->first);
   }
 
-  // Delete this frame's entry from the map now that the store is deleted.
+  // Delete the frame data.
   ad_frames_data_.erase(id_and_data);
 }
 
@@ -751,10 +783,7 @@ void AdsPageLoadMetricsObserver::ProcessResourceForFrame(
 
   // Determine if the frame (or its ancestor) is an ad, if so attribute the
   // bytes to the highest ad ancestor.
-  if (id_and_data->second == ad_frames_data_storage_.end())
-    return;
-
-  FrameData* ancestor_data = &*id_and_data->second;
+  FrameData* ancestor_data = id_and_data->second.Get();
   if (!ancestor_data)
     return;
 
@@ -820,8 +849,12 @@ void AdsPageLoadMetricsObserver::RecordPageResourceTotalHistograms(
 
 void AdsPageLoadMetricsObserver::RecordHistograms(ukm::SourceId source_id) {
   // Record per-frame metrics for any existing frames.
-  for (const auto& frame_data : ad_frames_data_storage_) {
-    RecordPerFrameMetrics(frame_data, source_id);
+  for (auto& id_and_instance : ad_frames_data_) {
+    // We only log metrics for FrameInstance which own a FrameData, otherwise we
+    // would be double counting frames.
+    if (FrameData* frame_data = id_and_instance.second.GetOwnedFrame()) {
+      RecordPerFrameMetrics(*frame_data, source_id);
+    }
   }
 
   RecordAggregateHistogramsForAdTagging(
@@ -1153,12 +1186,7 @@ FrameData* AdsPageLoadMetricsObserver::FindFrameData(FrameTreeNodeId id) {
   if (id_and_data == ad_frames_data_.end())
     return nullptr;
 
-  // If the iterator is not valid, this FrameTreeNodeId is not associated with
-  // an ad.
-  if (id_and_data->second == ad_frames_data_storage_.end())
-    return nullptr;
-
-  return &*id_and_data->second;
+  return id_and_data->second.Get();
 }
 
 void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(

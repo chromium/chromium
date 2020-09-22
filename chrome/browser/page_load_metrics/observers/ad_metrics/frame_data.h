@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_AD_METRICS_FRAME_DATA_H_
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
@@ -39,7 +40,7 @@ const int kMaxPeakWindowedPercent = 50;
 
 // Store information received for a frame on the page. FrameData is meant
 // to represent a frame along with it's entire subtree.
-class FrameData {
+class FrameData : public base::SupportsWeakPtr<FrameData> {
  public:
   // The origin of the ad relative to the main frame's origin.
   // Note: Logged to UMA, keep in sync with CrossOriginAdStatus in enums.xml.

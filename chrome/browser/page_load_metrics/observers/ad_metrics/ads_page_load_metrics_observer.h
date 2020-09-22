@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/scoped_observer.h"
 #include "base/time/tick_clock.h"
@@ -146,6 +147,36 @@ class AdsPageLoadMetricsObserver
   }
 
  private:
+  // Object which maps to a FrameData object. This can either own the FrameData
+  // object, or hold a reference to a FrameData owned by a different
+  // FrameInstance.
+  class FrameInstance {
+   public:
+    // Default constructor to indicate no frame is referenced.
+    FrameInstance();
+    explicit FrameInstance(std::unique_ptr<FrameData> frame_data);
+    explicit FrameInstance(base::WeakPtr<FrameData> frame_data);
+    FrameInstance& operator=(FrameInstance&& other) = default;
+
+    FrameInstance(const FrameInstance& other) = delete;
+    FrameInstance& operator=(const FrameInstance& other) = delete;
+
+    ~FrameInstance();
+
+    // Returns underlying pointer from |owned_frame_data_|,
+    // |unowned_frame_data_| or nullptr.
+    FrameData* Get();
+
+    // Returns underlying pointer from |owned_frame_data_| if it exists.
+    FrameData* GetOwnedFrame();
+
+   private:
+    // Only |owned_frame_data_| or |unowned_frame_data_| can be set at one time.
+    // Both can be nullptr.
+    std::unique_ptr<FrameData> owned_frame_data_;
+    base::WeakPtr<FrameData> unowned_frame_data_;
+  };
+
   // subresource_filter::SubresourceFilterObserver:
   void OnAdSubframeDetected(
       content::RenderFrameHost* render_frame_host) override;
@@ -202,7 +233,7 @@ class AdsPageLoadMetricsObserver
   void RecordAdFrameIgnoredByRestrictedAdTagging(bool ignored);
 
   // Find the FrameData object associated with a given FrameTreeNodeId in
-  // |ad_frames_data_storage_|.
+  // |ad_frames_data_|.
   FrameData* FindFrameData(FrameTreeNodeId id);
 
   // Triggers the heavy ad intervention page in the target frame if it is safe
@@ -216,19 +247,12 @@ class AdsPageLoadMetricsObserver
   bool IsBlocklisted();
   HeavyAdBlocklist* GetHeavyAdBlocklist();
 
-  // Stores the size data of each ad frame. Pointed to by ad_frames_ so use a
-  // data structure that won't move the data around. This only stores ad frames
-  // that are actively on the page. When a frame is destroyed, so should its
-  // FrameData.
-  std::list<FrameData> ad_frames_data_storage_;
-
-  // Maps a frame (by id) to the corresponding iterator of
-  // |ad_frames_data_storage_| responsible for the frame. Multiple frame ids can
-  // point to the same FrameData. The responsible frame is the top-most frame
-  // labeled as an ad in the frame's ancestry, which may be itself. If no
-  // responsible frame is found, the data is an iterator to the end of
-  // |ad_frames_data_storage_|.
-  std::map<FrameTreeNodeId, std::list<FrameData>::iterator> ad_frames_data_;
+  // Maps a frame (by id) to the corresponding FrameInstance. Multiple frame ids
+  // can point to the same underlying FrameData. The responsible frame is the
+  // top-most frame labeled as an ad in the frame's ancestry, which may be
+  // itself. If the frame is not an ad, the id will point to a FrameInstance
+  // where FrameInstance::Get() returns nullptr..
+  std::map<FrameTreeNodeId, FrameInstance> ad_frames_data_;
 
   int64_t navigation_id_ = -1;
   bool subresource_filter_is_enabled_ = false;
