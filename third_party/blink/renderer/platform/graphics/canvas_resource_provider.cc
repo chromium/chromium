@@ -890,10 +890,16 @@ CanvasResourceProvider::CreateSharedImageProvider(
     RasterMode raster_mode,
     bool is_origin_top_left,
     uint32_t shared_image_usage_flags) {
-  if (!context_provider_wrapper)
-    return nullptr;
+  // IsGpuCompositingEnabled can re-create the context if it has been lost, do
+  // this up front so that we can fail early and not expose ourselves to
+  // use after free bugs (crbug.com/1126424)
+  const bool is_gpu_compositing_enabled =
+      SharedGpuContext::IsGpuCompositingEnabled();
 
-  if (size.Width() <= 0 || size.Height() <= 0)
+  // If the context is lost we don't want to re-create it here, the resulting
+  // resource provider would be invalid anyway
+  if (!context_provider_wrapper ||
+      context_provider_wrapper->ContextProvider()->IsContextLost())
     return nullptr;
 
   const auto& capabilities =
@@ -909,7 +915,7 @@ CanvasResourceProvider::CreateSharedImageProvider(
   }
 
   const bool is_gpu_memory_buffer_image_allowed =
-      SharedGpuContext::IsGpuCompositingEnabled() &&
+      is_gpu_compositing_enabled &&
       IsGMBAllowed(size, color_params, capabilities) &&
       Platform::Current()->GetGpuMemoryBufferManager();
 
@@ -946,6 +952,9 @@ CanvasResourceProvider::CreatePassThroughProvider(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
     bool is_origin_top_left) {
+  // SharedGpuContext::IsGpuCompositingEnabled can potentially replace the
+  // context_provider_wrapper, so it's important to call that first as it can
+  // invalidate the weak pointer.
   if (!SharedGpuContext::IsGpuCompositingEnabled() || !context_provider_wrapper)
     return nullptr;
 
@@ -986,6 +995,9 @@ CanvasResourceProvider::CreateSwapChainProvider(
     base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
     bool is_origin_top_left) {
   DCHECK(is_origin_top_left);
+  // SharedGpuContext::IsGpuCompositingEnabled can potentially replace the
+  // context_provider_wrapper, so it's important to call that first as it can
+  // invalidate the weak pointer.
   if (!SharedGpuContext::IsGpuCompositingEnabled() || !context_provider_wrapper)
     return nullptr;
 
