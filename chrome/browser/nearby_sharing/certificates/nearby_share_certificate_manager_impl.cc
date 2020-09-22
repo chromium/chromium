@@ -526,10 +526,10 @@ void NearbyShareCertificateManagerImpl::OnDownloadPublicCertificatesRequest(
   if (page_token)
     request.set_page_token(*page_token);
 
-  for (const std::string& id :
-       certificate_storage_->GetPublicCertificateIds()) {
-    request.add_secret_ids(id);
-  }
+  // TODO(b/168701170): One Platform has a length restriction on request URLs.
+  // Adding all secret IDs to the request, and subsequently as query parameters,
+  // could result in hitting this limit. Add the secret IDs of all locally
+  // stored public certificates when this length restriction is circumvented.
 
   NS_LOG(VERBOSE) << __func__ << ": Downloading public certificates.";
 
@@ -539,8 +539,6 @@ void NearbyShareCertificateManagerImpl::OnDownloadPublicCertificatesRequest(
           &NearbyShareCertificateManagerImpl::OnListPublicCertificatesTimeout,
           base::Unretained(this), page_number, certificate_count));
 
-  // TODO(https://crbug.com/1116910): Enforce a timeout for each
-  // ListPublicCertificates call.
   client_ = client_factory_->CreateInstance();
   client_->ListPublicCertificates(
       request,

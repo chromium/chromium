@@ -320,11 +320,14 @@ class NearbyShareCertificateManagerImplTest
       const nearbyshare::proto::ListPublicCertificatesRequest& request,
       const std::string& page_token) {
     EXPECT_EQ(request.parent(), std::string(kDeviceIdPrefix) + kDeviceId);
-    ASSERT_EQ(request.secret_ids_size(),
-              static_cast<int>(kPublicCertificateIds.size()));
-    for (size_t i = 0; i < kPublicCertificateIds.size(); ++i) {
-      EXPECT_EQ(request.secret_ids(i), kPublicCertificateIds[i]);
-    }
+
+    // TODO(b/168701170): One Platform has a length restriction on request URLs.
+    // Adding all secret IDs to the request, and subsequently as query
+    // parameters, could result in hitting this limit. Add the secret IDs of all
+    // locally stored public certificates when this length restriction is
+    // circumvented.
+    EXPECT_TRUE(request.secret_ids().empty());
+
     EXPECT_EQ(request.page_token(), page_token);
   }
 
