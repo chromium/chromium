@@ -4163,8 +4163,8 @@
   },
   {
     "name": "smbfs-file-shares",
-    "owners": [ "amistry", "dats" ],
-    "expiry_milestone": 86
+    "owners": [ "simmonsjosh@google.com", "dats" ],
+    "expiry_milestone": 90
   },
   {
     "name": "smooth-scrolling",
