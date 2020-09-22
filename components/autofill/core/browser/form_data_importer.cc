@@ -134,7 +134,8 @@ bool IsMinimumAddress(const AutofillProfile& profile,
   // Check the |ADDRESS_HOME_LINE1| requirement.
   bool is_line1_missing = false;
   if (country.requires_line1() &&
-      profile.GetRawInfo(ADDRESS_HOME_LINE1).empty()) {
+      profile.GetRawInfo(ADDRESS_HOME_LINE1).empty() &&
+      profile.GetRawInfo(ADDRESS_HOME_STREET_NAME).empty()) {
     if (import_log_buffer) {
       *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
                          << "Missing required ADDRESS_HOME_LINE1." << CTag{};

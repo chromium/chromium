@@ -183,7 +183,7 @@ bool AddressField::ParseAddressFieldSequence(AutofillScanner* scanner) {
 
   // TODO(crbug.com/1125978): Remove once launched.
   if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForHouseNumbers)) {
+          features::kAutofillEnableSupportForMoreStructureInAddresses)) {
     return false;
   }
 

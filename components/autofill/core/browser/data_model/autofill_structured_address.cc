@@ -265,7 +265,7 @@ DependentLocality::DependentLocality(AddressComponent* parent)
     : AddressComponent(ADDRESS_HOME_DEPENDENT_LOCALITY,
                        parent,
                        {},
-                       MergeMode::kReplaceSubset) {}
+                       MergeMode::kReplaceSubset | MergeMode::kReplaceEmpty) {}
 
 DependentLocality::~DependentLocality() = default;
 
@@ -309,7 +309,7 @@ SortingCode::SortingCode(AddressComponent* parent)
     : AddressComponent(ADDRESS_HOME_SORTING_CODE,
                        parent,
                        {},
-                       MergeMode::kReplaceEmpty) {}
+                       MergeMode::kReplaceEmpty | kUseMostRecentSubstring) {}
 
 SortingCode::~SortingCode() = default;
 

@@ -302,6 +302,158 @@ class FormDataImporterTest : public FormDataImporterTestBase,
 };
 
 // ImportAddressProfiles tests.
+TEST_P(FormDataImporterTest, ImportStructuredAddressProfile) {
+  base::test::ScopedFeatureList structured_addresses_feature;
+  structured_addresses_feature.InitAndEnableFeature(
+      features::kAutofillEnableSupportForMoreStructureInAddresses);
+
+  FormData form;
+  form.url = GURL("https://wwww.foo.com");
+
+  FormFieldData field;
+  test::CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
+                            "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Email:", "email", "theprez@gmail.com", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Address:", "address1", "21 Laussat St", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("City:", "city", "San Francisco", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("State:", "state", "California", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Zip:", "zip", "94102", "text", &field);
+  form.fields.push_back(field);
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes();
+  ImportAddressProfiles(/*extraction_successful=*/true, form_structure);
+
+  const std::vector<AutofillProfile*>& results =
+      personal_data_manager_->GetProfiles();
+  ASSERT_EQ(1U, results.size());
+
+  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER),
+            base::ASCIIToUTF16("21"));
+  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STREET_NAME),
+            base::ASCIIToUTF16("Laussat St"));
+  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
+            base::ASCIIToUTF16("21 Laussat St"));
+
+  EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER),
+            structured_address::VerificationStatus::kParsed);
+  EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_STREET_NAME),
+            structured_address::VerificationStatus::kParsed);
+  EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_STREET_ADDRESS),
+            structured_address::VerificationStatus::kObserved);
+}
+
+TEST_P(FormDataImporterTest,
+       ImportStructuredAddressProfile_StreetNameAndHouseNumber) {
+  base::test::ScopedFeatureList structured_addresses_feature;
+  structured_addresses_feature.InitAndEnableFeature(
+      features::kAutofillEnableSupportForMoreStructureInAddresses);
+
+  FormData form;
+  form.url = GURL("https://wwww.foo.com");
+
+  FormFieldData field;
+  test::CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
+                            "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Email:", "email", "theprez@gmail.com", "text",
+                            &field);
+  form.fields.push_back(field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Street name:", "street_name", "Laussat St", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("House number:", "house_number", "21", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("City:", "city", "San Francisco", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("State:", "state", "California", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Zip:", "zip", "94102", "text", &field);
+  form.fields.push_back(field);
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes();
+  ImportAddressProfiles(/*extraction_successful=*/true, form_structure);
+
+  const std::vector<AutofillProfile*>& results =
+      personal_data_manager_->GetProfiles();
+  ASSERT_EQ(1U, results.size());
+
+  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER),
+            base::ASCIIToUTF16("21"));
+  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STREET_NAME),
+            base::ASCIIToUTF16("Laussat St"));
+  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
+            base::ASCIIToUTF16("21 Laussat St"));
+
+  EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER),
+            structured_address::VerificationStatus::kObserved);
+  EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_STREET_NAME),
+            structured_address::VerificationStatus::kObserved);
+  EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_STREET_ADDRESS),
+            structured_address::VerificationStatus::kFormatted);
+}
+
+TEST_P(FormDataImporterTest,
+       ImportStructuredAddressProfile_GermanStreetNameAndHouseNumber) {
+  base::test::ScopedFeatureList structured_addresses_feature;
+  structured_addresses_feature.InitAndEnableFeature(
+      features::kAutofillEnableSupportForMoreStructureInAddresses);
+
+  FormData form;
+  form.url = GURL("https://wwww.foo.com");
+
+  FormFieldData field;
+  test::CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
+                            "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Email:", "email", "theprez@gmail.com", "text",
+                            &field);
+  form.fields.push_back(field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Street name:", "street_name", "Hermann Strasse",
+                            "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("House number:", "house_number", "23", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("City:", "city", "Munich", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Country:", "country", "Germany", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Zip:", "zip", "80992", "text", &field);
+  form.fields.push_back(field);
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes();
+  ImportAddressProfiles(/*extraction_successful=*/true, form_structure);
+
+  const std::vector<AutofillProfile*>& results =
+      personal_data_manager_->GetProfiles();
+  ASSERT_EQ(1U, results.size());
+
+  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER),
+            base::ASCIIToUTF16("23"));
+  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STREET_NAME),
+            base::ASCIIToUTF16("Hermann Strasse"));
+  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
+            base::ASCIIToUTF16("Hermann Strasse 23"));
+
+  EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER),
+            structured_address::VerificationStatus::kObserved);
+  EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_STREET_NAME),
+            structured_address::VerificationStatus::kObserved);
+  EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_STREET_ADDRESS),
+            structured_address::VerificationStatus::kFormatted);
+}
+
+// ImportAddressProfiles tests.
 TEST_P(FormDataImporterTest, ImportStructuredNameAddressProfile) {
   base::test::ScopedFeatureList structured_addresses_feature;
   structured_addresses_feature.InitAndEnableFeature(

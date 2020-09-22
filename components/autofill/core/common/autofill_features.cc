@@ -109,11 +109,6 @@ const base::Feature kAutofillEnableSupportForMergingSubsetNames{
     "AutofillEnableSupportForMergingSubsetNames",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables filling support for separate house number fields.
-// TODO(crbug.com/1125978): Remove once launched.
-const base::Feature kAutofillEnableSupportForHouseNumbers{
-    "AutofillEnableSupportForHouseNumbers", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls whether or not a minimum number of fields is required before
 // heuristic field type prediction is run for a form.
 const base::Feature kAutofillEnforceMinRequiredFieldsForHeuristics{

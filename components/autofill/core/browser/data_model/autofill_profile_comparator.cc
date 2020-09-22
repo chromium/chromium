@@ -666,6 +666,15 @@ bool AutofillProfileComparator::MergeAddresses(const AutofillProfile& p1,
                                                Address* address) const {
   DCHECK(HaveMergeableAddresses(p1, p2));
 
+  // TODO(crbug.com/1130194): Clean legacy implementation once structured
+  // addresses are fully launched.
+  if (structured_address::StructuredAddressesEnabled()) {
+    // Note that p1 is the newer address. Using p2 as the base.
+    *address = p2.GetAddress();
+    return address->MergeStructuredAddress(p1.GetAddress(),
+                                           p2.use_date() < p1.use_date());
+  }
+
   // One of the countries is empty or they are the same modulo case, so we just
   // have to find the non-empty one, if any.
   const AutofillType kCountryCode(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);
@@ -1102,6 +1111,13 @@ bool AutofillProfileComparator::HaveMergeablePhoneNumbers(
 bool AutofillProfileComparator::HaveMergeableAddresses(
     const AutofillProfile& p1,
     const AutofillProfile& p2) const {
+  // TODO(crbug.com/1130194): Clean legacy implementation once structured
+  // addresses are fully launched.
+  if (structured_address::StructuredAddressesEnabled()) {
+    // Note that p1 is the newer address. Using p2 as the base.
+    return p2.GetAddress().IsStructuredAddressMergeable(p1.GetAddress());
+  }
+
   // If the address are not in the same country, then they're not the same. If
   // one of the address countries is unknown/invalid the comparison continues.
   const AutofillType kCountryCode(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);

@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 
 #include <algorithm>
-#include <iostream>
 #include <map>
 #include <string>
 #include <utility>
@@ -713,14 +712,12 @@ bool AddressComponent::IsMergeableWithComponent(
   if (*this == newer_component)
     return true;
 
-  if ((merge_mode_ & kReplaceEmpty) &&
-      (ValueForComparison().empty() || value_newer.empty())) {
+  if ((merge_mode_ & kReplaceEmpty) && (value.empty() || value_newer.empty())) {
     return true;
   }
 
   if (merge_mode_ & kUseBetterOrNewerForSameValue) {
-    if (base::ToUpperASCII(ValueForComparison()) ==
-        base::ToUpperASCII(value_newer)) {
+    if (base::ToUpperASCII(value) == base::ToUpperASCII(value_newer)) {
       return true;
     }
   }
@@ -728,11 +725,9 @@ bool AddressComponent::IsMergeableWithComponent(
   SortedTokenComparisonResult token_comparison_result =
       CompareSortedTokens(value, value_newer);
 
-  SortedTokenComparisonStatus status = token_comparison_result.status;
-
   if ((merge_mode_ & (kRecursivelyMergeTokenEquivalentValues |
                       kRecursivelyMergeSingleTokenSubset)) &&
-      status == MATCH) {
+      token_comparison_result.status == MATCH) {
     return true;
   }
 
@@ -753,8 +748,8 @@ bool AddressComponent::IsMergeableWithComponent(
   // If the one value is a substring of the other, use the substring of the
   // corresponding mode is active.
   if ((merge_mode_ & kUseMostRecentSubstring) &&
-      (ValueForComparison().find(value_newer) != base::string16::npos ||
-       value_newer.find(ValueForComparison()) != base::string16::npos)) {
+      (value.find(value_newer) != base::string16::npos ||
+       value_newer.find(value) != base::string16::npos)) {
     return true;
   }
 
@@ -818,7 +813,6 @@ bool AddressComponent::MergeWithComponent(
   if ((merge_mode_ & kRecursivelyMergeTokenEquivalentValues) &&
       (token_comparison_result.status == MATCH)) {
     return MergeTokenEquivalentComponent(newer_component);
-    return true;
   }
 
   // Replace the subset with the superset if the corresponding mode is active.
