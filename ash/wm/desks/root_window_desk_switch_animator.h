@@ -299,6 +299,9 @@ class RootWindowDeskSwitchAnimator : public ui::ImplicitAnimationObserver {
   // of the desk indices.
   const int x_translation_offset_;
 
+  // The amount of padding in dips on the edges of the animation layer.
+  const int edge_padding_width_dp_;
+
   // Number of retires for taking the starting and ending screenshots, if we
   // get an empty result.
   int starting_desk_screenshot_retries_ = 0;

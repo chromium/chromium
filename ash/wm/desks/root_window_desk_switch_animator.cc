@@ -11,6 +11,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "base/auto_reset.h"
 #include "base/logging.h"
+#include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -47,7 +48,13 @@ constexpr base::TimeDelta kAnimationDuration =
 
 // In touchpad units, a touchpad swipe of this length will correspond to a full
 // desk change.
-constexpr int kTouchpadSwipeLengthForDeskChange = 300;
+constexpr int kTouchpadSwipeLengthForDeskChange = 100;
+
+// The animation layer has extra padding at its two edges. The width in dips is
+// a ratio of the root window width. This padding is to notify users there are
+// no more desks on that side by showing a black region as we swipe
+// continuously.
+constexpr float kEdgePaddingRatio = 0.15f;
 
 // The amount, by which the detached old layers of the removed desk's windows,
 // is translated vertically during the for-remove desk switch animation.
@@ -134,6 +141,8 @@ RootWindowDeskSwitchAnimator::RootWindowDeskSwitchAnimator(
       delegate_(delegate),
       animation_layer_owner_(CreateAnimationLayerOwner(root)),
       x_translation_offset_(root->layer()->size().width() + kDesksSpacing),
+      edge_padding_width_dp_(
+          std::round(root_window_->bounds().width() * kEdgePaddingRatio)),
       for_remove_(for_remove) {
   DCHECK(root_window_);
   DCHECK_NE(starting_desk_index_, ending_desk_index_);
@@ -248,12 +257,24 @@ bool RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(float scroll_delta_x) {
     return false;
 
   const float translation_delta_x =
-      TouchpadToXTranslation(scroll_delta_x, x_translation_offset_) * 5.f;
+      TouchpadToXTranslation(scroll_delta_x, x_translation_offset_);
 
-  // Append the new offset to the current transform.
+  // The visible bounds to the user are the root window bounds which always have
+  // origin of 0,0. Therefore the rightmost edge of the visible bounds will be
+  // the width.
+  const int visible_bounds_width =
+      root_window_->GetBoundsInRootWindow().width();
+
+  // Append the new offset to the current transform. Clamp the new transform so
+  // that we do not swipe past the edges.
   auto* animation_layer = animation_layer_owner_->root();
-  gfx::Transform transform = animation_layer->transform();
-  transform.Translate(translation_delta_x, 0.f);
+  float translation_x =
+      animation_layer->transform().To2dTranslation().x() + translation_delta_x;
+  translation_x = base::ClampToRange(
+      translation_x,
+      float{-animation_layer->bounds().width() + visible_bounds_width}, 0.f);
+  gfx::Transform transform;
+  transform.Translate(translation_x, 0.f);
   base::AutoReset<bool> auto_reset(&setting_new_transform_, true);
   animation_layer->SetTransform(transform);
 
@@ -278,11 +299,6 @@ bool RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(float scroll_delta_x) {
   gfx::RectF transformed_animation_layer_bounds(animation_layer->bounds());
   transform.TransformRect(&transformed_animation_layer_bounds);
 
-  // The visible bounds to the user are the root window bounds which always have
-  // origin of 0,0. Therefore the rightmost edge of the visible bounds will be
-  // the width.
-  const int visible_bounds_width =
-      root_window_->GetBoundsInRootWindow().width();
   const bool moving_left = scroll_delta_x < 0.f;
   const bool going_out_of_bounds =
       moving_left
@@ -431,15 +447,18 @@ void RootWindowDeskSwitchAnimator::OnScreenshotLayerCreated() {
     if (!layer)
       continue;
 
-    const int x = num_screenshots * x_translation_offset_;
+    const int x =
+        num_screenshots * x_translation_offset_ + edge_padding_width_dp_;
     layer->SetBounds(gfx::Rect(gfx::Point(x, 0), root_window_size));
     ++num_screenshots;
   }
 
-  // The animation layer is sized to contain all the screenshot layers plus
-  // |kDesksSpacing| between any two adjacent screenshot layers.
+  // The animation layer is sized to contain all the screenshot layers,
+  // |kDesksSpacing| between any two adjacent screenshot layers, and
+  // |edge_padding_width_dp_| on each side.
   const gfx::Rect animation_layer_bounds(
-      num_screenshots * x_translation_offset_ - kDesksSpacing,
+      num_screenshots * x_translation_offset_ - kDesksSpacing +
+          2 * edge_padding_width_dp_,
       root_window_size.height());
   auto* animation_layer = animation_layer_owner_->root();
   animation_layer->SetBounds(animation_layer_bounds);
