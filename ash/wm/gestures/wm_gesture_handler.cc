@@ -7,14 +7,17 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/toast_data.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_cycle_controller.h"
 #include "base/metrics/user_metrics.h"
+#include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
@@ -32,6 +35,16 @@ namespace {
 constexpr char kOverviewGestureNotificationId[] =
     "ash.wm.reverse_overview_gesture";
 constexpr int kReverseGestureNotificationShowLimit = 3;
+
+constexpr char kSwitchNextDeskToastId[] = "ash.wm.reverse_next_desk_toast";
+constexpr char kSwitchLastDeskToastId[] = "ash.wm.reverse_last_desk_toast";
+
+constexpr base::TimeDelta kToastDurationMs =
+    base::TimeDelta::FromMilliseconds(2500);
+
+// Check if the user used the wrong gestures.
+bool gDidWrongNextDeskGesture = false;
+bool gDidWrongLastDeskGesture = false;
 
 // Is the reverse scrolling for toupad on.
 bool IsNaturalScrollOn() {
@@ -86,6 +99,12 @@ void ShowOverviewGestureNotification() {
       reverse_gesture_notification_count + 1);
 }
 
+void ShowReverseGestureToast(const char* toast_id, int message_id) {
+  Shell::Get()->toast_manager()->Show(
+      ToastData(toast_id, l10n_util::GetStringUTF16(message_id),
+                kToastDurationMs.InMilliseconds(), base::nullopt));
+}
+
 // The amount the fingers must move in a direction before a continuous gesture
 // animation is started. This is to minimize accidental scrolls.
 constexpr int kContinuousGestureMoveThresholdDp = 10;
@@ -106,11 +125,10 @@ bool Handle3FingerVerticalScroll(float scroll_y) {
     // show notification; in M88, swip up will only show notification; in M89
     // the notification is removed.
     if (GetOffset(scroll_y) > 0) {
-      if (!IsNaturalScrollOn()) {
+      if (!IsNaturalScrollOn())
         return false;
-      } else {
+      else
         ShowOverviewGestureNotification();
-      }
     }
 
     base::RecordAction(base::UserMetricsAction("Touchpad_Gesture_Overview"));
@@ -123,11 +141,10 @@ bool Handle3FingerVerticalScroll(float scroll_y) {
     // but show notification; in M88, swip down will only show notification; in
     // M89 the notification is removed.
     if (GetOffset(scroll_y) < 0) {
-      if (!IsNaturalScrollOn()) {
+      if (!IsNaturalScrollOn())
         return false;
-      } else {
+      else
         ShowOverviewGestureNotification();
-      }
     }
 
     auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
@@ -146,6 +163,32 @@ bool Handle3FingerVerticalScroll(float scroll_y) {
 bool HandleDesksSwitchHorizontalScroll(float scroll_x) {
   if (std::fabs(scroll_x) < WmGestureHandler::kHorizontalThresholdDp)
     return false;
+
+  if (IsNaturalScrollOn()) {
+    if (GetOffset(scroll_x) < 0 && !DesksController::Get()->GetNextDesk() &&
+        DesksController::Get()->GetPreviousDesk()) {
+      if (!gDidWrongLastDeskGesture) {
+        gDidWrongLastDeskGesture = true;
+      } else {
+        ShowReverseGestureToast(kSwitchLastDeskToastId,
+                                IDS_CHANGE_LAST_DESK_REVERSE_GESTURE);
+      }
+    } else if (GetOffset(scroll_x) > 0 &&
+               !DesksController::Get()->GetPreviousDesk() &&
+               DesksController::Get()->GetNextDesk()) {
+      if (!gDidWrongNextDeskGesture) {
+        gDidWrongNextDeskGesture = true;
+      } else {
+        ShowReverseGestureToast(kSwitchNextDeskToastId,
+                                IDS_CHANGE_NEXT_DESK_REVERSE_GESTURE);
+      }
+    } else {
+      gDidWrongNextDeskGesture = false;
+      gDidWrongLastDeskGesture = false;
+      Shell::Get()->toast_manager()->Cancel(kSwitchNextDeskToastId);
+      Shell::Get()->toast_manager()->Cancel(kSwitchLastDeskToastId);
+    }
+  }
 
   // If touchpad reverse scroll is on, the swip direction will invert.
   return DesksController::Get()->ActivateAdjacentDesk(

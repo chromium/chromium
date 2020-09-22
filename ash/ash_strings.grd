@@ -504,6 +504,12 @@ This file contains the strings for ash.
       <message name="IDS_OVERVIEW_REVERSE_GESTURE_NOTIFICATION_MESSAGE" desc="The body of the notification to change reverse gesture when entering/exiting overview mode">
         Swipe up with three fingers to open and down to close the Overview.
       </message>
+      <message name="IDS_CHANGE_NEXT_DESK_REVERSE_GESTURE" desc="The toast of changing reverse gesture to switch to the next desk.">
+        The touchpad gesture to switch to the next desk has changed. Swipe right with four fingers to switch to the next desk.
+      </message>
+      <message name="IDS_CHANGE_LAST_DESK_REVERSE_GESTURE" desc="The toast of changing reverse gesture to switch to the previous desk.">
+        The touchpad gesture to switch to the previous desk has changed. Swipe left with four fingers to switch to the previous desk.
+      </message>
       <message name="IDS_UPDATE_NOTIFICATION_MESSAGE_LEARN_MORE" desc="The body of the notification to notify that the user should restart to get system updates. This notification body links to the info page on the update.">
         Learn more about the latest <ph name="SYSTEM_APP_NAME">$1<ex>Chromium OS</ex></ph> update
       </message>
