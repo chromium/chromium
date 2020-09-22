@@ -77,13 +77,12 @@ class ReloadResponseProvider : public web::DataResponseProvider {
 
 @implementation BrowsingTestCase
 
-// Matcher for the title of the current tab (on tablet only), which is
-// sufficiently visible.
+// Matcher for the title of the current tab (on tablet only).
 id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
   id<GREYMatcher> notPartOfOmnibox =
       grey_not(grey_ancestor(chrome_test_util::Omnibox()));
   return grey_allOf(grey_accessibilityLabel(base::SysUTF8ToNSString(tab_title)),
-                    notPartOfOmnibox, grey_sufficientlyVisible(), nil);
+                    notPartOfOmnibox, nil);
 }
 
 // Tests that page successfully reloads.
@@ -121,7 +120,7 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
       destinationURL.spec().substr(destinationURL.scheme().length() + 3);
 
   [[EarlGrey selectElementWithMatcher:TabWithTitle(URLWithoutScheme)]
-      assertWithMatcher:grey_notNil()];
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that after a PDF is loaded, the title appears in the tab bar on iPad.
@@ -139,7 +138,7 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
       destinationURL.spec().substr(destinationURL.scheme().length() + 3);
 
   [[EarlGrey selectElementWithMatcher:TabWithTitle(URLWithoutScheme)]
-      assertWithMatcher:grey_notNil()];
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that tab title is set to the specified title from a JavaScript.
@@ -156,7 +155,7 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
   [ChromeEarlGrey loadURL:URL];
 
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kPageTitle)]
-      assertWithMatcher:grey_notNil()];
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests clicking a link with target="_blank" and "event.stopPropagation()"
