@@ -76,9 +76,6 @@ source_set("cast_runner_core") {
     "//base",
     "//components/cast/named_message_port_connector:named_message_port_connector",
     "//fuchsia/base",
-
-    # TODO(crbug.com/1131102): Remove this dep when MPP lands, and add assertions to ensure
-    # that Blink indirect deps don't creep back in.
     "//fuchsia/base:message_port",
     "//fuchsia/base:modular",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular",
@@ -113,19 +110,6 @@ cr_fuchsia_package("cast_runner_pkg") {
   binary = ":cast_runner_exe"
   package_name_override = "cast_runner"
   manifest = "cast/cast_runner.cmx"
-
-  # TODO(crbug.com/1131102): Remove these exclusions when MPP lands.
-  excluded_files = [
-    "lib/libEGL.so",
-    "lib/libfuchsia_egl.so",
-    "lib/libGLESv2.so",
-    "lib/libswiftshader_libEGL.so",
-    "lib/libswiftshader_libGLESv2.so",
-    "lib/libtrace-engine.so",
-    "lib/libvulkan.so",
-    "lib/VkLayer_image_pipe_swapchain.so",
-    "lib/VkLayer_khronos_validation.so",
-  ]
 }
 
 fuchsia_package_runner("cast_runner") {
