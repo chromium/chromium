@@ -2960,12 +2960,6 @@ void Document::GetPageDescription(uint32_t page_index,
   description->orientation = style->GetPageOrientation();
 }
 
-void Document::SetIsViewSource(bool is_view_source) {
-  is_view_source_ = is_view_source;
-  if (!is_view_source_)
-    return;
-}
-
 void Document::SetIsXrOverlay(bool val, Element* overlay_element) {
   if (!documentElement())
     return;
