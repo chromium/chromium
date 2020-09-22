@@ -10,6 +10,7 @@ gn_args=var1=true var2="foo"
 linker_name=gold
 map_file_name=../../../test.map
 tool_prefix=tools/binary_size/libsupersize/testdata/mock_toolchain/
+zipalign_padding=16
 Section .text: has 100.0% of 35982248 bytes accounted for from 22 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 13808 bytes (0.0%)
 * 16 have source paths. Accounts for 73986 bytes (0.2%).
@@ -74,8 +75,8 @@ Section .pak.nontranslated: has 100.0% of 737 bytes accounted for from 3 symbols
 * 0 have source paths. Accounts for 0 bytes (0.0%).
 * 0 have a component assigned. Accounts for 0 bytes (0.0%).
 * 0 symbols have shared ownership.
-Section .other: has 100.0% of 95595829 bytes accounted for from 28 symbols. 0 bytes are unaccounted for.
-* Padding accounts for 33903431 bytes (35.5%)
+Section .other: has 100.0% of 95595813 bytes accounted for from 27 symbols. 0 bytes are unaccounted for.
+* Padding accounts for 33903415 bytes (35.5%)
 * 3 have source paths. Accounts for 5243904 bytes (5.5%).
 * 1 have a component assigned. Accounts for 1048576 bytes (1.1%).
 * 22 placeholders exist (symbols that start with **). Accounts for 56448494 bytes (59.0%).
@@ -309,7 +310,6 @@ Section .other: has 100.0% of 95595829 bytes accounted for from 28 symbols. 0 by
 .other@0(size_without_padding=1048576,padding=0,full_name=assets/icudtl.dat,object_path=,source_path=third_party/icu/android/icudtl.dat,flags={},num_aliases=1,component=Internal>Android)
 .other@0(size_without_padding=1024,padding=0,full_name=res/drawable-v13/test.xml,object_path=,source_path=chrome/android/res/drawable/test.xml,flags={},num_aliases=1,component=)
 .other@0(size_without_padding=0,padding=780,full_name=Overhead: APK file,object_path=,source_path=,flags={},num_aliases=1,component=)
-.other@0(size_without_padding=0,padding=16,full_name=Overhead: zipalign,object_path=,source_path=,flags={},num_aliases=1,component=)
 .other@0(size_without_padding=0,padding=33902635,full_name=Overhead: ELF file,object_path=,source_path=,flags={},num_aliases=1,component=)
 .other@154(size_without_padding=19,padding=0,full_name=** ELF Section: .interp,object_path=,source_path=,flags={},num_aliases=1,component=)
 .other@168(size_without_padding=36,padding=0,full_name=** ELF Section: .note.gnu.build-id,object_path=,source_path=,flags={},num_aliases=1,component=)

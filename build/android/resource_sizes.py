@@ -18,6 +18,7 @@ import logging
 import os
 import posixpath
 import re
+import struct
 import sys
 import tempfile
 import zipfile
@@ -92,6 +93,17 @@ def _PercentageDifference(a, b):
   if a == 0:
     return 0
   return float(b - a) / a
+
+
+def _ReadZipInfoExtraFieldLength(zip_file, zip_info):
+  """Reads the value of |extraLength| from |zip_info|'s local file header.
+
+  |zip_info| has an |extra| field, but it's read from the central directory.
+  Android's zipalign tool sets the extra field only in local file headers.
+  """
+  # Refer to https://en.wikipedia.org/wiki/Zip_(file_format)#File_headers
+  zip_file.fp.seek(zip_info.header_offset + 28)
+  return struct.unpack('<H', zip_file.fp.read(2))[0]
 
 
 def _RunReadelf(so_path, options, tool_prefix=''):
@@ -303,6 +315,8 @@ def _DoApkAnalysis(apk_filename, apks_path, tool_prefix, out_dir, report_func):
 
   with zipfile.ZipFile(apk_filename, 'r') as apk:
     apk_contents = apk.infolist()
+    zipalign_overhead = sum(
+        _ReadZipInfoExtraFieldLength(apk, i) for i in apk_contents)
 
   sdk_version, skip_extract_lib = _ParseManifestAttributes(apk_filename)
 
@@ -473,7 +487,7 @@ def _DoApkAnalysis(apk_filename, apks_path, tool_prefix, out_dir, report_func):
   # causes size changes files that proceed aligned files to be rounded.
   # For APKs where classes.dex directly proceeds libchrome.so, this causes
   # small dex size changes to disappear into libchrome.so alignment.
-  normalized_apk_size -= sum(len(i.extra) for i in apk_contents)
+  normalized_apk_size -= zipalign_overhead
 
   # Unaligned size should be ~= uncompressed size or something is wrong.
   # As of now, padding_fraction ~= .007

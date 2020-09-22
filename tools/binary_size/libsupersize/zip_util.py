@@ -7,6 +7,7 @@
 import contextlib
 import logging
 import os
+import struct
 import tempfile
 import zipfile
 
@@ -34,3 +35,14 @@ def UnzipToTemp(zip_path, inner_path):
     yield temp_file
   finally:
     os.unlink(temp_file)
+
+
+def ReadZipInfoExtraFieldLength(zip_file, zip_info):
+  """Reads the value of |extraLength| from |zip_info|'s local file header.
+
+  |zip_info| has an |extra| field, but it's read from the central directory.
+  Android's zipalign tool sets the extra field only in local file headers.
+  """
+  # Refer to https://en.wikipedia.org/wiki/Zip_(file_format)#File_headers
+  zip_file.fp.seek(zip_info.header_offset + 28)
+  return struct.unpack('<H', zip_file.fp.read(2))[0]

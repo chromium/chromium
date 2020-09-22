@@ -1253,7 +1253,8 @@ class _ResourcePathDeobfuscator(object):
 
 
 def _ParseApkOtherSymbols(section_ranges, apk_path, apk_so_path,
-                          resources_pathmap_path, size_info_prefix, knobs):
+                          resources_pathmap_path, size_info_prefix, metadata,
+                          knobs):
   res_source_mapper = _ResourceSourceMapper(size_info_prefix, knobs)
   resource_deobfuscator = _ResourcePathDeobfuscator(resources_pathmap_path)
   apk_symbols = []
@@ -1263,7 +1264,7 @@ def _ParseApkOtherSymbols(section_ranges, apk_path, apk_so_path,
   with zipfile.ZipFile(apk_path) as z:
     for zip_info in z.infolist():
       zip_info_total += zip_info.compress_size
-      zipalign_total += len(zip_info.extra)
+      zipalign_total += zip_util.ReadZipInfoExtraFieldLength(z, zip_info)
       # Skip main shared library, pak, and dex files as they are accounted for.
       if (zip_info.filename == apk_so_path
           or zip_info.filename.endswith('.pak')):
@@ -1288,11 +1289,9 @@ def _ParseApkOtherSymbols(section_ranges, apk_path, apk_so_path,
   zip_overhead_symbol = models.Symbol(
       models.SECTION_OTHER, overhead_size, full_name='Overhead: APK file')
   apk_symbols.append(zip_overhead_symbol)
-  if zipalign_total > 0:
-    zipalign_symbol = models.Symbol(models.SECTION_OTHER,
-                                    zipalign_total,
-                                    full_name='Overhead: zipalign')
-    apk_symbols.append(zipalign_symbol)
+  # Store as metadata rather than an Overhead: symbol so that the sum of symbols
+  # matches normalized apk size.
+  metadata[models.METADATA_ZIPALIGN_OVERHEAD] = zipalign_total
   _ExtendSectionRange(section_ranges, models.SECTION_OTHER,
                       sum(s.size for s in apk_symbols))
   return dex_size, apk_symbols
@@ -1597,9 +1596,11 @@ def CreateContainerAndSymbols(knobs=None,
                                                size_info_prefix)
 
     # Can modify |section_ranges|.
-    dex_size, other_symbols = _ParseApkOtherSymbols(
-        section_ranges, apk_path, apk_so_path, resources_pathmap_path,
-        size_info_prefix, knobs)
+    dex_size, other_symbols = _ParseApkOtherSymbols(section_ranges, apk_path,
+                                                    apk_so_path,
+                                                    resources_pathmap_path,
+                                                    size_info_prefix, metadata,
+                                                    knobs)
 
     if opts.analyze_java:
       dex_symbols = apkanalyzer.CreateDexSymbols(apk_path, mapping_path,

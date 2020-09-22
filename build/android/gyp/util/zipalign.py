@@ -73,8 +73,9 @@ def _SetAlignment(zip_obj, zip_info, alignment):
       (cur_offset + header_size) % alignment)) % alignment
 
 
-  # Extra field used to 4-byte align classes.dex. Alignment speeds up
-  # execution when dex files are used via incremental install.
+  # Python writes |extra| to both the local file header and the central
+  # directory's file header. Android's zipalign tool writes only to the
+  # local file header, so there is more overhead in using python to align.
   zip_info.extra = b'\0' * padding_needed
 
 
