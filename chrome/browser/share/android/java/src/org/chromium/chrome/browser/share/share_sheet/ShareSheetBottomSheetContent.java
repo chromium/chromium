@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.ui.favicon.LargeIconBridge;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -144,7 +145,8 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     private void createPreview(Set<Integer> contentTypes) {
         // Default preview is to show title + url.
         String title = mParams.getTitle();
-        String subtitle = mParams.getUrl();
+        String subtitle =
+                UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(mParams.getUrl());
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARING_HUB_V15)) {
             fetchFavicon(mParams.getUrl());
             setTitleStyle(R.style.TextAppearance_TextMediumThick_Primary);

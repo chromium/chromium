@@ -35,6 +35,7 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.test.util.DummyUiActivity;
 import org.chromium.url.GURL;
 
@@ -58,6 +59,7 @@ public final class ShareSheetBottomSheetContentTest {
     private static final String sText = "Text";
     private static final String sTitle = "Title";
     private static final String sUrl = "https://www.example.com";
+    private String mPreviewUrl;
 
     private Activity mActivity;
     private ShareParams mShareParams;
@@ -66,6 +68,7 @@ public final class ShareSheetBottomSheetContentTest {
     @Before
     public void setUp() {
         mActivity = mActivityTestRule.getActivity();
+        mPreviewUrl = UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(sUrl);
         mShareParams = new ShareParams.Builder(/*window=*/null, sTitle, sUrl)
                                .setText(sText)
                                .setFileUris(new ArrayList<>(ImmutableList.of(sImageUri)))
@@ -154,7 +157,7 @@ public final class ShareSheetBottomSheetContentTest {
         ImageView imageView =
                 mShareSheetBottomSheetContent.getContentView().findViewById(R.id.image_preview);
         assertEquals(mShareParams.getTitle(), titleView.getText());
-        assertEquals(mShareParams.getUrl(), subtitleView.getText());
+        assertEquals(mPreviewUrl, subtitleView.getText());
         assertNotNull(imageView.getDrawable());
     }
 
@@ -171,7 +174,7 @@ public final class ShareSheetBottomSheetContentTest {
         ImageView imageView =
                 mShareSheetBottomSheetContent.getContentView().findViewById(R.id.image_preview);
         assertEquals(mShareParams.getText(), titleView.getText());
-        assertEquals(mShareParams.getUrl(), subtitleView.getText());
+        assertEquals(mPreviewUrl, subtitleView.getText());
         assertNotNull(imageView.getDrawable());
     }
 
@@ -192,7 +195,7 @@ public final class ShareSheetBottomSheetContentTest {
         ImageView imageView =
                 shareSheetBottomSheetContent.getContentView().findViewById(R.id.image_preview);
         assertEquals(View.GONE, titleView.getVisibility());
-        assertEquals(mShareParams.getUrl(), subtitleView.getText());
+        assertEquals(mPreviewUrl, subtitleView.getText());
         assertNotNull(imageView.getDrawable());
     }
 
