@@ -48,7 +48,7 @@ NewDeskButton::NewDeskButton(views::ButtonListener* listener)
       kDesksNewDeskButtonIcon);
 
   SetInkDropMode(InkDropMode::ON);
-  set_has_ink_drop_action_on_click(true);
+  SetHasInkDropActionOnClick(true);
   SetFocusPainter(nullptr);
 
   auto border = std::make_unique<WmHighlightItemBorder>(kCornerRadius);

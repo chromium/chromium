@@ -84,7 +84,7 @@ ChosenObjectView::ChosenObjectView(
       views::style::GetColor(*this, views::style::CONTEXT_DIALOG_BODY_TEXT,
                              views::style::STYLE_PRIMARY));
   delete_button->SetFocusForPlatform();
-  delete_button->set_request_focus_on_press(true);
+  delete_button->SetRequestFocusOnPress(true);
   delete_button->SetTooltipText(
       l10n_util::GetStringUTF16(info_->ui_info.delete_tooltip_string_id));
   delete_button_ = layout->AddView(std::move(delete_button));

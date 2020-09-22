@@ -91,8 +91,7 @@ int TabCloseButton::GetGlyphSize() {
 void TabCloseButton::SetIconColors(SkColor foreground_color,
                                    SkColor background_color) {
   icon_color_ = foreground_color;
-  set_ink_drop_base_color(
-      color_utils::GetColorWithMaxContrast(background_color));
+  SetInkDropBaseColor(color_utils::GetColorWithMaxContrast(background_color));
 }
 
 void TabCloseButton::SetButtonPadding(const gfx::Insets& padding) {

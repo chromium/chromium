@@ -42,8 +42,8 @@ MdTextButton::MdTextButton(PressedCallback callback,
                            int button_context)
     : LabelButton(std::move(callback), text, button_context) {
   SetInkDropMode(InkDropMode::ON);
-  set_has_ink_drop_action_on_click(true);
-  set_show_ink_drop_when_hot_tracked(true);
+  SetHasInkDropActionOnClick(true);
+  SetShowInkDropWhenHotTracked(true);
   SetCornerRadius(LayoutProvider::Get()->GetCornerRadiusMetric(EMPHASIS_LOW));
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetFocusForPlatform();
@@ -53,8 +53,8 @@ MdTextButton::MdTextButton(PressedCallback callback,
   SetMinSize(gfx::Size(minimum_width, 0));
   SetInstallFocusRingOnFocus(true);
   label()->SetAutoColorReadabilityEnabled(false);
-  set_request_focus_on_press(false);
-  set_animate_on_state_change(true);
+  SetRequestFocusOnPress(false);
+  SetAnimateOnStateChange(true);
 
   // Paint to a layer so that the canvas is snapped to pixel boundaries (useful
   // for fractional DSF).

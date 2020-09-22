@@ -111,7 +111,7 @@ void PaymentRequestItemList::Item::Init() {
     edit_button->SetImage(views::Button::STATE_NORMAL,
                           gfx::CreateVectorIcon(vector_icons::kEditIcon,
                                                 kEditIconSize, icon_color));
-    edit_button->set_ink_drop_base_color(icon_color);
+    edit_button->SetInkDropBaseColor(icon_color);
     edit_button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     edit_button->SetID(static_cast<int>(DialogViewID::EDIT_ITEM_BUTTON));
     edit_button->SetAccessibleName(

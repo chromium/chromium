@@ -48,8 +48,8 @@ ReloadButton::ReloadButton(CommandUpdater* command_updater)
       double_click_timer_delay_(
           base::TimeDelta::FromMilliseconds(views::GetDoubleClickInterval())),
       mode_switch_timer_delay_(base::TimeDelta::FromMilliseconds(1350)) {
-  set_triggerable_event_flags(ui::EF_LEFT_MOUSE_BUTTON |
-                              ui::EF_MIDDLE_MOUSE_BUTTON);
+  SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
+                           ui::EF_MIDDLE_MOUSE_BUTTON);
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_RELOAD));
   SetID(VIEW_ID_RELOAD_BUTTON);
 }

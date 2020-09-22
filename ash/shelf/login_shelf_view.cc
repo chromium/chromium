@@ -175,10 +175,10 @@ class LoginShelfButton : public views::LabelButton {
     focus_ring()->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
     SetFocusPainter(nullptr);
     SetInkDropMode(InkDropMode::ON);
-    set_has_ink_drop_action_on_click(true);
+    SetHasInkDropActionOnClick(true);
     AshColorProvider::RippleAttributes ripple_attributes =
         ShelfConfig::Get()->GetInkDropRippleAttributes();
-    set_ink_drop_base_color(ripple_attributes.base_color);
+    SetInkDropBaseColor(ripple_attributes.base_color);
     SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
 
     // Layer rendering is required when the shelf background is visible, which
@@ -298,10 +298,10 @@ class KioskAppsButton : public views::MenuButton,
     focus_ring()->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
     SetFocusPainter(nullptr);
     SetInkDropMode(InkDropMode::ON);
-    set_has_ink_drop_action_on_click(true);
+    SetHasInkDropActionOnClick(true);
     AshColorProvider::RippleAttributes ripple_attributes =
         ShelfConfig::Get()->GetInkDropRippleAttributes();
-    set_ink_drop_base_color(ripple_attributes.base_color);
+    SetInkDropBaseColor(ripple_attributes.base_color);
     SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
 
     // Layer rendering is required when the shelf background is visible, which

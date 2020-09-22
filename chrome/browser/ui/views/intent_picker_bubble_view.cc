@@ -104,7 +104,7 @@ class IntentPickerLabelButton : public views::LabelButton {
     }
     SetBorder(views::CreateEmptyBorder(8, 16, 8, 0));
     SetFocusForPlatform();
-    set_ink_drop_base_color(SK_ColorGRAY);
+    SetInkDropBaseColor(SK_ColorGRAY);
     SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
   }
 

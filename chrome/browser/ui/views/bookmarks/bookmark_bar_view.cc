@@ -157,7 +157,7 @@ class BookmarkButtonBase : public views::LabelButton {
         DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
     views::InstallPillHighlightPathGenerator(this);
     SetInkDropMode(InkDropMode::ON);
-    set_has_ink_drop_action_on_click(true);
+    SetHasInkDropActionOnClick(true);
     SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
     show_animation_ = std::make_unique<gfx::SlideAnimation>(this);
     if (!animations_enabled) {
@@ -333,8 +333,8 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
     }
 
     // ui::EF_MIDDLE_MOUSE_BUTTON opens all bookmarked links in separate tabs.
-    set_triggerable_event_flags(ui::EF_LEFT_MOUSE_BUTTON |
-                                ui::EF_MIDDLE_MOUSE_BUTTON);
+    SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
+                             ui::EF_MIDDLE_MOUSE_BUTTON);
   }
 
   base::string16 GetTooltipText(const gfx::Point& p) const override {

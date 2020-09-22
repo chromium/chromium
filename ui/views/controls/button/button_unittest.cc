@@ -73,7 +73,7 @@ class TestContextMenuController : public ContextMenuController {
 class TestButton : public Button, public ButtonListener {
  public:
   explicit TestButton(bool has_ink_drop_action_on_click) : Button(this) {
-    set_has_ink_drop_action_on_click(has_ink_drop_action_on_click);
+    SetHasInkDropActionOnClick(has_ink_drop_action_on_click);
   }
 
   ~TestButton() override = default;
@@ -525,7 +525,7 @@ TEST_F(ButtonTest, HideInkDropWhenShowingContextMenu) {
   TestInkDrop* ink_drop = CreateButtonWithInkDrop(false);
   TestContextMenuController context_menu_controller;
   button()->set_context_menu_controller(&context_menu_controller);
-  button()->set_hide_ink_drop_when_showing_context_menu(true);
+  button()->SetHideInkDropWhenShowingContextMenu(true);
 
   ink_drop->SetHovered(true);
   ink_drop->AnimateToState(InkDropState::ACTION_PENDING);
@@ -540,7 +540,7 @@ TEST_F(ButtonTest, DontHideInkDropWhenShowingContextMenu) {
   TestInkDrop* ink_drop = CreateButtonWithInkDrop(false);
   TestContextMenuController context_menu_controller;
   button()->set_context_menu_controller(&context_menu_controller);
-  button()->set_hide_ink_drop_when_showing_context_menu(false);
+  button()->SetHideInkDropWhenShowingContextMenu(false);
 
   ink_drop->SetHovered(true);
   ink_drop->AnimateToState(InkDropState::ACTION_PENDING);

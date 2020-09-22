@@ -78,10 +78,10 @@ FrameCaptionButton::FrameCaptionButton(views::ButtonListener* listener,
       swap_images_animation_(new gfx::SlideAnimation(this)) {
   views::SetHitTestComponent(this, hit_test_type);
 
-  set_animate_on_state_change(true);
+  SetAnimateOnStateChange(true);
   swap_images_animation_->Reset(1);
 
-  set_has_ink_drop_action_on_click(true);
+  SetHasInkDropActionOnClick(true);
   SetInkDropMode(InkDropMode::ON);
   SetInkDropVisibleOpacity(kInkDropVisibleOpacity);
   UpdateInkDropBaseColor();
@@ -314,7 +314,7 @@ void FrameCaptionButton::UpdateInkDropBaseColor() {
   // TODO(pkasting): It would likely be better to make the button glyph always
   // be an alpha-blended version of GetColorWithMaxContrast(background_color_).
   const SkColor button_color = GetButtonColor(background_color_);
-  set_ink_drop_base_color(
+  SetInkDropBaseColor(
       GetColorWithMaxContrast(GetColorWithMaxContrast(button_color)));
 }
 

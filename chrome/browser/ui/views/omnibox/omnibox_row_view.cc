@@ -160,7 +160,7 @@ class OmniboxRowView::HeaderView : public views::View,
 
     SkColor icon_color = GetOmniboxColor(GetThemeProvider(),
                                          OmniboxPart::RESULTS_ICON, part_state);
-    header_toggle_button_->set_ink_drop_base_color(icon_color);
+    header_toggle_button_->SetInkDropBaseColor(icon_color);
 
     int dip_size = GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
     const gfx::ImageSkia arrow_down =

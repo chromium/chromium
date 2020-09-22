@@ -30,7 +30,7 @@ class ViewWithInkDrop : public T {
   template <typename... Args>
   explicit ViewWithInkDrop(Args... args) : T(std::forward<Args>(args)...) {
     T::SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
-    T::set_has_ink_drop_action_on_click(true);
+    T::SetHasInkDropActionOnClick(true);
     T::SetInkDropVisibleOpacity(capture_mode::kInkDropVisibleOpacity);
   }
 

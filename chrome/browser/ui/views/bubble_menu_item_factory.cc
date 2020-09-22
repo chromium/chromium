@@ -26,7 +26,7 @@ void ConfigureBubbleMenuItem(views::Button* button, int button_id) {
   button->GetInkDrop()->SetShowHighlightOnFocus(true);
   button->GetInkDrop()->SetHoverHighlightFadeDuration(base::TimeDelta());
   views::InstallRectHighlightPathGenerator(button);
-  button->set_ink_drop_base_color(HoverButton::GetInkDropColor(button));
+  button->SetInkDropBaseColor(HoverButton::GetInkDropColor(button));
   button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   button->SetID(button_id);
 }

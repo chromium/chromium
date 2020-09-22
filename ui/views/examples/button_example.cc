@@ -50,7 +50,7 @@ void ButtonExample::CreateExampleView(View* container) {
   auto label_button =
       std::make_unique<LabelButton>(this, ASCIIToUTF16(kLabelButton));
   label_button->SetFocusForPlatform();
-  label_button->set_request_focus_on_press(true);
+  label_button->SetRequestFocusOnPress(true);
   label_button_ = container->AddChildView(std::move(label_button));
 
   md_button_ = container->AddChildView(std::make_unique<views::MdTextButton>(
@@ -69,7 +69,7 @@ void ButtonExample::CreateExampleView(View* container) {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   auto image_button = std::make_unique<ImageButton>(this);
   image_button->SetFocusForPlatform();
-  image_button->set_request_focus_on_press(true);
+  image_button->SetRequestFocusOnPress(true);
   image_button->SetImage(ImageButton::STATE_NORMAL,
                          rb.GetImageNamed(IDR_CLOSE).ToImageSkia());
   image_button->SetImage(ImageButton::STATE_HOVERED,

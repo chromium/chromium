@@ -727,7 +727,7 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewError() {
           this,
           l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_OPTIONS_MENU_BUTTON));
   translate_options_button->SetID(BUTTON_ID_OPTIONS_MENU);
-  translate_options_button->set_request_focus_on_press(true);
+  translate_options_button->SetRequestFocusOnPress(true);
   return CreateViewErrorNoTitle(std::move(translate_options_button));
 }
 
@@ -1024,7 +1024,7 @@ std::unique_ptr<views::Button> TranslateBubbleView::CreateOptionsMenuButton() {
   tab_translate_options_button->SetFocusForPlatform();
   tab_translate_options_button->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_OPTIONS_MENU_BUTTON));
-  tab_translate_options_button->set_request_focus_on_press(true);
+  tab_translate_options_button->SetRequestFocusOnPress(true);
   tab_translate_options_button->SetVisible(true);
   tab_translate_options_button->SetID(BUTTON_ID_OPTIONS_MENU);
   return tab_translate_options_button;

@@ -144,8 +144,8 @@ void AssistantOnboardingSuggestionView::InitLayout(
 
   // Ink Drop.
   SetInkDropMode(InkDropMode::ON);
-  set_has_ink_drop_action_on_click(true);
-  set_ink_drop_base_color(GetForegroundColor(index_));
+  SetHasInkDropActionOnClick(true);
+  SetInkDropBaseColor(GetForegroundColor(index_));
   SetInkDropVisibleOpacity(kInkDropVisibleOpacity);
   SetInkDropHighlightOpacity(kInkDropHighlightOpacity);
 

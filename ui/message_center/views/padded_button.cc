@@ -22,11 +22,11 @@ PaddedButton::PaddedButton(views::ButtonListener* listener)
     : views::ImageButton(listener) {
   SetFocusForPlatform();
   SetBorder(views::CreateEmptyBorder(gfx::Insets(kControlButtonBorderSize)));
-  set_animate_on_state_change(false);
+  SetAnimateOnStateChange(false);
 
   SetInkDropMode(InkDropMode::ON);
   SetInkDropVisibleOpacity(0.12f);
-  set_has_ink_drop_action_on_click(true);
+  SetHasInkDropActionOnClick(true);
 }
 
 std::unique_ptr<views::InkDrop> PaddedButton::CreateInkDrop() {
@@ -43,7 +43,7 @@ void PaddedButton::OnThemeChanged() {
   SetBackground(views::CreateSolidBackground(theme->GetSystemColor(
       ui::NativeTheme::kColorId_NotificationButtonBackground)));
 #endif
-  set_ink_drop_base_color(theme->GetSystemColor(
+  SetInkDropBaseColor(theme->GetSystemColor(
       ui::NativeTheme::kColorId_PaddedButtonInkDropColor));
 }
 

@@ -163,7 +163,7 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
   AshColorProvider::RippleAttributes ripple_attributes =
       ShelfConfig::Get()->GetInkDropRippleAttributes();
 
-  set_ink_drop_base_color(ripple_attributes.base_color);
+  SetInkDropBaseColor(ripple_attributes.base_color);
   SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
 
   SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);

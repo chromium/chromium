@@ -109,7 +109,7 @@ void KSVSearchBoxView::UpdateSearchBoxBorder() {
 
 void KSVSearchBoxView::SetupCloseButton() {
   views::ImageButton* close = close_button();
-  close->set_has_ink_drop_action_on_click(true);
+  close->SetHasInkDropActionOnClick(true);
   close->SetImage(
       views::ImageButton::STATE_NORMAL,
       gfx::CreateVectorIcon(kKsvSearchCloseIcon, gfx::kGoogleGrey700));
@@ -125,7 +125,7 @@ void KSVSearchBoxView::SetupCloseButton() {
 
 void KSVSearchBoxView::SetupBackButton() {
   views::ImageButton* back = back_button();
-  back->set_has_ink_drop_action_on_click(true);
+  back->SetHasInkDropActionOnClick(true);
   back->SetImage(
       views::ImageButton::STATE_NORMAL,
       gfx::CreateVectorIcon(kKsvSearchBackIcon, gfx::kGoogleBlue500));

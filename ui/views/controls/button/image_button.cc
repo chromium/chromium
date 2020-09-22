@@ -47,7 +47,7 @@ void ImageButton::SetImage(ButtonState for_state, const gfx::ImageSkia* image) {
 
 void ImageButton::SetImage(ButtonState for_state, const gfx::ImageSkia& image) {
   if (for_state == STATE_HOVERED)
-    set_animate_on_state_change(!image.isNull());
+    SetAnimateOnStateChange(!image.isNull());
   const gfx::Size old_preferred_size = GetPreferredSize();
   images_[for_state] = image;
 

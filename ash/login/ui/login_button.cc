@@ -26,7 +26,7 @@ LoginButton::LoginButton(views::ButtonListener* listener)
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   SetInkDropMode(InkDropMode::ON);
-  set_has_ink_drop_action_on_click(true);
+  SetHasInkDropActionOnClick(true);
 
   SetInstallFocusRingOnFocus(true);
   login_views_utils::ConfigureRectFocusRingCircleInkDrop(this, focus_ring(),

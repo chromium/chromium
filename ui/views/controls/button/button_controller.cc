@@ -143,7 +143,7 @@ bool ButtonController::IsTriggerableEvent(const ui::Event& event) {
   return event.type() == ui::ET_GESTURE_TAP_DOWN ||
          event.type() == ui::ET_GESTURE_TAP ||
          (event.IsMouseEvent() &&
-          (button_->triggerable_event_flags() & event.flags()) != 0);
+          (button_->GetTriggerableEventFlags() & event.flags()) != 0);
 }
 
 }  // namespace views

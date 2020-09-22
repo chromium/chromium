@@ -292,7 +292,7 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
   dropdown_button_->SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_DOWNLOAD_ITEM_DROPDOWN_BUTTON_ACCESSIBLE_TEXT));
   dropdown_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets(10)));
-  dropdown_button_->set_has_ink_drop_action_on_click(false);
+  dropdown_button_->SetHasInkDropActionOnClick(false);
   dropdown_button_->SetFocusForPlatform();
   dropdown_button_->SizeToPreferredSize();
 

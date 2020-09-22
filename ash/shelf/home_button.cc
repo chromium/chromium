@@ -45,7 +45,7 @@ HomeButton::HomeButton(Shelf* shelf)
       l10n_util::GetStringUTF16(IDS_ASH_SHELF_APP_LIST_LAUNCHER_TITLE));
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
-  set_has_ink_drop_action_on_click(false);
+  SetHasInkDropActionOnClick(false);
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   layer()->SetName("shelf/Homebutton");

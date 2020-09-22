@@ -20,10 +20,10 @@ ShelfButton::ShelfButton(Shelf* shelf,
       shelf_(shelf),
       shelf_button_delegate_(shelf_button_delegate) {
   DCHECK(shelf_button_delegate_);
-  set_hide_ink_drop_when_showing_context_menu(false);
+  SetHideInkDropWhenShowingContextMenu(false);
   AshColorProvider::RippleAttributes ripple_attributes =
       ShelfConfig::Get()->GetInkDropRippleAttributes();
-  set_ink_drop_base_color(ripple_attributes.base_color);
+  SetInkDropBaseColor(ripple_attributes.base_color);
   SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);

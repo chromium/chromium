@@ -56,10 +56,10 @@ class NewTabButton::HighlightPathGenerator
 
 NewTabButton::NewTabButton(TabStrip* tab_strip, views::ButtonListener* listener)
     : views::ImageButton(listener), tab_strip_(tab_strip) {
-  set_animate_on_state_change(true);
+  SetAnimateOnStateChange(true);
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
-  set_triggerable_event_flags(triggerable_event_flags() |
-                              ui::EF_MIDDLE_MOUSE_BUTTON);
+  SetTriggerableEventFlags(GetTriggerableEventFlags() |
+                           ui::EF_MIDDLE_MOUSE_BUTTON);
 #endif
 
   ink_drop_container_ =
@@ -265,6 +265,6 @@ SkPath NewTabButton::GetBorderPath(const gfx::Point& origin,
 }
 
 void NewTabButton::UpdateInkDropBaseColor() {
-  set_ink_drop_base_color(
+  SetInkDropBaseColor(
       color_utils::GetColorWithMaxContrast(GetButtonFillColor()));
 }

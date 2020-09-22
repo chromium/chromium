@@ -53,7 +53,7 @@ ExpandDeviceSelectorButton::ExpandDeviceSelectorButton(
   SetLabel(l10n_util::GetStringUTF16(
       IDS_GLOBAL_MEDIA_CONTROLS_DEVICES_BUTTON_LABEL));
   SetInkDropMode(InkDropMode::ON);
-  set_has_ink_drop_action_on_click(true);
+  SetHasInkDropActionOnClick(true);
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   SetBorder(views::CreateRoundedRectBorder(

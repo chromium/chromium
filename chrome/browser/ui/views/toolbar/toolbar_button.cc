@@ -68,7 +68,7 @@ ToolbarButton::ToolbarButton(views::ButtonListener* listener,
       tab_strip_model_(tab_strip_model),
       trigger_menu_on_long_press_(trigger_menu_on_long_press),
       highlight_color_animation_(this) {
-  set_has_ink_drop_action_on_click(true);
+  SetHasInkDropActionOnClick(true);
   set_context_menu_controller(this);
 
   if (base::FeatureList::IsEnabled(views::kInstallableInkDropFeature)) {
@@ -500,7 +500,7 @@ void ToolbarButton::ShowDropDownMenu(ui::MenuSourceType source_type) {
   menu_model_adapter_ = std::make_unique<views::MenuModelAdapter>(
       model_.get(), base::BindRepeating(&ToolbarButton::OnMenuClosed,
                                         base::Unretained(this)));
-  menu_model_adapter_->set_triggerable_event_flags(triggerable_event_flags());
+  menu_model_adapter_->set_triggerable_event_flags(GetTriggerableEventFlags());
   menu_runner_ = std::make_unique<views::MenuRunner>(
       menu_model_adapter_->CreateMenu(), views::MenuRunner::HAS_MNEMONICS);
   menu_runner_->RunMenuAt(GetWidget(), nullptr, menu_anchor_bounds,

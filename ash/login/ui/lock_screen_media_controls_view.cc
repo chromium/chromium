@@ -146,7 +146,7 @@ class MediaActionButton : public views::ImageButton {
                     const base::string16& accessible_name)
       : views::ImageButton(listener), icon_size_(icon_size) {
     SetInkDropMode(views::Button::InkDropMode::ON);
-    set_has_ink_drop_action_on_click(true);
+    SetHasInkDropActionOnClick(true);
     SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
     SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
     SetBorder(

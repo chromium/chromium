@@ -131,7 +131,7 @@ ToggleButton::ToggleButton(ButtonListener* listener) : Button(listener) {
   // regression in crbug.com/1031983, but a matching FocusRing would probably be
   // desirable.
   SetInstallFocusRingOnFocus(false);
-  set_has_ink_drop_action_on_click(true);
+  SetHasInkDropActionOnClick(true);
 }
 
 ToggleButton::~ToggleButton() {

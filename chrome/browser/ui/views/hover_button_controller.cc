@@ -37,7 +37,7 @@ bool HoverButtonController::OnKeyPressed(const ui::KeyEvent& event) {
 
 bool HoverButtonController::OnMousePressed(const ui::MouseEvent& event) {
   DCHECK(notify_action() == views::ButtonController::NotifyAction::kOnRelease);
-  if (button()->request_focus_on_press())
+  if (button()->GetRequestFocusOnPress())
     button()->RequestFocus();
   if (listener_) {
     button()->AnimateInkDrop(views::InkDropState::ACTION_TRIGGERED,

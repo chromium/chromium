@@ -142,46 +142,31 @@ class VIEWS_EXPORT Button : public InkDropHostView,
   // Set how long the hover animation will last for.
   void SetAnimationDuration(base::TimeDelta duration);
 
-  void set_triggerable_event_flags(int triggerable_event_flags) {
-    triggerable_event_flags_ = triggerable_event_flags;
-  }
-  int triggerable_event_flags() const { return triggerable_event_flags_; }
+  void SetTriggerableEventFlags(int triggerable_event_flags);
+  int GetTriggerableEventFlags() const;
 
   // Sets whether |RequestFocus| should be invoked on a mouse press. The default
   // is false.
-  void set_request_focus_on_press(bool value) {
-// On Mac, buttons should not request focus on a mouse press. Hence keep the
-// default value i.e. false.
-#if !defined(OS_APPLE)
-    request_focus_on_press_ = value;
-#endif
-  }
-
-  bool request_focus_on_press() const { return request_focus_on_press_; }
+  void SetRequestFocusOnPress(bool value);
+  bool GetRequestFocusOnPress() const;
 
   // See description above field.
-  void set_animate_on_state_change(bool value) {
-    animate_on_state_change_ = value;
-  }
+  void SetAnimateOnStateChange(bool value);
+  bool GetAnimateOnStateChange() const;
 
-  bool hide_ink_drop_when_showing_context_menu() const {
-    return hide_ink_drop_when_showing_context_menu_;
-  }
-  void set_hide_ink_drop_when_showing_context_menu(
-      bool hide_ink_drop_when_showing_context_menu) {
-    hide_ink_drop_when_showing_context_menu_ =
-        hide_ink_drop_when_showing_context_menu;
-  }
+  void SetHideInkDropWhenShowingContextMenu(bool value);
+  bool GetHideInkDropWhenShowingContextMenu() const;
 
-  void set_show_ink_drop_when_hot_tracked(bool show_ink_drop_when_hot_tracked) {
-    show_ink_drop_when_hot_tracked_ = show_ink_drop_when_hot_tracked;
-  }
+  void SetShowInkDropWhenHotTracked(bool value);
+  bool GetShowInkDropWhenHotTracked() const;
 
-  void set_ink_drop_base_color(SkColor color) { ink_drop_base_color_ = color; }
-  void set_has_ink_drop_action_on_click(bool has_ink_drop_action_on_click) {
-    has_ink_drop_action_on_click_ = has_ink_drop_action_on_click;
-  }
+  void SetInkDropBaseColor(SkColor color);
+
+  void SetHasInkDropActionOnClick(bool value);
+  bool GetHasInkDropActionOnClick() const;
+
   void SetInstallFocusRingOnFocus(bool install_focus_ring_on_focus);
+  bool GetInstallFocusRingOnFocus() const;
 
   void SetHotTracked(bool is_hot_tracked);
   bool IsHotTracked() const;
@@ -382,7 +367,15 @@ class VIEWS_EXPORT Button : public InkDropHostView,
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Button, InkDropHostView)
 VIEW_BUILDER_PROPERTY(base::TimeDelta, AnimationDuration)
+VIEW_BUILDER_PROPERTY(bool, AnimateOnStateChange)
+VIEW_BUILDER_PROPERTY(bool, HasInkDropActionOnClick)
+VIEW_BUILDER_PROPERTY(bool, HideInkDropWhenShowingContextMenu)
+VIEW_BUILDER_PROPERTY(SkColor, InkDropBaseColor)
+VIEW_BUILDER_PROPERTY(bool, InstallFocusRingOnFocus)
+VIEW_BUILDER_PROPERTY(bool, RequestFocusOnPress)
 VIEW_BUILDER_PROPERTY(Button::ButtonState, State)
+VIEW_BUILDER_PROPERTY(base::string16, TooltipText)
+VIEW_BUILDER_PROPERTY(int, TriggerableEventFlags)
 VIEW_BUILDER_METHOD(SetFocusForPlatform)
 END_VIEW_BUILDER(VIEWS_EXPORT, Button)
 

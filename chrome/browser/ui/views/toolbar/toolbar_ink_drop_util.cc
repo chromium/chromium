@@ -89,10 +89,10 @@ void InstallToolbarButtonHighlightPathGenerator(views::View* host) {
 }
 
 void ConfigureInkDropForToolbar(views::Button* host) {
-  host->set_has_ink_drop_action_on_click(true);
+  host->SetHasInkDropActionOnClick(true);
   InstallToolbarButtonHighlightPathGenerator(host);
   host->SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
   host->SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
   host->SetInkDropHighlightOpacity(kToolbarInkDropHighlightVisibleOpacity);
-  host->set_ink_drop_base_color(GetToolbarInkDropBaseColor(host));
+  host->SetInkDropBaseColor(GetToolbarInkDropBaseColor(host));
 }

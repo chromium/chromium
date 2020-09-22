@@ -222,7 +222,7 @@ Tab::Tab(TabController* controller)
   close_button_ = new TabCloseButton(
       this, base::BindRepeating(&TabController::OnMouseEventInTab,
                                 base::Unretained(controller_)));
-  close_button_->set_has_ink_drop_action_on_click(true);
+  close_button_->SetHasInkDropActionOnClick(true);
   AddChildView(close_button_);
 
   tab_close_button_observer_ = std::make_unique<TabCloseButtonObserver>(

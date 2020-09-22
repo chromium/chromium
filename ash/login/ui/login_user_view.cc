@@ -415,7 +415,7 @@ LoginUserView::LoginUserView(
   user_label_ = new UserLabel(style, label_width);
   if (show_dropdown) {
     dropdown_ = new LoginButton(this);
-    dropdown_->set_has_ink_drop_action_on_click(false);
+    dropdown_->SetHasInkDropActionOnClick(false);
     dropdown_->SetPreferredSize(
         gfx::Size(kDropdownIconSizeDp, kDropdownIconSizeDp));
     dropdown_->SetImage(

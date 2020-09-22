@@ -129,7 +129,7 @@ void ExtensionsMenuItemView::OnThemeChanged() {
           ui::NativeTheme::kColorId_MenuIconColor));
 
   if (pin_button_)
-    pin_button_->set_ink_drop_base_color(icon_color);
+    pin_button_->SetInkDropBaseColor(icon_color);
   views::SetImageFromVectorIconWithColor(context_menu_button_,
                                          kBrowserToolsIcon,
                                          kSecondaryIconSizeDp, icon_color);

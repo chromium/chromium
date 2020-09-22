@@ -98,7 +98,7 @@ bool MenuButtonController::OnMousePressed(const ui::MouseEvent& event) {
   is_intentional_menu_trigger_ =
       (TimeTicks::Now() - menu_closed_time_) >= kMinimumTimeBetweenButtonClicks;
 
-  if (button()->request_focus_on_press())
+  if (button()->GetRequestFocusOnPress())
     button()->RequestFocus();
   if (button()->GetState() != Button::STATE_DISABLED &&
       button()->HitTestPoint(event.location()) && IsTriggerableEvent(event)) {
@@ -117,7 +117,7 @@ void MenuButtonController::OnMouseReleased(const ui::MouseEvent& event) {
       button()->HitTestPoint(event.location()) && !delegate()->InDrag()) {
     Activate(&event);
   } else {
-    if (button()->hide_ink_drop_when_showing_context_menu())
+    if (button()->GetHideInkDropWhenShowingContextMenu())
       button()->AnimateInkDrop(InkDropState::HIDDEN, &event);
     ButtonController::OnMouseReleased(event);
   }
@@ -273,7 +273,7 @@ bool MenuButtonController::IsTriggerableEventType(const ui::Event& event) {
     // trigger button actions. For example, menus should only active on left
     // mouse button, to prevent a menu from being activated when a right-click
     // would also activate a context menu.
-    if (!(mouse_event->button_flags() & button()->triggerable_event_flags()))
+    if (!(mouse_event->button_flags() & button()->GetTriggerableEventFlags()))
       return false;
 
     // Activate on release if dragging, otherwise activate based on

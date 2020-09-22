@@ -167,8 +167,8 @@ void SimpleWebViewDialog::Init() {
 
   // Back/Forward buttons.
   auto back = std::make_unique<views::ImageButton>(this);
-  back->set_triggerable_event_flags(ui::EF_LEFT_MOUSE_BUTTON |
-                                    ui::EF_MIDDLE_MOUSE_BUTTON);
+  back->SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
+                                 ui::EF_MIDDLE_MOUSE_BUTTON);
   back->set_tag(IDC_BACK);
   back->SetImageHorizontalAlignment(views::ImageButton::ALIGN_RIGHT);
   back->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_BACK));
@@ -177,8 +177,8 @@ void SimpleWebViewDialog::Init() {
   back_ = back.get();
 
   auto forward = std::make_unique<views::ImageButton>(this);
-  forward->set_triggerable_event_flags(ui::EF_LEFT_MOUSE_BUTTON |
-                                       ui::EF_MIDDLE_MOUSE_BUTTON);
+  forward->SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
+                                    ui::EF_MIDDLE_MOUSE_BUTTON);
   forward->set_tag(IDC_FORWARD);
   forward->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_FORWARD));
   forward->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_FORWARD));
@@ -192,8 +192,8 @@ void SimpleWebViewDialog::Init() {
 
   // Reload button.
   auto reload = std::make_unique<ReloadButton>(command_updater_.get());
-  reload->set_triggerable_event_flags(ui::EF_LEFT_MOUSE_BUTTON |
-                                      ui::EF_MIDDLE_MOUSE_BUTTON);
+  reload->SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
+                                   ui::EF_MIDDLE_MOUSE_BUTTON);
   reload->set_tag(IDC_RELOAD);
   reload->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_RELOAD));
   reload->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_RELOAD));

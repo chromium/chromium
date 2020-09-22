@@ -61,7 +61,7 @@ AvatarToolbarButton::AvatarToolbarButton(Browser* browser,
   // without drag-drop actions (specifically the adjacent browser menu).
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
-  set_triggerable_event_flags(ui::EF_LEFT_MOUSE_BUTTON);
+  SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON);
 
   SetID(VIEW_ID_AVATAR_BUTTON);
 

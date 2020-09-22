@@ -152,7 +152,7 @@ bool PageActionIconView::IsTriggerableEvent(const ui::Event& event) {
     // IconLabelBubbleView allows any mouse click to be triggerable event so
     // need to manually check here.
     return IconLabelBubbleView::IsTriggerableEvent(event) &&
-           ((triggerable_event_flags() & event.flags()) != 0);
+           ((GetTriggerableEventFlags() & event.flags()) != 0);
   }
 
   return IconLabelBubbleView::IsTriggerableEvent(event);

@@ -286,7 +286,7 @@ void QuickAnswersView::ShowRetryView() {
           /*listener=*/this, base::UTF8ToUTF16(kDefaultRetryStr)));
   retry_label_->SetEnabledTextColors(gfx::kGoogleBlue600);
   retry_label_->SetFocusForPlatform();
-  retry_label_->set_request_focus_on_press(true);
+  retry_label_->SetRequestFocusOnPress(true);
   SetButtonNotifyActionToOnPress(retry_label_);
   retry_label_->SetAccessibleName(base::UTF8ToUTF16(
       base::StringPrintf(kA11yRetryLabelNameTemplate, kA11yNameText)));

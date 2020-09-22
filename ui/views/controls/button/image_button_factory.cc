@@ -64,7 +64,7 @@ std::unique_ptr<ToggleImageButton> CreateVectorToggleImageButton(
 
 void ConfigureVectorImageButton(ImageButton* button) {
   button->SetInkDropMode(Button::InkDropMode::ON);
-  button->set_has_ink_drop_action_on_click(true);
+  button->SetHasInkDropActionOnClick(true);
   button->SetImageHorizontalAlignment(ImageButton::ALIGN_CENTER);
   button->SetImageVerticalAlignment(ImageButton::ALIGN_MIDDLE);
   button->SetBorder(CreateEmptyBorder(
@@ -107,7 +107,7 @@ void SetImageFromVectorIconWithColor(ImageButton* button,
 
   button->SetImage(Button::STATE_NORMAL, normal_image);
   button->SetImage(Button::STATE_DISABLED, disabled_image);
-  button->set_ink_drop_base_color(icon_color);
+  button->SetInkDropBaseColor(icon_color);
 }
 
 void SetToggledImageFromVectorIconWithColor(ToggleImageButton* button,

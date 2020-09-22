@@ -23,7 +23,7 @@ Windows10CaptionButton::Windows10CaptionButton(
     : views::Button(frame_view),
       frame_view_(frame_view),
       button_type_(button_type) {
-  set_animate_on_state_change(true);
+  SetAnimateOnStateChange(true);
   SetAccessibleName(accessible_name);
 }
 

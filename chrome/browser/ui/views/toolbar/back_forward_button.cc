@@ -25,9 +25,9 @@ BackForwardButton::BackForwardButton(Direction direction,
                             : BackForwardMenuModel::ModelType::kForward),
                     browser->tab_strip_model()),
       direction_(direction) {
-  set_hide_ink_drop_when_showing_context_menu(false);
-  set_triggerable_event_flags(ui::EF_LEFT_MOUSE_BUTTON |
-                              ui::EF_MIDDLE_MOUSE_BUTTON);
+  SetHideInkDropWhenShowingContextMenu(false);
+  SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
+                           ui::EF_MIDDLE_MOUSE_BUTTON);
   if (direction_ == Direction::kBack) {
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_BACK));
     SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));

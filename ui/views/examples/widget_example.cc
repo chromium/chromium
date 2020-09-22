@@ -80,7 +80,7 @@ void WidgetExample::BuildButton(View* container,
   LabelButton* button =
       container->AddChildView(std::make_unique<LabelButton>(this, label));
   button->SetFocusForPlatform();
-  button->set_request_focus_on_press(true);
+  button->SetRequestFocusOnPress(true);
   button->set_tag(tag);
 }
 

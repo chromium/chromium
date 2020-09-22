@@ -26,7 +26,7 @@ ActionableView::ActionableView(TrayPopupInkDropStyle ink_drop_style)
       destroyed_(nullptr),
       ink_drop_style_(ink_drop_style) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  set_has_ink_drop_action_on_click(false);
+  SetHasInkDropActionOnClick(false);
   SetNotifyEnterExitOnChild(true);
   // TODO(pbos): Replace the use of FocusPainter with the FocusRing (using the
   // below HighlightPathGenerator).

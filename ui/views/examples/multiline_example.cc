@@ -148,12 +148,12 @@ void MultilineExample::CreateExampleView(View* container) {
   auto label_checkbox =
       std::make_unique<Checkbox>(GetStringUTF16(IDS_MULTILINE_LABEL), this);
   label_checkbox->SetChecked(true);
-  label_checkbox->set_request_focus_on_press(false);
+  label_checkbox->SetRequestFocusOnPress(false);
 
   auto elision_checkbox = std::make_unique<Checkbox>(
       GetStringUTF16(IDS_MULTILINE_ELIDE_LABEL), this);
   elision_checkbox->SetChecked(false);
-  elision_checkbox->set_request_focus_on_press(false);
+  elision_checkbox->SetRequestFocusOnPress(false);
 
   auto textfield = std::make_unique<Textfield>();
   textfield->set_controller(this);

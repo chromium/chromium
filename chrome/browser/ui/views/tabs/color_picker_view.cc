@@ -89,7 +89,7 @@ class ColorPickerElementView : public views::Button,
     SetBorder(views::CreateEmptyBorder(insets));
 
     SetInkDropMode(InkDropMode::OFF);
-    set_animate_on_state_change(true);
+    SetAnimateOnStateChange(true);
   }
 
   void SetSelected(bool selected) {

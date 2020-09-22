@@ -77,8 +77,8 @@ AudioDeviceEntryView::AudioDeviceEntryView(
 
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetInkDropMode(Button::InkDropMode::ON);
-  set_ink_drop_base_color(foreground_color);
-  set_has_ink_drop_action_on_click(true);
+  SetInkDropBaseColor(foreground_color);
+  SetHasInkDropActionOnClick(true);
   SetPreferredSize(kDeviceEntryViewSize);
 }
 
@@ -86,19 +86,19 @@ void AudioDeviceEntryView::SetHighlighted(bool highlighted) {
   is_highlighted_ = highlighted;
   if (highlighted) {
     SetInkDropMode(Button::InkDropMode::OFF);
-    set_has_ink_drop_action_on_click(false);
+    SetHasInkDropActionOnClick(false);
     SetBackground(views::CreateSolidBackground(
         SkColorSetA(GetInkDropBaseColor(), kEntryHighlightOpacity)));
   } else {
     SetInkDropMode(Button::InkDropMode::ON);
-    set_has_ink_drop_action_on_click(true);
+    SetHasInkDropActionOnClick(true);
     SetBackground(nullptr);
   }
 }
 
 void AudioDeviceEntryView::OnColorsChanged(SkColor foreground_color,
                                            SkColor background_color) {
-  set_ink_drop_base_color(foreground_color);
+  SetInkDropBaseColor(foreground_color);
 
   ChangeEntryColor(static_cast<views::ImageView*>(icon_view()), title(),
                    subtitle(), icon_, foreground_color, background_color);
@@ -131,14 +131,14 @@ CastDeviceEntryView::CastDeviceEntryView(views::ButtonListener* button_listener,
 
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetInkDropMode(Button::InkDropMode::ON);
-  set_ink_drop_base_color(foreground_color);
-  set_has_ink_drop_action_on_click(true);
+  SetInkDropBaseColor(foreground_color);
+  SetHasInkDropActionOnClick(true);
   SetPreferredSize(kDeviceEntryViewSize);
 }
 
 void CastDeviceEntryView::OnColorsChanged(SkColor foreground_color,
                                           SkColor background_color) {
-  set_ink_drop_base_color(foreground_color);
+  SetInkDropBaseColor(foreground_color);
   ChangeEntryColor(static_cast<views::ImageView*>(icon_view()), title(),
                    subtitle(), icon_, foreground_color, background_color);
 }

@@ -90,8 +90,8 @@ HoverButton::HoverButton(views::ButtonListener* button_listener,
 
   SetInkDropMode(InkDropMode::ON);
 
-  set_triggerable_event_flags(ui::EF_LEFT_MOUSE_BUTTON |
-                              ui::EF_RIGHT_MOUSE_BUTTON);
+  SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
+                           ui::EF_RIGHT_MOUSE_BUTTON);
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnRelease);
 }
