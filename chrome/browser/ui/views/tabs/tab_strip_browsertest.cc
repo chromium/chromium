@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -812,29 +811,4 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
   tab_strip()->SelectTab(tab_strip()->tab_at(0), GetDummyEvent());
   EXPECT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group));
-}
-
-class TabSearchButtonTest : public TabStripBrowsertest {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(features::kTabSearch, true);
-    TabStripBrowsertest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(TabSearchButtonTest, TabSearchBubble_CreateAndClose) {
-  TabSearchButton* tab_search_button = tab_strip()->tab_search_button();
-
-  DCHECK_EQ(nullptr, tab_search_button->bubble_for_testing());
-  tab_search_button->ButtonPressed(tab_search_button, GetDummyEvent());
-  DCHECK_NE(nullptr, tab_search_button->bubble_for_testing());
-
-  // Close the tab search bubble widget, the bubble should be cleared from the
-  // TabSearchButton.
-  tab_search_button->bubble_for_testing()->CloseWithReason(
-      views::Widget::ClosedReason::kUnspecified);
-  DCHECK_EQ(nullptr, tab_search_button->bubble_for_testing());
 }

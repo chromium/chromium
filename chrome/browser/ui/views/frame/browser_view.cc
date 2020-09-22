@@ -729,6 +729,19 @@ int BrowserView::GetTabStripHeight() const {
   return IsTabStripVisible() ? tabstrip_->GetPreferredSize().height() : 0;
 }
 
+TabSearchButton* BrowserView::GetTabSearchButton() {
+  if (!base::FeatureList::IsEnabled(features::kTabSearch))
+    return nullptr;
+
+  // If kTabSearchFixedEntrypoint is enabled then the tab search button is
+  // defined in the tab strip region view.
+  // TODO(tluk): Consolidate these once Tab Scrolling successfully moves the
+  // tab controls container to the tab strip region view.
+  return base::FeatureList::IsEnabled(features::kTabSearchFixedEntrypoint)
+             ? tab_strip_region_view_->tab_search_button()
+             : tabstrip_->tab_search_button();
+}
+
 bool BrowserView::IsTabStripVisible() const {
   // Return false if this window does not normally display a tabstrip.
   if (!browser_->SupportsWindowFeature(Browser::FEATURE_TABSTRIP))
@@ -2641,13 +2654,8 @@ void BrowserView::CreateTabSearchBubble() {
     return;
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
-  // If kTabSearchFixedEntrypoint is enabled then the tab search button is
-  // defined in the tab strip region view.
-  // TODO(tluk): Consolidate these once Tab Scrolling successfully moves the
-  // tab controls container to the tab strip region view.
-  if ((base::FeatureList::IsEnabled(features::kTabSearchFixedEntrypoint) &&
-       tab_strip_region_view_->tab_search_button()->ShowTabSearchBubble()) ||
-      tabstrip_->tab_search_button()->ShowTabSearchBubble()) {
+  DCHECK(GetTabSearchButton());
+  if (GetTabSearchButton()->ShowTabSearchBubble()) {
     // Only log the open action if it resulted in creating a new instance of the
     // Tab Search bubble.
     base::UmaHistogramEnumeration("Tabs.TabSearch.OpenAction",

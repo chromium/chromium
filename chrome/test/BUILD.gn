@@ -1453,6 +1453,7 @@ if (!is_android) {
       "../browser/ui/views/sharing/shared_clipboard_browsertest.cc",
       "../browser/ui/views/sharing/sharing_browsertest.cc",
       "../browser/ui/views/sharing/sharing_browsertest.h",
+      "../browser/ui/views/tabs/tab_search_button_browsertest.cc",
       "../browser/ui/views/tabs/tab_strip_browsertest.cc",
       "../browser/ui/views/try_chrome_dialog_win/try_chrome_dialog_browsertest.cc",
       "../browser/ui/views/web_apps/web_app_frame_toolbar_browsertest.cc",
