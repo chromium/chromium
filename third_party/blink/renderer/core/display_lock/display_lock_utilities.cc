@@ -24,7 +24,7 @@ namespace {
 
 // Returns the frame owner node for the frame that contains the given child, if
 // one exists. Returns nullptr otherwise.
-const Node* GetFrameOwnerNode(const Node* child) {
+Node* GetFrameOwnerNode(const Node* child) {
   if (!child || !child->GetDocument().GetFrame() ||
       !child->GetDocument().GetFrame()->OwnerLayoutObject()) {
     return nullptr;
@@ -320,40 +320,53 @@ Element* DisplayLockUtilities::NearestLockedExclusiveAncestor(
 Element* DisplayLockUtilities::HighestLockedInclusiveAncestor(
     const Node& node) {
   if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled() ||
-      node.GetDocument()
-              .GetDisplayLockDocumentState()
-              .LockedDisplayLockCount() == 0 ||
       !node.CanParticipateInFlatTree()) {
     return nullptr;
   }
-  const_cast<Node*>(&node)->UpdateDistributionForFlatTreeTraversal();
-  Element* locked_ancestor = nullptr;
-  for (Node& ancestor : FlatTreeTraversal::InclusiveAncestorsOf(node)) {
-    auto* ancestor_node = DynamicTo<Element>(ancestor);
-    if (!ancestor_node)
-      continue;
-    if (auto* context = ancestor_node->GetDisplayLockContext()) {
-      if (context->IsLocked())
-        locked_ancestor = ancestor_node;
-    }
+  auto* node_ptr = const_cast<Node*>(&node);
+  node_ptr->UpdateDistributionForFlatTreeTraversal();
+  // If the exclusive result exists, then that's higher than this node, so
+  // return it.
+  if (auto* result = HighestLockedExclusiveAncestor(node))
+    return result;
+
+  // Otherwise, we know the node is not in a locked subtree, so the only
+  // other possibility is that the node itself is locked.
+  auto* element = DynamicTo<Element>(node_ptr);
+  if (element && element->GetDisplayLockContext() &&
+      element->GetDisplayLockContext()->IsLocked()) {
+    return element;
   }
-  return locked_ancestor;
+  return nullptr;
 }
 
 Element* DisplayLockUtilities::HighestLockedExclusiveAncestor(
     const Node& node) {
   if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled() ||
-      node.GetDocument()
-              .GetDisplayLockDocumentState()
-              .LockedDisplayLockCount() == 0 ||
       !node.CanParticipateInFlatTree()) {
     return nullptr;
   }
   const_cast<Node*>(&node)->UpdateDistributionForFlatTreeTraversal();
 
-  if (Node* parent = FlatTreeTraversal::Parent(node))
-    return HighestLockedInclusiveAncestor(*parent);
-  return nullptr;
+  Node* parent = FlatTreeTraversal::Parent(node);
+  Element* locked_ancestor = nullptr;
+  while (parent) {
+    auto* locked_candidate = NearestLockedInclusiveAncestor(*parent);
+    auto* last_node = parent;
+    if (locked_candidate) {
+      locked_ancestor = locked_candidate;
+      parent = FlatTreeTraversal::Parent(*parent);
+    } else {
+      parent = nullptr;
+    }
+
+    if (!parent) {
+      parent = GetFrameOwnerNode(last_node);
+      if (parent)
+        parent->UpdateDistributionForFlatTreeTraversal();
+    }
+  }
+  return locked_ancestor;
 }
 
 Element* DisplayLockUtilities::NearestLockedInclusiveAncestor(

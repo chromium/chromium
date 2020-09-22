@@ -118,11 +118,10 @@ class CORE_EXPORT DisplayLockUtilities {
   // locked.
   static Element* NearestLockedExclusiveAncestor(const Node& node);
 
-  // Returns the highest inclusive ancestor of |node| that is display locked.
-  static Element* HighestLockedInclusiveAncestor(const Node& node);
-
   // Returns the highest exclusive ancestor of |node| that is display locked.
+  // Note that this function crosses local frames.
   static Element* HighestLockedExclusiveAncestor(const Node& node);
+  static Element* HighestLockedInclusiveAncestor(const Node& node);
 
   // LayoutObject versions of the NearestLocked* ancestor functions.
   static Element* NearestLockedInclusiveAncestor(const LayoutObject& object);
