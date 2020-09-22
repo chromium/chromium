@@ -34,7 +34,7 @@ void AddField(const std::string& label,
 // should also generate forms vectors by using fuzzing, but at the moment we use
 // simplified approach. There is no specific reason to use those two hardcoded
 // forms vectors, so it can be changed if needed.
-DEFINE_BINARY_PROTO_FUZZER(const AutofillQueryResponseContents& response) {
+DEFINE_BINARY_PROTO_FUZZER(const AutofillQueryResponse& response) {
   std::vector<FormStructure*> forms;
   FormStructure::ProcessQueryResponseForTesting(
       response, forms, test::GetEncodedSignatures(forms), nullptr);

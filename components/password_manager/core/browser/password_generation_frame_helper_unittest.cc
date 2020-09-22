@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -294,21 +295,24 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
 
     // EMAIL_ADDRESS = 9
     // ACCOUNT_CREATION_PASSWORD = 76
-    autofill::AutofillQueryResponseContents response;
-    response.add_field()->set_overall_type_prediction(9);
-    response.add_field()->set_overall_type_prediction(76);
+    autofill::AutofillQueryResponse response;
+    auto* form_suggestion = response.add_form_suggestions();
+    form_suggestion->add_field_suggestions()->set_primary_type_prediction(9);
+    form_suggestion->add_field_suggestions()->set_primary_type_prediction(76);
 
     if (test.has_field_requirements) {
-      *response.mutable_field(1)->mutable_password_requirements() =
-          GetFieldRequirements();
+      *form_suggestion->mutable_field_suggestions(1)
+           ->mutable_password_requirements() = GetFieldRequirements();
     }
 
     client_->SetLastCommittedEntryUrl(origin);
 
+    std::string unencoded_response_string;
     std::string response_string;
-    ASSERT_TRUE(response.SerializeToString(&response_string));
+    ASSERT_TRUE(response.SerializeToString(&unencoded_response_string));
+    base::Base64Encode(unencoded_response_string, &response_string);
 
-    autofill::FormStructure::ParseQueryResponse(
+    autofill::FormStructure::ParseApiQueryResponse(
         response_string, forms, autofill::test::GetEncodedSignatures(forms),
         nullptr);
 

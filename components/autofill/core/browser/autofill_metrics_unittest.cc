@@ -312,6 +312,17 @@ void AddAutoCompleteFieldToForm(const std::string& type, FormData& form) {
   form.fields.push_back(field);
 }
 
+std::string SerializeAndEncode(const AutofillQueryResponse& response) {
+  std::string unencoded_response_string;
+  if (!response.SerializeToString(&unencoded_response_string)) {
+    LOG(ERROR) << "Cannot serialize the response proto";
+    return "";
+  }
+  std::string response_string;
+  base::Base64Encode(unencoded_response_string, &response_string);
+  return response_string;
+}
+
 class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() {}
@@ -2036,17 +2047,17 @@ TEST_F(AutofillMetricsTest, LogRepeatedAddressTypeRationalized) {
   // |form_structure| will be owned by |autofill_manager_|.
   autofill_manager_->AddSeenForm(form, field_types, field_types);
 
-  AutofillQueryResponseContents response;
-  response.add_field()->set_overall_type_prediction(NAME_FULL);
-  response.add_field()->set_overall_type_prediction(
+  AutofillQueryResponse response;
+  auto* form_suggestion = response.add_form_suggestions();
+  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+      NAME_FULL);
+  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  response.add_field()->set_overall_type_prediction(
+  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
 
-  std::string response_string;
-  ASSERT_TRUE(response.SerializeToString(&response_string));
-
-  FormStructure::ParseQueryResponse(
+  std::string response_string = SerializeAndEncode(response);
+  FormStructure::ParseApiQueryResponse(
       response_string, forms, test::GetEncodedSignatures(forms),
       autofill_manager_->form_interactions_ukm_logger_for_test());
 
@@ -2153,16 +2164,19 @@ TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
   // |form_structure| will be owned by |autofill_manager_|.
   autofill_manager_->AddSeenForm(form, field_types, field_types);
 
-  AutofillQueryResponseContents response;
-  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_COUNTRY);
-  response.add_field()->set_overall_type_prediction(NAME_FULL);
-  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_COUNTRY);
-  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_COUNTRY);
+  AutofillQueryResponse response;
+  auto* form_suggestion = response.add_form_suggestions();
+  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+      ADDRESS_HOME_COUNTRY);
+  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+      NAME_FULL);
+  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+      ADDRESS_HOME_COUNTRY);
+  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+      ADDRESS_HOME_COUNTRY);
 
-  std::string response_string;
-  ASSERT_TRUE(response.SerializeToString(&response_string));
-
-  FormStructure::ParseQueryResponse(
+  std::string response_string = SerializeAndEncode(response);
+  FormStructure::ParseApiQueryResponse(
       response_string, forms, test::GetEncodedSignatures(forms),
       autofill_manager_->form_interactions_ukm_logger_for_test());
 
@@ -3077,16 +3091,13 @@ TEST_F(AutofillMetricsTest, QualityMetrics_BasedOnAutocomplete) {
   form_suggestion->add_field_suggestions()->set_primary_type_prediction(
       NAME_MIDDLE);
 
-  std::string response_string;
-  ASSERT_TRUE(response.SerializeToString(&response_string));
-  std::string encoded_response_string;
-  base::Base64Encode(response_string, &encoded_response_string);
-
+  std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
   autofill_manager_->OnLoadedServerPredictionsForTest(
-      encoded_response_string, test::GetEncodedSignatures(*form_structure_ptr));
+      response_string, test::GetEncodedSignatures(*form_structure_ptr));
 
-  // Verify that FormStructure::ParseQueryResponse was called (here and below).
+  // Verify that FormStructure::ParseApiQueryResponse was called (here and
+  // below).
   histogram_tester.ExpectBucketCount("Autofill.ServerQueryResponse",
                                      AutofillMetrics::QUERY_RESPONSE_RECEIVED,
                                      1);
@@ -9610,17 +9621,16 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
 };
 
 TEST_F(AutofillMetricsParseQueryResponseTest, ServerHasData) {
-  AutofillQueryResponseContents response;
-  response.add_field()->set_overall_type_prediction(7);
-  response.add_field()->set_overall_type_prediction(30);
-  response.add_field()->set_overall_type_prediction(9);
-  response.add_field()->set_overall_type_prediction(0);
+  AutofillQueryResponse response;
+  auto* form_suggestion = response.add_form_suggestions();
+  form_suggestion->add_field_suggestions()->set_primary_type_prediction(7);
+  form_suggestion->add_field_suggestions()->set_primary_type_prediction(30);
+  form_suggestion->add_field_suggestions()->set_primary_type_prediction(9);
+  form_suggestion->add_field_suggestions()->set_primary_type_prediction(0);
 
-  std::string response_string;
-  ASSERT_TRUE(response.SerializeToString(&response_string));
-
+  std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
-  FormStructure::ParseQueryResponse(
+  FormStructure::ParseApiQueryResponse(
       response_string, forms_, test::GetEncodedSignatures(forms_), nullptr);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.ServerResponseHasDataForForm"),
@@ -9630,17 +9640,16 @@ TEST_F(AutofillMetricsParseQueryResponseTest, ServerHasData) {
 // If the server returns NO_SERVER_DATA for one of the forms, expect proper
 // logging.
 TEST_F(AutofillMetricsParseQueryResponseTest, OneFormNoServerData) {
-  AutofillQueryResponseContents response;
-  response.add_field()->set_overall_type_prediction(0);
-  response.add_field()->set_overall_type_prediction(0);
-  response.add_field()->set_overall_type_prediction(9);
-  response.add_field()->set_overall_type_prediction(0);
+  AutofillQueryResponse response;
+  auto* form_suggestion = response.add_form_suggestions();
+  form_suggestion->add_field_suggestions()->set_primary_type_prediction(0);
+  form_suggestion->add_field_suggestions()->set_primary_type_prediction(0);
+  form_suggestion->add_field_suggestions()->set_primary_type_prediction(9);
+  form_suggestion->add_field_suggestions()->set_primary_type_prediction(0);
 
-  std::string response_string;
-  ASSERT_TRUE(response.SerializeToString(&response_string));
-
+  std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
-  FormStructure::ParseQueryResponse(
+  FormStructure::ParseApiQueryResponse(
       response_string, forms_, test::GetEncodedSignatures(forms_), nullptr);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.ServerResponseHasDataForForm"),
@@ -9650,16 +9659,15 @@ TEST_F(AutofillMetricsParseQueryResponseTest, OneFormNoServerData) {
 // If the server returns NO_SERVER_DATA for both of the forms, expect proper
 // logging.
 TEST_F(AutofillMetricsParseQueryResponseTest, AllFormsNoServerData) {
-  AutofillQueryResponseContents response;
+  AutofillQueryResponse response;
+  auto* form_suggestion = response.add_form_suggestions();
   for (int i = 0; i < 4; ++i) {
-    response.add_field()->set_overall_type_prediction(0);
+    form_suggestion->add_field_suggestions()->set_primary_type_prediction(0);
   }
 
-  std::string response_string;
-  ASSERT_TRUE(response.SerializeToString(&response_string));
-
+  std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
-  FormStructure::ParseQueryResponse(
+  FormStructure::ParseApiQueryResponse(
       response_string, forms_, test::GetEncodedSignatures(forms_), nullptr);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.ServerResponseHasDataForForm"),
@@ -9669,17 +9677,16 @@ TEST_F(AutofillMetricsParseQueryResponseTest, AllFormsNoServerData) {
 // If the server returns NO_SERVER_DATA for only some of the fields, expect the
 // UMA metric to say there is data.
 TEST_F(AutofillMetricsParseQueryResponseTest, PartialNoServerData) {
-  AutofillQueryResponseContents response;
-  response.add_field()->set_overall_type_prediction(0);
-  response.add_field()->set_overall_type_prediction(10);
-  response.add_field()->set_overall_type_prediction(0);
-  response.add_field()->set_overall_type_prediction(11);
+  AutofillQueryResponse response;
+  auto* form_suggestion = response.add_form_suggestions();
+  form_suggestion->add_field_suggestions()->set_primary_type_prediction(0);
+  form_suggestion->add_field_suggestions()->set_primary_type_prediction(10);
+  form_suggestion->add_field_suggestions()->set_primary_type_prediction(0);
+  form_suggestion->add_field_suggestions()->set_primary_type_prediction(11);
 
-  std::string response_string;
-  ASSERT_TRUE(response.SerializeToString(&response_string));
-
+  std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
-  FormStructure::ParseQueryResponse(
+  FormStructure::ParseApiQueryResponse(
       response_string, forms_, test::GetEncodedSignatures(forms_), nullptr);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.ServerResponseHasDataForForm"),

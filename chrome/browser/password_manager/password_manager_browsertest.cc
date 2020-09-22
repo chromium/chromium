@@ -39,6 +39,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
@@ -82,8 +83,8 @@ using base::ASCIIToUTF16;
 using base::Feature;
 using testing::_;
 using testing::ElementsAre;
-using FieldPrediction =
-    autofill::AutofillQueryResponseContents::Field::FieldPrediction;
+using FieldPrediction = autofill::AutofillQueryResponse::FormSuggestion::
+    FieldSuggestion::FieldPrediction;
 
 namespace password_manager {
 namespace {
@@ -1239,9 +1240,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   std::vector<FieldPrediction> username_predictions;
   FieldPrediction username_prediction;
   username_prediction.set_type(autofill::USERNAME);
-  username_prediction.set_may_use_prefilled_placeholder(is_placeholder);
   username_predictions.push_back(username_prediction);
   form_structure.field(0)->set_server_predictions(username_predictions);
+  form_structure.field(0)->set_may_use_prefilled_placeholder(is_placeholder);
 
   // Password
   form_structure.field(1)->set_server_type(autofill::PASSWORD);
@@ -1304,9 +1305,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   std::vector<FieldPrediction> username_predictions;
   FieldPrediction username_prediction;
   username_prediction.set_type(autofill::USERNAME);
-  username_prediction.set_may_use_prefilled_placeholder(is_placeholder);
   username_predictions.push_back(username_prediction);
   form_structure.field(0)->set_server_predictions(username_predictions);
+  form_structure.field(0)->set_may_use_prefilled_placeholder(is_placeholder);
 
   // Password
   form_structure.field(1)->set_server_type(autofill::PASSWORD);

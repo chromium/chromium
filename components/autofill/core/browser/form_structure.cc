@@ -379,15 +379,6 @@ HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
   return HTML_TYPE_UNRECOGNIZED;
 }
 
-std::ostream& operator<<(
-    std::ostream& out,
-    const autofill::AutofillQueryResponseContents& response) {
-  for (const auto& field : response.field()) {
-    out << "\nautofill_type: " << field.overall_type_prediction();
-  }
-  return out;
-}
-
 std::ostream& operator<<(std::ostream& out,
                          const autofill::AutofillQueryResponse& response) {
   for (const auto& form : response.form_suggestions()) {
@@ -798,25 +789,6 @@ bool FormStructure::EncodeQueryRequest(
 }
 
 // static
-void FormStructure::ParseQueryResponse(
-    std::string payload,
-    const std::vector<FormStructure*>& forms,
-    const FormAndFieldSignatures& encoded_signatures,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
-  AutofillMetrics::LogServerQueryMetric(
-      AutofillMetrics::QUERY_RESPONSE_RECEIVED);
-
-  // Parse the response.
-  AutofillQueryResponseContents response;
-  if (!response.ParseFromString(payload))
-    return;
-
-  VLOG(1) << "Autofill query response was successfully parsed:\n" << response;
-
-  ProcessQueryResponse(response, forms, encoded_signatures,
-                       form_interactions_ukm_logger);
-}
-
 void FormStructure::ParseApiQueryResponse(
     base::StringPiece payload,
     const std::vector<FormStructure*>& forms,
@@ -839,13 +811,13 @@ void FormStructure::ParseApiQueryResponse(
   VLOG(1) << "Autofill query response from API was successfully parsed: "
           << response;
 
-  ProcessQueryResponse(CreateLegacyResponseFromApiResponse(response), forms,
-                       encoded_signatures, form_interactions_ukm_logger);
+  ProcessQueryResponse(response, forms, encoded_signatures,
+                       form_interactions_ukm_logger);
 }
 
 // static
 void FormStructure::ProcessQueryResponse(
-    const AutofillQueryResponseContents& response,
+    const AutofillQueryResponse& response,
     const std::vector<FormStructure*>& forms,
     const FormAndFieldSignatures& encoded_signatures,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
@@ -854,18 +826,26 @@ void FormStructure::ProcessQueryResponse(
   bool heuristics_detected_fillable_field = false;
   bool query_response_overrode_heuristics = false;
 
+  std::vector<AutofillQueryResponse::FormSuggestion::FieldSuggestion>
+      fields_in_response;
+  for (const auto& api_form : response.form_suggestions()) {
+    for (const auto& api_field : api_form.field_suggestions()) {
+      fields_in_response.push_back(api_field);
+    }
+  }
+
   // Align the server response to the |encoded_signatures|.
-  auto field_types = [&response, &encoded_signatures] {
+  auto field_types = [&fields_in_response, &encoded_signatures] {
     std::map<std::pair<FormSignature, FieldSignature>,
-             ::autofill::AutofillQueryResponseContents_Field>
+             AutofillQueryResponse::FormSuggestion::FieldSuggestion>
         field_types;
-    auto current_field = response.field().begin();
+    auto current_field = fields_in_response.begin();
     for (const auto& form_and_fields : encoded_signatures) {
       FormSignature form = form_and_fields.first;
       for (const auto& field : form_and_fields.second) {
         // In some cases *successful* response does not return all the
         // fields.
-        if (current_field == response.field().end())
+        if (current_field == fields_in_response.end())
           return field_types;
         field_types[std::make_pair(form, field)] = *current_field++;
       }
@@ -885,7 +865,7 @@ void FormStructure::ProcessQueryResponse(
       const auto& current_field = it->second;
 
       ServerFieldType field_type =
-          static_cast<ServerFieldType>(current_field.overall_type_prediction());
+          static_cast<ServerFieldType>(current_field.primary_type_prediction());
       query_response_has_no_server_data &= field_type == NO_SERVER_DATA;
 
       ServerFieldType heuristic_type = field->heuristic_type();
@@ -893,10 +873,12 @@ void FormStructure::ProcessQueryResponse(
         heuristics_detected_fillable_field = true;
 
       field->set_server_type(field_type);
-      std::vector<AutofillQueryResponseContents::Field::FieldPrediction>
+      std::vector<AutofillQueryResponse::FormSuggestion::FieldSuggestion::
+                      FieldPrediction>
           server_predictions;
       if (current_field.predictions_size() == 0) {
-        AutofillQueryResponseContents::Field::FieldPrediction field_prediction;
+        AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
+            field_prediction;
         field_prediction.set_type(field_type);
         server_predictions.push_back(field_prediction);
       } else {
@@ -904,6 +886,8 @@ void FormStructure::ProcessQueryResponse(
                                   current_field.predictions().end());
       }
       field->set_server_predictions(std::move(server_predictions));
+      field->set_may_use_prefilled_placeholder(
+          current_field.may_use_prefilled_placeholder());
 
       if (heuristic_type != field->Type().GetStorableType())
         query_response_overrode_heuristics = true;
