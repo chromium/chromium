@@ -7,7 +7,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -177,8 +176,7 @@ class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+#if defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
 namespace {
 
 void ValidateFontEnumerationBasic(FontEnumerationStatus status,

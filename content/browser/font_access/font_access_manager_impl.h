@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "base/sequence_checker.h"
-#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

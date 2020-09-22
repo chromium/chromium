@@ -10,9 +10,15 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 #include "third_party/blink/public/mojom/font_access/font_access.mojom.h"
+
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
+    defined(OS_MAC)
+#define PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL 1
+#endif
 
 using blink::mojom::FontEnumerationStatus;
 

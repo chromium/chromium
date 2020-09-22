@@ -41,8 +41,7 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+#if defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
   const BindingContext& context = receivers_.current_context();
   RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(context.frame_id);
 
@@ -103,8 +102,7 @@ void FontAccessManagerImpl::DidRequestPermission(
 
 // Per-platform delegation for obtaining cached font enumeration data occurs
 // here, after the permission has been granted.
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+#if defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
   ipc_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(
                      [](EnumerateLocalFontsCallback callback,

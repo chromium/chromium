@@ -6,21 +6,15 @@
 
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "build/build_config.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
-#define PLATFORM_HAS_NATIVE_ENUMERATION_IMPL 1
-#endif
 
 namespace content {
 
 FontEnumerationCache::FontEnumerationCache() = default;
 FontEnumerationCache::~FontEnumerationCache() = default;
 
-#if !defined(PLATFORM_HAS_NATIVE_ENUMERATION_IMPL)
+#if !defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
 //  static
 FontEnumerationCache* FontEnumerationCache::GetInstance() {
   return nullptr;
