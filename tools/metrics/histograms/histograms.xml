@@ -47996,7 +47996,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.AsyncTargeting.AsyncClientDepth" units="clients"
-    expires_after="2020-11-01">
+    expires_after="2021-01-31">
   <owner>yigu@chromium.org</owner>
   <owner>event-targeting@chromium.org</owner>
   <summary>
