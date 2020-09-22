@@ -1219,6 +1219,14 @@ const FeatureEntry::FeatureVariation kOmniboxOnFocusSuggestionsVariations[] = {
 #endif  // defined(OS_ANDROID)
 };
 
+const FeatureEntry::FeatureVariation
+    kOmniboxOnFocusSuggestionsContextualWebVariations[] = {
+        {"GOC Only", {}, 0, "t3317583"},
+        {"GOC, pSuggest Fallback", {}, 0, "t3317692"},
+        {"GOC, pSuggest Backfill", {}, 0, "t3317694"},
+        {"GOC, Default Hidden", {}, 0, "t3317834"},
+};
+
 const FeatureEntry::FeatureVariation kMaxZeroSuggestMatchesVariations[] = {
     {
         "5",
@@ -3737,7 +3745,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-on-focus-suggestions-contextual-web",
      flag_descriptions::kOmniboxOnFocusSuggestionsContextualWebName,
      flag_descriptions::kOmniboxOnFocusSuggestionsContextualWebDescription,
-     kOsAll, FEATURE_VALUE_TYPE(omnibox::kOnFocusSuggestionsContextualWeb)},
+     kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox::kOnFocusSuggestionsContextualWeb,
+         kOmniboxOnFocusSuggestionsContextualWebVariations,
+         "OmniboxGoogleOnContent")},
 
     {"omnibox-local-zero-suggest-frecency-ranking",
      flag_descriptions::kOmniboxLocalZeroSuggestFrecencyRankingName,
