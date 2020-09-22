@@ -1519,9 +1519,18 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, RestorePinnedTabs) {
 }
 #endif  // !defined(OS_CHROMEOS)
 
+// TODO(1126339): fix the way how exo creates accelerated widgets. At the
+// moment, they are created only after the client attaches a buffer to a surface,
+// which is incorrect and results in the "[destroyed object]: error 1: popup
+// parent not constructed" error.
+#if BUILDFLAG(IS_LACROS)
+#define MAYBE_CloseWithAppMenuOpen DISABLED_CloseWithAppMenuOpen
+#else
+#define MAYBE_CloseWithAppMenuOpen CloseWithAppMenuOpen
+#endif
 // This test verifies we don't crash when closing the last window and the app
 // menu is showing.
-IN_PROC_BROWSER_TEST_F(BrowserTest, CloseWithAppMenuOpen) {
+IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_CloseWithAppMenuOpen) {
   if (browser_defaults::kBrowserAliveWithNoWindows)
     return;
 

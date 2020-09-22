@@ -60,6 +60,10 @@ class WaylandEventSource : public PlatformEventSource,
 
   int keyboard_modifiers() const { return keyboard_modifiers_; }
 
+  // Sets a callback that that shutdowns the browser in case of unrecoverable
+  // error. Called by WaylandEventWatcher.
+  void SetShutdownCb(base::OnceCallback<void()> shutdown_cb);
+
   // Starts polling for events from the wayland connection file descriptor.
   // This method assumes connection is already estabilished and input objects
   // are already bound and properly initialized.
