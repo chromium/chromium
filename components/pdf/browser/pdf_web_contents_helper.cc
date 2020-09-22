@@ -40,6 +40,14 @@ PDFWebContentsHelper::~PDFWebContentsHelper() {
   if (!touch_selection_controller_client_manager_)
     return;
 
+  // PDFWebContentsHelperTest overrides TouchSelectionControllerClientManager
+  // to mock it and GetTouchSelectionController() returns nullptr in that case.
+  // This check prevents the tests from failing in that condition.
+  ui::TouchSelectionController* touch_selection_controller =
+      touch_selection_controller_client_manager_->GetTouchSelectionController();
+  if (touch_selection_controller)
+    touch_selection_controller->HideAndDisallowShowingAutomatically();
+
   touch_selection_controller_client_manager_->InvalidateClient(this);
   touch_selection_controller_client_manager_->RemoveObserver(this);
 }
