@@ -3718,8 +3718,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxClobberTriggersContextualWebZeroSuggestName,
      flag_descriptions::
          kOmniboxClobberTriggersContextualWebZeroSuggestDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kClobberTriggersContextualWebZeroSuggest)},
+     kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox::kClobberTriggersContextualWebZeroSuggest,
+         // On-clobber has the same variations and forcing IDs as on-focus.
+         kOmniboxOnFocusSuggestionsContextualWebVariations,
+         "OmniboxGoogleOnContent")},
 
     {"omnibox-on-device-head-suggestions-incognito",
      flag_descriptions::kOmniboxOnDeviceHeadSuggestionsIncognitoName,
