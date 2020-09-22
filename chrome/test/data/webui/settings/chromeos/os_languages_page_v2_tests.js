@@ -176,6 +176,86 @@ suite('languages page', () => {
       assertEquals('en-US', languageHelper.getPref(languagesPref).value);
     });
 
+    test('the only translate blocked language is not removable', () => {
+      //'en-US' is preconfigured to be the only translate blocked language.
+      assertDeepEquals(
+          ['en-US'], languageHelper.prefs.translate_blocked_languages.value);
+      const items = languagesList.querySelectorAll('.list-item');
+      const domRepeat = assert(languagesList.querySelector('dom-repeat'));
+      const item = Array.from(items).find(function(el) {
+        return domRepeat.itemForElement(el) &&
+            domRepeat.itemForElement(el).language.code === 'en-US';
+      });
+
+      // Opens the menu and selects Remove.
+      item.querySelector('cr-icon-button').click();
+
+      assertTrue(actionMenu.open);
+      const removeMenuItem = getMenuItem('removeLanguage');
+      assertTrue(removeMenuItem.disabled);
+      assertFalse(removeMenuItem.hidden);
+    });
+
+    test('device language is removable', () => {
+      // 'en-US' is the preconfigured UI language.
+      assertEquals('en-US', languageHelper.languages.prospectiveUILanguage);
+      // Add 'sw' to translate_blocked_languages.
+      languageHelper.setPrefValue(
+          'translate_blocked_languages', ['en-US', 'sw']);
+      Polymer.dom.flush();
+
+      const items = languagesList.querySelectorAll('.list-item');
+      const domRepeat = assert(languagesList.querySelector('dom-repeat'));
+      const item = Array.from(items).find(function(el) {
+        return domRepeat.itemForElement(el) &&
+            domRepeat.itemForElement(el).language.code === 'en-US';
+      });
+
+      // Opens the menu and selects Remove.
+      item.querySelector('cr-icon-button').click();
+
+      assertTrue(actionMenu.open);
+      const removeMenuItem = getMenuItem('removeLanguage');
+      assertFalse(removeMenuItem.disabled);
+      assertFalse(removeMenuItem.hidden);
+      removeMenuItem.click();
+      assertFalse(actionMenu.open);
+
+      assertEquals('sw', languageHelper.getPref(languagesPref).value);
+    });
+
+    test('single preferred language is not removable', () => {
+      languageHelper.setPrefValue(
+          'settings.language.preferred_languages', 'sw');
+      Polymer.dom.flush();
+      const items = languagesList.querySelectorAll('.list-item');
+      const domRepeat = assert(languagesList.querySelector('dom-repeat'));
+      const item = Array.from(items).find(function(el) {
+        return domRepeat.itemForElement(el) &&
+            domRepeat.itemForElement(el).language.code === 'sw';
+      });
+
+      // Opens the menu and selects Remove.
+      item.querySelector('cr-icon-button').click();
+
+      assertTrue(actionMenu.open);
+      const removeMenuItem = getMenuItem('removeLanguage');
+      assertTrue(removeMenuItem.disabled);
+      assertFalse(removeMenuItem.hidden);
+    });
+
+    test('removing a language does not remove related input methods', () => {
+      const sw = '_comp_ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:sw:sw';
+      const swUS = 'ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:us:sw';
+      languageHelper.addInputMethod(sw);
+      languageHelper.addInputMethod(swUS);
+      assertEquals(4, languageHelper.languages.inputMethods.enabled.length);
+
+      // Disable Swahili. The Swahili-only keyboard should not be removed.
+      languageHelper.disableLanguage('sw');
+      assertEquals(4, languageHelper.languages.inputMethods.enabled.length);
+    });
+
     test('has move up/down buttons', () => {
       // Adds several languages.
       for (const language of ['en-CA', 'en-US', 'tk', 'no']) {

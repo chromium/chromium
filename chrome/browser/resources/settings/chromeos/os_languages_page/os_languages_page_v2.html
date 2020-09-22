@@ -133,7 +133,8 @@
               $i18n{moveDown}
             </button>
             <button class="dropdown-item" role="menuitem"
-                on-click="onRemoveLanguageClick_">
+                on-click="onRemoveLanguageClick_"
+                disabled="[[!detailLanguage_.state.removable]]">
               $i18n{removeLanguage}
             </button>
           </cr-action-menu>

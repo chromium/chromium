@@ -738,11 +738,12 @@ Polymer({
     // Remove the language from spell check.
     this.deletePrefListItem('spellcheck.dictionaries', languageCode);
 
-    if (cr.isChromeOS) {
+    // For language settings V2, languages and input methods are decoupled
+    // so there's no need to remove related input methods.
+    if (cr.isChromeOS && !this.isChromeOSLanguageSettingsV2_()) {
       // Remove input methods that don't support any other enabled language.
       const inputMethods = this.languageInputMethods_.get(languageCode) || [];
-      for (let i = 0; i < inputMethods.length; i++) {
-        const inputMethod = inputMethods[i];
+      for (const inputMethod of inputMethods) {
         const supportsOtherEnabledLanguages = inputMethod.languageCodes.some(
             otherLanguageCode => otherLanguageCode !== languageCode &&
                 this.isLanguageEnabled(otherLanguageCode));
@@ -754,6 +755,17 @@ Polymer({
 
     // Remove the language from preferred languages.
     this.languageSettingsPrivate_.disableLanguage(languageCode);
+  },
+
+  /**
+   * @private
+   */
+  isChromeOSLanguageSettingsV2_() {
+    if (!cr.isChromeOS) {
+      return false;
+    }
+    return loadTimeData.valueExists('enableLanguageSettingsV2') &&
+        loadTimeData.getBoolean('enableLanguageSettingsV2');
   },
 
   /**
@@ -772,7 +784,10 @@ Polymer({
    */
   canDisableLanguage(languageState) {
     // Cannot disable the prospective UI language.
-    if (languageState.language.code === this.languages.prospectiveUILanguage) {
+    // Exception for Chrome OS language settings V2 as we are decoupling
+    // language preference from UI language.
+    if (languageState.language.code === this.languages.prospectiveUILanguage &&
+        !this.isChromeOSLanguageSettingsV2_()) {
       return false;
     }
 
@@ -787,6 +802,13 @@ Polymer({
     }
 
     if (!cr.isChromeOS) {
+      return true;
+    }
+
+    // ChromeOS language settings V2 does not remove input methods when removing
+    // languages, so there's no need to check for other enabled input methods
+    // below.
+    if (this.isChromeOSLanguageSettingsV2_()) {
       return true;
     }
 
