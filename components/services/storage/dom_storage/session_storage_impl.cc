@@ -188,6 +188,7 @@ void SessionStorageImpl::BindStorageArea(
 }
 
 void SessionStorageImpl::CreateNamespace(const std::string& namespace_id) {
+  DCHECK_NE(connection_state_, CONNECTION_IN_PROGRESS);
   if (namespaces_.find(namespace_id) != namespaces_.end())
     return;
 
@@ -199,6 +200,7 @@ void SessionStorageImpl::CloneNamespace(
     const std::string& clone_from_namespace_id,
     const std::string& clone_to_namespace_id,
     mojom::SessionStorageCloneType clone_type) {
+  DCHECK_NE(connection_state_, CONNECTION_IN_PROGRESS);
   if (namespaces_.find(clone_to_namespace_id) != namespaces_.end()) {
     // Non-immediate clones expect to be paired with a |Clone| from the mojo
     // namespace object. If that clone has already happened, then we don't need
@@ -264,6 +266,7 @@ void SessionStorageImpl::CloneNamespace(
 
 void SessionStorageImpl::DeleteNamespace(const std::string& namespace_id,
                                          bool should_persist) {
+  DCHECK_NE(connection_state_, CONNECTION_IN_PROGRESS);
   auto namespace_it = namespaces_.find(namespace_id);
   // If the namespace has pending clones, do the clone now before destroying it.
   if (namespace_it != namespaces_.end()) {
@@ -710,6 +713,7 @@ void SessionStorageImpl::RunWhenConnected(base::OnceClosure callback) {
     case NO_CONNECTION:
       // If we don't have a filesystem_connection_, we'll need to establish one.
       connection_state_ = CONNECTION_IN_PROGRESS;
+      receiver_.Pause();
       on_database_opened_callbacks_.push_back(std::move(callback));
       InitiateConnection();
       return;
@@ -973,6 +977,7 @@ void SessionStorageImpl::OnConnectionFinished() {
   // |database_| should be known to either be valid or invalid by now. Run our
   // delayed bindings.
   connection_state_ = CONNECTION_FINISHED;
+  receiver_.Resume();
   std::vector<base::OnceClosure> callbacks;
   std::swap(callbacks, on_database_opened_callbacks_);
   for (size_t i = 0; i < callbacks.size(); ++i)
@@ -993,6 +998,7 @@ void SessionStorageImpl::DeleteAndRecreateDatabase(const char* histogram_name) {
   // Reset state to be in process of connecting. This will cause requests for
   // StorageAreas to be queued until the connection is complete.
   connection_state_ = CONNECTION_IN_PROGRESS;
+  receiver_.Pause();
   commit_error_count_ = 0;
   database_.reset();
   open_result_histogram_ = histogram_name;

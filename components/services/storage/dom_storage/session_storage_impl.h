@@ -119,14 +119,23 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
     return database_->database();
   }
 
+  const SessionStorageMetadata& GetMetadataForTesting() const {
+    return metadata_;
+  }
+
+  SessionStorageNamespaceImpl* GetNamespaceForTesting(const std::string& id) {
+    auto it = namespaces_.find(id);
+    if (it == namespaces_.end())
+      return nullptr;
+    return it->second.get();
+  }
+
   // Wait for the database to be opened, or for opening to fail. If the database
   // is already opened, |callback| is invoked immediately.
   void SetDatabaseOpenCallbackForTesting(base::OnceClosure callback);
 
  private:
   friend class DOMStorageBrowserTest;
-  FRIEND_TEST_ALL_PREFIXES(SessionStorageImplTest,
-                           PurgeMemoryDoesNotCrashOrHang);
 
   // These values are written to logs.  New enum values can be added, but
   // existing enums must never be renumbered or deleted and reused.
