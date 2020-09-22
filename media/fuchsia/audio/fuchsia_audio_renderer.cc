@@ -23,9 +23,9 @@ namespace {
 // nullopt is returned in case the codec is not supported. nullptr is returned
 // for uncompressed PCM streams.
 base::Optional<std::unique_ptr<fuchsia::media::Compression>>
-GetFuchsiaCompressionFromAudioCodec(AudioCodec codec) {
+GetFuchsiaCompressionFromDecoderConfig(AudioDecoderConfig config) {
   auto compression = std::make_unique<fuchsia::media::Compression>();
-  switch (codec) {
+  switch (config.codec()) {
     case kCodecAAC:
       compression->type = fuchsia::media::AUDIO_ENCODING_AAC;
       break;
@@ -48,6 +48,11 @@ GetFuchsiaCompressionFromAudioCodec(AudioCodec codec) {
     default:
       return base::nullopt;
   }
+
+  if (!config.extra_data().empty()) {
+    compression->parameters = config.extra_data();
+  }
+
   return std::move(compression);
 }
 
@@ -171,7 +176,7 @@ void FuchsiaAudioRenderer::InitializeStreamSink(
     vmos_for_stream_sink.push_back(std::move(readonly_vmo));
   }
 
-  auto compression = GetFuchsiaCompressionFromAudioCodec(config.codec());
+  auto compression = GetFuchsiaCompressionFromDecoderConfig(config);
   if (!compression) {
     LOG(ERROR) << "Unsupported audio codec: " << GetCodecName(config.codec());
     std::move(init_cb_).Run(AUDIO_RENDERER_ERROR);
