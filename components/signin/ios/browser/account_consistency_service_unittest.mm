@@ -12,6 +12,8 @@
 #include "base/bind_helpers.h"
 #include "base/test/bind_test_util.h"
 #import "base/test/ios/wait_util.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -54,6 +56,10 @@ const char* kGoogleDomain = "google.com";
 const char* kYoutubeDomain = "youtube.com";
 // Google domain where the CHROME_CONNECTED cookie is set/removed.
 const char* kCountryGoogleDomain = "google.de";
+
+// Name of the histogram to record whether the GAIA cookie is present.
+const char* kGAIACookiePresentHistogram =
+    "Signin.IOSGaiaCookiePresentOnNavigation";
 
 // Returns a cookie domain that applies for all origins on |host_domain|.
 std::string GetCookieDomain(const std::string& host_domain) {
@@ -529,4 +535,17 @@ TEST_F(AccountConsistencyServiceTest, SetGaiaCookieUpdateAtUpdateTime) {
   // considered for the call.
   base::Time second_gaia_cookie_update = SimulateUpdateGaiaCookie();
   EXPECT_GT(second_gaia_cookie_update, first_gaia_cookie_update);
+}
+
+// Ensures that the presence or absence of GAIA cookies is logged even if the
+// |kRestoreGAIACookiesIfDeleted| experiment is disabled.
+TEST_F(AccountConsistencyServiceTest, GAIACookieStatusLoggedProperly) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kRestoreGAIACookiesIfDeleted);
+
+  histogram_tester.ExpectTotalCount(kGAIACookiePresentHistogram, 0);
+  SimulateUpdateGaiaCookie();
+  base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectTotalCount(kGAIACookiePresentHistogram, 1);
 }

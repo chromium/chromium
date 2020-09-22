@@ -78,6 +78,9 @@ class AccountConsistencyHandler : public web::WebStatePolicyDecider {
 };
 }  // namespace
 
+const base::Feature kRestoreGAIACookiesIfDeleted{
+    "RestoreGAIACookiesIfDeleted", base::FEATURE_DISABLED_BY_DEFAULT};
+
 AccountConsistencyHandler::AccountConsistencyHandler(
     web::WebState* web_state,
     AccountConsistencyService* service,
@@ -268,10 +271,15 @@ void AccountConsistencyService::TriggerGaiaCookieChangeIfDeleted(
       return;
     }
   }
+
   // The SAPISID cookie may have been deleted previous to this update due to
   // ITP restrictions marking Google domains as potential trackers.
-  // Re-generate cookie to ensure that the user is properly signed in.
   LogIOSGaiaCookiesPresentOnNavigation(false);
+
+  if (!base::FeatureList::IsEnabled(kRestoreGAIACookiesIfDeleted)) {
+    return;
+  }
+  // Re-generate cookie to ensure that the user is properly signed in.
   identity_manager_->GetAccountsCookieMutator()->ForceTriggerOnCookieChange();
 }
 

@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
+#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
@@ -32,6 +33,9 @@ class WebStatePolicyDecider;
 
 class AccountReconcilor;
 class PrefService;
+
+// Feature flag controlling whether to restore GAIA cookies if they are deleted.
+extern const base::Feature kRestoreGAIACookiesIfDeleted;
 
 // Handles actions necessary for keeping the list of Google accounts available
 // on the web and those available on the iOS device from first-party Google apps
