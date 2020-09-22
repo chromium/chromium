@@ -125,8 +125,8 @@ std::unique_ptr<PopupNavigationDelegate> MaybeBlockPopup(
   // first.
   content::RenderFrameHost* source_frame =
       GetSourceFrameForPopup(delegate.get(), open_url_params, web_contents);
-  popup_blocker->AddBlockedPopup(source_frame, std::move(delegate),
-                                 window_features, block_type);
+  popup_blocker->AddBlockedPopup(std::move(delegate), window_features,
+                                 block_type);
   auto* trigger = safe_browsing::AdPopupTrigger::FromWebContents(web_contents);
   if (trigger) {
     trigger->PopupWasBlocked(source_frame);

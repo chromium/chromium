@@ -108,7 +108,6 @@ TEST_F(PopupBlockedInfoBarDelegateTest, ReplacesInfobarOnSecondPopup) {
 TEST_F(PopupBlockedInfoBarDelegateTest, ShowsBlockedPopups) {
   TestPopupNavigationDelegate::ResultHolder result;
   helper()->AddBlockedPopup(
-      web_contents()->GetMainFrame(),
       std::make_unique<TestPopupNavigationDelegate>(GURL(kPopupUrl), &result),
       blink::mojom::WindowFeatures(), PopupBlockType::kNoGesture);
   bool on_accept_called = false;
