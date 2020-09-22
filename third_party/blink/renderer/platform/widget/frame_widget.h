@@ -121,7 +121,7 @@ class PLATFORM_EXPORT FrameWidget
 
   // Return the composition character in window coordinates.
   virtual void GetCompositionCharacterBoundsInWindow(
-      Vector<gfx::Rect>* bounds_in_dips) = 0;
+      Vector<gfx::Rect>* bounds) = 0;
 
   virtual gfx::Range CompositionRange() = 0;
   // Returns ime_text_spans and corresponding window coordinates for the list
@@ -170,8 +170,7 @@ class PLATFORM_EXPORT FrameWidget
   virtual void FinishComposingText(bool keep_selection) = 0;
 
   virtual bool IsProvisional() = 0;
-  virtual uint64_t GetScrollableContainerIdAt(
-      const gfx::PointF& point_in_dips) = 0;
+  virtual uint64_t GetScrollableContainerIdAt(const gfx::PointF& point) = 0;
 
   virtual bool ShouldHandleImeEvents() { return false; }
 

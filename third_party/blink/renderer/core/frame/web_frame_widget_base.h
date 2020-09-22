@@ -150,7 +150,7 @@ class CORE_EXPORT WebFrameWidgetBase
                                 WebInputEvent::Type injected_type) override;
   void DidChangeCursor(const ui::Cursor&) override;
   void GetCompositionCharacterBoundsInWindow(
-      Vector<gfx::Rect>* bounds_in_dips) override;
+      Vector<gfx::Rect>* bounds) override;
   gfx::Range CompositionRange() override;
   WebTextInputInfo TextInputInfo() override;
   ui::mojom::VirtualKeyboardVisibilityRequest
@@ -179,8 +179,7 @@ class CORE_EXPORT WebFrameWidgetBase
                   int relative_cursor_pos) override;
   void FinishComposingText(bool keep_selection) override;
   bool IsProvisional() override;
-  uint64_t GetScrollableContainerIdAt(
-      const gfx::PointF& point_in_dips) override;
+  uint64_t GetScrollableContainerIdAt(const gfx::PointF& point) override;
   void SetEditCommandsForNextKeyEvent(
       Vector<mojom::blink::EditCommandPtr> edit_commands) override;
 
@@ -215,16 +214,14 @@ class CORE_EXPORT WebFrameWidgetBase
   void CollapseSelection() override;
   void Replace(const String& word) override;
   void ReplaceMisspelling(const String& word) override;
-  void SelectRange(const gfx::Point& base_in_dips,
-                   const gfx::Point& extent_in_dips) override;
+  void SelectRange(const gfx::Point& base, const gfx::Point& extent) override;
   void AdjustSelectionByCharacterOffset(
       int32_t start,
       int32_t end,
       mojom::blink::SelectionMenuBehavior behavior) override;
-  void MoveRangeSelectionExtent(const gfx::Point& extent_in_dips) override;
-  void ScrollFocusedEditableNodeIntoRect(
-      const gfx::Rect& rect_in_dips) override;
-  void MoveCaret(const gfx::Point& point_in_dips) override;
+  void MoveRangeSelectionExtent(const gfx::Point& extent) override;
+  void ScrollFocusedEditableNodeIntoRect(const gfx::Rect& rect) override;
+  void MoveCaret(const gfx::Point& point) override;
 #if defined(OS_ANDROID)
   void SelectWordAroundCaret(SelectWordAroundCaretCallback callback) override;
 #endif

@@ -59,6 +59,7 @@ class SkBitmap;
 
 namespace gfx {
 class Point;
+class PointF;
 }
 
 namespace ui {
@@ -155,6 +156,12 @@ class WebWidgetClient {
   // is eanbled.  TODO(oshima): Update the comment when the
   // migration is completed.
   virtual void ConvertWindowToViewport(WebFloatRect* rect) {}
+  virtual gfx::Point ConvertWindowPointToViewport(const gfx::Point& point) {
+    return point;
+  }
+  virtual gfx::PointF ConvertWindowPointToViewport(const gfx::PointF& point) {
+    return point;
+  }
 
   // Called when a drag-and-drop operation should begin. Returns whether the
   // call has been handled.
