@@ -172,6 +172,8 @@
       <include name="IDR_CAMERA_CAMERA_BUTTON_FPS_60_SVG" file="src/images/camera_button_fps_60.svg" type="BINDATA" />
       <include name="IDR_CAMERA_CAMERA_INTENT_RESULT_CANCEL_SVG" file="src/images/camera_intent_result_cancel.svg" type="BINDATA" />
       <include name="IDR_CAMERA_CAMERA_INTENT_RESULT_CONFIRM_SVG" file="src/images/camera_intent_result_confirm.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_INTRO_BANNER_ICON_SVG" file="src/images/camera_intro_banner_icon.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_INTRO_BANNER_CLOSE_SVG" file="src/images/camera_intro_banner_close.svg" type="BINDATA" />
     </includes>
   </release>
 </grit>

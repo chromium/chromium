@@ -68,6 +68,8 @@ copy("chrome_camera_app_images") {
     "src/images/camera_intent_play_video.svg",
     "src/images/camera_intent_result_cancel.svg",
     "src/images/camera_intent_result_confirm.svg",
+    "src/images/camera_intro_banner_close.svg",
+    "src/images/camera_intro_banner_icon.svg",
     "src/images/camera_mode_photo.svg",
     "src/images/camera_mode_portrait.svg",
     "src/images/camera_mode_square.svg",
