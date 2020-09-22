@@ -30,24 +30,25 @@ namespace chromeos {
 namespace platform_keys {
 
 using GenerateKeyCallback =
-    base::Callback<void(const std::string& public_key_spki_der, Status status)>;
+    base::OnceCallback<void(const std::string& public_key_spki_der,
+                            Status status)>;
 
 using SignCallback =
-    base::Callback<void(const std::string& signature, Status status)>;
+    base::OnceCallback<void(const std::string& signature, Status status)>;
 
 // If the certificate request could be processed successfully, |matches| will
 // contain the list of matching certificates (which may be empty). If an error
 // occurred, |matches| will be null.
 using SelectCertificatesCallback =
-    base::Callback<void(std::unique_ptr<net::CertificateList> matches,
-                        Status status)>;
+    base::OnceCallback<void(std::unique_ptr<net::CertificateList> matches,
+                            Status status)>;
 
 // If the list of certificates could be successfully retrieved, |certs| will
 // contain the list of available certificates (maybe empty). If an error
 // occurred, |certs| will be empty.
 using GetCertificatesCallback =
-    base::Callback<void(std::unique_ptr<net::CertificateList> certs,
-                        Status status)>;
+    base::OnceCallback<void(std::unique_ptr<net::CertificateList> certs,
+                            Status status)>;
 
 // If the list of key pairs could be successfully retrieved,
 // |public_key_spki_der_list| will contain the list of available key pairs (may
@@ -77,11 +78,9 @@ using GetTokensCallback =
 // user has access to. Note that this is also the case if the key exists on the
 // system token, but the current user does not have access to the system token.
 // If an error occurred during processing, |token_ids| will be empty.
-// TODO(pmarko): This is currently a RepeatingCallback because of
-// GetNSSCertDatabaseForResourceContext semantics.
 using GetKeyLocationsCallback =
-    base::RepeatingCallback<void(const std::vector<TokenId>& token_ids,
-                                 Status status)>;
+    base::OnceCallback<void(const std::vector<TokenId>& token_ids,
+                            Status status)>;
 
 using SetAttributeForKeyCallback = base::OnceCallback<void(Status status)>;
 
@@ -130,14 +129,14 @@ class PlatformKeysService : public KeyedService {
   // resulting public key or an error status.
   virtual void GenerateRSAKey(TokenId token_id,
                               unsigned int modulus_length_bits,
-                              const GenerateKeyCallback& callback) = 0;
+                              GenerateKeyCallback callback) = 0;
 
   // Generates a EC key pair with |named_curve|. |token_id| specifies the token
   // to store the key pair on. |callback| will be invoked with the resulting
   // public key or an error status.
   virtual void GenerateECKey(TokenId token_id,
                              const std::string& named_curve,
-                             const GenerateKeyCallback& callback) = 0;
+                             GenerateKeyCallback callback) = 0;
 
   // Digests |data|, applies PKCS1 padding and afterwards signs the data with
   // the private key matching |public_key_spki_der|. If the key is not found in
@@ -148,7 +147,7 @@ class PlatformKeysService : public KeyedService {
                                   const std::string& data,
                                   const std::string& public_key_spki_der,
                                   HashAlgorithm hash_algorithm,
-                                  const SignCallback& callback) = 0;
+                                  SignCallback callback) = 0;
 
   // Applies PKCS1 padding and afterwards signs the data with the private key
   // matching |public_key_spki_der|. |data| is not digested. If the key is not
@@ -159,7 +158,7 @@ class PlatformKeysService : public KeyedService {
   virtual void SignRSAPKCS1Raw(base::Optional<TokenId> token_id,
                                const std::string& data,
                                const std::string& public_key_spki_der,
-                               const SignCallback& callback) = 0;
+                               SignCallback callback) = 0;
 
   // Digests |data| and afterwards signs the data with the private key matching
   // |public_key_spki_der|. If the key is not found in that |token_id| (or in
@@ -170,7 +169,7 @@ class PlatformKeysService : public KeyedService {
                                const std::string& data,
                                const std::string& public_key_spki_der,
                                HashAlgorithm hash_algorithm,
-                               const SignCallback& callback) = 0;
+                               SignCallback callback) = 0;
 
   // Returns the list of all certificates that were issued by one of the
   // |certificate_authorities|. If |certificate_authorities| is empty, all
@@ -178,14 +177,14 @@ class PlatformKeysService : public KeyedService {
   // or an error status.
   virtual void SelectClientCertificates(
       const std::vector<std::string>& certificate_authorities,
-      const SelectCertificatesCallback& callback) = 0;
+      const SelectCertificatesCallback callback) = 0;
 
   // Returns the list of all certificates with stored private key available from
   // the given token. Only certificates from the specified |token_id| are
   // listed. |callback| will be invoked with the list of available certificates
   // or an error status.
   virtual void GetCertificates(TokenId token_id,
-                               const GetCertificatesCallback& callback) = 0;
+                               const GetCertificatesCallback callback) = 0;
 
   // Returns the list of all keys available from the given |token_id| as a list
   // of der-encoded SubjectPublicKeyInfo strings. |callback| will be invoked on
@@ -201,7 +200,7 @@ class PlatformKeysService : public KeyedService {
   virtual void ImportCertificate(
       TokenId token_id,
       const scoped_refptr<net::X509Certificate>& certificate,
-      const ImportCertificateCallback& callback) = 0;
+      ImportCertificateCallback callback) = 0;
 
   // Removes |certificate| from the given token. Any intermediate of
   // |certificate| will be ignored. |token_id| specifies the token to remove the
@@ -210,7 +209,7 @@ class PlatformKeysService : public KeyedService {
   virtual void RemoveCertificate(
       TokenId token_id,
       const scoped_refptr<net::X509Certificate>& certificate,
-      const RemoveCertificateCallback& callback) = 0;
+      RemoveCertificateCallback callback) = 0;
 
   // Removes the key pair if no matching certificates exist. Only keys in the
   // given |token_id| are considered. |callback| will be invoked on the UI
@@ -229,7 +228,7 @@ class PlatformKeysService : public KeyedService {
   // ids are determined, possibly with an error status. Calls |callback| on the
   // UI thread.
   virtual void GetKeyLocations(const std::string& public_key_spki_der,
-                               const GetKeyLocationsCallback& callback) = 0;
+                               GetKeyLocationsCallback callback) = 0;
 
   // Sets |attribute_type| for the private key corresponding to
   // |public_key_spki_der| to |attribute_value| only if the key is in
@@ -314,42 +313,42 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
   void RemoveObserver(PlatformKeysServiceObserver* observer) override;
   void GenerateRSAKey(TokenId token_id,
                       unsigned int modulus_length_bits,
-                      const GenerateKeyCallback& callback) override;
+                      GenerateKeyCallback callback) override;
   void GenerateECKey(TokenId token_id,
                      const std::string& named_curve,
-                     const GenerateKeyCallback& callback) override;
+                     GenerateKeyCallback callback) override;
   void SignRSAPKCS1Digest(base::Optional<TokenId> token_id,
                           const std::string& data,
                           const std::string& public_key_spki_der,
                           HashAlgorithm hash_algorithm,
-                          const SignCallback& callback) override;
+                          SignCallback callback) override;
   void SignRSAPKCS1Raw(base::Optional<TokenId> token_id,
                        const std::string& data,
                        const std::string& public_key_spki_der,
-                       const SignCallback& callback) override;
+                       SignCallback callback) override;
   void SignECDSADigest(base::Optional<TokenId> token_id,
                        const std::string& data,
                        const std::string& public_key_spki_der,
                        HashAlgorithm hash_algorithm,
-                       const SignCallback& callback) override;
+                       SignCallback callback) override;
   void SelectClientCertificates(
       const std::vector<std::string>& certificate_authorities,
-      const SelectCertificatesCallback& callback) override;
+      SelectCertificatesCallback callback) override;
   void GetCertificates(TokenId token_id,
-                       const GetCertificatesCallback& callback) override;
+                       GetCertificatesCallback callback) override;
   void GetAllKeys(TokenId token_id, GetAllKeysCallback callback) override;
   void ImportCertificate(TokenId token_id,
                          const scoped_refptr<net::X509Certificate>& certificate,
-                         const ImportCertificateCallback& callback) override;
+                         ImportCertificateCallback callback) override;
   void RemoveCertificate(TokenId token_id,
                          const scoped_refptr<net::X509Certificate>& certificate,
-                         const RemoveCertificateCallback& callback) override;
+                         RemoveCertificateCallback callback) override;
   void RemoveKey(TokenId token_id,
                  const std::string& public_key_spki_der,
                  RemoveKeyCallback callback) override;
   void GetTokens(GetTokensCallback callback) override;
   void GetKeyLocations(const std::string& public_key_spki_der,
-                       const GetKeyLocationsCallback& callback) override;
+                       const GetKeyLocationsCallback callback) override;
   void SetAttributeForKey(TokenId token_id,
                           const std::string& public_key_spki_der,
                           KeyAttributeType attribute_type,

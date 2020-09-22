@@ -57,7 +57,7 @@ CertificateHelperForTesting::~CertificateHelperForTesting() = default;
 
 void CertificateHelperForTesting::GetCertificates(
     platform_keys::TokenId token_id,
-    const platform_keys::GetCertificatesCallback& callback) {
+    platform_keys::GetCertificatesCallback callback) {
   auto result = std::make_unique<net::CertificateList>();
   *result = cert_list_;
   std::move(callback).Run(std::move(result), platform_keys::Status::kSuccess);

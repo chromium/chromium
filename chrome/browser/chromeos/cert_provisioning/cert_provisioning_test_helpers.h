@@ -63,7 +63,7 @@ struct CertificateHelperForTesting {
 
  private:
   void GetCertificates(platform_keys::TokenId token_id,
-                       const platform_keys::GetCertificatesCallback& callback);
+                       platform_keys::GetCertificatesCallback callback);
 
   platform_keys::MockPlatformKeysService* platform_keys_service_ = nullptr;
   scoped_refptr<net::X509Certificate> template_cert_;
