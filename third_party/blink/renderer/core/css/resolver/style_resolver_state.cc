@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/css/css_light_dark_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -168,6 +169,9 @@ void StyleResolverState::SetZoom(float f) {
                                     : ComputedStyleInitialValues::InitialZoom();
 
   style_->SetZoom(f);
+
+  if (f != 1.f)
+    GetDocument().CountUse(WebFeature::kCascadedCSSZoomNotEqualToOne);
 
   if (style_->SetEffectiveZoom(parent_effective_zoom * f))
     font_builder_.DidChangeEffectiveZoom();

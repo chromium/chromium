@@ -29323,6 +29323,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3575" label="IdentifiabilityStudyReserved3575"/>
   <int value="3576" label="IdentifiabilityStudyReserved3576"/>
   <int value="3577" label="IdentifiabilityStudyReserved3577"/>
+  <int value="3578" label="CascadedCSSZoomNotEqualToOne"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
