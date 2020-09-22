@@ -63,6 +63,7 @@
 <translation id="1572585716423026576">Ustaw jako tapetę</translation>
 <translation id="158809615184981282">Klawiatura farerska</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1620510694547887537">Kamera</translation>
 <translation id="1646136617204068573">Klawiatura węgierska</translation>
 <translation id="164729547906544836">Klawiatura tamilska (itrans)</translation>
 <translation id="164969095109328410">Urządzenie z Chrome</translation>
@@ -375,6 +376,7 @@
 <translation id="5098629044894065541">Hebrajski</translation>
 <translation id="5123433949759960244">Piłka do koszykówki</translation>
 <translation id="5129662217315786329">polski</translation>
+<translation id="5132435854979302863">filipiński</translation>
 <translation id="5144820558584035333">Zestaw Hangul 3 (390)</translation>
 <translation id="5145331109270917438">Data modyfikacji</translation>
 <translation id="515594325917491223">Szachy</translation>
@@ -421,6 +423,7 @@
 <translation id="5464696796438641524">Klawiatura polska</translation>
 <translation id="5465122519792752163">Klawiatura nepalska (InScript)</translation>
 <translation id="5469868506864199649">Włoski</translation>
+<translation id="5484429245813572665">indonezyjski</translation>
 <translation id="5494920125229734069">Wybierz wszystko</translation>
 <translation id="5500122897333236901">Islandzki</translation>
 <translation id="5508696409934741614">Punkty</translation>
@@ -608,6 +611,7 @@
 <translation id="7649070708921625228">Pomoc</translation>
 <translation id="7654209398114106148">Przenoszę elementy (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="7658239707568436148">Anuluj</translation>
+<translation id="7693909743393669729">Sformatowanie dysku spowoduje usunięcie wszystkich zapisanych na nim danych i wszystkich znajdujących się na nim partycji, w tym partycji niewidocznych. Tej czynności nie będzie można cofnąć.</translation>
 <translation id="7695430100978772476">Nie udało się sformatować: <ph name="DRIVE_NAME" /></translation>
 <translation id="770015031906360009">Grecki</translation>
 <translation id="7706319470528945664">Klawiatura portugalska</translation>
@@ -639,6 +643,7 @@
 <translation id="78946041517601018">Dyski współdzielone</translation>
 <translation id="7896906914454843592">Klawiatura rozszerzona USA</translation>
 <translation id="7898607018410277265">Klawiatura gudżarati (nowa fonetyczna)</translation>
+<translation id="7908793776359722643">Sformatowanie partycji usunie wszystkie zapisane na niej dane. Tej czynności nie będzie można cofnąć.</translation>
 <translation id="7917972308273378936">Klawiatura litewska</translation>
 <translation id="7925686952655276919">Nie synchronizuj przez połączenie komórkowe</translation>
 <translation id="7928710562641958568">Odłącz urządzenie</translation>
@@ -726,6 +731,7 @@
 <translation id="8900820606136623064">Węgierski</translation>
 <translation id="8901822611024316615">Czeska klawiatura QWERTY</translation>
 <translation id="8919081441417203123">Duński</translation>
+<translation id="8941776146379310519">malajski</translation>
 <translation id="8960999352790021682">Klawiatura bengalska (fonetyczna)</translation>
 <translation id="8965697826696209160">Nie ma wystarczającej ilości miejsca.</translation>
 <translation id="9017798300203431059">rosyjska klawiatura fonetyczna</translation>

@@ -91,7 +91,6 @@
 <translation id="1099962274138857708">Bild kopiert von <ph name="DEVICE_NAME" /></translation>
 <translation id="1102187190604780492">Erlauben Sie Assistant, proaktiv zum aktuellen Bildschirminhalt passende Informationen anzuzeigen.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> immer übersetzen</translation>
-<translation id="1104038495841596279">Es wurde keine SIM-Karte erkannt</translation>
 <translation id="1108600514891325577">&amp;Anhalten</translation>
 <translation id="1110155001042129815">Warten</translation>
 <translation id="1112420131909513020">Tab im Hintergrund verwendet Bluetooth</translation>
@@ -1829,7 +1828,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3163201441334626963">Unbekanntes Produkt <ph name="PRODUCT_ID" /> von Anbieter <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Diese Dienste tragen dazu bei, dass Ihre Daten sicher bleiben. Sie können diese Funktionen jederzeit deaktivieren.</translation>
 <translation id="3164329792803560526">Tab wird mit <ph name="APP_NAME" /> geteilt</translation>
-<translation id="3165371858310906303">Nachfragen, wenn eine Website Informationen zu meiner Anwesenheit abrufen möchte</translation>
+<translation id="3165371858310906303">Nachfragen, wenn eine Website wissen möchte, ob ich anwesend bin</translation>
 <translation id="3165390001037658081">Einige Mobilfunkanbieter blockieren diese Funktion möglicherweise.</translation>
 <translation id="316652501498554287">G Suite for Education-Konten</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -3891,7 +3890,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5701381305118179107">Zentrieren</translation>
 <translation id="5701441174893770082">Wenn Sie Linux aktualisieren, kann dies den Akku stark beanspruchen. Bitte verbinden Sie Ihr Gerät mit einem Ladegerät und versuchen Sie es noch einmal.</translation>
 <translation id="5702749864074810610">Vorschlag abgelehnt</translation>
-<translation id="5702898740348134351">Suchmaschin&amp;en bearbeiten...</translation>
 <translation id="5704875434923668958">Synchronisierung mit</translation>
 <translation id="5705005699929844214">Optionen für Bedienungshilfen immer anzeigen</translation>
 <translation id="5705882733397021510">Zurück</translation>
@@ -4058,7 +4056,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5910363049092958439">Bi&amp;ld speichern unter...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ist offline</translation>
 <translation id="5911533659001334206">Tastenkombinationsanzeige</translation>
-<translation id="5912378097832178659">Such&amp;maschinen bearbeiten...</translation>
 <translation id="5914724413750400082">Modulo (<ph name="MODULUS_NUM_BITS" /> Bits):
   <ph name="MODULUS_HEX_DUMP" />
 

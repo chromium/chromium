@@ -136,6 +136,7 @@
 <translation id="2341729377289034582">Κλειδωμένη σε κάθετη</translation>
 <translation id="2352467521400612932">Ρυθμίσεις γραφίδας</translation>
 <translation id="2354174487190027830">Ενεργοποίηση <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Φαίνεται ότι το τηλέφωνό σας δεν είναι συνδεδεμένο στο διαδίκτυο και δεν είναι δυνατή η λήψη του περιεχομένου του αυτήν τη στιγμή.</translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="2365393535144473978">Με την ενεργοποίηση των δεδομένων κινητής τηλεφωνίας θα ενεργοποιηθεί και το Bluetooth.</translation>
 <translation id="2369165858548251131">"Γεια σας" στα κινεζικά</translation>
@@ -168,6 +169,7 @@
 <translation id="2705001408393684014">Εναλλαγή μικροφώνου. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Πάνω</translation>
 <translation id="2718395828230677721">Νυχτ. φωτισμός</translation>
+<translation id="2727175239389218057">Απάντηση</translation>
 <translation id="2727977024730340865">Σύνδεση με φορτιστή χαμηλής ισχύος. Η φόρτιση της μπαταρίας ενδέχεται να μη γίνεται με αξιόπιστο τρόπο.</translation>
 <translation id="2743387203779672305">Αντιγραφή στο πρόχειρο</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
@@ -176,6 +178,7 @@
 <translation id="2825619548187458965">Ράφι</translation>
 <translation id="2841907151129139818">Έγινε εναλλαγή σε λειτουργία tablet.</translation>
 <translation id="2844169650293029770">Συσκευή USB-C (αριστερή μπροστινή θύρα)</translation>
+<translation id="2846247265041961677">Λυπούμαστε! Δεν είναι δυνατή η εύρεση του τηλεφώνου</translation>
 <translation id="2865888419503095837">Πληροφορίες δικτύου</translation>
 <translation id="2872961005593481000">Τερματισμός λειτουργίας</translation>
 <translation id="2878884018241093801">Δεν υπάρχουν πρόσφατα στοιχεία</translation>
@@ -458,6 +461,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Ενεργό</translation>
 <translation id="5920710855273935292">Έγινε σίγαση του μικροφώνου</translation>
+<translation id="594179686076170922">Γίνεται σύνδεση με το τηλέφωνό σας…</translation>
 <translation id="5946788582095584774">Η λειτουργία <ph name="FEATURE_NAME" /> είναι ενεργοποιημένη.</translation>
 <translation id="5947494881799873997">Επαναφορά</translation>
 <translation id="595202126637698455">Η παρακολούθηση απόδοσης έχει ενεργοποιηθεί</translation>
@@ -581,6 +585,7 @@
 <translation id="7262906531272962081">Δημιουργία υπενθύμισης</translation>
 <translation id="7303365578352795231">Απάντηση σε άλλη συσκευή.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7346909386216857016">OK, το κατάλαβα</translation>
 <translation id="7348093485538360975">Πληκτρολόγιο οθόνης</translation>
 <translation id="735745346212279324">Το VPN αποσυνδέθηκε</translation>
 <translation id="7377169924702866686">Το Caps Lock είναι ενεργοποιημένο.</translation>

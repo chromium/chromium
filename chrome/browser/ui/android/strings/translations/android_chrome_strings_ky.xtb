@@ -530,7 +530,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5233638681132016545">Жаңы өтмөк</translation>
 <translation id="526421993248218238">Бул бет жүктөлбөй жатат</translation>
 <translation id="5271967389191913893">Жүктөлүп алына турган мазмунду түзмөк ача албайт.</translation>
-<translation id="528192093759286357">Толук экрандан чыгуу үчүн жогорудан ылдый сүйрөп келип, "Артка" деген баскычка тийип коюңуз.</translation>
 <translation id="5292796745632149097">Төмөнкүгө жөнөтүү</translation>
 <translation id="5304593522240415983">Бул талаа бош болбошу керек</translation>
 <translation id="5308380583665731573">Туташуу</translation>
@@ -634,6 +633,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6005538289190791541">Сунушталган сырсөз</translation>
 <translation id="6036057147555329831">Кошумча ICU</translation>
 <translation id="6039379616847168523">Кийинки өтмөккө секирүү</translation>
+<translation id="6040143037577758943">Жабуу</translation>
 <translation id="604124094241169006">Автоматтык</translation>
 <translation id="6042308850641462728">Дагы</translation>
 <translation id="604996488070107836">Белгисиз катадан улам <ph name="FILE_NAME" /> жүктөлүп алынбай калды.</translation>
@@ -929,6 +929,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8190358571722158785">1 күн калды</translation>
 <translation id="8200772114523450471">Улантуу</translation>
 <translation id="8209050860603202033">Сүрөттү ачуу</translation>
+<translation id="8216351761227087153">Көрүү</translation>
 <translation id="8218052821161047641">Тез ачылуучу барак</translation>
 <translation id="8218622182176210845">Аккаунтуңузду башкарыңыз</translation>
 <translation id="8223642481677794647">Түрмөктөгү меню</translation>
@@ -990,6 +991,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8655129584991699539">Бул дайындарды Chrome'дун жөндөөлөрүнөн тазаласаңыз болот</translation>
 <translation id="8662811608048051533">Көпчүлүк сайттардагы каттоо эсептериңизден чыгарыласыз.</translation>
 <translation id="8664979001105139458">Мындай аталыштагы файл бар</translation>
+<translation id="8666678546361132282">Англисче</translation>
 <translation id="8683039184091909753">сүрөт</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Сигналдын күчү: # тилке}other{Сигналдын күчү: # тилке}}</translation>
 <translation id="869891660844655955">Мөөнөтү аяктай турган күн</translation>

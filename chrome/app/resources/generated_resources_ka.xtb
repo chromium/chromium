@@ -91,7 +91,6 @@
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" />-დან დაკოპირდა სურათი</translation>
 <translation id="1102187190604780492">ასისტენტისთვის ეკრანზე არსებულ კონტენტთან დაკავშირებული ინფორმაციის წინსწრებით ჩვენების დაშვება</translation>
 <translation id="1103523840287552314">ყოველთვის თარგმნე ამ ენიდან: <ph name="LANGUAGE" /></translation>
-<translation id="1104038495841596279">თქვენი SIM ბარათის ამოცნობა ვერ მოხერხდა</translation>
 <translation id="1108600514891325577">შ&amp;ეწყვეტა</translation>
 <translation id="1110155001042129815">დაელოდეთ</translation>
 <translation id="1112420131909513020">ფონური ჩანართი იყენებს Bluetooth-კავშირს</translation>
@@ -1204,6 +1203,7 @@
 <translation id="2419706071571366386">უსაფრთხოების მიზნით გირჩევთ, გამოხვიდეთ სისტემიდან, როცა კომპიუტერს არ იყენებთ.</translation>
 <translation id="2422125132043002186">Linux აღდგენა გაუქმდა</translation>
 <translation id="2423578206845792524">გამოსახულების შენახ&amp;ვა, როგორც…</translation>
+<translation id="2424424966051154874">{0,plural, =1{სტუმარი}other{სტუმარი (#)}}</translation>
 <translation id="2428510569851653187">აღწერეთ, რას აკეთებდით, როცა ჩანართი ავარიულად გაითიშა</translation>
 <translation id="2428939361789119025">Wi-Fi-ს გამორთვა</translation>
 <translation id="2431027948063157455">Google ასისტენტი ვერ ჩაიტვირთა. გთხოვთ, შეამოწმოთ კავშირი ქსელთან და ცადოთ ხელახლა.</translation>
@@ -3894,7 +3894,6 @@
 <translation id="5701381305118179107">ცენტრირება</translation>
 <translation id="5701441174893770082">Linux-ის ახალ ვერსიაზე გადასვლისას ბატარეა შეიძლება საგრძნობლად დაიცალოს. მიაერთეთ მოწყობილობა დამტენს და ცადეთ ხელახლა.</translation>
 <translation id="5702749864074810610">შემოთავაზება უარყოფილია</translation>
-<translation id="5702898740348134351">ძიების სისტემების რ&amp;ედაქტირება…</translation>
 <translation id="5704875434923668958">სინქრონიზებულია შემდეგთან:</translation>
 <translation id="5705005699929844214">მარტივი წვდომის ვარიანტების ყოველთვის ჩვენება</translation>
 <translation id="5705882733397021510">უკან დაბრუნება</translation>
@@ -4061,7 +4060,6 @@
 <translation id="5910363049092958439">გამოსახულების შენ&amp;ახვა, როგორც…</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ხაზგარეშეა</translation>
 <translation id="5911533659001334206">მალსახმობების მნახველი</translation>
-<translation id="5912378097832178659">&amp;საძიებო სისტემების რედაქტირება…</translation>
 <translation id="5914724413750400082">მოდული (<ph name="MODULUS_NUM_BITS" /> ბიტი):
   <ph name="MODULUS_HEX_DUMP" />
 
@@ -4205,6 +4203,7 @@
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" />-თან დაკავშირებული რჩევები და განახლებები</translation>
 <translation id="6077476112742402730">ტექსტის წარმოთქმით აკრეფა</translation>
 <translation id="6078045608615316905">ამ სურათისთვის QR კოდის შექმნა</translation>
+<translation id="6078121669093215958">{0,plural, =1{სტუმარი}other{სტუმრის გახსნილი # ფანჯარა}}</translation>
 <translation id="6078323886959318429">მალსახმობის დამატება</translation>
 <translation id="6078752646384677957">შეამოწმეთ მიკროფონისა და აუდიოს დონეები.</translation>
 <translation id="6078769373519310690">„<ph name="CHROME_EXTENSION_NAME" />“ ითხოვს HID მოწყობილობასთან დაკავშირებას</translation>
@@ -4712,6 +4711,7 @@
 <translation id="6704062477274546131">DNS-ის დარეგულირება</translation>
 <translation id="6706210727756204531">არეალი</translation>
 <translation id="6707389671160270963">SSL კლიენტის სერთიფიკატი</translation>
+<translation id="670893696722244877">მოიძიეთ ენების ან შეყვანის სახელების მიხედვით</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> და 1 სხვა ჩანართი}other{<ph name="PAGE_TITLE" /> და # სხვა ჩანართი}}</translation>
 <translation id="6709133671862442373">ახალი ამბები</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" />-ით დაკავშირება</translation>
@@ -5552,6 +5552,7 @@
 <translation id="7753735457098489144">ინსტალაცია ვერ მოხერხდა არასაკმარისი მეხსიერების გამო. მეხსიერების გათავისუფლება შეგიძლიათ მოწყობილობიდან ფაილების წაშლით.</translation>
 <translation id="7754704193130578113">მკითხე, სად შეინახოს თითოეული ფაილი ჩამოტვირთვამდე</translation>
 <translation id="7755287808199759310">მისი განბლოკვა თქვენს მშობელს შეუძლია</translation>
+<translation id="7757592200364144203">მოწყობილობის გადარქმევა</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" />-დან გაზიარებული ტექსტი</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">თქვენი ეკრანის საზღვრების დარეგულირება</translation>
@@ -6008,6 +6009,7 @@
 <translation id="8264024885325823677">ამ პარამეტრს მართავს თქვენი ადმინისტრატორი.</translation>
 <translation id="8264718194193514834">„<ph name="EXTENSION_NAME" />“ სრულ ეკრანზე გამოწვევა.</translation>
 <translation id="826511437356419340">შესულია ფანჯრების მიმოხილვის რეჟიმში. ნავიგაციისთვის გადაფურცლეთ ან დააჭირეთ Tab-კლავიშს, თუ კლავიატურას იყენებთ.</translation>
+<translation id="8266947622852630193">შეყვანის ყველა მეთოდი</translation>
 <translation id="8267539814046467575">პრინტერის დამატება</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />ეს არის ზოგადი ინფორმაცია ამ მოწყობილობისა და მისი გამოყენების შესახებ (მაგ. ბატარეის დონე, სისტემისა და აპების აქტივობა თუ შეცდომები). აღნიშნული მონაცემები ხელს შეუწყობს Android-ის გაუმჯობესებას, ხოლო შეჯამებული ინფორმაციის ნაწილი ასევე სასარგებლო იქნება Google-ის აპებისა და პარტნიორებისთვის, მაგალითად, Android-ის დეველოპერებისთვის, რომლებიც შეძლებენ საკუთარი აპებისა და პროდუქტების დახვეწას.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ამ ფუნქციის გამორთვა არ შეუშლის ხელს ამ მოწყობილობას, გააგზავნოს ისეთი არსებითი სერვისებისთვის აუცილებელი ინფორმაცია, როგორიცაა სისტემის განახლებები და უსაფრთხოება.<ph name="END_PARAGRAPH2" />

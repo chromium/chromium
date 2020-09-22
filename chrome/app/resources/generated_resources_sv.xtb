@@ -91,7 +91,6 @@
 <translation id="1099962274138857708">Bild kopierad från <ph name="DEVICE_NAME" /></translation>
 <translation id="1102187190604780492">Tillåt att assistenten ger information i förväg utifrån vad som visas på skärmen</translation>
 <translation id="1103523840287552314">Översätt alltid <ph name="LANGUAGE" /></translation>
-<translation id="1104038495841596279">Det gick inte att hitta SIM-kortet.</translation>
 <translation id="1108600514891325577">&amp;Stopp</translation>
 <translation id="1110155001042129815">Vänta</translation>
 <translation id="1112420131909513020">En flik i bakgrunden använder Bluetooth</translation>
@@ -3895,7 +3894,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5701381305118179107">Centrera</translation>
 <translation id="5701441174893770082">En uppgradering av Linux kan göra att batteriet tar slut betydligt fortare. Anslut enheten till en laddare och försök igen.</translation>
 <translation id="5702749864074810610">Förslaget avvisat</translation>
-<translation id="5702898740348134351">&amp;Redigera sökmotorer...</translation>
 <translation id="5704875434923668958">Synkroniserar till</translation>
 <translation id="5705005699929844214">Visa alltid tillgänglighetsalternativen</translation>
 <translation id="5705882733397021510">Tillbaka</translation>
@@ -4062,7 +4060,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5910363049092958439">S&amp;para bild som...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> är offline</translation>
 <translation id="5911533659001334206">Kortkommandovisare</translation>
-<translation id="5912378097832178659">&amp;Redigera sökmotorer...</translation>
 <translation id="5914724413750400082">Modulus (<ph name="MODULUS_NUM_BITS" /> bitar):
   <ph name="MODULUS_HEX_DUMP" />
 

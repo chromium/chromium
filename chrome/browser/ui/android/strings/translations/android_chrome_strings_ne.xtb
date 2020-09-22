@@ -529,7 +529,6 @@
 <translation id="5233638681132016545">नयाँ ट्याब</translation>
 <translation id="526421993248218238">यो पृष्ठ लोड गर्न सकिएन</translation>
 <translation id="5271967389191913893">यन्त्रले डाउनलोड गर्नको लागि सामग्रीलाई खोल्न सक्दैन।</translation>
-<translation id="528192093759286357">पूर्ण स्क्रिनबाट बाहिर निस्कनका लागि शीर्षबाट तानेर पछाडि बटनलाई छुनुहोस्।</translation>
 <translation id="5292796745632149097">निम्न यन्त्रमा पठाउनुहोस्</translation>
 <translation id="5304593522240415983">यो क्षेत्र खाली हुन सक्दैन</translation>
 <translation id="5308380583665731573">जडान गर्नुहोस्</translation>
@@ -633,6 +632,7 @@
 <translation id="6005538289190791541">सिफारिस गरिएको पासवर्ड</translation>
 <translation id="6036057147555329831">अतिरिक्त ICU</translation>
 <translation id="6039379616847168523">अर्को ट्याबमा जानुहोस्</translation>
+<translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
 <translation id="604124094241169006">स्वचालित</translation>
 <translation id="6042308850641462728">थप</translation>
 <translation id="604996488070107836">एक अज्ञात त्रुटिको कारणले गर्दा <ph name="FILE_NAME" /> को डाउनलोड असफल भयो।</translation>
@@ -928,6 +928,7 @@
 <translation id="8190358571722158785">१ दिन बाँकी छ</translation>
 <translation id="8200772114523450471">रिजुमी</translation>
 <translation id="8209050860603202033">छवि खोल्नुहोस्</translation>
+<translation id="8216351761227087153">हेर्नुहोस्</translation>
 <translation id="8218052821161047641">छिटो लोड हुने पृष्ठ</translation>
 <translation id="8218622182176210845">आफ्नो खाताको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="8223642481677794647">फिड कार्ड मेनु</translation>
@@ -989,6 +990,7 @@
 <translation id="8655129584991699539">तपाईं Chrome का सेटिङहरूमा गई डेटा खाली गर्न सक्नुहुन्छ</translation>
 <translation id="8662811608048051533">तपाईंलाई प्रायः जसो साइटहरूबाट साइन आउट गर्दछ।</translation>
 <translation id="8664979001105139458">यो नामको फाइल पहिलेदेखि नै विद्यमान छ</translation>
+<translation id="8666678546361132282">अङ्ग्रेजी</translation>
 <translation id="8683039184091909753">फोटो</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{सङ्केतको क्षमता स्तर: # बार}other{सङ्केतको क्षमता स्तर: # बारहरू}}</translation>
 <translation id="869891660844655955">समाप्ति मिति</translation>

@@ -530,7 +530,6 @@
 <translation id="5233638681132016545">Новая вкладка</translation>
 <translation id="526421993248218238">Не удалось загрузить страницу</translation>
 <translation id="5271967389191913893">Не удается открыть скачанный контент.</translation>
-<translation id="528192093759286357">Чтобы выйти из полноэкранного режима, проведите по экрану сверху вниз и нажмите кнопку "Назад".</translation>
 <translation id="5292796745632149097">Куда отправить</translation>
 <translation id="5304593522240415983">Это поле нужно заполнить</translation>
 <translation id="5308380583665731573">Подключение</translation>
@@ -634,6 +633,7 @@
 <translation id="6005538289190791541">Предложенный пароль</translation>
 <translation id="6036057147555329831">Дополнительный модуль ICU</translation>
 <translation id="6039379616847168523">Перейти к следующей вкладке</translation>
+<translation id="6040143037577758943">Закрыть</translation>
 <translation id="604124094241169006">Автоматически</translation>
 <translation id="6042308850641462728">Ещё</translation>
 <translation id="604996488070107836">Не удалось скачать файл <ph name="FILE_NAME" /> из-за неизвестной ошибки.</translation>
@@ -929,6 +929,7 @@
 <translation id="8190358571722158785">Остался 1 день</translation>
 <translation id="8200772114523450471">Возобновить</translation>
 <translation id="8209050860603202033">Открыть изображение</translation>
+<translation id="8216351761227087153">Просмотреть</translation>
 <translation id="8218052821161047641">Быстрая страница</translation>
 <translation id="8218622182176210845">Управление аккаунтом</translation>
 <translation id="8223642481677794647">Меню карточки из ленты</translation>
@@ -990,6 +991,7 @@
 <translation id="8655129584991699539">Удалить данные можно в настройках Chrome</translation>
 <translation id="8662811608048051533">Вы автоматически выйдете из учетных записей на большинстве сайтов.</translation>
 <translation id="8664979001105139458">Файл с таким именем уже существует.</translation>
+<translation id="8666678546361132282">Английский</translation>
 <translation id="8683039184091909753">Изображение</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Уровень сигнала: # линия}one{Уровень сигнала: # линия}few{Уровень сигнала: # линии}many{Уровень сигнала: # линий}other{Уровень сигнала: # линии}}</translation>
 <translation id="869891660844655955">Срок действия</translation>

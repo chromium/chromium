@@ -91,7 +91,6 @@
 <translation id="1099962274138857708">Image copiée depuis <ph name="DEVICE_NAME" /></translation>
 <translation id="1102187190604780492">Autoriser l'Assistant à afficher proactivement des informations en lien avec le contenu affiché à l'écran</translation>
 <translation id="1103523840287552314">Toujours traduire les pages en <ph name="LANGUAGE" /></translation>
-<translation id="1104038495841596279">Impossible de détecter votre carte SIM</translation>
 <translation id="1108600514891325577">&amp;Arrêter</translation>
 <translation id="1110155001042129815">Attendre</translation>
 <translation id="1112420131909513020">Le Bluetooth est utilisé par un onglet d'arrière-plan</translation>
@@ -3896,7 +3895,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5701381305118179107">Centrer</translation>
 <translation id="5701441174893770082">Mettre à niveau Linux peut entraîner un déchargement significatif de la batterie. Veuillez brancher votre appareil à un chargeur, puis réessayer.</translation>
 <translation id="5702749864074810610">Suggestion ignorée</translation>
-<translation id="5702898740348134351">Modifi&amp;er les moteurs de recherche...</translation>
 <translation id="5704875434923668958">Synchronisation</translation>
 <translation id="5705005699929844214">Toujours afficher les options d'accessibilité</translation>
 <translation id="5705882733397021510">Retour</translation>
@@ -4063,7 +4061,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5910363049092958439">En&amp;registrer l'image sous...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> est hors connexion</translation>
 <translation id="5911533659001334206">Visionneuse de raccourcis</translation>
-<translation id="5912378097832178659">Modifi&amp;er les moteurs de recherche...</translation>
 <translation id="5914724413750400082">Module (<ph name="MODULUS_NUM_BITS" /> bits) :
   <ph name="MODULUS_HEX_DUMP" />
 

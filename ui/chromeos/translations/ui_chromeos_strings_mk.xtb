@@ -63,6 +63,7 @@
 <translation id="1572585716423026576">Постави како тапет</translation>
 <translation id="158809615184981282">Фарска тастатура</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1620510694547887537">Камера</translation>
 <translation id="1646136617204068573">унгарска тастатура</translation>
 <translation id="164729547906544836">тамилска тастатура (itrans)</translation>
 <translation id="164969095109328410">Уред со Chrome</translation>
@@ -375,6 +376,7 @@
 <translation id="5098629044894065541">хебрејски</translation>
 <translation id="5123433949759960244">Баскет</translation>
 <translation id="5129662217315786329">полски</translation>
+<translation id="5132435854979302863">филипинска</translation>
 <translation id="5144820558584035333">хангул, 3-делна (390)</translation>
 <translation id="5145331109270917438">Датум на промена</translation>
 <translation id="515594325917491223">Шах</translation>
@@ -420,6 +422,7 @@
 <translation id="5464696796438641524">полска тастатура</translation>
 <translation id="5465122519792752163">непалска тастатура (InScript)</translation>
 <translation id="5469868506864199649">италијански</translation>
+<translation id="5484429245813572665">индонезиска</translation>
 <translation id="5494920125229734069">Избери сè</translation>
 <translation id="5500122897333236901">Исландски</translation>
 <translation id="5508696409934741614">Точки</translation>
@@ -607,6 +610,7 @@
 <translation id="7649070708921625228">Помош</translation>
 <translation id="7654209398114106148">Се преместуваат <ph name="NUMBER_OF_ITEMS" /> ставки…</translation>
 <translation id="7658239707568436148">Откажи</translation>
+<translation id="7693909743393669729">Форматирањето на дискот ќе ги избрише сите податоци што се зачувани на него и ќе ги отстрани сите постојни партиции, вклучително и партициите што можеби не се видливи. Дејството не може да се врати.</translation>
 <translation id="7695430100978772476">Не можеше да се форматира <ph name="DRIVE_NAME" /></translation>
 <translation id="770015031906360009">Грчки</translation>
 <translation id="7706319470528945664">португалска тастатура</translation>
@@ -638,6 +642,7 @@
 <translation id="78946041517601018">Споделени простори</translation>
 <translation id="7896906914454843592">САД, продолжена тастатура</translation>
 <translation id="7898607018410277265">гуџарати тастатура (нова фонетска)</translation>
+<translation id="7908793776359722643">Форматирањето на една партиција ќе ги избрише сите податоци што се зачувани на неа. Дејството не може да се врати.</translation>
 <translation id="7917972308273378936">литванска тастатура</translation>
 <translation id="7925686952655276919">Не користете мобилни податоци за синхронизација</translation>
 <translation id="7928710562641958568">Извади уред</translation>
@@ -725,6 +730,7 @@
 <translation id="8900820606136623064">унгарски</translation>
 <translation id="8901822611024316615">чешка QWERTY тастатура</translation>
 <translation id="8919081441417203123">дански</translation>
+<translation id="8941776146379310519">малезиска</translation>
 <translation id="8960999352790021682">бенгалска тастатура (фонетска)</translation>
 <translation id="8965697826696209160">Нема доволно простор.</translation>
 <translation id="9017798300203431059">фонетски руски</translation>

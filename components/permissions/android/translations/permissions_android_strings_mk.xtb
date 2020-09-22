@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
+<translation id="2077832278056815832">Затворете ги балончињата или преклопувањата од другите апликации. Потоа обидете се повторно.</translation>
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2416359993254398973">На Chrome му треба дозвола за да пристапи до камерата за сајтов.</translation>
+<translation id="2987449669841041897">Сајтов не може да побара ваша дозвола</translation>
 <translation id="557283862590186398">На Chrome му треба дозвола за да пристапи до микрофонот за сајтов.</translation>
 <translation id="5860491529813859533">Вклучи</translation>
 <translation id="6092062101542170135">За да продолжите, вклучете ја NFC во поставките за Android</translation>

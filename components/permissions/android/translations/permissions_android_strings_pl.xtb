@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="2077832278056815832">Zamknij wszystkie dymki i nakładki z innych aplikacji. Następnie spróbuj ponownie.</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2416359993254398973">Chrome potrzebuje uprawnień dostępu do aparatu na tej stronie.</translation>
+<translation id="2987449669841041897">Ta strona nie może prosić o Twoją zgodę</translation>
 <translation id="557283862590186398">Chrome potrzebuje uprawnień dostępu do mikrofonu na tej stronie.</translation>
 <translation id="5860491529813859533">Włącz</translation>
 <translation id="6092062101542170135">Aby kontynuować, włącz NFC w ustawieniach Androida</translation>

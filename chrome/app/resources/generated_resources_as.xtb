@@ -92,7 +92,6 @@
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" />ৰ পৰা প্ৰতিলিপি কৰা প্ৰতিচ্ছবি</translation>
 <translation id="1102187190604780492">আপোনাৰ স্ক্ৰীনত থকা সমলৰ বিষয়ে আপোনাৰ Assistantক আগতীয়াকৈ তথ্য দেখুৱাবলৈ দিয়ক</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> সদাই অনুবাদ কৰক</translation>
-<translation id="1104038495841596279">আমি আপোনাৰ ছিম কাৰ্ডখন চিনাক্ত কৰিব নোৱাৰিলোঁ</translation>
 <translation id="1108600514891325577">&amp;বন্ধ কৰক</translation>
 <translation id="1110155001042129815">অপেক্ষা কৰক</translation>
 <translation id="1112420131909513020">নেপথ্যৰ টেবটোৱে ব্লুটুথ ব্যৱহাৰ কৰি আছে</translation>
@@ -3940,7 +3939,6 @@
 <translation id="5701381305118179107">কেন্দ্ৰ</translation>
 <translation id="5701441174893770082">Linux আপগ্ৰে’ড কৰা কাৰ্যই আপোনাৰ বেটাৰী যথেষ্ট পৰিমাণে হ্ৰাস কৰিব পাৰে। অনুগ্ৰহ কৰি আপোনাৰ ডিভাইচটো এটা চাৰ্জাৰৰ সৈতে সংযোগ কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="5702749864074810610">পৰামৰ্শ অগ্ৰাহ্য কৰা হ'ল</translation>
-<translation id="5702898740348134351">&amp;সন্ধান ইঞ্জিন সম্পাদনা কৰক...</translation>
 <translation id="5704875434923668958">ইয়ালৈ ছিংক কৰি থকা হৈছে</translation>
 <translation id="5705005699929844214">সাধ্য সুবিধাৰ বিকল্পসমূহ সদায় দেখুৱাওক</translation>
 <translation id="5705882733397021510">উভতি যাওক</translation>
@@ -4110,7 +4108,6 @@
 <translation id="5910363049092958439">এইবুলি প্ৰতিচ্ছবি ছে&amp;ভ কৰক...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> অফলাইন হৈ আছে</translation>
 <translation id="5911533659001334206">শ্বৰ্টকাটৰ ভিউৱাৰ</translation>
-<translation id="5912378097832178659">সন্ধান ইঞ্জিনসমূহ &amp;সম্পাদনা কৰক...</translation>
 <translation id="5914724413750400082">মডিউল (<ph name="MODULUS_NUM_BITS" /> বিট):
   <ph name="MODULUS_HEX_DUMP" />
 

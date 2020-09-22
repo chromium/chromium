@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="2077832278056815832">Închide toate baloanele sau suprapunerile din alte aplicații. Apoi, încearcă din nou.</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2416359993254398973">Chrome are nevoie de permisiune ca să acceseze camera foto pentru acest site.</translation>
+<translation id="2987449669841041897">Acest site nu îți poate solicita permisiunea</translation>
 <translation id="557283862590186398">Chrome are nevoie de permisiune ca să acceseze microfonul pentru acest site.</translation>
 <translation id="5860491529813859533">Activează</translation>
 <translation id="6092062101542170135">Pentru a continua, activează NFC în setările Android</translation>

@@ -91,7 +91,6 @@
 <translation id="1099962274138857708">Imagen copiada de <ph name="DEVICE_NAME" /></translation>
 <translation id="1102187190604780492">Permitir que el Asistente muestre de forma proactiva información relacionada con lo que aparece en tu pantalla</translation>
 <translation id="1103523840287552314">Siempre traducir <ph name="LANGUAGE" /></translation>
-<translation id="1104038495841596279">No pudimos detectar tu tarjeta SIM</translation>
 <translation id="1108600514891325577">&amp;Interrumpir</translation>
 <translation id="1110155001042129815">Esperar</translation>
 <translation id="1112420131909513020">La pestaña en segundo plano está usando Bluetooth</translation>
@@ -3892,7 +3891,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="5701441174893770082">Actualizar Linux puede agotar la batería de forma significativa. Conecta tu dispositivo a un cargador y vuelve a intentarlo.</translation>
 <translation id="5702749864074810610">Se descartó la sugerencia</translation>
-<translation id="5702898740348134351">&amp;Modificar los motores de búsqueda...</translation>
 <translation id="5704875434923668958">Sincronizando con</translation>
 <translation id="5705005699929844214">Mostrar siempre las opciones de accesibilidad</translation>
 <translation id="5705882733397021510">Volver</translation>
@@ -4059,7 +4057,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5910363049092958439">Gu&amp;ardar imagen como...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> está sin conexión</translation>
 <translation id="5911533659001334206">Visualizador de combinaciones de teclas</translation>
-<translation id="5912378097832178659">&amp;Editar motores de búsqueda...</translation>
 <translation id="5914724413750400082">Módulo (<ph name="MODULUS_NUM_BITS" /> bits):
   <ph name="MODULUS_HEX_DUMP" />
 

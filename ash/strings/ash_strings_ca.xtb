@@ -136,6 +136,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2341729377289034582">Bloquejada en vertical</translation>
 <translation id="2352467521400612932">Configuració del llapis òptic</translation>
 <translation id="2354174487190027830">S'està activant <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Sembla que el telèfon no està en línia i ara mateix no en podem obtenir tots els productes.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2365393535144473978">En activar les dades mòbils s'activarà el Bluetooth.</translation>
 <translation id="2369165858548251131">"Hola" en xinès</translation>
@@ -168,6 +169,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2705001408393684014">Commuta el micròfon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Amunt</translation>
 <translation id="2718395828230677721">Llum nocturna</translation>
+<translation id="2727175239389218057">Respon</translation>
 <translation id="2727977024730340865">S'ha connectat a un carregador de baix consum. És possible que la càrrega de la bateria no sigui fiable.</translation>
 <translation id="2743387203779672305">Copia al porta-retalls</translation>
 <translation id="2792498699870441125">Alt+Cerca</translation>
@@ -176,6 +178,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2825619548187458965">Prestatge</translation>
 <translation id="2841907151129139818">S'ha canviat a mode de tauleta</translation>
 <translation id="2844169650293029770">Dispositiu USB-C (port frontal esquerre)</translation>
+<translation id="2846247265041961677">No es troba el telèfon</translation>
 <translation id="2865888419503095837">Informació de la xarxa</translation>
 <translation id="2872961005593481000">Apaga</translation>
 <translation id="2878884018241093801">No hi ha cap element recent</translation>
@@ -458,6 +461,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5920710855273935292">El micròfon està silenciat.</translation>
+<translation id="594179686076170922">S'està connectant al telèfon...</translation>
 <translation id="5946788582095584774">La funció <ph name="FEATURE_NAME" /> està activada.</translation>
 <translation id="5947494881799873997">Reverteix</translation>
 <translation id="595202126637698455">Traça del rendiment activada</translation>
@@ -581,6 +585,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7262906531272962081">Crea un recordatori</translation>
 <translation id="7303365578352795231">S'està responent en un altre dispositiu.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7346909386216857016">D'acord</translation>
 <translation id="7348093485538360975">Teclat en pantalla</translation>
 <translation id="735745346212279324">VPN desconnectada</translation>
 <translation id="7377169924702866686">Bloq Maj està activat.</translation>

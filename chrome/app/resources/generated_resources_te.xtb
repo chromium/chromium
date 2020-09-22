@@ -91,7 +91,6 @@
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> నుండి కాపీ చేసిన ఇమేజ్</translation>
 <translation id="1102187190604780492">మీ స్క్రీన్‌పై ఉన్న అంశాల గురించిన సమాచారాన్ని ముందుగా చూపడానికి మీ Assistantను అనుమతించండి</translation>
 <translation id="1103523840287552314">ఎల్లప్పుడూ <ph name="LANGUAGE" />ను అనువదించు</translation>
-<translation id="1104038495841596279">మీ SIM కార్డ్‌ను మేము గుర్తించలేకపోయాము</translation>
 <translation id="1108600514891325577">&amp;ఆపు</translation>
 <translation id="1110155001042129815">వేచి ఉండండి</translation>
 <translation id="1112420131909513020">బ్యాక్‌గ్రౌండ్‌ ట్యాబ్ బ్లూటూత్‌ను ఉపయోగిస్తోంది</translation>
@@ -3895,7 +3894,6 @@
 <translation id="5701381305118179107">మధ్యకు</translation>
 <translation id="5701441174893770082">Linuxను అప్‌గ్రేడ్ చేయడం వలన మీ బ్యాటరీ గణనీయంగా ఖాళీ అవుతుంది. దయచేసి మీ పరికరాన్ని ఛార్జర్‌కు కనెక్ట్ చేసి, మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="5702749864074810610">సూచన తీసివేయబడింది</translation>
-<translation id="5702898740348134351">&amp;శోధన ఇంజిన్‌లను సవరించండి...</translation>
 <translation id="5704875434923668958">దీనికి సమకాలీకరిస్తోంది</translation>
 <translation id="5705005699929844214">ఎల్లప్పుడూ యాక్సెసిబిలిటీ ఆప్షన్‌లు చూపించు</translation>
 <translation id="5705882733397021510">వెనుకకు వెళ్లు</translation>
@@ -4062,7 +4060,6 @@
 <translation id="5910363049092958439">చిత్రాన్ని ఇలా సే&amp;వ్ చేయి...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ఆఫ్‌లైన్‌లో ఉంది</translation>
 <translation id="5911533659001334206">షార్ట్‌కట్ వ్యూయర్</translation>
-<translation id="5912378097832178659">&amp;శోధన ఇంజిన్‌లను సవరించండి...</translation>
 <translation id="5914724413750400082">మధ్యగుణకము (<ph name="MODULUS_NUM_BITS" /> బిట్‌లు):
   <ph name="MODULUS_HEX_DUMP" />
 

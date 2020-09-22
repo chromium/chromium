@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
+<translation id="2077832278056815832">Затворете всички балончета и наслагвания от други приложения. След това опитайте отново.</translation>
 <translation id="2359808026110333948">Напред</translation>
 <translation id="2416359993254398973">Chrome се нуждае от разрешение за достъп до камерата ви за този сайт.</translation>
+<translation id="2987449669841041897">Този сайт не може да извежда запитвания за разрешения</translation>
 <translation id="557283862590186398">Chrome се нуждае от разрешение за достъп до микрофона ви за този сайт.</translation>
 <translation id="5860491529813859533">Включване</translation>
 <translation id="6092062101542170135">За да продължите, включете NFC в настройките на Android</translation>

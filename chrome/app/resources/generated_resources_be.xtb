@@ -91,7 +91,6 @@
 <translation id="1099962274138857708">Відарыс скапіраваны з прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1102187190604780492">Дазволіць Памочніку без запыту паказваць інфармацыю, якая датычыцца змесціва на экране</translation>
 <translation id="1103523840287552314">Заўсёды перакладаць з мовы: <ph name="LANGUAGE" /></translation>
-<translation id="1104038495841596279">Не ўдалося выявіць SIM-карту</translation>
 <translation id="1108600514891325577">&amp;Спыніць</translation>
 <translation id="1110155001042129815">Пачакаць</translation>
 <translation id="1112420131909513020">Фонавая ўкладка выкарыстоўвае Bluetooth</translation>
@@ -3895,7 +3894,6 @@
 <translation id="5701381305118179107">У цэнтры</translation>
 <translation id="5701441174893770082">Абнаўленне сістэмы Linux можа істотна разрадзіць акумулятар. Падключыце зарадную прыладу і паўтарыце спробу.</translation>
 <translation id="5702749864074810610">Прапанова адхілена</translation>
-<translation id="5702898740348134351">&amp;Змяніць пошукавыя сістэмы...</translation>
 <translation id="5704875434923668958">Сінхранізавана з</translation>
 <translation id="5705005699929844214">Заўсёды паказваць параметры спецыяльных магчымасцей</translation>
 <translation id="5705882733397021510">Назад</translation>
@@ -4062,7 +4060,6 @@
 <translation id="5910363049092958439">За&amp;хаваць відарыс як...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> па-за сеткай</translation>
 <translation id="5911533659001334206">Прагляд спалучэнняў клавіш</translation>
-<translation id="5912378097832178659">&amp;Змяніць пошукавыя сістэмы...</translation>
 <translation id="5914724413750400082">Модуль (бітаў – <ph name="MODULUS_NUM_BITS" />):
   <ph name="MODULUS_HEX_DUMP" />
 

@@ -136,6 +136,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2341729377289034582">Zaključan vertikalni prikaz</translation>
 <translation id="2352467521400612932">Postavke stilosa</translation>
 <translation id="2354174487190027830">Aktiviranje mreže <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Izgleda da vaš telefon nije na mreži, stoga vam trenutno ne možemo pružiti sve dobre stvari iz njega.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2365393535144473978">Omogućavanjem prijenosa podataka na mobilnoj mreži omogućit će se Bluetooth.</translation>
 <translation id="2369165858548251131">"Zdravo" na kineskom</translation>
@@ -168,6 +169,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2705001408393684014">Uključite/isključite mikrofon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Gore</translation>
 <translation id="2718395828230677721">Noćno svjetlo</translation>
+<translation id="2727175239389218057">Odgovori</translation>
 <translation id="2727977024730340865">Priključeno na niskonaponski punjač. Punjenje baterije može biti nepouzdano.</translation>
 <translation id="2743387203779672305">Kopiraj u međumemoriju</translation>
 <translation id="2792498699870441125">Alt + tipka za pretraživanje</translation>
@@ -176,6 +178,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2825619548187458965">Polica</translation>
 <translation id="2841907151129139818">Promijenjeno u način rada za tablet</translation>
 <translation id="2844169650293029770">USB-C uređaj (prednji priključak na lijevoj strani)</translation>
+<translation id="2846247265041961677">O, ne! Nije moguće pronaći telefon</translation>
 <translation id="2865888419503095837">Informacije o mreži</translation>
 <translation id="2872961005593481000">Isključi</translation>
 <translation id="2878884018241093801">Nema nedavnih stavki</translation>
@@ -458,6 +461,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5920710855273935292">Mikrofon je isključen.</translation>
+<translation id="594179686076170922">Povezivanje s telefonom…</translation>
 <translation id="5946788582095584774">Funkcija <ph name="FEATURE_NAME" /> je uključena.</translation>
 <translation id="5947494881799873997">Vrati</translation>
 <translation id="595202126637698455">Praćenje performansi je omogućeno</translation>
@@ -581,6 +585,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="7262906531272962081">Napravite podsjetnik</translation>
 <translation id="7303365578352795231">Odgovaranje na drugom uređaju.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7346909386216857016">Uredu, razumijem</translation>
 <translation id="7348093485538360975">Tastatura na ekranu</translation>
 <translation id="735745346212279324">VPN veza je prekinuta</translation>
 <translation id="7377169924702866686">Uključena su velika slova.</translation>

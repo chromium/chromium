@@ -91,7 +91,6 @@
 <translation id="1099962274138857708">Afbeelding gekopieerd vanaf <ph name="DEVICE_NAME" /></translation>
 <translation id="1102187190604780492">Laat de Assistent proactief informatie weergeven over wat er op je scherm staat</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> altijd vertalen</translation>
-<translation id="1104038495841596279">Je simkaart kan niet worden gedetecteerd</translation>
 <translation id="1108600514891325577">&amp;Stop</translation>
 <translation id="1110155001042129815">Wachten</translation>
 <translation id="1112420131909513020">Achtergrondtabblad gebruikt Bluetooth</translation>
@@ -3895,7 +3894,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5701381305118179107">Centreren</translation>
 <translation id="5701441174893770082">Als je Linux upgradet, kan je batterij aanzienlijk sneller leeglopen. Sluit je apparaat aan op een oplader en probeer het opnieuw.</translation>
 <translation id="5702749864074810610">Suggestie afgewezen</translation>
-<translation id="5702898740348134351">Zo&amp;ekmachines bewerken...</translation>
 <translation id="5704875434923668958">Synchroniseren naar</translation>
 <translation id="5705005699929844214">Toegankelijkheidsopties altijd weergeven</translation>
 <translation id="5705882733397021510">Terug</translation>
@@ -4062,7 +4060,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5910363049092958439">Af&amp;beelding opslaan als...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> is offline</translation>
 <translation id="5911533659001334206">Sneltoetsenviewer</translation>
-<translation id="5912378097832178659">Zo&amp;ekmachines bewerken...</translation>
 <translation id="5914724413750400082">Modulus (<ph name="MODULUS_NUM_BITS" />-bits):
   <ph name="MODULUS_HEX_DUMP" />
 

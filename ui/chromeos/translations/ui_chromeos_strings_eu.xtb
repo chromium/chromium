@@ -63,6 +63,7 @@
 <translation id="1572585716423026576">Ezarri horma-paper gisa</translation>
 <translation id="158809615184981282">Teklatu faroetarra</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1620510694547887537">Kamera</translation>
 <translation id="1646136617204068573">Teklatu hungariarra</translation>
 <translation id="164729547906544836">Teklatu tamildarra (itrans)</translation>
 <translation id="164969095109328410">Chrome gailua</translation>
@@ -111,12 +112,12 @@
 <translation id="2163152940313951844">Karaktere honek ez du balio: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Teklatu vietnamdarra (TCVN)</translation>
 <translation id="2168214441502403371">Teklatu persiarra</translation>
-<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> tokiz aldatu da.</translation>
+<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> mugitu da.</translation>
 <translation id="2198315389084035571">Txinera (sinplifikatua)</translation>
 <translation id="2208158072373999562">Zip fitxategia</translation>
 <translation id="2225536596944493418">Ziur <ph name="NUMBER_OF_ITEMS" /> elementu ezabatu nahi dituzula?</translation>
 <translation id="2230062665678605299">Ezin  izan da sortu "<ph name="FOLDER_NAME" />" fitxategia. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2275059641601412272">Tokiz aldatu da.</translation>
+<translation id="2275059641601412272">Mugitu da.</translation>
 <translation id="2278988676849463018">Teklatu kannadarra (fonetikoa)</translation>
 <translation id="2288278176040912387">Disko-jogailua</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> fitxategi irekitzen.</translation>

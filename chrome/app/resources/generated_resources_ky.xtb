@@ -91,7 +91,6 @@
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> түзмөгүнөн көчүрүлгөн сүрөт</translation>
 <translation id="1102187190604780492">Жардамчыңызга экранда көрсөтүлгөн нерсеге ылайыктуу болгон маалыматты дайым көрсөтүүгө уруксат бериңиз</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> тилин ар дайым которуу</translation>
-<translation id="1104038495841596279">SIM картаңызды таба алган жокбуз</translation>
 <translation id="1108600514891325577">&amp;Токтотуу</translation>
 <translation id="1110155001042129815">Күтө туруңуз</translation>
 <translation id="1112420131909513020">Фондогу өтмөк Bluetooth'ду колдонууда</translation>
@@ -3895,7 +3894,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5701381305118179107">Борбор</translation>
 <translation id="5701441174893770082">Linux'ту жаңыртсаңыз, түзмөктүн батареясы тез отуруп калышы мүмкүн. Андыктан түзмөгүңүздү электр тармагына туташтырып, кайталап көрүңүз.</translation>
 <translation id="5702749864074810610">Сунуш четке кагылды</translation>
-<translation id="5702898740348134351">Издөө каражаттарын &amp;түзөтүү…</translation>
 <translation id="5704875434923668958">Төмөнкү менен шайкештирилүүдө:</translation>
 <translation id="5705005699929844214">Атайын мүмкүнчүлүктөрдүн параметрлери дайыма көрсөтүлсүн</translation>
 <translation id="5705882733397021510">Артка кайтуу</translation>
@@ -4062,7 +4060,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5910363049092958439">Сүрөттү төмөнкүдөй сак&amp;тоо…</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> оффлайн режиминде</translation>
 <translation id="5911533659001334206">Тез баскычтарды карап чыгуу</translation>
-<translation id="5912378097832178659">Издөө каражаттарын &amp;түзөтүү…</translation>
 <translation id="5914724413750400082">Модуль (<ph name="MODULUS_NUM_BITS" /> бит):
   <ph name="MODULUS_HEX_DUMP" />
 

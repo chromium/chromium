@@ -91,7 +91,6 @@
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> မှ မိတ္တူကူးထားသည့် ပုံ</translation>
 <translation id="1102187190604780492">ဖန်သားပြင်ပေါ်ရှိအရာများနှင့် သက်ဆိုင်သည့် အချက်အလက်များကို မေးစရာမလိုဘဲပြရန် သင်၏ Assistant အား ခွင့်ပြုပါ</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />ကို အမြဲတမ်း ဘာသာပြန်ရန်</translation>
-<translation id="1104038495841596279">သင့်ဆင်းမ်ကတ်ကို ရှာမတွေ့ပါ</translation>
 <translation id="1108600514891325577">&amp;ရပ်</translation>
 <translation id="1110155001042129815">စောင့်ရန်</translation>
 <translation id="1112420131909513020">နောက်ခံတဘ်သည် ဘလူးတုသ်ကို အသုံးပြုနေသည်</translation>
@@ -3896,7 +3895,6 @@
 <translation id="5701381305118179107">အလယ်</translation>
 <translation id="5701441174893770082">Linux အဆင့်မြှင့်ခြင်းက ဘက်ထရီ သိသာစွာကုန်စေသည်။ သင့်စက်ကို အားသွင်းကိရိယာနှင့် ချိတ်ဆက်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="5702749864074810610">အကြံပြုချက်ကို ပယ်လိုက်ပါပြီ</translation>
-<translation id="5702898740348134351">&amp;ရှာဖွေရေးစက်ကို တည်းဖြတ်ရန်...</translation>
 <translation id="5704875434923668958">စင့်ခ်လုပ်နေသည့်အကောင့်</translation>
 <translation id="5705005699929844214">အများသုံးစွဲနိုင်မှု ရွေးစရာများ အမြဲပြရန်</translation>
 <translation id="5705882733397021510">နောက်ပြန်သွားရန်</translation>
@@ -4063,7 +4061,6 @@
 <translation id="5910363049092958439">ပုံ&amp;ကို အဖြစ် သိမ်းရန်...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> က အော့ဖ်လိုင်းဖြစ်နေသည်</translation>
 <translation id="5911533659001334206">ဖြတ်လမ်းလင့်ခ် ကြည့်ရှုကိရိယာ</translation>
-<translation id="5912378097832178659">ရှဖွေမှု အင်ဂျင်များ တည်းဖြတ်မည်...</translation>
 <translation id="5914724413750400082">မော်ဂျူး (<ph name="MODULUS_NUM_BITS" /> ဘစ်များ):
   <ph name="MODULUS_HEX_DUMP" />
 

@@ -136,6 +136,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2341729377289034582">Gesluit op vertikaal</translation>
 <translation id="2352467521400612932">Stilusinstellings</translation>
 <translation id="2354174487190027830">Aktiveer tans <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Dit lyk of jou foon nie aanlyn is nie; ons kan nie op die oomblik al die goedjies van daar af vir jou kry nie.</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
 <translation id="2365393535144473978">As mobiele data geaktiveer word, sal dit Bluetooth aktiveer.</translation>
 <translation id="2369165858548251131">"Hallo" in Chinees</translation>
@@ -168,6 +169,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2705001408393684014">Wissel mikrofoon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Op</translation>
 <translation id="2718395828230677721">Aandbeligting</translation>
+<translation id="2727175239389218057">Antwoord</translation>
 <translation id="2727977024730340865">By 'n laekrag-laaier ingeprop. Laai van battery is dalk nie betroubaar nie.</translation>
 <translation id="2743387203779672305">Kopieer na knipbord</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
@@ -176,6 +178,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2825619548187458965">Rak</translation>
 <translation id="2841907151129139818">Het na tabletmodus oorgeskakel</translation>
 <translation id="2844169650293029770">USB C-toestel (voorste poort aan linkerkant)</translation>
+<translation id="2846247265041961677">Ag nee! Kan nie foon kry nie</translation>
 <translation id="2865888419503095837">Netwerkinligting</translation>
 <translation id="2872961005593481000">Skakel af</translation>
 <translation id="2878884018241093801">Geen onlangse items nie</translation>
@@ -459,6 +462,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5920710855273935292">Mikrofoon is gedemp.</translation>
+<translation id="594179686076170922">Koppel tans aan jou foon …</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> is aan.</translation>
 <translation id="5947494881799873997">Stel terug</translation>
 <translation id="595202126637698455">Prestasie-nasporing geaktiveer</translation>
@@ -582,6 +586,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="7262906531272962081">Skep herinnering</translation>
 <translation id="7303365578352795231">Antwoord tans op 'n ander toestel.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7346909386216857016">OK, het dit</translation>
 <translation id="7348093485538360975">Opskerm-sleutelbord</translation>
 <translation id="735745346212279324">VPN ontkoppel</translation>
 <translation id="7377169924702866686">Hoofletterslot is aan.</translation>

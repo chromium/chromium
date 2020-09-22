@@ -63,6 +63,7 @@
 <translation id="1572585716423026576">Setează ca imagine de fundal</translation>
 <translation id="158809615184981282">Tastatură feroeză</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1620510694547887537">Cameră</translation>
 <translation id="1646136617204068573">Tastatură maghiară</translation>
 <translation id="164729547906544836">Tastatură tamilă (itrans)</translation>
 <translation id="164969095109328410">Dispozitiv Chrome</translation>
@@ -375,6 +376,7 @@
 <translation id="5098629044894065541">Ebraică</translation>
 <translation id="5123433949759960244">Baschet</translation>
 <translation id="5129662217315786329">Poloneză</translation>
+<translation id="5132435854979302863">Filipineză</translation>
 <translation id="5144820558584035333">Hangul setul 3 (390)</translation>
 <translation id="5145331109270917438">Data modificării</translation>
 <translation id="515594325917491223">Șah</translation>
@@ -421,6 +423,7 @@
 <translation id="5464696796438641524">Tastatură poloneză</translation>
 <translation id="5465122519792752163">Tastatură nepaleză (InScript)</translation>
 <translation id="5469868506864199649">Italiană</translation>
+<translation id="5484429245813572665">Indoneziană</translation>
 <translation id="5494920125229734069">Selectează-le pe toate</translation>
 <translation id="5500122897333236901">Islandeză</translation>
 <translation id="5508696409934741614">Puncte</translation>
@@ -608,6 +611,7 @@
 <translation id="7649070708921625228">Ajutor</translation>
 <translation id="7654209398114106148">Se mută <ph name="NUMBER_OF_ITEMS" /> elemente…</translation>
 <translation id="7658239707568436148">Anulează</translation>
+<translation id="7693909743393669729">Formatarea unității va șterge toate datele stocate pe unitate și va elimina toate partițiile existente, inclusiv partițiile care nu sunt vizibile. Această acțiune nu poate fi anulată.</translation>
 <translation id="7695430100978772476">Nu s-a putut formata <ph name="DRIVE_NAME" /></translation>
 <translation id="770015031906360009">Greacă</translation>
 <translation id="7706319470528945664">Tastatură portugheză</translation>
@@ -639,6 +643,7 @@
 <translation id="78946041517601018">Drive-uri în comun</translation>
 <translation id="7896906914454843592">Tastatură S.U.A. extinsă</translation>
 <translation id="7898607018410277265">Tastatură gujarati (Fonetică nouă)</translation>
+<translation id="7908793776359722643">Formatarea partiției va șterge toate datele stocate pe partiție. Această acțiune nu poate fi anulată.</translation>
 <translation id="7917972308273378936">Tastatură lituaniană</translation>
 <translation id="7925686952655276919">Nu utilizați date mobile pentru sincronizare</translation>
 <translation id="7928710562641958568">Scoateți dispozitivul</translation>
@@ -726,6 +731,7 @@
 <translation id="8900820606136623064">Maghiară</translation>
 <translation id="8901822611024316615">Tastatură QWERTY cehă</translation>
 <translation id="8919081441417203123">Daneză</translation>
+<translation id="8941776146379310519">Malaieză</translation>
 <translation id="8960999352790021682">Tastatură bengaleză (Fonetică)</translation>
 <translation id="8965697826696209160">Nu există spațiu suficient.</translation>
 <translation id="9017798300203431059">Rusă fonetică</translation>

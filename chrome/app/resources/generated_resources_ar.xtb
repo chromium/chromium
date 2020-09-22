@@ -91,7 +91,6 @@
 <translation id="1099962274138857708">تم نسخ الصورة من <ph name="DEVICE_NAME" />.</translation>
 <translation id="1102187190604780492">‏السماح لـ "مساعد Google" بإظهار معلومات متعلّقة بالمحتوى المعروض على شاشتك</translation>
 <translation id="1103523840287552314">ترجمة اللغة <ph name="LANGUAGE" /> دائمًا</translation>
-<translation id="1104038495841596279">‏تعذّر علينا رصد شريحة SIM.</translation>
 <translation id="1108600514891325577">إي&amp;قاف</translation>
 <translation id="1110155001042129815">انتظار</translation>
 <translation id="1112420131909513020">هناك علامة تبويب خلفية تستخدم البلوتوث</translation>
@@ -3893,7 +3892,6 @@
 <translation id="5701381305118179107">توسيط</translation>
 <translation id="5701441174893770082">‏قد تؤدي ترقية نظام التشغيل Linux إلى استهلاك البطارية بشكل كبير. يُرجى توصيل جهازك بالشاحن وإعادة المحاولة.</translation>
 <translation id="5702749864074810610">تم رفض الاقتراح</translation>
-<translation id="5702898740348134351">&amp;تعديل محركات البحث...</translation>
 <translation id="5704875434923668958">المزامنة مع</translation>
 <translation id="5705005699929844214">عرض خيارات إمكانية الوصول دائمًا</translation>
 <translation id="5705882733397021510">رجوع</translation>
@@ -4060,7 +4058,6 @@
 <translation id="5910363049092958439">حفظ ال&amp;صورة باسم...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> غير متصل</translation>
 <translation id="5911533659001334206">عارض الاختصارات</translation>
-<translation id="5912378097832178659">تع&amp;ديل محرّكات البحث...</translation>
 <translation id="5914724413750400082">المعامل (<ph name="MODULUS_NUM_BITS" /> بت):
   <ph name="MODULUS_HEX_DUMP" />
 

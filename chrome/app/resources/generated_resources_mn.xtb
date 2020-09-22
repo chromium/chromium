@@ -91,7 +91,6 @@
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" />-с хуулсан зураг</translation>
 <translation id="1102187190604780492">Туслахдаа таны дэлгэц дээр байгаа зүйлтэй холбоотой мэдээллийг идэвхтэй харуулахыг зөвшөөрнө үү</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />-ийг үргэлж орчуулах</translation>
-<translation id="1104038495841596279">Бид таны SIM картыг илрүүлж чадсангүй</translation>
 <translation id="1108600514891325577">&amp; Зогс</translation>
 <translation id="1110155001042129815">Хүлээх</translation>
 <translation id="1112420131909513020">Дэвсгэр чихтэй хуудас bluetooth-г ашиглаж байна</translation>
@@ -2911,7 +2910,7 @@
 <translation id="4480590691557335796">Chrome таны компьютероос хортой программ хангамжийг олж устгах боломжтой</translation>
 <translation id="4481530544597605423">Хослоогүй төхөөрөмж</translation>
 <translation id="4483049906298469269">Сүлжээний өгөгдмөл бус гэйтвэйд пин илгээж чадсангүй</translation>
-<translation id="4487489714832036847">Chromebook уламжлалт программ хангамжийн оронд аппыг ашигладаг. Бүтээмж, энтертэйнмент болон бусад зүйлд зориулсан аппуудыг татаж аваарай.</translation>
+<translation id="4487489714832036847">Chromebook уламжлалт программ хангамжийн оронд аппыг ашигладаг. Бүтээмж, энтертайнмент болон бусад зүйлд зориулсан аппуудыг татаж аваарай.</translation>
 <translation id="4488502501195719518">Бүх өгөгдлийг устгах уу?</translation>
 <translation id="4493468155686877504">Санал болгосон (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Энэ хуудсан дээр бүү үзүүл</translation>
@@ -3890,7 +3889,6 @@
 <translation id="5701381305118179107">Төв</translation>
 <translation id="5701441174893770082">Linux-г дэвшүүлэхэд таны батарейн цэнэг ихээхэн зарцуулагдаж болзошгүй. Төхөөрөмжөө цэнэглэгчид залгаад дахин оролдоно уу.</translation>
 <translation id="5702749864074810610">Зөвлөмжийг үл хэрэгссэн</translation>
-<translation id="5702898740348134351">&amp; Хайлтын системийг засварлах ...</translation>
 <translation id="5704875434923668958">Дараахад синк хийж байна</translation>
 <translation id="5705005699929844214">Хандалтын сонголтыг байнга харуулах</translation>
 <translation id="5705882733397021510">Буцах</translation>
@@ -4057,7 +4055,6 @@
 <translation id="5910363049092958439">Зургийг өөр өргөтгөлтэйгээр хадгалах...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> офлайн байна</translation>
 <translation id="5911533659001334206">Товчлол харагч</translation>
-<translation id="5912378097832178659">Хайлтын системийг засварлах ...</translation>
 <translation id="5914724413750400082">Модулиуд (<ph name="MODULUS_NUM_BITS" /> бит): 
 <ph name="MODULUS_HEX_DUMP" /> 
 Нийтийн жишиг (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> бит): 

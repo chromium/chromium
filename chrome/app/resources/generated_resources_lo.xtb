@@ -91,7 +91,6 @@
 <translation id="1099962274138857708">ສຳເນົາຮູບຈາກ <ph name="DEVICE_NAME" /> ແລ້ວ</translation>
 <translation id="1102187190604780492">ໃຫ້ຜູ້ຊ່ວຍຂອງທ່ານສະແດງຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບສິ່ງທີ່ຢູ່ໃນໜ້າຈໍຂອງທ່ານໂດຍບໍ່ຕ້ອງຂໍ</translation>
 <translation id="1103523840287552314">ແປ <ph name="LANGUAGE" /> ຢູ່ສະເໝີ</translation>
-<translation id="1104038495841596279">ພວກເຮົາບໍ່ສາມາດກວດພົບ SIM ກາດຂອງທ່ານ</translation>
 <translation id="1108600514891325577">ຢຸດ</translation>
 <translation id="1110155001042129815">ລໍ​ຖ້າ</translation>
 <translation id="1112420131909513020">ແຖບໃນພື້ນຫຼັງກຳລັງໃຊ້ Bluetooth ຢູ່</translation>
@@ -3893,7 +3892,6 @@
 <translation id="5701381305118179107">ໃຈກາງ</translation>
 <translation id="5701441174893770082">ການອັບເກຣດ Linux ສາມາດເຮັດໃຫ້ແບັດເຕີຣີໝົດຢ່າງວ່ອງໄວໄດ້. ກະລຸນາເຊື່ອມຕໍ່ອຸປະກອນຂອງທ່ານກັບສາຍສາກ ແລ້ວລອງໃໝ່.</translation>
 <translation id="5702749864074810610">ປິດການແນະນຳໄວ້ແລ້ວ</translation>
-<translation id="5702898740348134351">ແກ້ໄຂເຄື່ອງຈັກຄົ້ນຫາ...</translation>
 <translation id="5704875434923668958">ກຳລັງຊິ້ງຂໍ້ມູນກັບ</translation>
 <translation id="5705005699929844214">ສະແດງຕົວເລືອກການຊ່ວຍເຂົ້າເຖິງທຸກເທື່ອ</translation>
 <translation id="5705882733397021510">ກັບຄືນ</translation>
@@ -4060,7 +4058,6 @@
 <translation id="5910363049092958439">ບັນທຶກຮູບເປັນ...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ອອບລາຍຢູ່</translation>
 <translation id="5911533659001334206">ຕົວສະແດງທາງລັດ</translation>
-<translation id="5912378097832178659">ແກ້ໄຂເຄື່ອງຈັກຄົ້ນຫາ...</translation>
 <translation id="5914724413750400082">ໂມດູນລັດ (<ph name="MODULUS_NUM_BITS" /> ບິດທ໌):
   <ph name="MODULUS_HEX_DUMP" />
 

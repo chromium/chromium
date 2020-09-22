@@ -63,6 +63,7 @@
 <translation id="1572585716423026576">ୱାଲ୍‌‌ପେପର୍‌ ଭାବରେ ସେଟ୍‍ କରନ୍ତୁ</translation>
 <translation id="158809615184981282">ଫାରୋଇଜ୍‍ କୀବୋର୍ଡ</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1620510694547887537">କ୍ୟାମେରା</translation>
 <translation id="1646136617204068573">ହଙ୍ଗେରୀଅନ୍ କୀବୋର୍ଡ</translation>
 <translation id="164729547906544836">ତାମିଲ୍‌ କୀବୋର୍ଡ (itrans)</translation>
 <translation id="164969095109328410">Chrome ଡିଭାଇସ୍</translation>
@@ -375,6 +376,7 @@
 <translation id="5098629044894065541">ହେବ୍ର୍ୟୁ</translation>
 <translation id="5123433949759960244">ବାସ୍କେଟବଲ୍</translation>
 <translation id="5129662217315786329">ପୋଲିସ୍</translation>
+<translation id="5132435854979302863">ଫିଲିପିନୋ</translation>
 <translation id="5144820558584035333">ହଂଗୁଲ୍ 3 ସେଟ୍ (390)</translation>
 <translation id="5145331109270917438">ପରିବର୍ତ୍ତିତ ତାରିଖ</translation>
 <translation id="515594325917491223">ଚେସ୍</translation>
@@ -415,6 +417,7 @@
 <translation id="5464696796438641524">ପୋଲିଶ୍‍ କୀବୋର୍ଡ</translation>
 <translation id="5465122519792752163">ନେପାଳୀ କୀବୋର୍ଡ (ଇନ୍‍ସ୍କ୍ରିପ୍ଟ)</translation>
 <translation id="5469868506864199649">ଇଟାଲିୟାନ୍</translation>
+<translation id="5484429245813572665">ଇନ୍ଦୋନେସୀୟ</translation>
 <translation id="5494920125229734069">ସମସ୍ତ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="5500122897333236901">ଆଇସ୍ଲେଣ୍ଡିକ୍</translation>
 <translation id="5508696409934741614">ଡଟ୍</translation>
@@ -602,6 +605,7 @@
 <translation id="7649070708921625228">ସହାୟତା</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> ଟି ଆଇଟମ୍ ଘୁଞ୍ଚାଯାଉଛି ...</translation>
 <translation id="7658239707568436148">ବାତିଲ୍</translation>
+<translation id="7693909743393669729">ଏକ ଡ୍ରାଇଭକୁ ଫର୍ମାଟ୍ କରିବା ଦ୍ୱାରା ସେଥିରେ ଷ୍ଟୋର୍ କରାଯାଇଥିବା ସମସ୍ତ ଡାଟା ଲିଭିଯିବ ଏବଂ ଦୃଶ୍ଯମାନ ହେଉନଥିବା ପାର୍ଟିସନଗୁଡ଼ିକ ସମେତ, ପୂର୍ବରୁ ଥିବା ସମସ୍ତ ପାର୍ଟିସନକୁ କାଢ଼ି ଦିଆଯିବ। ଏହି କାର୍ଯ୍ୟକୁ ପୂର୍ବବତ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> ଫର୍ମାଟ୍ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="770015031906360009">ଗ୍ରୀକ୍</translation>
 <translation id="7706319470528945664">ପର୍ତ୍ତୁଗୀଜ୍ କୀ'ବୋର୍ଡ</translation>
@@ -633,6 +637,7 @@
 <translation id="78946041517601018">ସେୟାର୍ ହୋଇଥିବା ଡ୍ରାଇଭ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="7896906914454843592">US ସମ୍ପ୍ରସାରିତ କୀବୋର୍ଡ</translation>
 <translation id="7898607018410277265">ଗୁଜରାଟୀ କୀବୋର୍ଡ (ନୂଆ ଫୋନେଟିକ୍)</translation>
+<translation id="7908793776359722643">ଏକ ପାର୍ଟିସନକୁ ଫର୍ମାଟ୍ କରିବା ଦ୍ୱାରା ଏଥିରେ ଷ୍ଟୋର୍ କରାଯାଇଥିବା ସମସ୍ତ ଡାଟା ଲିଭିଯିବ। ଏହି କାର୍ଯ୍ୟକୁ ପୂର୍ବବତ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="7917972308273378936">ଲିଥୁଆନିଆନ୍ କୀ'ବୋର୍ଡ</translation>
 <translation id="7925686952655276919">ସିଙ୍କ୍‍ କରିବା ପାଇଁ ମୋବାଇଲ୍‌ ଡାଟା ବ୍ୟବହାର କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="7928710562641958568">ଡିଭାଇସ୍‌କୁ ବାହାର କରନ୍ତୁ</translation>
@@ -720,6 +725,7 @@
 <translation id="8900820606136623064">ହଙ୍ଗେରୀଆନ୍</translation>
 <translation id="8901822611024316615">ଚେକ୍ QWERTY କୀବୋର୍ଡ</translation>
 <translation id="8919081441417203123">ଡାନିଶ୍</translation>
+<translation id="8941776146379310519">ମଲୟ</translation>
 <translation id="8960999352790021682">ବେଙ୍ଗଲୀ କୀବୋର୍ଡ (ଫୋନେଟିକ୍)</translation>
 <translation id="8965697826696209160">ଯଥେଷ୍ଟ ସ୍ଥାନ ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="9017798300203431059">ରସିଆନ୍ (ଫୋନେଟିକ୍)</translation>

@@ -136,6 +136,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2341729377289034582">Dikunci menegak</translation>
 <translation id="2352467521400612932">Tetapan stilus</translation>
 <translation id="2354174487190027830">Mengaktifkan <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Nampaknya telefon anda tidak berada dalam talian dan kami gagal mendapatkan semua cenderahati daripada telefon itu untuk anda sekarang.</translation>
 <translation id="2359808026110333948">Teruskan</translation>
 <translation id="2365393535144473978">Tindakan mendayakan data mudah alih akan turut mendayakan Bluetooth.</translation>
 <translation id="2369165858548251131">"Helo" dalam bahasa Cina</translation>
@@ -168,6 +169,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2705001408393684014">Togol Mikrofon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Atas</translation>
 <translation id="2718395828230677721">Cahaya Malam</translation>
+<translation id="2727175239389218057">Balas</translation>
 <translation id="2727977024730340865">Dipalamkan pada pengecas berkuasa rendah. Pengecasan bateri mungkin tidak boleh diharapkan.</translation>
 <translation id="2743387203779672305">Salin ke papan keratan</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
@@ -176,6 +178,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2825619548187458965">Rak</translation>
 <translation id="2841907151129139818">Bertukar kepada mod tablet</translation>
 <translation id="2844169650293029770">Peranti USB-C (port depan sebelah kiri)</translation>
+<translation id="2846247265041961677">Alamak! Tidak dapat menemukan telefon</translation>
 <translation id="2865888419503095837">Maklumat rangkaian</translation>
 <translation id="2872961005593481000">Mematikan</translation>
 <translation id="2878884018241093801">Tiada item terbaharu</translation>
@@ -459,6 +462,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Hidupkan</translation>
 <translation id="5920710855273935292">Mikrofon diredamkan.</translation>
+<translation id="594179686076170922">Menyambung kepada telefon anda...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> dihidupkan.</translation>
 <translation id="5947494881799873997">Berbalik</translation>
 <translation id="595202126637698455">Penjejakan prestasi didayakan</translation>
@@ -582,6 +586,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="7262906531272962081">Buat peringatan</translation>
 <translation id="7303365578352795231">Menjawab menggunakan peranti lain.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7346909386216857016">Ok, faham</translation>
 <translation id="7348093485538360975">Papan kekunci pada skrin</translation>
 <translation id="735745346212279324">VPN diputuskan sambungan</translation>
 <translation id="7377169924702866686">Caps Lock dihidupkan.</translation>

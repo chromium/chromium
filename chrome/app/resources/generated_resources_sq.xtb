@@ -91,7 +91,6 @@
 <translation id="1099962274138857708">Imazhi u kopjua nga <ph name="DEVICE_NAME" /></translation>
 <translation id="1102187190604780492">Lejo që "Asistenti" yt të shfaqë në mënyrë proaktive informacione në lidhje me atë që ndodhet në ekran</translation>
 <translation id="1103523840287552314">Përkthe gjithmonë nga <ph name="LANGUAGE" /></translation>
-<translation id="1104038495841596279">Nuk mund të zbulonim kartën tënde SIM</translation>
 <translation id="1108600514891325577">&amp;Ndalo</translation>
 <translation id="1110155001042129815">Prit</translation>
 <translation id="1112420131909513020">Skeda në sfond po përdor Bluetooth</translation>
@@ -3892,7 +3891,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5701381305118179107">Qendër</translation>
 <translation id="5701441174893770082">Përmirësimi i Linux mund ta shkarkojë në mënyrë të konsiderueshme baterinë. Lidhe pajisjen me një karikues dhe provo përsëri.</translation>
 <translation id="5702749864074810610">Sugjerimi u hoq</translation>
-<translation id="5702898740348134351">&amp;Redakto motorët e kërkimit...</translation>
 <translation id="5704875434923668958">Po sinkronizohet në</translation>
 <translation id="5705005699929844214">Shfaq gjithmonë opsionet e qasshmërisë</translation>
 <translation id="5705882733397021510">Kthehu prapa</translation>
@@ -4059,7 +4057,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5910363049092958439">Ru&amp;aje imazhin si...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> është jashtë linje</translation>
 <translation id="5911533659001334206">Shikuesi i shkurtoreve</translation>
-<translation id="5912378097832178659">&amp;Redakto motorët e kërkimit...</translation>
 <translation id="5914724413750400082">Vlera absolute (<ph name="MODULUS_NUM_BITS" /> bit):
   <ph name="MODULUS_HEX_DUMP" />
 

@@ -91,7 +91,6 @@
 <translation id="1099962274138857708">Resim, <ph name="DEVICE_NAME" /> cihazından kopyalandı</translation>
 <translation id="1102187190604780492">Asistanınızın, ekranınızda bulunan içerikle ilgili bilgileri proaktif olarak göstermesine izin verin</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> dilini daima çevir</translation>
-<translation id="1104038495841596279">SIM kartınız algılanamadı</translation>
 <translation id="1108600514891325577">D&amp;urdur</translation>
 <translation id="1110155001042129815">Bekle</translation>
 <translation id="1112420131909513020">Arka plan sekmesi Bluetooth bağlantısını kullanıyor</translation>
@@ -3896,7 +3895,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5701381305118179107">Ortala</translation>
 <translation id="5701441174893770082">Linux'u yeni sürüme geçirme işlemi pilinizi önemli ölçüde tüketebilir. Lütfen cihazınızı bir şarj cihazına bağlayıp tekrar deneyin.</translation>
 <translation id="5702749864074810610">Öneri reddedildi</translation>
-<translation id="5702898740348134351">&amp;Arama Motorlarını Düzenle...</translation>
 <translation id="5704875434923668958">Şu hesapla senkronize ediliyor:</translation>
 <translation id="5705005699929844214">Her zaman erişilebilirlik seçeneklerini göster</translation>
 <translation id="5705882733397021510">Geri Git</translation>
@@ -4063,7 +4061,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5910363049092958439">Resmi Farklı Ka&amp;ydet...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> çevrimdışı</translation>
 <translation id="5911533659001334206">Kısayol görüntüleyici</translation>
-<translation id="5912378097832178659">&amp;Arama motorlarını düzenle...</translation>
 <translation id="5914724413750400082">Katsayı (<ph name="MODULUS_NUM_BITS" /> bit):
   <ph name="MODULUS_HEX_DUMP" />
 

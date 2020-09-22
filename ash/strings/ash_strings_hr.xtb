@@ -136,6 +136,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2341729377289034582">Zaključan okomiti prikaz</translation>
 <translation id="2352467521400612932">Postavke pisaljke</translation>
 <translation id="2354174487190027830">Aktiviranje mreže <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Čini se da vaš telefon nije povezan s internetom, pa trenutačno ne možemo prenijeti sve male dodatke s njega.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2365393535144473978">Omogućivanjem mobilnih podataka omogućit će Bluetooth.</translation>
 <translation id="2369165858548251131">"Zdravo" na kineskom</translation>
@@ -168,6 +169,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2705001408393684014">Pomaknite klizač mikrofona udesno. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Gore</translation>
 <translation id="2718395828230677721">Noćno svjetlo</translation>
+<translation id="2727175239389218057">Odgovori</translation>
 <translation id="2727977024730340865">Uređaj je priključen na punjač male snage. Punjenje baterije možda nije pouzdano.</translation>
 <translation id="2743387203779672305">Kopiraj u međuspremnik</translation>
 <translation id="2792498699870441125">Alt + Pretraživanje</translation>
@@ -176,6 +178,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2825619548187458965">Polica</translation>
 <translation id="2841907151129139818">Prebačeno na način tableta</translation>
 <translation id="2844169650293029770">USB-C uređaj (prednji lijevi priključak)</translation>
+<translation id="2846247265041961677">O, ne! Ne možemo pronaći telefon</translation>
 <translation id="2865888419503095837">Podaci o mreži</translation>
 <translation id="2872961005593481000">Isključi</translation>
 <translation id="2878884018241093801">Nema nedavnih stavki</translation>
@@ -458,6 +461,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Uključi</translation>
 <translation id="5920710855273935292">Mikrofon je isključen.</translation>
+<translation id="594179686076170922">Povezivanje s vašim telefonom...</translation>
 <translation id="5946788582095584774">Značajka <ph name="FEATURE_NAME" /> je uključena.</translation>
 <translation id="5947494881799873997">Vrati</translation>
 <translation id="595202126637698455">Omogućeno je praćenje izvedbe</translation>
@@ -581,6 +585,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7262906531272962081">Izrada podsjetnika</translation>
 <translation id="7303365578352795231">Odgovaranje na drugom uređaju.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7346909386216857016">Dobro, shvaćam</translation>
 <translation id="7348093485538360975">Tipkovnica na zaslonu</translation>
 <translation id="735745346212279324">Veza s VPN-om prekinuta</translation>
 <translation id="7377169924702866686">Uključena je opcija Caps Lock.</translation>

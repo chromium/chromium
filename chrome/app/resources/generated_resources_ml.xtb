@@ -91,7 +91,6 @@
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> എന്ന ഉപകരണത്തിൽ നിന്ന് പകർത്തിയ ചിത്രം</translation>
 <translation id="1102187190604780492">നിങ്ങളുടെ സ്ക്രീനിൽ എന്താണുള്ളതെന്നതുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ ആവശ്യപ്പെടാതെ തന്നെ കാണിക്കാൻ Assistant-നെ അനുവദിക്കുക</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> എല്ലായ്പ്പോഴും വിവര്‍ത്തനം ചെയ്യുക </translation>
-<translation id="1104038495841596279">ഞങ്ങൾക്ക് നിങ്ങളുടെ സിം കാർഡ് കണ്ടെത്താനായില്ല</translation>
 <translation id="1108600514891325577">&amp;നിറുത്തുക</translation>
 <translation id="1110155001042129815">കാത്തിരിക്കുക</translation>
 <translation id="1112420131909513020">പശ്ചാത്തല ടാബ് bluetooth ഉപയോഗിക്കുന്നു</translation>
@@ -3892,7 +3891,6 @@
 <translation id="5701381305118179107">മധ്യഭാഗം</translation>
 <translation id="5701441174893770082">Linux അപ്ഗ്രേഡ് ചെയ്യുന്നത് വലിയ തോതിൽ നിങ്ങളുടെ ബാറ്ററി ചാർജ് കുറച്ചേക്കാം. നിങ്ങളുടെ ഉപകരണം ചാർജറിൽ കണക്റ്റ് ചെയ്ത് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="5702749864074810610">നിർദ്ദേശം നിരസിച്ചു</translation>
-<translation id="5702898740348134351">&amp;തിരയൽ യന്ത്രങ്ങൾ എഡിറ്റ് ചെയ്യുക...</translation>
 <translation id="5704875434923668958">ഇതിലേക്ക് സമന്വയിപ്പിക്കുന്നു</translation>
 <translation id="5705005699929844214">ഉപയോഗസഹായി ഓപ്‌ഷനുകൾ എല്ലായ്‌പ്പോഴും കാണിക്കുക</translation>
 <translation id="5705882733397021510">മടങ്ങുക</translation>
@@ -4059,7 +4057,6 @@
 <translation id="5910363049092958439">ചിത്രം ഇതായി സം&amp;രക്ഷിക്കുക...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ഓഫ്‌ലൈൻ ആണ്</translation>
 <translation id="5911533659001334206">ഷോട്ട്കട്ട് വ്യൂവർ</translation>
-<translation id="5912378097832178659">&amp;തിരയൽ യന്ത്രങ്ങൾ എഡിറ്റ് ചെയ്യുക...</translation>
 <translation id="5914724413750400082">മൊഡ്യൂലസ് (<ph name="MODULUS_NUM_BITS" /> ബിറ്റുകൾ):
   <ph name="MODULUS_HEX_DUMP" />
 

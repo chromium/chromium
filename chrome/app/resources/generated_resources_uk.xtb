@@ -91,7 +91,6 @@
 <translation id="1099962274138857708">Зображення скопійовано з пристрою <ph name="DEVICE_NAME" /></translation>
 <translation id="1102187190604780492">Дозвольте Асистенту активно показувати інформацію на основі контенту на екрані</translation>
 <translation id="1103523840287552314">Завжди перекладати з такої мови: <ph name="LANGUAGE" /></translation>
-<translation id="1104038495841596279">SIM-карту не виявлено</translation>
 <translation id="1108600514891325577">&amp;Зупинити</translation>
 <translation id="1110155001042129815">Зачекайте</translation>
 <translation id="1112420131909513020">Фонова вкладка використовує Bluetooth</translation>
@@ -3895,7 +3894,6 @@
 <translation id="5701381305118179107">По центру</translation>
 <translation id="5701441174893770082">Оновлення Linux може значно виснажити акумулятор. Підключіть зарядний пристрій і повторіть спробу.</translation>
 <translation id="5702749864074810610">Пропозицію закрито</translation>
-<translation id="5702898740348134351">&amp;Змінити пошукові системи...</translation>
 <translation id="5704875434923668958">Синхронізовано з</translation>
 <translation id="5705005699929844214">Завжди показувати параметри спеціальних можливостей</translation>
 <translation id="5705882733397021510">Назад</translation>
@@ -4062,7 +4060,6 @@
 <translation id="5910363049092958439">Збер&amp;егти зображення як...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> у режимі офлайн</translation>
 <translation id="5911533659001334206">Засіб перегляду комбінацій клавіш</translation>
-<translation id="5912378097832178659">&amp;Змінити пошукові системи...</translation>
 <translation id="5914724413750400082">Модуль (<ph name="MODULUS_NUM_BITS" /> біт.):
   <ph name="MODULUS_HEX_DUMP" />
 

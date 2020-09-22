@@ -63,6 +63,7 @@
 <translation id="1572585716423026576">Задаване като тапет</translation>
 <translation id="158809615184981282">Фарьорска клавиатура</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
+<translation id="1620510694547887537">Камера</translation>
 <translation id="1646136617204068573">Унгарска клавиатура</translation>
 <translation id="164729547906544836">Тамилска клавиатура (itrans)</translation>
 <translation id="164969095109328410">Устройство с Chrome</translation>
@@ -375,6 +376,7 @@
 <translation id="5098629044894065541">иврит</translation>
 <translation id="5123433949759960244">Баскетболна топка</translation>
 <translation id="5129662217315786329">полски</translation>
+<translation id="5132435854979302863">филипински</translation>
 <translation id="5144820558584035333">Хангъл, 3 набора (390)</translation>
 <translation id="5145331109270917438">Дата на промяна</translation>
 <translation id="515594325917491223">Шах</translation>
@@ -421,6 +423,7 @@
 <translation id="5464696796438641524">Полска клавиатура</translation>
 <translation id="5465122519792752163">Непалска клавиатура (InScript)</translation>
 <translation id="5469868506864199649">италиански</translation>
+<translation id="5484429245813572665">индонезийски</translation>
 <translation id="5494920125229734069">Избиране на всички</translation>
 <translation id="5500122897333236901">исландски</translation>
 <translation id="5508696409934741614">Точки</translation>
@@ -608,6 +611,7 @@
 <translation id="7649070708921625228">Помощ</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> елемента се преместват...</translation>
 <translation id="7658239707568436148">Отказ</translation>
+<translation id="7693909743393669729">При форматирането на устройство ще бъдат изтрити всички съхранявани на него данни и всички негови дялове, включително тези, които не са видими. Това действие не може да бъде отменено.</translation>
 <translation id="7695430100978772476">Устройството „<ph name="DRIVE_NAME" />“ не бе форматирано</translation>
 <translation id="770015031906360009">гръцки</translation>
 <translation id="7706319470528945664">Португалска клавиатура</translation>
@@ -639,6 +643,7 @@
 <translation id="78946041517601018">Споделени дискове</translation>
 <translation id="7896906914454843592">Американска разширена клавиатура</translation>
 <translation id="7898607018410277265">Клавиатура на гуджарати (нова, фонетична)</translation>
+<translation id="7908793776359722643">При форматирането на даден дял ще бъдат изтрити всички съхранявани в него данни. Това действие не може да бъде отменено.</translation>
 <translation id="7917972308273378936">Литовска клавиатура</translation>
 <translation id="7925686952655276919">Без използване на мобилни данни за синхронизиране</translation>
 <translation id="7928710562641958568">Изваждане на устройството</translation>
@@ -726,6 +731,7 @@
 <translation id="8900820606136623064">унгарски</translation>
 <translation id="8901822611024316615">Чешка клавиатура QWERTY</translation>
 <translation id="8919081441417203123">датски</translation>
+<translation id="8941776146379310519">малайски</translation>
 <translation id="8960999352790021682">Бенгалска клавиатура (фонетична)</translation>
 <translation id="8965697826696209160">Няма достатъчно място.</translation>
 <translation id="9017798300203431059">Руска фонетична клавиатура</translation>

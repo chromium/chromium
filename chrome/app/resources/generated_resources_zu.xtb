@@ -91,7 +91,6 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1099962274138857708">Isithombe sikopishwe kusuka ku-<ph name="DEVICE_NAME" /></translation>
 <translation id="1102187190604780492">Vumela Umsizi wakho akubonise ngamandla ulwazi oluhlobene nalokho okukusikrini sakho</translation>
 <translation id="1103523840287552314">Humusha njalo i-<ph name="LANGUAGE" /></translation>
-<translation id="1104038495841596279">Asikwazanga ukuthola ikhadi lakho le-SIM</translation>
 <translation id="1108600514891325577">Misa</translation>
 <translation id="1110155001042129815">Linda</translation>
 <translation id="1112420131909513020">Ithebhu engemuva isebenzisa i-bluetooth</translation>
@@ -3895,7 +3894,6 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="5701381305118179107">Maphakathi</translation>
 <translation id="5701441174893770082">Ukuthuthukisa i-Linux kungaqeda ibhethri lakho kakhulu. Sicela uxhume idivayisi yakho kwishaja bese uyazama futhi.</translation>
 <translation id="5702749864074810610">Iziphakamiso zikhishiwe</translation>
-<translation id="5702898740348134351">&amp;Hlela izinjini zokusesha...</translation>
 <translation id="5704875434923668958">Vumelanisa ku-</translation>
 <translation id="5705005699929844214">Njalo nje bonisa izinketho zokufinyeleleka</translation>
 <translation id="5705882733397021510">Emuva</translation>
@@ -4062,7 +4060,6 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="5910363049092958439">Londoloza isithombe njenge...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ayixhunyiwe kwi-inthanethi</translation>
 <translation id="5911533659001334206">Isibuki sesinqamuleli</translation>
-<translation id="5912378097832178659">Hlela izinjini zokusesha...</translation>
 <translation id="5914724413750400082">I-Modulus (<ph name="MODULUS_NUM_BITS" /> amabhithi):
   <ph name="MODULUS_HEX_DUMP" />
 

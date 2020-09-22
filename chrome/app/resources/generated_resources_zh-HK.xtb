@@ -91,7 +91,6 @@
 <translation id="1099962274138857708">從「<ph name="DEVICE_NAME" />」複製的圖片</translation>
 <translation id="1102187190604780492">允許「Google 助理」主動根據畫面上的內容顯示相關資料</translation>
 <translation id="1103523840287552314">永遠翻譯<ph name="LANGUAGE" /></translation>
-<translation id="1104038495841596279">無法偵測您的 SIM 卡</translation>
 <translation id="1108600514891325577">停止(&amp;S)</translation>
 <translation id="1110155001042129815">等一下</translation>
 <translation id="1112420131909513020">背景分頁正在使用藍牙</translation>
@@ -3894,7 +3893,6 @@
 <translation id="5701381305118179107">置中</translation>
 <translation id="5701441174893770082">升級 Linux 可能導致電池大量耗電。請將您的裝置連接至充電器，然後再試一次。</translation>
 <translation id="5702749864074810610">閂咗建議</translation>
-<translation id="5702898740348134351">編輯搜尋引擎(&amp;E)…</translation>
 <translation id="5704875434923668958">同步至</translation>
 <translation id="5705005699929844214">一律顯示無障礙功能選項</translation>
 <translation id="5705882733397021510">返回</translation>
@@ -4061,7 +4059,6 @@
 <translation id="5910363049092958439">另存圖片為(&amp;V)…</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> 已離線</translation>
 <translation id="5911533659001334206">快速鍵檢視器</translation>
-<translation id="5912378097832178659">編輯搜尋引擎(&amp;E)…</translation>
 <translation id="5914724413750400082">模數 (<ph name="MODULUS_NUM_BITS" /> 位元)：
   <ph name="MODULUS_HEX_DUMP" />
 

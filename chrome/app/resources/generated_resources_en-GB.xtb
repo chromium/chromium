@@ -92,7 +92,6 @@
 <translation id="1099962274138857708">Image copied from <ph name="DEVICE_NAME" /></translation>
 <translation id="1102187190604780492">Let your Assistant proactively show info related to what's on your screen</translation>
 <translation id="1103523840287552314">Always translate <ph name="LANGUAGE" /></translation>
-<translation id="1104038495841596279">We couldn't detect your SIM card</translation>
 <translation id="1108600514891325577">&amp;Stop</translation>
 <translation id="1110155001042129815">Wait</translation>
 <translation id="1112420131909513020">Background tab is using Bluetooth</translation>
@@ -1221,6 +1220,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2419706071571366386">For security, sign out when your computer isn't being used.</translation>
 <translation id="2422125132043002186">Linux restore cancelled</translation>
 <translation id="2423578206845792524">Sa&amp;ve image as...</translation>
+<translation id="2424424966051154874">{0,plural, =1{Guest}other{Guest (#)}}</translation>
 <translation id="2428510569851653187">Describe what you were doing when the tab crashed</translation>
 <translation id="2428939361789119025">Turn off Wi-Fi</translation>
 <translation id="2431027948063157455">Google Assistant was unable to load. Please check your network connection and retry.</translation>
@@ -3948,7 +3948,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5701381305118179107">Centre</translation>
 <translation id="5701441174893770082">Upgrading Linux can drain your battery significantly. Please connect your device to a charger and try again.</translation>
 <translation id="5702749864074810610">Suggestion dismissed</translation>
-<translation id="5702898740348134351">&amp;Edit Search Engines...</translation>
 <translation id="5704875434923668958">Syncing to</translation>
 <translation id="5705005699929844214">Always show accessibility options</translation>
 <translation id="5705882733397021510">Go back</translation>
@@ -4118,7 +4117,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5910363049092958439">Sa&amp;ve Image As...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> is offline</translation>
 <translation id="5911533659001334206">Shortcut viewer</translation>
-<translation id="5912378097832178659">&amp;Edit search engines...</translation>
 <translation id="5914724413750400082">Modulus (<ph name="MODULUS_NUM_BITS" /> bits):
   <ph name="MODULUS_HEX_DUMP" />
 
@@ -4263,6 +4261,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6077189836672154517">Tips and updates on <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Speak-to-type</translation>
 <translation id="6078045608615316905">Create QR code for this image</translation>
+<translation id="6078121669093215958">{0,plural, =1{Guest}other{# open guest windows}}</translation>
 <translation id="6078323886959318429">Add shortcut</translation>
 <translation id="6078752646384677957">Please check your microphone and audio levels.</translation>
 <translation id="6078769373519310690">'<ph name="CHROME_EXTENSION_NAME" />' wants to connect to a HID device</translation>
@@ -4778,6 +4777,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6704062477274546131">DNS resolution</translation>
 <translation id="6706210727756204531">Scope</translation>
 <translation id="6707389671160270963">SSL Client Certificate</translation>
+<translation id="670893696722244877">Search by languages or input names</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> and 1 Other Tab}other{<ph name="PAGE_TITLE" /> and # Other Tabs}}</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6709357832553498500">Connect using <ph name="EXTENSIONNAME" /></translation>
@@ -5636,6 +5636,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7753735457098489144">Installation failed due to lack of storage space. To free up space, delete files from device storage.</translation>
 <translation id="7754704193130578113">Ask where to save each file before downloading</translation>
 <translation id="7755287808199759310">Your parent can unblock it for you</translation>
+<translation id="7757592200364144203">Change device name</translation>
 <translation id="7757787379047923882">Text shared from <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Adjust the boundaries of your display</translation>
@@ -6083,7 +6084,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8249672078237421304">Offer to translate pages that aren't in a language you read</translation>
 <translation id="8251441930213048644">Refresh now</translation>
 <translation id="8251578425305135684">Thumbnail removed.</translation>
-<translation id="825238165904109940">Always show full URLs</translation>
+<translation id="825238165904109940">Always Show Full URLs</translation>
 <translation id="8252569384384439529">Uploading…</translation>
 <translation id="8253198102038551905">Click '+' to get network properties</translation>
 <translation id="8254954272268479918">Shut down Linux (Beta)</translation>
@@ -6099,6 +6100,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8264024885325823677">This setting is managed by your administrator.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" triggered full screen.</translation>
 <translation id="826511437356419340">Entered window overview mode. Swipe to navigate, or press tab if using a keyboard.</translation>
+<translation id="8266947622852630193">All input methods</translation>
 <translation id="8267539814046467575">Add printer</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />This is general information about this device and how it's used (such as battery level, system and app activity and errors). The data will be used to improve Android, and some aggregated information will also help Google apps and partners, such as Android developers, make their apps and products better.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Turning off this feature doesn't affect this device's ability to send the information needed for essential services such as system updates and security.<ph name="END_PARAGRAPH2" />

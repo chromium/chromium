@@ -136,6 +136,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2341729377289034582">Modu bertikalean blokeatuta</translation>
 <translation id="2352467521400612932">Arkatzaren ezarpenak</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> aktibatzen</translation>
+<translation id="2356210126990741501">Telefonoa ez dago Internetera konektatuta; hortaz, ezin ditugu eskuratu zuretzako osagarri txiki guztiak bertatik.</translation>
 <translation id="2359808026110333948">Jarraitu</translation>
 <translation id="2365393535144473978">Datu-konexioa aktibatzen baduzu, Bluetooth-a ere aktibatuko da.</translation>
 <translation id="2369165858548251131">Nola esaten da "Kaixo" txineraz</translation>
@@ -168,6 +169,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2705001408393684014">Aktibatu/Desaktibatu mikrofonoa. <ph name="STATE_TEXT" />.</translation>
 <translation id="2706462751667573066">Gora</translation>
 <translation id="2718395828230677721">Gaueko argia</translation>
+<translation id="2727175239389218057">Erantzun</translation>
 <translation id="2727977024730340865">Energia gutxiko kargagailu bat entxufatu duzu. Agian bateria kargatzeko prozesua ez da fidagarria izango.</translation>
 <translation id="2743387203779672305">Kopiatu arbelean</translation>
 <translation id="2792498699870441125">Alt + Bilaketa</translation>
@@ -176,6 +178,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2825619548187458965">Apala</translation>
 <translation id="2841907151129139818">Tableta modura aldatu da</translation>
 <translation id="2844169650293029770">USB-C gailua (ezkerraldeko aurreko ataka)</translation>
+<translation id="2846247265041961677">Hara! Ezin da aurkitu telefonoa</translation>
 <translation id="2865888419503095837">Sarearen informazioa</translation>
 <translation id="2872961005593481000">Itzali</translation>
 <translation id="2878884018241093801">Ez dago azken elementurik</translation>
@@ -459,6 +462,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aktibatuta</translation>
 <translation id="5920710855273935292">Mikrofonoa desaktibatuta dago.</translation>
+<translation id="594179686076170922">Telefonora konektatzen…</translation>
 <translation id="5946788582095584774">Aktibatuta dago <ph name="FEATURE_NAME" />.</translation>
 <translation id="5947494881799873997">Leheneratu</translation>
 <translation id="595202126637698455">Errendimenduaren jarraipena egiteko aukera gaitu da</translation>
@@ -582,6 +586,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="7262906531272962081">Sortu abisua</translation>
 <translation id="7303365578352795231">Beste gailu batean erantzuten.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7346909386216857016">Ados, ulertu dut</translation>
 <translation id="7348093485538360975">Pantailako teklatua</translation>
 <translation id="735745346212279324">VPN deskonektatu da</translation>
 <translation id="7377169924702866686">Maiuskula-blokeoa aktibatuta dago.</translation>
