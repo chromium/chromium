@@ -46,7 +46,7 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView,
 
  private:
   void AddPinButton();
-  void Update();
+  void UpdateImage();
   void UpdatePin();
 
   tray::RoundedImageView* image_ = nullptr;
@@ -54,6 +54,8 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView,
   views::ToggleImageButton* pin_ = nullptr;
 
   std::unique_ptr<HoldingSpaceImage::Subscription> image_subscription_;
+
+  base::WeakPtrFactory<HoldingSpaceItemChipView> weak_factory_{this};
 };
 
 }  // namespace ash

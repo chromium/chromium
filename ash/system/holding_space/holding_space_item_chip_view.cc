@@ -63,9 +63,9 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(const HoldingSpaceItem* item)
   // Subscribe to be notified of changes to `item_`'s image.
   image_subscription_ =
       item->image().AddImageSkiaChangedCallback(base::BindRepeating(
-          &HoldingSpaceItemChipView::Update, base::Unretained(this)));
+          &HoldingSpaceItemChipView::UpdateImage, base::Unretained(this)));
 
-  Update();
+  UpdateImage();
 }
 
 HoldingSpaceItemChipView::~HoldingSpaceItemChipView() = default;
@@ -85,15 +85,19 @@ void HoldingSpaceItemChipView::OnMouseEvent(ui::MouseEvent* event) {
 void HoldingSpaceItemChipView::ButtonPressed(views::Button* sender,
                                              const ui::Event& event) {
   DCHECK_EQ(sender, pin_);
-  bool is_item_pinned = HoldingSpaceController::Get()->model()->GetItem(
+  const bool is_item_pinned = HoldingSpaceController::Get()->model()->GetItem(
       HoldingSpaceItem::GetFileBackedItemId(HoldingSpaceItem::Type::kPinnedFile,
                                             item()->file_path()));
-  pin_->SetToggled(!is_item_pinned);
 
+  // Unpinning `item()` may result in the destruction of this view.
+  auto weak_ptr = weak_factory_.GetWeakPtr();
   if (is_item_pinned)
     HoldingSpaceController::Get()->client()->UnpinItem(*item());
   else
     HoldingSpaceController::Get()->client()->PinItem(*item());
+
+  if (weak_ptr)
+    UpdatePin();
 }
 
 void HoldingSpaceItemChipView::AddPinButton() {
@@ -112,7 +116,7 @@ void HoldingSpaceItemChipView::AddPinButton() {
   pin_->SetToggledImage(views::Button::STATE_NORMAL, &pinned_icon);
 }
 
-void HoldingSpaceItemChipView::Update() {
+void HoldingSpaceItemChipView::UpdateImage() {
   image_->SetImage(
       item()->image().image_skia(),
       gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize));
@@ -124,7 +128,7 @@ void HoldingSpaceItemChipView::UpdatePin() {
     return;
   }
 
-  bool is_item_pinned = HoldingSpaceController::Get()->model()->GetItem(
+  const bool is_item_pinned = HoldingSpaceController::Get()->model()->GetItem(
       HoldingSpaceItem::GetFileBackedItemId(HoldingSpaceItem::Type::kPinnedFile,
                                             item()->file_path()));
 
