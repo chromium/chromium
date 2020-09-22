@@ -27,6 +27,11 @@ namespace {
 
 const int kMessageWidth = 400;
 
+void OnArcHandled(WebContents* web_contents, const GURL& url, bool handled) {
+  if (!handled)
+    new ExternalProtocolDialog(web_contents, url);
+}
+
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -47,12 +52,10 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
   int render_process_host_id =
       web_contents->GetRenderViewHost()->GetProcess()->GetID();
   int routing_id = web_contents->GetRenderViewHost()->GetRoutingID();
-  if (arc::RunArcExternalProtocolDialog(url, initiating_origin,
-                                        render_process_host_id, routing_id,
-                                        page_transition, has_user_gesture)) {
-    return;
-  }
-  new ExternalProtocolDialog(web_contents, url);
+  arc::RunArcExternalProtocolDialog(
+      url, initiating_origin, render_process_host_id, routing_id,
+      page_transition, has_user_gesture,
+      base::BindOnce(&OnArcHandled, web_contents, url));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

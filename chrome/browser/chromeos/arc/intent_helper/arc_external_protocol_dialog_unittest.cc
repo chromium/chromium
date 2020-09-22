@@ -1030,13 +1030,17 @@ TEST_F(ArcExternalProtocolDialogTestUtils, TestDialogWithoutAppsWithDevices) {
   ClickToCallUiController::GetOrCreateFromWebContents(web_contents())
       ->set_on_dialog_shown_closure_for_testing(run_loop.QuitClosure());
 
-  ASSERT_TRUE(arc::RunArcExternalProtocolDialog(
+  bool handled = false;
+  arc::RunArcExternalProtocolDialog(
       GURL("tel:12341234"), /*initiating_origin=*/base::nullopt,
       rvh->GetProcess()->GetID(), rvh->GetRoutingID(), ui::PAGE_TRANSITION_LINK,
-      /*has_user_gesture=*/true));
+      /*has_user_gesture=*/true,
+      base::BindOnce([](bool* handled, bool result) { *handled = result; },
+                     &handled));
 
   // Wait until the bubble is visible.
   run_loop.Run();
+  EXPECT_TRUE(handled);
 }
 
 }  // namespace arc

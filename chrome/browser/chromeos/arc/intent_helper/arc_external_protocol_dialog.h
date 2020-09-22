@@ -123,15 +123,18 @@ enum class Scheme {
   OTHER
 };
 
-// Shows ARC version of the dialog. Returns true if ARC is supported, running,
-// and in a context where it is allowed to handle external protocol.
-bool RunArcExternalProtocolDialog(
+// Checks if ARC is supported, running, and in a context where it is allowed to
+// handle external protocol, then either shows the dialog, or directly launches
+// the app if a user has previously made a choice. Invokes |handled_cb| with
+// true if the protocol has been handled by ARC.
+void RunArcExternalProtocolDialog(
     const GURL& url,
     const base::Optional<url::Origin>& initiating_origin,
     int render_process_host_id,
     int routing_id,
     ui::PageTransition page_transition,
-    bool has_user_gesture);
+    bool has_user_gesture,
+    base::OnceCallback<void(bool)> handled_cb);
 
 GetActionResult GetActionForTesting(
     const GURL& original_url,
