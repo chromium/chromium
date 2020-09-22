@@ -47,15 +47,6 @@ RecentFilesContainer::RecentFilesContainer() {
       kHoldingSpaceScreenshotsContainerPadding,
       kHoldingSpaceScreenshotSpacing));
 
-  // TODO(crbug.com/1125254): Populate containers if and when holding space
-  // model is attached, below is a temporary solution.
-  for (const auto& item : HoldingSpaceController::Get()->model()->items()) {
-    if (item->type() == HoldingSpaceItem::Type::kScreenshot) {
-      screenshots_container_->AddChildView(
-          std::make_unique<HoldingSpaceItemScreenshotView>(item.get()));
-    }
-  }
-
   auto* recent_downloads_label = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_RECENT_DOWNLOADS_TITLE)));
   setup_layered_child(recent_downloads_label);
@@ -64,20 +55,43 @@ RecentFilesContainer::RecentFilesContainer() {
   recent_downloads_container_ =
       AddChildView(std::make_unique<HoldingSpaceItemChipsContainer>());
 
-  // TODO(crbug.com/1125254): Populate containers if and when holding space
-  // model is attached, below is a temporary solution.
-  for (const auto& item : HoldingSpaceController::Get()->model()->items()) {
-    if (item->type() == HoldingSpaceItem::Type::kDownload) {
-      recent_downloads_container_->AddChildView(
-          std::make_unique<HoldingSpaceItemChipView>(item.get()));
-    }
-  }
+  if (HoldingSpaceController::Get()->model())
+    OnHoldingSpaceModelAttached(HoldingSpaceController::Get()->model());
 }
 
 RecentFilesContainer::~RecentFilesContainer() = default;
 
-const char* RecentFilesContainer::GetClassName() const {
-  return "RecentFilesContainer";
+void RecentFilesContainer::AddHoldingSpaceItemView(
+    const HoldingSpaceItem* item) {
+  DCHECK(!base::Contains(views_by_item_id_, item->id()));
+  if (item->type() == HoldingSpaceItem::Type::kScreenshot) {
+    views_by_item_id_[item->id()] = screenshots_container_->AddChildViewAt(
+        std::make_unique<HoldingSpaceItemScreenshotView>(item), 0 /*index*/);
+  } else if (item->type() == HoldingSpaceItem::Type::kDownload) {
+    views_by_item_id_[item->id()] = recent_downloads_container_->AddChildViewAt(
+        std::make_unique<HoldingSpaceItemChipView>(item), 0 /*index*/);
+  }
+}
+
+void RecentFilesContainer::RemoveAllHoldingSpaceItemViews() {
+  views_by_item_id_.clear();
+  screenshots_container_->RemoveAllChildViews(true);
+  recent_downloads_container_->RemoveAllChildViews(true);
+}
+
+void RecentFilesContainer::RemoveHoldingSpaceItemView(
+    const HoldingSpaceItem* item) {
+  auto it = views_by_item_id_.find(item->id());
+  if (it == views_by_item_id_.end())
+    return;
+  views::View* view = it->second;
+
+  if (item->type() == HoldingSpaceItem::Type::kScreenshot) {
+    screenshots_container_->RemoveChildViewT(view);
+  } else if (item->type() == HoldingSpaceItem::Type::kDownload) {
+    recent_downloads_container_->RemoveChildViewT(view);
+  }
+  views_by_item_id_.erase(it);
 }
 
 }  // namespace ash

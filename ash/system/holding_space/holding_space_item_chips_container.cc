@@ -12,7 +12,6 @@
 #include "ui/views/layout/proposed_layout.h"
 
 namespace ash {
-
 namespace {
 
 // Need a custom grid layout to facilitate removal of views from the grid,
@@ -41,7 +40,7 @@ class SimpleGridLayout : public views::LayoutManagerBase {
     int total_children = 0;
     for (auto* child : host_view()->children()) {
       if (IsChildIncludedInLayout(child))
-        total_children++;
+        ++total_children;
     }
     // Equivalent to `ceil(children().size() / column_count_)`.
     int number_of_rows = (total_children + column_count_ - 1) / column_count_;
@@ -94,6 +93,12 @@ class SimpleGridLayout : public views::LayoutManagerBase {
       }
     }
     return proposed_layout;
+  }
+
+  void OnLayoutChanged() override {
+    LayoutManagerBase::OnLayoutChanged();
+    cached_child_preferred_size_.reset();
+    host_view()->SetPreferredSize(CalculatePreferredSize());
   }
 
  private:

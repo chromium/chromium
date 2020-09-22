@@ -99,8 +99,6 @@ void HoldingSpaceItemChipView::ButtonPressed(views::Button* sender,
     HoldingSpaceController::Get()->client()->UnpinItem(*item());
   else
     HoldingSpaceController::Get()->client()->PinItem(*item());
-
-  UpdatePin();
 }
 
 void HoldingSpaceItemChipView::AddPinButton() {

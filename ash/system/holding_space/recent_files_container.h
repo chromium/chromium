@@ -5,26 +5,32 @@
 #ifndef ASH_SYSTEM_HOLDING_SPACE_RECENT_FILES_CONTAINER_H_
 #define ASH_SYSTEM_HOLDING_SPACE_RECENT_FILES_CONTAINER_H_
 
-#include "ui/views/view.h"
+#include <map>
+
+#include "ash/system/holding_space/holding_space_item_views_container.h"
 
 namespace ash {
 
 class HoldingSpaceItemChipsContainer;
 
 // Container for the recent files (Screenshots, downloads etc).
-class RecentFilesContainer : public views::View {
+class RecentFilesContainer : public HoldingSpaceItemViewsContainer {
  public:
   RecentFilesContainer();
   RecentFilesContainer(const RecentFilesContainer& other) = delete;
   RecentFilesContainer& operator=(const RecentFilesContainer& other) = delete;
   ~RecentFilesContainer() override;
 
-  // views::View:
-  const char* GetClassName() const override;
+  // HoldingSpaceItemViewsContainer:
+  void AddHoldingSpaceItemView(const HoldingSpaceItem* item) override;
+  void RemoveAllHoldingSpaceItemViews() override;
+  void RemoveHoldingSpaceItemView(const HoldingSpaceItem* item) override;
 
  private:
   views::View* screenshots_container_ = nullptr;
   HoldingSpaceItemChipsContainer* recent_downloads_container_ = nullptr;
+
+  std::map<std::string, views::View*> views_by_item_id_;
 };
 
 }  // namespace ash
