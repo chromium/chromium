@@ -264,14 +264,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             containerParams.urlTitleLongClickCallback = viewParams.urlTitleLongClickCallback;
             containerParams.urlTitleShown = viewParams.urlTitleShown;
             mContainer.setParams(containerParams);
-            mContainer.showPage(mView, null, null);
-            PageInfoViewV2 view2 = (PageInfoViewV2) mView;
-            mConnectionController = new PageInfoConnectionController(
-                    this, view2.getConnectionRowView(), mWebContents, mDelegate.getVrHandler());
-            mPermissionsController = new PageInfoPermissionsController(
-                    this, view2.getPermissionsRowView(), mDelegate, mFullUrl);
-            mCookiesController = new PageInfoCookiesController(this, view2.getCookiesRowView(),
-                    mDelegate, viewParams.cookieControlsShown, mFullUrl);
             mDelegate.getFavicon(mFullUrl, favicon -> {
                 if (favicon != null) {
                     mContainer.setFavicon(favicon);
@@ -280,6 +272,15 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
                             SettingsUtils.getTintedIcon(mContext, R.drawable.ic_globe_24dp));
                 }
             });
+            mContainer.showPage(mView, null, null);
+
+            PageInfoViewV2 view2 = (PageInfoViewV2) mView;
+            mConnectionController = new PageInfoConnectionController(
+                    this, view2.getConnectionRowView(), mWebContents, mDelegate.getVrHandler());
+            mPermissionsController = new PageInfoPermissionsController(
+                    this, view2.getPermissionsRowView(), mDelegate, mFullUrl);
+            mCookiesController = new PageInfoCookiesController(
+                    this, view2.getCookiesRowView(), mDelegate, mFullUrl);
         } else {
             mView.showPerformanceInfo(mDelegate.shouldShowPerformanceBadge(mFullUrl));
             mView.showHttpsImageCompressionInfo(mDelegate.isHttpsImageCompressionApplied());
@@ -585,7 +586,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         CharSequence title = mSubpageController.getSubpageTitle();
         View subview = mSubpageController.createViewForSubpage(mContainer);
         mContainer.showPage(subview, title, null);
-        controller.onSubPageAttached();
     }
 
     /**

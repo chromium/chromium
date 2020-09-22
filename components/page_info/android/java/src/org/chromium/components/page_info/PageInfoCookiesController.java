@@ -37,7 +37,7 @@ public class PageInfoCookiesController
     private boolean mIsEnforced;
 
     public PageInfoCookiesController(PageInfoMainController mainController, PageInfoRowView rowView,
-            PageInfoControllerDelegate delegate, boolean isVisible, String fullUrl) {
+            PageInfoControllerDelegate delegate, String fullUrl) {
         mMainController = mainController;
         mRowView = rowView;
         mDelegate = delegate;
@@ -45,7 +45,7 @@ public class PageInfoCookiesController
         mTitle = mRowView.getContext().getResources().getString(R.string.cookies_title);
 
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
-        rowParams.visible = isVisible;
+        rowParams.visible = delegate.isSiteSettingsAvailable();
         rowParams.title = mTitle;
         rowParams.iconResId = R.drawable.permission_cookie;
         rowParams.clickCallback = this::launchSubpage;
@@ -65,25 +65,22 @@ public class PageInfoCookiesController
     public View createViewForSubpage(ViewGroup parent) {
         assert mSubPage == null;
         mSubPage = new PageInfoCookiesPreference();
+        AppCompatActivity host = (AppCompatActivity) mRowView.getContext();
+        host.getSupportFragmentManager().beginTransaction().add(mSubPage, null).commitNow();
+
         PageInfoCookiesPreference.PageInfoCookiesViewParams params =
                 new PageInfoCookiesPreference.PageInfoCookiesViewParams();
+        params.thirdPartyCookieBlockingEnabled = mDelegate.cookieControlsShown();
         params.onCheckedChangedCallback = this::onCheckedChangedCallback;
         params.onClearCallback = this::clearData;
         params.onCookieSettingsLinkClicked = mDelegate::showCookieSettings;
         params.disableCookieDeletion = WebsitePreferenceBridge.isCookieDeletionDisabled(
                 mMainController.getBrowserContext(), mFullUrl);
         mSubPage.setParams(params);
-
-        AppCompatActivity host = (AppCompatActivity) mRowView.getContext();
-        host.getSupportFragmentManager().beginTransaction().add(mSubPage, null).commitNow();
-        return mSubPage.requireView();
-    }
-
-    @Override
-    public void onSubPageAttached() {
-        // TODO(crbug.com/1077766): Get storage size.
         mSubPage.setCookiesCount(mAllowedCookies, mBlockedCookies);
         mSubPage.setCookieBlockingStatus(mStatus, mIsEnforced);
+
+        return mSubPage.requireView();
     }
 
     private void onCheckedChangedCallback(boolean state) {
@@ -112,8 +109,8 @@ public class PageInfoCookiesController
         String subtitle = blockedCookies > 0
                 ? mRowView.getContext().getResources().getQuantityString(
                         R.plurals.cookie_controls_blocked_cookies, blockedCookies, blockedCookies)
-                : mRowView.getContext().getResources().getQuantityString(
-                        R.plurals.page_info_cookies_in_use, allowedCookies, allowedCookies);
+                : null;
+
         mRowView.updateSubtitle(subtitle);
 
         if (mSubPage != null) {

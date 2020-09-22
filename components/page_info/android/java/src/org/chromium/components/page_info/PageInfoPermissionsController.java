@@ -56,11 +56,8 @@ public class PageInfoPermissionsController implements PageInfoSubpageController 
         mSubpageFragment.setRefreshAfterReset(true);
         AppCompatActivity host = (AppCompatActivity) mRowView.getContext();
         host.getSupportFragmentManager().beginTransaction().add(mSubpageFragment, null).commitNow();
-        return mSubpageFragment.getView();
+        return mSubpageFragment.requireView();
     }
-
-    @Override
-    public void onSubPageAttached() {}
 
     @Override
     public void onSubpageRemoved() {

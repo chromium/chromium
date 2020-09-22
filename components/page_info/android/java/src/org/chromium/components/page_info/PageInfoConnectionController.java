@@ -52,9 +52,6 @@ public class PageInfoConnectionController
     }
 
     @Override
-    public void onSubPageAttached() {}
-
-    @Override
     public void onSubpageRemoved() {
         mContainer = null;
         mInfoView.onDismiss();
