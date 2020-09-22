@@ -16,7 +16,9 @@ export {BackgroundManager} from './background_manager.js';
 export {BrowserProxy} from './browser_proxy.js';
 export {BackgroundSelectionType} from './customize_dialog.js';
 export {ImgElement} from './img.js';
+// <if expr="not is_official_build">
 export {dummyDescriptor} from './modules/dummy/module.js';
+// </if>
 export {kaleidoscopeDescriptor} from './modules/kaleidoscope/module.js';
 export {ModuleDescriptor} from './modules/module_descriptor.js';
 export {ModuleRegistry} from './modules/module_registry.js';
