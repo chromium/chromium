@@ -57,6 +57,12 @@ class BASE_EXPORT JobDelegate {
   // reused by a different thread after a worker_task returns.
   uint8_t GetTaskId();
 
+  // Returns true if the current task is called from the thread currently
+  // running JobHandle::Join().
+  bool IsJoiningThread() const {
+    return pooled_task_runner_delegate_ == nullptr;
+  }
+
  private:
   static constexpr uint8_t kInvalidTaskId = std::numeric_limits<uint8_t>::max();
 

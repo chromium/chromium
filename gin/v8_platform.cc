@@ -284,6 +284,7 @@ class JobDelegateImpl : public v8::JobDelegate {
     delegate_->NotifyConcurrencyIncrease();
   }
   uint8_t GetTaskId() override { return delegate_->GetTaskId(); }
+  bool IsJoiningThread() const override { return delegate_->IsJoiningThread(); }
 
  private:
   base::JobDelegate* delegate_;
