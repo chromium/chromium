@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_custom_layout_constraints_options.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -22,7 +23,8 @@ class ScriptPromiseResolver;
 
 // Contains all the information needed to resolve a promise with a fragment or
 // intrinsic-sizes.
-class CustomLayoutWorkTask {
+class CustomLayoutWorkTask final
+    : public GarbageCollected<CustomLayoutWorkTask> {
  public:
   enum TaskType {
     kLayoutFragment,
@@ -43,6 +45,7 @@ class CustomLayoutWorkTask {
                        scoped_refptr<SerializedScriptValue> constraint_data,
                        const TaskType type);
   ~CustomLayoutWorkTask();
+  void Trace(Visitor*) const;
 
   // Runs this work task.
   void Run(const NGConstraintSpace& parent_space,
@@ -51,10 +54,10 @@ class CustomLayoutWorkTask {
            bool* child_depends_on_percentage_block_size = nullptr);
 
  private:
-  Persistent<CustomLayoutChild> child_;
-  Persistent<CustomLayoutToken> token_;
-  Persistent<ScriptPromiseResolver> resolver_;
-  Persistent<const CustomLayoutConstraintsOptions> options_;
+  Member<CustomLayoutChild> child_;
+  Member<CustomLayoutToken> token_;
+  Member<ScriptPromiseResolver> resolver_;
+  Member<const CustomLayoutConstraintsOptions> options_;
   scoped_refptr<SerializedScriptValue> constraint_data_;
   TaskType type_;
 

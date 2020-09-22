@@ -142,11 +142,14 @@ bool CSSLayoutDefinition::Instance::Layout(
   }
 
   // Run the work queue until exhaustion.
-  while (!custom_layout_scope->Queue()->IsEmpty()) {
-    for (auto& task : *custom_layout_scope->Queue()) {
-      task.Run(space, node.Style(), border_box_size.block_size);
+  auto& queue = *custom_layout_scope->Queue();
+  while (!queue.IsEmpty()) {
+    // The queue may mutate (re-allocating the vector) while running a task.
+    for (wtf_size_t index = 0; index < queue.size(); ++index) {
+      auto task = queue[index];
+      task->Run(space, node.Style(), border_box_size.block_size);
     }
-    custom_layout_scope->Queue()->clear();
+    queue.clear();
     {
       v8::MicrotasksScope microtasks_scope(isolate, microtask_queue,
                                            v8::MicrotasksScope::kRunMicrotasks);
@@ -268,13 +271,16 @@ bool CSSLayoutDefinition::Instance::IntrinsicSizes(
   }
 
   // Run the work queue until exhaustion.
-  while (!custom_layout_scope->Queue()->IsEmpty()) {
-    for (auto& task : *custom_layout_scope->Queue()) {
-      task.Run(space, node.Style(),
-               child_percentage_resolution_block_size_for_min_max,
-               child_depends_on_percentage_block_size);
+  auto& queue = *custom_layout_scope->Queue();
+  while (!queue.IsEmpty()) {
+    // The queue may mutate (re-allocating the vector) while running a task.
+    for (wtf_size_t index = 0; index < queue.size(); ++index) {
+      auto task = queue[index];
+      task->Run(space, node.Style(),
+                child_percentage_resolution_block_size_for_min_max,
+                child_depends_on_percentage_block_size);
     }
-    custom_layout_scope->Queue()->clear();
+    queue.clear();
     {
       v8::MicrotasksScope microtasks_scope(isolate, microtask_queue,
                                            v8::MicrotasksScope::kRunMicrotasks);

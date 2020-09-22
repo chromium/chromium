@@ -12,7 +12,7 @@ namespace blink {
 
 // The work queue is a list of work tasks which will either produce fragment(s)
 // or intrinsic-size(s) for the custom-layout class.
-typedef Vector<CustomLayoutWorkTask, 4> CustomLayoutWorkQueue;
+typedef HeapVector<Member<CustomLayoutWorkTask>, 4> CustomLayoutWorkQueue;
 
 // This heap allocated class is used to indicate which custom-layout (heap)
 // objects are still valid.

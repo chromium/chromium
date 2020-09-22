@@ -42,7 +42,9 @@ ScriptPromise CustomLayoutChild::intrinsicSizes(
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   CustomLayoutScope::Current()->Queue()->emplace_back(
-      this, token_, resolver, CustomLayoutWorkTask::TaskType::kIntrinsicSizes);
+      MakeGarbageCollected<CustomLayoutWorkTask>(
+          this, token_, resolver,
+          CustomLayoutWorkTask::TaskType::kIntrinsicSizes));
   return resolver->Promise();
 }
 
@@ -81,8 +83,9 @@ ScriptPromise CustomLayoutChild::layoutNextFragment(
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   CustomLayoutScope::Current()->Queue()->emplace_back(
-      this, token_, resolver, options, std::move(constraint_data),
-      CustomLayoutWorkTask::TaskType::kLayoutFragment);
+      MakeGarbageCollected<CustomLayoutWorkTask>(
+          this, token_, resolver, options, std::move(constraint_data),
+          CustomLayoutWorkTask::TaskType::kLayoutFragment));
   return resolver->Promise();
 }
 

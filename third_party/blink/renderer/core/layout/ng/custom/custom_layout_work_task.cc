@@ -40,6 +40,13 @@ CustomLayoutWorkTask::CustomLayoutWorkTask(
 
 CustomLayoutWorkTask::~CustomLayoutWorkTask() = default;
 
+void CustomLayoutWorkTask::Trace(Visitor* visitor) const {
+  visitor->Trace(child_);
+  visitor->Trace(token_);
+  visitor->Trace(resolver_);
+  visitor->Trace(options_);
+}
+
 void CustomLayoutWorkTask::Run(
     const NGConstraintSpace& parent_space,
     const ComputedStyle& parent_style,
