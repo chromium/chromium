@@ -33,7 +33,6 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -126,7 +125,7 @@ public class AndroidSyncSettingsTest {
     private String mAuthority = AndroidSyncSettings.getContractAuthority();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         FeatureList.setTestCanUseDefaultsForTesting();
 
         mSyncContentResolverDelegate = new CountingMockSyncContentResolverDelegate();
@@ -139,7 +138,7 @@ public class AndroidSyncSettingsTest {
         fakeAccountManagerFacade.addAccount(mAlternateAccount);
     }
 
-    private void createAndroidSyncSettings() throws TimeoutException {
+    private void createAndroidSyncSettings() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mAndroidSyncSettings = new AndroidSyncSettings(mSyncContentResolverDelegate, mAccount);
             AndroidSyncSettings.overrideForTests(mAndroidSyncSettings);
@@ -164,14 +163,14 @@ public class AndroidSyncSettingsTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         AccountManagerFacadeProvider.resetInstanceForTests();
     }
 
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testAccountInitialization() throws TimeoutException {
+    public void testAccountInitialization() {
         createAndroidSyncSettings();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -194,7 +193,7 @@ public class AndroidSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testToggleMasterSyncFromSettings() throws TimeoutException {
+    public void testToggleMasterSyncFromSettings() {
         createAndroidSyncSettings();
 
         mSyncContentResolverDelegate.setMasterSyncAutomatically(true);
@@ -211,7 +210,7 @@ public class AndroidSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testToggleChromeSyncFromSettings() throws TimeoutException {
+    public void testToggleChromeSyncFromSettings() {
         createAndroidSyncSettings();
 
         mSyncContentResolverDelegate.setMasterSyncAutomatically(true);
@@ -246,7 +245,7 @@ public class AndroidSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testToggleAccountSyncFromApplication() throws TimeoutException {
+    public void testToggleAccountSyncFromApplication() {
         createAndroidSyncSettings();
 
         setMasterSyncAllowsChromeSync();
@@ -261,7 +260,7 @@ public class AndroidSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testToggleSyncabilityForMultipleAccounts() throws TimeoutException {
+    public void testToggleSyncabilityForMultipleAccounts() {
         createAndroidSyncSettings();
 
         setMasterSyncAllowsChromeSync();
@@ -288,7 +287,7 @@ public class AndroidSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testSyncSettingsCaching() throws TimeoutException {
+    public void testSyncSettingsCaching() {
         createAndroidSyncSettings();
 
         setMasterSyncAllowsChromeSync();
@@ -335,7 +334,7 @@ public class AndroidSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testAndroidSyncSettingsPostsNotifications() throws TimeoutException {
+    public void testAndroidSyncSettingsPostsNotifications() {
         createAndroidSyncSettings();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -378,7 +377,7 @@ public class AndroidSyncSettingsTest {
     @SmallTest
     @Feature({"Sync"})
     @Features.DisableFeatures(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
-    public void testIsSyncableOnSigninAndNotOnSignout() throws TimeoutException {
+    public void testIsSyncableOnSigninAndNotOnSignout() {
         createAndroidSyncSettings();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -402,7 +401,7 @@ public class AndroidSyncSettingsTest {
     @SmallTest
     @Feature({"Sync"})
     @Features.DisableFeatures(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
-    public void testSyncableIsAlwaysSetWhenSignedIn() throws TimeoutException {
+    public void testSyncableIsAlwaysSetWhenSignedIn() {
         // Set up bad state where an account is stored as not syncable.
         mSyncContentResolverDelegate.setIsSyncable(mAccount, mAuthority, 0);
         // When the account is signed-in, AndroidSyncSettings makes sure it is set
@@ -417,7 +416,7 @@ public class AndroidSyncSettingsTest {
     @Features.EnableFeatures(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
     // TODO(crbug.com/1105795): Remove this test after DecoupleSyncFromAndroidMasterSync has
     // launched, since testToggleChromeSyncFromSettings() covers the same functionality.
-    public void testSyncStateDoesNotDependOnMasterSync() throws TimeoutException {
+    public void testSyncStateDoesNotDependOnMasterSync() {
         mSyncContentResolverDelegate.setMasterSyncAutomatically(false);
         createAndroidSyncSettings();
 
