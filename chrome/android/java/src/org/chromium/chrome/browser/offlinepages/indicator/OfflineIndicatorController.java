@@ -241,7 +241,7 @@ public class OfflineIndicatorController implements ConnectivityDetector.Observer
         // If this is the first time to show offline indicator, show it. Otherwise, it will only
         // be shown if the user has been continuously online for the required duration, then goes
         // back to being offline.
-        // TODO(jianli): keep these values in shared prefernces. (http://crbug.com/879725)
+        // TODO(jianli): keep these values in shared preferences. (http://crbug.com/879725)
         if (mHasOfflineIndicatorShownSinceActivityResumed && !mWasOnlineForRequiredDuration) {
             return;
         }
