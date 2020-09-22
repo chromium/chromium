@@ -51,11 +51,11 @@ void UrlIconSource::StartIconFetch() {
           semantics {
             sender: "URL Icon Source"
             description:
-              "Chrome OS downloads an icon for a web store result."
+              "Chrome OS downloads an app icon for display in the app list."
             trigger:
-              "When a user initiates a web store search and views results. "
+              "An icon/image needs to be downloaded to be displayed."
             data:
-              "URL of the icon. "
+              "URL of the icon/image. "
               "No user information is sent."
             destination: WEBSITE
           }
@@ -99,11 +99,8 @@ void UrlIconSource::OnSimpleLoaderComplete(
 }
 
 void UrlIconSource::OnImageDecoded(const SkBitmap& decoded_image) {
-  icon_ = gfx::ImageSkiaOperations::CreateResizedImage(
-      gfx::ImageSkia::CreateFrom1xBitmap(decoded_image),
-      skia::ImageOperations::RESIZE_BEST,
-      gfx::Size(icon_size_, icon_size_));
-
+  const float scale = decoded_image.width() / icon_size_;
+  icon_ = gfx::ImageSkia(gfx::ImageSkiaRep(decoded_image, scale));
   icon_loaded_callback_.Run();
 }
 

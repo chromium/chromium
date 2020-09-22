@@ -169,11 +169,19 @@ void RecordUmaResponseParseResult(arc::mojom::AppReinstallState result) {
   UMA_HISTOGRAM_ENUMERATION("Apps.AppListRecommendedResponse", result);
 }
 
+// Limits icon size to be downloaded with FIFE. The input |icon_dimension| is in
+// dip and the FIFE requires pixel value. Thus, we need to multiply
+// |icon_dimension| with the maximum device scale factor to avoid potential
+// issues.
 std::string LimitIconSizeWithFife(const std::string& icon_url,
                                   int icon_dimension) {
-  // We append a suffix to icon url
   DCHECK_GT(icon_dimension, 0);
-  return base::StrCat({icon_url, "=s", base::NumberToString(icon_dimension)});
+  // Maximum device scale factor (DSF).
+  static const int kMaxDeviceScaleFactor = 3;
+  // We append a suffix to icon url
+  return base::StrCat(
+      {icon_url, "=s",
+       base::NumberToString(icon_dimension * kMaxDeviceScaleFactor)});
 }
 
 }  // namespace

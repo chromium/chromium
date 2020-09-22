@@ -499,6 +499,38 @@ class ColorMaskSource : public gfx::ImageSkiaSource {
   DISALLOW_COPY_AND_ASSIGN(ColorMaskSource);
 };
 
+// Image source to create an image with a circle background.
+class ImageWithCircleBackgroundSource : public gfx::CanvasImageSource {
+ public:
+  ImageWithCircleBackgroundSource(int radius,
+                                  SkColor color,
+                                  const gfx::ImageSkia& image)
+      : gfx::CanvasImageSource(gfx::Size(radius * 2, radius * 2)),
+        radius_(radius),
+        color_(color),
+        image_(image) {}
+
+  ~ImageWithCircleBackgroundSource() override = default;
+
+  // gfx::CanvasImageSource:
+  void Draw(gfx::Canvas* canvas) override {
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setColor(color_);
+    canvas->DrawCircle(gfx::Point(radius_, radius_), radius_, flags);
+    const int x = radius_ - image_.width() / 2;
+    const int y = radius_ - image_.height() / 2;
+    canvas->DrawImageInt(image_, x, y);
+  }
+
+ private:
+  const int radius_;
+  const SkColor color_;
+  const gfx::ImageSkia image_;
+
+  DISALLOW_COPY_AND_ASSIGN(ImageWithCircleBackgroundSource);
+};
 }  // namespace
 
 // static
@@ -663,5 +695,15 @@ ImageSkia ImageSkiaOperations::CreateColorMask(const ImageSkia& image,
 
   return ImageSkia(std::make_unique<ColorMaskSource>(image, color),
                    image.size());
+}
+
+ImageSkia ImageSkiaOperations::CreateImageWithCircleBackground(
+    int radius,
+    SkColor color,
+    const ImageSkia& image) {
+  DCHECK_GE(radius * 2, image.width());
+  DCHECK_GE(radius * 2, image.height());
+  return gfx::CanvasImageSource::MakeImageSkia<ImageWithCircleBackgroundSource>(
+      radius, color, image);
 }
 }  // namespace gfx
