@@ -2546,9 +2546,6 @@ extern const char kVaapiWebPImageDecodeAccelerationDescription[];
 extern const char kVirtualKeyboardBorderedKeyName[];
 extern const char kVirtualKeyboardBorderedKeyDescription[];
 
-extern const char kVirtualKeyboardFloatingResizableName[];
-extern const char kVirtualKeyboardFloatingResizableDescription[];
-
 extern const char kVirtualKeyboardName[];
 extern const char kVirtualKeyboardDescription[];
 

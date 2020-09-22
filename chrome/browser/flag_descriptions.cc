@@ -4375,11 +4375,6 @@ const char kVirtualKeyboardBorderedKeyName[] = "Virtual Keyboard Bordered Key";
 const char kVirtualKeyboardBorderedKeyDescription[] =
     "Show virtual keyboard with bordered key";
 
-const char kVirtualKeyboardFloatingResizableName[] =
-    "Virtual Keyboard Resizable Mode";
-const char kVirtualKeyboardFloatingResizableDescription[] =
-    "Show virtual keyboard with resizable floating mode";
-
 const char kVirtualKeyboardName[] = "Virtual Keyboard";
 const char kVirtualKeyboardDescription[] =
     "Always show virtual keyboard regardless of having a physical keyboard "
