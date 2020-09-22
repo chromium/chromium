@@ -65,6 +65,8 @@ struct Environment {
                           TestTimeouts::Initialize(),
                           base::test::TaskEnvironment::MainThreadType::UI)) {
     logging::SetMinLogLevel(logging::LOG_FATAL);
+
+    mojo::core::Init();
   }
 
   base::test::TaskEnvironment task_environment;
@@ -76,7 +78,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
   FuzzedDataProvider data_provider(data, size);
 
-  mojo::core::Init();
   base::CommandLine::Init(0, nullptr);
 
   std::vector<uint32_t> known_fourccs{
