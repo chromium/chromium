@@ -598,6 +598,9 @@ class TabStrip : public views::AccessiblePaneView,
   // Calculates the width that can be occupied by the tabs in the strip.
   int CalculateAvailableWidthForTabs();
 
+  // Returns the total width available for the TabStrip's use.
+  int GetAvailableWidthForTabStrip();
+
   // Starts various types of TabStrip animations.
   void StartResizeLayoutAnimation();
   void StartPinnedTabAnimation();
