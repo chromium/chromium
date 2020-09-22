@@ -64,28 +64,31 @@ FinishedRecording FinishRecording(
   TRACE_EVENT_BEGIN0("paint_preview", "ParseGlyphsAndLinks");
   ParseGlyphsAndLinks(recording.get(), tracker.get());
   TRACE_EVENT_END0("paint_preview", "ParseGlyphsAndLinks");
-  size_t serialized_size = 0;
 
   TRACE_EVENT0("paint_preview", "SerializeAsSkPicture");
 
-  auto skp = PaintRecordToSkPicture(recording, tracker.get(), bounds);
-  if (!skp) {
-    out.status = mojom::PaintPreviewStatus::kCaptureFailed;
-    return out;
-  }
-
   bool success = false;
-  switch (persistence) {
-    case RecordingPersistence::kFileSystem:
-      success = RecordToFile(std::move(skp_file), skp, tracker.get(),
-                             max_capture_size, &serialized_size);
-      break;
-    case RecordingPersistence::kMemoryBuffer:
-      base::Optional<mojo_base::BigBuffer> buffer = RecordToBuffer(
-          skp, tracker.get(), max_capture_size, &serialized_size);
-      success = buffer.has_value();
-      out.response->skp.emplace(std::move(buffer.value()));
-      break;
+  size_t serialized_size = 0;
+  {
+    auto skp = PaintRecordToSkPicture(recording, tracker.get(), bounds);
+    recording.reset();
+    if (!skp) {
+      out.status = mojom::PaintPreviewStatus::kCaptureFailed;
+      return out;
+    }
+
+    switch (persistence) {
+      case RecordingPersistence::kFileSystem:
+        success = RecordToFile(std::move(skp_file), skp, tracker.get(),
+                               max_capture_size, &serialized_size);
+        break;
+      case RecordingPersistence::kMemoryBuffer:
+        base::Optional<mojo_base::BigBuffer> buffer = RecordToBuffer(
+            skp, tracker.get(), max_capture_size, &serialized_size);
+        success = buffer.has_value();
+        out.response->skp.emplace(std::move(buffer.value()));
+        break;
+    }
   }
 
   if (!success) {
@@ -93,7 +96,7 @@ FinishedRecording FinishRecording(
     return out;
   }
 
-  BuildResponse(tracker.get(), out.response.get());
+  BuildResponse(tracker.get(), out.response.get(), /*log=*/true);
   out.response->serialized_size = serialized_size;
   return out;
 }
