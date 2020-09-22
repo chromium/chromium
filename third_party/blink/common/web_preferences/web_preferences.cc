@@ -41,11 +41,6 @@ STATIC_ASSERT_ENUM(ui::POINTER_TYPE_FINE, blink::kPointerTypeFine);
 STATIC_ASSERT_ENUM(ui::HOVER_TYPE_NONE, blink::kHoverTypeNone);
 STATIC_ASSERT_ENUM(ui::HOVER_TYPE_HOVER, blink::kHoverTypeHover);
 
-STATIC_ASSERT_ENUM(ViewportStyle::DEFAULT, blink::WebViewportStyle::kDefault);
-STATIC_ASSERT_ENUM(ViewportStyle::MOBILE, blink::WebViewportStyle::kMobile);
-STATIC_ASSERT_ENUM(ViewportStyle::TELEVISION,
-                   blink::WebViewportStyle::kTelevision);
-
 WebPreferences::WebPreferences()
     : default_font_size(16),
       default_fixed_font_size(13),
@@ -137,13 +132,13 @@ WebPreferences::WebPreferences()
 #if defined(OS_ANDROID)
       viewport_meta_enabled(true),
       shrinks_viewport_contents_to_fit(true),
-      viewport_style(ViewportStyle::MOBILE),
+      viewport_style(web_pref::WebViewportStyle::kMobile),
       always_show_context_menu_on_touch(false),
       smooth_scroll_for_find_enabled(true),
 #else
       viewport_meta_enabled(false),
       shrinks_viewport_contents_to_fit(false),
-      viewport_style(ViewportStyle::DEFAULT),
+      viewport_style(web_pref::WebViewportStyle::kDefault),
       always_show_context_menu_on_touch(true),
       smooth_scroll_for_find_enabled(false),
 #endif

@@ -346,7 +346,7 @@ class WebFrameTest : public testing::Test {
     settings->SetViewportEnabled(true);
     settings->SetMainFrameResizesAreOrientationChanges(true);
     settings->SetShrinksViewportContentToFit(true);
-    settings->SetViewportStyle(WebViewportStyle::kMobile);
+    settings->SetViewportStyle(web_pref::WebViewportStyle::kMobile);
   }
 
   static void ConfigureLoadsImagesAutomatically(WebSettings* settings) {
@@ -11656,7 +11656,7 @@ class WebFrameSimTest : public SimTest {
     WebView().GetPage()->GetSettings().SetMainFrameResizesAreOrientationChanges(
         true);
     WebView().GetPage()->GetSettings().SetViewportStyle(
-        WebViewportStyle::kMobile);
+        web_pref::WebViewportStyle::kMobile);
     WebView().GetSettings()->SetAutoZoomFocusedNodeToLegibleScale(true);
     WebView().GetSettings()->SetShrinksViewportContentToFit(true);
     WebView().SetDefaultPageScaleLimits(0.25f, 5);

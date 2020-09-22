@@ -665,7 +665,7 @@ void WebSettingsImpl::SetV8CacheOptions(mojom::blink::V8CacheOptions options) {
   settings_->SetV8CacheOptions(options);
 }
 
-void WebSettingsImpl::SetViewportStyle(WebViewportStyle style) {
+void WebSettingsImpl::SetViewportStyle(web_pref::WebViewportStyle style) {
   dev_tools_emulator_->SetViewportStyle(style);
 }
 

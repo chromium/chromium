@@ -69,9 +69,9 @@ IPC_ENUM_TRAITS_MIN_MAX_VALUE(ui::HoverType,
 IPC_ENUM_TRAITS_MIN_MAX_VALUE(blink::web_pref::ImageAnimationPolicy,
                               blink::web_pref::kImageAnimationPolicyAllowed,
                               blink::web_pref::kImageAnimationPolicyNoAnimation)
-IPC_ENUM_TRAITS_MIN_MAX_VALUE(blink::web_pref::ViewportStyle,
-                              blink::web_pref::ViewportStyle::DEFAULT,
-                              blink::web_pref::ViewportStyle::LAST)
+IPC_ENUM_TRAITS_MIN_MAX_VALUE(blink::web_pref::WebViewportStyle,
+                              blink::web_pref::WebViewportStyle::kDefault,
+                              blink::web_pref::WebViewportStyle::kTelevision)
 IPC_ENUM_TRAITS_MIN_MAX_VALUE(
     blink::web_pref::AutoplayPolicy,
     blink::web_pref::AutoplayPolicy::kNoUserGestureRequired,

@@ -18,6 +18,7 @@
 #include "third_party/blink/public/common/web_preferences/autoplay_policy.h"
 #include "third_party/blink/public/common/web_preferences/editing_behavior_types.h"
 #include "third_party/blink/public/common/web_preferences/image_animation_policy.h"
+#include "third_party/blink/public/common/web_preferences/web_viewport_style.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-forward.h"
 #include "ui/base/pointer/pointer_device.h"
 #include "url/gurl.h"
@@ -31,8 +32,6 @@ namespace web_pref {
 // Map of ISO 15924 four-letter script code to font family.  For example,
 // "Arab" to "My Arabic Font".
 typedef std::map<std::string, base::string16> ScriptFontFamilyMap;
-
-enum class ViewportStyle { DEFAULT, MOBILE, TELEVISION, LAST = TELEVISION };
 
 // The ISO 15924 script code for undetermined script aka Common. It's the
 // default used on WebKit's side to get/set a font setting when no script is
@@ -147,7 +146,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // viewport_enabled is on.
   bool shrinks_viewport_contents_to_fit;
 
-  ViewportStyle viewport_style;
+  web_pref::WebViewportStyle viewport_style;
   bool always_show_context_menu_on_touch;
   bool smooth_scroll_for_find_enabled;
   bool main_frame_resizes_are_orientation_changes;

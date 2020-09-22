@@ -2121,8 +2121,7 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetAutoplayPolicy(prefs.autoplay_policy);
   settings->SetViewportEnabled(prefs.viewport_enabled);
   settings->SetViewportMetaEnabled(prefs.viewport_meta_enabled);
-  settings->SetViewportStyle(
-      static_cast<blink::WebViewportStyle>(prefs.viewport_style));
+  settings->SetViewportStyle(prefs.viewport_style);
 
   settings->SetLoadWithOverviewMode(prefs.initialize_at_minimum_page_scale);
   settings->SetMainFrameResizesAreOrientationChanges(

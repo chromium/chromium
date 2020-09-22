@@ -85,17 +85,17 @@ void ViewportStyleResolver::Reset() {
 void ViewportStyleResolver::CollectViewportRulesFromUASheets() {
   CSSDefaultStyleSheets& default_style_sheets =
       CSSDefaultStyleSheets::Instance();
-  WebViewportStyle viewport_style =
+  web_pref::WebViewportStyle viewport_style =
       document_->GetSettings() ? document_->GetSettings()->GetViewportStyle()
-                               : WebViewportStyle::kDefault;
+                               : web_pref::WebViewportStyle::kDefault;
   StyleSheetContents* viewport_contents = nullptr;
   switch (viewport_style) {
-    case WebViewportStyle::kDefault:
+    case web_pref::WebViewportStyle::kDefault:
       break;
-    case WebViewportStyle::kMobile:
+    case web_pref::WebViewportStyle::kMobile:
       viewport_contents = default_style_sheets.EnsureMobileViewportStyleSheet();
       break;
-    case WebViewportStyle::kTelevision:
+    case web_pref::WebViewportStyle::kTelevision:
       viewport_contents =
           default_style_sheets.EnsureTelevisionViewportStyleSheet();
       break;

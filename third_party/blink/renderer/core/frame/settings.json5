@@ -715,9 +715,9 @@
     // used by content embedders to specify custom style on certain platforms.
     {
       name: "viewportStyle",
-      initial: "WebViewportStyle::kDefault",
+      initial: "web_pref::WebViewportStyle::kDefault",
       invalidate: "ViewportRule",
-      type: "WebViewportStyle",
+      type: "web_pref::WebViewportStyle",
     },
 
     // Automatic track selection is performed based on user preference for track kind specified

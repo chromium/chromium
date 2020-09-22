@@ -167,11 +167,11 @@ void InternalSettings::setViewportStyle(const String& style,
                                         ExceptionState& exception_state) {
   InternalSettingsGuardForSettings();
   if (EqualIgnoringASCIICase(style, "default"))
-    GetSettings()->SetViewportStyle(WebViewportStyle::kDefault);
+    GetSettings()->SetViewportStyle(web_pref::WebViewportStyle::kDefault);
   else if (EqualIgnoringASCIICase(style, "mobile"))
-    GetSettings()->SetViewportStyle(WebViewportStyle::kMobile);
+    GetSettings()->SetViewportStyle(web_pref::WebViewportStyle::kMobile);
   else if (EqualIgnoringASCIICase(style, "television"))
-    GetSettings()->SetViewportStyle(WebViewportStyle::kTelevision);
+    GetSettings()->SetViewportStyle(web_pref::WebViewportStyle::kTelevision);
   else
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
