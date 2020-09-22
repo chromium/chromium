@@ -39,6 +39,7 @@ import("//third_party/widevine/cdm/widevine.gni")
 import("//ui/base/ui_features.gni")
 import("//ui/gl/features.gni")
 import("//ui/views/features.gni")
+import("//ui/webui/webui_features.gni")
 import("//v8/gni/v8.gni")
 
 # This file depends on the legacy global sources assignment filter. It should
@@ -3043,6 +3044,11 @@ if (!is_android) {
         "../browser/ui/webui/tab_strip/chrome_content_browser_client_tab_strip_part_browsertest.cc",
         "../browser/ui/webui/tab_strip/tab_strip_ui_browsertest.cc",
       ]
+    }
+
+    if (enable_tab_search) {
+      sources +=
+          [ "../browser/ui/webui/tab_search/tab_search_ui_browsertest.cc" ]
     }
 
     if (enable_spellcheck) {
