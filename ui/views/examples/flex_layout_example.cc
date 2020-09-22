@@ -32,55 +32,6 @@ FlexLayoutExample::FlexLayoutExample() : LayoutExampleBase("Flex Layout") {}
 
 FlexLayoutExample::~FlexLayoutExample() = default;
 
-void FlexLayoutExample::CreateAdditionalControls(int vertical_pos) {
-  static const char* const orientation_values[2] = {"Horizontal", "Vertical"};
-  static const char* const main_axis_values[3] = {"Start", "Center", "End"};
-  static const char* const cross_axis_values[4] = {"Stretch", "Start", "Center",
-                                                   "End"};
-
-  orientation_ = CreateAndAddCombobox(base::ASCIIToUTF16("Orientation"),
-                                      orientation_values, 2, &vertical_pos);
-  main_axis_alignment_ = CreateAndAddCombobox(
-      base::ASCIIToUTF16("Main axis"), main_axis_values, 3, &vertical_pos);
-  cross_axis_alignment_ = CreateAndAddCombobox(
-      base::ASCIIToUTF16("Cross axis"), cross_axis_values, 4, &vertical_pos);
-
-  CreateMarginsTextFields(base::ASCIIToUTF16("Interior margin"),
-                          &interior_margin_, &vertical_pos);
-
-  CreateMarginsTextFields(base::ASCIIToUTF16("Default margins"),
-                          &default_child_margins_, &vertical_pos);
-
-  collapse_margins_ = CreateAndAddCheckbox(
-      base::ASCIIToUTF16("Collapse margins"), &vertical_pos);
-
-  ignore_default_main_axis_margins_ = CreateAndAddCheckbox(
-      base::ASCIIToUTF16("Ignore main axis margins"), &vertical_pos);
-
-  layout_ = layout_panel()->SetLayoutManager(std::make_unique<FlexLayout>());
-}
-
-void FlexLayoutExample::OnPerformAction(Combobox* combobox) {
-  static const LayoutOrientation orientations[2] = {
-      LayoutOrientation::kHorizontal, LayoutOrientation::kVertical};
-  static const LayoutAlignment main_axis_alignments[3] = {
-      LayoutAlignment::kStart, LayoutAlignment::kCenter, LayoutAlignment::kEnd};
-  static const LayoutAlignment cross_axis_alignments[4] = {
-      LayoutAlignment::kStretch, LayoutAlignment::kStart,
-      LayoutAlignment::kCenter, LayoutAlignment::kEnd};
-
-  if (combobox == orientation_) {
-    layout_->SetOrientation(orientations[combobox->GetSelectedIndex()]);
-  } else if (combobox == main_axis_alignment_) {
-    layout_->SetMainAxisAlignment(
-        main_axis_alignments[combobox->GetSelectedIndex()]);
-  } else if (combobox == cross_axis_alignment_) {
-    layout_->SetCrossAxisAlignment(
-        cross_axis_alignments[combobox->GetSelectedIndex()]);
-  }
-  RefreshLayoutPanel(false);
-}
-
 void FlexLayoutExample::ContentsChanged(Textfield* sender,
                                         const base::string16& new_contents) {
   layout_->SetInteriorMargin(
@@ -100,14 +51,51 @@ void FlexLayoutExample::ButtonPressedImpl(Button* sender) {
   RefreshLayoutPanel(false);
 }
 
+void FlexLayoutExample::CreateAdditionalControls() {
+  constexpr const char* kOrientationValues[2] = {"Horizontal", "Vertical"};
+  orientation_ = CreateAndAddCombobox(
+      base::ASCIIToUTF16("Orientation"), kOrientationValues,
+      base::size(kOrientationValues),
+      base::BindRepeating(&FlexLayoutExample::OrientationChanged,
+                          base::Unretained(this)));
+
+  constexpr const char* kMainAxisValues[3] = {"Start", "Center", "End"};
+  main_axis_alignment_ = CreateAndAddCombobox(
+      base::ASCIIToUTF16("Main axis"), kMainAxisValues,
+      base::size(kMainAxisValues),
+      base::BindRepeating(&FlexLayoutExample::MainAxisAlignmentChanged,
+                          base::Unretained(this)));
+
+  constexpr const char* kCrossAxisValues[4] = {"Stretch", "Start", "Center",
+                                               "End"};
+  cross_axis_alignment_ = CreateAndAddCombobox(
+      base::ASCIIToUTF16("Cross axis"), kCrossAxisValues,
+      base::size(kCrossAxisValues),
+      base::BindRepeating(&FlexLayoutExample::CrossAxisAlignmentChanged,
+                          base::Unretained(this)));
+
+  CreateMarginsTextFields(base::ASCIIToUTF16("Interior margin"),
+                          &interior_margin_);
+
+  CreateMarginsTextFields(base::ASCIIToUTF16("Default margins"),
+                          &default_child_margins_);
+
+  collapse_margins_ =
+      CreateAndAddCheckbox(base::ASCIIToUTF16("Collapse margins"));
+
+  ignore_default_main_axis_margins_ =
+      CreateAndAddCheckbox(base::ASCIIToUTF16("Ignore main axis margins"));
+
+  layout_ = layout_panel()->SetLayoutManager(std::make_unique<FlexLayout>());
+}
+
 void FlexLayoutExample::UpdateLayoutManager() {
   for (View* child : layout_panel()->children()) {
-    ChildPanel* panel = static_cast<ChildPanel*>(child);
-    int flex = panel->GetFlex();
+    const int flex = static_cast<ChildPanel*>(child)->GetFlex();
     if (flex < 0)
-      panel->ClearProperty(views::kFlexBehaviorKey);
+      child->ClearProperty(views::kFlexBehaviorKey);
     else
-      panel->SetProperty(views::kFlexBehaviorKey, GetFlexSpecification(flex));
+      child->SetProperty(views::kFlexBehaviorKey, GetFlexSpecification(flex));
   }
 }
 
@@ -119,6 +107,30 @@ FlexSpecification FlexLayoutExample::GetFlexSpecification(int weight) const {
              : FlexSpecification(MinimumFlexSizeRule::kPreferredSnapToZero,
                                  MaximumFlexSizeRule::kPreferred)
                    .WithWeight(0);
+}
+
+void FlexLayoutExample::OrientationChanged() {
+  constexpr LayoutOrientation kOrientations[2] = {
+      LayoutOrientation::kHorizontal, LayoutOrientation::kVertical};
+  layout_->SetOrientation(kOrientations[orientation_->GetSelectedIndex()]);
+  RefreshLayoutPanel(false);
+}
+
+void FlexLayoutExample::MainAxisAlignmentChanged() {
+  constexpr LayoutAlignment kMainAxisAlignments[3] = {
+      LayoutAlignment::kStart, LayoutAlignment::kCenter, LayoutAlignment::kEnd};
+  layout_->SetMainAxisAlignment(
+      kMainAxisAlignments[main_axis_alignment_->GetSelectedIndex()]);
+  RefreshLayoutPanel(false);
+}
+
+void FlexLayoutExample::CrossAxisAlignmentChanged() {
+  constexpr LayoutAlignment kCrossAxisAlignments[4] = {
+      LayoutAlignment::kStretch, LayoutAlignment::kStart,
+      LayoutAlignment::kCenter, LayoutAlignment::kEnd};
+  layout_->SetCrossAxisAlignment(
+      kCrossAxisAlignments[cross_axis_alignment_->GetSelectedIndex()]);
+  RefreshLayoutPanel(false);
 }
 
 }  // namespace examples

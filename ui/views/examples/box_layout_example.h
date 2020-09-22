@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_BOX_LAYOUT_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_BOX_LAYOUT_EXAMPLE_H_
 
-#include "base/macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/examples/layout_example_base.h"
@@ -22,23 +21,23 @@ namespace examples {
 class VIEWS_EXAMPLES_EXPORT BoxLayoutExample : public LayoutExampleBase {
  public:
   BoxLayoutExample();
+  BoxLayoutExample(const BoxLayoutExample&) = delete;
+  BoxLayoutExample& operator=(const BoxLayoutExample&) = delete;
   ~BoxLayoutExample() override;
 
  private:
+  // LayoutExampleBase:
+  void ContentsChanged(Textfield* sender,
+                       const base::string16& new_contents) override;
+  void ButtonPressedImpl(Button* sender) override;
+  void CreateAdditionalControls() override;
+  void UpdateLayoutManager() override;
+
   // Set the border insets on the current BoxLayout instance.
   void UpdateBorderInsets();
 
-  // LayoutExampleBase:
-  void OnPerformAction(Combobox* combobox) override;
-
-  // TextfieldController:
-  void ContentsChanged(Textfield* sender,
-                       const base::string16& new_contents) override;
-
-  // LayoutExampleBase:
-  void ButtonPressedImpl(Button* sender) override;
-  void CreateAdditionalControls(int vertical_start_pos) override;
-  void UpdateLayoutManager() override;
+  void MainAxisAlignmentChanged();
+  void CrossAxisAlignmentChanged();
 
   BoxLayout* layout_ = nullptr;
   Combobox* orientation_ = nullptr;
@@ -49,8 +48,6 @@ class VIEWS_EXAMPLES_EXPORT BoxLayoutExample : public LayoutExampleBase {
   Textfield* min_cross_axis_size_ = nullptr;
   InsetTextfields border_insets_;
   Checkbox* collapse_margins_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(BoxLayoutExample);
 };
 
 }  // namespace examples

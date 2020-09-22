@@ -41,21 +41,16 @@ constexpr gfx::Size kLayoutExampleDefaultChildSize(180, 90);
 class FullPanel : public View {
  public:
   FullPanel() = default;
+  FullPanel(const FullPanel&) = delete;
+  FullPanel& operator=(const FullPanel&) = delete;
   ~FullPanel() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FullPanel);
 };
 
 std::unique_ptr<Textfield> CreateCommonTextfield(
-    int vertical_pos,
-    int horizontal_pos,
     TextfieldController* container) {
   auto textfield = std::make_unique<Textfield>();
-  textfield->SetPosition(gfx::Point(horizontal_pos, vertical_pos));
   textfield->SetDefaultWidthInChars(3);
   textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_NUMBER);
-  textfield->SizeToPreferredSize();
   textfield->SetText(base::ASCIIToUTF16("0"));
   textfield->set_controller(container);
   return textfield;
@@ -65,28 +60,20 @@ std::unique_ptr<Textfield> CreateCommonTextfield(
 
 LayoutExampleBase::ChildPanel::ChildPanel(LayoutExampleBase* example)
     : example_(example) {
-  SetBorder(CreateSolidBorder(1, SK_ColorGRAY));
   margin_.left = CreateTextfield();
   margin_.top = CreateTextfield();
   margin_.right = CreateTextfield();
   margin_.bottom = CreateTextfield();
   flex_ = CreateTextfield();
-  flex_->SetText(base::ASCIIToUTF16(""));
+  flex_->SetText(base::string16());
 }
 
 LayoutExampleBase::ChildPanel::~ChildPanel() = default;
 
-bool LayoutExampleBase::ChildPanel::OnMousePressed(
-    const ui::MouseEvent& event) {
-  if (event.IsOnlyLeftMouseButton())
-    SetSelected(true);
-  return true;
-}
-
 void LayoutExampleBase::ChildPanel::Layout() {
-  const int kSpacing = 2;
+  constexpr int kSpacing = 2;
   if (selected_) {
-    gfx::Rect client = GetContentsBounds();
+    const gfx::Rect client = GetContentsBounds();
     margin_.top->SetPosition(
         gfx::Point((client.width() - margin_.top->width()) / 2, kSpacing));
     margin_.left->SetPosition(
@@ -102,10 +89,17 @@ void LayoutExampleBase::ChildPanel::Layout() {
   }
 }
 
+bool LayoutExampleBase::ChildPanel::OnMousePressed(
+    const ui::MouseEvent& event) {
+  if (event.IsOnlyLeftMouseButton())
+    SetSelected(true);
+  return true;
+}
+
 void LayoutExampleBase::ChildPanel::SetSelected(bool value) {
   if (value != selected_) {
     selected_ = value;
-    SetBorder(CreateSolidBorder(1, selected_ ? SK_ColorBLACK : SK_ColorGRAY));
+    OnThemeChanged();
     if (selected_ && parent()) {
       for (View* child : parent()->children()) {
         if (child != this && child->GetGroup() == GetGroup())
@@ -122,11 +116,17 @@ void LayoutExampleBase::ChildPanel::SetSelected(bool value) {
   }
 }
 
-int LayoutExampleBase::ChildPanel::GetFlex() {
+int LayoutExampleBase::ChildPanel::GetFlex() const {
   int flex;
-  if (base::StringToInt(flex_->GetText(), &flex))
-    return flex;
-  return -1;
+  return base::StringToInt(flex_->GetText(), &flex) ? flex : -1;
+}
+
+void LayoutExampleBase::ChildPanel::OnThemeChanged() {
+  View::OnThemeChanged();
+  SetBorder(CreateSolidBorder(
+      1, GetNativeTheme()->GetSystemColor(
+             selected_ ? ui::NativeTheme::kColorId_FocusedBorderColor
+                       : ui::NativeTheme::kColorId_UnfocusedBorderColor)));
 }
 
 void LayoutExampleBase::ChildPanel::ContentsChanged(
@@ -134,9 +134,9 @@ void LayoutExampleBase::ChildPanel::ContentsChanged(
     const base::string16& new_contents) {
   const gfx::Insets margins = LayoutExampleBase::TextfieldsToInsets(margin_);
   if (!margins.IsEmpty())
-    this->SetProperty(kMarginsKey, margins);
+    SetProperty(kMarginsKey, margins);
   else
-    this->ClearProperty(kMarginsKey);
+    ClearProperty(kMarginsKey);
   example_->RefreshLayoutPanel(sender == flex_);
 }
 
@@ -154,141 +154,135 @@ LayoutExampleBase::LayoutExampleBase(const char* title) : ExampleBase(title) {}
 
 LayoutExampleBase::~LayoutExampleBase() = default;
 
+void LayoutExampleBase::RefreshLayoutPanel(bool update_layout) {
+  if (update_layout)
+    UpdateLayoutManager();
+  layout_panel_->InvalidateLayout();
+  layout_panel_->SchedulePaint();
+}
+
+gfx::Insets LayoutExampleBase::TextfieldsToInsets(
+    const InsetTextfields& textfields,
+    const gfx::Insets& default_insets) {
+  int top, left, bottom, right;
+  if (!base::StringToInt(textfields.top->GetText(), &top))
+    top = default_insets.top();
+  if (!base::StringToInt(textfields.left->GetText(), &left))
+    left = default_insets.left();
+  if (!base::StringToInt(textfields.bottom->GetText(), &bottom))
+    bottom = default_insets.bottom();
+  if (!base::StringToInt(textfields.right->GetText(), &right))
+    right = default_insets.right();
+  return gfx::Insets(std::max(0, top), std::max(0, left), std::max(0, bottom),
+                     std::max(0, right));
+}
+
 Combobox* LayoutExampleBase::CreateAndAddCombobox(
     const base::string16& label_text,
     const char* const* items,
     int count,
-    int* vertical_pos) {
-  auto label = std::make_unique<Label>(label_text);
-  label->SetPosition(gfx::Point(kLayoutExampleLeftPadding, *vertical_pos));
-  label->SizeToPreferredSize();
-
-  auto combo_box = std::make_unique<Combobox>(
-      std::make_unique<ExampleComboboxModel>(items, count));
-  combo_box->SetPosition(
-      gfx::Point(label->x() + label->width() + kLayoutExampleVerticalSpacing,
-                 *vertical_pos));
-  combo_box->SizeToPreferredSize();
-  combo_box->set_callback(base::BindRepeating(
-      &LayoutExampleBase::OnPerformAction, base::Unretained(this)));
-  label->SetSize(gfx::Size(label->width(), combo_box->height()));
-  control_panel_->AddChildView(std::move(label));
-
-  auto* combo_box_ptr = control_panel_->AddChildView(std::move(combo_box));
-  *vertical_pos += combo_box_ptr->height() + kLayoutExampleVerticalSpacing;
-  return combo_box_ptr;
+    base::RepeatingClosure combobox_callback) {
+  auto* const row = control_panel_->AddChildView(std::make_unique<View>());
+  row->SetLayoutManager(std::make_unique<BoxLayout>(
+      BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+      kLayoutExampleVerticalSpacing));
+  row->AddChildView(std::make_unique<Label>(label_text));
+  auto* const combobox = row->AddChildView(std::make_unique<Combobox>(
+      std::make_unique<ExampleComboboxModel>(items, count)));
+  combobox->set_closure(std::move(combobox_callback));
+  return combobox;
 }
 
 Textfield* LayoutExampleBase::CreateAndAddTextfield(
-    const base::string16& label_text,
-    int* vertical_pos) {
-  auto label = std::make_unique<Label>(label_text);
-  label->SetPosition(gfx::Point(kLayoutExampleLeftPadding, *vertical_pos));
-  label->SizeToPreferredSize();
-  int horizontal_pos =
-      label->x() + label->width() + kLayoutExampleVerticalSpacing;
-  std::unique_ptr<Textfield> textfield =
-      CreateCommonTextfield(*vertical_pos, horizontal_pos, this);
-  label->SetSize(gfx::Size(label->width(), textfield->height()));
-  control_panel_->AddChildView(std::move(label));
-  auto* textfield_ptr = control_panel_->AddChildView(std::move(textfield));
-  *vertical_pos += textfield_ptr->height() + kLayoutExampleVerticalSpacing;
-  return textfield_ptr;
+    const base::string16& label_text) {
+  auto* const row = control_panel_->AddChildView(std::make_unique<View>());
+  row->SetLayoutManager(std::make_unique<BoxLayout>(
+      BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+      kLayoutExampleVerticalSpacing));
+  row->AddChildView(std::make_unique<Label>(label_text));
+  return row->AddChildView(CreateCommonTextfield(this));
 }
 
 void LayoutExampleBase::CreateMarginsTextFields(
     const base::string16& label_text,
-    InsetTextfields* textfields,
-    int* vertical_pos) {
-  textfields->top = CreateAndAddTextfield(label_text, vertical_pos);
-  int center = textfields->top->x() + textfields->top->width() / 2;
-  int horizontal_pos = std::max(
-      0,
-      center - (textfields->top->width() + kLayoutExampleVerticalSpacing / 2));
-  textfields->left = CreateAndAddRawTextfield(*vertical_pos, &horizontal_pos);
-  textfields->right = CreateAndAddRawTextfield(*vertical_pos, &horizontal_pos);
-  *vertical_pos = textfields->left->y() + textfields->left->height() +
-                  kLayoutExampleVerticalSpacing;
-  horizontal_pos = textfields->top->x();
-  textfields->bottom = CreateAndAddRawTextfield(*vertical_pos, &horizontal_pos);
-  *vertical_pos = textfields->bottom->y() + textfields->bottom->height() +
-                  kLayoutExampleVerticalSpacing;
+    InsetTextfields* textfields) {
+  auto* const row = control_panel_->AddChildView(std::make_unique<View>());
+  row->SetLayoutManager(std::make_unique<BoxLayout>(
+      BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+      kLayoutExampleVerticalSpacing));
+  row->AddChildView(std::make_unique<Label>(label_text));
+
+  auto* const container = row->AddChildView(std::make_unique<View>());
+  container
+      ->SetLayoutManager(std::make_unique<BoxLayout>(
+          BoxLayout::Orientation::kVertical, gfx::Insets(),
+          kLayoutExampleVerticalSpacing))
+      ->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kCenter);
+  textfields->top = container->AddChildView(CreateCommonTextfield(this));
+  auto* const middle_row = container->AddChildView(std::make_unique<View>());
+  middle_row->SetLayoutManager(std::make_unique<BoxLayout>(
+      BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+      kLayoutExampleVerticalSpacing));
+  textfields->left = middle_row->AddChildView(CreateCommonTextfield(this));
+  textfields->right = middle_row->AddChildView(CreateCommonTextfield(this));
+  textfields->bottom = container->AddChildView(CreateCommonTextfield(this));
 }
 
 Checkbox* LayoutExampleBase::CreateAndAddCheckbox(
-    const base::string16& label_text,
-    int* vertical_pos) {
-  auto checkbox = std::make_unique<Checkbox>(label_text, this);
-  checkbox->SetPosition(gfx::Point(kLayoutExampleLeftPadding, *vertical_pos));
-  checkbox->SizeToPreferredSize();
-  auto* checkbox_ptr = control_panel_->AddChildView(std::move(checkbox));
-  *vertical_pos += checkbox_ptr->height() + kLayoutExampleVerticalSpacing;
-  return checkbox_ptr;
+    const base::string16& label_text) {
+  return control_panel_->AddChildView(
+      std::make_unique<Checkbox>(label_text, this));
 }
 
 void LayoutExampleBase::CreateExampleView(View* container) {
   container->SetLayoutManager(std::make_unique<FillLayout>());
   View* full_panel = container->AddChildView(std::make_unique<FullPanel>());
 
-  auto* manager = full_panel->SetLayoutManager(
+  auto* const manager = full_panel->SetLayoutManager(
       std::make_unique<BoxLayout>(views::BoxLayout::Orientation::kHorizontal));
   layout_panel_ = full_panel->AddChildView(std::make_unique<View>());
-  layout_panel_->SetBorder(CreateSolidBorder(1, SK_ColorLTGRAY));
+  layout_panel_->SetBorder(CreateSolidBorder(
+      1, layout_panel_->GetNativeTheme()->GetSystemColor(
+             ui::NativeTheme::kColorId_UnfocusedBorderColor)));
   manager->SetFlexForView(layout_panel_, 3);
+
   control_panel_ = full_panel->AddChildView(std::make_unique<View>());
   manager->SetFlexForView(control_panel_, 1);
+  control_panel_->SetLayoutManager(std::make_unique<BoxLayout>(
+      BoxLayout::Orientation::kVertical,
+      gfx::Insets(kLayoutExampleVerticalSpacing, kLayoutExampleLeftPadding),
+      kLayoutExampleVerticalSpacing));
 
-  int vertical_pos = kLayoutExampleVerticalSpacing;
-  int horizontal_pos = kLayoutExampleLeftPadding;
-  auto add_button = std::make_unique<MdTextButton>(
-      this, l10n_util::GetStringUTF16(IDS_LAYOUT_BASE_ADD_LABEL));
-  add_button->SetPosition(gfx::Point(horizontal_pos, vertical_pos));
-  add_button->SizeToPreferredSize();
-  add_button_ = control_panel_->AddChildView(std::move(add_button));
-  horizontal_pos += add_button_->width() + kLayoutExampleVerticalSpacing;
+  auto* const row = control_panel_->AddChildView(std::make_unique<View>());
+  row->SetLayoutManager(std::make_unique<BoxLayout>(
+                            BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+                            kLayoutExampleVerticalSpacing))
+      ->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kCenter);
+  add_button_ = row->AddChildView(std::make_unique<MdTextButton>(
+      this, l10n_util::GetStringUTF16(IDS_LAYOUT_BASE_ADD_LABEL)));
 
-  preferred_width_view_ =
-      CreateAndAddRawTextfield(vertical_pos, &horizontal_pos);
-  preferred_width_view_->SetY(
-      vertical_pos +
-      (add_button_->height() - preferred_width_view_->height()) / 2);
+  preferred_width_view_ = row->AddChildView(CreateCommonTextfield(this));
   preferred_width_view_->SetText(
       base::NumberToString16(kLayoutExampleDefaultChildSize.width()));
 
-  preferred_height_view_ =
-      CreateAndAddRawTextfield(vertical_pos, &horizontal_pos);
-  preferred_height_view_->SetY(
-      vertical_pos +
-      (add_button_->height() - preferred_height_view_->height()) / 2);
+  preferred_height_view_ = row->AddChildView(CreateCommonTextfield(this));
   preferred_height_view_->SetText(
       base::NumberToString16(kLayoutExampleDefaultChildSize.height()));
 
-  CreateAdditionalControls(add_button_->y() + add_button_->height() +
-                           kLayoutExampleVerticalSpacing);
+  CreateAdditionalControls();
 }
 
 void LayoutExampleBase::ButtonPressed(Button* sender, const ui::Event& event) {
-  constexpr int kChildPanelGroup = 100;
-
   if (sender == add_button_) {
-    std::unique_ptr<ChildPanel> panel = std::make_unique<ChildPanel>(this);
+    auto* const panel =
+        layout_panel_->AddChildView(std::make_unique<ChildPanel>(this));
     panel->SetPreferredSize(GetNewChildPanelPreferredSize());
+    constexpr int kChildPanelGroup = 100;
     panel->SetGroup(kChildPanelGroup);
-    layout_panel_->AddChildView(std::move(panel));
     RefreshLayoutPanel(false);
   } else {
     ButtonPressedImpl(sender);
   }
-}
-
-// Default implementation is to do nothing.
-void LayoutExampleBase::ButtonPressedImpl(Button* sender) {}
-
-void LayoutExampleBase::RefreshLayoutPanel(bool update_layout) {
-  if (update_layout)
-    UpdateLayoutManager();
-  layout_panel_->InvalidateLayout();
-  layout_panel_->SchedulePaint();
 }
 
 gfx::Size LayoutExampleBase::GetNewChildPanelPreferredSize() {
@@ -301,34 +295,6 @@ gfx::Size LayoutExampleBase::GetNewChildPanelPreferredSize() {
     height = kLayoutExampleDefaultChildSize.height();
 
   return gfx::Size(std::max(0, width), std::max(0, height));
-}
-
-gfx::Insets LayoutExampleBase::TextfieldsToInsets(
-    const InsetTextfields& textfields,
-    const gfx::Insets& default_insets) {
-  int top;
-  int left;
-  int bottom;
-  int right;
-  if (!base::StringToInt(textfields.top->GetText(), &top))
-    top = default_insets.top();
-  if (!base::StringToInt(textfields.left->GetText(), &left))
-    left = default_insets.left();
-  if (!base::StringToInt(textfields.bottom->GetText(), &bottom))
-    bottom = default_insets.bottom();
-  if (!base::StringToInt(textfields.right->GetText(), &right))
-    right = default_insets.right();
-
-  return gfx::Insets(std::max(0, top), std::max(0, left), std::max(0, bottom),
-                     std::max(0, right));
-}
-
-Textfield* LayoutExampleBase::CreateAndAddRawTextfield(int vertical_pos,
-                                                       int* horizontal_pos) {
-  std::unique_ptr<Textfield> textfield =
-      CreateCommonTextfield(vertical_pos, *horizontal_pos, this);
-  *horizontal_pos += textfield->width() + kLayoutExampleVerticalSpacing;
-  return control_panel_->AddChildView(std::move(textfield));
 }
 
 }  // namespace examples
