@@ -72,6 +72,8 @@ def main(argv):
 
     out_path = os.path.join(out_folder, input_file)
     out_dir = os.path.dirname(out_path)
+    assert out_dir.startswith(out_folder), \
+           'Cannot preprocess files to locations not under %s.' % out_dir
     try:
       os.makedirs(out_dir)
     except OSError as e:
