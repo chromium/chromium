@@ -197,8 +197,8 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
         ThreadUtils.assertOnUiThread();
         if (mObservers.isEmpty()) {
             if (mProfileDataSource != null) {
+                updateCacheFromProfileDataSource();
                 mProfileDataSource.addObserver(this);
-                populateCacheFromProfileDataSource();
             } else {
                 ProfileDownloader.addObserver(this);
             }
@@ -221,20 +221,10 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
         }
     }
 
-    private void populateCacheFromProfileDataSource() {
-        for (Map.Entry<String, ProfileDataSource.ProfileData> entry :
-                mProfileDataSource.getProfileDataMap().entrySet()) {
-            mCachedProfileData.put(entry.getKey(), createDisplayableProfileData(entry.getValue()));
-        }
-    }
-
     private void updateCacheFromProfileDataSource() {
-        for (Map.Entry<String, ProfileDataSource.ProfileData> entry :
-                mProfileDataSource.getProfileDataMap().entrySet()) {
-            mCachedProfileData.put(entry.getKey(), createDisplayableProfileData(entry.getValue()));
-            for (Observer observer : mObservers) {
-                observer.onProfileDataUpdated(entry.getKey());
-            }
+        for (ProfileDataSource.ProfileData profileData :
+                mProfileDataSource.getProfileDataMap().values()) {
+            updateCachedProfileData(createDisplayableProfileData(profileData));
         }
     }
 
@@ -249,12 +239,8 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
     public void onProfileDownloaded(String accountId, String fullName, String givenName,
             Bitmap bitmap) {
         ThreadUtils.assertOnUiThread();
-        mCachedProfileData.put(accountId,
-                new DisplayableProfileData(
-                        accountId, prepareAvatar(bitmap, accountId), fullName, givenName));
-        for (Observer observer : mObservers) {
-            observer.onProfileDataUpdated(accountId);
-        }
+        updateCachedProfileData(new DisplayableProfileData(
+                accountId, prepareAvatar(bitmap, accountId), fullName, givenName));
     }
 
     @Override
@@ -264,13 +250,11 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
                 mProfileDataSource.getProfileDataForAccount(accountId);
         if (profileData == null) {
             mCachedProfileData.remove(accountId);
+            notifyObservers(accountId);
         } else {
-            mCachedProfileData.put(accountId, createDisplayableProfileData(profileData));
+            updateCachedProfileData(createDisplayableProfileData(profileData));
         }
 
-        for (Observer observer : mObservers) {
-            observer.onProfileDataUpdated(accountId);
-        }
     }
 
     /**
@@ -329,6 +313,17 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
             return croppedAvatar;
         }
         return overlayBadgeOnUserPicture(croppedAvatar);
+    }
+
+    private void updateCachedProfileData(DisplayableProfileData profileData) {
+        mCachedProfileData.put(profileData.getAccountName(), profileData);
+        notifyObservers(profileData.getAccountName());
+    }
+
+    private void notifyObservers(String accountEmail) {
+        for (Observer observer : mObservers) {
+            observer.onProfileDataUpdated(accountEmail);
+        }
     }
 
     private Drawable overlayBadgeOnUserPicture(Drawable userPicture) {
