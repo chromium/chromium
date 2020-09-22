@@ -6406,13 +6406,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(printing::features::kEnableOopPrintDrivers)},
 #endif
 
-#if defined(OS_WIN)
-    {"use-serial-bus-enumerator",
-     flag_descriptions::kUseSerialBusEnumeratorName,
-     flag_descriptions::kUseSerialBusEnumeratorDescription, kOsWin,
-     FEATURE_VALUE_TYPE(features::kUseSerialBusEnumerator)},
-#endif
-
 #if defined(OS_CHROMEOS)
     {"omnibox-rich-entities-in-launcher",
      flag_descriptions::kOmniboxRichEntitiesInLauncherName,

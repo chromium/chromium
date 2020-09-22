@@ -19,7 +19,6 @@
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/ranges.h"
 #include "base/scoped_generic.h"
@@ -31,7 +30,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_devinfo.h"
-#include "services/device/public/cpp/device_features.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace device {
@@ -112,13 +110,6 @@ bool GetProductID(const std::string& instance_id, uint32_t* product_id) {
          base::HexStringToUInt(product_id_str, product_id);
 }
 
-const GUID& GetDeviceInterfaceGuid() {
-  if (base::FeatureList::IsEnabled(features::kUseSerialBusEnumerator))
-    return GUID_DEVINTERFACE_SERENUM_BUS_ENUMERATOR;
-
-  return GUID_DEVINTERFACE_COMPORT;
-}
-
 }  // namespace
 
 class SerialDeviceEnumeratorWin::UiThreadHelper
@@ -140,7 +131,7 @@ class SerialDeviceEnumeratorWin::UiThreadHelper
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     enumerator_ = std::move(enumerator);
     device_observer_.Add(
-        DeviceMonitorWin::GetForDeviceInterface(GetDeviceInterfaceGuid()));
+        DeviceMonitorWin::GetForDeviceInterface(GUID_DEVINTERFACE_COMPORT));
   }
 
   void OnDeviceAdded(const GUID& class_guid,
@@ -248,7 +239,7 @@ void SerialDeviceEnumeratorWin::DoInitialEnumeration() {
                                                 base::BlockingType::MAY_BLOCK);
   // Make a device interface query to find all serial devices.
   base::win::ScopedDevInfo dev_info(
-      SetupDiGetClassDevs(&GetDeviceInterfaceGuid(), nullptr, 0,
+      SetupDiGetClassDevs(&GUID_DEVINTERFACE_COMPORT, nullptr, 0,
                           DIGCF_DEVICEINTERFACE | DIGCF_PRESENT));
   if (!dev_info.is_valid())
     return;
