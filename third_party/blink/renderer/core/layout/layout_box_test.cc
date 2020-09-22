@@ -533,6 +533,44 @@ TEST_P(LayoutBoxTest, HitTestContainPaint) {
   EXPECT_EQ(GetDocument().documentElement(), HitTest(10, 250));
 }
 
+TEST_P(LayoutBoxTest, OverflowRectsContainPaint) {
+  SetBodyInnerHTML(R"HTML(
+    <div id='container' style='width: 100px; height: 200px; contain: paint;
+                               border: 10px solid blue'>
+      <div id='child' style='width: 300px; height: 400px;'></div>
+    </div>
+  )HTML");
+
+  auto* container = GetLayoutBoxByElementId("container");
+  EXPECT_TRUE(container->ShouldClipOverflow());
+  EXPECT_EQ(LayoutRect(10, 10, 300, 400), container->LayoutOverflowRect());
+  EXPECT_EQ(LayoutRect(0, 0, 120, 220), container->VisualOverflowRect());
+  EXPECT_EQ(LayoutRect(0, 0, 120, 220), container->SelfVisualOverflowRect());
+  EXPECT_EQ(LayoutRect(10, 10, 300, 400),
+            container->ContentsVisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(10, 10, 100, 200),
+            container->OverflowClipRect(PhysicalOffset()));
+}
+
+TEST_P(LayoutBoxTest, OverflowRectsOverflowHidden) {
+  SetBodyInnerHTML(R"HTML(
+    <div id='container' style='width: 100px; height: 200px; overflow: hidden;
+                               border: 10px solid blue'>
+      <div id='child' style='width: 300px; height: 400px;'></div>
+    </div>
+  )HTML");
+
+  auto* container = GetLayoutBoxByElementId("container");
+  EXPECT_TRUE(container->ShouldClipOverflow());
+  EXPECT_EQ(LayoutRect(10, 10, 300, 400), container->LayoutOverflowRect());
+  EXPECT_EQ(LayoutRect(0, 0, 120, 220), container->VisualOverflowRect());
+  EXPECT_EQ(LayoutRect(0, 0, 120, 220), container->SelfVisualOverflowRect());
+  EXPECT_EQ(LayoutRect(10, 10, 300, 400),
+            container->ContentsVisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(10, 10, 100, 200),
+            container->OverflowClipRect(PhysicalOffset()));
+}
+
 class AnimatedImage : public StubImage {
  public:
   bool MaybeAnimated() override { return true; }

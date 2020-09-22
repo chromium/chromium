@@ -6715,7 +6715,7 @@ LayoutRect LayoutBox::NoOverflowRect() const {
 LayoutRect LayoutBox::VisualOverflowRect() const {
   if (!VisualOverflowIsSet())
     return BorderBoxRect();
-  if (HasNonVisibleOverflow() || HasMask())
+  if (ShouldClipOverflow() || HasMask())
     return overflow_->visual_overflow->SelfVisualOverflowRect();
   return UnionRect(overflow_->visual_overflow->SelfVisualOverflowRect(),
                    overflow_->visual_overflow->ContentsVisualOverflowRect());

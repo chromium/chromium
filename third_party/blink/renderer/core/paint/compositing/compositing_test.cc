@@ -418,6 +418,20 @@ TEST_P(CompositingTest, BackgroundColorInGraphicsLayer) {
   EXPECT_EQ(layer->SafeOpaqueBackgroundColor(), SK_ColorTRANSPARENT);
 }
 
+TEST_P(CompositingTest, ContainPaintLayerBounds) {
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <div id="target" style="will-change: transform; contain: paint;
+                            width: 200px; height: 100px">
+      <div style="width: 300px; height: 400px"></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+  auto* layer = CcLayersByDOMElementId(RootCcLayer(), "target")[0];
+  ASSERT_TRUE(layer);
+  EXPECT_EQ(gfx::Size(200, 100), layer->bounds());
+}
+
 class CompositingSimTest : public PaintTestConfigurations, public SimTest {
  public:
   void InitializeWithHTML(const String& html) {
