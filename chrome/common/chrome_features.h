@@ -443,7 +443,7 @@ extern const base::Feature kSharesheet;
 
 #if defined(OS_MAC)
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kShow10_9ObsoleteInfobar;
+extern const base::Feature kShow10_10ObsoleteInfobar;
 #endif  // defined(OS_MAC)
 
 #if defined(OS_ANDROID)

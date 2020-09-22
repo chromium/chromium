@@ -658,10 +658,10 @@ const base::Feature kSharesheet{"Sharesheet",
 #endif
 
 #if defined(OS_MAC)
-// Enables the "this OS is obsolete" infobar on Mac 10.9.
-// TODO(ellyjones): Remove this after the last 10.9 release.
-const base::Feature kShow10_9ObsoleteInfobar{"Show109ObsoleteInfobar",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables the "this OS is obsolete" infobar on Mac 10.10.
+// TODO(ellyjones): Remove this after the last 10.10 release.
+const base::Feature kShow10_10ObsoleteInfobar{
+    "Show1010ObsoleteInfobar", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_MAC)
 
 #if defined(OS_ANDROID)

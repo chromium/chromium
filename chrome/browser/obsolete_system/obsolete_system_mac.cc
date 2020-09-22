@@ -19,13 +19,13 @@ bool ObsoleteSystem::IsObsoleteNowOrSoon() {
   int32_t major, minor, bugfix;
   base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
 
-  return ((major < 10) || (major == 10 && minor <= 9)) &&
-         base::FeatureList::IsEnabled(features::kShow10_9ObsoleteInfobar);
+  return ((major < 10) || (major == 10 && minor <= 10)) &&
+         base::FeatureList::IsEnabled(features::kShow10_10ObsoleteInfobar);
 }
 
 // static
 base::string16 ObsoleteSystem::LocalizedObsoleteString() {
-  return l10n_util::GetStringUTF16(IDS_MAC_10_9_OBSOLETE_NOW);
+  return l10n_util::GetStringUTF16(IDS_MAC_10_10_OBSOLETE_SOON);
 }
 
 // static
@@ -35,5 +35,5 @@ bool ObsoleteSystem::IsEndOfTheLine() {
 
 // static
 const char* ObsoleteSystem::GetLinkURL() {
-  return chrome::kMac10_9_ObsoleteURL;
+  return chrome::kMac10_10_ObsoleteURL;
 }

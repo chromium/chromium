@@ -379,8 +379,8 @@ extern const char kWifiSyncLearnMoreURL[];
 // "Learn more" URL for the enterprise sign-in confirmation dialog.
 extern const char kChromeEnterpriseSignInLearnMoreURL[];
 
-// The URL for the "learn more" link on the 10.9 obsolescence infobar.
-extern const char kMac10_9_ObsoleteURL[];
+// The URL for the "learn more" link on the 10.10 obsolescence infobar.
+extern const char kMac10_10_ObsoleteURL[];
 #endif
 
 #if defined(OS_WIN)

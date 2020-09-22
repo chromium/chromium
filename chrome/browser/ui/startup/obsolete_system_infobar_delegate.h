@@ -30,6 +30,7 @@ class ObsoleteSystemInfoBarDelegate : public ConfirmInfoBarDelegate {
   GURL GetLinkURL() const override;
   base::string16 GetMessageText() const override;
   int GetButtons() const override;
+  bool ShouldExpire(const NavigationDetails& details) const override;
 
   DISALLOW_COPY_AND_ASSIGN(ObsoleteSystemInfoBarDelegate);
 };

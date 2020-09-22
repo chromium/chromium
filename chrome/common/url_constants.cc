@@ -416,7 +416,7 @@ const char kWifiSyncLearnMoreURL[] =
 const char kChromeEnterpriseSignInLearnMoreURL[] =
     "https://support.google.com/chromebook/answer/1331549";
 
-const char kMac10_9_ObsoleteURL[] =
+const char kMac10_10_ObsoleteURL[] =
     "https://support.google.com/chrome/?p=unsupported_mac";
 #endif
 

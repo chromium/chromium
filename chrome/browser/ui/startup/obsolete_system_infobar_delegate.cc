@@ -44,3 +44,11 @@ base::string16 ObsoleteSystemInfoBarDelegate::GetMessageText() const {
 int ObsoleteSystemInfoBarDelegate::GetButtons() const {
   return BUTTON_NONE;
 }
+
+bool ObsoleteSystemInfoBarDelegate::ShouldExpire(
+    const NavigationDetails& details) const {
+  // Since the obsolete system infobar communicates critical state ("your system
+  // is no longer receiving updates") it should persist until explicitly
+  // dismissed.
+  return false;
+}
