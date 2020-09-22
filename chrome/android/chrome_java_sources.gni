@@ -362,7 +362,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/contextmenu/RevampedContextMenuListView.java",
   "java/src/org/chromium/chrome/browser/contextmenu/RevampedContextMenuShareItemProperties.java",
   "java/src/org/chromium/chrome/browser/contextmenu/RevampedContextMenuShareItemViewBinder.java",
-  "java/src/org/chromium/chrome/browser/contextmenu/ShareContextMenuItem.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/BarOverlapTapSuppression.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchContext.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchEntityHeuristic.java",

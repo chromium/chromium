@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tab;
 
 import android.graphics.Bitmap;
-import android.view.ContextMenu;
 
 import androidx.annotation.Nullable;
 
@@ -82,7 +81,7 @@ public class EmptyTabObserver implements TabObserver {
     public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {}
 
     @Override
-    public void onContextMenuShown(Tab tab, ContextMenu menu) {}
+    public void onContextMenuShown(Tab tab) {}
 
     @Override
     public void onCloseContents(Tab tab) {}

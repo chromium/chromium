@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import android.app.Activity;
 import android.content.Context;
-import android.view.ContextMenu;
 
 import androidx.annotation.Nullable;
 
@@ -164,7 +163,7 @@ public class ContextualSearchTabHelper
     }
 
     @Override
-    public void onContextMenuShown(Tab tab, ContextMenu menu) {
+    public void onContextMenuShown(Tab tab) {
         ContextualSearchManager manager = getContextualSearchManager(tab);
         if (manager != null) {
             manager.onContextMenuShown();

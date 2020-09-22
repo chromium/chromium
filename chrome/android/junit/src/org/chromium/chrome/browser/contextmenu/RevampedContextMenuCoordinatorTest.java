@@ -25,7 +25,6 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuItem.Item;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuGroup;
 import org.chromium.chrome.browser.contextmenu.RevampedContextMenuCoordinator.ListItemType;
@@ -78,21 +77,21 @@ public class RevampedContextMenuCoordinatorTest {
     public void testGetItemListWithImageLink() {
         final ContextMenuParams params = new ContextMenuParams(
                 0, ContextMenuDataMediaType.IMAGE, "", "", "", "", "", "", null, false, 0, 0, 0);
-        List<Pair<Integer, List<ContextMenuItem>>> rawItems = new ArrayList<>();
+        List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Link items
-        List<ContextMenuItem> groupOne = new ArrayList<>();
-        groupOne.add(new ChromeContextMenuItem(Item.OPEN_IN_NEW_TAB));
-        groupOne.add(new ChromeContextMenuItem(Item.OPEN_IN_INCOGNITO_TAB));
-        groupOne.add(new ChromeContextMenuItem(Item.SAVE_LINK_AS));
-        groupOne.add(new ShareContextMenuItem(R.string.contextmenu_share_link,
-                org.chromium.chrome.R.id.contextmenu_share_link, true));
+        ModelList groupOne = new ModelList();
+        groupOne.add(ChromeContextMenuPopulator.createListItem(mActivity, Item.OPEN_IN_NEW_TAB));
+        groupOne.add(
+                ChromeContextMenuPopulator.createListItem(mActivity, Item.OPEN_IN_INCOGNITO_TAB));
+        groupOne.add(ChromeContextMenuPopulator.createListItem(mActivity, Item.SAVE_LINK_AS));
+        groupOne.add(ChromeContextMenuPopulator.createShareListItem(mActivity, Item.SHARE_LINK));
         rawItems.add(new Pair<>(ContextMenuGroup.LINK, groupOne));
         // Image Items
-        List<ContextMenuItem> groupTwo = new ArrayList<>();
-        groupTwo.add(new ChromeContextMenuItem(Item.OPEN_IMAGE_IN_NEW_TAB));
-        groupTwo.add(new ChromeContextMenuItem(Item.SAVE_IMAGE));
-        groupTwo.add(new ShareContextMenuItem(R.string.contextmenu_share_image,
-                org.chromium.chrome.R.id.contextmenu_share_image, false));
+        ModelList groupTwo = new ModelList();
+        groupTwo.add(
+                ChromeContextMenuPopulator.createListItem(mActivity, Item.OPEN_IMAGE_IN_NEW_TAB));
+        groupTwo.add(ChromeContextMenuPopulator.createListItem(mActivity, Item.SAVE_IMAGE));
+        groupTwo.add(ChromeContextMenuPopulator.createShareListItem(mActivity, Item.SHARE_IMAGE));
         rawItems.add(new Pair<>(ContextMenuGroup.IMAGE, groupTwo));
 
         mCoordinator.initializeHeaderCoordinatorForTesting(mActivity, params, mProfile);
@@ -118,14 +117,14 @@ public class RevampedContextMenuCoordinatorTest {
         // initialized. mediaType here doesn't have any effect on what we're testing.
         final ContextMenuParams params = new ContextMenuParams(
                 0, ContextMenuDataMediaType.IMAGE, "", "", "", "", "", "", null, false, 0, 0, 0);
-        List<Pair<Integer, List<ContextMenuItem>>> rawItems = new ArrayList<>();
+        List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Link items
-        List<ContextMenuItem> groupOne = new ArrayList<>();
-        groupOne.add(new ChromeContextMenuItem(Item.OPEN_IN_NEW_TAB));
-        groupOne.add(new ChromeContextMenuItem(Item.OPEN_IN_INCOGNITO_TAB));
-        groupOne.add(new ChromeContextMenuItem(Item.SAVE_LINK_AS));
-        groupOne.add(new ShareContextMenuItem(R.string.contextmenu_share_link,
-                org.chromium.chrome.R.id.contextmenu_share_link, true));
+        ModelList groupOne = new ModelList();
+        groupOne.add(ChromeContextMenuPopulator.createListItem(mActivity, Item.OPEN_IN_NEW_TAB));
+        groupOne.add(
+                ChromeContextMenuPopulator.createListItem(mActivity, Item.OPEN_IN_INCOGNITO_TAB));
+        groupOne.add(ChromeContextMenuPopulator.createListItem(mActivity, Item.SAVE_LINK_AS));
+        groupOne.add(ChromeContextMenuPopulator.createShareListItem(mActivity, Item.SHARE_LINK));
         rawItems.add(new Pair<>(ContextMenuGroup.LINK, groupOne));
 
         mCoordinator.initializeHeaderCoordinatorForTesting(mActivity, params, mProfile);
@@ -143,10 +142,10 @@ public class RevampedContextMenuCoordinatorTest {
     public void testGetItemListWithVideo() {
         final ContextMenuParams params = new ContextMenuParams(
                 0, ContextMenuDataMediaType.VIDEO, "", "", "", "", "", "", null, false, 0, 0, 0);
-        List<Pair<Integer, List<ContextMenuItem>>> rawItems = new ArrayList<>();
+        List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Video items
-        List<ContextMenuItem> groupOne = new ArrayList<>();
-        groupOne.add(new ChromeContextMenuItem(Item.SAVE_VIDEO));
+        ModelList groupOne = new ModelList();
+        groupOne.add(ChromeContextMenuPopulator.createListItem(mActivity, Item.SAVE_VIDEO));
         rawItems.add(new Pair<>(ContextMenuGroup.LINK, groupOne));
 
         mCoordinator.initializeHeaderCoordinatorForTesting(mActivity, params, mProfile);

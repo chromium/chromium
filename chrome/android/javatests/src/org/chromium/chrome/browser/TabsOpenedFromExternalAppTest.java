@@ -10,8 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Browser;
 import android.support.test.InstrumentationRegistry;
-import android.view.ContextMenu;
-import android.view.View;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -32,25 +30,23 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.browser.contextmenu.RevampedContextMenuUtils;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.CriteriaNotSatisfiedException;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.network.mojom.ReferrerPolicy;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -662,15 +658,6 @@ public class TabsOpenedFromExternalAppTest {
                         mActivityTestRule.getActivity().getActivityTab()));
     }
 
-    private static class TestTabObserver extends EmptyTabObserver {
-        private ContextMenu mContextMenu;
-
-        @Override
-        public void onContextMenuShown(Tab tab, ContextMenu menu) {
-            mContextMenu = menu;
-        }
-    }
-
     /**
      * Catches regressions for https://crbug.com/495877.
      */
@@ -703,7 +690,8 @@ public class TabsOpenedFromExternalAppTest {
                 + "    </style>"
                 + "  </head>"
                 + "  <body>"
-                + "    <a href='" + mTestServer.getURL("/chrome/test/data/android/google.html")
+                + "    <a id='target' href='"
+                + mTestServer.getURL("/chrome/test/data/android/google.html")
                 + "' target='_blank'><div></div></a>"
                 + "  </body>"
                 + "</html>");
@@ -724,22 +712,10 @@ public class TabsOpenedFromExternalAppTest {
         ApplicationTestUtils.assertWaitForPageScaleFactorMatch(
                 mActivityTestRule.getActivity(), 0.5f);
 
-        // Long press the center of the page, which should bring up the context menu.
-        final TestTabObserver observer = new TestTabObserver();
-        mActivityTestRule.getActivity().getActivityTab().addObserver(observer);
-        Assert.assertNull(observer.mContextMenu);
-        final View view = TestThreadUtils.runOnUiThreadBlocking(
-                (Callable<View>) ()
-                        -> mActivityTestRule.getActivity().getActivityTab().getContentView());
-        TouchCommon.longPressView(view);
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(observer.mContextMenu, Matchers.notNullValue()));
-        mActivityTestRule.getActivity().getActivityTab().removeObserver(observer);
-
-        // Select the "open in new tab" option.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> Assert.assertTrue(observer.mContextMenu.performIdentifierAction(
-                                R.id.contextmenu_open_in_new_tab, 0)));
+        // Open context menu and select the "open in new tab" option.
+        RevampedContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
+                mActivityTestRule.getActivity(), mActivityTestRule.getActivity().getActivityTab(),
+                "target", R.id.contextmenu_open_in_new_tab);
 
         // The second tab should open in the background.
         CriteriaHelper.pollUiThread(() -> {

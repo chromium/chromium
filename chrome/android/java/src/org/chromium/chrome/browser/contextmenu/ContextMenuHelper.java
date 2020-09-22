@@ -26,6 +26,7 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -145,8 +146,8 @@ public class ContextMenuHelper {
 
     private void displayRevampedContextMenu(
             RenderFrameHost renderFrameHost, float topContentOffsetPx, boolean addShoppyMenuItem) {
-        List<Pair<Integer, List<ContextMenuItem>>> items = mPopulator.buildContextMenu(
-                null, mActivity, mCurrentContextMenuParams, addShoppyMenuItem);
+        List<Pair<Integer, ModelList>> items = mPopulator.buildContextMenu(
+                mActivity, mCurrentContextMenuParams, addShoppyMenuItem);
         if (items.isEmpty()) {
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, mOnMenuClosed.bind(false));
             return;

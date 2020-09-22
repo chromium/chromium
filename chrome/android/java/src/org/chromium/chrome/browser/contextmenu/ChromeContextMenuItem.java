@@ -28,16 +28,17 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * List of all predefined Context Menu Items available in Chrome.
  */
-public class ChromeContextMenuItem implements ContextMenuItem {
+class ChromeContextMenuItem {
     @IntDef({Item.OPEN_IN_NEW_CHROME_TAB, Item.OPEN_IN_CHROME_INCOGNITO_TAB,
             Item.OPEN_IN_BROWSER_ID, Item.OPEN_IN_NEW_TAB, Item.OPEN_IN_INCOGNITO_TAB,
             Item.OPEN_IN_OTHER_WINDOW, Item.OPEN_IN_EPHEMERAL_TAB, Item.COPY_LINK_ADDRESS,
-            Item.COPY_LINK_TEXT, Item.SAVE_LINK_AS, Item.LOAD_ORIGINAL_IMAGE, Item.SAVE_IMAGE,
-            Item.OPEN_IMAGE, Item.OPEN_IMAGE_IN_NEW_TAB, Item.OPEN_IMAGE_IN_EPHEMERAL_TAB,
-            Item.COPY_IMAGE, Item.SEARCH_BY_IMAGE, Item.SEARCH_WITH_GOOGLE_LENS,
-            Item.SHOP_SIMILAR_PRODUCTS, Item.SHOP_IMAGE_WITH_GOOGLE_LENS,
-            Item.SEARCH_SIMILAR_PRODUCTS, Item.CALL, Item.SEND_MESSAGE, Item.ADD_TO_CONTACTS,
-            Item.COPY, Item.SAVE_VIDEO, Item.OPEN_IN_CHROME})
+            Item.COPY_LINK_TEXT, Item.SAVE_LINK_AS, Item.SHARE_LINK, Item.LOAD_ORIGINAL_IMAGE,
+            Item.SAVE_IMAGE, Item.OPEN_IMAGE, Item.OPEN_IMAGE_IN_NEW_TAB,
+            Item.OPEN_IMAGE_IN_EPHEMERAL_TAB, Item.COPY_IMAGE, Item.SEARCH_BY_IMAGE,
+            Item.SEARCH_WITH_GOOGLE_LENS, Item.SHOP_SIMILAR_PRODUCTS,
+            Item.SHOP_IMAGE_WITH_GOOGLE_LENS, Item.SEARCH_SIMILAR_PRODUCTS, Item.SHARE_IMAGE,
+            Item.CALL, Item.SEND_MESSAGE, Item.ADD_TO_CONTACTS, Item.COPY, Item.SAVE_VIDEO,
+            Item.OPEN_IN_CHROME})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Item {
         // Values are numerated from 0 and can't have gaps.
@@ -54,29 +55,31 @@ public class ChromeContextMenuItem implements ContextMenuItem {
         int COPY_LINK_ADDRESS = 7;
         int COPY_LINK_TEXT = 8;
         int SAVE_LINK_AS = 9;
+        int SHARE_LINK = 10;
         // Image Group
-        int LOAD_ORIGINAL_IMAGE = 10;
-        int SAVE_IMAGE = 11;
-        int OPEN_IMAGE = 12;
-        int OPEN_IMAGE_IN_NEW_TAB = 13;
-        int OPEN_IMAGE_IN_EPHEMERAL_TAB = 14;
-        int COPY_IMAGE = 15;
-        int SEARCH_BY_IMAGE = 16;
-        int SEARCH_WITH_GOOGLE_LENS = 17;
-        int SHOP_SIMILAR_PRODUCTS = 18;
-        int SHOP_IMAGE_WITH_GOOGLE_LENS = 19;
-        int SEARCH_SIMILAR_PRODUCTS = 20;
+        int LOAD_ORIGINAL_IMAGE = 11;
+        int SAVE_IMAGE = 12;
+        int OPEN_IMAGE = 13;
+        int OPEN_IMAGE_IN_NEW_TAB = 14;
+        int OPEN_IMAGE_IN_EPHEMERAL_TAB = 15;
+        int COPY_IMAGE = 16;
+        int SEARCH_BY_IMAGE = 17;
+        int SEARCH_WITH_GOOGLE_LENS = 18;
+        int SHOP_SIMILAR_PRODUCTS = 19;
+        int SHOP_IMAGE_WITH_GOOGLE_LENS = 20;
+        int SEARCH_SIMILAR_PRODUCTS = 21;
+        int SHARE_IMAGE = 22;
         // Message Group
-        int CALL = 21;
-        int SEND_MESSAGE = 22;
-        int ADD_TO_CONTACTS = 23;
-        int COPY = 24;
+        int CALL = 23;
+        int SEND_MESSAGE = 24;
+        int ADD_TO_CONTACTS = 25;
+        int COPY = 26;
         // Video Group
-        int SAVE_VIDEO = 25;
+        int SAVE_VIDEO = 27;
         // Other
-        int OPEN_IN_CHROME = 26;
+        int OPEN_IN_CHROME = 28;
         // ALWAYS UPDATE!
-        int NUM_ENTRIES = 27;
+        int NUM_ENTRIES = 29;
     }
 
     /**
@@ -93,6 +96,7 @@ public class ChromeContextMenuItem implements ContextMenuItem {
             R.id.contextmenu_copy_link_address, // Item.COPY_LINK_ADDRESS
             R.id.contextmenu_copy_link_text, // Item.COPY_LINK_TEXT
             R.id.contextmenu_save_link_as, // Item.SAVE_LINK_AS
+            R.id.contextmenu_share_link, // Item.SHARE_LINK
             R.id.contextmenu_load_original_image, // Item.LOAD_ORIGINAL_IMAGE
             R.id.contextmenu_save_image, // Item.SAVE_IMAGE
             R.id.contextmenu_open_image, // Item.OPEN_IMAGE
@@ -104,6 +108,7 @@ public class ChromeContextMenuItem implements ContextMenuItem {
             R.id.contextmenu_shop_similar_products, // Item.SHOP_SIMILAR_PRODUCTS
             R.id.contextmenu_shop_image_with_google_lens, // Item.SHOP_IMAGE_WITH_GOOGLE_LENS
             R.id.contextmenu_search_similar_products, // Item.SEARCH_SIMILAR_PRODUCTS
+            R.id.contextmenu_share_image, // Item.SHARE_IMAGE
             R.id.contextmenu_call, // Item.CALL
             R.id.contextmenu_send_message, // Item.SEND_MESSAGE
             R.id.contextmenu_add_to_contacts, // Item.ADD_TO_CONTACTS
@@ -126,6 +131,7 @@ public class ChromeContextMenuItem implements ContextMenuItem {
             R.string.contextmenu_copy_link_address, // Item.COPY_LINK_ADDRESS:
             R.string.contextmenu_copy_link_text, // Item.COPY_LINK_TEXT:
             R.string.contextmenu_save_link, // Item.SAVE_LINK_AS:
+            R.string.contextmenu_share_link, // Item.SHARE_LINK
             R.string.contextmenu_load_original_image, // Item.LOAD_ORIGINAL_IMAGE:
             R.string.contextmenu_save_image, // Item.SAVE_IMAGE:
             R.string.contextmenu_open_image, // Item.OPEN_IMAGE:
@@ -137,6 +143,7 @@ public class ChromeContextMenuItem implements ContextMenuItem {
             R.string.contextmenu_shop_similar_products, // Item.SHOP_SIMILAR_PRODUCTS
             R.string.contextmenu_shop_image_with_google_lens, // Item.SHOP_IMAGE_WITH_GOOGLE_LENS
             R.string.contextmenu_search_similar_products, // Item.SEARCH_SIMILAR_PRODUCTS
+            R.string.contextmenu_share_image, // Item.SHARE_IMAGE
             R.string.contextmenu_call, // Item.CALL:
             R.string.contextmenu_send_message, // Item.SEND_MESSAGE:
             R.string.contextmenu_add_to_contacts, // Item.ADD_TO_CONTACTS:
@@ -145,24 +152,14 @@ public class ChromeContextMenuItem implements ContextMenuItem {
             R.string.menu_open_in_chrome, // Item.OPEN_IN_CHROME:
     };
 
-    private final @Item int mItem;
-
-    // If set to true, adds a "New" superscript label to the menu string.
-    private boolean mShowNewLabel;
-
-    public ChromeContextMenuItem(@Item int item) {
-        mItem = item;
-    }
-
-    @Override
-    public int getMenuId() {
+    /**
+     * Returns the menu id for a given {@link @Item}.
+     * @param item The {@link @Item}.
+     * @return Menu id associated with the {@code item}.
+     */
+    public static int getMenuId(@Item int item) {
         assert MENU_IDS.length == Item.NUM_ENTRIES;
-        return MENU_IDS[mItem];
-    }
-
-    @Override
-    public void setShowInProductHelp() {
-        mShowNewLabel = true;
+        return MENU_IDS[item];
     }
 
     /**
@@ -184,38 +181,46 @@ public class ChromeContextMenuItem implements ContextMenuItem {
      * Transforms the id of the item into a string. It manages special cases that need minor
      * changes due to templating.
      * @param context Requires to get the string resource related to the item.
+     * @param item Context menu item id.
+     * @param showInProductHelp Whether the menu item should show the new superscript label.
      * @return Returns a string for the menu item.
      */
-    @Override
-    public CharSequence getTitle(Context context) {
-        switch (mItem) {
+    public static CharSequence getTitle(
+            Context context, @Item int item, boolean showInProductHelp) {
+        switch (item) {
             case Item.OPEN_IN_BROWSER_ID:
                 return DefaultBrowserInfo.getTitleOpenInDefaultBrowser(false);
             case Item.SEARCH_BY_IMAGE:
-                return context.getString(getStringId(mItem),
+                return context.getString(getStringId(item),
                         TemplateUrlServiceFactory.get()
                                 .getDefaultSearchEngineTemplateUrl()
                                 .getShortName());
             case Item.OPEN_IN_EPHEMERAL_TAB:
-                return addOrRemoveNewLabel(
-                        context, ChromePreferenceKeys.CONTEXT_MENU_OPEN_IN_EPHEMERAL_TAB_CLICKED);
+                return addOrRemoveNewLabel(context, item,
+                        ChromePreferenceKeys.CONTEXT_MENU_OPEN_IN_EPHEMERAL_TAB_CLICKED,
+                        showInProductHelp);
             case Item.OPEN_IMAGE_IN_EPHEMERAL_TAB:
-                return addOrRemoveNewLabel(context,
-                        ChromePreferenceKeys.CONTEXT_MENU_OPEN_IMAGE_IN_EPHEMERAL_TAB_CLICKED);
+                return addOrRemoveNewLabel(context, item,
+                        ChromePreferenceKeys.CONTEXT_MENU_OPEN_IMAGE_IN_EPHEMERAL_TAB_CLICKED,
+                        showInProductHelp);
             case Item.SEARCH_WITH_GOOGLE_LENS:
-                return addOrRemoveNewLabel(
-                        context, ChromePreferenceKeys.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS_CLICKED);
+                return addOrRemoveNewLabel(context, item,
+                        ChromePreferenceKeys.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS_CLICKED,
+                        showInProductHelp);
             case Item.SHOP_SIMILAR_PRODUCTS:
-                return addOrRemoveNewLabel(
-                        context, ChromePreferenceKeys.CONTEXT_MENU_SHOP_SIMILAR_PRODUCTS_CLICKED);
+                return addOrRemoveNewLabel(context, item,
+                        ChromePreferenceKeys.CONTEXT_MENU_SHOP_SIMILAR_PRODUCTS_CLICKED,
+                        showInProductHelp);
             case Item.SHOP_IMAGE_WITH_GOOGLE_LENS:
-                return addOrRemoveNewLabel(context,
-                        ChromePreferenceKeys.CONTEXT_MENU_SHOP_IMAGE_WITH_GOOGLE_LENS_CLICKED);
+                return addOrRemoveNewLabel(context, item,
+                        ChromePreferenceKeys.CONTEXT_MENU_SHOP_IMAGE_WITH_GOOGLE_LENS_CLICKED,
+                        showInProductHelp);
             case Item.SEARCH_SIMILAR_PRODUCTS:
-                return addOrRemoveNewLabel(
-                        context, ChromePreferenceKeys.CONTEXT_MENU_SEARCH_SIMILAR_PRODUCTS_CLICKED);
+                return addOrRemoveNewLabel(context, item,
+                        ChromePreferenceKeys.CONTEXT_MENU_SEARCH_SIMILAR_PRODUCTS_CLICKED,
+                        showInProductHelp);
             default:
-                return context.getString(getStringId(mItem));
+                return context.getString(getStringId(item));
         }
     }
 
@@ -223,9 +228,10 @@ public class ChromeContextMenuItem implements ContextMenuItem {
      * Modify the menu title by applying span attributes or removing the 'New' label if the menu
      * has already been selected before.
      */
-    private CharSequence addOrRemoveNewLabel(Context context, String prefKey) {
-        String menuTitle = context.getString(getStringId(mItem));
-        if (!mShowNewLabel || SharedPreferencesManager.getInstance().readBoolean(prefKey, false)) {
+    private static CharSequence addOrRemoveNewLabel(
+            Context context, @Item int item, String prefKey, boolean showNewLabel) {
+        String menuTitle = context.getString(getStringId(item));
+        if (!showNewLabel || SharedPreferencesManager.getInstance().readBoolean(prefKey, false)) {
             return SpanApplier.removeSpanText(menuTitle, new SpanInfo("<new>", "</new>"));
         }
         return SpanApplier.applySpans(menuTitle,

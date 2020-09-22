@@ -10,6 +10,7 @@ import org.chromium.base.Callback;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
 
@@ -36,6 +37,6 @@ public interface ContextMenuUi {
      *                     of clicking an item and false if the menu is abandoned by the user.
      */
     void displayMenu(WindowAndroid window, WebContents webContents, ContextMenuParams params,
-            List<Pair<Integer, List<ContextMenuItem>>> items, Callback<Integer> onItemClicked,
+            List<Pair<Integer, ModelList>> items, Callback<Integer> onItemClicked,
             Runnable onMenuShown, Callback<Boolean> onMenuClosed);
 }

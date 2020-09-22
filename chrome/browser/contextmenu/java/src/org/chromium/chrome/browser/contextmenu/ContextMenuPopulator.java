@@ -8,11 +8,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Pair;
-import android.view.ContextMenu;
 
 import org.chromium.base.Callback;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
 
@@ -29,7 +29,6 @@ public interface ContextMenuPopulator {
 
     /**
      * Should be used to populate {@code menu} with the correct context menu items.
-     * @param menu    The menu to populate.
      * @param context A {@link Context} instance.
      * @param params  The parameters that represent what should be shown in the context menu.
      * @param isShoppyImage Whether the selected item was a shoppy image.
@@ -39,8 +38,8 @@ public interface ContextMenuPopulator {
      *         group will likely say "IMAGE". If the link pressed is contains multiple items (like
      *         an image link) the list will have both an image list and a link list.
      */
-    List<Pair<Integer, List<ContextMenuItem>>> buildContextMenu(
-            ContextMenu menu, Context context, ContextMenuParams params, boolean isShoppyImage);
+    List<Pair<Integer, ModelList>> buildContextMenu(
+            Context context, ContextMenuParams params, boolean isShoppyImage);
 
     /**
      * Called when a context menu item has been selected.

@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
+import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemProperties.MENU_ID;
+import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuShareItemProperties.CLICK_LISTENER;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -79,7 +81,7 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
 
     @Override
     public void displayMenu(final WindowAndroid window, WebContents webContents,
-            ContextMenuParams params, List<Pair<Integer, List<ContextMenuItem>>> items,
+            ContextMenuParams params, List<Pair<Integer, ModelList>> items,
             Callback<Integer> onItemClicked, final Runnable onMenuShown,
             final Callback<Boolean> onMenuClosed) {
         displayMenuWithLensChip(window, webContents, params, items, onItemClicked, onMenuShown,
@@ -88,7 +90,7 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
 
     // Shows the Context Menu in Chrome with the lens chip (if supported).
     void displayMenuWithLensChip(final WindowAndroid window, WebContents webContents,
-            ContextMenuParams params, List<Pair<Integer, List<ContextMenuItem>>> items,
+            ContextMenuParams params, List<Pair<Integer, ModelList>> items,
             Callback<Integer> onItemClicked, final Runnable onMenuShown,
             final Callback<Boolean> onMenuClosed, @Nullable LensAsyncManager lensAsyncManager) {
         mOnMenuClosed = onMenuClosed;
@@ -235,49 +237,26 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
     }
 
     @VisibleForTesting
-    ModelList getItemList(WindowAndroid window, List<Pair<Integer, List<ContextMenuItem>>> items,
-            ContextMenuParams params) {
-        Activity activity = window.getActivity().get();
+    ModelList getItemList(
+            WindowAndroid window, List<Pair<Integer, ModelList>> items, ContextMenuParams params) {
         ModelList itemList = new ModelList();
 
-        // TODO(sinansahin): We should be able to remove this conversion once we can get the items
-        // in the desired format.
+        // Start with the header
         itemList.add(new ListItem(ListItemType.HEADER, mHeaderCoordinator.getModel()));
 
-        for (Pair<Integer, List<ContextMenuItem>> group : items) {
+        for (Pair<Integer, ModelList> group : items) {
             // Add a divider
             itemList.add(new ListItem(ListItemType.DIVIDER, new PropertyModel()));
+            // Add the items in the group
+            itemList.addAll(group.second);
+        }
 
-            for (ContextMenuItem item : group.second) {
-                PropertyModel itemModel;
-                if (item instanceof ShareContextMenuItem) {
-                    final ShareContextMenuItem shareItem = ((ShareContextMenuItem) item);
-                    final Pair<Drawable, CharSequence> shareInfo = shareItem.getShareInfo();
-                    itemModel =
-                            new PropertyModel
-                                    .Builder(RevampedContextMenuShareItemProperties.ALL_KEYS)
-                                    .with(RevampedContextMenuShareItemProperties.MENU_ID,
-                                            item.getMenuId())
-                                    .with(RevampedContextMenuItemProperties.TEXT,
-                                            item.getTitle(activity))
-                                    .with(RevampedContextMenuShareItemProperties.IMAGE,
-                                            shareInfo.first)
-                                    .with(RevampedContextMenuShareItemProperties.CONTENT_DESC,
-                                            shareInfo.second)
-                                    .with(RevampedContextMenuShareItemProperties.CLICK_LISTENER,
-                                            getShareItemClickListener(window, shareItem, params))
-                                    .build();
-                    itemList.add(new ListItem(ListItemType.CONTEXT_MENU_SHARE_ITEM, itemModel));
-                } else {
-                    itemModel =
-                            new PropertyModel.Builder(RevampedContextMenuItemProperties.ALL_KEYS)
-                                    .with(RevampedContextMenuItemProperties.MENU_ID,
-                                            item.getMenuId())
-                                    .with(RevampedContextMenuItemProperties.TEXT,
-                                            item.getTitle(activity))
-                                    .build();
-                    itemList.add(new ListItem(ListItemType.CONTEXT_MENU_ITEM, itemModel));
-                }
+        // TODO(sinansahin): See if we can avoid this when we refactor the direct share action.
+        for (ListItem item : itemList) {
+            if (item.type == ListItemType.CONTEXT_MENU_SHARE_ITEM) {
+                item.model.set(CLICK_LISTENER,
+                        getShareItemClickListener(window,
+                                item.model.get(MENU_ID) == R.id.contextmenu_share_link, params));
             }
         }
 
@@ -285,15 +264,14 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
     }
 
     private View.OnClickListener getShareItemClickListener(
-            WindowAndroid window, ShareContextMenuItem item, ContextMenuParams params) {
+            WindowAndroid window, boolean isLink, ContextMenuParams params) {
         return (v) -> {
             ChromeContextMenuPopulator.ContextMenuUma.record(mWebContents, params,
-                    item.isShareLink()
-                            ? ChromeContextMenuPopulator.ContextMenuUma.Action.DIRECT_SHARE_LINK
-                            : ChromeContextMenuPopulator.ContextMenuUma.Action.DIRECT_SHARE_IMAGE);
+                    isLink ? ChromeContextMenuPopulator.ContextMenuUma.Action.DIRECT_SHARE_LINK
+                           : ChromeContextMenuPopulator.ContextMenuUma.Action.DIRECT_SHARE_IMAGE);
             mDialog.setOnDismissListener(dialogInterface -> mOnMenuClosed.onResult(true));
             dismissDialog();
-            if (item.isShareLink()) {
+            if (isLink) {
                 final ShareParams shareParams =
                         new ShareParams.Builder(window, params.getUrl(), params.getUrl()).build();
                 ShareHelper.shareWithLastUsedComponent(shareParams);

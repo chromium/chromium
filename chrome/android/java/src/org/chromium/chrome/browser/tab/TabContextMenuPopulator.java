@@ -8,17 +8,16 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Pair;
-import android.view.ContextMenu;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.chrome.browser.contextmenu.ContextMenuImageFormat;
-import org.chromium.chrome.browser.contextmenu.ContextMenuItem;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulator;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
 
@@ -49,13 +48,13 @@ public class TabContextMenuPopulator implements ContextMenuPopulator {
     }
 
     @Override
-    public List<Pair<Integer, List<ContextMenuItem>>> buildContextMenu(
-            ContextMenu menu, Context context, ContextMenuParams params, boolean isShoppyImage) {
-        List<Pair<Integer, List<ContextMenuItem>>> itemGroups =
-                mPopulator.buildContextMenu(menu, context, params, isShoppyImage);
+    public List<Pair<Integer, ModelList>> buildContextMenu(
+            Context context, ContextMenuParams params, boolean isShoppyImage) {
+        List<Pair<Integer, ModelList>> itemGroups =
+                mPopulator.buildContextMenu(context, params, isShoppyImage);
         RewindableIterator<TabObserver> observers = mTab.getTabObservers();
         while (observers.hasNext()) {
-            observers.next().onContextMenuShown(mTab, menu);
+            observers.next().onContextMenuShown(mTab);
         }
         return itemGroups;
     }

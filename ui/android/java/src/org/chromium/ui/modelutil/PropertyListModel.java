@@ -39,6 +39,14 @@ public class PropertyListModel<T extends PropertyObservable<P>, P> extends ListM
     }
 
     @Override
+    public void addAll(SimpleList<T> items, int insertionIndex) {
+        super.addAll(items, insertionIndex);
+        for (T item : items) {
+            item.addObserver(mPropertyObserver);
+        }
+    }
+
+    @Override
     public T removeAt(int position) {
         T item = super.removeAt(position);
         item.removeObserver(mPropertyObserver);

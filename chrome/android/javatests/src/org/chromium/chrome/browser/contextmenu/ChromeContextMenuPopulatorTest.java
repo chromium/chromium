@@ -9,6 +9,9 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemProperties.MENU_ID;
+import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemProperties.TEXT;
+
 import android.util.Pair;
 
 import androidx.test.filters.SmallTest;
@@ -36,6 +39,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.base.MenuSourceType;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -99,8 +103,8 @@ public class ChromeContextMenuPopulatorTest {
     }
 
     private void checkMenuOptions(ContextMenuParams params, int[]... tabs) {
-        List<Pair<Integer, List<ContextMenuItem>>> contextMenuState = mPopulator.buildContextMenu(
-                null, ContextUtils.getApplicationContext(), params, false);
+        List<Pair<Integer, ModelList>> contextMenuState =
+                mPopulator.buildContextMenu(ContextUtils.getApplicationContext(), params, false);
 
         assertEquals("Number of tabs doesn't match", tabs[0] == null ? 0 : tabs.length,
                 contextMenuState.size());
@@ -108,15 +112,14 @@ public class ChromeContextMenuPopulatorTest {
         for (int i = 0; i < contextMenuState.size(); i++) {
             int[] availableInTab = new int[contextMenuState.get(i).second.size()];
             for (int j = 0; j < contextMenuState.get(i).second.size(); j++) {
-                availableInTab[j] = contextMenuState.get(i).second.get(j).getMenuId();
+                availableInTab[j] = contextMenuState.get(i).second.get(j).model.get(MENU_ID);
             }
 
             if (!Arrays.equals(tabs[i], availableInTab)) {
                 StringBuilder info = new StringBuilder();
                 for (int j = 0; j < contextMenuState.get(i).second.size(); j++) {
                     info.append("'");
-                    info.append(contextMenuState.get(i).second.get(j).getTitle(
-                            ContextUtils.getApplicationContext()));
+                    info.append(contextMenuState.get(i).second.get(j).model.get(TEXT));
                     info.append("' ");
                 }
                 fail("Tab entries in tab " + i + " don't match, generated: " + info.toString());
