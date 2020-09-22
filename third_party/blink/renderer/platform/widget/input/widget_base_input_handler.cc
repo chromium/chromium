@@ -688,8 +688,11 @@ void WidgetBaseInputHandler::UpdateTextInputState() {
   widget_->UpdateTextInputState();
 }
 
-bool WidgetBaseInputHandler::ProtectedByIMEGuard() {
+bool WidgetBaseInputHandler::ProtectedByIMEGuard(bool show_virtual_keyboard) {
 #if defined(OS_ANDROID)
+  if (show_virtual_keyboard && handling_input_state_) {
+    handling_input_state_->show_virtual_keyboard = true;
+  }
   return handling_input_state_;
 #else
   return false;

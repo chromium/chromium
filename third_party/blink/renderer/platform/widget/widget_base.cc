@@ -337,7 +337,7 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
                                               bool reply_to_request) {
   TRACE_EVENT0("renderer", "WidgetBase::UpdateTextInputStateInternal");
   if (client_->HasCurrentImeGuard(show_virtual_keyboard) ||
-      input_handler_.ProtectedByIMEGuard()) {
+      input_handler_.ProtectedByIMEGuard(show_virtual_keyboard)) {
     DCHECK(!reply_to_request);
     return;
   }
@@ -573,7 +573,7 @@ ui::TextInputType WidgetBase::GetTextInputType() {
 void WidgetBase::UpdateSelectionBounds() {
   TRACE_EVENT0("renderer", "WidgetBase::UpdateSelectionBounds");
   if (client_->HasCurrentImeGuard(false) ||
-      input_handler_.ProtectedByIMEGuard()) {
+      input_handler_.ProtectedByIMEGuard(false)) {
     return;
   }
 #if defined(USE_AURA)

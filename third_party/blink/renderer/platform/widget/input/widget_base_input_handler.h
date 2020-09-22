@@ -80,7 +80,7 @@ class PLATFORM_EXPORT WidgetBaseInputHandler {
 
   // Whether the event is protected by an IME guard to prevent intermediate
   // IPC messages from being dispatched.
-  bool ProtectedByIMEGuard();
+  bool ProtectedByIMEGuard(bool show_virtual_keyboard);
 
   // Process the touch action, returning whether the action should be relayed
   // to the browser.
