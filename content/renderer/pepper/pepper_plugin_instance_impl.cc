@@ -3028,6 +3028,9 @@ void PepperPluginInstanceImpl::SetAlwaysOnTop(bool on_top) {
 }
 
 void PepperPluginInstanceImpl::DoSetCursor(std::unique_ptr<ui::Cursor> cursor) {
+  if (is_deleted_)
+    return;
+
   cursor_ = std::move(cursor);
   if (fullscreen_container_) {
     fullscreen_container_->PepperDidChangeCursor(*cursor_);
