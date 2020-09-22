@@ -198,6 +198,7 @@ TEST_F(MobileSessionShutdownMetricsProviderTest,
 
   // Test UTE with no possible explanation.
   auto histogram_tester = std::make_unique<base::HistogramTester>();
+  [PreviousSessionInfo resetSharedInstanceForTesting];
   [PreviousSessionInfo sharedInstance].OSRestartedAfterPreviousSession = NO;
   metrics_provider_->ProvidePreviousSessionData(nullptr);
   histogram_tester->ExpectUniqueSample(

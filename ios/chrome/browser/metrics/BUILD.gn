@@ -41,13 +41,11 @@ source_set("metrics") {
     "mobile_session_shutdown_metrics_provider.mm",
     "pageload_foreground_duration_tab_helper.h",
     "pageload_foreground_duration_tab_helper.mm",
-    "previous_session_info.h",
-    "previous_session_info.mm",
-    "previous_session_info_private.h",
   ]
   public_deps = [ "//components/ukm/ios:ukm_url_recorder" ]
   deps = [
     ":chrome_browser_state_client",
+    ":previous_session_info",
     "//base",
     "//components/browser_sync",
     "//components/crash/core/common",
@@ -81,7 +79,6 @@ source_set("metrics") {
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/translate",
     "//ios/chrome/browser/ui/overscroll_actions",
-    "//ios/chrome/browser/ui/util:multiwindow_util",
     "//ios/chrome/browser/ui/whats_new:utils",
     "//ios/chrome/browser/variations",
     "//ios/chrome/browser/variations:ios_chrome_ui_string_overrider_factory",
@@ -92,6 +89,20 @@ source_set("metrics") {
     "//ios/web/common",
     "//ios/web/public/deprecated",
     "//url",
+  ]
+}
+
+source_set("previous_session_info") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "previous_session_info.h",
+    "previous_session_info.mm",
+    "previous_session_info_private.h",
+  ]
+  public_deps = [ "//components/ukm/ios:ukm_url_recorder" ]
+  deps = [
+    "//components/version_info",
+    "//ios/chrome/browser/ui/util:multiwindow_util",
   ]
 }
 
@@ -111,6 +122,7 @@ source_set("unit_tests") {
   deps = [
     ":chrome_browser_state_client",
     ":metrics",
+    ":previous_session_info",
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
@@ -145,6 +157,7 @@ source_set("metrics_browser_agent") {
   deps = [
     ":metrics",
     ":metrics_internal",
+    ":previous_session_info",
     ":tab_usage_recorder_metrics",
     "//base",
     "//components/google/core/common",
@@ -219,6 +232,7 @@ source_set("unit_tests_internal") {
     ":metrics",
     ":metrics_browser_agent",
     ":metrics_internal",
+    ":previous_session_info",
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/main:test_support",
@@ -286,6 +300,8 @@ source_set("eg_app_support+eg2") {
     "metrics_app_interface.mm",
   ]
   deps = [
+    ":metrics",
+    ":metrics_internal",
     "//base",
     "//base/test:test_support",
     "//components/metrics",
@@ -297,8 +313,6 @@ source_set("eg_app_support+eg2") {
     "//components/ukm:ukm_test_helper",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/metrics",
-    "//ios/chrome/browser/metrics:metrics_internal",
     "//ios/chrome/test/app:test_support",
     "//ios/testing:nserror_support",
     "//third_party/metrics_proto",
