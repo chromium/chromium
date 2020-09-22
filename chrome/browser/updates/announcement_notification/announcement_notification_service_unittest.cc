@@ -107,7 +107,6 @@ class AnnouncementNotificationServiceTest : public testing::Test {
     TestingProfile::Builder builder;
     builder.SetPath(
         test_profile_manager_->profiles_dir().AppendASCII(kProfileId));
-    std::unique_ptr<sync_preferences::PrefServiceSyncable>();
     builder.SetPrefService(
         std::unique_ptr<sync_preferences::PrefServiceSyncable>());
     builder.SetProfileName(kProfileId);
