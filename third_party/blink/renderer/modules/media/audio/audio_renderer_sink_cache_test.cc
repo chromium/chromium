@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/media/audio/audio_renderer_sink_cache_impl.h"
+#include "third_party/blink/renderer/modules/media/audio/audio_renderer_sink_cache.h"
 
 #include <utility>
 
@@ -38,7 +38,7 @@ class AudioRendererSinkCacheTest : public testing::Test {
         task_runner_context_(
             std::make_unique<base::TestMockTimeTaskRunner::ScopedContext>(
                 task_runner_)),
-        cache_(std::make_unique<AudioRendererSinkCacheImpl>(
+        cache_(std::make_unique<AudioRendererSinkCache>(
             task_runner_,
             base::BindRepeating(&AudioRendererSinkCacheTest::CreateSink,
                                 base::Unretained(this)),
@@ -99,7 +99,7 @@ class AudioRendererSinkCacheTest : public testing::Test {
   std::unique_ptr<base::TestMockTimeTaskRunner::ScopedContext>
       task_runner_context_;
 
-  std::unique_ptr<AudioRendererSinkCacheImpl> cache_;
+  std::unique_ptr<AudioRendererSinkCache> cache_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AudioRendererSinkCacheTest);
@@ -259,7 +259,7 @@ TEST_F(AudioRendererSinkCacheTest, UnhealthySinkIsStopped) {
           kUnhealthyDeviceId, media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
 
   cache_.reset();  // Destruct first so there's only one cache at a time.
-  cache_ = std::make_unique<AudioRendererSinkCacheImpl>(
+  cache_ = std::make_unique<AudioRendererSinkCache>(
       task_runner_,
       base::BindRepeating(
           [](scoped_refptr<media::AudioRendererSink> sink,
@@ -287,7 +287,7 @@ TEST_F(AudioRendererSinkCacheTest, UnhealthySinkUsingSessionIdIsStopped) {
           kUnhealthyDeviceId, media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
 
   cache_.reset();  // Destruct first so there's only one cache at a time.
-  cache_ = std::make_unique<AudioRendererSinkCacheImpl>(
+  cache_ = std::make_unique<AudioRendererSinkCache>(
       task_runner_,
       base::BindRepeating(
           [](scoped_refptr<media::AudioRendererSink> sink,
@@ -352,10 +352,10 @@ TEST_F(AudioRendererSinkCacheTest, MultithreadedAccess) {
 
   // Request device information on the first thread.
   PostAndWaitUntilDone(
-      thread1, base::BindOnce(
-                   base::IgnoreResult(&AudioRendererSinkCacheImpl::GetSinkInfo),
-                   base::Unretained(cache_.get()), kFrameToken,
-                   base::UnguessableToken(), kDefaultDeviceId));
+      thread1,
+      base::BindOnce(base::IgnoreResult(&AudioRendererSinkCache::GetSinkInfo),
+                     base::Unretained(cache_.get()), kFrameToken,
+                     base::UnguessableToken(), kDefaultDeviceId));
 
   EXPECT_EQ(1, sink_count());
 
@@ -372,10 +372,10 @@ TEST_F(AudioRendererSinkCacheTest, MultithreadedAccess) {
 
   // Request device information on the first thread again.
   PostAndWaitUntilDone(
-      thread1, base::BindOnce(
-                   base::IgnoreResult(&AudioRendererSinkCacheImpl::GetSinkInfo),
-                   base::Unretained(cache_.get()), kFrameToken,
-                   base::UnguessableToken(), kDefaultDeviceId));
+      thread1,
+      base::BindOnce(base::IgnoreResult(&AudioRendererSinkCache::GetSinkInfo),
+                     base::Unretained(cache_.get()), kFrameToken,
+                     base::UnguessableToken(), kDefaultDeviceId));
   EXPECT_EQ(1, sink_count());
 
   // Release the sink on the second thread.

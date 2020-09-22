@@ -2,29 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_SINK_CACHE_IMPL_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_SINK_CACHE_IMPL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_SINK_CACHE_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_SINK_CACHE_H_
 
-#include "third_party/blink/public/web/modules/media/audio/audio_renderer_sink_cache.h"
-
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "media/audio/audio_sink_parameters.h"
+#include "media/base/output_device_info.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+
+namespace media {
+class AudioRendererSink;
+}
 
 namespace blink {
 
 class LocalFrame;
 
-// AudioRendererSinkCache implementation.
-class MODULES_EXPORT AudioRendererSinkCacheImpl
-    : public AudioRendererSinkCache {
+// Caches AudioRendererSink instances, provides them to the clients for usage,
+// tracks their used/unused state, reuses them to obtain output device
+// information, garbage-collects unused sinks.
+// Must live on the main render thread. Thread safe.
+class MODULES_EXPORT AudioRendererSinkCache {
  public:
   class FrameObserver;
 
@@ -39,28 +47,27 @@ class MODULES_EXPORT AudioRendererSinkCacheImpl
   static void InstallFrameObserver(LocalFrame& frame);
 
   // |cleanup_task_runner| will be used to delete sinks when they are unused,
-  // AudioRendererSinkCacheImpl must outlive any tasks posted to it. Since
+  // AudioRendererSinkCache must outlive any tasks posted to it. Since
   // the sink cache is normally a process-wide singleton, this isn't a problem.
-  AudioRendererSinkCacheImpl(
+  AudioRendererSinkCache(
       scoped_refptr<base::SequencedTaskRunner> cleanup_task_runner,
       CreateSinkCallback create_sink_callback,
       base::TimeDelta delete_timeout);
-
-  ~AudioRendererSinkCacheImpl() final;
+  ~AudioRendererSinkCache();
 
   // AudioRendererSinkCache implementation:
   media::OutputDeviceInfo GetSinkInfo(const LocalFrameToken& source_frame_token,
                                       const base::UnguessableToken& session_id,
-                                      const std::string& device_id) final;
+                                      const std::string& device_id);
   scoped_refptr<media::AudioRendererSink> GetSink(
       const LocalFrameToken& source_frame_token,
-      const std::string& device_id) final;
-  void ReleaseSink(const media::AudioRendererSink* sink_ptr) final;
+      const std::string& device_id);
+  void ReleaseSink(const media::AudioRendererSink* sink_ptr);
 
  private:
   friend class AudioRendererSinkCacheTest;
   friend class CacheEntryFinder;
-  friend class AudioRendererSinkCacheImpl::FrameObserver;
+  friend class AudioRendererSinkCache::FrameObserver;
 
   struct CacheEntry;
   using CacheContainer = std::vector<CacheEntry>;
@@ -90,7 +97,7 @@ class MODULES_EXPORT AudioRendererSinkCacheImpl
   size_t GetCacheSizeForTesting();
 
   // Global instance, set in constructor and unset in destructor.
-  static AudioRendererSinkCacheImpl* instance_;
+  static AudioRendererSinkCache* instance_;
 
   // Renderer main task runner.
   const scoped_refptr<base::SequencedTaskRunner> cleanup_task_runner_;
@@ -110,9 +117,9 @@ class MODULES_EXPORT AudioRendererSinkCacheImpl
   base::Lock cache_lock_;
   CacheContainer cache_;
 
-  DISALLOW_COPY_AND_ASSIGN(AudioRendererSinkCacheImpl);
+  DISALLOW_COPY_AND_ASSIGN(AudioRendererSinkCache);
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_SINK_CACHE_IMPL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_SINK_CACHE_H_

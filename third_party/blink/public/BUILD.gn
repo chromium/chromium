@@ -278,7 +278,6 @@ source_set("blink_headers") {
     "web/blink.h",
     "web/modules/autofill/web_form_element_observer.h",
     "web/modules/media/audio/audio_device_factory.h",
-    "web/modules/media/audio/audio_renderer_sink_cache.h",
     "web/modules/media/audio/web_audio_input_ipc_factory.h",
     "web/modules/media/audio/web_audio_output_ipc_factory.h",
     "web/modules/media/webmediaplayer_util.h",

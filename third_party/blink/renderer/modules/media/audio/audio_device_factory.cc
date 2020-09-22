@@ -22,7 +22,7 @@
 #include "third_party/blink/public/web/modules/media/audio/web_audio_input_ipc_factory.h"
 #include "third_party/blink/public/web/modules/media/audio/web_audio_output_ipc_factory.h"
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_manager.h"
-#include "third_party/blink/renderer/modules/media/audio/audio_renderer_sink_cache_impl.h"
+#include "third_party/blink/renderer/modules/media/audio/audio_renderer_sink_cache.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
@@ -196,7 +196,7 @@ media::OutputDeviceInfo AudioDeviceFactory::GetOutputDeviceInfo(
   //
   // TODO(crbug.com/787252): Replace the use of base::ThreadPool below by
   // worker_pool::PostTask().
-  static base::NoDestructor<AudioRendererSinkCacheImpl> cache(
+  static base::NoDestructor<AudioRendererSinkCache> cache(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
