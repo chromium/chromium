@@ -1436,9 +1436,17 @@ void AutofillManager::OnLoadedServerPredictions(
     return;
 
   // Parse and store the server predictions.
-  FormStructure::ParseApiQueryResponse(std::move(response), queried_forms,
-                                       signatures,
-                                       form_interactions_ukm_logger_.get());
+  if (base::FeatureList::IsEnabled(features::kAutofillUseApi)) {
+    // Parse response from API.
+    FormStructure::ParseApiQueryResponse(std::move(response), queried_forms,
+                                         signatures,
+                                         form_interactions_ukm_logger_.get());
+  } else {
+    // Parse response from legacy server.
+    FormStructure::ParseQueryResponse(std::move(response), queried_forms,
+                                      signatures,
+                                      form_interactions_ukm_logger_.get());
+  }
 
   // Will log quality metrics for each FormStructure based on the presence of
   // autocomplete attributes, if available.

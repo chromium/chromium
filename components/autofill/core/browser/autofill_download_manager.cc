@@ -500,9 +500,20 @@ bool CanThrottleUpload(const FormStructure& form,
   return !is_first_upload_for_event;
 }
 
+// Determines whether to use the API instead of the legacy server.
+inline bool UseApi() {
+  return base::FeatureList::IsEnabled(features::kAutofillUseApi);
+}
+
 // Determines whether a HTTP request was successful based on its response code.
 bool IsHttpSuccess(int response_code) {
   return (response_code >= 200 && response_code < 300);
+}
+
+// Gets an upload payload for requests to the legacy server.
+inline bool GetUploadPayloadForLegacy(const AutofillUploadContents& upload,
+                                      std::string* payload) {
+  return upload.SerializeToString(payload);
 }
 
 bool GetUploadPayloadForApi(const AutofillUploadContents& upload,
@@ -646,7 +657,8 @@ bool AutofillDownloadManager::StartQueryRequest(
 
   // Get the query request payload.
   std::string payload;
-  bool is_payload_serialized = GetAPIQueryPayload(query, &payload);
+  bool is_payload_serialized = UseApi() ? GetAPIQueryPayload(query, &payload)
+                                        : query.SerializeToString(&payload);
   if (!is_payload_serialized) {
     return false;
   }
@@ -727,7 +739,8 @@ bool AutofillDownloadManager::StartUploadRequest(
 
   // Get the POST payload that contains upload data.
   std::string payload;
-  bool is_payload = GetUploadPayloadForApi(upload, &payload);
+  bool is_payload = UseApi() ? GetUploadPayloadForApi(upload, &payload)
+                             : GetUploadPayloadForLegacy(upload, &payload);
   // Indicate that we could not serialize upload in the payload.
   if (!is_payload) {
     return false;
@@ -836,7 +849,9 @@ bool AutofillDownloadManager::StartRequest(FormRequestData request_data) {
   // Get the URL and method to use for this request.
   std::string method;
   GURL request_url;
-  std::tie(request_url, method) = GetRequestURLAndMethodForApi(request_data);
+  std::tie(request_url, method) =
+      UseApi() ? GetRequestURLAndMethodForApi(request_data)
+               : GetRequestURLAndMethod(request_data);
 
   // Track the URL length for GET queries because the URL length can be in the
   // thousands when rich metadata is enabled.
@@ -866,10 +881,11 @@ bool AutofillDownloadManager::StartRequest(FormRequestData request_data) {
                              : variations::InIncognito::kNo,
       resource_request.get());
 
-  // Set headers specific to the API.
-  // Encode response serialized proto in base64 for safety.
-  resource_request->headers.SetHeader(kGoogEncodeResponseIfExecutable,
-                                      "base64");
+  // Set headers specific to the API if using it.
+  if (UseApi())
+    // Encode response serialized proto in base64 for safety.
+    resource_request->headers.SetHeader(kGoogEncodeResponseIfExecutable,
+                                        "base64");
 
   // Put API key in request's header if a key exists, and the endpoint is
   // trusted by Google.
@@ -888,13 +904,17 @@ bool AutofillDownloadManager::StartRequest(FormRequestData request_data) {
   simple_loader->SetAllowHttpErrorResults(true);
 
   if (method == "POST") {
-    const std::string content_type = "application/x-protobuf";
+    const std::string content_type =
+        UseApi() ? "application/x-protobuf" : "text/proto";
     std::string payload;
-    if (!GetAPIBodyPayload(request_data.payload, request_data.request_type,
-                           &payload)) {
-      return false;
+    if (UseApi()) {
+      if (!GetAPIBodyPayload(request_data.payload, request_data.request_type,
+                             &payload)) {
+        return false;
+      }
+    } else {
+      payload = request_data.payload;
     }
-
     // Attach payload data and add data format header.
     simple_loader->AttachStringForUpload(payload, content_type);
   }

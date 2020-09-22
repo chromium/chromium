@@ -207,7 +207,10 @@ class AutofillCapturedSitesInteractiveTest
         std::make_unique<test::ServerCacheReplayer>(
             GetParam().capture_file_path,
             test::ServerCacheReplayer::kOptionFailOnInvalidJsonRecord |
-                test::ServerCacheReplayer::kOptionSplitRequestsByForm)));
+                test::ServerCacheReplayer::kOptionSplitRequestsByForm,
+            base::FeatureList::IsEnabled(features::kAutofillUseApi)
+                ? test::AutofillServerType::kApi
+                : test::AutofillServerType::kLegacy)));
   }
 
   void TearDownOnMainThread() override {
@@ -235,7 +238,8 @@ class AutofillCapturedSitesInteractiveTest
     // prediction. Test will check this attribute on all the relevant input
     // elements in a form to determine if the form is ready for interaction.
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillShowTypePredictions},
+        /*enabled_features=*/{features::kAutofillShowTypePredictions,
+                              features::kAutofillUseApi},
         /*disabled_features=*/{features::kAutofillCacheQueryResponses});
     command_line->AppendSwitch(switches::kShowAutofillTypePredictions);
     command_line->AppendSwitchASCII(::switches::kForceFieldTrials,
