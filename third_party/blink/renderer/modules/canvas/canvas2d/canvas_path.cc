@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_path.h"
 
 #include "base/numerics/safe_conversions.h"
+#include "third_party/blink/renderer/core/geometry/dom_point.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -447,5 +448,61 @@ void CanvasPath::rect(double double_x,
     return;
 
   path_.AddRect(FloatRect(x, y, width, height));
+}
+
+void CanvasPath::roundRect(double double_x,
+                           double double_y,
+                           double double_width,
+                           double double_height,
+                           const HeapVector<DoubleOrDOMPoint, 0> radii,
+                           ExceptionState& exception_state) {
+  const int num_radii = radii.size();
+  if (num_radii < 1 || num_radii > 4) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kIndexSizeError,
+        String::Number(num_radii) +
+            " radii provided. Between one and four radii are necessary.");
+  }
+
+  float x = base::saturated_cast<float>(double_x);
+  float y = base::saturated_cast<float>(double_y);
+  float width = base::saturated_cast<float>(double_width);
+  float height = base::saturated_cast<float>(double_height);
+  if (!IsTransformInvertible())
+    return;
+
+  if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(width) ||
+      !std::isfinite(height))
+    return;
+
+  FloatRect rect = FloatRect(x, y, width, height);
+
+  FloatSize r[num_radii];
+  for (int i = 0; i < num_radii; ++i) {
+    if (radii[i].IsDouble()) {
+      float a = base::saturated_cast<float>(radii[i].GetAsDouble());
+      r[i] = FloatSize(a, a);
+    } else {  // This radius is a DOMPoint
+      DOMPoint* p = radii[i].GetAsDOMPoint();
+      r[i] = FloatSize(base::saturated_cast<float>(p->x()),
+                       base::saturated_cast<float>(p->y()));
+    }
+  }
+
+  // Order of arguments here is so that this function behaves the same as the
+  // CSS border-radius property
+  switch (num_radii) {
+    case 1:
+      path_.AddRoundedRect(rect, r[0]);
+      break;
+    case 2:
+      path_.AddRoundedRect(rect, r[0], r[1], r[1], r[0]);
+      break;
+    case 3:
+      path_.AddRoundedRect(rect, r[0], r[1], r[1], r[2]);
+      break;
+    case 4:
+      path_.AddRoundedRect(rect, r[0], r[1], r[3], r[2]);
+  }
 }
 }  // namespace blink

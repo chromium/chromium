@@ -982,6 +982,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method resetTransform
 [Worker]     method restore
 [Worker]     method rotate
+[Worker]     method roundRect
 [Worker]     method save
 [Worker]     method scale
 [Worker]     method setLineDash
@@ -1024,6 +1025,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method moveTo
 [Worker]     method quadraticCurveTo
 [Worker]     method rect
+[Worker]     method roundRect
 [Worker] interface PaymentInstruments
 [Worker]     attribute @@toStringTag
 [Worker]     method clear

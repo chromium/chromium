@@ -1025,6 +1025,7 @@ interface CanvasRenderingContext2D
     method resetTransform
     method restore
     method rotate
+    method roundRect
     method save
     method scale
     method scrollPathIntoView
@@ -5745,6 +5746,7 @@ interface OffscreenCanvasRenderingContext2D
     method resetTransform
     method restore
     method rotate
+    method roundRect
     method save
     method scale
     method setLineDash
@@ -5865,6 +5867,7 @@ interface Path2D
     method moveTo
     method quadraticCurveTo
     method rect
+    method roundRect
 interface PaymentAddress
     attribute @@toStringTag
     getter addressLine
