@@ -464,8 +464,8 @@ class HandleFilesystemViaBrokerPolicy : public bpf_dsl::Policy {
     // Broker everything that we're supposed to broker.
     if (broker_process_->IsSyscallAllowed(sysno)) {
       return sandbox::bpf_dsl::Trap(
-          sandbox::syscall_broker::BrokerProcess::SIGSYS_Handler,
-          broker_process_);
+          sandbox::syscall_broker::BrokerClient::SIGSYS_Handler,
+          broker_process_->GetBrokerClientSignalBased());
     }
 
     // Otherwise, if this is a syscall that takes a pathname but isn't an

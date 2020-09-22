@@ -8,17 +8,10 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "sandbox/linux/system_headers/linux_seccomp.h"
 #include "sandbox/sandbox_export.h"
 
 namespace sandbox {
-
-// This must match the kernel's seccomp_data structure.
-struct arch_seccomp_data {
-  int nr;
-  uint32_t arch;
-  uint64_t instruction_pointer;
-  uint64_t args[6];
-};
 
 namespace bpf_dsl {
 

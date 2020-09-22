@@ -5,6 +5,8 @@
 #ifndef SANDBOX_LINUX_SYSTEM_HEADERS_LINUX_SECCOMP_H_
 #define SANDBOX_LINUX_SYSTEM_HEADERS_LINUX_SECCOMP_H_
 
+#include <stdint.h>
+
 // The Seccomp2 kernel ABI is not part of older versions of glibc.
 // As we can't break compilation with these versions of the library,
 // we explicitly define all missing symbols.
@@ -102,6 +104,17 @@
 #ifndef SECCOMP_FILTER_FLAG_SPEC_ALLOW
 #define SECCOMP_FILTER_FLAG_SPEC_ALLOW (1UL << 2)
 #endif
+
+// In the future, if we add fields to this struct and then access them, they
+// might be out-of-bounds on an older kernel. So before adding to this struct,
+// make sure to annotate them with a comment that it may be unsafe to access
+// those fields on older kernels.
+struct arch_seccomp_data {
+  int nr;
+  uint32_t arch;
+  uint64_t instruction_pointer;
+  uint64_t args[6];
+};
 
 #ifndef SECCOMP_RET_KILL
 // Return values supported for BPF filter programs. Please note that the

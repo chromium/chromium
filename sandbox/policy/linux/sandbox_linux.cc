@@ -40,6 +40,7 @@
 #include "sandbox/linux/services/thread_helpers.h"
 #include "sandbox/linux/services/yama.h"
 #include "sandbox/linux/suid/client/setuid_sandbox_client.h"
+#include "sandbox/linux/syscall_broker/broker_client.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_process.h"
 #include "sandbox/policy/linux/bpf_broker_policy_linux.h"
@@ -506,7 +507,8 @@ bool SandboxLinux::ShouldBrokerHandleSyscall(int sysno) const {
 
 sandbox::bpf_dsl::ResultExpr SandboxLinux::HandleViaBroker() const {
   return sandbox::bpf_dsl::Trap(
-      sandbox::syscall_broker::BrokerProcess::SIGSYS_Handler, broker_process_);
+      sandbox::syscall_broker::BrokerClient::SIGSYS_Handler,
+      broker_process_->GetBrokerClientSignalBased());
 }
 
 bool SandboxLinux::HasOpenDirectories() const {

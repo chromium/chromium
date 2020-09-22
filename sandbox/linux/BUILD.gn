@@ -351,6 +351,8 @@ component("sandbox_services") {
     "syscall_broker/broker_process.h",
     "syscall_broker/broker_simple_message.cc",
     "syscall_broker/broker_simple_message.h",
+    "syscall_broker/syscall_dispatcher.cc",
+    "syscall_broker/syscall_dispatcher.h",
   ]
 
   defines = [ "SANDBOX_IMPLEMENTATION" ]
@@ -400,6 +402,8 @@ component("sandbox_services") {
       "syscall_broker/broker_process.h",
       "syscall_broker/broker_simple_message.cc",
       "syscall_broker/broker_simple_message.h",
+      "syscall_broker/syscall_dispatcher.cc",
+      "syscall_broker/syscall_dispatcher.h",
     ]
   } else if (!is_android) {
     sources += [

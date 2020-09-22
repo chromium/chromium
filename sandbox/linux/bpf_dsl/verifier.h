@@ -12,10 +12,10 @@
 #include "base/macros.h"
 #include "sandbox/sandbox_export.h"
 
+struct arch_seccomp_data;
 struct sock_filter;
 
 namespace sandbox {
-struct arch_seccomp_data;
 
 namespace bpf_dsl {
 

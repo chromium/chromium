@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "sandbox/linux/syscall_broker/broker_channel.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
+#include "sandbox/linux/syscall_broker/syscall_dispatcher.h"
 #include "sandbox/sandbox_export.h"
 
 namespace sandbox {
@@ -26,8 +27,13 @@ class BrokerPermissionList;
 // thread-safe and async-signal safe way. The goal is to be able to use it to
 // replace the open() or access() system calls happening anywhere in a process
 // (as allowed for instance by seccomp-bpf's SIGSYS mechanism).
-class SANDBOX_EXPORT BrokerClient {
+class SANDBOX_EXPORT BrokerClient : public SyscallDispatcher {
  public:
+  // Handler to be used with a bpf_dsl Trap() function to forward system calls
+  // to the methods below.
+  static intptr_t SIGSYS_Handler(const arch_seccomp_data& args,
+                                 void* aux_broker_process);
+
   // |policy| needs to match the policy used by BrokerHost. This
   // allows to predict some of the requests which will be denied
   // and save an IPC round trip.
@@ -37,43 +43,29 @@ class SANDBOX_EXPORT BrokerClient {
                BrokerChannel::EndPoint ipc_channel,
                const BrokerCommandSet& allowed_command_set,
                bool fast_check_in_client);
-  ~BrokerClient();
+  ~BrokerClient() override;
 
-  // Get the file descriptor used for IPC. This is used for tests.
-  int GetIPCDescriptor() const { return ipc_channel_.get(); }
+  // Get the file descriptor used for IPC.
+  int GetIPCDescriptorForTesting() const { return ipc_channel_.get(); }
 
   // The following public methods can be used in place of the equivalently
   // name system calls. They all return -errno on errors. They are all async
   // signal safe so they may be called from a SIGSYS trap handler.
 
-  // Can be used in place of access().
-  // X_OK will always return an error in practice since the broker process
-  // doesn't support execute permissions.
-  int Access(const char* pathname, int mode) const;
-
-  // Can be used in place of mkdir().
-  int Mkdir(const char* path, int mode) const;
-
-  // Can be used in place of open().
-  // The implementation only supports certain white listed flags and will
-  // return -EPERM on other flags.
-  int Open(const char* pathname, int flags) const;
-
-  // Can be used in place of Readlink().
-  int Readlink(const char* path, char* buf, size_t bufsize) const;
-
-  // Can be used in place of rename().
-  int Rename(const char* oldpath, const char* newpath) const;
-
-  // Can be used in place of rmdir().
-  int Rmdir(const char* path) const;
-
-  // Can be used in place of stat()/stat64()/lstat()/lstat64()
-  int Stat(const char* pathname, bool follow_links, struct stat* sb) const;
-  int Stat64(const char* pathname, bool folllow_links, struct stat64* sb) const;
-
-  // Can be used in place of unlink().
-  int Unlink(const char* unlink) const;
+  // SyscallDispatcher implementation:
+  int Access(const char* pathname, int mode) const override;
+  int Mkdir(const char* path, int mode) const override;
+  int Open(const char* pathname, int flags) const override;
+  int Readlink(const char* path, char* buf, size_t bufsize) const override;
+  int Rename(const char* oldpath, const char* newpath) const override;
+  int Rmdir(const char* path) const override;
+  int Stat(const char* pathname,
+           bool follow_links,
+           struct stat* sb) const override;
+  int Stat64(const char* pathname,
+             bool follow_links,
+             struct stat64* sb) const override;
+  int Unlink(const char* unlink) const override;
 
  private:
   int PathOnlySyscall(BrokerCommand syscall_type, const char* pathname) const;

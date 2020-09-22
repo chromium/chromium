@@ -15,8 +15,9 @@
 #include "sandbox/linux/bpf_dsl/policy.h"
 #include "sandbox/sandbox_export.h"
 
-namespace sandbox {
 struct arch_seccomp_data;
+
+namespace sandbox {
 
 // This class can be used to apply a syscall sandboxing policy expressed in a
 // bpf_dsl::Policy object to the current process.

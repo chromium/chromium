@@ -15,43 +15,43 @@
 // guaranteed to be async-signal safe.
 // See sandbox/linux/seccomp-bpf/trap.h to see how they work.
 
-namespace sandbox {
-
 struct arch_seccomp_data;
+
+namespace sandbox {
 
 // This handler will crash the currently running process. The crashing address
 // will be the number of the current system call, extracted from |args|.
 // This handler will also print to stderr the number of the crashing syscall.
-SANDBOX_EXPORT intptr_t
-    CrashSIGSYS_Handler(const struct arch_seccomp_data& args, void* aux);
+SANDBOX_EXPORT intptr_t CrashSIGSYS_Handler(const arch_seccomp_data& args,
+                                            void* aux);
 
 // The following seven handlers are suitable to report failures for specific
 // system calls with additional information.
 
 // The crashing address will be (clone_flags & 0xFFFFFF), where clone_flags is
 // the clone(2) argument, extracted from |args|.
-SANDBOX_EXPORT intptr_t
-    SIGSYSCloneFailure(const struct arch_seccomp_data& args, void* aux);
+SANDBOX_EXPORT intptr_t SIGSYSCloneFailure(const arch_seccomp_data& args,
+                                           void* aux);
 // The crashing address will be (option & 0xFFF), where option is the prctl(2)
 // argument.
-SANDBOX_EXPORT intptr_t
-    SIGSYSPrctlFailure(const struct arch_seccomp_data& args, void* aux);
+SANDBOX_EXPORT intptr_t SIGSYSPrctlFailure(const arch_seccomp_data& args,
+                                           void* aux);
 // The crashing address will be request & 0xFFFF, where request is the ioctl(2)
 // argument.
-SANDBOX_EXPORT intptr_t
-    SIGSYSIoctlFailure(const struct arch_seccomp_data& args, void* aux);
+SANDBOX_EXPORT intptr_t SIGSYSIoctlFailure(const arch_seccomp_data& args,
+                                           void* aux);
 // The crashing address will be (pid & 0xFFF), where pid is the first
 // argument (and can be a tid).
-SANDBOX_EXPORT intptr_t
-    SIGSYSKillFailure(const struct arch_seccomp_data& args, void* aux);
+SANDBOX_EXPORT intptr_t SIGSYSKillFailure(const arch_seccomp_data& args,
+                                          void* aux);
 // The crashing address will be (op & 0xFFF), where op is the second
 // argument.
-SANDBOX_EXPORT intptr_t
-    SIGSYSFutexFailure(const struct arch_seccomp_data& args, void* aux);
+SANDBOX_EXPORT intptr_t SIGSYSFutexFailure(const arch_seccomp_data& args,
+                                           void* aux);
 // The crashing address will be (op & 0xFFF), where op is the second
 // argument.
-SANDBOX_EXPORT intptr_t
-SIGSYSPtraceFailure(const struct arch_seccomp_data& args, void* aux);
+SANDBOX_EXPORT intptr_t SIGSYSPtraceFailure(const arch_seccomp_data& args,
+                                            void* aux);
 // If the syscall is not being called on the current tid, crashes in the same
 // way as CrashSIGSYS_Handler.  Otherwise, returns the result of calling the
 // syscall with the pid argument set to 0 (which for these calls means the
@@ -60,8 +60,8 @@ SIGSYSPtraceFailure(const struct arch_seccomp_data& args, void* aux);
 // sched_getaffinity(), sched_getattr(), sched_getparam(), sched_getscheduler(),
 // sched_rr_get_interval(), sched_setaffinity(), sched_setattr(),
 // sched_setparam(), sched_setscheduler()
-SANDBOX_EXPORT intptr_t
-    SIGSYSSchedHandler(const struct arch_seccomp_data& args, void* aux);
+SANDBOX_EXPORT intptr_t SIGSYSSchedHandler(const arch_seccomp_data& args,
+                                           void* aux);
 
 // Variants of the above functions for use with bpf_dsl.
 SANDBOX_EXPORT bpf_dsl::ResultExpr CrashSIGSYS();

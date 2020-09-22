@@ -21,6 +21,7 @@
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
 #include "sandbox/linux/seccomp-bpf/syscall.h"
 #include "sandbox/linux/services/syscall_wrappers.h"
+#include "sandbox/linux/system_headers/linux_seccomp.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 
 #if defined(__mips__)
@@ -147,7 +148,7 @@ class NumberToHex {
 
 // Records the syscall number and first four arguments in a crash key, to help
 // debug the failure.
-void SetSeccompCrashKey(const struct sandbox::arch_seccomp_data& args) {
+void SetSeccompCrashKey(const struct arch_seccomp_data& args) {
 #if !defined(OS_NACL_NONSFI)
   NumberToHex<int> nr(args.nr);
   NumberToHex<uint64_t> arg1(args.args[0]);

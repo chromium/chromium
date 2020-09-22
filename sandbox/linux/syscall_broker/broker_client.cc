@@ -337,5 +337,13 @@ int BrokerClient::StatFamilySyscall(BrokerCommand syscall_type,
   return return_value;
 }
 
+// static
+intptr_t BrokerClient::SIGSYS_Handler(const arch_seccomp_data& args,
+                                      void* aux_broker_client) {
+  RAW_CHECK(aux_broker_client);
+  auto* broker_client = static_cast<BrokerClient*>(aux_broker_client);
+  return broker_client->DispatchSyscall(args);
+}
+
 }  // namespace syscall_broker
 }  // namespace sandbox

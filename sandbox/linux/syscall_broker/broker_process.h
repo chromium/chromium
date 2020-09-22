@@ -39,11 +39,6 @@ class BrokerFilePermission;
 // 4. Use open_broker.Open() to open files.
 class SANDBOX_EXPORT BrokerProcess {
  public:
-  // Handler to be used with a bpf_dsl Trap() function to forward system calls
-  // to the methods below.
-  static intptr_t SIGSYS_Handler(const arch_seccomp_data& args,
-                                 void* aux_broker_process);
-
   // |denied_errno| is the error code returned when methods such as Open()
   // or Access() are invoked on a file which is not in the allowlist (EACCESS
   // would be a typical value).  |allowed_command_mask| is a bitwise-or of
@@ -88,40 +83,6 @@ class SANDBOX_EXPORT BrokerProcess {
   syscall_broker::BrokerClient* GetBrokerClientSignalBased() const {
     return broker_client_.get();
   }
-
-  // The following methods are used in place of the equivalently-named
-  // syscalls by the trap handler. They, in turn, forward the call onto
-  // |broker_client_| for further processing. They will all be async signal
-  // safe. They all return -errno on errors.
-
-  // Can be used in place of access().
-  // X_OK will always return an error in practice since the broker process
-  // doesn't support execute permissions.
-  int Access(const char* pathname, int mode) const;
-
-  // Can be used in place of mkdir().
-  int Mkdir(const char* path, int mode) const;
-
-  // Can be used in place of open()
-  // The implementation only supports certain white listed flags and will
-  // return -EPERM on other flags.
-  int Open(const char* pathname, int flags) const;
-
-  // Can be used in place of readlink().
-  int Readlink(const char* path, char* buf, size_t bufsize) const;
-
-  // Can be used in place of rename().
-  int Rename(const char* oldpath, const char* newpath) const;
-
-  // Can be used in place of rmdir().
-  int Rmdir(const char* path) const;
-
-  // Can be used in place of stat()/stat64()/lstat()/lstat64().
-  int Stat(const char* pathname, bool follow_links, struct stat* sb) const;
-  int Stat64(const char* pathname, bool follow_links, struct stat64* sb) const;
-
-  // Can be used in place of unlink().
-  int Unlink(const char* path) const;
 
  private:
   friend class BrokerProcessTestHelper;
