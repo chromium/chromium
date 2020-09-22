@@ -11,10 +11,13 @@ import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import './tab_search_item.js';
 import './tab_search_search_field.js'
+import './strings.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
+import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {fuzzySearch} from './fuzzy_search.js';
@@ -163,6 +166,18 @@ export class TabSearchAppElement extends PolymerElement {
     this.$.selector.selected =
         this.filteredOpenTabs_.length > 0 ? 0 : undefined;
     this.$.tabs.scrollTop = 0;
+
+    const length = this.filteredOpenTabs_.length;
+    let text;
+    if (this.searchText_.length > 0) {
+      text = loadTimeData.getStringF(
+          length == 1 ? 'a11yFoundTabFor' : 'a11yFoundTabsFor', length,
+          this.searchText_);
+    } else {
+      text = loadTimeData.getStringF(
+          length == 1 ? 'a11yFoundTab' : 'a11yFoundTabs', length);
+    }
+    this.announceA11y_(text);
   }
 
   /** @private */
@@ -191,6 +206,7 @@ export class TabSearchAppElement extends PolymerElement {
   onItemClose_(e) {
     const tabId = Number.parseInt(e.currentTarget.id, 10);
     this.apiProxy_.closeTab(tabId);
+    this.announceA11y_(loadTimeData.getString('a11yTabClosed'));
   }
 
   /**
@@ -301,11 +317,31 @@ export class TabSearchAppElement extends PolymerElement {
       this.selectorNavigate_(e.key);
       this.updateScrollView_();
       e.preventDefault();
+
+      // For some reasons setting combobox/aria-activedescendant on tab-search-search-field
+      // has no effect, so manually announce a11y message here.
+      const selectedItem = this.filteredOpenTabs_[this.getSelectedIndex()];
+      this.announceA11y_(this.ariaLabel_(selectedItem));
     } else if (e.key === 'Enter') {
       const selectedItem = this.filteredOpenTabs_[this.getSelectedIndex()];
       this.apiProxy_.switchToTab(
           {tabId: selectedItem.tabId}, !!this.searchText_);
     }
+  }
+
+  /** @param {string} text */
+  announceA11y_(text) {
+    IronA11yAnnouncer.requestAvailability();
+    this.dispatchEvent(new CustomEvent(
+        'iron-announce', {bubbles: true, composed: true, detail: {text}}));
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  ariaLabel_(item) {
+    return `${item.title} ${item.hostname}`;
   }
 
   /**

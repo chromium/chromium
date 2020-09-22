@@ -13,8 +13,8 @@ js_type_check("closure_compile") {
                   ]
   deps = [
     ":fuzzy_search_test",
-    ":tab_search_app_test",
     ":tab_search_app_focus_test",
+    ":tab_search_app_test",
   ]
 }
 

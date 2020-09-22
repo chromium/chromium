@@ -60,12 +60,13 @@
 </tab-search-search-field>
 <div id="tabs">
   <iron-selector id="selector" on-keydown="onItemKeyDown_"
-      selected="{{selectedIndex_}}" selected-class="selected">
+      selected="{{selectedIndex_}}" selected-class="selected" role="listbox">
     <template id="tabsList" is="dom-repeat" items="[[filteredOpenTabs_]]"
         initial-count="[[chunkingItemCount_]]">
-      <tab-search-item id="[[item.tabId]]" class="mwb-list-item" data="[[item]]"
+      <tab-search-item id="[[item.tabId]]" aria-label="[[ariaLabel_(item)]]"
+          class="mwb-list-item" data="[[item]]"
           on-click="onItemClick_" on-close="onItemClose_"
-          on-focus="onItemFocus_" tabindex="0" >
+          on-focus="onItemFocus_" tabindex="0" role="option">
       </tab-search-item>
     </template>
   </iron-selector>
