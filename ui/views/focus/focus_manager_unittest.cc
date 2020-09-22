@@ -1192,40 +1192,6 @@ TEST_F(DesktopWidgetFocusManagerTest, AnchoredDialogInDesktopNativeWidgetAura) {
 }
 #endif
 
-// Ensures graceful failure if there is a focus cycle.
-TEST_F(FocusManagerTest, HandlesFocusCycles) {
-  // Create two side-by-side views.
-  View* root_view = GetWidget()->GetRootView();
-  View* left = root_view->AddChildView(std::make_unique<View>());
-  View* right = root_view->AddChildView(std::make_unique<View>());
-
-  // Create a cycle where the left view is focusable and the right isn't.
-  left->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-  right->SetFocusBehavior(View::FocusBehavior::NEVER);
-  left->SetNextFocusableView(right);
-  right->SetNextFocusableView(left);
-
-  // Set focus on the left view then make it unfocusable, which both advances
-  // focus and ensures there's no candidate for focusing.
-  left->RequestFocus();
-  EXPECT_TRUE(left->HasFocus());
-  left->SetFocusBehavior(View::FocusBehavior::NEVER);
-
-  // At this point, we didn't crash. Just as a sanity check, ensure neither of
-  // our views were incorrectly focused.
-  EXPECT_FALSE(left->HasFocus());
-  EXPECT_FALSE(right->HasFocus());
-
-  // Now test focusing in reverse.
-  GetFocusManager()->SetFocusedView(right);
-  EXPECT_TRUE(right->HasFocus());
-  GetFocusManager()->AdvanceFocus(true);
-
-  // We don't check whether |right| has focus since if no focusable view is
-  // found, AdvanceFocus() doesn't clear focus.
-  EXPECT_FALSE(left->HasFocus());
-}
-
 #if defined(USE_AURA)
 class RedirectToParentFocusManagerTest : public FocusManagerTest {
  public:

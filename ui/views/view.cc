@@ -194,6 +194,10 @@ View::~View() {
   if (parent_)
     parent_->RemoveChildView(this);
 
+  // This view should have been removed from the focus list by now.
+  DCHECK_EQ(next_focusable_view_, nullptr);
+  DCHECK_EQ(previous_focusable_view_, nullptr);
+
   // Need to remove layout manager before deleting children because if we do not
   // it is possible for layout-related calls (e.g. CalculatePreferredSize()) to
   // be called on this view during one of the callbacks below. Since most
@@ -205,6 +209,13 @@ View::~View() {
     internal::ScopedChildrenLock lock(this);
     for (auto* child : children_) {
       child->parent_ = nullptr;
+
+      // Since all children are removed here, it is safe to set
+      // |child|'s focus list pointers to null and expect any references
+      // to |child| will be removed subsequently.
+      child->next_focusable_view_ = nullptr;
+      child->previous_focusable_view_ = nullptr;
+
       if (!child->owned_by_client_)
         delete child;
     }
@@ -257,12 +268,7 @@ void View::ReorderChildView(View* view, int index) {
 
   // Update focus siblings.  Unhook |view| from the focus cycle first so
   // SetFocusSiblings() won't traverse through it.
-  View* next_focusable = view->next_focusable_view_;
-  View* prev_focusable = view->previous_focusable_view_;
-  if (prev_focusable)
-    prev_focusable->next_focusable_view_ = next_focusable;
-  if (next_focusable)
-    next_focusable->previous_focusable_view_ = prev_focusable;
+  view->RemoveFromFocusList();
   SetFocusSiblings(view, pos);
 
   for (ViewObserver& observer : observers_)
@@ -273,13 +279,12 @@ void View::ReorderChildView(View* view, int index) {
 }
 
 void View::RemoveChildView(View* view) {
-  DoRemoveChildView(view, true, true, false, nullptr);
+  DoRemoveChildView(view, true, false, nullptr);
 }
 
 void View::RemoveAllChildViews(bool delete_children) {
   while (!children_.empty())
-    DoRemoveChildView(children_.front(), false, false, delete_children,
-                      nullptr);
+    DoRemoveChildView(children_.front(), false, delete_children, nullptr);
   UpdateTooltip();
 }
 
@@ -1465,10 +1470,54 @@ View* View::GetPreviousFocusableView() {
   return previous_focusable_view_;
 }
 
-void View::SetNextFocusableView(View* view) {
-  if (view)
-    view->previous_focusable_view_ = this;
+void View::RemoveFromFocusList() {
+  View* const old_prev = previous_focusable_view_;
+  View* const old_next = next_focusable_view_;
+
+  previous_focusable_view_ = nullptr;
+  next_focusable_view_ = nullptr;
+
+  if (old_prev)
+    old_prev->next_focusable_view_ = old_next;
+
+  if (old_next)
+    old_next->previous_focusable_view_ = old_prev;
+}
+
+void View::InsertBeforeInFocusList(View* view) {
+  DCHECK(view);
+  DCHECK_EQ(parent_, view->parent_);
+
+  if (view == next_focusable_view_)
+    return;
+
+  RemoveFromFocusList();
+
   next_focusable_view_ = view;
+  previous_focusable_view_ = view->previous_focusable_view_;
+
+  if (previous_focusable_view_)
+    previous_focusable_view_->next_focusable_view_ = this;
+
+  next_focusable_view_->previous_focusable_view_ = this;
+}
+
+void View::InsertAfterInFocusList(View* view) {
+  DCHECK(view);
+  DCHECK_EQ(parent_, view->parent_);
+
+  if (view == previous_focusable_view_)
+    return;
+
+  RemoveFromFocusList();
+
+  if (view->next_focusable_view_) {
+    InsertBeforeInFocusList(view->next_focusable_view_);
+    return;
+  }
+
+  view->next_focusable_view_ = this;
+  previous_focusable_view_ = view;
 }
 
 View::FocusBehavior View::GetFocusBehavior() const {
@@ -2275,7 +2324,7 @@ void View::AddChildViewAtImpl(View* view, int index) {
   if (parent) {
     old_theme = view->GetNativeTheme();
     old_widget = view->GetWidget();
-    parent->DoRemoveChildView(view, true, true, false, this);
+    parent->DoRemoveChildView(view, true, false, this);
   }
 
   view->parent_ = this;
@@ -2284,6 +2333,7 @@ void View::AddChildViewAtImpl(View* view, int index) {
 #endif
   const auto pos = children_.insert(std::next(children_.cbegin(), index), view);
 
+  view->RemoveFromFocusList();
   SetFocusSiblings(view, pos);
 
   // Ensure the layer tree matches the view tree before calling to any client
@@ -2334,7 +2384,6 @@ void View::AddChildViewAtImpl(View* view, int index) {
 }
 
 void View::DoRemoveChildView(View* view,
-                             bool update_focus_cycle,
                              bool update_tool_tip,
                              bool delete_removed_view,
                              View* new_parent) {
@@ -2345,14 +2394,7 @@ void View::DoRemoveChildView(View* view,
     return;
 
   std::unique_ptr<View> view_to_be_deleted;
-  if (update_focus_cycle) {
-    View* next_focusable = view->next_focusable_view_;
-    View* prev_focusable = view->previous_focusable_view_;
-    if (prev_focusable)
-      prev_focusable->next_focusable_view_ = next_focusable;
-    if (next_focusable)
-      next_focusable->previous_focusable_view_ = prev_focusable;
-  }
+  view->RemoveFromFocusList();
 
   Widget* widget = GetWidget();
   bool is_removed_from_widget = false;
@@ -2877,34 +2919,22 @@ void View::SetFocusSiblings(View* view, Views::const_iterator pos) {
   DCHECK(pos != children_.cend());
   DCHECK_EQ(view, *pos);
 
-  View* prev = nullptr;
-  View* next = nullptr;
   if (children_.size() > 1) {
-    if (pos == std::prev(children_.cend())) {
+    if (std::next(pos) == children_.cend()) {
       // |view| was inserted at the end, but the end of the child list may not
       // be the last focusable element. Try to hook in after the last focusable
       // child.
-      prev = *std::find_if(children_.cbegin(), pos,
-                           [](View* v) { return !v->next_focusable_view_; });
-      if (prev == view) {
-        // There is a cycle in the focus list. Insert |view| after the last
-        // child.
-        prev = *std::prev(pos);
-      }
-      next = prev->next_focusable_view_;
+      View* const old_last =
+          *std::find_if(children_.cbegin(), pos,
+                        [](View* v) { return !v->next_focusable_view_; });
+      DCHECK_NE(old_last, view);
+      view->InsertAfterInFocusList(old_last);
     } else {
       // |view| was inserted somewhere other than the end.  Hook in before the
       // subsequent child.
-      next = *std::next(pos);
-      prev = next->GetPreviousFocusableView();
+      view->InsertBeforeInFocusList(*std::next(pos));
     }
   }
-  if (prev)
-    prev->next_focusable_view_ = view;
-  view->previous_focusable_view_ = prev;
-  view->next_focusable_view_ = next;
-  if (next)
-    next->previous_focusable_view_ = view;
 }
 
 void View::AdvanceFocusIfNecessary() {

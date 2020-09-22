@@ -8,6 +8,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -26,6 +27,8 @@
 #include "build/build_config.h"
 #include "cc/paint/display_item_list.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -63,6 +66,7 @@
 #include "ui/views/window/dialog_delegate.h"
 
 using base::ASCIIToUTF16;
+using testing::ElementsAre;
 
 namespace {
 
@@ -5516,6 +5520,164 @@ TEST_F(ViewTest, TooltipShowsForDisabledView) {
 
   EXPECT_EQ(disabled_child,
             enabled_parent.GetTooltipHandlerForPoint(gfx::Point(50, 50)));
+}
+
+TEST_F(ViewTest, DefaultFocusListIsInChildOrder) {
+  View parent;
+  View* const first = parent.AddChildView(std::make_unique<View>());
+
+  EXPECT_EQ(first->GetPreviousFocusableView(), nullptr);
+  EXPECT_EQ(first->GetNextFocusableView(), nullptr);
+
+  View* const second = parent.AddChildView(std::make_unique<View>());
+
+  EXPECT_EQ(first->GetPreviousFocusableView(), nullptr);
+  EXPECT_EQ(first->GetNextFocusableView(), second);
+  EXPECT_EQ(second->GetPreviousFocusableView(), first);
+  EXPECT_EQ(second->GetNextFocusableView(), nullptr);
+
+  View* const last = parent.AddChildView(std::make_unique<View>());
+
+  EXPECT_EQ(first->GetPreviousFocusableView(), nullptr);
+  EXPECT_EQ(first->GetNextFocusableView(), second);
+  EXPECT_EQ(second->GetPreviousFocusableView(), first);
+  EXPECT_EQ(second->GetNextFocusableView(), last);
+  EXPECT_EQ(last->GetPreviousFocusableView(), second);
+  EXPECT_EQ(last->GetNextFocusableView(), nullptr);
+}
+
+TEST_F(ViewTest, RemoveFromFocusList) {
+  View parent;
+  View* const first = parent.AddChildView(std::make_unique<View>());
+  View* const second = parent.AddChildView(std::make_unique<View>());
+  View* const last = parent.AddChildView(std::make_unique<View>());
+
+  second->RemoveFromFocusList();
+  EXPECT_EQ(second->GetPreviousFocusableView(), nullptr);
+  EXPECT_EQ(second->GetNextFocusableView(), nullptr);
+  EXPECT_EQ(first->GetNextFocusableView(), last);
+  EXPECT_EQ(last->GetPreviousFocusableView(), first);
+}
+
+TEST_F(ViewTest, RemoveChildUpdatesFocusList) {
+  View parent;
+
+  View* const first = parent.AddChildView(std::make_unique<View>());
+  View* const second = parent.AddChildView(std::make_unique<View>());
+  View* const last = parent.AddChildView(std::make_unique<View>());
+
+  std::unique_ptr<View> removed = parent.RemoveChildViewT(second);
+
+  EXPECT_EQ(removed->GetPreviousFocusableView(), nullptr);
+  EXPECT_EQ(removed->GetNextFocusableView(), nullptr);
+  EXPECT_EQ(first->GetNextFocusableView(), last);
+  EXPECT_EQ(last->GetPreviousFocusableView(), first);
+}
+
+TEST_F(ViewTest, RemoveAllChildViewsNullsFocusListPointers) {
+  View parent;
+
+  View* const first = parent.AddChildView(std::make_unique<View>());
+  View* const second = parent.AddChildView(std::make_unique<View>());
+  View* const last = parent.AddChildView(std::make_unique<View>());
+
+  parent.RemoveAllChildViews(false /* delete_children */);
+
+  EXPECT_EQ(first->GetPreviousFocusableView(), nullptr);
+  EXPECT_EQ(first->GetNextFocusableView(), nullptr);
+  EXPECT_EQ(second->GetPreviousFocusableView(), nullptr);
+  EXPECT_EQ(second->GetNextFocusableView(), nullptr);
+  EXPECT_EQ(last->GetPreviousFocusableView(), nullptr);
+  EXPECT_EQ(last->GetNextFocusableView(), nullptr);
+
+  // The former child views must be deleted manually since the
+  // RemoveAllChildViews released ownership.
+  delete first;
+  delete second;
+  delete last;
+}
+
+namespace {
+
+// Traverses the focus list starting at |first| and returns the views in
+// order as a vector. Checks the consistency of the list as it goes.
+std::vector<View*> ViewsInFocusList(View* first) {
+  std::vector<View*> result;
+
+  // Tracks the views traversed so far. Used to check for cycles.
+  std::set<View*> seen_views;
+
+  View* cur = first;
+  while (cur != nullptr) {
+    // Check a cycle hasn't been found. If there is a cycle, return early.
+    const bool seen = base::Contains(seen_views, cur);
+    EXPECT_FALSE(seen);
+    if (seen)
+      return result;
+
+    seen_views.insert(cur);
+    result.push_back(cur);
+
+    View* const next = cur->GetNextFocusableView();
+    if (next)
+      EXPECT_EQ(next->GetPreviousFocusableView(), cur);
+    cur = next;
+  }
+
+  return result;
+}
+
+}  // namespace
+
+TEST_F(ViewTest, InsertBeforeInFocusList) {
+  View parent;
+  View* const v1 = parent.AddChildView(std::make_unique<View>());
+  View* const v2 = parent.AddChildView(std::make_unique<View>());
+  View* const v3 = parent.AddChildView(std::make_unique<View>());
+
+  EXPECT_THAT(ViewsInFocusList(v1), ElementsAre(v1, v2, v3));
+
+  v2->InsertBeforeInFocusList(v1);
+  EXPECT_THAT(ViewsInFocusList(v2), ElementsAre(v2, v1, v3));
+
+  v3->InsertBeforeInFocusList(v1);
+  EXPECT_THAT(ViewsInFocusList(v2), ElementsAre(v2, v3, v1));
+
+  v1->InsertBeforeInFocusList(v2);
+  EXPECT_THAT(ViewsInFocusList(v1), ElementsAre(v1, v2, v3));
+
+  v1->InsertBeforeInFocusList(v3);
+  EXPECT_THAT(ViewsInFocusList(v2), ElementsAre(v2, v1, v3));
+
+  v1->InsertBeforeInFocusList(v3);
+  EXPECT_THAT(ViewsInFocusList(v2), ElementsAre(v2, v1, v3));
+}
+
+TEST_F(ViewTest, InsertAfterInFocusList) {
+  View parent;
+  View* const v1 = parent.AddChildView(std::make_unique<View>());
+  View* const v2 = parent.AddChildView(std::make_unique<View>());
+  View* const v3 = parent.AddChildView(std::make_unique<View>());
+
+  EXPECT_THAT(ViewsInFocusList(v1), ElementsAre(v1, v2, v3));
+
+  v1->InsertAfterInFocusList(v2);
+  EXPECT_THAT(ViewsInFocusList(v2), ElementsAre(v2, v1, v3));
+
+  v1->InsertAfterInFocusList(v3);
+  EXPECT_THAT(ViewsInFocusList(v2), ElementsAre(v2, v3, v1));
+
+  v2->InsertAfterInFocusList(v1);
+  EXPECT_THAT(ViewsInFocusList(v3), ElementsAre(v3, v1, v2));
+
+  v3->InsertAfterInFocusList(v2);
+  EXPECT_THAT(ViewsInFocusList(v1), ElementsAre(v1, v2, v3));
+
+  v1->InsertAfterInFocusList(v3);
+  EXPECT_THAT(ViewsInFocusList(v2), ElementsAre(v2, v3, v1));
+
+  v1->InsertAfterInFocusList(v3);
+  EXPECT_THAT(ViewsInFocusList(v2), ElementsAre(v2, v3, v1));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

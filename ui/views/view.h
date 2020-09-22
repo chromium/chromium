@@ -1147,12 +1147,13 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Returns the view that should be selected next when pressing Shift-Tab.
   View* GetPreviousFocusableView();
 
-  // Sets the component that should be selected next when pressing Tab, and
-  // makes the current view the precedent view of the specified one.
-  // Note that by default views are linked in the order they have been added to
-  // their container. Use this method if you want to modify the order.
-  // IMPORTANT NOTE: loops in the focus hierarchy are not supported.
-  void SetNextFocusableView(View* view);
+  // Removes |this| from its focus list, updating the previous and next
+  // views' points accordingly.
+  void RemoveFromFocusList();
+
+  // Insert |this| before or after |view| in the focus list.
+  void InsertBeforeInFocusList(View* view);
+  void InsertAfterInFocusList(View* view);
 
   // Gets/sets |FocusBehavior|. SetFocusBehavior() advances focus if necessary.
   FocusBehavior GetFocusBehavior() const;
@@ -1655,15 +1656,13 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Adds |view| as a child of this view at |index|.
   void AddChildViewAtImpl(View* view, int index);
 
-  // Removes |view| from the hierarchy tree.  If |update_focus_cycle| is true,
-  // the next and previous focusable views of views pointing to this view are
-  // updated.  If |update_tool_tip| is true, the tooltip is updated.  If
-  // |delete_removed_view| is true, the view is also deleted (if it is parent
-  // owned).  If |new_parent| is not null, the remove is the result of
-  // AddChildView() to a new parent.  For this case, |new_parent| is the View
-  // that |view| is going to be added to after the remove completes.
+  // Removes |view| from the hierarchy tree. If |update_tool_tip| is
+  // true, the tooltip is updated. If |delete_removed_view| is true, the
+  // view is also deleted (if it is parent owned). If |new_parent| is
+  // not null, the remove is the result of AddChildView() to a new
+  // parent. For this case, |new_parent| is the View that |view| is
+  // going to be added to after the remove completes.
   void DoRemoveChildView(View* view,
-                         bool update_focus_cycle,
                          bool update_tool_tip,
                          bool delete_removed_view,
                          View* new_parent);
