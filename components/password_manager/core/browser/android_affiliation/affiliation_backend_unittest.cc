@@ -323,9 +323,7 @@ class AffiliationBackendTest : public testing::Test {
     return consumer_task_runner_.get();
   }
 
-  ScopedFakeAffiliationAPI* fake_affiliation_api() {
-    return &fake_affiliation_api_;
-  }
+  FakeAffiliationAPI* fake_affiliation_api() { return &fake_affiliation_api_; }
 
   MockAffiliationConsumer* mock_consumer() { return &mock_consumer_; }
 
@@ -350,6 +348,10 @@ class AffiliationBackendTest : public testing::Test {
         std::make_unique<MockAffiliationFetchThrottler>(backend_.get());
     mock_fetch_throttler_ = mock_fetch_throttler.get();
     backend_->SetThrottlerForTesting(std::move(mock_fetch_throttler));
+    auto fake_fetcher_factory =
+        std::make_unique<FakeAffiliationFetcherFactory>();
+    fake_affiliation_api_.SetFetcherFactory(fake_fetcher_factory.get());
+    backend_->SetFetcherFactoryForTesting(std::move(fake_fetcher_factory));
 
     fake_affiliation_api_.AddTestEquivalenceClass(
         GetTestEquivalenceClassAlpha());
@@ -366,9 +368,9 @@ class AffiliationBackendTest : public testing::Test {
       base::MakeRefCounted<base::TestSimpleTaskRunner>();
 
   base::FilePath db_path_;
-  ScopedFakeAffiliationAPI fake_affiliation_api_;
-  MockAffiliationConsumer mock_consumer_;
   std::unique_ptr<AffiliationBackend> backend_;
+  FakeAffiliationAPI fake_affiliation_api_;
+  MockAffiliationConsumer mock_consumer_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   // Owned by |backend_|.
   MockAffiliationFetchThrottler* mock_fetch_throttler_ = nullptr;

@@ -26,7 +26,6 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace password_manager {
-
 class AffiliationBackend;
 
 // A service that can be used to query the list of facets that are affiliated
@@ -151,6 +150,8 @@ class AndroidAffiliationService : public KeyedService {
   // corresponding to the given |facet_uri|, but still only as long as the
   // data is no longer needed.
   virtual void TrimCacheForFacetURI(const FacetURI& facet_uri);
+
+  AffiliationBackend* GetBackendForTesting() { return backend_; }
 
  private:
   // The backend, owned by this AndroidAffiliationService instance, but living

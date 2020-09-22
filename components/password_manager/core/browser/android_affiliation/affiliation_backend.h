@@ -41,6 +41,7 @@ namespace password_manager {
 
 class AffiliationDatabase;
 class AffiliationFetcherInterface;
+class AffiliationFetcherFactory;
 class AffiliationFetchThrottler;
 class FacetManager;
 
@@ -92,6 +93,12 @@ class AffiliationBackend : public FacetManagerHost,
   // Deletes the cache database file at |db_path|, and all auxiliary files. The
   // database must be closed before calling this.
   static void DeleteCache(const base::FilePath& db_path);
+
+  // Replaces already initialized |fetcher_factory_| implemented by
+  // AffiliationFetcherFactoryImpl with a new instance of
+  // AffilationFetcherInterface.
+  void SetFetcherFactoryForTesting(
+      std::unique_ptr<AffiliationFetcherFactory> fetcher_factory);
 
  private:
   friend class AffiliationBackendTest;
@@ -150,6 +157,7 @@ class AffiliationBackend : public FacetManagerHost,
   base::Clock* clock_;
   const base::TickClock* tick_clock_;
 
+  std::unique_ptr<AffiliationFetcherFactory> fetcher_factory_;
   std::unique_ptr<AffiliationDatabase> cache_;
   std::unique_ptr<AffiliationFetcherInterface> fetcher_;
   std::unique_ptr<AffiliationFetchThrottler> throttler_;

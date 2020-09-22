@@ -17,7 +17,6 @@
 #include "components/password_manager/core/browser/android_affiliation/affiliation_api.pb.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/android_affiliation/lookup_affiliation_response_parser.h"
-#include "components/password_manager/core/browser/site_affiliation/affiliation_fetcher_factory.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
@@ -40,8 +39,6 @@ enum AffiliationFetchResult {
   AFFILIATION_FETCH_RESULT_MAX
 };
 
-static AffiliationFetcherFactory* g_testing_factory = nullptr;
-
 AffiliationFetcher::AffiliationFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     AffiliationFetcherDelegate* delegate)
@@ -53,26 +50,6 @@ AffiliationFetcher::AffiliationFetcher(
 }
 
 AffiliationFetcher::~AffiliationFetcher() = default;
-
-// static
-std::unique_ptr<AffiliationFetcherInterface> AffiliationFetcher::Create(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    AffiliationFetcherDelegate* delegate) {
-  if (g_testing_factory) {
-    return g_testing_factory->CreateInstance(std::move(url_loader_factory),
-                                             delegate);
-  }
-  // Using `new` to access a non-public constructor.
-  // (https://abseil.io/tips/134#recommendations)
-  return base::WrapUnique(
-      new AffiliationFetcher(std::move(url_loader_factory), delegate));
-}
-
-// static
-void AffiliationFetcher::SetFactoryForTesting(
-    AffiliationFetcherFactory* factory) {
-  g_testing_factory = factory;
-}
 
 void AffiliationFetcher::StartRequest(const std::vector<FacetURI>& facet_uris,
                                       RequestInfo request_info) {

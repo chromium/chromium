@@ -13,12 +13,12 @@
 
 namespace password_manager {
 
-// Intercepts all AffiliationFetcher requests while in scope, and manufactures
-// API responses based on a set of equivalence classes predefined by the tests.
-class ScopedFakeAffiliationAPI {
+// Wraps the fake factory. Manufactures API responses to AffiliationFetcher
+// requests based on a set of equivalence classes predefined by the tests.
+class FakeAffiliationAPI {
  public:
-  ScopedFakeAffiliationAPI();
-  ~ScopedFakeAffiliationAPI();
+  FakeAffiliationAPI();
+  ~FakeAffiliationAPI();
 
   // Adds |affiliated_facets| to the set of equivalence classes that will form
   // the basis for calculating the fake API responses.
@@ -41,11 +41,15 @@ class ScopedFakeAffiliationAPI {
   // Ignores the next pending request, if any, without completing it.
   void IgnoreNextRequest();
 
- private:
-  ScopedFakeAffiliationFetcherFactory fake_fetcher_factory_;
-  std::vector<AffiliatedFacets> preset_equivalence_relation_;
+  // Sets the fetcher factory through which the affiliation fetchers are
+  // accessed.
+  void SetFetcherFactory(FakeAffiliationFetcherFactory* fake_fetcher_factory) {
+    fake_fetcher_factory_ = fake_fetcher_factory;
+  }
 
-  DISALLOW_COPY_AND_ASSIGN(ScopedFakeAffiliationAPI);
+ private:
+  FakeAffiliationFetcherFactory* fake_fetcher_factory_ = nullptr;
+  std::vector<AffiliatedFacets> preset_equivalence_relation_;
 };
 
 }  // namespace password_manager

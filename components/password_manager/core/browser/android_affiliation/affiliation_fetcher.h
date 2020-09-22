@@ -23,16 +23,12 @@ class SimpleURLLoader;
 
 namespace password_manager {
 
-class AffiliationFetcherFactory;
-
 // Fetches authoritative information regarding which facets are affiliated with
 // each other, that is, which facets belong to the same logical application.
 // See affiliation_utils.h for a definition of what this means.
 //
 // An instance is good for exactly one fetch, and may be used from any thread
 // that runs a message loop (i.e. not a worker pool thread).
-// TODO(crbug.com/1117447): Create and SetFactoryForTesting methods should be
-// moved to a factory responsible for creating AffiliationFetcher instances.
 class AffiliationFetcher : public AffiliationFetcherInterface {
  public:
   AffiliationFetcher(
@@ -40,22 +36,8 @@ class AffiliationFetcher : public AffiliationFetcherInterface {
       AffiliationFetcherDelegate* delegate);
   ~AffiliationFetcher() override;
 
-  // Constructs a fetcher using the specified |url_loader_factory|, and will
-  // provide the results to the |delegate| on the same thread that creates the
-  // instance.
-  static std::unique_ptr<AffiliationFetcherInterface> Create(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      AffiliationFetcherDelegate* delegate);
-
   // Builds the URL for the Affiliation API's lookup method.
   static GURL BuildQueryURL();
-
-  // Sets the |factory| to be used by Create() to construct AffiliationFetcher
-  // instances. To be used only for testing.
-  //
-  // The caller must ensure that the |factory| outlives all potential Create()
-  // calls. The caller may pass in NULL to resume using the default factory.
-  static void SetFactoryForTesting(AffiliationFetcherFactory* factory);
 
   // Actually starts the request to retrieve affiliations and optionally
   // groupings for each facet in |facet_uris| along with the details based on
@@ -95,8 +77,6 @@ class AffiliationFetcher : public AffiliationFetcherInterface {
   base::ElapsedTimer fetch_timer_;
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(AffiliationFetcher);
 };
 
 }  // namespace password_manager

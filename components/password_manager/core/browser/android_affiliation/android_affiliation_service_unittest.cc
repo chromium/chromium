@@ -19,6 +19,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/password_manager/core/browser/android_affiliation/affiliation_backend.h"
 #include "components/password_manager/core/browser/android_affiliation/fake_affiliation_api.h"
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliation_consumer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -63,9 +64,7 @@ class AndroidAffiliationServiceTest : public testing::Test {
     return background_task_runner_.get();
   }
 
-  ScopedFakeAffiliationAPI* fake_affiliation_api() {
-    return &fake_affiliation_api_;
-  }
+  FakeAffiliationAPI* fake_affiliation_api() { return &fake_affiliation_api_; }
 
   base::test::TaskEnvironment task_environment_;
 
@@ -82,11 +81,16 @@ class AndroidAffiliationServiceTest : public testing::Test {
         std::make_unique<AndroidAffiliationService>(background_task_runner());
     service_->Initialize(test_shared_loader_factory_,
                          network_connection_tracker, database_path);
-    // Note: the background task runner is purposely not pumped here, so that
-    // the tests also verify that the service can be used synchronously right
-    // away after having been constructed.
     fake_affiliation_api_.AddTestEquivalenceClass(
         GetTestEquivalenceClassAlpha());
+
+    auto fetcher_factory = std::make_unique<FakeAffiliationFetcherFactory>();
+    fake_affiliation_api_.SetFetcherFactory(fetcher_factory.get());
+    background_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AffiliationBackend::SetFetcherFactoryForTesting,
+                       base::Unretained(service_->GetBackendForTesting()),
+                       std::move(fetcher_factory)));
   }
 
   void TearDown() override {
@@ -102,11 +106,9 @@ class AndroidAffiliationServiceTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_ =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_);
-
-  ScopedFakeAffiliationAPI fake_affiliation_api_;
   MockAffiliationConsumer mock_consumer_;
-
   std::unique_ptr<AndroidAffiliationService> service_;
+  FakeAffiliationAPI fake_affiliation_api_;
 
   DISALLOW_COPY_AND_ASSIGN(AndroidAffiliationServiceTest);
 };
