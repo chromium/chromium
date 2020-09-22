@@ -38,18 +38,17 @@ class ExternalWebAppManager {
   // described at https://developer.chrome.com/apps/external_extensions
   //
   // This function performs file I/O, and must not be scheduled on UI threads.
-  static std::vector<ExternalInstallOptions>
-  ScanDirForExternalWebAppsForTesting(
+  static std::vector<ExternalInstallOptions> ReloadInstallOptionsForTesting(
       std::unique_ptr<FileUtilsWrapper> file_utils,
       const base::FilePath& dir,
       Profile* profile);
 
-  using ScanCallback =
+  using LoadCallback =
       base::OnceCallback<void(std::vector<ExternalInstallOptions>)>;
 
-  void ScanForExternalWebApps(ScanCallback callback);
+  void LoadInstallOptions(LoadCallback callback);
 
-  static void SkipStartupScanForTesting();
+  static void SkipStartupForTesting();
 
   void SynchronizeAppsForTesting(
       std::unique_ptr<FileUtilsWrapper> file_utils,

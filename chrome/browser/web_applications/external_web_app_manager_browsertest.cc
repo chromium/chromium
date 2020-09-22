@@ -27,7 +27,7 @@ class ExternalWebAppManagerBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
   ExternalWebAppManagerBrowserTest() {
-    ExternalWebAppManager::SkipStartupScanForTesting();
+    ExternalWebAppManager::SkipStartupForTesting();
   }
 
   GURL GetAppUrl() const {

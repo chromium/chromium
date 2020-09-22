@@ -59,7 +59,7 @@ namespace web_app {
 class ExternalWebAppMigrationBrowserTest : public InProcessBrowserTest {
  public:
   ExternalWebAppMigrationBrowserTest() {
-    ExternalWebAppManager::SkipStartupScanForTesting();
+    ExternalWebAppManager::SkipStartupForTesting();
     disable_scope_ =
         extensions::ExtensionService::DisableExternalUpdatesForTesting();
   }

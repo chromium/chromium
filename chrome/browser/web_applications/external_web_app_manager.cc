@@ -51,15 +51,18 @@ const base::FilePath::CharType kWebAppsSubDirectory[] =
     FILE_PATH_LITERAL("web_apps");
 #endif
 
-bool g_skip_startup_scan_for_testing_ = false;
+bool g_skip_startup_for_testing_ = false;
 
-std::vector<ExternalInstallOptions> ScanDir(
+std::vector<ExternalInstallOptions> LoadInstallOptionsBlocking(
     std::unique_ptr<FileUtilsWrapper> file_utils,
     const base::FilePath& dir,
     const std::string& user_type) {
   std::vector<ExternalInstallOptions> install_options_list;
   if (!base::FeatureList::IsEnabled(features::kDefaultWebAppInstallation))
     return install_options_list;
+
+  for (ExternalInstallOptions& options : GetPreinstalledWebApps())
+    install_options_list.push_back(std::move(options));
 
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -91,7 +94,7 @@ std::vector<ExternalInstallOptions> ScanDir(
   return install_options_list;
 }
 
-base::FilePath DetermineScanDir(const Profile* profile) {
+base::FilePath DetermineLoadDir(const Profile* profile) {
   base::FilePath dir;
 #if defined(OS_CHROMEOS)
   // As of mid 2018, only Chrome OS has default/external web apps, and
@@ -105,7 +108,8 @@ base::FilePath DetermineScanDir(const Profile* profile) {
     // "/usr/share/chromium/extensions/web_apps".
     if (!base::PathService::Get(chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS,
                                 &dir)) {
-      LOG(ERROR) << "ScanForExternalWebApps: base::PathService::Get failed";
+      LOG(ERROR) << "ExternalWebAppManager::LoadInstallOptions: "
+                    "base::PathService::Get failed";
     } else {
       dir = dir.Append(kWebAppsSubDirectory);
     }
@@ -141,6 +145,10 @@ std::vector<ExternalInstallOptions> SynchronizeAppsBlockingForTesting(
       install_options_list.push_back(std::move(*install_options));
   }
 
+  // TODO(crbug.com/1128801): Dedupe this with LoadInstallOptionsBlocking().
+  for (ExternalInstallOptions& options : GetPreinstalledWebApps())
+    install_options_list.push_back(std::move(options));
+
   return install_options_list;
 }
 
@@ -157,8 +165,8 @@ void ExternalWebAppManager::SetSubsystems(
 }
 
 void ExternalWebAppManager::Start() {
-  if (!g_skip_startup_scan_for_testing_) {
-    ScanForExternalWebApps(base::BindOnce(
+  if (!g_skip_startup_for_testing_) {
+    LoadInstallOptions(base::BindOnce(
         &ExternalWebAppManager::SynchronizeExternalInstallOptions,
         weak_ptr_factory_.GetWeakPtr(),
         base::BindOnce(&OnExternalWebAppsSynchronized)));
@@ -167,24 +175,20 @@ void ExternalWebAppManager::Start() {
 
 // static
 std::vector<ExternalInstallOptions>
-ExternalWebAppManager::ScanDirForExternalWebAppsForTesting(
+ExternalWebAppManager::ReloadInstallOptionsForTesting(
     std::unique_ptr<FileUtilsWrapper> file_utils,
     const base::FilePath& dir,
     Profile* profile) {
-  return ScanDir(std::move(file_utils), dir, apps::DetermineUserType(profile));
+  return LoadInstallOptionsBlocking(std::move(file_utils), dir,
+                                    apps::DetermineUserType(profile));
 }
 
-void ExternalWebAppManager::ScanForExternalWebApps(ScanCallback callback) {
+void ExternalWebAppManager::LoadInstallOptions(LoadCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::FilePath dir = DetermineScanDir(profile_);
-  if (dir.empty()) {
-    std::move(callback).Run(std::vector<ExternalInstallOptions>());
-    return;
-  }
   // Do a two-part callback dance, across different TaskRunners.
   //
-  // 1. Schedule ScanDir to happen on a background thread, so that we don't
-  // block the UI thread. When that's done,
+  // 1. Schedule LoadInstallOptionsBlocking to happen on a background thread, so
+  // that we don't block the UI thread. When that's done,
   // base::PostTaskAndReplyWithResult will bounce us back to the originating
   // thread (the UI thread).
   //
@@ -194,13 +198,14 @@ void ExternalWebAppManager::ScanForExternalWebApps(ScanCallback callback) {
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&ScanDir, std::make_unique<FileUtilsWrapper>(),
-                     std::move(dir), apps::DetermineUserType(profile_)),
+      base::BindOnce(
+          &LoadInstallOptionsBlocking, std::make_unique<FileUtilsWrapper>(),
+          DetermineLoadDir(profile_), apps::DetermineUserType(profile_)),
       std::move(callback));
 }
 
-void ExternalWebAppManager::SkipStartupScanForTesting() {
-  g_skip_startup_scan_for_testing_ = true;
+void ExternalWebAppManager::SkipStartupForTesting() {
+  g_skip_startup_for_testing_ = true;
 }
 
 void ExternalWebAppManager::SynchronizeAppsForTesting(
@@ -221,13 +226,6 @@ void ExternalWebAppManager::SynchronizeExternalInstallOptions(
     PendingAppManager::SynchronizeCallback callback,
     std::vector<ExternalInstallOptions> desired_apps_install_options) {
   DCHECK(pending_app_manager_);
-
-  // Add in any web apps that should be pre-installed.
-  std::vector<ExternalInstallOptions> default_apps = GetPreinstalledWebApps();
-  desired_apps_install_options.insert(
-      desired_apps_install_options.end(),
-      std::make_move_iterator(default_apps.begin()),
-      std::make_move_iterator(default_apps.end()));
 
   pending_app_manager_->SynchronizeInstalledApps(
       std::move(desired_apps_install_options),

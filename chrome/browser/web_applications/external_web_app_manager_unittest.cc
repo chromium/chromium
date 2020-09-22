@@ -67,10 +67,10 @@ using InstallOptionsList = std::vector<ExternalInstallOptions>;
 
 }  // namespace
 
-class ScanDirForExternalWebAppsTest : public testing::Test {
+class ExternalWebAppManagerTest : public testing::Test {
  public:
-  ScanDirForExternalWebAppsTest() = default;
-  ~ScanDirForExternalWebAppsTest() override = default;
+  ExternalWebAppManagerTest() = default;
+  ~ExternalWebAppManagerTest() override = default;
 
   // testing::Test:
   void SetUp() override {
@@ -90,9 +90,8 @@ class ScanDirForExternalWebAppsTest : public testing::Test {
 
  protected:
   // Helper that makes blocking call to
-  // |ExternalWebAppManager::ScanForExternalWebApps| and returns read app
-  // infos.
-  static InstallOptionsList ScanApps(Profile* profile,
+  // |ExternalWebAppManager::LoadInstallOptions| and returns read app infos.
+  static InstallOptionsList LoadApps(Profile* profile,
                                      const base::FilePath& test_dir) {
 #if defined(OS_CHROMEOS)
     base::ScopedPathOverride path_override(
@@ -103,7 +102,7 @@ class ScanDirForExternalWebAppsTest : public testing::Test {
 
     InstallOptionsList result;
     base::RunLoop run_loop;
-    external_web_app_manager->ScanForExternalWebApps(base::BindOnce(
+    external_web_app_manager->LoadInstallOptions(base::BindOnce(
         [](base::RunLoop* run_loop, InstallOptionsList* result,
            InstallOptionsList install_options_list) {
           *result = install_options_list;
@@ -114,9 +113,9 @@ class ScanDirForExternalWebAppsTest : public testing::Test {
     return result;
   }
 
-  std::vector<ExternalInstallOptions> ScanTestDirForExternalWebApps(
+  std::vector<ExternalInstallOptions> ReloadInstallOptions(
       const std::string& dir) {
-    return ExternalWebAppManager::ScanDirForExternalWebAppsForTesting(
+    return ExternalWebAppManager::ReloadInstallOptionsForTesting(
         std::make_unique<FileUtilsWrapper>(), GetTestDir(dir),
         CreateProfile().get());
   }
@@ -157,7 +156,7 @@ class ScanDirForExternalWebAppsTest : public testing::Test {
 
   void VerifySetOfApps(Profile* profile, const std::set<GURL>& expectations) {
     const auto install_options_list =
-        ScanApps(profile, GetTestDir(kUserTypesTestDir));
+        LoadApps(profile, GetTestDir(kUserTypesTestDir));
     ASSERT_EQ(expectations.size(), install_options_list.size());
     for (const auto& install_options : install_options_list)
       ASSERT_EQ(1u, expectations.count(install_options.install_url));
@@ -178,12 +177,11 @@ class ScanDirForExternalWebAppsTest : public testing::Test {
   // To support context of browser threads.
   content::BrowserTaskEnvironment task_environment_;
 
-  DISALLOW_COPY_AND_ASSIGN(ScanDirForExternalWebAppsTest);
+  DISALLOW_COPY_AND_ASSIGN(ExternalWebAppManagerTest);
 };
 
-TEST_F(ScanDirForExternalWebAppsTest, GoodJson) {
-  const auto install_options_list =
-      ScanTestDirForExternalWebApps(kGoodJsonTestDir);
+TEST_F(ExternalWebAppManagerTest, GoodJson) {
+  const auto install_options_list = ReloadInstallOptions(kGoodJsonTestDir);
 
   // The good_json directory contains two good JSON files:
   // chrome_platform_status.json and google_io_2016.json.
@@ -222,23 +220,23 @@ TEST_F(ScanDirForExternalWebAppsTest, GoodJson) {
   }
 }
 
-TEST_F(ScanDirForExternalWebAppsTest, BadJson) {
-  const auto app_infos = ScanTestDirForExternalWebApps("bad_json");
+TEST_F(ExternalWebAppManagerTest, BadJson) {
+  const auto app_infos = ReloadInstallOptions("bad_json");
 
   // The bad_json directory contains one (malformed) JSON file.
   EXPECT_EQ(0u, app_infos.size());
 }
 
-TEST_F(ScanDirForExternalWebAppsTest, TxtButNoJson) {
-  const auto app_infos = ScanTestDirForExternalWebApps("txt_but_no_json");
+TEST_F(ExternalWebAppManagerTest, TxtButNoJson) {
+  const auto app_infos = ReloadInstallOptions("txt_but_no_json");
 
   // The txt_but_no_json directory contains one file, and the contents of that
   // file is valid JSON, but that file's name does not end with ".json".
   EXPECT_EQ(0u, app_infos.size());
 }
 
-TEST_F(ScanDirForExternalWebAppsTest, MixedJson) {
-  const auto app_infos = ScanTestDirForExternalWebApps("mixed_json");
+TEST_F(ExternalWebAppManagerTest, MixedJson) {
+  const auto app_infos = ReloadInstallOptions("mixed_json");
 
   // The mixed_json directory contains one empty JSON file, one malformed JSON
   // file and one good JSON file. ScanDirForExternalWebAppsForTesting should
@@ -250,32 +248,32 @@ TEST_F(ScanDirForExternalWebAppsTest, MixedJson) {
   }
 }
 
-TEST_F(ScanDirForExternalWebAppsTest, MissingAppUrl) {
-  const auto app_infos = ScanTestDirForExternalWebApps("missing_app_url");
+TEST_F(ExternalWebAppManagerTest, MissingAppUrl) {
+  const auto app_infos = ReloadInstallOptions("missing_app_url");
 
   // The missing_app_url directory contains one JSON file which is correct
   // except for a missing "app_url" field.
   EXPECT_EQ(0u, app_infos.size());
 }
 
-TEST_F(ScanDirForExternalWebAppsTest, EmptyAppUrl) {
-  const auto app_infos = ScanTestDirForExternalWebApps("empty_app_url");
+TEST_F(ExternalWebAppManagerTest, EmptyAppUrl) {
+  const auto app_infos = ReloadInstallOptions("empty_app_url");
 
   // The empty_app_url directory contains one JSON file which is correct
   // except for an empty "app_url" field.
   EXPECT_EQ(0u, app_infos.size());
 }
 
-TEST_F(ScanDirForExternalWebAppsTest, InvalidAppUrl) {
-  const auto app_infos = ScanTestDirForExternalWebApps("invalid_app_url");
+TEST_F(ExternalWebAppManagerTest, InvalidAppUrl) {
+  const auto app_infos = ReloadInstallOptions("invalid_app_url");
 
   // The invalid_app_url directory contains one JSON file which is correct
   // except for an invalid "app_url" field.
   EXPECT_EQ(0u, app_infos.size());
 }
 
-TEST_F(ScanDirForExternalWebAppsTest, TrueHideFromUser) {
-  const auto app_infos = ScanTestDirForExternalWebApps("true_hide_from_user");
+TEST_F(ExternalWebAppManagerTest, TrueHideFromUser) {
+  const auto app_infos = ReloadInstallOptions("true_hide_from_user");
 
   EXPECT_EQ(1u, app_infos.size());
   const auto& app = app_infos[0];
@@ -284,65 +282,60 @@ TEST_F(ScanDirForExternalWebAppsTest, TrueHideFromUser) {
   EXPECT_FALSE(app.add_to_management);
 }
 
-TEST_F(ScanDirForExternalWebAppsTest, InvalidHideFromUser) {
-  const auto app_infos =
-      ScanTestDirForExternalWebApps("invalid_hide_from_user");
+TEST_F(ExternalWebAppManagerTest, InvalidHideFromUser) {
+  const auto app_infos = ReloadInstallOptions("invalid_hide_from_user");
 
   // The invalid_hide_from_user directory contains on JSON file which is correct
   // except for an invalid "hide_from_user" field.
   EXPECT_EQ(0u, app_infos.size());
 }
 
-TEST_F(ScanDirForExternalWebAppsTest, InvalidCreateShortcuts) {
-  const auto app_infos =
-      ScanTestDirForExternalWebApps("invalid_create_shortcuts");
+TEST_F(ExternalWebAppManagerTest, InvalidCreateShortcuts) {
+  const auto app_infos = ReloadInstallOptions("invalid_create_shortcuts");
 
   // The invalid_create_shortcuts directory contains one JSON file which is
   // correct except for an invalid "create_shortcuts" field.
   EXPECT_EQ(0u, app_infos.size());
 }
 
-TEST_F(ScanDirForExternalWebAppsTest, MissingLaunchContainer) {
-  const auto app_infos =
-      ScanTestDirForExternalWebApps("missing_launch_container");
+TEST_F(ExternalWebAppManagerTest, MissingLaunchContainer) {
+  const auto app_infos = ReloadInstallOptions("missing_launch_container");
 
   // The missing_launch_container directory contains one JSON file which is
   // correct except for a missing "launch_container" field.
   EXPECT_EQ(0u, app_infos.size());
 }
 
-TEST_F(ScanDirForExternalWebAppsTest, InvalidLaunchContainer) {
-  const auto app_infos =
-      ScanTestDirForExternalWebApps("invalid_launch_container");
+TEST_F(ExternalWebAppManagerTest, InvalidLaunchContainer) {
+  const auto app_infos = ReloadInstallOptions("invalid_launch_container");
 
   // The invalid_launch_container directory contains one JSON file which is
   // correct except for an invalid "launch_container" field.
   EXPECT_EQ(0u, app_infos.size());
 }
 
-TEST_F(ScanDirForExternalWebAppsTest, InvalidUninstallAndReplace) {
-  const auto app_infos =
-      ScanTestDirForExternalWebApps("invalid_uninstall_and_replace");
+TEST_F(ExternalWebAppManagerTest, InvalidUninstallAndReplace) {
+  const auto app_infos = ReloadInstallOptions("invalid_uninstall_and_replace");
 
   // The invalid_uninstall_and_replace directory contains 2 JSON files which are
   // correct except for invalid "uninstall_and_replace" fields.
   EXPECT_EQ(0u, app_infos.size());
 }
 
-TEST_F(ScanDirForExternalWebAppsTest, DefaultWebAppInstallDisabled) {
+TEST_F(ExternalWebAppManagerTest, DefaultWebAppInstallDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kDefaultWebAppInstallation);
-  const auto app_infos = ScanTestDirForExternalWebApps(kGoodJsonTestDir);
+  const auto app_infos = ReloadInstallOptions(kGoodJsonTestDir);
 
   EXPECT_EQ(0u, app_infos.size());
 }
 
-TEST_F(ScanDirForExternalWebAppsTest, EnabledByFinch) {
+TEST_F(ExternalWebAppManagerTest, EnabledByFinch) {
   base::AutoReset<bool> testing_scope =
       SetExternalAppInstallFeatureAlwaysEnabledForTesting();
 
-  const auto app_infos = ScanTestDirForExternalWebApps("enabled_by_finch");
+  const auto app_infos = ReloadInstallOptions("enabled_by_finch");
 
   // The enabled_by_finch directory contains two JSON file containing apps
   // that have field trials. As the matching feature is enabled, they should be
@@ -350,8 +343,8 @@ TEST_F(ScanDirForExternalWebAppsTest, EnabledByFinch) {
   EXPECT_EQ(2u, app_infos.size());
 }
 
-TEST_F(ScanDirForExternalWebAppsTest, NotEnabledByFinch) {
-  const auto app_infos = ScanTestDirForExternalWebApps("enabled_by_finch");
+TEST_F(ExternalWebAppManagerTest, NotEnabledByFinch) {
+  const auto app_infos = ReloadInstallOptions("enabled_by_finch");
 
   // The enabled_by_finch directory contains two JSON file containing apps
   // that have field trials. As the matching feature isn't enabled, they should
@@ -360,43 +353,43 @@ TEST_F(ScanDirForExternalWebAppsTest, NotEnabledByFinch) {
 }
 
 #if defined(OS_CHROMEOS)
-TEST_F(ScanDirForExternalWebAppsTest, ChildUser) {
+TEST_F(ExternalWebAppManagerTest, ChildUser) {
   const auto profile = CreateProfileAndLogin();
   profile->SetSupervisedUserId(supervised_users::kChildAccountSUID);
   VerifySetOfApps(profile.get(), {GURL(kAppAllUrl), GURL(kAppChildUrl)});
 }
 
-TEST_F(ScanDirForExternalWebAppsTest, GuestUser) {
+TEST_F(ExternalWebAppManagerTest, GuestUser) {
   VerifySetOfApps(CreateGuestProfileAndLogin().get(),
                   {GURL(kAppAllUrl), GURL(kAppGuestUrl)});
 }
 
-TEST_F(ScanDirForExternalWebAppsTest, ManagedUser) {
+TEST_F(ExternalWebAppManagerTest, ManagedUser) {
   const auto profile = CreateProfileAndLogin();
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
   VerifySetOfApps(profile.get(), {GURL(kAppAllUrl), GURL(kAppManagedUrl)});
 }
 
-TEST_F(ScanDirForExternalWebAppsTest, SupervisedUser) {
+TEST_F(ExternalWebAppManagerTest, SupervisedUser) {
   const auto profile = CreateProfileAndLogin();
   profile->SetSupervisedUserId("asdf");
   VerifySetOfApps(profile.get(), {GURL(kAppAllUrl), GURL(kAppSupervisedUrl)});
 }
 
-TEST_F(ScanDirForExternalWebAppsTest, UnmanagedUser) {
+TEST_F(ExternalWebAppManagerTest, UnmanagedUser) {
   VerifySetOfApps(CreateProfileAndLogin().get(),
                   {GURL(kAppAllUrl), GURL(kAppUnmanagedUrl)});
 }
 
-TEST_F(ScanDirForExternalWebAppsTest, NonPrimaryProfile) {
+TEST_F(ExternalWebAppManagerTest, NonPrimaryProfile) {
   EXPECT_TRUE(
-      ScanApps(CreateProfile().get(), GetTestDir(kUserTypesTestDir)).empty());
+      LoadApps(CreateProfile().get(), GetTestDir(kUserTypesTestDir)).empty());
 }
 #else
 // No app is expected for non-ChromeOS builds.
-TEST_F(ScanDirForExternalWebAppsTest, NoApp) {
+TEST_F(ExternalWebAppManagerTest, NoApp) {
   EXPECT_TRUE(
-      ScanApps(CreateProfile().get(), GetTestDir(kUserTypesTestDir)).empty());
+      LoadApps(CreateProfile().get(), GetTestDir(kUserTypesTestDir)).empty());
 }
 #endif
 

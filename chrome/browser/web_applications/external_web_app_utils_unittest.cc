@@ -64,7 +64,7 @@ class ExternalWebAppUtilsTest : public testing::Test {
   std::unique_ptr<TestFileUtils> file_utils_;
 };
 
-// ParseConfig() is also tested by ScanDirForExternalWebAppsTest.
+// ParseConfig() is also tested by ExternalWebAppManagerTest.
 
 #if defined(OS_CHROMEOS)
 
