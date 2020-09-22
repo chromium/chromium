@@ -11,6 +11,8 @@
 
 #include "base/logging.h"
 #include "media/base/video_frame.h"
+#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/mac/io_surface.h"
 
 namespace media {
 
@@ -40,6 +42,27 @@ WrapVideoFrameInCVPixelBuffer(const VideoFrame& frame) {
     pixel_buffer.reset(frame.CvPixelBuffer(), base::scoped_policy::RETAIN);
     return pixel_buffer;
   }
+
+  // If the frame has a GMB, yank out its IOSurface if possible.
+  if (frame.GetGpuMemoryBuffer()) {
+    gfx::GpuMemoryBufferHandle handle =
+        frame.GetGpuMemoryBuffer()->CloneHandle();
+    if (handle.type == gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER) {
+      base::ScopedCFTypeRef<IOSurfaceRef> io_surface =
+          gfx::IOSurfaceMachPortToIOSurface(std::move(handle.mach_port));
+      if (io_surface) {
+        const CVReturn cv_return = CVPixelBufferCreateWithIOSurface(
+            nullptr, io_surface, nullptr, pixel_buffer.InitializeInto());
+        if (cv_return == kCVReturnSuccess) {
+          VLOG(3) << "Returning IOSurface-based CVPixelBuffer.";
+          return pixel_buffer;
+        }
+        pixel_buffer.reset();
+      }
+    }
+  }
+
+  VLOG(3) << "Returning RAM based CVPixelBuffer.";
 
   // VideoFrame only supports YUV formats and most of them are 'YVU' ordered,
   // which CVPixelBuffer does not support. This means we effectively can only

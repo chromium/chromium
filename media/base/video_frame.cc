@@ -27,6 +27,9 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/gpu_memory_buffer.h"
+#if defined(OS_MAC)
+#include "ui/gfx/mac/io_surface.h"
+#endif
 
 namespace media {
 
@@ -694,14 +697,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapIOSurface(
     DLOG(ERROR) << "Non-IOSurface handle.";
     return nullptr;
   }
-  if (!handle.mach_port) {
-    DLOG(ERROR) << "Invalid mach port.";
-    return nullptr;
-  }
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface(
-      IOSurfaceLookupFromMachPort(handle.mach_port));
+  base::ScopedCFTypeRef<IOSurfaceRef> io_surface =
+      gfx::IOSurfaceMachPortToIOSurface(std::move(handle.mach_port));
   if (!io_surface) {
-    DLOG(ERROR) << "Unable to lookup IOSurface.";
     return nullptr;
   }
 

@@ -292,4 +292,19 @@ void IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
   }
 }
 
+GFX_EXPORT base::ScopedCFTypeRef<IOSurfaceRef> IOSurfaceMachPortToIOSurface(
+    ScopedRefCountedIOSurfaceMachPort io_surface_mach_port) {
+  base::ScopedCFTypeRef<IOSurfaceRef> io_surface;
+  if (!io_surface_mach_port) {
+    DLOG(ERROR) << "Invalid mach port.";
+    return io_surface;
+  }
+  io_surface.reset(IOSurfaceLookupFromMachPort(io_surface_mach_port));
+  if (!io_surface) {
+    DLOG(ERROR) << "Unable to lookup IOSurface.";
+    return io_surface;
+  }
+  return io_surface;
+}
+
 }  // namespace gfx

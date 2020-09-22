@@ -1047,17 +1047,23 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
   }
 
   const int index = input_buffers_free_.back();
-  bool requires_copy = false;
   scoped_refptr<media::VideoFrame> frame;
-  if (next_frame->video_frame_buffer()->type() ==
-      webrtc::VideoFrameBuffer::Type::kNative) {
+  const bool is_native_frame = next_frame->video_frame_buffer()->type() ==
+                               webrtc::VideoFrameBuffer::Type::kNative;
+
+  // All non-native frames require a copy because we can't tell if non-copy
+  // conditions are met.
+  bool requires_copy = !is_native_frame;
+  if (!requires_copy) {
     frame = static_cast<blink::WebRtcVideoFrameAdapter*>(
                 next_frame->video_frame_buffer().get())
                 ->getMediaVideoFrame();
-    requires_copy = RequiresSizeChange(*frame) ||
-                    frame->storage_type() != media::VideoFrame::STORAGE_SHMEM;
-  } else {
-    requires_copy = true;
+    const media::VideoFrame::StorageType storage = frame->storage_type();
+    const bool is_shmem_frame = storage == media::VideoFrame::STORAGE_SHMEM;
+    const bool is_gmb_frame =
+        storage == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER;
+    requires_copy =
+        RequiresSizeChange(*frame) || !(is_shmem_frame || is_gmb_frame);
   }
 
   if (requires_copy) {
