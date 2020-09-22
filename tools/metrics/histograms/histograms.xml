@@ -70362,7 +70362,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.decision.repeat_visit"
-    enum="SecurityInterstitialDecision" expires_after="M85">
+    enum="SecurityInterstitialDecision" expires_after="M89">
   <owner>felt@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
   <summary>
@@ -70525,7 +70525,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.ssl.did_user_revoke_decisions2"
-    enum="BooleanRevoked" expires_after="M85">
+    enum="BooleanRevoked" expires_after="M89">
   <owner>carlosil@chromium.org</owner>
   <summary>
     Specifies when a user enters the page info menu whether or not the user
@@ -86409,7 +86409,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MixedAutoupgrade.ResourceRequest.ErrorOrResponseCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M85">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M89">
   <owner>carlosil@chromium.org</owner>
   <summary>
     The net error or HTTP response code of a mixed content resource request that
@@ -86418,7 +86418,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MixedAutoupgrade.ResourceRequest.Failure.IsAd" enum="Boolean"
-    expires_after="M85">
+    expires_after="M89">
   <owner>carlosil@chromium.org</owner>
   <summary>
     Whether or not an autoupgrade mixed content request was for a resource we
@@ -86427,7 +86427,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MixedAutoupgrade.ResourceRequest.Failure.Type"
-    enum="ResourceType" expires_after="M85">
+    enum="ResourceType" expires_after="M89">
   <owner>carlosil@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -86437,7 +86437,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MixedAutoupgrade.ResourceRequest.Response.Type"
-    enum="ResourceType" expires_after="M85">
+    enum="ResourceType" expires_after="M89">
   <owner>carlosil@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -86447,7 +86447,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MixedAutoupgrade.ResourceRequest.Start.Type"
-    enum="ResourceType" expires_after="M85">
+    enum="ResourceType" expires_after="M89">
   <owner>carlosil@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -86457,7 +86457,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MixedAutoupgrade.ResourceRequest.Status"
-    enum="MixedContentAutoupgradeStatus" expires_after="M85">
+    enum="MixedContentAutoupgradeStatus" expires_after="M89">
   <owner>carlosil@chromium.org</owner>
   <summary>
     The status of a mixed content resource request that was autoupgraded to
