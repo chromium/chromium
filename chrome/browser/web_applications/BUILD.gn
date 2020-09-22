@@ -257,6 +257,7 @@ source_set("web_applications_browser_tests") {
     "web_app_audio_focus_browsertest.cc",
     "web_app_icon_manager_browsertest.cc",
     "web_app_migration_manager_browsertest.cc",
+    "web_app_migration_user_display_mode_clean_up_browsertest.cc",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -294,6 +295,8 @@ source_set("web_applications_on_extensions") {
   sources = [
     "web_app_migration_manager.cc",
     "web_app_migration_manager.h",
+    "web_app_migration_user_display_mode_clean_up.cc",
+    "web_app_migration_user_display_mode_clean_up.h",
     "web_app_provider.cc",
     "web_app_provider.h",
     "web_app_provider_factory.cc",

@@ -190984,6 +190984,21 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="WebApp.Migration.UserDisplayModeCleanUp"
+    enum="BooleanMigrated" expires_after="2021-01-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>dxie@google.com</owner>
+  <owner>loyso@google.com</owner>
+  <owner>mgiuca@google.com</owner>
+  <summary>
+    The result of deploying a follow up migration after a migration bug
+    (https://crbug.com/1125020) that caused users' web apps to open in a browser
+    tab instead of a standalone window. This follow up migration only runs once
+    at startup for all Chrome profiles. If it fails it will retry until
+    successful on subsequent start ups, metrics are only recorded on success.
+  </summary>
+</histogram>
+
 <histogram name="Webapp.NavigationStatus" enum="BooleanSuccess"
     expires_after="M90">
   <owner>peter@chromium.org</owner>

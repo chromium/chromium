@@ -371,6 +371,10 @@ void WebAppInstallFinalizer::RemoveLegacyInstallFinalizerForTesting() {
   legacy_finalizer_ = nullptr;
 }
 
+InstallFinalizer* WebAppInstallFinalizer::legacy_finalizer_for_testing() {
+  return legacy_finalizer_.get();
+}
+
 void WebAppInstallFinalizer::Start() {
   DCHECK(!started_);
   started_ = true;
