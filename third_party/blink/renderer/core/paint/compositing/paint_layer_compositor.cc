@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -207,6 +208,9 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeededRecursiveInternal(
   if (layout_view_->GetFrameView()->ShouldThrottleRendering())
     return;
 
+  if (DisplayLockUtilities::PrePaintBlockedInParentFrame(layout_view_))
+    return;
+
   Lifecycle().AdvanceTo(DocumentLifecycle::kInCompositingAssignmentsUpdate);
 
   LocalFrameView* view = layout_view_->GetFrameView();
@@ -245,7 +249,8 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeededRecursiveInternal(
 #if DCHECK_IS_ON()
   DCHECK_EQ(Lifecycle().GetState(),
             DocumentLifecycle::kCompositingAssignmentsClean);
-  AssertNoUnresolvedDirtyBits();
+  if (!DisplayLockUtilities::PrePaintBlockedInParentFrame(layout_view_))
+    AssertNoUnresolvedDirtyBits();
   for (Frame* child =
            layout_view_->GetFrameView()->GetFrame().Tree().FirstChild();
        child; child = child->Tree().NextSibling()) {
@@ -253,7 +258,9 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeededRecursiveInternal(
     if (!local_frame)
       continue;
     if (local_frame->ShouldThrottleRendering() ||
-        !local_frame->ContentLayoutObject())
+        !local_frame->ContentLayoutObject() ||
+        DisplayLockUtilities::PrePaintBlockedInParentFrame(
+            local_frame->ContentLayoutObject()))
       continue;
     local_frame->ContentLayoutObject()
         ->Compositor()

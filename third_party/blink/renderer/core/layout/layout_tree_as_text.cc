@@ -571,16 +571,17 @@ void Write(WTF::TextStream& ts,
         continue;
       Write(ts, *child, indent + 1, behavior);
     }
-  }
 
-  if (o.IsLayoutEmbeddedContent()) {
-    FrameView* frame_view = ToLayoutEmbeddedContent(o).ChildFrameView();
-    if (auto* local_frame_view = DynamicTo<LocalFrameView>(frame_view)) {
-      if (auto* layout_view = local_frame_view->GetLayoutView()) {
-        layout_view->GetDocument().UpdateStyleAndLayout(
-            DocumentUpdateReason::kTest);
-        if (auto* layer = layout_view->Layer()) {
-          LayoutTreeAsText::WriteLayers(ts, layer, layer, indent + 1, behavior);
+    if (o.IsLayoutEmbeddedContent()) {
+      FrameView* frame_view = ToLayoutEmbeddedContent(o).ChildFrameView();
+      if (auto* local_frame_view = DynamicTo<LocalFrameView>(frame_view)) {
+        if (auto* layout_view = local_frame_view->GetLayoutView()) {
+          layout_view->GetDocument().UpdateStyleAndLayout(
+              DocumentUpdateReason::kTest);
+          if (auto* layer = layout_view->Layer()) {
+            LayoutTreeAsText::WriteLayers(ts, layer, layer, indent + 1,
+                                          behavior);
+          }
         }
       }
     }
@@ -739,6 +740,9 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
   }
 #endif
 
+  bool should_paint_children =
+      !layer->GetLayoutObject().ChildLayoutBlockedByDisplayLock();
+
   const auto& neg_list = ChildLayers(layer, kNegativeZOrderChildren);
   bool paints_background_separately = !neg_list.IsEmpty();
   if (should_paint && paints_background_separately) {
@@ -747,7 +751,7 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
           behavior, marked_layer);
   }
 
-  if (!neg_list.IsEmpty()) {
+  if (should_paint_children && !neg_list.IsEmpty()) {
     int curr_indent = indent;
     if (behavior & kLayoutAsTextShowLayerNesting) {
       WriteIndent(ts, indent);
@@ -767,7 +771,7 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
   }
 
   const auto& normal_flow_list = ChildLayers(layer, kNormalFlowChildren);
-  if (!normal_flow_list.IsEmpty()) {
+  if (should_paint_children && !normal_flow_list.IsEmpty()) {
     int curr_indent = indent;
     if (behavior & kLayoutAsTextShowLayerNesting) {
       WriteIndent(ts, indent);
@@ -779,7 +783,7 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
   }
 
   const auto& pos_list = ChildLayers(layer, kPositiveZOrderChildren);
-  if (!pos_list.IsEmpty()) {
+  if (should_paint_children && !pos_list.IsEmpty()) {
     int curr_indent = indent;
     if (behavior & kLayoutAsTextShowLayerNesting) {
       WriteIndent(ts, indent);
