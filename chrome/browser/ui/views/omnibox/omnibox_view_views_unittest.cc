@@ -2645,15 +2645,13 @@ class OmniboxViewViewsRevealOnHoverAndMaybeHideOnInteractionTest
       : OmniboxViewViewsTest(
             GetParam().first
                 ? std::vector<FeatureAndParams>(
-                      {{omnibox::kOmniboxContextMenuShowFullUrls, {}},
-                       {omnibox::kRevealSteadyStateUrlPathQueryAndRefOnHover,
+                      {{omnibox::kRevealSteadyStateUrlPathQueryAndRefOnHover,
                         {}},
                        {omnibox::
                             kHideSteadyStateUrlPathQueryAndRefOnInteraction,
                         {}}})
                 : std::vector<FeatureAndParams>(
-                      {{omnibox::kOmniboxContextMenuShowFullUrls, {}},
-                       {omnibox::kRevealSteadyStateUrlPathQueryAndRefOnHover,
+                      {{omnibox::kRevealSteadyStateUrlPathQueryAndRefOnHover,
                         {}}}),
             {omnibox::kMaybeElideToRegistrableDomain},
             GetParam().second) {}

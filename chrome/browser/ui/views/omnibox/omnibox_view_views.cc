@@ -45,7 +45,6 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
@@ -2434,14 +2433,12 @@ void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
   menu_contents->AddItemWithStringId(IDC_EDIT_SEARCH_ENGINES,
                                      IDS_EDIT_SEARCH_ENGINES);
 
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxContextMenuShowFullUrls)) {
-    const PrefService::Preference* show_full_urls_pref =
-        location_bar_view_->profile()->GetPrefs()->FindPreference(
-            omnibox::kPreventUrlElisionsInOmnibox);
-    if (!show_full_urls_pref->IsManaged()) {
-      menu_contents->AddCheckItemWithStringId(IDC_SHOW_FULL_URLS,
-                                              IDS_CONTEXT_MENU_SHOW_FULL_URLS);
-    }
+  const PrefService::Preference* show_full_urls_pref =
+      location_bar_view_->profile()->GetPrefs()->FindPreference(
+          omnibox::kPreventUrlElisionsInOmnibox);
+  if (!show_full_urls_pref->IsManaged()) {
+    menu_contents->AddCheckItemWithStringId(IDC_SHOW_FULL_URLS,
+                                            IDS_CONTEXT_MENU_SHOW_FULL_URLS);
   }
 }
 

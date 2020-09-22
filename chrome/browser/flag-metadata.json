@@ -3311,11 +3311,6 @@
     "expiry_milestone": 87
   },
   {
-    "name": "omnibox-context-menu-show-full-urls",
-    "owners": [ "livvielin", "chrome-security-enamel@google.com" ],
-    "expiry_milestone": 87
-  },
-  {
     "name": "omnibox-deferred-keyboard-popup",
     "owners": [ "ender", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 87

@@ -367,11 +367,6 @@ const base::Feature kWebUIOmniboxPopup{"WebUIOmniboxPopup",
 const base::Feature kOmniboxAssistantVoiceSearch{
     "OmniboxAssistantVoiceSearch", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, provides an omnibox context menu option that prevents URL
-// elisions.
-const base::Feature kOmniboxContextMenuShowFullUrls{
-    "OmniboxContextMenuShowFullUrls", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Feature used to reveal the path, query and ref from steady state URLs
 // on hover.
 const base::Feature kRevealSteadyStateUrlPathQueryAndRefOnHover{

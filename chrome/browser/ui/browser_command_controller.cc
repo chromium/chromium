@@ -51,7 +51,6 @@
 #include "chrome/common/url_constants.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -1084,9 +1083,7 @@ void BrowserCommandController::UpdateSharedCommandsForIncognitoAvailability(
   const bool enable_extensions =
       extension_service && extension_service->extensions_enabled();
 
-  command_updater->UpdateCommandEnabled(
-      IDC_SHOW_FULL_URLS,
-      base::FeatureList::IsEnabled(omnibox::kOmniboxContextMenuShowFullUrls));
+  command_updater->UpdateCommandEnabled(IDC_SHOW_FULL_URLS, true);
 
   // Bookmark manager and settings page/subpages are forced to open in normal
   // mode. For this reason we disable these commands when incognito is forced.

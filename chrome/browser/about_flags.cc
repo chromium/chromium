@@ -6038,11 +6038,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kAvatarToolbarButton)},
 #endif  // defined(OS_CHROMEOS)
 
-    {"omnibox-context-menu-show-full-urls",
-     flag_descriptions::kOmniboxContextMenuShowFullUrlsName,
-     flag_descriptions::kOmniboxContextMenuShowFullUrlsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxContextMenuShowFullUrls)},
-
     {"color-provider-redirection",
      flag_descriptions::kColorProviderRedirectionName,
      flag_descriptions::kColorProviderRedirectionDescription, kOsDesktop,
