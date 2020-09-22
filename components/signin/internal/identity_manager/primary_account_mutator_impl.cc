@@ -78,7 +78,7 @@ bool PrimaryAccountMutatorImpl::ClearPrimaryAccount(
     ClearAccountsAction action,
     signin_metrics::ProfileSignout source_metric,
     signin_metrics::SignoutDelete delete_metric) {
-  if (!primary_account_manager_->IsAuthenticated())
+  if (!primary_account_manager_->HasUnconsentedPrimaryAccount())
     return false;
 
   switch (action) {

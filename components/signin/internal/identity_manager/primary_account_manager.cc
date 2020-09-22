@@ -351,9 +351,11 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
     return;
   }
 
-  const CoreAccountInfo account_info = GetAuthenticatedAccountInfo();
+  const CoreAccountInfo account_info = primary_account_info();
   client_->GetPrefs()->ClearPref(prefs::kGoogleServicesHostedDomain);
-  SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false);
+  // Revoke the sync consent.
+  if (IsAuthenticated())
+    SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false);
 
   // Revoke all tokens before sending signed_out notification, because there
   // may be components that don't listen for token service events when the
