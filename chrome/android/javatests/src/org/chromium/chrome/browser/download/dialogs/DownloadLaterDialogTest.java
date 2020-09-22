@@ -168,7 +168,7 @@ public class DownloadLaterDialogTest {
                 DownloadLaterDialogChoice.ON_WIFI, DownloadLaterPromptStatus.SHOW_INITIAL);
         showDialog();
         assertPositiveButtonText("Download");
-        assertShowAgainCheckBox(true, View.VISIBLE, true);
+        assertShowAgainCheckBox(true, View.VISIBLE, false);
         assertEditText(false);
     }
 
@@ -191,7 +191,7 @@ public class DownloadLaterDialogTest {
                 DownloadLaterDialogChoice.DOWNLOAD_LATER, DownloadLaterPromptStatus.SHOW_INITIAL);
         showDialog();
         assertPositiveButtonText("Next");
-        assertShowAgainCheckBox(false, View.VISIBLE, true);
+        assertShowAgainCheckBox(false, View.VISIBLE, false);
         assertEditText(false);
     }
 
@@ -245,7 +245,7 @@ public class DownloadLaterDialogTest {
         });
 
         assertPositiveButtonText("Next");
-        assertShowAgainCheckBox(false, View.VISIBLE, true);
+        assertShowAgainCheckBox(false, View.VISIBLE, false);
 
         clickPositiveButton();
         verify(mController, times(0)).onDownloadLaterDialogComplete(anyInt(), anyLong());
