@@ -234,7 +234,7 @@ dependencies {
 task setUpRepository(type: BuildConfigGenerator) {
     // Paths are relative to the chromium source root.
     repositoryPath 'third_party/android_deps'
-    depsPath 'DEPS'
     chromiumSourceRoot '../..'
     cipdBucket 'chromium'
+    internalTargetVisibility = [ ':*' ]
 }

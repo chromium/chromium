@@ -57,11 +57,6 @@ class BuildConfigGenerator extends DefaultTask {
     String repositoryPath
 
     /**
-     * Relative path to the DEPS file where the cipd packages are specified.
-     */
-    String depsPath
-
-    /**
      * Relative path to the Chromium source root from the build.gradle file.
      */
     String chromiumSourceRoot
@@ -87,6 +82,11 @@ class BuildConfigGenerator extends DefaultTask {
      * //third_party/android_deps/BUILD.gn.
      */
     boolean onlyPlayServices
+
+    /**
+     * Array with visibility for targets which are not listed in build.gradle
+     */
+    String[] internalTargetVisibility
 
     @TaskAction
     void main() {
@@ -149,17 +149,19 @@ class BuildConfigGenerator extends DefaultTask {
         downloadExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 
         // 3. Generate the root level build files
-        updateBuildTargetDeclaration(graph, "${normalisedRepoPath}/BUILD.gn", onlyPlayServices)
+        updateBuildTargetDeclaration(graph, repositoryPath, normalisedRepoPath, onlyPlayServices,
+            internalTargetVisibility)
         updateDepsDeclaration(graph, cipdBucket, stripFromCipdPath, repositoryPath,
-                              "${rootDirPath}/${depsPath}", onlyPlayServices)
+                              "${rootDirPath}/DEPS", onlyPlayServices)
         dependencyDirectories.sort { path1, path2 -> return path1.compareTo(path2) }
         updateReadmeReferenceFile(dependencyDirectories,
                                   "${normalisedRepoPath}/additional_readme_paths.json")
     }
 
-    private static void updateBuildTargetDeclaration(ChromiumDepGraph depGraph, String path,
-                                                     boolean onlyPlayServices) {
-        File buildFile = new File(path)
+    private static void updateBuildTargetDeclaration(ChromiumDepGraph depGraph,
+            String repositoryPath, String normalisedRepoPath, boolean onlyPlayServices,
+            String[] internalTargetVisibility) {
+        File buildFile = new File("${normalisedRepoPath}/BUILD.gn");
         def sb = new StringBuilder()
 
         // Comparator to sort the dependency in alphabetical order, with the visible ones coming
@@ -229,8 +231,8 @@ class BuildConfigGenerator extends DefaultTask {
 
             if (!dependency.visible) {
               sb.append("  # To remove visibility constraint, add this dependency to\n")
-              sb.append("  # //third_party/android_deps/build.gradle.\n")
-              sb.append("  visibility = [ \":*\" ]\n")
+              sb.append("  # //${repositoryPath}/build.gradle.\n")
+              sb.append("  visibility = " + makeGnArray(internalTargetVisibility) + "\n")
             }
             if (dependency.testOnly) sb.append("  testonly = true\n")
             if (!depsStr.empty) sb.append("  deps = [${depsStr}]\n")
@@ -567,6 +569,18 @@ class BuildConfigGenerator extends DefaultTask {
 
     private String normalisePath(String pathRelativeToChromiumRoot) {
         return project.file("${chromiumSourceRoot}/${pathRelativeToChromiumRoot}").absolutePath
+    }
+
+    private static String makeGnArray(String[] values) {
+       def sb = new StringBuilder();
+       sb.append("[");
+       for (String value : values) {
+           sb.append("\"");
+           sb.append(value);
+           sb.append("\",");
+       }
+       sb.replace(sb.length() - 1, sb.length(), "]");
+       return sb.toString();
     }
 
     static String makeOwners() {
