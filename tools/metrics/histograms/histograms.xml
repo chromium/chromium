@@ -113147,7 +113147,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OccludedWindowMouseEvents" units="events"
-    expires_after="2020-10-01">
+    expires_after="2021-02-01">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
@@ -196531,7 +196531,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WindowOcclusionChanged" enum="WindowOcclusionState"
-    expires_after="2020-10-01">
+    expires_after="2021-02-01">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
@@ -196736,7 +196736,7 @@ regressions. -->
 </histogram>
 
 <histogram name="Windows.NativeWindowVisibility" units="windows"
-    expires_after="2020-10-01">
+    expires_after="2021-02-01">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
