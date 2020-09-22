@@ -7,7 +7,7 @@
 #include <sstream>
 #include <utility>
 
-#include "tile_utils.h"
+#include "components/query_tiles/internal/tile_utils.h"
 
 namespace query_tiles {
 

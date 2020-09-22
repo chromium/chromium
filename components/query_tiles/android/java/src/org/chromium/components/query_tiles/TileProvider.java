@@ -19,4 +19,10 @@ public interface TileProvider {
      *         no tiles are found.
      */
     void getQueryTiles(Callback<List<QueryTile>> callback);
+
+    /**
+     * Called when a tile is clicked.
+     * @param tildId ID of the tile.
+     */
+    void onTileClicked(String tileId);
 }

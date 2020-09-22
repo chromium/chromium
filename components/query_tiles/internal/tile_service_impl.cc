@@ -141,6 +141,10 @@ TileGroup* TileServiceImpl::GetTileGroup() {
   return tile_manager_->GetTileGroup();
 }
 
+void TileServiceImpl::OnTileClicked(const std::string& tile_id) {
+  tile_manager_->OnTileClicked(tile_id);
+}
+
 Logger* TileServiceImpl::GetLogger() {
   return logger_.get();
 }

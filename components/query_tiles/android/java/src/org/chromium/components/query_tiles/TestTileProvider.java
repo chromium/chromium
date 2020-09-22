@@ -69,6 +69,9 @@ public class TestTileProvider implements TileProvider {
         callback.onResult(mTiles);
     }
 
+    @Override
+    public void onTileClicked(String tileId) {}
+
     private static List<QueryTile> buildTiles(String prefix, int levelsLeft, int count) {
         if (levelsLeft == 0) return null;
         List<QueryTile> children = new ArrayList<>();

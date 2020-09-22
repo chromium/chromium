@@ -34,6 +34,7 @@ class InitAwareTileService : public TileService {
   void CancelTask() override;
   void PurgeDb() override;
   void SetServerUrl(const std::string& base_url) override;
+  void OnTileClicked(const std::string& tile_id) override;
   Logger* GetLogger() override;
 
   void OnTileServiceInitialized(bool success);

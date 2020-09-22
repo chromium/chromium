@@ -50,6 +50,9 @@ class TileService : public KeyedService, public base::SupportsUserData {
   // Used for setting the server url for test.
   virtual void SetServerUrl(const std::string& base_url) = 0;
 
+  // Called when a tile was clicked.
+  virtual void OnTileClicked(const std::string& tile_id) = 0;
+
   // Returns a Logger instance that is meant to be used by logging and debug UI
   // components in the larger system.
   virtual Logger* GetLogger() = 0;

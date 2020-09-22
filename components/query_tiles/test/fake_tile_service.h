@@ -32,6 +32,7 @@ class FakeTileService : public TileService {
   void CancelTask() override;
   void PurgeDb() override;
   void SetServerUrl(const std::string& url) override;
+  void OnTileClicked(const std::string& tile_id) override;
   Logger* GetLogger() override;
 
   std::vector<std::unique_ptr<Tile>> tiles_;

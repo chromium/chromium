@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/task_runner.h"
@@ -18,6 +19,7 @@
 #include "components/query_tiles/internal/tile_iterator.h"
 #include "components/query_tiles/internal/tile_manager.h"
 #include "components/query_tiles/internal/tile_utils.h"
+#include "components/query_tiles/switches.h"
 
 namespace query_tiles {
 namespace {
@@ -160,7 +162,8 @@ class TileManagerImpl : public TileManager {
     }
 
     // Keep the stats group in memory for tile score calculation.
-    if (loaded_groups.find(kTileStatsGroup) != loaded_groups.end()) {
+    if (loaded_groups.find(kTileStatsGroup) != loaded_groups.end() &&
+        base::FeatureList::IsEnabled(features::kQueryTilesLocalOrdering)) {
       tile_stats_group_ = std::move(loaded_groups[kTileStatsGroup]);
       // prevent the stats group from being deleted.
       loaded_groups.erase(kTileStatsGroup);
@@ -227,6 +230,18 @@ class TileManagerImpl : public TileManager {
   void OnGroupDeleted(bool success) {
     // TODO(hesen): Record db operation metrics.
     NOTIMPLEMENTED();
+  }
+
+  void OnTileClicked(const std::string& tile_id) override {
+    // If the tile stats haven't been created, create it here.
+    if (!tile_stats_group_) {
+      tile_stats_group_ = std::make_unique<TileGroup>();
+      tile_stats_group_->id = kTileStatsGroup;
+    }
+    tile_stats_group_->OnTileClicked(tile_id);
+    // It's fine if |tile_stats_group_| is not saved, so no callback needs to
+    // be passed to Update().
+    store_->Update(kTileStatsGroup, *tile_stats_group_, base::DoNothing());
   }
 
   // Indicates if the db is fully initialized, rejects calls if not.

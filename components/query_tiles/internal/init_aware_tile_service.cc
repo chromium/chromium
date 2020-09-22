@@ -113,6 +113,15 @@ void InitAwareTileService::SetServerUrl(const std::string& base_url) {
   }
 }
 
+void InitAwareTileService::OnTileClicked(const std::string& tile_id) {
+  if (IsReady()) {
+    tile_service_->OnTileClicked(tile_id);
+  } else if (!IsFailed()) {
+    MaybeCacheApiCall(base::BindOnce(&InitAwareTileService::OnTileClicked,
+                                     weak_ptr_factory_.GetWeakPtr(), tile_id));
+  }
+}
+
 Logger* InitAwareTileService::GetLogger() {
   return tile_service_->GetLogger();
 }

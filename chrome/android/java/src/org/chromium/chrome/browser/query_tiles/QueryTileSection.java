@@ -117,6 +117,9 @@ public class QueryTileSection {
     private void onTileClicked(ImageTile tile) {
         QueryTile queryTile = (QueryTile) tile;
         mTileUmaLogger.recordTileClicked(queryTile);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.QUERY_TILES_LOCAL_ORDERING)) {
+            mTileProvider.onTileClicked(queryTile.id);
+        }
 
         boolean isLastLevelTile = queryTile.children.isEmpty();
         if (isLastLevelTile) {

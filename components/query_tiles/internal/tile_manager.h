@@ -53,6 +53,9 @@ class TileManager {
   // Dump the group. Used for debugging in WebUI only.
   virtual TileGroup* GetTileGroup() = 0;
 
+  // Called when a tile is clicked.
+  virtual void OnTileClicked(const std::string& tile_id) = 0;
+
   TileManager();
   virtual ~TileManager() = default;
 

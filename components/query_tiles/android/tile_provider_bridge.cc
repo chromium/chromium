@@ -68,4 +68,9 @@ void TileProviderBridge::GetQueryTiles(JNIEnv* env,
       &RunGetTilesCallback, ScopedJavaGlobalRef<jobject>(jcallback)));
 }
 
+void TileProviderBridge::OnTileClicked(JNIEnv* env,
+                                       const JavaParamRef<jstring>& j_tile_id) {
+  tile_service_->OnTileClicked(ConvertJavaStringToUTF8(env, j_tile_id));
+}
+
 }  // namespace query_tiles
