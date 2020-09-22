@@ -817,10 +817,10 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedFilter) {
 
   background->AddChild(child);
 
-#if defined(OS_WIN) || defined(OS_FUCHSIA)
-#if defined (ARCH_CPU_ARM64)
-  // Windows ARM64 and Fuchsia has some pixels difference
-  // crbug.com/1029728, crbug.com/1048249
+#if defined(OS_WIN) || defined(OS_FUCHSIA) || defined(OS_MAC)
+#if defined(ARCH_CPU_ARM64)
+  // Windows, macOS, and Fuchsia on ARM64 has some pixels difference
+  // crbug.com/1029728, crbug.com/1048249, crbug.com/1128443
   float percentage_pixels_large_error = 0.391112f;
   float average_error_allowed_in_bad_pixels = 1.1f;
   int large_error_allowed = 3;
@@ -879,13 +879,15 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedDropShadowFilter) {
   background->AddChild(child);
 
 #if defined(OS_WIN) || defined(ARCH_CPU_ARM64)
-#if (defined(OS_WIN) && defined(ARCH_CPU_ARM64)) || defined(OS_FUCHSIA)
-  // Windows ARM64 has some pixels difference: crbug.com/1029729
+#if defined(ARCH_CPU_ARM64) && \
+    (defined(OS_WIN) || defined(OS_FUCHSIA) || defined(OS_MAC))
+  // Windows, macOS, and Fuchsia on ARM64 has some pixels difference.
+  // crbug.com/1029728, crbug.com/1128443
   float percentage_pixels_large_error = 0.89f;
   float average_error_allowed_in_bad_pixels = 5.f;
   int large_error_allowed = 17;
 #else
-  // Windows and ARM64 have 3 pixels off by 1: crbug.com/259915
+  // Windows and all other ARM64 have 3 pixels off by 1: crbug.com/259915
   float percentage_pixels_large_error = 0.00333334f;  // 3px / (300*300)
   float average_error_allowed_in_bad_pixels = 1.f;
   int large_error_allowed = 1;

@@ -774,10 +774,10 @@ class LayerTreeHostMaskAsBlendingPixelTest
       small_error_allowed = 1;
     } else {
 #if defined(ARCH_CPU_ARM64)
-#if defined(OS_WIN) || defined(OS_FUCHSIA)
-      // Windows and Fuchsia ARM64 has some pixels difference
+#if defined(OS_WIN) || defined(OS_FUCHSIA) || defined(OS_MAC)
+      // ARM Windows, macOS, and Fuchsia has some pixels difference
       // Affected tests: RotatedClippedCircle, RotatedClippedCircleUnderflow
-      // crbug.com/1030244, crbug.com/1048249
+      // crbug.com/1030244, crbug.com/1048249, crbug.com/1128443
       percentage_pixels_error = 6.1f;
       average_error_allowed_in_bad_pixels = 5.f;
       large_error_allowed = 20;
