@@ -39,6 +39,7 @@
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
@@ -151,15 +152,23 @@ class ScopedActionAnnotator {
   Persistent<AXObjectCacheImpl> cache_;
 };
 
-static bool IsLayoutClean(Document* document) {
-  if (!document || !document->View())
-    return false;
-  if (document->NeedsLayoutTreeUpdate())
-    return false;
-  if (document->View()->NeedsLayout())
-    return false;
-  return document->Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean;
+#if DCHECK_IS_ON()
+static void CheckLayoutClean(const Document* document) {
+  DCHECK(document);
+  LocalFrameView* view = document->View();
+  DCHECK(view);
+  DCHECK(!document->NeedsLayoutTreeUpdate());
+  LayoutView* lview = view->GetLayoutView();
+
+  DCHECK(!view->NeedsLayout())
+      << "\n  Layout pending: " << view->LayoutPending()
+      << "\n  Needs layout: " << (lview && lview->NeedsLayout());
+
+  DCHECK_GE(document->Lifecycle().GetState(), DocumentLifecycle::kLayoutClean)
+      << "Document lifecycle must be at LayoutClean or later, was "
+      << document->Lifecycle().GetState();
 }
+#endif
 
 void WebAXObject::Reset() {
   private_.Reset();
@@ -194,14 +203,38 @@ int WebAXObject::GenerateAXID() const {
   return private_->AXObjectCache().GenerateAXID();
 }
 
-bool WebAXObject::UpdateLayoutAndCheckValidity() {
+// This method must be called before serializing any accessibility nodes, in
+// order to ensure that layout calls are not made at an unsafe time in the
+// document lifecycle.
+bool WebAXObject::MaybeUpdateLayoutAndCheckValidity() {
   if (!IsDetached()) {
-    if (!UpdateLayoutAndCheckValidity(GetDocument()))
+    if (!MaybeUpdateLayoutAndCheckValidity(GetDocument()))
       return false;
   }
 
   // Doing a layout can cause this object to be invalid, so check again.
-  return !IsDetached();
+  return CheckValidity();
+}
+
+// Returns true if the object is valid and can be accessed.
+bool WebAXObject::CheckValidity() {
+  if (IsDetached())
+    return false;
+
+#if DCHECK_IS_ON()
+  Node* node = private_->GetNode();
+  if (!node)
+    return true;
+
+  // Has up-to-date layout info or is display-locked (content-visibility), which
+  // is handled as a special case inside of accessibility code.
+  Document* document = private_->GetDocument();
+  DCHECK(!document->NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*node) ||
+         DisplayLockUtilities::NearestLockedExclusiveAncestor(*node))
+      << "Node needs layout update and is not display locked";
+#endif  // DCHECK_IS_ON()
+
+  return true;
 }
 
 ax::mojom::DefaultActionVerb WebAXObject::Action() const {
@@ -1125,7 +1158,9 @@ WebString WebAXObject::ComputedStyleDisplay() const {
   if (IsDetached())
     return WebString();
 
-  DCHECK(IsLayoutClean(private_->GetDocument()));
+#if DCHECK_IS_ON()
+  CheckLayoutClean(private_->GetDocument());
+#endif
 
   Node* node = private_->GetNode();
   if (!node || node->IsDocumentNode())
@@ -1475,7 +1510,9 @@ void WebAXObject::GetRelativeBounds(WebAXObject& offset_container,
   if (IsDetached())
     return;
 
-  DCHECK(IsLayoutClean(private_->GetDocument()));
+#if DCHECK_IS_ON()
+  CheckLayoutClean(private_->GetDocument());
+#endif
 
   AXObject* container = nullptr;
   FloatRect bounds;
@@ -1631,8 +1668,10 @@ WebAXObject WebAXObject::FromWebNode(const WebNode& web_node) {
 // static
 WebAXObject WebAXObject::FromWebDocument(const WebDocument& web_document,
                                          bool update_layout_if_necessary) {
-  if (update_layout_if_necessary && !UpdateLayoutAndCheckValidity(web_document))
+  if (update_layout_if_necessary &&
+      !MaybeUpdateLayoutAndCheckValidity(web_document)) {
     return WebAXObject();
+  }
   const Document* document = web_document.ConstUnwrap<Document>();
   auto* cache = To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
   return cache ? WebAXObject(cache->GetOrCreate(document->GetLayoutView()))
@@ -1651,22 +1690,52 @@ WebAXObject WebAXObject::FromWebDocumentByID(const WebDocument& web_document,
 WebAXObject WebAXObject::FromWebDocumentFocused(
     const WebDocument& web_document,
     bool update_layout_if_necessary) {
-  if (update_layout_if_necessary && !UpdateLayoutAndCheckValidity(web_document))
+  if (update_layout_if_necessary &&
+      !MaybeUpdateLayoutAndCheckValidity(web_document)) {
     return WebAXObject();
+  }
   const Document* document = web_document.ConstUnwrap<Document>();
   auto* cache = To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
   return cache ? WebAXObject(cache->FocusedObject()) : WebAXObject();
 }
 
-bool WebAXObject::UpdateLayoutAndCheckValidity(
+// static
+void WebAXObject::UpdateLayout(const WebDocument& web_document) {
+  const Document* document = web_document.ConstUnwrap<Document>();
+  if (!document || !document->View())
+    return;
+  DCHECK(document->View());
+  DCHECK(document->ExistingAXObjectCache());
+  if (document->NeedsLayoutTreeUpdate() || document->View()->NeedsLayout() ||
+      document->Lifecycle().GetState() <
+          DocumentLifecycle::kCompositingAssignmentsClean ||
+      document->ExistingAXObjectCache()->IsDirty()) {
+    document->View()->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kAccessibility);
+  }
+}
+
+// static
+bool WebAXObject::MaybeUpdateLayoutAndCheckValidity(
     const WebDocument& web_document) {
   const Document* document = web_document.ConstUnwrap<Document>();
   if (!document || !document->View())
     return false;
 
-  if (!document->View()->UpdateLifecycleToCompositingCleanPlusScrolling(
-          DocumentUpdateReason::kAccessibility))
-    return false;
+  if (document->NeedsLayoutTreeUpdate() || document->View()->NeedsLayout() ||
+      document->Lifecycle().GetState() <
+          DocumentLifecycle::kCompositingAssignmentsClean) {
+    // Note: this always alters the lifecycle, because
+    // RunAccessibilityLifecyclePhase() will be called.
+    if (!document->View()->UpdateAllLifecyclePhasesExceptPaint(
+            DocumentUpdateReason::kAccessibility)) {
+      return false;
+    }
+  } else {
+#if DCHECK_IS_ON()
+    CheckLayoutClean(document);
+#endif
+  }
 
   return true;
 }

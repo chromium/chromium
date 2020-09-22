@@ -545,7 +545,7 @@ TEST_F(RenderAccessibilityImplTest, HideAccessibilityObject) {
   ExecuteJavaScriptForTests(
       "document.getElementById('B').style.visibility = 'hidden';");
   // Force layout now.
-  root_obj.UpdateLayoutAndCheckValidity();
+  root_obj.MaybeUpdateLayoutAndCheckValidity();
 
   // Send a childrenChanged on "A".
   ClearHandledUpdates();
@@ -594,7 +594,7 @@ TEST_F(RenderAccessibilityImplTest, ShowAccessibilityObject) {
   ExecuteJavaScriptForTests(
       "document.getElementById('B').style.visibility = 'visible';");
 
-  root_obj.UpdateLayoutAndCheckValidity();
+  root_obj.MaybeUpdateLayoutAndCheckValidity();
   ClearHandledUpdates();
 
   GetRenderAccessibilityImpl()->HandleAXEvent(
@@ -964,7 +964,7 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
   EXPECT_FALSE(IsSelected(option));
   EXPECT_TRUE(option_action_target->SetSelected(true));
   // Seleting option requires layout to be clean.
-  ASSERT_TRUE(root_obj.UpdateLayoutAndCheckValidity());
+  ASSERT_TRUE(root_obj.MaybeUpdateLayoutAndCheckValidity());
   EXPECT_TRUE(IsSelected(option));
 #endif
 
@@ -973,7 +973,7 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
   EXPECT_EQ(value_to_set, input_text.StringValue().Utf8());
 
   // Setting selection requires layout to be clean.
-  ASSERT_TRUE(root_obj.UpdateLayoutAndCheckValidity());
+  ASSERT_TRUE(root_obj.MaybeUpdateLayoutAndCheckValidity());
 
   EXPECT_TRUE(text_one_action_target->SetSelection(
       text_one_action_target.get(), 3, text_two_action_target.get(), 4));
@@ -1082,7 +1082,7 @@ TEST_F(AXImageAnnotatorTest, OnImageAdded) {
   ExecuteJavaScriptForTests(
       "document.getElementById('B').style.visibility = 'visible';");
   ClearHandledUpdates();
-  root_obj.UpdateLayoutAndCheckValidity();
+  root_obj.MaybeUpdateLayoutAndCheckValidity();
 
   // This should update the annotations of all images on the page, including the
   // already visible one.

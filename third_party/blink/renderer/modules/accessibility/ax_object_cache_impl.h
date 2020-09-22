@@ -148,6 +148,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void InlineTextBoxesUpdated(LineLayoutItem) override;
   void ProcessDeferredAccessibilityEvents(Document&) override;
+  bool IsDirty() const override;
 
   // Called when a HTMLFrameOwnerElement (such as an iframe element) changes the
   // embedding token of its child frame.

@@ -1050,7 +1050,7 @@ void AXObjectCacheImpl::StyleChangedWithCleanLayout(Node* node) {
   // supports selection changes, it can be the result of the selection changing
   // as well as the container losing focus. We handle these notifications via
   // their state changes, so no need to mark them dirty here.
-  AXObject* parent = obj->ParentObjectUnignored();
+  AXObject* parent = obj->CachedParentObject();
   if (parent && ui::IsContainerWithSelectableChildren(parent->RoleValue()))
     return;
 
@@ -1346,6 +1346,11 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
 
   ProcessUpdates(document);
   PostNotifications(document);
+}
+
+bool AXObjectCacheImpl::IsDirty() const {
+  return !tree_updates_paused_ &&
+         (tree_update_callback_queue_.size() || notifications_to_post_.size());
 }
 
 void AXObjectCacheImpl::EmbeddingTokenChanged(HTMLFrameOwnerElement* element) {
@@ -2349,6 +2354,7 @@ void AXObjectCacheImpl::HandleLoadCompleteWithCleanLayout(Node* document_node) {
       << "Unclean document at lifecycle " << document->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
+  AddPermissionStatusListener();
   PostNotification(GetOrCreate(document_node),
                    ax::mojom::blink::Event::kLoadComplete);
 }

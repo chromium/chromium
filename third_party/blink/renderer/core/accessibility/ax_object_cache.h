@@ -163,6 +163,9 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // Static helper functions.
   static bool IsInsideFocusableElementOrARIAWidget(const Node&);
 
+  // Returns true if there are any pending updates that need processing.
+  virtual bool IsDirty() const = 0;
+
  protected:
   friend class ScopedBlinkAXEventIntent;
   FRIEND_TEST_ALL_PREFIXES(ScopedBlinkAXEventIntentTest, SingleIntent);

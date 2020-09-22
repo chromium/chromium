@@ -102,7 +102,9 @@ class WebAXObject {
   BLINK_EXPORT static WebAXObject FromWebDocumentFocused(
       const WebDocument&,
       bool update_layout_if_necessary = true);
-  BLINK_EXPORT static bool UpdateLayoutAndCheckValidity(const WebDocument&);
+  BLINK_EXPORT static bool MaybeUpdateLayoutAndCheckValidity(
+      const WebDocument&);
+  BLINK_EXPORT static void UpdateLayout(const WebDocument&);
 
   BLINK_EXPORT void Reset();
   BLINK_EXPORT void Assign(const WebAXObject&);
@@ -119,11 +121,15 @@ class WebAXObject {
   // tree.
   BLINK_EXPORT int GenerateAXID() const;
 
-  // Update layout if necessary on the underlying tree, and return true if this
-  // object is still valid (not detached). Note that calling this method can
-  // cause other WebAXObjects to become invalid, too, so always call isDetached
-  // if any other blink/renderer/core code has run.
-  BLINK_EXPORT bool UpdateLayoutAndCheckValidity();
+  // Update layout if necessary on the underlying tree and return true if the
+  // object is valid. Note that calling this and other methods can cause other
+  // WebAXObjects to become invalid, so always check validity of an object
+  // before using it.
+  BLINK_EXPORT bool MaybeUpdateLayoutAndCheckValidity();
+
+  // Return true if this object is still valid (not detached) and has updated
+  // layout.
+  BLINK_EXPORT bool CheckValidity();
 
   BLINK_EXPORT unsigned ChildCount() const;
 
