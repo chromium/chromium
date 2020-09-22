@@ -23,6 +23,9 @@ import {FittingType} from '../constants.js';
 // <if expr="chromeos">
 import {InkController} from '../ink_controller.js';
 // </if>
+// <if expr="chromeos">
+import {ViewerAnnotationsModeDialogElement} from './viewer-annotations-mode-dialog.js';
+// </if>
 
 export class ViewerPdfToolbarNewElement extends PolymerElement {
   static get is() {
@@ -67,17 +70,18 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
       pdfAnnotationsEnabled: Boolean,
       pdfFormSaveEnabled: Boolean,
       printingEnabled: Boolean,
+      rotated: Boolean,
       viewportZoom: {
         type: Number,
         observer: 'viewportZoomChanged_',
       },
 
+      twoUpViewEnabled: Boolean,
+
       moreMenuOpen_: {
         type: Boolean,
         reflectToAttribute: true,
       },
-
-      twoUpViewEnabled_: Boolean,
 
       fittingType_: Number,
 
@@ -88,6 +92,12 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
       },
 
       // <if expr="chromeos">
+      /** @private */
+      showAnnotationsModeDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
       /** @private */
       showAnnotationsBar_: {
         type: Boolean,
@@ -112,9 +122,6 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
 
     /** @private {boolean} */
     this.moreMenuOpen_ = false;
-
-    /** @private {boolean} */
-    this.twoUpViewEnabled_ = false;
 
     /** @private {?number} */
     this.zoomTimeout_ = null;
@@ -225,9 +232,9 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
 
   /** @private */
   toggleTwoPageViewClick_() {
-    this.twoUpViewEnabled_ = !this.twoUpViewEnabled_;
-    this.dispatchEvent(new CustomEvent(
-        'two-up-view-changed', {detail: this.twoUpViewEnabled_}));
+    const newTwoUpViewEnabled = !this.twoUpViewEnabled;
+    this.dispatchEvent(
+        new CustomEvent('two-up-view-changed', {detail: newTwoUpViewEnabled}));
     this.getMenu_().close();
   }
 
@@ -338,6 +345,27 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
   }
 
   // <if expr="chromeos">
+  /** @private */
+  onDialogClose_() {
+    if (/** @type {!ViewerAnnotationsModeDialogElement} */ (
+            this.shadowRoot.querySelector('viewer-annotations-mode-dialog'))
+            .wasConfirmed()) {
+      this.dispatchEvent(new CustomEvent('annotation-mode-dialog-confirmed'));
+    }
+    this.showAnnotationsModeDialog_ = false;
+    this.toggleAnnotation();
+  }
+
+  /** @private */
+  onAnnotationClick_() {
+    if (!this.rotated && !this.twoUpViewEnabled) {
+      this.toggleAnnotation();
+      return;
+    }
+
+    this.showAnnotationsModeDialog_ = true;
+  }
+
   toggleAnnotation() {
     const newAnnotationMode = !this.annotationMode;
     this.dispatchEvent(new CustomEvent(

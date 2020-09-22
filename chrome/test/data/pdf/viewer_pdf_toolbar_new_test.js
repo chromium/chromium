@@ -181,6 +181,7 @@ const tests = [
 
   function testTwoPageViewToggle() {
     const toolbar = createToolbar();
+    toolbar.twoUpViewEnabled = false;
     const button = /** @type {!HTMLElement} */ (
         toolbar.shadowRoot.querySelector('#two-page-view-button'));
     assertCheckboxMenuButton(button, false);
@@ -189,6 +190,8 @@ const tests = [
     button.click();
     whenChanged
         .then(e => {
+          // Happens in the parent.
+          toolbar.twoUpViewEnabled = true;
           chrome.test.assertEq(true, e.detail);
           assertCheckboxMenuButton(button, true);
           whenChanged = eventToPromise('two-up-view-changed', toolbar);
@@ -196,6 +199,8 @@ const tests = [
           return whenChanged;
         })
         .then(e => {
+          // Happens in the parent.
+          toolbar.twoUpViewEnabled = false;
           chrome.test.assertEq(false, e.detail);
           assertCheckboxMenuButton(button, false);
           chrome.test.succeed();

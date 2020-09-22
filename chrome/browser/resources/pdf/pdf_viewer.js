@@ -469,6 +469,30 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   }
 
   // <if expr="chromeos">
+  /** @private */
+  onResetView_() {
+    if (this.twoUpViewEnabled_) {
+      this.currentController.setTwoUpView(false);
+      this.twoUpViewEnabled_ = false;
+    }
+    if (this.rotated_) {
+      const rotations = this.viewport.getClockwiseRotations();
+      switch (rotations) {
+        case 1:
+          super.rotateCounterclockwise();
+          break;
+        case 2:
+          super.rotateCounterclockwise();
+          super.rotateCounterclockwise();
+          break;
+        case 3:
+          super.rotateClockwise();
+          break;
+      }
+      this.rotated_ = false;
+    }
+  }
+
   /**
    * @return {!Promise} Resolves when the sidenav animation is complete.
    * @private
@@ -1102,8 +1126,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    * @private
    */
   computeAnnotationAvailable_() {
-    return this.canSerializeDocument_ && !this.rotated_ && !this.hadPassword_ &&
-        !this.twoUpViewEnabled_;
+    return this.canSerializeDocument_ && !this.hadPassword_;
   }
 
   /** @override */

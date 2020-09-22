@@ -27,6 +27,7 @@ js_type_check("closure_compile") {
   if (is_chromeos) {
     deps += [
       ":viewer-annotations-bar",
+      ":viewer-annotations-mode-dialog",
       ":viewer-form-warning",
       ":viewer-ink-host",
       ":viewer-pen-options",
@@ -69,6 +70,13 @@ js_library("viewer-annotations-bar") {
     "..:ink_controller",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:event_tracker.m",
+  ]
+}
+
+js_library("viewer-annotations-mode-dialog") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
   ]
 }
 
@@ -133,6 +141,7 @@ js_library("viewer-pdf-toolbar") {
 
 js_library("viewer-pdf-toolbar-new") {
   deps = [
+    ":viewer-annotations-mode-dialog",
     ":viewer-download-controls",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -195,6 +204,7 @@ html_to_js("web_components") {
   if (is_chromeos) {
     js_files += [
       "viewer-annotations-bar.js",
+      "viewer-annotations-mode-dialog.js",
       "viewer-form-warning.js",
       "viewer-ink-host.js",
       "viewer-pen-options.js",

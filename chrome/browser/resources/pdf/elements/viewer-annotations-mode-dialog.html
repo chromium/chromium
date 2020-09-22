@@ -1,0 +1,17 @@
+<style include="cr-shared-style"></style>
+<cr-dialog id="dialog" show-on-attach>
+  <div slot="title">$i18n{annotationEditInDefaultView}</div>
+  <div slot="body">
+    [[getBodyMessage_(rotated, twoUpViewEnabled)]]
+  </div>
+  <div slot="button-container">
+    <cr-button aria-label="$i18n{cancelButton}" class="cancel-button"
+        on-click="onCancelClick_">
+      $i18n{cancelButton}
+    </cr-button>
+    <cr-button aria-label="$i18n{editButton}" class="action-button"
+        on-click="onEditClick_">
+      $i18n{editButton}
+    </cr-button>
+  </div>
+</cr-dialog>

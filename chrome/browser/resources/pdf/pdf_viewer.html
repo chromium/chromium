@@ -156,8 +156,9 @@
     load-progress="[[loadProgress_]]" has-edits="[[hasEdits_]]"
     has-entered-annotation-mode="[[hasEnteredAnnotationMode_]]"
     pdf-form-save-enabled="[[pdfFormSaveEnabled_]]"
-    printing-enabled="[[printingEnabled_]]"
+    printing-enabled="[[printingEnabled_]]" rotated="[[rotated_]]"
     is-form-field-focused="[[isFormFieldFocused_]]"
+    two-up-view-enabled="[[twoUpViewEnabled_]]"
     viewport-zoom="[[viewportZoom_]]"
 <if expr="chromeos">
     annotation-available="[[annotationAvailable_]]"
@@ -168,6 +169,7 @@
     on-display-annotations-changed="onDisplayAnnotationsChanged_"
     on-dropdown-opened="onDropdownOpened_"
     on-fit-to-changed="onFitToChanged"
+    on-annotation-mode-dialog-confirmed="onResetView_"
     on-sidenav-toggle-click="onSidenavToggleClick_"
     on-two-up-view-changed="onTwoUpViewChanged_"
     on-zoom-changed="onZoomChanged" on-zoom-in="onZoomIn"

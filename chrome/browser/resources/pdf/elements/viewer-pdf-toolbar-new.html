@@ -216,8 +216,9 @@
   <if expr="chromeos">
     <template is="dom-if" if="[[pdfAnnotationsEnabled]]">
       <cr-icon-button id="annotate" iron-icon="pdf:create"
-          disabled="[[!annotationAvailable]]" on-click="toggleAnnotation"
+          on-click="onAnnotationClick_"
           aria-label="$i18n{tooltipAnnotate}"
+          disabled="[[!annotationsAvailable]]"
           title="$i18n{tooltipAnnotate}"></cr-icon-button>
     </template>
   </if>
@@ -245,9 +246,9 @@
 <if expr="chromeos">
       disabled="[[annotationMode]]"
 </if>
-      aria-checked="[[getTwoPageViewAriaChecked_(twoUpViewEnabled_)]]">
+      aria-checked="[[getTwoPageViewAriaChecked_(twoUpViewEnabled)]]">
     <span class="check-container">
-      <iron-icon icon="pdf:check" hidden="[[!twoUpViewEnabled_]]"></iron-icon>
+      <iron-icon icon="pdf:check" hidden="[[!twoUpViewEnabled]]"></iron-icon>
     </span>
     $i18n{twoUpViewEnable}
   </button>
@@ -263,6 +264,13 @@
   </button>
 </cr-action-menu>
 
+<if expr="chromeos">
+  <template is="dom-if" if="[[showAnnotationsModeDialog_]]" restamp>
+    <viewer-annotations-mode-dialog two-up-view-enabled="[[twoUpViewEnabled]]"
+        rotated="[[rotated]]" on-close="onDialogClose_">
+    </viewer-annotations-mode-dialog>
+  </template>
+</if>
 <if expr="chromeos">
   <template is="dom-if" if="[[showAnnotationsBar_]]">
     <viewer-annotations-bar annotation-mode="[[annotationMode]]"

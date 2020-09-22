@@ -128,6 +128,7 @@
         <include name="IDR_PDF_VIEWER_DOWNLOADS_JS" file="${root_gen_dir}/chrome/browser/resources/pdf/elements/viewer-download-controls.js" use_base_dir="false" type="BINDATA"/>
         <include name="IDR_PDF_VIEWER_ERROR_SCREEN_JS" file="${root_gen_dir}/chrome/browser/resources/pdf/elements/viewer-error-screen.js" use_base_dir="false" type="BINDATA" />
         <if expr="chromeos">
+          <include name="IDR_PDF_VIEWER_ANNOTATIONS_MODE_DIALOG_JS" file="${root_gen_dir}/chrome/browser/resources/pdf/elements/viewer-annotations-mode-dialog.js" use_base_dir="false" type="BINDATA"/>
           <include name="IDR_PDF_VIEWER_ANNOTATIONS_BAR_JS" file="${root_gen_dir}/chrome/browser/resources/pdf/elements/viewer-annotations-bar.js" use_base_dir="false" type="BINDATA"/>
           <include name="IDR_PDF_VIEWER_INK_CONTROLLER_JS" file="pdf/ink_controller.js" type="BINDATA" />
           <include name="IDR_PDF_VIEWER_INK_INDEX_HTML" file="pdf/ink/index.html" type="BINDATA" />

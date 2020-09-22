@@ -105,6 +105,18 @@
       <message name="IDS_PDF_ANNOTATION_UNAVAILABLE" desc="Button tooltip to explain that 'Annotation mode' which allows writing, drawing and highlighting of the PDF document is not available">
         Annotation not available
       </message>
+      <message name="IDS_PDF_ANNOTATION_EDIT_IN_DEFAULT_VIEW" desc="Title of a dialog asking the user if they want to annotate the document in default view">
+        Edit annotations in default view?
+      </message>
+      <message name="IDS_PDF_ANNOTATION_RESET_ROTATE" desc="Text in a dialog informing the user that rotation will be reset to default if they continue to annotation mode">
+        When you edit annotations, this document will return to its original rotation.
+      </message>
+      <message name="IDS_PDF_ANNOTATION_RESET_TWO_PAGE_VIEW" desc="Text in a dialog informing the user that the view will reset to single page if they continue to annotation mode">
+        When you edit annotations, this document will return to single page view.
+      </message>
+      <message name="IDS_PDF_ANNOTATION_RESET_ROTATE_AND_TWO_PAGE_VIEW" desc="Text in a dialog informing the user that rotation will be reset to default and the view will reset to single page if they continue to annotation mode">
+        When you edit annotations, this document will return to single page view and its original rotation.
+      </message>
       <message name="IDS_PDF_ANNOTATION_DOCUMENT_TOO_LARGE" desc="Button tooltip to indicate why 'Annotation mode' which allows writing, drawing and highlighting of the PDF document is not available due to the document being too large">
         Document is too large to be annotated
       </message>
