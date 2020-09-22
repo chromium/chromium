@@ -755,8 +755,11 @@ class MEDIA_GPU_EXPORT V4L2Device
   // Check whether the V4L2 control with specified |ctrl_id| is supported.
   bool IsCtrlExposed(uint32_t ctrl_id);
   // Set the specified list of |ctrls| for the specified |ctrl_class|, returns
-  // whether the operation succeeded.
-  bool SetExtCtrls(uint32_t ctrl_class, std::vector<V4L2ExtCtrl> ctrls);
+  // whether the operation succeeded. If |request_ref| is not nullptr, the
+  // controls are applied to the request instead of globally for the device.
+  bool SetExtCtrls(uint32_t ctrl_class,
+                   std::vector<V4L2ExtCtrl> ctrls,
+                   V4L2RequestRef* request_ref = nullptr);
 
   // Get the value of a single control, or base::nullopt of the control is not
   // exposed by the device.

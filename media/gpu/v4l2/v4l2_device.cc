@@ -2146,7 +2146,8 @@ bool V4L2Device::IsCtrlExposed(uint32_t ctrl_id) {
 }
 
 bool V4L2Device::SetExtCtrls(uint32_t ctrl_class,
-                             std::vector<V4L2ExtCtrl> ctrls) {
+                             std::vector<V4L2ExtCtrl> ctrls,
+                             V4L2RequestRef* request_ref) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   if (ctrls.empty())
@@ -2157,6 +2158,10 @@ bool V4L2Device::SetExtCtrls(uint32_t ctrl_class,
   ext_ctrls.ctrl_class = ctrl_class;
   ext_ctrls.count = ctrls.size();
   ext_ctrls.controls = &ctrls[0].ctrl;
+
+  if (request_ref)
+    request_ref->ApplyCtrls(&ext_ctrls);
+
   return Ioctl(VIDIOC_S_EXT_CTRLS, &ext_ctrls) == 0;
 }
 
