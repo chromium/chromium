@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.media.router;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
 import android.app.Dialog;
-import android.os.StrictMode;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
@@ -82,24 +81,17 @@ public class MediaRouterIntegrationTest {
     private static final int SCRIPT_TIMEOUT_MS = 10000;
     private static final int SCRIPT_RETRY_MS = 50;
 
-    private StrictMode.ThreadPolicy mOldPolicy;
-
     private EmbeddedTestServer mTestServer;
 
     @Before
     public void setUp() throws Exception {
         BrowserMediaRouter.setRouteProviderFactoryForTest(new MockMediaRouteProvider.Factory());
         mActivityTestRule.startMainActivityOnBlankPage();
-        // Temporary until support library is updated, see http://crbug.com/576393.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mOldPolicy = StrictMode.allowThreadDiskWrites(); });
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
     }
 
     @After
     public void tearDown() {
-        // Temporary until support library is updated, see http://crbug.com/576393.
-        TestThreadUtils.runOnUiThreadBlocking(() -> { StrictMode.setThreadPolicy(mOldPolicy); });
         mTestServer.stopAndDestroyServer();
     }
 

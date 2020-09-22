@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.infobar;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.StrictMode;
 
 import androidx.annotation.DrawableRes;
 
@@ -75,38 +74,32 @@ public class DataReductionPromoInfoBar extends ConfirmInfoBar {
         String freOrSecondRunVersion =
                 DataReductionPromoUtils.getDisplayedFreOrSecondRunPromoVersion();
 
-        // Temporarily allowing disk access. TODO: Fix. See http://crbug.com/577185
-        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
-        try {
-            Calendar releaseDateOfM48Stable = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        Calendar releaseDateOfM48Stable = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
-            releaseDateOfM48Stable.setTime(Date.valueOf(M48_STABLE_RELEASE_DATE));
-            long packageInstallTime = getPackageInstallTime(context);
+        releaseDateOfM48Stable.setTime(Date.valueOf(M48_STABLE_RELEASE_DATE));
+        long packageInstallTime = getPackageInstallTime(context);
 
-            // The boolean pref that stores whether user opted out on the first run experience was
-            // added in M51. If the last promo was shown before M51, then |freOrSecondRunVersion|
-            // will be empty. If Chrome was installed after the FRE promo was added in M48 and
-            // beforeM51,assume the user opted out from the FRE and don't show the infobar.
-            if (freOrSecondRunVersion.isEmpty()
-                    && packageInstallTime > releaseDateOfM48Stable.getTimeInMillis()) {
-                return false;
-            }
-
-            // Only show the promo if the current version is at least two milestones after the last
-            // promo was displayed or the command line switch is on. If the last promo was shown
-            // before M51 then |freOrSecondRunVersion| will be empty and it is safe to show the
-            // infobar promo.
-            if (!freOrSecondRunVersion.isEmpty()
-                    && currentMilestone < VersionNumberGetter.getMilestoneFromVersionNumber(
-                                                  freOrSecondRunVersion)
-                                    + 2) {
-                return false;
-            }
-
-            return true;
-        } finally {
-            StrictMode.setThreadPolicy(oldPolicy);
+        // The boolean pref that stores whether user opted out on the first run experience was
+        // added in M51. If the last promo was shown before M51, then |freOrSecondRunVersion|
+        // will be empty. If Chrome was installed after the FRE promo was added in M48 and
+        // beforeM51,assume the user opted out from the FRE and don't show the infobar.
+        if (freOrSecondRunVersion.isEmpty()
+                && packageInstallTime > releaseDateOfM48Stable.getTimeInMillis()) {
+            return false;
         }
+
+        // Only show the promo if the current version is at least two milestones after the last
+        // promo was displayed or the command line switch is on. If the last promo was shown
+        // before M51 then |freOrSecondRunVersion| will be empty and it is safe to show the
+        // infobar promo.
+        if (!freOrSecondRunVersion.isEmpty()
+                && currentMilestone
+                        < VersionNumberGetter.getMilestoneFromVersionNumber(freOrSecondRunVersion)
+                                + 2) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

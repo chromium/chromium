@@ -228,9 +228,7 @@ public class AndroidSyncSettings {
         if (value == mChromeSyncEnabled || mAccount == null) return;
         mChromeSyncEnabled = value;
 
-        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            mSyncContentResolverDelegate.setSyncAutomatically(mAccount, mContractAuthority, value);
-        }
+        mSyncContentResolverDelegate.setSyncAutomatically(mAccount, mContractAuthority, value);
         notifyObservers();
     }
 
@@ -283,19 +281,17 @@ public class AndroidSyncSettings {
         boolean oldChromeSyncEnabled = mChromeSyncEnabled;
         boolean oldMasterSyncEnabled = mMasterSyncEnabled;
 
-        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            if (mAccount != null) {
-                mIsSyncable =
-                        mSyncContentResolverDelegate.getIsSyncable(mAccount, mContractAuthority)
-                        > 0;
-                mChromeSyncEnabled = mSyncContentResolverDelegate.getSyncAutomatically(
-                        mAccount, mContractAuthority);
-            } else {
-                mIsSyncable = false;
-                mChromeSyncEnabled = false;
-            }
-            mMasterSyncEnabled = mSyncContentResolverDelegate.getMasterSyncAutomatically();
+        if (mAccount != null) {
+            mIsSyncable =
+                    mSyncContentResolverDelegate.getIsSyncable(mAccount, mContractAuthority)
+                    > 0;
+            mChromeSyncEnabled = mSyncContentResolverDelegate.getSyncAutomatically(
+                    mAccount, mContractAuthority);
+        } else {
+            mIsSyncable = false;
+            mChromeSyncEnabled = false;
         }
+        mMasterSyncEnabled = mSyncContentResolverDelegate.getMasterSyncAutomatically();
 
         return oldChromeSyncEnabled != mChromeSyncEnabled
                 || oldMasterSyncEnabled != mMasterSyncEnabled;
