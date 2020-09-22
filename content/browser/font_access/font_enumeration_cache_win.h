@@ -69,6 +69,9 @@ class CONTENT_EXPORT FontEnumerationCacheWin : public FontEnumerationCache {
   Microsoft::WRL::ComPtr<IDWriteFontCollection> collection_;
   uint32_t outstanding_family_results_ = 0;
 
+  // Protobuf structure temporarily used during cache construction and shared.
+  std::unique_ptr<blink::FontEnumerationTable> font_enumeration_table_;
+
   std::map<HRESULT, unsigned> enumeration_errors_;
   std::unique_ptr<base::ElapsedTimer> enumeration_timer_;
 

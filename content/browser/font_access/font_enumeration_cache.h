@@ -73,9 +73,6 @@ class CONTENT_EXPORT FontEnumerationCache {
 
   bool IsFontEnumerationCacheValid() const;
 
-  // Protobuf structure temporarily used during cache construction and shared.
-  std::unique_ptr<blink::FontEnumerationTable> font_enumeration_table_;
-
   base::MappedReadOnlyRegion enumeration_cache_memory_;
   base::AtomicFlag enumeration_cache_built_;
   base::AtomicFlag enumeration_cache_build_started_;
