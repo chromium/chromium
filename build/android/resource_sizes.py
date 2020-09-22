@@ -469,6 +469,12 @@ def _DoApkAnalysis(apk_filename, apks_path, tool_prefix, out_dir, report_func):
   # Use a constant compression factor to account for fluctuations.
   normalized_apk_size -= java_code.ComputeZippedSize()
   normalized_apk_size += java_code.ComputeUncompressedSize()
+  # Don't include zipalign overhead in normalized size, since it effectively
+  # causes size changes files that proceed aligned files to be rounded.
+  # For APKs where classes.dex directly proceeds libchrome.so, this causes
+  # small dex size changes to disappear into libchrome.so alignment.
+  normalized_apk_size -= sum(len(i.extra) for i in apk_contents)
+
   # Unaligned size should be ~= uncompressed size or something is wrong.
   # As of now, padding_fraction ~= .007
   padding_fraction = -_PercentageDifference(

@@ -125,9 +125,10 @@ class IntegrationTest(unittest.TestCase):
 
     with zipfile.ZipFile(_TEST_APK_PATH, 'w') as apk_file:
       apk_file.write(_TEST_ELF_PATH, _TEST_APK_SO_PATH)
-      # Exactly 4MB of data (2^22).
-      apk_file.writestr(
-          _TEST_APK_SMALL_SO_PATH, IntegrationTest._CreateBlankData(22))
+      # Exactly 4MB of data (2^22), with some zipalign overhead.
+      info = zipfile.ZipInfo(_TEST_APK_SMALL_SO_PATH)
+      info.extra = b'\x00' * 16
+      apk_file.writestr(info, IntegrationTest._CreateBlankData(22))
       # Exactly 1MB of data (2^20).
       apk_file.writestr(
           _TEST_APK_OTHER_FILE_PATH, IntegrationTest._CreateBlankData(20))
