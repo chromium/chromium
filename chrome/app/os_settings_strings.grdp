@@ -298,8 +298,8 @@
   <message name="IDS_OS_SETTINGS_LANGUAGES_ADD_INPUT_METHOD_LABEL" translateable="false" desc="Button under the list of input methods which opens a dialog that lets the user add keyboard layouts and input method editors.">
     Add input methods
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_REMOVE_INPUT_METHOD_LABEL" translateable="false" desc="Title of the dialog that lets the user remove a given keyboard layout or input method editor.">
-    Remove <ph name="INPUT_METHOD_NAME">$1<ex>US keyboard</ex></ph>?
+  <message name="IDS_OS_SETTINGS_LANGUAGES_REMOVE_INPUT_METHOD_TOOLTIP" desc="Tooltip of the button that lets the user remove a given keyboard layout or input method editor.">
+    Remove <ph name="INPUT_METHOD_NAME">$1<ex>US keyboard</ex></ph>
   </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_SUGGESTED_INPUT_METHODS_LABEL" desc="Title of the list of keyboard layouts or input method editors suggested to users.">
     Suggested

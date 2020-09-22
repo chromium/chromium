@@ -54,15 +54,6 @@ Polymer({
       value: false,
     },
 
-    /** @private {!chrome.languageSettingsPrivate.InputMethod} */
-    inputMethodToRemove_: Object,
-
-    /** @private */
-    showRemoveInputMethodDialog_: {
-      type: Boolean,
-      value: false,
-    },
-
     /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
@@ -276,7 +267,7 @@ Polymer({
    * @private
    */
   getRemoveInputMethodTooltip_(inputMethod) {
-    return this.i18n('removeInputMethodLabel', inputMethod.displayName);
+    return this.i18n('removeInputMethodTooltip', inputMethod.displayName);
   },
 
   /**
@@ -284,13 +275,8 @@ Polymer({
    * @private
    */
   onRemoveInputMethodClick_(e) {
-    this.inputMethodToRemove_ = e.model.item;
-    this.showRemoveInputMethodDialog_ = true;
-  },
-
-  /** @private */
-  onRemoveInputMethodDialogClose_() {
-    this.showRemoveInputMethodDialog_ = false;
+    this.languageHelper.removeInputMethod(e.model.item.id);
+    settings.recordSettingChange();
   },
 
   /**

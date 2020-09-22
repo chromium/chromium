@@ -121,21 +121,9 @@ suite('input page', () => {
       assertEquals(
           inputMethodName,
           items[0].querySelector('.display-name').textContent.trim());
-      assertFalse(!!inputPage.$$('os-settings-remove-input-method-dialog'));
 
-      // opens the remove input method dialog.
+      // clicks remove input method button.
       items[0].querySelector('.icon-clear').click();
-      Polymer.dom.flush();
-
-      const dialog = inputPage.$$('os-settings-remove-input-method-dialog');
-      assertTrue(!!dialog);
-      assertTrue(
-          dialog.$$('[slot=title]').textContent.includes(inputMethodName));
-
-      // removes the input method.
-      const actionButton = dialog.$$('.action-button');
-      assertTrue(!!actionButton);
-      actionButton.click();
       Polymer.dom.flush();
 
       inputMethodsList = inputPage.$.inputMethodsList;
