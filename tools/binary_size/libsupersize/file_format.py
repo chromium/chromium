@@ -108,19 +108,21 @@ import itertools
 import json
 import logging
 import os
-import shutil
 import sys
 
 import models
 import parallel
 
 
+_COMMON_HEADER = b'# Created by //tools/binary_size\n'
+
 # File format version for .size files.
-_SERIALIZATION_VERSION_SINGLE_CONTAINER = 'Size File Format v1'
-_SERIALIZATION_VERSION_MULTI_CONTAINER = 'Size File Format v1.1'
+_SIZE_HEADER_SINGLE_CONTAINER = b'Size File Format v1\n'
+_SIZE_HEADER_MULTI_CONTAINER = b'Size File Format v1.1\n'
 
 # Header for .sizediff files
-_SIZEDIFF_HEADER = '# Created by //tools/binary_size\nDIFF\n'
+_SIZEDIFF_HEADER = b'DIFF\n'
+_SIZEDIFF_VERSION = 1
 
 
 class _Writer:
@@ -252,14 +254,11 @@ def _SaveSizeInfoToFile(size_info,
   num_containers = len(size_info.containers)
   has_multi_containers = (num_containers > 1)
 
-  w = _Writer(file_obj)
-
-  # "Created by SuperSize" header
-  w.WriteLine('# Created by //tools/binary_size')
+  file_obj.write(_COMMON_HEADER)
   if has_multi_containers:
-    w.WriteLine(_SERIALIZATION_VERSION_MULTI_CONTAINER)
+    file_obj.write(_SIZE_HEADER_MULTI_CONTAINER)
   else:
-    w.WriteLine(_SERIALIZATION_VERSION_SINGLE_CONTAINER)
+    file_obj.write(_SIZE_HEADER_SINGLE_CONTAINER)
 
   # JSON header fields
   fields = {
@@ -283,6 +282,8 @@ def _SaveSizeInfoToFile(size_info,
     fields['section_sizes'] = size_info.containers[0].section_sizes
 
   fields_str = json.dumps(fields, indent=2, sort_keys=True)
+
+  w = _Writer(file_obj)
   w.WriteLine(str(len(fields_str)))
   w.WriteLine(fields_str)
   w.LogSize('header')  # For libchrome: 570 bytes.
@@ -404,11 +405,12 @@ def _LoadSizeInfoFromFile(file_obj, size_path):
   """
   # Split lines on '\n', since '\r' can appear in some lines!
   lines = io.TextIOWrapper(file_obj, newline='\n')
-  _ReadLine(lines)  # Line 0: "Created by SuperSize" header
-  actual_version = _ReadLine(lines)
-  if actual_version == _SERIALIZATION_VERSION_SINGLE_CONTAINER:
+  header_line = _ReadLine(lines).encode('ascii')
+  assert header_line == _COMMON_HEADER[:-1], 'was ' + str(header_line)
+  header_line = _ReadLine(lines).encode('ascii')
+  if header_line == _SIZE_HEADER_SINGLE_CONTAINER[:-1]:
     has_multi_containers = False
-  elif actual_version == _SERIALIZATION_VERSION_MULTI_CONTAINER:
+  elif header_line == _SIZE_HEADER_MULTI_CONTAINER[:-1]:
     has_multi_containers = True
   else:
     raise ValueError('Version mismatch. Need to write some upgrade code.')
@@ -624,9 +626,8 @@ def SaveSizeInfo(size_info,
         sparse_symbols=sparse_symbols)
 
     logging.debug('Serialization complete. Gzipping...')
-    bytesio.seek(0)
     with _OpenGzipForWrite(path, file_obj=file_obj) as f:
-      f.write(bytesio.read())
+      f.write(bytesio.getbuffer())
 
 
 def LoadSizeInfo(filename, file_obj=None):
@@ -664,23 +665,42 @@ def SaveDeltaSizeInfo(delta_size_info, path, file_obj=None):
 
   with file_obj or open(path, 'wb') as output_file:
     w = _Writer(output_file)
-
-    # |_SIZEDIFF_HEADER| is multi-line with new line at end, so use
-    # WriteString() instead of WriteLine().
-    w.WriteString(_SIZEDIFF_HEADER)
-
+    w.WriteBytes(_COMMON_HEADER + _SIZEDIFF_HEADER)
     # JSON header fields
     fields = {
-        'version': 1,
+        'version': _SIZEDIFF_VERSION,
         'before_length': before_size_file.tell(),
     }
     fields_str = json.dumps(fields, indent=2, sort_keys=True)
+
     w.WriteLine(str(len(fields_str)))
     w.WriteLine(fields_str)
 
-    before_size_file.seek(0)
-    shutil.copyfileobj(before_size_file, output_file)
-
+    w.WriteBytes(before_size_file.getbuffer())
     after_promise.get()
-    after_size_file.seek(0)
-    shutil.copyfileobj(after_size_file, output_file)
+    w.WriteBytes(after_size_file.getbuffer())
+
+
+def LoadDeltaSizeInfo(filename, file_obj=None):
+  """Returns a tuple of size infos (before, after).
+
+  To reconstruct the DeltaSizeInfo, diff the two size infos.
+  """
+  with file_obj or open(filename, 'rb') as f:
+    combined_header = _COMMON_HEADER + _SIZEDIFF_HEADER
+    actual_header = f.read(len(combined_header))
+    if actual_header != combined_header:
+      raise Exception('Bad file header.')
+
+    json_len = int(f.readline())
+    json_str = f.read(json_len + 1)  # + 1 for \n
+    fields = json.loads(json_str)
+
+    assert fields['version'] == _SIZEDIFF_VERSION
+    after_pos = f.tell() + fields['before_length']
+
+    before_size_info = LoadSizeInfo(filename, f)
+    f.seek(after_pos)
+    after_size_info = LoadSizeInfo(filename, f)
+
+  return before_size_info, after_size_info

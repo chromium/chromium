@@ -486,11 +486,17 @@ def AddArguments(parser):
 
 
 def Run(args, on_config_error):
+  # Up-front check for faster error-checking.
   for path in args.inputs:
-    if not path.endswith('.size'):
-      on_config_error('All inputs must end with ".size"')
+    if not path.endswith('.size') and not path.endswith('.sizediff'):
+      on_config_error('All inputs must end with ".size" or ".sizediff"')
 
-  size_infos = [archive.LoadAndPostProcessSizeInfo(p) for p in args.inputs]
+  size_infos = []
+  for path in args.inputs:
+    if path.endswith('.sizediff'):
+      size_infos.extend(archive.LoadAndPostProcessDeltaSizeInfo(path))
+    else:
+      size_infos.append(archive.LoadAndPostProcessSizeInfo(path))
   output_directory_finder = path_util.OutputDirectoryFinder(
       value=args.output_directory,
       any_path_within_output_directory=args.inputs[0])

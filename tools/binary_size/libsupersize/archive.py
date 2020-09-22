@@ -727,6 +727,19 @@ def LoadAndPostProcessSizeInfo(path, file_obj=None):
   return size_info
 
 
+def LoadAndPostProcessDeltaSizeInfo(path, file_obj=None):
+  """Returns a tuple of SizeInfos for the given |path|."""
+  logging.debug('Loading results from: %s', path)
+  before_size_info, after_size_info = file_format.LoadDeltaSizeInfo(
+      path, file_obj=file_obj)
+  logging.info('Normalizing symbol names')
+  _NormalizeNames(before_size_info.raw_symbols)
+  _NormalizeNames(after_size_info.symbols)
+  logging.info('Loaded %d + %d symbols', len(before_size_info.raw_symbols),
+               len(after_size_info.raw_symbols))
+  return before_size_info, after_size_info
+
+
 def _CollectModuleSizes(minimal_apks_path):
   sizes_by_module = collections.defaultdict(int)
   with zipfile.ZipFile(minimal_apks_path) as z:
