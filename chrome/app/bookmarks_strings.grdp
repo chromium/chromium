@@ -65,19 +65,19 @@
         {COUNT, plural,
           =0 {&amp;Open all}
           =1 {&amp;Open bookmark}
-          other {&amp;Open all (#)}}
+          other {&amp;Open all ({COUNT})}}
     </message>
     <message name="IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_WINDOW" desc="Menu title for opening all urls in a bookmark folder in a new window">
         {COUNT, plural,
           =0 {Open all in &amp;new window}
           =1 {Open in &amp;new window}
-          other {Open all (#) in &amp;new window}}
+          other {Open all ({COUNT}) in &amp;new window}}
     </message>
     <message name="IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_INCOGNITO" desc="Menu description for opening all urls in a bookmark folder in an incognito window">
         {COUNT, plural,
           =0 {Open all in &amp;incognito window}
           =1 {Open in &amp;incognito window}
-          other {Open all (#) in &amp;incognito window}}
+          other {Open all ({COUNT}) in &amp;incognito window}}
     </message>
     <message name="IDS_BOOKMARK_BAR_OPEN_IN_NEW_TAB" desc="Menu description for loading bookmark in a new tab">
       &amp;Open in new tab
@@ -117,19 +117,19 @@
         {COUNT, plural,
           =0 {&amp;Open All}
           =1 {&amp;Open Bookmark}
-          other {&amp;Open All (#)}}
+       other {&amp;Open All ({COUNT})}}
     </message>
     <message name="IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_WINDOW" desc="In Title Case: Menu title for opening all urls in a bookmark folder in a new window">
         {COUNT, plural,
           =0 {Open All in &amp;New Window}
           =1 {Open in &amp;New Window}
-          other {Open All (#) in &amp;New Window}}
+          other {Open All ({COUNT}) in &amp;New Window}}
     </message>
     <message name="IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_INCOGNITO" desc="In Title Case: Menu description for opening all urls in a bookmark folder in an incognito window">
         {COUNT, plural,
           =0 {Open All in &amp;Incognito Window}
           =1 {Open in &amp;Incognito Window}
-          other {Open All (#) in &amp;Incognito Window}}
+          other {Open All ({COUNT}) in &amp;Incognito Window}}
     </message>
     <message name="IDS_BOOKMARK_BAR_OPEN_IN_NEW_TAB" desc="In Title Case: Menu description for loading bookmark in a new tab">
       &amp;Open in New Tab
@@ -341,7 +341,7 @@
   <message name="IDS_BOOKMARK_MANAGER_FOLDER_LIST_CHANGED" desc="Message announced by screenreaders when the bookmark list changes.">
     {COUNT, plural,
       =1 {1 item in bookmark list}
-      other {# items in bookmark list}}
+      other {{COUNT} items in bookmark list}}
   </message>
   <message name="IDS_BOOKMARK_MANAGER_LIST_AX_LABEL" desc="Spoken feedback for focusing the bookmark list.">
     Bookmark list
@@ -430,7 +430,7 @@
   <message name="IDS_BOOKMARK_MANAGER_TOAST_ITEMS_DELETED" desc="Label displayed in toast popup message when two or more items are deleted.">
     {COUNT, plural,
       =1 {1 bookmark deleted}
-      other {# bookmarks deleted}}
+      other {{COUNT} bookmarks deleted}}
   </message>
   <message name="IDS_BOOKMARK_MANAGER_TOAST_URL_COPIED" desc="Label displayed in toast popup message when a URL is copied.">
     URL copied
@@ -441,7 +441,7 @@
   <message name="IDS_BOOKMARK_MANAGER_TOAST_ITEMS_COPIED" desc="Label displayed in a toast popup message when two or more bookmark items are copied">
     {COUNT, plural,
       =1 {1 item copied}
-      other {# items copied}}
+      other {{COUNT} items copied}}
   </message>
   <!-- End of Bookmarks Manager strings. -->
 
