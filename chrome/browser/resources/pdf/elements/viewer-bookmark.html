@@ -26,9 +26,14 @@
       }
 
       #title {
+        outline: none;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+      }
+
+      :host-context(.focus-outline-visible) #title:focus {
+        outline: auto -webkit-focus-ring-color;
       }
 
       :host-context([pdf-viewer-update-enabled]) #title {
