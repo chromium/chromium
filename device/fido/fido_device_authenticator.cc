@@ -205,12 +205,6 @@ void FidoDeviceAuthenticator::GetPinRetries(GetRetriesCallback callback) {
 
 void FidoDeviceAuthenticator::GetEphemeralKey(
     GetEphemeralKeyCallback callback) {
-  if (cached_ephemeral_key_.has_value()) {
-    std::move(callback).Run(CtapDeviceResponseCode::kSuccess,
-                            cached_ephemeral_key_);
-    return;
-  }
-
   DCHECK(Options());
   DCHECK(
       Options()->client_pin_availability !=
@@ -218,24 +212,8 @@ void FidoDeviceAuthenticator::GetEphemeralKey(
       Options()->supports_pin_uv_auth_token || SupportsHMACSecretExtension());
 
   RunOperation<pin::KeyAgreementRequest, pin::KeyAgreementResponse>(
-      pin::KeyAgreementRequest(),
-      base::BindOnce(&FidoDeviceAuthenticator::OnHaveEphemeralKey,
-                     weak_factory_.GetWeakPtr(), std::move(callback)),
+      pin::KeyAgreementRequest(), std::move(callback),
       base::BindOnce(&pin::KeyAgreementResponse::Parse));
-}
-
-void FidoDeviceAuthenticator::OnHaveEphemeralKey(
-    GetEphemeralKeyCallback callback,
-    CtapDeviceResponseCode status,
-    base::Optional<pin::KeyAgreementResponse> key) {
-  if (status != CtapDeviceResponseCode::kSuccess) {
-    std::move(callback).Run(status, base::nullopt);
-  }
-  DCHECK(key.has_value());
-
-  cached_ephemeral_key_.emplace(std::move(key.value()));
-  std::move(callback).Run(CtapDeviceResponseCode::kSuccess,
-                          cached_ephemeral_key_);
 }
 
 void FidoDeviceAuthenticator::GetPINToken(
