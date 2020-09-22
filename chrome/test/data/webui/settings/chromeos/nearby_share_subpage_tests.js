@@ -152,11 +152,14 @@ suite('NearbyShare', function() {
     Polymer.dom.flush();
 
     const dialog = subpage.$$('nearby-share-device-name-dialog');
+    const oldName = subpage.settings.deviceName;
     const newName = 'NEW NAME';
     dialog.$$('cr-input').value = newName;
     dialog.$$('.action-button').click();
+    Polymer.dom.flush();
 
-    assertEquals(newName, subpage.prefs.nearby_sharing.device_name.value);
+    assertEquals(newName, subpage.settings.deviceName);
+    subpage.set('settings.deviceName', oldName);
   });
 
   test('update data usage preference', function() {
@@ -192,7 +195,7 @@ suite('NearbyShare', function() {
     const profileLabel = subpage.$$('#profileLabel');
     assertEquals('primary@gmail.com', profileLabel.textContent.trim());
     const deviceLabel = subpage.$$('#accountRowDeviceName');
-    assertEquals('', deviceLabel.textContent.trim());
+    assertEquals('testDevice', deviceLabel.textContent.trim());
   });
 
   test('show receive dialog', function() {

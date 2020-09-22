@@ -12,14 +12,12 @@ Polymer({
 
   behaviors: [
     I18nBehavior,
-    PrefsBehavior,
   ],
 
   properties: {
-    /** Preferences state. */
-    prefs: {
+    /** @type {nearby_share.NearbySettings} */
+    settings: {
       type: Object,
-      notify: true,
     },
   },
 
@@ -48,7 +46,7 @@ Polymer({
 
   /** @private */
   onDoneTap_() {
-    this.setPrefValue('nearby_sharing.device_name', this.$$('cr-input').value);
+    this.set('settings.deviceName', this.$$('cr-input').value);
     this.close();
   },
 });

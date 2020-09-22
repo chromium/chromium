@@ -57,9 +57,7 @@ js_library("nearby_share_data_usage_dialog") {
 
 js_library("nearby_share_device_name_dialog") {
   deps = [
-    "../../prefs",
-    "../../prefs:prefs_behavior",
-    "../../prefs:prefs_types",
+    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
     "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/cr_elements/cr_input:cr_input",
@@ -194,9 +192,7 @@ js_library("nearby_share_data_usage_dialog.m") {
 js_library("nearby_share_device_name_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_share_device_name_dialog.m.js" ]
   deps = [
-    "../../prefs:prefs.m",
-    "../../prefs:prefs_behavior.m",
-    "../../prefs:prefs_types.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior.m",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
@@ -332,8 +328,10 @@ polymer_modulizer("nearby_share_device_name_dialog") {
   js_file = "nearby_share_device_name_dialog.js"
   html_file = "nearby_share_device_name_dialog.html"
   html_type = "dom-module"
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
+  namespace_rewrites =
+      os_settings_namespace_rewrites + nearby_shared_namespace_rewrites
+  auto_imports =
+      os_settings_auto_imports + nearby_shared_auto_imports_closure_fix
 }
 
 polymer_modulizer("nearby_share_high_visibility_page") {

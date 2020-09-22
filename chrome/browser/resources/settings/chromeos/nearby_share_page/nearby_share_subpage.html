@@ -34,9 +34,9 @@
     </div>
     <div class="settings-box two-line">
       <div class="start" aria-label="[[getAccountRowLabel(
-          prefs.nearby_sharing.device_name.value, profileLabel_)]]">
+          settings.deviceName, profileLabel_)]]">
         <div id="accountRowDeviceName" role="heading" aria-hidden="true">
-          [[prefs.nearby_sharing.device_name.value]]
+          [[settings.deviceName]]
         </div>
         <div id="profileLabel" class="secondary" aria-hidden="true">
           [[profileLabel_]]
@@ -49,18 +49,18 @@
           $i18n{nearbyShareDeviceNameRowTitle}
         </div>
         <div aria-hidden="true" class="secondary">
-          [[prefs.nearby_sharing.device_name.value]]
+          [[settings.deviceName]]
         </div>
       </div>
       <cr-button id="editDeviceNameButton" on-click="onDeviceNameTap_"
           aria-description="[[getEditNameButtonAriaDescription_(
-              prefs.nearby_sharing.device_name.value)]]">
+              settings.deviceName)]]">
         $i18n{nearbyShareEditDeviceName}
       </cr-button>
     </div>
     <template is="dom-if" if="[[showDeviceNameDialog_]]" restamp>
-      <nearby-share-device-name-dialog prefs="{{prefs}}" id="deviceNameDialog"
-          on-close="onDeviceNameDialogClose_">
+      <nearby-share-device-name-dialog settings="{{settings}}"
+          id="deviceNameDialog" on-close="onDeviceNameDialogClose_">
       </nearby-share-device-name-dialog>
     </template>
     <div class="settings-box two-line">
