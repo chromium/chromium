@@ -570,6 +570,9 @@ void LayoutBlock::AddLayoutOverflowFromBlockChildren() {
 }
 
 void LayoutBlock::AddLayoutOverflowFromPositionedObjects() {
+  if (IsLayoutNGBlockFlow())
+    return;
+
   if (ChildLayoutBlockedByDisplayLock())
     return;
 
