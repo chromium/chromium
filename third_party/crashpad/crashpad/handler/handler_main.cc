@@ -1097,7 +1097,7 @@ int HandlerMain(int argc,
   ExceptionHandlerServer exception_handler_server(!options.pipe_name.empty());
 
   if (!options.pipe_name.empty()) {
-    exception_handler_server.SetPipeName(base::UTF8ToUTF16(options.pipe_name));
+    exception_handler_server.SetPipeName(base::UTF8ToWide(options.pipe_name));
   }
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   ExceptionHandlerServer exception_handler_server;

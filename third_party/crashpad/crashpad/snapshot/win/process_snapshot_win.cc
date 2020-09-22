@@ -214,7 +214,7 @@ std::vector<HandleSnapshot> ProcessSnapshotWin::Handles() const {
     // This is probably not strictly correct, but these are not localized so we
     // expect them all to be in ASCII range anyway. This will need to be more
     // carefully done if the object name is added.
-    snapshot.type_name = base::UTF16ToUTF8(handle.type_name);
+    snapshot.type_name = base::WideToUTF8(handle.type_name);
     snapshot.handle = handle.handle;
     snapshot.attributes = handle.attributes;
     snapshot.granted_access = handle.granted_access;
@@ -333,7 +333,7 @@ void ProcessSnapshotWin::InitializeUnloadedModules() {
           uet.SizeOfImage,
           uet.CheckSum,
           uet.TimeDateStamp,
-          base::UTF16ToUTF8(base::StringPiece16(
+          base::WideToUTF8(base::WStringPiece(
               uet.ImageName,
               wcsnlen(uet.ImageName, base::size(uet.ImageName))))));
     }

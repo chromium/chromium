@@ -160,7 +160,7 @@ FileHandle OpenFileForReadAndWrite(const base::FilePath& path,
 FileHandle LoggingOpenFileForRead(const base::FilePath& path) {
   FileHandle file = OpenFileForRead(path);
   PLOG_IF(ERROR, file == INVALID_HANDLE_VALUE)
-      << "CreateFile " << base::UTF16ToUTF8(path.value());
+      << "CreateFile " << base::WideToUTF8(path.value());
   return file;
 }
 
@@ -169,7 +169,7 @@ FileHandle LoggingOpenFileForWrite(const base::FilePath& path,
                                    FilePermissions permissions) {
   FileHandle file = OpenFileForWrite(path, mode, permissions);
   PLOG_IF(ERROR, file == INVALID_HANDLE_VALUE)
-      << "CreateFile " << base::UTF16ToUTF8(path.value());
+      << "CreateFile " << base::WideToUTF8(path.value());
   return file;
 }
 
@@ -178,7 +178,7 @@ FileHandle LoggingOpenFileForReadAndWrite(const base::FilePath& path,
                                           FilePermissions permissions) {
   FileHandle file = OpenFileForReadAndWrite(path, mode, permissions);
   PLOG_IF(ERROR, file == INVALID_HANDLE_VALUE)
-      << "CreateFile " << base::UTF16ToUTF8(path.value());
+      << "CreateFile " << base::WideToUTF8(path.value());
   return file;
 }
 

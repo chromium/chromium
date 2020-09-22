@@ -111,8 +111,7 @@ bool PathExists(const base::FilePath& path) {
 #elif defined(OS_WIN)
   if (GetFileAttributes(path.value().c_str()) == INVALID_FILE_ATTRIBUTES) {
     EXPECT_EQ(GetLastError(), static_cast<DWORD>(ERROR_FILE_NOT_FOUND))
-        << ErrorMessage("GetFileAttributes ")
-        << base::UTF16ToUTF8(path.value());
+        << ErrorMessage("GetFileAttributes ") << base::WideToUTF8(path.value());
     return false;
   }
   return true;
@@ -163,13 +162,13 @@ bool SetFileModificationTime(const base::FilePath& path,
                                        flags,
                                        nullptr));
   if (!handle.is_valid()) {
-    PLOG(ERROR) << "CreateFile " << base::UTF16ToUTF8(path.value());
+    PLOG(ERROR) << "CreateFile " << base::WideToUTF8(path.value());
     return false;
   }
 
   FILETIME filetime = TimespecToFiletimeEpoch(mtime);
   if (!SetFileTime(handle.get(), nullptr, nullptr, &filetime)) {
-    PLOG(ERROR) << "SetFileTime " << base::UTF16ToUTF8(path.value());
+    PLOG(ERROR) << "SetFileTime " << base::WideToUTF8(path.value());
     return false;
   }
   return true;

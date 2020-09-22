@@ -410,8 +410,8 @@ void SystemSnapshotWin::TimeZone(DaylightSavingTimeStatus* dst_status,
       (time_zone_information.Bias + time_zone_information.StandardBias) * -60;
   *daylight_offset_seconds =
       (time_zone_information.Bias + time_zone_information.DaylightBias) * -60;
-  *standard_name = base::UTF16ToUTF8(time_zone_information.StandardName);
-  *daylight_name = base::UTF16ToUTF8(time_zone_information.DaylightName);
+  *standard_name = base::WideToUTF8(time_zone_information.StandardName);
+  *daylight_name = base::WideToUTF8(time_zone_information.DaylightName);
 }
 
 }  // namespace internal

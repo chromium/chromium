@@ -79,7 +79,7 @@ int ToolSupport::Wmain(int argc, wchar_t* argv[], int (*entry)(int, char* [])) {
   std::vector<std::string> storage;
   storage.reserve(argc);
   for (int i = 0; i < argc; ++i) {
-    storage.push_back(base::UTF16ToUTF8(argv[i]));
+    storage.push_back(base::WideToUTF8(argv[i]));
     argv_as_utf8[i] = &storage[i][0];
   }
   argv_as_utf8[argc] = nullptr;
@@ -94,7 +94,7 @@ base::FilePath::StringType ToolSupport::CommandLineArgumentToFilePathStringType(
 #if defined(OS_POSIX)
   return path.as_string();
 #elif defined(OS_WIN)
-  return base::UTF8ToUTF16(path);
+  return base::UTF8ToWide(path);
 #endif  // OS_POSIX
 }
 
@@ -104,7 +104,7 @@ std::string ToolSupport::FilePathToCommandLineArgument(
 #if defined(OS_POSIX)
   return file_path.value();
 #elif defined(OS_WIN)
-  return base::UTF16ToUTF8(file_path.value());
+  return base::WideToUTF8(file_path.value());
 #endif  // OS_POSIX
 }
 

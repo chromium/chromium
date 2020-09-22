@@ -18,14 +18,15 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 
+#include "util/misc/no_cfi_icall.h"
+
 #if defined(__GLIBC__)
 
 extern "C" {
 
 int memfd_create(const char* name, unsigned int flags) {
-  using MemfdCreateType = int (*)(const char*, int);
-  static const MemfdCreateType next_memfd_create =
-      reinterpret_cast<MemfdCreateType>(dlsym(RTLD_NEXT, "memfd_create"));
+  static const crashpad::NoCfiIcall<decltype(memfd_create)*> next_memfd_create(
+      dlsym(RTLD_NEXT, "memfd_create"));
   return next_memfd_create ? next_memfd_create(name, flags)
                            : syscall(SYS_memfd_create, name, flags);
 }

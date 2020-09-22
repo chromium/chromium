@@ -20,10 +20,13 @@
 #include <stdint.h>
 #include <sys/types.h>
 #include <time.h>
+#include <wchar.h>
 
 #include <string>
 
 #include "base/macros.h"
+#include "base/strings/string16.h"
+#include "build/build_config.h"
 #include "minidump/minidump_stream_writer.h"
 #include "minidump/minidump_writable.h"
 
@@ -136,6 +139,26 @@ class MinidumpMiscInfoWriter final : public internal::MinidumpStreamWriter {
 
   DISALLOW_COPY_AND_ASSIGN(MinidumpMiscInfoWriter);
 };
+
+//! \brief Conversion functions from a native UTF16 C-string to a base::char16
+//!     C-string. No-op where the native UTF16 string is base::string16.
+#if defined(WCHAR_T_IS_UTF16) || DOXYGEN
+inline const base::char16* AsU16CStr(const wchar_t* str) {
+  return reinterpret_cast<const base::char16*>(str);
+}
+
+inline base::char16* AsU16CStr(wchar_t* str) {
+  return reinterpret_cast<base::char16*>(str);
+}
+#else
+inline const base::char16* AsU16CStr(const base::char16* str) {
+  return str;
+}
+
+inline base::char16* AsU16CStr(base::char16* str) {
+  return str;
+}
+#endif
 
 }  // namespace crashpad
 

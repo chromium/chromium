@@ -142,7 +142,7 @@ void TestOtherProcess(TestPaths::Architecture architecture) {
   done_uuid.InitializeWithNew();
 
   ScopedKernelHANDLE done(
-      CreateEvent(nullptr, true, false, done_uuid.ToString16().c_str()));
+      CreateEvent(nullptr, true, false, done_uuid.ToWString().c_str()));
   ASSERT_TRUE(done.get()) << ErrorMessage("CreateEvent");
 
   base::FilePath child_test_executable =
@@ -151,7 +151,7 @@ void TestOtherProcess(TestPaths::Architecture architecture) {
                                TestPaths::FileType::kExecutable,
                                architecture);
   std::wstring args;
-  AppendCommandLineArgument(done_uuid.ToString16(), &args);
+  AppendCommandLineArgument(done_uuid.ToWString(), &args);
 
   ChildLauncher child(child_test_executable, args);
   ASSERT_NO_FATAL_FAILURE(child.Start());
@@ -559,9 +559,9 @@ TEST(ProcessInfo, Handles) {
   ASSERT_TRUE(scoped_key.is_valid());
 
   std::wstring mapping_name =
-      base::UTF8ToUTF16(base::StringPrintf("Local\\test_mapping_%lu_%s",
-                                           GetCurrentProcessId(),
-                                           RandomString().c_str()));
+      base::UTF8ToWide(base::StringPrintf("Local\\test_mapping_%lu_%s",
+                                          GetCurrentProcessId(),
+                                          RandomString().c_str()));
   ScopedKernelHANDLE mapping(CreateFileMapping(INVALID_HANDLE_VALUE,
                                                nullptr,
                                                PAGE_READWRITE,

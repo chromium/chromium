@@ -150,7 +150,7 @@ base::string16 GetDistributionData() {
     std::unique_ptr<crashpad::CrashReportDatabase> database(
         crashpad::CrashReportDatabase::InitializeWithoutCreating(crash_dir));
     if (database && database->GetSettings()->GetClientID(&client_id))
-      result.append(L"&crash_client_id=").append(client_id.ToString16());
+      result.append(L"&crash_client_id=").append(client_id.ToWString());
   }
 
   return result;

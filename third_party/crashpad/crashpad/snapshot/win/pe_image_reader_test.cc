@@ -62,14 +62,14 @@ TEST(PEImageReader, DebugDirectory) {
       &process_reader,
       FromPointerCast<WinVMAddress>(module_handle.get()),
       module_info.SizeOfImage,
-      base::UTF16ToUTF8(module_basename.value())));
+      base::WideToUTF8(module_basename.value())));
 
   UUID uuid;
   DWORD age;
   std::string pdbname;
   ASSERT_TRUE(pe_image_reader.DebugDirectoryInformation(&uuid, &age, &pdbname));
   std::string module_name =
-      base::UTF16ToUTF8(module_basename.RemoveFinalExtension().value());
+      base::WideToUTF8(module_basename.RemoveFinalExtension().value());
   EXPECT_NE(pdbname.find(module_name), std::string::npos);
   const std::string suffix(".pdb");
   EXPECT_EQ(
@@ -84,7 +84,7 @@ void TestVSFixedFileInfo(ProcessReaderWin* process_reader,
   ASSERT_TRUE(pe_image_reader.Initialize(process_reader,
                                          module.dll_base,
                                          module.size,
-                                         base::UTF16ToUTF8(module.name)));
+                                         base::WideToUTF8(module.name)));
 
   VS_FIXEDFILEINFO observed;
   const bool observed_rv = pe_image_reader.VSFixedFileInfo(&observed);
@@ -183,7 +183,7 @@ TEST(PEImageReader, VSFixedFileInfo_AllModules) {
   EXPECT_GT(modules.size(), 2u);
 
   for (const auto& module : modules) {
-    SCOPED_TRACE(base::UTF16ToUTF8(module.name));
+    SCOPED_TRACE(base::WideToUTF8(module.name));
     TestVSFixedFileInfo(&process_reader, module, false);
   }
 }
