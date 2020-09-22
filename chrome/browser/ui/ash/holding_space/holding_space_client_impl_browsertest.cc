@@ -76,7 +76,13 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItem) {
 // Verifies that `HoldingSpaceClient::ShowItemInFolder()` works as intended when
 // attempting to open holding space items backed by both non-existing and
 // existing files.
-IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, ShowItemInFolder) {
+// Flaky on linux-chromeos-dbg (https://crbug.com/1130958)
+#ifdef NDEBUG
+#define MAYBE_ShowItemInFolder ShowItemInFolder
+#else
+#define MAYBE_ShowItemInFolder DISABLED_ShowItemInFolder
+#endif
+IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, MAYBE_ShowItemInFolder) {
   ASSERT_TRUE(HoldingSpaceController::Get());
 
   auto* holding_space_client = HoldingSpaceController::Get()->client();
