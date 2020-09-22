@@ -32,6 +32,7 @@ class BleConnectionManager;
 class BleScanner;
 class BluetoothHelper;
 class BleSynchronizerBase;
+class NearbyConnectionManager;
 class TimerFactory;
 
 // Concrete SecureChannelImpl implementation, which contains three pieces:
@@ -178,6 +179,7 @@ class SecureChannelImpl : public mojom::SecureChannel,
   std::unique_ptr<BleSynchronizerBase> ble_synchronizer_;
   std::unique_ptr<BleScanner> ble_scanner_;
   std::unique_ptr<BleConnectionManager> ble_connection_manager_;
+  std::unique_ptr<NearbyConnectionManager> nearby_connection_manager_;
   std::unique_ptr<PendingConnectionManager> pending_connection_manager_;
   std::unique_ptr<ActiveConnectionManager> active_connection_manager_;
 

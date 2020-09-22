@@ -18,6 +18,7 @@
 #include "chromeos/services/secure_channel/bluetooth_helper_impl.h"
 #include "chromeos/services/secure_channel/client_connection_parameters_impl.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
+#include "chromeos/services/secure_channel/nearby_connection_manager_impl.h"
 #include "chromeos/services/secure_channel/pending_connection_manager_impl.h"
 #include "chromeos/services/secure_channel/timer_factory_impl.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -80,9 +81,12 @@ SecureChannelImpl::SecureChannelImpl(
                                                     ble_synchronizer_.get(),
                                                     ble_scanner_.get(),
                                                     timer_factory_.get())),
+      nearby_connection_manager_(
+          NearbyConnectionManagerImpl::Factory::Create()),
       pending_connection_manager_(PendingConnectionManagerImpl::Factory::Create(
           this /* delegate */,
           ble_connection_manager_.get(),
+          nearby_connection_manager_.get(),
           bluetooth_adapter_)),
       active_connection_manager_(
           ActiveConnectionManagerImpl::Factory::Create(this /* delegate */)) {}

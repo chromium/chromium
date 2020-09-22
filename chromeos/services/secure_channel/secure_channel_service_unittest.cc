@@ -28,8 +28,10 @@
 #include "chromeos/services/secure_channel/fake_bluetooth_helper.h"
 #include "chromeos/services/secure_channel/fake_client_connection_parameters.h"
 #include "chromeos/services/secure_channel/fake_connection_delegate.h"
+#include "chromeos/services/secure_channel/fake_nearby_connection_manager.h"
 #include "chromeos/services/secure_channel/fake_pending_connection_manager.h"
 #include "chromeos/services/secure_channel/fake_timer_factory.h"
+#include "chromeos/services/secure_channel/nearby_connection_manager_impl.h"
 #include "chromeos/services/secure_channel/pending_connection_manager_impl.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
@@ -236,13 +238,39 @@ class FakeBleConnectionManagerFactory
   DISALLOW_COPY_AND_ASSIGN(FakeBleConnectionManagerFactory);
 };
 
+class FakeNearbyConnectionManagerFactory
+    : public NearbyConnectionManagerImpl::Factory {
+ public:
+  FakeNearbyConnectionManagerFactory() = default;
+  ~FakeNearbyConnectionManagerFactory() override = default;
+
+  FakeNearbyConnectionManager* instance() { return instance_; }
+
+ private:
+  // NearbyConnectionManagerImpl::Factory:
+  std::unique_ptr<NearbyConnectionManager> CreateInstance() override {
+    EXPECT_FALSE(instance_);
+    auto instance = std::make_unique<FakeNearbyConnectionManager>();
+    instance_ = instance.get();
+    return instance;
+  }
+
+  FakeNearbyConnectionManager* instance_ = nullptr;
+
+  DISALLOW_COPY_AND_ASSIGN(FakeNearbyConnectionManagerFactory);
+};
+
 class FakePendingConnectionManagerFactory
     : public PendingConnectionManagerImpl::Factory {
  public:
   FakePendingConnectionManagerFactory(
-      FakeBleConnectionManagerFactory* fake_ble_connection_manager_factory)
+      FakeBleConnectionManagerFactory* fake_ble_connection_manager_factory,
+      FakeNearbyConnectionManagerFactory*
+          fake_nearby_connection_manager_factory)
       : fake_ble_connection_manager_factory_(
-            fake_ble_connection_manager_factory) {}
+            fake_ble_connection_manager_factory),
+        fake_nearby_connection_manager_factory_(
+            fake_nearby_connection_manager_factory) {}
 
   ~FakePendingConnectionManagerFactory() override = default;
 
@@ -253,10 +281,13 @@ class FakePendingConnectionManagerFactory
   std::unique_ptr<PendingConnectionManager> CreateInstance(
       PendingConnectionManager::Delegate* delegate,
       BleConnectionManager* ble_connection_manager,
+      NearbyConnectionManager* nearby_connection_manager,
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) override {
     EXPECT_FALSE(instance_);
     EXPECT_EQ(fake_ble_connection_manager_factory_->instance(),
               ble_connection_manager);
+    EXPECT_EQ(fake_nearby_connection_manager_factory_->instance(),
+              nearby_connection_manager);
 
     auto instance = std::make_unique<FakePendingConnectionManager>(delegate);
     instance_ = instance.get();
@@ -264,6 +295,7 @@ class FakePendingConnectionManagerFactory
   }
 
   FakeBleConnectionManagerFactory* fake_ble_connection_manager_factory_;
+  FakeNearbyConnectionManagerFactory* fake_nearby_connection_manager_factory_;
 
   FakePendingConnectionManager* instance_ = nullptr;
 
@@ -447,9 +479,15 @@ class SecureChannelServiceTest : public testing::Test {
     BleConnectionManagerImpl::Factory::SetFactoryForTesting(
         fake_ble_connection_manager_factory_.get());
 
+    fake_nearby_connection_manager_factory_ =
+        std::make_unique<FakeNearbyConnectionManagerFactory>();
+    NearbyConnectionManagerImpl::Factory::SetFactoryForTesting(
+        fake_nearby_connection_manager_factory_.get());
+
     fake_pending_connection_manager_factory_ =
         std::make_unique<FakePendingConnectionManagerFactory>(
-            fake_ble_connection_manager_factory_.get());
+            fake_ble_connection_manager_factory_.get(),
+            fake_nearby_connection_manager_factory_.get());
     PendingConnectionManagerImpl::Factory::SetFactoryForTesting(
         fake_pending_connection_manager_factory_.get());
 
@@ -481,6 +519,7 @@ class SecureChannelServiceTest : public testing::Test {
     BleSynchronizer::Factory::SetFactoryForTesting(nullptr);
     BleScannerImpl::Factory::SetFactoryForTesting(nullptr);
     BleConnectionManagerImpl::Factory::SetFactoryForTesting(nullptr);
+    NearbyConnectionManagerImpl::Factory::SetFactoryForTesting(nullptr);
     PendingConnectionManagerImpl::Factory::SetFactoryForTesting(nullptr);
     ActiveConnectionManagerImpl::Factory::SetFactoryForTesting(nullptr);
     SecureChannelInitializer::Factory::SetFactoryForTesting(nullptr);
@@ -957,6 +996,8 @@ class SecureChannelServiceTest : public testing::Test {
   std::unique_ptr<FakeBleScannerFactory> fake_ble_scanner_factory_;
   std::unique_ptr<FakeBleConnectionManagerFactory>
       fake_ble_connection_manager_factory_;
+  std::unique_ptr<FakeNearbyConnectionManagerFactory>
+      fake_nearby_connection_manager_factory_;
   std::unique_ptr<FakePendingConnectionManagerFactory>
       fake_pending_connection_manager_factory_;
   std::unique_ptr<FakeActiveConnectionManagerFactory>
