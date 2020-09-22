@@ -25,8 +25,9 @@
             android:src="@drawable/ic_expand_more_black_24dp"
             app:tint="@color/default_icon_color_tint_list"
             android:contentDescription="@string/accessibility_bottom_tab_grid_close_tab_sheet" />
+        <!-- This generic option should not have autofillHints (crbug.com/1073966#c3). -->
         <EditText
-            tools:ignore="LabelFor"
+            tools:ignore="Autofill,LabelFor"
             android:id="@+id/title"
             android:cursorVisible="false"
             android:layout_height="@dimen/bottom_sheet_peek_height"

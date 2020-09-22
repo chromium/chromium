@@ -19,7 +19,7 @@
 
     <!-- Hint will be added programmatically so we're ignoring the lint warning. -->
     <EditText
-        tools:ignore="LabelFor"
+        tools:ignore="Autofill,LabelFor"
         android:id="@+id/edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

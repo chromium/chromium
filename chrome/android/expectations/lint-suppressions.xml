@@ -18,15 +18,6 @@ Still reading?
     <ignore regexp="chrome/android/java/res_base/xml/network_security_config.xml"/>
     <ignore regexp="android_webview/tools/system_webview_shell/apk/res/xml/network_security_config.xml"/>
   </issue>
-  <issue id="Autofill">
-    <!-- Filed https://crbug.com/1073966 to fix -->
-    <ignore regexp="chrome/android/features/tab_ui/java/res/layout/bottom_tab_grid_toolbar.xml"/>
-    <ignore regexp="chrome/android/java/res/layout/password_entry_editor.xml"/>
-    <ignore regexp="components/browser_ui/widget/android/java/res/layout/radio_button_with_edit_text.xml"/>
-  </issue>
-  <issue id="ButtonOrder">
-    <ignore regexp="chrome/android/java/res/layout/homepage_editor.xml"/>
-  </issue>
   <issue id="ContentDescription">
     <!--TODO(crbug.com/1044658): This suppression was added blindly, and needs investigated.-->
     <ignore regexp="components/browser_ui/contacts_picker/android/java/res/layout/contacts_list_item_view.xml"/>
