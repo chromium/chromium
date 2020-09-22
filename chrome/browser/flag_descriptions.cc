@@ -1206,6 +1206,11 @@ const char kGlobalMediaControlsForCastDescription[] =
     "Shows Cast sessions in the Global Media Controls UI. Requires "
     "#global-media-controls and #cast-media-route-provider to also be enabled.";
 
+const char kGlobalMediaControlsForChromeOSName[] =
+    "Global Media Conrols for ChromeOS";
+const char kGlobalMediaControlsForChromeOSDescription[] =
+    "Enable Global Media Controls UI in shelf and quick settings.";
+
 const char kGlobalMediaControlsPictureInPictureName[] =
     "Global Media Controls Picture-in-Picture";
 const char kGlobalMediaControlsPictureInPictureDescription[] =

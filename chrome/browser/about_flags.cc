@@ -5480,6 +5480,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsWin | kOsMac | kOsLinux,
      FEATURE_VALUE_TYPE(media::kGlobalMediaControlsForCast)},
 
+    {"global-media-controls-for-chromeos",
+     flag_descriptions::kGlobalMediaControlsForChromeOSName,
+     flag_descriptions::kGlobalMediaControlsForChromeOSDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(media::kGlobalMediaControlsForChromeOS)},
+
     {"global-media-controls-modern-ui",
      flag_descriptions::kGlobalMediaControlsModernUIName,
      flag_descriptions::kGlobalMediaControlsModernUIDescription,

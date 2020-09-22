@@ -43247,6 +43247,7 @@ from previous Chrome versions.
   <int value="482232604" label="PercentBasedScrolling:enabled"/>
   <int value="482429100"
       label="OmniboxClobberIsZeroSuggestEntrypoint:disabled"/>
+  <int value="483155358" label="GlobalMediaControlsForChromeOS:disabled"/>
   <int value="485957747" label="finch-seed-ignore-pending-download"/>
   <int value="487810392" label="EnablePalmOnToolTypePalm:enabled"/>
   <int value="491334698" label="ConditionalTabStripAndroid:enabled"/>
@@ -43623,6 +43624,7 @@ from previous Chrome versions.
   <int value="871713352" label="ImprovedLanguageSettings:enabled"/>
   <int value="876879670" label="OfflinePagesInDownloadHomeOpenInCct:enabled"/>
   <int value="877059804" label="AutofillPreventMixedFormsFilling:disabled"/>
+  <int value="877235225" label="GlobalMediaControlsForChromeOS:enabled"/>
   <int value="877238334" label="WebUITabStripTabDragIntegration:enabled"/>
   <int value="878773995" label="ChromeHomeBottomNavLabels:disabled"/>
   <int value="879699575" label="disable-gesture-tap-highlight"/>

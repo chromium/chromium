@@ -700,6 +700,9 @@ extern const char kGlobalMediaControlsDescription[];
 extern const char kGlobalMediaControlsForCastName[];
 extern const char kGlobalMediaControlsForCastDescription[];
 
+extern const char kGlobalMediaControlsForChromeOSName[];
+extern const char kGlobalMediaControlsForChromeOSDescription[];
+
 extern const char kGlobalMediaControlsPictureInPictureName[];
 extern const char kGlobalMediaControlsPictureInPictureDescription[];
 
