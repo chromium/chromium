@@ -870,7 +870,7 @@ void LayoutView::UpdateFromStyle() {
   LayoutBlockFlow::UpdateFromStyle();
 
   // LayoutView of the main frame is responsible for painting base background.
-  if (GetDocument().IsInMainFrame())
+  if (GetFrameView()->ShouldPaintBaseBackgroundColor())
     SetHasBoxDecorationBackground(true);
 }
 

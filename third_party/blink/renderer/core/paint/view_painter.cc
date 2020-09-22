@@ -43,7 +43,7 @@ void ViewPainter::PaintRootGroup(const PaintInfo& paint_info,
                                  const Document& document,
                                  const DisplayItemClient& client,
                                  const PropertyTreeStateOrAlias& state) {
-  if (!document.IsInMainFrame())
+  if (!layout_view_.GetFrameView()->ShouldPaintBaseBackgroundColor())
     return;
   bool should_clear_canvas =
       document.GetSettings() &&
@@ -245,7 +245,7 @@ void ViewPainter::PaintRootElementGroup(
 
   const Document& document = layout_view_.GetDocument();
   const LocalFrameView& frame_view = *layout_view_.GetFrameView();
-  bool paints_base_background = document.IsInMainFrame() &&
+  bool paints_base_background = frame_view.ShouldPaintBaseBackgroundColor() &&
                                 (frame_view.BaseBackgroundColor().Alpha() > 0);
   Color base_background_color =
       paints_base_background ? frame_view.BaseBackgroundColor() : Color();
