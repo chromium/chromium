@@ -4810,9 +4810,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.SearchEngineChoice.ChosenSearchEngine"
-    enum="OmniboxSearchEngineType" expires_after="2020-10-01">
+    enum="OmniboxSearchEngineType" expires_after="2021-09-01">
   <owner>fgorski@chromium.org</owner>
-  <owner>lzbylut@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
   <summary>
     The type of the search engine chosen by the user in Search Engine Choice
     flow.
