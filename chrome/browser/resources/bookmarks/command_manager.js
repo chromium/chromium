@@ -20,6 +20,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {KeyboardShortcutList} from 'chrome://resources/js/cr/ui/keyboard_shortcut_list.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {afterNextRender, flush, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -352,7 +353,7 @@ export const CommandManager = Polymer({
             labelPromise =
                 Promise.resolve(loadTimeData.getString('toastItemCopied'));
           } else {
-            labelPromise = this.browserProxy_.getPluralString(
+            labelPromise = PluralStringProxyImpl.getInstance().getPluralString(
                 'toastItemsCopied', idList.length);
           }
 
@@ -378,7 +379,7 @@ export const CommandManager = Polymer({
           labelPromise =
               Promise.resolve(loadTimeData.getString('toastItemDeleted'));
         } else {
-          labelPromise = this.browserProxy_.getPluralString(
+          labelPromise = PluralStringProxyImpl.getInstance().getPluralString(
               'toastItemsDeleted', idList.length);
         }
 

@@ -176,6 +176,7 @@ js_library("command_manager") {
     "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:plural_string_proxy",
     "//ui/webui/resources/js/cr/ui:keyboard_shortcut_list.m",
   ]
   externs_list = chrome_extension_public_externs + [
@@ -258,7 +259,6 @@ js_library("item") {
 js_library("list") {
   deps = [
     ":actions",
-    ":browser_proxy",
     ":command_manager",
     ":constants",
     ":item",
@@ -269,6 +269,7 @@ js_library("list") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:list_property_update_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:plural_string_proxy",
   ]
 }
 

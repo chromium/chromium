@@ -27,10 +27,6 @@ export class TestBookmarksBrowserProxy extends TestBrowserProxy {
     return Promise.resolve(false);
   }
 
-  getPluralString(messageName, itemCount) {
-    return Promise.resolve('test');
-  }
-
   recordInHistogram(histogram, bucket, maxBucket) {
     this.methodCalled('recordInHistogram');
   }

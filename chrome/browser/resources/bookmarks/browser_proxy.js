@@ -24,14 +24,6 @@ export class BrowserProxy {
   }
 
   /**
-   * @return {!Promise<string>} Promise resolved with the appropriate plural
-   *     string for |messageName| with |itemCount| items.
-   */
-  getPluralString(messageName, itemCount) {
-    return sendWithPromise('getPluralString', messageName, itemCount);
-  }
-
-  /**
    * Notifies the metrics handler to record a histogram value.
    * @param {string} histogram The name of the histogram to record
    * @param {number} bucket The bucket to record
