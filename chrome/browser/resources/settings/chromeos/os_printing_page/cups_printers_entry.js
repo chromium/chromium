@@ -9,6 +9,9 @@
 Polymer({
   is: 'settings-cups-printers-entry',
 
+  behaviors: [
+    cr.ui.FocusRowBehavior,
+  ],
   properties: {
     /** @type {!PrinterListEntry} */
     printerEntry: Object,

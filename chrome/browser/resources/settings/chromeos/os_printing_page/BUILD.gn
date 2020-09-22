@@ -131,6 +131,7 @@ js_library("cups_printers_entry") {
   deps = [
     ":cups_printer_types",
     ":cups_printers_browser_proxy",
+    "//ui/webui/resources/js/cr/ui:focus_row_behavior",
   ]
 }
 
@@ -311,7 +312,10 @@ js_library("cups_printers_browser_proxy.m") {
 
 js_library("cups_printers_entry.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_printing_page/cups_printers_entry.m.js" ]
-  deps = [ ":cups_printer_types.m" ]
+  deps = [
+    ":cups_printer_types.m",
+    "//ui/webui/resources/js/cr/ui:focus_row_behavior.m",
+  ]
   extra_deps = [ ":cups_printers_entry_module" ]
 }
 

@@ -5,53 +5,74 @@
 <link rel="import" href="cups_printers_browser_proxy.html">
 <link rel="import" href="../../settings_shared_css.html">
 <link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="chrome://resources/html/cr/ui/focus_row_behavior.html">
 
 <dom-module id="settings-cups-printers-entry">
   <template>
     <style include="settings-shared">
+      .icon-more-vert {
+        background-color: none;
+      }
+
       .printer-name {
         flex: 1;
       }
+
+      .list-item:focus-within {
+        background-color: var(--google-blue-50);
+        outline: none;
+      }
     </style>
-    <div id="entry" class="list-item" focus-row-container>
-      <div class="printer-name text-elide">
-        <span id="printerName" aria-hidden="true">
-            [[printerEntry.printerInfo.printerName]]
-        </span>
-        <div id="printerSubtext" hidden="[[!subtext]]" class="secondary"
-            aria-hidden="true">
-          [[subtext]]
+    <div focus-row-container>
+      <div id="entry" class="list-item" focus-row-control focus-type="entry">
+        <div class="printer-name text-elide">
+          <span id="printerName" aria-hidden="true">
+              [[printerEntry.printerInfo.printerName]]
+          </span>
+          <div id="printerSubtext" hidden="[[!subtext]]" class="secondary"
+              aria-hidden="true">
+            [[subtext]]
+          </div>
         </div>
+        <template is="dom-if"
+            if="[[isSavedPrinter_(printerEntry.printerType)]]">
+          <cr-icon-button id="moreActions" class="icon-more-vert"
+              on-click="onOpenActionMenuTap_" title="$i18n{moreActions}"
+              aria-labelledby="printerName" focus-row-control
+              focus-type="moreActions" tabindex$="[[tabindex]]">
+          </cr-icon-button>
+        </template>
+        <template is="dom-if"
+            if="[[isDiscoveredPrinter_(printerEntry.printerType)]]">
+          <cr-button id="setupPrinterButton"
+              on-click="onAddDiscoveredPrinterTap_"
+              aria-label$="[[getSetupButtonAria_()]]"
+              focus-row-control
+              focus-type="setupPrinterButton">
+            $i18n{setupPrinter}
+          </cr-button>
+        </template>
+        <template is="dom-if"
+            if="[[isAutomaticPrinter_(printerEntry.printerType)]]">
+          <cr-button id="automaticPrinterButton" class="save-printer-button"
+              on-click="onAddAutomaticPrinterTap_"
+              aria-label$="[[getSaveButtonAria_()]]"
+              focus-row-control
+              focus-type="automaticPrinterButton">
+            $i18n{savePrinter}
+          </cr-button>
+        </template>
+        <template is="dom-if"
+            if="[[isPrintServerPrinter_(printerEntry.printerType)]]">
+          <cr-button id="savePrinterButton"
+          class="save-printer-button" on-click="onAddServerPrinterTap_"
+              aria-label$="[[getSaveButtonAria_()]]"
+              focus-row-control
+              focus-type="savePrinterButton">
+            $i18n{savePrinter}
+          </cr-button>
+        </template>
       </div>
-      <template is="dom-if" if="[[isSavedPrinter_(printerEntry.printerType)]]">
-        <cr-icon-button id="moreActions" class="icon-more-vert"
-            on-click="onOpenActionMenuTap_" title="$i18n{moreActions}"
-            aria-labelledby="printerName">
-        </cr-icon-button>
-      </template>
-      <template is="dom-if"
-          if="[[isDiscoveredPrinter_(printerEntry.printerType)]]">
-        <cr-button id="setupPrinterButton"
-            on-click="onAddDiscoveredPrinterTap_"
-            aria-label$="[[getSetupButtonAria_()]]">
-          $i18n{setupPrinter}
-        </cr-button>
-      </template>
-      <template is="dom-if"
-          if="[[isAutomaticPrinter_(printerEntry.printerType)]]">
-        <cr-button class="save-printer-button"
-            on-click="onAddAutomaticPrinterTap_"
-            aria-label$="[[getSaveButtonAria_()]]">
-          $i18n{savePrinter}
-        </cr-button>
-      </template>
-      <template is="dom-if"
-          if="[[isPrintServerPrinter_(printerEntry.printerType)]]">
-        <cr-button class="save-printer-button" on-click="onAddServerPrinterTap_"
-            aria-label$="[[getSaveButtonAria_()]]">
-          $i18n{savePrinter}
-        </cr-button>
-      </template>
     </div>
   </template>
   <script src="cups_printers_entry.js"></script>
