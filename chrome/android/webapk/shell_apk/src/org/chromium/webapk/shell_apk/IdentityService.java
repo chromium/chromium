@@ -7,6 +7,7 @@ package org.chromium.webapk.shell_apk;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.StrictMode;
 
 import org.chromium.webapk.lib.common.identity_service.IIdentityService;
 
@@ -15,8 +16,13 @@ public class IdentityService extends Service {
     private final IIdentityService.Stub mBinder = new IIdentityService.Stub() {
         @Override
         public String getRuntimeHostBrowserPackageName() {
-            return HostBrowserUtils.computeHostBrowserPackageClearCachedDataOnChange(
-                    getApplicationContext());
+            StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
+            try {
+                return HostBrowserUtils.computeHostBrowserPackageClearCachedDataOnChange(
+                        getApplicationContext());
+            } finally {
+                StrictMode.setThreadPolicy(oldPolicy);
+            }
         }
     };
 

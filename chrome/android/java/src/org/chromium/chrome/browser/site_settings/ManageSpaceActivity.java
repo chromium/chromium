@@ -13,6 +13,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.text.format.Formatter;
@@ -121,21 +122,28 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
             }
         };
 
-        String productVersion = AboutChromeSettings.getApplicationVersion(
-                this, ChromeVersionInfo.getProductVersion());
-        String failedVersion = SharedPreferencesManager.getInstance().readString(
-                ChromePreferenceKeys.SETTINGS_WEBSITE_FAILED_BUILD_VERSION, null);
-        if (TextUtils.equals(failedVersion, productVersion)) {
-            parts.onStartupFailure(null);
-            return;
-        }
+        // Allow reading/writing to disk to check whether the last attempt was successful before
+        // kicking off the browser process initialization.
+        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
+        try {
+            String productVersion = AboutChromeSettings.getApplicationVersion(
+                    this, ChromeVersionInfo.getProductVersion());
+            String failedVersion = SharedPreferencesManager.getInstance().readString(
+                    ChromePreferenceKeys.SETTINGS_WEBSITE_FAILED_BUILD_VERSION, null);
+            if (TextUtils.equals(failedVersion, productVersion)) {
+                parts.onStartupFailure(null);
+                return;
+            }
 
-        // If the native library crashes and kills the browser process, there is no guarantee
-        // java-side the pref will be written before the process dies. We want to make sure we
-        // don't attempt to start the browser process and have it kill chrome. This activity is
-        // used to clear data for the chrome app, so it must be particularly error resistant.
-        SharedPreferencesManager.getInstance().writeStringSync(
-                ChromePreferenceKeys.SETTINGS_WEBSITE_FAILED_BUILD_VERSION, productVersion);
+            // If the native library crashes and kills the browser process, there is no guarantee
+            // java-side the pref will be written before the process dies. We want to make sure we
+            // don't attempt to start the browser process and have it kill chrome. This activity is
+            // used to clear data for the chrome app, so it must be particularly error resistant.
+            SharedPreferencesManager.getInstance().writeStringSync(
+                    ChromePreferenceKeys.SETTINGS_WEBSITE_FAILED_BUILD_VERSION, productVersion);
+        } finally {
+            StrictMode.setThreadPolicy(oldPolicy);
+        }
 
         try {
             ChromeBrowserInitializer.getInstance().handlePreNativeStartup(parts);

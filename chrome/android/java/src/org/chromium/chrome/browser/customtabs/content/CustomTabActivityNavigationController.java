@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
@@ -240,8 +241,13 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
         boolean willChromeHandleIntent =
                 mIntentDataProvider.isOpenedByChrome() || mIntentDataProvider.isIncognito();
 
-        willChromeHandleIntent |=
-                ExternalNavigationDelegateImpl.willChromeHandleIntent(intent, true);
+        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
+        try {
+            willChromeHandleIntent |=
+                    ExternalNavigationDelegateImpl.willChromeHandleIntent(intent, true);
+        } finally {
+            StrictMode.setThreadPolicy(oldPolicy);
+        }
 
         Bundle startActivityOptions = ActivityOptionsCompat.makeCustomAnimation(
                 mActivity, R.anim.abc_fade_in, R.anim.abc_fade_out).toBundle();
@@ -252,10 +258,16 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
             mTabController.detachAndStartReparenting(intent, startActivityOptions,
                     () -> finish(REPARENTING));
         } else {
-            if (mIntentDataProvider.isInfoPage()) {
-                IntentHandler.startChromeLauncherActivityForTrustedIntent(intent);
-            } else {
-                mActivity.startActivity(intent, startActivityOptions);
+            // Temporarily allowing disk access while fixing. TODO: http://crbug.com/581860
+            StrictMode.allowThreadDiskWrites();
+            try {
+                if (mIntentDataProvider.isInfoPage()) {
+                    IntentHandler.startChromeLauncherActivityForTrustedIntent(intent);
+                } else {
+                    mActivity.startActivity(intent, startActivityOptions);
+                }
+            } finally {
+                StrictMode.setThreadPolicy(oldPolicy);
             }
         }
         return true;

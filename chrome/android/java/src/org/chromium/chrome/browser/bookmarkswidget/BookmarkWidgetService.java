@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.StrictMode;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -83,8 +84,13 @@ public class BookmarkWidgetService extends RemoteViewsService {
     }
 
     static SharedPreferences getWidgetState(int widgetId) {
-        return ContextUtils.getApplicationContext().getSharedPreferences(
-                String.format(Locale.US, "widgetState-%d", widgetId), Context.MODE_PRIVATE);
+        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
+        try {
+            return ContextUtils.getApplicationContext().getSharedPreferences(
+                    String.format(Locale.US, "widgetState-%d", widgetId), Context.MODE_PRIVATE);
+        } finally {
+            StrictMode.setThreadPolicy(oldPolicy);
+        }
     }
 
     static void deleteWidgetState(int widgetId) {

@@ -15,6 +15,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.os.StrictMode;
 import android.util.Log;
 
 import org.chromium.base.Callback;
@@ -106,8 +107,15 @@ public class GSAServiceClient {
         if (mService != null) Log.e(TAG, "Already connected.");
         Intent intent = new Intent(GSA_SERVICE).setPackage(GSAState.SEARCH_INTENT_PACKAGE);
 
-        return mContext.bindService(
-                intent, mConnection, Context.BIND_AUTO_CREATE | Context.BIND_NOT_FOREGROUND);
+        // Third-party modifications to the framework lead to StrictMode violations in
+        // Context#bindService(). See crbug.com/670195.
+        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
+        try {
+            return mContext.bindService(
+                    intent, mConnection, Context.BIND_AUTO_CREATE | Context.BIND_NOT_FOREGROUND);
+        } finally {
+            StrictMode.setThreadPolicy(oldPolicy);
+        }
     }
 
     /**

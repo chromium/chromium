@@ -13,6 +13,7 @@ import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -51,7 +52,15 @@ public class LauncherShortcutActivity extends Activity {
         }
 
         Intent newIntent = getChromeLauncherActivityIntent(this, intentAction);
-        startActivity(newIntent);
+
+        // This system call is often modified by OEMs and not actionable. http://crbug.com/619646.
+        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
+        try {
+            startActivity(newIntent);
+        } finally {
+            StrictMode.setThreadPolicy(oldPolicy);
+        }
+
         finish();
     }
 

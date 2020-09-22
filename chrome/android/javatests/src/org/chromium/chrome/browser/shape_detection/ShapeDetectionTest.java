@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.shape_detection;
 
+import android.os.StrictMode;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.LargeTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,6 +27,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRestriction;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.concurrent.TimeoutException;
@@ -45,6 +48,7 @@ public class ShapeDetectionTest {
     private static final String BARCODE_TEST_EXPECTED_TAB_TITLE = "https://chromium.org";
     private static final String TEXT_TEST_EXPECTED_TAB_TITLE =
             "The quick brown fox jumped over the lazy dog. Helvetica Neue 36.";
+    private StrictMode.ThreadPolicy mOldPolicy;
 
     /**
      * Verifies that QR codes are detected correctly.
@@ -102,5 +106,12 @@ public class ShapeDetectionTest {
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mOldPolicy = StrictMode.allowThreadDiskWrites(); });
+    }
+
+    @After
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> StrictMode.setThreadPolicy(mOldPolicy));
     }
 }

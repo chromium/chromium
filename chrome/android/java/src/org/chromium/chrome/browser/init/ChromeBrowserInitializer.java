@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.init;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Process;
+import android.os.StrictMode;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -348,7 +349,9 @@ public class ChromeBrowserInitializer {
         try {
             TraceEvent.begin("ChromeBrowserInitializer.startChromeBrowserProcessesSync");
             ThreadUtils.assertOnUiThread();
+            StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
             LibraryLoader.getInstance().ensureInitialized();
+            StrictMode.setThreadPolicy(oldPolicy);
             LibraryPrefetcher.asyncPrefetchLibrariesToMemory();
             getBrowserStartupController().startBrowserProcessesSync(
                     LibraryProcessType.PROCESS_BROWSER, /*singleProcess=*/false);

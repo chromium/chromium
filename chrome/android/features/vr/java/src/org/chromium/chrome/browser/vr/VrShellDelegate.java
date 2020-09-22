@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.provider.Settings;
 import android.view.View;
 import android.view.ViewGroup;
@@ -1245,8 +1246,13 @@ public class VrShellDelegate
         assert (VrCoreInstallUtils.getVrSupportLevel() == VrSupportLevel.VR_DAYDREAM
                 || !mStartedFromVrIntent);
 
-        if (mNativeVrShellDelegate != 0) {
-            VrShellDelegateJni.get().onResume(mNativeVrShellDelegate, VrShellDelegate.this);
+        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
+        try {
+            if (mNativeVrShellDelegate != 0) {
+                VrShellDelegateJni.get().onResume(mNativeVrShellDelegate, VrShellDelegate.this);
+            }
+        } finally {
+            StrictMode.setThreadPolicy(oldPolicy);
         }
 
         // Perform slow initialization asynchronously.
@@ -1569,11 +1575,13 @@ public class VrShellDelegate
         if (mActivity.getCompositorViewHolder() == null) return false;
         TabModelSelector tabModelSelector = mActivity.getTabModelSelector();
         if (tabModelSelector == null) return false;
+        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
         try {
             mVrShell = new VrShell(mActivity, this, tabModelSelector);
         } catch (VrUnsupportedException e) {
             return false;
         } finally {
+            StrictMode.setThreadPolicy(oldPolicy);
         }
         return true;
     }

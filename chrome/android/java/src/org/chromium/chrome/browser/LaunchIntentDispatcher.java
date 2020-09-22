@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -409,6 +410,7 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         }
 
         // This system call is often modified by OEMs and not actionable. http://crbug.com/619646.
+        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
         try {
             Bundle options = mIsVrIntent
                     ? VrModuleProvider.getIntentDelegate().getVrIntentOptions(mActivity)
@@ -423,6 +425,8 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
             } else {
                 throw ex;
             }
+        } finally {
+            StrictMode.setThreadPolicy(oldPolicy);
         }
 
         return Action.FINISH_ACTIVITY;

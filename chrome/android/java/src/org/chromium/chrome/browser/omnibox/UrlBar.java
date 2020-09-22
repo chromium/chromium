@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.StrictMode;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.InputType;
@@ -23,6 +24,7 @@ import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.TextView;
@@ -870,6 +872,18 @@ public abstract class UrlBar extends AutocompleteEditText {
         spanLeft = maxLength / 2;
         text.setSpan(EllipsisSpan.INSTANCE, spanLeft, textLength - spanLeft,
                 Editable.SPAN_INCLUSIVE_EXCLUSIVE);
+    }
+
+    @Override
+    public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
+        // Certain OEM implementations of onInitializeAccessibilityNodeInfo trigger disk reads
+        // to access the clipboard.  crbug.com/640993
+        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
+        try {
+            super.onInitializeAccessibilityNodeInfo(info);
+        } finally {
+            StrictMode.setThreadPolicy(oldPolicy);
+        }
     }
 
     @Override
