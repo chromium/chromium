@@ -67,6 +67,10 @@ bool HardwareDisplayPlaneManagerLegacy::Commit(
     bool should_modeset,
     scoped_refptr<PageFlipRequest> page_flip_request,
     std::unique_ptr<gfx::GpuFence>* out_fence) {
+  // Legacy Modeset should not call Commit. Ensure the separation between both
+  // Atomic and Legacy and nothing trickles in.
+  DCHECK(!should_modeset);
+
   bool test_only = !page_flip_request;
   if (test_only) {
     for (HardwareDisplayPlane* plane : plane_list->plane_list) {
@@ -202,9 +206,8 @@ bool HardwareDisplayPlaneManagerLegacy::SetPlaneData(
 
   if (plane_list->legacy_page_flips.empty() ||
       plane_list->legacy_page_flips.back().crtc_id != crtc_id) {
-    plane_list->legacy_page_flips.push_back(
-        HardwareDisplayPlaneList::PageFlipInfo(
-            crtc_id, overlay.buffer->opaque_framebuffer_id()));
+    plane_list->legacy_page_flips.emplace_back(
+        crtc_id, overlay.buffer->opaque_framebuffer_id());
   } else {
     return false;
   }
