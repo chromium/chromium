@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/time/time.h"
 #include "url/gurl.h"
 
 namespace video_tutorials {
@@ -27,6 +28,9 @@ extern const char kPreferredLocaleConfigKey[];
 // Default preferred locale setting before users pick.
 extern const char kDefaultPreferredLocale[];
 
+// Finch parameter key for the fetch frequency to retrieve the tutorials.
+extern const char kFetchFrequencyKey[];
+
 class Config {
  public:
   // Get video tutorials metadata server URL.
@@ -34,6 +38,9 @@ class Config {
 
   // Get the default locale before users choice.
   static std::string GetDefaultPreferredLocale();
+
+  // Get the default fetch frequency.
+  static base::TimeDelta GetFetchFrequency();
 };
 
 }  // namespace video_tutorials

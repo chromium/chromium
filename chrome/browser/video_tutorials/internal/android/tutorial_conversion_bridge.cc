@@ -42,4 +42,16 @@ ScopedJavaLocalRef<jobject> TutorialConversionBridge::CreateJavaTutorials(
   return jlist;
 }
 
+ScopedJavaLocalRef<jobject> TutorialConversionBridge::CreateJavaTutorial(
+    JNIEnv* env,
+    base::Optional<Tutorial> tutorial) {
+  ScopedJavaLocalRef<jobject> jobj;
+  if (tutorial.has_value()) {
+    jobj = CreateJavaTutorialAndMaybeAddToList(
+        env, ScopedJavaLocalRef<jobject>(), tutorial.value());
+  }
+
+  return jobj;
+}
+
 }  // namespace video_tutorials

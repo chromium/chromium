@@ -11,7 +11,8 @@
 namespace video_tutorials {
 
 std::unique_ptr<VideoTutorialService> CreateVideoTutorialService() {
-  return std::make_unique<TutorialServiceImpl>();
+  // TODO(shaktisahu): Pass correct values.
+  return std::make_unique<TutorialServiceImpl>(nullptr, nullptr, nullptr);
 }
 
 }  // namespace video_tutorials

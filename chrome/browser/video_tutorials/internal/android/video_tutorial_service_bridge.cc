@@ -8,9 +8,12 @@
 #include <vector>
 
 #include "base/android/callback_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
+#include "chrome/browser/video_tutorials/internal/android/tutorial_conversion_bridge.h"
 #include "chrome/browser/video_tutorials/internal/jni_headers/VideoTutorialServiceBridge_jni.h"
+#include "chrome/browser/video_tutorials/tutorial.h"
 
 using base::android::AttachCurrentThread;
 
@@ -18,6 +21,21 @@ namespace video_tutorials {
 namespace {
 
 const char kVideoTutorialServiceBridgeKey[] = "video_tutorial_service_bridge";
+
+void RunGetMultipleTutorialsCallback(const JavaRef<jobject>& j_callback,
+                                     std::vector<Tutorial> tutorials) {
+  JNIEnv* env = AttachCurrentThread();
+  RunObjectCallbackAndroid(
+      j_callback,
+      TutorialConversionBridge::CreateJavaTutorials(env, std::move(tutorials)));
+}
+
+void RunGetSingleTutorialCallback(const JavaRef<jobject>& j_callback,
+                                  base::Optional<Tutorial> tutorial) {
+  JNIEnv* env = AttachCurrentThread();
+  RunObjectCallbackAndroid(
+      j_callback, TutorialConversionBridge::CreateJavaTutorial(env, tutorial));
+}
 
 }  // namespace
 
@@ -50,6 +68,49 @@ VideoTutorialServiceBridge::VideoTutorialServiceBridge(
 VideoTutorialServiceBridge::~VideoTutorialServiceBridge() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_VideoTutorialServiceBridge_clearNativePtr(env, java_obj_);
+}
+
+void VideoTutorialServiceBridge::GetTutorials(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jcaller,
+    const JavaParamRef<jobject>& jcallback) {
+  video_tutorial_service_->GetTutorials(
+      base::BindOnce(&RunGetMultipleTutorialsCallback,
+                     ScopedJavaGlobalRef<jobject>(jcallback)));
+}
+
+void VideoTutorialServiceBridge::GetTutorial(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jcaller,
+    jint j_feature,
+    const JavaParamRef<jobject>& jcallback) {
+  video_tutorial_service_->GetTutorial(
+      static_cast<FeatureType>(j_feature),
+      base::BindOnce(&RunGetSingleTutorialCallback,
+                     ScopedJavaGlobalRef<jobject>(jcallback)));
+}
+
+ScopedJavaLocalRef<jobject> VideoTutorialServiceBridge::GetSupportedLocales(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jcaller) {
+  std::vector<std::string> locales =
+      video_tutorial_service_->GetSupportedLocales();
+  return base::android::ToJavaArrayOfStrings(env, locales);
+}
+
+ScopedJavaLocalRef<jstring> VideoTutorialServiceBridge::GetPreferredLocale(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jcaller) {
+  std::string locale = video_tutorial_service_->GetPreferredLocale();
+  return base::android::ConvertUTF8ToJavaString(env, locale);
+}
+
+void VideoTutorialServiceBridge::SetPreferredLocale(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jcaller,
+    jstring j_locale) {
+  std::string locale = base::android::ConvertJavaStringToUTF8(env, j_locale);
+  video_tutorial_service_->SetPreferredLocale(locale);
 }
 
 }  // namespace video_tutorials

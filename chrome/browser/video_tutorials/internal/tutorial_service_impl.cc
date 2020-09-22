@@ -6,4 +6,73 @@
 
 #include <utility>
 
-namespace video_tutorials {}  // namespace video_tutorials
+#include "base/bind.h"
+#include "base/bind_helpers.h"
+#include "chrome/browser/video_tutorials/internal/config.h"
+#include "chrome/browser/video_tutorials/prefs.h"
+
+namespace video_tutorials {
+
+TutorialServiceImpl::TutorialServiceImpl(
+    std::unique_ptr<TutorialManager> tutorial_manager,
+    std::unique_ptr<TutorialFetcher> tutorial_fetcher,
+    PrefService* pref_service)
+    : tutorial_manager_(std::move(tutorial_manager)),
+      tutorial_fetcher_(std::move(tutorial_fetcher)),
+      pref_service_(pref_service) {}
+
+TutorialServiceImpl::~TutorialServiceImpl() = default;
+
+void TutorialServiceImpl::GetTutorials(MultipleItemCallback callback) {
+  tutorial_manager_->GetTutorials(std::move(callback));
+}
+
+void TutorialServiceImpl::GetTutorial(FeatureType feature_type,
+                                      SingleItemCallback callback) {
+  tutorial_manager_->GetTutorials(base::BindOnce(
+      &TutorialServiceImpl::OnGetTutorials, weak_ptr_factory_.GetWeakPtr(),
+      std::move(callback), feature_type));
+}
+
+void TutorialServiceImpl::OnGetTutorials(SingleItemCallback callback,
+                                         FeatureType feature_type,
+                                         std::vector<Tutorial> tutorials) {
+  for (const Tutorial& tutorial : tutorials) {
+    if (tutorial.feature == feature_type) {
+      std::move(callback).Run(tutorial);
+      return;
+    }
+  }
+
+  std::move(callback).Run(base::nullopt);
+}
+
+void TutorialServiceImpl::StartFetchIfNecessary() {
+  base::Time last_update_time = pref_service_->GetTime(kLastUpdatedTimeKey);
+  bool needs_update =
+      ((base::Time::Now() - last_update_time) > Config::GetFetchFrequency());
+  if (needs_update) {
+    tutorial_fetcher_->StartFetchForTutorials(base::BindOnce(
+        &TutorialServiceImpl::OnFetchFinished, weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void TutorialServiceImpl::OnFetchFinished(
+    bool success,
+    std::unique_ptr<std::string> response_body) {
+  // TODO(shaktisahu): Save tutorials to the database.
+}
+
+std::vector<std::string> TutorialServiceImpl::GetSupportedLocales() {
+  return tutorial_manager_->GetSupportedLocales();
+}
+
+std::string TutorialServiceImpl::GetPreferredLocale() {
+  return tutorial_manager_->GetPreferredLocale();
+}
+
+void TutorialServiceImpl::SetPreferredLocale(const std::string& locale) {
+  tutorial_manager_->SetPreferredLocale(locale);
+}
+
+}  // namespace video_tutorials

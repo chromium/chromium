@@ -7,11 +7,11 @@ package org.chromium.chrome.browser.video_tutorials.bridges;
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.video_tutorials.FeatureType;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,26 +32,55 @@ public class VideoTutorialServiceBridge implements VideoTutorialService {
 
     @Override
     public void getTutorials(Callback<List<Tutorial>> callback) {
-        callback.onResult(getSampleData());
+        if (mNativeVideoTutorialServiceBridge == 0) return;
+        VideoTutorialServiceBridgeJni.get().getTutorials(
+                mNativeVideoTutorialServiceBridge, this, callback);
     }
 
-    private List<Tutorial> getSampleData() {
-        List<Tutorial> list = new ArrayList<>();
-        list.add(new Tutorial(FeatureType.DOWNLOAD,
-                "How to use Google Chrome's download functionality",
-                "https://storage.googleapis.com/stock-wizard.appspot.com/portrait.jpg",
-                "https://storage.googleapis.com/stock-wizard.appspot.com/portrait.jpg",
-                "caption url", "share url", 35));
+    @Override
+    public void getTutorial(@FeatureType int feature, Callback<Tutorial> callback) {
+        if (mNativeVideoTutorialServiceBridge == 0) return;
+        VideoTutorialServiceBridgeJni.get().getTutorial(
+                mNativeVideoTutorialServiceBridge, this, feature, callback);
+    }
 
-        list.add(new Tutorial(FeatureType.SEARCH, "How to efficiently search with Google Chrome",
-                "https://storage.googleapis.com/stock-wizard.appspot.com/elephant.jpg ",
-                "https://storage.googleapis.com/stock-wizard.appspot.com/elephant.jpg",
-                "caption url", "share url", 35));
-        return list;
+    @Override
+    public List<String> getSupportedLocales() {
+        if (mNativeVideoTutorialServiceBridge == 0) return null;
+        return VideoTutorialServiceBridgeJni.get().getSupportedLocales(
+                mNativeVideoTutorialServiceBridge, this);
+    }
+
+    @Override
+    public String getPreferredLocale() {
+        if (mNativeVideoTutorialServiceBridge == 0) return null;
+        return VideoTutorialServiceBridgeJni.get().getPreferredLocale(
+                mNativeVideoTutorialServiceBridge, this);
+    }
+
+    @Override
+    public void setPreferredLocale(String locale) {
+        if (mNativeVideoTutorialServiceBridge == 0) return;
+        VideoTutorialServiceBridgeJni.get().setPreferredLocale(
+                mNativeVideoTutorialServiceBridge, this, locale);
     }
 
     @CalledByNative
     private void clearNativePtr() {
         mNativeVideoTutorialServiceBridge = 0;
+    }
+
+    @NativeMethods
+    interface Natives {
+        void getTutorials(long nativeVideoTutorialServiceBridge, VideoTutorialServiceBridge caller,
+                Callback<List<Tutorial>> callback);
+        void getTutorial(long nativeVideoTutorialServiceBridge, VideoTutorialServiceBridge caller,
+                int feature, Callback<Tutorial> callback);
+        List<String> getSupportedLocales(
+                long nativeVideoTutorialServiceBridge, VideoTutorialServiceBridge caller);
+        String getPreferredLocale(
+                long nativeVideoTutorialServiceBridge, VideoTutorialServiceBridge caller);
+        void setPreferredLocale(long nativeVideoTutorialServiceBridge,
+                VideoTutorialServiceBridge caller, String locale);
     }
 }

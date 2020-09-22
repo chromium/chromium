@@ -29,6 +29,24 @@ class VideoTutorialServiceBridge : public base::SupportsUserData::Data {
       VideoTutorialService* video_tutorial_service);
   ~VideoTutorialServiceBridge() override;
 
+  // Methods called from Java via JNI.
+  void GetTutorials(JNIEnv* env,
+                    const JavaParamRef<jobject>& jcaller,
+                    const JavaParamRef<jobject>& jcallback);
+  void GetTutorial(JNIEnv* env,
+                   const JavaParamRef<jobject>& jcaller,
+                   jint j_feature,
+                   const JavaParamRef<jobject>& jcallback);
+  ScopedJavaLocalRef<jobject> GetSupportedLocales(
+      JNIEnv* env,
+      const JavaParamRef<jobject>& jcaller);
+  ScopedJavaLocalRef<jstring> GetPreferredLocale(
+      JNIEnv* env,
+      const JavaParamRef<jobject>& jcaller);
+  void SetPreferredLocale(JNIEnv* env,
+                          const JavaParamRef<jobject>& jcaller,
+                          jstring j_locale);
+
  private:
   // A reference to the Java counterpart of this class.  See
   // VideoTutorialServiceBridge.java.

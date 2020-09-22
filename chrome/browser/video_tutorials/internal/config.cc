@@ -24,6 +24,11 @@ constexpr char kBaseURLKey[] = "base_url";
 
 constexpr char kPreferredLocaleConfigKey[] = "default_locale";
 
+constexpr char kFetchFrequencyKey[] = "fetch_frequency";
+
+// Default frequency in days for fetching tutorial metatada from server.
+constexpr int kDefaultFetchFrequencyDays = 15;
+
 namespace {
 const GURL BuildGetTutorialsEndpoint(const GURL& base_url, const char* path) {
   GURL::Replacements replacements;
@@ -49,6 +54,14 @@ std::string Config::GetDefaultPreferredLocale() {
                                              kPreferredLocaleConfigKey);
   return default_locale_from_finch.empty() ? kDefaultPreferredLocale
                                            : default_locale_from_finch;
+}
+
+// static
+base::TimeDelta Config::GetFetchFrequency() {
+  int frequency_in_days = base::GetFieldTrialParamByFeatureAsInt(
+      features::kVideoTutorials, kFetchFrequencyKey,
+      kDefaultFetchFrequencyDays);
+  return base::TimeDelta::FromDays(frequency_in_days);
 }
 
 }  // namespace video_tutorials

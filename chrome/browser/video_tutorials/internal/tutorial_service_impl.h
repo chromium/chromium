@@ -7,12 +7,49 @@
 
 #include "chrome/browser/video_tutorials/video_tutorial_service.h"
 
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/video_tutorials/internal/tutorial_fetcher.h"
+#include "chrome/browser/video_tutorials/internal/tutorial_manager.h"
+#include "components/prefs/pref_service.h"
+
 namespace video_tutorials {
 
 class TutorialServiceImpl : public VideoTutorialService {
  public:
-  TutorialServiceImpl() = default;
-  ~TutorialServiceImpl() override = default;
+  TutorialServiceImpl(std::unique_ptr<TutorialManager> tutorial_manager,
+                      std::unique_ptr<TutorialFetcher> tutorial_fetcher,
+                      PrefService* pref_service);
+  ~TutorialServiceImpl() override;
+
+  // TutorialService implementation.
+  void GetTutorials(MultipleItemCallback callback) override;
+  void GetTutorial(FeatureType feature_type,
+                   SingleItemCallback callback) override;
+  std::vector<std::string> GetSupportedLocales() override;
+  std::string GetPreferredLocale() override;
+  void SetPreferredLocale(const std::string& locale) override;
+
+ private:
+  void OnGetTutorials(SingleItemCallback callback,
+                      FeatureType feature_type,
+                      std::vector<Tutorial> tutorials);
+
+  // Called at service startup to determine if a network fetch is necessary
+  // based on the last fetch timestamp.
+  void StartFetchIfNecessary();
+  void OnFetchFinished(bool success,
+                       std::unique_ptr<std::string> response_body);
+
+  // Manages in memory tutorial metadata and coordinates with TutorialStore.
+  std::unique_ptr<TutorialManager> tutorial_manager_;
+
+  // Fetcher to execute download jobs from Google server.
+  std::unique_ptr<TutorialFetcher> tutorial_fetcher_;
+
+  // PrefService.
+  PrefService* pref_service_;
+
+  base::WeakPtrFactory<TutorialServiceImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace video_tutorials

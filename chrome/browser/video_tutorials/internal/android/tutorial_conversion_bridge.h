@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
+#include "base/optional.h"
 #include "chrome/browser/video_tutorials/tutorial.h"
 
 using base::android::ScopedJavaLocalRef;
@@ -21,6 +22,10 @@ class TutorialConversionBridge {
   static ScopedJavaLocalRef<jobject> CreateJavaTutorials(
       JNIEnv* env,
       const std::vector<Tutorial>& tutorials);
+
+  static ScopedJavaLocalRef<jobject> CreateJavaTutorial(
+      JNIEnv* env,
+      base::Optional<Tutorial> tutorial);
 };
 
 }  // namespace video_tutorials
