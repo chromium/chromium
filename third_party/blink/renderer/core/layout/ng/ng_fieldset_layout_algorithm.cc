@@ -418,6 +418,7 @@ NGFieldsetLayoutAlgorithm::CreateConstraintSpaceForFieldsetContent(
   NGConstraintSpaceBuilder builder(ConstraintSpace(),
                                    ConstraintSpace().GetWritingMode(),
                                    /* is_new_fc */ true);
+  builder.SetTextDirection(fieldset_content.Style().Direction());
   builder.SetAvailableSize(padding_box_size);
   builder.SetPercentageResolutionSize(
       ConstraintSpace().PercentageResolutionSize());
