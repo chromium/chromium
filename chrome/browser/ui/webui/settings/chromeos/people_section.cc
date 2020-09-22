@@ -15,6 +15,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/account_manager/account_manager_util.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_utils.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -44,6 +45,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -113,12 +115,6 @@ const std::vector<SearchConcept>& GetPeopleSearchConcepts() {
        {.setting = mojom::Setting::kLockScreen},
        {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_WHEN_WAKING_ALT1,
         SearchConcept::kAltTagEnd}},
-      {IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS_REMOVE,
-       mojom::kMyAccountsSubpagePath,
-       mojom::SearchResultIcon::kAvatar,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kRemoveAccount}},
       {IDS_OS_SETTINGS_TAG_RESTRICT_SIGN_IN,
        mojom::kManageOtherPeopleSubpagePath,
        mojom::SearchResultIcon::kAvatar,
@@ -138,6 +134,18 @@ const std::vector<SearchConcept>& GetPeopleSearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kAddToUserWhitelist}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetRemoveAccountSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS_REMOVE,
+       mojom::kMyAccountsSubpagePath,
+       mojom::SearchResultIcon::kAvatar,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kRemoveAccount}},
   });
   return *tags;
 }
@@ -672,6 +680,20 @@ void AddParentalControlStrings(content::WebUIDataSource* html_source,
                          tooltip);
 }
 
+bool IsSameAccount(const AccountManager::AccountKey& account_key,
+                   const AccountId& account_id) {
+  switch (account_key.account_type) {
+    case account_manager::AccountType::ACCOUNT_TYPE_GAIA:
+      return account_id.GetAccountType() == AccountType::GOOGLE &&
+             account_id.GetGaiaId() == account_key.id;
+    case account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY:
+      return account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY &&
+             account_id.GetObjGuid() == account_key.id;
+    case account_manager::AccountType::ACCOUNT_TYPE_UNSPECIFIED:
+      return false;
+  }
+}
+
 }  // namespace
 
 PeopleSection::PeopleSection(
@@ -694,6 +716,19 @@ PeopleSection::PeopleSection(
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetPeopleSearchConcepts());
+
+  // TODO(jamescook): Sort out how account management is split between Chrome
+  // OS and browser settings.
+  if (IsAccountManagerAvailable(profile)) {
+    // Some Account Manager search tags are added/removed dynamically.
+    AccountManagerFactory* factory =
+        g_browser_process->platform_part()->GetAccountManagerFactory();
+    account_manager_ = factory->GetAccountManager(profile->GetPath().value());
+    DCHECK(account_manager_);
+
+    account_manager_->AddObserver(this);
+    FetchAccounts();
+  }
 
   if (kerberos_credentials_manager_) {
     // Kerberos search tags are added/removed dynamically.
@@ -730,6 +765,9 @@ PeopleSection::~PeopleSection() {
 
   if (chromeos::features::IsSplitSettingsSyncEnabled() && sync_service_)
     sync_service_->RemoveObserver(this);
+
+  if (account_manager_)
+    account_manager_->RemoveObserver(this);
 }
 
 void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
@@ -754,7 +792,7 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   // Toggles the Chrome OS Account Manager submenu in the People section.
   html_source->AddBoolean("isAccountManagerEnabled",
-                          chromeos::IsAccountManagerAvailable(profile()));
+                          account_manager_ != nullptr);
 
   if (chromeos::features::ShouldUseBrowserSyncConsent()) {
     static constexpr webui::LocalizedString kTurnOffStrings[] = {
@@ -822,18 +860,10 @@ void PeopleSection::AddHandlers(content::WebUI* web_ui) {
                                             IDS_OS_SETTINGS_PROFILE_LABEL);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 
-  // TODO(jamescook): Sort out how account management is split between Chrome OS
-  // and browser settings.
-  if (chromeos::IsAccountManagerAvailable(profile())) {
-    chromeos::AccountManagerFactory* factory =
-        g_browser_process->platform_part()->GetAccountManagerFactory();
-    chromeos::AccountManager* account_manager =
-        factory->GetAccountManager(profile()->GetPath().value());
-    DCHECK(account_manager);
-
+  if (account_manager_) {
     web_ui->AddMessageHandler(
         std::make_unique<chromeos::settings::AccountManagerUIHandler>(
-            account_manager, identity_manager_));
+            account_manager_, identity_manager_));
   }
 
   if (chromeos::features::IsSplitSettingsSyncEnabled())
@@ -974,6 +1004,41 @@ void PeopleSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   };
   RegisterNestedSettingBulk(mojom::Subpage::kKerberos, kKerberosSettings,
                             generator);
+}
+
+void PeopleSection::FetchAccounts() {
+  account_manager_->GetAccounts(
+      base::BindOnce(&PeopleSection::UpdateAccountManagerSearchTags,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void PeopleSection::OnTokenUpserted(const AccountManager::Account& account) {
+  FetchAccounts();
+}
+
+void PeopleSection::OnAccountRemoved(const AccountManager::Account& account) {
+  FetchAccounts();
+}
+
+void PeopleSection::UpdateAccountManagerSearchTags(
+    const std::vector<AccountManager::Account>& accounts) {
+  DCHECK(IsAccountManagerAvailable(profile()));
+
+  // Start with no Account Manager search tags.
+  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+  updater.RemoveSearchTags(GetRemoveAccountSearchConcepts());
+
+  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile());
+  DCHECK(user);
+
+  for (const AccountManager::Account& account : accounts) {
+    if (IsSameAccount(account.key, user->GetAccountId()))
+      continue;
+
+    // If a non-device account exists, add the "Remove Account" search tag.
+    updater.AddSearchTags(GetRemoveAccountSearchConcepts());
+    return;
+  }
 }
 
 void PeopleSection::OnStateChanged(syncer::SyncService* sync_service) {

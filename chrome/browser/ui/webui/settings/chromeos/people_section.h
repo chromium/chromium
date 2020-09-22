@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_PEOPLE_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_PEOPLE_SECTION_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
+#include "chromeos/components/account_manager/account_manager.h"
 #include "components/sync/driver/sync_service_observer.h"
 
 class PrefService;
@@ -38,6 +40,7 @@ class SearchTagRegistry;
 // they are allowed by policy/flags. Different sets of Sync tags are shown
 // depending on whether the feature is enabed or disabled.
 class PeopleSection : public OsSettingsSection,
+                      public AccountManager::Observer,
                       public syncer::SyncServiceObserver,
                       public KerberosCredentialsManager::Observer {
  public:
@@ -60,6 +63,10 @@ class PeopleSection : public OsSettingsSection,
   std::string GetSectionPath() const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
+  // AccountManager::Observer:
+  void OnTokenUpserted(const AccountManager::Account& account) override;
+  void OnAccountRemoved(const AccountManager::Account& account) override;
+
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync_service) override;
 
@@ -69,12 +76,17 @@ class PeopleSection : public OsSettingsSection,
   void AddKerberosAccountsPageStrings(
       content::WebUIDataSource* html_source) const;
   bool AreFingerprintSettingsAllowed();
+  void FetchAccounts();
+  void UpdateAccountManagerSearchTags(
+      const std::vector<AccountManager::Account>& accounts);
 
+  AccountManager* account_manager_ = nullptr;
   syncer::SyncService* sync_service_;
   SupervisedUserService* supervised_user_service_;
   KerberosCredentialsManager* kerberos_credentials_manager_;
   signin::IdentityManager* identity_manager_;
   PrefService* pref_service_;
+  base::WeakPtrFactory<PeopleSection> weak_factory_{this};
 };
 
 }  // namespace settings
