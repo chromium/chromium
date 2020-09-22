@@ -3531,6 +3531,55 @@
       "features": [
         "disable_accelerated_vp8_decode"
       ]
+    },
+    {
+      "id": 350,
+      "cr_bugs": [1038006],
+      "description": "Intel device 0x1066 can't use d3d11 video decoder",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "device_id": ["0x0166"],
+      "features": [
+        "disable_d3d11_video_decoder"
+      ]
+    },
+    {
+      "id": 351,
+      "cr_bugs": [1038006],
+      "description": "Intel device 0x8a56 with specific drivers can't use d3d11 video decoder",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "device_id": ["0x8a56"],
+      "features": [
+        "disable_d3d11_video_decoder"
+      ],
+      "driver_version": {
+        "op": "between",
+        "value": "26",
+        "value2": "27"
+      }
+    },
+    {
+      "id": 352,
+      "cr_bugs": [1126834],
+      "description": "AMD devices 98e4 and 15d8 with specific drivers can't use d3d11 video decoder",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "device_id": ["0x98e4", "0x15d8", "0x15dd"],
+      "features": [
+        "disable_d3d11_video_decoder"
+      ],
+      "driver_version": {
+        "op": "between",
+        "value": "24",
+        "value2": "27"
+      }
     }
   ]
 }
