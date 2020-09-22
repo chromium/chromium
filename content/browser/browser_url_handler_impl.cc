@@ -157,6 +157,11 @@ void BrowserURLHandlerImpl::RewriteURLIfNecessary(
   DCHECK(browser_context);
   DCHECK(reverse_on_redirect);
 
+  if (!url->is_valid()) {
+    *reverse_on_redirect = false;
+    return;
+  }
+
   for (const auto& it : url_handlers_) {
     const URLHandler& handler = it.first;
     bool has_reverse_rewriter = it.second;
