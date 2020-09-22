@@ -44,21 +44,6 @@ using features::kAutofillLabelAffixRemoval;
 using mojom::SubmissionIndicatorEvent;
 using mojom::SubmissionSource;
 
-namespace {
-
-std::string SerializeAndEncode(const AutofillQueryResponse& response) {
-  std::string unencoded_response_string;
-  if (!response.SerializeToString(&unencoded_response_string)) {
-    LOG(ERROR) << "Cannot serialize the response proto";
-    return "";
-  }
-  std::string response_string;
-  base::Base64Encode(unencoded_response_string, &response_string);
-  return response_string;
-}
-
-}  // namespace
-
 class FormStructureTestImpl : public test::FormStructureTest {
  public:
   static std::string Hash64Bit(const std::string& str) {
@@ -5199,22 +5184,18 @@ TEST_F(FormStructureTestImpl,
   form.DetermineHeuristicTypes();
 
   // Setup the query response.
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FIRST);
+  AutofillQueryResponseContents response;
+  std::string response_string;
+  response.add_field()->set_overall_type_prediction(NAME_FIRST);
   // Simulate a NAME_LAST classification for the two last name fields.
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_LAST);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_LAST);
-
-  std::string response_string = SerializeAndEncode(response);
+  response.add_field()->set_overall_type_prediction(NAME_LAST);
+  response.add_field()->set_overall_type_prediction(NAME_LAST);
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   // Parse the response and update the field type predictions.
   std::vector<FormStructure*> forms{&form};
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
   ASSERT_EQ(form.field_count(), 3U);
 
   // Validate the heuristic and server predictions.
@@ -5234,7 +5215,7 @@ TEST_F(FormStructureTestImpl,
       features::kAutofillEnableSupportForMoreStructureInNames);
 
   std::vector<FormStructure*> forms2{&form};
-  FormStructure::ParseApiQueryResponse(
+  FormStructure::ParseQueryResponse(
       response_string, forms2, test::GetEncodedSignatures(forms2), nullptr);
   ASSERT_EQ(form.field_count(), 3U);
 
@@ -5276,25 +5257,19 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_TooManyTypes) {
   form.DetermineHeuristicTypes();
 
   // Setup the query response.
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FIRST);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_LAST);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_LINE1);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      EMAIL_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      UNKNOWN_TYPE);
-
-  std::string response_string = SerializeAndEncode(response);
+  AutofillQueryResponseContents response;
+  std::string response_string;
+  response.add_field()->set_overall_type_prediction(NAME_FIRST);
+  response.add_field()->set_overall_type_prediction(NAME_LAST);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_LINE1);
+  response.add_field()->set_overall_type_prediction(EMAIL_ADDRESS);
+  response.add_field()->set_overall_type_prediction(UNKNOWN_TYPE);
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   // Parse the response and update the field type predictions.
   std::vector<FormStructure*> forms{&form};
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
   ASSERT_EQ(form.field_count(), 3U);
 
   // Validate field 0.
@@ -5318,9 +5293,9 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_TooManyTypes) {
   // Also check the extreme case of an empty form.
   FormStructure empty_form{FormData()};
   std::vector<FormStructure*> empty_forms{&empty_form};
-  FormStructure::ParseApiQueryResponse(response_string, empty_forms,
-                                       test::GetEncodedSignatures(empty_forms),
-                                       nullptr);
+  FormStructure::ParseQueryResponse(response_string, empty_forms,
+                                    test::GetEncodedSignatures(empty_forms),
+                                    nullptr);
   ASSERT_EQ(empty_form.field_count(), 0U);
 }
 
@@ -5349,21 +5324,17 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_UnknownType) {
   form.DetermineHeuristicTypes();
 
   // Setup the query response.
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      UNKNOWN_TYPE);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NO_SERVER_DATA);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_LINE1);
-
-  std::string response_string = SerializeAndEncode(response);
+  AutofillQueryResponseContents response;
+  std::string response_string;
+  response.add_field()->set_overall_type_prediction(UNKNOWN_TYPE);
+  response.add_field()->set_overall_type_prediction(NO_SERVER_DATA);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_LINE1);
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   // Parse the response and update the field type predictions.
   std::vector<FormStructure*> forms{&form};
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
   ASSERT_EQ(form.field_count(), 3U);
 
   // Validate field 0.
@@ -5425,37 +5396,39 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse) {
   FormStructure form_structure2(form);
   forms.push_back(&form_structure2);
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  auto* field0 = form_suggestion->add_field_suggestions();
-  field0->set_primary_type_prediction(7);
-  auto* field_prediction0 = field0->add_predictions();
+  AutofillQueryResponseContents response;
+  AutofillQueryResponseContents_Field* field0 = response.add_field();
+  field0->set_overall_type_prediction(7);
+  AutofillQueryResponseContents_Field_FieldPrediction* field_prediction0 =
+      field0->add_predictions();
   field_prediction0->set_type(7);
-  auto* field_prediction1 = field0->add_predictions();
+  AutofillQueryResponseContents_Field_FieldPrediction* field_prediction1 =
+      field0->add_predictions();
   field_prediction1->set_type(22);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(30);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(9);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(0);
+  response.add_field()->set_overall_type_prediction(30);
+  response.add_field()->set_overall_type_prediction(9);
+  response.add_field()->set_overall_type_prediction(0);
 
-  std::string response_string = SerializeAndEncode(response);
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
 
   ASSERT_GE(forms[0]->field_count(), 2U);
   ASSERT_GE(forms[1]->field_count(), 2U);
   EXPECT_EQ(7, forms[0]->field(0)->server_type());
   ASSERT_EQ(2U, forms[0]->field(0)->server_predictions().size());
-  EXPECT_EQ(7, forms[0]->field(0)->server_predictions()[0].type());
-  EXPECT_EQ(22, forms[0]->field(0)->server_predictions()[1].type());
+  EXPECT_EQ(7U, forms[0]->field(0)->server_predictions()[0].type());
+  EXPECT_EQ(22U, forms[0]->field(0)->server_predictions()[1].type());
   EXPECT_EQ(30, forms[0]->field(1)->server_type());
   ASSERT_EQ(1U, forms[0]->field(1)->server_predictions().size());
-  EXPECT_EQ(30, forms[0]->field(1)->server_predictions()[0].type());
+  EXPECT_EQ(30U, forms[0]->field(1)->server_predictions()[0].type());
   EXPECT_EQ(9, forms[1]->field(0)->server_type());
   ASSERT_EQ(1U, forms[1]->field(0)->server_predictions().size());
-  EXPECT_EQ(9, forms[1]->field(0)->server_predictions()[0].type());
+  EXPECT_EQ(9U, forms[1]->field(0)->server_predictions()[0].type());
   EXPECT_EQ(0, forms[1]->field(1)->server_type());
   ASSERT_EQ(1U, forms[1]->field(1)->server_predictions().size());
-  EXPECT_EQ(0, forms[1]->field(1)->server_predictions()[0].type());
+  EXPECT_EQ(0U, forms[1]->field(1)->server_predictions()[0].type());
 }
 
 TEST_F(FormStructureTestImpl, ParseApiQueryResponse) {
@@ -5544,7 +5517,7 @@ TEST_F(FormStructureTestImpl, ParseApiQueryResponse) {
   EXPECT_EQ(EMAIL_ADDRESS, forms[1]->field(0)->server_predictions()[0].type());
   EXPECT_EQ(NO_SERVER_DATA, forms[1]->field(1)->server_type());
   ASSERT_EQ(1U, forms[1]->field(1)->server_predictions().size());
-  EXPECT_EQ(0, forms[1]->field(1)->server_predictions()[0].type());
+  EXPECT_EQ(0U, forms[1]->field(1)->server_predictions()[0].type());
 }
 
 // Tests ParseApiQueryResponse when the payload cannot be parsed to an
@@ -5642,16 +5615,14 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_AuthorDefinedTypes) {
   forms.push_back(&form_structure);
   forms.front()->DetermineHeuristicTypes();
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      EMAIL_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ACCOUNT_CREATION_PASSWORD);
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(EMAIL_ADDRESS);
+  response.add_field()->set_overall_type_prediction(ACCOUNT_CREATION_PASSWORD);
 
-  std::string response_string = SerializeAndEncode(response);
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
 
   ASSERT_GE(forms[0]->field_count(), 2U);
   // Server type is parsed from the response and is the end result type.
@@ -5689,22 +5660,19 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_RationalizeLoneField) {
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_LINE1);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_LINE1);
+  response.add_field()->set_overall_type_prediction(
       CREDIT_CARD_EXP_MONTH);  // Uh-oh!
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      EMAIL_ADDRESS);
+  response.add_field()->set_overall_type_prediction(EMAIL_ADDRESS);
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   // Test that the expiry month field is rationalized away.
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
   EXPECT_EQ(NAME_FULL, forms[0]->field(0)->Type().GetStorableType());
@@ -5735,20 +5703,17 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_RationalizeCCName) {
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      CREDIT_CARD_NAME_FIRST);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      CREDIT_CARD_NAME_LAST);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      EMAIL_ADDRESS);
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(CREDIT_CARD_NAME_FIRST);
+  response.add_field()->set_overall_type_prediction(CREDIT_CARD_NAME_LAST);
+  response.add_field()->set_overall_type_prediction(EMAIL_ADDRESS);
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   // Test that the name fields are rationalized.
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(3U, forms[0]->field_count());
   EXPECT_EQ(NAME_FIRST, forms[0]->field(0)->Type().GetStorableType());
@@ -5786,24 +5751,21 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_RationalizeMultiMonth_1) {
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      CREDIT_CARD_NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      CREDIT_CARD_NUMBER);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      CREDIT_CARD_EXP_MONTH);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(CREDIT_CARD_NAME_FULL);
+  response.add_field()->set_overall_type_prediction(CREDIT_CARD_NUMBER);
+  response.add_field()->set_overall_type_prediction(CREDIT_CARD_EXP_MONTH);
+  response.add_field()->set_overall_type_prediction(
       CREDIT_CARD_EXP_2_DIGIT_YEAR);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(
       CREDIT_CARD_EXP_MONTH);  // Uh-oh!
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   // Test that the extra month field is rationalized away.
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(5U, forms[0]->field_count());
   EXPECT_EQ(CREDIT_CARD_NAME_FULL,
@@ -5842,22 +5804,20 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_RationalizeMultiMonth_2) {
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      CREDIT_CARD_NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      CREDIT_CARD_NUMBER);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(CREDIT_CARD_NAME_FULL);
+  response.add_field()->set_overall_type_prediction(CREDIT_CARD_NUMBER);
+  response.add_field()->set_overall_type_prediction(
       CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(
       CREDIT_CARD_EXP_MONTH);  // Uh-oh!
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   // Test that the extra month field is rationalized away.
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
   EXPECT_EQ(CREDIT_CARD_NAME_FULL,
@@ -6025,24 +5985,21 @@ TEST_F(FormStructureTestImpl, RationalizePhoneNumber_RunsOncePerSection) {
   field.name = ASCIIToUTF16("cellPhoneNumber");
   form.fields.push_back(field);
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      PHONE_HOME_WHOLE_NUMBER);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      PHONE_HOME_WHOLE_NUMBER);
+  response.add_field()->set_overall_type_prediction(PHONE_HOME_WHOLE_NUMBER);
+  response.add_field()->set_overall_type_prediction(PHONE_HOME_WHOLE_NUMBER);
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   FormStructure form_structure(form);
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
 
   EXPECT_FALSE(form_structure.phone_rationalized_["fullName_1-default"]);
   form_structure.RationalizePhoneNumbersInSection("fullName_1-default");
@@ -6080,24 +6037,22 @@ TEST_F(FormStructureTestImpl, RationalizeRepeatedFields_OneAddress) {
   field.name = ASCIIToUTF16("city");
   form.fields.push_back(field);
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_CITY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_CITY);
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   FormStructure form_structure(form);
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(3U, forms[0]->field_count());
@@ -6133,26 +6088,24 @@ TEST_F(FormStructureTestImpl, RationalizeRepreatedFields_TwoAddresses) {
   field.name = ASCIIToUTF16("city");
   form.fields.push_back(field);
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_CITY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_CITY);
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   FormStructure form_structure(form);
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
@@ -6192,28 +6145,26 @@ TEST_F(FormStructureTestImpl, RationalizeRepreatedFields_ThreeAddresses) {
   field.name = ASCIIToUTF16("city");
   form.fields.push_back(field);
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_CITY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_CITY);
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   FormStructure form_structure(form);
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(5U, forms[0]->field_count());
@@ -6259,30 +6210,28 @@ TEST_F(FormStructureTestImpl, RationalizeRepreatedFields_FourAddresses) {
   field.name = ASCIIToUTF16("city");
   form.fields.push_back(field);
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_CITY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_CITY);
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   FormStructure form_structure(form);
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(6U, forms[0]->field_count());
@@ -6338,32 +6287,28 @@ TEST_F(FormStructureTestImpl,
   field.section = "Shipping";
   form.fields.push_back(field);
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
+  AutofillQueryResponseContents response;
   // Billing
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_CITY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_CITY);
   // Shipping
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_CITY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_CITY);
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   FormStructure form_structure(form);
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
   // Billing
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(6U, forms[0]->field_count());
@@ -6469,50 +6414,44 @@ TEST_F(
   field.section = "Work";
   form.fields.push_back(field);
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_CITY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_CITY);
 
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_CITY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_CITY);
 
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_CITY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_CITY);
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   FormStructure form_structure(form);
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(15U, forms[0]->field_count());
@@ -6581,28 +6520,24 @@ TEST_F(FormStructureTestImpl,
   // Will identify the sections based on the heuristics types.
   form_structure.DetermineHeuristicTypes();
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
+  AutofillQueryResponseContents response;
   // Billing
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_CITY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_CITY);
   // Shipping
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_CITY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_CITY);
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
   // Billing
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(6U, forms[0]->field_count());
@@ -6673,32 +6608,28 @@ TEST_F(
   // Will identify the sections based on the heuristics types.
   form_structure.DetermineHeuristicTypes();
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_CITY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_CITY);
 
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  response.add_field()->set_overall_type_prediction(
       ADDRESS_HOME_STREET_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_CITY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_CITY);
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(9U, forms[0]->field_count());
@@ -6773,37 +6704,27 @@ TEST_F(FormStructureTestImpl,
   // Will identify the sections based on the heuristics types.
   form_structure.DetermineHeuristicTypes();
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_STATE);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_COUNTRY);
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_STATE);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_COUNTRY);
   // second section
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_COUNTRY);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_STATE);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_COUNTRY);
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_STATE);
   // third section
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_STATE);
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_STATE);
   // fourth section
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_COUNTRY);
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_COUNTRY);
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(10U, forms[0]->field_count());
@@ -6908,44 +6829,30 @@ TEST_F(FormStructureTestImpl,
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_CITY);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_STATE);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_STATE);
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_CITY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_STATE);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_STATE);
   // second section
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_STATE);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_STATE);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_STATE);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_STATE);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_STATE);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_BILLING_STATE);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_STATE);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_STATE);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_STATE);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_STATE);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_STATE);
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(ADDRESS_BILLING_STATE);
   // third section
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_BILLING_STATE);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_BILLING_STATE);
+  response.add_field()->set_overall_type_prediction(ADDRESS_BILLING_STATE);
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(ADDRESS_BILLING_STATE);
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(14U, forms[0]->field_count());
@@ -7054,44 +6961,30 @@ TEST_F(FormStructureTestImpl,
 
   // Will identify the sections based on the heuristics types.
   form_structure.DetermineHeuristicTypes();
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_COUNTRY);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_COUNTRY);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_CITY);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_COUNTRY);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_COUNTRY);
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_COUNTRY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_COUNTRY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_CITY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_COUNTRY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_COUNTRY);
   // second section
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_COUNTRY);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_CITY);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_BILLING_COUNTRY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_COUNTRY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_CITY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_BILLING_COUNTRY);
   // third section
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_CITY);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_BILLING_COUNTRY);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_COUNTRY);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_BILLING_COUNTRY);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_COUNTRY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_CITY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_BILLING_COUNTRY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_COUNTRY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_BILLING_COUNTRY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_COUNTRY);
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(14U, forms[0]->field_count());
@@ -7151,28 +7044,23 @@ TEST_F(FormStructureTestImpl,
   field.name = ASCIIToUTF16("state");
   form.fields.push_back(field);
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_STATE);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_STATE);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_STATE);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_BILLING_STATE);
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_STATE);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_STATE);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_STATE);
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(ADDRESS_BILLING_STATE);
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   FormStructure form_structure(form);
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(5U, forms[0]->field_count());
@@ -7225,30 +7113,24 @@ TEST_F(FormStructureTestImpl,
   field.is_focusable = true;  // visible
   form.fields.push_back(field);
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_COUNTRY);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_COUNTRY);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_COUNTRY);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_COUNTRY);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_COUNTRY);
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_COUNTRY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_COUNTRY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_COUNTRY);
+  response.add_field()->set_overall_type_prediction(NAME_FULL);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_COUNTRY);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_COUNTRY);
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   FormStructure form_structure(form);
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(6U, forms[0]->field_count());
@@ -7301,18 +7183,14 @@ TEST_P(ParameterizedFormStructureTest,
   field.name = ASCIIToUTF16("country");
   form.fields.push_back(field);
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FIRST);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NO_SERVER_DATA);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NO_SERVER_DATA);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NO_SERVER_DATA);
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(NAME_FIRST);
+  response.add_field()->set_overall_type_prediction(NO_SERVER_DATA);
+  response.add_field()->set_overall_type_prediction(NO_SERVER_DATA);
+  response.add_field()->set_overall_type_prediction(NO_SERVER_DATA);
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   FormStructure form_structure(form);
 
@@ -7323,8 +7201,8 @@ TEST_P(ParameterizedFormStructureTest,
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
@@ -7371,18 +7249,14 @@ TEST_P(ParameterizedFormStructureTest, NoServerDataCCFields_CVC_NoOverwrite) {
   field.name = ASCIIToUTF16("cvc");
   form.fields.push_back(field);
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NO_SERVER_DATA);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NO_SERVER_DATA);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NO_SERVER_DATA);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NO_SERVER_DATA);
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(NO_SERVER_DATA);
+  response.add_field()->set_overall_type_prediction(NO_SERVER_DATA);
+  response.add_field()->set_overall_type_prediction(NO_SERVER_DATA);
+  response.add_field()->set_overall_type_prediction(NO_SERVER_DATA);
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   FormStructure form_structure(form);
 
@@ -7393,8 +7267,8 @@ TEST_P(ParameterizedFormStructureTest, NoServerDataCCFields_CVC_NoOverwrite) {
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
@@ -7450,18 +7324,15 @@ TEST_P(ParameterizedFormStructureTest, WithServerDataCCFields_CVC_NoOverwrite) {
   field.name = ASCIIToUTF16("cvc");
   form.fields.push_back(field);
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      CREDIT_CARD_NAME_FULL);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      CREDIT_CARD_NUMBER);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(CREDIT_CARD_NAME_FULL);
+  response.add_field()->set_overall_type_prediction(CREDIT_CARD_NUMBER);
+  response.add_field()->set_overall_type_prediction(
       CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NO_SERVER_DATA);
+  response.add_field()->set_overall_type_prediction(NO_SERVER_DATA);
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   FormStructure form_structure(form);
 
@@ -7472,8 +7343,8 @@ TEST_P(ParameterizedFormStructureTest, WithServerDataCCFields_CVC_NoOverwrite) {
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
@@ -7541,18 +7412,14 @@ TEST_P(RationalizationFieldTypeFilterTest, Rationalization_Rules_Filter_Out) {
   field.name = ASCIIToUTF16("tested-thing");
   form.fields.push_back(field);
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FIRST);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_LAST);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_LINE1);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      filtered_off_field);
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(NAME_FIRST);
+  response.add_field()->set_overall_type_prediction(NAME_LAST);
+  response.add_field()->set_overall_type_prediction(ADDRESS_HOME_LINE1);
+  response.add_field()->set_overall_type_prediction(filtered_off_field);
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   FormStructure form_structure(form);
 
@@ -7563,8 +7430,8 @@ TEST_P(RationalizationFieldTypeFilterTest, Rationalization_Rules_Filter_Out) {
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
@@ -7606,18 +7473,14 @@ TEST_P(RationalizationFieldTypeRelationshipsTest,
   field.name = ASCIIToUTF16("tested-thing");
   form.fields.push_back(field);
 
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_FIRST);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_LAST);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      test_params.required_type);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      test_params.server_type);
+  AutofillQueryResponseContents response;
+  response.add_field()->set_overall_type_prediction(NAME_FIRST);
+  response.add_field()->set_overall_type_prediction(NAME_LAST);
+  response.add_field()->set_overall_type_prediction(test_params.required_type);
+  response.add_field()->set_overall_type_prediction(test_params.server_type);
 
-  std::string response_string = SerializeAndEncode(response);
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
 
   FormStructure form_structure(form);
 
@@ -7628,8 +7491,8 @@ TEST_P(RationalizationFieldTypeRelationshipsTest,
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseQueryResponse(response_string, forms,
+                                    test::GetEncodedSignatures(forms), nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
