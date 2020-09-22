@@ -16,12 +16,6 @@
   color: #666;
 }
 
-#step-error {
-  display: table;
-  height: 480px;
-  margin: 0 auto;
-}
-
 #authView {
   display: block;
   overflow: hidden;
