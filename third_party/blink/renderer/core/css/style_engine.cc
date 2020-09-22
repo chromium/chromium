@@ -2220,24 +2220,43 @@ void StyleEngine::UpdateColorSchemeBackground(bool color_scheme_changed) {
   if (!view)
     return;
 
-  bool use_color_adjust_background = false;
-  use_dark_background_ = false;
+  LocalFrameView::UseColorAdjustBackground use_color_adjust_background =
+      LocalFrameView::UseColorAdjustBackground::kNo;
 
   if (forced_colors_ != ForcedColors::kNone) {
-    use_color_adjust_background = true;
+    if (GetDocument().IsInMainFrame()) {
+      use_color_adjust_background =
+          LocalFrameView::UseColorAdjustBackground::kIfBaseNotTransparent;
+    }
   } else {
-    const ComputedStyle* style = nullptr;
-    if (auto* root_element = GetDocument().documentElement())
-      style = root_element->GetComputedStyle();
-    if (style) {
-      if (style->UsedColorSchemeForInitialColors() == ColorScheme::kDark)
-        use_dark_background_ = true;
-    } else if (SupportsDarkColorScheme()) {
-      use_dark_background_ = true;
+    // Find out if we should use a canvas color that is different from the
+    // view's base background color in order to match the root element color-
+    // scheme. See spec:
+    // https://drafts.csswg.org/css-color-adjust/#color-scheme-effect
+    ColorScheme root_color_scheme = ColorScheme::kLight;
+    if (auto* root_element = GetDocument().documentElement()) {
+      if (const ComputedStyle* style = root_element->GetComputedStyle())
+        root_color_scheme = style->UsedColorSchemeForInitialColors();
+      else if (SupportsDarkColorScheme())
+        root_color_scheme = ColorScheme::kDark;
+    }
+    color_scheme_background_ = root_color_scheme == ColorScheme::kLight
+                                   ? Color::kWhite
+                                   : Color(0x12, 0x12, 0x12);
+    if (GetDocument().IsInMainFrame()) {
+      if (root_color_scheme == ColorScheme::kDark) {
+        use_color_adjust_background =
+            LocalFrameView::UseColorAdjustBackground::kIfBaseNotTransparent;
+      }
+    } else if (root_color_scheme != owner_color_scheme_) {
+      // Iframes should paint a solid background if the embedding iframe has a
+      // used color-scheme different from the used color-scheme of the embedded
+      // root element. Normally, iframes as transparent by default.
+      use_color_adjust_background =
+          LocalFrameView::UseColorAdjustBackground::kYes;
     }
   }
 
-  use_color_adjust_background |= use_dark_background_;
   view->SetUseColorAdjustBackground(use_color_adjust_background,
                                     color_scheme_changed);
 }
@@ -2247,6 +2266,7 @@ void StyleEngine::SetOwnerColorScheme(ColorScheme color_scheme) {
   if (owner_color_scheme_ == color_scheme)
     return;
   owner_color_scheme_ = color_scheme;
+  UpdateColorSchemeBackground(true);
 }
 
 void StyleEngine::UpdateForcedBackgroundColor() {
@@ -2255,11 +2275,9 @@ void StyleEngine::UpdateForcedBackgroundColor() {
 }
 
 Color StyleEngine::ColorAdjustBackgroundColor() const {
-  if (use_dark_background_ && forced_colors_ == ForcedColors::kNone)
-    return Color(0x12, 0x12, 0x12);
-
-  DCHECK(forced_colors_ != ForcedColors::kNone);
-  return ForcedBackgroundColor();
+  if (forced_colors_ != ForcedColors::kNone)
+    return ForcedBackgroundColor();
+  return color_scheme_background_;
 }
 
 void StyleEngine::MarkAllElementsForStyleRecalc(

@@ -261,8 +261,21 @@ class CORE_EXPORT LocalFrameView final
   Color BaseBackgroundColor() const;
   void SetBaseBackgroundColor(const Color&);
   void UpdateBaseBackgroundColorRecursively(const Color&);
-  void SetUseColorAdjustBackground(bool color_adjust,
+
+  enum class UseColorAdjustBackground {
+    // Use the base background color set on this view.
+    kNo,
+    // Use the color-adjust background from StyleEngine instead of the base
+    // background color.
+    kYes,
+    // Use the color-adjust background from StyleEngine, but only if the base
+    // background is not transparent.
+    kIfBaseNotTransparent,
+  };
+
+  void SetUseColorAdjustBackground(UseColorAdjustBackground use,
                                    bool color_scheme_changed);
+  bool ShouldPaintBaseBackgroundColor() const;
 
   void AdjustViewSize();
   void AdjustViewSizeAndLayout();
@@ -902,6 +915,10 @@ class CORE_EXPORT LocalFrameView final
   // Return the sticky-ad detector for this frame, creating it if necessary.
   StickyAdDetector& EnsureStickyAdDetector();
 
+  // Returns true if we should paint the color adjust background from the
+  // StyleEngine instead of the base background color.
+  bool ShouldUseColorAdjustBackground() const;
+
   LayoutSize size_;
 
   typedef HashSet<scoped_refptr<LayoutEmbeddedObject>> EmbeddedObjectSet;
@@ -922,7 +939,8 @@ class CORE_EXPORT LocalFrameView final
   TaskRunnerTimer<LocalFrameView> update_plugins_timer_;
 
   bool first_layout_;
-  bool use_color_adjust_background_ = false;
+  UseColorAdjustBackground use_color_adjust_background_{
+      UseColorAdjustBackground::kNo};
   Color base_background_color_;
   IntSize last_viewport_size_;
   float last_zoom_factor_;

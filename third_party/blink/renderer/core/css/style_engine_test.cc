@@ -3296,4 +3296,61 @@ TEST_F(StyleEngineSimTest, OwnerColorScheme) {
             frame_document->GetStyleEngine().GetOwnerColorScheme());
 }
 
+TEST_F(StyleEngineSimTest, OwnerColorSchemeBaseBackground) {
+  ScopedCSSColorSchemeForTest enable_color_scheme(true);
+
+  SimRequest main_resource("https://example.com", "text/html");
+  SimRequest dark_frame_resource("https://example.com/dark.html", "text/html");
+  SimRequest light_frame_resource("https://example.com/light.html",
+                                  "text/html");
+
+  LoadURL("https://example.com");
+
+  main_resource.Complete(R"HTML(
+    <style>
+      .dark { color-scheme: dark }
+    </style>
+    <iframe id="dark-frame" src="dark.html"></iframe>
+    <iframe id="light-frame" src="light.html"></iframe>
+  )HTML");
+
+  dark_frame_resource.Complete(R"HTML(
+    <!doctype html>
+    <meta name=color-scheme content="dark">
+    <p>Frame</p>
+  )HTML");
+
+  light_frame_resource.Complete(R"HTML(
+    <!doctype html>
+    <p>Frame</p>
+  )HTML");
+
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+
+  auto* dark_document =
+      To<HTMLIFrameElement>(GetDocument().getElementById("dark-frame"))
+          ->contentDocument();
+  auto* light_document =
+      To<HTMLIFrameElement>(GetDocument().getElementById("light-frame"))
+          ->contentDocument();
+  ASSERT_TRUE(dark_document);
+  ASSERT_TRUE(light_document);
+
+  EXPECT_TRUE(dark_document->View()->ShouldPaintBaseBackgroundColor());
+  EXPECT_EQ(Color(0x12, 0x12, 0x12),
+            dark_document->View()->BaseBackgroundColor());
+  EXPECT_FALSE(light_document->View()->ShouldPaintBaseBackgroundColor());
+
+  GetDocument().documentElement()->setAttribute(blink::html_names::kClassAttr,
+                                                "dark");
+
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+
+  EXPECT_FALSE(dark_document->View()->ShouldPaintBaseBackgroundColor());
+  EXPECT_TRUE(light_document->View()->ShouldPaintBaseBackgroundColor());
+  EXPECT_EQ(Color::kWhite, light_document->View()->BaseBackgroundColor());
+}
+
 }  // namespace blink

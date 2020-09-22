@@ -1823,9 +1823,15 @@ void LocalFrameView::SetNeedsLayout() {
   layout_view->SetNeedsLayout(layout_invalidation_reason::kUnknown);
 }
 
+bool LocalFrameView::ShouldUseColorAdjustBackground() const {
+  return use_color_adjust_background_ == UseColorAdjustBackground::kYes ||
+         (use_color_adjust_background_ ==
+              UseColorAdjustBackground::kIfBaseNotTransparent &&
+          base_background_color_ != Color::kTransparent);
+}
+
 Color LocalFrameView::BaseBackgroundColor() const {
-  if (use_color_adjust_background_ &&
-      base_background_color_ != Color::kTransparent) {
+  if (ShouldUseColorAdjustBackground()) {
     DCHECK(frame_->GetDocument());
     return frame_->GetDocument()->GetStyleEngine().ColorAdjustBackgroundColor();
   }
@@ -1857,14 +1863,19 @@ void LocalFrameView::SetBaseBackgroundColor(const Color& background_color) {
     GetPage()->Animator().ScheduleVisualUpdate(frame_.Get());
 }
 
-void LocalFrameView::SetUseColorAdjustBackground(bool color_adjust,
+void LocalFrameView::SetUseColorAdjustBackground(UseColorAdjustBackground use,
                                                  bool color_scheme_changed) {
-  if (use_color_adjust_background_ == color_adjust && !color_scheme_changed)
+  if (use_color_adjust_background_ == use && !color_scheme_changed)
     return;
 
-  use_color_adjust_background_ = color_adjust;
+  use_color_adjust_background_ = use;
   if (auto* layout_view = GetLayoutView())
     layout_view->SetBackgroundNeedsFullPaintInvalidation();
+}
+
+bool LocalFrameView::ShouldPaintBaseBackgroundColor() const {
+  return ShouldUseColorAdjustBackground() ||
+         frame_->GetDocument()->IsInMainFrame();
 }
 
 void LocalFrameView::UpdateBaseBackgroundColorRecursively(

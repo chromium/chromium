@@ -525,7 +525,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   Member<Document> document_;
 
   // True if this StyleEngine is for an HTML Import document.
-  bool is_html_import_ = false;
+  bool is_html_import_{false};
 
   // Tracks the number of currently loading top-level stylesheets. Sheets loaded
   // using the @import directive are not included in this count. We use this
@@ -535,7 +535,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // https://html.spec.whatwg.org/multipage/semantics.html#interactions-of-styling-and-scripting
   // Once the BlockHTMLParserOnStyleSheets flag has shipped, this is the same
   // as pending_parser_blocking_stylesheets_.
-  int pending_script_blocking_stylesheets_ = 0;
+  int pending_script_blocking_stylesheets_{0};
 
   // Tracks the number of currently loading top-level stylesheets which block
   // rendering (the "Update the rendering" step of the event loop processing
@@ -543,13 +543,13 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // included in this count. See:
   // https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model
   // Once all of these sheets have loaded, rendering begins.
-  int pending_render_blocking_stylesheets_ = 0;
+  int pending_render_blocking_stylesheets_{0};
 
   // Tracks the number of currently loading top-level stylesheets which block
   // the HTML parser. Sheets loaded using the @import directive are not included
   // in this count. Once all of these sheets have loaded, the parser may
   // continue.
-  int pending_parser_blocking_stylesheets_ = 0;
+  int pending_parser_blocking_stylesheets_{0};
 
   Member<CSSStyleSheet> inspector_style_sheet_;
 
@@ -562,27 +562,27 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                   Member<ShadowTreeStyleSheetCollection>>;
   StyleSheetCollectionMap style_sheet_collection_map_;
 
-  bool document_scope_dirty_ = true;
-  bool tree_scopes_removed_ = false;
-  bool user_style_dirty_ = false;
+  bool document_scope_dirty_{true};
+  bool tree_scopes_removed_{false};
+  bool user_style_dirty_{false};
   UnorderedTreeScopeSet dirty_tree_scopes_;
   UnorderedTreeScopeSet active_tree_scopes_;
   TreeOrderedList tree_boundary_crossing_scopes_;
 
   String preferred_stylesheet_set_name_;
 
-  bool uses_rem_units_ = false;
-  bool in_layout_tree_rebuild_ = false;
-  bool in_dom_removal_ = false;
-  bool viewport_style_dirty_ = false;
-  bool fonts_need_update_ = false;
+  bool uses_rem_units_{false};
+  bool in_layout_tree_rebuild_{false};
+  bool in_dom_removal_{false};
+  bool viewport_style_dirty_{false};
+  bool fonts_need_update_{false};
 
   // Set to true if we allow marking style dirty from style recalc. Ideally, we
   // should get rid of this, but we keep track of where we allow it with
   // AllowMarkStyleDirtyFromRecalcScope.
-  bool allow_mark_style_dirty_from_recalc_ = false;
+  bool allow_mark_style_dirty_from_recalc_{false};
 
-  VisionDeficiency vision_deficiency_ = VisionDeficiency::kNoVisionDeficiency;
+  VisionDeficiency vision_deficiency_{VisionDeficiency::kNoVisionDeficiency};
   Member<ReferenceFilterOperation> vision_deficiency_filter_;
 
   Member<StyleResolver> resolver_;
@@ -610,7 +610,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       sheet_to_text_cache_;
 
   std::unique_ptr<StyleResolverStats> style_resolver_stats_;
-  unsigned style_for_element_count_ = 0;
+  unsigned style_for_element_count_{0};
 
   HeapVector<std::pair<StyleSheetKey, Member<CSSStyleSheet>>>
       injected_user_style_sheets_;
@@ -639,17 +639,19 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // The preferred color scheme is set in settings, but may be overridden by the
   // ForceDarkMode setting where the preferred_color_scheme_ will be set to
   // kLight to avoid dark styling to be applied before auto darkening.
-  PreferredColorScheme preferred_color_scheme_ = PreferredColorScheme::kLight;
-  bool use_dark_background_ = false;
-
-  // Forced colors is set in WebThemeEngine.
-  ForcedColors forced_colors_ = ForcedColors::kNone;
+  PreferredColorScheme preferred_color_scheme_{PreferredColorScheme::kLight};
 
   // We pass the used value of color-scheme from the iframe element in the
   // embedding document. If the color-scheme of the owner element and the root
   // element in the embedded document differ, use a solid backdrop color instead
   // of the default transparency of an iframe.
-  ColorScheme owner_color_scheme_ = ColorScheme::kLight;
+  ColorScheme owner_color_scheme_{ColorScheme::kLight};
+
+  // The color of the canvas backdrop for the used color-scheme.
+  Color color_scheme_background_;
+
+  // Forced colors is set in WebThemeEngine.
+  ForcedColors forced_colors_{ForcedColors::kNone};
 
   Color forced_background_color_;
 
