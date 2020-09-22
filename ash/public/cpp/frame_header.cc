@@ -345,6 +345,10 @@ void FrameHeader::StartTransitionAnimation(base::TimeDelta duration) {
 // FrameHeader, private:
 
 void FrameHeader::LayoutHeaderInternal() {
+  // The animator's position can change when the frame is moved from overlay.
+  // Make sure the animator view is at the bottom.
+  view_->ReorderChildView(frame_animator_, 0);
+
   bool use_zoom_icons = caption_button_container()->model()->InZoomMode();
   const gfx::VectorIcon& restore_icon = use_zoom_icons
                                             ? kWindowControlDezoomIcon
