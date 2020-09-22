@@ -2635,6 +2635,12 @@ const views::Widget* BrowserView::GetWidget() const {
 }
 
 void BrowserView::CreateTabSearchBubble() {
+  // Do not spawn the bubble if using the WebUITabStrip.
+#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+  if (WebUITabStripContainerView::UseTouchableTabStrip(browser_.get()))
+    return;
+#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+
   // If kTabSearchFixedEntrypoint is enabled then the tab search button is
   // defined in the tab strip region view.
   // TODO(tluk): Consolidate these once Tab Scrolling successfully moves the
