@@ -64,8 +64,8 @@ TEST_F(SetAttributeActionTest, CheckExpectedCallChain) {
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
   std::vector<std::string> expected_attributes = {"value"};
   EXPECT_CALL(mock_action_delegate_,
-              SetAttribute(EqualsElement(expected_element), expected_attributes,
-                           "Hello World", _))
+              SetAttribute(expected_attributes, "Hello World",
+                           EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus()));
 
   EXPECT_CALL(

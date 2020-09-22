@@ -323,50 +323,57 @@ TEST_F(UseCreditCardActionTest, FillCreditCardWithFallback) {
   // Expect fields to be filled
   Expectation set_cvc =
       EXPECT_CALL(mock_action_delegate_,
-                  OnSetFieldValue(EqualsElement(test_util::MockFindElement(
+                  OnSetFieldValue(kFakeCvc,
+                                  EqualsElement(test_util::MockFindElement(
                                       mock_action_delegate_, cvc_selector)),
-                                  kFakeCvc, _))
+                                  _))
           .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   Expectation set_expmonth =
       EXPECT_CALL(
           mock_action_delegate_,
-          OnSetFieldValue(EqualsElement(test_util::MockFindElement(
+          OnSetFieldValue("09",
+                          EqualsElement(test_util::MockFindElement(
                               mock_action_delegate_, expiry_month_selector)),
-                          "09", _))
+                          _))
           .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   Expectation set_expyear2 =
       EXPECT_CALL(
           mock_action_delegate_,
-          OnSetFieldValue(EqualsElement(test_util::MockFindElement(
+          OnSetFieldValue("50",
+                          EqualsElement(test_util::MockFindElement(
                               mock_action_delegate_, expiry_year2_selector)),
-                          "50", _))
+                          _))
           .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   Expectation set_expyear4 =
       EXPECT_CALL(
           mock_action_delegate_,
-          OnSetFieldValue(EqualsElement(test_util::MockFindElement(
+          OnSetFieldValue("2050",
+                          EqualsElement(test_util::MockFindElement(
                               mock_action_delegate_, expiry_year4_selector)),
-                          "2050", _))
+                          _))
           .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   Expectation set_cardholder_name =
       EXPECT_CALL(
           mock_action_delegate_,
-          OnSetFieldValue(EqualsElement(test_util::MockFindElement(
+          OnSetFieldValue("Adam West",
+                          EqualsElement(test_util::MockFindElement(
                               mock_action_delegate_, card_name_selector)),
-                          "Adam West", _))
+                          _))
           .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   Expectation set_card_number =
       EXPECT_CALL(
           mock_action_delegate_,
-          OnSetFieldValue(EqualsElement(test_util::MockFindElement(
+          OnSetFieldValue("4111111111111111",
+                          EqualsElement(test_util::MockFindElement(
                               mock_action_delegate_, card_number_selector)),
-                          "4111111111111111", _))
+                          _))
           .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   Expectation set_card_network =
       EXPECT_CALL(mock_action_delegate_,
-                  OnSetFieldValue(EqualsElement(test_util::MockFindElement(
+                  OnSetFieldValue("visa",
+                                  EqualsElement(test_util::MockFindElement(
                                       mock_action_delegate_, network_selector)),
-                                  "visa", _))
+                                  _))
           .WillOnce(RunOnceCallback<2>(OkClientStatus()));
 
   // After fallback, second validation succeeds.
@@ -423,9 +430,10 @@ TEST_F(UseCreditCardActionTest, ForcedFallbackWithKeystrokes) {
   // But we still want the CVC filled, with simulated keypresses.
   Selector cvc_selector({"#cvc"});
   EXPECT_CALL(mock_action_delegate_,
-              OnSetFieldValue(EqualsElement(test_util::MockFindElement(
+              OnSetFieldValue(kFakeCvc, true, 1000,
+                              EqualsElement(test_util::MockFindElement(
                                   mock_action_delegate_, cvc_selector)),
-                              kFakeCvc, true, 1000, _))
+                              _))
       .WillOnce(RunOnceCallback<4>(OkClientStatus()));
 
   user_data_.selected_card_ = std::make_unique<autofill::CreditCard>();
@@ -462,9 +470,10 @@ TEST_F(UseCreditCardActionTest, SkippingAutofill) {
   // Fill cvc.
   Expectation set_cvc =
       EXPECT_CALL(mock_action_delegate_,
-                  OnSetFieldValue(EqualsElement(test_util::MockFindElement(
+                  OnSetFieldValue(kFakeCvc,
+                                  EqualsElement(test_util::MockFindElement(
                                       mock_action_delegate_, cvc_selector)),
-                                  kFakeCvc, _))
+                                  _))
           .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   // Second validation succeeds.
   EXPECT_CALL(mock_web_controller_, OnGetFieldValue(cvc_selector, _))
@@ -523,9 +532,10 @@ TEST_F(UseCreditCardActionTest,
   // Fill CVC.
   Expectation set_cvc =
       EXPECT_CALL(mock_action_delegate_,
-                  OnSetFieldValue(EqualsElement(test_util::MockFindElement(
+                  OnSetFieldValue(kFakeCvc,
+                                  EqualsElement(test_util::MockFindElement(
                                       mock_action_delegate_, cvc_selector)),
-                                  kFakeCvc, _))
+                                  _))
           .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   // Second validation succeeds.
   EXPECT_CALL(mock_web_controller_, OnGetFieldValue(cvc_selector, _))
@@ -570,9 +580,10 @@ TEST_F(UseCreditCardActionTest, FallbackForCardExpirationSucceeds) {
   Expectation set_expiration_date =
       EXPECT_CALL(
           mock_action_delegate_,
-          OnSetFieldValue(EqualsElement(test_util::MockFindElement(
+          OnSetFieldValue("09 - 2050",
+                          EqualsElement(test_util::MockFindElement(
                               mock_action_delegate_, expiration_date_selector)),
-                          "09 - 2050", _))
+                          _))
           .WillOnce(RunOnceCallback<2>(OkClientStatus()));
 
   // Second validation succeeds.
@@ -607,9 +618,10 @@ TEST_F(UseCreditCardActionTest, FallbackFails) {
   // Fallback fails.
   EXPECT_CALL(
       mock_action_delegate_,
-      OnSetFieldValue(EqualsElement(test_util::MockFindElement(
+      OnSetFieldValue("09/2050",
+                      EqualsElement(test_util::MockFindElement(
                           mock_action_delegate_, expiration_date_selector)),
-                      "09/2050", _))
+                      _))
       .WillOnce(RunOnceCallback<2>(ClientStatus(OTHER_ACTION_STATUS)));
 
   ProcessedActionProto processed_action;

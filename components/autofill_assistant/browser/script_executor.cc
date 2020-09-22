@@ -330,8 +330,8 @@ void ScriptExecutor::ScrollIntoView(
 }
 
 void ScriptExecutor::ClickOrTapElement(
-    const ElementFinder::Result& element,
     ClickType click_type,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   delegate_->GetWebController()->ClickOrTapElement(element, click_type,
                                                    std::move(callback));
@@ -517,9 +517,9 @@ void ScriptExecutor::RetrieveElementFormAndFieldData(
 }
 
 void ScriptExecutor::SelectOption(
-    const ElementFinder::Result& element,
     const std::string& value,
     DropdownSelectStrategy select_strategy,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   delegate_->GetWebController()->SelectOption(element, value, select_strategy,
                                               std::move(callback));
@@ -582,10 +582,10 @@ void ScriptExecutor::GetFieldValue(
 }
 
 void ScriptExecutor::SetFieldValue(
-    const ElementFinder::Result& element,
     const std::string& value,
     KeyboardValueFillStrategy fill_strategy,
     int key_press_delay_in_millisecond,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   delegate_->GetWebController()->SetFieldValue(element, value, fill_strategy,
                                                key_press_delay_in_millisecond,
@@ -593,18 +593,18 @@ void ScriptExecutor::SetFieldValue(
 }
 
 void ScriptExecutor::SetAttribute(
-    const ElementFinder::Result& element,
     const std::vector<std::string>& attributes,
     const std::string& value,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   delegate_->GetWebController()->SetAttribute(element, attributes, value,
                                               std::move(callback));
 }
 
 void ScriptExecutor::SendKeyboardInput(
-    const ElementFinder::Result& element,
     const std::vector<UChar32>& codepoints,
     int key_press_delay_in_millisecond,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   delegate_->GetWebController()->SendKeyboardInput(
       element, codepoints, key_press_delay_in_millisecond, std::move(callback));
@@ -786,6 +786,10 @@ void ScriptExecutor::ClearGenericUi() {
 void ScriptExecutor::SetOverlayBehavior(
     ConfigureUiStateProto::OverlayBehavior overlay_behavior) {
   delegate_->SetOverlayBehavior(overlay_behavior);
+}
+
+base::WeakPtr<ActionDelegate> ScriptExecutor::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void ScriptExecutor::OnGetActions(bool result, const std::string& response) {

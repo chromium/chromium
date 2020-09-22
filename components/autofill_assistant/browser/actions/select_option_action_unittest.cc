@@ -72,8 +72,8 @@ TEST_F(SelectOptionActionTest, CheckExpectedCallChain) {
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
   EXPECT_CALL(mock_action_delegate_,
-              SelectOption(EqualsElement(expected_element), "option",
-                           DropdownSelectStrategy::VALUE_MATCH, _))
+              SelectOption("option", DropdownSelectStrategy::VALUE_MATCH,
+                           EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus()));
 
   EXPECT_CALL(

@@ -69,7 +69,7 @@ TEST_F(ClickActionTest, CheckExpectedCallChain) {
       .WillOnce(RunOnceCallback<1>(OkClientStatus()));
   EXPECT_CALL(
       mock_action_delegate_,
-      ClickOrTapElement(EqualsElement(expected_element), ClickType::CLICK, _))
+      ClickOrTapElement(ClickType::CLICK, EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
 
   EXPECT_CALL(

@@ -312,7 +312,7 @@ void RequiredFieldsFallbackHandler::OnGetFallbackFieldElementTag(
     }
 
     action_delegate_->SelectOption(
-        *element, value, select_strategy,
+        value, select_strategy, *element,
         base::BindOnce(&RequiredFieldsFallbackHandler::OnSetFallbackFieldValue,
                        weak_ptr_factory_.GetWeakPtr(), required_fields_index,
                        std::move(element)));
@@ -320,8 +320,8 @@ void RequiredFieldsFallbackHandler::OnGetFallbackFieldElementTag(
   }
 
   action_delegate_->SetFieldValue(
-      *element, value, required_field.fill_strategy,
-      required_field.delay_in_millisecond,
+      value, required_field.fill_strategy, required_field.delay_in_millisecond,
+      *element,
       base::BindOnce(&RequiredFieldsFallbackHandler::OnSetFallbackFieldValue,
                      weak_ptr_factory_.GetWeakPtr(), required_fields_index,
                      std::move(element)));

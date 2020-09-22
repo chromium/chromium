@@ -31,11 +31,6 @@ class SelectOptionAction : public Action {
   void OnWaitForElement(ProcessActionCallback callback,
                         const Selector& selector,
                         const ClientStatus& element_status);
-  void PerformSelectOption(
-      const std::string& value,
-      DropdownSelectStrategy select_strategy,
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback);
   void OnSelectOption(ProcessActionCallback callback,
                       const ClientStatus& status);
 

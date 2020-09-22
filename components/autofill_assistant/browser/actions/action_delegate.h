@@ -102,8 +102,8 @@ class ActionDelegate {
 
   // Click or tap the |element|.
   virtual void ClickOrTapElement(
-      const ElementFinder::Result& element,
       ClickType click_type,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
   // Wait for the |element|'s document to become interactive.
@@ -194,9 +194,9 @@ class ActionDelegate {
 
   // Select the option to be picked given by the |value| in the |element|.
   virtual void SelectOption(
-      const ElementFinder::Result& element,
       const std::string& value,
       DropdownSelectStrategy select_strategy,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
   // Focus on element given by |selector|. |top_padding| specifies the padding
@@ -231,25 +231,25 @@ class ActionDelegate {
   // clicking the field and then simulating key presses, otherwise the `value`
   // attribute will be set directly.
   virtual void SetFieldValue(
-      const ElementFinder::Result& element,
       const std::string& value,
       KeyboardValueFillStrategy fill_strategy,
       int key_press_delay_in_millisecond,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
   // Set the |value| of all the |attributes| of the |element|.
   virtual void SetAttribute(
-      const ElementFinder::Result& element,
       const std::vector<std::string>& attributes,
       const std::string& value,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
   // Sets the keyboard focus to |element| and inputs the specified codepoints.
   // Returns the result through |callback|.
   virtual void SendKeyboardInput(
-      const ElementFinder::Result& element,
       const std::vector<UChar32>& codepoints,
       int key_press_delay_in_millisecond,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
   // Return the outerHTML of an element given by |selector|.
@@ -424,6 +424,8 @@ class ActionDelegate {
   // Sets the OverlayBehavior.
   virtual void SetOverlayBehavior(
       ConfigureUiStateProto::OverlayBehavior overlay_behavior) = 0;
+
+  virtual base::WeakPtr<ActionDelegate> GetWeakPtr() = 0;
 
  protected:
   ActionDelegate() = default;

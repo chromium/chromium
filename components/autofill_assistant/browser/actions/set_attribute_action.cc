@@ -48,20 +48,11 @@ void SetAttributeAction::OnWaitForElement(ProcessActionCallback callback,
 
   ActionDelegateUtil::FindElementAndPerform(
       delegate_, selector,
-      base::BindOnce(&SetAttributeAction::PerformSetAttribute,
-                     weak_ptr_factory_.GetWeakPtr(),
+      base::BindOnce(&ActionDelegate::SetAttribute, delegate_->GetWeakPtr(),
                      ExtractVector(proto_.set_attribute().attribute()),
                      proto_.set_attribute().value()),
       base::BindOnce(&SetAttributeAction::OnSetAttribute,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void SetAttributeAction::PerformSetAttribute(
-    const std::vector<std::string>& attributes,
-    const std::string& value,
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate_->SetAttribute(element, attributes, value, std::move(callback));
 }
 
 void SetAttributeAction::OnSetAttribute(ProcessActionCallback callback,

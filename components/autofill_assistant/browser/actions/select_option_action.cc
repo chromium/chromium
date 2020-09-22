@@ -56,20 +56,11 @@ void SelectOptionAction::OnWaitForElement(ProcessActionCallback callback,
 
   ActionDelegateUtil::FindElementAndPerform(
       delegate_, selector,
-      base::BindOnce(&SelectOptionAction::PerformSelectOption,
-                     weak_ptr_factory_.GetWeakPtr(),
+      base::BindOnce(&ActionDelegate::SelectOption, delegate_->GetWeakPtr(),
                      proto_.select_option().selected_option(),
                      proto_.select_option().select_strategy()),
       base::BindOnce(&SelectOptionAction::OnSelectOption,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void SelectOptionAction::PerformSelectOption(
-    const std::string& value,
-    DropdownSelectStrategy select_strategy,
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate_->SelectOption(element, value, select_strategy, std::move(callback));
 }
 
 void SelectOptionAction::OnSelectOption(ProcessActionCallback callback,

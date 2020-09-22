@@ -31,11 +31,6 @@ class SetAttributeAction : public Action {
   void OnWaitForElement(ProcessActionCallback callback,
                         const Selector& selector,
                         const ClientStatus& element_status);
-  void PerformSetAttribute(
-      const std::vector<std::string>& attributes,
-      const std::string& value,
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback);
   void OnSetAttribute(ProcessActionCallback callback,
                       const ClientStatus& status);
 
