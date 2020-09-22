@@ -269,7 +269,11 @@ void PrintJobWorker::GetSettingsWithUI(uint32_t document_page_count,
                                        bool is_scripted,
                                        SettingsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_LE(document_page_count, kMaxPageCount);
+
+  if (document_page_count > kMaxPageCount) {
+    GetSettingsDone(std::move(callback), PrintingContext::Result::FAILED);
+    return;
+  }
 
   content::WebContents* web_contents = GetWebContents();
 
