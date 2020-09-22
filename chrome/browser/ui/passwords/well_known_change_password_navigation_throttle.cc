@@ -6,8 +6,12 @@
 
 #include "base/logging.h"
 #include "chrome/browser/password_manager/change_password_url_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/password_manager/core/browser/change_password_url_service.h"
 #include "components/password_manager/core/browser/well_known_change_password_state.h"
+#include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_context.h"
@@ -20,6 +24,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -31,6 +36,26 @@ using content::WebContents;
 using password_manager::IsWellKnownChangePasswordUrl;
 using password_manager::WellKnownChangePasswordResult;
 using password_manager::WellKnownChangePasswordState;
+
+bool IsTriggeredByGoogleOwnedUI(NavigationHandle* handle) {
+  ui::PageTransition page_transition = handle->GetPageTransition();
+  // `PAGE_TRANSITION_FROM_API` covers cases where Chrome is opened as a CCT.
+  // This happens on Android if Chrome is opened from the Password Check(up) in
+  // Chrome settings or the Google Password Manager app.
+  if (page_transition & ui::PAGE_TRANSITION_FROM_API)
+    return true;
+
+  // In case where the user clicked on a link, we require that the origin is
+  // either chrome://settings or https://passwords.google.com.
+  if (ui::PageTransitionCoreTypeIs(page_transition, ui::PAGE_TRANSITION_LINK)) {
+    url::Origin origin = handle->GetInitiatorOrigin().value_or(url::Origin());
+    return origin == url::Origin::Create(GURL(chrome::kChromeUISettingsURL)) ||
+           origin ==
+               url::Origin::Create(GURL(chrome::kGooglePasswordManagerURL));
+  }
+
+  return false;
+}
 
 // Used to scope the posted navigation task to the lifetime of |web_contents|.
 class WebContentsLifetimeHelper
@@ -70,6 +95,7 @@ WellKnownChangePasswordNavigationThrottle::MaybeCreateThrottleFor(
   // would be used. Otherwise the we would not see a difference between control
   // and experiment groups on the dashboards.
   if (handle->IsInMainFrame() && IsWellKnownChangePasswordUrl(url) &&
+      IsTriggeredByGoogleOwnedUI(handle) &&
       base::FeatureList::IsEnabled(
           password_manager::features::kWellKnownChangePassword)) {
     return base::WrapUnique(
