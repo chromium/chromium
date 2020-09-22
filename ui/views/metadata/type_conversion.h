@@ -31,11 +31,16 @@ namespace metadata {
 // whether the types are "small" (defined as "fundamental, enum, or pointer").
 // ArgType<T> gives the appropriate type to use as an argument in such cases.
 template <typename T>
-using ArgType = typename std::conditional<std::is_fundamental<T>::value ||
-                                              std::is_enum<T>::value ||
-                                              std::is_pointer<T>::value,
-                                          T,
-                                          const T&>::type;
+using ArgType =
+    typename std::conditional<std::is_fundamental<T>::value ||
+                                  std::is_enum<T>::value ||
+                                  std::is_pointer<T>::value ||
+                                  (std::is_move_assignable<T>::value &&
+                                   std::is_move_constructible<T>::value &&
+                                   !std::is_copy_assignable<T>::value &&
+                                   !std::is_copy_constructible<T>::value),
+                              T,
+                              const T&>::type;
 
 // General Type Conversion Template Functions ---------------------------------
 template <typename T>

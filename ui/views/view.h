@@ -49,6 +49,7 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/paint_info.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/views_export.h"
@@ -2063,6 +2064,27 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   DISALLOW_COPY_AND_ASSIGN(View);
 };
+
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, View, BaseView)
+VIEW_BUILDER_PROPERTY(std::unique_ptr<Background>, Background)
+VIEW_BUILDER_PROPERTY(std::unique_ptr<Border>, Border)
+VIEW_BUILDER_PROPERTY(gfx::Rect, BoundsRect)
+VIEW_BUILDER_PROPERTY(gfx::Size, Size)
+VIEW_BUILDER_PROPERTY(gfx::Point, Position)
+VIEW_BUILDER_PROPERTY(int, X)
+VIEW_BUILDER_PROPERTY(int, Y)
+VIEW_BUILDER_PROPERTY(gfx::Size, PreferredSize)
+VIEW_BUILDER_PROPERTY(SkPath, ClipPath)
+VIEW_BUILDER_PROPERTY_DEFAULT(ui::LayerType, PaintToLayer, ui::LAYER_TEXTURED)
+VIEW_BUILDER_PROPERTY(bool, Enabled)
+VIEW_BUILDER_PROPERTY(views::View::FocusBehavior, FocusBehavior)
+VIEW_BUILDER_PROPERTY(int, Group)
+VIEW_BUILDER_PROPERTY(int, ID)
+VIEW_BUILDER_PROPERTY(bool, Mirrored)
+VIEW_BUILDER_PROPERTY(bool, NotifyEnterExitOnChild)
+VIEW_BUILDER_PROPERTY(gfx::Transform, Transform)
+VIEW_BUILDER_PROPERTY(bool, Visible)
+END_VIEW_BUILDER(VIEWS_EXPORT, View)
 
 }  // namespace views
 

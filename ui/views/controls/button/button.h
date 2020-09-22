@@ -19,6 +19,7 @@
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/button/button_controller_delegate.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/painter.h"
 
 namespace views {
@@ -378,6 +379,12 @@ class VIEWS_EXPORT Button : public InkDropHostView,
 
   DISALLOW_COPY_AND_ASSIGN(Button);
 };
+
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Button, InkDropHostView)
+VIEW_BUILDER_PROPERTY(base::TimeDelta, AnimationDuration)
+VIEW_BUILDER_PROPERTY(Button::ButtonState, State)
+VIEW_BUILDER_METHOD(SetFocusForPlatform)
+END_VIEW_BUILDER(VIEWS_EXPORT, Button)
 
 }  // namespace views
 

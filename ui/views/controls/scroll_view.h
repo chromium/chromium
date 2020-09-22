@@ -285,6 +285,19 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   DISALLOW_COPY_AND_ASSIGN(ScrollView);
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ScrollView, View)
+VIEW_BUILDER_VIEW_TYPE_PROPERTY(View, Contents)
+VIEW_BUILDER_VIEW_TYPE_PROPERTY(View, Header)
+VIEW_BUILDER_PROPERTY(base::Optional<ui::NativeTheme::ColorId>,
+                      BackgroundThemeColorId)
+VIEW_BUILDER_PROPERTY(bool, HideHorizontalScrollBar)
+VIEW_BUILDER_PROPERTY(bool, DrawOverflowIndicator)
+VIEW_BUILDER_PROPERTY(base::Optional<SkColor>, BackgroundColor)
+VIEW_BUILDER_VIEW_PROPERTY(ScrollBar, HorizontalScrollBar)
+VIEW_BUILDER_VIEW_PROPERTY(ScrollBar, VerticalScrollBar)
+VIEW_BUILDER_PROPERTY(bool, HasFocusIndicator)
+END_VIEW_BUILDER(VIEWS_EXPORT, ScrollView)
+
 // VariableRowHeightScrollHelper is intended for views that contain rows of
 // varying height. To use a VariableRowHeightScrollHelper create one supplying
 // a Controller and delegate GetPageScrollIncrement and GetLineScrollIncrement

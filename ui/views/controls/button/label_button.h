@@ -19,6 +19,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/native_theme_delegate.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
@@ -268,6 +269,16 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
 
   DISALLOW_COPY_AND_ASSIGN(LabelButton);
 };
+
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, LabelButton, Button)
+VIEW_BUILDER_PROPERTY(base::string16, Text)
+VIEW_BUILDER_PROPERTY(gfx::HorizontalAlignment, HorizontalAlignment)
+VIEW_BUILDER_PROPERTY(gfx::Size, MinSize)
+VIEW_BUILDER_PROPERTY(gfx::Size, MaxSize)
+VIEW_BUILDER_PROPERTY(bool, IsDefault)
+VIEW_BUILDER_PROPERTY(int, ImageLabelSpacing)
+VIEW_BUILDER_PROPERTY(bool, ImageCentered)
+END_VIEW_BUILDER(VIEWS_EXPORT, LabelButton)
 
 }  // namespace views
 

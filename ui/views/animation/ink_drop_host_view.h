@@ -11,6 +11,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/ink_drop_event_handler.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace ui {
@@ -245,6 +246,14 @@ class VIEWS_EXPORT InkDropHostView : public View {
 
   DISALLOW_COPY_AND_ASSIGN(InkDropHostView);
 };
+
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, InkDropHostView, View)
+VIEW_BUILDER_PROPERTY(base::Optional<float>, InkDropHighlightOpacity)
+VIEW_BUILDER_PROPERTY(int, InkDropLargeCornerRadius)
+VIEW_BUILDER_PROPERTY(InkDropHostView::InkDropMode, InkDropMode)
+VIEW_BUILDER_PROPERTY(int, InkDropSmallCornerRadius)
+VIEW_BUILDER_PROPERTY(float, InkDropVisibleOpacity)
+END_VIEW_BUILDER(VIEWS_EXPORT, InkDropHostView)
 
 }  // namespace views
 
