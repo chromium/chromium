@@ -301,8 +301,6 @@ AppListConfig::AppListConfig(AppListConfigType type)
       folder_name_border_thickness_(2),
       folder_name_padding_(8),
       folder_name_border_color_(gfx::kGoogleBlue600),
-      folder_name_background_color_(SK_ColorTRANSPARENT),
-      folder_name_background_color_active_(gfx::kGoogleGrey100),
       folder_icon_dimension_(FolderClippedIconDimensionForType(type)),
       folder_unclipped_icon_dimension_(
           FolderUnclippedIconDimensionForType(type)),
@@ -318,9 +316,7 @@ AppListConfig::AppListConfig(AppListConfigType type)
       page_flip_zone_size_(20),
       grid_tile_spacing_in_folder_(8),
       blur_radius_(30),
-      contents_background_color_(SkColorSetRGB(0xF2, 0xF2, 0xF2)),
       grid_selected_color_(gfx::kGoogleBlue300),
-      card_background_color_(SK_ColorWHITE),
       page_transition_duration_(base::TimeDelta::FromMilliseconds(250)),
       overscroll_page_transition_duration_(
           base::TimeDelta::FromMilliseconds(50)),
@@ -436,9 +432,6 @@ AppListConfig::AppListConfig(const AppListConfig& base_config,
       folder_name_border_thickness_(base_config.folder_name_border_thickness_),
       folder_name_padding_(base_config.folder_name_padding_),
       folder_name_border_color_(base_config.folder_name_border_color_),
-      folder_name_background_color_(base_config.folder_name_background_color_),
-      folder_name_background_color_active_(
-          base_config.folder_name_background_color_active_),
       folder_icon_dimension_(MinScale(base_config.folder_icon_dimension_,
                                       scale_x,
                                       inner_tile_scale_y)),
@@ -472,9 +465,7 @@ AppListConfig::AppListConfig(const AppListConfig& base_config,
                    scale_x,
                    inner_tile_scale_y)),
       blur_radius_(base_config.blur_radius_),
-      contents_background_color_(base_config.contents_background_color_),
       grid_selected_color_(base_config.grid_selected_color_),
-      card_background_color_(base_config.card_background_color_),
       page_transition_duration_(base_config.page_transition_duration_),
       overscroll_page_transition_duration_(
           base_config.overscroll_page_transition_duration_),
@@ -551,11 +542,6 @@ int AppListConfig::GetIdealVerticalMargin(
 SkColor AppListConfig::GetCardifiedBackgroundColor(bool is_active) const {
   return is_active ? cardified_background_color_active_
                    : cardified_background_color_;
-}
-
-SkColor AppListConfig::GetFolderNameBackgroundColor(bool is_active) const {
-  return is_active ? folder_name_background_color_active_
-                   : folder_name_background_color_;
 }
 
 }  // namespace ash

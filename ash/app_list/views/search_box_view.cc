@@ -373,7 +373,7 @@ int SearchBoxView::GetSearchBoxBorderCornerRadiusForState(
 
 SkColor SearchBoxView::GetBackgroundColorForState(AppListState state) const {
   if (state == AppListState::kStateSearchResults)
-    return AppListConfig::instance().card_background_color();
+    return AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor();
   return AppListColorProvider::Get()->GetSearchBoxBackgroundColor();
 }
 
@@ -385,14 +385,6 @@ void SearchBoxView::ShowZeroStateSuggestions() {
 }
 
 void SearchBoxView::OnWallpaperColorsChanged() {
-  const auto& colors = view_delegate_->GetWallpaperProminentColors();
-  if (colors.empty())
-    return;
-
-  DCHECK_EQ(static_cast<size_t>(ColorProfileType::NUM_OF_COLOR_PROFILES),
-            colors.size());
-
-  SetSearchBoxColor(colors[static_cast<int>(ColorProfileType::DARK_MUTED)]);
   UpdateSearchIcon();
   AppListColorProvider* app_list_color_provider = AppListColorProvider::Get();
   search_box()->set_placeholder_text_color(

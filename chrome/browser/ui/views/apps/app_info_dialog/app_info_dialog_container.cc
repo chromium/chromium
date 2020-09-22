@@ -29,7 +29,7 @@
 #include "ui/views/window/non_client_view.h"
 
 #if defined(OS_CHROMEOS)
-#include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "ui/views/background.h"
 #endif
@@ -62,7 +62,8 @@ class AppListOverlayBackground : public views::Background {
 
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(ash::AppListConfig::instance().contents_background_color());
+    flags.setColor(
+        ash::AppListColorProvider::Get()->GetContentsBackgroundColor());
     canvas->DrawRoundRect(view->GetContentsBounds(),
                           kAppListOverlayBorderRadius, flags);
   }

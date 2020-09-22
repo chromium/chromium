@@ -12,6 +12,7 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/app_list/views/app_list_item_view.h"
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -66,11 +67,6 @@ constexpr int kSearchRatingCenteringOffset =
        kSearchRatingStarSize)) /
      2);
 
-constexpr SkColor kSearchTitleColor = gfx::kGoogleGrey900;
-constexpr SkColor kSearchAppRatingColor = gfx::kGoogleGrey700;
-constexpr SkColor kSearchAppPriceColor = gfx::kGoogleGreen600;
-constexpr SkColor kSearchRatingStarColor = gfx::kGoogleGrey700;
-
 }  // namespace
 
 SearchResultTileItemView::SearchResultTileItemView(
@@ -104,7 +100,7 @@ SearchResultTileItemView::SearchResultTileItemView(
 
   title_ = new views::Label;
   title_->SetAutoColorReadabilityEnabled(false);
-  title_->SetEnabledColor(AppListConfig::instance().grid_title_color());
+  title_->SetEnabledColor(AppListColorProvider::Get()->GetSearchBoxTextColor());
   title_->SetLineHeight(kTileTextLineHeight);
   title_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   title_->SetHandlesTooltips(false);
@@ -114,7 +110,8 @@ SearchResultTileItemView::SearchResultTileItemView(
   if (is_play_store_app_search_enabled_ ||
       is_app_reinstall_recommendation_enabled_) {
     rating_ = new views::Label;
-    rating_->SetEnabledColor(kSearchAppRatingColor);
+    rating_->SetEnabledColor(
+        AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor());
     rating_->SetLineHeight(kTileTextLineHeight);
     rating_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
     rating_->SetVisible(false);
@@ -124,12 +121,14 @@ SearchResultTileItemView::SearchResultTileItemView(
     rating_star_->set_can_process_events_within_subtree(false);
     rating_star_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
     rating_star_->SetImage(gfx::CreateVectorIcon(
-        kBadgeRatingIcon, kSearchRatingStarSize, kSearchRatingStarColor));
+        kBadgeRatingIcon, kSearchRatingStarSize,
+        AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor()));
     rating_star_->SetVisible(false);
     AddChildView(rating_star_);
 
     price_ = new views::Label;
-    price_->SetEnabledColor(kSearchAppPriceColor);
+    price_->SetEnabledColor(
+        AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor());
     price_->SetLineHeight(kTileTextLineHeight);
     price_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     price_->SetVisible(false);
@@ -163,7 +162,7 @@ void SearchResultTileItemView::OnResultChanged() {
     // Set solid color background to avoid broken text. See crbug.com/746563.
     if (rating_) {
       rating_->SetBackground(views::CreateSolidBackground(
-          AppListConfig::instance().card_background_color()));
+          AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor()));
       if (!IsSuggestedAppTile()) {
         // App search results use different fonts than AppList apps.
         rating_->SetFontList(
@@ -175,7 +174,7 @@ void SearchResultTileItemView::OnResultChanged() {
     }
     if (price_) {
       price_->SetBackground(views::CreateSolidBackground(
-          AppListConfig::instance().card_background_color()));
+          AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor()));
       if (!IsSuggestedAppTile()) {
         // App search results use different fonts than AppList apps.
         price_->SetFontList(ui::ResourceBundle::GetSharedInstance().GetFontList(
@@ -185,7 +184,7 @@ void SearchResultTileItemView::OnResultChanged() {
       }
     }
     title_->SetBackground(views::CreateSolidBackground(
-        AppListConfig::instance().card_background_color()));
+        AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor()));
     if (!IsSuggestedAppTile()) {
       // App search results use different fonts than AppList apps.
       title_->SetFontList(
@@ -196,7 +195,8 @@ void SearchResultTileItemView::OnResultChanged() {
     } else {
       title_->SetFontList(font);
     }
-    title_->SetEnabledColor(kSearchTitleColor);
+    title_->SetEnabledColor(
+        AppListColorProvider::Get()->GetSearchBoxTextColor());
   }
 
   title_->SetMaxLines(2);

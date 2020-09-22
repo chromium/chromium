@@ -21,6 +21,7 @@ class AppListColorProviderImpl : public AppListColorProvider {
   SkColor GetExpandArrowIconBackgroundColor() const override;
   SkColor GetAppListBackgroundColor() const override;
   SkColor GetSearchBoxBackgroundColor() const override;
+  SkColor GetSearchBoxSecondaryTextColor() const override;
   SkColor GetSearchBoxPlaceholderTextColor() const override;
   SkColor GetSearchBoxTextColor() const override;
   SkColor GetSuggestionChipBackgroundColor() const override;
@@ -30,9 +31,13 @@ class AppListColorProviderImpl : public AppListColorProvider {
   SkColor GetPageSwitcherInkDropBaseColor() const override;
   SkColor GetPageSwitcherInkDropHighlightColor() const override;
   SkColor GetSearchBoxIconColor() const override;
+  SkColor GetSearchBoxCardBackgroundColor() const override;
   SkColor GetFolderBackgroundColor() const override;
   SkColor GetFolderTitleTextColor() const override;
   SkColor GetFolderHintTextColor() const override;
+  SkColor GetFolderNameBackgroundColor(bool active) const override;
+  SkColor GetContentsBackgroundColor() const override;
+  SkColor GetSeparatorColor() const override;
   float GetFolderBackgrounBlurSigma() const override;
 
  private:

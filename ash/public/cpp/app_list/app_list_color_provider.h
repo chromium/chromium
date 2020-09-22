@@ -22,6 +22,7 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   virtual SkColor GetSearchBoxBackgroundColor() const = 0;
   virtual SkColor GetSearchBoxPlaceholderTextColor() const = 0;
   virtual SkColor GetSearchBoxTextColor() const = 0;
+  virtual SkColor GetSearchBoxSecondaryTextColor() const = 0;
   virtual SkColor GetSuggestionChipBackgroundColor() const = 0;
   virtual SkColor GetSuggestionChipTextColor() const = 0;
   virtual SkColor GetAppListItemTextColor() const = 0;
@@ -29,9 +30,13 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   virtual SkColor GetPageSwitcherInkDropBaseColor() const = 0;
   virtual SkColor GetPageSwitcherInkDropHighlightColor() const = 0;
   virtual SkColor GetSearchBoxIconColor() const = 0;
+  virtual SkColor GetSearchBoxCardBackgroundColor() const = 0;
   virtual SkColor GetFolderBackgroundColor() const = 0;
   virtual SkColor GetFolderTitleTextColor() const = 0;
   virtual SkColor GetFolderHintTextColor() const = 0;
+  virtual SkColor GetFolderNameBackgroundColor(bool active) const = 0;
+  virtual SkColor GetContentsBackgroundColor() const = 0;
+  virtual SkColor GetSeparatorColor() const = 0;
   virtual float GetFolderBackgrounBlurSigma() const = 0;
 
  protected:

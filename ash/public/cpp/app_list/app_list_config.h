@@ -150,11 +150,7 @@ class ASH_PUBLIC_EXPORT AppListConfig {
     return grid_tile_spacing_in_folder_;
   }
   int blur_radius() const { return blur_radius_; }
-  SkColor contents_background_color() const {
-    return contents_background_color_;
-  }
   SkColor grid_selected_color() const { return grid_selected_color_; }
-  SkColor card_background_color() const { return card_background_color_; }
   base::TimeDelta page_transition_duration() const {
     return page_transition_duration_;
   }
@@ -267,9 +263,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
 
   // Returns the color and opacity for the page background.
   SkColor GetCardifiedBackgroundColor(bool is_active) const;
-
-  // Returns the folder name background color.
-  SkColor GetFolderNameBackgroundColor(bool is_active) const;
 
  private:
   const AppListConfigType type_;
@@ -411,10 +404,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   // The color of the folder name border.
   const SkColor folder_name_border_color_;
 
-  // Background colors for folder name.
-  const SkColor folder_name_background_color_;
-  const SkColor folder_name_background_color_active_;
-
   // The icon dimension of folder.
   const int folder_icon_dimension_;
 
@@ -455,15 +444,9 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   // The blur radius used in the app list.
   const int blur_radius_;
 
-  // The background color of app list overlay.
-  const SkColor contents_background_color_;
-
   // The keyboard select color for grid views, which are on top of a black
   // shield view for new design (12% white).
   const SkColor grid_selected_color_;
-
-  // The background color for views in search results page.
-  const SkColor card_background_color_;
 
   // Duration for page transition.
   const base::TimeDelta page_transition_duration_;

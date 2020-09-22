@@ -64,7 +64,7 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
         gfx::Insets(0, horizontal_padding)));
 
     SetBackgroundColor(
-        AppListConfig::instance().GetFolderNameBackgroundColor(is_active));
+        AppListColorProvider::Get()->GetFolderNameBackgroundColor(is_active));
   }
 
   void OnFocus() override {
@@ -123,8 +123,9 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
 
   void OnMouseExited(const ui::MouseEvent& event) override {
     if (!HasFocus()) {
-      SetBackgroundColor(AppListConfig::instance().GetFolderNameBackgroundColor(
-          /*is_active=*/false));
+      SetBackgroundColor(
+          AppListColorProvider::Get()->GetFolderNameBackgroundColor(
+              /*is_active=*/false));
     }
 
     has_mouse_already_entered_ = false;
@@ -135,7 +136,7 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
       // If this is reached, the mouse is entering the view.
       // Recreate border to have custom corner radius.
       SetBackground(views::CreateRoundedRectBackground(
-          AppListConfig::instance().GetFolderNameBackgroundColor(
+          AppListColorProvider::Get()->GetFolderNameBackgroundColor(
               /*is_active=*/true),
           AppListConfig::instance().folder_name_border_radius()));
       has_mouse_already_entered_ = true;
@@ -143,8 +144,9 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
                has_mouse_already_entered_ && !HasFocus()) {
       // If this is reached, the mouse is exiting the view on its horizontal
       // edges.
-      SetBackgroundColor(AppListConfig::instance().GetFolderNameBackgroundColor(
-          /*is_active=*/false));
+      SetBackgroundColor(
+          AppListColorProvider::Get()->GetFolderNameBackgroundColor(
+              /*is_active=*/false));
       has_mouse_already_entered_ = false;
     }
   }

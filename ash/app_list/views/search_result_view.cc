@@ -17,6 +17,7 @@
 #include "ash/app_list/views/search_result_actions_view.h"
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -44,10 +45,6 @@ constexpr int kActionButtonRightMargin = 8;
 constexpr int kTitleLineHeight = 20;
 constexpr int kDetailsLineHeight = 16;
 
-// Matched text color.
-constexpr SkColor kMatchedTextColor = gfx::kGoogleGrey900;
-// Default text color.
-constexpr SkColor kDefaultTextColor = gfx::kGoogleGrey700;
 // URL color.
 constexpr SkColor kUrlColor = gfx::kGoogleBlue600;
 // Row selected color, Google Grey 8%.
@@ -122,16 +119,14 @@ void SearchResultView::CreateTitleRenderText() {
   // When result is an omnibox non-url search, the matched tag indicates
   // proposed query. For all other cases, the matched tag indicates typed search
   // query.
-  render_text->SetColor(result()->is_omnibox_search() ? kDefaultTextColor
-                                                      : kMatchedTextColor);
+  render_text->SetColor(AppListColorProvider::Get()->GetSearchBoxTextColor());
   const SearchResult::Tags& tags = result()->title_tags();
   for (const auto& tag : tags) {
     if (tag.styles & SearchResult::Tag::URL) {
       render_text->ApplyColor(kUrlColor, tag.range);
     } else if (tag.styles & SearchResult::Tag::MATCH) {
       render_text->ApplyColor(
-          result()->is_omnibox_search() ? kMatchedTextColor : kDefaultTextColor,
-          tag.range);
+          AppListColorProvider::Get()->GetSearchBoxTextColor(), tag.range);
     }
   }
   title_text_ = std::move(render_text);
@@ -148,7 +143,7 @@ void SearchResultView::CreateDetailsRenderText() {
   render_text->SetText(result()->details());
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   render_text->SetFontList(rb.GetFontList(ui::ResourceBundle::BaseFont));
-  render_text->SetColor(kDefaultTextColor);
+  render_text->SetColor(AppListColorProvider::Get()->GetSearchBoxTextColor());
   const SearchResult::Tags& tags = result()->details_tags();
   for (const auto& tag : tags) {
     if (tag.styles & SearchResult::Tag::URL)
@@ -270,8 +265,9 @@ void SearchResultView::PaintButtonContents(gfx::Canvas* canvas) {
 
   // Set solid color background to avoid broken text. See crbug.com/746563.
   // This should be drawn before selected color which is semi-transparent.
-  canvas->FillRect(text_bounds,
-                   AppListConfig::instance().card_background_color());
+  canvas->FillRect(
+      text_bounds,
+      AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor());
 
   // Possibly call FillRect a second time (these colours are partially
   // transparent, so the previous FillRect is not redundant).

@@ -15,6 +15,7 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/app_list/views/search_result_page_view.h"
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_notifier.h"
@@ -47,8 +48,6 @@ constexpr int kBetweenItemSpacing = 8;
 constexpr int kSeparatorLeftRightPadding = 4;
 constexpr int kSeparatorHeight = 46;
 constexpr int kSeparatorTopPadding = 10;
-
-constexpr SkColor kSeparatorColor = SkColorSetA(gfx::kGoogleGrey900, 0x24);
 
 // The Delay before recording play store app results impression, i.e., if the
 // play store results are displayed less than the duration, we assume user
@@ -95,7 +94,7 @@ SearchResultTileItemListView::SearchResultTileItemListView(
           kSeparatorTopPadding, kSeparatorLeftRightPadding,
           AppListConfig::instance().search_tile_height() - kSeparatorHeight,
           kSeparatorLeftRightPadding));
-      separator->SetColor(kSeparatorColor);
+      separator->SetColor(AppListColorProvider::Get()->GetSeparatorColor());
       separator_views_.push_back(separator);
       layout_->SetFlexForView(separator, 0);
     }
@@ -105,7 +104,7 @@ SearchResultTileItemListView::SearchResultTileItemListView(
             view_delegate, false /* show_in_apps_page */));
     tile_item->set_index_in_container(i);
     tile_item->SetParentBackgroundColor(
-        AppListConfig::instance().card_background_color());
+        AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor());
     tile_views_.push_back(tile_item);
     AddObservedResultView(tile_item);
   }

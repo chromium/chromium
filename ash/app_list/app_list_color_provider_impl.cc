@@ -39,6 +39,12 @@ SkColor AppListColorProviderImpl::GetSearchBoxBackgroundColor() const {
       AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
 }
 
+SkColor AppListColorProviderImpl::GetSearchBoxCardBackgroundColor() const {
+  // Set solid color background to avoid broken text. See crbug.com/746563.
+  return ash_color_provider_->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kOpaque);
+}
+
 SkColor AppListColorProviderImpl::GetSearchBoxPlaceholderTextColor() const {
   return ash_color_provider_->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorSecondary);
@@ -47,6 +53,11 @@ SkColor AppListColorProviderImpl::GetSearchBoxPlaceholderTextColor() const {
 SkColor AppListColorProviderImpl::GetSearchBoxTextColor() const {
   return ash_color_provider_->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
+}
+
+SkColor AppListColorProviderImpl::GetSearchBoxSecondaryTextColor() const {
+  return ash_color_provider_->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary);
 }
 
 SkColor AppListColorProviderImpl::GetSuggestionChipBackgroundColor() const {
@@ -101,6 +112,27 @@ SkColor AppListColorProviderImpl::GetFolderTitleTextColor() const {
 SkColor AppListColorProviderImpl::GetFolderHintTextColor() const {
   return ash_color_provider_->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorSecondary);
+}
+
+SkColor AppListColorProviderImpl::GetFolderNameBackgroundColor(
+    bool active) const {
+  if (!active)
+    return SK_ColorTRANSPARENT;
+
+  AshColorProvider::RippleAttributes ripple_attributes =
+      ash_color_provider_->GetRippleAttributes(GetAppListBackgroundColor());
+  return SkColorSetA(ripple_attributes.base_color,
+                     ripple_attributes.inkdrop_opacity * 255);
+}
+
+SkColor AppListColorProviderImpl::GetContentsBackgroundColor() const {
+  return ash_color_provider_->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+}
+
+SkColor AppListColorProviderImpl::GetSeparatorColor() const {
+  return ash_color_provider_->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kSeparatorColor);
 }
 
 float AppListColorProviderImpl::GetFolderBackgrounBlurSigma() const {
