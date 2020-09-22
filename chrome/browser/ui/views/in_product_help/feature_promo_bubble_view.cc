@@ -99,12 +99,18 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
     base::RepeatingClosure snooze_callback,
     base::RepeatingClosure dismiss_callback)
     : BubbleDialogDelegateView(params.anchor_view, params.arrow),
+      focusable_(params.allow_focus),
+      persist_on_blur_(params.persist_on_blur),
       snoozable_(params.allow_snooze),
-      activation_action_(params.activation_action),
       preferred_width_(params.preferred_width),
       snooze_callback_(snooze_callback),
       dismiss_callback_(dismiss_callback) {
   DCHECK(params.anchor_view);
+  DCHECK(!params.allow_snooze || params.allow_focus)
+      << "A snoozable bubble must be focusable to allow keyboard "
+         "accessibility.";
+  DCHECK(!params.persist_on_blur || params.allow_focus)
+      << "A bubble that persists on blur must be focusable.";
   UseCompactMargins();
 
   // Bubble will not auto-dismiss for snoozble IPH.
@@ -215,11 +221,12 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
     dismiss_button_->SetCustomPadding(kBubbleButtonPadding);
   }
 
-  if (params.activation_action ==
-      FeaturePromoBubbleParams::ActivationAction::DO_NOT_ACTIVATE) {
+  if (!focusable_) {
     SetCanActivate(false);
     set_shadow(views::BubbleBorder::BIG_SHADOW);
   }
+
+  set_close_on_deactivate(!persist_on_blur_);
 
   set_margins(gfx::Insets());
   set_title_margins(gfx::Insets());
@@ -278,8 +285,7 @@ void FeaturePromoBubbleView::ButtonPressed(views::Button* sender,
 
 gfx::Rect FeaturePromoBubbleView::GetBubbleBounds() {
   gfx::Rect bounds = BubbleDialogDelegateView::GetBubbleBounds();
-  if (activation_action_ ==
-      FeaturePromoBubbleParams::ActivationAction::DO_NOT_ACTIVATE) {
+  if (!focusable_) {
     if (base::i18n::IsRTL())
       bounds.Offset(5, 0);
     else

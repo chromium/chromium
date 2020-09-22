@@ -44,6 +44,7 @@ class FeaturePromoBubbleViewTest : public TestWithBrowserView {
     params.body_string_specifier = IDS_REOPEN_TAB_PROMO;
     params.anchor_view = browser_view()->contents_container();
     params.arrow = views::BubbleBorder::TOP_RIGHT;
+    params.allow_focus = snoozable;
     params.allow_snooze = snoozable;
     return params;
   }

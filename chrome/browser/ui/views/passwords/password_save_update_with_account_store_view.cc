@@ -760,8 +760,8 @@ void PasswordSaveUpdateWithAccountStoreView::ShowIPH(IPHType type) {
   bubble_params.anchor_view = destination_dropdown_;
   bubble_params.arrow = views::BubbleBorder::RIGHT_CENTER;
   bubble_params.preferred_width = kAccountStoragePromoWidth;
-  bubble_params.activation_action =
-      FeaturePromoBubbleParams::ActivationAction::ACTIVATE;
+  bubble_params.allow_focus = true;
+  bubble_params.persist_on_blur = false;
   bubble_params.timeout_default = GetRegularIPHTimeout();
   bubble_params.timeout_short = GetShortIPHTimeout();
 
