@@ -136,6 +136,16 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
   }
 };
 
+/**
+ * Specific test fixture for tests that need a test server running.
+ */
+ChromeVoxBackgroundTestWithTestServer = class extends ChromeVoxBackgroundTest {
+  get testServer() {
+    return true;
+  }
+};
+
+
 
 /** Tests that ChromeVox classic is in this context. */
 SYNC_TEST_F('ChromeVoxBackgroundTest', 'ClassicNamespaces', function() {
@@ -1230,7 +1240,9 @@ TEST_F('ChromeVoxBackgroundTest', 'BrailleCaretNavigation', function() {
       });
 });
 
-TEST_F('ChromeVoxBackgroundTest', 'InPageLinks', function() {
+// This tests ChromeVox's special support for following an in-page link
+// if you force-click on it. Compare with InPageLinks, below.
+TEST_F('ChromeVoxBackgroundTest', 'ForceClickInPageLinks', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(
       `
@@ -1243,6 +1255,29 @@ TEST_F('ChromeVoxBackgroundTest', 'InPageLinks', function() {
             .expectSpeech('there', 'Button')
             .replay();
       });
+});
+
+// This tests ChromeVox's handling of the scrolledToAnchor event, which is
+// fired when the users follows an in-page link or the document otherwise
+// gets navigated to an in-page link target by the url fragment changing,
+// not necessarily due to directly clicking on the link via ChromeVox.
+//
+// Note: this test needs the test server running because the browser
+// does not follow same-page links on data urls (because it modifies the
+// url fragment, and any change to the url is disallowed for a data url).
+TEST_F('ChromeVoxBackgroundTestWithTestServer', 'InPageLinks', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(undefined, function(root) {
+    mockFeedback.call(doCmd('nextObject'))
+        .expectSpeech('Jump', 'Internal link')
+        .call(press(KeyCode.RETURN))
+        .expectSpeech('Found It')
+        .call(doCmd('nextHeading'))
+        .expectSpeech('Continue Here', 'Heading 2')
+        .replay();
+  }.bind(this), {
+    url: `${testRunnerParams.testServerBaseUrl}accessibility/in_page_links.html`
+  });
 });
 
 TEST_F('ChromeVoxBackgroundTest', 'ListItem', function() {

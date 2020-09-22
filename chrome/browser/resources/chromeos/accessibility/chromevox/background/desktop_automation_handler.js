@@ -76,6 +76,8 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     this.addListener_(EventType.MENU_START, this.onMenuStart);
     this.addListener_(
         EventType.SCROLL_POSITION_CHANGED, this.onScrollPositionChanged);
+    // Called when a same-page link is followed or the url fragment changes.
+    this.addListener_(EventType.SCROLLED_TO_ANCHOR, this.onEventDefault);
     this.addListener_(EventType.SELECTION, this.onSelection);
     this.addListener_(EventType.TEXT_CHANGED, this.onEditableChanged_);
     this.addListener_(

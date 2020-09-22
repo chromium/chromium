@@ -404,8 +404,8 @@ function TEST_F(testFixture, testFunction, testBody, opt_preamble) {
     const featureList = this[testFixture].prototype.featureList;
     const featuresWithParameters =
         this[testFixture].prototype.featuresWithParameters;
-    if ((!hasSwitches && !featureList && !featuresWithParameters) ||
-        typedefCppFixture == 'V8UnitTest') {
+    if ((!hasSwitches && !featureList && !featuresWithParameters &&
+         !testServer) || typedefCppFixture == 'V8UnitTest') {
       output(`
 typedef ${typedefCppFixture} ${testFixture};
 `);
