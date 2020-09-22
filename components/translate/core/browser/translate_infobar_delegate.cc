@@ -89,15 +89,6 @@ void TranslateInfoBarDelegate::Create(
     }
   }
 
-  // Do not create the after translate infobar for navigation if we are auto
-  // translating.
-  if (((step == translate::TRANSLATE_STEP_AFTER_TRANSLATE) ||
-       (step == translate::TRANSLATE_STEP_TRANSLATING)) &&
-      translate_manager->GetLanguageState().InTranslateNavigation() &&
-      !triggered_from_menu) {
-    return;
-  }
-
   // Find any existing translate infobar delegate.
   infobars::InfoBar* old_infobar = NULL;
   TranslateInfoBarDelegate* old_delegate = NULL;
