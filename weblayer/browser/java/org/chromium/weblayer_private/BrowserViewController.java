@@ -186,7 +186,7 @@ public final class BrowserViewController
         if (tab == mTab) return;
 
         if (mTab != null) {
-            mTab.onDidLoseActive();
+            mTab.onDetachedFromViewController();
             mTab.setBrowserControlsVisibilityConstraint(
                     ImplControlsVisibilityReason.ANIMATION, BrowserControlsState.BOTH);
             // WebContentsGestureStateTracker is relatively cheap, easier to destroy rather than
@@ -215,7 +215,7 @@ public final class BrowserViewController
         if (mTab != null) {
             mTab.setBrowserControlsVisibilityConstraint(
                     ImplControlsVisibilityReason.ANIMATION, mBrowserControlsConstraint);
-            mTab.onDidGainActive(mTopControlsContainerView.getNativeHandle(),
+            mTab.onAttachedToViewController(mTopControlsContainerView.getNativeHandle(),
                     mBottomControlsContainerView.getNativeHandle());
             mContentView.requestFocus();
         }

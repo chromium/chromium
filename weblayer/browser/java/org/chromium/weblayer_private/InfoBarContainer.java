@@ -101,13 +101,13 @@ public class InfoBarContainer implements KeyboardVisibilityListener, InfoBar.Con
         }
     };
 
-    public void onTabDidGainActive() {
+    public void onTabAttachedToViewController() {
         initializeContainerView(mTab.getBrowser().getContext());
         updateWebContents();
         mInfoBarContainerView.addToParentView();
     }
 
-    public void onTabDidLoseActive() {
+    public void onTabDetachedFromViewController() {
         mInfoBarContainerView.removeFromParentView();
         destroyContainerView();
     }

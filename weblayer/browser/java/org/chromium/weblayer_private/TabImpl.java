@@ -398,23 +398,23 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
     }
 
     /**
-     * Called when this TabImpl becomes the active TabImpl.
+     * Called when this TabImpl is attached to the BrowserViewController.
      */
-    public void onDidGainActive(
+    public void onAttachedToViewController(
             long topControlsContainerViewHandle, long bottomControlsContainerViewHandle) {
         // attachToFragment() must be called before activate().
         assert mBrowser != null;
         TabImplJni.get().setBrowserControlsContainerViews(
                 mNativeTab, topControlsContainerViewHandle, bottomControlsContainerViewHandle);
-        mInfoBarContainer.onTabDidGainActive();
+        mInfoBarContainer.onTabAttachedToViewController();
         updateWebContentsVisibility();
         updateDisplayCutoutController();
     }
 
     /**
-     * Called when this TabImpl is no longer the active TabImpl.
+     * Called when this TabImpl is detached from the BrowserViewController.
      */
-    public void onDidLoseActive() {
+    public void onDetachedFromViewController() {
         if (mAutofillProvider != null) {
             mAutofillProvider.hidePopup();
         }
@@ -428,7 +428,7 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         // This method is called as part of the final phase of TabImpl destruction, at which
         // point mInfoBarContainer has already been destroyed.
         if (mInfoBarContainer != null) {
-            mInfoBarContainer.onTabDidLoseActive();
+            mInfoBarContainer.onTabDetachedFromViewController();
         }
 
         TabImplJni.get().setBrowserControlsContainerViews(mNativeTab, 0, 0);
