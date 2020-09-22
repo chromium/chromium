@@ -189216,6 +189216,37 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="WebApp.Preinstalled.ConfigErrorCount" units="apps"
+    expires_after="2021-04-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records how many preinstalled web app config files failed to parse as valid
+    JSON with valid fields. See external_web_app_utils.cc ParseConfig(). This is
+    recorded at start up.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Preinstalled.DisabledCount" units="apps"
+    expires_after="2021-04-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records how many preinstalled web apps configs were disabled for the device.
+    This is recorded at start up.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Preinstalled.EnabledCount" units="apps"
+    expires_after="2021-04-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records how many preinstalled web apps configs were enabled for the device.
+    This is recorded at start up.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Shortcuts.Creation.Result"
     enum="ShortcutsCreationResult" expires_after="M93">
   <owner>phillis@chromium.org</owner>

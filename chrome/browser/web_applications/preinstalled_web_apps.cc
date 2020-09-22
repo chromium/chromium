@@ -38,16 +38,18 @@ ScopedTestingPreinstalledAppData::~ScopedTestingPreinstalledAppData() {
   g_preinstalled_app_data_for_testing = nullptr;
 }
 
-std::vector<ExternalInstallOptions> GetPreinstalledWebApps() {
-  std::vector<ExternalInstallOptions> install_options_list;
-  if (!base::FeatureList::IsEnabled(features::kDefaultWebAppInstallation))
-    return install_options_list;
+PreinstalledWebApps::PreinstalledWebApps() = default;
+PreinstalledWebApps::PreinstalledWebApps(PreinstalledWebApps&&) = default;
+PreinstalledWebApps::~PreinstalledWebApps() = default;
 
-  std::vector<PreinstalledAppData> preinstalled_app_data =
-      GetPreinstalledAppData();
-  for (const auto& app_data : preinstalled_app_data) {
-    if (!IsExternalAppInstallFeatureEnabled(app_data.feature_name))
+PreinstalledWebApps GetPreinstalledWebApps() {
+  PreinstalledWebApps result;
+
+  for (const PreinstalledAppData& app_data : GetPreinstalledAppData()) {
+    if (!IsExternalAppInstallFeatureEnabled(app_data.feature_name)) {
+      ++result.disabled_count;
       continue;
+    }
 
     ExternalInstallOptions options(app_data.install_url, DisplayMode::kBrowser,
                                    ExternalInstallSource::kExternalDefault);
@@ -59,10 +61,10 @@ std::vector<ExternalInstallOptions> GetPreinstalledWebApps() {
     options.add_to_management = false;
     options.require_manifest = true;
     options.uninstall_and_replace = {app_data.app_id_to_replace};
-    install_options_list.push_back(std::move(options));
+    result.options.push_back(std::move(options));
   }
 
-  return install_options_list;
+  return result;
 }
 
 }  // namespace web_app

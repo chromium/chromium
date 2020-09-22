@@ -39,8 +39,17 @@ struct ScopedTestingPreinstalledAppData {
   std::vector<PreinstalledAppData> apps;
 };
 
+struct PreinstalledWebApps {
+  PreinstalledWebApps();
+  PreinstalledWebApps(PreinstalledWebApps&&);
+  ~PreinstalledWebApps();
+
+  std::vector<ExternalInstallOptions> options;
+  int disabled_count = 0;
+};
+
 // Returns the list of web apps that should be pre-installed on new profiles.
-std::vector<ExternalInstallOptions> GetPreinstalledWebApps();
+PreinstalledWebApps GetPreinstalledWebApps();
 
 }  // namespace web_app
 

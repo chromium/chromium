@@ -38,8 +38,7 @@ class ExternalWebAppUtilsTest : public testing::Test {
     });
   }
 
-  base::Optional<ExternalInstallOptions> ParseConfig(
-      const char* app_config_string) {
+  ExternalConfigParseResult ParseConfig(const char* app_config_string) {
     base::Optional<base::Value> app_config =
         base::JSONReader::Read(app_config_string);
     DCHECK(app_config);
@@ -49,7 +48,7 @@ class ExternalWebAppUtilsTest : public testing::Test {
                                   /*user_type=*/"test", app_config.value());
   }
 
-  WebApplicationInfoFactory ParseOfflineManifest(
+  base::Optional<WebApplicationInfoFactory> ParseOfflineManifest(
       const char* offline_manifest_string) {
     base::Optional<base::Value> offline_manifest =
         base::JSONReader::Read(offline_manifest_string);
@@ -96,7 +95,7 @@ class ExternalWebAppUtilsTabletTest
 };
 
 TEST_P(ExternalWebAppUtilsTabletTest, DisableIfTabletFormFactor) {
-  base::Optional<ExternalInstallOptions> disable_true_config = ParseConfig(R"(
+  ExternalConfigParseResult disable_true_result = ParseConfig(R"(
     {
       "app_url": "https://test.org",
       "launch_container": "window",
@@ -104,9 +103,11 @@ TEST_P(ExternalWebAppUtilsTabletTest, DisableIfTabletFormFactor) {
       "user_type": ["test"]
     }
   )");
-  EXPECT_EQ(disable_true_config.has_value(), !is_tablet());
+  EXPECT_EQ(disable_true_result.type,
+            is_tablet() ? ExternalConfigParseResult::kDisabled
+                        : ExternalConfigParseResult::kEnabled);
 
-  base::Optional<ExternalInstallOptions> disable_false_config = ParseConfig(R"(
+  ExternalConfigParseResult disable_false_result = ParseConfig(R"(
     {
       "app_url": "https://test.org",
       "launch_container": "window",
@@ -114,7 +115,8 @@ TEST_P(ExternalWebAppUtilsTabletTest, DisableIfTabletFormFactor) {
       "user_type": ["test"]
     }
   )");
-  EXPECT_TRUE(disable_false_config.has_value());
+  EXPECT_EQ(disable_false_result.type, ExternalConfigParseResult::kEnabled);
+  EXPECT_TRUE(disable_false_result.options.has_value());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -138,7 +140,7 @@ class ExternalWebAppUtilsArcTest
 };
 
 TEST_P(ExternalWebAppUtilsArcTest, DisableIfArcSupported) {
-  base::Optional<ExternalInstallOptions> disable_true_config = ParseConfig(R"(
+  ExternalConfigParseResult disable_true_result = ParseConfig(R"(
     {
       "app_url": "https://test.org",
       "launch_container": "window",
@@ -146,9 +148,11 @@ TEST_P(ExternalWebAppUtilsArcTest, DisableIfArcSupported) {
       "user_type": ["test"]
     }
   )");
-  EXPECT_EQ(disable_true_config.has_value(), !is_arc_supported());
+  EXPECT_EQ(disable_true_result.type,
+            is_arc_supported() ? ExternalConfigParseResult::kDisabled
+                               : ExternalConfigParseResult::kEnabled);
 
-  base::Optional<ExternalInstallOptions> disable_false_config = ParseConfig(R"(
+  ExternalConfigParseResult disable_false_result = ParseConfig(R"(
     {
       "app_url": "https://test.org",
       "launch_container": "window",
@@ -156,7 +160,8 @@ TEST_P(ExternalWebAppUtilsArcTest, DisableIfArcSupported) {
       "user_type": ["test"]
     }
   )");
-  EXPECT_TRUE(disable_false_config.has_value());
+  EXPECT_EQ(disable_false_result.type, ExternalConfigParseResult::kEnabled);
+  EXPECT_TRUE(disable_false_result.options.has_value());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -183,6 +188,7 @@ TEST_F(ExternalWebAppUtilsTest, MAYBE_OfflineManifestValid) {
       "theme_color_argb_hex": "AABBCCDD"
     }
   )")
+                                                     .value()
                                                      .Run();
   EXPECT_TRUE(app_info);
   EXPECT_EQ(app_info->title, base::UTF8ToUTF16("Test App"));

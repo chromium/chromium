@@ -426,11 +426,14 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
 // by the preinstalled apps (rather than an external config).
 IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
                        MigrateToPreinstalledWebApp) {
+  ScopedTestingPreinstalledAppData preinstalled_apps;
+  preinstalled_apps.apps.push_back(
+      {GetWebAppUrl(), kMigrationFlag, kExtensionId});
+  EXPECT_EQ(1, GetPreinstalledWebApps().disabled_count);
+
   // Set up pre-migration state.
   {
-    // Override the preinstalled apps to be empty.
-    ScopedTestingPreinstalledAppData empty_preinstalled_apps;
-    EXPECT_EQ(0u, GetPreinstalledWebApps().size());
+    base::HistogramTester histograms;
 
     ASSERT_FALSE(IsExternalAppInstallFeatureEnabled(kMigrationFlag));
 
@@ -440,6 +443,16 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
 
     EXPECT_FALSE(IsWebAppInstalled());
     EXPECT_TRUE(IsExtensionAppInstalled());
+
+    // TODO(crbug.com/1128801): Use the normal LoadInstallOptions() code path
+    // such that metrics are recorded.
+    // histograms.ExpectUniqueSample(
+    //     ExternalWebAppManager::kHistogramEnabledCount,
+    //     0, 1);
+    // histograms.ExpectUniqueSample(
+    //     ExternalWebAppManager::kHistogramDisabledCount, 1, 1);
+    // histograms.ExpectUniqueSample(
+    //     ExternalWebAppManager::kHistogramConfigErrorCount, 0, 1);
   }
 
   // Migrate extension app to web app.
@@ -453,13 +466,11 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
     EXPECT_TRUE(IsExtensionAppInstalled());
 
     {
+      base::HistogramTester histograms;
+
       extensions::TestExtensionRegistryObserver uninstall_observer(
           extensions::ExtensionRegistry::Get(profile()));
 
-      ScopedTestingPreinstalledAppData preinstalled_apps;
-      preinstalled_apps.apps.push_back(
-          {GetWebAppUrl(), kMigrationFlag, kExtensionId});
-      EXPECT_EQ(1u, GetPreinstalledWebApps().size());
 
       SyncExternalWebApps(/*expect_install=*/true, /*expect_uninstall=*/false,
                           /*pass_config=*/false);
@@ -469,6 +480,15 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
           uninstall_observer.WaitForExtensionUninstalled();
       EXPECT_EQ(uninstalled_app->id(), kExtensionId);
       EXPECT_FALSE(IsExtensionAppInstalled());
+
+      // TODO(crbug.com/1128801): Use the normal LoadInstallOptions() code path
+      // such that metrics are recorded.
+      // histograms.ExpectUniqueSample(
+      //     ExternalWebAppManager::kHistogramEnabledCount, 1, 1);
+      // histograms.ExpectUniqueSample(
+      //     ExternalWebAppManager::kHistogramDisabledCount, 0, 1);
+      // histograms.ExpectUniqueSample(
+      //     ExternalWebAppManager::kHistogramConfigErrorCount, 0, 1);
     }
   }
 }

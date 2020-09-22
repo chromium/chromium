@@ -26,6 +26,10 @@ class PendingAppManager;
 
 class ExternalWebAppManager {
  public:
+  static const char* kHistogramEnabledCount;
+  static const char* kHistogramDisabledCount;
+  static const char* kHistogramConfigErrorCount;
+
   explicit ExternalWebAppManager(Profile* profile);
   ~ExternalWebAppManager();
 

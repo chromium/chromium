@@ -173,8 +173,8 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
                 "user_type": ["unmanaged"],
                 "offline_manifest": {
                   "name": "Offline only app name",
-                  "start_url": "$3",
-                  "scope": "$4",
+                  "start_url": "$2",
+                  "scope": "$3",
                   "display": "minimal-ui",
                   "theme_color_argb_hex": "AABBCCDD",
                   "icon_any_pngs": ["icon.png"]

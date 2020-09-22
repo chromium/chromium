@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/task/post_task.h"
@@ -61,16 +62,22 @@ std::vector<ExternalInstallOptions> LoadInstallOptionsBlocking(
   if (!base::FeatureList::IsEnabled(features::kDefaultWebAppInstallation))
     return install_options_list;
 
-  for (ExternalInstallOptions& options : GetPreinstalledWebApps())
-    install_options_list.push_back(std::move(options));
+  int disabled_count = 0;
+  int error_count = 0;
 
+  // Load hard coded apps.
+  PreinstalledWebApps preinstalled_web_apps = GetPreinstalledWebApps();
+  for (ExternalInstallOptions& options : preinstalled_web_apps.options)
+    install_options_list.push_back(std::move(options));
+  disabled_count += preinstalled_web_apps.disabled_count;
+
+  // Load JSON config apps.
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   base::FilePath::StringType extension(FILE_PATH_LITERAL(".json"));
   base::FileEnumerator json_files(dir,
                                   false,  // Recursive.
                                   base::FileEnumerator::FILES);
-
   for (base::FilePath file = json_files.Next(); !file.empty();
        file = json_files.Next()) {
     if (!file.MatchesExtension(extension)) {
@@ -83,13 +90,31 @@ std::vector<ExternalInstallOptions> LoadInstallOptionsBlocking(
         deserializer.Deserialize(nullptr, &error_msg);
     if (!app_config) {
       LOG(ERROR) << file.value() << " was not valid JSON: " << error_msg;
+      ++error_count;
       continue;
     }
-    base::Optional<ExternalInstallOptions> install_options =
+
+    ExternalConfigParseResult result =
         ParseConfig(*file_utils, dir, file, user_type, *app_config);
-    if (install_options.has_value())
-      install_options_list.push_back(std::move(*install_options));
+    switch (result.type) {
+      case ExternalConfigParseResult::kEnabled:
+        install_options_list.push_back(std::move(result.options.value()));
+        break;
+      case ExternalConfigParseResult::kDisabled:
+        ++disabled_count;
+        break;
+      case ExternalConfigParseResult::kError:
+        ++error_count;
+        break;
+    }
   }
+
+  base::UmaHistogramCounts100(ExternalWebAppManager::kHistogramEnabledCount,
+                              install_options_list.size());
+  base::UmaHistogramCounts100(ExternalWebAppManager::kHistogramDisabledCount,
+                              disabled_count);
+  base::UmaHistogramCounts100(ExternalWebAppManager::kHistogramConfigErrorCount,
+                              error_count);
 
   return install_options_list;
 }
@@ -137,22 +162,29 @@ std::vector<ExternalInstallOptions> SynchronizeAppsBlockingForTesting(
         base::JSONReader::Read(app_config_string);
     DCHECK(app_config);
 
-    base::Optional<ExternalInstallOptions> install_options =
+    ExternalConfigParseResult result =
         ParseConfig(*file_utils, base::FilePath(FILE_PATH_LITERAL("test_dir")),
                     base::FilePath(FILE_PATH_LITERAL("test_dir/test.json")),
                     user_type, *app_config);
-    if (install_options)
-      install_options_list.push_back(std::move(*install_options));
+    if (result.type == ExternalConfigParseResult::kEnabled)
+      install_options_list.push_back(std::move(*result.options));
   }
 
   // TODO(crbug.com/1128801): Dedupe this with LoadInstallOptionsBlocking().
-  for (ExternalInstallOptions& options : GetPreinstalledWebApps())
+  for (ExternalInstallOptions& options : GetPreinstalledWebApps().options)
     install_options_list.push_back(std::move(options));
 
   return install_options_list;
 }
 
 }  // namespace
+
+const char* ExternalWebAppManager::kHistogramEnabledCount =
+    "WebApp.Preinstalled.EnabledCount";
+const char* ExternalWebAppManager::kHistogramDisabledCount =
+    "WebApp.Preinstalled.DisabledCount";
+const char* ExternalWebAppManager::kHistogramConfigErrorCount =
+    "WebApp.Preinstalled.ConfigErrorCount";
 
 ExternalWebAppManager::ExternalWebAppManager(Profile* profile)
     : profile_(profile) {}

@@ -15,6 +15,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
@@ -163,6 +164,17 @@ class ExternalWebAppManagerTest : public testing::Test {
   }
 #endif
 
+  void ExpectHistograms(int enabled, int disabled, int errors) {
+    histograms_.ExpectUniqueSample(
+        ExternalWebAppManager::kHistogramEnabledCount, enabled, 1);
+    histograms_.ExpectUniqueSample(
+        ExternalWebAppManager::kHistogramDisabledCount, disabled, 1);
+    histograms_.ExpectUniqueSample(
+        ExternalWebAppManager::kHistogramConfigErrorCount, errors, 1);
+  }
+
+  base::HistogramTester histograms_;
+
  private:
 #if defined(OS_CHROMEOS)
   chromeos::FakeChromeUserManager* user_manager() {
@@ -218,6 +230,7 @@ TEST_F(ExternalWebAppManagerTest, GoodJson) {
   for (const auto& install_option : test_install_options_list) {
     EXPECT_TRUE(base::Contains(install_options_list, install_option));
   }
+  ExpectHistograms(/*enabled=*/2, /*disabled=*/0, /*errors=*/0);
 }
 
 TEST_F(ExternalWebAppManagerTest, BadJson) {
@@ -225,6 +238,7 @@ TEST_F(ExternalWebAppManagerTest, BadJson) {
 
   // The bad_json directory contains one (malformed) JSON file.
   EXPECT_EQ(0u, app_infos.size());
+  ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/1);
 }
 
 TEST_F(ExternalWebAppManagerTest, TxtButNoJson) {
@@ -233,6 +247,7 @@ TEST_F(ExternalWebAppManagerTest, TxtButNoJson) {
   // The txt_but_no_json directory contains one file, and the contents of that
   // file is valid JSON, but that file's name does not end with ".json".
   EXPECT_EQ(0u, app_infos.size());
+  ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/0);
 }
 
 TEST_F(ExternalWebAppManagerTest, MixedJson) {
@@ -246,6 +261,7 @@ TEST_F(ExternalWebAppManagerTest, MixedJson) {
     EXPECT_EQ(app_infos[0].install_url.spec(),
               std::string("https://polytimer.rocks/?homescreen=1"));
   }
+  ExpectHistograms(/*enabled=*/1, /*disabled=*/0, /*errors=*/2);
 }
 
 TEST_F(ExternalWebAppManagerTest, MissingAppUrl) {
@@ -254,6 +270,7 @@ TEST_F(ExternalWebAppManagerTest, MissingAppUrl) {
   // The missing_app_url directory contains one JSON file which is correct
   // except for a missing "app_url" field.
   EXPECT_EQ(0u, app_infos.size());
+  ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/1);
 }
 
 TEST_F(ExternalWebAppManagerTest, EmptyAppUrl) {
@@ -262,6 +279,7 @@ TEST_F(ExternalWebAppManagerTest, EmptyAppUrl) {
   // The empty_app_url directory contains one JSON file which is correct
   // except for an empty "app_url" field.
   EXPECT_EQ(0u, app_infos.size());
+  ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/1);
 }
 
 TEST_F(ExternalWebAppManagerTest, InvalidAppUrl) {
@@ -270,6 +288,7 @@ TEST_F(ExternalWebAppManagerTest, InvalidAppUrl) {
   // The invalid_app_url directory contains one JSON file which is correct
   // except for an invalid "app_url" field.
   EXPECT_EQ(0u, app_infos.size());
+  ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/1);
 }
 
 TEST_F(ExternalWebAppManagerTest, TrueHideFromUser) {
@@ -280,6 +299,7 @@ TEST_F(ExternalWebAppManagerTest, TrueHideFromUser) {
   EXPECT_FALSE(app.add_to_applications_menu);
   EXPECT_FALSE(app.add_to_search);
   EXPECT_FALSE(app.add_to_management);
+  ExpectHistograms(/*enabled=*/1, /*disabled=*/0, /*errors=*/0);
 }
 
 TEST_F(ExternalWebAppManagerTest, InvalidHideFromUser) {
@@ -288,6 +308,7 @@ TEST_F(ExternalWebAppManagerTest, InvalidHideFromUser) {
   // The invalid_hide_from_user directory contains on JSON file which is correct
   // except for an invalid "hide_from_user" field.
   EXPECT_EQ(0u, app_infos.size());
+  ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/1);
 }
 
 TEST_F(ExternalWebAppManagerTest, InvalidCreateShortcuts) {
@@ -296,6 +317,7 @@ TEST_F(ExternalWebAppManagerTest, InvalidCreateShortcuts) {
   // The invalid_create_shortcuts directory contains one JSON file which is
   // correct except for an invalid "create_shortcuts" field.
   EXPECT_EQ(0u, app_infos.size());
+  ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/1);
 }
 
 TEST_F(ExternalWebAppManagerTest, MissingLaunchContainer) {
@@ -304,6 +326,7 @@ TEST_F(ExternalWebAppManagerTest, MissingLaunchContainer) {
   // The missing_launch_container directory contains one JSON file which is
   // correct except for a missing "launch_container" field.
   EXPECT_EQ(0u, app_infos.size());
+  ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/1);
 }
 
 TEST_F(ExternalWebAppManagerTest, InvalidLaunchContainer) {
@@ -312,6 +335,7 @@ TEST_F(ExternalWebAppManagerTest, InvalidLaunchContainer) {
   // The invalid_launch_container directory contains one JSON file which is
   // correct except for an invalid "launch_container" field.
   EXPECT_EQ(0u, app_infos.size());
+  ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/1);
 }
 
 TEST_F(ExternalWebAppManagerTest, InvalidUninstallAndReplace) {
@@ -320,6 +344,7 @@ TEST_F(ExternalWebAppManagerTest, InvalidUninstallAndReplace) {
   // The invalid_uninstall_and_replace directory contains 2 JSON files which are
   // correct except for invalid "uninstall_and_replace" fields.
   EXPECT_EQ(0u, app_infos.size());
+  ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/2);
 }
 
 TEST_F(ExternalWebAppManagerTest, DefaultWebAppInstallDisabled) {
@@ -329,6 +354,12 @@ TEST_F(ExternalWebAppManagerTest, DefaultWebAppInstallDisabled) {
   const auto app_infos = ReloadInstallOptions(kGoodJsonTestDir);
 
   EXPECT_EQ(0u, app_infos.size());
+  histograms_.ExpectTotalCount(
+      ExternalWebAppManager::kHistogramConfigErrorCount, 0);
+  histograms_.ExpectTotalCount(ExternalWebAppManager::kHistogramEnabledCount,
+                               0);
+  histograms_.ExpectTotalCount(ExternalWebAppManager::kHistogramDisabledCount,
+                               0);
 }
 
 TEST_F(ExternalWebAppManagerTest, EnabledByFinch) {
@@ -341,6 +372,7 @@ TEST_F(ExternalWebAppManagerTest, EnabledByFinch) {
   // that have field trials. As the matching feature is enabled, they should be
   // in our list of apps to install.
   EXPECT_EQ(2u, app_infos.size());
+  ExpectHistograms(/*enabled=*/2, /*disabled=*/0, /*errors=*/0);
 }
 
 TEST_F(ExternalWebAppManagerTest, NotEnabledByFinch) {
@@ -350,6 +382,7 @@ TEST_F(ExternalWebAppManagerTest, NotEnabledByFinch) {
   // that have field trials. As the matching feature isn't enabled, they should
   // not be in our list of apps to install.
   EXPECT_EQ(0u, app_infos.size());
+  ExpectHistograms(/*enabled=*/0, /*disabled=*/2, /*errors=*/0);
 }
 
 #if defined(OS_CHROMEOS)

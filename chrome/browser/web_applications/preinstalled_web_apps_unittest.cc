@@ -33,16 +33,6 @@ std::unique_ptr<ScopedTestingPreinstalledAppData> CreateStubPreinstalledApps() {
 
 using PreinstalledWebAppsTest = testing::Test;
 
-TEST(PreinstalledWebAppsTest, NoAppsWithoutDefaultWebAppInstallation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kDefaultWebAppInstallation);
-  base::AutoReset<bool> testing_scope =
-      SetExternalAppInstallFeatureAlwaysEnabledForTesting();
-  auto scoped_preinstalled_apps = CreateStubPreinstalledApps();
-
-  EXPECT_EQ(0u, GetPreinstalledWebApps().size());
-}
-
 TEST(PreinstalledWebAppsTest, AppsOnlyReturnedIfSpecificFeatureEnabled) {
   auto scoped_preinstalled_apps = CreateStubPreinstalledApps();
 
@@ -54,7 +44,9 @@ TEST(PreinstalledWebAppsTest, AppsOnlyReturnedIfSpecificFeatureEnabled) {
     feature_list.InitWithFeatures({features::kDefaultWebAppInstallation},
                                   {kMigrateDefaultChromeAppToWebAppsGSuite,
                                    kMigrateDefaultChromeAppToWebAppsNonGSuite});
-    EXPECT_EQ(0u, GetPreinstalledWebApps().size());
+    PreinstalledWebApps preinstalled_web_apps = GetPreinstalledWebApps();
+    EXPECT_EQ(2, preinstalled_web_apps.disabled_count);
+    EXPECT_EQ(0u, preinstalled_web_apps.options.size());
   }
 
   {
@@ -63,11 +55,12 @@ TEST(PreinstalledWebAppsTest, AppsOnlyReturnedIfSpecificFeatureEnabled) {
     feature_list.InitWithFeatures({features::kDefaultWebAppInstallation,
                                    kMigrateDefaultChromeAppToWebAppsGSuite},
                                   {kMigrateDefaultChromeAppToWebAppsNonGSuite});
-    std::vector<ExternalInstallOptions> install_options =
-        GetPreinstalledWebApps();
-    ASSERT_EQ(1u, install_options.size());
-    ASSERT_EQ(1u, install_options[0].uninstall_and_replace.size());
-    EXPECT_EQ(kTestAppId1, install_options[0].uninstall_and_replace[0]);
+    PreinstalledWebApps preinstalled_web_apps = GetPreinstalledWebApps();
+    EXPECT_EQ(1, preinstalled_web_apps.disabled_count);
+    ASSERT_EQ(1u, preinstalled_web_apps.options.size());
+    const ExternalInstallOptions& options = preinstalled_web_apps.options[0];
+    ASSERT_EQ(1u, options.uninstall_and_replace.size());
+    EXPECT_EQ(kTestAppId1, options.uninstall_and_replace[0]);
   }
 
   {
@@ -76,11 +69,12 @@ TEST(PreinstalledWebAppsTest, AppsOnlyReturnedIfSpecificFeatureEnabled) {
     feature_list.InitWithFeatures({features::kDefaultWebAppInstallation,
                                    kMigrateDefaultChromeAppToWebAppsNonGSuite},
                                   {kMigrateDefaultChromeAppToWebAppsGSuite});
-    std::vector<ExternalInstallOptions> install_options =
-        GetPreinstalledWebApps();
-    ASSERT_EQ(1u, install_options.size());
-    ASSERT_EQ(1u, install_options[0].uninstall_and_replace.size());
-    EXPECT_EQ(kTestAppId2, install_options[0].uninstall_and_replace[0]);
+    PreinstalledWebApps preinstalled_web_apps = GetPreinstalledWebApps();
+    EXPECT_EQ(1, preinstalled_web_apps.disabled_count);
+    ASSERT_EQ(1u, preinstalled_web_apps.options.size());
+    const ExternalInstallOptions& options = preinstalled_web_apps.options[0];
+    ASSERT_EQ(1u, options.uninstall_and_replace.size());
+    EXPECT_EQ(kTestAppId2, options.uninstall_and_replace[0]);
   }
 }
 
