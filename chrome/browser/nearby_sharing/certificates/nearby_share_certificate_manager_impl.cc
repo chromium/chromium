@@ -57,19 +57,19 @@ size_t NumExpectedPrivateCertificates() {
 }
 
 base::Optional<nearbyshare::proto::EncryptedMetadata> BuildMetadata(
-    base::Optional<std::string> device_name,
+    std::string device_name,
     base::Optional<std::string> full_name,
     base::Optional<std::string> icon_url,
     device::BluetoothAdapter* bluetooth_adapter) {
   nearbyshare::proto::EncryptedMetadata metadata;
-  if (!device_name) {
+  if (device_name.empty()) {
     NS_LOG(WARNING)
         << __func__
         << ": Cannot create private certificate metadata; missing device name.";
     return base::nullopt;
   }
 
-  metadata.set_device_name(*device_name);
+  metadata.set_device_name(device_name);
   if (full_name) {
     metadata.set_full_name(*full_name);
   }

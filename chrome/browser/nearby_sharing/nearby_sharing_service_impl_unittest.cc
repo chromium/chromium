@@ -62,9 +62,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/ash/test_session_controller.h"
-#include "components/user_manager/scoped_user_manager.h"
 #endif  // defined(OS_CHROMEOS)
 
 using ::testing::_;
@@ -197,9 +195,6 @@ namespace {
 constexpr base::TimeDelta kDelta = base::TimeDelta::FromMilliseconds(100);
 
 const char kProfileName[] = "profile_name";
-#if defined(OS_CHROMEOS)
-const char kUserDisplayName[] = "user_display_name";
-#endif  // defined(OS_CHROMEOS)
 const char kServiceId[] = "NearbySharing";
 const char kDeviceName[] = "test_device_name";
 const nearby_share::mojom::ShareTargetType kDeviceType =
@@ -410,18 +405,6 @@ class NearbySharingServiceImplTest : public testing::Test {
 
   std::unique_ptr<NearbySharingServiceImpl> CreateService() {
     profile_ = profile_manager_.CreateTestingProfile(kProfileName);
-
-    // Perform additional profile setup for Chrome OS. This is necessary for
-    // constructing a default device name.
-#if defined(OS_CHROMEOS)
-    chromeos::FakeChromeUserManager* user_manager =
-        new chromeos::FakeChromeUserManager();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(user_manager));
-    user_manager->AddUser(AccountId::FromUserEmail(kProfileName));
-    user_manager->SaveUserDisplayName(AccountId::FromUserEmail(kProfileName),
-                                      base::UTF8ToUTF16(kUserDisplayName));
-#endif  // defined(OS_CHROMEOS)
 
     fake_nearby_connections_manager_ = new FakeNearbyConnectionsManager();
     notification_tester_ =
@@ -873,9 +856,6 @@ class NearbySharingServiceImplTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   Profile* profile_ = nullptr;
-#if defined(OS_CHROMEOS)
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-#endif  // defined(OS_CHROMEOS)
   sync_preferences::TestingPrefServiceSyncable prefs_;
   FakeNearbyConnectionsManager* fake_nearby_connections_manager_ = nullptr;
   FakePowerClient* power_client_ = nullptr;
@@ -3517,40 +3497,4 @@ TEST_F(NearbySharingServiceImplTest, ShutdownCallsObservers) {
 
   // Prevent a double shutdown.
   service_.reset();
-}
-
-TEST_F(NearbySharingServiceImplTest, SetDefaultDeviceName) {
-  // The default device name is set in the ctor because the device name was not
-  // yet set.
-  base::Optional<std::string> expected_device_name;
-  base::RunLoop run_loop;
-  GetNearbyShareDefaultDeviceName(
-      profile_,
-      base::BindLambdaForTesting([&run_loop, &expected_device_name](
-                                     const base::Optional<std::string>& name) {
-        expected_device_name = std::move(name);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-  ASSERT_TRUE(local_device_data_manager()->GetDeviceName());
-  EXPECT_EQ(*expected_device_name,
-            *local_device_data_manager()->GetDeviceName());
-
-  // If the device name is cleared, the service notices and sets the default
-  // device name.
-  local_device_data_manager()->SetDeviceName(/*device_name=*/std::string());
-  EXPECT_FALSE(local_device_data_manager()->GetDeviceName());
-  // Allow the observer notifications to propagate, and allow the posted task to
-  // set the default device name to finish.
-  // Propagate first device name change notification: device name empty.
-  service_->FlushMojoForTesting();
-  // Run tasks to generate default device name.
-  task_environment_.RunUntilIdle();
-  // Propagate second device name change notification: default device name set;
-  // should be no-op.
-  service_->FlushMojoForTesting();
-
-  ASSERT_TRUE(local_device_data_manager()->GetDeviceName());
-  EXPECT_EQ(*expected_device_name,
-            *local_device_data_manager()->GetDeviceName());
 }

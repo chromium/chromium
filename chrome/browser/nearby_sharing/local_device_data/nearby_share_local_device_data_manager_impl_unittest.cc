@@ -23,7 +23,8 @@
 
 namespace {
 
-const char kFakeDeviceName[] = "Barack Obama's Chromebook";
+const char kFakeDefaultDeviceName[] = "Barack's Chromebook";
+const char kFakeDeviceName[] = "My Cool Chromebook";
 const char kFakeFullName[] = "Barack Obama";
 const char kFakeIconUrl[] = "https://www.google.com";
 
@@ -106,7 +107,7 @@ class NearbyShareLocalDeviceDataManagerImplTest
 
   void CreateManager() {
     manager_ = NearbyShareLocalDeviceDataManagerImpl::Factory::Create(
-        &pref_service_, &http_client_factory_);
+        &pref_service_, &http_client_factory_, kFakeDefaultDeviceName);
     manager_->AddObserver(this);
     ++num_manager_creations_;
     VerifyInitialization();
@@ -257,14 +258,20 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, DeviceId) {
 
 TEST_F(NearbyShareLocalDeviceDataManagerImplTest, SetDeviceName) {
   CreateManager();
+
+  // The default device name is set in the ctor when the device name is empty.
+  // No notification is received because we can't add an observer until the
+  // object is fully constructed.
+  EXPECT_EQ(kFakeDefaultDeviceName, manager()->GetDeviceName());
   EXPECT_TRUE(notifications().empty());
+
   manager()->SetDeviceName(kFakeDeviceName);
   EXPECT_EQ(kFakeDeviceName, manager()->GetDeviceName());
   EXPECT_EQ(1u, notifications().size());
   EXPECT_EQ(ObserverNotification(/*did_device_name_change=*/true,
                                  /*did_full_name_change=*/false,
                                  /*did_icon_url_change=*/false),
-            notifications()[0]);
+            notifications().back());
 
   // The data is persisted.
   DestroyManager();

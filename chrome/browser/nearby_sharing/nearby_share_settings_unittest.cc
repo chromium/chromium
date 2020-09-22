@@ -25,6 +25,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
+const char kDefaultDeviceName[] = "Josh's Chromebook";
+
+}  // namespace
+
 using NearbyShareSettingsAsyncWaiter =
     nearby_share::mojom::NearbyShareSettingsAsyncWaiter;
 
@@ -60,7 +66,7 @@ class FakeNearbyShareSettingsObserver
 
 class NearbyShareSettingsTest : public ::testing::Test {
  public:
-  NearbyShareSettingsTest() {
+  NearbyShareSettingsTest() : local_device_data_manager_(kDefaultDeviceName) {
     scoped_feature_list_.InitAndEnableFeature(features::kNearbySharing);
 
     RegisterNearbySharingPrefs(pref_service_.registry());
@@ -116,7 +122,7 @@ TEST_F(NearbyShareSettingsTest, GetAndSetEnabled) {
 TEST_F(NearbyShareSettingsTest, GetAndSetDeviceName) {
   std::string name = "not_the_default";
   nearby_share_settings_waiter_.GetDeviceName(&name);
-  EXPECT_EQ("", name);
+  EXPECT_EQ(kDefaultDeviceName, name);
 
   EXPECT_EQ("uncalled", observer_.device_name);
   nearby_share_settings_.SetDeviceName("d");

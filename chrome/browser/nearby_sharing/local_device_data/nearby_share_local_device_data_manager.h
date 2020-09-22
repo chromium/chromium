@@ -45,10 +45,9 @@ class NearbyShareLocalDeviceDataManager {
   // differentiate a user's devices when communicating with the Nearby server.
   virtual std::string GetId() = 0;
 
-  // Returns the name of the local device, typically in the format of
-  // "UserName's DeviceType". This can be modified by SetDeviceName(). Returns
-  // base::nullopt if the device name have not been set yet.
-  virtual base::Optional<std::string> GetDeviceName() const = 0;
+  // Returns the name of the local device, for example, "Josh's Chromebook."
+  // This can be modified by SetDeviceName().
+  virtual std::string GetDeviceName() const = 0;
 
   // Returns the user's full name, for example, "Barack Obama". Returns
   // base::nullopt if the name has not yet been set from an UpdateDevice RPC

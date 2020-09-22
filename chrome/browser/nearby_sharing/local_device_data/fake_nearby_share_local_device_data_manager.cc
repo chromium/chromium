@@ -17,11 +17,13 @@ FakeNearbyShareLocalDeviceDataManager::Factory::~Factory() = default;
 std::unique_ptr<NearbyShareLocalDeviceDataManager>
 FakeNearbyShareLocalDeviceDataManager::Factory::CreateInstance(
     PrefService* pref_service,
-    NearbyShareClientFactory* http_client_factory) {
+    NearbyShareClientFactory* http_client_factory,
+    const std::string& default_device_name) {
   latest_pref_service_ = pref_service;
   latest_http_client_factory_ = http_client_factory;
 
-  auto instance = std::make_unique<FakeNearbyShareLocalDeviceDataManager>();
+  auto instance = std::make_unique<FakeNearbyShareLocalDeviceDataManager>(
+      default_device_name);
   instances_.push_back(instance.get());
 
   return instance;
@@ -50,8 +52,9 @@ FakeNearbyShareLocalDeviceDataManager::UploadCertificatesCall::
 FakeNearbyShareLocalDeviceDataManager::UploadCertificatesCall::
     ~UploadCertificatesCall() = default;
 
-FakeNearbyShareLocalDeviceDataManager::FakeNearbyShareLocalDeviceDataManager()
-    : id_(kDefaultId) {}
+FakeNearbyShareLocalDeviceDataManager::FakeNearbyShareLocalDeviceDataManager(
+    const std::string& default_device_name)
+    : id_(kDefaultId), device_name_(default_device_name) {}
 
 FakeNearbyShareLocalDeviceDataManager::
     ~FakeNearbyShareLocalDeviceDataManager() = default;
@@ -60,11 +63,7 @@ std::string FakeNearbyShareLocalDeviceDataManager::GetId() {
   return id_;
 }
 
-base::Optional<std::string>
-FakeNearbyShareLocalDeviceDataManager::GetDeviceName() const {
-  if (!device_name_ || device_name_->empty())
-    return base::nullopt;
-
+std::string FakeNearbyShareLocalDeviceDataManager::GetDeviceName() const {
   return device_name_;
 }
 

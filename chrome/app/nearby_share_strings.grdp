@@ -102,6 +102,9 @@
   <message name="IDS_NEARBY_ACTIONS_REJECT" desc="Action button text to reject a transfer in the Nearby Share UI.">
     Reject
   </message>
+  <message name="IDS_NEARBY_DEFAULT_DEVICE_NAME" desc="The default device name used unless a user explicitly sets the device name during onboarding or in settings. Displayed to other users during sharing.">
+    <ph name="GIVEN_NAME">$1<ex>Josh</ex></ph>'s <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>
+  </message>
   <message name="IDS_NEARBY_FILE_ATTACHMENTS_APPS" desc="Describes one or more apps being transfered via Nearby Share.">
     {COUNT, plural, =1 {1 app} other {# apps}}
   </message>

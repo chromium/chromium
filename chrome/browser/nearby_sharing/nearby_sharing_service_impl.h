@@ -311,10 +311,6 @@ class NearbySharingServiceImpl
       NearbyConnectionsManager::ConnectionsStatus status);
   void SetInHighVisibility(bool in_high_visibility);
 
-  void SetDefaultDeviceNameIfEmpty();
-  void OnDefaultDeviceNameFetched(
-      const base::Optional<std::string>& default_device_name);
-
   Profile* profile_;
   std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager_;
   NearbyProcessManager* process_manager_;

@@ -32,14 +32,16 @@ class NearbyShareLocalDeviceDataManagerImpl
    public:
     static std::unique_ptr<NearbyShareLocalDeviceDataManager> Create(
         PrefService* pref_service,
-        NearbyShareClientFactory* http_client_factory);
+        NearbyShareClientFactory* http_client_factory,
+        const std::string& default_device_name);
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:
     virtual ~Factory();
     virtual std::unique_ptr<NearbyShareLocalDeviceDataManager> CreateInstance(
         PrefService* pref_service,
-        NearbyShareClientFactory* http_client_factory) = 0;
+        NearbyShareClientFactory* http_client_factory,
+        const std::string& default_device_name) = 0;
 
    private:
     static Factory* test_factory_;
@@ -50,11 +52,12 @@ class NearbyShareLocalDeviceDataManagerImpl
  private:
   NearbyShareLocalDeviceDataManagerImpl(
       PrefService* pref_service,
-      NearbyShareClientFactory* http_client_factory);
+      NearbyShareClientFactory* http_client_factory,
+      const std::string& default_device_name);
 
   // NearbyShareLocalDeviceDataManager:
   std::string GetId() override;
-  base::Optional<std::string> GetDeviceName() const override;
+  std::string GetDeviceName() const override;
   base::Optional<std::string> GetFullName() const override;
   base::Optional<std::string> GetIconUrl() const override;
   void SetDeviceName(const std::string& name) override;
@@ -66,10 +69,6 @@ class NearbyShareLocalDeviceDataManagerImpl
       UploadCompleteCallback callback) override;
   void OnStart() override;
   void OnStop() override;
-
-  base::Optional<std::string> GetStringPref(const std::string& pref_name) const;
-  void SetStringPref(const std::string& pref_name,
-                     const base::Optional<std::string>& value);
 
   void OnDownloadDeviceDataRequested();
   void OnDownloadDeviceDataFinished(

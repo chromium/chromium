@@ -16,6 +16,12 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
+const char kDefaultDeviceName[] = "Josh's Chromebook";
+
+}  // namespace
+
 using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::Return;
@@ -40,6 +46,7 @@ class NearbyShareDelegateImplTest : public ::testing::Test {
  public:
   NearbyShareDelegateImplTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        test_local_device_data_(kDefaultDeviceName),
         settings_(&test_pref_service_, &test_local_device_data_),
         delegate_(&controller_) {
     RegisterNearbySharingPrefs(test_pref_service_.registry());

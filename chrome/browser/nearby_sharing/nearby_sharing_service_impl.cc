@@ -229,7 +229,8 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
       local_device_data_manager_(
           NearbyShareLocalDeviceDataManagerImpl::Factory::Create(
               prefs,
-              http_client_factory_.get())),
+              http_client_factory_.get(),
+              GetNearbyShareDefaultDeviceName(profile_))),
       contact_manager_(NearbyShareContactManagerImpl::Factory::Create(
           prefs,
           http_client_factory_.get(),
@@ -270,8 +271,6 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
     contact_manager_->Start();
     certificate_manager_->Start();
   }
-
-  SetDefaultDeviceNameIfEmpty();
 }
 
 NearbySharingServiceImpl::~NearbySharingServiceImpl() {
@@ -822,8 +821,6 @@ void NearbySharingServiceImpl::OnDeviceNameChanged(
   NS_LOG(VERBOSE) << __func__ << ": Nearby sharing device name changed to "
                   << device_name;
   // TODO(vecore): handle device name change
-
-  SetDefaultDeviceNameIfEmpty();
 }
 
 void NearbySharingServiceImpl::OnDataUsageChanged(DataUsage data_usage) {
@@ -3233,29 +3230,4 @@ void NearbySharingServiceImpl::SetInHighVisibility(
   for (auto& observer : observers_) {
     observer.OnHighVisibilityChanged(in_high_visibility);
   }
-}
-
-void NearbySharingServiceImpl::SetDefaultDeviceNameIfEmpty() {
-  if (local_device_data_manager_->GetDeviceName() || !profile_)
-    return;
-
-  GetNearbyShareDefaultDeviceName(
-      profile_,
-      base::BindOnce(&NearbySharingServiceImpl::OnDefaultDeviceNameFetched,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void NearbySharingServiceImpl::OnDefaultDeviceNameFetched(
-    const base::Optional<std::string>& default_device_name) {
-  // Check that the device name wasn't set while the default device name was
-  // being generated.
-  if (local_device_data_manager_->GetDeviceName())
-    return;
-
-  if (!default_device_name) {
-    NS_LOG(ERROR) << __func__ << ": Could not generate default device name.";
-    return;
-  }
-
-  local_device_data_manager_->SetDeviceName(*default_device_name);
 }

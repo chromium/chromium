@@ -45,7 +45,7 @@ bool NearbyShareSettings::GetEnabled() const {
 }
 
 std::string NearbyShareSettings::GetDeviceName() const {
-  return local_device_data_manager_->GetDeviceName().value_or(std::string());
+  return local_device_data_manager_->GetDeviceName();
 }
 
 DataUsage NearbyShareSettings::GetDataUsage() const {

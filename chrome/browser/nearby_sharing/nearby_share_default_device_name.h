@@ -7,14 +7,11 @@
 
 #include <string>
 
-#include "base/callback.h"
-#include "base/optional.h"
-
 class Profile;
 
-// Creates a default device name of the form <profile name>'s <device model>.
-void GetNearbyShareDefaultDeviceName(
-    Profile* profile,
-    base::OnceCallback<void(const base::Optional<std::string>&)> callback);
+// Creates a default device name of the form "<given name>'s <device type>." For
+// example, "Josh's Chromebook." If a given name cannot be found, returns just
+// the device type.
+std::string GetNearbyShareDefaultDeviceName(Profile* profile);
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_DEFAULT_DEVICE_NAME_H_

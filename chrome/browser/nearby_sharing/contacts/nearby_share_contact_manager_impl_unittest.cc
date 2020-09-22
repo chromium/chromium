@@ -33,6 +33,7 @@ namespace {
 const char kTestContactIdPrefix[] = "id_";
 const char kTestContactEmailPrefix[] = "email_";
 const char kTestContactPhonePrefix[] = "phone_";
+const char kTestDefaultDeviceName[] = "Josh's Chromebook";
 
 // From nearby_share_contact_manager_impl.cc.
 constexpr base::TimeDelta kContactDownloadPeriod =
@@ -141,7 +142,9 @@ class NearbyShareContactManagerImplTest
     bool did_contacts_change_since_last_upload;
   };
 
-  NearbyShareContactManagerImplTest() = default;
+  NearbyShareContactManagerImplTest()
+      : local_device_data_manager_(kTestDefaultDeviceName) {}
+
   ~NearbyShareContactManagerImplTest() override = default;
 
   void SetUp() override {

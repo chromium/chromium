@@ -35,6 +35,7 @@ const char kPageTokenPrefix[] = "page_token_";
 const char kSecretIdPrefix[] = "secret_id_";
 const char kDeviceIdPrefix[] = "users/me/devices/";
 const char kDeviceId[] = "123456789A";
+const char kDefaultDeviceName[] = "Josh's Chromebook";
 
 const std::vector<std::string> kPublicCertificateIds = {"id1", "id2", "id3"};
 
@@ -55,7 +56,8 @@ class NearbyShareCertificateManagerImplTest
     FastForward(t0 - base::Time::UnixEpoch());
 
     local_device_data_manager_ =
-        std::make_unique<FakeNearbyShareLocalDeviceDataManager>();
+        std::make_unique<FakeNearbyShareLocalDeviceDataManager>(
+            kDefaultDeviceName);
     local_device_data_manager_->SetId(kDeviceId);
 
     contact_manager_ = std::make_unique<FakeNearbyShareContactManager>();

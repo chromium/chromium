@@ -45,7 +45,8 @@ class FakeNearbyShareLocalDeviceDataManager
    protected:
     std::unique_ptr<NearbyShareLocalDeviceDataManager> CreateInstance(
         PrefService* pref_service,
-        NearbyShareClientFactory* http_client_factory) override;
+        NearbyShareClientFactory* http_client_factory,
+        const std::string& default_device_name) override;
 
    private:
     std::vector<FakeNearbyShareLocalDeviceDataManager*> instances_;
@@ -74,12 +75,13 @@ class FakeNearbyShareLocalDeviceDataManager
     UploadCompleteCallback callback;
   };
 
-  FakeNearbyShareLocalDeviceDataManager();
+  explicit FakeNearbyShareLocalDeviceDataManager(
+      const std::string& default_device_name);
   ~FakeNearbyShareLocalDeviceDataManager() override;
 
   // NearbyShareLocalDeviceDataManager:
   std::string GetId() override;
-  base::Optional<std::string> GetDeviceName() const override;
+  std::string GetDeviceName() const override;
   base::Optional<std::string> GetFullName() const override;
   base::Optional<std::string> GetIconUrl() const override;
   void SetDeviceName(const std::string& name) override;
@@ -116,7 +118,7 @@ class FakeNearbyShareLocalDeviceDataManager
   void OnStop() override;
 
   std::string id_;
-  base::Optional<std::string> device_name_;
+  std::string device_name_;
   base::Optional<std::string> full_name_;
   base::Optional<std::string> icon_url_;
   size_t num_download_device_data_calls_ = 0;
