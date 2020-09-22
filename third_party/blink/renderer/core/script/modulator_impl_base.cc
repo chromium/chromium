@@ -282,21 +282,10 @@ ScriptValue ModulatorImplBase::InstantiateModule(
   return ModuleRecord::Instantiate(script_state_, module_record, source_url);
 }
 
-Vector<Modulator::ModuleRequest>
-ModulatorImplBase::ModuleRequestsFromModuleRecord(
+Vector<ModuleRequest> ModulatorImplBase::ModuleRequestsFromModuleRecord(
     v8::Local<v8::Module> module_record) {
   ScriptState::Scope scope(script_state_);
-  Vector<String> specifiers =
-      ModuleRecord::ModuleRequests(script_state_, module_record);
-  Vector<TextPosition> positions =
-      ModuleRecord::ModuleRequestPositions(script_state_, module_record);
-  DCHECK_EQ(specifiers.size(), positions.size());
-  Vector<ModuleRequest> requests;
-  requests.ReserveInitialCapacity(specifiers.size());
-  for (wtf_size_t i = 0; i < specifiers.size(); ++i) {
-    requests.emplace_back(specifiers[i], positions[i]);
-  }
-  return requests;
+  return ModuleRecord::ModuleRequests(script_state_, module_record);
 }
 
 void ModulatorImplBase::ProduceCacheModuleTreeTopLevel(
@@ -325,7 +314,7 @@ void ModulatorImplBase::ProduceCacheModuleTree(
 
   module_script->ProduceCache();
 
-  Vector<Modulator::ModuleRequest> child_specifiers =
+  Vector<ModuleRequest> child_specifiers =
       ModuleRequestsFromModuleRecord(record);
 
   for (const auto& module_request : child_specifiers) {

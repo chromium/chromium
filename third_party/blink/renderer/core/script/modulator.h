@@ -10,6 +10,7 @@
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
+#include "third_party/blink/renderer/bindings/core/v8/module_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -190,12 +191,6 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
 
   virtual ScriptValue InstantiateModule(v8::Local<v8::Module>, const KURL&) = 0;
 
-  struct ModuleRequest {
-    String specifier;
-    TextPosition position;
-    ModuleRequest(const String& specifier, const TextPosition& position)
-        : specifier(specifier), position(position) {}
-  };
   virtual Vector<ModuleRequest> ModuleRequestsFromModuleRecord(
       v8::Local<v8::Module>) = 0;
 

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_MODULE_RECORD_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_MODULE_RECORD_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/module_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -126,11 +127,8 @@ class CORE_EXPORT ModuleRecord final {
 
   static void ReportException(ScriptState*, v8::Local<v8::Value> exception);
 
-  static Vector<String> ModuleRequests(ScriptState*,
-                                       v8::Local<v8::Module> record);
-  static Vector<TextPosition> ModuleRequestPositions(
-      ScriptState*,
-      v8::Local<v8::Module> record);
+  static Vector<ModuleRequest> ModuleRequests(ScriptState*,
+                                              v8::Local<v8::Module> record);
 
   static v8::Local<v8::Value> V8Namespace(v8::Local<v8::Module> record);
 

@@ -206,38 +206,25 @@ void ModuleRecord::ReportException(ScriptState* script_state,
   V8ScriptRunner::ReportException(script_state->GetIsolate(), exception);
 }
 
-Vector<String> ModuleRecord::ModuleRequests(ScriptState* script_state,
-                                            v8::Local<v8::Module> record) {
-  if (record.IsEmpty())
-    return Vector<String>();
-
-  Vector<String> ret;
-
-  int length = record->GetModuleRequestsLength();
-  ret.ReserveInitialCapacity(length);
-  for (int i = 0; i < length; ++i) {
-    v8::Local<v8::String> v8_name = record->GetModuleRequest(i);
-    ret.push_back(ToCoreString(v8_name));
-  }
-  return ret;
-}
-
-Vector<TextPosition> ModuleRecord::ModuleRequestPositions(
+Vector<ModuleRequest> ModuleRecord::ModuleRequests(
     ScriptState* script_state,
     v8::Local<v8::Module> record) {
   if (record.IsEmpty())
-    return Vector<TextPosition>();
+    return Vector<ModuleRequest>();
 
-  Vector<TextPosition> ret;
-
+  Vector<ModuleRequest> requests;
   int length = record->GetModuleRequestsLength();
-  ret.ReserveInitialCapacity(length);
+  requests.ReserveInitialCapacity(length);
+
   for (int i = 0; i < length; ++i) {
+    v8::Local<v8::String> v8_name = record->GetModuleRequest(i);
     v8::Location v8_loc = record->GetModuleRequestLocation(i);
-    ret.emplace_back(OrdinalNumber::FromZeroBasedInt(v8_loc.GetLineNumber()),
-                     OrdinalNumber::FromZeroBasedInt(v8_loc.GetColumnNumber()));
+    TextPosition position(
+        OrdinalNumber::FromZeroBasedInt(v8_loc.GetLineNumber()),
+        OrdinalNumber::FromZeroBasedInt(v8_loc.GetColumnNumber()));
+    requests.emplace_back(ToCoreString(v8_name), position);
   }
-  return ret;
+  return requests;
 }
 
 v8::Local<v8::Value> ModuleRecord::V8Namespace(v8::Local<v8::Module> record) {

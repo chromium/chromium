@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/loader/modulescript/module_tree_linker.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
+#include "third_party/blink/renderer/bindings/core/v8/module_request.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_tree_linker_registry.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
@@ -379,7 +380,7 @@ void ModuleTreeLinker::FetchDescendants(const ModuleScript* module_script) {
 
   // <spec step="5">For each string requested of
   // record.[[RequestedModules]],</spec>
-  Vector<Modulator::ModuleRequest> module_requests =
+  Vector<ModuleRequest> module_requests =
       modulator_->ModuleRequestsFromModuleRecord(record);
 
   for (const auto& module_request : module_requests) {
@@ -572,7 +573,7 @@ ScriptValue ModuleTreeLinker::FindFirstParseError(
 
   // <spec step="5.1">Let childSpecifiers be the value of moduleScript's
   // record's [[RequestedModules]] internal slot.</spec>
-  Vector<Modulator::ModuleRequest> child_specifiers =
+  Vector<ModuleRequest> child_specifiers =
       modulator_->ModuleRequestsFromModuleRecord(record);
 
   for (const auto& module_request : child_specifiers) {

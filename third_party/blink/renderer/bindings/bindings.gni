@@ -53,6 +53,7 @@ bindings_core_v8_files =
                     "core/v8/maplike.h",
                     "core/v8/module_record.cc",
                     "core/v8/module_record.h",
+                    "core/v8/module_request.h",
                     "core/v8/native_value_traits.h",
                     "core/v8/native_value_traits_impl.cc",
                     "core/v8/native_value_traits_impl.h",

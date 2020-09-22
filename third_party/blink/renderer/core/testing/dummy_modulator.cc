@@ -163,7 +163,7 @@ ScriptValue DummyModulator::InstantiateModule(v8::Local<v8::Module>,
   return ScriptValue();
 }
 
-Vector<Modulator::ModuleRequest> DummyModulator::ModuleRequestsFromModuleRecord(
+Vector<ModuleRequest> DummyModulator::ModuleRequestsFromModuleRecord(
     v8::Local<v8::Module>) {
   NOTREACHED();
   return Vector<ModuleRequest>();

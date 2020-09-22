@@ -7,6 +7,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/boxed_v8_module.h"
+#include "third_party/blink/renderer/bindings/core/v8/module_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -122,7 +123,9 @@ TEST(ModuleRecordTest, moduleRequests) {
   ASSERT_FALSE(module.IsEmpty());
 
   auto requests = ModuleRecord::ModuleRequests(scope.GetScriptState(), module);
-  EXPECT_THAT(requests, testing::ContainerEq<Vector<String>>({"a", "b"}));
+  EXPECT_EQ(2u, requests.size());
+  EXPECT_EQ("a", requests[0].specifier);
+  EXPECT_EQ("b", requests[1].specifier);
 }
 
 TEST(ModuleRecordTest, instantiateNoDeps) {
