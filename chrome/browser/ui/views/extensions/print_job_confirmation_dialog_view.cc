@@ -94,6 +94,7 @@ PrintJobConfirmationDialogView::PrintJobConfirmationDialogView(
                                            : views::BubbleBorder::NONE),
       callback_(std::move(callback)),
       dialog_is_bubble_(anchor_view != nullptr) {
+  SetModalType(dialog_is_bubble_ ? ui::MODAL_TYPE_NONE : ui::MODAL_TYPE_WINDOW);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(
                      IDS_EXTENSIONS_PRINTING_API_PRINT_REQUEST_ALLOW));
@@ -106,8 +107,8 @@ PrintJobConfirmationDialogView::PrintJobConfirmationDialogView(
       extension_icon, skia::ImageOperations::ResizeMethod::RESIZE_GOOD,
       gfx::Size(extension_misc::EXTENSION_ICON_SMALL,
                 extension_misc::EXTENSION_ICON_SMALL)));
-  SetTitle(l10n_util::GetStringFUTF16(
-      IDS_EXTENSIONS_PRINTING_API_PRINT_REQUEST_BUBBLE_TITLE, extension_name));
+  SetTitle(l10n_util::GetStringUTF16(
+      IDS_EXTENSIONS_PRINTING_API_PRINT_REQUEST_BUBBLE_TITLE));
 
   auto run_callback = [](PrintJobConfirmationDialogView* dialog, bool accept) {
     std::move(dialog->callback_).Run(accept);
@@ -151,10 +152,6 @@ gfx::Size PrintJobConfirmationDialogView::CalculatePreferredSize() const {
                             : DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
       margins().width();
   return gfx::Size(width, GetHeightForWidth(width));
-}
-
-ui::ModalType PrintJobConfirmationDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
 }
 
 namespace chrome {

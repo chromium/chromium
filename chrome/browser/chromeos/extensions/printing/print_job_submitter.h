@@ -79,6 +79,8 @@ class PrintJobSubmitter {
 
   static base::AutoReset<bool> DisablePdfFlatteningForTesting();
 
+  static base::AutoReset<bool> SkipConfirmationDialogForTesting();
+
  private:
   bool CheckContentType() const;
 

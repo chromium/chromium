@@ -57,9 +57,15 @@ constexpr int kIconSize = 64;
 // handle requests.
 bool g_disable_pdf_flattening_for_testing = false;
 
-// Returns true if |extension_id| is in the allowlist.
+// There is no easy way to interact with UI dialogs, so we want to have an
+// ability to skip this stage for browser tests.
+bool g_skip_confirmation_dialog_for_testing = false;
+
+// Returns true if print job request dialog should be shown.
 bool IsUserConfirmationRequired(content::BrowserContext* browser_context,
                                 const std::string& extension_id) {
+  if (g_skip_confirmation_dialog_for_testing)
+    return false;
   const base::ListValue* list =
       Profile::FromBrowserContext(browser_context)
           ->GetPrefs()
@@ -282,6 +288,11 @@ void PrintJobSubmitter::FireErrorCallback(const std::string& error) {
 // static
 base::AutoReset<bool> PrintJobSubmitter::DisablePdfFlatteningForTesting() {
   return base::AutoReset<bool>(&g_disable_pdf_flattening_for_testing, true);
+}
+
+// static
+base::AutoReset<bool> PrintJobSubmitter::SkipConfirmationDialogForTesting() {
+  return base::AutoReset<bool>(&g_skip_confirmation_dialog_for_testing, true);
 }
 
 }  // namespace extensions

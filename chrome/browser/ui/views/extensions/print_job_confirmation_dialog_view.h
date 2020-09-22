@@ -45,9 +45,6 @@ class PrintJobConfirmationDialogView : public views::BubbleDialogDelegateView {
   // views::DialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
 
-  // views::WidgetDelegate:
-  ui::ModalType GetModalType() const override;
-
   // The name of the extension we are showing the dialog for.
   const base::string16 extension_name_;
 

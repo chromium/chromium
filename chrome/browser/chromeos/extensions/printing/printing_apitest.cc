@@ -157,6 +157,9 @@ IN_PROC_BROWSER_TEST_F(PrintingApiTest, SubmitJob) {
       ->SetPrintJobControllerForTesting(
           std::make_unique<FakePrintJobController>(GetPrintJobManager(),
                                                    GetPrintersManager()));
+  base::AutoReset<bool> skip_confirmation_dialog_reset(
+      PrintJobSubmitter::SkipConfirmationDialogForTesting());
+
   ASSERT_TRUE(RunExtensionSubtest("printing", "submit_job.html"));
 }
 
@@ -171,6 +174,8 @@ IN_PROC_BROWSER_TEST_F(PrintingApiTest, CancelJob) {
       ->SetPrintJobControllerForTesting(
           std::make_unique<FakePrintJobController>(GetPrintJobManager(),
                                                    GetPrintersManager()));
+  base::AutoReset<bool> skip_confirmation_dialog_reset(
+      PrintJobSubmitter::SkipConfirmationDialogForTesting());
 
   ASSERT_TRUE(RunExtensionSubtest("printing", "cancel_job.html"));
 }
