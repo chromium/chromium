@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/gestures/layout_switcher_provider.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
 
 // Responsible for handling vertical pan gestures to reveal/hide a view behind
@@ -14,6 +15,12 @@
 // TODO(crbug.com/1123512): Add support for going straight from a Hidden state
 // to a revealed state (and vice-versa) if the gesture's translation and
 // velocity are enough to trigger such transition.
+// TODO(crbug.com/1130037): When the currentState is Peeked and a transition
+// starts, if the user switches direction (from Revealed to Hidden and from
+// Hidden to Revealed again), the layout switcher's collection view starts a new
+// transition when one already exists: `'NSInternalInconsistencyException',
+// reason: 'the collection is already in the middle of an interactive
+// transition'`
 @interface ViewRevealingVerticalPanHandler : NSObject
 
 // |peekedHeight| is the height of the view when peeked (partially revealed).
@@ -41,6 +48,9 @@
 @property(nonatomic, assign, readonly) CGFloat revealedHeight;
 // Height of the base view. It changes when the user rotates the screen.
 @property(nonatomic, assign) CGFloat baseViewHeight;
+// The provider for the object that switches the layout of the revealed view
+// from horizontal (Peeked state) to full (Revealed state).
+@property(nonatomic, weak) id<LayoutSwitcherProvider> layoutSwitcherProvider;
 
 @end
 

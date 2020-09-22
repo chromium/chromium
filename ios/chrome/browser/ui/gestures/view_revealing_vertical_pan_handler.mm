@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 
 #include "base/numerics/ranges.h"
+#import "ios/chrome/browser/ui/gestures/layout_switcher.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -43,6 +44,8 @@ const CGFloat kAnimationDuration = 0.25f;
 @property(nonatomic, assign) CGFloat progressWhenInterrupted;
 // Set of UI elements which are animated during view reveal transitions.
 @property(nonatomic, strong) NSHashTable<id<ViewRevealingAnimatee>>* animatees;
+// Whether the revealed view is undergoing a transition of layout.
+@property(nonatomic, assign) BOOL layoutInTransition;
 @end
 
 @implementation ViewRevealingVerticalPanHandler
@@ -58,6 +61,7 @@ const CGFloat kAnimationDuration = 0.25f;
     _remainingHeight = _revealedHeight - peekedHeight;
     _currentState = ViewRevealState::Hidden;
     _animatees = [NSHashTable weakObjectsHashTable];
+    _layoutInTransition = NO;
   }
   return self;
 }
@@ -133,6 +137,23 @@ const CGFloat kAnimationDuration = 0.25f;
     [weakSelf didAnimateViewReveal:weakSelf.currentState];
   }];
   [self.animator pauseAnimation];
+  [self createLayoutTransitionIfNeeded];
+}
+
+// Creates a transition layout in the revealed view if going from Peeked to
+// Revealed state or vice-versa.
+- (void)createLayoutTransitionIfNeeded {
+  if (self.currentState == ViewRevealState::Peeked &&
+      self.nextState == ViewRevealState::Revealed) {
+    [self.layoutSwitcherProvider.layoutSwitcher
+        willTransitionToLayout:LayoutSwitcherState::Full];
+    self.layoutInTransition = YES;
+  } else if (self.currentState == ViewRevealState::Revealed &&
+             self.nextState == ViewRevealState::Peeked) {
+    [self.layoutSwitcherProvider.layoutSwitcher
+        willTransitionToLayout:LayoutSwitcherState::Horizontal];
+    self.layoutInTransition = YES;
+  }
 }
 
 // Initiates a transition if there isn't already one running
@@ -229,6 +250,10 @@ const CGFloat kAnimationDuration = 0.25f;
   progress += self.progressWhenInterrupted;
   progress = base::ClampToRange<CGFloat>(progress, 0, 1);
   self.animator.fractionComplete = progress;
+  if (self.layoutInTransition) {
+    [self.layoutSwitcherProvider.layoutSwitcher
+        didUpdateTransitionLayoutProgress:progress];
+  }
 }
 
 // Handles the start of the pan gesture.
@@ -267,6 +292,11 @@ const CGFloat kAnimationDuration = 0.25f;
                                                   Velocity:velocity]);
 
   [self.animator continueAnimationWithTimingParameters:nil durationFactor:1];
+  if (self.layoutInTransition) {
+    [self.layoutSwitcherProvider.layoutSwitcher
+        didTransitionToLayoutSuccessfully:!self.animator.reversed];
+    self.layoutInTransition = NO;
+  }
 }
 
 @end

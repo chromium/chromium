@@ -21,8 +21,10 @@
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_image_data_source.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_layout.h"
+#import "ios/chrome/browser/ui/tab_grid/grid/horizontal_layout.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/tab_switcher_layout.h"
 #import "ios/chrome/browser/ui/tab_grid/transitions/grid_transition_layout.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -74,6 +76,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 @property(nonatomic, strong) UIViewPropertyAnimator* emptyStateAnimator;
 // The default layout for the tab switcher.
 @property(nonatomic, strong) TabSwitcherLayout* defaultLayout;
+// The layout for the tab grid.
+@property(nonatomic, strong) GridLayout* gridLayout;
+// The layout for the thumb strip.
+@property(nonatomic, strong) HorizontalLayout* horizontalLayout;
 // The layout used while the grid is being reordered.
 @property(nonatomic, strong) UICollectionViewLayout* reorderingLayout;
 // YES if, when reordering is enabled, the order of the cells has changed.
@@ -86,6 +92,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     NSHashTable<UICollectionViewCell*>* pointerInteractionCells API_AVAILABLE(
         ios(13.4));
 #endif  // defined(__IPHONE_13_4)
+// The transition layout either from grid to horizontal layout or from
+// horizontal to grid layout.
+@property(nonatomic, strong)
+    UICollectionViewTransitionLayout* gridHorizontalTransitionLayout;
 @end
 
 @implementation GridViewController
@@ -101,7 +111,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 #pragma mark - UIViewController
 
 - (void)loadView {
-  self.defaultLayout = [[GridLayout alloc] init];
+  self.horizontalLayout = [[HorizontalLayout alloc] init];
+  self.gridLayout = [[GridLayout alloc] init];
+  if (IsThumbStripEnabled()) {
+    self.defaultLayout = self.horizontalLayout;
+  } else {
+    self.defaultLayout = self.gridLayout;
+  }
+
   UICollectionView* collectionView =
       [[UICollectionView alloc] initWithFrame:CGRectZero
                          collectionViewLayout:self.defaultLayout];
@@ -642,6 +659,42 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self performModelUpdates:modelUpdates
                 collectionViewUpdates:collectionViewUpdates
       collectionViewUpdatesCompletion:completion];
+}
+
+#pragma mark - LayoutSwitcher
+
+- (void)willTransitionToLayout:(LayoutSwitcherState)nextState {
+  auto completionBlock = ^(BOOL completed, BOOL finished) {
+    self.collectionView.scrollEnabled = YES;
+  };
+  switch (nextState) {
+    case LayoutSwitcherState::Horizontal:
+      self.gridHorizontalTransitionLayout = [self.collectionView
+          startInteractiveTransitionToCollectionViewLayout:self.horizontalLayout
+                                                completion:completionBlock];
+      break;
+    case LayoutSwitcherState::Full:
+      self.gridHorizontalTransitionLayout = [self.collectionView
+          startInteractiveTransitionToCollectionViewLayout:self.gridLayout
+                                                completion:completionBlock];
+      break;
+  }
+
+  // Stops collectionView scrolling when the animation starts.
+  [self.collectionView setContentOffset:self.collectionView.contentOffset
+                               animated:NO];
+}
+
+- (void)didUpdateTransitionLayoutProgress:(CGFloat)progress {
+  self.gridHorizontalTransitionLayout.transitionProgress = progress;
+}
+
+- (void)didTransitionToLayoutSuccessfully:(BOOL)success {
+  if (success) {
+    [self.collectionView finishInteractiveTransition];
+  } else {
+    [self.collectionView cancelInteractiveTransition];
+  }
 }
 
 #pragma mark - Private properties

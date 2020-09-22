@@ -6,6 +6,8 @@ import("//build/config/chrome_build.gni")
 
 source_set("gestures") {
   sources = [
+    "layout_switcher.h",
+    "layout_switcher_provider.h",
     "view_revealing_animatee.h",
     "view_revealing_vertical_pan_handler.h",
     "view_revealing_vertical_pan_handler.mm",

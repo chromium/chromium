@@ -428,6 +428,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   _activePage = activePage;
 }
 
+#pragma mark - LayoutSwitcherProvider
+
+- (id<LayoutSwitcher>)layoutSwitcher {
+  return [self gridViewControllerForPage:self.activePage];
+}
+
 #pragma mark - Private
 
 // Sets the proper insets for the Remote Tabs ViewController to accomodate for

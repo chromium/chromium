@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/history/history_coordinator.h"
 #import "ios/chrome/browser/ui/history/public/history_presentation_delegate.h"
 #import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
@@ -348,6 +349,8 @@
         initWithBaseViewController:baseViewController
                            browser:self.browser];
     [self.thumbStripCoordinator start];
+    self.thumbStripCoordinator.panHandler.layoutSwitcherProvider =
+        baseViewController;
 
     [self setUpThumbStripAttachers];
   }
