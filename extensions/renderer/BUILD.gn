@@ -98,6 +98,8 @@ source_set("renderer") {
     "display_source_custom_bindings.h",
     "dom_activity_logger.cc",
     "dom_activity_logger.h",
+    "dom_hooks_delegate.cc",
+    "dom_hooks_delegate.h",
     "extension_frame_helper.cc",
     "extension_frame_helper.h",
     "extension_injection_host.cc",

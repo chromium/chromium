@@ -1924,6 +1924,7 @@ if (!is_android) {
         "../browser/extensions/extension_context_menu_browsertest.cc",
         "../browser/extensions/extension_csp_bypass_browsertest.cc",
         "../browser/extensions/extension_disabled_ui_browsertest.cc",
+        "../browser/extensions/extension_dom_apitest.cc",
         "../browser/extensions/extension_dom_clipboard_apitest.cc",
         "../browser/extensions/extension_fileapi_apitest.cc",
         "../browser/extensions/extension_function_registration_test.cc",
