@@ -30,11 +30,12 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button_controller.h"
 
-MediaToolbarButtonView::MediaToolbarButtonView(const Browser* browser)
+MediaToolbarButtonView::MediaToolbarButtonView(BrowserView* browser_view)
     : ToolbarButton(this),
-      service_(
-          MediaNotificationServiceFactory::GetForProfile(browser->profile())),
-      browser_(browser) {
+      browser_(browser_view->browser()),
+      service_(MediaNotificationServiceFactory::GetForProfile(
+          browser_view->browser()->profile())),
+      feature_promo_controller_(browser_view->feature_promo_controller()) {
   GlobalMediaControlsInProductHelp* global_media_controls_in_product_help =
       GlobalMediaControlsInProductHelpFactory::GetForProfile(
           browser_->profile());
@@ -162,14 +163,10 @@ void MediaToolbarButtonView::OnPromoEnded() {
 }
 
 void MediaToolbarButtonView::EnsurePromoController() {
-  if (!promo_controller_) {
-    promo_controller_ = std::make_unique<GlobalMediaControlsPromoController>(
-        this, browser_->profile());
-    AddObserver(promo_controller_.get());
-  }
+  if (promo_controller_)
+    return;
 
-  if (!feature_promo_controller_) {
-    feature_promo_controller_ = BrowserView::GetBrowserViewForBrowser(browser_)
-                                    ->feature_promo_controller();
-  }
+  promo_controller_ = std::make_unique<GlobalMediaControlsPromoController>(
+      this, browser_->profile());
+  AddObserver(promo_controller_.get());
 }

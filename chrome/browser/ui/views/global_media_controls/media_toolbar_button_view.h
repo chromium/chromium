@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 
 class Browser;
+class BrowserView;
 class FeaturePromoControllerViews;
 class GlobalMediaControlsPromoController;
 class MediaNotificationService;
@@ -23,7 +24,7 @@ class MediaToolbarButtonView : public ToolbarButton,
                                public MediaToolbarButtonControllerDelegate,
                                public views::ButtonListener {
  public:
-  explicit MediaToolbarButtonView(const Browser* browser);
+  explicit MediaToolbarButtonView(BrowserView* browser_view);
   ~MediaToolbarButtonView() override;
 
   void AddObserver(MediaToolbarButtonObserver* observer);
@@ -65,18 +66,20 @@ class MediaToolbarButtonView : public ToolbarButton,
   void InformIPHOfButtonEnabled();
   void InformIPHOfButtonDisabledorHidden();
 
-  // Shows the in-product help bubble.
-  std::unique_ptr<GlobalMediaControlsPromoController> promo_controller_;
+  const Browser* const browser_;
+
+  MediaNotificationService* const service_;
 
   // The window's IPH promo controller.
-  FeaturePromoControllerViews* feature_promo_controller_ = nullptr;
+  FeaturePromoControllerViews* const feature_promo_controller_;
+
+  // Shows the in-product help bubble.
+  std::unique_ptr<GlobalMediaControlsPromoController> promo_controller_;
 
   // True if the in-product help bubble is currently showing.
   bool is_promo_showing_ = false;
 
-  MediaNotificationService* const service_;
   std::unique_ptr<MediaToolbarButtonController> controller_;
-  const Browser* const browser_;
 
   base::ObserverList<MediaToolbarButtonObserver> observers_;
 

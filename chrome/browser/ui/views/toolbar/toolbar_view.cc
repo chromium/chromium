@@ -228,7 +228,7 @@ void ToolbarView::Init() {
 
   std::unique_ptr<MediaToolbarButtonView> media_button;
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControls)) {
-    media_button = std::make_unique<MediaToolbarButtonView>(browser_);
+    media_button = std::make_unique<MediaToolbarButtonView>(browser_view_);
   }
 
   std::unique_ptr<ToolbarAccountIconContainerView>
