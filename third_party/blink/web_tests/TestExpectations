@@ -1264,6 +1264,10 @@ crbug.com/6606 external/wpt/mathml/relations/html5-tree/href-click-1.html [ Fail
 crbug.com/6606 external/wpt/mathml/relations/html5-tree/href-click-2.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/relations/html5-tree/href-click-3.html [ Failure ]
 
+# These tests fail because we don't parse math display values according to the spec.
+crbug.com/1127222 external/wpt/css/css-display/display-math-on-pseudo-elements-001.html [ Failure ]
+crbug.com/1127222 external/wpt/css/css-display/display-math-on-pseudo-elements-002.html [ Failure ]
+
 # This test fails on windows. It should really be made more reliable and take
 # into account fallback parameters.
 crbug.com/6606 [ Win ] external/wpt/mathml/presentation-markup/fractions/frac-1.html [ Failure ]

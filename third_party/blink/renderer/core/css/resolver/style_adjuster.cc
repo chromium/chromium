@@ -665,7 +665,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
     // math display values on non-MathML elements compute to flow display
     // values.
-    if (element && !element->IsMathMLElement() &&
+    if ((!element || !element->IsMathMLElement()) &&
         (style.Display() == EDisplay::kMath ||
          style.Display() == EDisplay::kInlineMath)) {
       style.SetDisplay(style.Display() == EDisplay::kMath ? EDisplay::kBlock
