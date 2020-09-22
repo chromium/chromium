@@ -39,10 +39,28 @@ interface AshChromeService {
 };
 
 // LacrosInitParams is a set of parameters for initialization of lacros-chrome,
-// which is passed from ash-chrome.
+// which is passed from ash-chrome to lacros-chrome. Since ash-chrome and
+// lacros-chrome may have different versions, lacros-chrome must handle this
+// struct carefully.
+//
+// If ash-chrome is older than lacros-chrome, then some fields may not be
+// present in the serialized IPC message. This manifests as the newer (missing)
+// fields taking on default values in lacros-chrome. This means
+// that the default value for each field must always be interpreted to mean:
+// this field was not sent because ash-chrome was too old. If the default value
+// needs to have a different meaning, then we must also add a bool field
+// describing the validity of this field. Mojo currently does not support
+// optional primitives.
+//
+// If ash-chrome is newer than lacros-chrome, then some fields may not be
+// processed by lacros-chrome.
 [Stable]
 struct LacrosInitParams {
-  // This is placeholder, so now it is empty.
+  // This is ash-chrome's version of the AshChromeService interface. This is
+  // used by lacros-chrome to determine which interface methods are safe to
+  // call.
+  [MinVersion=1]
+  uint32 ash_chrome_service_version@0;
 };
 
 // LacrosChromeService defines the APIs that live in lacros-chrome and

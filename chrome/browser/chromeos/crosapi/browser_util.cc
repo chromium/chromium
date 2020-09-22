@@ -120,7 +120,10 @@ SendMojoInvitationToLacrosChrome(
           invitation.AttachMessagePipe(0 /* token */), /*version=*/0));
   lacros_chrome_service.set_disconnect_handler(
       std::move(mojo_disconnected_callback));
-  lacros_chrome_service->Init(crosapi::mojom::LacrosInitParams::New());
+  auto params = crosapi::mojom::LacrosInitParams::New();
+  params->ash_chrome_service_version =
+      crosapi::mojom::AshChromeService::Version_;
+  lacros_chrome_service->Init(std::move(params));
   lacros_chrome_service->RequestAshChromeServiceReceiver(
       std::move(ash_chrome_service_callback));
   mojo::OutgoingInvitation::Send(std::move(invitation),
