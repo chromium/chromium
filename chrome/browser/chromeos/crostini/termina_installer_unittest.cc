@@ -171,7 +171,9 @@ TEST_F(TerminaInstallTest, UninstallWithNothingInstalled) {
   run_loop_.Run();
 }
 
-TEST_F(TerminaInstallTest, UninstallWithNothingInstalledListError) {
+// TODO(crbug/1121463): Disabled since we're ignoring DLC errors until this bug
+// is fixed.
+TEST_F(TerminaInstallTest, DISABLED_UninstallWithNothingInstalledListError) {
   fake_dlc_client_->set_get_existing_dlcs_error("An error");
 
   termina_installer_.Uninstall(
@@ -221,7 +223,9 @@ TEST_F(TerminaInstallTest, UninstallWithDlcInstalled) {
   CheckDlcNotInstalled();
 }
 
-TEST_F(TerminaInstallTest, UninstallWithDlcInstalledUninstallError) {
+// TODO(crbug/1121463): Disabled since we're ignoring DLC errors until this bug
+// is fixed.
+TEST_F(TerminaInstallTest, DISABLED_UninstallWithDlcInstalledUninstallError) {
   InjectDlc();
   fake_dlc_client_->set_uninstall_error("An error");
 

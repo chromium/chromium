@@ -293,13 +293,10 @@ void TerminaInstaller::RemoveDlc(base::OnceCallback<void()> callback,
 void TerminaInstaller::OnUninstallFinished(
     base::OnceCallback<void(bool)> callback,
     std::vector<UninstallResult> partial_results) {
-  for (auto i : partial_results) {
-    if (!i) {
-      std::move(callback).Run(false);
-      return;
-    }
-  }
-  std::move(callback).Run(true);
+  // TODO(crbug/1121463): dlc_result is always false on platforms without DLC
+  // support. Since we aren't using DLC yet ignore DLC failures until we can
+  // distinguish unsupported vs error.
+  std::move(callback).Run(partial_results[0]);
 }
 
 base::FilePath TerminaInstaller::GetInstallLocation() {
