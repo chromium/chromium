@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/stl_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -116,8 +117,15 @@ void CommonAppsNavigationThrottle::OnIntentPickerClosed(
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
 
-  if (should_persist)
-    proxy->AddPreferredApp(launch_name, url);
+  if (should_persist) {
+    // TODO(https://crbug.com/853604): Remove this and convert to a DCHECK
+    // after finding out the root cause.
+    if (launch_name.empty()) {
+      base::debug::DumpWithoutCrashing();
+    } else {
+      proxy->AddPreferredApp(launch_name, url);
+    }
+  }
 
   if (should_launch_app) {
     if (entry_type == PickerEntryType::kWeb) {

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/stl_util.h"
@@ -604,6 +605,12 @@ void AppServiceProxy::AddPreferredApp(const std::string& app_id,
 
 void AppServiceProxy::AddPreferredApp(const std::string& app_id,
                                       const apps::mojom::IntentPtr& intent) {
+  // TODO(https://crbug.com/853604): Remove this and convert to a DCHECK
+  // after finding out the root cause.
+  if (app_id.empty()) {
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
   auto intent_filter = FindBestMatchingFilter(intent);
   if (!intent_filter) {
     return;

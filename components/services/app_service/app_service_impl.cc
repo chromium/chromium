@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/metrics/histogram_macros.h"
@@ -318,6 +319,13 @@ void AppServiceImpl::AddPreferredApp(apps::mojom::AppType app_type,
   // after initialization in the future.
   if (!preferred_apps_.IsInitialized()) {
     DVLOG(0) << "Preferred apps not initialised when try to add.";
+    return;
+  }
+
+  // TODO(https://crbug.com/853604): Remove this and convert to a DCHECK
+  // after finding out the root cause.
+  if (app_id.empty()) {
+    base::debug::DumpWithoutCrashing();
     return;
   }
 

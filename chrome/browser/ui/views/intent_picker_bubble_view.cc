@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_piece.h"
@@ -474,6 +475,11 @@ void IntentPickerBubbleView::RunCallbackAndCloseBubble(
     bool should_persist) {
   if (!intent_picker_cb_.is_null()) {
     // Calling Run() will make |intent_picker_cb_| null.
+    // TODO(https://crbug.com/853604): Remove this and convert to a DCHECK
+    // after finding out the root cause.
+    if (should_persist && launch_name.empty()) {
+      base::debug::DumpWithoutCrashing();
+    }
     std::move(intent_picker_cb_)
         .Run(launch_name, entry_type, close_reason, should_persist);
   }
