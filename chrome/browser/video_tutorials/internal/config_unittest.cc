@@ -16,13 +16,13 @@ namespace video_tutorials {
 TEST(VideoTutorialsConfigTest, FinchConfigEnabled) {
   base::test::ScopedFeatureList feature_list;
   std::map<std::string, std::string> params = {
-      {kBaseURLKey, "https://test.com"}, {kPrefferedLanguageKey, "en"}};
+      {kBaseURLKey, "https://test.com"}, {kPreferredLocaleConfigKey, "en"}};
   feature_list.InitAndEnableFeatureWithParameters(features::kVideoTutorials,
                                                   params);
 
   EXPECT_EQ(Config::GetTutorialsServerURL().spec(),
             "https://test.com/v1/videotutorials");
-  EXPECT_EQ(Config::GetDefaultPreferredLanguage(), "en");
+  EXPECT_EQ(Config::GetDefaultPreferredLocale(), "en");
 }
 
 TEST(VideoTutorialsConfigTest, ConfigDefaultParams) {
@@ -30,7 +30,7 @@ TEST(VideoTutorialsConfigTest, ConfigDefaultParams) {
   feature_list.InitAndEnableFeature(features::kVideoTutorials);
   EXPECT_EQ(Config::GetTutorialsServerURL().spec(),
             "https://chromeupboarding-pa.googleapis.com/v1/videotutorials");
-  EXPECT_EQ(Config::GetDefaultPreferredLanguage(), "hi");
+  EXPECT_EQ(Config::GetDefaultPreferredLocale(), "hi");
 }
 
 }  // namespace video_tutorials

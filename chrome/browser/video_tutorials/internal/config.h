@@ -21,19 +21,19 @@ extern const char kDefaultBaseURL[];
 // Finch parameter key for base server URL to retrieve the tutorials.
 extern const char kBaseURLKey[];
 
-// Finch parameter key for the default preferred language.
-extern const char kPrefferedLanguageKey[];
+// Finch parameter key for the default preferred locale.
+extern const char kPreferredLocaleConfigKey[];
 
-// Default preferred language setting before users pick.
-extern const char kDefaultPreferredLanguage[];
+// Default preferred locale setting before users pick.
+extern const char kDefaultPreferredLocale[];
 
 class Config {
  public:
   // Get video tutorials metadata server URL.
   static GURL GetTutorialsServerURL();
 
-  // Get the default language before users choice.
-  static std::string GetDefaultPreferredLanguage();
+  // Get the default locale before users choice.
+  static std::string GetDefaultPreferredLocale();
 };
 
 }  // namespace video_tutorials

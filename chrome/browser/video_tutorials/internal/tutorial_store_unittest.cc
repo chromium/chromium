@@ -182,8 +182,12 @@ TEST_F(TutorialStoreTest, AddAndUpdateDataSuccess) {
   // Add a group successfully.
   TutorialGroup test_group;
   test::BuildTestGroup(&test_group);
-  store()->Update(test_group.locale, test_group,
-                  base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+  std::vector<std::pair<std::string, TutorialGroup>> entries_to_save;
+  entries_to_save.emplace_back(std::make_pair(test_group.locale, test_group));
+  std::vector<std::string> keys_to_delete;
+  store()->UpdateAll(
+      entries_to_save, keys_to_delete,
+      base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
   db()->UpdateCallback(true);
 
   auto expected = std::make_unique<KeysAndEntries>();
@@ -204,8 +208,11 @@ TEST_F(TutorialStoreTest, Delete) {
   EXPECT_EQ(loaded_keys().size(), 1u);
   EXPECT_EQ(loaded_keys().front(), locale);
   std::vector<std::string> keys{locale};
-  store()->Delete(std::move(keys),
-                  base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+  std::vector<std::pair<std::string, TutorialGroup>> entries_to_save;
+
+  store()->UpdateAll(
+      entries_to_save, std::move(keys),
+      base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
   db()->UpdateCallback(true);
   // No entry is expected in db.
   auto expected = std::make_unique<KeysAndEntries>();

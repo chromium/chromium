@@ -13,8 +13,8 @@ class PrefRegistrySimple;
 
 namespace video_tutorials {
 
-// Key for the language that user picked in video tutorials service.
-extern const char kPreferredLanguageKey[];
+// Key for the locale that user picked in video tutorials service.
+extern const char kPreferredLocaleKey[];
 
 // Key to record a timestamp when the last update of video tutorials metadata
 // happened.

@@ -25,7 +25,6 @@ class Store {
   using LoadKeysCallback = base::OnceCallback<void(bool, Keys)>;
   using LoadEntriesCallback = base::OnceCallback<void(bool, Entries)>;
   using UpdateCallback = base::OnceCallback<void(bool)>;
-  using DeleteCallback = base::OnceCallback<void(bool)>;
 
   // Initialize the db and load keys into memory.
   virtual void InitAndLoadKeys(LoadKeysCallback callback) = 0;
@@ -34,14 +33,12 @@ class Store {
   virtual void LoadEntries(const std::vector<std::string>& keys,
                            LoadEntriesCallback callback) = 0;
 
-  // Add a new entry or update an existing entry.
-  virtual void Update(const std::string& key,
-                      const T& entry,
-                      UpdateCallback callback) = 0;
-
-  // Delete entries from database.
-  virtual void Delete(const std::vector<std::string>& keys,
-                      DeleteCallback callback) = 0;
+  // Batch update call with ability to update and remove multiple
+  // entries.
+  virtual void UpdateAll(
+      const std::vector<std::pair<std::string, T>>& key_entry_pairs,
+      const std::vector<std::string>& keys_to_delete,
+      UpdateCallback callback) = 0;
 
   Store() = default;
   virtual ~Store() = default;

@@ -16,13 +16,13 @@ constexpr char kDefaultBaseURL[] = "https://chromeupboarding-pa.googleapis.com";
 // Default URL string for GetTutorials RPC.
 constexpr char kDefaultGetTutorialsPath[] = "/v1/videotutorials";
 
-// Hindi is the default language.
-constexpr char kDefaultPreferredLanguage[] = "hi";
+// Hindi is the default locale.
+constexpr char kDefaultPreferredLocale[] = "hi";
 
 // Finch parameter key for base server URL to retrieve the tutorials.
 constexpr char kBaseURLKey[] = "base_url";
 
-constexpr char kPrefferedLanguageKey[] = "default_lang";
+constexpr char kPreferredLocaleConfigKey[] = "default_locale";
 
 namespace {
 const GURL BuildGetTutorialsEndpoint(const GURL& base_url, const char* path) {
@@ -43,11 +43,12 @@ GURL Config::GetTutorialsServerURL() {
 }
 
 // static
-std::string Config::GetDefaultPreferredLanguage() {
-  std::string default_lang_from_finch = base::GetFieldTrialParamValueByFeature(
-      features::kVideoTutorials, kPrefferedLanguageKey);
-  return default_lang_from_finch.empty() ? kDefaultPreferredLanguage
-                                         : default_lang_from_finch;
+std::string Config::GetDefaultPreferredLocale() {
+  std::string default_locale_from_finch =
+      base::GetFieldTrialParamValueByFeature(features::kVideoTutorials,
+                                             kPreferredLocaleConfigKey);
+  return default_locale_from_finch.empty() ? kDefaultPreferredLocale
+                                           : default_locale_from_finch;
 }
 
 }  // namespace video_tutorials

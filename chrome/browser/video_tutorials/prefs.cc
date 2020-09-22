@@ -9,12 +9,12 @@
 
 namespace video_tutorials {
 
-constexpr char kPreferredLanguageKey[] = "video_tutorials.perferred_language";
+constexpr char kPreferredLocaleKey[] = "video_tutorials.perferred_locale";
 
 constexpr char kLastUpdatedTimeKey[] = "video_tutorials.last_updated_time";
 
 void RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(kPreferredLanguageKey, std::string());
+  registry->RegisterStringPref(kPreferredLocaleKey, std::string());
   registry->RegisterTimePref(kLastUpdatedTimeKey, base::Time());
 }
 

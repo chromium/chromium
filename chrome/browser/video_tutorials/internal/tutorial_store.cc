@@ -46,22 +46,20 @@ void TutorialStore::LoadEntries(const std::vector<std::string>& keys,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void TutorialStore::Update(const std::string& key,
-                           const TutorialGroup& group,
-                           UpdateCallback callback) {
+void TutorialStore::UpdateAll(
+    const std::vector<std::pair<std::string, TutorialGroup>>& key_entry_pairs,
+    const std::vector<std::string>& keys_to_delete,
+    UpdateCallback callback) {
   auto entries_to_save = std::make_unique<KeyEntryVector>();
-  auto entry_to_save = group;
-  entries_to_save->emplace_back(key, std::move(entry_to_save));
-  db_->UpdateEntries(std::move(entries_to_save),
-                     std::make_unique<KeyVector>() /*keys_to_remove*/,
-                     std::move(callback));
-}
+  for (auto& pair : key_entry_pairs)
+    entries_to_save->emplace_back(pair.first, pair.second);
 
-void TutorialStore::Delete(const std::vector<std::string>& keys,
-                           DeleteCallback callback) {
-  auto keys_to_delete = std::make_unique<KeyVector>(keys);
-  db_->UpdateEntries(std::make_unique<KeyEntryVector>() /*entries_to_save*/,
-                     std::move(keys_to_delete), std::move(callback));
+  auto keys_to_remove = std::make_unique<std::vector<std::string>>();
+  for (auto key : keys_to_delete)
+    keys_to_remove->emplace_back(key);
+
+  db_->UpdateEntries(std::move(entries_to_save), std::move(keys_to_remove),
+                     std::move(callback));
 }
 
 void TutorialStore::OnDbInitialized(LoadKeysCallback callback,

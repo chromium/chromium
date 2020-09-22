@@ -50,11 +50,10 @@ class TutorialStore : public Store<TutorialGroup> {
   void InitAndLoadKeys(LoadKeysCallback callback) override;
   void LoadEntries(const std::vector<std::string>& keys,
                    LoadEntriesCallback callback) override;
-  void Update(const std::string& key,
-              const TutorialGroup& group,
-              UpdateCallback callback) override;
-  void Delete(const std::vector<std::string>& keys,
-              DeleteCallback callback) override;
+  void UpdateAll(
+      const std::vector<std::pair<std::string, TutorialGroup>>& key_entry_pairs,
+      const std::vector<std::string>& keys_to_delete,
+      UpdateCallback callback) override;
 
   // Called when db is initialized.
   void OnDbInitialized(LoadKeysCallback callback,
