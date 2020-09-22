@@ -72,6 +72,7 @@ import java.util.List;
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
         "enable-experimental-web-platform-features", "enable-features=WebAuthentication",
         "ignore-certificate-errors"})
+@DisabledTest(message = "https://crbug.com/1130845")
 public class Fido2CredentialRequestTest {
     @Rule
     public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
