@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
-#include "base/i18n/number_formatting.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
@@ -30,6 +29,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
+#include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -40,17 +40,14 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/crash/core/app/crashpad.h"
-#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 @class NSUserNotification;
 @class NSUserNotificationCenter;
@@ -113,20 +110,6 @@ void RecordXPCEvent(XPCConnectionEvent event) {
                             XPC_CONNECTION_EVENT_COUNT);
 }
 
-base::string16 CreateNotificationTitle(
-    const message_center::Notification& notification) {
-  base::string16 title;
-  // Show progress percentage if available. We don't support indeterminate
-  // states on macOS native notifications.
-  if (notification.type() == message_center::NOTIFICATION_TYPE_PROGRESS &&
-      notification.progress() >= 0 && notification.progress() <= 100) {
-    title += base::FormatPercent(notification.progress());
-    title += base::UTF8ToUTF16(" - ");
-  }
-  title += notification.title();
-  return title;
-}
-
 bool IsPersistentNotification(
     const message_center::Notification& notification) {
   if (!NotificationPlatformBridgeMac::SupportsAlerts())
@@ -134,48 +117,6 @@ bool IsPersistentNotification(
 
   return notification.never_timeout() ||
          notification.type() == message_center::NOTIFICATION_TYPE_PROGRESS;
-}
-
-base::string16 CreateNotificationContext(
-    const message_center::Notification& notification,
-    bool requires_attribution) {
-  if (!requires_attribution)
-    return notification.context_message();
-
-  // Mac OS notifications don't provide a good way to elide the domain (or tell
-  // you the maximum width of the subtitle field). We have experimentally
-  // determined the maximum number of characters that fit using the widest
-  // possible character (m). If the domain fits in those character we show it
-  // completely. Otherwise we use eTLD + 1.
-
-  // These numbers have been obtained through experimentation on various
-  // Mac OS platforms.
-
-  constexpr size_t kMaxDomainLengthAlert = 19;
-  constexpr size_t kMaxDomainLengthBanner = 28;
-
-  size_t max_characters = IsPersistentNotification(notification)
-                              ? kMaxDomainLengthAlert
-                              : kMaxDomainLengthBanner;
-
-  base::string16 origin = url_formatter::FormatOriginForSecurityDisplay(
-      url::Origin::Create(notification.origin_url()),
-      url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-
-  if (origin.size() <= max_characters)
-    return origin;
-
-  // Too long, use etld+1
-  base::string16 etldplusone =
-      base::UTF8ToUTF16(net::registry_controlled_domains::GetDomainAndRegistry(
-          notification.origin_url(),
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES));
-
-  // localhost, raw IPs etc. are not handled by GetDomainAndRegistry.
-  if (etldplusone.empty())
-    return origin;
-
-  return etldplusone;
 }
 
 // Implements the version check to determine if alerts are supported. Do not
@@ -255,8 +196,8 @@ void NotificationPlatformBridgeMac::Display(
            settingsLabel:l10n_util::GetNSString(
                              IDS_NOTIFICATION_BUTTON_SETTINGS)]);
 
-  [builder
-      setTitle:base::SysUTF16ToNSString(CreateNotificationTitle(notification))];
+  [builder setTitle:base::SysUTF16ToNSString(
+                        CreateMacNotificationTitle(notification))];
 
   base::string16 context_message =
       notification.items().empty()
@@ -269,8 +210,11 @@ void NotificationPlatformBridgeMac::Display(
   bool requires_attribution =
       notification.context_message().empty() &&
       notification_type != NotificationHandler::Type::EXTENSION;
-  [builder setSubTitle:base::SysUTF16ToNSString(CreateNotificationContext(
-                           notification, requires_attribution))];
+
+  bool is_persistent = IsPersistentNotification(notification);
+
+  [builder setSubTitle:base::SysUTF16ToNSString(CreateMacNotificationContext(
+                           is_persistent, notification, requires_attribution))];
 
   if (!notification.icon().IsEmpty()) {
     [builder setIcon:notification.icon().ToNSImage()];

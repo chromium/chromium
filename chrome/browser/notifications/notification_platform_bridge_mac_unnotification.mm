@@ -9,6 +9,9 @@
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/cocoa/notifications/unnotification_builder_mac.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 @class NSNotification;
@@ -50,16 +53,38 @@ void NotificationPlatformBridgeMacUNNotification::Display(
     Profile* profile,
     const message_center::Notification& notification,
     std::unique_ptr<NotificationCommon::Metadata> metadata) {
-  base::scoped_nsobject<UNMutableNotificationContent> content(
-      [[UNMutableNotificationContent alloc] init]);
+  base::scoped_nsobject<UNNotificationBuilder> builder(
+      [[UNNotificationBuilder alloc] init]);
 
-  [content setTitle:base::SysUTF16ToNSString(notification.title())];
+  base::string16 context_message =
+      notification.items().empty()
+          ? notification.message()
+          : (notification.items().at(0).title + base::UTF8ToUTF16(" - ") +
+             notification.items().at(0).message);
 
-  base::string16 context_message = notification.message();
-  [content setBody:base::SysUTF16ToNSString(context_message)];
+  bool requires_attribution =
+      notification.context_message().empty() &&
+      notification_type != NotificationHandler::Type::EXTENSION;
 
-  [content
-      setSubtitle:base::SysUTF8ToNSString(notification.origin_url().spec())];
+  [builder setTitle:base::SysUTF16ToNSString(
+                        CreateMacNotificationTitle(notification))];
+  [builder setContextMessage:base::SysUTF16ToNSString(context_message)];
+  [builder setSubTitle:base::SysUTF16ToNSString(CreateMacNotificationContext(
+                           /*is_persistent=*/false, notification,
+                           requires_attribution))];
+
+  [builder setOrigin:base::SysUTF8ToNSString(notification.origin_url().spec())];
+  [builder setNotificationId:base::SysUTF8ToNSString(notification.id())];
+  [builder setProfileId:base::SysUTF8ToNSString(GetProfileId(profile))];
+  [builder setIncognito:profile->IsOffTheRecord()];
+  [builder setCreatorPid:[NSNumber numberWithInteger:static_cast<NSInteger>(
+                                                         getpid())]];
+
+  [builder
+      setNotificationType:[NSNumber numberWithInteger:static_cast<NSInteger>(
+                                                          notification_type)]];
+
+  UNMutableNotificationContent* content = [builder buildUserNotification];
 
   // TODO(crbug/1129398): Add close button to banners
   UNNotificationRequest* request = [UNNotificationRequest
