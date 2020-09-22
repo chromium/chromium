@@ -24,6 +24,22 @@ base/android/linker/
 tools/
 net/tools/
 
+# Exclude code that only runs inside a renderer process - renderer
+# processes are excluded for now from the MiraclePtr project scope,
+# because they are sensitive to performance regressions (to a much higher
+# degree than, say, the Browser process).
+#
+# Note that some renderer-only directories are already excluded
+# elsewhere - for example "v8/" is excluded in another part of this
+# file.
+#
+# Also, note that isInThirdPartyLocation AST matcher in
+# RewriteRawPtrFields.cpp explicitly includes third_party/blink
+# (because it is in the same git repository as the rest of Chromium),
+# but we go ahead and exclude it below.
+/renderer/  # (e.g. //content/renderer/ or //components/visitedlink/renderer/).
+third_party/blink/
+
 # Exclude paths in separate repositories - i.e. in directories that
 # 1. Contain a ".git" subdirectory
 # 2. And hasn't been excluded via "third_party/" substring in their path
