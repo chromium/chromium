@@ -652,7 +652,7 @@ cr.define('settings', function() {
         case Icon.kMouse:
           return 'os-settings:mouse';
         case Icon.kNearbyShare:
-          return 'settings:nearby-share';
+          return 'os-settings:nearby-share';
         case Icon.kPaintbrush:
           return 'os-settings:paint-brush';
         case Icon.kPenguin:
