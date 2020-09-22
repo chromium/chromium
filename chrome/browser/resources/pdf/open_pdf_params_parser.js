@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FittingType, Point} from './constants.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {FittingType, NamedDestinationMessageData, Point} from './constants.js';
 
 /**
  * @typedef {{
@@ -18,14 +19,12 @@ let OpenPdfParams;
 // settings for opening the pdf.
 export class OpenPdfParamsParser {
   /**
-   * @param {function(string):void} getNamedDestinationCallback
-   *     Function called to fetch information for a named destination.
+   * @param {function(string):!Promise<!NamedDestinationMessageData>}
+   *     getNamedDestinationCallback Function called to fetch information for a
+   *     named destination.
    */
   constructor(getNamedDestinationCallback) {
-    /** @private {!Array<!Object>} */
-    this.outstandingRequests_ = [];
-
-    /** @private {!function(string):void} */
+    /** @private {!function(string):!Promise<!NamedDestinationMessageData>} */
     this.getNamedDestinationCallback_ = getNamedDestinationCallback;
   }
 
@@ -168,25 +167,16 @@ export class OpenPdfParamsParser {
     }
 
     if (params.page === undefined && urlParams.has('nameddest')) {
-      this.outstandingRequests_.push({callback: callback, params: params});
       this.getNamedDestinationCallback_(
-          /** @type {string} */ (urlParams.get('nameddest')));
+              /** @type {string} */ (urlParams.get('nameddest')))
+          .then(data => {
+            if (data.pageNumber !== -1) {
+              params.page = data.pageNumber;
+            }
+            callback(params);
+          });
     } else {
       callback(params);
     }
-  }
-
-  /**
-   * This is called when a named destination is received and the page number
-   * corresponding to the request for which a named destination is passed.
-   * @param {number} pageNumber The page corresponding to the named destination
-   *    requested.
-   */
-  onNamedDestinationReceived(pageNumber) {
-    const outstandingRequest = this.outstandingRequests_.shift();
-    if (pageNumber !== -1) {
-      outstandingRequest.params.page = pageNumber;
-    }
-    outstandingRequest.callback(outstandingRequest.params);
   }
 }

@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {eventToPromise} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.m.js';
 import {NavigatorDelegate, PdfNavigator, WindowOpenDisposition} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/navigator.js';
 import {OpenPdfParamsParser} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/open_pdf_params_parser.js';
 import {PDFScriptingAPI} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_scripting_api.js';
 
-import {getZoomableViewport, MockDocumentDimensions, MockElement, MockSizer, MockViewportChangedCallback} from './test_util.js';
+import {getZoomableViewport, MockDocumentDimensions, MockElement, MockSizer, MockViewportChangedCallback, testAsync} from './test_util.js';
 
 /** @implements {NavigatorDelegate} */
 class MockNavigatorDelegate {
@@ -96,7 +97,8 @@ function doNavigationUrlTests(originalUrl, url, expectedResultUrl) {
   viewport.setViewportChangedCallback(mockViewportChangedCallback.callback);
 
   const paramsParser = new OpenPdfParamsParser(function(name) {
-    paramsParser.onNamedDestinationReceived(-1);
+    return Promise.resolve(
+        {messageId: 'getNamedDestination_1', pageNumber: -1});
   });
 
   const navigatorDelegate = new MockNavigatorDelegate();
@@ -128,11 +130,14 @@ const tests = [
 
     const paramsParser = new OpenPdfParamsParser(function(destination) {
       if (destination === 'US') {
-        paramsParser.onNamedDestinationReceived(0);
+        return Promise.resolve(
+            {messageId: 'getNamedDestination_1', pageNumber: 0});
       } else if (destination === 'UY') {
-        paramsParser.onNamedDestinationReceived(2);
+        return Promise.resolve(
+            {messageId: 'getNamedDestination_2', pageNumber: 2});
       } else {
-        paramsParser.onNamedDestinationReceived(-1);
+        return Promise.resolve(
+            {messageId: 'getNamedDestination_3', pageNumber: -1});
       }
     });
     const url = 'http://xyz.pdf';
@@ -148,42 +153,54 @@ const tests = [
     viewport.setDocumentDimensions(documentDimensions);
     viewport.setZoom(1);
 
-    mockCallback.reset();
-    // This should move viewport to page 0.
-    navigator.navigate(url + '#US', WindowOpenDisposition.CURRENT_TAB);
-    chrome.test.assertTrue(mockCallback.wasCalled);
-    chrome.test.assertEq(0, viewport.position.x);
-    chrome.test.assertEq(0, viewport.position.y);
+    testAsync(async () => {
+      mockCallback.reset();
+      let navigatingDone =
+          eventToPromise('navigate-for-testing', navigator.getEventTarget());
+      // This should move viewport to page 0.
+      navigator.navigate(url + '#US', WindowOpenDisposition.CURRENT_TAB);
+      await navigatingDone;
+      chrome.test.assertTrue(mockCallback.wasCalled);
+      chrome.test.assertEq(0, viewport.position.x);
+      chrome.test.assertEq(0, viewport.position.y);
 
-    mockCallback.reset();
-    navigatorDelegate.reset();
-    // This should open "http://xyz.pdf#US" in a new tab. So current tab
-    // viewport should not update and viewport position should remain same.
-    navigator.navigate(url + '#US', WindowOpenDisposition.NEW_BACKGROUND_TAB);
-    chrome.test.assertFalse(mockCallback.wasCalled);
-    chrome.test.assertTrue(navigatorDelegate.navigateInNewTabCalled);
-    chrome.test.assertEq(0, viewport.position.x);
-    chrome.test.assertEq(0, viewport.position.y);
+      mockCallback.reset();
+      navigatorDelegate.reset();
+      navigatingDone =
+          eventToPromise('navigate-for-testing', navigator.getEventTarget());
+      // This should open "http://xyz.pdf#US" in a new tab. So current tab
+      // viewport should not update and viewport position should remain same.
+      navigator.navigate(url + '#US', WindowOpenDisposition.NEW_BACKGROUND_TAB);
+      await navigatingDone;
+      chrome.test.assertFalse(mockCallback.wasCalled);
+      chrome.test.assertTrue(navigatorDelegate.navigateInNewTabCalled);
+      chrome.test.assertEq(0, viewport.position.x);
+      chrome.test.assertEq(0, viewport.position.y);
 
-    mockCallback.reset();
-    // This should move viewport to page 2.
-    navigator.navigate(url + '#UY', WindowOpenDisposition.CURRENT_TAB);
-    chrome.test.assertTrue(mockCallback.wasCalled);
-    chrome.test.assertEq(0, viewport.position.x);
-    chrome.test.assertEq(300, viewport.position.y);
+      mockCallback.reset();
+      navigatingDone =
+          eventToPromise('navigate-for-testing', navigator.getEventTarget());
+      // This should move viewport to page 2.
+      navigator.navigate(url + '#UY', WindowOpenDisposition.CURRENT_TAB);
+      await navigatingDone;
+      chrome.test.assertTrue(mockCallback.wasCalled);
+      chrome.test.assertEq(0, viewport.position.x);
+      chrome.test.assertEq(300, viewport.position.y);
 
-    mockCallback.reset();
-    navigatorDelegate.reset();
-    // #ABC is not a named destination in the page so viewport should not
-    // update and viewport position should remain same. As this link will open
-    // in the same tab.
-    navigator.navigate(url + '#ABC', WindowOpenDisposition.CURRENT_TAB);
-    chrome.test.assertFalse(mockCallback.wasCalled);
-    chrome.test.assertTrue(navigatorDelegate.navigateInCurrentTabCalled);
-    chrome.test.assertEq(0, viewport.position.x);
-    chrome.test.assertEq(300, viewport.position.y);
-
-    chrome.test.succeed();
+      mockCallback.reset();
+      navigatorDelegate.reset();
+      navigatingDone =
+          eventToPromise('navigate-for-testing', navigator.getEventTarget());
+      // #ABC is not a named destination in the page so viewport should not
+      // update, and the viewport position should remain same as testNavigate3's
+      // navigating results, as this link will open in the same tab.
+      navigator.navigate(url + '#ABC', WindowOpenDisposition.CURRENT_TAB);
+      await navigatingDone;
+      chrome.test.assertFalse(mockCallback.wasCalled);
+      chrome.test.assertTrue(navigatorDelegate.navigateInCurrentTabCalled);
+      chrome.test.assertEq(0, viewport.position.x);
+      chrome.test.assertEq(300, viewport.position.y);
+    });
   },
   /**
    * Test opening a url in the same tab, in a new tab, and in a new window for

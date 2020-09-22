@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 import {OpenPdfParamsParser} from './open_pdf_params_parser.js';
 import {Viewport} from './viewport.js';
 
@@ -103,6 +104,14 @@ export class PdfNavigator {
 
     /** @private {!NavigatorDelegate} */
     this.navigatorDelegate_ = navigatorDelegate;
+
+    /** @private {!EventTarget} */
+    this.eventTarget_ = new EventTarget();
+  }
+
+  /** @return {!EventTarget} */
+  getEventTarget() {
+    return this.eventTarget_;
   }
 
   /**
@@ -166,6 +175,9 @@ export class PdfNavigator {
       default:
         break;
     }
+
+    // Dispatch events for tests.
+    this.eventTarget_.dispatchEvent(new CustomEvent('navigate-for-testing'));
   }
 
   /**

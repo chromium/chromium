@@ -29,6 +29,14 @@ export const FittingType = {
 };
 
 /**
+ * @typedef {{
+ *   messageId: string,
+ *   pageNumber: number,
+ * }}
+ */
+export let NamedDestinationMessageData;
+
+/**
  * Enumeration of save message request types. Must Match SaveRequestType in
  * pdf/out_of_process_instance.h.
  * @enum {number}

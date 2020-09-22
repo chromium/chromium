@@ -7,7 +7,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_t
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
-import {Point, SaveRequestType} from './constants.js';
+import {NamedDestinationMessageData, Point, SaveRequestType} from './constants.js';
 import {PartialPoint, PinchPhase, Viewport} from './viewport.js';
 
 /** @typedef {{type: string, messageId: (string|undefined)}} */
@@ -354,7 +354,11 @@ export class PluginController extends ContentController {
     this.postMessage_({type: 'getPasswordComplete', password: password});
   }
 
-  /** @param {string} destination */
+  /**
+   * @param {string} destination
+   * @return {!Promise<!NamedDestinationMessageData>}
+   *     A promise holding the named destination information from the plugin.
+   */
   getNamedDestination(destination) {
     return this.postMessageWithReply_({
       type: 'getNamedDestination',

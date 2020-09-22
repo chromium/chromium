@@ -223,10 +223,7 @@ export class PDFViewerBaseElement extends PolymerElement {
 
     // Parse open pdf parameters.
     this.paramsParser = new OpenPdfParamsParser(destination => {
-      this.pluginController_.getNamedDestination(destination).then(data => {
-        this.paramsParser.onNamedDestinationReceived(
-            /** @type {{ pageNumber: number }} */ (data).pageNumber);
-      });
+      return this.pluginController_.getNamedDestination(destination);
     });
 
     // Can only reload if we are in a normal tab.

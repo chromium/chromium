@@ -14,13 +14,17 @@ const tests = [
   function testParamsParser() {
     const paramsParser = new OpenPdfParamsParser(function(destination) {
       if (destination === 'RU') {
-        paramsParser.onNamedDestinationReceived(26);
+        return Promise.resolve(
+            {messageId: 'getNamedDestination_1', pageNumber: 26});
       } else if (destination === 'US') {
-        paramsParser.onNamedDestinationReceived(0);
+        return Promise.resolve(
+            {messageId: 'getNamedDestination_2', pageNumber: 0});
       } else if (destination === 'UY') {
-        paramsParser.onNamedDestinationReceived(22);
+        return Promise.resolve(
+            {messageId: 'getNamedDestination_3', pageNumber: 22});
       } else {
-        paramsParser.onNamedDestinationReceived(-1);
+        return Promise.resolve(
+            {messageId: 'getNamedDestination_4', pageNumber: -1});
       }
     });
 
