@@ -26,7 +26,9 @@ constexpr int kMaxConnectionAttemptCount = 5;
 
 }  // namespace
 
-ArcDataSnapshotdBridge::ArcDataSnapshotdBridge() {
+ArcDataSnapshotdBridge::ArcDataSnapshotdBridge(
+    base::OnceClosure on_bridge_available_callback)
+    : on_bridge_available_callback_(std::move(on_bridge_available_callback)) {
   WaitForDBusService();
 }
 
@@ -48,6 +50,7 @@ void ArcDataSnapshotdBridge::WaitForDBusService() {
     LOG(WARNING)
         << "Stopping attempts to connect to arc-data-snapshotd - too many "
            "unsuccessful attempts in a row";
+    std::move(on_bridge_available_callback_).Run();
     return;
   }
   ++connection_attempt_;
@@ -80,6 +83,7 @@ void ArcDataSnapshotdBridge::OnWaitedForDBusService(bool service_is_available) {
   // ScheduleWaitingForDBusService().
   dbus_waiting_weak_ptr_factory_.InvalidateWeakPtrs();
   is_available_ = true;
+  std::move(on_bridge_available_callback_).Run();
 }
 
 void ArcDataSnapshotdBridge::GenerateKeyPair(
@@ -94,6 +98,19 @@ void ArcDataSnapshotdBridge::GenerateKeyPair(
   chromeos::DBusThreadManager::Get()
       ->GetArcDataSnapshotdClient()
       ->GenerateKeyPair(std::move(callback));
+}
+
+void ArcDataSnapshotdBridge::ClearSnapshot(
+    bool last,
+    base::OnceCallback<void(bool)> callback) {
+  if (!is_available_) {
+    LOG(ERROR) << "ClearSnapshot call when D-Bus service is not available.";
+    std::move(callback).Run(false /* success */);
+    return;
+  }
+  VLOG(1) << "ClearSnapshot via D-Bus";
+  // TODO(pbond): implement
+  std::move(callback).Run(true /* success */);
 }
 
 }  // namespace data_snapshotd

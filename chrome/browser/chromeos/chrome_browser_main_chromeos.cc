@@ -655,7 +655,8 @@ void ChromeBrowserMainPartsChromeos::PreProfileInit() {
   g_browser_process->platform_part()->InitializeChromeUserManager();
 
   arc_data_snapshotd_manager_ =
-      std::make_unique<arc::data_snapshotd::ArcDataSnapshotdManager>();
+      std::make_unique<arc::data_snapshotd::ArcDataSnapshotdManager>(
+          g_browser_process->local_state());
   if (base::FeatureList::IsEnabled(::features::kWilcoDtc))
     wilco_dtc_supportd_manager_ = std::make_unique<WilcoDtcSupportdManager>();
 

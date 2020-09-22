@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
@@ -62,7 +63,7 @@ class ArcDataSnapshotdBridgeTest : public testing::Test {
 // Test basic scenario: D-Bus service is available immediately.
 TEST_F(ArcDataSnapshotdBridgeTest, ServiceAvailable) {
   dbus_client()->set_available(true /* is_available */);
-  ArcDataSnapshotdBridge bridge;
+  ArcDataSnapshotdBridge bridge{base::DoNothing()};
   EXPECT_FALSE(bridge.is_available_for_testing());
   RunGenerateKeyPair(&bridge, false /* expected_result */);
 
@@ -75,7 +76,7 @@ TEST_F(ArcDataSnapshotdBridgeTest, ServiceAvailable) {
 // Test basic scenario: D-Bus service is not available.
 TEST_F(ArcDataSnapshotdBridgeTest, ServiceUnavailable) {
   dbus_client()->set_available(false /* is_available */);
-  ArcDataSnapshotdBridge bridge;
+  ArcDataSnapshotdBridge bridge{base::DoNothing()};
 
   task_environment_.RunUntilIdle();
 
@@ -86,7 +87,7 @@ TEST_F(ArcDataSnapshotdBridgeTest, ServiceUnavailable) {
 // Test that service is available from the max attempt.
 TEST_F(ArcDataSnapshotdBridgeTest, ServiceAvailableMaxAttempt) {
   dbus_client()->set_available(false /* is_available */);
-  ArcDataSnapshotdBridge bridge;
+  ArcDataSnapshotdBridge bridge{base::DoNothing()};
 
   // Not available from the first attempt.
   task_environment_.RunUntilIdle();
@@ -109,7 +110,7 @@ TEST_F(ArcDataSnapshotdBridgeTest, ServiceAvailableMaxAttempt) {
 // Test that service is available from the max + 1 attempt and is not picked up.
 TEST_F(ArcDataSnapshotdBridgeTest, ServiceUnavailableMaxAttempts) {
   dbus_client()->set_available(false /* is_available */);
-  ArcDataSnapshotdBridge bridge;
+  ArcDataSnapshotdBridge bridge{base::DoNothing()};
 
   // Not available from the first attempt.
   task_environment_.RunUntilIdle();

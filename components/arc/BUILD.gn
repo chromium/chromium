@@ -148,6 +148,7 @@ static_library("arc") {
     "//ui/events",
     "//ui/events:dom_keycode_converter",
     "//ui/events/ozone",
+    "//ui/ozone",
     "//ui/wm/public",
     "//url:url",
   ]
@@ -448,6 +449,7 @@ source_set("unit_tests") {
     "//ui/base/ime",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
+    "//ui/ozone",
     "//url:url",
   ]
 }

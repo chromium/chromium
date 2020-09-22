@@ -45,6 +45,7 @@ ARC_EXPORT extern const char kEngagementPrefsPrefix[];
 
 // Local state prefs in lexicographical order.
 ARC_EXPORT extern const char kArcSerialNumberSalt[];
+ARC_EXPORT extern const char kArcSnapshotInfo[];
 ARC_EXPORT extern const char kNativeBridge64BitSupportExperimentEnabled[];
 ARC_EXPORT extern const char kStabilityMetrics[];
 

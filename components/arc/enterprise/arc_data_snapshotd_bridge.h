@@ -17,7 +17,8 @@ namespace data_snapshotd {
 // operations to it.
 class ArcDataSnapshotdBridge {
  public:
-  ArcDataSnapshotdBridge();
+  explicit ArcDataSnapshotdBridge(
+      base::OnceClosure on_bridge_available_callback);
   ArcDataSnapshotdBridge(const ArcDataSnapshotdBridge&) = delete;
   ArcDataSnapshotdBridge& operator=(const ArcDataSnapshotdBridge&) = delete;
   ~ArcDataSnapshotdBridge();
@@ -27,6 +28,7 @@ class ArcDataSnapshotdBridge {
 
   // Delegates the key pair generation to arc-data-snapshotd daemon.
   void GenerateKeyPair(base::OnceCallback<void(bool)> callback);
+  void ClearSnapshot(bool last, base::OnceCallback<void(bool)> callback);
 
   bool is_available_for_testing() { return is_available_; }
 
@@ -39,6 +41,10 @@ class ArcDataSnapshotdBridge {
   // Called once waiting for the D-Bus service, started by WaitForDBusService(),
   // finishes.
   void OnWaitedForDBusService(bool service_is_available);
+
+  // Callback passed in constructor and called once the D-Bus bridge is set up
+  // or the number of max attempts exceeded.
+  base::OnceClosure on_bridge_available_callback_;
 
   // Current consecutive connection attempt number.
   int connection_attempt_ = 0;
