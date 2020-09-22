@@ -114,6 +114,9 @@ class Kind(object):
     # during a subsequent run of the parser.
     return hash((self.spec, self.parent_kind))
 
+  def IsBackwardCompatible(self, rhs):
+    return self == rhs
+
 
 class ReferenceKind(Kind):
   """ReferenceKind represents pointer and handle types.
@@ -194,6 +197,10 @@ class ReferenceKind(Kind):
 
   def __hash__(self):
     return hash((super(ReferenceKind, self).__hash__(), self.is_nullable))
+
+  def IsBackwardCompatible(self, rhs):
+    return (super(ReferenceKind, self).IsBackwardCompatible(rhs)
+            and self.is_nullable == rhs.is_nullable)
 
 
 # Initialize the set of primitive types. These can be accessed by clients.
@@ -380,10 +387,7 @@ def _IsFieldBackwardCompatible(new_field, old_field):
   if (new_field.min_version or 0) != (old_field.min_version or 0):
     return False
 
-  if isinstance(new_field.kind, (Enum, Struct, Union)):
-    return new_field.kind.IsBackwardCompatible(old_field.kind)
-
-  return new_field.kind == old_field.kind
+  return new_field.kind.IsBackwardCompatible(old_field.kind)
 
 
 class Struct(ReferenceKind):
@@ -704,6 +708,10 @@ class Array(ReferenceKind):
   def __hash__(self):
     return id(self)
 
+  def IsBackwardCompatible(self, rhs):
+    return (isinstance(rhs, Array) and self.length == rhs.length
+            and self.kind.IsBackwardCompatible(rhs.kind))
+
 
 class Map(ReferenceKind):
   """A map.
@@ -748,6 +756,11 @@ class Map(ReferenceKind):
   def __hash__(self):
     return id(self)
 
+  def IsBackwardCompatible(self, rhs):
+    return (isinstance(rhs, Map)
+            and self.key_kind.IsBackwardCompatible(rhs.key_kind)
+            and self.value_kind.IsBackwardCompatible(rhs.value_kind))
+
 
 class PendingRemote(ReferenceKind):
   ReferenceKind.AddSharedProperty('kind')
@@ -768,6 +781,10 @@ class PendingRemote(ReferenceKind):
 
   def __hash__(self):
     return id(self)
+
+  def IsBackwardCompatible(self, rhs):
+    return (isinstance(rhs, PendingRemote)
+            and self.kind.IsBackwardCompatible(rhs.kind))
 
 
 class PendingReceiver(ReferenceKind):
@@ -790,6 +807,10 @@ class PendingReceiver(ReferenceKind):
   def __hash__(self):
     return id(self)
 
+  def IsBackwardCompatible(self, rhs):
+    return isinstance(rhs, PendingReceiver) and self.kind.IsBackwardCompatible(
+        rhs.kind)
+
 
 class PendingAssociatedRemote(ReferenceKind):
   ReferenceKind.AddSharedProperty('kind')
@@ -810,6 +831,11 @@ class PendingAssociatedRemote(ReferenceKind):
 
   def __hash__(self):
     return id(self)
+
+  def IsBackwardCompatible(self, rhs):
+    return isinstance(
+        rhs, PendingAssociatedRemote) and self.kind.IsBackwardCompatible(
+            rhs.kind)
 
 
 class PendingAssociatedReceiver(ReferenceKind):
@@ -832,6 +858,11 @@ class PendingAssociatedReceiver(ReferenceKind):
   def __hash__(self):
     return id(self)
 
+  def IsBackwardCompatible(self, rhs):
+    return isinstance(
+        rhs, PendingAssociatedReceiver) and self.kind.IsBackwardCompatible(
+            rhs.kind)
+
 
 class InterfaceRequest(ReferenceKind):
   ReferenceKind.AddSharedProperty('kind')
@@ -851,6 +882,10 @@ class InterfaceRequest(ReferenceKind):
 
   def __hash__(self):
     return id(self)
+
+  def IsBackwardCompatible(self, rhs):
+    return isinstance(rhs, InterfaceRequest) and self.kind.IsBackwardCompatible(
+        rhs.kind)
 
 
 class AssociatedInterfaceRequest(ReferenceKind):
@@ -873,6 +908,11 @@ class AssociatedInterfaceRequest(ReferenceKind):
 
   def __hash__(self):
     return id(self)
+
+  def IsBackwardCompatible(self, rhs):
+    return isinstance(
+        rhs, AssociatedInterfaceRequest) and self.kind.IsBackwardCompatible(
+            rhs.kind)
 
 
 class Parameter(object):
@@ -1149,6 +1189,10 @@ class AssociatedInterface(ReferenceKind):
 
   def __hash__(self):
     return id(self)
+
+  def IsBackwardCompatible(self, rhs):
+    return isinstance(
+        rhs, AssociatedInterface) and self.kind.IsBackwardCompatible(rhs.kind)
 
 
 class EnumField(object):

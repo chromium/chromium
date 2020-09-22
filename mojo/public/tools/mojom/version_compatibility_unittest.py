@@ -234,6 +234,33 @@ class VersionCompatibilityTest(MojomParserTestCase):
     self.assertNotBackwardCompatible('union U { string a; };',
                                      'union U { string? a; };')
 
+  def testFieldNestedTypeChanged(self):
+    """Changing the definition of a nested type within a field (such as an array
+    element or interface endpoint type) should only break backward-compatibility
+    if the changes to that type are not backward-compatible."""
+    self.assertBackwardCompatible(
+        """\
+        struct S { string a; };
+        struct T { array<S> ss; };
+        """, """\
+        struct S {
+          string a;
+          [MinVersion=1] string? b;
+        };
+        struct T { array<S> ss; };
+        """)
+    self.assertBackwardCompatible(
+        """\
+        interface F { Do(); };
+        struct S { pending_receiver<F> r; };
+        """, """\
+        interface F {
+          Do();
+          [MinVersion=1] Say();
+        };
+        struct S { pending_receiver<F> r; };
+        """)
+
   def testUnionFieldBecomingNonOptional(self):
     """Changing a field from optional to non-optional breaks
     backward-compatibility."""
