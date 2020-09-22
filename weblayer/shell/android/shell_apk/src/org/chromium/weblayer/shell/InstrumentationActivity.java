@@ -372,10 +372,6 @@ public class InstrumentationActivity extends FragmentActivity {
                 mPreviousTabList.add(mTab);
                 setTab(newTab);
             }
-            @Override
-            public void onCloseTab() {
-                assert false;
-            }
         });
 
         // Creates and adds a new UrlBarView to |mTopContentsContainer|.

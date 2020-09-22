@@ -469,11 +469,6 @@ public class WebLayerShellActivity extends AppCompatActivity {
                 mPreviousTabList.add(mBrowser.getActiveTab());
                 mBrowser.setActiveTab(newTab);
             }
-            @Override
-            public void onCloseTab() {
-                // This callback is deprecated and no longer sent.
-                assert false;
-            }
         });
         tab.setFullscreenCallback(new FullscreenCallback() {
             private int mSystemVisibilityToRestore;

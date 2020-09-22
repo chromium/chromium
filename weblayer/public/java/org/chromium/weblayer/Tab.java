@@ -742,20 +742,6 @@ public class Tab {
         }
 
         @Override
-        public void onCloseTab() {
-            StrictModeWorkaround.apply();
-
-            // Prior to 84 this method was used to signify that the embedder should take action to
-            // close the Tab; 84+ it's deprecated and no longer sent..
-            assert WebLayer.getSupportedMajorVersionInternal() < 84;
-
-            // This should only be hit if setNewTabCallback() has been called with a non-null
-            // value.
-            assert mNewTabCallback != null;
-            mNewTabCallback.onCloseTab();
-        }
-
-        @Override
         public void onTabDestroyed() {
             // Prior to 87 this was called *before* onTabRemoved(). Post 87 this is called after
             // onTabRemoved(). onTabRemoved() needs the Tab to be registered, so unregisterTab()

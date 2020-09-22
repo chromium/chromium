@@ -44,7 +44,6 @@ class PopupBlockerBrowserTest : public WebLayerBrowserTest,
 
   // NewTabDelegate:
   void OnNewTab(Tab* new_tab, NewTabType type) override {}
-  void CloseTab() override {}
 
   // BrowserObserver:
   void OnTabAdded(Tab* tab) override {

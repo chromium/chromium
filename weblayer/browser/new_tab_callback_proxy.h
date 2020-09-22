@@ -24,7 +24,6 @@ class NewTabCallbackProxy : public NewTabDelegate {
 
   // NewTabDelegate:
   void OnNewTab(Tab* tab, NewTabType type) override;
-  void CloseTab() override;
 
  private:
   TabImpl* tab_;
