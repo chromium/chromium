@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
@@ -249,9 +250,21 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
      */
     private static Map<String, String> createFullFontNameToQueryMap() {
         Map<String, String> map = new HashMap<>();
-        map.put("google sans regular", "name=Google Sans&weight=400");
-        map.put("google sans medium", "name=Google Sans&weight=500");
+        map.put("google sans regular", createFontQuery("Google Sans", 400));
+        map.put("google sans medium", createFontQuery("Google Sans", 500));
         return map;
+    }
+
+    /**
+     * Construct a GMS Core Downloadable fonts query for a font with exact match parameters.
+     * (More info: https://developers.google.com/fonts/docs/android#query_format)
+     *
+     * @param name Font family name (from fonts.google.com).
+     * @param weight Font weight.
+     * @return Query for Google Fonts provider.
+     */
+    private static String createFontQuery(String name, int weight) {
+        return String.format(Locale.US, "name=%s&weight=%d&besteffort=false", name, weight);
     }
 
     private static void logFetchFontResult(@FetchFontResult int result) {
