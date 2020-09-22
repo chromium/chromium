@@ -8,12 +8,14 @@ import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,23 +23,24 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.annotation.Config;
-import org.robolectric.shadows.multidex.ShadowMultiDex;
 
-import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 
 /**
  * Unit tests for OptimizationGuideBridge.
  */
-@RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowMultiDex.class})
+@RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class OptimizationGuideBridgeUnitTest {
     private static final String TEST_URL = "https://testurl.com/";
     @Rule
@@ -56,6 +59,8 @@ public class OptimizationGuideBridgeUnitTest {
     }
 
     @Test
+    @SmallTest
+    @UiThreadTest
     @Feature({"OptimizationHints"})
     public void testRegisterOptimizationTypes() {
         OptimizationGuideBridge bridge = new OptimizationGuideBridge(1);
@@ -66,6 +71,8 @@ public class OptimizationGuideBridgeUnitTest {
     }
 
     @Test
+    @SmallTest
+    @UiThreadTest
     @Feature({"OptimizationHints"})
     public void testRegisterOptimizationTypes_withoutNativeBridge() {
         OptimizationGuideBridge bridge = new OptimizationGuideBridge(0);
@@ -76,6 +83,8 @@ public class OptimizationGuideBridgeUnitTest {
     }
 
     @Test
+    @SmallTest
+    @UiThreadTest
     @Feature({"OptimizationHints"})
     public void testRegisterOptimizationTypes_noOptimizationTypes() {
         OptimizationGuideBridge bridge = new OptimizationGuideBridge(1);
@@ -85,29 +94,35 @@ public class OptimizationGuideBridgeUnitTest {
     }
 
     @Test
+    @SmallTest
+    @UiThreadTest
     @Feature({"OptimizationHints"})
     public void testCanApplyOptimization_withoutNativeBridge() {
         OptimizationGuideBridge bridge = new OptimizationGuideBridge(0);
-        NavigationHandle navHandle = new NavigationHandle(0, TEST_URL, true, false, false);
+        NavigationHandle navHandle =
+                new NavigationHandle(0, new GURL(TEST_URL), true, false, false);
 
         bridge.canApplyOptimization(navHandle, OptimizationType.PERFORMANCE_HINTS, mCallbackMock);
 
         verify(mOptimizationGuideBridgeJniMock, never())
-                .canApplyOptimization(anyLong(), anyString(), anyInt(),
+                .canApplyOptimization(anyLong(), anyObject(), anyInt(),
                         any(OptimizationGuideBridge.OptimizationGuideCallback.class));
         verify(mCallbackMock)
                 .onOptimizationGuideDecision(eq(OptimizationGuideDecision.FALSE), isNull());
     }
 
     @Test
+    @SmallTest
+    @UiThreadTest
     @Feature({"OptimizationHints"})
     public void testCanApplyOptimization() {
+        GURL gurl = new GURL(TEST_URL);
         OptimizationGuideBridge bridge = new OptimizationGuideBridge(1);
-        NavigationHandle navHandle = new NavigationHandle(0, TEST_URL, true, false, false);
+        NavigationHandle navHandle = new NavigationHandle(0, gurl, true, false, false);
 
         bridge.canApplyOptimization(navHandle, OptimizationType.PERFORMANCE_HINTS, mCallbackMock);
 
         verify(mOptimizationGuideBridgeJniMock, times(1))
-                .canApplyOptimization(eq(1L), eq(TEST_URL), eq(6), eq(mCallbackMock));
+                .canApplyOptimization(eq(1L), eq(gurl), eq(6), eq(mCallbackMock));
     }
 }

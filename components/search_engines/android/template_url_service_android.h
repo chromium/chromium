@@ -40,7 +40,7 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
   jboolean IsSearchResultsPageFromDefaultSearchProvider(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& jurl);
+      const base::android::JavaParamRef<jobject>& jurl);
   base::android::ScopedJavaLocalRef<jstring> GetUrlForSearchQuery(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,

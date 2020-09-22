@@ -802,7 +802,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             initWebContents(webContents);
 
             if (!creatingWebContents && webContents.isLoadingToDifferentDocument()) {
-                didStartPageLoad(webContents.getVisibleUrlString());
+                didStartPageLoad(webContents.getVisibleUrl());
             }
 
         } finally {
@@ -934,10 +934,12 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      * Called when a page has started loading.
      * @param validatedUrl URL being loaded.
      */
-    void didStartPageLoad(String validatedUrl) {
+    void didStartPageLoad(GURL validatedUrl) {
         updateTitle();
         if (mIsRendererUnresponsive) handleRendererResponsiveStateChanged(true);
-        for (TabObserver observer : mObservers) observer.onPageLoadStarted(this, validatedUrl);
+        for (TabObserver observer : mObservers) {
+            observer.onPageLoadStarted(this, validatedUrl.getSpec());
+        }
     }
 
     /**
@@ -968,11 +970,11 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      * @param url The URL that was loaded.
      * @param transitionType The transition type to the current URL.
      */
-    void handleDidFinishNavigation(String url, Integer transitionType) {
+    void handleDidFinishNavigation(GURL url, Integer transitionType) {
         mIsNativePageCommitPending = false;
         boolean isReload = (transitionType != null
                 && (transitionType & PageTransition.CORE_MASK) == PageTransition.RELOAD);
-        if (!maybeShowNativePage(url, isReload)) {
+        if (!maybeShowNativePage(url.getSpec(), isReload)) {
             showRenderedPage();
         }
     }
@@ -1165,14 +1167,12 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             initWebContents(webContents);
         });
 
-        String url = getUrlString();
-
         if (didStartLoad) {
             // Simulate the PAGE_LOAD_STARTED notification that we did not get.
-            didStartPageLoad(url);
+            didStartPageLoad(getUrl());
 
             // Simulate the PAGE_LOAD_FINISHED notification that we did not get.
-            if (didFinishLoad) didFinishPageLoad(url);
+            if (didFinishLoad) didFinishPageLoad(getUrlString());
         }
 
         for (TabObserver observer : mObservers) {

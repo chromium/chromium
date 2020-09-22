@@ -623,10 +623,11 @@ public class SearchActivityTest {
             // Make sure tab is in either upload page or result page. cannot only verify one of
             // them since on fast device tab jump to result page really quick but on slow device
             // may stay on upload page for a really long time.
-            boolean isValid = tab.getUrlString().equals(imageSuggestion.getUrl().getSpec())
+            boolean isValid = tab.getUrl().equals(imageSuggestion.getUrl())
                     || TemplateUrlServiceFactory.get().isSearchResultsPageFromDefaultSearchProvider(
-                            tab.getUrlString());
-            Criteria.checkThat("Invalid URL: " + tab.getUrlString(), isValid, Matchers.is(true));
+                            tab.getUrl());
+            Criteria.checkThat(
+                    "Invalid URL: " + tab.getUrl().getSpec(), isValid, Matchers.is(true));
         });
     }
 
@@ -688,9 +689,9 @@ public class SearchActivityTest {
         // Because no POST data, Google wont go to the result page.
         CriteriaHelper.pollUiThread(() -> {
             Tab tab = cta.getActivityTab();
-            Criteria.checkThat("Unexpected URL: " + tab.getUrlString(),
+            Criteria.checkThat("Unexpected URL: " + tab.getUrl().getSpec(),
                     TemplateUrlServiceFactory.get().isSearchResultsPageFromDefaultSearchProvider(
-                            tab.getUrlString()),
+                            tab.getUrl()),
                     Matchers.is(false));
         });
     }

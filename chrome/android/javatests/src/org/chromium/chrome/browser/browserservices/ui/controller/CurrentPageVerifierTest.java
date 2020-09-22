@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.browserservices.ui.controller;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,9 +19,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.ClientPackageNameProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
@@ -34,14 +36,16 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.url.GURL;
 
 import java.util.Collections;
 
 /**
  * Tests for {@link CurrentPageVerifier}.
  */
-@RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 @DisableFeatures(ChromeFeatureList.TRUSTED_WEB_ACTIVITY_POST_MESSAGE)
 public class CurrentPageVerifierTest {
     private static final Origin TRUSTED_ORIGIN = Origin.create("https://www.origin1.com/");
@@ -90,6 +94,8 @@ public class CurrentPageVerifierTest {
     }
 
     @Test
+    @SmallTest
+    @UiThreadTest
     public void verifiesOriginOfInitialPage() {
         setInitialUrl(TRUSTED_ORIGIN_PAGE1);
         mCurrentPageVerifier.onFinishNativeInitialization();
@@ -97,6 +103,8 @@ public class CurrentPageVerifierTest {
     }
 
     @Test
+    @SmallTest
+    @UiThreadTest
     public void statusIsPending_UntilVerificationFinished() {
         setInitialUrl(TRUSTED_ORIGIN_PAGE1);
         mCurrentPageVerifier.onFinishNativeInitialization();
@@ -104,6 +112,8 @@ public class CurrentPageVerifierTest {
     }
 
     @Test
+    @SmallTest
+    @UiThreadTest
     public void statusIsSuccess_WhenVerificationSucceeds() {
         setInitialUrl(TRUSTED_ORIGIN_PAGE1);
         mCurrentPageVerifier.onFinishNativeInitialization();
@@ -112,6 +122,8 @@ public class CurrentPageVerifierTest {
     }
 
     @Test
+    @SmallTest
+    @UiThreadTest
     public void statusIsFail_WhenVerificationFails() {
         setInitialUrl(UNTRUSTED_PAGE);
         mCurrentPageVerifier.onFinishNativeInitialization();
@@ -120,6 +132,8 @@ public class CurrentPageVerifierTest {
     }
 
     @Test
+    @SmallTest
+    @UiThreadTest
     public void verifies_WhenNavigatingToOtherTrustedOrigin() {
         setInitialUrl(TRUSTED_ORIGIN_PAGE1);
         mCurrentPageVerifier.onFinishNativeInitialization();
@@ -130,6 +144,8 @@ public class CurrentPageVerifierTest {
     }
 
     @Test
+    @SmallTest
+    @UiThreadTest
     public void doesntUpdateState_IfVerificationFinishedAfterLeavingOrigin() {
         setInitialUrl(TRUSTED_ORIGIN_PAGE1);
         mCurrentPageVerifier.onFinishNativeInitialization();
@@ -140,6 +156,8 @@ public class CurrentPageVerifierTest {
     }
 
     @Test
+    @SmallTest
+    @UiThreadTest
     public void reverifiesOrigin_WhenReturningToIt_IfFirstVerificationDidntFinishInTime() {
         setInitialUrl(TRUSTED_ORIGIN_PAGE1);
         mCurrentPageVerifier.onFinishNativeInitialization();
@@ -151,7 +169,8 @@ public class CurrentPageVerifierTest {
     }
 
     private void assertStatus(@CurrentPageVerifier.VerificationStatus int status) {
-        assertEquals(status, mCurrentPageVerifier.getState().status);
+        CriteriaHelper.pollUiThreadNested(
+                () -> { return status == mCurrentPageVerifier.getState().status; });
     }
 
     private void verifyStartsVerification(String url) {
@@ -164,15 +183,16 @@ public class CurrentPageVerifierTest {
     }
 
     private void navigateToUrl(String url) {
+        GURL gurl = new GURL(url);
         when(mTab.getUrlString()).thenReturn(url);
         NavigationHandle navigation =
-                new NavigationHandle(0 /* navigationHandleProxy */, url, true /* isMainFrame */,
+                new NavigationHandle(0 /* navigationHandleProxy */, gurl, true /* isMainFrame */,
                         false /* isSameDocument */, false /* isRendererInitiated */);
         for (CustomTabTabObserver tabObserver : mTabObserverCaptor.getAllValues()) {
             tabObserver.onDidStartNavigation(mTab, navigation);
         }
 
-        navigation.didFinish(url, false /* isErrorPage */, true /* hasCommitted */,
+        navigation.didFinish(gurl, false /* isErrorPage */, true /* hasCommitted */,
                 false /* isFragmentNavigation */, false /* isDownload */,
                 false /* isValidSearchFormUrl */, 0 /* pageTransition */, 0 /* errorCode*/,
                 200 /* httpStatusCode*/);

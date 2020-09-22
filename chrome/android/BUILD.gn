@@ -797,7 +797,6 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/fullscreen/android:java",
     "//chrome/browser/image_editor/public:java",
     "//chrome/browser/image_fetcher:java",
-    "//chrome/browser/optimization_guide/android:junit_tests",
     "//chrome/browser/performance_hints/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/preferences:preferences_junit_tests",
@@ -897,6 +896,7 @@ junit_binary("chrome_junit_tests") {
     "//ui/android:ui_java",
     "//ui/base/mojom:mojom_java",
     "//url:gurl_java",
+    "//url:gurl_junit_test_support",
     "//url:origin_java",
     "//url/mojom:url_mojom_gurl_java",
   ]
@@ -991,6 +991,7 @@ android_library("chrome_test_java") {
     "//chrome/browser/fullscreen/android:java",
     "//chrome/browser/image_fetcher:java",
     "//chrome/browser/offline_pages/android:java",
+    "//chrome/browser/optimization_guide/android:javatests",
     "//chrome/browser/paint_preview/android:java",
     "//chrome/browser/password_check:public_java",
     "//chrome/browser/password_manager/android:java",

@@ -128,14 +128,16 @@ public class CriteriaHelper {
         new Handler(Looper.myLooper()).postDelayed(() -> { called.set(true); }, checkIntervalMs);
 
         TimeoutTimer timer = new TimeoutTimer(checkIntervalMs);
-        while (!timer.isTimedOut() && !called.get()) {
+        // To allow a checkInterval of 0ms, ensure we at least run a single task, which allows a
+        // test to check conditions between each task run on the thread.
+        do {
             try {
                 NestedSystemMessageHandler.runSingleNestedLooperTask(Looper.myQueue());
             } catch (IllegalArgumentException | IllegalAccessException | SecurityException
                     | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
-        }
+        } while (!timer.isTimedOut() && !called.get());
     }
 
     /**

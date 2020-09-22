@@ -36,7 +36,8 @@ public class LoadProgressMediator {
                     return;
                 }
 
-                if (NativePageFactory.isNativePageUrl(navigation.getUrl(), tab.isIncognito())) {
+                if (NativePageFactory.isNativePageUrl(
+                            navigation.getUrlString(), tab.isIncognito())) {
                     finishLoadProgress(false);
                     return;
                 }

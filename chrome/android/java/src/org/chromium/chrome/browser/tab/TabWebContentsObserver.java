@@ -29,6 +29,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.net.NetError;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -74,7 +75,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
     private final ObserverList<Callback<WebContents>> mInitObservers = new ObserverList<>();
     private final Handler mHandler = new Handler();
     private WebContentsObserver mObserver;
-    private String mLastUrl;
+    private GURL mLastUrl;
 
     public static TabWebContentsObserver from(Tab tab) {
         TabWebContentsObserver observer = get(tab);
@@ -293,8 +294,8 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
             if (navigation.errorCode() != NetError.OK) {
                 if (navigation.isInMainFrame()) mTab.didFailPageLoad(navigation.errorCode());
 
-                recordErrorInPolicyAuditor(
-                        navigation.getUrl(), navigation.errorDescription(), navigation.errorCode());
+                recordErrorInPolicyAuditor(navigation.getUrlString(), navigation.errorDescription(),
+                        navigation.errorCode());
             }
             mLastUrl = navigation.getUrl();
 

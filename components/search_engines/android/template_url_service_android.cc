@@ -112,10 +112,10 @@ jboolean
 TemplateUrlServiceAndroid::IsSearchResultsPageFromDefaultSearchProvider(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jstring>& jurl) {
-  GURL url(base::android::ConvertJavaStringToUTF8(env, jurl));
+    const base::android::JavaParamRef<jobject>& jurl) {
+  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, jurl);
   return template_url_service_->IsSearchResultsPageFromDefaultSearchProvider(
-      url);
+      *url);
 }
 
 void TemplateUrlServiceAndroid::OnTemplateURLServiceLoaded() {

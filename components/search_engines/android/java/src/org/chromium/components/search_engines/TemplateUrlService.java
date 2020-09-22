@@ -182,11 +182,18 @@ public class TemplateUrlService {
     }
 
     /**
+     * Do not use. This is part of a 3-sided patch to avoid breaking downstream builds.
+     */
+    public boolean isSearchResultsPageFromDefaultSearchProvider(String url) {
+        return isSearchResultsPageFromDefaultSearchProvider(new GURL(url));
+    }
+
+    /**
      * Checks whether a search result page is from a default search provider.
      * @param url The url for the search result page.
      * @return Whether the search result page with the given url from the default search provider.
      */
-    public boolean isSearchResultsPageFromDefaultSearchProvider(String url) {
+    public boolean isSearchResultsPageFromDefaultSearchProvider(GURL url) {
         ThreadUtils.assertOnUiThread();
         return TemplateUrlServiceJni.get().isSearchResultsPageFromDefaultSearchProvider(
                 mNativeTemplateUrlServiceAndroid, TemplateUrlService.this, url);
@@ -374,7 +381,7 @@ public class TemplateUrlService {
         boolean isDefaultSearchManaged(
                 long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);
         boolean isSearchResultsPageFromDefaultSearchProvider(
-                long nativeTemplateUrlServiceAndroid, TemplateUrlService caller, String url);
+                long nativeTemplateUrlServiceAndroid, TemplateUrlService caller, GURL url);
         boolean isSearchByImageAvailable(
                 long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);
         boolean isDefaultSearchEngineGoogle(
