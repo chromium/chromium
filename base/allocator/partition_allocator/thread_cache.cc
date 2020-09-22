@@ -56,7 +56,9 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
   size_t allocated_size;
   bool already_zeroed;
 
-  auto* bucket = root->SizeToBucket(sizeof(ThreadCache));
+  auto* bucket =
+      root->buckets + PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(
+                          sizeof(ThreadCache));
   void* buffer =
       root->RawAlloc(bucket, PartitionAllocZeroFill, sizeof(ThreadCache),
                      &allocated_size, &already_zeroed);

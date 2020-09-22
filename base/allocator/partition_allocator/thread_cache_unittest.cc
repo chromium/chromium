@@ -49,13 +49,8 @@ class LambdaThreadDelegate : public PlatformThread::Delegate {
 // Forbid extras, since they make finding out which bucket is used harder.
 NoDestructor<ThreadSafePartitionRoot> g_root{true, true};
 
-size_t BucketIndexForSize(size_t size) {
-  auto* bucket = g_root->SizeToBucket(size);
-  return bucket - g_root->buckets;
-}
-
 size_t FillThreadCacheAndReturnIndex(size_t size, size_t count = 1) {
-  size_t bucket_index = BucketIndexForSize(size);
+  uint16_t bucket_index = PartitionRoot<ThreadSafe>::SizeToBucketIndex(size);
   std::vector<void*> allocated_data;
 
   for (size_t i = 0; i < count; ++i) {
@@ -89,7 +84,7 @@ TEST_F(ThreadCacheTest, Simple) {
   auto* tcache = g_root->thread_cache_for_testing();
   EXPECT_TRUE(tcache);
 
-  size_t index = BucketIndexForSize(kTestSize);
+  uint16_t index = PartitionRoot<ThreadSafe>::SizeToBucketIndex(kTestSize);
   EXPECT_EQ(0u, tcache->bucket_count_for_testing(index));
 
   g_root->Free(ptr);
@@ -111,7 +106,7 @@ TEST_F(ThreadCacheTest, InexactSizeMatch) {
   auto* tcache = g_root->thread_cache_for_testing();
   EXPECT_TRUE(tcache);
 
-  size_t index = BucketIndexForSize(kTestSize);
+  uint16_t index = PartitionRoot<ThreadSafe>::SizeToBucketIndex(kTestSize);
   EXPECT_EQ(0u, tcache->bucket_count_for_testing(index));
 
   g_root->Free(ptr);

@@ -410,7 +410,8 @@ struct BASE_EXPORT PartitionRoot {
   // sizes.  It is one flat array instead of a 2D array because in the 2D
   // world, we'd need to index array[blah][max+1] which risks undefined
   // behavior.
-  Bucket* bucket_lookups[((kBitsPerSizeT + 1) * kNumBucketsPerOrder) + 1] = {};
+  static uint16_t
+      bucket_index_lookup[((kBitsPerSizeT + 1) * kNumBucketsPerOrder) + 1];
   Bucket buckets[kNumBuckets] = {};
   Bucket sentinel_bucket;
 
@@ -494,7 +495,7 @@ struct BASE_EXPORT PartitionRoot {
                  bool is_light_dump,
                  PartitionStatsDumper* partition_stats_dumper);
 
-  internal::PartitionBucket<thread_safe>* SizeToBucket(size_t size) const;
+  static uint16_t SizeToBucketIndex(size_t size);
 
   // Frees memory, with |ptr| as returned by |RawAlloc()|.
   ALWAYS_INLINE void RawFree(void* ptr, Page* page);
@@ -844,20 +845,20 @@ ALWAYS_INLINE void DCheckIfManagedByPartitionAllocNormalBuckets(const void*) {}
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
+// static
 template <bool thread_safe>
-ALWAYS_INLINE internal::PartitionBucket<thread_safe>*
-PartitionRoot<thread_safe>::SizeToBucket(size_t size) const {
+ALWAYS_INLINE uint16_t
+PartitionRoot<thread_safe>::SizeToBucketIndex(size_t size) {
   size_t order = kBitsPerSizeT - bits::CountLeadingZeroBitsSizeT(size);
   // The order index is simply the next few bits after the most significant bit.
   size_t order_index =
       (size >> kOrderIndexShift[order]) & (kNumBucketsPerOrder - 1);
   // And if the remaining bits are non-zero we must bump the bucket up.
   size_t sub_order_index = size & kOrderSubIndexMask[order];
-  Bucket* bucket = bucket_lookups[(order << kNumBucketsPerOrderBits) +
-                                  order_index + !!sub_order_index];
-  PA_DCHECK(!bucket->slot_size || bucket->slot_size >= size);
-  PA_DCHECK(!(bucket->slot_size % kSmallestBucket));
-  return bucket;
+  uint16_t index = bucket_index_lookup[(order << kNumBucketsPerOrderBits) +
+                                       order_index + !!sub_order_index];
+  PA_DCHECK(index <= kNumBuckets);  // Last one is the sentinetl bucket.
+  return index;
 }
 
 template <bool thread_safe>
@@ -915,7 +916,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(int flags,
   size = internal::PartitionSizeAdjustAdd(allow_extras, size);
   PA_CHECK(size >= requested_size);  // check for overflows
 
-  auto* bucket = SizeToBucket(size);
+  uint16_t bucket_index = SizeToBucketIndex(size);
   size_t allocated_size;
   bool is_already_zeroed;
   void* ret = nullptr;
@@ -950,11 +951,9 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(int flags,
     // bucket->slot_size is 0 for direct-mapped allocations, as their bucket is
     // the sentinel one. Since |bucket_index| is going to be kNumBuckets + 1,
     // the thread cache allocation will return nullptr.
-    PA_DCHECK(bucket >= buckets && bucket <= &sentinel_bucket);
-    size_t bucket_index = bucket - buckets;
     ret = tcache->GetFromCache(bucket_index);
     is_already_zeroed = false;
-    allocated_size = bucket->slot_size;
+    allocated_size = buckets[bucket_index].slot_size;
 
 #if DCHECK_IS_ON()
     // Make sure that the allocated pointer comes from the same place it would
@@ -968,7 +967,8 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(int flags,
   }
 
   if (!ret)
-    ret = RawAlloc(bucket, flags, size, &allocated_size, &is_already_zeroed);
+    ret = RawAlloc(buckets + bucket_index, flags, size, &allocated_size,
+                   &is_already_zeroed);
 
   if (UNLIKELY(!ret))
     return nullptr;
@@ -1109,9 +1109,12 @@ ALWAYS_INLINE size_t PartitionRoot<thread_safe>::ActualSize(size_t size) {
 #else
   PA_DCHECK(PartitionRoot<thread_safe>::initialized);
   size = internal::PartitionSizeAdjustAdd(allow_extras, size);
-  auto* bucket = SizeToBucket(size);
-  if (LIKELY(!bucket->is_direct_mapped())) {
-    size = bucket->slot_size;
+  auto& bucket = buckets[SizeToBucketIndex(size)];
+  PA_DCHECK(!bucket.slot_size || bucket.slot_size >= size);
+  PA_DCHECK(!(bucket.slot_size % kSmallestBucket));
+
+  if (LIKELY(!bucket.is_direct_mapped())) {
+    size = bucket.slot_size;
   } else if (size > MaxDirectMapped()) {
     // Too large to allocate => return the size unchanged.
   } else {

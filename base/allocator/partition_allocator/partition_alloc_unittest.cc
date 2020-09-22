@@ -162,7 +162,7 @@ class PartitionAllocTest : public testing::Test {
   }
 
   size_t SizeToIndex(size_t size) {
-    return allocator.root()->SizeToBucket(size) - allocator.root()->buckets;
+    return PartitionRoot<base::internal::ThreadSafe>::SizeToBucketIndex(size);
   }
 
   void TearDown() override {
@@ -950,7 +950,7 @@ TEST_F(PartitionAllocTest, GetOffsetMultiplePages) {
   EXPECT_GT(requested_size, 0u);
   EXPECT_LE(requested_size, real_size);
   PartitionBucket<ThreadSafe>* bucket =
-      allocator.root()->SizeToBucket(real_size);
+      allocator.root()->buckets + SizeToIndex(real_size);
   // Make sure the test is testing multiple partition pages case.
   EXPECT_GT(bucket->num_system_pages_per_slot_span,
             PartitionPageSize() / SystemPageSize());
