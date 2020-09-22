@@ -292,7 +292,7 @@ bool V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
     }
 
     base::Optional<struct v4l2_format> format =
-        output_queue_->SetFormat(pixfmt, size, 0);
+        output_queue_->TryFormat(pixfmt, size, 0);
     if (!format)
       continue;
 

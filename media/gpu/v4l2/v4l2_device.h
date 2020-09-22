@@ -308,6 +308,15 @@ class MEDIA_GPU_EXPORT V4L2Queue
                                                size_t buffer_size)
       WARN_UNUSED_RESULT;
 
+  // Identical to |SetFormat|, but does not actually apply the format, and can
+  // be called anytime.
+  // Returns an adjusted V4L2 format if |fourcc| is supported by the queue, or
+  // |nullopt| if |fourcc| is not supported or an ioctl error happened.
+  base::Optional<struct v4l2_format> TryFormat(uint32_t fourcc,
+                                               const gfx::Size& size,
+                                               size_t buffer_size)
+      WARN_UNUSED_RESULT;
+
   // Returns the currently set format on the queue. The result is returned as
   // a std::pair where the first member is the format, or base::nullopt if the
   // format could not be obtained due to an ioctl error. The second member is
