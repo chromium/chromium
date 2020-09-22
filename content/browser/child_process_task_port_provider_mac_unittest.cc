@@ -35,6 +35,8 @@ class MockChildProcess : public mojom::ChildProcess {
 #endif
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
   MOCK_METHOD1(SetProfilingFile, void(base::File));
+  MOCK_METHOD1(WriteClangProfilingProfile,
+               void(WriteClangProfilingProfileCallback));
 #endif
   MOCK_METHOD1(GetBackgroundTracingAgentProvider,
                void(mojo::PendingReceiver<
