@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "media/gpu/vaapi/vaapi_picture.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace gl {
@@ -47,9 +48,9 @@ class VaapiTFPPicture : public VaapiPicture {
  private:
   Status Initialize();
 
-  Display* x_display_;
+  x11::Connection* const connection_;
 
-  Pixmap x_pixmap_;
+  ::Pixmap x_pixmap_;
   scoped_refptr<gl::GLImageGLX> glx_image_;
 
   DISALLOW_COPY_AND_ASSIGN(VaapiTFPPicture);

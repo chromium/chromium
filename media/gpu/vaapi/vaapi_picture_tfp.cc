@@ -7,6 +7,7 @@
 #include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11_types.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_image_glx.h"
@@ -33,7 +34,7 @@ VaapiTFPPicture::VaapiTFPPicture(
                    texture_id,
                    client_texture_id,
                    texture_target),
-      x_display_(gfx::GetXDisplay()),
+      connection_(x11::Connection::Get()),
       x_pixmap_(0) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!features::IsUsingOzonePlatform());
@@ -49,7 +50,7 @@ VaapiTFPPicture::~VaapiTFPPicture() {
   }
 
   if (x_pixmap_)
-    XFreePixmap(x_display_, x_pixmap_);
+    connection_->FreePixmap({static_cast<x11::Pixmap>(x_pixmap_)});
 }
 
 Status VaapiTFPPicture::Initialize() {
@@ -84,16 +85,33 @@ Status VaapiTFPPicture::Allocate(gfx::BufferFormat format) {
     return StatusCode::kVaapiUnsupportedFormat;
   }
 
-  XWindowAttributes win_attr;
-  int screen = DefaultScreen(x_display_);
-  XGetWindowAttributes(x_display_, XRootWindow(x_display_, screen), &win_attr);
+  if (!connection_->Ready())
+    return StatusCode::kVaapiNoPixmap;
+
+  auto root = connection_->default_root();
+
+  uint8_t depth = 0;
+  if (auto reply = connection_->GetGeometry({root}).Sync())
+    depth = reply->depth;
+  else
+    return StatusCode::kVaapiNoPixmap;
+
   // TODO(posciak): pass the depth required by libva, not the RootWindow's
   // depth
-  x_pixmap_ = XCreatePixmap(x_display_, XRootWindow(x_display_, screen),
-                            size_.width(), size_.height(), win_attr.depth);
-  if (!x_pixmap_) {
+  auto pixmap = connection_->GenerateId<x11::Pixmap>();
+  uint16_t pixmap_width, pixmap_height;
+  if (!base::CheckedNumeric<int>(size_.width()).AssignIfValid(&pixmap_width) ||
+      !base::CheckedNumeric<int>(size_.height())
+           .AssignIfValid(&pixmap_height)) {
+    return StatusCode::kVaapiNoPixmap;
+  }
+  auto req = connection_->CreatePixmap(
+      {depth, pixmap, root, pixmap_width, pixmap_height});
+  if (req.Sync().error) {
     DLOG(ERROR) << "Failed creating an X Pixmap for TFP";
     return StatusCode::kVaapiNoPixmap;
+  } else {
+    x_pixmap_ = base::strict_cast<::Pixmap>(pixmap);
   }
 
   return Initialize();

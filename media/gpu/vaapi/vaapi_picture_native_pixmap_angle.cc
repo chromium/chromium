@@ -7,6 +7,8 @@
 #include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/xproto.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_image_egl_pixmap.h"
 #include "ui/gl/scoped_binders.h"
@@ -15,25 +17,31 @@ namespace media {
 
 namespace {
 
-inline Pixmap CreatePixmap(const gfx::Size& size) {
-  auto* display = gfx::GetXDisplay();
-  if (!display)
-    return 0;
+inline ::Pixmap CreatePixmap(const gfx::Size& size) {
+  auto* connection = x11::Connection::Get();
+  if (!connection->Ready())
+    return base::strict_cast<::Pixmap>(x11::Pixmap::None);
 
-  int screen = DefaultScreen(display);
-  auto root = XRootWindow(display, screen);
-  if (root == BadValue)
-    return 0;
+  auto root = connection->default_root();
 
-  XWindowAttributes win_attr = {};
-  // returns 0 on failure, see:
-  // https://tronche.com/gui/x/xlib/introduction/errors.html#Status
-  if (!XGetWindowAttributes(display, root, &win_attr))
-    return 0;
+  uint8_t depth = 0;
+  if (auto reply = connection->GetGeometry({root}).Sync())
+    depth = reply->depth;
+  else
+    return base::strict_cast<::Pixmap>(x11::Pixmap::None);
 
   // TODO(tmathmeyer) should we use the depth from libva instead of root window?
-  return XCreatePixmap(display, root, size.width(), size.height(),
-                       win_attr.depth);
+  auto pixmap = connection->GenerateId<x11::Pixmap>();
+  uint16_t pixmap_width, pixmap_height;
+  if (!base::CheckedNumeric<int>(size.width()).AssignIfValid(&pixmap_width) ||
+      !base::CheckedNumeric<int>(size.height()).AssignIfValid(&pixmap_height)) {
+    return base::strict_cast<::Pixmap>(x11::Pixmap::None);
+  }
+  auto req = connection->CreatePixmap(
+      {depth, pixmap, root, pixmap_width, pixmap_height});
+  if (req.Sync().error)
+    pixmap = x11::Pixmap::None;
+  return base::strict_cast<::Pixmap>(pixmap);
 }
 
 }  // namespace
@@ -71,11 +79,8 @@ VaapiPictureNativePixmapAngle::~VaapiPictureNativePixmapAngle() {
     DCHECK_EQ(glGetError(), static_cast<GLenum>(GL_NO_ERROR));
   }
 
-  if (x_pixmap_) {
-    if (auto* display = gfx::GetXDisplay()) {
-      XFreePixmap(display, x_pixmap_);
-    }
-  }
+  if (x_pixmap_)
+    x11::Connection::Get()->FreePixmap({static_cast<x11::Pixmap>(x_pixmap_)});
 }
 
 Status VaapiPictureNativePixmapAngle::Allocate(gfx::BufferFormat format) {

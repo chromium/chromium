@@ -46,7 +46,7 @@ class VaapiPictureNativePixmapAngle : public VaapiPictureNativePixmap {
   VASurfaceID va_surface_id() const override;
 
  private:
-  Pixmap x_pixmap_ = 0;
+  ::Pixmap x_pixmap_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(VaapiPictureNativePixmapAngle);
 };
