@@ -43,20 +43,22 @@ namespace {
 // Sizes are in px.
 constexpr int kButtonPadding = 8;
 constexpr int kButtonWidth = 92;
-constexpr int kBubbleTopPaddingFromWindow = 36;
 constexpr int kCornerRadius = 12;
+constexpr int kBubbleTopPaddingFromWindow = 36;
+constexpr int kDefaultBubbleWidth = 416;
+constexpr int kNoExtensionBubbleHeight = 340;
+constexpr int kDefaultBubbleHeight = 380;
+constexpr int kExpandedBubbleHeight = 522;
 constexpr int kMaxTargetsPerRow = 4;
+constexpr int kMaxRowsForDefaultView = 2;
+
 // TargetViewHeight is 2*kButtonHeight + kButtonPadding
 constexpr int kTargetViewHeight = 216;
 constexpr int kTargetViewExpandedHeight = 382;
-constexpr int kDefaultBubbleWidth = 416;
 
-constexpr int kMaxRowsForDefaultView = 2;
 constexpr int kExpandViewTitleLabelHeight = 22;
 constexpr int kExpandViewPadding = 16;
 
-constexpr int kDefaultBubbleHeight = 380;
-constexpr int kExpandedBubbleHeight = 522;
 constexpr int kShortSpacing = 20;
 constexpr int kSpacing = 24;
 constexpr int kTitleLineHeight = 24;
@@ -154,7 +156,12 @@ void SharesheetBubbleView::ShowBubble(std::vector<TargetInfo> targets,
   GetWidget()->GetRootView()->Layout();
   widget->Show();
 
-  SetToDefaultBubbleSizing();
+  if (targets_.size() <= (kMaxRowsForDefaultView * kMaxTargetsPerRow)) {
+    width_ = kDefaultBubbleWidth;
+    height_ = kNoExtensionBubbleHeight;
+  } else {
+    SetToDefaultBubbleSizing();
+  }
   UpdateAnchorPosition();
 }
 
@@ -164,9 +171,6 @@ std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView() {
   auto* default_layout =
       default_view->SetLayoutManager(std::make_unique<views::GridLayout>());
   SetUpTargetColumnSet(default_layout);
-
-  // TODO(crbug.com/1097623) When there are 8 or less apps don't show
-  // expanded_view.
 
   auto expanded_view = std::make_unique<views::View>();
   auto* expanded_layout =
