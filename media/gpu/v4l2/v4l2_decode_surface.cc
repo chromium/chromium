@@ -140,7 +140,6 @@ void V4L2RequestDecodeSurface::PrepareSetCtrls(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(ctrls, nullptr);
 
-  ctrls->which = V4L2_CTRL_WHICH_REQUEST_VAL;
   request_ref_.ApplyCtrls(ctrls);
 }
 
