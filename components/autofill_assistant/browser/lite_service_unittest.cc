@@ -32,24 +32,15 @@ using ::testing::_;
 using ::testing::AtMost;
 using ::testing::Eq;
 
-class MockDelegate : public LiteService::Delegate {
- public:
-  ~MockDelegate() {}
-  MOCK_CONST_METHOD0(OnUiShown, void());
-  MOCK_CONST_METHOD1(OnFinished, void(Metrics::LiteScriptFinishedState state));
-};
-
 class LiteServiceTest : public testing::Test {
  protected:
   LiteServiceTest() {
     auto service_impl = std::make_unique<MockService>();
     mock_native_service_ = service_impl.get();
 
-    auto delegate = std::make_unique<MockDelegate>();
-    mock_delegate_ = delegate.get();
-
     lite_service_ = std::make_unique<LiteService>(
-        std::move(service_impl), kFakeScriptPath, std::move(delegate));
+        std::move(service_impl), kFakeScriptPath, mock_finished_callback_.Get(),
+        mock_ui_shown_callback_.Get());
     EXPECT_CALL(*mock_native_service_, OnGetScriptsForUrl).Times(0);
     EXPECT_CALL(*mock_native_service_, OnGetNextActions).Times(0);
 
@@ -82,27 +73,30 @@ class LiteServiceTest : public testing::Test {
     std::string serialized_stop;
     stop.SerializeToString(&serialized_stop);
     EXPECT_CALL(mock_response_callback_, Run(true, serialized_stop)).Times(1);
-    EXPECT_CALL(*mock_delegate_, OnFinished(state));
+    EXPECT_CALL(mock_finished_callback_, Run(state));
   }
 
+  base::MockCallback<base::OnceCallback<void(Metrics::LiteScriptFinishedState)>>
+      mock_finished_callback_;
+  base::MockCallback<base::OnceCallback<void(void)>> mock_ui_shown_callback_;
   base::MockCallback<base::OnceCallback<void(bool, const std::string&)>>
       mock_response_callback_;
   MockService* mock_native_service_ = nullptr;
-  MockDelegate* mock_delegate_ = nullptr;
   std::unique_ptr<LiteService> lite_service_;
   ActionsResponseProto get_actions_response_;
 };
 
 TEST_F(LiteServiceTest, RunsNotificationOnDelete) {
-  auto delegate = std::make_unique<MockDelegate>();
-  auto* delegate_ptr = delegate.get();
+  base::MockCallback<base::OnceCallback<void(Metrics::LiteScriptFinishedState)>>
+      notification_callback;
+  base::MockCallback<base::OnceCallback<void()>> ui_shown_callback;
   EXPECT_CALL(
-      *delegate_ptr,
-      OnFinished(
-          Metrics::LiteScriptFinishedState::LITE_SCRIPT_SERVICE_DELETED));
+      notification_callback,
+      Run(Metrics::LiteScriptFinishedState::LITE_SCRIPT_SERVICE_DELETED));
   {
     LiteService lite_service(std::make_unique<MockService>(), kFakeScriptPath,
-                             std::move(delegate));
+                             notification_callback.Get(),
+                             ui_shown_callback.Get());
   }
 }
 
@@ -169,7 +163,8 @@ TEST_F(LiteServiceTest, StopsOnGetActionsFailed) {
                     Service::ResponseCallback& callback) {
         std::move(callback).Run(false, std::string());
       });
-  EXPECT_CALL(*mock_delegate_, OnUiShown).Times(0);
+
+  EXPECT_CALL(mock_ui_shown_callback_, Run).Times(0);
   lite_service_->GetActions(kFakeScriptPath, GURL(kFakeUrl),
                             TriggerContextImpl(), "", "",
                             mock_response_callback_.Get());
@@ -188,7 +183,7 @@ TEST_F(LiteServiceTest, StopsOnGetActionsParsingError) {
                     Service::ResponseCallback& callback) {
         std::move(callback).Run(true, std::string("invalid proto"));
       });
-  EXPECT_CALL(*mock_delegate_, OnUiShown).Times(0);
+  EXPECT_CALL(mock_ui_shown_callback_, Run).Times(0);
   lite_service_->GetActions(kFakeScriptPath, GURL(kFakeUrl),
                             TriggerContextImpl(), "", "",
                             mock_response_callback_.Get());
@@ -200,7 +195,7 @@ TEST_F(LiteServiceTest, StopsOnGetActionsContainsUnsafeActions) {
   get_actions_response_.add_actions()->mutable_prompt();
   ExpectStopWithFinishedState(
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_UNSAFE_ACTIONS);
-  EXPECT_CALL(*mock_delegate_, OnUiShown).Times(0);
+  EXPECT_CALL(mock_ui_shown_callback_, Run).Times(0);
   lite_service_->GetActions(kFakeScriptPath, GURL(kFakeUrl),
                             TriggerContextImpl(), "", "",
                             mock_response_callback_.Get());
@@ -266,7 +261,7 @@ TEST_F(LiteServiceTest, GetActionsSplitsActionsResponseAtLastBrowse) {
         processed_actions.back().mutable_prompt_choice()->set_server_payload(
             proto.actions(3).prompt().choices(0).server_payload());
       });
-  EXPECT_CALL(*mock_delegate_, OnUiShown).Times(1);
+  EXPECT_CALL(mock_ui_shown_callback_, Run).Times(1);
   lite_service_->GetActions(kFakeScriptPath, GURL(kFakeUrl),
                             TriggerContextImpl(), "", "",
                             mock_response_callback_.Get());
@@ -295,7 +290,7 @@ TEST_F(LiteServiceTest, GetNextActionsFirstPartStopsOnUserNavigateAway) {
 
   ExpectStopWithFinishedState(
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_BROWSE_FAILED_NAVIGATE);
-  EXPECT_CALL(*mock_delegate_, OnUiShown).Times(0);
+  EXPECT_CALL(mock_ui_shown_callback_, Run).Times(0);
   lite_service_->GetNextActions(TriggerContextImpl(), "", "", processed_actions,
                                 mock_response_callback_.Get());
 }
@@ -314,7 +309,7 @@ TEST_F(LiteServiceTest, GetNextActionsFirstPartSucceedsOnAutoSelectChoice) {
       "payload");
 
   EXPECT_CALL(mock_response_callback_, Run(true, ""));
-  EXPECT_CALL(*mock_delegate_, OnUiShown).Times(1);
+  EXPECT_CALL(mock_ui_shown_callback_, Run).Times(1);
   lite_service_->GetNextActions(TriggerContextImpl(), "", "", processed_actions,
                                 mock_response_callback_.Get());
 }

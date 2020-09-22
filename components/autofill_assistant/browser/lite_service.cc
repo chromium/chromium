@@ -15,18 +15,21 @@
 
 namespace autofill_assistant {
 
-LiteService::LiteService(std::unique_ptr<Service> service_impl,
-                         const std::string& trigger_script_path,
-                         std::unique_ptr<Delegate> delegate)
+LiteService::LiteService(
+    std::unique_ptr<Service> service_impl,
+    const std::string& trigger_script_path,
+    base::OnceCallback<void(Metrics::LiteScriptFinishedState)>
+        notify_finished_callback,
+    base::OnceCallback<void()> notify_ui_shown_callback)
     : service_impl_(std::move(service_impl)),
       trigger_script_path_(trigger_script_path),
-      delegate_(std::move(delegate)) {}
+      notify_finished_callback_(std::move(notify_finished_callback)),
+      notify_ui_shown_callback_(std::move(notify_ui_shown_callback)) {}
 
 LiteService::~LiteService() {
-  if (delegate_) {
-    delegate_->OnFinished(
-        Metrics::LiteScriptFinishedState::LITE_SCRIPT_SERVICE_DELETED);
-    delegate_.reset();
+  if (notify_finished_callback_) {
+    std::move(notify_finished_callback_)
+        .Run(Metrics::LiteScriptFinishedState::LITE_SCRIPT_SERVICE_DELETED);
   }
 }
 
@@ -136,7 +139,7 @@ void LiteService::GetNextActions(
     const std::string& previous_script_payload,
     const std::vector<ProcessedActionProto>& processed_actions,
     ResponseCallback callback) {
-  if (!delegate_) {
+  if (!notify_finished_callback_) {
     // The lite script has already terminated. We need to run |callback| with
     // |success|=true and an empty response to ensure a graceful stop of the
     // script (i.e., without error message).
@@ -174,7 +177,9 @@ void LiteService::GetNextActions(
         trigger_script_second_part_->SerializeToString(&serialized_second_part);
         trigger_script_second_part_.reset();
         std::move(callback).Run(true, serialized_second_part);
-        delegate_->OnUiShown();
+        if (notify_ui_shown_callback_) {
+          std::move(notify_ui_shown_callback_).Run();
+        }
         return;
     }
   } else {
@@ -219,9 +224,8 @@ void LiteService::StopWithoutErrorMessage(
     Metrics::LiteScriptFinishedState state) {
   // Notify delegate BEFORE terminating the controller. See comment in header
   // for |OnFinished|.
-  if (delegate_) {
-    delegate_->OnFinished(state);
-    delegate_.reset();
+  if (notify_finished_callback_) {
+    std::move(notify_finished_callback_).Run(state);
   }
 
   // Stop script.

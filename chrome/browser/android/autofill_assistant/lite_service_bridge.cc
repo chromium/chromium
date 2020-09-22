@@ -14,26 +14,18 @@
 
 namespace autofill_assistant {
 
-class LiteServiceJavaDelegate : public LiteService::Delegate {
- public:
-  LiteServiceJavaDelegate(
-      const base::android::JavaParamRef<jobject>& java_lite_service)
-      : java_lite_service_(java_lite_service) {}
-  void OnUiShown() const override {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_AutofillAssistantLiteService_onUiShown(env, java_lite_service_);
-  }
+void OnFinished(base::android::ScopedJavaGlobalRef<jobject> java_lite_service,
+                Metrics::LiteScriptFinishedState state) {
+  VLOG(1) << "Lite service finished with state " << static_cast<int>(state);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_AutofillAssistantLiteService_onFinished(env, java_lite_service,
+                                               static_cast<int>(state));
+}
 
-  void OnFinished(Metrics::LiteScriptFinishedState state) const override {
-    VLOG(1) << "Lite service finished with state " << static_cast<int>(state);
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_AutofillAssistantLiteService_onFinished(env, java_lite_service_,
-                                                 static_cast<int>(state));
-  }
-
- private:
-  base::android::ScopedJavaGlobalRef<jobject> java_lite_service_;
-};
+void OnUiShown(base::android::ScopedJavaGlobalRef<jobject> java_lite_service) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_AutofillAssistantLiteService_onUiShown(env, java_lite_service);
+}
 
 // static
 jlong JNI_AutofillAssistantLiteService_CreateLiteService(
@@ -57,7 +49,10 @@ jlong JNI_AutofillAssistantLiteService_CreateLiteService(
                                     /* access_token_fetcher = */ nullptr,
                                     /* auth_enabled = */ false),
       base::android::ConvertJavaStringToUTF8(env, jtrigger_script_path),
-      std::make_unique<LiteServiceJavaDelegate>(java_lite_service)));
+      base::BindOnce(&OnFinished, base::android::ScopedJavaGlobalRef<jobject>(
+                                      java_lite_service)),
+      base::BindOnce(&OnUiShown, base::android::ScopedJavaGlobalRef<jobject>(
+                                     java_lite_service))));
 }
 
 }  // namespace autofill_assistant
