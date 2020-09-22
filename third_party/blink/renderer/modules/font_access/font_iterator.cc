@@ -71,15 +71,17 @@ void FontIterator::DidGetEnumerationResponse(
     FontEnumerationStatus status,
     base::ReadOnlySharedMemoryRegion region) {
   switch (status) {
+    case FontEnumerationStatus::kOk:
+      break;
     case FontEnumerationStatus::kUnimplemented:
       pending_resolver_->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
           "Not yet supported on this platform."));
       pending_resolver_.Clear();
       return;
-    case FontEnumerationStatus::kUnexpectedError:
+    case FontEnumerationStatus::kNeedsUserActivation:
       pending_resolver_->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kUnknownError, "An unexpected error occured."));
+          DOMExceptionCode::kSecurityError, "User activation is required."));
       pending_resolver_.Clear();
       return;
     case FontEnumerationStatus::kPermissionDenied:
@@ -88,8 +90,12 @@ void FontIterator::DidGetEnumerationResponse(
           DOMExceptionCode::kNotAllowedError, "Permission not granted."));
       pending_resolver_.Clear();
       return;
+    case FontEnumerationStatus::kUnexpectedError:
     default:
-      break;
+      pending_resolver_->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kUnknownError, "An unexpected error occured."));
+      pending_resolver_.Clear();
+      return;
   }
   permission_status_ = PermissionStatus::GRANTED;
 

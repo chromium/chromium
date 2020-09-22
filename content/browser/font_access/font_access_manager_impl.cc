@@ -8,9 +8,10 @@
 #include "base/task/post_task.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/browser/permissions/permission_controller_impl.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -43,7 +44,15 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
 #if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
     defined(OS_MAC)
   const BindingContext& context = receivers_.current_context();
-  RenderFrameHost* rfh = RenderFrameHost::FromID(context.frame_id);
+  RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(context.frame_id);
+
+  // Sticky User Activation is required for the API to function at all.
+  if (!rfh->frame_tree_node()->HasStickyUserActivation()) {
+    std::move(callback).Run(
+        blink::mojom::FontEnumerationStatus::kNeedsUserActivation,
+        base::ReadOnlySharedMemoryRegion());
+    return;
+  }
 
   auto status = PermissionControllerImpl::FromBrowserContext(
                     rfh->GetProcess()->GetBrowserContext())
@@ -56,12 +65,17 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
     return;
   }
 
+  // Transient User Activation only required before showing permission prompt.
+  // This action will consume it.
   if (!rfh->HasTransientUserActivation()) {
     std::move(callback).Run(
-        blink::mojom::FontEnumerationStatus::kPermissionDenied,
+        blink::mojom::FontEnumerationStatus::kNeedsUserActivation,
         base::ReadOnlySharedMemoryRegion());
     return;
   }
+  rfh->frame_tree_node()->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
+      blink::mojom::UserActivationNotificationType::kNone);
 
   PermissionControllerImpl::FromBrowserContext(
       rfh->GetProcess()->GetBrowserContext())

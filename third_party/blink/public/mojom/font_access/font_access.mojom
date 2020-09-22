@@ -13,6 +13,8 @@ enum FontEnumerationStatus {
   kUnimplemented,
   // The service failed due to an unexpected error.
   kUnexpectedError,
+  // Needs user activation to proceed.
+  kNeedsUserActivation,
   // The site doesn't have permission for the requested operation.
   kPermissionDenied,
 };
