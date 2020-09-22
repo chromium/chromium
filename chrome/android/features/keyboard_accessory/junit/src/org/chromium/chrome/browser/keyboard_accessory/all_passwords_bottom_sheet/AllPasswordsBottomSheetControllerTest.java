@@ -38,11 +38,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 @Features.EnableFeatures(ChromeFeatureList.FILLING_PASSWORDS_FROM_ANY_ORIGIN)
 public class AllPasswordsBottomSheetControllerTest {
     private static final Credential ANA =
-            new Credential("Ana", "S3cr3t", "Ana", "https://m.a.xyz/", true, false);
+            new Credential("Ana", "S3cr3t", "Ana", "https://m.a.xyz/", false, "");
     private static final Credential BOB =
-            new Credential("Bob", "*****", "Bob", "https://subdomain.example.xyz", true, false);
+            new Credential("Bob", "*****", "Bob", "https://subdomain.example.xyz", false, "");
     private static final Credential CARL =
-            new Credential("Carl", "G3h3!m", "Carl", "https://www.example.xyz", false, false);
+            new Credential("Carl", "G3h3!m", "Carl", "https://www.example.xyz", false, "");
     private static final Credential[] TEST_CREDENTIALS = new Credential[] {ANA, BOB, CARL};
     private static final boolean IS_PASSWORD_FIELD = true;
 

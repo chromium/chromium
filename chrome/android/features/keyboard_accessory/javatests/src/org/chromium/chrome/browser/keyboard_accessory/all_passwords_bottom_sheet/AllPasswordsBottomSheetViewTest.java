@@ -50,11 +50,11 @@ import org.chromium.ui.widget.ChipView;
 @Features.EnableFeatures(ChromeFeatureList.FILLING_PASSWORDS_FROM_ANY_ORIGIN)
 public class AllPasswordsBottomSheetViewTest {
     private static final Credential ANA =
-            new Credential("Ana", "S3cr3t", "Ana", "https://example.com", false, false);
+            new Credential("Ana", "S3cr3t", "Ana", "https://example.com", false, "");
     private static final Credential NO_ONE =
-            new Credential("", "***", "No Username", "https://m.example.xyz", true, false);
+            new Credential("", "***", "No Username", "https://m.example.xyz", false, "");
     private static final Credential BOB =
-            new Credential("Bob", "***", "Bob", "http://mobile.example.xyz", true, false);
+            new Credential("Bob", "***", "Bob", "android://com.facebook.org", true, "facebook");
     private static final boolean IS_PASSWORD_FIELD = true;
 
     @Mock
@@ -133,7 +133,7 @@ public class AllPasswordsBottomSheetViewTest {
         assertThat(getCredentialPasswordAt(1).isEnabled(), is(true));
         assertThat(getCredentialPasswordAt(1).isClickable(), is(true));
 
-        assertThat(getCredentialOriginAt(2).getText(), is("http://mobile.example.xyz"));
+        assertThat(getCredentialOriginAt(2).getText(), is("facebook"));
         assertThat(getCredentialNameAt(2).getPrimaryTextView().getText(),
                 is(BOB.getFormattedUsername()));
         assertThat(

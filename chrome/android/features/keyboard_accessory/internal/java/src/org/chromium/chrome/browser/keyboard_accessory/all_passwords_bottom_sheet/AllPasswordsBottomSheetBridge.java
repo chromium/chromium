@@ -45,10 +45,10 @@ class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinato
 
     @CalledByNative
     private void insertCredential(int index, String username, String password,
-            String formattedUsername, String originUrl, boolean isPublicSuffixMatch,
-            boolean isAffiliationBasedMatch) {
+            String formattedUsername, String originUrl, boolean isAndroidCredential,
+            String appDisplayName) {
         mCredentials[index] = new Credential(username, password, formattedUsername, originUrl,
-                isPublicSuffixMatch, isAffiliationBasedMatch);
+                isAndroidCredential, appDisplayName);
     }
 
     @CalledByNative
@@ -59,7 +59,8 @@ class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinato
     @Override
     public void onCredentialSelected(Credential credential) {
         assert mNativeView != 0 : "The native side is already dismissed";
-        AllPasswordsBottomSheetBridgeJni.get().onCredentialSelected(mNativeView, credential);
+        AllPasswordsBottomSheetBridgeJni.get().onCredentialSelected(
+                mNativeView, credential.getUsername(), credential.getPassword());
     }
 
     @Override
@@ -72,7 +73,7 @@ class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinato
     @NativeMethods
     interface Natives {
         void onCredentialSelected(
-                long nativeAllPasswordsBottomSheetViewImpl, Credential credential);
+                long nativeAllPasswordsBottomSheetViewImpl, String username, String password);
         void onDismiss(long nativeAllPasswordsBottomSheetViewImpl);
     }
 }

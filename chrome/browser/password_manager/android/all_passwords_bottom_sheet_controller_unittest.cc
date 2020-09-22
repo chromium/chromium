@@ -159,7 +159,8 @@ TEST_F(AllPasswordsBottomSheetControllerTest, OnCredentialSelected) {
   EXPECT_CALL(driver(),
               FillIntoFocusedField(true, base::ASCIIToUTF16(kPassword)));
 
-  all_passwords_controller()->OnCredentialSelected(credential);
+  all_passwords_controller()->OnCredentialSelected(
+      base::UTF8ToUTF16(kUsername1), base::UTF8ToUTF16(kPassword));
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, OnDismiss) {

@@ -37,7 +37,8 @@ class AllPasswordsBottomSheetViewImpl : public AllPasswordsBottomSheetView {
   // presented to them.
   void OnCredentialSelected(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& credential);
+      const base::android::JavaParamRef<jstring>& username,
+      const base::android::JavaParamRef<jstring>& password);
 
   // Called from Java bridge when user dismisses the BottomSheet.
   // Redirects the call to the controller.

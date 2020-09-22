@@ -12,7 +12,6 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace password_manager {
-class UiCredential;
 class PasswordManagerDriver;
 }  // namespace password_manager
 
@@ -54,7 +53,8 @@ class AllPasswordsBottomSheetController
   void Show();
 
   // Informs the controller that the user has made a selection.
-  void OnCredentialSelected(const password_manager::UiCredential& credential);
+  void OnCredentialSelected(const base::string16 username,
+                            const base::string16 password);
 
   // The web page view containing the focused field.
   gfx::NativeView GetNativeView();

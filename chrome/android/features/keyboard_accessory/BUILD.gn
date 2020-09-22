@@ -24,7 +24,6 @@ generate_jni("jni_headers") {
     "internal/java/src/org/chromium/chrome/browser/keyboard_accessory/AutofillKeyboardAccessoryViewBridge.java",
     "internal/java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingComponentBridge.java",
     "internal/java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetBridge.java",
-    "internal/java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/Credential.java",
     "public/java/src/org/chromium/chrome/browser/keyboard_accessory/data/UserInfoField.java",
   ]
 }

@@ -8,13 +8,11 @@
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view_impl.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
-#include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "content/public/browser/web_contents.h"
 
 using autofill::mojom::FocusedFieldType;
-using password_manager::UiCredential;
 
 // No-op constructor for tests.
 AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
@@ -69,14 +67,15 @@ gfx::NativeView AllPasswordsBottomSheetController::GetNativeView() {
 }
 
 void AllPasswordsBottomSheetController::OnCredentialSelected(
-    const UiCredential& credential) {
+    const base::string16 username,
+    const base::string16 password) {
   const bool is_password_field =
       focused_field_type_ == FocusedFieldType::kFillablePasswordField;
   DCHECK(driver_);
   if (is_password_field) {
-    driver_->FillIntoFocusedField(is_password_field, credential.password());
+    driver_->FillIntoFocusedField(is_password_field, password);
   } else {
-    driver_->FillIntoFocusedField(is_password_field, credential.username());
+    driver_->FillIntoFocusedField(is_password_field, username);
   }
 
   // Consumes the dismissal callback to destroy the native controller and java

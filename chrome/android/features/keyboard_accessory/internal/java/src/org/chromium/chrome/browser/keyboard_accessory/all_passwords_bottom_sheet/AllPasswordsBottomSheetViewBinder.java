@@ -134,10 +134,12 @@ class AllPasswordsBottomSheetViewBinder {
             passwordView.setEnabled(isPasswordField);
             passwordView.setClickable(isPasswordField);
         } else if (propertyKey == CREDENTIAL) {
-            TextView originView = view.findViewById(R.id.password_info_title);
-            String formattedOrigin = UrlFormatter.formatUrlForSecurityDisplay(
-                    new GURL(credential.getOriginUrl()), SchemeDisplay.OMIT_CRYPTOGRAPHIC);
-            originView.setText(formattedOrigin);
+            TextView passwordTitleView = view.findViewById(R.id.password_info_title);
+            String title = credential.isAndroidCredential()
+                    ? credential.getAppDisplayName()
+                    : UrlFormatter.formatUrlForSecurityDisplay(
+                            new GURL(credential.getOriginUrl()), SchemeDisplay.OMIT_CRYPTOGRAPHIC);
+            passwordTitleView.setText(title);
 
             ChipView usernameView = view.findViewById(R.id.suggestion_text);
             usernameView.getPrimaryTextView().setText(credential.getFormattedUsername());
@@ -150,9 +152,16 @@ class AllPasswordsBottomSheetViewBinder {
             // Set the default icon, then try to get a better one.
             FaviconHelper faviconHelper = new FaviconHelper(view.getContext());
             ImageView iconView = view.findViewById(R.id.favicon);
-            setIconForBitmap(iconView, faviconHelper.getDefaultIcon(credential.getOriginUrl()));
-            faviconHelper.fetchFavicon(
-                    credential.getOriginUrl(), icon -> setIconForBitmap(iconView, icon));
+            setIconForBitmap(iconView,
+                    faviconHelper.getDefaultIcon(credential.isAndroidCredential()
+                                    ? credential.getAppDisplayName()
+                                    : credential.getOriginUrl()));
+
+            if (!credential.isAndroidCredential()) {
+                faviconHelper.fetchFavicon(
+                        credential.getOriginUrl(), icon -> setIconForBitmap(iconView, icon));
+            }
+
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
