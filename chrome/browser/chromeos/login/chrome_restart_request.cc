@@ -227,7 +227,7 @@ void DeriveCommandLine(const GURL& start_url,
   }
 }
 
-// Adds whitelisted features to |out_command_line| if they are enabled in the
+// Adds allowlisted features to |out_command_line| if they are enabled in the
 // current session.
 void DeriveEnabledFeatures(base::CommandLine* out_command_line) {
   static const base::Feature* kForwardEnabledFeatures[] = {

@@ -53,9 +53,9 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void ShowPasswordChangedDialog(bool show_password_error,
                                  const AccountId& account_id);
 
-  // Show whitelist check failed error. Happens after user completes online
-  // signin but whitelist check fails.
-  void ShowWhitelistCheckFailedError();
+  // Show allowlist check failed error. Happens after user completes online
+  // signin but allowlist check fails.
+  void ShowAllowlistCheckFailedError();
 
   // Shows signin UI with specified email.
   void ShowSigninUI(const std::string& email);

@@ -32,7 +32,7 @@ const uint16_t kDeviceIds[] = {0x0457, 0x266e, 0x222a};
 
 // Returns true if |vendor_id| is a valid vendor id that may be made the primary
 // display.
-bool IsWhiteListedVendorId(uint16_t vendor_id) {
+bool IsAllowListedVendorId(uint16_t vendor_id) {
   return base::Contains(kDeviceIds, vendor_id);
 }
 
@@ -83,7 +83,7 @@ void OobeDisplayChooser::MoveToTouchDisplay() {
       ui::DeviceDataManager::GetInstance();
   for (const ui::TouchscreenDevice& device :
        device_data_manager->GetTouchscreenDevices()) {
-    if (IsWhiteListedVendorId(device.vendor_id) &&
+    if (IsAllowListedVendorId(device.vendor_id) &&
         device.target_display_id != display::kInvalidDisplayId) {
       auto config_properties = ash::mojom::DisplayConfigProperties::New();
       config_properties->set_primary = true;

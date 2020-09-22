@@ -1741,7 +1741,7 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, TestLoginMediaPermission) {
       web_contents->GetMainFrame(), url1,
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE));
 
-  // Camera should be allowed if allowed by the whitelist, otherwise blocked.
+  // Camera should be allowed if allowed by the allowlist, otherwise blocked.
   EXPECT_TRUE(web_contents_delegate->CheckMediaAccessPermission(
       web_contents->GetMainFrame(), url1,
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE));

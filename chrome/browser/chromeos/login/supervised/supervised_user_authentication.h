@@ -35,10 +35,8 @@ class SupervisedUserAuthentication {
   enum SupervisedUserPasswordChangeResult {
     PASSWORD_CHANGED_IN_MANAGER_SESSION = 0,
     PASSWORD_CHANGED_IN_USER_SESSION = 1,
-    PASSWORD_CHANGE_FAILED_NO_MASTER_KEY = 2,
     PASSWORD_CHANGE_FAILED_NO_SIGNATURE_KEY = 3,
     PASSWORD_CHANGE_FAILED_NO_PASSWORD_DATA = 4,
-    PASSWORD_CHANGE_FAILED_MASTER_KEY_FAILURE = 5,
     PASSWORD_CHANGE_FAILED_LOADING_DATA = 6,
     PASSWORD_CHANGE_FAILED_INCOMPLETE_DATA = 7,
     PASSWORD_CHANGE_FAILED_AUTHENTICATION_FAILURE = 8,
@@ -88,10 +86,6 @@ class SupervisedUserAuthentication {
   void LoadPasswordUpdateData(const std::string& user_id,
                               const PasswordDataCallback& success_callback,
                               const base::Closure& failure_callback);
-
-  // Creates a random string that can be used as a master key for managed
-  // user's homedir.
-  std::string GenerateMasterKey();
 
   // Called by supervised user to store password data for migration upon signin.
   void ScheduleSupervisedPasswordChange(

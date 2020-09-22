@@ -45,7 +45,7 @@ class LoginDisplayWebUI : public LoginDisplay,
   void ShowPasswordChangedDialog(bool show_password_error,
                                  const AccountId& account_id) override;
   void ShowSigninUI(const std::string& email) override;
-  void ShowWhitelistCheckFailedError() override;
+  void ShowAllowlistCheckFailedError() override;
 
   // SigninScreenHandlerDelegate implementation:
   void Login(const UserContext& user_context,

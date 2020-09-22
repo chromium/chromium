@@ -33,7 +33,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthFailure {
     UNLOCK_FAILED = 6,
     NETWORK_AUTH_FAILED = 7,     // Could not authenticate against Google
     OWNER_REQUIRED = 8,          // Only the device owner can log-in.
-    WHITELIST_CHECK_FAILED = 9,  // Login attempt blocked by whitelist. This
+    ALLOWLIST_CHECK_FAILED = 9,  // Login attempt blocked by allowlist. This
     // value is synthesized by the ExistingUserController and passed to the
     // login_status_consumer_ in tests only. It is never generated or seen by
     // any of the other authenticator classes.
@@ -89,8 +89,8 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthFailure {
         return "Google authentication failed.";
       case OWNER_REQUIRED:
         return "Login is restricted to the owner's account only.";
-      case WHITELIST_CHECK_FAILED:
-        return "Login attempt blocked by whitelist.";
+      case ALLOWLIST_CHECK_FAILED:
+        return "Login attempt blocked by allowlist.";
       case FAILED_TO_INITIALIZE_TOKEN:
         return "OAuth2 token fetch failed.";
       case MISSING_CRYPTOHOME:

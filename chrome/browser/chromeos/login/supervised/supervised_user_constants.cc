@@ -9,9 +9,7 @@
 namespace chromeos {
 
 const char kCryptohomeSupervisedUserKeyLabel[] = "managed";
-const char kCryptohomeMasterKeyLabel[] = "master";
 const char kLegacyCryptohomeSupervisedUserKeyLabel[] = "default-0";
-const char kLegacyCryptohomeMasterKeyLabel[] = "default-1";
 
 const int kCryptohomeSupervisedUserKeyPrivileges =
     cryptohome::PRIV_AUTHORIZED_UPDATE | cryptohome::PRIV_MOUNT;

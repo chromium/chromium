@@ -33,22 +33,22 @@ bool AreAllUsersAllowed(const user_manager::UserList& users,
   decoded_policies.GetBoolean(kAccountsPrefAllowGuest, &is_guest_allowed);
 
   const base::Value* value;
-  const base::ListValue* whitelist;
+  const base::ListValue* allowlist;
   if (decoded_policies.GetValue(kAccountsPrefUsers, &value)) {
-    value->GetAsList(&whitelist);
+    value->GetAsList(&allowlist);
   }
 
   bool allow_new_user = false;
   decoded_policies.GetBoolean(kAccountsPrefAllowNewUser, &allow_new_user);
 
   for (user_manager::User* user : users) {
-    bool is_user_whitelisted =
+    bool is_user_allowlisted =
         user->HasGaiaAccount() &&
         CrosSettings::FindEmailInList(
-            whitelist, user->GetAccountId().GetUserEmail(), nullptr);
+            allowlist, user->GetAccountId().GetUserEmail(), nullptr);
     if (!IsUserAllowed(
             *user, supervised_users_allowed, is_guest_allowed,
-            user->HasGaiaAccount() && (allow_new_user || is_user_whitelisted)))
+            user->HasGaiaAccount() && (allow_new_user || is_user_allowlisted)))
       return false;
   }
   return true;
@@ -57,7 +57,7 @@ bool AreAllUsersAllowed(const user_manager::UserList& users,
 bool IsUserAllowed(const user_manager::User& user,
                    bool supervised_users_allowed,
                    bool is_guest_allowed,
-                   bool is_user_whitelisted) {
+                   bool is_user_allowlisted) {
   DCHECK(user.GetType() == user_manager::USER_TYPE_REGULAR ||
          user.GetType() == user_manager::USER_TYPE_GUEST ||
          user.GetType() == user_manager::USER_TYPE_SUPERVISED ||
@@ -70,7 +70,7 @@ bool IsUserAllowed(const user_manager::User& user,
       !supervised_users_allowed) {
     return false;
   }
-  if (user.HasGaiaAccount() && !is_user_whitelisted) {
+  if (user.HasGaiaAccount() && !is_user_allowlisted) {
     return false;
   }
   return true;

@@ -460,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, AllowNewUser) {
   // New users are allowed.
   test::OobeJS().ExpectTrue(frame_url + ".search('flow=nosignup') == -1");
 
-  // Disallow new users - we also need to set a whitelist due to weird logic.
+  // Disallow new users - we also need to set an allowlist due to weird logic.
   scoped_testing_cros_settings_.device_settings()->Set(kAccountsPrefUsers,
                                                        base::ListValue());
   scoped_testing_cros_settings_.device_settings()->Set(

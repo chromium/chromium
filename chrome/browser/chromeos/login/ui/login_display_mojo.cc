@@ -204,8 +204,8 @@ void LoginDisplayMojo::ShowSigninUI(const std::string& email) {
   host_->ShowSigninUI(email);
 }
 
-void LoginDisplayMojo::ShowWhitelistCheckFailedError() {
-  host_->ShowWhitelistCheckFailedError();
+void LoginDisplayMojo::ShowAllowlistCheckFailedError() {
+  host_->ShowAllowlistCheckFailedError();
 }
 
 void LoginDisplayMojo::Login(const UserContext& user_context,

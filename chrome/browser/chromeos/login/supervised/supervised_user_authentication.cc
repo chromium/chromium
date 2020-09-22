@@ -35,9 +35,6 @@ const unsigned kSaltSize = 32;
 const unsigned kHMACKeySizeInBits = 256;
 const int kSignatureLength = 32;
 
-// Size of master key (in bytes).
-const int kMasterKeySize = 32;
-
 std::string CreateSalt() {
   char result[kSaltSize];
   crypto::RandBytes(&result, sizeof(result));
@@ -156,14 +153,6 @@ bool SupervisedUserAuthentication::FillDataForNewUser(
   }
   NOTREACHED();
   return false;
-}
-
-std::string SupervisedUserAuthentication::GenerateMasterKey() {
-  char master_key_bytes[kMasterKeySize];
-  crypto::RandBytes(&master_key_bytes, sizeof(master_key_bytes));
-  return base::ToLowerASCII(
-      base::HexEncode(reinterpret_cast<const void*>(master_key_bytes),
-                      sizeof(master_key_bytes)));
 }
 
 void SupervisedUserAuthentication::StorePasswordData(

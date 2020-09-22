@@ -136,7 +136,7 @@ void LoginDisplayHostMojo::ShowPasswordChangedDialog(
   ShowDialog();
 }
 
-void LoginDisplayHostMojo::ShowWhitelistCheckFailedError() {
+void LoginDisplayHostMojo::ShowAllowlistCheckFailedError() {
   DCHECK(GetOobeUI());
   GetOobeUI()->signin_screen_handler()->ShowAllowlistCheckFailedError();
   ShowDialog();

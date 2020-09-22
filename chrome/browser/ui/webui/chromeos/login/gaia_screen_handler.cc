@@ -636,8 +636,8 @@ void GaiaScreenHandler::DeclareLocalizedValues(
   builder->Add("guestSignin", IDS_BROWSE_WITHOUT_SIGNING_IN_HTML);
   builder->Add("backButton", IDS_ACCNAME_BACK);
   builder->Add("closeButton", IDS_CLOSE);
-  builder->Add("whitelistErrorConsumer", IDS_LOGIN_ERROR_ALLOWLIST);
-  builder->Add("whitelistErrorEnterprise",
+  builder->Add("allowlistErrorConsumer", IDS_LOGIN_ERROR_ALLOWLIST);
+  builder->Add("allowlistErrorEnterprise",
                IDS_ENTERPRISE_LOGIN_ERROR_ALLOWLIST);
   builder->Add("tryAgainButton", IDS_ALLOWLIST_ERROR_TRY_AGAIN_BUTTON);
   builder->Add("learnMoreButton", IDS_LEARN_MORE);
@@ -1534,7 +1534,7 @@ void GaiaScreenHandler::ShowAllowlistCheckFailedError() {
                     g_browser_process->platform_part()
                         ->browser_policy_connector_chromeos()
                         ->IsEnterpriseManaged());
-  CallJS("login.GaiaSigninScreen.showWhitelistCheckFailedError", true, params);
+  CallJS("login.GaiaSigninScreen.showAllowlistCheckFailedError", true, params);
 }
 
 void GaiaScreenHandler::LoadAuthExtension(bool force, bool offline) {

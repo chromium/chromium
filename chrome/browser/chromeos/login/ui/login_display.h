@@ -94,9 +94,9 @@ class LoginDisplay {
   // Shows signin UI with specified email.
   virtual void ShowSigninUI(const std::string& email) = 0;
 
-  // Show whitelist check failed error. Happens after user completes online
-  // signin but whitelist check fails.
-  virtual void ShowWhitelistCheckFailedError() = 0;
+  // Show allowlist check failed error. Happens after user completes online
+  // signin but allowlist check fails.
+  virtual void ShowAllowlistCheckFailedError() = 0;
 
   Delegate* delegate() { return delegate_; }
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }

@@ -18,7 +18,7 @@ const GAIA_ANIMATION_GUARD_MILLISEC = 300;
 // Maximum Gaia loading time in seconds.
 const MAX_GAIA_LOADING_TIME_SEC = 60;
 
-// The help topic regarding user not being in the whitelist.
+// The help topic regarding user not being in the allowlist.
 const HELP_CANT_ACCESS_ACCOUNT = 188036;
 
 // Amount of time the user has to be idle for before showing the online login
@@ -63,7 +63,7 @@ const DialogMode = {
   GAIA_LOADING: 'gaia-loading',
   LOADING: 'loading',
   PIN_DIALOG: 'pin',
-  GAIA_WHITELIST_ERROR: 'whitelist-error',
+  GAIA_ALLOWLIST_ERROR: 'allowlist-error',
   SAML_INTERSTITIAL: 'saml-interstitial',
 };
 
@@ -76,7 +76,7 @@ Polymer({
     'loadAuthExtension',
     'doReload',
     'monitorOfflineIdle',
-    'showWhitelistCheckFailedError',
+    'showAllowlistCheckFailedError',
     'invalidateAd',
     'showPinDialog',
     'closePinDialog',
@@ -120,14 +120,14 @@ Polymer({
     isLoadingUiShown_: {
       type: Boolean,
       computed: 'computeIsLoadingUiShown_(loadingFrameContents_, ' +
-          'isWhitelistErrorShown_, authCompleted_)',
+          'isAllowlistErrorShown_, authCompleted_)',
     },
 
     /**
-     * Whether the loading whitelist error UI is shown.
+     * Whether the loading allowlist error UI is shown.
      * @private
      */
-    isWhitelistErrorShown_: {
+    isAllowlistErrorShown_: {
       type: Boolean,
       value: false,
     },
@@ -240,7 +240,7 @@ Polymer({
 
   observers: [
     'refreshDialogStep_(screenMode_, pinDialogParameters_, isLoadingUiShown_,' +
-        'isWhitelistErrorShown_)',
+        'isAllowlistErrorShown_)',
   ],
 
   /**
@@ -429,11 +429,11 @@ Polymer({
     this.$['offline-gaia'].addEventListener(
         'offline-gaia-cancel', this.cancel.bind(this));
 
-    this.$['gaia-whitelist-error'].addEventListener('buttonclick', function() {
-      this.showWhitelistCheckFailedError(false);
+    this.$['gaia-allowlist-error'].addEventListener('buttonclick', function() {
+      this.showAllowlistCheckFailedError(false);
     }.bind(this));
 
-    this.$['gaia-whitelist-error'].addEventListener('linkclick', function() {
+    this.$['gaia-allowlist-error'].addEventListener('linkclick', function() {
       chrome.send('launchHelpApp', [HELP_CANT_ACCESS_ACCOUNT]);
     });
 
@@ -465,7 +465,7 @@ Polymer({
    */
   isAtTheBeginning_() {
     return !this.canGoBack_() && !this.isSaml_ &&
-        !this.isWhitelistErrorShown_ && !this.authCompleted_;
+        !this.isAllowlistErrorShown_ && !this.authCompleted_;
   },
 
   /**
@@ -501,7 +501,7 @@ Polymer({
    * @private
    */
   canGoBack_() {
-    return this.lastBackMessageValue_ && !this.isWhitelistErrorShown_ &&
+    return this.lastBackMessageValue_ && !this.isAllowlistErrorShown_ &&
         !this.authCompleted_ && !this.isSaml_;
   },
 
@@ -1337,7 +1337,7 @@ Polymer({
 
     // TODO(crbug.com/470893): Figure out whether/which of these exit conditions
     // are useful.
-    if (this.isWhitelistErrorShown_ || this.authCompleted_) {
+    if (this.isAllowlistErrorShown_ || this.authCompleted_) {
       return;
     }
 
@@ -1403,16 +1403,16 @@ Polymer({
   },
 
   /**
-   * Show/Hide error when user is not in whitelist. When UI is hidden GAIA is
+   * Show/Hide error when user is not in allowlist. When UI is hidden GAIA is
    * reloaded.
    * @param {boolean} show Show/hide error UI.
    * @param {!Object=} opt_data Optional additional information.
    */
-  showWhitelistCheckFailedError(show, opt_data) {
+  showAllowlistCheckFailedError(show, opt_data) {
     if (show) {
       const isManaged = opt_data && opt_data.enterpriseManaged;
-      this.$['gaia-whitelist-error'].textContent = loadTimeData.getValue(
-          isManaged ? 'whitelistErrorEnterprise' : 'whitelistErrorConsumer');
+      this.$['gaia-allowlist-error'].textContent = loadTimeData.getValue(
+          isManaged ? 'allowlistErrorEnterprise' : 'allowlistErrorConsumer');
       // To make animations correct, we need to make sure Gaia is completely
       // reloaded. Otherwise ChromeOS overlays hide and Gaia page is shown
       // somewhere in the middle of animations.
@@ -1420,10 +1420,10 @@ Polymer({
         this.authenticator_.resetWebview();
     }
 
-    this.isWhitelistErrorShown_ = show;
+    this.isAllowlistErrorShown_ = show;
 
     if (show)
-      this.$['gaia-whitelist-error'].submitButton.focus();
+      this.$['gaia-allowlist-error'].submitButton.focus();
     else
       Oobe.showSigninUI();
 
@@ -1555,10 +1555,10 @@ Polymer({
    * @param {number} mode
    * @param {OobeTypes.SecurityTokenPinDialogParameter} pinParams
    * @param {boolean} isLoading
-   * @param {boolean} isWhitelistError
+   * @param {boolean} isAllowlistError
    * @private
    */
-  refreshDialogStep_(mode, pinParams, isLoading, isWhitelistError) {
+  refreshDialogStep_(mode, pinParams, isLoading, isAllowlistError) {
     if (pinParams !== null) {
       this.step_ = DialogMode.PIN_DIALOG;
       return;
@@ -1571,8 +1571,8 @@ Polymer({
       }
       return;
     }
-    if (isWhitelistError) {
-      this.step_ = DialogMode.GAIA_WHITELIST_ERROR;
+    if (isAllowlistError) {
+      this.step_ = DialogMode.GAIA_ALLOWLIST_ERROR;
       return;
     }
     switch (mode) {
@@ -1617,14 +1617,14 @@ Polymer({
   /**
    * Computes the value of the isLoadingUiShown_ property.
    * @param {boolean} loadingFrameContents
-   * @param {boolean} isWhitelistErrorShown
+   * @param {boolean} isAllowlistErrorShown
    * @param {boolean} authCompleted
    * @return {boolean}
    * @private
    */
   computeIsLoadingUiShown_: function(
-      loadingFrameContents, isWhitelistErrorShown, authCompleted) {
-    return (loadingFrameContents || authCompleted) && !isWhitelistErrorShown;
+      loadingFrameContents, isAllowlistErrorShown, authCompleted) {
+    return (loadingFrameContents || authCompleted) && !isAllowlistErrorShown;
   },
 
   /**

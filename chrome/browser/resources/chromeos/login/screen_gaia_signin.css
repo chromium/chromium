@@ -73,7 +73,7 @@ element during loading, without affecting its loading events. */
   width: 20px;
 }
 
-#gaia-whitelist-error {
+#gaia-allowlist-error {
   bottom: 0;
   display: block;
   left: 0;

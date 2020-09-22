@@ -177,7 +177,7 @@ void LoginDisplayWebUI::ShowSigninUI(const std::string& email) {
     webui_handler_->ShowSigninUI(email);
 }
 
-void LoginDisplayWebUI::ShowWhitelistCheckFailedError() {
+void LoginDisplayWebUI::ShowAllowlistCheckFailedError() {
   if (webui_handler_)
     webui_handler_->ShowAllowlistCheckFailedError();
 }

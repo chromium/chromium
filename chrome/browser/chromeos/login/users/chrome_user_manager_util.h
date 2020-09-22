@@ -26,7 +26,7 @@ bool AreAllUsersAllowed(const user_manager::UserList& users,
 bool IsUserAllowed(const user_manager::User& user,
                    bool supervised_users_allowed,
                    bool is_guest_allowed,
-                   bool is_user_whitelisted);
+                   bool is_user_allowlisted);
 
 // Returns whether the active user is public session user or non-regular
 // ephemeral user. Note: it assumes the active user exists (ie. at least one

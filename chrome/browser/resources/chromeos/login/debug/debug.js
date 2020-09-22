@@ -558,9 +558,9 @@ cr.define('cr.ui.login.debug', function() {
           },
         },
         {
-          id: 'whitelist-customer',
+          id: 'allowlist-customer',
           trigger: (screen) => {
-            screen.showWhitelistCheckFailedError(true, {
+            screen.showAllowlistCheckFailedError(true, {
               enterpriseManaged: false,
             });
           },

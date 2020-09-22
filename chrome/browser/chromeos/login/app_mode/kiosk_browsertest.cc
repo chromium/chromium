@@ -1385,7 +1385,7 @@ IN_PROC_BROWSER_TEST_F(KioskTest, SettingsWindow) {
   const GURL page2_sub("https://page2.com/sub");
   const GURL page3("https://page3.com/");
 
-  // Replace the settings whitelist with |settings_pages|.
+  // Replace the settings allowlist with |settings_pages|.
   ScopedSettingsPages pages(&settings_pages);
   AppSession* app_session = KioskAppManager::Get()->app_session();
 

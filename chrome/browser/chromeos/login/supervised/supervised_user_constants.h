@@ -10,9 +10,7 @@
 namespace chromeos {
 
 extern const char kCryptohomeSupervisedUserKeyLabel[];
-extern const char kCryptohomeMasterKeyLabel[];
 extern const char kLegacyCryptohomeSupervisedUserKeyLabel[];
-extern const char kLegacyCryptohomeMasterKeyLabel[];
 
 // Set of privileges for usual Supervised User : Mount and UpdatePrivileged
 // (update with signed key).

@@ -101,8 +101,8 @@ const char kNewUser[] = "new_test_user@gmail.com";
 const char kNewGaiaID[] = "11111";
 const char kExistingUser[] = "existing_test_user@gmail.com";
 const char kExistingGaiaID[] = "22222";
-const char kUserWhitelist[] = "*@ad-domain.com";
-const char kUserNotMatchingWhitelist[] = "user@another_mail.com";
+const char kUserAllowlist[] = "*@ad-domain.com";
+const char kUserNotMatchingAllowlist[] = "user@another_mail.com";
 const char kSupervisedUserID[] = "supervised_user@locally-managed.localhost";
 const char kPassword[] = "test_password";
 const char kHash[] = "test_hash";
@@ -794,9 +794,9 @@ class ExistingUserControllerActiveDirectoryTest
     EXPECT_CALL(*mock_login_display_, SetUIEnabled(true)).Times(1);
   }
 
-  void ExpectLoginWhitelistFailure() {
+  void ExpectLoginAllowlistFailure() {
     EXPECT_CALL(*mock_login_display_, SetUIEnabled(false)).Times(2);
-    EXPECT_CALL(*mock_login_display_, ShowWhitelistCheckFailedError()).Times(1);
+    EXPECT_CALL(*mock_login_display_, ShowAllowlistCheckFailedError()).Times(1);
     EXPECT_CALL(*mock_login_display_, SetUIEnabled(true)).Times(1);
   }
 
@@ -844,17 +844,17 @@ class ExistingUserControllerActiveDirectoryTest
   policy::MockConfigurationPolicyProvider policy_provider_;
 };
 
-class ExistingUserControllerActiveDirectoryUserWhitelistTest
+class ExistingUserControllerActiveDirectoryUserAllowlistTest
     : public ExistingUserControllerActiveDirectoryTest {
  public:
-  ExistingUserControllerActiveDirectoryUserWhitelistTest() = default;
+  ExistingUserControllerActiveDirectoryUserAllowlistTest() = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     ExistingUserControllerActiveDirectoryTest::
         SetUpInProcessBrowserTestFixture();
     em::ChromeDeviceSettingsProto device_policy;
     device_policy.mutable_user_allowlist()->add_user_allowlist()->assign(
-        kUserWhitelist);
+        kUserAllowlist);
     FakeAuthPolicyClient::Get()->set_device_policy(device_policy);
   }
 
@@ -937,8 +937,8 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerActiveDirectoryTest,
   existing_user_controller()->CompleteLogin(user_context);
 }
 
-// Tests that authentication succeeds if user email matches whitelist.
-IN_PROC_BROWSER_TEST_F(ExistingUserControllerActiveDirectoryUserWhitelistTest,
+// Tests that authentication succeeds if user email matches allowlist.
+IN_PROC_BROWSER_TEST_F(ExistingUserControllerActiveDirectoryUserAllowlistTest,
                        Success) {
   ExpectLoginSuccess();
   UserContext user_context(user_manager::UserType::USER_TYPE_ACTIVE_DIRECTORY,
@@ -956,12 +956,12 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerActiveDirectoryUserWhitelistTest,
   profile_prepared_observer.Wait();
 }
 
-// Tests that authentication fails if user email does not match whitelist.
-IN_PROC_BROWSER_TEST_F(ExistingUserControllerActiveDirectoryUserWhitelistTest,
+// Tests that authentication fails if user email does not match allowlist.
+IN_PROC_BROWSER_TEST_F(ExistingUserControllerActiveDirectoryUserAllowlistTest,
                        Fail) {
-  ExpectLoginWhitelistFailure();
+  ExpectLoginAllowlistFailure();
   AccountId account_id =
-      AccountId::AdFromUserEmailObjGuid(kUserNotMatchingWhitelist, kObjectGuid);
+      AccountId::AdFromUserEmailObjGuid(kUserNotMatchingAllowlist, kObjectGuid);
   UserContext user_context(user_manager::UserType::USER_TYPE_ACTIVE_DIRECTORY,
                            account_id);
   user_context.SetKey(Key(kPassword));

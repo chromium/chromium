@@ -1352,11 +1352,11 @@ void ExistingUserController::ForceOnlineLoginForAccountId(
 void ExistingUserController::AllowlistCheckFailed(const std::string& email) {
   PerformLoginFinishedActions(true /* start auto login timer */);
 
-  GetLoginDisplay()->ShowWhitelistCheckFailedError();
+  GetLoginDisplay()->ShowAllowlistCheckFailedError();
 
   for (auto& auth_status_consumer : auth_status_consumers_) {
     auth_status_consumer.OnAuthFailure(
-        AuthFailure(AuthFailure::WHITELIST_CHECK_FAILED));
+        AuthFailure(AuthFailure::ALLOWLIST_CHECK_FAILED));
   }
 
   ClearActiveDirectoryState();
