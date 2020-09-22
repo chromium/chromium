@@ -52,13 +52,12 @@ void SearchEnginePreconnector::StopPreconnecting() {
 void SearchEnginePreconnector::StartPreconnecting(bool with_startup_delay) {
   timer_.Stop();
   if (with_startup_delay) {
-    timer_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromMilliseconds(
-            base::GetFieldTrialParamByFeatureAsInt(
-                features::kPreconnectToSearch, "startup_delay_ms", 1000)),
-        base::BindOnce(&SearchEnginePreconnector::PreconnectDSE,
-                       base::Unretained(this)));
+    timer_.Start(FROM_HERE,
+                 base::TimeDelta::FromMilliseconds(
+                     base::GetFieldTrialParamByFeatureAsInt(
+                         features::kPreconnectToSearch, "startup_delay_ms", 0)),
+                 base::BindOnce(&SearchEnginePreconnector::PreconnectDSE,
+                                base::Unretained(this)));
     return;
   }
 
