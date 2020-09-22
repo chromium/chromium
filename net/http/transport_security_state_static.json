@@ -87308,7 +87308,6 @@
     { "name": "katom.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "keilycosmetics.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "kernel.nz", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
-    { "name": "kiesmedia.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "kiwee.eu", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "klacki.de", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "krimikiosk.de", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
