@@ -1,25 +1,21 @@
 <style include="cr-icons">
   :host {
     align-items: center;
-    background-color: var(--google-grey-refresh-100);
-    border-radius: 32px;
+    background-color: var(--mwb-background-color);
     display: flex;
-    height: 28px;
-    margin: 8px;
-    padding: 0 8px;
+    height: var(--mwb-item-height);
+    padding: 0 var(--mwb-list-item-horizontal-margin);
     user-select: none;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :host {
-      background-color: var(--google-grey-800);
-    }
   }
 
   #searchIcon {
     height: var(--mwb-icon-size);
-    padding-inline-end: 4px;
+    padding-inline-end: var(--mwb-list-item-horizontal-margin);
     width: var(--mwb-icon-size);
+  }
+
+  #searchInput {
+    padding: 0;
   }
 
   @media (prefers-color-scheme: dark) {
