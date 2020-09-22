@@ -1319,10 +1319,15 @@ TEST_P(PaintChunksToCcLayerTest, EmptyChunkRect) {
   EXPECT_EFFECT_BOUNDS(0, 0, 0, 0, *output, 0);
 }
 
+static sk_sp<cc::PaintFilter> MakeFilter(FloatRect bounds) {
+  PaintFilter::CropRect rect(bounds);
+  return sk_make_sp<ColorFilterPaintFilter>(
+      SkColorFilters::Blend(SK_ColorBLUE, SkBlendMode::kSrc), nullptr, &rect);
+}
+
 TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnEmptyChunk) {
   CompositorFilterOperations filter;
-  filter.AppendReferenceFilter(sk_make_sp<cc::RecordPaintFilter>(
-      sk_make_sp<cc::PaintOpBuffer>(), SkRect::MakeIWH(100, 100)));
+  filter.AppendReferenceFilter(MakeFilter(FloatRect(12, 26, 93, 84)));
   filter.SetReferenceBox(FloatRect(11, 22, 33, 44));
   ASSERT_TRUE(filter.HasReferenceFilter());
   auto e1 = CreateFilterEffect(e0(), t0(), &c0(), filter);
@@ -1335,8 +1340,8 @@ TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnEmptyChunk) {
                                     gfx::Vector2dF(5, 10), chunks.items,
                                     *cc_list);
   ASSERT_EQ(5u, cc_list->TotalOpCount());
-  // (16 32) is (11, 22) + layer_offset.
-  gfx::Rect expected_visual_rect(6, 12, 33, 44);
+  // (7 16) is (12, 26) - layer_offset.
+  gfx::Rect expected_visual_rect(7, 16, 93, 84);
   for (size_t i = 0; i < cc_list->TotalOpCount(); i++) {
     SCOPED_TRACE(testing::Message() << "Visual rect of op " << i);
     EXPECT_EQ(expected_visual_rect, cc_list->VisualRectForTesting(i));
@@ -1349,13 +1354,12 @@ TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnEmptyChunk) {
                             cc::PaintOpType::SaveLayer,  // <e1>
                             cc::PaintOpType::Restore,    // </e1>
                             cc::PaintOpType::Restore}));
-  EXPECT_EFFECT_BOUNDS(11, 22, 33, 44, *output, 2);
+  EXPECT_EFFECT_BOUNDS(12, 26, 93, 84, *output, 2);
 }
 
 TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnChunkWithDrawingDisplayItem) {
   CompositorFilterOperations filter;
-  filter.AppendReferenceFilter(sk_make_sp<cc::RecordPaintFilter>(
-      sk_make_sp<cc::PaintOpBuffer>(), SkRect::MakeIWH(100, 100)));
+  filter.AppendReferenceFilter(MakeFilter(FloatRect(7, 16, 93, 84)));
   filter.SetReferenceBox(FloatRect(11, 22, 33, 44));
   ASSERT_TRUE(filter.HasReferenceFilter());
   auto e1 = CreateFilterEffect(e0(), t0(), &c0(), filter);
@@ -1370,16 +1374,14 @@ TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnChunkWithDrawingDisplayItem) {
                                     *cc_list);
   ASSERT_EQ(7u, cc_list->TotalOpCount());
   // This is the visual rect for all filter related paint operations, which is
-  // the union of the draw record and reference box of the filter in the layer's
-  // space.
-  gfx::Rect expected_filter_visual_rect(5, 5, 34, 51);
-  // This is the visual rect of the DrawingDisplayItem in the layer's space.
-  gfx::Rect expected_draw_visual_rect(5, 5, 20, 30);
+  // the union of the draw record and the output bounds of the filter with empty
+  // input in the layer's space. This is also the rect that the chunk bounds map
+  // to via MapVisualRect since the filter does not actually use the source.
+  gfx::Rect expected_filter_visual_rect(2, 6, 93, 84);
   // TotalOpCount() - 1 because the DrawRecord op has a sub operation.
   for (size_t i = 0; i < cc_list->TotalOpCount() - 1; i++) {
     SCOPED_TRACE(testing::Message() << "Visual rect of op " << i);
-    EXPECT_EQ(i == 3 ? expected_draw_visual_rect : expected_filter_visual_rect,
-              cc_list->VisualRectForTesting(i));
+    EXPECT_EQ(expected_filter_visual_rect, cc_list->VisualRectForTesting(i));
   }
 
   auto output = cc_list->ReleaseAsRecord();
@@ -1392,8 +1394,8 @@ TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnChunkWithDrawingDisplayItem) {
                    cc::PaintOpType::Restore,     // </e1>
                    cc::PaintOpType::Restore}));
   // The effect bounds are the union of the chunk's drawable_bounds and the
-  // reference box in the filter's space.
-  EXPECT_EFFECT_BOUNDS(10, 15, 34, 51, *output, 2);
+  // output bounds of the filter with empty input in the filter's space.
+  EXPECT_EFFECT_BOUNDS(7, 15, 93, 85, *output, 2);
 }
 
 }  // namespace

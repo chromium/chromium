@@ -37,13 +37,9 @@ void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
     return;
   }
 
-  // We do not apply cull rect optimizations across transforms for two reasons:
-  //   1) Performance: We can optimize transform changes by not repainting.
-  //   2) Complexity: Difficulty updating clips when ancestor transforms change.
-  // This is why we use an infinite cull rect if there is a transform. Non-svg
-  // content, does this in PaintLayerPainter::PaintSingleFragment.
   PaintInfo paint_info_before_filtering(paint_info);
-  if (layout_svg_container_.StyleRef().HasTransform()) {
+  if (SVGModelObjectPainter::ShouldUseInfiniteCullRect(
+          layout_svg_container_.StyleRef())) {
     paint_info_before_filtering.ApplyInfiniteCullRect();
   } else if (const auto* properties =
                  layout_svg_container_.FirstFragment().PaintProperties()) {
@@ -81,6 +77,12 @@ void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
       continue_rendering = paint_state.ApplyEffects();
 
     if (continue_rendering) {
+      // When a filter applies to the container we need to make sure
+      // that it is applied even if nothing is painted.
+      if (paint_state.GetPaintInfo().phase == PaintPhase::kForeground &&
+          layout_svg_container_.SelfWillPaint())
+        paint_state.GetPaintInfo().context.GetPaintController().EnsureChunk();
+
       for (LayoutObject* child = layout_svg_container_.FirstChild(); child;
            child = child->NextSibling()) {
         if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(*child)) {

@@ -28,7 +28,7 @@ class FECompositeTest : public testing::Test {
     // Input 1 of composite has a fixed output rect.
     auto* source_graphic1 = MakeGarbageCollected<SourceGraphic>(filter);
     source_graphic1->SetClipsToBounds(false);
-    source_graphic1->SetSourceRect(kInput1Rect);
+    source_graphic1->SetSourceRectForTests(kInput1Rect);
 
     // Input 2 of composite will pass composite->MapRect()'s parameter as its
     // output.

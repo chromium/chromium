@@ -35,12 +35,8 @@
 
 namespace blink {
 
-class FilterData;
-class GraphicsContext;
 class LayoutObject;
 class ObjectPaintProperties;
-class PaintController;
-class SVGResources;
 
 // Hooks up the correct paint property transform node.
 class ScopedSVGTransformState {
@@ -78,25 +74,6 @@ class ScopedSVGTransformState {
   base::Optional<ScopedPaintChunkProperties> transform_property_scope_;
 };
 
-class SVGFilterRecordingContext {
-  USING_FAST_MALLOC(SVGFilterRecordingContext);
-
- public:
-  explicit SVGFilterRecordingContext(const PaintInfo&);
-  SVGFilterRecordingContext(const SVGFilterRecordingContext&) = delete;
-  SVGFilterRecordingContext& operator=(const SVGFilterRecordingContext&) =
-      delete;
-  ~SVGFilterRecordingContext();
-
-  const PaintInfo& GetPaintInfo() const { return paint_info_; }
-  sk_sp<PaintRecord> GetPaintRecord(const PaintInfo&);
-
- private:
-  std::unique_ptr<PaintController> paint_controller_;
-  std::unique_ptr<GraphicsContext> context_;
-  PaintInfo paint_info_;
-};
-
 class ScopedSVGPaintState {
   STACK_ALLOCATED();
 
@@ -109,15 +86,11 @@ class ScopedSVGPaintState {
                       const DisplayItemClient& display_item_client)
       : object_(object),
         paint_info_(paint_info),
-        display_item_client_(display_item_client),
-        filter_data_(nullptr) {}
+        display_item_client_(display_item_client) {}
 
   ~ScopedSVGPaintState();
 
-  const PaintInfo& GetPaintInfo() const {
-    return filter_recording_context_ ? filter_recording_context_->GetPaintInfo()
-                                     : paint_info_;
-  }
+  const PaintInfo& GetPaintInfo() const { return paint_info_; }
 
   // Return true if these operations aren't necessary or if they are
   // successfully applied.
@@ -125,18 +98,11 @@ class ScopedSVGPaintState {
 
  private:
   void ApplyPaintPropertyState(const ObjectPaintProperties&);
-  void ApplyClipIfNecessary();
-  void ApplyMaskIfNecessary(SVGResources*);
-
-  // Return true if no filtering is necessary or if the filter is successfully
-  // applied.
-  bool ApplyFilterIfNecessary(SVGResources*);
+  void ApplyMaskIfNecessary();
 
   const LayoutObject& object_;
-  PaintInfo paint_info_;
+  const PaintInfo& paint_info_;
   const DisplayItemClient& display_item_client_;
-  FilterData* filter_data_;
-  std::unique_ptr<SVGFilterRecordingContext> filter_recording_context_;
   base::Optional<ScopedPaintChunkProperties> scoped_paint_chunk_properties_;
   base::Optional<SVGMaskPainter> mask_painter_;
   bool should_paint_clip_path_as_mask_image_ = false;

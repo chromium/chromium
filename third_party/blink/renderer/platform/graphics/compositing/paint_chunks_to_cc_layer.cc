@@ -576,15 +576,18 @@ void ConversionContext::StartEffect(const EffectPaintPropertyNode& effect) {
   current_effect_ = &effect;
 
   if (effect.Filter().HasReferenceFilter()) {
-    auto reference_box = effect.Filter().ReferenceBox();
-    effect_bounds_stack_.back().bounds = reference_box;
-    if (current_effect_->Filter().HasReferenceFilter()) {
-      // Emit an empty paint operation to add the filter's source bounds (mapped
-      // to layer space) to the visual rect of the filter's SaveLayerOp.
-      cc_list_.StartPaint();
-      cc_list_.EndPaintOfUnpaired(chunk_to_layer_mapper_.MapVisualRect(
-          EnclosingIntRect(reference_box)));
-    }
+    // Map a random point in the reference box through the filter to determine
+    // the bounds of the effect on an empty source. For empty chunks, or chunks
+    // with empty bounds, with a filter applied that produces output even when
+    // there's no input this will expand the bounds to match.
+    FloatRect filtered_bounds = current_effect_->MapRect(
+        FloatRect(effect.Filter().ReferenceBox().Center(), FloatSize()));
+    effect_bounds_stack_.back().bounds = filtered_bounds;
+    // Emit an empty paint operation to add the filtered bounds (mapped to layer
+    // space) to the visual rect of the filter's SaveLayerOp.
+    cc_list_.StartPaint();
+    cc_list_.EndPaintOfUnpaired(chunk_to_layer_mapper_.MapVisualRect(
+        EnclosingIntRect(filtered_bounds)));
   }
 }
 
@@ -743,8 +746,8 @@ void ConversionContext::Convert(const PaintChunkSubset& paint_chunks,
       SwitchToChunkState(chunk);
 
     // Most effects apply to drawable contents only. Reference filters are
-    // exceptions, for which we have already added the reference box to the
-    // bounds of the effect in StartEffect().
+    // exceptions, for which we have already added the chunk bounds mapped
+    // through the filter to the bounds of the effect in StartEffect().
     UpdateEffectBounds(FloatRect(chunk.drawable_bounds),
                        chunk_state.Transform().Unalias());
   }

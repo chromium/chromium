@@ -99,6 +99,8 @@ class SVGResources {
     return nullptr;
   }
 
+  bool HasClipOrMaskOrFilter() const { return !!clipper_filter_masker_data_; }
+
   // Paint servers
   LayoutSVGResourcePaintServer* Fill() const {
     return fill_stroke_data_ ? fill_stroke_data_->fill : nullptr;
@@ -115,8 +117,6 @@ class SVGResources {
   void BuildSetOfResources(HashSet<LayoutSVGResourceContainer*>&);
 
   // Methods operating on all cached resources
-  InvalidationModeMask RemoveClientFromCacheAffectingObjectBounds(
-      SVGElementResourceClient&) const;
   void ResourceDestroyed(LayoutSVGResourceContainer*);
   void ClearReferencesTo(LayoutSVGResourceContainer*);
 
@@ -196,16 +196,9 @@ class SVGResources {
 class FilterData final : public GarbageCollected<FilterData> {
  public:
   FilterData(FilterEffect* last_effect, SVGFilterGraphNodeMap* node_map)
-      : last_effect_(last_effect),
-        node_map_(node_map),
-        state_(kRecordingContent) {}
+      : last_effect_(last_effect), node_map_(node_map) {}
 
-  void UpdateStateOnPrepare();
-  bool UpdateStateOnFinish();
-  bool ContentNeedsUpdate() const { return state_ == kRecordingContent; }
-  void UpdateContent(sk_sp<PaintRecord> content);
-  sk_sp<PaintFilter> CreateFilter();
-  FloatRect MapRect(const FloatRect& input_rect) const;
+  sk_sp<PaintFilter> BuildPaintFilter();
   // Perform a finegrained invalidation of the filter chain for the
   // specified filter primitive and attribute. Returns false if no
   // further invalidation is required, otherwise true.
@@ -219,23 +212,6 @@ class FilterData final : public GarbageCollected<FilterData> {
  private:
   Member<FilterEffect> last_effect_;
   Member<SVGFilterGraphNodeMap> node_map_;
-
-  /*
-   * The state transitions should follow the following:
-   *
-   * RecordingContent->ReadyToPaint->GeneratingFilter->ReadyToPaint
-   *     |     ^                       |     ^
-   *     v     |                       v     |
-   * RecordingContentCycleDetected   GeneratingFilterCycleDetected
-   */
-  enum FilterDataState {
-    kRecordingContent,
-    kRecordingContentCycleDetected,
-    kReadyToPaint,
-    kGeneratingFilter,
-    kGeneratingFilterCycleDetected
-  };
-  FilterDataState state_;
 };
 
 class SVGElementResourceClient final
@@ -251,14 +227,16 @@ class SVGElementResourceClient final
   void FilterPrimitiveChanged(SVGFilterPrimitiveStandardAttributes& primitive,
                               const QualifiedName& attribute) override;
 
-  FilterData* UpdateFilterData();
+  void UpdateFilterData(CompositorFilterOperations&);
   bool ClearFilterData();
+  void MarkFilterDataDirty();
 
   void Trace(Visitor*) const override;
 
  private:
   Member<SVGElement> element_;
   Member<FilterData> filter_data_;
+  bool filter_data_dirty_;
 };
 
 }  // namespace blink

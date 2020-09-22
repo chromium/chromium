@@ -97,6 +97,7 @@ class PLATFORM_EXPORT PaintController {
     return new_paint_chunks_.LastChunk().bounds;
   }
 
+  void EnsureChunk() { new_paint_chunks_.EnsureChunk(); }
   void RecordHitTestData(const DisplayItemClient& client,
                          const IntRect& rect,
                          TouchAction touch_action) {

@@ -95,7 +95,6 @@ static WTF::String SpecialDrawingTypeAsDebugString(DisplayItem::Type type) {
     DEBUG_STRING_CASE(ReflectionMask);
     DEBUG_STRING_CASE(Resizer);
     DEBUG_STRING_CASE(SVGClip);
-    DEBUG_STRING_CASE(SVGFilter);
     DEBUG_STRING_CASE(SVGMask);
     DEBUG_STRING_CASE(ScrollbarThumb);
     DEBUG_STRING_CASE(ScrollbarTickmarks);

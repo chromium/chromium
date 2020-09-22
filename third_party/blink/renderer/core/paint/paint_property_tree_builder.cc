@@ -1270,37 +1270,79 @@ static CompositingReasons CompositingReasonsForFilterProperty() {
   return reasons;
 }
 
-static bool NeedsFilter(const LayoutObject& object,
-                        CompositingReasons direct_compositing_reasons) {
-  if (direct_compositing_reasons & CompositingReasonsForFilterProperty())
-    return true;
-
-  if (!object.IsBoxModelObject() || !ToLayoutBoxModelObject(object).Layer())
+static bool HasReferenceFilterOnly(const ComputedStyle& style) {
+  if (!style.HasFilter())
     return false;
+  const FilterOperations& operations = style.Filter();
+  if (operations.size() != 1)
+    return false;
+  return operations.at(0)->GetType() == FilterOperation::REFERENCE;
+}
 
-  if (object.StyleRef().HasFilter() || object.HasReflection())
+static bool IsClipPathDescendant(const LayoutObject& object) {
+  const LayoutObject* parent = object.Parent();
+  while (parent) {
+    if (parent->IsSVGResourceContainer()) {
+      auto* container = ToLayoutSVGResourceContainer(parent);
+      if (container->ResourceType() == kClipperResourceType)
+        return true;
+    }
+    parent = parent->Parent();
+  }
+  return false;
+}
+
+static bool NeedsFilter(const LayoutObject& object,
+                        const PaintPropertyTreeBuilderContext& full_context) {
+  if (full_context.direct_compositing_reasons &
+      CompositingReasonsForFilterProperty())
     return true;
 
+  if (object.IsBoxModelObject() && ToLayoutBoxModelObject(object).HasLayer()) {
+    if (object.StyleRef().HasFilter() || object.HasReflection())
+      return true;
+  } else if (object.IsSVGChild()) {
+    if (HasReferenceFilterOnly(object.StyleRef())) {
+      // Filters don't apply to elements that are descendants of a <clipPath>.
+      if (!full_context.has_svg_hidden_container_ancestor ||
+          !IsClipPathDescendant(object))
+        return true;
+    }
+  }
   return false;
+}
+
+static void UpdateFilterEffect(const LayoutObject& object,
+                               const EffectPaintPropertyNode* effect_node,
+                               CompositorFilterOperations& filter) {
+  if (object.IsBoxModelObject() && ToLayoutBoxModelObject(object).HasLayer()) {
+    // Try to use the cached filter.
+    if (effect_node)
+      filter = effect_node->Filter();
+    PaintLayer* layer = ToLayoutBoxModelObject(object).Layer();
+    layer->UpdateFilterReferenceBox();
+    layer->UpdateCompositorFilterOperationsForFilter(filter);
+    layer->ClearFilterOnEffectNodeDirty();
+    return;
+  }
+  if (object.IsSVGChild()) {
+    if (!HasReferenceFilterOnly(object.StyleRef()))
+      return;
+    // Try to use the cached filter.
+    if (effect_node)
+      filter = effect_node->Filter();
+    SVGResources::GetClient(object)->UpdateFilterData(filter);
+  }
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
   DCHECK(properties_);
   if (NeedsPaintPropertyUpdate()) {
-    if (NeedsFilter(object_, full_context_.direct_compositing_reasons)) {
+    if (NeedsFilter(object_, full_context_)) {
       EffectPaintPropertyNode::State state;
       state.local_transform_space = context_.current.transform;
 
-      if (object_.IsBoxModelObject()) {
-        if (auto* layer = ToLayoutBoxModelObject(object_).Layer()) {
-          // Try to use the cached filter.
-          if (properties_->Filter())
-            state.filter = properties_->Filter()->Filter();
-          layer->UpdateFilterReferenceBox();
-          layer->UpdateCompositorFilterOperationsForFilter(state.filter);
-          layer->ClearFilterOnEffectNodeDirty();
-        }
-      }
+      UpdateFilterEffect(object_, properties_->Filter(), state.filter);
 
       // The CSS filter spec didn't specify how filters interact with overflow
       // clips. The implementation here mimics the old Blink/WebKit behavior for
@@ -3495,10 +3537,9 @@ bool PaintPropertyTreeBuilder::UpdateFragments() {
        NeedsEffect(object_, context_.direct_compositing_reasons) ||
        NeedsTransformForSVGChild(object_,
                                  context_.direct_compositing_reasons) ||
-       NeedsFilter(object_, context_.direct_compositing_reasons) ||
-       NeedsCssClip(object_) || NeedsInnerBorderRadiusClip(object_) ||
-       NeedsOverflowClip(object_) || NeedsPerspective(object_) ||
-       NeedsReplacedContentTransform(object_) ||
+       NeedsFilter(object_, context_) || NeedsCssClip(object_) ||
+       NeedsInnerBorderRadiusClip(object_) || NeedsOverflowClip(object_) ||
+       NeedsPerspective(object_) || NeedsReplacedContentTransform(object_) ||
        NeedsLinkHighlightEffect(object_) ||
        NeedsScrollOrScrollTranslation(object_,
                                       context_.direct_compositing_reasons));

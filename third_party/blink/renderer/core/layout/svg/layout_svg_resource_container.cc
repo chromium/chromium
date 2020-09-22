@@ -216,10 +216,19 @@ static inline void RemoveFromCacheAndInvalidateDependencies(
   if (SVGResources* resources =
           SVGResourcesCache::CachedResourcesForLayoutObject(object)) {
     SVGElementResourceClient* client = element->GetSVGResourceClient();
-    if (InvalidationModeMask invalidation_mask =
-            resources->RemoveClientFromCacheAffectingObjectBounds(*client)) {
+    if (resources->HasClipOrMaskOrFilter()) {
+      InvalidationModeMask invalidation_mask =
+          SVGResourceClient::kBoundariesInvalidation;
+      bool filter_data_invalidated = false;
+      if (resources->Filter()) {
+        filter_data_invalidated = client->ClearFilterData();
+        invalidation_mask |=
+            filter_data_invalidated ? SVGResourceClient::kPaintInvalidation : 0;
+      }
       LayoutSVGResourceContainer::MarkClientForInvalidation(object,
                                                             invalidation_mask);
+      if (filter_data_invalidated)
+        client->MarkFilterDataDirty();
     }
   }
 

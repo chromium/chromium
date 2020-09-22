@@ -416,6 +416,9 @@ crbug.com/1050993 [ Linux ] virtual/gpu-rasterization/images/drag-image-descenda
 # Flaky test.
 crbug.com/1054894 [ Mac ] http/tests/images/image-decode-in-frame.html [ Pass Failure ]
 
+# Regression from crbug.com/109224.
+crbug.com/1128962 svg/filters/feDisplacementMap.svg [ Failure ]
+
 # ====== Paint team owned tests to here ======
 
 crbug.com/922249 virtual/android/fullscreen/compositor-touch-hit-rects-fullscreen-video-controls.html [ Failure Pass ]

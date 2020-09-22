@@ -75,6 +75,7 @@ class PLATFORM_EXPORT PaintChunker final {
   void ProcessBackgroundColorCandidate(const PaintChunk::Id& id,
                                        Color color,
                                        uint64_t area);
+  void EnsureChunk() { EnsureCurrentChunk(*next_chunk_id_); }
 
   // Releases the generated paint chunk list and raster invalidations and
   // resets the state of this object.

@@ -280,19 +280,6 @@ bool SVGResources::DifferenceNeedsLayout(const SVGResources* a,
          a->Masker() != b->Masker();
 }
 
-InvalidationModeMask SVGResources::RemoveClientFromCacheAffectingObjectBounds(
-    SVGElementResourceClient& client) const {
-  if (!clipper_filter_masker_data_)
-    return 0;
-  InvalidationModeMask invalidation_flags =
-      SVGResourceClient::kBoundariesInvalidation;
-  if (clipper_filter_masker_data_->filter) {
-    if (client.ClearFilterData())
-      invalidation_flags |= SVGResourceClient::kPaintInvalidation;
-  }
-  return invalidation_flags;
-}
-
 void SVGResources::ResourceDestroyed(LayoutSVGResourceContainer* resource) {
   DCHECK(resource);
   if (!HasResourceData())
@@ -587,8 +574,18 @@ void SVGResources::UpdateClipPathFilterMask(SVGElement& element,
   if (auto* reference_clip =
           DynamicTo<ReferenceClipPathOperation>(style.ClipPath()))
     reference_clip->AddClient(element.EnsureSVGResourceClient());
-  if (style.HasFilter())
-    style.Filter().AddClient(element.EnsureSVGResourceClient());
+  if (style.HasFilter()) {
+    SVGElementResourceClient& client = element.EnsureSVGResourceClient();
+    style.Filter().AddClient(client);
+    LayoutObject* layout_object = element.GetLayoutObject();
+    // This is called from StyleDidChange so we should have a LayoutObject.
+    DCHECK(layout_object);
+    // TODO(fs): Reorganise the code so that we don't need to invalidate this
+    // again in SVGResourcesCache::ClientStyleChanged (and potentially avoid
+    // redundant invalidations).
+    layout_object->SetNeedsPaintPropertyUpdate();
+    client.MarkFilterDataDirty();
+  }
   if (StyleSVGResource* masker_resource = style.SvgStyle().MaskerResource())
     masker_resource->AddClient(element.EnsureSVGResourceClient());
   if (had_client)
@@ -611,6 +608,7 @@ void SVGResources::ClearClipPathFilterMask(SVGElement& element,
       LayoutObject* layout_object = element.GetLayoutObject();
       LayoutSVGResourceContainer::MarkClientForInvalidation(
           *layout_object, SVGResourceClient::kPaintInvalidation);
+      client->MarkFilterDataDirty();
     }
   }
   if (StyleSVGResource* masker_resource = style->SvgStyle().MaskerResource())
@@ -675,63 +673,12 @@ void SVGResources::ClearMarkers(SVGElement& element,
     marker_resource->RemoveClient(*client);
 }
 
-bool FilterData::UpdateStateOnFinish() {
-  switch (state_) {
-    // A cycle can occur when an FeImage references a source that
-    // makes use of the FeImage itself. This is the first place we
-    // would hit the cycle so we reset the state and continue.
-    case kGeneratingFilterCycleDetected:
-      state_ = kGeneratingFilter;
-      return false;
-    case kRecordingContentCycleDetected:
-      state_ = kRecordingContent;
-      return false;
-    default:
-      return true;
-  }
-}
-
-void FilterData::UpdateStateOnPrepare() {
-  switch (state_) {
-    case kGeneratingFilter:
-      state_ = kGeneratingFilterCycleDetected;
-      break;
-    case kRecordingContent:
-      state_ = kRecordingContentCycleDetected;
-      break;
-    default:
-      break;
-  }
-}
-
-void FilterData::UpdateContent(sk_sp<PaintRecord> content) {
-  DCHECK_EQ(state_, kRecordingContent);
-  Filter* filter = last_effect_->GetFilter();
-  FloatRect bounds = filter->FilterRegion();
-  DCHECK(filter->GetSourceGraphic());
-  paint_filter_builder::BuildSourceGraphic(filter->GetSourceGraphic(),
-                                           std::move(content), bounds);
-  state_ = kReadyToPaint;
-}
-
-sk_sp<PaintFilter> FilterData::CreateFilter() {
-  DCHECK_EQ(state_, kReadyToPaint);
-  state_ = kGeneratingFilter;
-  sk_sp<PaintFilter> image_filter =
-      paint_filter_builder::Build(last_effect_, kInterpolationSpaceSRGB);
-  state_ = kReadyToPaint;
-  return image_filter;
-}
-
-FloatRect FilterData::MapRect(const FloatRect& input_rect) const {
-  DCHECK_EQ(state_, kReadyToPaint);
-  return last_effect_->MapRect(input_rect);
+sk_sp<PaintFilter> FilterData::BuildPaintFilter() {
+  return paint_filter_builder::Build(last_effect_, kInterpolationSpaceSRGB);
 }
 
 bool FilterData::Invalidate(SVGFilterPrimitiveStandardAttributes& primitive,
                             const QualifiedName& attribute) {
-  if (state_ != kReadyToPaint)
-    return true;
   if (FilterEffect* effect = node_map_->EffectForElement(primitive)) {
     if (!primitive.SetFilterEffectAttribute(effect, attribute))
       return false;  // No change
@@ -753,7 +700,7 @@ void FilterData::Dispose() {
 }
 
 SVGElementResourceClient::SVGElementResourceClient(SVGElement* element)
-    : element_(element) {}
+    : element_(element), filter_data_dirty_(false) {}
 
 void SVGElementResourceClient::ResourceContentChanged(
     InvalidationModeMask invalidation_mask) {
@@ -765,10 +712,14 @@ void SVGElementResourceClient::ResourceContentChanged(
     return;
   }
 
+  const bool filter_data_invalidated = ClearFilterData();
+  if (filter_data_invalidated)
+    invalidation_mask |= SVGResourceClient::kPaintInvalidation;
+
   LayoutSVGResourceContainer::MarkClientForInvalidation(*layout_object,
                                                         invalidation_mask);
-
-  ClearFilterData();
+  if (filter_data_invalidated)
+    MarkFilterDataDirty();
 
   bool needs_layout =
       invalidation_mask & SVGResourceClient::kLayoutInvalidation;
@@ -780,6 +731,10 @@ void SVGElementResourceClient::ResourceElementChanged() {
   if (LayoutObject* layout_object = element_->GetLayoutObject()) {
     ClearFilterData();
     SVGResourcesCache::ResourceReferenceChanged(*layout_object);
+    // TODO(fs): If the resource element (for a filter) doesn't actually change
+    // we don't need to perform the associated invalidations.
+    layout_object->SetNeedsPaintPropertyUpdate();
+    MarkFilterDataDirty();
   }
 }
 
@@ -804,35 +759,46 @@ void SVGElementResourceClient::FilterPrimitiveChanged(
     return;
   LayoutSVGResourceContainer::MarkClientForInvalidation(
       *layout_object, SVGResourceClient::kPaintInvalidation);
+  MarkFilterDataDirty();
 }
 
-FilterData* SVGElementResourceClient::UpdateFilterData() {
-  DCHECK(element_->GetLayoutObject());
-  if (filter_data_) {
-    // If the filterData already exists we do not need to record the
-    // content to be filtered. This can occur if the content was
-    // previously recorded or we are in a cycle.
-    filter_data_->UpdateStateOnPrepare();
-    return filter_data_;
-  }
-  const LayoutObject& object = *element_->GetLayoutObject();
-  const ComputedStyle& style = object.StyleRef();
-  // Caller should make sure this holds.
-  DCHECK(GetFilterResourceForSVG(style));
-
+static FilterData* CreateFilterDataWithNodeMap(
+    FilterEffectBuilder& builder,
+    const ReferenceFilterOperation& reference_filter) {
   auto* node_map = MakeGarbageCollected<SVGFilterGraphNodeMap>();
-  FilterEffectBuilder builder(SVGResources::ReferenceBoxForEffects(object), 1);
-  Filter* filter = builder.BuildReferenceFilter(
-      To<ReferenceFilterOperation>(*style.Filter().at(0)), nullptr, node_map);
+  Filter* filter =
+      builder.BuildReferenceFilter(reference_filter, nullptr, node_map);
   if (!filter || !filter->LastEffect())
     return nullptr;
+  paint_filter_builder::PopulateSourceGraphicImageFilters(
+      filter->GetSourceGraphic(), kInterpolationSpaceSRGB);
+  return MakeGarbageCollected<FilterData>(filter->LastEffect(), node_map);
+}
 
-  IntRect source_region = EnclosingIntRect(object.StrokeBoundingBox());
-  filter->GetSourceGraphic()->SetSourceRect(source_region);
-
-  filter_data_ =
-      MakeGarbageCollected<FilterData>(filter->LastEffect(), node_map);
-  return filter_data_;
+void SVGElementResourceClient::UpdateFilterData(
+    CompositorFilterOperations& operations) {
+  DCHECK(element_->GetLayoutObject());
+  const LayoutObject& object = *element_->GetLayoutObject();
+  FloatRect reference_box = SVGResources::ReferenceBoxForEffects(object);
+  if (!operations.IsEmpty() && !filter_data_dirty_ &&
+      reference_box == operations.ReferenceBox())
+    return;
+  if (!filter_data_ && GetFilterResourceForSVG(object.StyleRef())) {
+    FilterEffectBuilder builder(reference_box, 1);
+    filter_data_ = CreateFilterDataWithNodeMap(
+        builder,
+        To<ReferenceFilterOperation>(*object.StyleRef().Filter().at(0)));
+  }
+  operations.Clear();
+  if (filter_data_) {
+    operations.AppendReferenceFilter(filter_data_->BuildPaintFilter());
+  } else {
+    // Filter construction failed. Create a filter chain that yields
+    // transparent black.
+    operations.AppendOpacityFilter(0);
+  }
+  operations.SetReferenceBox(reference_box);
+  filter_data_dirty_ = false;
 }
 
 bool SVGElementResourceClient::ClearFilterData() {
@@ -840,6 +806,12 @@ bool SVGElementResourceClient::ClearFilterData() {
   if (filter_data)
     filter_data->Dispose();
   return !!filter_data;
+}
+
+void SVGElementResourceClient::MarkFilterDataDirty() {
+  DCHECK(element_->GetLayoutObject());
+  DCHECK(element_->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  filter_data_dirty_ = true;
 }
 
 void SVGElementResourceClient::Trace(Visitor* visitor) const {

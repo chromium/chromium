@@ -35,7 +35,6 @@ namespace blink {
 
 class BoxReflection;
 class FilterEffect;
-class FloatRect;
 
 namespace paint_filter_builder {
 
@@ -51,11 +50,7 @@ PLATFORM_EXPORT sk_sp<PaintFilter> TransformInterpolationSpace(
 
 PLATFORM_EXPORT void PopulateSourceGraphicImageFilters(
     FilterEffect* source_graphic,
-    sk_sp<PaintFilter> input,
     InterpolationSpace input_interpolation_space);
-PLATFORM_EXPORT void BuildSourceGraphic(FilterEffect*,
-                                        sk_sp<PaintRecord>,
-                                        const FloatRect& record_bounds);
 
 PLATFORM_EXPORT sk_sp<PaintFilter> BuildBoxReflectFilter(
     const BoxReflection&,

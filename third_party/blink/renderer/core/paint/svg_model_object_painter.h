@@ -27,6 +27,10 @@ class SVGModelObjectPainter {
       const LayoutSVGModelObject& layout_svg_model_object)
       : layout_svg_model_object_(layout_svg_model_object) {}
 
+  // Should we use an infinite cull rect when painting an object with the
+  // specified style.
+  static bool ShouldUseInfiniteCullRect(const ComputedStyle&);
+
   // If the object is outside the cull rect, painting can be skipped in most
   // cases. An important exception is when there is a transform style: see the
   // comment in the implementation.

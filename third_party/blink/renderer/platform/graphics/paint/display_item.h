@@ -79,7 +79,6 @@ class PLATFORM_EXPORT DisplayItem {
     kReflectionMask,
     kResizer,
     kSVGClip,
-    kSVGFilter,
     kSVGMask,
     kScrollCorner,
     // The following 3 types are used during cc::Scrollbar::PaintPart() only.

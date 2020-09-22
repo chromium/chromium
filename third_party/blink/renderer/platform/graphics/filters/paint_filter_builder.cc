@@ -44,7 +44,6 @@ namespace paint_filter_builder {
 
 void PopulateSourceGraphicImageFilters(
     FilterEffect* source_graphic,
-    sk_sp<PaintFilter> input,
     InterpolationSpace input_interpolation_space) {
   // Prepopulate SourceGraphic with two image filters: one with a null image
   // filter, and the other with a colorspace conversion filter.
@@ -53,9 +52,9 @@ void PopulateSourceGraphicImageFilters(
   // Since we know SourceGraphic is always PM-valid, we also use these for
   // the PM-validated options.
   sk_sp<PaintFilter> device_filter = TransformInterpolationSpace(
-      input, input_interpolation_space, kInterpolationSpaceSRGB);
+      nullptr, input_interpolation_space, kInterpolationSpaceSRGB);
   sk_sp<PaintFilter> linear_filter = TransformInterpolationSpace(
-      input, input_interpolation_space, kInterpolationSpaceLinear);
+      nullptr, input_interpolation_space, kInterpolationSpaceLinear);
   source_graphic->SetImageFilter(kInterpolationSpaceSRGB, false, device_filter);
   source_graphic->SetImageFilter(kInterpolationSpaceLinear, false,
                                  linear_filter);
@@ -109,17 +108,6 @@ sk_sp<PaintFilter> TransformInterpolationSpace(
 
   return sk_make_sp<ColorFilterPaintFilter>(std::move(color_filter),
                                             std::move(input));
-}
-
-void BuildSourceGraphic(FilterEffect* source_graphic,
-                        sk_sp<PaintRecord> record,
-                        const FloatRect& record_bounds) {
-  DCHECK(record);
-  sk_sp<PaintFilter> filter =
-      sk_make_sp<RecordPaintFilter>(record, record_bounds);
-  PopulateSourceGraphicImageFilters(
-      source_graphic, std::move(filter),
-      source_graphic->OperatingInterpolationSpace());
 }
 
 static const float kMaxMaskBufferSize =

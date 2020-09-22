@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/paint/filter_effect_builder.h"
 
 #include <algorithm>
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
@@ -313,7 +314,7 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
             BuildReferenceFilter(reference_operation, nullptr);
         if (reference_filter && reference_filter->LastEffect()) {
           paint_filter_builder::PopulateSourceGraphicImageFilters(
-              reference_filter->GetSourceGraphic(), nullptr,
+              reference_filter->GetSourceGraphic(),
               current_interpolation_space);
 
           FilterEffect* filter_effect = reference_filter->LastEffect();
@@ -423,6 +424,8 @@ Filter* FilterEffectBuilder::BuildReferenceFilter(
       DynamicTo<SVGFilterElement>(resource ? resource->Target() : nullptr);
   if (!filter_element)
     return nullptr;
+  if (auto* resource_container = resource->ResourceContainer())
+    resource_container->ClearInvalidationMask();
   FloatRect filter_region =
       SVGLengthContext::ResolveRectangle<SVGFilterElement>(
           filter_element, filter_element->filterUnits()->CurrentEnumValue(),

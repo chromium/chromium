@@ -94,8 +94,15 @@ void SVGResourcesCache::ClientLayoutChanged(LayoutObject& object) {
   if (!object.SelfNeedsLayout() && !resources->Filter())
     return;
   SVGElementResourceClient* client = SVGResources::GetClient(object);
-  InvalidationModeMask invalidation_flags =
-      resources->RemoveClientFromCacheAffectingObjectBounds(*client);
+  InvalidationModeMask invalidation_flags = 0;
+  if (resources->HasClipOrMaskOrFilter())
+    invalidation_flags = SVGResourceClient::kBoundariesInvalidation;
+  bool filter_data_invalidated = false;
+  if (resources->Filter()) {
+    filter_data_invalidated = client->ClearFilterData();
+    invalidation_flags |=
+        filter_data_invalidated ? SVGResourceClient::kPaintInvalidation : 0;
+  }
   if (LayoutSVGResourcePaintServer* fill = resources->Fill()) {
     fill->RemoveClientFromCache(*client);
     invalidation_flags |= SVGResourceClient::kPaintInvalidation;
@@ -107,6 +114,8 @@ void SVGResourcesCache::ClientLayoutChanged(LayoutObject& object) {
   if (invalidation_flags) {
     LayoutSVGResourceContainer::MarkClientForInvalidation(object,
                                                           invalidation_flags);
+    if (filter_data_invalidated)
+      client->MarkFilterDataDirty();
   }
 }
 
