@@ -143,10 +143,6 @@ public class MainSettingsFragmentTest {
         Mockito.doReturn(SEARCH_ENGINE_SHORT_NAME).when(mMockSearchEngine).getShortName();
     }
 
-    /**
-     *  TODO(crbug.com/1128924): Add a corresponding test case to support Safety Check being
-     * enabled.
-     */
     @Test
     @LargeTest
     @Feature({"RenderTest"})
@@ -164,14 +160,32 @@ public class MainSettingsFragmentTest {
         mRenderTestRule.render(view, "main_settings_signed_in");
     }
 
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    @EnableFeatures({ChromeFeatureList.SAFETY_CHECK_ANDROID})
+    public void testRenderDifferentSignedInStatesWithSafetyCheck() throws IOException {
+        launchSettingsActivity();
+        View view = mSettingsActivityTestRule.getActivity()
+                            .findViewById(android.R.id.content)
+                            .getRootView();
+        mRenderTestRule.render(view, "main_settings_signed_out_safety_check");
+
+        // Sign in and render changes.
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        SyncTestUtil.waitForSyncActive();
+        mRenderTestRule.render(view, "main_settings_signed_in_safety_check");
+    }
+
     /**
      * Test for the "Account" section.
      *
-     * TODO(crbug.com/1128924): Add a corresponding test case to support Safety Check being enabled.
+     * TODO(crbug.com/1098205): remove code to explicitly enable Safety Check and Password check,
+     * once the flags are on by default.
      */
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.SAFETY_CHECK_ANDROID})
+    @EnableFeatures({ChromeFeatureList.PASSWORD_CHECK, ChromeFeatureList.SAFETY_CHECK_ANDROID})
     public void testStartup() {
         launchSettingsActivity();
 
@@ -200,9 +214,7 @@ public class MainSettingsFragmentTest {
 
         // Assert for advanced section
         assertSettingsExists("privacy", PrivacySettings.class);
-        // Safety check should be hidden with the flag off.
-        Assert.assertNull("Safety check section should be hidden",
-                mMainSettings.findPreference(MainSettings.PREF_SAFETY_CHECK));
+        assertSettingsExists(MainSettings.PREF_SAFETY_CHECK, SafetyCheckSettingsFragment.class);
         assertSettingsExists("accessibility", AccessibilitySettings.class);
         assertSettingsExists("content_settings", SiteSettings.class);
         assertSettingsExists("languages", LanguageSettings.class);
@@ -216,13 +228,15 @@ public class MainSettingsFragmentTest {
     /**
      * Test for the "Account" section.
      *
-     * TODO(crbug.com/1128924): Add a corresponding test case to support Safety Check being enabled.
+     * TODO(crbug.com/1098205): remove code to explicitly enable Safety Check and Password check,
+     * once the flags are on by default.
      */
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY})
-    @DisableFeatures({ChromeFeatureList.SAFETY_CHECK_ANDROID})
-    public void testStartupWithMobileIdentityConsistency() {
+    @EnableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY,
+            ChromeFeatureList.PASSWORD_CHECK, ChromeFeatureList.SAFETY_CHECK_ANDROID})
+    public void
+    testStartupWithMobileIdentityConsistency() {
         launchSettingsActivity();
 
         // For non-signed-in users, the section contains the generic header.
@@ -255,9 +269,7 @@ public class MainSettingsFragmentTest {
 
         // Assert for advanced section
         assertSettingsExists("privacy", PrivacySettings.class);
-        // Safety check should be hidden with the flag off.
-        Assert.assertNull("Safety check section should be hidden",
-                mMainSettings.findPreference(MainSettings.PREF_SAFETY_CHECK));
+        assertSettingsExists(MainSettings.PREF_SAFETY_CHECK, SafetyCheckSettingsFragment.class);
         assertSettingsExists("accessibility", AccessibilitySettings.class);
         assertSettingsExists("content_settings", SiteSettings.class);
         assertSettingsExists("languages", LanguageSettings.class);
@@ -266,14 +278,6 @@ public class MainSettingsFragmentTest {
         assertSettingsExists(MainSettings.PREF_DOWNLOADS, DownloadSettings.class);
         assertSettingsExists(MainSettings.PREF_DEVELOPER, DeveloperSettings.class);
         assertSettingsExists("about_chrome", AboutChromeSettings.class);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.SAFETY_CHECK_ANDROID, ChromeFeatureList.PASSWORD_CHECK})
-    public void testSafetyCheckFlagOn() {
-        launchSettingsActivity();
-        assertSettingsExists(MainSettings.PREF_SAFETY_CHECK, SafetyCheckSettingsFragment.class);
     }
 
     @Test
