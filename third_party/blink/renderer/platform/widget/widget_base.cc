@@ -1259,11 +1259,28 @@ gfx::PointF WidgetBase::DIPsToBlinkSpace(const gfx::PointF& point) {
       client_->GetOriginalScreenInfo().device_scale_factor, point);
 }
 
+gfx::Point WidgetBase::DIPsToBlinkSpace(const gfx::Point& point) {
+  if (!use_zoom_for_dsf_)
+    return point;
+  // TODO(danakj): Should this be GetScreenInfo() so it changes under emulation?
+  return gfx::ScaleToRoundedPoint(
+      point, client_->GetOriginalScreenInfo().device_scale_factor);
+}
+
 gfx::PointF WidgetBase::BlinkSpaceToDIPs(const gfx::PointF& point) {
   if (!use_zoom_for_dsf_)
     return point;
   return gfx::ConvertPointToDIP(
       client_->GetOriginalScreenInfo().device_scale_factor, point);
+}
+
+gfx::Point WidgetBase::BlinkSpaceToDIPs(const gfx::Point& point) {
+  if (!use_zoom_for_dsf_)
+    return point;
+  // TODO(danakj): Should this be GetScreenInfo() so it changes under emulation?
+  // TODO(dtapuska): Determine if this should be a floor vs rounded.
+  return gfx::ScaleToFlooredPoint(
+      point, client_->GetOriginalScreenInfo().device_scale_factor);
 }
 
 gfx::Size WidgetBase::DIPsToBlinkSpace(const gfx::Size& size) {
@@ -1278,6 +1295,13 @@ gfx::Size WidgetBase::BlinkSpaceToDIPs(const gfx::Size& size) {
     return size;
   float reverse = 1 / client_->GetOriginalScreenInfo().device_scale_factor;
   return gfx::ScaleToCeiledSize(size, reverse);
+}
+
+gfx::Rect WidgetBase::BlinkSpaceToDIPs(const gfx::Rect& rect) {
+  if (!use_zoom_for_dsf_)
+    return rect;
+  float reverse = 1 / client_->GetOriginalScreenInfo().device_scale_factor;
+  return gfx::ScaleToEnclosedRect(rect, reverse);
 }
 
 }  // namespace blink

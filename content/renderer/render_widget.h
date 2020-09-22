@@ -216,8 +216,6 @@ class CONTENT_EXPORT RenderWidget
   void ConvertViewportToWindow(blink::WebRect* rect) override;
   void ConvertViewportToWindow(blink::WebFloatRect* rect) override;
   void ConvertWindowToViewport(blink::WebFloatRect* rect) override;
-  gfx::Point ConvertWindowPointToViewport(const gfx::Point& point) override;
-  gfx::PointF ConvertWindowPointToViewport(const gfx::PointF& point) override;
   bool RequestPointerLock(blink::WebLocalFrame* requester_frame,
                           blink::WebWidgetClient::PointerLockCallback callback,
                           bool request_unadjusted_movement) override;

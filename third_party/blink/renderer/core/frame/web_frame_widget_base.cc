@@ -489,11 +489,10 @@ void WebFrameWidgetBase::StartDragging(const WebDragData& drag_data,
     return;
   }
 
-  WebRect offset_in_window(drag_image_offset.x(), drag_image_offset.y(), 0, 0);
-  Client()->ConvertViewportToWindow(&offset_in_window);
+  gfx::Point offset_in_dips = widget_base_->BlinkSpaceToDIPs(drag_image_offset);
   GetAssociatedFrameWidgetHost()->StartDragging(
       drag_data, operations_allowed, drag_image,
-      gfx::Vector2d(offset_in_window.x, offset_in_window.y),
+      gfx::Vector2d(offset_in_dips.x(), offset_in_dips.y()),
       possible_drag_event_info_.Clone());
 }
 
@@ -1560,11 +1559,11 @@ void WebFrameWidgetBase::GetEditContextBoundsInWindow(
   WebRect control_bounds;
   WebRect selection_bounds;
   controller->GetLayoutBounds(&control_bounds, &selection_bounds);
-  client_->ConvertViewportToWindow(&control_bounds);
-  edit_context_control_bounds->emplace(control_bounds);
+  *edit_context_control_bounds =
+      widget_base_->BlinkSpaceToDIPs(gfx::Rect(control_bounds));
   if (controller->IsEditContextActive()) {
-    client_->ConvertViewportToWindow(&selection_bounds);
-    edit_context_selection_bounds->emplace(selection_bounds);
+    *edit_context_selection_bounds =
+        widget_base_->BlinkSpaceToDIPs(gfx::Rect(selection_bounds));
   }
 }
 
@@ -1605,15 +1604,16 @@ bool WebFrameWidgetBase::GetSelectionBoundsInWindow(
   WebRect focus_webrect;
   WebRect anchor_webrect;
   SelectionBounds(focus_webrect, anchor_webrect);
-  client_->ConvertViewportToWindow(&focus_webrect);
-  client_->ConvertViewportToWindow(&anchor_webrect);
+  gfx::Rect focus_rect_in_dips =
+      widget_base_->BlinkSpaceToDIPs(gfx::Rect(focus_webrect));
+  gfx::Rect anchor_rect_in_dips =
+      widget_base_->BlinkSpaceToDIPs(gfx::Rect(anchor_webrect));
 
   // if the bounds are the same return false.
-  if (gfx::Rect(focus_webrect) == *focus &&
-      gfx::Rect(anchor_webrect) == *anchor)
+  if (focus_rect_in_dips == *focus && anchor_rect_in_dips == *anchor)
     return false;
-  *focus = gfx::Rect(focus_webrect);
-  *anchor = gfx::Rect(anchor_webrect);
+  *focus = focus_rect_in_dips;
+  *anchor = anchor_rect_in_dips;
 
   WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
   if (!focused_frame)
@@ -1759,9 +1759,9 @@ bool WebFrameWidgetBase::IsProvisional() {
 }
 
 uint64_t WebFrameWidgetBase::GetScrollableContainerIdAt(
-    const gfx::PointF& point) {
-  gfx::PointF point_in_pixel = Client()->ConvertWindowPointToViewport(point);
-  return HitTestResultAt(point_in_pixel).GetScrollableContainerId();
+    const gfx::PointF& point_in_dips) {
+  gfx::PointF point = widget_base_->DIPsToBlinkSpace(point_in_dips);
+  return HitTestResultAt(point).GetScrollableContainerId();
 }
 
 void WebFrameWidgetBase::SetEditCommandsForNextKeyEvent(
@@ -1860,7 +1860,7 @@ gfx::Range WebFrameWidgetBase::CompositionRange() {
 }
 
 void WebFrameWidgetBase::GetCompositionCharacterBoundsInWindow(
-    Vector<gfx::Rect>* bounds) {
+    Vector<gfx::Rect>* bounds_in_dips) {
   WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
   if (!focused_frame)
     return;
@@ -1870,12 +1870,10 @@ void WebFrameWidgetBase::GetCompositionCharacterBoundsInWindow(
   if (!controller->GetCompositionCharacterBounds(bounds_from_blink))
     return;
 
-  for (size_t i = 0; i < bounds_from_blink.size(); ++i) {
-    Client()->ConvertViewportToWindow(&bounds_from_blink[i]);
-    bounds->push_back(bounds_from_blink[i]);
+  for (auto& rect : bounds_from_blink) {
+    bounds_in_dips->push_back(widget_base_->BlinkSpaceToDIPs(gfx::Rect(rect)));
   }
 }
-
 
 void WebFrameWidgetBase::AddImeTextSpansToExistingText(
     uint32_t start,
@@ -1901,10 +1899,9 @@ WebFrameWidgetBase::GetImeTextSpansInfo(
     unsigned length = ime_text_span.end_offset - ime_text_span.start_offset;
     focused_frame->FirstRectForCharacterRange(ime_text_span.start_offset,
                                               length, webrect);
-    Client()->ConvertViewportToWindow(&webrect);
 
     ime_text_spans_info.push_back(ui::mojom::blink::ImeTextSpanInfo::New(
-        ime_text_span, gfx::Rect(webrect)));
+        ime_text_span, widget_base_->BlinkSpaceToDIPs(gfx::Rect(webrect))));
   }
   return ime_text_spans_info;
 }
@@ -2063,13 +2060,13 @@ void WebFrameWidgetBase::ReplaceMisspelling(const String& word) {
   focused_frame->ReplaceMisspelledRange(word);
 }
 
-void WebFrameWidgetBase::SelectRange(const gfx::Point& base,
-                                     const gfx::Point& extent) {
+void WebFrameWidgetBase::SelectRange(const gfx::Point& base_in_dips,
+                                     const gfx::Point& extent_in_dips) {
   WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
   if (!focused_frame)
     return;
-  focused_frame->SelectRange(Client()->ConvertWindowPointToViewport(base),
-                             Client()->ConvertWindowPointToViewport(extent));
+  focused_frame->SelectRange(widget_base_->DIPsToBlinkSpace(base_in_dips),
+                             widget_base_->DIPsToBlinkSpace(extent_in_dips));
 }
 
 void WebFrameWidgetBase::AdjustSelectionByCharacterOffset(
@@ -2097,16 +2094,17 @@ void WebFrameWidgetBase::AdjustSelectionByCharacterOffset(
                              selection_menu_behavior);
 }
 
-void WebFrameWidgetBase::MoveRangeSelectionExtent(const gfx::Point& extent) {
+void WebFrameWidgetBase::MoveRangeSelectionExtent(
+    const gfx::Point& extent_in_dips) {
   WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
   if (!focused_frame)
     return;
   focused_frame->MoveRangeSelectionExtent(
-      Client()->ConvertWindowPointToViewport(extent));
+      widget_base_->DIPsToBlinkSpace(extent_in_dips));
 }
 
 void WebFrameWidgetBase::ScrollFocusedEditableNodeIntoRect(
-    const gfx::Rect& rect) {
+    const gfx::Rect& rect_in_dips) {
   WebLocalFrame* local_frame = FocusedWebLocalFrameInWidget();
   if (!local_frame)
     return;
@@ -2116,15 +2114,15 @@ void WebFrameWidgetBase::ScrollFocusedEditableNodeIntoRect(
   // DidChangeVisibleViewport to ensure that we don't assume the element
   // is already in view and ignore the scroll.
   local_frame->Client()->ResetHasScrolledFocusedEditableIntoView();
-  local_frame->Client()->ScrollFocusedEditableElementIntoRect(rect);
+  local_frame->Client()->ScrollFocusedEditableElementIntoRect(rect_in_dips);
 }
 
-void WebFrameWidgetBase::MoveCaret(const gfx::Point& point) {
+void WebFrameWidgetBase::MoveCaret(const gfx::Point& point_in_dips) {
   WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
   if (!focused_frame)
     return;
   focused_frame->MoveCaretSelection(
-      Client()->ConvertWindowPointToViewport(point));
+      widget_base_->DIPsToBlinkSpace(point_in_dips));
 }
 
 #if defined(OS_ANDROID)
