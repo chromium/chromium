@@ -137,7 +137,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         List<PropertyModel> thirdPartyApps = createThirdPartyPropertyModels(
                 mActivity, params, mContentTypes, chromeShareExtras.saveLastUsed());
 
-        mBottomSheet.createRecyclerViews(firstPartyApps, thirdPartyApps, mContentTypes);
+        mBottomSheet.createRecyclerViews(
+                firstPartyApps, thirdPartyApps, mContentTypes, params.getFileContentType());
 
         boolean shown = mBottomSheetController.requestShowContent(mBottomSheet, true);
         if (shown) {

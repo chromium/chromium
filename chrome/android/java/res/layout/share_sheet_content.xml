@@ -28,13 +28,13 @@
 
       <org.chromium.components.browser_ui.widget.RoundedCornerImageView
           android:id="@+id/image_preview"
-          android:layout_height="@dimen/sharing_hub_preview_monogram_size"
-          android:layout_width="@dimen/sharing_hub_preview_monogram_size"
-          android:scaleType="fitCenter"
-          app:cornerRadiusBottomStart="@dimen/default_rounded_corner_radius"
-          app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius"
-          app:cornerRadiusTopStart="@dimen/default_rounded_corner_radius"
-          app:cornerRadiusTopEnd="@dimen/default_rounded_corner_radius"
+          android:layout_height="@dimen/sharing_hub_preview_icon_size"
+          android:layout_width="@dimen/sharing_hub_preview_icon_size"
+          android:background="@drawable/preview_icon_border_background"
+          app:cornerRadiusBottomStart="@dimen/sharing_hub_preview_icon_rounded_corner_radius"
+          app:cornerRadiusBottomEnd="@dimen/sharing_hub_preview_icon_rounded_corner_radius"
+          app:cornerRadiusTopStart="@dimen/sharing_hub_preview_icon_rounded_corner_radius"
+          app:cornerRadiusTopEnd="@dimen/sharing_hub_preview_icon_rounded_corner_radius"
           tools:ignore="ContentDescription"/>
 
       <TextView

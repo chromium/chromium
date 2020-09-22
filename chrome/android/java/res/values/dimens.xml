@@ -594,6 +594,8 @@
     <dimen name="overflow_menu_update_padding">12dp</dimen>
 
     <!-- Sharing Hub dimensions -->
-    <dimen name="sharing_hub_preview_monogram_text_size">24dp</dimen>
-    <dimen name="sharing_hub_preview_monogram_size">48dp</dimen>
+    <dimen name="sharing_hub_preview_icon_padding">12dp</dimen>
+    <dimen name="sharing_hub_preview_icon_rounded_corner_radius">4dp</dimen>
+    <dimen name="sharing_hub_preview_icon_size">48dp</dimen>
+    <dimen name="sharing_hub_preview_inner_icon_size">24dp</dimen>
 </resources>

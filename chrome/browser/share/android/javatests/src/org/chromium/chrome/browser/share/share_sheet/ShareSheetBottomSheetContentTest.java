@@ -81,29 +81,53 @@ public final class ShareSheetBottomSheetContentTest {
     @Test
     @MediumTest
     public void createRecyclerViews_imageOnlyShare() {
+        String fileContentType = "image/jpeg";
         ShareSheetBottomSheetContent shareSheetBottomSheetContent =
                 new ShareSheetBottomSheetContent(mActivity, new MockLargeIconBridge(), null,
                         new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"")
                                 .setFileUris(new ArrayList<>(ImmutableList.of(sImageUri)))
+                                .setFileContentType(fileContentType)
                                 .build());
 
-        shareSheetBottomSheetContent.createRecyclerViews(
-                ImmutableList.of(), ImmutableList.of(), ImmutableSet.of(ContentType.IMAGE));
+        shareSheetBottomSheetContent.createRecyclerViews(ImmutableList.of(), ImmutableList.of(),
+                ImmutableSet.of(ContentType.IMAGE), fileContentType);
 
         TextView titleView =
                 shareSheetBottomSheetContent.getContentView().findViewById(R.id.title_preview);
         TextView subtitleView =
                 shareSheetBottomSheetContent.getContentView().findViewById(R.id.subtitle_preview);
         assertEquals("", titleView.getText());
-        assertEquals(mActivity.getString(R.string.sharing_hub_image_preview_subtitle),
-                subtitleView.getText());
+        assertEquals("image", subtitleView.getText());
+    }
+
+    @Test
+    @MediumTest
+    public void createRecyclerViews_fileShare() {
+        String fileContentType = "video/mp4";
+        ShareSheetBottomSheetContent shareSheetBottomSheetContent =
+                new ShareSheetBottomSheetContent(mActivity, new MockLargeIconBridge(), null,
+                        new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"")
+                                .setFileUris(new ArrayList<>(
+                                        ImmutableList.of(Uri.parse("content://TestVideo.mp4"))))
+                                .setFileContentType(fileContentType)
+                                .build());
+
+        shareSheetBottomSheetContent.createRecyclerViews(ImmutableList.of(), ImmutableList.of(),
+                ImmutableSet.of(ContentType.IMAGE), fileContentType);
+
+        TextView titleView =
+                shareSheetBottomSheetContent.getContentView().findViewById(R.id.title_preview);
+        TextView subtitleView =
+                shareSheetBottomSheetContent.getContentView().findViewById(R.id.subtitle_preview);
+        assertEquals("", titleView.getText());
+        assertEquals("video", subtitleView.getText());
     }
 
     @Test
     @MediumTest
     public void createRecyclerViews_highlightedTextShare() {
         mShareSheetBottomSheetContent.createRecyclerViews(ImmutableList.of(), ImmutableList.of(),
-                ImmutableSet.of(ContentType.HIGHLIGHTED_TEXT));
+                ImmutableSet.of(ContentType.HIGHLIGHTED_TEXT), "");
 
         TextView titleView =
                 mShareSheetBottomSheetContent.getContentView().findViewById(R.id.title_preview);
@@ -117,7 +141,7 @@ public final class ShareSheetBottomSheetContentTest {
     @MediumTest
     public void createRecyclerViews_textOnlyShare() {
         mShareSheetBottomSheetContent.createRecyclerViews(
-                ImmutableList.of(), ImmutableList.of(), ImmutableSet.of(ContentType.TEXT));
+                ImmutableList.of(), ImmutableList.of(), ImmutableSet.of(ContentType.TEXT), "");
 
         TextView titleView =
                 mShareSheetBottomSheetContent.getContentView().findViewById(R.id.title_preview);
@@ -131,14 +155,14 @@ public final class ShareSheetBottomSheetContentTest {
     @MediumTest
     public void createRecyclerViews_producesCorrectFavicon() {
         mShareSheetBottomSheetContent.createRecyclerViews(ImmutableList.of(), ImmutableList.of(),
-                ImmutableSet.of(ContentType.LINK_PAGE_VISIBLE));
+                ImmutableSet.of(ContentType.LINK_PAGE_VISIBLE), "");
 
         ImageView imageView =
                 mShareSheetBottomSheetContent.getContentView().findViewById(R.id.image_preview);
         assertNotNull(imageView.getDrawable());
         Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
         int size = mActivity.getResources().getDimensionPixelSize(
-                R.dimen.sharing_hub_preview_monogram_size);
+                R.dimen.sharing_hub_preview_inner_icon_size);
         assertEquals(size, bitmap.getWidth());
         assertEquals(size, bitmap.getHeight());
         assertEquals(sConfig, bitmap.getConfig());
@@ -148,7 +172,7 @@ public final class ShareSheetBottomSheetContentTest {
     @MediumTest
     public void createRecyclerViews_tabShare() {
         mShareSheetBottomSheetContent.createRecyclerViews(ImmutableList.of(), ImmutableList.of(),
-                ImmutableSet.of(ContentType.LINK_PAGE_VISIBLE));
+                ImmutableSet.of(ContentType.LINK_PAGE_VISIBLE), "");
 
         TextView titleView =
                 mShareSheetBottomSheetContent.getContentView().findViewById(R.id.title_preview);
@@ -165,7 +189,7 @@ public final class ShareSheetBottomSheetContentTest {
     @MediumTest
     public void createRecyclerViews_webShareTextAndUrl() {
         mShareSheetBottomSheetContent.createRecyclerViews(ImmutableList.of(), ImmutableList.of(),
-                ImmutableSet.of(ContentType.LINK_PAGE_NOT_VISIBLE, ContentType.TEXT));
+                ImmutableSet.of(ContentType.LINK_PAGE_NOT_VISIBLE, ContentType.TEXT), "");
 
         TextView titleView =
                 mShareSheetBottomSheetContent.getContentView().findViewById(R.id.title_preview);
@@ -186,7 +210,7 @@ public final class ShareSheetBottomSheetContentTest {
                         new ShareParams.Builder(/*window=*/null, /*title=*/"", sUrl).build());
 
         shareSheetBottomSheetContent.createRecyclerViews(ImmutableList.of(), ImmutableList.of(),
-                ImmutableSet.of(ContentType.LINK_PAGE_NOT_VISIBLE));
+                ImmutableSet.of(ContentType.LINK_PAGE_NOT_VISIBLE), "");
 
         TextView titleView =
                 shareSheetBottomSheetContent.getContentView().findViewById(R.id.title_preview);

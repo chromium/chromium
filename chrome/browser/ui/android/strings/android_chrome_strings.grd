@@ -3784,8 +3784,17 @@ In Incognito, your activity might still be visible to websites that you visit, y
       <message name="IDS_SHARING_HUB_OPEN_SETTINGS_LABEL" desc="Label for the open settings button.">
         Open Settings
       </message>
+      <message name="IDS_SHARING_HUB_AUDIO_PREVIEW_SUBTITLE" desc="Subtitle shown in the preview of Sharing Hub audio file shares.">
+        audio
+      </message>
       <message name="IDS_SHARING_HUB_IMAGE_PREVIEW_SUBTITLE" desc="Subtitle shown in the preview of Sharing Hub image shares.">
         image
+      </message>
+      <message name="IDS_SHARING_HUB_TEXT_PREVIEW_SUBTITLE" desc="Subtitle shown in the preview of Sharing Hub text file shares.">
+        text
+      </message>
+      <message name="IDS_SHARING_HUB_VIDEO_PREVIEW_SUBTITLE" desc="Subtitle shown in the preview of Sharing Hub video file shares.">
+        video
       </message>
 
       <!-- ClickToCall -->
