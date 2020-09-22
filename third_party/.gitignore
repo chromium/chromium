@@ -39,6 +39,7 @@
 /arcore-android-sdk/src/
 /arcore-android-sdk/test-apks/arcore/*.apk
 /asan
+/barhopper
 /bazel/desugar/*.jar
 /binutils
 /bison
