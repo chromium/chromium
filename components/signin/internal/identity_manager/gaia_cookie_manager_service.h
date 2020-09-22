@@ -373,11 +373,8 @@ class GaiaCookieManagerService
   virtual void StartFetchingListAccounts();
 
   // Prepare for logout and then starts fetching logout request.
-  void StartGaiaLogOut();
-
-  // Starts fetching log out.
   // Virtual for testing purpose.
-  virtual void StartFetchingLogOut();
+  virtual void StartGaiaLogOut();
 
   // Starts setting account using multilogin endpoint.
   void StartSetAccounts();

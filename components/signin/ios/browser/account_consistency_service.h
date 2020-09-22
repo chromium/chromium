@@ -87,10 +87,6 @@ class AccountConsistencyService : public KeyedService,
   void SetChromeConnectedCookieWithDomains(
       const std::vector<std::string>& domains);
 
-  // Removes CHROME_CONNECTED cookies on all the Google domains where it was
-  // set. Calls callback once all cookies were removed.
-  void RemoveAllChromeConnectedCookies(base::OnceClosure callback);
-
   // Notifies the AccountConsistencyService that browsing data has been removed
   // for any time period.
   void OnBrowsingDataRemoved();
@@ -134,6 +130,10 @@ class AccountConsistencyService : public KeyedService,
 
   // Adds CHROME_CONNECTED cookies on all the main Google domains.
   void AddChromeConnectedCookies();
+
+  // Removes CHROME_CONNECTED cookies on all the Google domains where it was
+  // set. Calls callback once all cookies were removed.
+  void RemoveAllChromeConnectedCookies(base::OnceClosure callback);
 
   // Triggers a Gaia cookie update on the Google domain.
   void TriggerGaiaCookieChangeIfDeleted(

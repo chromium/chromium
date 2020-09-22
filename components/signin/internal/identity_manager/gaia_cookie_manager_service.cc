@@ -1006,13 +1006,6 @@ void GaiaCookieManagerService::StartFetchingMergeSession() {
 void GaiaCookieManagerService::StartGaiaLogOut() {
   DCHECK(requests_.front().request_type() == GaiaCookieRequestType::LOG_OUT);
   VLOG(1) << "GaiaCookieManagerService::StartGaiaLogOut";
-
-  signin_client_->PreGaiaLogout(
-      base::BindOnce(&GaiaCookieManagerService::StartFetchingLogOut,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void GaiaCookieManagerService::StartFetchingLogOut() {
   RecordLogoutRequestState(LogoutRequestState::kStarted);
   gaia_auth_fetcher_ =
       signin_client_->CreateGaiaAuthFetcher(this, requests_.front().source());

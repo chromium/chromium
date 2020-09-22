@@ -108,7 +108,7 @@ class InstrumentedGaiaCookieManagerService : public GaiaCookieManagerService {
 
   MOCK_METHOD0(StartFetchingUbertoken, void());
   MOCK_METHOD0(StartFetchingListAccounts, void());
-  MOCK_METHOD0(StartFetchingLogOut, void());
+  MOCK_METHOD0(StartGaiaLogOut, void());
   MOCK_METHOD0(StartFetchingMergeSession, void());
 
  private:
@@ -448,7 +448,7 @@ TEST_F(GaiaCookieManagerServiceTest, LogOutAllAccountsNoQueue) {
   MockObserver observer(&helper);
 
   EXPECT_CALL(helper, StartFetchingUbertoken());
-  EXPECT_CALL(helper, StartFetchingLogOut());
+  EXPECT_CALL(helper, StartGaiaLogOut());
 
   MockAddAccountToCookieCompletedCallback add_account_to_cookie_completed;
   EXPECT_CALL(add_account_to_cookie_completed, Run(account_id2_, no_error()));
@@ -471,7 +471,7 @@ TEST_F(GaiaCookieManagerServiceTest, LogOutAllAccountsFails) {
   MockObserver observer(&helper);
 
   EXPECT_CALL(helper, StartFetchingUbertoken());
-  EXPECT_CALL(helper, StartFetchingLogOut());
+  EXPECT_CALL(helper, StartGaiaLogOut());
 
   MockAddAccountToCookieCompletedCallback add_account_to_cookie_completed;
   EXPECT_CALL(add_account_to_cookie_completed, Run(account_id2_, no_error()));
@@ -494,7 +494,7 @@ TEST_F(GaiaCookieManagerServiceTest, LogOutAllAccountsAfterOneAddInQueue) {
   MockObserver observer(&helper);
 
   EXPECT_CALL(helper, StartFetchingUbertoken());
-  EXPECT_CALL(helper, StartFetchingLogOut());
+  EXPECT_CALL(helper, StartGaiaLogOut());
 
   MockAddAccountToCookieCompletedCallback add_account_to_cookie_completed;
   EXPECT_CALL(add_account_to_cookie_completed, Run(account_id2_, no_error()));
@@ -515,7 +515,7 @@ TEST_F(GaiaCookieManagerServiceTest, LogOutAllAccountsAfterTwoAddsInQueue) {
   MockObserver observer(&helper);
 
   EXPECT_CALL(helper, StartFetchingUbertoken());
-  EXPECT_CALL(helper, StartFetchingLogOut());
+  EXPECT_CALL(helper, StartGaiaLogOut());
 
   MockAddAccountToCookieCompletedCallback add_account_to_cookie_completed1,
       add_account_to_cookie_completed2;
@@ -541,7 +541,7 @@ TEST_F(GaiaCookieManagerServiceTest, LogOutAllAccountsTwice) {
   MockObserver observer(&helper);
 
   EXPECT_CALL(helper, StartFetchingUbertoken());
-  EXPECT_CALL(helper, StartFetchingLogOut());
+  EXPECT_CALL(helper, StartGaiaLogOut());
 
   MockAddAccountToCookieCompletedCallback add_account_to_cookie_completed;
   EXPECT_CALL(add_account_to_cookie_completed, Run(account_id2_, no_error()));
@@ -568,7 +568,7 @@ TEST_F(GaiaCookieManagerServiceTest, LogOutAllAccountsBeforeAdd) {
   MockObserver observer(&helper);
 
   EXPECT_CALL(helper, StartFetchingUbertoken()).Times(2);
-  EXPECT_CALL(helper, StartFetchingLogOut());
+  EXPECT_CALL(helper, StartGaiaLogOut());
 
   MockAddAccountToCookieCompletedCallback add_account_to_cookie_completed2,
       add_account_to_cookie_completed3;
@@ -597,7 +597,7 @@ TEST_F(GaiaCookieManagerServiceTest, LogOutAllAccountsBeforeLogoutAndAdd) {
   MockObserver observer(&helper);
 
   EXPECT_CALL(helper, StartFetchingUbertoken()).Times(2);
-  EXPECT_CALL(helper, StartFetchingLogOut());
+  EXPECT_CALL(helper, StartGaiaLogOut());
 
   MockAddAccountToCookieCompletedCallback add_account_to_cookie_completed2,
       add_account_to_cookie_completed3;
@@ -635,7 +635,7 @@ TEST_F(GaiaCookieManagerServiceTest, PendingSigninThenSignout) {
   EXPECT_CALL(add_account_to_cookie_completed1, Run(account_id1_, no_error()));
 
   // From the sign out and then re-sign in.
-  EXPECT_CALL(helper, StartFetchingLogOut());
+  EXPECT_CALL(helper, StartGaiaLogOut());
 
   MockAddAccountToCookieCompletedCallback add_account_to_cookie_completed3;
   EXPECT_CALL(add_account_to_cookie_completed3, Run(account_id3_, no_error()));
@@ -667,7 +667,7 @@ TEST_F(GaiaCookieManagerServiceTest, CancelSignIn) {
       add_account_to_cookie_completed2;
   EXPECT_CALL(add_account_to_cookie_completed1, Run(account_id1_, no_error()));
   EXPECT_CALL(add_account_to_cookie_completed2, Run(account_id2_, canceled()));
-  EXPECT_CALL(helper, StartFetchingLogOut());
+  EXPECT_CALL(helper, StartGaiaLogOut());
 
   MockLogOutFromCookieCompletedCallback log_out_from_cookie_completed;
   EXPECT_CALL(log_out_from_cookie_completed, Run(no_error()));

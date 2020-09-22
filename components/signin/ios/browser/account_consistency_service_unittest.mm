@@ -622,8 +622,7 @@ TEST_F(AccountConsistencyServiceTest, DeleteChromeConnectedCookiesAfterSet) {
   // with remove call.
   account_consistency_service_->SetChromeConnectedCookieWithDomains(
       {"google.ca", "google.fr", kCountryGoogleDomain});
-  account_consistency_service_->RemoveAllChromeConnectedCookies(
-      base::OnceClosure());
+  SimulateGaiaCookieManagerServiceLogout();
 
   WaitUntilAllCookieRequestsAreApplied();
   CheckNoChromeConnectedCookies();
@@ -640,8 +639,7 @@ TEST_F(AccountConsistencyServiceTest, SetChromeConnectedCookiesAfterDelete) {
   // with remove call.
   account_consistency_service_->SetChromeConnectedCookieWithDomains(
       {"google.ca", "google.fr", kCountryGoogleDomain});
-  account_consistency_service_->RemoveAllChromeConnectedCookies(
-      base::OnceClosure());
+  SimulateGaiaCookieManagerServiceLogout();
   account_consistency_service_->SetChromeConnectedCookieWithDomains(
       {"google.ca"});
 

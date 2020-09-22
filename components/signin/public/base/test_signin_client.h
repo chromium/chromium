@@ -87,7 +87,6 @@ class TestSigninClient : public SigninClient {
   std::unique_ptr<GaiaAuthFetcher> CreateGaiaAuthFetcher(
       GaiaAuthConsumer* consumer,
       gaia::GaiaSource source) override;
-  void PreGaiaLogout(base::OnceClosure callback) override;
   void SetDiceMigrationCompleted() override;
   bool IsNonEnterpriseUser(const std::string& email) override;
 

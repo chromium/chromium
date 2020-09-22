@@ -64,10 +64,6 @@ class SigninClient : public KeyedService {
       base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached,
       signin_metrics::ProfileSignout signout_source_metric);
 
-  // Called before calling the GAIA logout endpoint.
-  // For iOS, cookies should be cleaned up.
-  virtual void PreGaiaLogout(base::OnceClosure callback);
-
   // Returns true if GAIA cookies are allowed in the content area.
   virtual bool AreSigninCookiesAllowed() = 0;
 

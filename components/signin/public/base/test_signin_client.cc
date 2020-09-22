@@ -108,12 +108,6 @@ std::unique_ptr<GaiaAuthFetcher> TestSigninClient::CreateGaiaAuthFetcher(
                                            GetURLLoaderFactory());
 }
 
-void TestSigninClient::PreGaiaLogout(base::OnceClosure callback) {
-  if (!callback.is_null()) {
-    std::move(callback).Run();
-  }
-}
-
 void TestSigninClient::SetDiceMigrationCompleted() {
   is_dice_migration_completed_ = true;
 }
