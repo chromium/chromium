@@ -242,7 +242,6 @@ enum DocumentClass {
   kMediaDocumentClass = 1 << 4,
   kSVGDocumentClass = 1 << 5,
   kXMLDocumentClass = 1 << 6,
-  kViewSourceDocumentClass = 1 << 7,
 };
 
 enum ShadowCascadeOrder {
