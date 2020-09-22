@@ -199374,7 +199374,7 @@
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-8",
+              "machine_type": "n1-standard-4",
               "os": "Ubuntu-16.04",
               "pool": "chromium.tests.avd"
             }
@@ -199448,7 +199448,7 @@
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-8",
+              "machine_type": "n1-standard-4",
               "os": "Ubuntu-16.04",
               "pool": "chromium.tests.avd"
             }
@@ -199522,7 +199522,7 @@
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-8",
+              "machine_type": "n1-standard-4",
               "os": "Ubuntu-16.04",
               "pool": "chromium.tests.avd"
             }
@@ -199596,7 +199596,7 @@
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-8",
+              "machine_type": "n1-standard-4",
               "os": "Ubuntu-16.04",
               "pool": "chromium.tests.avd"
             }
@@ -199670,7 +199670,7 @@
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-8",
+              "machine_type": "n1-standard-4",
               "os": "Ubuntu-16.04",
               "pool": "chromium.tests.avd"
             }
@@ -199744,7 +199744,7 @@
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-8",
+              "machine_type": "n1-standard-4",
               "os": "Ubuntu-16.04",
               "pool": "chromium.tests.avd"
             }
@@ -199818,7 +199818,7 @@
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-8",
+              "machine_type": "n1-standard-4",
               "os": "Ubuntu-16.04",
               "pool": "chromium.tests.avd"
             }

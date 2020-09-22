@@ -856,7 +856,7 @@
       'android-weblayer-pie-x86-fyi-rel': {
         'mixins': [
           'pie-x86-emulator',
-          'emulator-8-cores',
+          'emulator-4-cores',
           'linux-xenial',
           'x86-64',
         ],
