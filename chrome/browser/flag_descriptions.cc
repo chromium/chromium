@@ -3684,11 +3684,6 @@ const char kCrostiniUseBusterImageDescription[] =
 const char kCrostiniGpuSupportName[] = "Crostini GPU Support";
 const char kCrostiniGpuSupportDescription[] = "Enable Crostini GPU support.";
 
-const char kCrostiniUsbAllowUnsupportedName[] =
-    "Crostini Usb Allow Unsupported";
-const char kCrostiniUsbAllowUnsupportedDescription[] =
-    "Allow mounting unsupported Usb devices in Crostini. At your own risk. ";
-
 const char kCrostiniWebUIUpgraderName[] = "Crostini WebUI Upgrader";
 const char kCrostiniWebUIUpgraderDescription[] =
     "Enable the new WebUI Crostini Upgrader Dialog.";

@@ -158,10 +158,6 @@ const base::Feature kCrostiniUseBusterImage{"CrostiniUseBusterImage",
 const base::Feature kCrostiniGpuSupport{"CrostiniGpuSupport",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables or disables Crostini usb mounting for unsupported devices.
-const base::Feature kCrostiniUsbAllowUnsupported{
-    "CrostiniUsbAllowUnsupported", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables or disables the new WebUI Crostini upgrader.
 const base::Feature kCrostiniWebUIUpgrader{"CrostiniWebUIUpgrader",
                                            base::FEATURE_ENABLED_BY_DEFAULT};

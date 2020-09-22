@@ -79,8 +79,6 @@ extern const base::Feature kCrostiniUseBusterImage;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kCrostiniGpuSupport;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const base::Feature kCrostiniUsbAllowUnsupported;
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kCrostiniUseDlc;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kDiagnosticsApp;

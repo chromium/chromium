@@ -2128,9 +2128,6 @@ extern const char kCrostiniUseBusterImageDescription[];
 extern const char kCrostiniGpuSupportName[];
 extern const char kCrostiniGpuSupportDescription[];
 
-extern const char kCrostiniUsbAllowUnsupportedName[];
-extern const char kCrostiniUsbAllowUnsupportedDescription[];
-
 extern const char kCrostiniWebUIUpgraderName[];
 extern const char kCrostiniWebUIUpgraderDescription[];
 
