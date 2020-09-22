@@ -392,6 +392,11 @@
     "expiry_milestone": 87
   },
   {
+    "name": "autofill-use-renderer-ids",
+    "owners": [ "kazinova" ],
+    "expiry_milestone": 91
+  },
+  {
     "name": "avatar-toolbar-button",
     "owners": [ "droger", "my-chrome-everywhere@google.com" ],
     "expiry_milestone": 86

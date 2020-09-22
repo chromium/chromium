@@ -102,6 +102,10 @@ bool IsAutofillCreditCardAssistEnabled();
 bool IsMacViewsAutofillPopupExperimentEnabled();
 #endif  // defined(OS_APPLE)
 
+#if defined(OS_IOS)
+extern const base::Feature kAutofillUseUniqueRendererIDsOnIOS;
+#endif  // OS_IOS
+
 }  // namespace features
 }  // namespace autofill
 

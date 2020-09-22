@@ -362,5 +362,13 @@ bool IsAutofillCreditCardAssistEnabled() {
 #endif
 }
 
+#if defined(OS_IOS)
+// Controls whether or not autofill uses numeric renderer IDs instead of string
+// form and field identifiers in filling logic.
+// TODO(crbug/1131038): Remove once it's launched.
+const base::Feature kAutofillUseUniqueRendererIDsOnIOS{
+    "AutofillUseUniqueRendererIDsOnIOS", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 }  // namespace features
 }  // namespace autofill

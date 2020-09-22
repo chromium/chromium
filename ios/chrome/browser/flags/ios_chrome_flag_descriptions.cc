@@ -126,6 +126,12 @@ const char kAutofillUseMobileLabelDisambiguationDescription[] =
     "When enabled, Autofill suggestions' labels are displayed using a "
     "mobile-friendly format.";
 
+const char kAutofillUseRendererIDsName[] =
+    "Autofill logic uses unqiue renderer IDs";
+const char kAutofillUseRendererIDsDescription[] =
+    "When enabled, Autofill logic uses unique numeric renderer IDs instead "
+    "of string form and field identifiers in form filling logic.";
+
 const char kBlockPopupInfobarMessagesUIName[] =
     "Block Popup Infobars Messages UI";
 const char kBlockPopupInfobarMessagesUIDescription[] =

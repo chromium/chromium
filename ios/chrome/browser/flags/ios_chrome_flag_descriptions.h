@@ -96,6 +96,12 @@ extern const char kAutofillRichMetadataQueriesDescription[];
 extern const char kAutofillUseMobileLabelDisambiguationName[];
 extern const char kAutofillUseMobileLabelDisambiguationDescription[];
 
+// Title and description for the flag that controls whether Autofill's
+// logic is using numeric unique renderer IDs instead of string IDs for
+// form and field elements.
+extern const char kAutofillUseRendererIDsName[];
+extern const char kAutofillUseRendererIDsDescription[];
+
 // Title and description for the flag that enables Messages UI on
 // Block Popup Infobars.
 extern const char kBlockPopupInfobarMessagesUIName[];
