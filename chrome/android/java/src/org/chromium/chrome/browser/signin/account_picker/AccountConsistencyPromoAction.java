@@ -21,6 +21,9 @@ import java.lang.annotation.RetentionPolicy;
         AccountConsistencyPromoAction.DISMISSED_BACK,
         AccountConsistencyPromoAction.ADD_ACCOUNT,
         AccountConsistencyPromoAction.STARTED_INCOGNITO_SESSION,
+        AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT,
+        AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT,
+        AccountConsistencyPromoAction.SHOWN,
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface AccountConsistencyPromoAction {
@@ -46,5 +49,20 @@ public @interface AccountConsistencyPromoAction {
      */
     int STARTED_INCOGNITO_SESSION = 3;
 
-    int MAX = 4;
+    /**
+     * User has selected the default account and signed in with it.
+     */
+    int SIGNED_IN_WITH_DEFAULT_ACCOUNT = 4;
+
+    /**
+     * User has selected one of the non default accounts and signed in with it.
+     */
+    int SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT = 5;
+
+    /**
+     * The promo was shown to user.
+     */
+    int SHOWN = 6;
+
+    int MAX = 7;
 }

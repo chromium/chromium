@@ -40,6 +40,7 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
     private final AccountManagerFacade mAccountManagerFacade;
     private final AccountsChangeObserver mAccountsChangeObserver = this::onAccountListUpdated;
     private @Nullable String mSelectedAccountName;
+    private @Nullable String mDefaultAccountName;
 
     AccountPickerBottomSheetMediator(Context context, AccountPickerDelegate accountPickerDelegate) {
         mAccountPickerDelegate = accountPickerDelegate;
@@ -137,24 +138,26 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
             // we will go to the zero account screen.
             mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.NO_ACCOUNTS);
             mSelectedAccountName = null;
+            mDefaultAccountName = null;
             mModel.set(AccountPickerBottomSheetProperties.SELECTED_ACCOUNT_DATA, null);
             return;
         }
 
+        mDefaultAccountName = accounts.get(0).name;
         @ViewState
         int viewState = mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE);
         if (viewState == ViewState.NO_ACCOUNTS) {
             // When a non-empty account list appears while it is currently zero-account screen,
             // we should change the screen to collapsed account list and set the selected account
             // to the first account of the account list
-            setSelectedAccountName(accounts.get(0).name);
+            setSelectedAccountName(mDefaultAccountName);
             mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE,
                     ViewState.COLLAPSED_ACCOUNT_LIST);
         } else if (viewState == ViewState.COLLAPSED_ACCOUNT_LIST
                 && AccountUtils.findAccountByName(accounts, mSelectedAccountName) == null) {
             // When it is already collapsed account list, we update the selected account only
             // when the current selected account name is no longer in the new account list
-            setSelectedAccountName(accounts.get(0).name);
+            setSelectedAccountName(mDefaultAccountName);
         }
     }
 
@@ -203,6 +206,10 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
 
     private void signIn() {
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_IN_PROGRESS);
+        AccountPickerDelegate.recordAccountConsistencyPromoAction(
+                TextUtils.equals(mSelectedAccountName, mDefaultAccountName)
+                        ? AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT
+                        : AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT);
         new AsyncTask<String>() {
             @Override
             protected String doInBackground() {

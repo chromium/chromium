@@ -961,6 +961,13 @@ Unknown properties are collapsed to zero. -->
     interstitial then confirmed opening the page in the incognito tab by tapping
     |Continue| in the incognito interstitial.
   </int>
+  <int value="4" label="SignedInWithDefaultAccount">
+    User has selected the default account and signed in with it.
+  </int>
+  <int value="5" label="SignedInWithNonDefaultAccount">
+    User has selected one of the non default accounta and signed in with it.
+  </int>
+  <int value="6" label="Shown">The promo was shown to user.</int>
 </enum>
 
 <enum name="AccountManagerAccountAdditionSource">

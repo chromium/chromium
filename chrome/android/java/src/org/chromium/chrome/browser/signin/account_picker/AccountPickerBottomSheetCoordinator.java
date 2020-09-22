@@ -45,6 +45,9 @@ public class AccountPickerBottomSheetCoordinator {
             BottomSheetController bottomSheetController,
             AccountPickerDelegate accountPickerDelegate,
             IncognitoInterstitialDelegate incognitoInterstitialDelegate) {
+        AccountPickerDelegate.recordAccountConsistencyPromoAction(
+                AccountConsistencyPromoAction.SHOWN);
+
         mAccountPickerBottomSheetMediator =
                 new AccountPickerBottomSheetMediator(context, accountPickerDelegate);
         mView = new AccountPickerBottomSheetView(context, mAccountPickerBottomSheetMediator);
