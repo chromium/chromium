@@ -6,6 +6,7 @@ The commands module wraps operations that have side-effects.
 """
 
 import os
+import platform
 import plistlib
 import shutil
 import stat
@@ -88,6 +89,36 @@ def run_command(args, **kwargs):
 def run_command_output(args, **kwargs):
     logger.info('Running command: %s', args)
     return subprocess.check_output(args, **kwargs)
+
+
+def lenient_run_command_output(args, **kwargs):
+    """Runs a command, being fairly tolerant of errors.
+
+    Returns:
+        A tuple of (returncode, stdoutdata, stderrdata), or if an OSError was
+        raised, (None, None, None).
+    """
+    logger.info('Running command: %s', args)
+
+    try:
+        process = subprocess.Popen(
+            args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
+    except OSError:
+        return (None, None, None)
+
+    (stdout, stderr) = process.communicate()
+
+    return (process.wait(), stdout, stderr)
+
+
+def macos_version():
+    """Determines the macOS version of the running system.
+
+    Returns:
+        A list containing one element for each component of the version number,
+        such as [10, 15, 6] and [11, 0].
+    """
+    return [int(x) for x in platform.mac_ver()[0].split('.')]
 
 
 class PlistContext(object):

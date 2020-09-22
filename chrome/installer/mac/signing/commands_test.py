@@ -171,3 +171,38 @@ class TestCommands(unittest.TestCase):
     def test_run_command_output(self):
         output = commands.run_command_output(['echo', 'hello world'])
         self.assertEqual(b'hello world\n', output)
+
+    def test_lenient_run_command_output(self):
+        # Successful command, output on stdout.
+        (returncode, stdout,
+         stderr) = commands.lenient_run_command_output(['echo', 'hello'])
+        self.assertEqual(returncode, 0)
+        self.assertEqual(stdout, b'hello\n')
+        self.assertEqual(stderr, b'')
+
+        # Failure, error on stderr.
+        (returncode, stdout,
+         stderr) = commands.lenient_run_command_output(['cp'])
+        self.assertNotEqual(returncode, 0)
+        self.assertEqual(stdout, b'')
+        self.assertTrue(b'usage: ' in stderr or b'cp: ' in stderr)
+
+        # EACCES
+        (returncode, stdout,
+         stderr) = commands.lenient_run_command_output(['/etc/shells'])
+        self.assertIsNone(returncode)
+        self.assertIsNone(stdout)
+        self.assertIsNone(stderr)
+
+        # ENOENT
+        (returncode, stdout,
+         stderr) = commands.lenient_run_command_output(['/var/empty/enoent'])
+        self.assertIsNone(returncode)
+        self.assertIsNone(stdout)
+        self.assertIsNone(stderr)
+
+    def test_macos_version(self):
+        version = commands.macos_version()
+        self.assertGreaterEqual(len(version), 2)
+        self.assertGreaterEqual(version, [10, 10])
+        self.assertLess(version, [30])

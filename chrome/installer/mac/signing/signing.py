@@ -7,9 +7,7 @@ bundle that need to be signed, as well as providing utilities to sign them.
 """
 
 import os.path
-import platform
 import re
-import subprocess
 
 from . import commands
 
@@ -28,30 +26,23 @@ def _linker_signed_arm64_needs_force(path):
     # On macOS 11.0 and later, codesign handles linker-signed code properly
     # without the --force hand-holding. Check OS >= 10.16 because that's what
     # Python will think the OS is if it wasn't built with the 11.0 SDK or later.
-    if [int(x) for x in platform.mac_ver()[0].split('.')] >= [10, 16]:
+    if commands.macos_version() >= [10, 16]:
         return False
 
-    try:
-        # Look just for --arch=arm64 because that's the only architecture that
-        # has linker-signed code by default. If this were used with universal
-        # code (if there were any), --display without --arch would default to
-        # the native architecture, which almost certainly wouldn't be arm64 and
-        # therefore would be wrong.
-        codesign = subprocess.Popen(
-            ['codesign', '--display', '--verbose', '--arch=arm64', '--', path],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
-    except OSError:
+    # Look just for --arch=arm64 because that's the only architecture that has
+    # linker-signed code by default. If this were used with universal code (if
+    # there were any), --display without --arch would default to the native
+    # architecture, which almost certainly wouldn't be arm64 and therefore would
+    # be wrong.
+    (returncode, stdout, stderr) = commands.lenient_run_command_output(
+        ['codesign', '--display', '--verbose', '--arch=arm64', '--', path])
+
+    if returncode != 0:
         # Problem running codesign? Don't make the error about this confusing
         # function. Just return False and let some less obscure codesign
-        # invocation be the error.
-        return False
-
-    (stdout, stderr) = codesign.communicate()
-    if codesign.wait() != 0:
-        # Not signed at all? No problem. No arm64 code? No problem either. Not
-        # code at all? File not found? Well, those don't count as linker-signed
-        # either.
+        # invocation be the error. Not signed at all? No problem. No arm64 code?
+        # No problem either. Not code at all? File not found? Well, those don't
+        # count as linker-signed either.
         return False
 
     # Yes, codesign --display puts all of this on stderr.
