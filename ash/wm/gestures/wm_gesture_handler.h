@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/optional.h"
+#include "components/prefs/pref_registry_simple.h"
 
 namespace ui {
 class ScrollEvent;
@@ -34,6 +35,8 @@ class ASH_EXPORT WmGestureHandler {
   // not be processed further, false otherwise. Forwards events to
   // DesksController if |is_enhanced_desk_animations_| is true.
   bool ProcessScrollEvent(const ui::ScrollEvent& event);
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
  private:
   // A struct containing the relevant data during a scroll session.

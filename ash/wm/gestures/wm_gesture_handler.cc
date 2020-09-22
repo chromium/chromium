@@ -5,18 +5,86 @@
 #include "ash/wm/gestures/wm_gesture_handler.h"
 
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/public/cpp/notification_utils.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_cycle_controller.h"
 #include "base/metrics/user_metrics.h"
+#include "components/prefs/pref_service.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/message_center_types.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_types.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 
 namespace ash {
 
 namespace {
+
+constexpr char kOverviewGestureNotificationId[] =
+    "ash.wm.reverse_overview_gesture";
+constexpr int kReverseGestureNotificationShowLimit = 3;
+
+// Is the reverse scrolling for toupad on.
+bool IsNaturalScrollOn() {
+  PrefService* pref =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  return pref->GetBoolean(prefs::kTouchpadEnabled) &&
+         pref->GetBoolean(prefs::kNaturalScroll);
+}
+
+// Reverse an offset when the reverse scrolling is on.
+float GetOffset(float offset) {
+  return IsNaturalScrollOn() ? -offset : offset;
+}
+
+void ShowOverviewGestureNotification() {
+  int reverse_gesture_notification_count =
+      Shell::Get()->session_controller()->GetActivePrefService()->GetInteger(
+          prefs::kReverseGestureNotificationCount);
+
+  if (reverse_gesture_notification_count >=
+      kReverseGestureNotificationShowLimit) {
+    return;
+  }
+
+  base::string16 title = l10n_util::GetStringUTF16(
+      IDS_OVERVIEW_REVERSE_GESTURE_NOTIFICATION_TITLE);
+  base::string16 message = l10n_util::GetStringUTF16(
+      IDS_OVERVIEW_REVERSE_GESTURE_NOTIFICATION_MESSAGE);
+
+  std::unique_ptr<message_center::Notification> notification =
+      CreateSystemNotification(
+          message_center::NOTIFICATION_TYPE_SIMPLE,
+          kOverviewGestureNotificationId, title, message, base::string16(),
+          GURL(),
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT,
+              kOverviewGestureNotificationId),
+          message_center::RichNotificationData(), nullptr, gfx::VectorIcon(),
+          message_center::SystemNotificationWarningLevel::NORMAL);
+
+  // Make the notification popup again if it has been in message center.
+  if (message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kOverviewGestureNotificationId)) {
+    message_center::MessageCenter::Get()->RemoveNotification(
+        kOverviewGestureNotificationId, false);
+  }
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
+
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kReverseGestureNotificationCount,
+      reverse_gesture_notification_count + 1);
+}
 
 // The amount the fingers must move in a direction before a continuous gesture
 // animation is started. This is to minimize accidental scrolls.
@@ -27,19 +95,40 @@ constexpr int kContinuousGestureMoveThresholdDp = 10;
 // list is open, close the window cycle list.
 // Returns true if the gesture was handled.
 bool Handle3FingerVerticalScroll(float scroll_y) {
+  if (std::fabs(scroll_y) < WmGestureHandler::kVerticalThresholdDp)
+    return false;
+
   auto* overview_controller = Shell::Get()->overview_controller();
   const bool in_overview = overview_controller->InOverviewSession();
   if (in_overview) {
-    if (scroll_y > -WmGestureHandler::kVerticalThresholdDp)
-      return false;
+    // If touchpad reverse scroll is off, only swip down can exit overview. If
+    // touchpad reverse scroll is on, in M87 swip up can also exit overview but
+    // show notification; in M88, swip up will only show notification; in M89
+    // the notification is removed.
+    if (GetOffset(scroll_y) > 0) {
+      if (!IsNaturalScrollOn()) {
+        return false;
+      } else {
+        ShowOverviewGestureNotification();
+      }
+    }
 
     base::RecordAction(base::UserMetricsAction("Touchpad_Gesture_Overview"));
     if (overview_controller->AcceptSelection())
       return true;
     overview_controller->EndOverview();
   } else {
-    if (scroll_y < WmGestureHandler::kVerticalThresholdDp)
-      return false;
+    // If touchpad reverse scroll is off, only swip up can enter overview. If
+    // touchpad reverse scroll is on, in M87 swip down can also enter overview
+    // but show notification; in M88, swip down will only show notification; in
+    // M89 the notification is removed.
+    if (GetOffset(scroll_y) < 0) {
+      if (!IsNaturalScrollOn()) {
+        return false;
+      } else {
+        ShowOverviewGestureNotification();
+      }
+    }
 
     auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
     if (window_cycle_controller->IsCycling())
@@ -58,11 +147,10 @@ bool HandleDesksSwitchHorizontalScroll(float scroll_x) {
   if (std::fabs(scroll_x) < WmGestureHandler::kHorizontalThresholdDp)
     return false;
 
-  // This does not invert if the user changes their touchpad settings
-  // currently. The scroll works Australian way (scroll left to go to the
-  // desk on the right and vice versa).
+  // If touchpad reverse scroll is on, the swip direction will invert.
   return DesksController::Get()->ActivateAdjacentDesk(
-      /*going_left=*/scroll_x > 0, DesksSwitchSource::kDeskSwitchTouchpad);
+      /*going_left=*/GetOffset(scroll_x) > 0,
+      DesksSwitchSource::kDeskSwitchTouchpad);
 }
 
 }  // namespace
@@ -142,6 +230,11 @@ bool WmGestureHandler::ProcessScrollEvent(const ui::ScrollEvent& event) {
     scroll_data_ = ScrollData();
   scroll_data_->finger_count = finger_count;
   return moved;
+}
+
+// static
+void WmGestureHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(prefs::kReverseGestureNotificationCount, 0);
 }
 
 bool WmGestureHandler::EndScroll() {

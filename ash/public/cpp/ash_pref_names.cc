@@ -588,6 +588,11 @@ const char kColorModeThemed[] = "cros.system.color_mode_themed";
 const char kAppNotificationBadgingEnabled[] =
     "ash.app_notification_badging_enabled";
 
+// An integer pref that counts how many times the reverse gesture notification
+// shows.
+const char kReverseGestureNotificationCount[] =
+    "ash.wm.reverse_gesture_notification_count";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 
