@@ -20,13 +20,12 @@
 void ShowSafetyTipDialog(
     content::WebContents* web_contents,
     security_state::SafetyTipStatus safety_tip_status,
-    const GURL& url,
     const GURL& suggested_url,
     base::OnceCallback<void(SafetyTipInteraction)> close_callback) {
   InfoBarService* infobar_service =
       InfoBarService::FromWebContents(web_contents);
   auto delegate = std::make_unique<SafetyTipInfoBarDelegate>(
-      safety_tip_status, url, suggested_url, web_contents,
+      safety_tip_status, suggested_url, web_contents,
       std::move(close_callback));
   infobar_service->AddInfoBar(
       SafetyTipInfoBar::CreateInfoBar(std::move(delegate)));
@@ -34,12 +33,10 @@ void ShowSafetyTipDialog(
 
 SafetyTipInfoBarDelegate::SafetyTipInfoBarDelegate(
     security_state::SafetyTipStatus safety_tip_status,
-    const GURL& url,
     const GURL& suggested_url,
     content::WebContents* web_contents,
     base::OnceCallback<void(SafetyTipInteraction)> close_callback)
     : safety_tip_status_(safety_tip_status),
-      url_(url),
       suggested_url_(suggested_url),
       close_callback_(std::move(close_callback)),
       web_contents_(web_contents) {}
@@ -91,13 +88,6 @@ int SafetyTipInfoBarDelegate::GetIconId() const {
 void SafetyTipInfoBarDelegate::InfoBarDismissed() {
   // Called when you click the X. Treat as 'ignore'.
   action_taken_ = SafetyTipInteraction::kDismissWithClose;
-
-  auto* tab = TabAndroid::FromWebContents(web_contents_);
-  if (!tab) {
-    return;
-  }
-  ReputationService::Get(tab->GetProfile())
-      ->SetUserIgnore(web_contents_, url_, action_taken_);
 }
 
 base::string16 SafetyTipInfoBarDelegate::GetLinkText() const {

@@ -58,8 +58,7 @@ class SafetyTipPageInfoBubbleViewTest : public testing::Test {
     bubble_ = CreateSafetyTipBubbleForTesting(
         parent_window_->GetNativeView(), web_contents,
         security_state::SafetyTipStatus::kBadReputation,
-        GURL("https://www.fakegoogle.tld"), GURL("https://www.google.tld"),
-        base::DoNothing());
+        GURL("https://www.google.tld"), base::DoNothing());
   }
 
   void TearDown() override { parent_window_->CloseNow(); }

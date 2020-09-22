@@ -69,12 +69,13 @@ class ReputationService : public KeyedService {
   // if the url is not flagged).
   void GetReputationStatus(const GURL& url, ReputationCheckCallback callback);
 
-  // Tells the service that the user has explicitly ignored the warning, and
-  // records a histogram.
-  // Exposed in subsequent results from GetReputationStatus.
-  void SetUserIgnore(content::WebContents* web_contents,
-                     const GURL& url,
-                     SafetyTipInteraction interaction);
+  // Returns whether the user has dismissed a similar warning, and thus no
+  // warning should be shown for the provided url.
+  bool IsIgnored(const GURL& url) const;
+
+  // Tells the service that the user has explicitly ignored the warning (thus
+  // adding to the profile-wide allowlist)..
+  void SetUserIgnore(const GURL& url);
 
   // Tells the service that the user has the UI disabled, and thus the warning
   // should be ignored.  This ensures that subsequent loads of the page are not
@@ -88,11 +89,6 @@ class ReputationService : public KeyedService {
                                       size_t num_new_keywords);
 
  private:
-  // Returns whether the warning should be shown on the given URL. This is
-  // mostly just a helper function to ensure that we always query the allowlist
-  // by origin.
-  bool IsIgnored(const GURL& url) const;
-
   // Callback once we have up-to-date |engaged_sites|. Performs checks on the
   // navigated |url|. Displays the warning when needed.
   void GetReputationStatusWithEngagedSites(

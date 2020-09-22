@@ -14,19 +14,13 @@ namespace content {
 class WebContents;
 }
 
-// Records a histogram for a user's interaction with a Safety Tip in the given
-// |web_contents|.
-void RecordSafetyTipInteractionHistogram(content::WebContents* web_contents,
-                                         SafetyTipInteraction interaction);
-
-// Invokes action when 'leave site' button is clicked, and records a histogram.
 // Navigates to either |safe_url| (when !is_empty()), or a safe default
-// otherwise, replacing the current page in the process.
+// otherwise, replacing the current page in the process. Invoked when 'leave
+// site' button is clicked.
 void LeaveSiteFromSafetyTip(content::WebContents* web_contents,
                             const GURL& safe_url);
 
-// Invoke action when 'Learn more' button is clicked, and records a histogram.
-// Navigates to the help center URL.
+// Opens the Help Center URL when 'Learn more' button is clicked.
 void OpenHelpCenterFromSafetyTip(content::WebContents* web_contents);
 
 // Get the titles, descriptions, and button strings or IDs needed to describe

@@ -17,7 +17,6 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reputation/local_heuristics.h"
-#include "chrome/browser/reputation/safety_tip_ui_helper.h"
 #include "chrome/browser/reputation/safety_tips_config.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -122,20 +121,11 @@ void ReputationService::GetReputationStatus(const GURL& url,
                                       service->GetLatestEngagedSites());
 }
 
-void ReputationService::SetUserIgnore(content::WebContents* web_contents,
-                                      const GURL& url,
-                                      SafetyTipInteraction interaction) {
-  // Record that the user dismissed the safety tip. kDismiss is the base case,
-  // which makes it easier to track overall dismissal metrics without having
-  // to re-constitute from separate histograms that record specifically how the
-  // user dismissed the safety tip. The way the user dismissed the dialog is
-  // also recorded to this interaction histogram, but with a more specific value
-  // (e.g. kDismissWithEsc) that is passed into this method.
-  RecordSafetyTipInteractionHistogram(web_contents,
-                                      SafetyTipInteraction::kDismiss);
-  // Record a histogram indicating how the user dismissed the safety tip
-  // (i.e. esc key, close button, or ignore button).
-  RecordSafetyTipInteractionHistogram(web_contents, interaction);
+bool ReputationService::IsIgnored(const GURL& url) const {
+  return warning_dismissed_origins_.count(url::Origin::Create(url)) > 0;
+}
+
+void ReputationService::SetUserIgnore(const GURL& url) {
   warning_dismissed_origins_.insert(url::Origin::Create(url));
 }
 
@@ -148,10 +138,6 @@ void ReputationService::SetSensitiveKeywordsForTesting(
     size_t num_new_keywords) {
   sensitive_keywords_ = new_keywords;
   num_sensitive_keywords_ = num_new_keywords;
-}
-
-bool ReputationService::IsIgnored(const GURL& url) const {
-  return warning_dismissed_origins_.count(url::Origin::Create(url)) > 0;
 }
 
 void ReputationService::GetReputationStatusWithEngagedSites(
@@ -238,14 +224,12 @@ void ReputationService::GetReputationStatusWithEngagedSites(
       result.safety_tip_status = SafetyTipStatus::kBadReputationIgnored;
     } else if (result.safety_tip_status == SafetyTipStatus::kLookalike) {
       result.safety_tip_status = SafetyTipStatus::kLookalikeIgnored;
-    } else if (result.safety_tip_status == SafetyTipStatus::kNone) {
-      // This happens when a domain is added to the server-side allowlist
-      // after it is ignored. There's nothing to do in this case.
-    } else {
-      // No other case should show a bubble, so nothing else should be
-      // ignorable.
-      NOTREACHED();
     }
+    // The local allowlist is used by both the interstitial and safety tips, so
+    // it's possible to hit this case even when we're not in the conditions
+    // above. It's also possible to get kNone here when a domain is added to
+    // the server-side allowlist after it has been ignored. In these cases,
+    // there's no additional action required.
   }
   result.url = url;
 

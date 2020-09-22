@@ -15,7 +15,6 @@ class SafetyTipInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   SafetyTipInfoBarDelegate(
       security_state::SafetyTipStatus safety_tip_status,
-      const GURL& url,
       const GURL& suggested_url,
       content::WebContents* web_contents,
       base::OnceCallback<void(SafetyTipInteraction)> close_callback);
@@ -41,12 +40,9 @@ class SafetyTipInfoBarDelegate : public ConfirmInfoBarDelegate {
  private:
   security_state::SafetyTipStatus safety_tip_status_;
 
-  // The URL of the page on which the Safety Tip was triggered.
-  GURL url_;
-
   // The URL of the page the Safety Tip suggests you intended to go to, when
   // applicable (for SafetyTipStatus::kLookalike).
-  GURL suggested_url_;
+  const GURL suggested_url_;
 
   SafetyTipInteraction action_taken_ = SafetyTipInteraction::kNoAction;
   base::OnceCallback<void(SafetyTipInteraction)> close_callback_;

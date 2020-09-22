@@ -36,14 +36,6 @@ LookalikeUrlTabStorage* LookalikeUrlTabStorage::GetOrCreate(
   return storage;
 }
 
-bool LookalikeUrlTabStorage::IsDomainAllowed(const std::string& domain) {
-  return allowed_domains_.count(domain) > 0;
-}
-
-void LookalikeUrlTabStorage::AllowDomain(const std::string& domain) {
-  allowed_domains_.insert(domain);
-}
-
 void LookalikeUrlTabStorage::OnLookalikeInterstitialShown(
     const GURL& url,
     const content::Referrer& referrer,

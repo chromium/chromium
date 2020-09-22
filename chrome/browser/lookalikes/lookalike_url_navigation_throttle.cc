@@ -24,6 +24,7 @@
 #include "chrome/browser/lookalikes/lookalike_url_tab_storage.h"
 #include "chrome/browser/prerender/chrome_prerender_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/reputation/reputation_service.h"
 #include "chrome/browser/reputation/safety_tips_config.h"
 #include "chrome/common/chrome_features.h"
 #include "components/lookalikes/core/features.h"
@@ -152,7 +153,7 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::HandleThrottleRequest(
   }
 
   // If the URL is in the local temporary allowlist, don't show any warning.
-  if (tab_storage->IsDomainAllowed(url.host())) {
+  if (ReputationService::Get(profile_)->IsIgnored(url)) {
     return content::NavigationThrottle::PROCEED;
   }
 

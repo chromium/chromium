@@ -40,15 +40,13 @@ enum class SafetyTipInteraction {
 };
 
 // Shows Safety Tip UI using the specified information if it is not already
-// showing. |virtual_url| is the virtual url of the page/frame the info applies
-// to. |suggested_url| is the URL that Chrome thinks the user may have wanted to
-// navigate to (if applicable). |close_callback| will be called when the dialog
-// is closed; the argument indicates the action that the user took (if any) to
-// close the dialog. Implemented in platform-specific files.
+// showing. |suggested_url| is the URL that Chrome thinks the user may have
+// wanted to navigate to (if applicable). |close_callback| will be called when
+// the dialog is closed; the argument indicates the action that the user took
+// (if any) to close the dialog. Implemented in platform-specific files.
 void ShowSafetyTipDialog(
     content::WebContents* web_contents,
     security_state::SafetyTipStatus type,
-    const GURL& virtual_url,
     const GURL& suggested_url,
     base::OnceCallback<void(SafetyTipInteraction)> close_callback);
 

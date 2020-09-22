@@ -19,13 +19,8 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-// A short-lived, per-tab storage for lookalike interstitials.
-// Contains an allowlist for bypassing lookalike URL warnings tied to
-// web_contents and extra URL parameters for handling interstitial reloads.
-// Since lookalike URL interstitials only trigger when site
-// engagement is low, Chrome does not need to persist interstitial bypasses
-// beyond the life of the web_contents-- if the user proceeds to interact with a
-// page, site engagement will go up and the allowlist will be bypassed entirely.
+// A short-lived, per-tab storage for lookalike interstitials, containing
+// extra URL parameters for handling interstitial reloads.
 class LookalikeUrlTabStorage : public base::SupportsUserData::Data {
  public:
   struct InterstitialParams {
@@ -50,9 +45,6 @@ class LookalikeUrlTabStorage : public base::SupportsUserData::Data {
   static LookalikeUrlTabStorage* GetOrCreate(
       content::WebContents* web_contents);
 
-  bool IsDomainAllowed(const std::string& domain);
-  void AllowDomain(const std::string& domain);
-
   // Stores parameters associated with a lookalike interstitial. Must be called
   // when a lookalike interstitial is shown.
   void OnLookalikeInterstitialShown(const GURL& url,
@@ -65,8 +57,6 @@ class LookalikeUrlTabStorage : public base::SupportsUserData::Data {
   InterstitialParams GetInterstitialParams() const;
 
  private:
-  std::set<std::string> allowed_domains_;
-
   // Parameters associated with the currently displayed interstitial. These are
   // cleared immediately on next navigation.
   InterstitialParams interstitial_params_;

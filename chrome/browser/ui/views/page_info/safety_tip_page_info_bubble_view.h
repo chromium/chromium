@@ -41,7 +41,6 @@ class SafetyTipPageInfoBubbleView : public PageInfoBubbleViewBase,
       gfx::NativeView parent_window,
       content::WebContents* web_contents,
       security_state::SafetyTipStatus safety_tip_status,
-      const GURL& url,
       const GURL& suggested_url,
       base::OnceCallback<void(SafetyTipInteraction)> close_callback);
   ~SafetyTipPageInfoBubbleView() override;
@@ -61,9 +60,6 @@ class SafetyTipPageInfoBubbleView : public PageInfoBubbleViewBase,
 
   const security_state::SafetyTipStatus safety_tip_status_;
 
-  // The URL of the page on which the Safety Tip was triggered.
-  const GURL url_;
-
   // The URL of the page the Safety Tip suggests you intended to go to, when
   // applicable (for SafetyTipStatus::kLookalike).
   const GURL suggested_url_;
@@ -82,7 +78,6 @@ PageInfoBubbleViewBase* CreateSafetyTipBubbleForTesting(
     gfx::NativeView parent_view,
     content::WebContents* web_contents,
     security_state::SafetyTipStatus safety_tip_status,
-    const GURL& virtual_url,
     const GURL& suggested_url,
     base::OnceCallback<void(SafetyTipInteraction)> close_callback);
 

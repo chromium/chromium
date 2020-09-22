@@ -60,7 +60,6 @@ SafetyTipPageInfoBubbleView::SafetyTipPageInfoBubbleView(
     gfx::NativeView parent_window,
     content::WebContents* web_contents,
     security_state::SafetyTipStatus safety_tip_status,
-    const GURL& url,
     const GURL& suggested_url,
     base::OnceCallback<void(SafetyTipInteraction)> close_callback)
     : PageInfoBubbleViewBase(anchor_view,
@@ -69,7 +68,6 @@ SafetyTipPageInfoBubbleView::SafetyTipPageInfoBubbleView(
                              PageInfoBubbleViewBase::BUBBLE_SAFETY_TIP,
                              web_contents),
       safety_tip_status_(safety_tip_status),
-      url_(url),
       suggested_url_(suggested_url),
       close_callback_(std::move(close_callback)) {
   // Keep the bubble open until explicitly closed (or we navigate away, a tab is
@@ -212,8 +210,6 @@ SafetyTipPageInfoBubbleView::~SafetyTipPageInfoBubbleView() {}
 void SafetyTipPageInfoBubbleView::OnWidgetDestroying(views::Widget* widget) {
   PageInfoBubbleViewBase::OnWidgetDestroying(widget);
 
-  bool should_set_ignore = false;
-
   switch (widget->closed_reason()) {
     case views::Widget::ClosedReason::kUnspecified:
     case views::Widget::ClosedReason::kLostFocus:
@@ -226,24 +222,15 @@ void SafetyTipPageInfoBubbleView::OnWidgetDestroying(views::Widget* widget) {
       break;
     case views::Widget::ClosedReason::kEscKeyPressed:
       action_taken_ = SafetyTipInteraction::kDismissWithEsc;
-      should_set_ignore = true;
       break;
     case views::Widget::ClosedReason::kCloseButtonClicked:
       action_taken_ = SafetyTipInteraction::kDismissWithClose;
-      should_set_ignore = true;
       break;
     case views::Widget::ClosedReason::kCancelButtonClicked:
       NOTREACHED();
       break;
   }
   std::move(close_callback_).Run(action_taken_);
-  if (should_set_ignore) {
-    Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-    if (browser) {
-      ReputationService::Get(browser->profile())
-          ->SetUserIgnore(web_contents(), url_, action_taken_);
-    }
-  }
 }
 
 void SafetyTipPageInfoBubbleView::ButtonPressed(views::Button* button,
@@ -267,7 +254,6 @@ void SafetyTipPageInfoBubbleView::OpenHelpCenter() {
 void ShowSafetyTipDialog(
     content::WebContents* web_contents,
     security_state::SafetyTipStatus safety_tip_status,
-    const GURL& virtual_url,
     const GURL& suggested_url,
     base::OnceCallback<void(SafetyTipInteraction)> close_callback) {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
@@ -286,7 +272,7 @@ void ShowSafetyTipDialog(
 
   views::BubbleDialogDelegateView* bubble = new SafetyTipPageInfoBubbleView(
       configuration.anchor_view, anchor_rect, parent_view, web_contents,
-      safety_tip_status, virtual_url, suggested_url, std::move(close_callback));
+      safety_tip_status, suggested_url, std::move(close_callback));
 
   bubble->SetHighlightedButton(configuration.highlighted_button);
   bubble->SetArrow(configuration.bubble_arrow);
@@ -297,10 +283,9 @@ PageInfoBubbleViewBase* CreateSafetyTipBubbleForTesting(
     gfx::NativeView parent_view,
     content::WebContents* web_contents,
     security_state::SafetyTipStatus safety_tip_status,
-    const GURL& virtual_url,
     const GURL& suggested_url,
     base::OnceCallback<void(SafetyTipInteraction)> close_callback) {
   return new SafetyTipPageInfoBubbleView(
       nullptr, gfx::Rect(), parent_view, web_contents, safety_tip_status,
-      virtual_url, suggested_url, std::move(close_callback));
+      suggested_url, std::move(close_callback));
 }

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/reputation/safety_tip_ui_helper.h"
 
-#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/common/url_constants.h"
@@ -28,22 +27,8 @@ const char kSafetyTipLeaveSiteUrl[] = "chrome://newtab";
 
 }  // namespace
 
-void RecordSafetyTipInteractionHistogram(content::WebContents* web_contents,
-                                         SafetyTipInteraction interaction) {
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(web_contents);
-  DCHECK(helper);
-  base::UmaHistogramEnumeration(
-      security_state::GetSafetyTipHistogramName(
-          "Security.SafetyTips.Interaction",
-          helper->GetVisibleSecurityState()->safety_tip_info.status),
-      interaction);
-}
-
 void LeaveSiteFromSafetyTip(content::WebContents* web_contents,
                             const GURL& safe_url) {
-  RecordSafetyTipInteractionHistogram(web_contents,
-                                      SafetyTipInteraction::kLeaveSite);
   auto navigated_to = safe_url;
   if (navigated_to.is_empty()) {
     navigated_to = GURL(kSafetyTipLeaveSiteUrl);
@@ -76,8 +61,6 @@ void LeaveSiteFromSafetyTip(content::WebContents* web_contents,
 }
 
 void OpenHelpCenterFromSafetyTip(content::WebContents* web_contents) {
-  RecordSafetyTipInteractionHistogram(web_contents,
-                                      SafetyTipInteraction::kLearnMore);
   web_contents->OpenURL(content::OpenURLParams(
       GURL(chrome::kSafetyTipHelpCenterURL), content::Referrer(),
       WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,

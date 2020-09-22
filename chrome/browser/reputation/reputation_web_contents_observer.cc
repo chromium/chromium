@@ -58,6 +58,9 @@ void RecordHeuristicsUKMData(ReputationCheckResult result,
 void OnSafetyTipClosed(ReputationCheckResult result,
                        base::Time start_time,
                        ukm::SourceId navigation_source_id,
+                       Profile* profile,
+                       const GURL& url,
+                       security_state::SafetyTipStatus status,
                        SafetyTipInteraction action) {
   std::string action_suffix;
   bool warning_dismissed = false;
@@ -95,6 +98,17 @@ void OnSafetyTipClosed(ReputationCheckResult result,
       break;
   }
   if (warning_dismissed) {
+    ReputationService::Get(profile)->SetUserIgnore(url);
+
+    // Record that the user dismissed the safety tip. kDismiss is recorded in
+    // all dismiss-like cases, which makes it easier to track overall dismissals
+    // without having to re-constitute from each bucket on how the user
+    // dismissed the safety tip. We additionally record a more specific action
+    // below (e.g. kDismissWithEsc).
+    base::UmaHistogramEnumeration(
+        security_state::GetSafetyTipHistogramName(
+            "Security.SafetyTips.Interaction", status),
+        SafetyTipInteraction::kDismiss);
     base::UmaHistogramCustomTimes(
         security_state::GetSafetyTipHistogramName(
             std::string("Security.SafetyTips.OpenTime.Dismiss"),
@@ -102,6 +116,9 @@ void OnSafetyTipClosed(ReputationCheckResult result,
         base::Time::Now() - start_time, base::TimeDelta::FromMilliseconds(1),
         base::TimeDelta::FromHours(1), 100);
   }
+  base::UmaHistogramEnumeration(security_state::GetSafetyTipHistogramName(
+                                    "Security.SafetyTips.Interaction", status),
+                                action);
   base::UmaHistogramCustomTimes(
       security_state::GetSafetyTipHistogramName(
           std::string("Security.SafetyTips.OpenTime.") + action_suffix,
@@ -338,10 +355,11 @@ void ReputationWebContentsObserver::HandleReputationCheckResult(
   }
 
   RecordPostFlagCheckHistogram(result.safety_tip_status);
-  ShowSafetyTipDialog(web_contents(), result.safety_tip_status, result.url,
-                      result.suggested_url,
-                      base::BindOnce(OnSafetyTipClosed, result,
-                                     base::Time::Now(), navigation_source_id));
+  ShowSafetyTipDialog(
+      web_contents(), result.safety_tip_status, result.suggested_url,
+      base::BindOnce(OnSafetyTipClosed, result, base::Time::Now(),
+                     navigation_source_id, profile_, result.url,
+                     result.safety_tip_status));
   MaybeCallReputationCheckCallback(true);
 }
 
