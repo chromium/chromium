@@ -795,8 +795,8 @@
   },
   {
     "name": "detect-target-embedding-lookalikes",
-    "owners": [ "jdeblasio", "behnoodm" ],
-    "expiry_milestone": 86
+    "owners": [ "jdeblasio", "meacer" ],
+    "expiry_milestone": 87
   },
   {
     "name": "device-discovery-notifications",
