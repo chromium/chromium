@@ -173,9 +173,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
       const gfx::Transform& target_transform,
       const ClipData& clip_rect,
       const SurfaceId& surface_id,
-      const RoundedCornerInfo& rounded_corner_info,
-      Surface* surface,
-      bool is_last_pass);
+      const RoundedCornerInfo& rounded_corner_info);
 
   // Recursively walks through the render pass and updates the
   // |can_use_backdrop_filter_cache| flag on all RenderPassDrawQuads(RPDQ).
@@ -252,15 +250,24 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   gfx::Rect CalculateOccludingSurfaceDamageRect(
       const DrawQuad* quad,
       const gfx::Transform& parent_quad_to_root_target_transform);
-  void UnionSurfaceDamageRectsOnTop(const gfx::Rect& surface_rect,
-                                    const gfx::Transform& target_transform);
 
+  // This function adds |damage_rect| to
+  // |damage_rects_union_of_surfaces_on_top_|. |damage_rect| is in the quad
+  // content space while both clip_rect and
+  // |damage_rects_union_of_surfaces_on_top_| are already on the root target
+  // space.
+  void UnionSurfaceDamageRectsOnTop(
+      const gfx::Rect& damage_rect,
+      const gfx::Transform& parent_to_root_target_transform,
+      const ClipData& clip_rect);
+
+  // Determine the overlay occluding damage.
   const DrawQuad* ProcessSurfaceOccludingDamage(
       const CompositorRenderPass& source_pass,
       AggregatedRenderPass* dest_pass,
       const gfx::Transform& parent_target_transform,
-      Surface* surface,
-      bool is_last_pass_in_src_surface,
+      const SurfaceId& surface_id,
+      const ClipData& clip_rect,
       gfx::Rect* occluding_damage_rect);
 
   // Returns true if the render pass with the given id and cache_render_pass

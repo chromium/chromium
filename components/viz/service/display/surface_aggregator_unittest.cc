@@ -6649,6 +6649,122 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DamageRectWithClippedChildSurface) {
   }
 }
 
+// Tests the damage rect with a invalid child frame
+TEST_F(SurfaceAggregatorValidSurfaceTest, DamageRectWithInvalidChildFrame) {
+  ParentLocalSurfaceIdAllocator allocator;
+  allocator.GenerateId();
+  LocalSurfaceId child_local_surface_id =
+      allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  SurfaceId child_surface_id(child_sink_->frame_sink_id(),
+                             child_local_surface_id);
+
+  std::vector<Quad> root_surface_quads = {Quad::SurfaceQuad(
+      SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+      gfx::Rect(0, 0, 100, 100), /*stretch_content_to_fill_bounds=*/false)};
+  std::vector<Pass> root_passes = {
+      Pass(root_surface_quads,
+           /*size*/ gfx::Size(100, 100),
+           /*damage_rect*/ gfx::Rect(10, 10, 20, 20))};
+
+  CompositorFrame root_frame = MakeEmptyCompositorFrame();
+  AddPasses(&root_frame.render_pass_list, root_passes,
+            &root_frame.metadata.referenced_surfaces);
+
+  SurfaceId root_surface_id(root_sink_->frame_sink_id(),
+                            root_local_surface_id_);
+  root_sink_->SubmitCompositorFrame(root_local_surface_id_,
+                                    std::move(root_frame));
+
+  // Frame # 0 - The primary surface of the child frame is not available.
+  // The child frame is not submitted.
+  // The damage rect of the very first frame is always the full rect.
+  auto aggregated_frame = AggregateFrame(root_surface_id);
+  auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
+  EXPECT_EQ(gfx::Rect(gfx::Rect(0, 0, 100, 100)),
+            output_root_pass->damage_rect);
+  EXPECT_EQ(output_root_pass->damage_rect, aggregated_frame.occluding_damage_);
+
+  // Frame # 1 - The primary surface of the child frame is not available.
+  {
+    CompositorFrame root_frame = MakeEmptyCompositorFrame();
+    AddPasses(&root_frame.render_pass_list, root_passes,
+              &root_frame.metadata.referenced_surfaces);
+    root_sink_->SubmitCompositorFrame(root_local_surface_id_,
+                                      std::move(root_frame));
+
+    auto aggregated_frame = AggregateFrame(root_surface_id);
+    auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
+    // The damage rect is the full display rect when the child surface is not
+    // available.
+    EXPECT_EQ(gfx::Rect(gfx::Rect(0, 0, 100, 100)),
+              output_root_pass->damage_rect);
+    // Make sure |occluding_damage_| is correct.
+    EXPECT_EQ(output_root_pass->damage_rect,
+              aggregated_frame.occluding_damage_);
+  }
+
+  // Frame # 2 - The primary surface is available now.
+  // The child frame is submitted
+  std::vector<Quad> child_surface_quads = {
+      Quad::SolidColorQuad(SK_ColorRED, gfx::Rect(0, 0, 100, 100))};
+  std::vector<Pass> child_surface_passes = {Pass(child_surface_quads,
+                                                 CompositorRenderPassId{1},
+                                                 gfx::Rect(20, 20, 50, 50))};
+  {
+    CompositorFrame child_surface_frame = MakeEmptyCompositorFrame();
+    AddPasses(&child_surface_frame.render_pass_list, child_surface_passes,
+              &child_surface_frame.metadata.referenced_surfaces);
+
+    child_sink_->SubmitCompositorFrame(child_local_surface_id,
+                                       std::move(child_surface_frame));
+
+    CompositorFrame root_frame = MakeEmptyCompositorFrame();
+    AddPasses(&root_frame.render_pass_list, root_passes,
+              &root_frame.metadata.referenced_surfaces);
+    root_sink_->SubmitCompositorFrame(root_local_surface_id_,
+                                      std::move(root_frame));
+
+    auto aggregated_frame = AggregateFrame(root_surface_id);
+    auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
+    // The damage rect is the union of root surface damage (10, 10, 20, 20) and
+    // child surface (20, 20, 50, 50).
+    EXPECT_EQ(gfx::Rect(gfx::Rect(10, 10, 60, 60)),
+              output_root_pass->damage_rect);
+    EXPECT_EQ(output_root_pass->damage_rect,
+              aggregated_frame.occluding_damage_);
+  }
+  // Frame # 3 - The primary surface is not available, with a different id.
+  {
+    allocator.GenerateId();
+    LocalSurfaceId child_local_surface_id2 =
+        allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+    SurfaceId child_surface_id2(child_sink_->frame_sink_id(),
+                                child_local_surface_id2);
+    std::vector<Quad> root_surface_quads = {Quad::SurfaceQuad(
+        SurfaceRange(base::nullopt, child_surface_id2), SK_ColorWHITE,
+        gfx::Rect(0, 0, 100, 100), /*stretch_content_to_fill_bounds=*/false)};
+    std::vector<Pass> root_passes = {
+        Pass(root_surface_quads,
+             /*size*/ gfx::Size(100, 100),
+             /*damage_rect*/ gfx::Rect(10, 10, 20, 20))};
+
+    CompositorFrame root_frame = MakeEmptyCompositorFrame();
+    AddPasses(&root_frame.render_pass_list, root_passes,
+              &root_frame.metadata.referenced_surfaces);
+    root_sink_->SubmitCompositorFrame(root_local_surface_id_,
+                                      std::move(root_frame));
+
+    auto aggregated_frame = AggregateFrame(root_surface_id);
+    auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
+    // The damage rect is the full display rect when the primary child surface
+    // is not available.
+    EXPECT_EQ(gfx::Rect(gfx::Rect(0, 0, 100, 100)),
+              output_root_pass->damage_rect);
+    EXPECT_EQ(output_root_pass->damage_rect,
+              aggregated_frame.occluding_damage_);
+  }
+}
+
 // Tests the overlay occluding damage rect
 TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
   // Video quad
@@ -6673,7 +6789,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
                                      std::move(child_surface_frame));
 
   // Original video quad (0, 0, 100, 100) x this video_transform matrix ==
-  // (10, 0, 80, 80)
+  // (10, 0, 80, 80).
   gfx::Transform video_transform(0.8f, 0, 0, 0.8f, 10.0f, 0);
 
   // root surface quads
@@ -6703,9 +6819,11 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
   auto aggregated_frame = AggregateFrame(root_surface_id);
 
   // Frame # 0 - Full occluding damage rect
-  // The damage rect of the very first frame is always the full rect
+  // The damage rect of the very first frame is always the full rect.
   auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
   EXPECT_EQ(gfx::Rect(0, 0, 200, 200), output_root_pass->damage_rect);
+  // Make sure |occluding_damage_| is correct.
+  EXPECT_EQ(output_root_pass->damage_rect, aggregated_frame.occluding_damage_);
 
   const SharedQuadState* video_sqs =
       output_root_pass->quad_list.back()->shared_quad_state;
@@ -6734,13 +6852,15 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
 
     auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
     // The video quad (10, 0, 80, 80) unions the solid quad on top (60, 0, 40,
-    // 40)
+    // 40).
     EXPECT_EQ(gfx::Rect(10, 0, 90, 80), output_root_pass->damage_rect);
+    EXPECT_EQ(output_root_pass->damage_rect,
+              aggregated_frame.occluding_damage_);
 
     const SharedQuadState* video_sqs =
         output_root_pass->quad_list.back()->shared_quad_state;
     // The solid quad on top (60, 0, 40, 40) intersects the video quad (10, 0,
-    // 80, 80)
+    // 80, 80).
     EXPECT_EQ(gfx::Rect(60, 0, 30, 40),
               video_sqs->occluding_damage_rect.value());
   }
@@ -6752,16 +6872,18 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
     child_sink_->SubmitCompositorFrame(child_local_surface_id,
                                        std::move(child_surface_frame));
 
-    // No change in root frame
+    // No change in root frame.
     auto aggregated_frame = AggregateFrame(root_surface_id);
 
     auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
-    // Only the video quad (10, 0, 80, 80) is damaged
+    // Only the video quad (10, 0, 80, 80) is damaged.
     EXPECT_EQ(gfx::Rect(10, 0, 80, 80), output_root_pass->damage_rect);
+    EXPECT_EQ(output_root_pass->damage_rect,
+              aggregated_frame.occluding_damage_);
 
     const SharedQuadState* video_sqs =
         output_root_pass->quad_list.back()->shared_quad_state;
-    // No occluding damage
+    // No occluding damage.
     EXPECT_EQ(gfx::Rect(), video_sqs->occluding_damage_rect.value());
   }
   // Frame #3 - The only quad on top is removed
@@ -6772,7 +6894,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
     child_sink_->SubmitCompositorFrame(child_local_surface_id,
                                        std::move(child_surface_frame));
 
-    // root surface quads, the solid quad (60, 0, 40, 40) is removed
+    // root surface quads, the solid quad (60, 0, 40, 40) is removed.
     std::vector<Quad> root_surface_quads = {Quad::SurfaceQuad(
         SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
         /*primary_surface_rect*/ gfx::Rect(0, 0, 100, 100),
@@ -6796,13 +6918,15 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
 
     auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
     // The video quad (10, 0, 80, 80) unions the expose damage from removing
-    // the solid quad on top (60, 0, 40, 40)
+    // the solid quad on top (60, 0, 40, 40).
     EXPECT_EQ(gfx::Rect(10, 0, 90, 80), output_root_pass->damage_rect);
+    EXPECT_EQ(output_root_pass->damage_rect,
+              aggregated_frame.occluding_damage_);
 
     const SharedQuadState* video_sqs =
         output_root_pass->quad_list.back()->shared_quad_state;
     // The expose damage (60, 0, 40, 40) intersects the video quad (10, 0,
-    // 80, 80)
+    // 80, 80).
     EXPECT_EQ(gfx::Rect(60, 0, 30, 40),
               video_sqs->occluding_damage_rect.value());
   }
@@ -6831,18 +6955,73 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
 
     auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
     // The video quad (10, 0, 80, 80) unions the solid quad on top (60, 0, 40,
-    // 40)
+    // 40).
     EXPECT_EQ(gfx::Rect(10, 0, 90, 80), output_root_pass->damage_rect);
+    EXPECT_EQ(output_root_pass->damage_rect,
+              aggregated_frame.occluding_damage_);
 
     const SharedQuadState* video_sqs =
         output_root_pass->quad_list.back()->shared_quad_state;
     // The solid quad on top (60, 0, 40, 40) intersects the clipped video quad
-    // (26, 0, 48, 64)
+    // (26, 0, 48, 64).
     EXPECT_EQ(gfx::Rect(60, 0, 14, 40),
               video_sqs->occluding_damage_rect.value());
   }
 
-  // Add a quad on top of video quad
+  // Frame #5 - Has occluding damage and clipping of surface on top is on
+  {
+    CompositorFrame child_surface_frame = MakeEmptyCompositorFrame();
+    AddPasses(&child_surface_frame.render_pass_list, child_surface_passes,
+              &child_surface_frame.metadata.referenced_surfaces);
+
+    child_sink_->SubmitCompositorFrame(child_local_surface_id,
+                                       std::move(child_surface_frame));
+
+    // root surface quads
+    std::vector<Quad> root_surface_quads = {
+        Quad::SolidColorQuad(SK_ColorRED, gfx::Rect(60, 0, 100, 100)),
+        Quad::SurfaceQuad(
+            SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+            /*primary_surface_rect*/ gfx::Rect(0, 0, 100, 100),
+            /*opacity*/ 1.f, video_transform,
+            /*stretch_content_to_fill_bounds=*/false, gfx::RRectF(),
+            /*is_fast_border_radius*/ false)};
+
+    std::vector<Pass> root_passes = {
+        Pass(root_surface_quads,
+             /*size*/ gfx::Size(200, 200),
+             /*damage_rect*/ gfx::Rect(60, 0, 80, 70))};
+
+    CompositorFrame root_frame = MakeEmptyCompositorFrame();
+    AddPasses(&root_frame.render_pass_list, root_passes,
+              &root_frame.metadata.referenced_surfaces);
+
+    auto* last_pass = root_frame.render_pass_list.back().get();
+    auto* solid_quad_sqs = last_pass->shared_quad_state_list.front();
+    solid_quad_sqs->is_clipped = true;
+    solid_quad_sqs->clip_rect = gfx::Rect(80, 0, 40, 30);
+
+    root_sink_->SubmitCompositorFrame(root_local_surface_id_,
+                                      std::move(root_frame));
+
+    auto aggregated_frame = AggregateFrame(root_surface_id);
+
+    auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
+    // The video quad (10, 0, 80, 80) unions the clipped damage rect of the
+    // solid quad on top (60, 0, 80, 70) where the clip rect (80, 0, 40, 30).
+    EXPECT_EQ(gfx::Rect(10, 0, 130, 80), output_root_pass->damage_rect);
+    EXPECT_EQ(output_root_pass->damage_rect,
+              aggregated_frame.occluding_damage_);
+
+    const SharedQuadState* video_sqs =
+        output_root_pass->quad_list.back()->shared_quad_state;
+    // The solid quad damage on top (60, 0, 80, 70) intersects the video quad
+    // (10, 0, 80, 80).
+    EXPECT_EQ(gfx::Rect(60, 0, 30, 70),
+              video_sqs->occluding_damage_rect.value());
+  }
+
+  // Add a quad on top of video quad.
   child_surface_quads = std::vector<Quad>(
       {Quad::SolidColorQuad(SK_ColorRED, gfx::Rect(0, 0, 50, 50)),
        Quad::YUVVideoQuad(gfx::Rect(0, 0, 100, 100))});
@@ -6851,7 +7030,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
       std::vector<Pass>({Pass(child_surface_quads, /*size*/ gfx::Size(100, 100),
                               /*damage_rect*/ gfx::Rect(0, 0, 100, 100))});
 
-  // Frame #5 - Child surface contains a quad other than the video
+  // Frame #6 - Child surface contains a quad other than the video
   {
     CompositorFrame child_surface_frame = MakeEmptyCompositorFrame();
     AddPasses(&child_surface_frame.render_pass_list, child_surface_passes,
@@ -6859,20 +7038,22 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
     child_sink_->SubmitCompositorFrame(child_local_surface_id,
                                        std::move(child_surface_frame));
 
-    // No change in root frame
+    // No change in root frame.
     auto aggregated_frame = AggregateFrame(root_surface_id);
 
     auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
-    // Only the video quad (10, 0, 80, 80) is damaged
+    // Only the video quad (10, 0, 80, 80) is damaged.
     EXPECT_EQ(gfx::Rect(10, 0, 80, 80), output_root_pass->damage_rect);
+    EXPECT_EQ(output_root_pass->damage_rect,
+              aggregated_frame.occluding_damage_);
 
     const SharedQuadState* video_sqs =
         output_root_pass->quad_list.back()->shared_quad_state;
     // The underlay optimization doesn't apply with multiple
-    // possibly damaged quads
+    // possibly damaged quads.
     EXPECT_FALSE(video_sqs->occluding_damage_rect.has_value());
   }
-  // Frame #6 - Child surface contains an undamaged quad other than the video
+  // Frame #7 - Child surface contains an undamaged quad other than the video
   {
     CompositorFrame child_surface_frame = MakeEmptyCompositorFrame();
     AddPasses(&child_surface_frame.render_pass_list, child_surface_passes,
@@ -6884,16 +7065,18 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
     child_sink_->SubmitCompositorFrame(child_local_surface_id,
                                        std::move(child_surface_frame));
 
-    // No change in root frame
+    // No change in root frame.
     auto aggregated_frame = AggregateFrame(root_surface_id);
 
     auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
-    // Only the video quad (10, 0, 80, 80) is damaged
+    // Only the video quad (10, 0, 80, 80) is damaged.
     EXPECT_EQ(gfx::Rect(10, 0, 80, 80), output_root_pass->damage_rect);
+    EXPECT_EQ(output_root_pass->damage_rect,
+              aggregated_frame.occluding_damage_);
 
     const SharedQuadState* video_sqs =
         output_root_pass->quad_list.back()->shared_quad_state;
-    // No occluding damage
+    // No occluding damage.
     EXPECT_EQ(gfx::Rect(), video_sqs->occluding_damage_rect.value());
   }
 }

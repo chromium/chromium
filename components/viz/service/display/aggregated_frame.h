@@ -42,6 +42,12 @@ class VIZ_SERVICE_EXPORT AggregatedFrame {
   // Indicates whether this frame may contain video.
   bool may_contain_video = false;
 
+  // This is the final root damage rect produced in
+  // ProcessSurfaceOccludingDamage().
+  // TODO(magchen@): This will be replaced by a damage rect list in the follow
+  // up CL.
+  gfx::Rect occluding_damage_;
+
   // Contains the metadata required for drawing a delegated ink trail onto the
   // end of a rendered ink stroke. This should only be present when two
   // conditions are met:
