@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
@@ -416,6 +417,13 @@ class Profile : public content::BrowserContext {
 
   // Returns whether it is a system profile.
   virtual bool IsSystemProfile() const;
+
+#if BUILDFLAG(IS_LACROS)
+  // TODO(https://crbug.com/1129543): Implement this method.
+  // In Lacros, there is exactly one profile associated with the currently
+  // logged in user on ChromeOS.
+  bool IsDefaultProfile() const { return false; }
+#endif
 
   bool CanUseDiskWhenOffTheRecord() override;
 
