@@ -122,7 +122,6 @@ def main():
   # https://crbug.com/954311 tracks finding a better way to plumb these.
   link_only = InterceptFlag('--link-only', args.command)
   collect_inputs_only = InterceptFlag('--collect-inputs-only', args.command)
-  generate_dwp = InterceptFlag('--generate-dwp', args.command)
 
   # If only linking, we are likely generating a partitioned .so that will be
   # split apart later. In that case:
@@ -162,12 +161,10 @@ def main():
 
   # If dwp is set, then package debug info for this SO.
   dwp_proc = None
-  if generate_dwp:
-    if not args.dwp:
-      parser.error('--generate-dwp requireds --dwp')
+  if args.dwp:
     dwp_proc = subprocess.Popen(
         wrapper_utils.CommandToRun(
-            [args.dwp, '-e', args.sofile, '-o', args.output + '.dwp']))
+            [args.dwp, '-e', args.sofile, '-o', args.sofile + '.dwp']))
 
   # Next, generate the contents of the TOC file.
   result, toc = CollectTOC(args)

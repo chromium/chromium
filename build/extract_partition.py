@@ -50,7 +50,7 @@ def main():
   if args.dwp:
     dwp_args = [
         args.dwp, '-e', args.unstripped_output, '-o',
-        args.stripped_output + '.dwp'
+        args.unstripped_output + '.dwp'
     ]
     subprocess.check_call(dwp_args)
 

@@ -54,10 +54,6 @@ def main():
                       help='Linking command')
   args = parser.parse_args()
 
-  generate_dwp = '--generate-dwp' in args.command
-  if generate_dwp:
-    args.command.remove('--generate-dwp')
-
   # Work-around for gold being slow-by-default. http://crbug.com/632230
   fast_env = dict(os.environ)
   fast_env['LC_ALL'] = 'C'
@@ -68,15 +64,13 @@ def main():
 
   # If dwp is set, then package debug info for this exe.
   dwp_proc = None
-  if generate_dwp:
-    if not args.dwp:
-      parser.error('--generate-dwp requireds --dwp')
+  if args.dwp:
     exe_file = args.output
     if args.unstripped_file:
       exe_file = args.unstripped_file
     dwp_proc = subprocess.Popen(
         wrapper_utils.CommandToRun(
-            [args.dwp, '-e', exe_file, '-o', args.output + '.dwp']))
+            [args.dwp, '-e', exe_file, '-o', exe_file + '.dwp']))
 
   # Finally, strip the linked executable (if desired).
   if args.strip:

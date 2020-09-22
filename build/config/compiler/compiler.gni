@@ -7,6 +7,7 @@ import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/args.gni")
 import("//build/config/compiler/pgo/pgo.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
@@ -223,11 +224,19 @@ if (strip_absolute_paths_from_debug_symbols_default) {
   }
 }
 
+# If it wasn't manually set, then default use_debug_fission to false.
+assert(
+    use_debug_fission == "default" || use_debug_fission || !use_debug_fission,
+    "Invalid use_debug_fission.")
+if (use_debug_fission == "default") {
+  use_debug_fission = is_debug && !is_android && !is_fuchsia && !is_apple &&
+                      !is_win && (use_gold || use_lld) && cc_wrapper == ""
+}
+
 # If it wasn't manually set, set to an appropriate default.
 assert(symbol_level >= -1 && symbol_level <= 2, "Invalid symbol_level")
 if (symbol_level == -1) {
-  if (is_android && !is_component_build &&
-      !(use_debug_fission != "default" && use_debug_fission)) {
+  if (is_android && !is_component_build && !use_debug_fission) {
     # Reduce symbol level when it will cause invalid elf files to be created
     # (due to file size). https://crbug.com/648948.
     symbol_level = 1
@@ -277,8 +286,7 @@ if (forbid_non_component_debug_builds) {
 # toolchain there to build relatively small binaries.
 assert(
     ignore_elf32_limitations || !is_android || target_os == "chromeos" ||
-        is_component_build || symbol_level < 2 ||
-        (use_debug_fission != "default" && use_debug_fission),
+        is_component_build || symbol_level < 2 || use_debug_fission,
     "Android 32-bit non-component builds without DWARF Fission cannot " +
         "have symbol_level=2 due to 4GiB file size limit, see " +
         "https://crbug.com/648948. " + "If you really want to try this out, " +

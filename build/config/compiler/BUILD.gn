@@ -174,11 +174,6 @@ declare_args() {
                                                        current_cpu == "x64"))))
 }
 
-if (use_debug_fission == "default") {
-  use_debug_fission = is_debug && !is_android && !is_fuchsia && !is_apple &&
-                      !is_win && (use_gold || use_lld) && cc_wrapper == ""
-}
-
 if (is_win || is_android || (is_chromeos && is_chromeos_device)) {
   # Set the path to use orderfile for linking Chrome
   # Note that this is for using only one orderfile for linking
@@ -2350,10 +2345,7 @@ config("symbols") {
       # NOTE: This flag is for use by the link wrapper scripts. They are also
       # expected to remove it before sending the rest of ldflags to the actual
       # linker. Only expect Android Chrome build on Android OS to need this.
-      ldflags += [
-        "--generate-dwp",
-        "-gsplit-dwarf",
-      ]
+      ldflags += [ "-gsplit-dwarf" ]
     }
 
     # TODO(thakis): Figure out if there's a way to make this go for 32-bit,
