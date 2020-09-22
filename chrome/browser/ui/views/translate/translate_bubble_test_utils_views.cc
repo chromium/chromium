@@ -61,8 +61,7 @@ void SelectTargetLanguageByDisplayName(Browser* browser,
 
   // Simulate selecting the correct index of the target language combo box.
   bubble->target_language_combobox_->SetSelectedIndex(language_index);
-  bubble->HandleComboboxPerformAction(
-      TranslateBubbleView::COMBOBOX_ID_TARGET_LANGUAGE);
+  bubble->TargetLanguageChanged();
 }
 
 }  // namespace test_utils

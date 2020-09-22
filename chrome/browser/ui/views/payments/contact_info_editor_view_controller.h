@@ -79,12 +79,12 @@ class ContactInfoEditorViewController : public EditorViewController {
     base::string16 Format(const base::string16& text) override;
     bool IsValidTextfield(views::Textfield* textfield,
                           base::string16* error_message) override;
-    bool IsValidCombobox(views::Combobox* combobox,
+    bool IsValidCombobox(ValidatingCombobox* combobox,
                          base::string16* error_message) override;
     bool TextfieldValueChanged(views::Textfield* textfield,
                                bool was_blurred) override;
-    bool ComboboxValueChanged(views::Combobox* combobox) override;
-    void ComboboxModelChanged(views::Combobox* combobox) override {}
+    bool ComboboxValueChanged(ValidatingCombobox* combobox) override;
+    void ComboboxModelChanged(ValidatingCombobox* combobox) override {}
 
    private:
     bool ValidateTextfield(views::Textfield* textfield,

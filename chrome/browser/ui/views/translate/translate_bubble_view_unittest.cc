@@ -346,11 +346,9 @@ TEST_F(TranslateBubbleViewTest, SourceDoneButton) {
   // are applied.
   EXPECT_FALSE(mock_model_->translate_called_);
   bubble_->source_language_combobox_->SetSelectedIndex(10);
-  bubble_->HandleComboboxPerformAction(
-      TranslateBubbleView::COMBOBOX_ID_SOURCE_LANGUAGE);
+  bubble_->SourceLanguageChanged();
   bubble_->target_language_combobox_->SetSelectedIndex(20);
-  bubble_->HandleComboboxPerformAction(
-      TranslateBubbleView::COMBOBOX_ID_TARGET_LANGUAGE);
+  bubble_->TargetLanguageChanged();
   PressButton(TranslateBubbleView::BUTTON_ID_DONE);
   EXPECT_TRUE(mock_model_->translate_called_);
   // Expected value is (set id - 1) because user selected id is actual id + 1
@@ -369,11 +367,9 @@ TEST_F(TranslateBubbleViewTest, TargetDoneButton) {
   // are applied.
   EXPECT_FALSE(mock_model_->translate_called_);
   bubble_->source_language_combobox_->SetSelectedIndex(10);
-  bubble_->HandleComboboxPerformAction(
-      TranslateBubbleView::COMBOBOX_ID_SOURCE_LANGUAGE);
+  bubble_->SourceLanguageChanged();
   bubble_->target_language_combobox_->SetSelectedIndex(20);
-  bubble_->HandleComboboxPerformAction(
-      TranslateBubbleView::COMBOBOX_ID_TARGET_LANGUAGE);
+  bubble_->TargetLanguageChanged();
   PressButton(TranslateBubbleView::BUTTON_ID_DONE);
   EXPECT_TRUE(mock_model_->translate_called_);
   EXPECT_EQ(9, mock_model_->original_language_index_);

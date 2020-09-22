@@ -376,8 +376,8 @@ PasswordSaveUpdateWithAccountStoreView::PasswordSaveUpdateWithAccountStoreView(
         controller_.GetPrimaryAccountEmail(),
         controller_.GetPrimaryAccountAvatar(ComboboxIconSize()),
         controller_.IsUsingAccountStore());
-    destination_dropdown->set_callback(base::BindRepeating(
-        &PasswordSaveUpdateWithAccountStoreView::OnPerformAction,
+    destination_dropdown->set_closure(base::BindRepeating(
+        &PasswordSaveUpdateWithAccountStoreView::DestinationChanged,
         base::Unretained(this)));
     destination_dropdown_ = destination_dropdown.get();
   }
@@ -518,9 +518,9 @@ void PasswordSaveUpdateWithAccountStoreView::ButtonPressed(
   TogglePasswordVisibility();
 }
 
-void PasswordSaveUpdateWithAccountStoreView::OnPerformAction(
-    views::Combobox* combobox) {
-  bool is_account_store_selected = combobox->GetSelectedIndex() == 0;
+void PasswordSaveUpdateWithAccountStoreView::DestinationChanged() {
+  bool is_account_store_selected =
+      destination_dropdown_->GetSelectedIndex() == 0;
   controller_.OnToggleAccountStore(is_account_store_selected);
   // If the user explicitly switched to "save on this device only", record this
   // with the IPH tracker (so it can decide not to show the IPH again).

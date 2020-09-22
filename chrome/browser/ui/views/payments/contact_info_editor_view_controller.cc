@@ -263,14 +263,15 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
 }
 
 bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
-    IsValidCombobox(views::Combobox* combobox, base::string16* error_message) {
+    IsValidCombobox(ValidatingCombobox* combobox,
+                    base::string16* error_message) {
   // This UI doesn't contain any comboboxes.
   NOTREACHED();
   return true;
 }
 
 bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
-    ComboboxValueChanged(views::Combobox* combobox) {
+    ComboboxValueChanged(ValidatingCombobox* combobox) {
   // This UI doesn't contain any comboboxes.
   NOTREACHED();
   return true;

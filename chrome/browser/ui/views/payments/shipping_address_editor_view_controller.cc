@@ -175,7 +175,7 @@ ShippingAddressEditorViewController::GetComboboxModelForType(
 }
 
 void ShippingAddressEditorViewController::OnPerformAction(
-    views::Combobox* sender) {
+    ValidatingCombobox* sender) {
   EditorViewController::OnPerformAction(sender);
   if (sender->GetID() != GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY))
     return;
@@ -257,7 +257,8 @@ bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
 }
 
 bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
-    IsValidCombobox(views::Combobox* combobox, base::string16* error_message) {
+    IsValidCombobox(ValidatingCombobox* combobox,
+                    base::string16* error_message) {
   return ValidateValue(combobox->GetTextForRow(combobox->GetSelectedIndex()),
                        error_message);
 }
@@ -274,7 +275,7 @@ bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
 }
 
 bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
-    ComboboxValueChanged(views::Combobox* combobox) {
+    ComboboxValueChanged(ValidatingCombobox* combobox) {
   base::string16 error_message;
   bool is_valid = ValidateValue(
       combobox->GetTextForRow(combobox->GetSelectedIndex()), &error_message);
@@ -283,7 +284,7 @@ bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
 }
 
 void ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
-    ComboboxModelChanged(views::Combobox* combobox) {
+    ComboboxModelChanged(ValidatingCombobox* combobox) {
   controller_->OnComboboxModelChanged(combobox);
 }
 
@@ -583,7 +584,7 @@ bool ShippingAddressEditorViewController::SaveFieldsToProfile(
 }
 
 void ShippingAddressEditorViewController::OnComboboxModelChanged(
-    views::Combobox* combobox) {
+    ValidatingCombobox* combobox) {
   if (combobox->GetID() != GetInputFieldViewId(autofill::ADDRESS_HOME_STATE))
     return;
   autofill::RegionComboboxModel* model =

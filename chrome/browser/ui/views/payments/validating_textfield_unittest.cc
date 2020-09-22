@@ -34,7 +34,7 @@ class ValidatingTextfieldTest : public ChromeViewsTestBase {
       base::string16 unused;
       return !was_blurred || IsValidTextfield(textfield, &unused);
     }
-    bool ComboboxValueChanged(views::Combobox* combobox) override {
+    bool ComboboxValueChanged(ValidatingCombobox* combobox) override {
       base::string16 unused;
       return IsValidCombobox(combobox, &unused);
     }
@@ -43,11 +43,11 @@ class ValidatingTextfieldTest : public ChromeViewsTestBase {
       // We really don't like textfields with more than 5 characters in them.
       return textfield->GetText().size() <= 5u;
     }
-    bool IsValidCombobox(views::Combobox* combobox,
+    bool IsValidCombobox(ValidatingCombobox* combobox,
                          base::string16* error_message) override {
       return true;
     }
-    void ComboboxModelChanged(views::Combobox* combobox) override {}
+    void ComboboxModelChanged(ValidatingCombobox* combobox) override {}
 
    private:
     DISALLOW_COPY_AND_ASSIGN(TestValidationDelegate);

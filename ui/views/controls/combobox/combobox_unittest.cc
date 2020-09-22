@@ -149,29 +149,31 @@ class VectorComboboxModel : public ui::ComboboxModel {
 
 class EvilListener {
  public:
-  EvilListener() = default;
+  EvilListener() {
+    combobox_->set_closure(base::BindRepeating(&EvilListener::OnPerformAction,
+                                               base::Unretained(this)));
+  }
   ~EvilListener() = default;
 
-  void OnPerformAction(Combobox* combobox) {
-    delete combobox;
-    deleted_ = true;
-  }
-
-  bool deleted() const { return deleted_; }
+  TestCombobox* combobox() { return combobox_.get(); }
 
  private:
-  bool deleted_ = false;
+  void OnPerformAction() { combobox_.reset(); }
+
+  TestComboboxModel model_;
+  std::unique_ptr<TestCombobox> combobox_ =
+      std::make_unique<TestCombobox>(&model_);
 
   DISALLOW_COPY_AND_ASSIGN(EvilListener);
 };
 
 class TestComboboxListener {
  public:
-  TestComboboxListener() = default;
+  explicit TestComboboxListener(Combobox* combobox) : combobox_(combobox) {}
   ~TestComboboxListener() = default;
 
-  void OnPerformAction(views::Combobox* combobox) {
-    perform_action_index_ = combobox->GetSelectedIndex();
+  void OnPerformAction() {
+    perform_action_index_ = combobox_->GetSelectedIndex();
     actions_performed_++;
   }
 
@@ -182,6 +184,7 @@ class TestComboboxListener {
   int actions_performed() const { return actions_performed_; }
 
  private:
+  Combobox* combobox_;
   int perform_action_index_ = -1;
   int actions_performed_ = 0;
 
@@ -532,22 +535,18 @@ TEST_F(ComboboxTest, SelectValue) {
 }
 
 TEST_F(ComboboxTest, ListenerHandlesDelete) {
-  TestComboboxModel model;
-
-  // |combobox| will be deleted on change.
-  TestCombobox* combobox = new TestCombobox(&model);
   auto evil_listener = std::make_unique<EvilListener>();
-  combobox->set_callback(base::BindRepeating(
-      &EvilListener::OnPerformAction, base::Unretained(evil_listener.get())));
-  ASSERT_NO_FATAL_FAILURE(ComboboxTestApi(combobox).PerformActionAt(2));
-  EXPECT_TRUE(evil_listener->deleted());
+  ASSERT_TRUE(evil_listener->combobox());
+  ASSERT_NO_FATAL_FAILURE(
+      ComboboxTestApi(evil_listener->combobox()).PerformActionAt(2));
+  EXPECT_FALSE(evil_listener->combobox());
 }
 
 TEST_F(ComboboxTest, Click) {
   InitCombobox(nullptr);
 
-  TestComboboxListener listener;
-  combobox_->set_callback(base::BindRepeating(
+  TestComboboxListener listener(combobox_);
+  combobox_->set_closure(base::BindRepeating(
       &TestComboboxListener::OnPerformAction, base::Unretained(&listener)));
   combobox_->Layout();
 
@@ -562,8 +561,8 @@ TEST_F(ComboboxTest, Click) {
 TEST_F(ComboboxTest, ClickButDisabled) {
   InitCombobox(nullptr);
 
-  TestComboboxListener listener;
-  combobox_->set_callback(base::BindRepeating(
+  TestComboboxListener listener(combobox_);
+  combobox_->set_closure(base::BindRepeating(
       &TestComboboxListener::OnPerformAction, base::Unretained(&listener)));
 
   combobox_->Layout();
@@ -579,8 +578,8 @@ TEST_F(ComboboxTest, ClickButDisabled) {
 TEST_F(ComboboxTest, NotifyOnClickWithReturnKey) {
   InitCombobox(nullptr);
 
-  TestComboboxListener listener;
-  combobox_->set_callback(base::BindRepeating(
+  TestComboboxListener listener(combobox_);
+  combobox_->set_closure(base::BindRepeating(
       &TestComboboxListener::OnPerformAction, base::Unretained(&listener)));
 
   // The click event is ignored. Instead the menu is shown.
@@ -593,8 +592,8 @@ TEST_F(ComboboxTest, NotifyOnClickWithReturnKey) {
 TEST_F(ComboboxTest, NotifyOnClickWithSpaceKey) {
   InitCombobox(nullptr);
 
-  TestComboboxListener listener;
-  combobox_->set_callback(base::BindRepeating(
+  TestComboboxListener listener(combobox_);
+  combobox_->set_closure(base::BindRepeating(
       &TestComboboxListener::OnPerformAction, base::Unretained(&listener)));
 
   // The click event is ignored. Instead the menu is shwon.
@@ -640,8 +639,8 @@ TEST_F(ComboboxTest, ShowViaAccessibleAction) {
 TEST_F(ComboboxTest, NotifyOnClickWithMouse) {
   InitCombobox(nullptr);
 
-  TestComboboxListener listener;
-  combobox_->set_callback(base::BindRepeating(
+  TestComboboxListener listener(combobox_);
+  combobox_->set_closure(base::BindRepeating(
       &TestComboboxListener::OnPerformAction, base::Unretained(&listener)));
 
   combobox_->Layout();
@@ -760,8 +759,8 @@ TEST_F(ComboboxTest, ModelChanged) {
 TEST_F(ComboboxTest, TypingPrefixNotifiesListener) {
   InitCombobox(nullptr);
 
-  TestComboboxListener listener;
-  combobox_->set_callback(base::BindRepeating(
+  TestComboboxListener listener(combobox_);
+  combobox_->set_closure(base::BindRepeating(
       &TestComboboxListener::OnPerformAction, base::Unretained(&listener)));
   ui::TextInputClient* input_client =
       widget_->GetInputMethod()->GetTextInputClient();
@@ -835,7 +834,7 @@ TEST_F(ComboboxTest, MenuModel) {
 TEST_F(ComboboxTest, SetTooltipTextNotifiesAccessibilityEvent) {
   InitCombobox(nullptr);
   base::string16 test_tooltip_text = ASCIIToUTF16("Test Tooltip Text");
-  test::AXEventCounter counter(views::AXEventManager::Get());
+  test::AXEventCounter counter(AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
   combobox_->SetTooltipText(test_tooltip_text);
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged));

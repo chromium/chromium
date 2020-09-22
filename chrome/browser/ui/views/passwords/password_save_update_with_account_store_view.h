@@ -85,7 +85,7 @@ class PasswordSaveUpdateWithAccountStoreView
   void UpdateUsernameAndPasswordInModel();
   void UpdateBubbleUIElements();
 
-  void OnPerformAction(views::Combobox* combobox);
+  void DestinationChanged();
 
   // Whether we should show the IPH informing the user about the destination
   // picker and that they can now select where to store the passwords. It

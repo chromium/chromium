@@ -107,7 +107,7 @@ class PermissionCombobox : public views::Combobox {
   gfx::Size CalculatePreferredSize() const override;
 
  private:
-  void OnPerformAction(Combobox* combobox);
+  void PermissionChanged();
 
   ComboboxModelAdapter* model_;
 
@@ -121,8 +121,8 @@ PermissionCombobox::PermissionCombobox(ComboboxModelAdapter* model,
                                        bool enabled,
                                        bool use_default)
     : views::Combobox(model), model_(model) {
-  set_callback(base::BindRepeating(&PermissionCombobox::OnPerformAction,
-                                   base::Unretained(this)));
+  set_closure(base::BindRepeating(&PermissionCombobox::PermissionChanged,
+                                  base::Unretained(this)));
   SetEnabled(enabled);
   UpdateSelectedIndex(use_default);
   SetSizeToLargestLabel(false);
@@ -144,8 +144,8 @@ gfx::Size PermissionCombobox::CalculatePreferredSize() const {
   return preferred_size;
 }
 
-void PermissionCombobox::OnPerformAction(Combobox* combobox) {
-  model_->OnPerformAction(combobox->GetSelectedIndex());
+void PermissionCombobox::PermissionChanged() {
+  model_->OnPerformAction(GetSelectedIndex());
 }
 
 }  // namespace internal

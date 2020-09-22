@@ -342,7 +342,7 @@ View* BubbleDialogModelHost::AddOrUpdateCombobox(
   combobox->SetAccessibleName(model->accessible_name(GetPassKey()).empty()
                                   ? model->label(GetPassKey())
                                   : model->accessible_name(GetPassKey()));
-  combobox->set_callback(base::BindRepeating(
+  combobox->set_closure(base::BindRepeating(
       [](ui::DialogModelCombobox* model,
          util::PassKey<DialogModelHost> pass_key, Combobox* combobox) {
         // TODO(pbos): This should be a subscription through the Combobox
@@ -351,7 +351,7 @@ View* BubbleDialogModelHost::AddOrUpdateCombobox(
         model->OnSelectedIndexChanged(pass_key, combobox->GetSelectedIndex());
         model->OnPerformAction(pass_key);
       },
-      model, GetPassKey()));
+      model, GetPassKey(), combobox.get()));
 
   // TODO(pbos): Add subscription to combobox selected-index changes.
   combobox->SetSelectedIndex(model->selected_index());

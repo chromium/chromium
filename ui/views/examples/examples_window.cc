@@ -120,8 +120,8 @@ class ExamplesWindowContents : public WidgetDelegateView {
     auto combobox = std::make_unique<Combobox>(std::move(combobox_model));
 
     instance_ = this;
-    combobox->set_callback(base::BindRepeating(
-        &ExamplesWindowContents::OnPerformAction, base::Unretained(this)));
+    combobox->set_closure(base::BindRepeating(
+        &ExamplesWindowContents::ComboboxChanged, base::Unretained(this)));
 
     SetBackground(CreateThemedSolidBackground(
         this, ui::NativeTheme::kColorId_DialogBackground));
@@ -180,8 +180,7 @@ class ExamplesWindowContents : public WidgetDelegateView {
     return size;
   }
 
-  void OnPerformAction(Combobox* combobox) {
-    DCHECK_EQ(combobox, combobox_);
+  void ComboboxChanged() {
     int index = combobox_->GetSelectedIndex();
     DCHECK_LT(index, combobox_model_->GetItemCount());
     example_shown_->RemoveAllChildViews(false);

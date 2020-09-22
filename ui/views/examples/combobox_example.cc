@@ -22,6 +22,8 @@ namespace {
 class ComboboxModelExample : public ui::ComboboxModel {
  public:
   ComboboxModelExample() = default;
+  ComboboxModelExample(const ComboboxModelExample&) = delete;
+  ComboboxModelExample& operator=(const ComboboxModelExample&) = delete;
   ~ComboboxModelExample() override = default;
 
  private:
@@ -30,8 +32,6 @@ class ComboboxModelExample : public ui::ComboboxModel {
   base::string16 GetItemAt(int index) const override {
     return base::UTF8ToUTF16(base::StringPrintf("%c item", 'A' + index));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ComboboxModelExample);
 };
 
 }  // namespace
@@ -46,23 +46,22 @@ void ComboboxExample::CreateExampleView(View* container) {
 
   combobox_ = container->AddChildView(
       std::make_unique<Combobox>(std::make_unique<ComboboxModelExample>()));
-  combobox_->set_callback(base::BindRepeating(&ComboboxExample::OnPerformAction,
-                                              base::Unretained(this)));
+  combobox_->set_closure(base::BindRepeating(&ComboboxExample::ValueChanged,
+                                             base::Unretained(this)));
   combobox_->SetSelectedIndex(3);
 
   auto* disabled_combobox = container->AddChildView(
       std::make_unique<Combobox>(std::make_unique<ComboboxModelExample>()));
-  disabled_combobox->set_callback(base::BindRepeating(
-      &ComboboxExample::OnPerformAction, base::Unretained(this)));
+  disabled_combobox->set_closure(base::BindRepeating(
+      &ComboboxExample::ValueChanged, base::Unretained(this)));
   disabled_combobox->SetSelectedIndex(4);
   disabled_combobox->SetEnabled(false);
 }
 
-void ComboboxExample::OnPerformAction(Combobox* combobox) {
-  DCHECK_EQ(combobox, combobox_);
+void ComboboxExample::ValueChanged() {
   PrintStatus("Selected: %s",
               base::UTF16ToUTF8(
-                  combobox->model()->GetItemAt(combobox->GetSelectedIndex()))
+                  combobox_->model()->GetItemAt(combobox_->GetSelectedIndex()))
                   .c_str());
 }
 

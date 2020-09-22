@@ -91,7 +91,7 @@ class ExpirationDateValidationDelegate : public ValidationDelegate {
     return true;
   }
 
-  bool IsValidCombobox(views::Combobox* combobox,
+  bool IsValidCombobox(ValidatingCombobox* combobox,
                        base::string16* error_message) override {
     // View will have no parent if it's not been attached yet. Use initial
     // validity state.
@@ -135,7 +135,7 @@ class ExpirationDateValidationDelegate : public ValidationDelegate {
     return true;
   }
 
-  bool ComboboxValueChanged(views::Combobox* combobox) override {
+  bool ComboboxValueChanged(ValidatingCombobox* combobox) override {
     base::string16 error_message;
     bool is_valid = IsValidCombobox(combobox, &error_message);
     controller_->DisplayErrorMessageForField(
@@ -143,7 +143,7 @@ class ExpirationDateValidationDelegate : public ValidationDelegate {
     return is_valid;
   }
 
-  void ComboboxModelChanged(views::Combobox* combobox) override {}
+  void ComboboxModelChanged(ValidatingCombobox* combobox) override {}
 
  private:
   EditorViewController* controller_;
@@ -667,7 +667,8 @@ bool CreditCardEditorViewController::CreditCardValidationDelegate::
 }
 
 bool CreditCardEditorViewController::CreditCardValidationDelegate::
-    IsValidCombobox(views::Combobox* combobox, base::string16* error_message) {
+    IsValidCombobox(ValidatingCombobox* combobox,
+                    base::string16* error_message) {
   return ValidateCombobox(combobox, error_message);
 }
 
@@ -695,7 +696,7 @@ bool CreditCardEditorViewController::CreditCardValidationDelegate::
 }
 
 bool CreditCardEditorViewController::CreditCardValidationDelegate::
-    ComboboxValueChanged(views::Combobox* combobox) {
+    ComboboxValueChanged(ValidatingCombobox* combobox) {
   base::string16 error_message;
   bool is_valid = ValidateCombobox(combobox, nullptr);
   controller_->DisplayErrorMessageForField(field_.type, error_message);
@@ -727,7 +728,8 @@ bool CreditCardEditorViewController::CreditCardValidationDelegate::
 }
 
 bool CreditCardEditorViewController::CreditCardValidationDelegate::
-    ValidateCombobox(views::Combobox* combobox, base::string16* error_message) {
+    ValidateCombobox(ValidatingCombobox* combobox,
+                     base::string16* error_message) {
   // The billing address ID is the selected item identifier and not the combobox
   // value itself.
   if (field_.type == kBillingAddressType) {

@@ -79,7 +79,7 @@ class CardUnmaskPromptViews : public CardUnmaskPromptView,
 
   void LinkClicked();
 
-  void OnPerformAction(views::Combobox* combobox);
+  void DateChanged();
 
   CardUnmaskPromptController* controller_;
   content::WebContents* web_contents_;

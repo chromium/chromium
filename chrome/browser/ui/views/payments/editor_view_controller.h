@@ -151,7 +151,7 @@ class EditorViewController : public PaymentRequestSheetController,
   void FillContentView(views::View* content_view) override;
 
   // Combobox callback.
-  virtual void OnPerformAction(views::Combobox* combobox);
+  virtual void OnPerformAction(ValidatingCombobox* combobox);
 
   // Update the editor view by removing all it's child views and recreating
   // the input fields returned by GetFieldDefinitions. Note that

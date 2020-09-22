@@ -44,7 +44,7 @@ class AppInfoSummaryPanel : public AppInfoPanel,
   void AddSubviews();
 
   // Called when the combobox selection changes.
-  void OnPerformAction(views::Combobox* combobox);
+  void LaunchOptionsChanged();
 
   // Called asynchronously to calculate and update the size of the app displayed
   // in the dialog.

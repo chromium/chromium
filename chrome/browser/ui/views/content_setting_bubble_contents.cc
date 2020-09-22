@@ -138,7 +138,7 @@ class MediaMenuBlock : public views::View {
       auto combobox =
           std::make_unique<views::Combobox>(std::move(combobox_model));
       combobox->SetEnabled(combobox_enabled);
-      combobox->set_callback(callback);
+      combobox->set_closure(base::BindRepeating(callback, combobox.get()));
       combobox->SetSelectedIndex(combobox_selected_index);
       layout->AddView(std::move(combobox));
     }

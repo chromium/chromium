@@ -32,8 +32,6 @@ class VIEWS_EXAMPLES_EXPORT LabelExample : public ExampleBase,
   // ButtonListener:
   void ButtonPressed(Button* button, const ui::Event& event) override;
 
-  void OnPerformAction(Combobox* combobox);
-
   // TextfieldController:
   void ContentsChanged(Textfield* sender,
                        const base::string16& new_contents) override;
@@ -46,7 +44,11 @@ class VIEWS_EXAMPLES_EXPORT LabelExample : public ExampleBase,
   Combobox* AddCombobox(GridLayout* layout,
                         const char* name,
                         const char** strings,
-                        int count);
+                        int count,
+                        void (LabelExample::*function)());
+
+  void AlignmentChanged();
+  void ElidingChanged();
 
   Textfield* textfield_ = nullptr;
   Combobox* alignment_ = nullptr;

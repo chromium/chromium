@@ -375,10 +375,6 @@ gfx::Size TranslateBubbleView::CalculatePreferredSize() const {
   return gfx::Size(width, GetCurrentView()->GetPreferredSize().height());
 }
 
-void TranslateBubbleView::OnPerformAction(views::Combobox* combobox) {
-  HandleComboboxPerformAction(static_cast<ComboboxID>(combobox->GetID()));
-}
-
 // Create the menu items for the dropdown options menu under TAB UI.
 void TranslateBubbleView::ShowOptionsMenu(views::Button* source) {
   // Recreate the menu model as translated languages can change while the menu
@@ -591,24 +587,18 @@ void TranslateBubbleView::ConfirmAdvancedOptions() {
   translate::ReportUiAction(translate::DONE_BUTTON_CLICKED);
 }
 
-void TranslateBubbleView::HandleComboboxPerformAction(
-    TranslateBubbleView::ComboboxID sender_id) {
-  switch (sender_id) {
-    case COMBOBOX_ID_SOURCE_LANGUAGE: {
-      model_->UpdateOriginalLanguageIndex(
-          source_language_combobox_->GetSelectedIndex() - 1);
-      UpdateAdvancedView();
-      translate::ReportUiAction(translate::SOURCE_LANGUAGE_MENU_CLICKED);
-      break;
-    }
-    case COMBOBOX_ID_TARGET_LANGUAGE: {
-      model_->UpdateTargetLanguageIndex(
-          target_language_combobox_->GetSelectedIndex());
-      UpdateAdvancedView();
-      translate::ReportUiAction(translate::TARGET_LANGUAGE_MENU_CLICKED);
-      break;
-    }
-  }
+void TranslateBubbleView::SourceLanguageChanged() {
+  model_->UpdateOriginalLanguageIndex(
+      source_language_combobox_->GetSelectedIndex() - 1);
+  UpdateAdvancedView();
+  translate::ReportUiAction(translate::SOURCE_LANGUAGE_MENU_CLICKED);
+}
+
+void TranslateBubbleView::TargetLanguageChanged() {
+  model_->UpdateTargetLanguageIndex(
+      target_language_combobox_->GetSelectedIndex());
+  UpdateAdvancedView();
+  translate::ReportUiAction(translate::TARGET_LANGUAGE_MENU_CLICKED);
 }
 
 void TranslateBubbleView::UpdateChildVisibilities() {
@@ -833,9 +823,8 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedSource() {
     advanced_always_translate_checkbox->SetID(BUTTON_ID_ALWAYS_TRANSLATE);
   }
 
-  source_language_combobox->SetID(COMBOBOX_ID_SOURCE_LANGUAGE);
-  source_language_combobox->set_callback(base::BindRepeating(
-      &TranslateBubbleView::OnPerformAction, base::Unretained(this)));
+  source_language_combobox->set_closure(base::BindRepeating(
+      &TranslateBubbleView::SourceLanguageChanged, base::Unretained(this)));
   source_language_combobox_ = source_language_combobox.get();
 
   auto advanced_done_button = std::make_unique<views::MdTextButton>(
@@ -866,9 +855,8 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedTarget() {
   auto target_language_combobox =
       std::make_unique<views::Combobox>(target_language_combobox_model_.get());
 
-  target_language_combobox->SetID(COMBOBOX_ID_TARGET_LANGUAGE);
-  target_language_combobox->set_callback(base::BindRepeating(
-      &TranslateBubbleView::OnPerformAction, base::Unretained(this)));
+  target_language_combobox->set_closure(base::BindRepeating(
+      &TranslateBubbleView::TargetLanguageChanged, base::Unretained(this)));
   target_language_combobox_ = target_language_combobox.get();
 
   auto advanced_done_button = std::make_unique<views::MdTextButton>(
