@@ -39,17 +39,16 @@ struct TabReloadTestCase {
   const char* description;
   const char* start_url;
   bool start_in_instant_process;
-  bool should_reload;
-  bool end_in_local_ntp;
-  bool end_in_instant_process;
+  bool end_in_ntp;
 };
 
 // Test cases for when Google is the initial, but not final provider.
 const TabReloadTestCase kTabReloadTestCasesFinalProviderNotGoogle[] = {
-    {"Local NTP", chrome::kChromeSearchLocalNtpUrl, true, true, true, true},
-    {"Remote SERP", "https://www.google.com/url?bar=search+terms", false, false,
-     false, false},
-    {"Other NTP", "https://bar.com/newtab", false, false, false, false}};
+    {"Local NTP", chrome::kChromeSearchLocalNtpUrl, true, true},
+    {"NTP", chrome::kChromeUINewTabPageURL, false, true},
+    {"Remote SERP", "https://www.google.com/url?bar=search+terms", false,
+     false},
+    {"Other NTP", "https://bar.com/newtab", false, false}};
 
 class FakeWebContentsObserver : public content::WebContentsObserver {
  public:
@@ -121,14 +120,6 @@ TEST_F(BrowserInstantControllerTest, DefaultSearchProviderChanged) {
     const TabReloadTestCase& test =
         kTabReloadTestCasesFinalProviderNotGoogle[i];
 
-    if (test.should_reload) {
-      // Validate final instant state.
-      EXPECT_EQ(test.end_in_instant_process,
-                search::ShouldAssignURLToInstantRenderer(
-                    observer->current_url(), profile()))
-          << test.description;
-    }
-
     // Ensure only the expected tabs(contents) reloaded.
     // RunUntilIdle() ensures that tasks posted by TabReloader::Reload run.
     base::RunLoop().RunUntilIdle();
@@ -138,14 +129,8 @@ TEST_F(BrowserInstantControllerTest, DefaultSearchProviderChanged) {
       observer->WaitForNavigationStart();
     }
 
-    // WaitForLoadStop ensures that all relevant navigation callbacks caused by
-    // TabReloader::Run complete.
-    // content::WaitForLoadStop(observer->web_contents());
-    EXPECT_EQ(test.should_reload ? 1 : 0, observer->num_reloads())
-        << test.description;
-
-    if (test.end_in_local_ntp) {
-      EXPECT_EQ(GURL(chrome::kChromeSearchLocalNtpUrl), observer->current_url())
+    if (test.end_in_ntp) {
+      EXPECT_EQ(GURL(chrome::kChromeUINewTabURL), observer->current_url())
           << test.description;
     }
   }

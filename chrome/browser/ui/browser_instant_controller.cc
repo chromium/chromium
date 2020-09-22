@@ -91,11 +91,6 @@ BrowserInstantController::~BrowserInstantController() = default;
 
 void BrowserInstantController::OnSearchEngineBaseURLChanged(
     SearchEngineBaseURLTracker::ChangeReason change_reason) {
-  InstantService* instant_service =
-      InstantServiceFactory::GetForProfile(profile());
-  if (!instant_service)
-    return;
-
   TabStripModel* tab_model = browser_->tab_strip_model();
   int count = tab_model->count();
   for (int index = 0; index < count; ++index) {
@@ -103,29 +98,32 @@ void BrowserInstantController::OnSearchEngineBaseURLChanged(
     if (!contents)
       continue;
 
-    // Send the new NTP URL to the renderer.
-    content::RenderProcessHost* rph = contents->GetMainFrame()->GetProcess();
-    instant_service->SendNewTabPageURLToRenderer(rph);
+    bool is_ntp = contents->GetMainFrame()->GetSiteInstance()->GetSiteURL() ==
+                  GURL(chrome::kChromeUINewTabPageURL);
 
-    if (!instant_service->IsInstantProcess(rph->GetID()))
+    if (!is_ntp) {
+      InstantService* instant_service =
+          InstantServiceFactory::GetForProfile(profile());
+      if (instant_service) {
+        // Send the new NTP URL to the renderer.
+        content::RenderProcessHost* rph =
+            contents->GetMainFrame()->GetProcess();
+        instant_service->SendNewTabPageURLToRenderer(rph);
+        is_ntp = instant_service->IsInstantProcess(rph->GetID());
+      }
+    }
+
+    if (!is_ntp)
       continue;
 
-    bool google_base_url_domain_changed =
-        change_reason ==
-        SearchEngineBaseURLTracker::ChangeReason::GOOGLE_BASE_URL;
-    if (google_base_url_domain_changed) {
-      GURL local_ntp_url(chrome::kChromeSearchLocalNtpUrl);
-      // Replace the server NTP with the local NTP (or reload the local NTP).
-      content::NavigationController::LoadURLParams params(local_ntp_url);
-      params.should_replace_current_entry = true;
-      params.referrer = content::Referrer();
-      params.transition_type = ui::PAGE_TRANSITION_RELOAD;
-      contents->GetController().LoadURLWithParams(params);
-    } else {
-      // Reload the contents to ensure that it gets assigned to a
-      // non-privileged renderer.
-      TabReloader::Reload(contents);
-    }
+    // When default search engine is changed navigate to chrome://newtab which
+    // will redirect to the new tab page associated with the search engine.
+    GURL url(chrome::kChromeUINewTabURL);
+    content::NavigationController::LoadURLParams params(url);
+    params.should_replace_current_entry = true;
+    params.referrer = content::Referrer();
+    params.transition_type = ui::PAGE_TRANSITION_RELOAD;
+    contents->GetController().LoadURLWithParams(params);
   }
 }
 
