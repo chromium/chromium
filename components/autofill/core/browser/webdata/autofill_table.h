@@ -114,6 +114,16 @@ struct PaymentsCustomerData;
 //   house_number       The house number.
 //   subpremise         The floor, apartment number and staircase.
 //                      apartment number.
+//   dependent_locality
+//                      A sub-classification beneath the city, e.g. an
+//                      inner-city district or suburb.
+//   city               The city information of the address.
+//   state              The state information of the address.
+//   zip_code           The zip code of the address.
+//   country_code       The code of the country of the address.
+//   sorting_code       Similar to the zipcode column, but used for businesses
+//                      or organizations that might not be geographically
+//                      contiguous.
 //   premise_name       The name of the premise.
 //   street_address_status
 //   street_name_status
@@ -121,6 +131,12 @@ struct PaymentsCustomerData;
 //   house_number_status
 //   subpremise_status
 //   premise_name_status
+//   dependent_locality_status
+//   city_status
+//   state_status
+//   zip_code_status
+//   country_code_status
+//   sorting_code_status
 //                      Each token of the address has an additional validation
 //                      status that indicates if Autofill parsed the value out
 //                      of an unstructured (last) name, or if autofill formatted
@@ -657,6 +673,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion87AddCreditCardNicknameColumn();
   bool MigrateToVersion88AddNewNameColumns();
   bool MigrateToVersion89AddInstrumentIdColumnToMaskedCreditCard();
+  bool MigrateToVersion90AddNewStructuredAddressColumns();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.

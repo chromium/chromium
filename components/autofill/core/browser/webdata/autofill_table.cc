@@ -250,8 +250,13 @@ bool AddAutofillProfileNames(const AutofillProfile& profile,
 
 bool AddAutofillProfileAddresses(const AutofillProfile& profile,
                                  sql::Database* db) {
+  // The structured table is only populated if either the full support for
+  // structured addresses is enabled or the creation of address enhancement
+  // votes.
   if (base::FeatureList::IsEnabled(
-          features::kAutofillAddressEnhancementVotes)) {
+          features::kAutofillAddressEnhancementVotes) ||
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForMoreStructureInAddresses)) {
     sql::Statement s(db->GetUniqueStatement(
         "INSERT INTO autofill_profile_addresses "
         "(guid, "
@@ -260,8 +265,14 @@ bool AddAutofillProfileAddresses(const AutofillProfile& profile,
         "dependent_street_name, dependent_street_name_status, "
         "house_number, house_number_status, "
         "subpremise, subpremise_status, "
-        "premise_name, premise_name_status) "
-        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"));
+        "premise_name, premise_name_status, "
+        "dependent_locality, dependent_locality_status, "
+        "city, city_status, "
+        "state, state_status, "
+        "zip_code, zip_code_status, "
+        "sorting_code, sorting_code_status, "
+        "country_code, country_code_status) "
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
 
     s.BindString(0, profile.guid());
     s.BindString16(1, profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
@@ -277,6 +288,19 @@ bool AddAutofillProfileAddresses(const AutofillProfile& profile,
     s.BindInt(10, profile.GetVerificationStatusInt(ADDRESS_HOME_SUBPREMISE));
     s.BindString16(11, profile.GetRawInfo(ADDRESS_HOME_PREMISE_NAME));
     s.BindInt(12, profile.GetVerificationStatusInt(ADDRESS_HOME_PREMISE_NAME));
+    s.BindString16(13, profile.GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY));
+    s.BindInt(
+        14, profile.GetVerificationStatusInt(ADDRESS_HOME_DEPENDENT_LOCALITY));
+    s.BindString16(15, profile.GetRawInfo(ADDRESS_HOME_CITY));
+    s.BindInt(16, profile.GetVerificationStatusInt(ADDRESS_HOME_CITY));
+    s.BindString16(17, profile.GetRawInfo(ADDRESS_HOME_STATE));
+    s.BindInt(18, profile.GetVerificationStatusInt(ADDRESS_HOME_STATE));
+    s.BindString16(19, profile.GetRawInfo(ADDRESS_HOME_ZIP));
+    s.BindInt(20, profile.GetVerificationStatusInt(ADDRESS_HOME_ZIP));
+    s.BindString16(21, profile.GetRawInfo(ADDRESS_HOME_SORTING_CODE));
+    s.BindInt(22, profile.GetVerificationStatusInt(ADDRESS_HOME_SORTING_CODE));
+    s.BindString16(23, profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
+    s.BindInt(24, profile.GetVerificationStatusInt(ADDRESS_HOME_COUNTRY));
 
     return s.Run();
   }
@@ -347,7 +371,9 @@ bool AddAutofillProfileNamesToProfile(sql::Database* db,
 bool AddAutofillProfileAddressesToProfile(sql::Database* db,
                                           AutofillProfile* profile) {
   if (base::FeatureList::IsEnabled(
-          features::kAutofillAddressEnhancementVotes)) {
+          features::kAutofillAddressEnhancementVotes) ||
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForMoreStructureInAddresses)) {
     sql::Statement s(db->GetUniqueStatement(
         "SELECT "
         "guid, "
@@ -356,7 +382,13 @@ bool AddAutofillProfileAddressesToProfile(sql::Database* db,
         "dependent_street_name, dependent_street_name_status, "
         "house_number, house_number_status, "
         "subpremise, subpremise_status, "
-        "premise_name, premise_name_status "
+        "premise_name, premise_name_status, "
+        "dependent_locality, dependent_locality_status, "
+        "city, city_status, "
+        "state, state_status, "
+        "zip_code, zip_code_status, "
+        "sorting_code, sorting_code_status, "
+        "country_code, country_code_status "
         "FROM autofill_profile_addresses "
         "WHERE guid=? "
         "LIMIT 1"));
@@ -368,13 +400,37 @@ bool AddAutofillProfileAddressesToProfile(sql::Database* db,
     if (s.Step()) {
       DCHECK_EQ(profile->guid(), s.ColumnString(0));
       base::string16 street_address = s.ColumnString16(1);
-      // At this stage, the unstructured street address was already written to
-      // the profile. If the street address was changed by a legacy client, the
+      base::string16 dependent_locality = s.ColumnString16(13);
+      base::string16 city = s.ColumnString16(15);
+      base::string16 state = s.ColumnString16(17);
+      base::string16 zip_code = s.ColumnString16(19);
+      base::string16 sorting_code = s.ColumnString16(21);
+      base::string16 country = s.ColumnString16(23);
+
+      base::string16 street_address_legacy =
+          profile->GetRawInfo(ADDRESS_HOME_STREET_ADDRESS);
+      base::string16 dependent_locality_legacy =
+          profile->GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY);
+      base::string16 city_legacy = profile->GetRawInfo(ADDRESS_HOME_CITY);
+      base::string16 state_legacy = profile->GetRawInfo(ADDRESS_HOME_STATE);
+      base::string16 zip_code_legacy = profile->GetRawInfo(ADDRESS_HOME_ZIP);
+      base::string16 sorting_code_legacy =
+          profile->GetRawInfo(ADDRESS_HOME_SORTING_CODE);
+      base::string16 country_legacy = profile->GetRawInfo(ADDRESS_HOME_COUNTRY);
+
+      // At this stage, the unstructured address was already written to
+      // the profile. If the address was changed by a legacy client, the
       // information diverged from the one in this table that is only written by
-      // new clients. If this is not the case, read the structured information.
-      if (street_address == profile->GetRawInfo(ADDRESS_HOME_STREET_ADDRESS)) {
+      // new clients. In this case remove the corresponding row from this table.
+      // Otherwise, read the new structured tokens and set the verification
+      // statuses for all tokens.
+      if (street_address == street_address_legacy &&
+          dependent_locality == dependent_locality_legacy &&
+          city == city_legacy && state == state_legacy &&
+          zip_code == zip_code_legacy && sorting_code == sorting_code_legacy &&
+          country == country_legacy) {
         profile->SetRawInfoWithVerificationStatusInt(
-            ADDRESS_HOME_STREET_ADDRESS, s.ColumnString16(1), s.ColumnInt(2));
+            ADDRESS_HOME_STREET_ADDRESS, street_address, s.ColumnInt(2));
         profile->SetRawInfoWithVerificationStatusInt(
             ADDRESS_HOME_STREET_NAME, s.ColumnString16(3), s.ColumnInt(4));
         profile->SetRawInfoWithVerificationStatusInt(
@@ -386,8 +442,21 @@ bool AddAutofillProfileAddressesToProfile(sql::Database* db,
             ADDRESS_HOME_SUBPREMISE, s.ColumnString16(9), s.ColumnInt(10));
         profile->SetRawInfoWithVerificationStatusInt(
             ADDRESS_HOME_PREMISE_NAME, s.ColumnString16(11), s.ColumnInt(12));
+        profile->SetRawInfoWithVerificationStatusInt(
+            ADDRESS_HOME_DEPENDENT_LOCALITY, dependent_locality,
+            s.ColumnInt(14));
+        profile->SetRawInfoWithVerificationStatusInt(ADDRESS_HOME_CITY, city,
+                                                     s.ColumnInt(16));
+        profile->SetRawInfoWithVerificationStatusInt(ADDRESS_HOME_STATE, state,
+                                                     s.ColumnInt(18));
+        profile->SetRawInfoWithVerificationStatusInt(ADDRESS_HOME_ZIP, zip_code,
+                                                     s.ColumnInt(20));
+        profile->SetRawInfoWithVerificationStatusInt(
+            ADDRESS_HOME_SORTING_CODE, sorting_code, s.ColumnInt(22));
+        profile->SetRawInfoWithVerificationStatusInt(ADDRESS_HOME_COUNTRY,
+                                                     country, s.ColumnInt(24));
       } else {
-        // Otherwise remove the structured information from the table for
+        // Remove the structured information from the table for
         // eventual deletion consistency.
         sql::Statement s1(db->GetUniqueStatement(
             "DELETE FROM autofill_profile_addresses WHERE guid = ?"));
@@ -687,6 +756,9 @@ bool AutofillTable::MigrateToVersion(int version,
     case 89:
       *update_compatible_version = false;
       return MigrateToVersion89AddInstrumentIdColumnToMaskedCreditCard();
+    case 90:
+      *update_compatible_version = false;
+      return MigrateToVersion90AddNewStructuredAddressColumns();
   }
   return true;
 }
@@ -3154,10 +3226,9 @@ bool AutofillTable::MigrateToVersion85AddCardIssuerColumnToMaskedCreditCard() {
 }
 
 bool AutofillTable::MigrateToVersion88AddNewNameColumns() {
-  for (const std::string& column :
-       {"honorific_prefix", "first_last_name", "conjunction_last_name",
-        "second_last_name"}) {
-    if (!db_->DoesColumnExist("autofill_profile_names", column.c_str()) &&
+  for (const char* column : {"honorific_prefix", "first_last_name",
+                             "conjunction_last_name", "second_last_name"}) {
+    if (!db_->DoesColumnExist("autofill_profile_names", column) &&
         !db_->Execute(
             base::StrCat({"ALTER TABLE autofill_profile_names ADD COLUMN ",
                           column, " VARCHAR"})
@@ -3166,14 +3237,14 @@ bool AutofillTable::MigrateToVersion88AddNewNameColumns() {
     }
   }
 
-  for (const std::string& column :
+  for (const char* column :
        {"honorific_prefix_status", "first_name_status", "middle_name_status",
         "last_name_status", "first_last_name_status",
         "conjunction_last_name_status", "second_last_name_status",
         "full_name_status"}) {
     // The default value of 0 corresponds to the verification status
     // |kNoStatus|.
-    if (!db_->DoesColumnExist("autofill_profile_names", column.c_str()) &&
+    if (!db_->DoesColumnExist("autofill_profile_names", column) &&
         !db_->Execute(
             base::StrCat({"ALTER TABLE autofill_profile_names ADD COLUMN ",
                           column, " INTEGER DEFAULT 0"})
@@ -3211,6 +3282,36 @@ bool AutofillTable::MigrateToVersion87AddCreditCardNicknameColumn() {
          db_->Execute("ALTER TABLE credit_cards ADD COLUMN nickname VARCHAR");
 }
 
+bool AutofillTable::MigrateToVersion90AddNewStructuredAddressColumns() {
+  if (!db_->DoesTableExist("autofill_profile_addresses"))
+    InitProfileAddressesTable();
+
+  for (const char* column : {"dependent_locality", "city", "state", "zip_code",
+                             "sorting_code", "country_code"}) {
+    if (!db_->DoesColumnExist("autofill_profile_addresses", column) &&
+        !db_->Execute(
+            base::StrCat({"ALTER TABLE autofill_profile_addresses ADD COLUMN ",
+                          column, " VARCHAR"})
+                .c_str())) {
+      return false;
+    }
+  }
+
+  for (const char* column :
+       {"dependent_locality_status", "city_status", "state_status",
+        "zip_code_status", "sorting_code_status", "country_code_status"}) {
+    // The default value of 0 corresponds to the verification status
+    // |kNoStatus|.
+    if (!db_->DoesColumnExist("autofill_profile_addresses", column) &&
+        !db_->Execute(
+            base::StrCat({"ALTER TABLE autofill_profile_addresses ADD COLUMN ",
+                          column, " INTEGER DEFAULT 0"})
+                .c_str())) {
+      return false;
+    }
+  }
+  return true;
+}
 bool AutofillTable::
     MigrateToVersion89AddInstrumentIdColumnToMaskedCreditCard() {
   // Add the new instrument_id column to the masked_credit_cards table and set
@@ -3569,7 +3670,19 @@ bool AutofillTable::InitProfileAddressesTable() {
                       "dependent_street_name_status INTEGER DEFAULT 0, "
                       "house_number_status INTEGER DEFAULT 0, "
                       "subpremise_status INTEGER DEFAULT 0, "
-                      "premise_name_status INTEGER DEFAULT 0)")) {
+                      "premise_name_status INTEGER DEFAULT 0, "
+                      "dependent_locality VARCHAR, "
+                      "city VARCHAR, "
+                      "state VARCHAR, "
+                      "zip_code VARCHAR, "
+                      "sorting_code VARCHAR, "
+                      "country_code VARCHAR, "
+                      "dependent_locality_status INTEGER DEFAULT 0, "
+                      "city_status INTEGER DEFAULT 0, "
+                      "state_status INTEGER DEFAULT 0, "
+                      "zip_code_status INTEGER DEFAULT 0, "
+                      "sorting_code_status INTEGER DEFAULT 0, "
+                      "country_code_status INTEGER DEFAULT 0)")) {
       NOTREACHED();
       return false;
     }
