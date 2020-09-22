@@ -87,6 +87,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="proxy_config_settings"/>
       <traffic_annotation unique_id="query_tiles_image_loader"/>
       <traffic_annotation unique_id="query_tiles_fetcher"/>
+      <traffic_annotation unique_id="video_tutorial_fetcher"/>
       <traffic_annotation unique_id="qr_code_save"/>
       <traffic_annotation unique_id="safe_browsing_cache_collector"/>
       <traffic_annotation unique_id="safety_check_update_connectivity"/>

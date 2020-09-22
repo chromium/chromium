@@ -14,6 +14,8 @@ source_set("internal") {
     "proto_conversions.cc",
     "proto_conversions.h",
     "store.h",
+    "tutorial_fetcher.cc",
+    "tutorial_fetcher.h",
     "tutorial_group.cc",
     "tutorial_group.h",
     "tutorial_manager.h",
@@ -91,6 +93,7 @@ source_set("unit_tests") {
   sources = [
     "config_unittest.cc",
     "proto_conversions_unittest.cc",
+    "tutorial_fetcher_unittest.cc",
     "tutorial_group_unittest.cc",
     "tutorial_manager_impl_unittest.cc",
     "tutorial_store_unittest.cc",
@@ -106,6 +109,7 @@ source_set("unit_tests") {
     "//components/leveldb_proto",
     "//components/leveldb_proto:test_support",
     "//components/prefs:test_support",
+    "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
