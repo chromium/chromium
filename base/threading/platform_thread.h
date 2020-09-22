@@ -123,6 +123,12 @@ class BASE_EXPORT PlatformThread {
   // ThreadMain method will be called on the newly created thread.
   class BASE_EXPORT Delegate {
    public:
+    // The interval at which the thread expects to have work to do. Zero if
+    // unknown. (Example: audio buffer duration for real-time audio.) Is used to
+    // optimize the thread real-time behavior. Is called on the newly created
+    // thread before ThreadMain().
+    virtual TimeDelta GetRealtimePeriod();
+
     virtual void ThreadMain() = 0;
 
    protected:
@@ -221,6 +227,9 @@ class BASE_EXPORT PlatformThread {
 
   static ThreadPriority GetCurrentThreadPriority();
 
+  // Returns a realtime period provided by |delegate|.
+  static TimeDelta GetRealtimePeriod(Delegate* delegate);
+
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // Toggles a specific thread's priority at runtime. This can be used to
   // change the priority of a thread in a different process and will fail
@@ -247,6 +256,15 @@ class BASE_EXPORT PlatformThread {
   // Returns the default thread stack size set by chrome. If we do not
   // explicitly set default size then returns 0.
   static size_t GetDefaultThreadStackSize();
+
+#if defined(OS_APPLE)
+  // Initializes realtime threading based on kOptimizedRealtimeThreadingMac
+  // feature status.
+  static void InitializeOptimizedRealtimeThreadingFeature();
+
+  // Stores the period value in TLS.
+  static void SetCurrentThreadRealtimePeriodValue(TimeDelta realtime_period);
+#endif
 
  private:
   static void SetCurrentThreadPriorityImpl(ThreadPriority priority);

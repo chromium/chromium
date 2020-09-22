@@ -8,7 +8,9 @@
 #include "base/process/process.h"
 #include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/threading_features.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,6 +19,13 @@
 #elif defined(OS_WIN)
 #include <windows.h>
 #include "base/threading/platform_thread_win.h"
+#endif
+
+#if defined(OS_APPLE)
+#include <mach/mach.h>
+#include <mach/mach_time.h>
+#include <mach/thread_policy.h>
+#include "base/time/time.h"
 #endif
 
 namespace base {
@@ -406,5 +415,129 @@ TEST(PlatformThreadTest, GetDefaultThreadStackSize) {
   EXPECT_LT(stack_size, 20u * (1 << 20));
 #endif
 }
+
+#if defined(OS_APPLE)
+
+namespace {
+
+class RealtimeTestThread : public FunctionTestThread {
+ public:
+  explicit RealtimeTestThread(TimeDelta realtime_period)
+      : realtime_period_(realtime_period) {}
+  ~RealtimeTestThread() override = default;
+
+ private:
+  RealtimeTestThread(const RealtimeTestThread&) = delete;
+  RealtimeTestThread& operator=(const RealtimeTestThread&) = delete;
+
+  TimeDelta GetRealtimePeriod() final { return realtime_period_; }
+
+  // Verifies the realtime thead configuration.
+  void RunTest() override {
+    EXPECT_EQ(PlatformThread::GetCurrentThreadPriority(),
+              ThreadPriority::REALTIME_AUDIO);
+
+    mach_port_t mach_thread_id = pthread_mach_thread_np(
+        PlatformThread::CurrentHandle().platform_handle());
+
+    // |count| and |get_default| chosen impirically so that
+    // time_constraints_buffer[0] would store the last constraints that were
+    // applied.
+    const int kPolicyCount = 32;
+    thread_time_constraint_policy_data_t time_constraints_buffer[kPolicyCount];
+    mach_msg_type_number_t count = kPolicyCount;
+    boolean_t get_default = 0;
+
+    kern_return_t result = thread_policy_get(
+        mach_thread_id, THREAD_TIME_CONSTRAINT_POLICY,
+        reinterpret_cast<thread_policy_t>(time_constraints_buffer), &count,
+        &get_default);
+
+    EXPECT_EQ(result, KERN_SUCCESS);
+
+    const thread_time_constraint_policy_data_t& time_constraints =
+        time_constraints_buffer[0];
+
+    mach_timebase_info_data_t tb_info;
+    mach_timebase_info(&tb_info);
+
+    if (FeatureList::IsEnabled(kOptimizedRealtimeThreadingMac) &&
+        !realtime_period_.is_zero()) {
+      uint32_t abs_realtime_period = saturated_cast<uint32_t>(
+          realtime_period_.InNanoseconds() *
+          (static_cast<double>(tb_info.denom) / tb_info.numer));
+
+      EXPECT_EQ(time_constraints.period, abs_realtime_period);
+      EXPECT_EQ(time_constraints.computation, abs_realtime_period / 2);
+      EXPECT_EQ(time_constraints.constraint, abs_realtime_period);
+      EXPECT_TRUE(time_constraints.preemptible);
+    } else {
+      // Old-style empirical values.
+      const double kTimeQuantum = 2.9;
+      const double kAudioTimeNeeded = 0.75 * kTimeQuantum;
+      const double kMaxTimeAllowed = 0.85 * kTimeQuantum;
+
+      // Get the conversion factor from milliseconds to absolute time
+      // which is what the time-constraints returns.
+      double ms_to_abs_time = double(tb_info.denom) / tb_info.numer * 1000000;
+
+      EXPECT_EQ(time_constraints.period,
+                saturated_cast<uint32_t>(kTimeQuantum * ms_to_abs_time));
+      EXPECT_EQ(time_constraints.computation,
+                saturated_cast<uint32_t>(kAudioTimeNeeded * ms_to_abs_time));
+      EXPECT_EQ(time_constraints.constraint,
+                saturated_cast<uint32_t>(kMaxTimeAllowed * ms_to_abs_time));
+      EXPECT_FALSE(time_constraints.preemptible);
+    }
+  }
+
+  const TimeDelta realtime_period_;
+};
+
+class RealtimePlatformThreadTest : public testing::TestWithParam<TimeDelta> {
+ protected:
+  void VerifyRealtimeConfig(TimeDelta period) {
+    RealtimeTestThread thread(period);
+    PlatformThreadHandle handle;
+
+    ASSERT_FALSE(thread.IsRunning());
+    ASSERT_TRUE(PlatformThread::CreateWithPriority(
+        0, &thread, &handle, ThreadPriority::REALTIME_AUDIO));
+    thread.WaitForTerminationReady();
+    ASSERT_TRUE(thread.IsRunning());
+
+    thread.MarkForTermination();
+    PlatformThread::Join(handle);
+    ASSERT_FALSE(thread.IsRunning());
+  }
+};
+
+TEST_P(RealtimePlatformThreadTest, RealtimeAudioConfigMacFeatureOn) {
+  test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kOptimizedRealtimeThreadingMac);
+  PlatformThread::InitializeOptimizedRealtimeThreadingFeature();
+  VerifyRealtimeConfig(GetParam());
+}
+
+TEST_P(RealtimePlatformThreadTest, RealtimeAudioConfigMacFeatureOff) {
+  test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kOptimizedRealtimeThreadingMac);
+  PlatformThread::InitializeOptimizedRealtimeThreadingFeature();
+  VerifyRealtimeConfig(GetParam());
+}
+
+INSTANTIATE_TEST_SUITE_P(RealtimePlatformThreadTest,
+                         RealtimePlatformThreadTest,
+                         testing::Values(TimeDelta(),
+                                         TimeDelta::FromSeconds(256.0 / 48000),
+                                         TimeDelta::FromMilliseconds(5),
+                                         TimeDelta::FromMilliseconds(10),
+                                         TimeDelta::FromSeconds(1024.0 / 44100),
+                                         TimeDelta::FromSeconds(1024.0 /
+                                                                16000)));
+
+}  // namespace
+
+#endif
 
 }  // namespace base

@@ -769,6 +769,7 @@ component("base") {
     "threading/thread_restrictions.h",
     "threading/thread_task_runner_handle.cc",
     "threading/thread_task_runner_handle.h",
+    "threading/threading_features.h",
     "threading/watchdog.cc",
     "threading/watchdog.h",
     "time/clock.cc",

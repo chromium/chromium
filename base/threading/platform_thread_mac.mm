@@ -12,18 +12,22 @@
 #include <sys/resource.h>
 
 #include <algorithm>
+#include <atomic>
 
+#include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mach_logging.h"
 #include "base/threading/thread_id_name_manager.h"
+#include "base/threading/threading_features.h"
 #include "build/build_config.h"
 
 namespace base {
 
 namespace {
 NSString* const kThreadPriorityKey = @"CrThreadPriorityKey";
+NSString* const kRealtimePeriodNsKey = @"CrRealtimePeriodNsKey";
 }  // namespace
 
 // If Cocoa is to be used on more than one thread, it must know that the
@@ -60,47 +64,73 @@ void PlatformThread::SetName(const std::string& name) {
   pthread_setname_np(shortened_name.c_str());
 }
 
+// Whether optimized realt-time thread config should be used for audio.
+const Feature kOptimizedRealtimeThreadingMac{"OptimizedRealtimeThreadingMac",
+                                             FEATURE_DISABLED_BY_DEFAULT};
+
+namespace {
+// PlatformThread::SetCurrentThreadRealtimePeriodValue() doesn't query the state
+// of kOptimizedRealtimeThreadingMac feature directly because FeatureList
+// initialization is not always synchronized with
+// PlatformThread::SetCurrentThreadRealtimePeriodValue(). The initial value
+// should match the default state of kOptimizedRealtimeThreadingMac.
+std::atomic<bool> g_use_optimized_realtime_threading(false);
+
+}  // namespace
+
+// static
+void PlatformThread::InitializeOptimizedRealtimeThreadingFeature() {
+  // A DCHECK is triggered on FeatureList initialization if the state of a
+  // feature has been checked before. To avoid triggering this DCHECK in unit
+  // tests that call this before initializing the FeatureList, only check the
+  // state of the feature if the FeatureList is initialized.
+  if (FeatureList::GetInstance()) {
+    g_use_optimized_realtime_threading.store(
+        FeatureList::IsEnabled(kOptimizedRealtimeThreadingMac));
+  }
+}
+
+// static
+void PlatformThread::SetCurrentThreadRealtimePeriodValue(
+    TimeDelta realtime_period) {
+  if (g_use_optimized_realtime_threading.load()) {
+    [[NSThread currentThread] threadDictionary][kRealtimePeriodNsKey] =
+        @(realtime_period.InNanoseconds());
+  }
+}
+
 namespace {
 
-// Enables time-contraint policy and priority suitable for low-latency,
-// glitch-resistant audio.
-void SetPriorityRealtimeAudio() {
-  // Increase thread priority to real-time.
+TimeDelta GetCurrentThreadRealtimePeriod() {
+  NSNumber* period = mac::ObjCCast<NSNumber>(
+      [[NSThread currentThread] threadDictionary][kRealtimePeriodNsKey]);
 
-  // Please note that the thread_policy_set() calls may fail in
-  // rare cases if the kernel decides the system is under heavy load
-  // and is unable to handle boosting the thread priority.
-  // In these cases we just return early and go on with life.
+  return period ? TimeDelta::FromNanoseconds(period.longLongValue)
+                : TimeDelta();
+}
 
-  mach_port_t mach_thread_id =
-      pthread_mach_thread_np(PlatformThread::CurrentHandle().platform_handle());
+// Calculates time constrints for THREAD_TIME_CONSTRAINT_POLICY.
+// |realtime_period| is used as a base if it's non-zero.
+// Otherwise we fall back to empirical values.
+thread_time_constraint_policy_data_t GetTimeConstraints(
+    TimeDelta realtime_period) {
+  thread_time_constraint_policy_data_t time_constraints;
+  mach_timebase_info_data_t tb_info;
+  mach_timebase_info(&tb_info);
 
-  // Make thread fixed priority.
-  thread_extended_policy_data_t policy;
-  policy.timeshare = 0;  // Set to 1 for a non-fixed thread.
-  kern_return_t result =
-      thread_policy_set(mach_thread_id,
-                        THREAD_EXTENDED_POLICY,
-                        reinterpret_cast<thread_policy_t>(&policy),
-                        THREAD_EXTENDED_POLICY_COUNT);
-  if (result != KERN_SUCCESS) {
-    MACH_DVLOG(1, result) << "thread_policy_set";
-    return;
+  if (!realtime_period.is_zero()) {
+    uint32_t abs_realtime_period =
+        saturated_cast<uint32_t>(realtime_period.InNanoseconds() *
+                                 (double(tb_info.denom) / tb_info.numer));
+
+    time_constraints.period = abs_realtime_period;
+    time_constraints.computation = abs_realtime_period / 2;
+    time_constraints.constraint = abs_realtime_period;
+    time_constraints.preemptible = YES;
+    return time_constraints;
   }
 
-  // Set to relatively high priority.
-  thread_precedence_policy_data_t precedence;
-  precedence.importance = 63;
-  result = thread_policy_set(mach_thread_id,
-                             THREAD_PRECEDENCE_POLICY,
-                             reinterpret_cast<thread_policy_t>(&precedence),
-                             THREAD_PRECEDENCE_POLICY_COUNT);
-  if (result != KERN_SUCCESS) {
-    MACH_DVLOG(1, result) << "thread_policy_set";
-    return;
-  }
-
-  // Most important, set real-time constraints.
+  // Empirical configuration.
 
   // Define the guaranteed and max fraction of time for the audio thread.
   // These "duty cycle" values can range from 0 to 1.  A value of 0.5
@@ -124,20 +154,57 @@ void SetPriorityRealtimeAudio() {
 
   // Get the conversion factor from milliseconds to absolute time
   // which is what the time-constraints call needs.
-  mach_timebase_info_data_t tb_info;
-  mach_timebase_info(&tb_info);
-  double ms_to_abs_time =
-      (static_cast<double>(tb_info.denom) / tb_info.numer) * 1000000;
+  double ms_to_abs_time = double(tb_info.denom) / tb_info.numer * 1000000;
 
-  thread_time_constraint_policy_data_t time_constraints;
   time_constraints.period = kTimeQuantum * ms_to_abs_time;
   time_constraints.computation = kAudioTimeNeeded * ms_to_abs_time;
   time_constraints.constraint = kMaxTimeAllowed * ms_to_abs_time;
   time_constraints.preemptible = 0;
+  return time_constraints;
+}
+
+// Enables time-contraint policy and priority suitable for low-latency,
+// glitch-resistant audio.
+void SetPriorityRealtimeAudio(TimeDelta realtime_period) {
+  // Increase thread priority to real-time.
+
+  // Please note that the thread_policy_set() calls may fail in
+  // rare cases if the kernel decides the system is under heavy load
+  // and is unable to handle boosting the thread priority.
+  // In these cases we just return early and go on with life.
+
+  mach_port_t mach_thread_id =
+      pthread_mach_thread_np(PlatformThread::CurrentHandle().platform_handle());
+
+  // Make thread fixed priority.
+  thread_extended_policy_data_t policy;
+  policy.timeshare = 0;  // Set to 1 for a non-fixed thread.
+  kern_return_t result = thread_policy_set(
+      mach_thread_id, THREAD_EXTENDED_POLICY,
+      reinterpret_cast<thread_policy_t>(&policy), THREAD_EXTENDED_POLICY_COUNT);
+  if (result != KERN_SUCCESS) {
+    MACH_DVLOG(1, result) << "thread_policy_set";
+    return;
+  }
+
+  // Set to relatively high priority.
+  thread_precedence_policy_data_t precedence;
+  precedence.importance = 63;
+  result = thread_policy_set(mach_thread_id, THREAD_PRECEDENCE_POLICY,
+                             reinterpret_cast<thread_policy_t>(&precedence),
+                             THREAD_PRECEDENCE_POLICY_COUNT);
+  if (result != KERN_SUCCESS) {
+    MACH_DVLOG(1, result) << "thread_policy_set";
+    return;
+  }
+
+  // Most important, set real-time constraints.
+
+  thread_time_constraint_policy_data_t time_constraints =
+      GetTimeConstraints(realtime_period);
 
   result =
-      thread_policy_set(mach_thread_id,
-                        THREAD_TIME_CONSTRAINT_POLICY,
+      thread_policy_set(mach_thread_id, THREAD_TIME_CONSTRAINT_POLICY,
                         reinterpret_cast<thread_policy_t>(&time_constraints),
                         THREAD_TIME_CONSTRAINT_POLICY_COUNT);
   MACH_DVLOG_IF(1, result != KERN_SUCCESS, result) << "thread_policy_set";
@@ -181,7 +248,7 @@ void PlatformThread::SetCurrentThreadPriorityImpl(ThreadPriority priority) {
       break;
     }
     case ThreadPriority::REALTIME_AUDIO:
-      SetPriorityRealtimeAudio();
+      SetPriorityRealtimeAudio(GetCurrentThreadRealtimePeriod());
       DCHECK_EQ([[NSThread currentThread] threadPriority], 1.0);
       break;
   }

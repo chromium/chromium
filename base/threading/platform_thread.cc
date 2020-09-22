@@ -32,6 +32,16 @@ void PlatformThread::SetCurrentThreadPriority(ThreadPriority priority) {
     SetCurrentThreadPriorityImpl(priority);
 }
 
+TimeDelta PlatformThread::GetRealtimePeriod(Delegate* delegate) {
+  if (g_use_thread_priorities.load())
+    return delegate->GetRealtimePeriod();
+  return TimeDelta();
+}
+
+TimeDelta PlatformThread::Delegate::GetRealtimePeriod() {
+  return TimeDelta();
+}
+
 namespace internal {
 
 void InitializeThreadPrioritiesFeature() {
@@ -43,6 +53,10 @@ void InitializeThreadPrioritiesFeature() {
       !FeatureList::IsEnabled(kThreadPrioritiesFeature)) {
     g_use_thread_priorities.store(false);
   }
+
+#if defined(OS_APPLE)
+  PlatformThread::InitializeOptimizedRealtimeThreadingFeature();
+#endif
 }
 
 }  // namespace internal

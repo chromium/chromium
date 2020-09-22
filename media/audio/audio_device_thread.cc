@@ -58,6 +58,10 @@ AudioDeviceThread::~AudioDeviceThread() {
   base::PlatformThread::Join(thread_handle_);
 }
 
+base::TimeDelta AudioDeviceThread::GetRealtimePeriod() {
+  return callback_->buffer_duration();
+}
+
 void AudioDeviceThread::ThreadMain() {
   base::PlatformThread::SetName(thread_name_);
   callback_->InitializeOnAudioThread();

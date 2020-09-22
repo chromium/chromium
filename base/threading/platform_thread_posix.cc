@@ -67,6 +67,12 @@ void* ThreadFunc(void* params) {
       base::ThreadRestrictions::SetSingletonAllowed(false);
 
 #if !defined(OS_NACL)
+
+#if defined(OS_APPLE)
+    PlatformThread::SetCurrentThreadRealtimePeriodValue(
+        PlatformThread::GetRealtimePeriod(delegate));
+#endif
+
     // Threads on linux/android may inherit their priority from the thread
     // where they were created. This explicitly sets the priority of all new
     // threads.
