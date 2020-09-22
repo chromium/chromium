@@ -447,7 +447,12 @@ void BubbleDialogDelegate::OnBubbleWidgetClosing() {
   // avoids a bug that occured when a focused anchor view is made unfocusable
   // right after the bubble is closed. Previously, focus would advance into the
   // bubble then would be lost when the bubble was destroyed.
-  if (GetAnchorView())
+  //
+  // If kAnchoredDialogKey does not point to |this|, then |this| is not on the
+  // focus traversal path. Don't reset kAnchoredDialogKey or we risk detaching
+  // a widget from the traversal path.
+  if (GetAnchorView() &&
+      GetAnchorView()->GetProperty(kAnchoredDialogKey) == this)
     GetAnchorView()->ClearProperty(kAnchoredDialogKey);
 }
 
@@ -642,7 +647,8 @@ void BubbleDialogDelegate::SetAnchorView(View* anchor_view) {
     anchor_widget_observer_.reset();
   }
   if (GetAnchorView()) {
-    GetAnchorView()->ClearProperty(kAnchoredDialogKey);
+    if (GetAnchorView()->GetProperty(kAnchoredDialogKey) == this)
+      GetAnchorView()->ClearProperty(kAnchoredDialogKey);
     anchor_view_observer_.reset();
   }
 
@@ -685,6 +691,11 @@ void BubbleDialogDelegate::SetAnchorView(View* anchor_view) {
   if (anchor_view && focus_traversable_from_anchor_view_) {
     // Make sure that focus can move into here from the anchor view (but not
     // out, focus will cycle inside the dialog once it gets here).
+    // It is possible that a view anchors more than one widgets,
+    // but among them there should be at most one widget that is focusable.
+    auto* old_anchored_dialog = anchor_view->GetProperty(kAnchoredDialogKey);
+    if (old_anchored_dialog && old_anchored_dialog != this)
+      DLOG(WARNING) << "|anchor_view| has already anchored a focusable widget.";
     anchor_view->SetProperty(kAnchoredDialogKey, this);
   }
 }
