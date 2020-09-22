@@ -104,6 +104,9 @@ class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBase {
 
   base::Value PopulateSize(const BrowserAccessibilityCocoa*) const;
   base::Value PopulatePosition(const BrowserAccessibilityCocoa*) const;
+  base::Value PopulatePoint(NSPoint) const;
+  base::Value PopulateSize(NSSize) const;
+  base::Value PopulateRect(NSRect) const;
   base::Value PopulateRange(NSRange) const;
   base::Value PopulateTextPosition(
       BrowserAccessibilityPosition::AXPositionInstance::pointer,
@@ -388,6 +391,39 @@ base::Value AccessibilityTreeFormatterMac::PopulateObject(
     return PopulateTextMarkerRange(value, line_indexer);
   }
 
+  // AXValue
+  if (CFGetTypeID(value) == AXValueGetTypeID()) {
+    AXValueType type = AXValueGetType(static_cast<AXValueRef>(value));
+    switch (type) {
+      case kAXValueCGPointType: {
+        NSPoint point;
+        if (AXValueGetValue(static_cast<AXValueRef>(value), type, &point)) {
+          return PopulatePoint(point);
+        }
+      } break;
+      case kAXValueCGSizeType: {
+        NSSize size;
+        if (AXValueGetValue(static_cast<AXValueRef>(value), type, &size)) {
+          return PopulateSize(size);
+        }
+      } break;
+      case kAXValueCGRectType: {
+        NSRect rect;
+        if (AXValueGetValue(static_cast<AXValueRef>(value), type, &rect)) {
+          return PopulateRect(rect);
+        }
+      } break;
+      case kAXValueCFRangeType: {
+        NSRange range;
+        if (AXValueGetValue(static_cast<AXValueRef>(value), type, &range)) {
+          return PopulateRange(range);
+        }
+      } break;
+      default:
+        break;
+    }
+  }
+
   // Accessible object
   if (IsBrowserAccessibilityCocoa(value) || IsAXUIElement(value)) {
     return base::Value(NodeToLineIndex(value, line_indexer));
@@ -396,6 +432,32 @@ base::Value AccessibilityTreeFormatterMac::PopulateObject(
   // Scalar value.
   return base::Value(
       SysNSStringToUTF16([NSString stringWithFormat:@"%@", value]));
+}
+
+base::Value AccessibilityTreeFormatterMac::PopulatePoint(
+    NSPoint point_value) const {
+  base::Value point(base::Value::Type::DICTIONARY);
+  point.SetIntPath("x", static_cast<int>(point_value.x));
+  point.SetIntPath("y", static_cast<int>(point_value.y));
+  return point;
+}
+
+base::Value AccessibilityTreeFormatterMac::PopulateSize(
+    NSSize size_value) const {
+  base::Value size(base::Value::Type::DICTIONARY);
+  size.SetIntPath("w", static_cast<int>(size_value.width));
+  size.SetIntPath("h", static_cast<int>(size_value.height));
+  return size;
+}
+
+base::Value AccessibilityTreeFormatterMac::PopulateRect(
+    NSRect rect_value) const {
+  base::Value rect(base::Value::Type::DICTIONARY);
+  rect.SetIntPath("x", static_cast<int>(rect_value.origin.x));
+  rect.SetIntPath("y", static_cast<int>(rect_value.origin.y));
+  rect.SetIntPath("w", static_cast<int>(rect_value.size.width));
+  rect.SetIntPath("h", static_cast<int>(rect_value.size.height));
+  return rect;
 }
 
 base::Value AccessibilityTreeFormatterMac::PopulateRange(
