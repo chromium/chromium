@@ -1887,6 +1887,7 @@ test("ash_unittests") {
     "autoclick/autoclick_unittest.cc",
     "capture_mode/capture_mode_unittests.cc",
     "child_accounts/parent_access_controller_impl_unittest.cc",
+    "clipboard/clipboard_history_controller_unittest.cc",
     "clipboard/clipboard_history_resource_manager_unittest.cc",
     "clipboard/clipboard_history_unittest.cc",
     "clipboard/clipboard_history_util_unittest.cc",
