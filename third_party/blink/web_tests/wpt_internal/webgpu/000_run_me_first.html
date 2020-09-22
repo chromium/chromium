@@ -11,11 +11,10 @@
 <script>
   'use strict';
 
-  async_test(async t => {
+  promise_test(async t => {
     const adapter = await navigator.gpu.requestAdapter();
     assert_true(adapter !== null);
     const device = await adapter.requestDevice();
     assert_true(device !== null);
-    t.done();
   });
 </script>

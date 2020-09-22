@@ -16,17 +16,18 @@
                 return iframe;
             }
 
-            async_test(async function(test)
+            promise_test(async function(test)
             {
                 iframe = allociframe();
                 keySystemAccess = await iframe.contentWindow.navigator.requestMediaKeySystemAccess('org.w3.clearkey', getSimpleConfiguration());
                 keys = await keySystemAccess.createMediaKeys();
+                const domException = iframe.contentWindow.DOMException;
                 document.body.removeChild(iframe);
-                keys.getStatusForPolicy({minHdcpVersion : '1.0'}).then(function(result) {
-                    assert_unreached('getStatusforPolicy() should fail');
-                }, function(error) {
-                    test.done();
-                });
+                return promise_rejects_dom(test,
+                    'InvalidAccessError',
+                    domException,
+                    keys.getStatusForPolicy({minHdcpVersion : '1.0'}),
+                    'getStatusforPolicy() should fail');
            }, 'Test context destruction.');
         </script>
     </body>

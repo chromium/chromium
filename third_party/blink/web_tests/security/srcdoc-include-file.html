@@ -22,7 +22,7 @@
     return new Promise(resolved => window.onScriptLoaded = resolved);
   };
 
-  async_test(async function(t) {
+  promise_test(async function(t) {
     // 1. Check file subresource can be loaded from the initial about:srcdoc
     //    document.
     await scriptLoaded();
@@ -30,6 +30,5 @@
     // 2. Check file subresource can be loaded again after a new navigation to
     //    about:srcdoc.
     await scriptLoaded();
-    t.done();
   });
 </script>
