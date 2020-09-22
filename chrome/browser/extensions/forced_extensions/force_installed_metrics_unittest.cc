@@ -6,7 +6,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
@@ -119,8 +118,7 @@ namespace extensions {
 using testing::_;
 using testing::Return;
 
-class ForceInstalledMetricsTest : public ForceInstalledTestBase,
-                                  public ForceInstalledTracker::Observer {
+class ForceInstalledMetricsTest : public ForceInstalledTestBase {
  public:
   ForceInstalledMetricsTest() = default;
 
@@ -132,7 +130,6 @@ class ForceInstalledMetricsTest : public ForceInstalledTestBase,
     ForceInstalledTestBase::SetUp();
     auto fake_timer = std::make_unique<base::MockOneShotTimer>();
     fake_timer_ = fake_timer.get();
-    scoped_observer_.Add(tracker_.get());
     metrics_ = std::make_unique<ForceInstalledMetrics>(
         registry_, profile_, tracker_.get(), std::move(fake_timer));
   }
@@ -172,26 +169,15 @@ class ForceInstalledMetricsTest : public ForceInstalledTestBase,
         kExtensionId1, InstallStageTracker::Stage::INSTALLING);
   }
 
-  // ForceInstalledTracker::Observer overrides:
-  void OnForceInstalledExtensionsLoaded() override { loaded_call_count_++; }
-  void OnForceInstalledExtensionsReady() override { ready_call_count_++; }
-
  protected:
   base::HistogramTester histogram_tester_;
   base::MockOneShotTimer* fake_timer_;
   std::unique_ptr<ForceInstalledMetrics> metrics_;
-
-  ScopedObserver<ForceInstalledTracker, ForceInstalledTracker::Observer>
-      scoped_observer_{this};
-  size_t loaded_call_count_ = 0;
-  size_t ready_call_count_ = 0;
 };
 
 TEST_F(ForceInstalledMetricsTest, EmptyForcelist) {
   SetupEmptyForceList();
   EXPECT_FALSE(fake_timer_->IsRunning());
-  EXPECT_EQ(1u, loaded_call_count_);
-  EXPECT_EQ(1u, ready_call_count_);
   // Don't report metrics when the Forcelist is empty.
   histogram_tester_.ExpectTotalCount(kLoadTimeStats, 0);
   histogram_tester_.ExpectTotalCount(kTimedOutStats, 0);
@@ -208,16 +194,11 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsInstalled) {
   auto ext1 = ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
   auto ext2 = ExtensionBuilder(kExtensionName2).SetID(kExtensionId2).Build();
 
-  EXPECT_EQ(0u, loaded_call_count_);
-  EXPECT_EQ(0u, ready_call_count_);
   histogram_tester_.ExpectTotalCount(kLoadTimeStats, 0);
   tracker_->OnExtensionLoaded(profile_, ext1.get());
-  EXPECT_EQ(0u, loaded_call_count_);
-  EXPECT_EQ(0u, ready_call_count_);
   histogram_tester_.ExpectTotalCount(kLoadTimeStats, 0);
   tracker_->OnExtensionLoaded(profile_, ext2.get());
-  EXPECT_EQ(1u, loaded_call_count_);
-  EXPECT_EQ(0u, ready_call_count_);
+
   histogram_tester_.ExpectTotalCount(kLoadTimeStats, 1);
   histogram_tester_.ExpectTotalCount(kTimedOutStats, 0);
   histogram_tester_.ExpectTotalCount(kTimedOutNotInstalledStats, 0);
@@ -228,10 +209,6 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsInstalled) {
   histogram_tester_.ExpectUniqueSample(
       kTotalCountStats,
       prefs_->GetManagedPref(pref_names::kInstallForceList)->DictSize(), 1);
-  tracker_->OnExtensionReady(profile_, ext1.get());
-  tracker_->OnExtensionReady(profile_, ext2.get());
-  EXPECT_EQ(1u, loaded_call_count_);
-  EXPECT_EQ(1u, ready_call_count_);
 }
 
 // Verifies that failure is reported for the extensions which are listed in
@@ -245,42 +222,18 @@ TEST_F(ForceInstalledMetricsTest, ExtensionSettingsOverrideForcedList) {
   // ForceInstalledMetrics shuts down timer because all extension are either
   // loaded or failed.
   EXPECT_FALSE(fake_timer_->IsRunning());
-  EXPECT_EQ(1u, loaded_call_count_);
   histogram_tester_.ExpectBucketCount(
       kFailureReasonsCWS,
       InstallStageTracker::FailureReason::OVERRIDDEN_BY_SETTINGS, 1);
 }
 
-TEST_F(ForceInstalledMetricsTest, ObserversOnlyCalledOnce) {
-  // Start with a non-empty force-list, and install them, which triggers
-  // observer.
-  SetupForceList();
-  auto ext1 = ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
-  auto ext2 = ExtensionBuilder(kExtensionName2).SetID(kExtensionId2).Build();
-  tracker_->OnExtensionLoaded(profile_, ext1.get());
-  tracker_->OnExtensionLoaded(profile_, ext2.get());
-  EXPECT_EQ(1u, loaded_call_count_);
-  tracker_->OnExtensionReady(profile_, ext1.get());
-  tracker_->OnExtensionReady(profile_, ext2.get());
-  EXPECT_EQ(1u, ready_call_count_);
-
-  // Then apply a new set of policies, which shouldn't trigger observers again.
-  SetupEmptyForceList();
-  EXPECT_EQ(1u, loaded_call_count_);
-  EXPECT_EQ(1u, ready_call_count_);
-}
-
 TEST_F(ForceInstalledMetricsTest, ExtensionsInstallationTimedOut) {
   SetupForceList();
-  EXPECT_EQ(0u, loaded_call_count_);
   auto ext1 = ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
   registry_->AddEnabled(ext1.get());
   EXPECT_TRUE(fake_timer_->IsRunning());
-  EXPECT_EQ(0u, loaded_call_count_);
   fake_timer_->Fire();
-  // Metrics are reported due to timeout, but ForceInstalledTracker::Observer
-  // never fired.
-  EXPECT_EQ(0u, loaded_call_count_);
+  // Metrics are reported due to timeout.
   histogram_tester_.ExpectTotalCount(kLoadTimeStats, 0);
   histogram_tester_.ExpectUniqueSample(kTimedOutStats, 2, 1);
   histogram_tester_.ExpectUniqueSample(kTimedOutNotInstalledStats, 1, 1);
@@ -494,8 +447,6 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsInstallationCancelled) {
   // ForceInstalledMetrics does not shut down the timer, because it's still
   // waiting for the initial extensions to install.
   EXPECT_TRUE(fake_timer_->IsRunning());
-  EXPECT_EQ(0u, loaded_call_count_);
-  EXPECT_EQ(0u, ready_call_count_);
   histogram_tester_.ExpectTotalCount(kLoadTimeStats, 0);
   histogram_tester_.ExpectTotalCount(kTimedOutStats, 0);
   histogram_tester_.ExpectTotalCount(kTimedOutNotInstalledStats, 0);
@@ -512,8 +463,6 @@ TEST_F(ForceInstalledMetricsTest, ForcedExtensionsAddedAfterManualExtensions) {
   // ForceInstalledMetrics should keep running as the forced extensions are
   // still not loaded.
   EXPECT_TRUE(fake_timer_->IsRunning());
-  EXPECT_EQ(0u, loaded_call_count_);
-  EXPECT_EQ(0u, ready_call_count_);
   SetupForceList();
 
   auto ext = ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
@@ -524,8 +473,6 @@ TEST_F(ForceInstalledMetricsTest, ForcedExtensionsAddedAfterManualExtensions) {
   // ForceInstalledMetrics shuts down timer because kExtensionId1 was loaded and
   // kExtensionId2 was failed.
   EXPECT_FALSE(fake_timer_->IsRunning());
-  EXPECT_EQ(1u, loaded_call_count_);
-  EXPECT_EQ(1u, ready_call_count_);
   histogram_tester_.ExpectBucketCount(
       kFailureReasonsCWS, InstallStageTracker::FailureReason::INVALID_ID, 1);
 }
