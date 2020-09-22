@@ -543,6 +543,45 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvaData(
 }
 
 // static
+scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvData(
+    VideoPixelFormat format,
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
+    int32_t y_stride,
+    int32_t uv_stride,
+    uint8_t* y_data,
+    uint8_t* uv_data,
+    base::TimeDelta timestamp) {
+  const StorageType storage = STORAGE_UNOWNED_MEMORY;
+  if (!IsValidConfig(format, storage, coded_size, visible_rect, natural_size)) {
+    DLOG(ERROR) << __func__ << " Invalid config."
+                << ConfigToString(format, storage, coded_size, visible_rect,
+                                  natural_size);
+    return nullptr;
+  }
+
+  if (NumPlanes(format) != 2) {
+    DLOG(ERROR) << "Expecting Y, UV planes to be present for the video format.";
+    return nullptr;
+  }
+
+  auto layout = VideoFrameLayout::CreateWithStrides(format, coded_size,
+                                                    {y_stride, uv_stride});
+  if (!layout) {
+    DLOG(ERROR) << "Invalid layout";
+    return nullptr;
+  }
+
+  scoped_refptr<VideoFrame> frame(
+      new VideoFrame(*layout, storage, visible_rect, natural_size, timestamp));
+  frame->data_[kYPlane] = y_data;
+  frame->data_[kUVPlane] = uv_data;
+
+  return frame;
+}
+
+// static
 scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,

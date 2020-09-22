@@ -236,6 +236,19 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       uint8_t* a_data,
       base::TimeDelta timestamp);
 
+  // Wraps external NV12 data of the given parameters with a VideoFrame.
+  // The returned VideoFrame does not own the data passed in.
+  static scoped_refptr<VideoFrame> WrapExternalYuvData(
+      VideoPixelFormat format,
+      const gfx::Size& coded_size,
+      const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
+      int32_t y_stride,
+      int32_t uv_stride,
+      uint8_t* y_data,
+      uint8_t* uv_data,
+      base::TimeDelta timestamp);
+
   // Wraps |gpu_memory_buffer| along with the mailboxes created from
   // |gpu_memory_buffer|. |mailbox_holders_release_cb| will be called with a
   // sync token as the argument when the VideoFrame is to be destroyed.

@@ -258,6 +258,15 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
           elapsed_timestamp);
       break;
     }
+    case webrtc::VideoFrameBuffer::Type::kNV12: {
+      const webrtc::NV12BufferInterface* nv12_buffer = buffer->GetNV12();
+      video_frame = media::VideoFrame::WrapExternalYuvData(
+          media::PIXEL_FORMAT_NV12, size, gfx::Rect(size), size,
+          nv12_buffer->StrideY(), nv12_buffer->StrideUV(),
+          const_cast<uint8_t*>(nv12_buffer->DataY()),
+          const_cast<uint8_t*>(nv12_buffer->DataUV()), elapsed_timestamp);
+      break;
+    }
     default:
       NOTREACHED();
   }
