@@ -98,6 +98,8 @@ class FakeCrosHealthdService final
       uint32_t minimum_charge_percent_required,
       RunBatteryChargeRoutineCallback callback) override;
   void RunMemoryRoutine(RunMemoryRoutineCallback callback) override;
+  void RunLanConnectivityRoutine(
+      RunLanConnectivityRoutineCallback callback) override;
 
   // CrosHealthdEventService overrides:
   void AddBluetoothObserver(
