@@ -113,6 +113,13 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
                            "privacy" /* privacy_policy */,
                            true /* display_globally */,
                            {} /* display_countries */),
+      new DohProviderEntry(
+          "GoogleDns64", base::nullopt /* provider_id_for_histogram */,
+          {"2001:4860:4860::64", "2001:4860:4860::6464"},
+          {"dns64.dns.google"} /* dns_over_tls_hostnames */,
+          "https://dns64.dns.google/dns-query{?dns}", "" /* ui_name */,
+          "" /* privacy_policy */, false /* display_globally */,
+          {} /* display_countries */),
       new DohProviderEntry("Iij", DohProviderIdForHistogram::kIij,
                            {} /* ip_strs */, {} /* dns_over_tls_hostnames */,
                            "https://public.dns.iij.jp/dns-query",
