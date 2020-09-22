@@ -145,9 +145,15 @@ class AllPasswordsBottomSheetViewBinder {
             usernameView.getPrimaryTextView().setText(credential.getFormattedUsername());
 
             ChipView passwordView = view.findViewById(R.id.password_text);
-            passwordView.getPrimaryTextView().setTransformationMethod(
-                    new PasswordTransformationMethod());
-            passwordView.getPrimaryTextView().setText(credential.getPassword());
+            boolean isEmptyPassword = credential.getPassword().isEmpty();
+            if (!isEmptyPassword) {
+                passwordView.getPrimaryTextView().setTransformationMethod(
+                        new PasswordTransformationMethod());
+            }
+            passwordView.getPrimaryTextView().setText(isEmptyPassword
+                            ? view.getContext().getString(
+                                    R.string.all_passwords_bottom_sheet_no_password)
+                            : credential.getPassword());
 
             // Set the default icon, then try to get a better one.
             FaviconHelper faviconHelper = new FaviconHelper(view.getContext());

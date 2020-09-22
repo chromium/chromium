@@ -38,6 +38,7 @@ class AllPasswordsBottomSheetMediator {
         sheetItems.clear();
 
         for (Credential credential : mCredentials) {
+            if (credential.getPassword().isEmpty() && isPasswordField) continue;
             final PropertyModel model =
                     AllPasswordsBottomSheetProperties.CredentialProperties.createCredentialModel(
                             credential, this::onCredentialSelected, isPasswordField);
@@ -58,7 +59,10 @@ class AllPasswordsBottomSheetMediator {
         sheetItems.clear();
 
         for (Credential credential : mCredentials) {
-            if (shouldBeFiltered(newText, credential)) continue;
+            if ((credential.getPassword().isEmpty() && mIsPasswordField)
+                    || shouldBeFiltered(newText, credential)) {
+                continue;
+            }
             final PropertyModel model =
                     AllPasswordsBottomSheetProperties.CredentialProperties.createCredentialModel(
                             credential, this::onCredentialSelected, mIsPasswordField);
