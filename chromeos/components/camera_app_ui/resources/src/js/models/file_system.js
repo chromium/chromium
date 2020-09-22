@@ -12,12 +12,6 @@ import {
 } from './file_system_entry.js';
 
 /**
- * The prefix of thumbnail files.
- * @type {string}
- */
-const THUMBNAIL_PREFIX = 'thumb-';
-
-/**
  * Checks if the entry's name has the video prefix.
  * @param {!AbstractFileEntry} entry File entry.
  * @return {boolean} Has the video prefix or not.
@@ -94,47 +88,6 @@ async function initCameraDirectory() {
 }
 
 /**
- * Regulates the picture name to the desired format if it's in legacy formats.
- * @param {!AbstractFileEntry} entry Picture entry whose name to be regulated.
- * @return {string} Name in the desired format.
- */
-function regulatePictureName(entry) {
-  if (hasVideoPrefix(entry) || hasImagePrefix(entry)) {
-    const match = entry.name.match(/(\w{3}_\d{8}_\d{6})(?:_(\d+))?(\..+)?$/);
-    if (match) {
-      const idx = match[2] ? ' (' + match[2] + ')' : '';
-      const ext = match[3] ? match[3].replace(/\.webm$/, '.mkv') : '';
-      return match[1] + idx + ext;
-    }
-  } else {
-    // Early pictures are in legacy file name format (crrev.com/c/310064).
-    const match = entry.name.match(/(\d+).(?:\d+)/);
-    if (match) {
-      return (new Filenamer(parseInt(match[1], 10))).newImageName();
-    }
-  }
-  return entry.name;
-}
-
-/**
- * Migrates all picture-files except thumbnails from internal storage to
- * external storage. For thumbnails, we just remove them.
- * @return {!Promise} Promise for the operation.
- */
-async function migratePictures() {
-  assert(cameraDir !== null);
-  const internalEntries = await internalDir.getFiles();
-  for (const entry of internalEntries) {
-    if (entry.name.startsWith(THUMBNAIL_PREFIX)) {
-      await entry.remove();
-      continue;
-    }
-    const name = regulatePictureName(entry);
-    await entry.moveTo(cameraDir, name);
-  }
-}
-
-/**
  * Initializes file systems. This function should be called only once in the
  * beginning of the app.
  * @return {!Promise}
@@ -148,47 +101,6 @@ export async function initialize() {
 
   cameraDir = await initCameraDirectory();
   assert(cameraDir !== null);
-}
-
-/**
- * Checks and performs migration if it's needed.
- * @param {function(): !Promise} promptMigrate Callback to instantiate a promise
- *     that prompts users to migrate pictures if no acknowledgement yet.
- * @return {!Promise<boolean>} Return a promise that will be resolved to a
- *     boolean indicates if the user ackes the migration dialog once the
- *     migration is skipped or completed.
- */
-export async function checkMigration(promptMigrate) {
-  const isDoneMigration =
-      (await browserProxy.localStorageGet({doneMigration: 0}))['doneMigration'];
-  if (isDoneMigration) {
-    return false;
-  }
-
-  const doneMigrate = () => browserProxy.localStorageSet({doneMigration: 1});
-  const ackMigrate = () =>
-      browserProxy.localStorageSet({ackMigratePictures: 1});
-
-  const internalEntries = await internalDir.getFiles();
-  const migrationNeeded = internalEntries.length > 0;
-  if (!migrationNeeded) {
-    // If there is already no picture in the internal file system, it implies
-    // done migration and then doesn't need acknowledge-prompt.
-    await ackMigrate();
-    await doneMigrate();
-    return false;
-  }
-
-  const isAckedMigration = (await browserProxy.localStorageGet(
-      {ackMigratePictures: 0}))['ackMigratePictures'];
-  if (!isAckedMigration) {
-    await promptMigrate();
-    await ackMigrate();
-  }
-  await migratePictures();
-  await doneMigrate();
-
-  return !isAckedMigration;
 }
 
 /**
