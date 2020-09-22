@@ -1918,6 +1918,9 @@ extern const char kOmniboxPedalSuggestionsDescription[];
 extern const char kOmniboxKeywordSearchButtonName[];
 extern const char kOmniboxKeywordSearchButtonDescription[];
 
+extern const char kOmniboxRefinedFocusStateName[];
+extern const char kOmniboxRefinedFocusStateDescription[];
+
 extern const char kPasswordsWeaknessCheckName[];
 extern const char kPasswordsWeaknessCheckDescription[];
 

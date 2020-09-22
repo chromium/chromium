@@ -348,6 +348,10 @@ const base::Feature kOmniboxPedalSuggestions{"OmniboxPedalSuggestions",
 const base::Feature kOmniboxKeywordSearchButton{
     "OmniboxKeywordSearchButton", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables new UI changes indicating focus and hover states.
+const base::Feature kOmniboxRefinedFocusState{
+    "OmniboxRefinedFocusState", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables using an Android RecyclerView to render the suggestions dropdown
 // instead of a ListView.
 const base::Feature kOmniboxSuggestionsRecyclerView{

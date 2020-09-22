@@ -40688,6 +40688,7 @@ from previous Chrome versions.
   <int value="-2113783491" label="ArcFilePickerExperiment:enabled"/>
   <int value="-2113705745"
       label="CrossOriginMediaPlaybackRequiresUserGesture:enabled"/>
+  <int value="-2112601037" label="OmniboxRefinedFocusState:enabled"/>
   <int value="-2112547309" label="ClickToCallReceiver:enabled"/>
   <int value="-2111196530" label="EnableAssistantLauncherUI:disabled"/>
   <int value="-2108564200" label="AutofillUpstream:disabled"/>
@@ -40828,6 +40829,7 @@ from previous Chrome versions.
   <int value="-1972312724" label="OfflinePagesLoadSignalCollecting:enabled"/>
   <int value="-1972219399" label="NTPSaveToOffline:enabled"/>
   <int value="-1971086581" label="print-scaling"/>
+  <int value="-1969636234" label="OmniboxRefinedFocusState:disabled"/>
   <int value="-1967387994" label="ArcEnableApplicationZoomFeature:disabled"/>
   <int value="-1965587041" label="omnibox-tab-switch-suggestions"/>
   <int value="-1964261747" label="WebVrVsyncAlign:disabled"/>

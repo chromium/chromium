@@ -3350,6 +3350,10 @@ const char kOmniboxKeywordSearchButtonDescription[] =
     "on specific sites from the omnibox. This flag has no effect unless "
     "\"Omnibox suggestion button row\" is also enabled.";
 
+const char kOmniboxRefinedFocusStateName[] = "Omnibox refined focus state UI";
+const char kOmniboxRefinedFocusStateDescription[] =
+    "Enables new changes to the UI indicating focus and hover states.";
+
 const char kOmniboxShortBookmarkSuggestionsName[] =
     "Omnibox short bookmark suggestions";
 const char kOmniboxShortBookmarkSuggestionsDescription[] =

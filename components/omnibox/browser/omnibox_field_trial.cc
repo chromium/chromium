@@ -733,6 +733,10 @@ bool OmniboxFieldTrial::IsExperimentalKeywordModeEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kExperimentalKeywordMode);
 }
 
+bool OmniboxFieldTrial::IsRefinedFocusStateEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxRefinedFocusState);
+}
+
 bool OmniboxFieldTrial::IsRichAutocompletionEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kRichAutocompletion);
 }
