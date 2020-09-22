@@ -855,7 +855,7 @@ class DeviceSyncServiceTest
     fake_device_sync_impl_factory_ =
         std::make_unique<FakeDeviceSyncImplFactory>(std::move(mock_timer),
                                                     simple_test_clock_.get());
-    DeviceSyncImpl::Factory::SetFactoryForTesting(
+    DeviceSyncImpl::Factory::SetCustomFactory(
         fake_device_sync_impl_factory_.get());
 
     fake_gcm_device_info_provider_ =
@@ -870,7 +870,7 @@ class DeviceSyncServiceTest
     CryptAuthEnrollmentManagerImpl::Factory::SetFactoryForTesting(nullptr);
     RemoteDeviceProviderImpl::Factory::SetFactoryForTesting(nullptr);
     SoftwareFeatureManagerImpl::Factory::SetFactoryForTesting(nullptr);
-    DeviceSyncImpl::Factory::SetFactoryForTesting(nullptr);
+    DeviceSyncImpl::Factory::SetCustomFactory(nullptr);
 
     NetworkHandler::Shutdown();
     DBusThreadManager::Shutdown();

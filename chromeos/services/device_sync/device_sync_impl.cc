@@ -240,7 +240,7 @@ void RecordForceSyncNowResult(ForceCryptAuthOperationResult result) {
 }  // namespace
 
 // static
-DeviceSyncImpl::Factory* DeviceSyncImpl::Factory::test_factory_instance_ =
+DeviceSyncImpl::Factory* DeviceSyncImpl::Factory::custom_factory_instance_ =
     nullptr;
 
 // static
@@ -252,8 +252,8 @@ std::unique_ptr<DeviceSyncBase> DeviceSyncImpl::Factory::Create(
     ClientAppMetadataProvider* client_app_metadata_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<base::OneShotTimer> timer) {
-  if (test_factory_instance_) {
-    return test_factory_instance_->CreateInstance(
+  if (custom_factory_instance_) {
+    return custom_factory_instance_->CreateInstance(
         identity_manager, gcm_driver, profile_prefs, gcm_device_info_provider,
         client_app_metadata_provider, std::move(url_loader_factory),
         std::move(timer));
@@ -266,8 +266,13 @@ std::unique_ptr<DeviceSyncBase> DeviceSyncImpl::Factory::Create(
 }
 
 // static
-void DeviceSyncImpl::Factory::SetFactoryForTesting(Factory* test_factory) {
-  test_factory_instance_ = test_factory;
+void DeviceSyncImpl::Factory::SetCustomFactory(Factory* custom_factory) {
+  custom_factory_instance_ = custom_factory;
+}
+
+// static
+bool DeviceSyncImpl::Factory::IsCustomFactorySet() {
+  return custom_factory_instance_ != nullptr;
 }
 
 DeviceSyncImpl::Factory::~Factory() = default;

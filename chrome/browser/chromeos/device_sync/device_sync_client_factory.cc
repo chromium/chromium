@@ -13,9 +13,11 @@
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/components/multidevice/stub_multidevice_util.h"
 #include "chromeos/services/device_sync/device_sync_impl.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client_impl.h"
+#include "chromeos/services/device_sync/stub_device_sync.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -85,6 +87,14 @@ DeviceSyncClientFactory::DeviceSyncClientFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
+
+  // If ShouldUseMultideviceStubs() is true, set a stub factory to facilitate
+  // fake devices for testing in the Linux Chrome OS build. Note that this is
+  // not done when a custom factory has already been set.
+  if (multidevice::ShouldUseMultideviceStubs() &&
+      !DeviceSyncImpl::Factory::IsCustomFactorySet()) {
+    SetStubDeviceSyncFactory();
+  }
 }
 
 DeviceSyncClientFactory::~DeviceSyncClientFactory() {}

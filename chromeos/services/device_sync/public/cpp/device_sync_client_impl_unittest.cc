@@ -166,7 +166,7 @@ class DeviceSyncClientImplTest : public testing::Test {
     fake_device_sync_impl_factory_ =
         std::make_unique<FakeDeviceSyncImplFactory>(
             std::move(fake_device_sync));
-    DeviceSyncImpl::Factory::SetFactoryForTesting(
+    DeviceSyncImpl::Factory::SetCustomFactory(
         fake_device_sync_impl_factory_.get());
 
     auto shared_url_loader_factory =
@@ -303,7 +303,7 @@ class DeviceSyncClientImplTest : public testing::Test {
   }
 
   void TearDown() override {
-    DeviceSyncImpl::Factory::SetFactoryForTesting(nullptr);
+    DeviceSyncImpl::Factory::SetCustomFactory(nullptr);
     client_->RemoveObserver(test_observer_.get());
   }
 
