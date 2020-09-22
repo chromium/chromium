@@ -94,6 +94,10 @@ void UserBoardScreenHandler::SetAuthType(
          static_cast<int>(auth_type), base::Value(initial_value));
 }
 
+void UserBoardScreenHandler::SetTpmLockedState(const AccountId& account_id,
+                                               bool is_locked,
+                                               base::TimeDelta time_left) {}
+
 void UserBoardScreenHandler::Bind(UserSelectionScreen* screen) {
   screen_ = screen;
   SetBaseScreen(screen_);

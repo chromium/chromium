@@ -27,6 +27,9 @@ class TestLoginScreenModel : public ash::LoginScreenModel {
   void DisableAuthForUser(
       const AccountId& account_id,
       const ash::AuthDisabledData& auth_disabled_data) override;
+  void SetTpmLockedState(const AccountId& user,
+                         bool is_locked,
+                         base::TimeDelta time_left) override;
   void SetTapToUnlockEnabledForUser(const AccountId& account_id,
                                     bool enabled) override;
   void ForceOnlineSignInForUser(const AccountId& account_id) override;

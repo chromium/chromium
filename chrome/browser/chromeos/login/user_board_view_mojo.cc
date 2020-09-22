@@ -130,6 +130,13 @@ void UserBoardViewMojo::SetAuthType(const AccountId& account_id,
   }
 }
 
+void UserBoardViewMojo::SetTpmLockedState(const AccountId& account_id,
+                                          bool is_locked,
+                                          base::TimeDelta time_left) {
+  ash::LoginScreen::Get()->GetModel()->SetTpmLockedState(account_id, is_locked,
+                                                         time_left);
+}
+
 base::WeakPtr<UserBoardView> UserBoardViewMojo::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
