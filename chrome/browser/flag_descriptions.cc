@@ -1452,11 +1452,6 @@ const char kNewTabstripAnimationName[] = "New tabstrip animations";
 const char kNewTabstripAnimationDescription[] =
     "New implementation of tabstrip animations.";
 
-const char kNewOsSettingsSearchName[] = "New OS Settings Search";
-const char kNewOsSettingsSearchDescription[] =
-    "Enables New OS Settings search with fuzzy matching, and disables the old "
-    "OS settings search using exact string matching.";
-
 const char kNotificationIndicatorName[] = "Notification Indicators";
 const char kNotificationIndicatorDescription[] =
     "Enable notification indicators, which appear on shelf app icons and "

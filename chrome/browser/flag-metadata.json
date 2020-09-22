@@ -3131,11 +3131,6 @@
     "expiry_milestone": 89
   },
   {
-    "name": "new-os-settings-search",
-    "owners": [ "cros-customization@google.com", "hsuregan", "khorimoto" ],
-    "expiry_milestone": 86
-  },
-  {
     "name": "new-shortcut-mapping",
     "owners": [ "oshima", "afakhry" ],
     "expiry_milestone": 86

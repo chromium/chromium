@@ -123,9 +123,7 @@ class OsSettingsSearchBrowserTest : public AppListSearchBrowserTest {
  public:
   OsSettingsSearchBrowserTest() : AppListSearchBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {app_list_features::kLauncherSettingsSearch,
-         chromeos::features::kNewOsSettingsSearch},
-        {});
+        {app_list_features::kLauncherSettingsSearch}, {});
   }
   ~OsSettingsSearchBrowserTest() override = default;
 

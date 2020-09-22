@@ -368,11 +368,6 @@ const base::Feature kMediaApp{"MediaApp", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kOobeScreensPriority{"OobeScreensPriority",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether to enable OS Settings fuzzy search, and disable search using
-// exact string matching.
-const base::Feature kNewOsSettingsSearch{"NewOsSettingsSearch",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables a unique URL for each path in CrOS settings.
 // This allows deep linking to individual settings, i.e. in settings search.
 const base::Feature kOsSettingsDeepLinking{"OsSettingsDeepLinking",

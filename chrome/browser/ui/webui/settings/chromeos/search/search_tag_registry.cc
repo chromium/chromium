@@ -121,9 +121,6 @@ SearchTagRegistry::ScopedTagUpdater SearchTagRegistry::StartUpdate() {
 
 void SearchTagRegistry::AddSearchTags(
     const std::vector<const SearchConcept*>& search_tags) {
-  if (!base::FeatureList::IsEnabled(features::kNewOsSettingsSearch))
-    return;
-
   index_->AddOrUpdate(ConceptVectorToDataVector(search_tags));
 
   // Add each concept to the map. Note that it is safe to take the address of
@@ -137,9 +134,6 @@ void SearchTagRegistry::AddSearchTags(
 
 void SearchTagRegistry::RemoveSearchTags(
     const std::vector<const SearchConcept*>& search_tags) {
-  if (!base::FeatureList::IsEnabled(features::kNewOsSettingsSearch))
-    return;
-
   std::vector<std::string> data_ids;
   for (const auto* concept : search_tags) {
     std::string result_id = ToResultId(*concept);

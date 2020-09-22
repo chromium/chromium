@@ -107,7 +107,6 @@ class OsSettingsManager : public KeyedService {
   // Adds SettingsPageUIHandlers to an OS settings instance.
   void AddHandlers(content::WebUI* web_ui);
 
-  // Note: Returns null when the kNewOsSettingsSearch flag is disabled.
   SearchHandler* search_handler() { return search_handler_.get(); }
 
   const Hierarchy* hierarchy() const { return hierarchy_.get(); }

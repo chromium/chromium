@@ -6,7 +6,6 @@
 
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/fake_hierarchy.h"
@@ -101,8 +100,6 @@ class SearchHandlerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kNewOsSettingsSearch);
     handler_.BindInterface(handler_remote_.BindNewPipeAndPassReceiver());
 
     fake_hierarchy_.AddSubpageMetadata(
@@ -132,7 +129,6 @@ class SearchHandlerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   local_search_service::LocalSearchService local_search_service_;
   SearchTagRegistry search_tag_registry_;
   FakeOsSettingsSections fake_sections_;

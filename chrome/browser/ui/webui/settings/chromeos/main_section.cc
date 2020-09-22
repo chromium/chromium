@@ -57,9 +57,8 @@ void AddSearchInSettingsStrings(content::WebUIDataSource* html_source) {
           IDS_SETTINGS_SEARCH_NO_RESULTS_HELP,
           base::ASCIIToUTF16(chrome::kOsSettingsSearchHelpURL)));
 
-  html_source->AddBoolean(
-      "newOsSettingsSearch",
-      base::FeatureList::IsEnabled(::chromeos::features::kNewOsSettingsSearch));
+  // TODO(crbug/1080777): Remove this flag and JS codepaths effected.
+  html_source->AddBoolean("newOsSettingsSearch", true);
 }
 
 void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {

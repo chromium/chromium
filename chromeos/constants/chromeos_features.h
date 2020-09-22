@@ -160,8 +160,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const base::Feature kMediaApp;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kMinimumChromeVersion;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const base::Feature kNewOsSettingsSearch;
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kOobeScreensPriority;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kOsSettingsDeepLinking;
