@@ -1097,14 +1097,41 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_LANGUAGE_SETTINGS" desc="Title for the Languages settings screen that allows users to manage their languages preferences. [CHAR-LIMIT=32]">
         Languages
       </message>
+      <message name="IDS_APP_LANGUAGE_TITLE" desc="Title of Language settings section to change Chrome’s user interface language. [CHAR-LIMIT=32]">
+        <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph>’s language
+      </message>
+      <message name="IDS_DEFAULT_LANG_SUBTITLE" desc="Subtile to use for the device’s default language. [CHAR-LIMIT=32]">
+        Default device language
+      </message>
       <message name="IDS_ADD_LANGUAGE" desc="Title for the screen that allows users to add languages to their preferred language list. [CHAR-LIMIT=32]">
         Add language
+      </message>
+      <message name="IDS_CHANGE_CHROME_LANG" desc="Title of page to select a language within Chrome's language settings. [CHAR-LIMIT=32]">
+        Change language
+      </message>
+      <message name="IDS_LANGUAGES_SELECT" desc="Option in overflow menu on Language settings page to change Chrome’s user interface language. [CHAR-LIMIT=32]">
+        Select language
+      </message>
+      <message name="IDS_LANGUAGES_SELECT_SUGGESTED" desc="Title appearing above list of languages ordered based on what users in that country might select. [CHAR-LIMIT=32]">
+        Suggested languages
+      </message>
+      <message name="IDS_LANGUAGES_SELECT_OTHER" desc="Subtile appearing above list of all languages not likely to be selected by users in that country. [CHAR-LIMIT=32]">
+        Other languages
+      </message>
+      <message name="IDS_LANGUAGES_CONTENT_TITLE" desc="Title of Language settings section to add or remove preferred content languages. Content languages are selected by the user and tell Chrome what language the user prefers webpage content in.  [CHAR-LIMIT=32]">
+        Content languages
+      </message>
+      <message name="IDS_LANGUAGES_CONTENT_DESCRIPTION" desc="Description of Content language on the Language settings screen. Appears above a list of one or more languages that the user selects to tell Chrome which languages they prefer webpage content in.">
+        To show content in your preferred languages, the sites you visit can see your preferences
       </message>
       <message name="IDS_LANGUAGES_LIST_DESCRIPTION" desc="Description on the Languages settings screen. Appears above a list of one or more languages that the user selects, to tell Chrome which languages they prefer to use to read website content.">
         Websites will show text in your preferred language, when possible.
       </message>
       <message name="IDS_LANGUAGES_OFFER_TRANSLATE_SWITCH" desc="Appears next to the 'offer to translate' switch that controls whether or not Chrome will display the Google Translate UI on web pages that are not in the user's preferred language(s).">
         Offer to translate pages in other languages
+      </message>
+      <message name="IDS_LANGUAGES_SEND_TRANSLATE_SWITCH" desc="Appears next to the switch controling whether or not Chrome will display the Google Translate UI on web pages that are not in the user's preferred language(s).">
+        Offer to send pages in other languages to Google Translate
       </message>
       <message name="IDS_LANGUAGES_ITEM_OPTION_OFFER_TO_TRANSLATE" desc="Option in language item menu. User can click the 'Offer to translate' option to toggle whether they want Chrome to translate pages in this language. [CHAR-LIMIT=32]">
         Offer to translate
@@ -1117,6 +1144,36 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_LANGUAGES_EXPLICIT_ASK_TITLE" desc="Title of the dialog that explicitly asks the user which languages they can read.">
         What languages do you read?
+      </message>
+      <message name="IDS_LANGUAGES_SPLIT_DOWNLOADING" desc="Text to display next to a language when it is being downloaded to use as Chrome's UI. [CHAR-LIMIT=32]">
+        Downloading <ph name="LANG">%1$s<ex>Hindi</ex></ph>…
+      </message>
+      <message name="IDS_LANGUAGES_SPLIT_READY" desc="Text to display next to a language once it has been downloaded telling user to restart the application.">
+        Language ready, restart <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph>
+      </message>
+      <message name="IDS_LANGUAGES_INFOBAR_READY" desc="Infobar text to appear when a new language pack has been downloaded. [CHAR-LIMIT=32]">
+        <ph name="LANG">%1$s<ex>Hindi</ex></ph> is ready.
+      </message>
+      <message name="IDS_LANGUAGES_INFOBAR_RESTART" desc="The clickable link letting the user know they can click to restart Chrome. [CHAR-LIMIT=32]">
+        Restart Chrome
+      </message>
+      <message name="IDS_LANGUAGES_SETTINGS_TITLE" desc="Title of Language settings section to control translation preferences. [CHAR-LIMIT=32]">
+        Translation settings
+      </message>
+      <message name="IDS_LANGUAGES_SETTINGS_ADVANCED" desc="Title of Language settings section that will show advanced translation settings. [CHAR-LIMIT=32]">
+        Advanced
+      </message>
+      <message name="IDS_LANGUAGES_SETTINGS_TARGET" desc="Title of Translation settings for the current translate targert. Tapping this opens a new screen to select the target language.  [CHAR-LIMIT=32]">
+        Translate into this language
+      </message>
+      <message name="IDS_LANGUAGES_SETTINGS_AUTOMATIC" desc="Title of Translation settings that lists languages that should be automatically translated.">
+        Automatically translate these languages
+      </message>
+      <message name="IDS_LANGUAGES_SETTINGS_DONT_OFFER_LANG" desc="Title of Translation settings that lists languages where no prompt to translate will be shown.">
+        Don’t offer to translate these languages
+      </message>
+      <message name="IDS_LANGUAGES_SETTINGS_DONT_OFFER_SITES" desc="Title of Translation settings that lists websites where no prompt to translate will be shown.">
+        Don’t offer to translate these sites
       </message>
 
       <!-- Lite Mode-->
