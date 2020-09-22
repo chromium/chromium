@@ -1301,7 +1301,8 @@ static bool NeedsFilter(const LayoutObject& object,
   if (object.IsBoxModelObject() && ToLayoutBoxModelObject(object).HasLayer()) {
     if (object.StyleRef().HasFilter() || object.HasReflection())
       return true;
-  } else if (object.IsSVGChild()) {
+  } else if (object.IsSVGChild() && !object.IsText() &&
+             SVGResources::GetClient(object)) {
     if (HasReferenceFilterOnly(object.StyleRef())) {
       // Filters don't apply to elements that are descendants of a <clipPath>.
       if (!full_context.has_svg_hidden_container_ancestor ||
@@ -1325,13 +1326,16 @@ static void UpdateFilterEffect(const LayoutObject& object,
     layer->ClearFilterOnEffectNodeDirty();
     return;
   }
-  if (object.IsSVGChild()) {
+  if (object.IsSVGChild() && !object.IsText()) {
+    SVGElementResourceClient* client = SVGResources::GetClient(object);
+    if (!client)
+      return;
     if (!HasReferenceFilterOnly(object.StyleRef()))
       return;
     // Try to use the cached filter.
     if (effect_node)
       filter = effect_node->Filter();
-    SVGResources::GetClient(object)->UpdateFilterData(filter);
+    client->UpdateFilterData(filter);
   }
 }
 
