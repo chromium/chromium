@@ -224,14 +224,14 @@ struct HidReportItem {
   // fields that define the unit system and the exponents on units of length,
   // mass, time, temperature, current, and luminous intensity. Bits [28:31] are
   // reserved and should be set to zero.
-  uint32 unit@21;
+  uint32 unit@22;
 
   // A single report item may define multiple same-sized fields within a report.
   // |report_size| and |report_count| define the size of one field (in bits) and
   // the number of fields within the item. The total size of this item in bits
   // is equal to the product of these values.
-  uint32 report_size@22;
-  uint32 report_count@23;
+  uint32 report_size@23;
+  uint32 report_count@24;
 };
 
 // Contains information collected from the HID report descriptor regarding a
