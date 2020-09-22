@@ -20,7 +20,7 @@ message Record {
   //
   // Current expected formats (destination : type):
   // Destination::UPLOAD_EVENTS : UploadEventsRequest
-  optional string data = 1;
+  optional bytes data = 1;
 
   // The destination associated with this request as set with the
   // ReportingQueueConfiguration (required).
@@ -29,6 +29,11 @@ message Record {
   // The DMToken associated with this request as set with the
   // ReportingQueueConfiuguration (required).
   optional string dm_token = 3;
+
+  // When the record was submitted to ReportingQueue::Enqueue.
+  // Represents UTC time since Unix epoch 1970-01-01T00:00:00Z in microseconds,
+  // to match Spanner timestamp format.
+  optional int64 timestamp_us = 4;
 }
 
 // A Record with it's digest and the digest of the previous record.
@@ -87,7 +92,7 @@ message SequencingInformation {
 message EncryptedRecord {
   // Encrypted Wrapped Record (required)
   // |WrappedRecord| encrypted with the |encryption_key| in |encryption_info|.
-  optional string encrypted_wrapped_record = 1;
+  optional bytes encrypted_wrapped_record = 1;
 
   optional EncryptionInfo encryption_info = 2;
 

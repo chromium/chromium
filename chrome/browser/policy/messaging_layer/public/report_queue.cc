@@ -18,6 +18,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/encryption/encryption_module.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
@@ -98,6 +99,10 @@ Record ReportQueue::AugmentRecord(base::StringPiece record_data) {
   record.set_data(std::string(record_data));
   record.set_destination(config_->destination());
   record.set_dm_token(config_->dm_token().value());
+  // Calculate timestamp in microseconds - to match Spanner expectations.
+  const int64_t time_since_epoch_us =
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
+  record.set_timestamp_us(time_since_epoch_us);
   return record;
 }
 
