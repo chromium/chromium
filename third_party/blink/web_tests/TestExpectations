@@ -6749,3 +6749,6 @@ crbug.com/1130500 [ Mac10.13 Debug ] virtual/omt-worker-fetch/external/wpt/xhr/x
 
 # Sheriff 2020-09-22
 crbug.com/1130533 [ Mac ] external/wpt/xhr/xhr-timeout-longtask.any.html [ Pass Failure ]
+
+# Sheriff 2020-09-22
+crbug.com/1130533 [ Mac ] external/wpt/xhr/xhr-timeout-longtask.any.worker.html [ Pass Failure ]
