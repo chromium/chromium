@@ -419,6 +419,8 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
             mAutofillProvider.hidePopup();
         }
 
+        if (mFullscreenCallbackProxy != null) mFullscreenCallbackProxy.destroyToast();
+
         hideFindInPageUiAndNotifyClient();
         updateWebContentsVisibility();
         updateDisplayCutoutController();
@@ -526,7 +528,7 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         StrictModeWorkaround.apply();
         if (client != null) {
             if (mFullscreenCallbackProxy == null) {
-                mFullscreenCallbackProxy = new FullscreenCallbackProxy(mNativeTab, client);
+                mFullscreenCallbackProxy = new FullscreenCallbackProxy(this, mNativeTab, client);
             } else {
                 mFullscreenCallbackProxy.setClient(client);
             }
@@ -976,6 +978,12 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
     @VisibleForTesting
     public boolean canBrowserControlsScrollForTesting() {
         return mBrowserControlsVisibility.get() == BrowserControlsState.BOTH;
+    }
+
+    @VisibleForTesting
+    public boolean didShowFullscreenToast() {
+        return mFullscreenCallbackProxy != null
+                && mFullscreenCallbackProxy.didShowFullscreenToast();
     }
 
     private void onBrowserControlsConstraintUpdated(int constraint) {

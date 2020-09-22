@@ -604,6 +604,11 @@
       <message name="IDS_EXTERNAL_APP_LEAVE_INCOGNITO_LEAVE" desc="Label for the dialog button to leave incognito mode. [CHAR-LIMIT=20]" formatter_data="android_java">
         Leave
       </message>
+
+      <!-- Fullscreen -->
+      <message name="IDS_IMMERSIVE_FULLSCREEN_API_NOTIFICATION" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit.">
+        Drag from top and touch the back button to exit full screen.
+      </message>
     </messages>
   </release>
 </grit>

@@ -185,4 +185,10 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
         TabImpl tabImpl = (TabImpl) tab;
         return tabImpl.getTranslateInfoBarTargetLanguageForTesting();
     }
+
+    @Override
+    public boolean didShowFullscreenToast(ITab tab) {
+        TabImpl tabImpl = (TabImpl) tab;
+        return tabImpl.didShowFullscreenToast();
+    }
 }

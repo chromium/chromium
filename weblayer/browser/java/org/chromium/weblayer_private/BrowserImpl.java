@@ -21,6 +21,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.weblayer_private.interfaces.APICallException;
@@ -126,7 +127,7 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
         return mWindowAndroid;
     }
 
-    public ViewGroup getViewAndroidDelegateContainerView() {
+    public ContentView getViewAndroidDelegateContainerView() {
         if (mViewController == null) return null;
         return mViewController.getContentView();
     }
@@ -399,7 +400,7 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
         return true;
     }
 
-    public TabImpl getActiveTab() {
+    public @Nullable TabImpl getActiveTab() {
         return BrowserImplJni.get().getActiveTab(mNativeBrowser);
     }
 

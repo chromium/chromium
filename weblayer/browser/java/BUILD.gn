@@ -116,6 +116,7 @@ android_library("java") {
     "org/chromium/weblayer_private/FragmentAndroidPermissionDelegate.java",
     "org/chromium/weblayer_private/FragmentWindowAndroid.java",
     "org/chromium/weblayer_private/FullscreenCallbackProxy.java",
+    "org/chromium/weblayer_private/FullscreenToast.java",
     "org/chromium/weblayer_private/GoogleAccountsCallbackProxy.java",
     "org/chromium/weblayer_private/InfoBarContainer.java",
     "org/chromium/weblayer_private/InfoBarContainerView.java",

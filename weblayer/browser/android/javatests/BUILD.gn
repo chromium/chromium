@@ -35,7 +35,6 @@ android_library("weblayer_java_tests") {
     "src/org/chromium/weblayer/test/TabCallbackTest.java",
     "src/org/chromium/weblayer/test/TabListCallbackTest.java",
     "src/org/chromium/weblayer/test/TabTest.java",
-    "src/org/chromium/weblayer/test/TestFullscreenCallback.java",
     "src/org/chromium/weblayer/test/TopControlsTest.java",
     "src/org/chromium/weblayer/test/WebLayerLoadingTest.java",
     "src/org/chromium/weblayer/test/WebLayerTest.java",
@@ -69,6 +68,7 @@ android_library("weblayer_private_java_tests") {
   testonly = true
   sources = [
     "src/org/chromium/weblayer/test/BrowserControlsTest.java",
+    "src/org/chromium/weblayer/test/FullscreenCallbackPrivateTest.java",
     "src/org/chromium/weblayer/test/GeolocationTest.java",
     "src/org/chromium/weblayer/test/InfoBarTest.java",
     "src/org/chromium/weblayer/test/MediaCaptureTest.java",
@@ -113,6 +113,7 @@ android_library("weblayer_java_test_support") {
     "src/org/chromium/weblayer/test/NewTabCallbackImpl.java",
     "src/org/chromium/weblayer/test/ResourceUtil.java",
     "src/org/chromium/weblayer/test/SiteSettingsActivityTestRule.java",
+    "src/org/chromium/weblayer/test/TestFullscreenCallback.java",
     "src/org/chromium/weblayer/test/WebLayerActivityTestRule.java",
     "src/org/chromium/weblayer/test/WebLayerJUnit4ClassRunner.java",
   ]

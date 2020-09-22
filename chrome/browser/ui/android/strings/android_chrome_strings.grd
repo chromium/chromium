@@ -2111,11 +2111,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Work profile
       </message>
 
-      <!-- Fullscreen -->
-      <message name="IDS_IMMERSIVE_FULLSCREEN_API_NOTIFICATION" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit.">
-        Drag from top and touch the back button to exit full screen.
-      </message>
-
       <!-- Download UI -->
       <message name="IDS_DOWNLOAD_NOTIFICATION_COMPLETED" desc="Download notification to be displayed when a download completes.">
         Download complete
