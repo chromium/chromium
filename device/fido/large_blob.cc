@@ -83,7 +83,18 @@ LargeBlobsRequest::~LargeBlobsRequest() = default;
 
 void LargeBlobsRequest::SetPinParam(
     const pin::TokenResponse& pin_uv_auth_token) {
-  // TODO(nsatragno): implement & test pin uv auth token.
+  pin_uv_auth_protocol_ = pin::kProtocolVersion;
+  std::vector<uint8_t> pin_auth(pin::kPinUvAuthTokenSafetyPadding.begin(),
+                                pin::kPinUvAuthTokenSafetyPadding.end());
+  pin_auth.insert(pin_auth.end(), kLargeBlobPinPrefix.begin(),
+                  kLargeBlobPinPrefix.end());
+  const std::array<uint8_t, 4> offset_array =
+      fido_parsing_utils::Uint32LittleEndian(offset_);
+  pin_auth.insert(pin_auth.end(), offset_array.begin(), offset_array.end());
+  if (set_) {
+    pin_auth.insert(pin_auth.end(), set_->begin(), set_->end());
+  }
+  pin_uv_auth_param_ = pin_uv_auth_token.PinAuth(pin_auth);
 }
 
 // static

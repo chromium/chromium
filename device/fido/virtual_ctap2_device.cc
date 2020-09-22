@@ -57,18 +57,12 @@ constexpr std::array<uint8_t, kAaguidLength> kDeviceAaguid = {
     {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04,
      0x05, 0x06, 0x07, 0x08}};
 
-// Some commands that validate PinUvAuthTokens include this padding to ensure a
-// PinUvAuthParam cannot be reused across different commands.
-constexpr std::array<uint8_t, 32> kPinUvAuthTokenSafetyPadding = {
-    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-
 constexpr uint8_t kSupportedPermissionsMask =
     static_cast<uint8_t>(pin::Permissions::kMakeCredential) |
     static_cast<uint8_t>(pin::Permissions::kGetAssertion) |
     static_cast<uint8_t>(pin::Permissions::kCredentialManagement) |
-    static_cast<uint8_t>(pin::Permissions::kBioEnrollment);
+    static_cast<uint8_t>(pin::Permissions::kBioEnrollment) |
+    static_cast<uint8_t>(pin::Permissions::kLargeBlobWrite);
 
 struct PinUvAuthTokenPermissions {
   uint8_t permissions;
@@ -600,6 +594,16 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
 }
 
 VirtualCtap2Device::~VirtualCtap2Device() = default;
+
+void VirtualCtap2Device::SetPin(std::string pin) {
+  DCHECK_NE(
+      device_info_->options.client_pin_availability,
+      AuthenticatorSupportedOptions::ClientPinAvailability::kNotSupported);
+  mutable_state()->pin = std::move(pin);
+  mutable_state()->pin_retries = device::kMaxPinRetries;
+  device_info_->options.client_pin_availability =
+      AuthenticatorSupportedOptions::ClientPinAvailability::kSupportedAndPinSet;
+}
 
 // As all operations for VirtualCtap2Device are synchronous and we do not wait
 // for user touch, Cancel command is no-op.
@@ -2294,9 +2298,10 @@ CtapDeviceResponseCode VirtualCtap2Device::OnLargeBlobs(
       //        pinUvAuthParam)
       std::vector<uint8_t> pinauth_bytes;
       pinauth_bytes.insert(pinauth_bytes.begin(),
-                           kPinUvAuthTokenSafetyPadding.begin(),
-                           kPinUvAuthTokenSafetyPadding.end());
-      pinauth_bytes.insert(pinauth_bytes.end(), {0x0c, 0x00});
+                           pin::kPinUvAuthTokenSafetyPadding.begin(),
+                           pin::kPinUvAuthTokenSafetyPadding.end());
+      pinauth_bytes.insert(pinauth_bytes.end(), kLargeBlobPinPrefix.begin(),
+                           kLargeBlobPinPrefix.end());
       auto offset_vec = fido_parsing_utils::Uint32LittleEndian(offset);
       pinauth_bytes.insert(pinauth_bytes.end(), offset_vec.begin(),
                            offset_vec.end());

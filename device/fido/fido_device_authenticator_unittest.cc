@@ -12,6 +12,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/large_blob.h"
+#include "device/fido/pin.h"
 #include "device/fido/test_callback_receiver.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device.h"
@@ -27,6 +28,9 @@ using WriteCallback =
 using ReadCallback = device::test::StatusAndValueCallbackReceiver<
     CtapDeviceResponseCode,
     base::Optional<std::vector<std::pair<LargeBlobKey, std::vector<uint8_t>>>>>;
+using PinCallback = device::test::StatusAndValueCallbackReceiver<
+    CtapDeviceResponseCode,
+    base::Optional<pin::TokenResponse>>;
 
 constexpr LargeBlobKey kDummyKey1 = {{0x01}};
 constexpr LargeBlobKey kDummyKey2 = {{0x02}};
@@ -34,6 +38,7 @@ constexpr std::array<uint8_t, 4> kSmallBlob1 = {'r', 'o', 's', 'a'};
 constexpr std::array<uint8_t, 4> kSmallBlob2 = {'l', 'u', 'm', 'a'};
 constexpr std::array<uint8_t, 4> kSmallBlob3 = {'s', 't', 'a', 'r'};
 constexpr size_t kMaxStorageSize = 4096;
+constexpr char kPin[] = "1234";
 
 class FidoDeviceAuthenticatorTest : public testing::Test {
  public:
@@ -43,10 +48,13 @@ class FidoDeviceAuthenticatorTest : public testing::Test {
     config.large_blob_support = true;
     config.resident_key_support = true;
     config.available_large_blob_storage = kMaxStorageSize;
+    config.pin_uv_auth_token_support = true;
+    config.ctap2_versions = {Ctap2Version::kCtap2_1};
 
     authenticator_state_ = base::MakeRefCounted<VirtualFidoDevice::State>();
     auto virtual_device =
         std::make_unique<VirtualCtap2Device>(authenticator_state_, config);
+    virtual_device_ = virtual_device.get();
     authenticator_ =
         std::make_unique<FidoDeviceAuthenticator>(std::move(virtual_device));
 
@@ -56,13 +64,9 @@ class FidoDeviceAuthenticatorTest : public testing::Test {
   }
 
  protected:
-  void SetPin() {
-    authenticator_state_->pin = "1234";
-    authenticator_state_->pin_retries = device::kMaxPinRetries;
-  }
-
   scoped_refptr<VirtualFidoDevice::State> authenticator_state_;
   std::unique_ptr<FidoDeviceAuthenticator> authenticator_;
+  VirtualCtap2Device* virtual_device_;
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -138,6 +142,36 @@ TEST_F(FidoDeviceAuthenticatorTest, TestWriteLargeBlob) {
   ASSERT_EQ(1u, large_blob_array->size());
   EXPECT_EQ(kDummyKey1, large_blob_array->at(0).first);
   EXPECT_EQ(large_blob, large_blob_array->at(0).second);
+}
+
+// Test reading and writing a blob using a PinUvAuthToken.
+TEST_F(FidoDeviceAuthenticatorTest, TestWriteSmallBlobWithToken) {
+  virtual_device_->SetPin(kPin);
+  PinCallback pin_callback;
+  authenticator_->GetPINToken(kPin, {pin::Permissions::kLargeBlobWrite},
+                              /*rp_id=*/base::nullopt, pin_callback.callback());
+  pin_callback.WaitForCallback();
+  ASSERT_EQ(CtapDeviceResponseCode::kSuccess, pin_callback.status());
+  pin::TokenResponse pin_token = *pin_callback.value();
+
+  std::vector<uint8_t> small_blob =
+      fido_parsing_utils::Materialize(kSmallBlob1);
+  WriteCallback write_callback;
+  authenticator_->WriteLargeBlob(small_blob, {kDummyKey1}, pin_token,
+                                 write_callback.callback());
+  write_callback.WaitForCallback();
+  ASSERT_EQ(CtapDeviceResponseCode::kSuccess, write_callback.value());
+
+  ReadCallback read_callback;
+  authenticator_->ReadLargeBlob({kDummyKey1}, pin_token,
+                                read_callback.callback());
+  read_callback.WaitForCallback();
+  ASSERT_EQ(CtapDeviceResponseCode::kSuccess, read_callback.status());
+  auto large_blob_array = read_callback.value();
+  ASSERT_TRUE(large_blob_array);
+  ASSERT_EQ(1u, large_blob_array->size());
+  EXPECT_EQ(kDummyKey1, large_blob_array->at(0).first);
+  EXPECT_EQ(small_blob, large_blob_array->at(0).second);
 }
 
 // Test updating a large blob in an array with multiple entries corresponding to

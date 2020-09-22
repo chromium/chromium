@@ -38,6 +38,13 @@ enum class Permissions : uint8_t {
 // implements.
 constexpr int kProtocolVersion = 1;
 
+// Some commands that validate PinUvAuthTokens include this padding to ensure a
+// PinUvAuthParam cannot be reused across different commands.
+constexpr std::array<uint8_t, 32> kPinUvAuthTokenSafetyPadding = {
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+
 // IsValid returns true if |pin|, which must be UTF-8, is a syntactically valid
 // PIN.
 COMPONENT_EXPORT(DEVICE_FIDO) bool IsValid(const std::string& pin);
