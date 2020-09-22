@@ -12,6 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "base/bind.h"
+#include "net/base/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -46,8 +47,8 @@ void HoldingSpaceItemContextMenu::ShowContextMenuForViewImpl(
 void HoldingSpaceItemContextMenu::ExecuteCommand(int command_id,
                                                  int event_flags) {
   switch (command_id) {
-    case HoldingSpaceCommandId::kCopyToClipboard:
-      HoldingSpaceController::Get()->client()->CopyToClipboard(
+    case HoldingSpaceCommandId::kCopyImageToClipboard:
+      HoldingSpaceController::Get()->client()->CopyImageToClipboard(
           *item_, base::DoNothing());
       break;
     case HoldingSpaceCommandId::kPinItem:
@@ -70,13 +71,21 @@ ui::SimpleMenuModel* HoldingSpaceItemContextMenu::BuildMenuModel() {
       l10n_util::GetStringUTF16(
           IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_SHOW_IN_FOLDER),
       ui::ImageModel::FromVectorIcon(kFolderIcon));
-  context_menu_model_->AddItemWithIcon(
-      HoldingSpaceCommandId::kCopyToClipboard,
-      l10n_util::GetStringUTF16(
-          IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_COPY_TO_CLIPBOARD),
-      ui::ImageModel::FromVectorIcon(kCopyIcon));
 
-  bool is_pinned = HoldingSpaceController::Get()->model()->GetItem(
+  std::string mime_type;
+  const bool is_image =
+      net::GetMimeTypeFromFile(item_->file_path(), &mime_type) &&
+      net::MatchesMimeType(kMimeTypeImage, mime_type);
+
+  if (is_image) {
+    context_menu_model_->AddItemWithIcon(
+        HoldingSpaceCommandId::kCopyImageToClipboard,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_COPY_IMAGE_TO_CLIPBOARD),
+        ui::ImageModel::FromVectorIcon(kCopyIcon));
+  }
+
+  const bool is_pinned = HoldingSpaceController::Get()->model()->GetItem(
       HoldingSpaceItem::GetFileBackedItemId(HoldingSpaceItem::Type::kPinnedFile,
                                             item_->file_path()));
   if (!is_pinned) {
@@ -90,6 +99,7 @@ ui::SimpleMenuModel* HoldingSpaceItemContextMenu::BuildMenuModel() {
         l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_UNPIN),
         ui::ImageModel::FromVectorIcon(views::kUnpinIcon));
   }
+
   return context_menu_model_.get();
 }
 

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_client_impl.h"
 
+#include <string>
+
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
@@ -11,6 +13,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "base/bind_helpers.h"
 #include "base/files/file_path.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -25,7 +28,77 @@
 
 namespace ash {
 
+namespace {
+
+// File paths for test data.
+constexpr char kTestDataDir[] = "chrome/test/data/chromeos/file_manager/";
+constexpr char kImageFilePath[] = "image.png";
+constexpr char kTextFilePath[] = "text.txt";
+
+// Helpers ---------------------------------------------------------------------
+
+// Returns the file for the `relative_path` in the test data directory.
+base::FilePath TestFile(const std::string& relative_path) {
+  base::FilePath source_root;
+  EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root));
+  return source_root.AppendASCII(kTestDataDir).AppendASCII(relative_path);
+}
+
+}  // namespace
+
+// Tests -----------------------------------------------------------------------
+
 using HoldingSpaceClientImplTest = HoldingSpaceBrowserTestBase;
+
+// Verifies that `HoldingSpaceClient::CopyImageToClipboard()` works as intended
+// when attempting to copy both image backed and non-image backed holding space
+// items.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, CopyImageToClipboard) {
+  ASSERT_TRUE(HoldingSpaceController::Get());
+
+  auto* holding_space_client = HoldingSpaceController::Get()->client();
+  ASSERT_TRUE(holding_space_client);
+
+  {
+    // Create a holding space item backed by a non-image file.
+    auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
+        HoldingSpaceItem::Type::kDownload, TestFile(kTextFilePath), GURL(),
+        std::make_unique<HoldingSpaceImage>(
+            /*placeholder=*/gfx::ImageSkia(),
+            /*async_bitmap_resolver=*/base::DoNothing()));
+
+    // We expect `HoldingSpaceClient::CopyImageToClipboard()` to fail when the
+    // backing file for `holding_space_item` is not an image file.
+    base::RunLoop run_loop;
+    holding_space_client->CopyImageToClipboard(
+        *holding_space_item,
+        base::BindLambdaForTesting([&run_loop](bool success) {
+          EXPECT_FALSE(success);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  {
+    // Create a holding space item backed by an image file.
+    auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
+        HoldingSpaceItem::Type::kDownload, TestFile(kImageFilePath), GURL(),
+        std::make_unique<HoldingSpaceImage>(
+            /*placeholder=*/gfx::ImageSkia(),
+            /*async_bitmap_resolver=*/base::DoNothing()));
+
+    // We expect `HoldingSpaceClient::CopyImageToClipboard()` to succeed when
+    // the backing file for `holding_space_item` is an image file.
+    base::RunLoop run_loop;
+    holding_space_client->CopyImageToClipboard(
+        *holding_space_item,
+        base::BindLambdaForTesting([&run_loop](bool success) {
+          EXPECT_TRUE(success);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+}
 
 // Verifies that `HoldingSpaceClient::OpenItem()` works as intended when
 // attempting to open holding space items backed by both non-existing and

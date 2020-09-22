@@ -24,10 +24,12 @@ class ASH_PUBLIC_EXPORT HoldingSpaceClient {
   // Adds a screenshot item backed by the provided `file_path`.
   virtual void AddScreenshot(const base::FilePath& file_path) = 0;
 
-  // Attempts to copy the specified holding space `item` to the clipboard.
-  // Success is returned via the supplied `callback`.
-  virtual void CopyToClipboard(const HoldingSpaceItem& item,
-                               SuccessCallback callback) = 0;
+  // Attempts to copy the contents of the image file backing the specified
+  // holding space `item` to the clipboard. If the backing file is not suspected
+  // to contain image data, this method will abort early. Success is returned
+  // via the supplied `callback`.
+  virtual void CopyImageToClipboard(const HoldingSpaceItem& item,
+                                    SuccessCallback callback) = 0;
 
   // Attempts to open the specified holding space `item`.
   // Success is returned via the supplied `callback`.

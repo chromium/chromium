@@ -11,15 +11,6 @@
 
 namespace ash {
 
-// Context menu commands.
-enum HoldingSpaceCommandId {
-  kPinItem,
-  kCopyToClipboard,
-  kShowInFolder,
-  kUnpinItem,
-  kMaxValue = kUnpinItem
-};
-
 // Appearance.
 constexpr gfx::Insets kHoldingSpaceContainerPadding(16);
 constexpr int kHoldingSpaceContainerChildSpacing = 16;
@@ -38,13 +29,25 @@ constexpr int kHoldingSpaceScreenshotSpacing = 8;
 constexpr gfx::Size kHoldingSpaceScreenshotSize(104, 80);
 constexpr gfx::Insets kHoldingSpaceScreenshotsContainerPadding(8, 0);
 
+// Context menu commands.
+enum HoldingSpaceCommandId {
+  kPinItem,
+  kCopyImageToClipboard,
+  kShowInFolder,
+  kUnpinItem,
+  kMaxValue = kUnpinItem
+};
+
 // View IDs.
 constexpr int kHoldingSpacePinnedFilesContainerId = 1;
 constexpr int kHoldingSpaceRecentFilesContainerId = 2;
 
-// The maximum allowed time age for files restored into holding space model.
-// This is not enforced for pinned items.
-const base::TimeDelta kMaxFileAge = base::TimeDelta::FromDays(1);
+// The maximum allowed age for files restored into the holding space model.
+// Note that this is not enforced for pinned items.
+constexpr base::TimeDelta kMaxFileAge = base::TimeDelta::FromDays(1);
+
+// Mime type with wildcard which matches all image types.
+constexpr char kMimeTypeImage[] = "image/*";
 
 }  // namespace ash
 

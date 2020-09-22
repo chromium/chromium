@@ -958,8 +958,8 @@ This file contains the strings for ash.
       <message name="IDS_ASH_HOLDING_SPACE_SCREENSHOTS_TITLE" desc="Title of the screenshots area in the holding space bubble.">
         Screenshots
       </message>
-      <message name="IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_COPY_TO_CLIPBOARD" desc="Title of the option to copy items to clipboard.">
-        Copy to clipboard
+      <message name="IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_COPY_IMAGE_TO_CLIPBOARD" desc="Title of the option to copy an image to the clipboard in the holding space item context menu.">
+        Copy image
       </message>
       <message name="IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PIN" desc="Title of the pin option in the holding space item context menu.">
         Pin
