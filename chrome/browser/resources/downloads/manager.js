@@ -266,10 +266,15 @@ Polymer({
     }
 
     this.mojoHandler_.clearAll();
-    getToastManager().show(loadTimeData.getString('toastClearedAll'));
-    this.fire('iron-announce', {
-      text: loadTimeData.getString('undoDescription'),
-    });
+    const canUndo =
+        this.items_.some(data => !data.isDangerous && !data.isMixedContent);
+    getToastManager().show(loadTimeData.getString('toastClearedAll'),
+        /* hideSlotted= */ !canUndo);
+    if (canUndo) {
+      this.fire('iron-announce', {
+        text: loadTimeData.getString('undoDescription'),
+      });
+    }
   },
 
   /** @private */

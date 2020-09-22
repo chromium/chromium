@@ -94,8 +94,9 @@
   }
 </style>
 
-<downloads-toolbar id="toolbar" spinner-active="{{spinnerActive_}}"
-    role="none" on-search-changed="onSearchChanged_">
+<downloads-toolbar id="toolbar" items="[[items_]]"
+    spinner-active="{{spinnerActive_}}" role="none"
+    on-search-changed="onSearchChanged_">
 </downloads-toolbar>
 <div id="drop-shadow" class="cr-container-shadow"></div>
 <div id="mainContainer" on-scroll="onScroll_">

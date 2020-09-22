@@ -51,4 +51,14 @@ suite('cr-toast-manager', () => {
     assertEquals(
         3, /** @type {!CrToastElement} */ (toastManager.$$('#toast').duration));
   });
+
+  test('slot hidden or shown based on arg passed into |show()|', () => {
+    toastManager.show('', /* hideSlotted= */ false);
+    assertFalse(toastManager.slottedHidden);
+    toastManager.show('', /* hideSlotted= */ true);
+    assertTrue(toastManager.slottedHidden);
+    // Check that |hideSlotted| defaults to false.
+    toastManager.show('');
+    assertFalse(toastManager.slottedHidden);
+  });
 });

@@ -13,6 +13,9 @@ suite('item tests', function() {
   /** @type {!TestIconLoader} */
   let testIconLoader;
 
+  /** @type {!CrToastManagerElement} */
+  let toastManager;
+
   setup(function() {
     document.body.innerHTML = '';
 
@@ -24,6 +27,9 @@ suite('item tests', function() {
 
     item = document.createElement('downloads-item');
     document.body.appendChild(item);
+
+    toastManager = document.createElement('cr-toast-manager');
+    document.body.appendChild(toastManager);
   });
 
   test('dangerous downloads aren\'t linkable', () => {
@@ -104,5 +110,29 @@ suite('item tests', function() {
              }));
     flush();
     assertEquals(item.$$('#openNow'), null);
+  });
+
+  test('undo is shown in toast', () => {
+    item.data = createDownload({hideDate: false});
+    toastManager.show('', /* hideSlotted= */ true);
+    assertTrue(toastManager.slottedHidden);
+    item.$.remove.click();
+    assertFalse(toastManager.slottedHidden);
+  });
+
+  test('undo is not shown in toast when item is dangerous', () => {
+    item.data = createDownload({hideDate: false, isDangerous: true});
+    toastManager.show('', /* hideSlotted= */ false);
+    assertFalse(toastManager.slottedHidden);
+    item.$.remove.click();
+    assertTrue(toastManager.slottedHidden);
+  });
+
+  test('undo is not shown in toast when item is mixed content', () => {
+    item.data = createDownload({hideDate: false, isMixedContent: true});
+    toastManager.show('', /* hideSlotted= */ false);
+    assertFalse(toastManager.slottedHidden);
+    item.$.remove.click();
+    assertTrue(toastManager.slottedHidden);
   });
 });

@@ -125,6 +125,8 @@ export function createDownload(config) {
         fileName: 'download 1',
         fileUrl: 'file:///some/file/path',
         id: '',
+        isDangerous: false,
+        isMixedContent: false,
         lastReasonText: '',
         otr: false,
         percent: 100,

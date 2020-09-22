@@ -625,23 +625,26 @@ Polymer({
 
     /** @private */
     onRemoveTap_() {
+      this.mojoHandler_.remove(this.data.id);
       const pieces = loadTimeData.getSubstitutedStringPieces(
           loadTimeData.getString('toastRemovedFromList'), this.data.fileName);
       pieces.forEach(p => {
         // Make the file name collapsible.
         p.collapsible = !!p.arg;
       });
+      const canUndo = !this.data.isDangerous && !this.data.isMixedContent;
       getToastManager().showForStringPieces(
           /**
            * @type {!Array<{collapsible: boolean,
            *                 value: string,
            *                 arg: (string|null)}>}
            */
-          (pieces));
-      this.fire('iron-announce', {
-        text: loadTimeData.getString('undoDescription'),
-      });
-      this.mojoHandler_.remove(this.data.id);
+          (pieces), /* hideSlotted= */ !canUndo);
+      if (canUndo) {
+        this.fire('iron-announce', {
+          text: loadTimeData.getString('undoDescription'),
+        });
+      }
     },
 
     /** @private */

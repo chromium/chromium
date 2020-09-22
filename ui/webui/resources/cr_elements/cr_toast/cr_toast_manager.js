@@ -38,6 +38,11 @@ cr.define('cr.toastManager', () => {
       return this.$.toast.open;
     },
 
+    /** @return {boolean} */
+    get slottedHidden() {
+      return this.$.slotted.hidden;
+    },
+
     /** @override */
     attached() {
       setInstance(this);
@@ -48,17 +53,21 @@ cr.define('cr.toastManager', () => {
       setInstance(null);
     },
 
-    /** @param {string} label The label to display inside the toast. */
-    show(label) {
+    /**
+     * @param {string} label The label to display inside the toast.
+     * @param {boolean=} hideSlotted
+     */
+    show(label, hideSlotted = false) {
       this.$.content.textContent = label;
-      this.showInternal_();
+      this.showInternal_(hideSlotted);
     },
 
     /**
      * Shows the toast, making certain text fragments collapsible.
      * @param {!Array<!{value: string, collapsible: boolean}>} pieces
+     * @param {boolean=} hideSlotted
      */
-    showForStringPieces(pieces) {
+    showForStringPieces(pieces, hideSlotted = false) {
       const content = this.$.content;
       content.textContent = '';
       pieces.forEach(function(p) {
@@ -75,11 +84,15 @@ cr.define('cr.toastManager', () => {
         content.appendChild(span);
       });
 
-      this.showInternal_();
+      this.showInternal_(hideSlotted);
     },
 
-    /** @private */
-    showInternal_() {
+    /**
+     * @param {boolean} hideSlotted
+     * @private
+     */
+    showInternal_(hideSlotted) {
+      this.$.slotted.hidden = hideSlotted;
       Polymer.IronA11yAnnouncer.requestAvailability();
       this.fire('iron-announce', {
         text: this.$.content.textContent,

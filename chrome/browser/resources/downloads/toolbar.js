@@ -32,6 +32,12 @@ Polymer({
       observer: 'updateClearAll_',
     },
 
+    /** @type {!Array<!downloads.Data>} */
+    items: {
+      type: Array,
+      value: Array,
+    },
+
     spinnerActive: {
       type: Boolean,
       notify: true,
@@ -80,10 +86,15 @@ Polymer({
     assert(this.canClearAll());
     this.mojoHandler_.clearAll();
     this.$.moreActionsMenu.close();
-    getToastManager().show(loadTimeData.getString('toastClearedAll'));
-    this.fire('iron-announce', {
-      text: loadTimeData.getString('undoDescription'),
-    });
+    const canUndo =
+        this.items.some(data => !data.isDangerous && !data.isMixedContent);
+    getToastManager().show(loadTimeData.getString('toastClearedAll'),
+        /* hideSlotted= */ !canUndo);
+    if (canUndo) {
+      this.fire('iron-announce', {
+        text: loadTimeData.getString('undoDescription'),
+      });
+    }
   },
 
   /** @private */

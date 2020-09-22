@@ -182,4 +182,28 @@ suite('manager tests', function() {
     manager.$$('cr-toast-manager cr-button').click();
     assertFalse(toastManager.isToastOpen);
   });
+
+  test('undo is not shown when removing only dangerous items', async () => {
+    callbackRouterRemote.insertItems(0, [
+      createDownload({isDangerous: true}),
+      createDownload({isMixedContent: true})
+    ]);
+    await callbackRouterRemote.$.flushForTesting();
+    toastManager.show('', /* hideSlotted= */ false);
+    assertFalse(toastManager.slottedHidden);
+    keyDownOn(document, null, 'alt', isMac ? 'ç' : 'c');
+    assertTrue(toastManager.slottedHidden);
+  });
+
+  test('undo is shown when removing items', async () => {
+    callbackRouterRemote.insertItems(0, [
+      createDownload(), createDownload({isDangerous: true}),
+      createDownload({isMixedContent: true})
+    ]);
+    await callbackRouterRemote.$.flushForTesting();
+    toastManager.show('', /* hideSlotted= */ true);
+    assertTrue(toastManager.slottedHidden);
+    keyDownOn(document, null, 'alt', isMac ? 'ç' : 'c');
+    assertFalse(toastManager.slottedHidden);
+  });
 });

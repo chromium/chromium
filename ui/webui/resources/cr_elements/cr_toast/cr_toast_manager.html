@@ -4,11 +4,12 @@
 <link rel="import" href="../../html/assert.html">
 <link rel="import" href="../../html/cr.html">
 <link rel="import" href="../../html/event_tracker.html">
+<link rel="import" href="../hidden_style_css.html">
 <link rel="import" href="cr_toast.html">
 
 <dom-module id="cr-toast-manager">
   <template>
-    <style>
+    <style include="cr-hidden-style">
       #content {
         display: flex;
         flex: 1;
@@ -31,7 +32,9 @@
     </style>
     <cr-toast id="toast" duration="[[duration]]">
       <div id="content" class="elided-text"></div>
-      <slot></slot>
+      <div id="slotted">
+        <slot></slot>
+      </div>
     </cr-toast>
   </template>
   <script src="cr_toast_manager.js"></script>

@@ -331,6 +331,8 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   DCHECK(state);
 
   file_value->danger_type = danger_type;
+  file_value->is_dangerous = download_item->IsDangerous();
+  file_value->is_mixed_content = download_item->IsMixedContent();
   file_value->last_reason_text = base::UTF16ToUTF8(last_reason_text);
   file_value->percent = percent;
   file_value->progress_status_text = base::UTF16ToUTF8(progress_status_text);
