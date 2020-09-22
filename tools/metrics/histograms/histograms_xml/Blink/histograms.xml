@@ -37,7 +37,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Animate.UpdateTime" units="microseconds"
-    expires_after="2021-01-10">
+    expires_after="2021-03-21">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -806,7 +806,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.ForcedStyleAndLayout.UpdateTime" units="microseconds"
-    expires_after="2021-01-10">
+    expires_after="2021-03-21">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
   <owner>schenney@chromium.org</owner>
@@ -1056,7 +1056,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.IntersectionObservation.UpdateTime" units="microseconds"
-    expires_after="2021-01-10">
+    expires_after="2021-03-21">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
   <owner>schenney@chromium.org</owner>
@@ -1283,7 +1283,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.MainFrame.LayoutRatio" units="%"
-    expires_after="2021-01-10">
+    expires_after="2021-03-21">
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
@@ -1295,7 +1295,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.MainFrame.PaintRatio" units="%"
-    expires_after="2021-01-10">
+    expires_after="2021-03-21">
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
@@ -1344,7 +1344,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.MainFrame.UpdateLayersRatio" units="%"
-    expires_after="2021-01-10">
+    expires_after="2021-03-21">
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
@@ -1539,7 +1539,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Render.DisplayLockActivationReason"
-    enum="DisplayLockActivationReason" expires_after="2020-12-31">
+    enum="DisplayLockActivationReason" expires_after="2021-03-21">
   <owner>vmpstr@chromium.org</owner>
   <owner>chrishtr@chromium.org</owner>
   <summary>This indicates the reason for display-locking activation</summary>
@@ -1641,7 +1641,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.ScrollingCoordinator.UpdateTime" units="microseconds"
-    expires_after="2021-01-10">
+    expires_after="2021-03-21">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -1768,7 +1768,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Style.UpdateTime" units="microseconds"
-    expires_after="2021-01-10">
+    expires_after="2021-03-21">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -2045,7 +2045,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold"
-    enum="NQEEffectiveConnectionType" expires_after="2021-01-17">
+    enum="NQEEffectiveConnectionType" expires_after="2021-03-21">
   <owner>sclittle@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
