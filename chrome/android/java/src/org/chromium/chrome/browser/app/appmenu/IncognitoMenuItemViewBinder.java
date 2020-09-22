@@ -52,7 +52,10 @@ class IncognitoMenuItemViewBinder implements CustomViewBinder {
 
         holder.title.setCompoundDrawablesRelative(item.getIcon(), null, null, null);
         holder.title.setEnabled(item.isEnabled());
-        holder.title.setFocusable(item.isEnabled());
+        // Setting |holder.title| to non-focusable will allow TalkBack highlighting the whole view
+        // of the menu item, not just title text.
+        holder.title.setFocusable(false);
+        convertView.setFocusable(item.isEnabled());
         if (IncognitoUtils.isIncognitoModeManaged()) {
             holder.image.setVisibility(View.VISIBLE);
         }
