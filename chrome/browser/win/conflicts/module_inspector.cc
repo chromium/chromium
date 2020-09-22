@@ -217,9 +217,9 @@ void ModuleInspector::OnUtilWinServiceConnectionError() {
   // Disconnect from the service.
   remote_util_win_.reset();
 
-  // Restart inspection for the current module, only if the retry limit wasn't
+  // Restart the inspection if there is work to do and the retry limit wasn't
   // reached.
-  if (connection_error_retry_count_--)
+  if (!queue_.empty() && connection_error_retry_count_--)
     StartInspectingModule();
 }
 
