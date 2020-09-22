@@ -39,10 +39,9 @@ class CONTENT_EXPORT FontEnumerationCache {
 
   // Enqueue a request to get notified about the availability of the shared
   // memory region holding the font enumeration cache.
-  virtual void QueueShareMemoryRegionWhenReady(
+  void QueueShareMemoryRegionWhenReady(
       scoped_refptr<base::TaskRunner> task_runner,
-      blink::mojom::FontAccessManager::EnumerateLocalFontsCallback
-          callback) = 0;
+      blink::mojom::FontAccessManager::EnumerateLocalFontsCallback callback);
 
   // Returns whether the cache population has completed and the shared memory
   // region is ready.
@@ -51,6 +50,8 @@ class CONTENT_EXPORT FontEnumerationCache {
   void ResetStateForTesting();
 
  protected:
+  virtual void SchedulePrepareFontEnumerationCache() = 0;
+
   // Retrieve the prepared memory region if it is available.
   base::ReadOnlySharedMemoryRegion DuplicateMemoryRegion();
 

@@ -4,10 +4,12 @@
 
 #include "content/browser/font_access/font_enumeration_cache.h"
 
+#include "base/feature_list.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -20,6 +22,26 @@ FontEnumerationCache* FontEnumerationCache::GetInstance() {
   return nullptr;
 }
 #endif
+
+void FontEnumerationCache::QueueShareMemoryRegionWhenReady(
+    scoped_refptr<base::TaskRunner> task_runner,
+    blink::mojom::FontAccessManager::EnumerateLocalFontsCallback callback) {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));
+
+  callbacks_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &FontEnumerationCache::RunPendingCallback,
+          // Safe because this is an initialized singleton.
+          base::Unretained(this),
+          CallbackOnTaskRunner(std::move(task_runner), std::move(callback))));
+
+  if (!enumeration_cache_build_started_.IsSet()) {
+    enumeration_cache_build_started_.Set();
+
+    SchedulePrepareFontEnumerationCache();
+  }
+}
 
 void FontEnumerationCache::ResetStateForTesting() {
   callbacks_task_runner_ =
