@@ -30,7 +30,7 @@ static void DetermineOperatorSpacing(const NGLayoutInputNode& node,
                                      LayoutUnit* lspace,
                                      LayoutUnit* rspace) {
   auto* core_operator =
-      DynamicTo<MathMLOperatorElement>(node.GetLayoutBox()->GetNode());
+      DynamicTo<MathMLOperatorElement>(node.GetDOMNode());
   if (core_operator) {
     // TODO(crbug.com/1124298): Implement embellished operators.
     LayoutUnit leading_space(core_operator->DefaultLeadingSpace() *

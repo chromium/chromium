@@ -391,7 +391,7 @@ bool CanUseCachedIntrinsicInlineSizes(const MinMaxSizesInput& input,
 }
 
 bool IsContentMinimumInlineSizeZero(const NGBlockNode& block_node) {
-  const auto* node = block_node.GetLayoutBox()->GetNode();
+  const auto* node = block_node.GetDOMNode();
   const auto* marquee_element = DynamicTo<HTMLMarqueeElement>(node);
   if (marquee_element && marquee_element->IsHorizontal())
     return true;
@@ -1391,13 +1391,13 @@ bool NGBlockNode::IsCustomLayoutLoaded() const {
 }
 
 MathScriptType NGBlockNode::ScriptType() const {
-  DCHECK(IsA<MathMLScriptsElement>(GetLayoutBox()->GetNode()));
-  return To<MathMLScriptsElement>(GetLayoutBox()->GetNode())->GetScriptType();
+  DCHECK(IsA<MathMLScriptsElement>(GetDOMNode()));
+  return To<MathMLScriptsElement>(GetDOMNode())->GetScriptType();
 }
 
 bool NGBlockNode::HasIndex() const {
-  DCHECK(IsA<MathMLRadicalElement>(GetLayoutBox()->GetNode()));
-  return To<MathMLRadicalElement>(GetLayoutBox()->GetNode())->HasIndex();
+  DCHECK(IsA<MathMLRadicalElement>(GetDOMNode()));
+  return To<MathMLRadicalElement>(GetDOMNode())->HasIndex();
 }
 
 scoped_refptr<const NGLayoutResult> NGBlockNode::LayoutAtomicInline(

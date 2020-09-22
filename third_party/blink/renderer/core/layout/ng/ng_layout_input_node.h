@@ -157,6 +157,7 @@ class CORE_EXPORT NGLayoutInputNode {
   wtf_size_t TableCellRowspan() const;
 
   bool IsMathRoot() const { return box_->IsMathMLRoot(); }
+  bool IsMathML() const { return box_->IsMathML(); }
 
   bool IsAnonymousBlock() const { return box_->IsAnonymousBlock(); }
 
@@ -209,6 +210,8 @@ class CORE_EXPORT NGLayoutInputNode {
   NGLayoutInputNode NextSibling() const;
 
   Document& GetDocument() const { return box_->GetDocument(); }
+
+  Node* GetDOMNode() const { return box_->GetNode(); }
 
   PhysicalSize InitialContainingBlockSize() const;
 

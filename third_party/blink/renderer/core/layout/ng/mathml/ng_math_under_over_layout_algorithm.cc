@@ -124,7 +124,7 @@ UnderOverVerticalParameters GetUnderOverVerticalParameters(
 // https://mathml-refresh.github.io/mathml-core/#underscripts-and-overscripts-munder-mover-munderover
 bool HasAccent(const NGBlockNode& node, bool accent_under) {
   DCHECK(node);
-  auto* underover = To<MathMLUnderOverElement>(node.GetLayoutBox()->GetNode());
+  auto* underover = To<MathMLUnderOverElement>(node.GetDOMNode());
   auto script_type = underover->GetScriptType();
   DCHECK(script_type == MathScriptType::kUnderOver ||
          (accent_under && script_type == MathScriptType::kUnder) ||
@@ -203,7 +203,7 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
   bool is_base_large_operator = false;
   bool is_base_stretchy_in_inline_axis = false;
   if (auto* core_operator =
-          DynamicTo<MathMLOperatorElement>(base.GetLayoutBox()->GetNode())) {
+          DynamicTo<MathMLOperatorElement>(base.GetDOMNode())) {
     // TODO(crbug.com/1124298): Implement embellished operators.
     is_base_large_operator =
         core_operator->HasBooleanProperty(MathMLOperatorElement::kLargeOp);

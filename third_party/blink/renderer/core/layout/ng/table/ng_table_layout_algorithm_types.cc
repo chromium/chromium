@@ -155,7 +155,7 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
     // Has not worked in Legacy, might be pulled out.
     if (css_inline_size && node.GetDocument().InQuirksMode()) {
       bool has_nowrap_attribute =
-          !To<Element>(node.GetLayoutBox()->GetNode())
+          !To<Element>(node.GetDOMNode())
                ->FastGetAttribute(html_names::kNowrapAttr)
                .IsNull();
       if (has_nowrap_attribute && node.Style().AutoWrap()) {
@@ -210,7 +210,7 @@ NGTableTypes::Section NGTableTypes::CreateSection(
   if (section_css_block_size.IsPercent())
     percent = section_css_block_size.Percent();
   bool is_tbody =
-      section.GetLayoutBox()->GetNode()->HasTagName(html_names::kTbodyTag);
+      section.GetDOMNode()->HasTagName(html_names::kTbodyTag);
   return Section{start_row,
                  rows,
                  block_size,

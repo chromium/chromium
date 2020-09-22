@@ -16,7 +16,7 @@ namespace {
 using MathConstants = OpenTypeMathSupport::MathConstants;
 
 static bool IsPrescriptDelimiter(const NGBlockNode& blockNode) {
-  auto* node = blockNode.GetLayoutBox()->GetNode();
+  auto* node = blockNode.GetDOMNode();
   return node && IsA<MathMLElement>(node) &&
          node->HasTagName(mathml_names::kMprescriptsTag);
 }

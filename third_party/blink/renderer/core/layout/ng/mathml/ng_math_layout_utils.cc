@@ -71,7 +71,7 @@ bool IsValidMathMLFraction(const NGBlockNode& node) {
 }
 
 static bool IsPrescriptDelimiter(const NGBlockNode& block_node) {
-  auto* node = block_node.GetLayoutBox()->GetNode();
+  auto* node = block_node.GetDOMNode();
   return node && IsA<MathMLElement>(node) &&
          node->HasTagName(mathml_names::kMprescriptsTag);
 }
@@ -116,7 +116,7 @@ bool IsValidMathMLScript(const NGBlockNode& node) {
 
 bool IsValidMathMLRadical(const NGBlockNode& node) {
   auto* radical =
-      DynamicTo<MathMLRadicalElement>(node.GetLayoutBox()->GetNode());
+      DynamicTo<MathMLRadicalElement>(node.GetDOMNode());
   return !radical->HasIndex() || InFlowChildCountIs(node, 2);
 }
 
@@ -201,13 +201,13 @@ bool IsUnderOverLaidOutAsSubSup(const NGBlockNode& node) {
   DCHECK(IsValidMathMLScript(node));
   if (HasDisplayStyle(node.Style()))
     return false;
-  if (!node.IsBlock() || !node.GetLayoutBox()->IsMathML())
+  if (!node.IsBlock() || !node.IsMathML())
     return false;
   auto base = To<NGBlockNode>(FirstChildInFlow(node));
   // TODO(crbug.com/1124298)):
   // https://mathml-refresh.github.io/mathml-core/#embellished-operators
   if (auto* element =
-          DynamicTo<MathMLOperatorElement>(base.GetLayoutBox()->GetNode())) {
+          DynamicTo<MathMLOperatorElement>(base.GetDOMNode())) {
     return element->HasBooleanProperty(MathMLOperatorElement::kMovableLimits);
   }
   return false;
