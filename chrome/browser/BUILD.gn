@@ -3118,7 +3118,6 @@ static_library("browser") {
       "//chrome/browser/share/android:jni_headers",
       "//chrome/browser/tab:jni_headers",
       "//chrome/browser/ui/webui/explore_sites_internals:mojo_bindings",
-      "//chrome/browser/ui/webui/snippets_internals:mojo_bindings",
       "//chrome/browser/updates",
       "//chrome/browser/updates:factory",
       "//chrome/browser/video_tutorials/internal",
@@ -6319,10 +6318,7 @@ grit("dev_ui_browser_resources") {
     "//chrome/browser/ui/webui/interventions_internals:mojo_bindings_js",
   ]
   if (is_android) {
-    deps += [
-      "//chrome/browser/ui/webui/feed_internals:mojo_bindings_js",
-      "//chrome/browser/ui/webui/snippets_internals:mojo_bindings_js",
-    ]
+    deps += [ "//chrome/browser/ui/webui/feed_internals:mojo_bindings_js" ]
   }
 }
 

@@ -1423,8 +1423,6 @@
         'chrome/android/javatests/src/org/chromium/chrome/browser/suggestions/|'\
         'chrome/browser/android/ntp/ntp_snippets|'\
         'chrome/browser/ntp_snippets/|'\
-        'chrome/browser/resources/snippets_internals|'\
-        'chrome/browser/ui/webui/snippets_internals|'\
         'components/ntp_snippets/|'\
         'chrome/android/java/res/layout/new_tab_page|'\
         'chrome/android/java/res/layout/most_visited|'\

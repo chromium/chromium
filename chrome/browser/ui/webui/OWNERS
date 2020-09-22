@@ -20,8 +20,6 @@ per-file ntp_tiles_internals_ui.*=file://components/ntp_tiles/OWNERS
 
 per-file signin_internals_ui*=achuith@chromium.org
 
-per-file snippets_internals*=file://components/ntp_snippets/OWNERS
-
 per-file sync_internals*=file://components/sync/OWNERS
 
 per-file invalidations_message_handler.*=file://components/invalidation/OWNERS

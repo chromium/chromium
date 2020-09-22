@@ -238,7 +238,14 @@ void FeedOfflineHost::OnGetKnownContentDone(
 void FeedOfflineHost::GetCurrentArticleSuggestions(
     SuggestionsProvider::SuggestionCallback suggestions_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!trigger_get_known_content_.is_null());
+
+  // This function is used by the internals page, which doesn't wait for
+  // initialization to complete. Just give up in this exceptional case.
+  if (!trigger_get_known_content_) {
+    std::move(suggestions_callback).Run({});
+    return;
+  }
+
   pending_known_content_callbacks_.emplace_back(
       std::move(suggestions_callback));
   // Trigger after push_back() in case triggering results in a synchronous

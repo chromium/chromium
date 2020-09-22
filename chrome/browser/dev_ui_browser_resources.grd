@@ -81,10 +81,6 @@ This file specifies browser resources for developer-facing chrome:// pages
         <include name="IDR_QUERY_TILES_INTERNALS_HTML" file="resources\internals\query_tiles\query_tiles_internals.html" type="BINDATA" />
         <include name="IDR_QUERY_TILES_INTERNALS_JS" file="resources\internals\query_tiles\query_tiles_internals.js" type="BINDATA" />
         <include name="IDR_QUERY_TILES_INTERNALS_BROWSER_PROXY_JS" file="resources\internals\query_tiles\query_tiles_internals_browser_proxy.js" type="BINDATA" />
-        <include name="IDR_SNIPPETS_INTERNALS_HTML" file="resources\snippets_internals\snippets_internals.html" allowexternalscript="true" type="BINDATA" />
-        <include name="IDR_SNIPPETS_INTERNALS_CSS" file="resources\snippets_internals\snippets_internals.css" type="BINDATA" />
-        <include name="IDR_SNIPPETS_INTERNALS_JS" file="resources\snippets_internals\snippets_internals.js" type="BINDATA" />
-        <include name="IDR_SNIPPETS_INTERNALS_MOJOM_LITE_JS" file="${root_gen_dir}\chrome\browser\ui\webui\snippets_internals\snippets_internals.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       </if>
 
       <if expr="enable_supervised_users">

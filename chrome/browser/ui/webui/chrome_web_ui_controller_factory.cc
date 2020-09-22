@@ -120,7 +120,6 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/ui/webui/explore_sites_internals/explore_sites_internals_ui.h"
 #include "chrome/browser/ui/webui/offline/offline_internals_ui.h"
-#include "chrome/browser/ui/webui/snippets_internals/snippets_internals_ui.h"
 #include "chrome/browser/ui/webui/webapks_ui.h"
 #include "components/feed/buildflags.h"
 #include "components/feed/feed_feature_list.h"
@@ -755,13 +754,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<OfflineInternalsUI>;
   if (url.host_piece() == chrome::kChromeUISnippetsInternalsHost &&
       !profile->IsOffTheRecord()) {
-    if (!base::FeatureList::IsEnabled(feed::kInterestFeedContentSuggestions)) {
-      return &NewWebUI<SnippetsInternalsUI>;
-    } else {
+    if (base::FeatureList::IsEnabled(feed::kInterestFeedContentSuggestions)) {
 #if BUILDFLAG(ENABLE_FEED_IN_CHROME)
       return &NewWebUI<FeedInternalsUI>;
-#else
-      return nullptr;
 #endif  // BUILDFLAG(ENABLE_FEED_IN_CHROME)
     }
   }
