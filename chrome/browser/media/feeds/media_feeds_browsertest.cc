@@ -866,8 +866,9 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest, ResetMediaFeed_OnNavigation) {
   }
 }
 
+// Flaky failures: crbug.com/1124983
 IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest,
-                       ResetMediaFeed_OnNavigation_NeverFetched) {
+                       DISABLED_ResetMediaFeed_OnNavigation_NeverFetched) {
   DiscoverFeed(kMediaFeedsTestURL);
 
   ui_test_utils::NavigateToURL(
