@@ -1117,7 +1117,6 @@ crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/nested-very-tall-ins
 crbug.com/1058792 virtual/layout_ng_block_frag/fast/multicol/nested-with-composited-and-multicol-crash.html [ Crash ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/nested-with-forced-breaks-in-eariler-rows.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/nested-with-padding.html [ Failure ]
-crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/nested-with-single-tall-line.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/newmulticol/breaks-3-columns-3.html [ Failure ]
 crbug.com/1066616 virtual/layout_ng_block_frag/fast/multicol/newmulticol/clipping-overflow-hidden.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/newmulticol/orphans-and-widows-balance.html [ Failure ]
