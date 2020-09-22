@@ -9,6 +9,7 @@
 #include <numeric>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/profile_builder.h"
@@ -268,11 +269,15 @@ class FakeTestUnwinder : public Unwinder {
   std::vector<Result> results_;
 };
 
-std::vector<std::unique_ptr<Unwinder>> MakeUnwinderVector(
+StackSampler::UnwindersFactory MakeUnwindersFactory(
     std::unique_ptr<Unwinder> unwinder) {
-  std::vector<std::unique_ptr<Unwinder>> unwinders;
-  unwinders.push_back(std::move(unwinder));
-  return unwinders;
+  return BindOnce(
+      [](std::unique_ptr<Unwinder> unwinder) {
+        std::vector<std::unique_ptr<Unwinder>> unwinders;
+        unwinders.push_back(std::move(unwinder));
+        return unwinders;
+      },
+      std::move(unwinder));
 }
 
 base::circular_deque<std::unique_ptr<Unwinder>> MakeUnwinderCircularDeque(
@@ -301,9 +306,11 @@ TEST(StackSamplerImplTest, MAYBE_CopyStack) {
   std::vector<uintptr_t> stack_copy;
   StackSamplerImpl stack_sampler_impl(
       std::make_unique<TestStackCopier>(stack),
-      MakeUnwinderVector(
+      MakeUnwindersFactory(
           std::make_unique<TestUnwinder>(stack.size(), &stack_copy)),
       &module_cache);
+
+  stack_sampler_impl.Initialize();
 
   std::unique_ptr<StackBuffer> stack_buffer =
       std::make_unique<StackBuffer>(stack.size() * sizeof(uintptr_t));
@@ -321,9 +328,11 @@ TEST(StackSamplerImplTest, CopyStackTimestamp) {
   TimeTicks timestamp = TimeTicks::UnixEpoch();
   StackSamplerImpl stack_sampler_impl(
       std::make_unique<TestStackCopier>(stack, timestamp),
-      MakeUnwinderVector(
+      MakeUnwindersFactory(
           std::make_unique<TestUnwinder>(stack.size(), &stack_copy)),
       &module_cache);
+
+  stack_sampler_impl.Initialize();
 
   std::unique_ptr<StackBuffer> stack_buffer =
       std::make_unique<StackBuffer>(stack.size() * sizeof(uintptr_t));
@@ -341,7 +350,9 @@ TEST(StackSamplerImplTest, UnwinderInvokedWhileRecordingStackFrames) {
   TestProfileBuilder profile_builder(&module_cache);
   StackSamplerImpl stack_sampler_impl(
       std::make_unique<DelegateInvokingStackCopier>(),
-      MakeUnwinderVector(std::move(owned_unwinder)), &module_cache);
+      MakeUnwindersFactory(std::move(owned_unwinder)), &module_cache);
+
+  stack_sampler_impl.Initialize();
 
   stack_sampler_impl.RecordStackFrames(stack_buffer.get(), &profile_builder);
 
@@ -355,8 +366,10 @@ TEST(StackSamplerImplTest, AuxUnwinderInvokedWhileRecordingStackFrames) {
   TestProfileBuilder profile_builder(&module_cache);
   StackSamplerImpl stack_sampler_impl(
       std::make_unique<DelegateInvokingStackCopier>(),
-      MakeUnwinderVector(std::make_unique<CallRecordingUnwinder>()),
+      MakeUnwindersFactory(std::make_unique<CallRecordingUnwinder>()),
       &module_cache);
+
+  stack_sampler_impl.Initialize();
 
   auto owned_aux_unwinder = std::make_unique<CallRecordingUnwinder>();
   CallRecordingUnwinder* aux_unwinder = owned_aux_unwinder.get();

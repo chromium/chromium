@@ -216,7 +216,7 @@ struct TestProfilerInfo {
                        profile = std::move(result_profile);
                        completed.Signal();
                      })),
-                 CreateCoreUnwindersForTesting(module_cache),
+                 CreateCoreUnwindersFactoryForTesting(module_cache),
                  RepeatingClosure(),
                  delegate) {}
 
@@ -351,7 +351,7 @@ void TestLibraryUnload(bool wait_until_unloaded, ModuleCache* module_cache) {
                 profile = std::move(result_profile);
                 sampling_thread_completed.Signal();
               })),
-      CreateCoreUnwindersForTesting(module_cache), RepeatingClosure(),
+      CreateCoreUnwindersFactoryForTesting(module_cache), RepeatingClosure(),
       &test_delegate);
 
   profiler.Start();
@@ -593,7 +593,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, StopWithoutStarting) {
                       profile = std::move(result_profile);
                       sampling_completed.Signal();
                     })),
-            CreateCoreUnwindersForTesting(module_cache()));
+            CreateCoreUnwindersFactoryForTesting(module_cache()));
 
         profiler.Stop();  // Constructed but never started.
         EXPECT_FALSE(sampling_completed.IsSignaled());
@@ -814,7 +814,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, DestroyProfilerWhileProfiling) {
         }));
     profiler.reset(new StackSamplingProfiler(
         target_thread_token, params, std::move(profile_builder),
-        CreateCoreUnwindersForTesting(module_cache())));
+        CreateCoreUnwindersFactoryForTesting(module_cache())));
     profiler->Start();
     profiler.reset();
 
@@ -1166,7 +1166,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MultipleSampledThreads) {
                 profile1 = std::move(result_profile);
                 sampling_thread_completed1.Signal();
               })),
-      CreateCoreUnwindersForTesting(module_cache()));
+      CreateCoreUnwindersFactoryForTesting(module_cache()));
 
   WaitableEvent sampling_thread_completed2(
       WaitableEvent::ResetPolicy::MANUAL,
@@ -1180,7 +1180,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MultipleSampledThreads) {
                 profile2 = std::move(result_profile);
                 sampling_thread_completed2.Signal();
               })),
-      CreateCoreUnwindersForTesting(module_cache()));
+      CreateCoreUnwindersFactoryForTesting(module_cache()));
 
   // Finally the real work.
   profiler1.Start();
@@ -1216,7 +1216,7 @@ class ProfilerThread : public SimpleThread {
                         profile_ = std::move(result_profile);
                         completed_.Signal();
                       })),
-                  CreateCoreUnwindersForTesting(module_cache)) {}
+                  CreateCoreUnwindersFactoryForTesting(module_cache)) {}
   void Run() override {
     run_.Wait();
     profiler_.Start();
@@ -1302,7 +1302,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_BeforeStart) {
                       profile = std::move(result_profile);
                       sampling_thread_completed.Signal();
                     })),
-                CreateCoreUnwindersForTesting(module_cache()));
+                CreateCoreUnwindersFactoryForTesting(module_cache()));
             profiler.AddAuxUnwinder(
                 std::make_unique<TestAuxUnwinder>(Frame(23, nullptr)));
             profiler.Start();
@@ -1343,7 +1343,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_AfterStart) {
                       profile = std::move(result_profile);
                       sampling_thread_completed.Signal();
                     })),
-                CreateCoreUnwindersForTesting(module_cache()));
+                CreateCoreUnwindersFactoryForTesting(module_cache()));
             profiler.Start();
             profiler.AddAuxUnwinder(
                 std::make_unique<TestAuxUnwinder>(Frame(23, nullptr)));
@@ -1384,7 +1384,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_AfterStop) {
                       profile = std::move(result_profile);
                       sampling_thread_completed.Signal();
                     })),
-                CreateCoreUnwindersForTesting(module_cache()));
+                CreateCoreUnwindersFactoryForTesting(module_cache()));
             profiler.Start();
             profiler.Stop();
             profiler.AddAuxUnwinder(
@@ -1458,7 +1458,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest,
                     BindLambdaForTesting([&profile](Profile result_profile) {
                       profile = std::move(result_profile);
                     })),
-                CreateCoreUnwindersForTesting(module_cache()),
+                CreateCoreUnwindersFactoryForTesting(module_cache()),
                 RepeatingClosure(), &post_sample_invoker);
             profiler.Start();
             // Wait for 5 samples to be collected.

@@ -4,6 +4,7 @@
 
 #include "base/profiler/stack_sampler.h"
 
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/profiler/native_unwinder_win.h"
 #include "base/profiler/stack_copier_suspend.h"
@@ -17,16 +18,20 @@ namespace base {
 std::unique_ptr<StackSampler> StackSampler::Create(
     SamplingProfilerThreadToken thread_token,
     ModuleCache* module_cache,
-    std::vector<std::unique_ptr<Unwinder>> core_unwinders,
+    UnwindersFactory core_unwinders_factory,
     RepeatingClosure record_sample_callback,
     StackSamplerTestDelegate* test_delegate) {
-  DCHECK(core_unwinders.empty());
+  DCHECK(!core_unwinders_factory);
 #if defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
-  core_unwinders.push_back(std::make_unique<NativeUnwinderWin>());
+  const auto create_unwinders = []() {
+    std::vector<std::unique_ptr<Unwinder>> unwinders;
+    unwinders.push_back(std::make_unique<NativeUnwinderWin>());
+    return unwinders;
+  };
   return std::make_unique<StackSamplerImpl>(
       std::make_unique<StackCopierSuspend>(
           std::make_unique<SuspendableThreadDelegateWin>(thread_token)),
-      std::move(core_unwinders), module_cache,
+      BindOnce(create_unwinders), module_cache,
       std::move(record_sample_callback), test_delegate);
 #else
   return nullptr;

@@ -579,6 +579,8 @@ void StackSamplingProfiler::SamplingThread::AddCollectionTask(
   const int collection_id = collection->collection_id;
   const TimeDelta initial_delay = collection->params.initial_delay;
 
+  collection->sampler->Initialize();
+
   active_collections_.insert(
       std::make_pair(collection_id, std::move(collection)));
 
@@ -773,13 +775,14 @@ StackSamplingProfiler::StackSamplingProfiler(
     SamplingProfilerThreadToken thread_token,
     const SamplingParams& params,
     std::unique_ptr<ProfileBuilder> profile_builder,
-    std::vector<std::unique_ptr<Unwinder>> unwinders,
+    UnwindersFactory core_unwinders_factory,
     RepeatingClosure record_sample_callback,
     StackSamplerTestDelegate* test_delegate)
     : StackSamplingProfiler(params, std::move(profile_builder), nullptr) {
-  sampler_ = StackSampler::Create(
-      thread_token, profile_builder_->GetModuleCache(), std::move(unwinders),
-      std::move(record_sample_callback), test_delegate);
+  sampler_ =
+      StackSampler::Create(thread_token, profile_builder_->GetModuleCache(),
+                           std::move(core_unwinders_factory),
+                           std::move(record_sample_callback), test_delegate);
 }
 
 StackSamplingProfiler::StackSamplingProfiler(

@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/android/library_loader/anchor_functions.h"
+#include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/debug/leak_annotations.h"
 #include "base/debug/stack_trace.h"
@@ -706,11 +707,14 @@ void TracingSamplerProfiler::StartTracing(
   // Create and start the stack sampling profiler.
 #if defined(OS_ANDROID)
 #if ANDROID_ARM64_UNWINDING_SUPPORTED
-  std::vector<std::unique_ptr<base::Unwinder>> unwinder;
-  unwinder.push_back(std::make_unique<UnwinderArm64>());
+  const auto create_unwinders = []() {
+    std::vector<std::unique_ptr<base::Unwinder>> unwinders;
+    unwinders.push_back(std::make_unique<UnwinderArm64>());
+    return unwinders;
+  };
   profiler_ = std::make_unique<base::StackSamplingProfiler>(
       sampled_thread_token_, params, std::move(profile_builder),
-      std::move(unwinder));
+      base::BindOnce(create_unwinders));
   profiler_->Start();
 
 #elif ANDROID_CFI_UNWINDING_SUPPORTED

@@ -31,6 +31,9 @@
 #include "services/service_manager/embedder/switches.h"
 
 #if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+#include <sys/types.h>
+#include <unistd.h>
+
 #include "base/android/apk_assets.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/profiler/arm_cfi_table.h"
@@ -101,67 +104,92 @@ bool IsCurrentProcessBackgrounded() {
 #endif  // defined(OS_MAC)
 }
 
-const base::RepeatingCallback<std::vector<std::unique_ptr<base::Unwinder>>()>&
-GetCoreUnwindersFactory() {
-  const auto create_unwinders_factory = []() {
 #if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
-    static constexpr char kCfiFileName[] = "assets/unwind_cfi_32";
+// Encapsulates the setup required to create the Chrome unwinder on Android.
+class ChromeUnwinderCreator {
+ public:
+  ChromeUnwinderCreator() {
+    constexpr char kCfiFileName[] = "assets/unwind_cfi_32";
 
-    // The module is loadable if the profiler is enabled for the current
-    // process.
-    CHECK(ThreadProfilerConfiguration::Get()
-              ->IsProfilerEnabledForCurrentProcess());
+    base::MemoryMappedFile::Region cfi_region;
+    int fd = base::android::OpenApkAsset(kCfiFileName, &cfi_region);
+    DCHECK(fd >= 0);
+    bool mapped_file_ok =
+        chrome_cfi_file_.Initialize(base::File(fd), cfi_region);
+    DCHECK(mapped_file_ok);
+    chrome_cfi_table_ = base::ArmCFITable::Parse(
+        {chrome_cfi_file_.data(), chrome_cfi_file_.length()});
+    DCHECK(chrome_cfi_table_);
+  }
 
-    class UnwindersFactory {
-     public:
-      UnwindersFactory()
-          : module_(stack_unwinder::Module::Load()),
-            memory_regions_map_(module_->CreateMemoryRegionsMap()) {
-        base::MemoryMappedFile::Region cfi_region;
-        int fd = base::android::OpenApkAsset(kCfiFileName, &cfi_region);
-        DCHECK(fd >= 0);
-        bool mapped_file_ok =
-            chrome_cfi_file_.Initialize(base::File(fd), cfi_region);
-        DCHECK(mapped_file_ok);
-        chrome_cfi_table_ = base::ArmCFITable::Parse(
-            {chrome_cfi_file_.data(), chrome_cfi_file_.length()});
-        DCHECK(chrome_cfi_table_);
-      }
-      UnwindersFactory(const UnwindersFactory&) = delete;
-      UnwindersFactory& operator=(const UnwindersFactory&) = delete;
+  ChromeUnwinderCreator(const ChromeUnwinderCreator&) = delete;
+  ChromeUnwinderCreator& operator=(const ChromeUnwinderCreator&) = delete;
 
-      std::vector<std::unique_ptr<base::Unwinder>> Run() {
-        std::vector<std::unique_ptr<base::Unwinder>> unwinders;
-        unwinders.push_back(module_->CreateNativeUnwinder(
-            memory_regions_map_.get(),
-            reinterpret_cast<uintptr_t>(&__executable_start)));
-        unwinders.push_back(std::make_unique<base::ChromeUnwinderAndroid>(
-            chrome_cfi_table_.get(),
-            reinterpret_cast<uintptr_t>(&__executable_start)));
-        return unwinders;
-      }
+  std::unique_ptr<base::Unwinder> Create() {
+    return std::make_unique<base::ChromeUnwinderAndroid>(
+        chrome_cfi_table_.get(),
+        reinterpret_cast<uintptr_t>(&__executable_start));
+  }
 
-     private:
-      const std::unique_ptr<stack_unwinder::Module> module_;
-      const std::unique_ptr<stack_unwinder::MemoryRegionsMap>
-          memory_regions_map_;
-      base::MemoryMappedFile chrome_cfi_file_;
-      std::unique_ptr<base::ArmCFITable> chrome_cfi_table_;
-    };
+ private:
+  base::MemoryMappedFile chrome_cfi_file_;
+  std::unique_ptr<base::ArmCFITable> chrome_cfi_table_;
+};
 
-    return base::BindRepeating(&UnwindersFactory::Run,
-                               std::make_unique<UnwindersFactory>());
+// Encapsulates the setup required to create the Android native unwinder.
+class NativeUnwinderCreator {
+ public:
+  NativeUnwinderCreator()
+      : module_(stack_unwinder::Module::Load()),
+        memory_regions_map_(module_->CreateMemoryRegionsMap()) {}
+  NativeUnwinderCreator(const NativeUnwinderCreator&) = delete;
+  NativeUnwinderCreator& operator=(const NativeUnwinderCreator&) = delete;
+
+  std::unique_ptr<base::Unwinder> Create() {
+    return module_->CreateNativeUnwinder(
+        memory_regions_map_.get(),
+        reinterpret_cast<uintptr_t>(&__executable_start));
+  }
+
+ private:
+  const std::unique_ptr<stack_unwinder::Module> module_;
+  const std::unique_ptr<stack_unwinder::MemoryRegionsMap> memory_regions_map_;
+};
+
+// This function must only be called via the closure created in
+// CreateCoreUnwindersFactory(), which is passed into StackSamplingProfiler.
+// This ensures the expensive work involved in constructing the unwinder
+// creators is done on the profiler thread rather than the profiled thread.
+// These take 50+ ms to execute due to the creation of the memory regions map
+// and lookup of the modules in the process.
+std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders() {
+  // This function is expected to be run on the profiler thread which is never
+  // the main thread in the process.
+  DCHECK_NE(getpid(), gettid());
+
+  static base::NoDestructor<NativeUnwinderCreator> native_unwinder_creator;
+  static base::NoDestructor<ChromeUnwinderCreator> chrome_unwinder_creator;
+
+  // Note order matters: the more general unwinder must appear first in the
+  // vector.
+  std::vector<std::unique_ptr<base::Unwinder>> unwinders;
+  unwinders.push_back(native_unwinder_creator->Create());
+  unwinders.push_back(chrome_unwinder_creator->Create());
+  return unwinders;
+}
+#endif  // defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+
+base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory() {
+#if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+  // The module is loadable if the profiler is enabled for the current
+  // process.
+  CHECK(
+      ThreadProfilerConfiguration::Get()->IsProfilerEnabledForCurrentProcess());
+
+  return base::BindOnce(&CreateCoreUnwinders);
 #else
-    return base::BindRepeating(
-        []() -> std::vector<std::unique_ptr<base::Unwinder>> { return {}; });
+  return base::StackSamplingProfiler::UnwindersFactory();
 #endif
-  };
-
-  static base::NoDestructor<
-      base::RepeatingCallback<std::vector<std::unique_ptr<base::Unwinder>>()>>
-      native_unwinder_factory(create_unwinders_factory());
-
-  return *native_unwinder_factory;
 }
 
 const base::RepeatingClosure GetApplyPerSampleMetadataCallback(
@@ -354,7 +382,7 @@ ThreadProfiler::ThreadProfiler(
           CallStackProfileParams(process_, thread,
                                  CallStackProfileParams::PROCESS_STARTUP),
           work_id_recorder_.get()),
-      GetCoreUnwindersFactory().Run(),
+      CreateCoreUnwindersFactory(),
       GetApplyPerSampleMetadataCallback(process_));
 
   startup_profiler_->Start();
@@ -420,7 +448,7 @@ void ThreadProfiler::StartPeriodicSamplingCollection() {
           base::BindOnce(&ThreadProfiler::OnPeriodicCollectionCompleted,
                          owning_thread_task_runner_,
                          weak_factory_.GetWeakPtr())),
-      GetCoreUnwindersFactory().Run(),
+      CreateCoreUnwindersFactory(),
       GetApplyPerSampleMetadataCallback(process_));
   if (aux_unwinder_factory_)
     periodic_profiler_->AddAuxUnwinder(aux_unwinder_factory_.Run());

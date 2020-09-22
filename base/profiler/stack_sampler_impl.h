@@ -24,7 +24,7 @@ class Unwinder;
 class BASE_EXPORT StackSamplerImpl : public StackSampler {
  public:
   StackSamplerImpl(std::unique_ptr<StackCopier> stack_copier,
-                   std::vector<std::unique_ptr<Unwinder>> core_unwinders,
+                   UnwindersFactory core_unwinders_factory,
                    ModuleCache* module_cache,
                    RepeatingClosure record_sample_callback = RepeatingClosure(),
                    StackSamplerTestDelegate* test_delegate = nullptr);
@@ -34,6 +34,7 @@ class BASE_EXPORT StackSamplerImpl : public StackSampler {
   StackSamplerImpl& operator=(const StackSamplerImpl&) = delete;
 
   // StackSampler:
+  void Initialize() override;
   void AddAuxUnwinder(std::unique_ptr<Unwinder> unwinder) override;
   void RecordStackFrames(StackBuffer* stack_buffer,
                          ProfileBuilder* profile_builder) override;
@@ -53,8 +54,11 @@ class BASE_EXPORT StackSamplerImpl : public StackSampler {
       const base::circular_deque<std::unique_ptr<Unwinder>>& unwinders);
 
   const std::unique_ptr<StackCopier> stack_copier_;
-  // Store all unwinder in decreasing priority order.
+  UnwindersFactory unwinders_factory_;
+
+  // Unwinders are stored in decreasing priority order.
   base::circular_deque<std::unique_ptr<Unwinder>> unwinders_;
+
   ModuleCache* const module_cache_;
   const RepeatingClosure record_sample_callback_;
   StackSamplerTestDelegate* const test_delegate_;

@@ -64,27 +64,35 @@ class StackCopierDelegate : public StackCopier::Delegate {
 
 }  // namespace
 
-// |core_unwinders| is iterated backward since |core_unwinders| is passed in
-// increasing priority order while |unwinders_| is stored in decreasing priority
-// order.
-StackSamplerImpl::StackSamplerImpl(
-    std::unique_ptr<StackCopier> stack_copier,
-    std::vector<std::unique_ptr<Unwinder>> core_unwinders,
-    ModuleCache* module_cache,
-    RepeatingClosure record_sample_callback,
-    StackSamplerTestDelegate* test_delegate)
+StackSamplerImpl::StackSamplerImpl(std::unique_ptr<StackCopier> stack_copier,
+                                   UnwindersFactory core_unwinders_factory,
+                                   ModuleCache* module_cache,
+                                   RepeatingClosure record_sample_callback,
+                                   StackSamplerTestDelegate* test_delegate)
     : stack_copier_(std::move(stack_copier)),
-      unwinders_(std::make_move_iterator(core_unwinders.rbegin()),
-                 std::make_move_iterator(core_unwinders.rend())),
+      unwinders_factory_(std::move(core_unwinders_factory)),
       module_cache_(module_cache),
       record_sample_callback_(std::move(record_sample_callback)),
       test_delegate_(test_delegate) {
-  DCHECK(!unwinders_.empty());
-  for (const auto& unwinder : unwinders_)
-    unwinder->AddInitialModules(module_cache_);
+  DCHECK(unwinders_factory_);
 }
 
 StackSamplerImpl::~StackSamplerImpl() = default;
+
+void StackSamplerImpl::Initialize() {
+  std::vector<std::unique_ptr<Unwinder>> unwinders =
+      std::move(unwinders_factory_).Run();
+
+  // |unwinders| is iterated backward since |unwinders_factory_| generates
+  // unwinders in increasing priority order. |unwinders_| is stored in
+  // decreasing priority order for ease of use within the class.
+  unwinders_.insert(unwinders_.end(),
+                    std::make_move_iterator(unwinders.rbegin()),
+                    std::make_move_iterator(unwinders.rend()));
+
+  for (const auto& unwinder : unwinders_)
+    unwinder->AddInitialModules(module_cache_);
+}
 
 void StackSamplerImpl::AddAuxUnwinder(std::unique_ptr<Unwinder> unwinder) {
   unwinder->AddInitialModules(module_cache_);

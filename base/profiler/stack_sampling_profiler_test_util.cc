@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
@@ -317,7 +318,7 @@ std::vector<Frame> SampleScenario(UnwindScenario* scenario,
                       sample = std::move(result_sample);
                       sampling_thread_completed.Signal();
                     })),
-                CreateCoreUnwindersForTesting(module_cache));
+                CreateCoreUnwindersFactoryForTesting(module_cache));
             if (aux_unwinder_factory)
               profiler.AddAuxUnwinder(std::move(aux_unwinder_factory).Run());
             profiler.Start();
@@ -415,7 +416,7 @@ uintptr_t GetAddressInOtherLibrary(NativeLibrary library) {
   return address;
 }
 
-std::vector<std::unique_ptr<Unwinder>> CreateCoreUnwindersForTesting(
+StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactoryForTesting(
     ModuleCache* module_cache) {
 #if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
   std::vector<std::unique_ptr<Unwinder>> unwinders;
@@ -423,9 +424,13 @@ std::vector<std::unique_ptr<Unwinder>> CreateCoreUnwindersForTesting(
       reinterpret_cast<uintptr_t>(&__executable_start)));
   unwinders.push_back(CreateChromeUnwinderAndroidForTesting(
       reinterpret_cast<uintptr_t>(&__executable_start)));
-  return unwinders;
+  return BindOnce(
+      [](std::vector<std::unique_ptr<Unwinder>> unwinders) {
+        return unwinders;
+      },
+      std::move(unwinders));
 #else
-  return {};
+  return StackSamplingProfiler::UnwindersFactory();
 #endif
 }
 

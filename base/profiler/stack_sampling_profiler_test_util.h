@@ -12,6 +12,7 @@
 #include "base/native_library.h"
 #include "base/profiler/frame.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
+#include "base/profiler/stack_sampling_profiler.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 
@@ -143,7 +144,7 @@ uintptr_t GetAddressInOtherLibrary(NativeLibrary library);
 // Creates a list of core unwinders required for StackSamplingProfilerTest.
 // This is useful notably on Android, which requires ChromeUnwinderAndroid in
 // addition to the native one.
-std::vector<std::unique_ptr<Unwinder>> CreateCoreUnwindersForTesting(
+StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactoryForTesting(
     ModuleCache* module_cache);
 
 }  // namespace base
