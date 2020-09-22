@@ -1,0 +1,5 @@
+file://chrome/android/OWNERS
+
+# COMPONENT: Internals>Flags
+# TEAM: chrome-android-app@chromium.org
+# OS: Android

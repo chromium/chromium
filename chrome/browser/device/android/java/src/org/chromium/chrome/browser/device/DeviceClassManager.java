@@ -66,10 +66,9 @@ public class DeviceClassManager {
 
         // Flag based configurations.
         CommandLine commandLine = CommandLine.getInstance();
-        mEnableAccessibilityLayout |= commandLine
-                .hasSwitch(ChromeSwitches.ENABLE_ACCESSIBILITY_TAB_SWITCHER);
-        mEnableFullscreen =
-                !commandLine.hasSwitch(ChromeSwitches.DISABLE_FULLSCREEN);
+        mEnableAccessibilityLayout |=
+                commandLine.hasSwitch(ChromeSwitches.ENABLE_ACCESSIBILITY_TAB_SWITCHER);
+        mEnableFullscreen = !commandLine.hasSwitch(ChromeSwitches.DISABLE_FULLSCREEN);
 
         // Related features.
         if (mEnableAccessibilityLayout) {
@@ -88,6 +87,7 @@ public class DeviceClassManager {
      * @return Whether or not should use the accessibility tab switcher.
      */
     public static boolean enableAccessibilityLayout() {
+        // TODO(crbug.com/1007598): Support TabGrid and TabGroup in Accessibility mode.
         if (isPhone()
                 && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
                 && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_ANDROID)) {
