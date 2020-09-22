@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/stl_util.h"
-#include "base/time/time.h"
 #include "components/guest_view/browser/bad_message.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
@@ -58,10 +57,6 @@ ExtensionsGuestViewMessageFilter::ExtensionsGuestViewMessageFilter(
       content::BrowserAssociatedInterface<mojom::GuestView>(this, this) {
 }
 
-ExtensionsGuestViewMessageFilter::~ExtensionsGuestViewMessageFilter() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-}
-
 void ExtensionsGuestViewMessageFilter::OverrideThreadForMessage(
     const IPC::Message& message,
     BrowserThread::ID* thread) {
@@ -89,6 +84,7 @@ bool ExtensionsGuestViewMessageFilter::OnMessageReceived(
 
 GuestViewManager* ExtensionsGuestViewMessageFilter::
     GetOrCreateGuestViewManager() {
+  DCHECK(browser_context_);
   auto* manager = GuestViewManager::FromBrowserContext(browser_context_);
   if (!manager) {
     manager = GuestViewManager::CreateWithDelegate(
@@ -153,6 +149,8 @@ void ExtensionsGuestViewMessageFilter::CreateMimeHandlerViewGuestOnUIThread(
         before_unload_control,
     bool is_full_page_plugin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!browser_context_)
+    return;
 
   auto* manager = GetOrCreateGuestViewManager();
 
@@ -178,6 +176,9 @@ void ExtensionsGuestViewMessageFilter::OnResizeGuest(
     int render_frame_id,
     int element_instance_id,
     const gfx::Size& new_size) {
+  if (!browser_context_)
+    return;
+
   // We should have a GuestViewManager at this point. If we don't then the
   // embedder is misbehaving.
   auto* manager = GetGuestViewManagerOrKill();

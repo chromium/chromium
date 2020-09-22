@@ -6,11 +6,13 @@
 
 #include <memory>
 
+#include "base/memory/singleton.h"
 #include "components/guest_view/browser/bad_message.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/common/guest_view_messages.h"
+#include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -23,13 +25,25 @@ using content::WebContents;
 
 namespace guest_view {
 
-GuestViewMessageFilter::GuestViewMessageFilter(int render_process_id,
-                                               BrowserContext* context)
-    : BrowserMessageFilter(GuestViewMsgStart),
-      render_process_id_(render_process_id),
-      browser_context_(context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-}
+namespace {
+
+class ShutdownNotifierFactory
+    : public BrowserContextKeyedServiceShutdownNotifierFactory {
+ public:
+  static ShutdownNotifierFactory* GetInstance() {
+    return base::Singleton<ShutdownNotifierFactory>::get();
+  }
+
+ private:
+  friend struct base::DefaultSingletonTraits<ShutdownNotifierFactory>;
+
+  ShutdownNotifierFactory()
+      : BrowserContextKeyedServiceShutdownNotifierFactory(
+            "GuestViewMessageFilter") {}
+  ~ShutdownNotifierFactory() override = default;
+};
+
+}  // namespace
 
 GuestViewMessageFilter::GuestViewMessageFilter(
     const uint32_t* message_classes_to_filter,
@@ -41,13 +55,30 @@ GuestViewMessageFilter::GuestViewMessageFilter(
       render_process_id_(render_process_id),
       browser_context_(context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  browser_context_shutdown_subscription_ =
+      ShutdownNotifierFactory::GetInstance()->Get(context)->Subscribe(
+          base::BindRepeating(&GuestViewMessageFilter::OnBrowserContextShutdown,
+                              base::Unretained(this)));
 }
 
 GuestViewMessageFilter::~GuestViewMessageFilter() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  // The filter is destroyed on the UI thread as
+  // |browser_context_shutdown_subscription_| was created there.
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+}
+
+void GuestViewMessageFilter::EnsureShutdownNotifierFactoryBuilt() {
+  ShutdownNotifierFactory::GetInstance();
+}
+
+void GuestViewMessageFilter::OnBrowserContextShutdown() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  browser_context_ = nullptr;
+  browser_context_shutdown_subscription_.reset();
 }
 
 GuestViewManager* GuestViewMessageFilter::GetOrCreateGuestViewManager() {
+  DCHECK(browser_context_);
   auto* manager = GuestViewManager::FromBrowserContext(browser_context_);
   if (!manager) {
     manager = GuestViewManager::CreateWithDelegate(
@@ -57,6 +88,7 @@ GuestViewManager* GuestViewMessageFilter::GetOrCreateGuestViewManager() {
 }
 
 GuestViewManager* GuestViewMessageFilter::GetGuestViewManagerOrKill() {
+  DCHECK(browser_context_);
   auto* manager = GuestViewManager::FromBrowserContext(browser_context_);
   if (!manager) {
     bad_message::ReceivedBadMessage(
@@ -73,9 +105,7 @@ void GuestViewMessageFilter::OverrideThreadForMessage(
 }
 
 void GuestViewMessageFilter::OnDestruct() const {
-  // Destroy the filter on the IO thread since that's where its weak pointers
-  // are being used.
-  BrowserThread::DeleteOnIOThread::Destruct(this);
+  BrowserThread::DeleteOnUIThread::Destruct(this);
 }
 
 bool GuestViewMessageFilter::OnMessageReceived(const IPC::Message& message) {
@@ -95,12 +125,16 @@ bool GuestViewMessageFilter::OnMessageReceived(const IPC::Message& message) {
 void GuestViewMessageFilter::OnViewCreated(int view_instance_id,
                                            const std::string& view_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!browser_context_)
+    return;
   GetOrCreateGuestViewManager()->ViewCreated(render_process_id_,
                                              view_instance_id, view_type);
 }
 
 void GuestViewMessageFilter::OnViewGarbageCollected(int view_instance_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!browser_context_)
+    return;
   GetOrCreateGuestViewManager()->ViewGarbageCollected(render_process_id_,
                                                       view_instance_id);
 }
@@ -110,6 +144,9 @@ void GuestViewMessageFilter::OnAttachGuest(
     int guest_instance_id,
     const base::DictionaryValue& params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!browser_context_)
+    return;
+
   // We should have a GuestViewManager at this point. If we don't then the
   // embedder is misbehaving.
   auto* manager = GetGuestViewManagerOrKill();
@@ -127,6 +164,9 @@ void GuestViewMessageFilter::OnAttachToEmbedderFrame(
     int element_instance_id,
     int guest_instance_id,
     const base::DictionaryValue& params) {
+  if (!browser_context_)
+    return;
+
   // We should have a GuestViewManager at this point. If we don't then the
   // embedder is misbehaving.
   auto* manager = GetGuestViewManagerOrKill();

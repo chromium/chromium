@@ -7,10 +7,8 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "components/guest_view/browser/guest_view_message_filter.h"
 #include "content/public/browser/browser_associated_interface.h"
 #include "content/public/browser/browser_message_filter.h"
@@ -33,7 +31,7 @@ class GuestViewManager;
 
 namespace extensions {
 // This class filters out incoming extensions GuestView-specific IPC messages
-// from thw renderer process. It is created on the UI thread. Messages may be
+// from the renderer process. It is created on the UI thread. Messages may be
 // handled on the IO thread or the UI thread.
 class ExtensionsGuestViewMessageFilter
     : public guest_view::GuestViewMessageFilter,
@@ -51,7 +49,7 @@ class ExtensionsGuestViewMessageFilter
   friend class content::BrowserThread;
   friend class base::DeleteHelper<ExtensionsGuestViewMessageFilter>;
 
-  ~ExtensionsGuestViewMessageFilter() override;
+  ~ExtensionsGuestViewMessageFilter() override = default;
 
   // GuestViewMessageFilter implementation.
   void OverrideThreadForMessage(const IPC::Message& message,

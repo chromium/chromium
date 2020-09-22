@@ -32,6 +32,8 @@ static_library("browser") {
     "//components/guest_view/common",
   ]
   deps = [
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
     "//components/zoom",
     "//content/public/browser",
     "//content/public/common",
