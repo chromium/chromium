@@ -253,9 +253,13 @@ bool ChromeVirtualKeyboardDelegate::ShowLanguageSettings() {
     keyboard_client->HideKeyboard(ash::HideReason::kUser);
 
   base::RecordAction(base::UserMetricsAction("OpenLanguageOptionsDialog"));
+  const std::string path =
+      base::FeatureList::IsEnabled(
+          ::chromeos::features::kLanguageSettingsUpdate)
+          ? chromeos::settings::mojom::kInputSubpagePath
+          : chromeos::settings::mojom::kLanguagesAndInputDetailsSubpagePath;
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      ProfileManager::GetActiveUserProfile(),
-      chromeos::settings::mojom::kLanguagesAndInputDetailsSubpagePath);
+      ProfileManager::GetActiveUserProfile(), path);
   return true;
 }
 

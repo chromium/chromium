@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/url_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
@@ -252,8 +253,12 @@ void SystemTrayClient::ShowChromeSlow() {
 
 void SystemTrayClient::ShowIMESettings() {
   base::RecordAction(base::UserMetricsAction("OpenLanguageOptionsDialog"));
-  ShowSettingsSubPageForActiveUser(
-      chromeos::settings::mojom::kLanguagesAndInputDetailsSubpagePath);
+  const std::string path =
+      base::FeatureList::IsEnabled(
+          ::chromeos::features::kLanguageSettingsUpdate)
+          ? chromeos::settings::mojom::kInputSubpagePath
+          : chromeos::settings::mojom::kLanguagesAndInputDetailsSubpagePath;
+  ShowSettingsSubPageForActiveUser(path);
 }
 
 void SystemTrayClient::ShowConnectedDevicesSettings() {
