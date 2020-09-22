@@ -9,8 +9,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "content/public/android/content_jni_headers/NavigationHandle_jni.h"
 #include "content/public/browser/navigation_handle.h"
-#include "url/android/gurl_android.h"
-#include "url/gurl.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
@@ -25,7 +23,7 @@ NavigationHandleProxy::NavigationHandleProxy(
   JNIEnv* env = AttachCurrentThread();
   java_navigation_handle_ = Java_NavigationHandle_Constructor(
       env, reinterpret_cast<jlong>(this),
-      url::GURLAndroid::FromNativeGURL(env, cpp_navigation_handle_->GetURL()),
+      ConvertUTF8ToJavaString(env, cpp_navigation_handle_->GetURL().spec()),
       cpp_navigation_handle_->IsInMainFrame(),
       cpp_navigation_handle_->IsSameDocument(),
       cpp_navigation_handle_->IsRendererInitiated());
@@ -35,16 +33,18 @@ void NavigationHandleProxy::DidRedirect() {
   JNIEnv* env = AttachCurrentThread();
   Java_NavigationHandle_didRedirect(
       env, java_navigation_handle_,
-      url::GURLAndroid::FromNativeGURL(env, cpp_navigation_handle_->GetURL()));
+      ConvertUTF8ToJavaString(env, cpp_navigation_handle_->GetURL().spec()));
 }
 
 void NavigationHandleProxy::DidFinish() {
   JNIEnv* env = AttachCurrentThread();
   // Matches logic in
   // components/navigation_interception/navigation_params_android.cc
-  const GURL& gurl = cpp_navigation_handle_->GetBaseURLForDataURL().is_empty()
-                         ? cpp_navigation_handle_->GetURL()
-                         : cpp_navigation_handle_->GetBaseURLForDataURL();
+  ScopedJavaLocalRef<jstring> jstring_url(ConvertUTF8ToJavaString(
+      env, cpp_navigation_handle_->GetBaseURLForDataURL().is_empty()
+               ? cpp_navigation_handle_->GetURL().spec()
+               : cpp_navigation_handle_->GetBaseURLForDataURL()
+                     .possibly_invalid_spec()));
 
   bool is_fragment_navigation = cpp_navigation_handle_->IsSameDocument();
 
@@ -65,7 +65,7 @@ void NavigationHandleProxy::DidFinish() {
           : false;
 
   Java_NavigationHandle_didFinish(
-      env, java_navigation_handle_, url::GURLAndroid::FromNativeGURL(env, gurl),
+      env, java_navigation_handle_, jstring_url,
       cpp_navigation_handle_->IsErrorPage(),
       cpp_navigation_handle_->HasCommitted(), is_fragment_navigation,
       cpp_navigation_handle_->IsDownload(), is_valid_search_form_url,

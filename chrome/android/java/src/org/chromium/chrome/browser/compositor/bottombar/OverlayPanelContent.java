@@ -362,7 +362,7 @@ public class OverlayPanelContent {
                     @Override
                     public void didStartNavigation(NavigationHandle navigation) {
                         if (navigation.isInMainFrame() && !navigation.isSameDocument()) {
-                            String url = navigation.getUrlString();
+                            String url = navigation.getUrl();
                             mContentDelegate.onMainFrameLoadStarted(
                                     url, !TextUtils.equals(url, mLoadedUrl));
                         }
@@ -377,8 +377,8 @@ public class OverlayPanelContent {
                     public void didFinishNavigation(NavigationHandle navigation) {
                         if (navigation.hasCommitted() && navigation.isInMainFrame()) {
                             mIsProcessingPendingNavigation = false;
-                            mContentDelegate.onMainFrameNavigation(navigation.getUrlString(),
-                                    !TextUtils.equals(navigation.getUrlString(), mLoadedUrl),
+                            mContentDelegate.onMainFrameNavigation(navigation.getUrl(),
+                                    !TextUtils.equals(navigation.getUrl(), mLoadedUrl),
                                     isHttpFailureCode(navigation.httpStatusCode()),
                                     navigation.isErrorPage());
                         }

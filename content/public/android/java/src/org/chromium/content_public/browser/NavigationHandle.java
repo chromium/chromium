@@ -4,13 +4,10 @@
 
 package org.chromium.content_public.browser;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.net.NetError;
-import org.chromium.url.GURL;
 
 /**
  * JNI bridge with content::NavigationHandle
@@ -22,7 +19,7 @@ public class NavigationHandle {
     private final boolean mIsRendererInitiated;
     private final boolean mIsSameDocument;
     private Integer mPageTransition;
-    private GURL mUrl;
+    private String mUrl;
     private boolean mHasCommitted;
     private boolean mIsDownload;
     private boolean mIsErrorPage;
@@ -32,7 +29,7 @@ public class NavigationHandle {
     private int mHttpStatusCode;
 
     @CalledByNative
-    public NavigationHandle(long nativeNavigationHandleProxy, GURL url, boolean isInMainFrame,
+    public NavigationHandle(long nativeNavigationHandleProxy, String url, boolean isInMainFrame,
             boolean isSameDocument, boolean isRendererInitiated) {
         mNativeNavigationHandleProxy = nativeNavigationHandleProxy;
         mUrl = url;
@@ -46,7 +43,7 @@ public class NavigationHandle {
      * @param url The new URL.
      */
     @CalledByNative
-    private void didRedirect(GURL url) {
+    private void didRedirect(String url) {
         mUrl = url;
     }
 
@@ -54,7 +51,7 @@ public class NavigationHandle {
      * The navigation finished. Called once per navigation.
      */
     @CalledByNative
-    public void didFinish(@NonNull GURL url, boolean isErrorPage, boolean hasCommitted,
+    public void didFinish(String url, boolean isErrorPage, boolean hasCommitted,
             boolean isFragmentNavigation, boolean isDownload, boolean isValidSearchFormUrl,
             int transition, @NetError int errorCode, int httpStatuscode) {
         mUrl = url;
@@ -83,19 +80,8 @@ public class NavigationHandle {
     /**
      * The URL the frame is navigating to.  This may change during the navigation when encountering
      * a server redirect.
-     *
-     * @deprecated Please use {@link #getUrl} instead.
      */
-    @Deprecated
-    public String getUrlString() {
-        return mUrl.getPossiblyInvalidSpec();
-    }
-
-    /**
-     * The URL the frame is navigating to.  This may change during the navigation when encountering
-     * a server redirect.
-     */
-    public GURL getUrl() {
+    public String getUrl() {
         return mUrl;
     }
 

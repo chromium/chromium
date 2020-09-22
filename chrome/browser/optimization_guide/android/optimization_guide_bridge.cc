@@ -18,7 +18,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/optimization_guide/optimization_guide_decider.h"
-#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 using base::android::AttachCurrentThread;
@@ -111,7 +110,7 @@ void OptimizationGuideBridge::RegisterOptimizationTypes(
 
 void OptimizationGuideBridge::CanApplyOptimization(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_gurl,
+    const JavaParamRef<jstring>& url,
     jint optimization_type,
     const JavaParamRef<jobject>& java_callback) {
   if (!optimization_guide_keyed_service_->GetHintsManager()) {
@@ -124,7 +123,7 @@ void OptimizationGuideBridge::CanApplyOptimization(
 
   optimization_guide_keyed_service_->GetHintsManager()
       ->CanApplyOptimizationAsync(
-          *url::GURLAndroid::ToNativeGURL(env, java_gurl),
+          GURL(ConvertJavaStringToUTF8(env, url)),
           /*navigation_id=*/base::nullopt,
           static_cast<optimization_guide::proto::OptimizationType>(
               optimization_type),

@@ -320,10 +320,10 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
                 if (mIsDestroyed) return;
 
-                mDistillerUrl = navigation.getUrlString();
-                if (DomDistillerUrlUtils.isDistilledPage(navigation.getUrlString())) {
+                mDistillerUrl = navigation.getUrl();
+                if (DomDistillerUrlUtils.isDistilledPage(navigation.getUrl())) {
                     mDistillationStatus = DistillationStatus.STARTED;
-                    mReaderModePageUrl = navigation.getUrlString();
+                    mReaderModePageUrl = navigation.getUrl();
                 }
             }
 
@@ -347,7 +347,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                 if (mIsDestroyed) return;
 
                 mDistillationStatus = DistillationStatus.POSSIBLE;
-                if (!TextUtils.equals(navigation.getUrlString(),
+                if (!TextUtils.equals(navigation.getUrl(),
                             DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(
                                     mReaderModePageUrl))) {
                     mDistillationStatus = DistillationStatus.NOT_POSSIBLE;

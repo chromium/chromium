@@ -47,7 +47,6 @@ import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.url.GURL;
 
 import java.net.HttpURLConnection;
 import java.util.List;
@@ -289,7 +288,6 @@ public class InfoBarTest {
     @EnableFeatures("DataReductionProxyEnabledWithNetworkService")
     @Feature({"Browser", "Main"})
     public void testDataReductionPromoInfoBar() {
-        GURL gurl = new GURL("http://google.com");
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertFalse("Data Reduction Proxy enabled",
                     DataReductionProxySettings.getInstance().isDataReductionProxyEnabled());
@@ -301,8 +299,8 @@ public class InfoBarTest {
                     .apply();
             // Add an infobar.
             Assert.assertTrue(DataReductionPromoInfoBar.maybeLaunchPromoInfoBar(
-                    mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(), gurl,
-                    false, false, HttpURLConnection.HTTP_OK));
+                    mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(),
+                    "http://google.com", false, false, HttpURLConnection.HTTP_OK));
         });
 
         waitUntilDataReductionPromoInfoBarAppears();
@@ -327,8 +325,8 @@ public class InfoBarTest {
             // Try to add an infobar. Infobar should not be added since it has already been
             // shown.
             Assert.assertFalse(DataReductionPromoInfoBar.maybeLaunchPromoInfoBar(
-                    mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(), gurl,
-                    false, false, HttpURLConnection.HTTP_OK));
+                    mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(),
+                    "http://google.com", false, false, HttpURLConnection.HTTP_OK));
         });
     }
 
@@ -341,7 +339,6 @@ public class InfoBarTest {
     @CommandLineFlags.Add("force-fieldtrials=DataCompressionProxyPromoVisibility/Enabled")
     @Feature({"Browser", "Main"})
     public void testDataReductionPromoInfoBarDismissed() {
-        GURL gurl = new GURL("http://google.com");
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertFalse("Data Reduction Proxy enabled",
                     DataReductionProxySettings.getInstance().isDataReductionProxyEnabled());
@@ -353,8 +350,8 @@ public class InfoBarTest {
                     .apply();
             // Add an infobar.
             Assert.assertTrue(DataReductionPromoInfoBar.maybeLaunchPromoInfoBar(
-                    mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(), gurl,
-                    false, false, HttpURLConnection.HTTP_OK));
+                    mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(),
+                    "http://google.com", false, false, HttpURLConnection.HTTP_OK));
         });
 
         waitUntilDataReductionPromoInfoBarAppears();
@@ -376,8 +373,8 @@ public class InfoBarTest {
             // Try to add an infobar. Infobar should not be added since the user clicked
             // dismiss.
             Assert.assertFalse(DataReductionPromoInfoBar.maybeLaunchPromoInfoBar(
-                    mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(), gurl,
-                    false, false, HttpURLConnection.HTTP_OK));
+                    mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(),
+                    "http://google.com", false, false, HttpURLConnection.HTTP_OK));
         });
     }
 
@@ -407,7 +404,7 @@ public class InfoBarTest {
                 // after M48.
                 Assert.assertFalse(DataReductionPromoInfoBar.maybeLaunchPromoInfoBar(
                         mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(),
-                        new GURL("http://google.com"), false, false, HttpURLConnection.HTTP_OK));
+                        "http://google.com", false, false, HttpURLConnection.HTTP_OK));
             }
         });
     }
@@ -421,15 +418,14 @@ public class InfoBarTest {
     @CommandLineFlags.Add("force-fieldtrials=DataCompressionProxyPromoVisibility/Enabled")
     @Feature({"Browser", "Main"})
     public void testDataReductionPromoInfoBarFreOptOut() throws Throwable {
-        GURL gurl = new GURL("http://google.com");
         mActivityTestRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 // Try to add an infobar. Infobar should not be added since the first run
                 // experience or second run promo hasn't been shown.
                 Assert.assertFalse(DataReductionPromoInfoBar.maybeLaunchPromoInfoBar(
-                        mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(), gurl,
-                        false, false, HttpURLConnection.HTTP_OK));
+                        mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(),
+                        "http://google.com", false, false, HttpURLConnection.HTTP_OK));
 
                 // Fake showing the FRE.
                 DataReductionPromoUtils.saveFreOrSecondRunPromoDisplayed();
@@ -437,8 +433,8 @@ public class InfoBarTest {
                 // Try to add an infobar. Infobar should not be added since the
                 // first run experience was just shown.
                 Assert.assertFalse(DataReductionPromoInfoBar.maybeLaunchPromoInfoBar(
-                        mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(), gurl,
-                        false, false, HttpURLConnection.HTTP_OK));
+                        mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(),
+                        "http://google.com", false, false, HttpURLConnection.HTTP_OK));
 
                 // Fake the first run experience or second run promo being shown in M51.
                 DataReductionPromoUtils.saveFreOrSecondRunPromoDisplayed();
@@ -451,8 +447,8 @@ public class InfoBarTest {
                 // Try to add an infobar. Infobar should not be added since the user opted
                 // out on the first run experience.
                 Assert.assertFalse(DataReductionPromoInfoBar.maybeLaunchPromoInfoBar(
-                        mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(), gurl,
-                        false, false, HttpURLConnection.HTTP_OK));
+                        mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(),
+                        "http://google.com", false, false, HttpURLConnection.HTTP_OK));
             }
         });
     }

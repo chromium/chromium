@@ -15,7 +15,6 @@ import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
 import org.chromium.components.optimization_guide.proto.PerformanceHintsMetadataProto.PerformanceHintsMetadata;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -128,7 +127,7 @@ public class OptimizationGuideBridge {
         long init();
         void destroy(long nativeOptimizationGuideBridge);
         void registerOptimizationTypes(long nativeOptimizationGuideBridge, int[] optimizationTypes);
-        void canApplyOptimization(long nativeOptimizationGuideBridge, GURL url,
+        void canApplyOptimization(long nativeOptimizationGuideBridge, String url,
                 int optimizationType, OptimizationGuideCallback callback);
     }
 }
