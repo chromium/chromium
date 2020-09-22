@@ -2305,6 +2305,9 @@ extern const char kEnableZeroStateSuggestionsDescription[];
 extern const char kEnableSuggestedFilesName[];
 extern const char kEnableSuggestedFilesDescription[];
 
+extern const char kEnhancedDeskAnimationsName[];
+extern const char kEnhancedDeskAnimationsDescription[];
+
 extern const char kEnterpriseReportingInChromeOSName[];
 extern const char kEnterpriseReportingInChromeOSDescription[];
 

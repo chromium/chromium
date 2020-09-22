@@ -6416,6 +6416,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-holding-space", flag_descriptions::kHoldingSpaceName,
      flag_descriptions::kHoldingSpaceDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kTemporaryHoldingSpace)},
+
+    {"enhanced-desk-animations", flag_descriptions::kEnhancedDeskAnimationsName,
+     flag_descriptions::kEnhancedDeskAnimationsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kEnhancedDeskAnimations)},
 #endif
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \

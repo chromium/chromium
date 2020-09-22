@@ -2404,6 +2404,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "enhanced-desk-animations",
+    "owners": ["sammiequon", "tclaiborne"],
+    "expiry_milestone": 92
+  },
+  {
     "name": "enterprise-reporting-in-chromeos",
     "owners": [ "anqing" ],
     "expiry_milestone": 87

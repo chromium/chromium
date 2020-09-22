@@ -3980,6 +3980,12 @@ const char kEnableSuggestedFilesDescription[] =
     "Enable Suggested Files feature in Launcher, which will show file "
     "suggestions in the suggestion chips when the launcher is opened";
 
+const char kEnhancedDeskAnimationsName[] =
+    "Enable Enhanced Virtual Desks Animations";
+const char kEnhancedDeskAnimationsDescription[] =
+    "Allows pressing multiple keyboard shortcuts to switch multiple desks, and "
+    "to have touchpad swipes continuously move desks.";
+
 const char kEnterpriseReportingInChromeOSName[] =
     "Enterprise cloud reporting in Chrome OS";
 const char kEnterpriseReportingInChromeOSDescription[] =

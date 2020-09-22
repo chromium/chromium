@@ -40900,6 +40900,7 @@ from previous Chrome versions.
   <int value="-1912999136" label="enable-automatic-password-saving:enabled"/>
   <int value="-1911316813" label="BlockTabUnders:disabled"/>
   <int value="-1911153473" label="enable-easy-signin"/>
+  <int value="-1910305102" label="EnhancedDeskAnimations:enabled"/>
   <int value="-1909983714" label="ExperimentalTabController:disabled"/>
   <int value="-1909702940" label="WebXRARModule:disabled"/>
   <int value="-1909356390"
@@ -42824,6 +42825,7 @@ from previous Chrome versions.
   <int value="21055794" label="OpenXR:enabled"/>
   <int value="23556595" label="MarkHttpAs:enabled"/>
   <int value="26875005" label="disable-explicit-dma-fences"/>
+  <int value="26945819" label="EnhancedDeskAnimations:disabled"/>
   <int value="27507364" label="apps-keep-chrome-alive"/>
   <int value="29212695" label="OfflineIndicator:enabled"/>
   <int value="31848187" label="ViewsTaskManager:disabled"/>
