@@ -7,6 +7,7 @@ import Fuse from './fuse.js';
 const OPTIONS = {
   includeScore: true,
   ignoreLocation: true,
+  includeMatches: true,
   keys: [
     {
       name: 'title',
@@ -21,12 +22,35 @@ const OPTIONS = {
 
 /**
  * @param {string} input
- * @param {!Array<tabSearch.mojom.Tab>} records
- * @return {!Array<tabSearch.mojom.Tab>}
+ * @param {!Array<!tabSearch.mojom.Tab>} records
+ * @return {!Array<!tabSearch.mojom.Tab>}
  */
 export function fuzzySearch(input, records) {
   if (input.length === 0) {
     return records;
   }
-  return new Fuse(records, OPTIONS).search(input).map(_ => _.item);
+  return new Fuse(records, OPTIONS).search(input).map(result => {
+    const titleMatch = result.matches.find(e => e.key === 'title');
+    const hostnameMatch = result.matches.find(e => e.key === 'hostname');
+    const item = Object.assign({}, result.item);
+    if (titleMatch) {
+      item.titleHighlightRanges = convertToRanges(titleMatch.indices);
+    }
+    if (hostnameMatch) {
+      item.hostnameHighlightRanges = convertToRanges(hostnameMatch.indices);
+    }
+    return item;
+  });
+}
+
+/**
+ * Convert fuse.js matches [start1, end1], [start2, end2] ... to
+ * ranges {start:start1, length:length1}, {start:start2, length:length2} ...
+ * to be used by search_highlight_utils.js
+ * @param {!Array<!Array<number>>} matches
+ * @return {!Array<!{start: number, length: number}>}
+ */
+function convertToRanges(matches) {
+  return matches.map(
+      ([start, end]) => ({start: start, length: end - start + 1}));
 }

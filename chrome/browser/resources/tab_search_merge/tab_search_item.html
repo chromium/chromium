@@ -31,21 +31,21 @@
     overflow: hidden;
   }
 
-  .primary-text,
-  .secondary-text {
+  #primaryText,
+  #secondaryText {
     overflow: hidden;
     text-overflow: ellipsis;
     user-select: none;
     white-space: nowrap;
   }
 
-  .primary-text {
+  #primaryText {
     color: var(--cr-primary-text-color);
     font-size: var(--mwb-primary-text-font-size);
     margin-bottom: 3px;
   }
 
-  .secondary-text {
+  #secondaryText {
     color: var(--cr-secondary-text-color);
     font-size: var(--mwb-secondary-text-font-size);
   }
@@ -55,12 +55,18 @@
     --cr-icon-button-margin-start: calc(var(--mwb-icon-size) / 4);
     --cr-icon-button-size: var(--mwb-icon-size);
   }
+
+  .search-highlight-hit {
+    font-weight: bold;
+  }
 </style>
 
-<div class="favicon" style="background-image:[[faviconUrl_(data.isDefaultFavicon, data.url)]]"></div>
+<div class="favicon"
+    style="background-image:[[faviconUrl_(data.isDefaultFavicon, data.url)]]">
+</div>
 <div class="text-container">
-  <div class="primary-text">[[data.title]]</div>
-  <div class="secondary-text">[[urlHostname_(data.url)]]</div>
+  <div id="primaryText"></div>
+  <div id="secondaryText"></div>
 </div>
 <div class="button-container">
   <cr-icon-button id="closeButton" aria-label="[[ariaLabel_(data.title)]]"

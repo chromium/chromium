@@ -15,6 +15,7 @@ js_type_check("closure_compile") {
     ":fuzzy_search_test",
     ":tab_search_app_focus_test",
     ":tab_search_app_test",
+    ":tab_search_item_test",
   ]
 }
 
@@ -50,4 +51,12 @@ js_library("test_tab_search_api_proxy") {
     "//chrome/browser/ui/webui/tab_search:mojo_bindings_js_library_for_compile",
     "//chrome/test/data/webui:test_browser_proxy.m",
   ]
+}
+
+js_library("tab_search_item_test") {
+  deps = [
+    "../..:chai_assert",
+    "//chrome/browser/resources/tab_search:tab_search_item",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

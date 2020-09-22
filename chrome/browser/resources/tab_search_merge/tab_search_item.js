@@ -10,6 +10,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {highlight} from 'chrome://resources/js/search_highlight_utils.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import './strings.js';
@@ -26,7 +27,10 @@ export class TabSearchItem extends PolymerElement {
   static get properties() {
     return {
       /** @type {!tabSearch.mojom.Tab} */
-      data: Object,
+      data: {
+        type: Object,
+        observer: 'setHighlights_',
+      },
     };
   }
 
@@ -40,22 +44,49 @@ export class TabSearchItem extends PolymerElement {
   }
 
   /**
+   * @param {boolean} isDefaultFavicon
    * @param {string} url
    * @return {string}
    * @private
    */
-  urlHostname_(url) {
-    return new URL(url).hostname;
+  faviconUrl_(isDefaultFavicon, url) {
+    return getFaviconForPageURL(
+        isDefaultFavicon ? 'chrome://newtab' : url, false);
   }
 
   /**
-   * @param isDefaultFavicon {boolean}
-   * @param url {string}
-   * @return {string}
+   * @suppress {checkTypes}
+   * Suppress checking types because hostname, titleHighlightRanges and
+   * hostnameHighlightRanges are added on the flight and not part of the
+   * original mojom.tabSearch.Tab definition
    * @private
    */
-  faviconUrl_(isDefaultFavicon, url) {
-    return getFaviconForPageURL(isDefaultFavicon ? undefined : url, false);
+  setHighlights_() {
+    this.highlightText_(
+        /** @type {!HTMLElement} */ (this.$.primaryText), this.data.title,
+        this.data.titleHighlightRanges);
+    this.highlightText_(
+        /** @type {!HTMLElement} */ (this.$.secondaryText), this.data.hostname,
+        this.data.hostnameHighlightRanges);
+  }
+
+  /**
+   *
+   * @param {!HTMLElement} container
+   * @param {string} text
+   * @param {?Array<!{start:number, length:number}>} ranges
+   */
+  highlightText_(container, text, ranges) {
+    container.textContent = '';
+    const node = document.createTextNode(text);
+    container.appendChild(node);
+    if (ranges) {
+      const result = highlight(node, ranges, true);
+      // Delete default highlight style.
+      result.querySelectorAll('.search-highlight-hit').forEach(e => {
+        e.style = '';
+      });
+    }
   }
 
   ariaLabel_(title) {
