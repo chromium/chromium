@@ -18,6 +18,7 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/windows_version.h"
+#include "build/build_config.h"
 #include "sandbox/win/src/app_container_profile.h"
 #include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/src/sandbox.h"
@@ -138,8 +139,17 @@ ResultCode BrokerServicesBase::Init() {
 
   no_targets_.Set(::CreateEventW(nullptr, true, false, nullptr));
 
-  job_thread_.Set(::CreateThread(nullptr, 0,  // Default security and stack.
-                                 TargetEventsThread, this, 0, nullptr));
+#if defined(ARCH_CPU_32_BITS)
+  // Conserve address space in 32-bit Chrome. This thread uses a small and
+  // consistent amount and doesn't need the default of 1.5 MiB.
+  constexpr unsigned flags = STACK_SIZE_PARAM_IS_A_RESERVATION;
+  constexpr size_t stack_size = 128 * 1024;
+#else
+  constexpr unsigned int flags = 0;
+  constexpr size_t stack_size = 0;
+#endif
+  job_thread_.Set(::CreateThread(nullptr, stack_size,  // Default security.
+                                 TargetEventsThread, this, flags, nullptr));
   if (!job_thread_.IsValid())
     return SBOX_ERROR_CANNOT_INIT_BROKERSERVICES;
 
