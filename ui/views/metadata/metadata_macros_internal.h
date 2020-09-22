@@ -71,10 +71,11 @@
       class_name)::meta_data_ = nullptr;                                    \
                                                                             \
   views::metadata::ClassMetaData* class_name::MetaData() {                  \
-    if (!METADATA_CLASS_NAME_INTERNAL(class_name)::meta_data_)              \
+    if (!METADATA_CLASS_NAME_INTERNAL(class_name)::meta_data_) {            \
       METADATA_CLASS_NAME_INTERNAL(class_name)::meta_data_ =                \
           views::metadata::MakeAndRegisterClassInfo<                        \
               METADATA_CLASS_NAME_INTERNAL(class_name)>();                  \
+    }                                                                       \
     return METADATA_CLASS_NAME_INTERNAL(class_name)::meta_data_;            \
   }                                                                         \
                                                                             \

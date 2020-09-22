@@ -44,6 +44,8 @@ class VIEWS_EXPORT ClassMetaData {
  public:
   ClassMetaData();
   ClassMetaData(std::string file, int line);
+  ClassMetaData(const ClassMetaData&) = delete;
+  ClassMetaData& operator=(const ClassMetaData&) = delete;
   virtual ~ClassMetaData();
 
   const std::string& type_name() const { return type_name_; }
@@ -119,8 +121,6 @@ class VIEWS_EXPORT ClassMetaData {
   ClassMetaData* parent_class_meta_data_ = nullptr;
   std::string file_;
   const int line_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ClassMetaData);
 };
 
 // Abstract base class to represent meta data about class members.
@@ -131,6 +131,8 @@ class VIEWS_EXPORT MemberMetaDataBase {
   MemberMetaDataBase(const std::string& member_name,
                      const std::string& member_type)
       : member_name_(member_name), member_type_(member_type) {}
+  MemberMetaDataBase(const MemberMetaDataBase&) = delete;
+  MemberMetaDataBase& operator=(const MemberMetaDataBase&) = delete;
   virtual ~MemberMetaDataBase() = default;
 
   // Access the value of this member and return it as a string.
@@ -152,8 +154,6 @@ class VIEWS_EXPORT MemberMetaDataBase {
  private:
   std::string member_name_;
   std::string member_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemberMetaDataBase);
 };  // class MemberMetaDataBase
 
 }  // namespace metadata
