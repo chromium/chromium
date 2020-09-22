@@ -801,7 +801,7 @@ deps = {
   },
 
   'src/third_party/barhopper': {
-      'url': 'https://chrome-internal.googlesource.com/chrome/deps/barhopper.git' + '@' + '47934f2c634ca9a0a512ad160b47f3108649a390',
+      'url': 'https://chrome-internal.googlesource.com/chrome/deps/barhopper.git' + '@' + 'd5422b6ec462d016d7cc1be59a9485e5f82bcf9f',
       'condition': 'checkout_src_internal and checkout_chromeos',
   },
 
