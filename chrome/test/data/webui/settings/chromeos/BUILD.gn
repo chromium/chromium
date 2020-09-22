@@ -42,6 +42,7 @@ js_modulizer("modulize") {
     "fake_user_action_recorder.js",
     "input_method_options_page_test.js",
     "input_page_test.js",
+    "internet_known_networks_page_tests.js",
     "localized_link_test.js",
     "multidevice_feature_item_tests.js",
     "multidevice_feature_toggle_tests.js",

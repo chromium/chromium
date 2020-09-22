@@ -30,6 +30,16 @@
            use_base_dir="false"
            compress="false"
            type="BINDATA" />
+  <include name="IDR_OS_SETTINGS_INTERNET_KNOWN_NETWORKS_PAGE_M_JS"
+           file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/internet_page/internet_known_networks_page.m.js"
+           use_base_dir="false"
+           compress="false"
+           type="BINDATA" />
+  <include name="IDR_OS_SETTINGS_INTERNET_SHARED_CSS_M_JS"
+           file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/internet_page/internet_shared_css.m.js"
+           use_base_dir="false"
+           compress="false"
+           type="BINDATA" />
   <include name="IDR_OS_SETTINGS_PERSONALIZATION_PAGE_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/personalization_page/personalization_page.m.js"
            use_base_dir="false"

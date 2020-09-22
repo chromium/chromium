@@ -2,6 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://os-settings/chromeos/os_settings.js';
+
+// #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
+// #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+// #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// clang-format on
+
 suite('InternetKnownNetworksPage', function() {
   /** @type {?SettingsInternetKnownNetworksPageElement} */
   let internetKnownNetworksPage = null;
@@ -87,7 +100,7 @@ suite('InternetKnownNetworksPage', function() {
       assertEquals(preferredElems.length, 1);
 
       const deepLinkElement = preferredElems[0].$$('#icon');
-      assert(!!deepLinkElement);
+      assertTrue(!!deepLinkElement);
       await test_util.waitAfterNextRender();
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
