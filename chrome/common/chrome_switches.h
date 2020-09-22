@@ -25,6 +25,12 @@ namespace switches {
 // media/base/media_switches.cc or ui/gl/gl_switches.cc or one of the
 // .cc files corresponding to the *_switches.h files included above
 // instead.
+//
+// Want to remove obsolete switches? Ensure that the switch isn't still in use
+// by the Android Java code (ChromeSwitches.java.tmpl) under an aliased name.
+// Also perform a string search to make sure the switch isn't in use only by a
+// build-configuration, e.g. BUILDFLAG(GOOGLE_CHROME_BRANDING), that is not
+// indexed for cross-reference or built by the CQ bots.
 // -----------------------------------------------------------------------------
 
 // All switches in alphabetical order. The switches should be documented
@@ -77,13 +83,10 @@ extern const char kDisableExtensionsExcept[];
 extern const char kDisableExtensionsFileAccessCheck[];
 extern const char kDisablePrintPreview[];
 extern const char kDisablePromptOnRepost[];
-extern const char kDisableSearchGeolocationDisclosure[];
 extern const char kDisableZeroBrowsersOpenForTests[];
 extern const char kDiskCacheDir[];
 extern const char kDiskCacheSize[];
-extern const char kDnsLogDetails[];
 extern const char kDumpBrowserHistograms[];
-extern const char kEasyUnlockAppPath[];
 extern const char kEnableAudioDebugRecordingsFromExtension[];
 extern const char kEnableAutoReload[];
 extern const char kEnableBookmarkUndo[];
@@ -129,7 +132,6 @@ extern const char kNoPings[];
 extern const char kNoProxyServer[];
 extern const char kNoServiceAutorun[];
 extern const char kNoStartupWindow[];
-extern const char kNoSupervisedUserAcknowledgmentCheck[];
 extern const char kOnTheFlyMhtmlHashComputation[];
 extern const char kOpenInNewWindow[];
 extern const char kPackExtension[];
@@ -194,7 +196,6 @@ extern const char kForceShowUpdateMenuBadge[];
 extern const char kForceShowUpdateMenuItemCustomSummary[];
 extern const char kForceUpdateMenuType[];
 extern const char kMarketUrlForTesting[];
-extern const char kProgressBarAnimation[];
 extern const char kTrustedCDNBaseURLForTests[];
 extern const char kWebApkServerUrl[];
 #endif  // defined(OS_ANDROID)
@@ -237,7 +238,6 @@ extern const char kNoNetworkProfileWarning[];
 extern const char kNotificationInlineReply[];
 extern const char kNotificationLaunchId[];
 extern const char kPrefetchArgumentBrowserBackground[];
-extern const char kPrefetchArgumentWatcher[];
 extern const char kPwaLauncherVersion[];
 extern const char kShowIcons[];
 extern const char kUninstall[];
