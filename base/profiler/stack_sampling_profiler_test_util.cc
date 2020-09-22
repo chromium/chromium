@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/path_service.h"
+#include "base/profiler/profiler_buildflags.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "base/profiler/unwinder.h"
