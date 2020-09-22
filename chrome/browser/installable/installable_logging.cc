@@ -15,8 +15,6 @@
 namespace {
 
 // Error message strings corresponding to the InstallableStatusCode enum.
-static const char kNotInMainFrameMessage[] =
-    "Page is not loaded in the main frame";
 static const char kNotFromSecureOriginMessage[] =
     "Page is not served from a secure origin";
 static const char kNoManifestMessage[] = "Page has no manifest <link> URL";
@@ -68,7 +66,6 @@ static const char kManifestDisplayOverrideNotSupportedMessage[] =
     "Manifest contains 'display_override' field, and the first supported "
     "display mode must be one of 'standalone', 'fullscreen', or 'minimal-ui'";
 
-static const char kNotInMainFrameId[] = "not-in-main-frame";
 static const char kNotFromSecureOriginId[] = "not-from-secure-origin";
 static const char kNoManifestId[] = "no-manifest";
 static const char kManifestEmptyId[] = "manifest-empty";
@@ -131,9 +128,6 @@ std::string GetErrorMessage(InstallableStatusCode code) {
     case WAITING_FOR_NATIVE_DATA:
     case SHOWING_APP_INSTALLATION_DIALOG:
     case MAX_ERROR_CODE:
-      break;
-    case NOT_IN_MAIN_FRAME:
-      message = kNotInMainFrameMessage;
       break;
     case NOT_FROM_SECURE_ORIGIN:
       message = kNotFromSecureOriginMessage;
@@ -237,9 +231,6 @@ content::InstallabilityError GetInstallabilityError(
     case WAITING_FOR_NATIVE_DATA:
     case SHOWING_APP_INSTALLATION_DIALOG:
     case MAX_ERROR_CODE:
-      break;
-    case NOT_IN_MAIN_FRAME:
-      error_id = kNotInMainFrameId;
       break;
     case NOT_FROM_SECURE_ORIGIN:
       error_id = kNotFromSecureOriginId;

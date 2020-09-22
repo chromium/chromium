@@ -591,9 +591,6 @@ void InstallableManager::CheckEligiblity() {
           ->IsOffTheRecord()) {
     eligibility_->errors.push_back(IN_INCOGNITO);
   }
-  if (web_contents->GetMainFrame()->GetParent()) {
-    eligibility_->errors.push_back(NOT_IN_MAIN_FRAME);
-  }
   if (!IsContentSecure(web_contents)) {
     eligibility_->errors.push_back(NOT_FROM_SECURE_ORIGIN);
   }
