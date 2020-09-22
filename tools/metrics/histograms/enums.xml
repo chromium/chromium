@@ -1819,6 +1819,8 @@ Unknown properties are collapsed to zero. -->
   <int value="262154" label="4.10"/>
   <int value="262157" label="4.13"/>
   <int value="262158" label="4.14"/>
+  <int value="262163" label="4.19"/>
+  <int value="327684" label="5.4"/>
 </enum>
 
 <enum name="AndroidManageSpaceButton">
