@@ -266,6 +266,29 @@ chromeos.test_support = {};
       }
       return response;
     }
+
+    /**
+     * Requests prime search routine to be run.
+     * @param { !number } lengthSeconds
+     * @param { !number } maximumNumber
+     * @return { !Promise<!Object> }
+     * @public
+     */
+    async runPrimeSearchRoutine(lengthSeconds, maximumNumber) {
+      const message =
+          /**
+             @type {!dpsl_internal.DiagnosticsRunPrimeSearchRoutineRequest}
+           */
+          ({lengthSeconds: lengthSeconds, maximumNumber: maximumNumber});
+      const response =
+          /** @type {!Object} */ (await messagePipe.sendMessage(
+              dpsl_internal.Message.DIAGNOSTICS_RUN_PRIME_SEARCH_ROUTINE,
+              message));
+      if (response instanceof Error) {
+        throw response;
+      }
+      return response;
+    }
   };
 
   /**

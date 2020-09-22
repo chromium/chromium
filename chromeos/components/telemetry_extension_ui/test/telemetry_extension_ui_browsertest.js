@@ -391,6 +391,8 @@ const untrustedTests = [
   ['UntrustedDiagnosticsRequestRunNvmeWearLevelRoutine'],
   ['UntrustedDiagnosticsRequestRunNvmeSelfTestRoutineInvalidInput'],
   ['UntrustedDiagnosticsRequestRunNvmeSelfTestRoutine'],
+  ['UntrustedDiagnosticsRequestRunPrimeSearchRoutineInvalidInput'],
+  ['UntrustedDiagnosticsRequestRunPrimeSearchRoutine'],
   ['UntrustedRequestTelemetryInfoUnknownCategory'],
   ['UntrustedRequestTelemetryInfo'],
   [

@@ -35,6 +35,8 @@ dpsl_internal.Message = {
       'DiagnosticsService.RunNvmeWearLevelRoutine',
   DIAGNOSTICS_RUN_NVME_SELF_TEST_ROUTINE:
       'DiagnosticsService.RunNvmeSelfTestRoutine',
+  DIAGNOSTICS_RUN_PRIME_SEARCH_ROUTINE:
+      'DiagnosticsService.RunPrimeSearchRoutine',
   PROBE_TELEMETRY_INFO: 'ProbeService.ProbeTelemetryInfo',
 };
 
@@ -137,6 +139,15 @@ dpsl_internal.DiagnosticsRunNvmeWearLevelRoutineRequest;
  * @typedef {{ nvmeSelfTestType: !string }}
  */
 dpsl_internal.DiagnosticsRunNvmeSelfTestRoutineRequest;
+
+/**
+ * Request message sent by the unprivileged context to the privileged
+ * context to run prime search routine.
+ * @typedef {{
+ * lengthSeconds: !number,
+ * maximumNumber: !number}}
+ */
+dpsl_internal.DiagnosticsRunPrimeSearchRoutineRequest;
 
 /**
  * Response message sent by the privileged context containing routine

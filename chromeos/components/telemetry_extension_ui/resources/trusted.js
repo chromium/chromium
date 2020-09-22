@@ -476,6 +476,20 @@ class DiagnosticsProxy {
     return await getOrCreateDiagnosticsService().runNvmeSelfTestRoutine(
         this.convertNvmeSelfTestTypeToEnum(request.nvmeSelfTestType));
   };
+
+  /**
+   * Runs prime search routine.
+   * @param { !Object } message
+   * @return { !RunRoutineResponsePromise }
+   */
+  async handleRunPrimeSearchRoutine(message) {
+    const request =
+        /** @type {!dpsl_internal.DiagnosticsRunPrimeSearchRoutineRequest} */
+        (message);
+    this.assertNumberIsPositive(request.lengthSeconds);
+    return await getOrCreateDiagnosticsService().runPrimeSearchRoutine(
+        request.lengthSeconds, request.maximumNumber);
+  };
 };
 
 const diagnosticsProxy = new DiagnosticsProxy();
@@ -808,6 +822,12 @@ untrustedMessagePipe.registerHandler(
     dpsl_internal.Message.DIAGNOSTICS_RUN_NVME_SELF_TEST_ROUTINE,
     (message) => diagnosticsProxy.genericRunRoutineHandler(
         (message) => diagnosticsProxy.handleRunNvmeSelfTestRoutine(message),
+        message));
+
+untrustedMessagePipe.registerHandler(
+    dpsl_internal.Message.DIAGNOSTICS_RUN_PRIME_SEARCH_ROUTINE,
+    (message) => diagnosticsProxy.genericRunRoutineHandler(
+        (message) => diagnosticsProxy.handleRunPrimeSearchRoutine(message),
         message));
 
 untrustedMessagePipe.registerHandler(

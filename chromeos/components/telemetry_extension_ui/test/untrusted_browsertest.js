@@ -295,6 +295,39 @@ UNTRUSTED_TEST('UntrustedRequestTelemetryInfoUnknownCategory', async () => {
       'Telemetry category \'unknown-category\' is unknown.');
 });
 
+// Tests that runPrimeSearchRoutine throws the correct error when invalid enum
+// is passed as input.
+UNTRUSTED_TEST(
+    'UntrustedDiagnosticsRequestRunPrimeSearchRoutineInvalidInput',
+    async () => {
+      let caughtError1;
+      try {
+        await chromeos.diagnostics.runPrimeSearchRoutine(0, 10);
+      } catch (error) {
+        caughtError1 = error;
+      }
+
+      assertEquals(caughtError1.name, 'RangeError');
+      assertEquals(caughtError1.message, `Parameter must be positive.`);
+
+      let caughtError2;
+      try {
+        await chromeos.diagnostics.runPrimeSearchRoutine(-2147483648, 128);
+      } catch (error) {
+        caughtError2 = error;
+      }
+
+      assertEquals(caughtError2.name, 'RangeError');
+      assertEquals(caughtError2.message, `Parameter must be positive.`);
+    });
+
+// Tests that runPrimeSearchRoutine returns the correct Object.
+UNTRUSTED_TEST('UntrustedDiagnosticsRequestRunPrimeSearchRoutine', async () => {
+  const response =
+      await chromeos.diagnostics.runPrimeSearchRoutine(12, 1110987654321);
+  assertDeepEquals(response, {id: 123456789, status: 'ready'});
+});
+
 // Tests that TelemetryInfo can be successfully requested from
 // from chrome-untrusted://.
 UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {

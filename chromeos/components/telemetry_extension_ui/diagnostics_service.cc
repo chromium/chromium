@@ -190,4 +190,19 @@ void DiagnosticsService::RunNvmeSelfTestRoutine(
           std::move(callback)));
 }
 
+void DiagnosticsService::RunPrimeSearchRoutine(
+    uint32_t length_seconds,
+    uint64_t max_num,
+    RunPrimeSearchRoutineCallback callback) {
+  GetService()->RunPrimeSearchRoutine(
+      length_seconds, max_num,
+      base::BindOnce(
+          [](health::mojom::DiagnosticsService::RunPrimeSearchRoutineCallback
+                 callback,
+             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+            std::move(callback).Run(converters::ConvertPtr(std::move(ptr)));
+          },
+          std::move(callback)));
+}
+
 }  // namespace chromeos

@@ -63,6 +63,9 @@ class DiagnosticsService : public health::mojom::DiagnosticsService {
   void RunNvmeSelfTestRoutine(
       health::mojom::NvmeSelfTestTypeEnum nvme_self_test_type,
       RunNvmeSelfTestRoutineCallback callback) override;
+  void RunPrimeSearchRoutine(uint32_t length_seconds,
+                             uint64_t max_num,
+                             RunPrimeSearchRoutineCallback callback) override;
 
   // Pointer to real implementation.
   mojo::Remote<cros_healthd::mojom::CrosHealthdDiagnosticsService> service_;
