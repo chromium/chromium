@@ -38,20 +38,6 @@ namespace {
 // Used to record when the user loads the inspect page.
 const char kInspectPageVisited[] = "IOSInspectPageVisited";
 
-// The histogram used to record user actions performed on the inspect page.
-const char kInspectConsoleHistogram[] = "IOS.Inspect.Console";
-
-// Actions performed by the user logged to |kInspectConsoleHistogram|.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class InspectConsoleAction {
-  // Recorded when a user pressed the "Start Logging" button to collect logs.
-  kStartLogging = 0,
-  // Recorded when a user pressed the "Stop Logging" button.
-  kStopLogging = 1,
-  kMaxValue = kStopLogging,
-};
-
 web::WebUIIOSDataSource* CreateInspectUIHTMLSource() {
   web::WebUIIOSDataSource* source =
       web::WebUIIOSDataSource::Create(kChromeUIInspectHost);
@@ -142,10 +128,6 @@ void InspectDOMHandler::HandleSetLoggingEnabled(const base::ListValue* args) {
   if (!args->GetBoolean(0, &enabled)) {
     NOTREACHED();
   }
-
-  UMA_HISTOGRAM_ENUMERATION(kInspectConsoleHistogram,
-                            enabled ? InspectConsoleAction::kStartLogging
-                                    : InspectConsoleAction::kStopLogging);
 
   SetLoggingEnabled(enabled);
 }

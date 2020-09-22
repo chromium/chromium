@@ -71136,6 +71136,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.Inspect.Console" enum="IOSInspectConsoleAction"
     expires_after="M85">
+  <obsolete>
+    Removed 09/2020.
+  </obsolete>
   <owner>eugenebut@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
