@@ -85,7 +85,6 @@ suite('TabSearchAppTest', () => {
     const tabData = {
       index: 0,
       tabId: 1,
-      favIconUrl: '',
       title: 'Google',
       url: 'https://www.google.com',
     };
@@ -204,7 +203,6 @@ suite('TabSearchAppTest', () => {
     const updatedTab = /** @type {!tabSearch.mojom.Tab} */ ({
       index: 0,
       tabId: 1,
-      favIconUrl: '',
       title: 'Example',
       url: 'https://example.com',
       lastActiveTimeTicks: { internalValue: 1 },
@@ -335,7 +333,6 @@ suite('TabSearchAppTest', () => {
     {
       index: 0,
       tabId: 1,
-      favIconUrl: '',
       title: 'Google',
       url: 'https://www.google.com',
       lastActiveTimeTicks: { internalValue: 2 },
@@ -343,7 +340,6 @@ suite('TabSearchAppTest', () => {
     {
       index: 1,
       tabId: 2,
-      favIconUrl: '',
       title: 'Bing',
       url: 'https://www.bing.com',
       lastActiveTimeTicks: { internalValue: 4 },
@@ -351,7 +347,6 @@ suite('TabSearchAppTest', () => {
     {
       index: 2,
       tabId: 3,
-      favIconUrl: '',
       title: 'Yahoo',
       url: 'https://www.yahoo.com',
       lastActiveTimeTicks: { internalValue: 3 },

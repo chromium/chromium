@@ -44,14 +44,13 @@ export class TabSearchItem extends PolymerElement {
   }
 
   /**
-   * @param {boolean} isDefaultFavicon
-   * @param {string} url
+   * @param {!tabSearch.mojom.Tab} data
    * @return {string}
    * @private
    */
-  faviconUrl_(isDefaultFavicon, url) {
-    return getFaviconForPageURL(
-        isDefaultFavicon ? 'chrome://newtab' : url, false);
+  faviconUrl_(data) {
+    return data.faviconUrl ? `url("${data.faviconUrl}")` :
+        getFaviconForPageURL(data.isDefaultFavicon ? 'chrome://newtab' : data.url, false);
   }
 
   /**
