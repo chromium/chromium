@@ -105,6 +105,7 @@ html_to_js("web_components") {
     "cpu_card.js",
     "diagnostics_app.js",
     "diagnostics_card.js",
+    "diagnostics_fonts_css.js",
     "diagnostics_shared_css.js",
     "memory_card.js",
     "overview_card.js",
