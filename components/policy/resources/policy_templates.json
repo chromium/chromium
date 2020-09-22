@@ -10200,9 +10200,9 @@
       'supported_on': [
         'chrome.*:22-',
         'chrome_os:22-',
-        'android:30-',
-        'ios:85-'
+        'android:30-'
       ],
+      'future_on': ['ios'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
