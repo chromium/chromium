@@ -1735,6 +1735,14 @@
     "label": "//chrome/test:unit_tests",
     "type": "windowed_test_launcher",
   },
+  "updater_integration_tests": {
+    "args": [
+      "../../chrome/updater/run_updater_tests.py",
+    ],
+    "label": "//chrome/updater:updater_integration_tests",
+    "script": "//testing/scripts/run_isolated_script_test.py",
+    "type": "script",
+  },
   "updater_tests": {
     "label": "//chrome/updater:updater_tests",
     "type": "console_test_launcher",

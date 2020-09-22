@@ -335,4 +335,17 @@ if (is_win || is_mac) {
       ]
     }
   }
+
+  group("updater_integration_tests") {
+    testonly = true
+
+    data = [
+      "//chrome/updater/run_updater_tests.py",
+      "//chrome/updater/test/",
+      "//testing/scripts/common.py",
+      "//testing/scripts/run_isolated_script_test.py",
+      "//testing/xvfb.py",
+      "//third_party/catapult/third_party/typ/",
+    ]
+  }
 }
