@@ -20,14 +20,13 @@ class BrokerPermissionList;
 // |ipc_channel| according to |broker_permission_list|.
 class BrokerHost {
  public:
-  enum class RequestStatus { LOST_CLIENT = 0, SUCCESS, FAILURE };
-
   BrokerHost(const BrokerPermissionList& broker_permission_list,
              const BrokerCommandSet& allowed_command_set,
              BrokerChannel::EndPoint ipc_channel);
   ~BrokerHost();
 
-  RequestStatus HandleRequest() const;
+  // Receive system call requests and handle them forevermore.
+  void LoopAndHandleRequests();
 
  private:
   const BrokerPermissionList& broker_permission_list_;

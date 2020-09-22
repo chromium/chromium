@@ -39,6 +39,8 @@ class BrokerFilePermission;
 // 4. Use open_broker.Open() to open files.
 class SANDBOX_EXPORT BrokerProcess {
  public:
+  enum class BrokerType { SIGNAL_BASED };
+
   // |denied_errno| is the error code returned when methods such as Open()
   // or Access() are invoked on a file which is not in the allowlist (EACCESS
   // would be a typical value).  |allowed_command_mask| is a bitwise-or of
@@ -57,6 +59,7 @@ class SANDBOX_EXPORT BrokerProcess {
       int denied_errno,
       const syscall_broker::BrokerCommandSet& allowed_command_set,
       const std::vector<syscall_broker::BrokerFilePermission>& permissions,
+      BrokerType broker_type,
       bool fast_check_in_client = true,
       bool quiet_failures_for_tests = false);
 
@@ -95,11 +98,18 @@ class SANDBOX_EXPORT BrokerProcess {
   bool IsSyscallBrokerable(int sysno, bool fast_check) const;
 
   // Close the IPC channel with the other party. This should only be used
-  // by tests an none of the class methods should be used afterwards.
+  // by tests and none of the class methods should be used afterwards.
   void CloseChannel();
+
+  // Forks the signal-based broker, where syscall emulation is performed using
+  // signals in the sandboxed process that connect to the broker via Unix
+  // socket.
+  bool ForkSignalBasedBroker(
+      base::OnceCallback<bool(void)> broker_process_init_callback);
 
   bool initialized_;  // Whether we've been through Init() yet.
   pid_t broker_pid_;  // The PID of the broker (child) created in Init().
+  const BrokerType broker_type_;
   const bool fast_check_in_client_;
   const bool quiet_failures_for_tests_;
   syscall_broker::BrokerCommandSet allowed_command_set_;

@@ -96,7 +96,7 @@ void OpenFileForIPC(const BrokerCommandSet& allowed_command_set,
                     const std::string& requested_filename,
                     int flags,
                     BrokerSimpleMessage* reply,
-                    int* opened_file) {
+                    base::ScopedFD* opened_file) {
   const char* file_to_open = NULL;
   bool unlink_after_open = false;
   if (!CommandOpenIsSafe(allowed_command_set, permission_list,
@@ -107,8 +107,8 @@ void OpenFileForIPC(const BrokerCommandSet& allowed_command_set,
   }
 
   CHECK(file_to_open);
-  int opened_fd = sys_open(file_to_open, flags);
-  if (opened_fd < 0) {
+  opened_file->reset(sys_open(file_to_open, flags));
+  if (!opened_file->is_valid()) {
     RAW_CHECK(reply->AddIntToMessage(-errno));
     return;
   }
@@ -116,7 +116,6 @@ void OpenFileForIPC(const BrokerCommandSet& allowed_command_set,
   if (unlink_after_open)
     unlink(file_to_open);
 
-  *opened_file = opened_fd;
   RAW_CHECK(reply->AddIntToMessage(0));
 }
 
@@ -243,7 +242,7 @@ bool HandleRemoteCommand(const BrokerCommandSet& allowed_command_set,
                          const BrokerPermissionList& permission_list,
                          BrokerSimpleMessage* message,
                          BrokerSimpleMessage* reply,
-                         int* opened_file) {
+                         base::ScopedFD* opened_file) {
   // Message structure:
   //   int:    command type
   //   char[]: pathname
@@ -346,47 +345,45 @@ BrokerHost::BrokerHost(const BrokerPermissionList& broker_permission_list,
       allowed_command_set_(allowed_command_set),
       ipc_channel_(std::move(ipc_channel)) {}
 
-BrokerHost::~BrokerHost() {}
+BrokerHost::~BrokerHost() = default;
 
 // Handle a request on the IPC channel ipc_channel_.
 // A request should have a file descriptor attached on which we will reply and
 // that we will then close.
 // A request should start with an int that will be used as the command type.
-BrokerHost::RequestStatus BrokerHost::HandleRequest() const {
-  BrokerSimpleMessage message;
-  errno = 0;
-  base::ScopedFD temporary_ipc;
-  const ssize_t msg_len =
-      message.RecvMsgWithFlags(ipc_channel_.get(), 0, &temporary_ipc);
+void BrokerHost::LoopAndHandleRequests() {
+  for (;;) {
+    BrokerSimpleMessage message;
+    errno = 0;
+    base::ScopedFD temporary_ipc;
+    const ssize_t msg_len =
+        message.RecvMsgWithFlags(ipc_channel_.get(), 0, &temporary_ipc);
 
-  if (msg_len == 0 || (msg_len == -1 && errno == ECONNRESET)) {
-    // EOF from the client, or the client died, we should die.
-    return RequestStatus::LOST_CLIENT;
+    if (msg_len == 0 || (msg_len == -1 && errno == ECONNRESET)) {
+      // EOF from the client, or the client died, we should finish looping.
+      return;
+    }
+
+    // The client sends exactly one file descriptor, on which we
+    // will write the reply.
+    if (msg_len < 0) {
+      PLOG(ERROR) << "Error reading message from the client";
+      continue;
+    }
+
+    BrokerSimpleMessage reply;
+    base::ScopedFD opened_file;
+    if (!HandleRemoteCommand(allowed_command_set_, broker_permission_list_,
+                             &message, &reply, &opened_file)) {
+      // Does not exit if we received a malformed message.
+      LOG(ERROR) << "Received malformed message from the client";
+      continue;
+    }
+
+    ssize_t sent = reply.SendMsg(temporary_ipc.get(), opened_file.get());
+    if (sent < 0)
+      LOG(ERROR) << "sent failed";
   }
-
-  // The client sends exactly one file descriptor, on which we
-  // will write the reply.
-  if (msg_len < 0) {
-    PLOG(ERROR) << "Error reading message from the client";
-    return RequestStatus::FAILURE;
-  }
-
-  BrokerSimpleMessage reply;
-  int opened_file = -1;
-  bool result =
-      HandleRemoteCommand(allowed_command_set_, broker_permission_list_,
-                          &message, &reply, &opened_file);
-
-  ssize_t sent = reply.SendMsg(temporary_ipc.get(), opened_file);
-  if (sent < 0)
-    LOG(ERROR) << "sent failed";
-
-  if (opened_file >= 0) {
-    int ret = IGNORE_EINTR(close(opened_file));
-    DCHECK(!ret) << "Could not close file descriptor";
-  }
-
-  return result ? RequestStatus::SUCCESS : RequestStatus::FAILURE;
 }
 
 }  // namespace syscall_broker

@@ -492,7 +492,8 @@ void SandboxLinux::StartBrokerProcess(
     const Options& options) {
   // Leaked at shutdown, so use bare |new|.
   broker_process_ = new syscall_broker::BrokerProcess(
-      BPFBasePolicy::GetFSDeniedErrno(), allowed_command_set, permissions);
+      BPFBasePolicy::GetFSDeniedErrno(), allowed_command_set, permissions,
+      syscall_broker::BrokerProcess::BrokerType::SIGNAL_BASED);
 
   // The initialization callback will perform generic initialization and then
   // call broker_sandboxer_callback.

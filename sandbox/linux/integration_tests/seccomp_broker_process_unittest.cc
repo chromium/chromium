@@ -48,6 +48,7 @@ using bpf_dsl::ResultExpr;
 using bpf_dsl::Trap;
 
 using BrokerProcess = syscall_broker::BrokerProcess;
+using BrokerType = syscall_broker::BrokerProcess::BrokerType;
 using BrokerCommandSet = syscall_broker::BrokerCommandSet;
 using BrokerFilePermission = syscall_broker::BrokerFilePermission;
 
@@ -55,15 +56,16 @@ using BrokerFilePermission = syscall_broker::BrokerFilePermission;
 
 class InitializedOpenBroker {
  public:
-  InitializedOpenBroker() {
+  explicit InitializedOpenBroker(
+      BrokerType broker_type = BrokerType::SIGNAL_BASED) {
     syscall_broker::BrokerCommandSet command_set;
     command_set.set(syscall_broker::COMMAND_OPEN);
     command_set.set(syscall_broker::COMMAND_ACCESS);
     std::vector<BrokerFilePermission> permissions = {
         BrokerFilePermission::ReadOnly("/proc/allowed"),
         BrokerFilePermission::ReadOnly("/proc/cpuinfo")};
-    broker_process_ =
-        std::make_unique<BrokerProcess>(EPERM, command_set, permissions);
+    broker_process_ = std::make_unique<BrokerProcess>(EPERM, command_set,
+                                                      permissions, broker_type);
     BPF_ASSERT(broker_process_->Init(base::BindOnce([]() { return true; })));
   }
 
@@ -493,10 +495,12 @@ class BPFTesterBrokerDelegate : public BPFTesterDelegate {
  public:
   explicit BPFTesterBrokerDelegate(bool fast_check_in_client,
                                    BrokerTestDelegate* broker_test_delegate,
-                                   SyscallerType syscaller_type)
+                                   SyscallerType syscaller_type,
+                                   BrokerType broker_type)
       : fast_check_in_client_(fast_check_in_client),
         broker_test_delegate_(broker_test_delegate),
-        syscaller_type_(syscaller_type) {}
+        syscaller_type_(syscaller_type),
+        broker_type_(broker_type) {}
   ~BPFTesterBrokerDelegate() override = default;
 
   std::unique_ptr<bpf_dsl::Policy> GetSandboxBPFPolicy() override {
@@ -505,7 +509,7 @@ class BPFTesterBrokerDelegate : public BPFTesterDelegate {
 
     broker_process_ = std::make_unique<BrokerProcess>(
         broker_params.denied_errno, broker_params.allowed_command_set,
-        broker_params.permissions, fast_check_in_client_);
+        broker_params.permissions, broker_type_, fast_check_in_client_);
     BPF_ASSERT(broker_process_->Init(base::BindOnce([]() { return true; })));
     broker_test_delegate_->OnBrokerStarted(broker_process_->broker_pid());
 
@@ -546,6 +550,7 @@ class BPFTesterBrokerDelegate : public BPFTesterDelegate {
   bool fast_check_in_client_;
   BrokerTestDelegate* broker_test_delegate_;
   SyscallerType syscaller_type_;
+  BrokerType broker_type_;
 
   std::unique_ptr<BrokerProcess> broker_process_;
   std::unique_ptr<Syscaller> syscaller_;
@@ -556,29 +561,35 @@ struct BrokerTestConfiguration {
   std::string test_name;
   bool fast_check_in_client;
   SyscallerType syscaller_type;
+  BrokerType broker_type;
 };
 
 // Lists out all the broker configurations we want to test.
 const std::vector<BrokerTestConfiguration> broker_test_configs = {
-    {"FastCheckInClient_IPCSyscaller", true, SyscallerType::IPCSyscaller},
+    {"FastCheckInClient_IPCSyscaller", true, SyscallerType::IPCSyscaller,
+     BrokerType::SIGNAL_BASED},
 #if defined(DIRECT_SYSCALLER_ENABLED)
-    {"FastCheckInClient_DirectSyscaller", true, SyscallerType::DirectSyscaller},
+    {"FastCheckInClient_DirectSyscaller", true, SyscallerType::DirectSyscaller,
+     BrokerType::SIGNAL_BASED},
 #endif
-    {"FastCheckInClient_LibcSyscaller", true, SyscallerType::LibcSyscaller},
-    {"NoFastCheckInClient_IPCSyscaller", false, SyscallerType::IPCSyscaller},
+    {"FastCheckInClient_LibcSyscaller", true, SyscallerType::LibcSyscaller,
+     BrokerType::SIGNAL_BASED},
+    {"NoFastCheckInClient_IPCSyscaller", false, SyscallerType::IPCSyscaller,
+     BrokerType::SIGNAL_BASED},
 #if defined(DIRECT_SYSCALLER_ENABLED)
     {"NoFastCheckInClient_DirectSyscaller", false,
-     SyscallerType::DirectSyscaller},
+     SyscallerType::DirectSyscaller, BrokerType::SIGNAL_BASED},
 #endif
-    {"NoFastCheckInClient_LibcSyscaller", false, SyscallerType::LibcSyscaller}};
+    {"NoFastCheckInClient_LibcSyscaller", false, SyscallerType::LibcSyscaller,
+     BrokerType::SIGNAL_BASED}};
 }  // namespace
 
 void RunSingleBrokerTest(BrokerTestDelegate* test_delegate,
                          const BrokerTestConfiguration& test_config) {
   test_delegate->ParentSetUp();
-  sandbox::SandboxBPFTestRunner bpf_test_runner(
-      new BPFTesterBrokerDelegate(test_config.fast_check_in_client,
-                                  test_delegate, test_config.syscaller_type));
+  sandbox::SandboxBPFTestRunner bpf_test_runner(new BPFTesterBrokerDelegate(
+      test_config.fast_check_in_client, test_delegate,
+      test_config.syscaller_type, test_config.broker_type));
   sandbox::UnitTests::RunTestInProcess(&bpf_test_runner, DEATH_SUCCESS());
   test_delegate->ParentTearDown();
 }

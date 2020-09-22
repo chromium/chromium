@@ -34,10 +34,12 @@ BrokerProcess::BrokerProcess(
     int denied_errno,
     const syscall_broker::BrokerCommandSet& allowed_command_set,
     const std::vector<syscall_broker::BrokerFilePermission>& permissions,
+    BrokerType broker_type,
     bool fast_check_in_client,
     bool quiet_failures_for_tests)
     : initialized_(false),
       broker_pid_(-1),
+      broker_type_(broker_type),
       fast_check_in_client_(fast_check_in_client),
       quiet_failures_for_tests_(quiet_failures_for_tests),
       allowed_command_set_(allowed_command_set),
@@ -58,16 +60,12 @@ BrokerProcess::~BrokerProcess() {
   }
 }
 
-bool BrokerProcess::Init(
+bool BrokerProcess::ForkSignalBasedBroker(
     base::OnceCallback<bool(void)> broker_process_init_callback) {
-  CHECK(!initialized_);
   BrokerChannel::EndPoint ipc_reader;
   BrokerChannel::EndPoint ipc_writer;
   BrokerChannel::CreatePair(&ipc_reader, &ipc_writer);
 
-#if !defined(THREAD_SANITIZER)
-  DCHECK_EQ(1, base::GetNumberOfThreads(base::GetCurrentProcessHandle()));
-#endif
   int child_pid = fork();
   if (child_pid == -1)
     return false;
@@ -80,9 +78,11 @@ bool BrokerProcess::Init(
     // We are the parent and we have just forked our broker process.
     ipc_reader.reset();
     broker_pid_ = child_pid;
+
     broker_client_ = std::make_unique<BrokerClient>(
         broker_permission_list_, std::move(ipc_writer), allowed_command_set_,
         fast_check_in_client_);
+
     initialized_ = true;
     return true;
   }
@@ -95,18 +95,26 @@ bool BrokerProcess::Init(
   // We are the broker process. Make sure to close the writer's end so that
   // we get notified if the client disappears.
   ipc_writer.reset();
+
   CHECK(std::move(broker_process_init_callback).Run());
-  BrokerHost broker_host(broker_permission_list_, allowed_command_set_,
-                         std::move(ipc_reader));
-  for (;;) {
-    switch (broker_host.HandleRequest()) {
-      case BrokerHost::RequestStatus::LOST_CLIENT:
-        _exit(1);
-      case BrokerHost::RequestStatus::SUCCESS:
-      case BrokerHost::RequestStatus::FAILURE:
-        continue;
-    }
-  }
+
+  BrokerHost broker_host_signal_based(
+      broker_permission_list_, allowed_command_set_, std::move(ipc_reader));
+  broker_host_signal_based.LoopAndHandleRequests();
+  _exit(1);
+  NOTREACHED();
+  return false;
+}
+
+bool BrokerProcess::Init(
+    base::OnceCallback<bool(void)> broker_process_init_callback) {
+  CHECK(!initialized_);
+
+#if !defined(THREAD_SANITIZER)
+  DCHECK_EQ(1, base::GetNumberOfThreads(base::GetCurrentProcessHandle()));
+#endif
+
+  return ForkSignalBasedBroker(std::move(broker_process_init_callback));
 }
 
 bool BrokerProcess::IsSyscallAllowed(int sysno) const {
