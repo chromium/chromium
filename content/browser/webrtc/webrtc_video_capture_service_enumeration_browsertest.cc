@@ -28,15 +28,6 @@
 
 namespace content {
 
-// The mediadevices.ondevicechange event is currently not supported on Android.
-#if defined(OS_ANDROID)
-#define MAYBE_AddingAndRemovingVirtualDeviceTriggersMediaElementOnDeviceChange \
-  DISABLED_AddingAndRemovingVirtualDeviceTriggersMediaElementOnDeviceChange
-#else
-#define MAYBE_AddingAndRemovingVirtualDeviceTriggersMediaElementOnDeviceChange \
-  AddingAndRemovingVirtualDeviceTriggersMediaElementOnDeviceChange
-#endif
-
 namespace {
 
 enum class ServiceApi { kSingleClient, kMultiClient };
@@ -273,6 +264,16 @@ IN_PROC_BROWSER_TEST_P(WebRtcVideoCaptureServiceEnumerationBrowserTest,
   // Tear down
   DisconnectFromService();
 }
+
+// The mediadevices.ondevicechange event is currently not supported on Android.
+// Flaky on ChromeOS.  https://crbug.com/1126373
+#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#define MAYBE_AddingAndRemovingVirtualDeviceTriggersMediaElementOnDeviceChange \
+  DISABLED_AddingAndRemovingVirtualDeviceTriggersMediaElementOnDeviceChange
+#else
+#define MAYBE_AddingAndRemovingVirtualDeviceTriggersMediaElementOnDeviceChange \
+  AddingAndRemovingVirtualDeviceTriggersMediaElementOnDeviceChange
+#endif
 
 IN_PROC_BROWSER_TEST_P(
     WebRtcVideoCaptureServiceEnumerationBrowserTest,
