@@ -269,7 +269,10 @@ void AccountManagerUIHandler::OnGetAccounts(
 
     // Check if user is managed.
     if (profile_->IsChild()) {
-      device_account.SetOrganization(kFamilyLink);
+      std::string organization = kFamilyLink;
+      // Replace space with the non-breaking space.
+      base::ReplaceSubstringsAfterOffset(&organization, 0, " ", "&nbsp;");
+      device_account.SetOrganization(organization);
     } else if (user->IsActiveDirectoryUser()) {
       device_account.SetOrganization(
           GetEnterpriseDomainFromUsername(user->GetDisplayEmail()));

@@ -258,8 +258,16 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
             ValueOrEmpty(device_account.FindStringKey("email")));
   EXPECT_EQ(GetDeviceAccountInfo().id,
             ValueOrEmpty(device_account.FindStringKey("id")));
-  EXPECT_EQ(GetDeviceAccountInfo().organization,
-            ValueOrEmpty(device_account.FindStringKey("organization")));
+  if (GetDeviceAccountInfo().user_type ==
+      user_manager::UserType::USER_TYPE_CHILD) {
+    std::string organization = GetDeviceAccountInfo().organization;
+    base::ReplaceSubstringsAfterOffset(&organization, 0, " ", "&nbsp;");
+    EXPECT_EQ(organization,
+              ValueOrEmpty(device_account.FindStringKey("organization")));
+  } else {
+    EXPECT_EQ(GetDeviceAccountInfo().organization,
+              ValueOrEmpty(device_account.FindStringKey("organization")));
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
@@ -295,8 +303,16 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
             ValueOrEmpty(device_account.FindStringKey("email")));
   EXPECT_EQ(GetDeviceAccountInfo().id,
             ValueOrEmpty(device_account.FindStringKey("id")));
-  EXPECT_EQ(GetDeviceAccountInfo().organization,
-            ValueOrEmpty(device_account.FindStringKey("organization")));
+  if (GetDeviceAccountInfo().user_type ==
+      user_manager::UserType::USER_TYPE_CHILD) {
+    std::string organization = GetDeviceAccountInfo().organization;
+    base::ReplaceSubstringsAfterOffset(&organization, 0, " ", "&nbsp;");
+    EXPECT_EQ(organization,
+              ValueOrEmpty(device_account.FindStringKey("organization")));
+  } else {
+    EXPECT_EQ(GetDeviceAccountInfo().organization,
+              ValueOrEmpty(device_account.FindStringKey("organization")));
+  }
 
   // Check secondary accounts.
   for (const base::Value& account : result) {

@@ -47,6 +47,11 @@
         margin-inline-start: 60px;
       }
 
+      .middle .secondary {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
       .secondary-accounts-policy-indicator {
         margin-inline-end: 12px;
       }
@@ -109,6 +114,12 @@
 
       .management-status {
         color: var(--cr-secondary-text-color);
+        max-width: 18ch;
+        min-width: 90px;
+        overflow: hidden;
+        text-align: end;
+        text-overflow: ellipsis;
+        width: min-content;
       }
 
       .edu-account-label {
