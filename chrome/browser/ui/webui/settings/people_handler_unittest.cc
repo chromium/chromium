@@ -1240,7 +1240,7 @@ TEST(PeopleHandlerDiceUnifiedConsentTest, StoredAccountsList) {
   // Do not be in first run, so that the profiles are not created as "new
   // profiles" and automatically migrated to Dice.
   first_run::ResetCachedSentinelDataForTesting();
-  base::ScopedClosureRunner(
+  base::ScopedClosureRunner scoped_closure_runner(
       base::BindOnce(&first_run::ResetCachedSentinelDataForTesting));
   base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
   ASSERT_FALSE(first_run::IsChromeFirstRun());
