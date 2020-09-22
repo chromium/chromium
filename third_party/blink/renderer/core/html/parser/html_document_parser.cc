@@ -517,7 +517,7 @@ void HTMLDocumentParser::ResumeParsingAfterYield() {
   DCHECK(have_background_parser_);
   DCHECK(!RuntimeEnabledFeatures::ForceSynchronousHTMLParsingEnabled());
 
-  ScopedYieldTimer(&yield_timer_, metrics_reporter_.get());
+  ScopedYieldTimer timer(&yield_timer_, metrics_reporter_.get());
 
   CheckIfBlockingStylesheetAdded();
   if (IsStopped() || IsPaused())
