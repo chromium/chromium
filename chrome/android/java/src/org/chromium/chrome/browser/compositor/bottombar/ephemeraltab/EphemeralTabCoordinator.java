@@ -44,6 +44,7 @@ import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.url.GURL;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -309,7 +310,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
          * @param callback The callback to be invoked to display the final image.
          * @param profile The profile for which favicon service is used.
          */
-        public void loadFavicon(final String url, Callback<Drawable> callback, Profile profile) {
+        public void loadFavicon(final GURL url, Callback<Drawable> callback, Profile profile) {
             assert profile != null;
             FaviconHelper.FaviconImageCallback imageCallback = (bitmap, iconUrl) -> {
                 Drawable drawable;
@@ -324,7 +325,8 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
                 callback.onResult(drawable);
             };
 
-            mFaviconHelper.getLocalFaviconImageForURL(profile, url, mFaviconSize, imageCallback);
+            mFaviconHelper.getLocalFaviconImageForURL(
+                    profile, url.getSpec(), mFaviconSize, imageCallback);
         }
     }
 }

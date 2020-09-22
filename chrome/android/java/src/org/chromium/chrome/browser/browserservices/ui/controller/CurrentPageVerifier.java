@@ -69,7 +69,7 @@ public class CurrentPageVerifier implements NativeInitObserver {
                     || navigation.isSameDocument()) {
                 return;
             }
-            verify(navigation.getUrl());
+            verify(navigation.getUrlString());
         }
 
         @Override

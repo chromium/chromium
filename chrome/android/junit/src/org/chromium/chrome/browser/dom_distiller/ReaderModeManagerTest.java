@@ -180,7 +180,7 @@ public class ReaderModeManagerTest {
         when(mNavigationHandle.isInMainFrame()).thenReturn(true);
         when(mNavigationHandle.isSameDocument()).thenReturn(false);
         when(mNavigationHandle.hasCommitted()).thenReturn(true);
-        when(mNavigationHandle.getUrl()).thenReturn(MOCK_URL);
+        when(mNavigationHandle.getUrlString()).thenReturn(MOCK_URL);
 
         mWebContentsObserver.didStartNavigation(mNavigationHandle);
         mWebContentsObserver.didFinishNavigation(mNavigationHandle);
@@ -199,7 +199,7 @@ public class ReaderModeManagerTest {
         when(mNavController.getLastCommittedEntryIndex()).thenReturn(0);
         when(mNavigationHandle.isInMainFrame()).thenReturn(true);
         when(mNavigationHandle.isSameDocument()).thenReturn(false);
-        when(mNavigationHandle.getUrl()).thenReturn(MOCK_DISTILLER_URL);
+        when(mNavigationHandle.getUrlString()).thenReturn(MOCK_DISTILLER_URL);
 
         mWebContentsObserver.didStartNavigation(mNavigationHandle);
         mWebContentsObserver.didFinishNavigation(mNavigationHandle);
@@ -217,7 +217,7 @@ public class ReaderModeManagerTest {
         when(mNavController.getLastCommittedEntryIndex()).thenReturn(0);
         when(mNavigationHandle.isInMainFrame()).thenReturn(true);
         when(mNavigationHandle.isSameDocument()).thenReturn(true);
-        when(mNavigationHandle.getUrl()).thenReturn(MOCK_URL);
+        when(mNavigationHandle.getUrlString()).thenReturn(MOCK_URL);
 
         mWebContentsObserver.didStartNavigation(mNavigationHandle);
         mWebContentsObserver.didFinishNavigation(mNavigationHandle);

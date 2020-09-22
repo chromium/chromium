@@ -32,6 +32,7 @@ import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.webrtc.MediaCaptureNotificationUtil;
 import org.chromium.components.webrtc.MediaCaptureNotificationUtil.MediaType;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -277,14 +278,14 @@ public class MediaCaptureNotificationService extends Service {
      * @param url Url of the current webrtc call.
      */
     public static void updateMediaNotificationForTab(
-            Context context, int tabId, @Nullable WebContents webContents, String url) {
+            Context context, int tabId, @Nullable WebContents webContents, GURL url) {
         @MediaType
         int mediaType = getMediaType(webContents);
         if (!shouldStartService(context, mediaType, tabId)) return;
         Intent intent = new Intent(context, MediaCaptureNotificationService.class);
         intent.setAction(ACTION_MEDIA_CAPTURE_UPDATE);
         intent.putExtra(NOTIFICATION_ID_EXTRA, tabId);
-        intent.putExtra(NOTIFICATION_MEDIA_URL_EXTRA, url);
+        intent.putExtra(NOTIFICATION_MEDIA_URL_EXTRA, url.getSpec());
         intent.putExtra(NOTIFICATION_MEDIA_TYPE_EXTRA, mediaType);
         if (TabWindowManager.getInstance().getTabById(tabId) != null) {
             intent.putExtra(NOTIFICATION_MEDIA_IS_INCOGNITO,

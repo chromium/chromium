@@ -124,12 +124,12 @@ public class MediaNotificationTestTabHolder {
         when(gurl.getOrigin()).thenAnswer(invocation -> gurlOrigin);
         when(gurlOrigin.getSpec()).thenAnswer(invocation -> url);
 
-        NavigationHandle navigation = new NavigationHandle(0 /* navigationHandleProxy */, url,
+        NavigationHandle navigation = new NavigationHandle(0 /* navigationHandleProxy */, gurl,
                 true /* isInMainFrame */, isSameDocument, false /* isRendererInitiated */);
         mMediaSessionTabHelper.mMediaSessionHelper.mWebContentsObserver.didStartNavigation(
                 navigation);
 
-        navigation.didFinish(url, false /* isErrorPage */, true /* hasCommitted */,
+        navigation.didFinish(gurl, false /* isErrorPage */, true /* hasCommitted */,
                 false /* isFragmentNavigation */, false /* isDownload */,
                 false /* isValidSearchFormUrl */, 0 /* pageTransition */, 0 /* errorCode */,
                 200 /* httpStatusCode */);

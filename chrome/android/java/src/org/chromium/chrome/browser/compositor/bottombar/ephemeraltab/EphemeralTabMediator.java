@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.compositor.bottombar.ephemeraltab;
 
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.text.TextUtils;
 
 import androidx.annotation.DrawableRes;
 
@@ -23,6 +22,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.url.GURL;
 
 /**
  * Mediator class for preview tab, responsible for communicating with other objects.
@@ -89,7 +89,7 @@ public class EphemeralTabMediator {
             /** Whether the currently loaded page is an error (interstitial) page. */
             private boolean mIsOnErrorPage;
 
-            private String mCurrentUrl;
+            private GURL mCurrentUrl;
 
             @Override
             public void loadProgressChanged(float progress) {
@@ -100,8 +100,8 @@ public class EphemeralTabMediator {
             public void didStartNavigation(NavigationHandle navigation) {
                 mMetrics.recordNavigateLink();
                 if (navigation.isInMainFrame() && !navigation.isSameDocument()) {
-                    String url = navigation.getUrl();
-                    if (TextUtils.equals(mCurrentUrl, url)) return;
+                    GURL url = navigation.getUrl();
+                    if (url.equals(mCurrentUrl)) return;
 
                     // The link Back to Safety on the interstitial page will go to the previous
                     // page. If there is no previous page, i.e. previous page is NTP, the preview

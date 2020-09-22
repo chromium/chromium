@@ -31,6 +31,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.PermissionCallback;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -185,7 +186,7 @@ public class VoiceRecognitionHandler {
          * @param url The URL for the navigation that started, so we can ensure that what we're
          * navigating to is actually a SRP.
          */
-        private void setReceivedUserGesture(String url) {
+        private void setReceivedUserGesture(GURL url) {
             WebContents webContents = mWebContents.get();
             if (webContents == null) return;
 

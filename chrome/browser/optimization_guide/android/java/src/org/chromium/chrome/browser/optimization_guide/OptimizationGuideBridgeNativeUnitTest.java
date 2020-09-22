@@ -13,6 +13,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 
@@ -63,7 +64,8 @@ public class OptimizationGuideBridgeNativeUnitTest {
     public void testCanApplyOptimizationPreInit() {
         OptimizationGuideBridge bridge = new OptimizationGuideBridge();
 
-        NavigationHandle navHandle = new NavigationHandle(0, TEST_URL, true, false, false);
+        NavigationHandle navHandle =
+                new NavigationHandle(0, new GURL(TEST_URL), true, false, false);
         OptimizationGuideCallback callback = new OptimizationGuideCallback();
         bridge.canApplyOptimization(navHandle, OptimizationType.PERFORMANCE_HINTS, callback);
 
@@ -76,7 +78,8 @@ public class OptimizationGuideBridgeNativeUnitTest {
     public void testCanApplyOptimizationHasHint() {
         OptimizationGuideBridge bridge = new OptimizationGuideBridge();
 
-        NavigationHandle navHandle = new NavigationHandle(0, TEST_URL, true, false, false);
+        NavigationHandle navHandle =
+                new NavigationHandle(0, new GURL(TEST_URL), true, false, false);
         OptimizationGuideCallback callback = new OptimizationGuideCallback();
         bridge.canApplyOptimization(navHandle, OptimizationType.PERFORMANCE_HINTS, callback);
 

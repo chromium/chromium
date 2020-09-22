@@ -22,7 +22,7 @@ import org.chromium.components.infobars.ConfirmInfoBar;
 import org.chromium.components.infobars.InfoBarControlLayout;
 import org.chromium.components.infobars.InfoBarLayout;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.net.GURLUtils;
+import org.chromium.url.GURL;
 
 import java.net.HttpURLConnection;
 import java.sql.Date;
@@ -47,7 +47,7 @@ public class DataReductionPromoInfoBar extends ConfirmInfoBar {
     private static String sSecondaryButtonText;
 
     private static boolean shouldLaunchPromoInfoBar(Context context, WebContents webContents,
-            String url, boolean isErrorPage, boolean isFragmentNavigation, int statusCode) {
+            GURL url, boolean isErrorPage, boolean isFragmentNavigation, int statusCode) {
         // This switch is only used for testing so let it override every other check.
         if (CommandLine.getInstance().hasSwitch(FORCE_INFOBAR_SWITCH)) return true;
 
@@ -68,7 +68,7 @@ public class DataReductionPromoInfoBar extends ConfirmInfoBar {
         if (DataReductionPromoUtils.getDisplayedInfoBarPromo()) return false;
 
         // Only show the promo on HTTP pages.
-        if (!GURLUtils.getScheme(url).equals(UrlConstants.HTTP_SCHEME)) return false;
+        if (!url.getScheme().equals(UrlConstants.HTTP_SCHEME)) return false;
 
         int currentMilestone = VersionNumberGetter.getMilestoneFromVersionNumber(
                 AboutSettingsBridge.getApplicationVersion());
@@ -121,7 +121,7 @@ public class DataReductionPromoInfoBar extends ConfirmInfoBar {
      * @return boolean Whether the promo was launched.
      */
     public static boolean maybeLaunchPromoInfoBar(Context context, WebContents webContents,
-            String url, boolean isErrorPage, boolean isFragmentNavigation, int statusCode) {
+            GURL url, boolean isErrorPage, boolean isFragmentNavigation, int statusCode) {
         ThreadUtils.assertOnUiThread();
 
         if (!shouldLaunchPromoInfoBar(
