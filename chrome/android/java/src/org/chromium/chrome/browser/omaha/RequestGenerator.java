@@ -72,7 +72,10 @@ public abstract class RequestGenerator {
             // Set up <request protocol=3.0 ...>
             serializer.startTag(null, "request");
             serializer.attribute(null, "protocol", "3.0");
-            serializer.attribute(null, "version", "Android-1.0.0.0");
+            serializer.attribute(null, "updater", "Android");
+            serializer.attribute(null, "updaterversion", versionName);
+            serializer.attribute(null, "updaterchannel",
+                    StringSanitizer.sanitize(BuildInfo.getInstance().hostPackageLabel));
             serializer.attribute(null, "ismachine", "1");
             serializer.attribute(null, "requestid", "{" + data.getRequestID() + "}");
             serializer.attribute(null, "sessionid", "{" + sessionID + "}");
