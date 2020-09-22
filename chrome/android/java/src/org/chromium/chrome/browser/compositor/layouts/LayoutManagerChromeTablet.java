@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.compositor.layouts;
 import android.view.ViewGroup;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -37,8 +38,10 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      */
     public LayoutManagerChromeTablet(LayoutManagerHost host, ViewGroup contentContainer,
-            ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
-        super(host, contentContainer, false, null, tabContentManagerSupplier);
+            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier) {
+        super(host, contentContainer, false, null, tabContentManagerSupplier,
+                overviewModeBehaviorSupplier);
 
         mTabStripLayoutHelperManager = new StripLayoutHelperManager(
                 host.getContext(), this, mHost.getLayoutRenderHost(), () -> mTitleCache);
