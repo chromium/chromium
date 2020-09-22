@@ -27,6 +27,6 @@ IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest,
   RunTestViaHTTP("MouseLock_SucceedWhenAllowed");
 }
 
-IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, ImeInputEvent) {
+IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, DISABLED_ImeInputEvent) {
   RunTest(ppapi::StripTestPrefixes("ImeInputEvent"));
 }
