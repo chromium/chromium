@@ -45,6 +45,7 @@
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
+#include "chrome/browser/chromeos/web_applications/camera_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/chromeos/web_applications/diagnostics_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/media_web_app_info.h"
@@ -111,9 +112,10 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps() {
   }
 
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::CAMERA)) {
-    infos.emplace(
-        SystemAppType::CAMERA,
-        SystemAppInfo("Camera", GURL("chrome://camera-app/pwa.html")));
+    infos.emplace(SystemAppType::CAMERA,
+                  SystemAppInfo("Camera", GURL("chrome://camera-app"),
+                                base::BindRepeating(
+                                    &CreateWebAppInfoForCameraSystemWebApp)));
     infos.at(SystemAppType::CAMERA).uninstall_and_replace = {
         extension_misc::kCameraAppId};
     // We need "FileHandling" to use File Handling API to set launch directory.
