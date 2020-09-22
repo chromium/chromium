@@ -303,6 +303,7 @@ void CloudPolicyRefreshScheduler::ScheduleRefresh() {
       return;
     case DM_STATUS_SERVICE_ACTIVATION_PENDING:
     case DM_STATUS_SERVICE_POLICY_NOT_FOUND:
+    case DM_STATUS_SERVICE_TOO_MANY_REQUESTS:
       RefreshAfter(GetActualRefreshDelay());
       return;
     case DM_STATUS_REQUEST_FAILED:

@@ -466,6 +466,10 @@ INSTANTIATE_TEST_SUITE_P(
         FailedRequestParams(DM_STATUS_REQUEST_TOO_LARGE,
                             net::OK,
                             413,
+                            PROTO_STRING(kResponseEmpty)),
+        FailedRequestParams(DM_STATUS_SERVICE_TOO_MANY_REQUESTS,
+                            net::OK,
+                            429,
                             PROTO_STRING(kResponseEmpty))));
 
 // Simple query parameter parser for testing.

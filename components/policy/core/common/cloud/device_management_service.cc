@@ -118,6 +118,7 @@ const int DeviceManagementService::kDeviceNotFound;
 const int DeviceManagementService::kPendingApproval;
 const int DeviceManagementService::kRequestTooLarge;
 const int DeviceManagementService::kConsumerAccountWithPackagedLicense;
+const int DeviceManagementService::kTooManyRequests;
 const int DeviceManagementService::kInternalServerError;
 const int DeviceManagementService::kServiceUnavailable;
 const int DeviceManagementService::kPolicyNotFound;

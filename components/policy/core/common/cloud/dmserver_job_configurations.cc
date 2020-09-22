@@ -183,6 +183,9 @@ DMServerJobConfiguration::MapNetErrorAndResponseCodeToDMStatus(
       case DeviceManagementService::kInvalidSerialNumber:
         code = DM_STATUS_SERVICE_INVALID_SERIAL_NUMBER;
         break;
+      case DeviceManagementService::kTooManyRequests:
+        code = DM_STATUS_SERVICE_TOO_MANY_REQUESTS;
+        break;
       case DeviceManagementService::kDomainMismatch:
         code = DM_STATUS_SERVICE_DOMAIN_MISMATCH;
         break;

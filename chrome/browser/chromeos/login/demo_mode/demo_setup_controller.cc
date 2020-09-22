@@ -180,6 +180,10 @@ DemoSetupController::DemoSetupError CreateFromClientStatus(
     case policy::DM_STATUS_SERVICE_DEVICE_ID_CONFLICT:
       return DemoSetupController::DemoSetupError(
           ErrorCode::kDeviceIdError, RecoveryMethod::kUnknown, debug_message);
+    case policy::DM_STATUS_SERVICE_TOO_MANY_REQUESTS:
+      return DemoSetupController::DemoSetupError(
+          ErrorCode::kTooManyRequestsError, RecoveryMethod::kRetry,
+          debug_message);
     case policy::DM_STATUS_SERVICE_MISSING_LICENSES:
       return DemoSetupController::DemoSetupError(
           ErrorCode::kLicenseError, RecoveryMethod::kUnknown, debug_message);
@@ -380,6 +384,8 @@ base::string16 DemoSetupController::DemoSetupError::GetLocalizedErrorMessage()
           IDS_DEMO_SETUP_INVALID_SERIAL_NUMBER_ERROR);
     case ErrorCode::kDeviceIdError:
       return l10n_util::GetStringUTF16(IDS_DEMO_SETUP_DEVICE_ID_ERROR);
+    case ErrorCode::kTooManyRequestsError:
+      return l10n_util::GetStringUTF16(IDS_DEMO_SETUP_TOO_MANY_REQUESTS_ERROR);
     case ErrorCode::kLicenseError:
       return l10n_util::GetStringUTF16(IDS_DEMO_SETUP_LICENSE_ERROR);
     case ErrorCode::kDeviceDeprovisioned:

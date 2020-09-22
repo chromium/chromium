@@ -138,8 +138,10 @@ enum MetricEnrollment {
   kMetricEnrollmentRegisterEnterpriseAccountIsNotEligibleToEnroll = 60,
   // Enrollment failed: Enterprise TOS has not been accepted.
   kMetricEnrollmentRegisterEnterpriseTosHasNotBeenAccepted = 61,
+  // Too many requests are uploadede within a short time.
+  kMetricEnrollmentTooManyRequests = 62,
   // Max value for use with enumeration histogram UMA functions.
-  kMaxValue = kMetricEnrollmentRegisterEnterpriseTosHasNotBeenAccepted
+  kMaxValue = kMetricEnrollmentTooManyRequests
 };
 
 // Events related to policy refresh.

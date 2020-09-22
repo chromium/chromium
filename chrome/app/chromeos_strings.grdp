@@ -901,6 +901,9 @@
   <message name="IDS_DEMO_SETUP_DEVICE_ID_ERROR" desc="Error message to show on demo setup screen in case of conflicting device id.">
     Conflicting device identifier.
   </message>
+  <message name="IDS_DEMO_SETUP_TOO_MANY_REQUESTS_ERROR" desc="Error message to show on demo setup screen in case of too many requests.">
+    Too many requests.
+  </message>
   <message name="IDS_DEMO_SETUP_LICENSE_ERROR" desc="Error message to show on demo setup screen when the demo domain has expired or exhausted licenses.">
     A problem with demo mode device licenses occurred.
   </message>

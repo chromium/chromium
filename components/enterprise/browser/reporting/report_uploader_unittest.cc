@@ -296,6 +296,6 @@ INSTANTIATE_TEST_SUITE_P(
     ReportUploaderTestWithTransientError,
     ::testing::Values(policy::DM_STATUS_REQUEST_FAILED,
                       policy::DM_STATUS_TEMPORARY_UNAVAILABLE,
-                      policy::DM_STATUS_SERVICE_DEVICE_ID_CONFLICT));
+                      policy::DM_STATUS_SERVICE_TOO_MANY_REQUESTS));
 
 }  // namespace enterprise_reporting

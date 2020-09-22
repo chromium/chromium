@@ -80,7 +80,7 @@ void ReportUploader::OnRequestFinished(bool status) {
     // a database error. We only want to retry for the second case. However,
     // there is no way for us to tell difference right now so we will retry
     // regardless.
-    case policy::DM_STATUS_SERVICE_DEVICE_ID_CONFLICT:
+    case policy::DM_STATUS_SERVICE_TOO_MANY_REQUESTS:
       RecordReportResponseMetrics(
           ReportResponseMetricsStatus::kDDSConcurrencyError);
       Retry();

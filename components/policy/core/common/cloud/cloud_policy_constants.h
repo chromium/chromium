@@ -129,6 +129,8 @@ enum DeviceManagementStatus {
   DM_STATUS_CANNOT_SIGN_REQUEST = 15,
   // Client error: Request body is too large.
   DM_STATUS_REQUEST_TOO_LARGE = 16,
+  // Client error: Too many request.
+  DM_STATUS_SERVICE_TOO_MANY_REQUESTS = 17,
   // Service error: Policy not found. Error code defined by the DM folks.
   DM_STATUS_SERVICE_POLICY_NOT_FOUND = 902,
   // Service error: ARC is not enabled on this domain.

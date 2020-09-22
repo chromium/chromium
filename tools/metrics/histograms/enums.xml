@@ -20963,6 +20963,15 @@ Called by update_document_policy_enum.py.-->
   <int value="59" label="Device not pre-provisioned">
     The device is not pre-provisioned for Zero-Touch.
   </int>
+  <int value="60" label="Enterprise account is not eligible to enroll">
+    The enterprise account is not eligible to enroll.
+  </int>
+  <int value="61" label="Tos is not accepted">
+    The term of service is not accepted by enterprise.
+  </int>
+  <int value="62" label="Too many requests">
+    Too many requests are uploaded within a short time.
+  </int>
 </enum>
 
 <enum name="EnterpriseExistingInstallAttributesLockType">

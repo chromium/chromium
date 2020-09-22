@@ -112,6 +112,8 @@ class DemoSetupController
       kDMTokenStoreError,
       // Unexpected/fatal error.
       kUnexpectedError,
+      // Too many requests error.
+      kTooManyRequestsError,
     };
 
     // Type of recommended recovery from the setup error.

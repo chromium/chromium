@@ -58,6 +58,9 @@
   <message name="IDS_POLICY_DM_STATUS_REQUEST_TOO_LARGE" desc="Message indicating a request to enterprise server is too large.">
     Request is too large
   </message>
+  <message name="IDS_POLICY_DM_STATUS_SERVICE_TOO_MANY_REQUESTS" desc="Message indicating the enterprise server receives too many requests in a short time period.">
+    Too many requests
+  </message>
   <message name="IDS_POLICY_DM_STATUS_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE" desc="Message to show when the user tries to enroll a device with a packaged license using a consumer account.">
     Can't enroll with consumer account (packaged license available).
   </message>
