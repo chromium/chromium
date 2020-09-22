@@ -1243,6 +1243,13 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded() const {
   if (cache.ModificationCount() == last_modification_count_)
     return;
 
+#if DCHECK_IS_ON()  // Required in order to get Lifecycle().ToString()
+  DCHECK(!GetDocument() || GetDocument()->Lifecycle().GetState() >=
+                               DocumentLifecycle::kLayoutClean)
+      << "Unclean document at lifecycle "
+      << GetDocument()->Lifecycle().ToString();
+#endif
+
   last_modification_count_ = cache.ModificationCount();
   cached_background_color_ = ComputeBackgroundColor();
   cached_is_inert_or_aria_hidden_ = ComputeIsInertOrAriaHidden();
@@ -1848,7 +1855,7 @@ void AXObject::UpdateDistributionForFlatTreeTraversal() const {
 }
 
 bool AXObject::IsARIAControlledByTextboxWithActiveDescendant() const {
-  if (IsDetached())
+  if (IsDetached() || !GetDocument())
     return false;
 
   // This situation should mostly arise when using an active descendant on a
@@ -1856,8 +1863,12 @@ bool AXObject::IsARIAControlledByTextboxWithActiveDescendant() const {
   // option in a list. In such situations, the active descendant is useful only
   // when the textbox is focused. Therefore, we don't currently need to keep
   // track of all aria-controls relationships.
-  const AXObject* focused_object = AXObjectCache().FocusedObject();
-  if (!focused_object || !focused_object->IsTextControl())
+  const Element* focused_element = GetDocument()->FocusedElement();
+  if (!focused_element)
+    return false;
+
+  const AXObject* focused_object = AXObjectCache().GetOrCreate(focused_element);
+  if (!focused_object->IsTextControl())
     return false;
 
   if (!focused_object->GetAOMPropertyOrARIAAttribute(

@@ -27,7 +27,7 @@ promise_test((t) => {
           markDirtyCounter++;
         }
 
-        if (focusCounter == 1 && markDirtyCounter == 2) {
+        if (focusCounter == 1 && markDirtyCounter >= 2) {
             assert_equals(month1.value, "2000-05", "Arrow key in month picker should have changed value");
             t.done();
         }

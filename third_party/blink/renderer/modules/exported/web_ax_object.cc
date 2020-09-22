@@ -196,11 +196,7 @@ int WebAXObject::GenerateAXID() const {
 
 bool WebAXObject::UpdateLayoutAndCheckValidity() {
   if (!IsDetached()) {
-    Document* document = private_->GetDocument();
-    if (!document || !document->View())
-      return false;
-    if (!document->View()->UpdateLifecycleToCompositingCleanPlusScrolling(
-            DocumentUpdateReason::kAccessibility))
+    if (!UpdateLayoutAndCheckValidity(GetDocument()))
       return false;
   }
 
@@ -779,7 +775,7 @@ void WebAXObject::Selection(bool& is_selection_backward,
   if (IsDetached() || GetDocument().IsNull())
     return;
 
-  WebAXObject focus = FromWebDocumentFocused(GetDocument());
+  WebAXObject focus = FromWebDocumentFocused(GetDocument(), false);
   if (focus.IsDetached())
     return;
 
@@ -875,7 +871,7 @@ unsigned WebAXObject::SelectionEnd() const {
   if (IsDetached() || GetDocument().IsNull())
     return 0;
 
-  WebAXObject focus = FromWebDocumentFocused(GetDocument());
+  WebAXObject focus = FromWebDocumentFocused(GetDocument(), false);
   if (focus.IsDetached())
     return 0;
 
@@ -896,7 +892,7 @@ unsigned WebAXObject::SelectionStart() const {
   if (IsDetached() || GetDocument().IsNull())
     return 0;
 
-  WebAXObject focus = FromWebDocumentFocused(GetDocument());
+  WebAXObject focus = FromWebDocumentFocused(GetDocument(), false);
   if (focus.IsDetached())
     return 0;
 
@@ -1633,7 +1629,10 @@ WebAXObject WebAXObject::FromWebNode(const WebNode& web_node) {
 }
 
 // static
-WebAXObject WebAXObject::FromWebDocument(const WebDocument& web_document) {
+WebAXObject WebAXObject::FromWebDocument(const WebDocument& web_document,
+                                         bool update_layout_if_necessary) {
+  if (update_layout_if_necessary && !UpdateLayoutAndCheckValidity(web_document))
+    return WebAXObject();
   const Document* document = web_document.ConstUnwrap<Document>();
   auto* cache = To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
   return cache ? WebAXObject(cache->GetOrCreate(document->GetLayoutView()))
@@ -1650,10 +1649,26 @@ WebAXObject WebAXObject::FromWebDocumentByID(const WebDocument& web_document,
 
 // static
 WebAXObject WebAXObject::FromWebDocumentFocused(
-    const WebDocument& web_document) {
+    const WebDocument& web_document,
+    bool update_layout_if_necessary) {
+  if (update_layout_if_necessary && !UpdateLayoutAndCheckValidity(web_document))
+    return WebAXObject();
   const Document* document = web_document.ConstUnwrap<Document>();
   auto* cache = To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
   return cache ? WebAXObject(cache->FocusedObject()) : WebAXObject();
+}
+
+bool WebAXObject::UpdateLayoutAndCheckValidity(
+    const WebDocument& web_document) {
+  const Document* document = web_document.ConstUnwrap<Document>();
+  if (!document || !document->View())
+    return false;
+
+  if (!document->View()->UpdateLifecycleToCompositingCleanPlusScrolling(
+          DocumentUpdateReason::kAccessibility))
+    return false;
+
+  return true;
 }
 
 }  // namespace blink

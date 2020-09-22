@@ -124,7 +124,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void HandleAttributeChanged(const QualifiedName& attr_name,
                               Element*) override;
   void HandleValidationMessageVisibilityChanged(
-      const Element* form_control) override;
+      const Node* form_control) override;
   void HandleFocusedUIElementChanged(Element* old_focused_element,
                                      Element* new_focused_element) override;
   void HandleInitialFocus() override;
@@ -209,6 +209,15 @@ class MODULES_EXPORT AXObjectCacheImpl
   void HandleAriaSelectedChangedWithCleanLayout(Node*);
   void HandleNodeLostFocusWithCleanLayout(Node*);
   void HandleNodeGainedFocusWithCleanLayout(Node*);
+  void HandleLayoutCompleteWithCleanLayout(Node*);
+  void HandleLoadCompleteWithCleanLayout(Node*);
+  void UpdateCacheAfterNodeIsAttachedWithCleanLayout(Node*);
+  void DidShowMenuListPopupWithCleanLayout(Node*);
+  void DidHideMenuListPopupWithCleanLayout(Node*);
+  void StyleChangedWithCleanLayout(Node*);
+  void DidInsertChildrenOfNodeWithCleanLayout(Node*);
+  void HandleScrollPositionChangedWithCleanLayout(Node*);
+  void HandleValidationMessageVisibilityChangedWithCleanLayout(const Node*);
 
   bool InlineTextBoxAccessibilityEnabled();
 
@@ -221,10 +230,14 @@ class MODULES_EXPORT AXObjectCacheImpl
   int ModificationCount() const { return modification_count_; }
 
   void PostNotification(const LayoutObject*, ax::mojom::blink::Event);
-  void PostNotification(Node*, ax::mojom::Event);
+  // Creates object if necessary.
+  void EnsurePostNotification(Node*, ax::mojom::blink::Event);
+  // Does not create object.
+  // TODO(accessibility) Find out if we can merge with EnsurePostNotification().
+  void PostNotification(Node*, ax::mojom::blink::Event);
   void PostNotification(AXObject*, ax::mojom::blink::Event);
   void MarkAXObjectDirty(AXObject*, bool subtree);
-  void MarkElementDirty(const Element*, bool subtree);
+  void MarkElementDirty(const Node*, bool subtree);
 
   //
   // Aria-owns support.
@@ -336,7 +349,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   };
 
   struct TreeUpdateParams final : public GarbageCollected<TreeUpdateParams> {
-    TreeUpdateParams(Node* node,
+    TreeUpdateParams(const Node* node,
                      AXID axid,
                      ax::mojom::blink::EventFrom event_from,
                      const BlinkAXEventIntentsSet& intents,
@@ -349,7 +362,7 @@ class MODULES_EXPORT AXObjectCacheImpl
         event_intents.insert(intent.key, intent.value);
       }
     }
-    WeakMember<Node> node;
+    WeakMember<const Node> node;
     AXID axid;
     ax::mojom::blink::EventFrom event_from;
     BlinkAXEventIntentsSet event_intents;
@@ -432,7 +445,14 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // Enqueue a callback to the given method to be run after layout is
   // complete.
+  void DeferTreeUpdate(void (AXObjectCacheImpl::*method)(const Node*),
+                       const Node* node);
   void DeferTreeUpdate(void (AXObjectCacheImpl::*method)(Node*), Node* node);
+  void DeferTreeUpdate(
+      void (AXObjectCacheImpl::*method)(Node* node,
+                                        ax::mojom::blink::Event event),
+      Node* node,
+      ax::mojom::blink::Event event);
   void DeferTreeUpdate(void (AXObjectCacheImpl::*method)(const QualifiedName&,
                                                          Element* element),
                        const QualifiedName& attr_name,
@@ -443,8 +463,7 @@ class MODULES_EXPORT AXObjectCacheImpl
                        Node* node,
                        AXObject* obj);
 
-  void DeferTreeUpdateInternal(base::OnceClosure callback, Node* node);
-
+  void DeferTreeUpdateInternal(base::OnceClosure callback, const Node* node);
   void DeferTreeUpdateInternal(base::OnceClosure callback, AXObject* obj);
 
   void SelectionChangedWithCleanLayout(Node* node);

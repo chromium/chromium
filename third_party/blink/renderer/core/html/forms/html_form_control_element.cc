@@ -321,8 +321,18 @@ void HTMLFormControlElement::AssociateWith(HTMLFormElement* form) {
 }
 
 int32_t HTMLFormControlElement::GetAxId() const {
-  if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
+  Document& document = GetDocument();
+  if (!document.IsActive() || !document.View())
+    return 0;
+  if (AXObjectCache* cache = document.ExistingAXObjectCache()) {
+    if (document.NeedsLayoutTreeUpdate() || document.View()->NeedsLayout() ||
+        document.Lifecycle().GetState() <
+            DocumentLifecycle::kCompositingAssignmentsClean) {
+      document.View()->UpdateLifecycleToCompositingCleanPlusScrolling(
+          DocumentUpdateReason::kAccessibility);
+    }
     return cache->GetAXID(const_cast<HTMLFormControlElement*>(this));
+  }
 
   return 0;
 }

@@ -859,6 +859,7 @@ gin::ObjectTemplateBuilder WebAXObjectProxy::GetObjectTemplateBuilder(
 }
 
 v8::Local<v8::Object> WebAXObjectProxy::GetChildAtIndex(unsigned index) {
+  accessibility_object_.UpdateLayoutAndCheckValidity();
   return factory_->GetOrCreate(accessibility_object_.ChildAt(index));
 }
 
@@ -1685,7 +1686,6 @@ std::string WebAXObjectProxy::BoundsForRange(int start, int end) {
 }
 
 v8::Local<v8::Object> WebAXObjectProxy::ChildAtIndex(int index) {
-  accessibility_object_.UpdateLayoutAndCheckValidity();
   return GetChildAtIndex(index);
 }
 

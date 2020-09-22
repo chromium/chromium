@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 
   EXPECT_EQ(
       content::AXTextMarkerToPosition(text_edit.edit_text_marker)->ToString(),
-      "TextPosition anchor_id=5 text_offset=1 affinity=downstream "
+      "TextPosition anchor_id=4 text_offset=1 affinity=downstream "
       "annotated_text=B<>");
 }
 

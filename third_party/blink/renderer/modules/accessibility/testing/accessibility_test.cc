@@ -25,6 +25,9 @@ void AccessibilityTest::SetUp() {
 }
 
 AXObjectCacheImpl& AccessibilityTest::GetAXObjectCache() const {
+  DCHECK(GetDocument().View());
+  GetDocument().View()->UpdateLifecycleToCompositingCleanPlusScrolling(
+      DocumentUpdateReason::kAccessibility);
   auto* ax_object_cache =
       To<AXObjectCacheImpl>(GetDocument().ExistingAXObjectCache());
   DCHECK(ax_object_cache);

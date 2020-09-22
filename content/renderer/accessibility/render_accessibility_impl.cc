@@ -258,10 +258,9 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
 
     // It's possible that the webview has already loaded a webpage without
     // accessibility being enabled. Initialize the browser's cached
-    // accessibility tree by sending it a notification.
-    WebAXObject root_object = WebAXObject::FromWebDocument(document);
-    HandleAXEvent(
-        ui::AXEvent(root_object.AxID(), ax::mojom::Event::kLayoutComplete));
+    // accessibility tree by firing a layout complete for the document.
+    // Ensure that this occurs after initial layout is actually complete.
+    ScheduleSendPendingAccessibilityEvents();
   }
 
   image_annotation_debugging_ =
@@ -763,6 +762,17 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   WebDocument document = GetMainDocument();
   if (document.IsNull())
     return;
+
+  if (needs_initial_ax_tree_root_) {
+    // At the very start of accessibility for this document, push a layout
+    // complete for the entire document, in order to initialize the browser's
+    // cached accessibility tree.
+    needs_initial_ax_tree_root_ = false;
+    auto obj = WebAXObject::FromWebDocument(document);
+    pending_events_.insert(
+        pending_events_.begin(),
+        ui::AXEvent(obj.AxID(), ax::mojom::Event::kLayoutComplete));
+  }
 
   if (pending_events_.empty() && dirty_objects_.empty())
     return;

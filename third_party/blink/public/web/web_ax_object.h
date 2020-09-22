@@ -95,9 +95,14 @@ class WebAXObject {
   BLINK_EXPORT bool operator>(const WebAXObject& other) const;
   BLINK_EXPORT bool operator>=(const WebAXObject& other) const;
   BLINK_EXPORT static WebAXObject FromWebNode(const WebNode&);
-  BLINK_EXPORT static WebAXObject FromWebDocument(const WebDocument&);
+  BLINK_EXPORT static WebAXObject FromWebDocument(
+      const WebDocument&,
+      bool update_layout_if_necessary = true);
   BLINK_EXPORT static WebAXObject FromWebDocumentByID(const WebDocument&, int);
-  BLINK_EXPORT static WebAXObject FromWebDocumentFocused(const WebDocument&);
+  BLINK_EXPORT static WebAXObject FromWebDocumentFocused(
+      const WebDocument&,
+      bool update_layout_if_necessary = true);
+  BLINK_EXPORT static bool UpdateLayoutAndCheckValidity(const WebDocument&);
 
   BLINK_EXPORT void Reset();
   BLINK_EXPORT void Assign(const WebAXObject&);

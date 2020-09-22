@@ -1936,11 +1936,11 @@ bool AXLayoutObject::OnNativeSetValueAction(const String& string) {
 //
 
 void AXLayoutObject::HandleActiveDescendantChanged() {
-  if (!GetLayoutObject())
+  if (!GetLayoutObject() || !GetNode() || !GetDocument())
     return;
 
-  AXObject* focused_object = AXObjectCache().FocusedObject();
-  if (focused_object == this) {
+  Node* focused_node = GetDocument()->FocusedElement();
+  if (focused_node == GetNode()) {
     AXObject* active_descendant = ActiveDescendant();
     if (active_descendant && active_descendant->IsSelectedFromFocus()) {
       // In single selection containers, selection follows focus, so a selection

@@ -247,6 +247,10 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // longer be valid.
   void ResetUKMData();
 
+  // The initial accessibility tree root still needs to be created. Like other
+  // accessible objects, it must be created when layout is clean.
+  bool needs_initial_ax_tree_root_ = true;
+
   // The RenderAccessibilityManager that owns us.
   RenderAccessibilityManager* render_accessibility_manager_;
 

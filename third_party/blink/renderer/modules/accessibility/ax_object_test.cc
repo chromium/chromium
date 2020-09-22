@@ -725,10 +725,6 @@ TEST_F(AccessibilityTest, InitRelationCacheAriaOwns) {
   const AXObject* root = GetAXRootObject();
   ASSERT_NE(nullptr, root);
 
-  // Perform deferred processing so that aria-owns children are attached.
-  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInAccessibility);
-  GetAXObjectCache().ProcessDeferredAccessibilityEvents(GetDocument());
-
   // Note: retrieve the LI first and check that its parent is not
   // the paragraph element. If we were to retrieve the UL element,
   // that would trigger the aria-owns check and wouln't allow us to

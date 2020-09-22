@@ -111,15 +111,18 @@ async_test((t) => {
     // This should trigger a "Focus" notification on the select.
     document.getElementById("select").focus();
 
-    // This should trigger a "Blur" notification on the select,
-    // followed by a "Focus" notification on the slider.
-    document.getElementById("slider").focus();
+    // Wait before focusing the slider, otherwise the select's focus is ingored.
+    setTimeout(() => {
+      // This should trigger a "Blur" notification on the select,
+      // followed by a "Focus" notification on the slider.
+      document.getElementById("slider").focus();
 
-    // This should trigger a "invalid status changed" notification on the select.
-    document.getElementById("select").setAttribute("aria-invalid", "true");
+      // This should trigger a "invalid status changed" notification on the select.
+      document.getElementById("select").setAttribute("aria-invalid", "true");
 
-    // This should trigger a "value changed" notification on the slider.
-    document.getElementById("slider").setAttribute("aria-valuenow", "6");
+      // This should trigger a "value changed" notification on the slider.
+      document.getElementById("slider").setAttribute("aria-valuenow", "6");
+    }, 0);
 
     window.setTimeout(t.step_func_done(() => {
       assert_unreached();

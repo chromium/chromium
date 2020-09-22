@@ -2063,9 +2063,14 @@ DOMRect* Element::getBoundingClientRect() {
 
 const AtomicString& Element::computedRole() {
   Document& document = GetDocument();
-  if (!document.IsActive())
+  if (!document.IsActive() || !document.View())
     return g_null_atom;
-  document.UpdateStyleAndLayoutForNode(this, DocumentUpdateReason::kJavaScript);
+  if (document.NeedsLayoutTreeUpdate() || document.View()->NeedsLayout() ||
+      document.Lifecycle().GetState() <
+          DocumentLifecycle::kCompositingAssignmentsClean) {
+    document.View()->UpdateLifecycleToCompositingCleanPlusScrolling(
+        DocumentUpdateReason::kJavaScript);
+  }
   UpdateDistributionForFlatTreeTraversal();
   AXContext ax_context(document);
   return ax_context.GetAXObjectCache().ComputedRoleForNode(this);
@@ -2073,9 +2078,14 @@ const AtomicString& Element::computedRole() {
 
 String Element::computedName() {
   Document& document = GetDocument();
-  if (!document.IsActive())
+  if (!document.IsActive() || !document.View())
     return String();
-  document.UpdateStyleAndLayoutForNode(this, DocumentUpdateReason::kJavaScript);
+  if (document.NeedsLayoutTreeUpdate() || document.View()->NeedsLayout() ||
+      document.Lifecycle().GetState() <
+          DocumentLifecycle::kCompositingAssignmentsClean) {
+    document.View()->UpdateLifecycleToCompositingCleanPlusScrolling(
+        DocumentUpdateReason::kJavaScript);
+  }
   UpdateDistributionForFlatTreeTraversal();
   AXContext ax_context(document);
   return ax_context.GetAXObjectCache().ComputedNameForNode(this);

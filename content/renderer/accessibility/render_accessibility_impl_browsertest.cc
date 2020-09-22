@@ -963,6 +963,8 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
 #if !defined(OS_ANDROID)
   EXPECT_FALSE(IsSelected(option));
   EXPECT_TRUE(option_action_target->SetSelected(true));
+  // Seleting option requires layout to be clean.
+  ASSERT_TRUE(root_obj.UpdateLayoutAndCheckValidity());
   EXPECT_TRUE(IsSelected(option));
 #endif
 
