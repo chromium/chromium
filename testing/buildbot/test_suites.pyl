@@ -98,14 +98,10 @@
     # Test suites will be gradually moved from android_marshmallow_wpr_gtests
     # to this one, when there are more GCE capacity.
     'android_marshmallow_emulator_gtests': {
-      'chrome_public_test_apk': {
-        'swarming': {
-          'shards': 20,
+      'unit_tests': {
+        'android_swarming': {
+          'shards': 2,
         },
-        'mixins': [
-          'chrome-gold-service-account',
-          'skia_gold_test',
-        ],
       },
     },
 

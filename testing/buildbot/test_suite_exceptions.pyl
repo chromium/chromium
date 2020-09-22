@@ -685,7 +685,6 @@
       'android-asan',  # https://crbug.com/964562
       'android-code-coverage-native', # https://crbug.com/1018780
       'android-lollipop-arm-rel', # https://crbug.com/1060245
-      'android-marshmallow-x86-rel-non-cq', # runs on MM-x86-rel already
     ],
     'modifications': {
       'Android CFI': {
@@ -730,7 +729,7 @@
           'service_account': 'chrome-gold-dev@chops-service-accounts.iam.gserviceaccount.com'
         },
       },
-      'android-marshmallow-x86-rel': {
+      'android-marshmallow-x86-rel-non-cq': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.chrome_public_test_apk.filter',
         ],
@@ -2627,6 +2626,7 @@
       # There's no need to run unit_tests on both lollipop and marshmallow
       # on the CQ. https://crbug.com/1026487.
       'android-marshmallow-arm64-rel',
+      'android-marshmallow-x86-rel-non-cq', # runs on MM-x86-rel already
       'android-pie-arm64-rel',  # https://crbug.com/1010211
     ],
     'modifications': {
