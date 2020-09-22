@@ -63,8 +63,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileStreamReader
   void OnRead(int read_result);
 
   void DidGetFileInfoForGetLength(net::Int64CompletionOnceCallback callback,
-                                  base::File::Error error,
-                                  const base::File::Info& file_info);
+                                  FileErrorOr<base::File::Info> result);
 
   net::CompletionOnceCallback callback_;
   scoped_refptr<base::TaskRunner> task_runner_;

@@ -26,29 +26,15 @@ namespace {
 const int kOpenFlagsForRead =
     base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_ASYNC;
 
-struct GetFileInfoResults {
-  base::File::Error error;
+FileErrorOr<base::File::Info> DoGetFileInfo(const base::FilePath& path) {
+  if (!base::PathExists(path))
+    return base::File::FILE_ERROR_NOT_FOUND;
+
   base::File::Info info;
-};
-
-using GetFileInfoCallback =
-    base::OnceCallback<void(base::File::Error, const base::File::Info&)>;
-
-GetFileInfoResults DoGetFileInfo(const base::FilePath& path) {
-  GetFileInfoResults results;
-  if (!base::PathExists(path)) {
-    results.error = base::File::FILE_ERROR_NOT_FOUND;
-    return results;
-  }
-  results.error = base::GetFileInfo(path, &results.info)
-                      ? base::File::FILE_OK
-                      : base::File::FILE_ERROR_FAILED;
-  return results;
-}
-
-void SendGetFileInfoResults(GetFileInfoCallback callback,
-                            const GetFileInfoResults& results) {
-  std::move(callback).Run(results.error, results.info);
+  bool success = base::GetFileInfo(path, &info);
+  if (!success)
+    return base::File::FILE_ERROR_FAILED;
+  return info;
 }
 
 }  // namespace
@@ -84,10 +70,8 @@ int64_t LocalFileStreamReader::GetLength(
     net::Int64CompletionOnceCallback callback) {
   bool posted = base::PostTaskAndReplyWithResult(
       task_runner_.get(), FROM_HERE, base::BindOnce(&DoGetFileInfo, file_path_),
-      base::BindOnce(
-          &SendGetFileInfoResults,
-          base::BindOnce(&LocalFileStreamReader::DidGetFileInfoForGetLength,
-                         weak_factory_.GetWeakPtr(), std::move(callback))));
+      base::BindOnce(&LocalFileStreamReader::DidGetFileInfoForGetLength,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
   DCHECK(posted);
   return net::ERR_IO_PENDING;
 }
@@ -182,14 +166,14 @@ void LocalFileStreamReader::DidOpenForRead(net::IOBuffer* buf,
 
 void LocalFileStreamReader::DidGetFileInfoForGetLength(
     net::Int64CompletionOnceCallback callback,
-    base::File::Error error,
-    const base::File::Info& file_info) {
-  if (file_info.is_directory) {
-    std::move(callback).Run(net::ERR_FILE_NOT_FOUND);
+    FileErrorOr<base::File::Info> result) {
+  if (result.is_error()) {
+    std::move(callback).Run(net::FileErrorToNetError(result.error()));
     return;
   }
-  if (error != base::File::FILE_OK) {
-    std::move(callback).Run(net::FileErrorToNetError(error));
+  const auto& file_info = result.value();
+  if (file_info.is_directory) {
+    std::move(callback).Run(net::ERR_FILE_NOT_FOUND);
     return;
   }
   if (!VerifySnapshotTime(expected_modification_time_, file_info)) {
