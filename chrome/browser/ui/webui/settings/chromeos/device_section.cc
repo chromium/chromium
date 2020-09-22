@@ -167,12 +167,6 @@ const std::vector<SearchConcept>& GetTouchpadSearchConcepts() {
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kPointers},
        {IDS_OS_SETTINGS_TAG_TOUCHPAD_ALT1, SearchConcept::kAltTagEnd}},
-      {IDS_OS_SETTINGS_TAG_TOUCHPAD_SCROLL_ACCELERATION,
-       mojom::kPointersSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kTouchpadScrollAcceleration}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_REVERSE_SCROLLING,
        mojom::kPointersSubpagePath,
        mojom::SearchResultIcon::kLaptop,
@@ -185,6 +179,19 @@ const std::vector<SearchConcept>& GetTouchpadSearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadAcceleration}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>&
+GetTouchpadScrollAccelerationSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_TOUCHPAD_SCROLL_ACCELERATION,
+       mojom::kPointersSubpagePath,
+       mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kTouchpadScrollAcceleration}},
   });
   return *tags;
 }
@@ -928,11 +935,14 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
 
 void DeviceSection::TouchpadExists(bool exists) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+  updater.RemoveSearchTags(GetTouchpadSearchConcepts());
+  updater.RemoveSearchTags(GetTouchpadScrollAccelerationSearchConcepts());
 
-  if (exists)
+  if (exists) {
     updater.AddSearchTags(GetTouchpadSearchConcepts());
-  else
-    updater.RemoveSearchTags(GetTouchpadSearchConcepts());
+    if (base::FeatureList::IsEnabled(chromeos::features::kAllowScrollSettings))
+      updater.AddSearchTags(GetTouchpadScrollAccelerationSearchConcepts());
+  }
 }
 
 void DeviceSection::MouseExists(bool exists) {
