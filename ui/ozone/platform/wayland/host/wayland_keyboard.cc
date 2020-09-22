@@ -201,8 +201,7 @@ void WaylandKeyboard::DispatchKey(uint32_t key,
   // Pass empty DomKey and KeyboardCode here so the delegate can pre-process
   // and decode it when needed.
   uint32_t result = delegate_->OnKeyboardKeyEvent(
-      down ? ET_KEY_PRESSED : ET_KEY_RELEASED, dom_code, DomKey::NONE,
-      KeyboardCode::VKEY_UNKNOWN, repeat, timestamp);
+      down ? ET_KEY_PRESSED : ET_KEY_RELEASED, dom_code, repeat, timestamp);
 
   if (extended_keyboard_v1_) {
     bool handled = result & POST_DISPATCH_STOP_PROPAGATION;

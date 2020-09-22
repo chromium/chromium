@@ -15,10 +15,7 @@
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
-#include "ui/events/keycodes/keyboard_code_conversion.h"
-#include "ui/events/keycodes/keyboard_code_conversion_xkb.h"
-#include "ui/events/ozone/layout/keyboard_layout_engine.h"
-#include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
+#include "ui/events/ozone/evdev/keyboard_util_evdev.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -26,12 +23,6 @@
 #include "ui/ozone/public/ozone_switches.h"
 
 namespace ui {
-
-namespace {
-
-constexpr int kXkbKeycodeOffset = 8;
-
-}  // namespace
 
 WaylandInputMethodContext::WaylandInputMethodContext(
     WaylandConnection* connection,
@@ -160,18 +151,16 @@ void WaylandInputMethodContext::OnDeleteSurroundingText(int32_t index,
 void WaylandInputMethodContext::OnKeysym(uint32_t key,
                                          uint32_t state,
                                          uint32_t modifiers) {
-  DomKey dom_key = NonPrintableXKeySymToDomKey(key);
-  KeyboardCode key_code = NonPrintableDomKeyToKeyboardCode(dom_key);
   DomCode dom_code =
-      KeycodeConverter::NativeKeycodeToDomCode(key_code + kXkbKeycodeOffset);
+      KeycodeConverter::NativeKeycodeToDomCode(EvdevCodeToNativeCode(key));
   if (dom_code == ui::DomCode::NONE)
     return;
 
   // TODO(crbug.com/1079353): Handle modifiers.
   EventType type =
       state == WL_KEYBOARD_KEY_STATE_PRESSED ? ET_KEY_PRESSED : ET_KEY_RELEASED;
-  key_delegate_->OnKeyboardKeyEvent(type, dom_code, dom_key, key_code,
-                                    /*repeat=*/false, EventTimeForNow());
+  key_delegate_->OnKeyboardKeyEvent(type, dom_code, /*repeat=*/false,
+                                    EventTimeForNow());
 }
 
 }  // namespace ui

@@ -13,8 +13,6 @@
 #include "base/time/time.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
-#include "ui/events/keycodes/dom/dom_key.h"
-#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/events/pointer_details.h"
 #include "ui/events/types/event_type.h"
@@ -85,8 +83,6 @@ class WaylandEventSource : public PlatformEventSource,
   void OnKeyboardModifiersChanged(int modifiers) override;
   uint32_t OnKeyboardKeyEvent(EventType type,
                               DomCode dom_code,
-                              DomKey dom_key,
-                              KeyboardCode key_code,
                               bool repeat,
                               base::TimeTicks timestamp) override;
 

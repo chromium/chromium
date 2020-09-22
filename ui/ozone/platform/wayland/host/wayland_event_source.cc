@@ -104,17 +104,15 @@ void WaylandEventSource::OnKeyboardModifiersChanged(int modifiers) {
 
 uint32_t WaylandEventSource::OnKeyboardKeyEvent(EventType type,
                                                 DomCode dom_code,
-                                                DomKey dom_key,
-                                                KeyboardCode key_code,
                                                 bool repeat,
                                                 base::TimeTicks timestamp) {
   DCHECK(type == ET_KEY_PRESSED || type == ET_KEY_RELEASED);
   if (!keyboard_)
     return POST_DISPATCH_NONE;
 
-  // try to decode key, if not yet.
-  if (dom_key == DomKey::NONE &&
-      !keyboard_->Decode(dom_code, keyboard_modifiers_, &dom_key, &key_code)) {
+  DomKey dom_key;
+  KeyboardCode key_code;
+  if (!keyboard_->Decode(dom_code, keyboard_modifiers_, &dom_key, &key_code)) {
     LOG(ERROR) << "Failed to decode key event.";
     return POST_DISPATCH_NONE;
   }

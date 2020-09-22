@@ -116,8 +116,6 @@ class WaylandKeyboard::Delegate {
   // dispatched.
   virtual uint32_t OnKeyboardKeyEvent(EventType type,
                                       DomCode dom_code,
-                                      DomKey dom_key,
-                                      KeyboardCode key_code,
                                       bool repeat,
                                       base::TimeTicks timestamp) = 0;
 
