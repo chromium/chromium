@@ -44,15 +44,15 @@ class CONTENT_EXPORT RawClipboardHostImpl
   void Write(const base::string16& format, mojo_base::BigBuffer data) override;
   void CommitWrite() override;
 
+  std::unique_ptr<ui::ClipboardDataEndpoint> CreateDataEndpoint();
   bool HasTransientUserActivation() const;
+
+  // The render frame is not owned.
+  const GlobalFrameRoutingId render_frame_routing_id_;
 
   mojo::Receiver<blink::mojom::RawClipboardHost> receiver_;
   ui::Clipboard* const clipboard_;  // Not owned.
   std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer_;
-  // Not owned. Raw pointer usage is safe here because RawClipboardHostImpl is
-  // per-frame, so |render_frame_host_| is guaranteed to outlive the
-  // RawClipboardHostImpl.
-  RenderFrameHost* const render_frame_host_;
 };
 
 }  // namespace content

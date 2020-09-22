@@ -24,19 +24,6 @@
 
 namespace content {
 
-namespace {
-
-std::unique_ptr<ui::ClipboardDataEndpoint> CreateDataEndpoint(
-    RenderFrameHost* render_frame_host) {
-  if (render_frame_host)
-    return std::make_unique<ui::ClipboardDataEndpoint>(
-        render_frame_host->GetLastCommittedOrigin());
-
-  return nullptr;
-}
-
-}  // namespace
-
 void RawClipboardHostImpl::Create(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::RawClipboardHost> receiver) {
@@ -93,12 +80,14 @@ RawClipboardHostImpl::~RawClipboardHostImpl() {
 RawClipboardHostImpl::RawClipboardHostImpl(
     mojo::PendingReceiver<blink::mojom::RawClipboardHost> receiver,
     RenderFrameHost* render_frame_host)
-    : receiver_(this, std::move(receiver)),
+    : render_frame_routing_id_(
+          GlobalFrameRoutingId(render_frame_host->GetProcess()->GetID(),
+                               render_frame_host->GetRoutingID())),
+      receiver_(this, std::move(receiver)),
       clipboard_(ui::Clipboard::GetForCurrentThread()),
       clipboard_writer_(
           new ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste,
-                                        CreateDataEndpoint(render_frame_host))),
-      render_frame_host_(render_frame_host) {
+                                        CreateDataEndpoint())) {
   DCHECK(render_frame_host);
 }
 
@@ -108,8 +97,7 @@ void RawClipboardHostImpl::ReadAvailableFormatNames(
     return;
   std::vector<base::string16> raw_types =
       clipboard_->ReadAvailablePlatformSpecificFormatNames(
-          ui::ClipboardBuffer::kCopyPaste,
-          CreateDataEndpoint(render_frame_host_).get());
+          ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint().get());
   std::move(callback).Run(raw_types);
 }
 
@@ -125,7 +113,7 @@ void RawClipboardHostImpl::Read(const base::string16& format,
   std::string result;
   clipboard_->ReadData(
       ui::ClipboardFormatType::GetType(base::UTF16ToUTF8(format)),
-      CreateDataEndpoint(render_frame_host_).get(), &result);
+      CreateDataEndpoint().get(), &result);
   base::span<const uint8_t> span(
       reinterpret_cast<const uint8_t*>(result.data()), result.size());
   mojo_base::BigBuffer buffer = mojo_base::BigBuffer(span);
@@ -171,15 +159,31 @@ void RawClipboardHostImpl::Write(const base::string16& format,
 
 void RawClipboardHostImpl::CommitWrite() {
   clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
-      ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint(render_frame_host_));
+      ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint());
+}
+
+std::unique_ptr<ui::ClipboardDataEndpoint>
+RawClipboardHostImpl::CreateDataEndpoint() {
+  RenderFrameHostImpl* render_frame_host =
+      RenderFrameHostImpl::FromID(render_frame_routing_id_);
+  if (!render_frame_host)
+    return nullptr;
+
+  return std::make_unique<ui::ClipboardDataEndpoint>(
+      render_frame_host->GetLastCommittedOrigin());
 }
 
 bool RawClipboardHostImpl::HasTransientUserActivation() const {
+  RenderFrameHostImpl* render_frame_host =
+      RenderFrameHostImpl::FromID(render_frame_routing_id_);
+  if (!render_frame_host)
+    return false;
+
   // Renderer process should already check for user activation before sending
   // this request. Double check in case of compromised renderer.
   // mojo::ReportBadMessage() is not appropriate here, because user activation
   // may expire after the renderer check but before the browser check.
-  return render_frame_host_->HasTransientUserActivation();
+  return render_frame_host->HasTransientUserActivation();
 }
 
 }  // namespace content
