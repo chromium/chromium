@@ -596,8 +596,8 @@ class WebLocalFrame : public WebFrame {
 
   // Events --------------------------------------------------------------
 
-  // TEMP: Usage count for chrome.loadtimes deprecation.
-  // This will be removed following the deprecation.
+  // Usage count for chrome.loadtimes deprecation.
+  // This will be removed following the deprecation. See: crbug.com/621512
   virtual void UsageCountChromeLoadTimes(const WebString& metric) = 0;
 
   // Whether we've dispatched "pagehide" on the current document in this frame
