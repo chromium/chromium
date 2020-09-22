@@ -388,8 +388,8 @@ void PasswordSaveUpdateView::AddedToWidget() {
 void PasswordSaveUpdateView::OnThemeChanged() {
   PasswordBubbleViewBase::OnThemeChanged();
   int id = color_utils::IsDark(GetBubbleFrameView()->GetBackgroundColor())
-               ? IDR_SAVE_PASSWORD_DARK
-               : IDR_SAVE_PASSWORD;
+               ? IDR_SAVE_PASSWORD_MULTI_DEVICE_DARK
+               : IDR_SAVE_PASSWORD_MULTI_DEVICE;
   GetBubbleFrameView()->SetHeaderView(CreateHeaderImage(id));
   if (password_view_button_) {
     auto* theme = GetNativeTheme();

@@ -198,6 +198,26 @@ bool SaveUpdateWithAccountStoreBubbleController::IsCurrentStateUpdate() const {
                      });
 }
 
+bool SaveUpdateWithAccountStoreBubbleController::
+    IsCurrentStateAffectingTheAccountStore() {
+  DCHECK(state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
+         state_ == password_manager::ui::PENDING_PASSWORD_STATE);
+  bool is_update = false;
+  bool is_update_in_account_store = false;
+  for (const autofill::PasswordForm& form : existing_credentials_) {
+    if (form.username_value == pending_password_.username_value) {
+      is_update = true;
+      if (form.IsUsingAccountStore())
+        is_update_in_account_store = true;
+    }
+  }
+
+  if (!is_update)
+    return IsUsingAccountStore();
+
+  return is_update_in_account_store;
+}
+
 bool SaveUpdateWithAccountStoreBubbleController::RevealPasswords() {
   bool reveal_immediately = !password_revealing_requires_reauth_ ||
                             (delegate_ && delegate_->AuthenticateUser());

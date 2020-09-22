@@ -273,8 +273,8 @@ void MoveToAccountStoreBubbleView::OnThemeChanged() {
   PasswordBubbleViewBase::OnThemeChanged();
   GetBubbleFrameView()->SetHeaderView(CreateHeaderImage(
       color_utils::IsDark(GetBubbleFrameView()->GetBackgroundColor())
-          ? IDR_SAVE_PASSWORD_DARK
-          : IDR_SAVE_PASSWORD));
+          ? IDR_SAVE_PASSWORD_MULTI_DEVICE_DARK
+          : IDR_SAVE_PASSWORD_MULTI_DEVICE));
 }
 
 gfx::Size MoveToAccountStoreBubbleView::CalculatePreferredSize() const {

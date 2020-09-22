@@ -522,6 +522,8 @@ void PasswordSaveUpdateWithAccountStoreView::DestinationChanged() {
   bool is_account_store_selected =
       destination_dropdown_->GetSelectedIndex() == 0;
   controller_.OnToggleAccountStore(is_account_store_selected);
+  // Saving in account and local stores have different header images.
+  UpdateHeaderImage();
   // If the user explicitly switched to "save on this device only", record this
   // with the IPH tracker (so it can decide not to show the IPH again).
   if (!is_account_store_selected) {
@@ -602,10 +604,7 @@ void PasswordSaveUpdateWithAccountStoreView::AddedToWidget() {
 
 void PasswordSaveUpdateWithAccountStoreView::OnThemeChanged() {
   PasswordBubbleViewBase::OnThemeChanged();
-  int id = color_utils::IsDark(GetBubbleFrameView()->GetBackgroundColor())
-               ? IDR_SAVE_PASSWORD_DARK
-               : IDR_SAVE_PASSWORD;
-  GetBubbleFrameView()->SetHeaderView(CreateHeaderImage(id));
+  UpdateHeaderImage();
   if (password_view_button_) {
     auto* theme = GetNativeTheme();
     const SkColor icon_color =
@@ -683,6 +682,9 @@ void PasswordSaveUpdateWithAccountStoreView::UpdateBubbleUIElements() {
   if (!destination_dropdown_)
     return;
 
+  // Saving and updating are using different headers depending on the affected
+  // store.
+  UpdateHeaderImage();
   // If it's not a save bubble anymore, close the IPH because the account picker
   // will disappear. If it has become a save bubble, the IPH will get triggered
   // after the animation finishes.
@@ -690,6 +692,17 @@ void PasswordSaveUpdateWithAccountStoreView::UpdateBubbleUIElements() {
     CloseIPHBubbleIfOpen();
 
   destination_dropdown_->SetVisible(!controller_.IsCurrentStateUpdate());
+}
+
+void PasswordSaveUpdateWithAccountStoreView::UpdateHeaderImage() {
+  bool is_dark_mode =
+      color_utils::IsDark(GetBubbleFrameView()->GetBackgroundColor());
+  int id = controller_.IsCurrentStateAffectingTheAccountStore()
+               ? (is_dark_mode ? IDR_SAVE_PASSWORD_MULTI_DEVICE_DARK
+                               : IDR_SAVE_PASSWORD_MULTI_DEVICE)
+               : (is_dark_mode ? IDR_SAVE_PASSWORD_ONE_DEVICE_DARK
+                               : IDR_SAVE_PASSWORD_ONE_DEVICE);
+  GetBubbleFrameView()->SetHeaderView(CreateHeaderImage(id));
 }
 
 bool PasswordSaveUpdateWithAccountStoreView::ShouldShowRegularIPH() {

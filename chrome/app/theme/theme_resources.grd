@@ -266,8 +266,10 @@
         <structure type="chrome_scaled_image" name="IDR_SAVED_PASSWORDS_SAFE_STATE_DARK" file="common/passwords_safe_state_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVED_PASSWORDS_WARNING_STATE" file="common/passwords_warning_state.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVED_PASSWORDS_WARNING_STATE_DARK" file="common/passwords_warning_state_dark.png" />
-        <structure type="chrome_scaled_image" name="IDR_SAVE_PASSWORD" file="common/save_password.png" />
-        <structure type="chrome_scaled_image" name="IDR_SAVE_PASSWORD_DARK" file="common/save_password_dark.png" />
+        <structure type="chrome_scaled_image" name="IDR_SAVE_PASSWORD_MULTI_DEVICE" file="common/save_password_multi_device.png" />
+        <structure type="chrome_scaled_image" name="IDR_SAVE_PASSWORD_MULTI_DEVICE_DARK" file="common/save_password_multi_device_dark.png" />
+        <structure type="chrome_scaled_image" name="IDR_SAVE_PASSWORD_ONE_DEVICE" file="common/save_password_one_device.png" />
+        <structure type="chrome_scaled_image" name="IDR_SAVE_PASSWORD_ONE_DEVICE_DARK" file="common/save_password_one_device_dark.png" />
       </if>
       <structure type="chrome_scaled_image" name="IDR_SCREEN_CAPTURE_NOTIFICATION_GRIP" file="screen_capture_notification_grip.png" />
       <if expr="chromeos">
