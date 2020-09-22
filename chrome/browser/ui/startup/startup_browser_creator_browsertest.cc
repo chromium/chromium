@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/search/local_ntp_test_utils.h"
+#include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
@@ -143,7 +144,7 @@ Browser* OpenNewBrowser(Profile* profile) {
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl creator(base::FilePath(), dummy,
                                     chrome::startup::IS_FIRST_RUN);
-  creator.Launch(profile, std::vector<GURL>(), false);
+  creator.Launch(profile, std::vector<GURL>(), false, nullptr);
   return chrome::FindBrowserWithProfile(profile);
 }
 
@@ -419,7 +420,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppUrlShortcut) {
       first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
                                     : chrome::startup::IS_NOT_FIRST_RUN;
   StartupBrowserCreatorImpl launch(base::FilePath(), command_line, first_run);
-  ASSERT_TRUE(launch.Launch(browser()->profile(), std::vector<GURL>(), false));
+  ASSERT_TRUE(
+      launch.Launch(browser()->profile(), std::vector<GURL>(), false, nullptr));
 
   Browser* new_browser = FindOneOtherBrowser(browser());
   ASSERT_TRUE(new_browser);
@@ -458,7 +460,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppShortcutNoPref) {
   chrome::startup::IsFirstRun first_run = first_run::IsChromeFirstRun() ?
       chrome::startup::IS_FIRST_RUN : chrome::startup::IS_NOT_FIRST_RUN;
   StartupBrowserCreatorImpl launch(base::FilePath(), command_line, first_run);
-  ASSERT_TRUE(launch.Launch(browser()->profile(), std::vector<GURL>(), false));
+  ASSERT_TRUE(
+      launch.Launch(browser()->profile(), std::vector<GURL>(), false, nullptr));
 
   // No pref was set, so the app should have opened in a tab in the existing
   // window.
@@ -483,7 +486,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppShortcutWindowPref) {
   chrome::startup::IsFirstRun first_run = first_run::IsChromeFirstRun() ?
       chrome::startup::IS_FIRST_RUN : chrome::startup::IS_NOT_FIRST_RUN;
   StartupBrowserCreatorImpl launch(base::FilePath(), command_line, first_run);
-  ASSERT_TRUE(launch.Launch(browser()->profile(), std::vector<GURL>(), false));
+  ASSERT_TRUE(
+      launch.Launch(browser()->profile(), std::vector<GURL>(), false, nullptr));
 
   // Pref was set to open in a window, so the app should have opened in a
   // window.  The launch should have created a new browser. Find the new
@@ -517,7 +521,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppShortcutTabPref) {
   chrome::startup::IsFirstRun first_run = first_run::IsChromeFirstRun() ?
       chrome::startup::IS_FIRST_RUN : chrome::startup::IS_NOT_FIRST_RUN;
   StartupBrowserCreatorImpl launch(base::FilePath(), command_line, first_run);
-  ASSERT_TRUE(launch.Launch(browser()->profile(), std::vector<GURL>(), false));
+  ASSERT_TRUE(
+      launch.Launch(browser()->profile(), std::vector<GURL>(), false, nullptr));
 
   // When an app shortcut is open and the pref indicates a tab should open, the
   // tab is open in the existing browser window.
@@ -545,7 +550,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, ValidNotificationLaunchId) {
       first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
                                     : chrome::startup::IS_NOT_FIRST_RUN;
   StartupBrowserCreatorImpl launch(base::FilePath(), command_line, first_run);
-  ASSERT_TRUE(launch.Launch(browser()->profile(), std::vector<GURL>(), false));
+  ASSERT_TRUE(
+      launch.Launch(browser()->profile(), std::vector<GURL>(), false, nullptr));
 
   // The launch delegates to the notification system and doesn't open any new
   // browser window.
@@ -560,7 +566,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, InvalidNotificationLaunchId) {
       first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
                                     : chrome::startup::IS_NOT_FIRST_RUN;
   StartupBrowserCreatorImpl launch(base::FilePath(), command_line, first_run);
-  ASSERT_FALSE(launch.Launch(browser()->profile(), std::vector<GURL>(), false));
+  ASSERT_FALSE(
+      launch.Launch(browser()->profile(), std::vector<GURL>(), false, nullptr));
 
   // No new browser window is open.
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
@@ -1365,7 +1372,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest, AddFirstRunTab) {
 
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, &browser_creator,
                                    chrome::startup::IS_FIRST_RUN);
-  ASSERT_TRUE(launch.Launch(browser()->profile(), std::vector<GURL>(), false));
+  ASSERT_TRUE(
+      launch.Launch(browser()->profile(), std::vector<GURL>(), false, nullptr));
 
   // This should have created a new browser window.
   Browser* new_browser = FindOneOtherBrowser(browser());
@@ -1422,7 +1430,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, &browser_creator,
                                    chrome::startup::IS_FIRST_RUN);
-  ASSERT_TRUE(launch.Launch(browser()->profile(), std::vector<GURL>(), true));
+  ASSERT_TRUE(
+      launch.Launch(browser()->profile(), std::vector<GURL>(), true, nullptr));
 
   // This should have created a new browser window.
   Browser* new_browser = FindOneOtherBrowser(browser());
@@ -1468,7 +1477,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, &browser_creator,
                                    chrome::startup::IS_FIRST_RUN);
-  ASSERT_TRUE(launch.Launch(browser()->profile(), std::vector<GURL>(), true));
+  ASSERT_TRUE(
+      launch.Launch(browser()->profile(), std::vector<GURL>(), true, nullptr));
 
   // This should have created a new browser window.
   Browser* new_browser = FindOneOtherBrowser(browser());
@@ -1723,7 +1733,7 @@ class StartupBrowserCreatorInfobarsTest
     Profile* profile = browser()->profile();
     StartupBrowserCreatorImpl launch(base::FilePath(), command_line,
                                      chrome::startup::IS_NOT_FIRST_RUN);
-    EXPECT_TRUE(launch.Launch(profile, std::vector<GURL>(), true));
+    EXPECT_TRUE(launch.Launch(profile, std::vector<GURL>(), true, nullptr));
 
     // This should have created a new browser window.
     Browser* new_browser = FindOneOtherBrowser(browser());
@@ -1827,7 +1837,7 @@ class StartupBrowserCreatorInfobarsKioskTest : public InProcessBrowserTest {
     command_line.AppendSwitch(extra_switch);
     StartupBrowserCreatorImpl launch(base::FilePath(), command_line,
                                      chrome::startup::IS_NOT_FIRST_RUN);
-    EXPECT_TRUE(launch.Launch(profile, std::vector<GURL>(), true));
+    EXPECT_TRUE(launch.Launch(profile, std::vector<GURL>(), true, nullptr));
 
     // This should have created a new browser window.
     Browser* new_browser = FindOneOtherBrowser(browser());

@@ -17,12 +17,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/ui/web_applications/web_app_metrics.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -503,7 +503,6 @@ IN_PROC_BROWSER_TEST_P(WebAppEngagementBrowserTest, CommandLineWindow) {
 
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, *app_id);
-
   chrome::startup::IsFirstRun first_run =
       first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
                                     : chrome::startup::IS_NOT_FIRST_RUN;
@@ -511,7 +510,8 @@ IN_PROC_BROWSER_TEST_P(WebAppEngagementBrowserTest, CommandLineWindow) {
 
   // The app should open as a window.
   EXPECT_TRUE(launch.Launch(browser()->profile(), std::vector<GURL>(),
-                            /*process_startup=*/false));
+                            /*process_startup=*/false,
+                            std::make_unique<LaunchModeRecorder>()));
   app_loaded_observer.Wait();
 
   Browser* const app_browser = BrowserList::GetInstance()->GetLastActive();
@@ -568,7 +568,8 @@ IN_PROC_BROWSER_TEST_P(WebAppEngagementBrowserTest, CommandLineTab) {
 
   // The app should open as a tab.
   EXPECT_TRUE(launch.Launch(browser()->profile(), std::vector<GURL>(),
-                            /*process_startup=*/false));
+                            /*process_startup=*/false,
+                            std::make_unique<LaunchModeRecorder>()));
   app_loaded_observer.Wait();
 
   {

@@ -8,19 +8,12 @@
 
 #include <algorithm>
 #include <iterator>
+#include <memory>
+#include <utility>
 
 #include "base/auto_reset.h"
-#include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/i18n/case_conversion.h"
-#include "base/location.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
-#include "base/path_service.h"
-#include "base/strings/string_util.h"
-#include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
@@ -55,6 +48,7 @@
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
 #include "chrome/browser/ui/startup/default_browser_prompt.h"
 #include "chrome/browser/ui/startup/google_api_keys_infobar_delegate.h"
+#include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
@@ -76,8 +70,6 @@
 
 #if defined(OS_MAC)
 #include "base/mac/mac_util.h"
-#import "chrome/browser/mac/dock.h"
-#include "chrome/browser/mac/install_from_dmg.h"
 #include "chrome/browser/ui/cocoa/keystone_infobar_delegate.h"
 #include "chrome/browser/ui/startup/mac_system_infobar_delegate.h"
 #endif
@@ -105,167 +97,6 @@ namespace {
 
 // Utility functions ----------------------------------------------------------
 
-// This enum is used to define the buckets for an enumerated UMA histogram.
-// Hence,
-//   (a) existing enumerated constants should never be deleted or reordered, and
-//   (b) new constants should only be appended at the end of the enumeration.
-enum LaunchMode {
-  LM_TO_BE_DECIDED = 0,         // Possibly direct launch or via a shortcut.
-  LM_AS_WEBAPP_IN_WINDOW = 1,   // Launched as an installed web application in a
-                                // standalone window.
-  LM_WITH_URLS = 2,             // Launched with urls in the cmd line.
-  LM_OTHER = 3,                 // Not launched from a shortcut.
-  LM_SHORTCUT_NONAME = 4,       // Launched from shortcut but no name available.
-  LM_SHORTCUT_UNKNOWN = 5,      // Launched from user-defined shortcut.
-  LM_SHORTCUT_QUICKLAUNCH = 6,  // Launched from the quick launch bar.
-  LM_SHORTCUT_DESKTOP = 7,      // Launched from a desktop shortcut.
-  LM_SHORTCUT_TASKBAR = 8,      // Launched from the taskbar.
-  LM_USER_EXPERIMENT = 9,  // Launched after acceptance of a user experiment.
-  LM_OTHER_OS = 10,        // Result bucket for OSes with no coverage here.
-  LM_MAC_UNDOCKED_DISK_LAUNCH = 11,    // Undocked launch from disk.
-  LM_MAC_DOCKED_DISK_LAUNCH = 12,      // Docked launch from disk.
-  LM_MAC_UNDOCKED_DMG_LAUNCH = 13,     // Undocked launch from a dmg.
-  LM_MAC_DOCKED_DMG_LAUNCH = 14,       // Docked launch from a dmg.
-  LM_MAC_DOCK_STATUS_ERROR = 15,       // Error determining dock status.
-  LM_MAC_DMG_STATUS_ERROR = 16,        // Error determining dmg status.
-  LM_MAC_DOCK_DMG_STATUS_ERROR = 17,   // Error determining dock and dmg status.
-  LM_WIN_PLATFORM_NOTIFICATION = 18,   // Launched from toast notification
-                                       // activation on Windows.
-  LM_SHORTCUT_START_MENU = 19,         // A Windows Start Menu shortcut.
-  LM_CREDENTIAL_PROVIDER_SIGNIN = 20,  // Started as a logon stub for the Google
-                                       // Credential Provider for Windows.
-  LM_AS_WEBAPP_IN_TAB = 21,            // Launched as an installed web
-                                       // application in a browser tab.
-  LM_UNKNOWN_WEBAPP = 22,  // The requested web application was not installed.
-};
-
-// Returns a LaunchMode value if one can be determined with low overhead, or
-// LM_TO_BE_DECIDED if a call to GetLaunchModeSlow is required.
-LaunchMode GetLaunchModeFast();
-
-// Returns a LaunchMode value; may require a bit of extra work. This will be
-// called on a background thread outside of the critical startup path.
-LaunchMode GetLaunchModeSlow();
-
-#if defined(OS_WIN)
-// Returns the path to the shortcut from which Chrome was launched, or null if
-// not launched via a shortcut.
-base::Optional<const wchar_t*> GetShortcutPath() {
-  STARTUPINFOW si = { sizeof(si) };
-  GetStartupInfoW(&si);
-  if (!(si.dwFlags & STARTF_TITLEISLINKNAME))
-    return base::nullopt;
-  return base::Optional<const wchar_t*>(si.lpTitle);
-}
-
-LaunchMode GetLaunchModeFast() {
-  auto shortcut_path = GetShortcutPath();
-  if (!shortcut_path)
-    return LM_OTHER;
-  if (!shortcut_path.value())
-    return LM_SHORTCUT_NONAME;
-  return LM_TO_BE_DECIDED;
-}
-
-LaunchMode GetLaunchModeSlow() {
-  auto shortcut_path = GetShortcutPath();
-  DCHECK(shortcut_path);
-  DCHECK(shortcut_path.value());
-
-  const base::string16 shortcut(base::i18n::ToLower(shortcut_path.value()));
-
-  // The windows quick launch path is not localized.
-  if (shortcut.find(L"\\quick launch\\") != base::StringPiece16::npos)
-    return LM_SHORTCUT_TASKBAR;
-
-  // Check the common shortcut locations.
-  static constexpr struct {
-    int path_key;
-    LaunchMode launch_mode;
-  } kPathKeysAndModes[] = {
-      {base::DIR_COMMON_START_MENU, LM_SHORTCUT_START_MENU},
-      {base::DIR_START_MENU, LM_SHORTCUT_START_MENU},
-      {base::DIR_COMMON_DESKTOP, LM_SHORTCUT_DESKTOP},
-      {base::DIR_USER_DESKTOP, LM_SHORTCUT_DESKTOP},
-  };
-  base::FilePath candidate;
-  for (const auto& item : kPathKeysAndModes) {
-    if (base::PathService::Get(item.path_key, &candidate) &&
-        base::StartsWith(shortcut, base::i18n::ToLower(candidate.value()),
-                         base::CompareCase::SENSITIVE)) {
-      return item.launch_mode;
-    }
-  }
-
-  return LM_SHORTCUT_UNKNOWN;
-}
-#elif defined(OS_MAC)  // defined(OS_WIN)
-LaunchMode GetLaunchModeFast() {
-  DiskImageStatus dmg_launch_status =
-      IsAppRunningFromReadOnlyDiskImage(nullptr);
-  dock::ChromeInDockStatus dock_launch_status = dock::ChromeIsInTheDock();
-
-  if (dock_launch_status == dock::ChromeInDockFailure &&
-      dmg_launch_status == DiskImageStatusFailure)
-    return LM_MAC_DOCK_DMG_STATUS_ERROR;
-
-  if (dock_launch_status == dock::ChromeInDockFailure)
-    return LM_MAC_DOCK_STATUS_ERROR;
-
-  if (dmg_launch_status == DiskImageStatusFailure)
-    return LM_MAC_DMG_STATUS_ERROR;
-
-  bool dmg_launch = dmg_launch_status == DiskImageStatusTrue;
-  bool dock_launch = dock_launch_status == dock::ChromeInDockTrue;
-
-  if (dmg_launch && dock_launch)
-    return LM_MAC_DOCKED_DMG_LAUNCH;
-
-  if (dmg_launch)
-    return LM_MAC_UNDOCKED_DMG_LAUNCH;
-
-  if (dock_launch)
-    return LM_MAC_DOCKED_DISK_LAUNCH;
-
-  return LM_MAC_UNDOCKED_DISK_LAUNCH;
-}
-
-LaunchMode GetLaunchModeSlow() {
-  NOTREACHED();
-  return LM_TO_BE_DECIDED;
-}
-#else                     // defined(OS_WIN)
-// TODO(cpu): Port to other platforms.
-LaunchMode GetLaunchModeFast() {
-  return LM_OTHER_OS;
-}
-
-LaunchMode GetLaunchModeSlow() {
-  NOTREACHED();
-  return LM_OTHER_OS;
-}
-#endif                    // defined(OS_WIN)
-
-// Log in a histogram the frequency of launching by the different methods. See
-// LaunchMode enum for the actual values of the buckets.
-void RecordLaunchModeHistogram(LaunchMode mode) {
-  static constexpr char kLaunchModesHistogram[] = "Launch.Modes";
-  if (mode == LM_TO_BE_DECIDED &&
-      (mode = GetLaunchModeFast()) == LM_TO_BE_DECIDED) {
-    // The mode couldn't be determined with a fast path. Perform a more
-    // expensive evaluation out of the critical startup path.
-    base::ThreadPool::PostTask(
-        FROM_HERE,
-        {base::TaskPriority::BEST_EFFORT,
-         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce([]() {
-          base::UmaHistogramSparse(kLaunchModesHistogram, GetLaunchModeSlow());
-        }));
-  } else {
-    base::UmaHistogramSparse(kLaunchModesHistogram, mode);
-  }
-}
-
 void MaybeToggleFullscreen(Browser* browser) {
   // In kiosk mode, we want to always be fullscreen.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode) ||
@@ -275,28 +106,31 @@ void MaybeToggleFullscreen(Browser* browser) {
   }
 }
 
-void FinalizeWebAppLaunch(Browser* browser,
-                          apps::mojom::LaunchContainer container) {
+void FinalizeWebAppLaunch(
+    std::unique_ptr<LaunchModeRecorder> launch_mode_recorder,
+    Browser* browser,
+    apps::mojom::LaunchContainer container) {
   LaunchMode mode;
   switch (container) {
     case apps::mojom::LaunchContainer::kLaunchContainerWindow:
       DCHECK(browser->is_type_app());
-      mode = LM_AS_WEBAPP_IN_WINDOW;
+      mode = LaunchMode::kAsWebAppInWindow;
       break;
     case apps::mojom::LaunchContainer::kLaunchContainerTab:
       DCHECK(!browser->is_type_app());
-      mode = LM_AS_WEBAPP_IN_TAB;
+      mode = LaunchMode::kAsWebAppInTab;
       break;
     case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
       NOTREACHED();
       FALLTHROUGH;
     case apps::mojom::LaunchContainer::kLaunchContainerNone:
       DCHECK(!browser->is_type_app());
-      mode = LM_UNKNOWN_WEBAPP;
+      mode = LaunchMode::kUnknownWebApp;
       break;
   }
 
-  RecordLaunchModeHistogram(mode);
+  if (launch_mode_recorder)
+    launch_mode_recorder->SetLaunchMode(mode);
   MaybeToggleFullscreen(browser);
 }
 
@@ -366,9 +200,11 @@ StartupBrowserCreatorImpl::StartupBrowserCreatorImpl(
 StartupBrowserCreatorImpl::~StartupBrowserCreatorImpl() {
 }
 
-bool StartupBrowserCreatorImpl::Launch(Profile* profile,
-                                       const std::vector<GURL>& urls_to_open,
-                                       bool process_startup) {
+bool StartupBrowserCreatorImpl::Launch(
+    Profile* profile,
+    const std::vector<GURL>& urls_to_open,
+    bool process_startup,
+    std::unique_ptr<LaunchModeRecorder> launch_mode_recorder) {
   DCHECK(profile);
   profile_ = profile;
 
@@ -378,7 +214,10 @@ bool StartupBrowserCreatorImpl::Launch(Profile* profile,
   // Delegate to the notification system; do not open a browser window here.
   if (command_line_.HasSwitch(switches::kNotificationLaunchId)) {
     if (NotificationPlatformBridgeWin::HandleActivation(command_line_)) {
-      RecordLaunchModeHistogram(LM_WIN_PLATFORM_NOTIFICATION);
+      if (launch_mode_recorder) {
+        launch_mode_recorder->SetLaunchMode(
+            LaunchMode::kWinPlatformNotification);
+      }
       return true;
     }
     return false;
@@ -395,7 +234,10 @@ bool StartupBrowserCreatorImpl::Launch(Profile* profile,
     if (!StartGCPWSignin(command_line_, profile_))
       return false;
 
-    RecordLaunchModeHistogram(LM_CREDENTIAL_PROVIDER_SIGNIN);
+    if (launch_mode_recorder) {
+      launch_mode_recorder->SetLaunchMode(
+          LaunchMode::kCredentialProviderSignIn);
+    }
     return true;
   }
 #endif  // defined(OS_WIN)
@@ -417,16 +259,19 @@ bool StartupBrowserCreatorImpl::Launch(Profile* profile,
   // should either open in an existing Chrome window for this profile, or spawn
   // a new Chrome window without any NTP if no window exists (see
   // crbug.com/528385).
-  if (!MaybeLaunchApplication(profile)) {
+  if (!MaybeLaunchApplication(profile, launch_mode_recorder)) {
     // Check the true process command line for --try-chrome-again=N rather than
     // the one parsed for startup URLs and such.
-    if (!base::CommandLine::ForCurrentProcess()
-             ->GetSwitchValueNative(switches::kTryChromeAgain)
-             .empty()) {
-      RecordLaunchModeHistogram(LM_USER_EXPERIMENT);
-    } else {
-      RecordLaunchModeHistogram(urls_to_open.empty() ? LM_TO_BE_DECIDED
-                                                     : LM_WITH_URLS);
+    if (launch_mode_recorder) {
+      if (!base::CommandLine::ForCurrentProcess()
+               ->GetSwitchValueNative(switches::kTryChromeAgain)
+               .empty()) {
+        launch_mode_recorder->SetLaunchMode(LaunchMode::kUserExperiment);
+      } else {
+        launch_mode_recorder->SetLaunchMode(urls_to_open.empty()
+                                                ? LaunchMode::kToBeDecided
+                                                : LaunchMode::kWithUrls);
+      }
     }
 
     DetermineURLsAndLaunch(process_startup, urls_to_open);
@@ -575,7 +420,9 @@ bool StartupBrowserCreatorImpl::IsAppLaunch(std::string* app_url,
   return false;
 }
 
-bool StartupBrowserCreatorImpl::MaybeLaunchApplication(Profile* profile) {
+bool StartupBrowserCreatorImpl::MaybeLaunchApplication(
+    Profile* profile,
+    std::unique_ptr<LaunchModeRecorder>& launch_mode_recorder) {
   std::string url_string, app_id;
   if (!IsAppLaunch(&url_string, &app_id))
     return false;
@@ -584,8 +431,10 @@ bool StartupBrowserCreatorImpl::MaybeLaunchApplication(Profile* profile) {
     // Opens an empty browser window if the app_id is invalid.
     apps::AppServiceProxyFactory::GetForProfile(profile)
         ->BrowserAppLauncher()
-        ->LaunchAppWithCallback(app_id, command_line_, cur_dir_,
-                                base::BindOnce(&FinalizeWebAppLaunch));
+        ->LaunchAppWithCallback(
+            app_id, command_line_, cur_dir_,
+            base::BindOnce(&FinalizeWebAppLaunch,
+                           std::move(launch_mode_recorder)));
     return true;
   }
 
@@ -607,6 +456,7 @@ bool StartupBrowserCreatorImpl::MaybeLaunchApplication(Profile* profile) {
           apps::OpenExtensionAppShortcutWindow(profile, url);
       if (web_contents) {
         FinalizeWebAppLaunch(
+            std::move(launch_mode_recorder),
             chrome::FindBrowserWithWebContents(web_contents),
             apps::mojom::LaunchContainer::kLaunchContainerWindow);
         return true;

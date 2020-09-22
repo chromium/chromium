@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -142,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
                                    chrome::startup::IS_NOT_FIRST_RUN);
-  ASSERT_TRUE(launch.Launch(profile, std::vector<GURL>(), false));
+  ASSERT_TRUE(launch.Launch(profile, std::vector<GURL>(), false, nullptr));
 
   // This should have created a new browser window.  |browser()| is still
   // around at this point, even though we've closed its window.
@@ -189,7 +190,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetFirstRunTest,
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, &browser_creator,
                                    chrome::startup::IS_FIRST_RUN);
-  ASSERT_TRUE(launch.Launch(browser()->profile(), std::vector<GURL>(), true));
+  ASSERT_TRUE(
+      launch.Launch(browser()->profile(), std::vector<GURL>(), true, nullptr));
 
   // This should have created a new browser window.
   Browser* new_browser = FindOneOtherBrowser(browser());
@@ -225,8 +227,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   {
     StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
                                      chrome::startup::IS_NOT_FIRST_RUN);
-    ASSERT_TRUE(
-        launch.Launch(browser()->profile(), std::vector<GURL>(), false));
+    ASSERT_TRUE(launch.Launch(browser()->profile(), std::vector<GURL>(), false,
+                              nullptr));
   }
 
   // This should have created a new browser window.  |browser()| is still
@@ -265,7 +267,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   {
     StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
                                      chrome::startup::IS_NOT_FIRST_RUN);
-    ASSERT_TRUE(launch.Launch(other_profile_ptr, std::vector<GURL>(), false));
+    ASSERT_TRUE(
+        launch.Launch(other_profile_ptr, std::vector<GURL>(), false, nullptr));
   }
 
   Browser* other_profile_browser =

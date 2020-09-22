@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_STARTUP_STARTUP_BROWSER_CREATOR_IMPL_H_
 #define CHROME_BROWSER_UI_STARTUP_STARTUP_BROWSER_CREATOR_IMPL_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -17,6 +18,7 @@
 #include "url/gurl.h"
 
 class Browser;
+class LaunchModeRecorder;
 class Profile;
 class StartupBrowserCreator;
 class StartupTabProvider;
@@ -55,7 +57,8 @@ class StartupBrowserCreatorImpl {
   // already running and the user wants to launch another instance.
   bool Launch(Profile* profile,
               const std::vector<GURL>& urls_to_open,
-              bool process_startup);
+              bool process_startup,
+              std::unique_ptr<LaunchModeRecorder> launch_mode_recorder);
 
   // Convenience for OpenTabsInBrowser that converts |urls| into a set of
   // Tabs.
@@ -132,7 +135,11 @@ class StartupBrowserCreatorImpl {
   // proceeding asynchronously); otherwise, returns false to indicate that
   // normal browser startup should resume. Desktop web applications launch
   // asynchronously, and fall back to launching a browser window.
-  bool MaybeLaunchApplication(Profile* profile);
+  // If the function returns true, |launch_mode_recorder| will be moved away,
+  // and the unique_ptr's value will be null.
+  bool MaybeLaunchApplication(
+      Profile* profile,
+      std::unique_ptr<LaunchModeRecorder>& launch_mode_recorder);
 
   // Determines the URLs to be shown at startup by way of various policies
   // (welcome, pinned tabs, etc.), determines whether a session restore

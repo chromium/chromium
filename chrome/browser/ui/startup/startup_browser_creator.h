@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_STARTUP_STARTUP_BROWSER_CREATOR_H_
 #define CHROME_BROWSER_UI_STARTUP_STARTUP_BROWSER_CREATOR_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -16,6 +17,7 @@
 
 class Browser;
 class GURL;
+class LaunchModeRecorder;
 class PrefRegistrySimple;
 
 namespace base {
@@ -75,11 +77,14 @@ class StartupBrowserCreator {
   // implies that the directory of the executable should be used.
   // |process_startup| indicates whether this is the first browser.
   // |is_first_run| indicates that this is a new profile.
+  // If |launch_mode_recorder| is non null, and a browser is launched, a launch
+  // mode histogram will be recorded.
   bool LaunchBrowser(const base::CommandLine& command_line,
                      Profile* profile,
                      const base::FilePath& cur_dir,
                      chrome::startup::IsProcessStartup is_process_startup,
-                     chrome::startup::IsFirstRun is_first_run);
+                     chrome::startup::IsFirstRun is_first_run,
+                     std::unique_ptr<LaunchModeRecorder> launch_mode_recorder);
 
   // When called the first time, reads the value of the preference kWasRestarted
   // and resets it to false. Subsequent calls return the value which was read

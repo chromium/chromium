@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/profile_chooser_constants.h"
+#include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -177,8 +178,10 @@ void FindOrCreateNewWindowForProfile(
   base::RecordAction(UserMetricsAction("NewWindow"));
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreator browser_creator;
-  browser_creator.LaunchBrowser(
-      command_line, profile, base::FilePath(), process_startup, is_first_run);
+  // This is not a browser launch from the user; don't record the launch mode.
+  browser_creator.LaunchBrowser(command_line, profile, base::FilePath(),
+                                process_startup, is_first_run,
+                                /*launch_mode_recorder=*/nullptr);
 }
 
 void OpenBrowserWindowForProfile(ProfileManager::CreateCallback callback,

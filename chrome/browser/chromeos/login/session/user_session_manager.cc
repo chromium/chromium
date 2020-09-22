@@ -99,6 +99,7 @@
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/webui/chromeos/login/discover/discover_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/discover/modules/discover_module_pin_setup.h"
@@ -2172,7 +2173,8 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
 
     browser_creator.LaunchBrowser(
         *base::CommandLine::ForCurrentProcess(), profile, base::FilePath(),
-        chrome::startup::IS_PROCESS_STARTUP, first_run);
+        chrome::startup::IS_PROCESS_STARTUP, first_run,
+        std::make_unique<LaunchModeRecorder>());
   }
 
   if (HatsNotificationController::ShouldShowSurveyToProfile(profile))
