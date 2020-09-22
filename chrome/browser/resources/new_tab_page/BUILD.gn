@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//chrome/browser/resources/optimize_webui.gni")
-import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/polymer/html_to_js.gni")
@@ -278,7 +277,6 @@ if (optimize_webui) {
       "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
     ]
 
-    defines = chrome_grit_defines + [ "is_official_build=$is_official_build" ]
     outputs = [
       "grit/new_tab_page_resources.h",
       "grit/new_tab_page_resources_map.cc",
