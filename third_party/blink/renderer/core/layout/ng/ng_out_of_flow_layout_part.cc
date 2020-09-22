@@ -1094,20 +1094,34 @@ void NGOutOfFlowLayoutPart::AddOOFResultsToFragmentainer(
   }
 
   if (is_new_fragment) {
-    // Calculate the column inline progression in order to calculate the inline
-    // offset of any newly added column fragments.
-    if (column_inline_progression_ == kIndefiniteSize) {
-      LayoutUnit available_size =
-          container_builder_->ChildAvailableSize().inline_size;
-      const ComputedStyle& style = container_builder_->Style();
-      LayoutUnit column_inline_size =
-          ResolveUsedColumnInlineSize(available_size, style);
-      column_inline_progression_ =
-          column_inline_size + ResolveUsedColumnGap(available_size, style);
-    }
+    LogicalOffset offset;
+    if (index != num_children - 1 && !container_builder_->Children()[index + 1]
+                                          .fragment->IsFragmentainerBox()) {
+      // If we are a new fragment and are separated from other columns by a
+      // spanner, compute the correct column offset to use.
+      const auto& spanner = container_builder_->Children()[index + 1];
+      DCHECK(spanner.fragment->IsColumnSpanAll());
 
-    LogicalOffset offset = fragmentainer.offset;
-    offset.inline_offset += column_inline_progression_;
+      offset = spanner.offset;
+      LogicalSize spanner_size = spanner.fragment->Size().ConvertToLogical(
+          container_builder_->Style().GetWritingMode());
+      // TODO(almaher): Include trailing spanner margin.
+      offset.block_offset += spanner_size.block_size;
+    } else {
+      // Calculate the column inline progression in order to calculate the
+      // inline offset of any newly added column fragments.
+      if (column_inline_progression_ == kIndefiniteSize) {
+        LayoutUnit available_size =
+            container_builder_->ChildAvailableSize().inline_size;
+        const ComputedStyle& style = container_builder_->Style();
+        LayoutUnit column_inline_size =
+            ResolveUsedColumnInlineSize(available_size, style);
+        column_inline_progression_ =
+            column_inline_size + ResolveUsedColumnGap(available_size, style);
+      }
+      offset = fragmentainer.offset;
+      offset.inline_offset += column_inline_progression_;
+    }
     container_builder_->AddChild(algorithm.Layout()->PhysicalFragment(),
                                  offset);
   } else {

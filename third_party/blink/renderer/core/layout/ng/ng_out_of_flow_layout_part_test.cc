@@ -966,8 +966,6 @@ TEST_F(NGOutOfFlowLayoutPartTest,
 
   // TODO(1079031): With top set to 0px, the abspos should start in the first
   // column with an offset of (0,0).
-  // TODO(1079031): The offsets of the columns following the spanner are
-  // incorrect. (The first should start at (0,10)).
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x40
     offset:0,0 size:1000x40
@@ -981,13 +979,13 @@ TEST_F(NGOutOfFlowLayoutPartTest,
       offset:0,10 size:1000x0
       offset:0,10 size:1000x0
       offset:0,10 size:1000x0
-      offset:1016,0 size:492x30
+      offset:0,10 size:492x30
         offset:0,0 size:5x30
-      offset:1524,0 size:492x30
+      offset:508,10 size:492x30
         offset:0,0 size:5x30
-      offset:2032,0 size:492x30
+      offset:1016,10 size:492x30
         offset:0,0 size:5x30
-      offset:2540,0 size:492x30
+      offset:1524,10 size:492x30
         offset:0,0 size:5x20
 )DUMP";
   EXPECT_EQ(expectation, dump);
@@ -1026,8 +1024,6 @@ TEST_F(NGOutOfFlowLayoutPartTest,
 
   // TODO(1079031): With top set to 25px, the abspos should start in the third
   // column with an offset of (0,5).
-  // TODO(1079031): The offsets of the columns following the spanner are
-  // incorrect. (The first should start at (0,10)).
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x40
     offset:0,0 size:1000x40
@@ -1038,11 +1034,11 @@ TEST_F(NGOutOfFlowLayoutPartTest,
         offset:0,0 size:30x10
           offset:0,0 size:30x10
       offset:0,10 size:1000x0
-      offset:1016,0 size:492x30
+      offset:0,10 size:492x30
         offset:0,15 size:5x15
-      offset:1524,0 size:492x30
+      offset:508,10 size:492x30
         offset:0,0 size:5x30
-      offset:2032,0 size:492x30
+      offset:1016,10 size:492x30
         offset:0,0 size:5x5
 )DUMP";
   EXPECT_EQ(expectation, dump);
@@ -1088,11 +1084,11 @@ TEST_F(NGOutOfFlowLayoutPartTest,
       offset:0,0 size:1000x0
       offset:0,0 size:1000x0
       offset:0,0 size:1000x0
+      offset:0,0 size:492x1
+        offset:0,0 size:5x1
       offset:508,0 size:492x1
         offset:0,0 size:5x1
       offset:1016,0 size:492x1
-        offset:0,0 size:5x1
-      offset:1524,0 size:492x1
         offset:0,0 size:5x1
 )DUMP";
   EXPECT_EQ(expectation, dump);
@@ -1136,14 +1132,14 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposFragWithSpannerAndNewEmptyColumns) {
       offset:0,0 size:1000x0
       offset:0,0 size:1000x0
       offset:0,0 size:1000x0
+      offset:0,0 size:492x40
       offset:508,0 size:492x40
-      offset:1016,0 size:492x40
         offset:0,39 size:5x1
+      offset:1016,0 size:492x40
+        offset:0,0 size:5x40
       offset:1524,0 size:492x40
         offset:0,0 size:5x40
       offset:2032,0 size:492x40
-        offset:0,0 size:5x40
-      offset:2540,0 size:492x40
         offset:0,0 size:5x39
 )DUMP";
   EXPECT_EQ(expectation, dump);
