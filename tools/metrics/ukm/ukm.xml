@@ -2968,12 +2968,15 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Blink.UseCounter">
-  <owner>loonybear@chromium.org</owner>
+  <owner>chasej@chromium.org</owner>
   <summary>
-    Collects data for a subset of UseCounter features. When UMA UseCounter data
+    Collects data for a subset of UseCounter features where UMA UseCounter data
     shows a behaviour that is rare but too common to blindly change. This metric
     should be used to reason about whether a breaking change is acceptable or
     not.
+
+    Note: In M87, a number of use counters were removed from UKM reporting due
+    to being reported too frequently (high proportion across page loads).
   </summary>
   <metric name="Feature" enum="FeatureObserver">
     <summary>
