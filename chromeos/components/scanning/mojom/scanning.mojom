@@ -7,6 +7,39 @@ module chromeos.scanning.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
+// The color modes that can be used to perform a scan.
+enum ColorMode {
+  kBlackAndWhite,
+  kGrayscale,
+  kColor,
+};
+
+// The source types from which a scan can be obtained.
+enum SourceType {
+  // A flatbed that scans a single page.
+  kFlatbed,
+  // An automatic document feeder that scans a single side of each page.
+  kAdfSimplex,
+  // An automatic document feeder that scans both sides of each page.
+  kAdfDuplex,
+};
+
+// The source from which a scan can be obtained.
+struct ScanSource {
+  // The type of this source.
+  SourceType type;
+  // The name of this source. Source names are unique to each SANE backend and
+  // are required to perform scans.
+  string name;
+};
+
+// The capabilities a scanner supports.
+struct ScannerCapabilities {
+  array<ScanSource> sources;
+  array<ColorMode> color_modes;
+  array<uint32> resolutions;
+};
+
 // Represents a connected scanner.
 struct Scanner {
   // The scanner's unique identifier.
@@ -23,4 +56,10 @@ interface ScanService {
   // implemented in a separate method to minimize the amount of time clients
   // must wait before receiving the scanners and displaying their display names.
   GetScanners() => (array<Scanner> scanners);
+
+  // Returns the capabilities of the scanner identified by |scanner_id|.
+  // TODO(jschettler): Return a boolean to indicate whether the capabilities
+  // were obtained via a secure protocol.
+  GetScannerCapabilities(mojo_base.mojom.UnguessableToken scanner_id)
+      => (ScannerCapabilities capabilities);
 };

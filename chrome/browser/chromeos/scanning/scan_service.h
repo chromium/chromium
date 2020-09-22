@@ -8,9 +8,12 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/scanning/mojom/scanning.mojom.h"
+#include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -32,6 +35,8 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
 
   // scanning::mojom::ScanService:
   void GetScanners(GetScannersCallback callback) override;
+  void GetScannerCapabilities(const base::UnguessableToken& scanner_id,
+                              GetScannerCapabilitiesCallback callback) override;
 
   // Binds receiver_ by consuming |pending_receiver|.
   void BindInterface(
@@ -44,6 +49,16 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
   // Processes the result of calling LorgnetteScannerManager::GetScannerNames().
   void OnScannerNamesReceived(GetScannersCallback callback,
                               std::vector<std::string> scanner_names);
+
+  // Processes the result of calling
+  // LorgnetteScannerManager::GetScannerCapabilities().
+  void OnScannerCapabilitiesReceived(
+      GetScannerCapabilitiesCallback callback,
+      base::Optional<lorgnette::ScannerCapabilities> capabilities);
+
+  // Map of scanner IDs to display names. Used to pass the correct display name
+  // to LorgnetteScannerManager when clients provide an ID.
+  base::flat_map<base::UnguessableToken, std::string> scanner_names_;
 
   // Receives and dispatches method calls to this implementation of the
   // chromeos::scanning::mojom::ScanService interface.
