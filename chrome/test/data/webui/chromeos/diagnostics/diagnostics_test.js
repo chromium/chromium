@@ -9,8 +9,10 @@ import 'chrome://diagnostics/diagnostics_app.js';
 import {SystemDataProviderInterface} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeBatteryInfo, fakeSystemInfo} from 'chrome://diagnostics/fake_data.js';
 import {FakeMethodResolver} from 'chrome://diagnostics/fake_method_resolver.js';
+import {FakeObservables} from 'chrome://diagnostics/fake_observables.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://test/test_util.m.js';
 
@@ -295,6 +297,36 @@ suite('FakeMojoProviderTest', () => {
     assertEquals(fake_provider, getSystemDataProvider());
   });
 });
+
+suite('FakeObservablesTest', () => {
+  /** @type {?FakeObservables} */
+  let observables = null;
+
+  setup(() => {
+    observables = new FakeObservables();
+  });
+
+  teardown(() => {
+    observables = null;
+  });
+
+  test('RegisterSimpleObservable', () => {
+    observables.register('ObserveFoo_OnFooUpdated');
+    /** @type !Array<string> */
+    const expected = ['bar'];
+    observables.setObservableData('ObserveFoo_OnFooUpdated', expected);
+
+    let resolver = new PromiseResolver();
+    observables.observe('ObserveFoo_OnFooUpdated', (foo) => {
+      assertEquals(expected[0], foo);
+      resolver.resolve();
+    });
+
+    observables.trigger('ObserveFoo_OnFooUpdated');
+    return resolver.promise;
+  });
+});
+
 
 suite('FakeSystemDataProviderTest', () => {
   /** @type {?FakeSystemDataProvider} */

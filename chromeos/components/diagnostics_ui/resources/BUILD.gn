@@ -17,6 +17,7 @@ js_type_check("closure_compile_module") {
     ":diagnostics_types",
     ":fake_data",
     ":fake_method_resolver",
+    ":fake_observables",
     ":fake_system_data_provider",
     ":memory_card",
     ":mojo_interface_provider",
@@ -61,6 +62,10 @@ js_library("fake_data") {
 }
 
 js_library("fake_method_resolver") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+}
+
+js_library("fake_observables") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
