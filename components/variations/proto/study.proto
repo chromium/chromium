@@ -428,6 +428,6 @@ message Study {
     ACTIVATE_ON_STARTUP = 1;
   }
 
-  // Activation type for this study. Defaults to ACTIVATION_EXPLICIT if omitted.
+  // Activation type for this study. Defaults to ACTIVATE_ON_QUERY if omitted.
   optional ActivationType activation_type = 12;
 }
