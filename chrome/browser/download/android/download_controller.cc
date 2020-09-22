@@ -19,6 +19,7 @@
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "chrome/android/chrome_jni_headers/DownloadController_jni.h"
+#include "chrome/browser/android/profile_key_startup_accessor.h"
 #include "chrome/browser/android/profile_key_util.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/download/android/dangerous_download_infobar_delegate.h"
@@ -31,8 +32,6 @@
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/offline_pages/android/offline_page_bridge.h"
 #include "chrome/browser/permissions/permission_update_infobar_delegate_android.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/grit/chromium_strings.h"
 #include "components/download/public/common/auto_resumption_handler.h"
@@ -378,10 +377,9 @@ void DownloadController::OnDownloadStarted(DownloadItem* download_item) {
   if (download::AutoResumptionHandler::Get())
     download::AutoResumptionHandler::Get()->OnDownloadStarted(download_item);
 
-  Profile* profile = Profile::FromBrowserContext(
-      content::DownloadItemUtils::GetBrowserContext(download_item));
-  ProfileKey* profile_key =
-      profile ? profile->GetProfileKey() : ::android::GetLastUsedProfileKey();
+  ProfileKey* profile_key = GetProfileKey(download_item);
+  if (!profile_key)
+    return;
 
   DownloadOfflineContentProviderFactory::GetForKey(profile_key)
       ->OnDownloadStarted(download_item);
@@ -505,4 +503,17 @@ bool DownloadController::IsInterruptedDownloadAutoResumable(
              download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED ||
          interrupt_reason ==
              download::DOWNLOAD_INTERRUPT_REASON_NETWORK_DISCONNECTED;
+}
+
+ProfileKey* DownloadController::GetProfileKey(DownloadItem* download_item) {
+  Profile* profile = Profile::FromBrowserContext(
+      content::DownloadItemUtils::GetBrowserContext(download_item));
+
+  ProfileKey* profile_key;
+  if (profile)
+    profile_key = profile->GetProfileKey();
+  else
+    profile_key = ProfileKeyStartupAccessor::GetInstance()->profile_key();
+
+  return profile_key;
 }
