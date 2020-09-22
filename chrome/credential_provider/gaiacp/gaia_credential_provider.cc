@@ -209,7 +209,7 @@ unsigned __stdcall BackgroundTokenHandleUpdater::PeriodicTokenHandleUpdate(
                         "credentials";
     }
 
-    if (GetGlobalFlagOrDefault(kRegUpdateCredentialsOnChange, 1))
+    if (GetGlobalFlagOrDefault(kRegUpdateCredentialsOnChange, 0))
       event_handler->UpdateCredentialsIfNeeded(user_access_changed);
   }
 
