@@ -26,16 +26,16 @@ public class PasswordCheckIconHelper {
      * Data object containing all data required to set an icon or construct a fallback.
      */
     public static class FaviconOrFallback {
-        public final String mUrl;
+        public final String mUrlOrAppName;
         public final @Nullable Bitmap mIcon;
         public final int mFallbackColor;
         public final boolean mIsFallbackColorDefault;
         public final int mIconType;
         public final int mIconSize;
 
-        FaviconOrFallback(String originUrl, @Nullable Bitmap icon, int fallbackColor,
+        FaviconOrFallback(String urlOrAppName, @Nullable Bitmap icon, int fallbackColor,
                 boolean isFallbackColorDefault, int iconType, int iconSize) {
-            mUrl = originUrl;
+            mUrlOrAppName = urlOrAppName;
             mIcon = icon;
             mFallbackColor = fallbackColor;
             mIsFallbackColorDefault = isFallbackColorDefault;
@@ -85,6 +85,10 @@ public class PasswordCheckIconHelper {
      * @return A pair with (potentially invalid) icon origin and a fallback URL for monograms.
      */
     private static Pair<GURL, String> getIconOriginAndFallback(CompromisedCredential credential) {
+        if (!credential.getAssociatedApp().isEmpty()) {
+            return getIconOriginAndFallbackForApp(credential);
+        }
+
         // Ideally, the sign-on realm is valid and has an adjacent, valid icon.
         GURL iconOrigin = new GURL(credential.getSignonRealm());
         String fallbackUrl = credential.getSignonRealm();
@@ -99,5 +103,10 @@ public class PasswordCheckIconHelper {
             fallbackUrl = credential.getDisplayOrigin();
         }
         return new Pair<>(iconOrigin, fallbackUrl);
+    }
+
+    private static Pair<GURL, String> getIconOriginAndFallbackForApp(
+            CompromisedCredential credential) {
+        return new Pair<>(new GURL(credential.getDisplayOrigin()), credential.getDisplayOrigin());
     }
 }
