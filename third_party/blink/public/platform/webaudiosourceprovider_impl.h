@@ -81,6 +81,7 @@ class BLINK_PLATFORM_EXPORT WebAudioSourceProviderImpl
   bool CurrentThreadIsRenderingThread() override;
   void SwitchOutputDevice(const std::string& device_id,
                           media::OutputDeviceStatusCB callback) override;
+  void TaintOrigin();
 
   // These methods allow a client to get a copy of the rendered audio.
   void SetCopyAudioCallback(CopyAudioCB callback);

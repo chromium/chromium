@@ -383,6 +383,9 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   // Called after asynchronous initialization of a data source completed.
   void DataSourceInitialized(bool success);
 
+  // Called if the |MultiBufferDataSource| is redirected.
+  void OnDataSourceRedirected();
+
   // Called when the data source is downloading or paused.
   void NotifyDownloading(bool is_downloading);
 
