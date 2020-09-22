@@ -19,7 +19,7 @@ if (crashpad_is_in_chromium) {
   set_sources_assignment_filter([])
 }
 
-crashpad_static_library("client") {
+static_library("client") {
   sources = [
     "annotation.cc",
     "annotation.h",
@@ -116,6 +116,7 @@ crashpad_static_library("client") {
     deps += [ "../third_party/fuchsia" ]
     if (crashpad_is_in_fuchsia) {
       deps += [ "//sdk/lib/fdio" ]
+      configs += [ "//build/config:Wno-conversion" ]
     }
   }
 }

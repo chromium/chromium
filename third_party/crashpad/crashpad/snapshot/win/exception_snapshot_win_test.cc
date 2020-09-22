@@ -17,6 +17,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "client/crashpad_client.h"
 #include "gtest/gtest.h"

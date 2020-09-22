@@ -14,12 +14,10 @@
 
 #include "test/scoped_temp_dir.h"
 
-#include <wchar.h>
 #include <windows.h>
 
-#include <string>
-
 #include "base/check.h"
+#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "gtest/gtest.h"
@@ -35,7 +33,7 @@ base::FilePath GenerateCandidateName() {
   DWORD path_len = GetTempPath(MAX_PATH, temp_path);
   PCHECK(path_len != 0) << "GetTempPath";
   base::FilePath system_temp_dir(temp_path);
-  std::wstring new_dir_name = base::UTF8ToWide(base::StringPrintf(
+  base::string16 new_dir_name = base::UTF8ToUTF16(base::StringPrintf(
       "crashpad.test.%lu.%s", GetCurrentProcessId(), RandomString().c_str()));
   return system_temp_dir.Append(new_dir_name);
 }

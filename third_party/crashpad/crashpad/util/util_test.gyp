@@ -21,7 +21,6 @@
       'target_name': 'crashpad_util_test',
       'type': 'executable',
       'dependencies': [
-        'no_cfi_icall.gyp:no_cfi_icall',
         'util.gyp:crashpad_util',
         '../client/client.gyp:crashpad_client',
         '../compat/compat.gyp:crashpad_compat',
@@ -80,7 +79,6 @@
         'misc/from_pointer_cast_test.cc',
         'misc/initialization_state_dcheck_test.cc',
         'misc/initialization_state_test.cc',
-        'misc/no_cfi_icall_test.cc',
         'misc/paths_test.cc',
         'misc/scoped_forbid_return_test.cc',
         'misc/random_string_test.cc',

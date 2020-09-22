@@ -19,8 +19,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <string>
-
 #include "base/check.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"

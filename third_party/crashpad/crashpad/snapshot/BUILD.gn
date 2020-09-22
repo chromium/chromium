@@ -22,7 +22,7 @@ if (crashpad_is_in_chromium) {
   set_sources_assignment_filter([])
 }
 
-crashpad_static_library("snapshot") {
+static_library("snapshot") {
   sources = [
     "annotation_snapshot.cc",
     "annotation_snapshot.h",
@@ -242,8 +242,6 @@ crashpad_static_library("snapshot") {
 
   public_configs = [ "..:crashpad_config" ]
 
-  configs = [ "..:disable_ubsan" ]
-
   public_deps = [ ":context" ]
 
   deps = [
@@ -261,6 +259,12 @@ crashpad_static_library("snapshot") {
   if (crashpad_is_win) {
     cflags = [ "/wd4201" ]  # nonstandard extension used : nameless struct/union
     libs = [ "powrprof.lib" ]
+  }
+
+  configs += [ "..:disable_ubsan" ]
+
+  if (crashpad_is_in_fuchsia) {
+    configs += [ "//build/config:Wno-conversion" ]
   }
 }
 
@@ -281,6 +285,10 @@ static_library("context") {
 
   if (crashpad_is_win) {
     cflags = [ "/wd4201" ]  # nonstandard extension used : nameless struct/union
+  }
+
+  if (crashpad_is_in_fuchsia) {
+    configs += [ "//build/config:Wno-conversion" ]
   }
 }
 

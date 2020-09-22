@@ -18,8 +18,7 @@
 #include <windows.h>
 #include <stdint.h>
 
-#include <string>
-
+#include "base/strings/string16.h"
 #include "util/win/address_types.h"
 
 namespace crashpad {
@@ -131,7 +130,7 @@ union ServerToClientMessage {
 //! CrashpadClient::SetHandler().
 //!
 //! \sa CrashpadClient::SetHandler()
-bool SendToCrashHandlerServer(const std::wstring& pipe_name,
+bool SendToCrashHandlerServer(const base::string16& pipe_name,
                               const ClientToServerMessage& message,
                               ServerToClientMessage* response);
 

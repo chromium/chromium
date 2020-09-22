@@ -1,4 +1,4 @@
-// Copyright 2019 The Crashpad Authors. All rights reserved.
+// Copyright 2018 The Crashpad Authors. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,24 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <sys/mman.h>
+#ifndef CRASHPAD_COMPAT_ANDROID_ANDROID_API_LEVEL_H_
+#define CRASHPAD_COMPAT_ANDROID_ANDROID_API_LEVEL_H_
 
-#include <dlfcn.h>
-#include <sys/syscall.h>
-#include <unistd.h>
+#include_next <android/api-level.h>
+#include <android/ndk-version.h>
 
-#if defined(__GLIBC__)
+#include <sys/cdefs.h>
 
+#if __NDK_MAJOR__ < 20
+
+#ifdef __cplusplus
 extern "C" {
+#endif
 
-int memfd_create(const char* name, unsigned int flags) {
-  using MemfdCreateType = int (*)(const char*, int);
-  static const MemfdCreateType next_memfd_create =
-      reinterpret_cast<MemfdCreateType>(dlsym(RTLD_NEXT, "memfd_create"));
-  return next_memfd_create ? next_memfd_create(name, flags)
-                           : syscall(SYS_memfd_create, name, flags);
-}
+// Returns the API level of the device or -1 if it can't be determined. This
+// function is provided by NDK r20.
+int android_get_device_api_level();
 
+#ifdef __cplusplus
 }  // extern "C"
+#endif
 
-#endif  // __GLIBC__
+#endif  // __NDK_MAJOR__ < 20
+
+#endif  // CRASHPAD_COMPAT_ANDROID_ANDROID_API_LEVEL_H_

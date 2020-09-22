@@ -17,13 +17,13 @@
 #include <aclapi.h>
 #include <sddl.h>
 #include <string.h>
-#include <wchar.h>
 #include <windows.h>
 
 #include <vector>
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/string16.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"
 #include "util/win/scoped_handle.h"
@@ -33,21 +33,21 @@ namespace crashpad {
 namespace test {
 namespace {
 
-std::wstring GetStringFromSid(PSID sid) {
+base::string16 GetStringFromSid(PSID sid) {
   LPWSTR sid_str;
   if (!ConvertSidToStringSid(sid, &sid_str)) {
     PLOG(ERROR) << "ConvertSidToStringSid";
-    return std::wstring();
+    return base::string16();
   }
   ScopedLocalAlloc sid_str_ptr(sid_str);
   return sid_str;
 }
 
-std::wstring GetUserSidString() {
+base::string16 GetUserSidString() {
   HANDLE token_handle;
   if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &token_handle)) {
     PLOG(ERROR) << "OpenProcessToken";
-    return std::wstring();
+    return base::string16();
   }
 
   ScopedKernelHANDLE token(token_handle);
@@ -55,14 +55,14 @@ std::wstring GetUserSidString() {
   GetTokenInformation(token.get(), TokenUser, nullptr, 0, &user_size);
   if (user_size == 0) {
     PLOG(ERROR) << "GetTokenInformation Size";
-    return std::wstring();
+    return base::string16();
   }
 
   std::vector<char> user(user_size);
   if (!GetTokenInformation(
           token.get(), TokenUser, user.data(), user_size, &user_size)) {
     PLOG(ERROR) << "GetTokenInformation";
-    return std::wstring();
+    return base::string16();
   }
 
   TOKEN_USER* user_ptr = reinterpret_cast<TOKEN_USER*>(user.data());
@@ -73,7 +73,7 @@ void CheckAce(PACL acl,
               DWORD index,
               BYTE check_ace_type,
               ACCESS_MASK check_mask,
-              const std::wstring& check_sid) {
+              const base::string16& check_sid) {
   ASSERT_FALSE(check_sid.empty());
   void* ace_ptr;
   ASSERT_TRUE(GetAce(acl, index, &ace_ptr));

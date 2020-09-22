@@ -50,7 +50,7 @@ bool CrashReportDatabase::NewReport::Initialize(
   }
 
 #if defined(OS_WIN)
-  const std::wstring uuid_string = uuid_.ToWString();
+  const std::wstring uuid_string = uuid_.ToString16();
 #else
   const std::string uuid_string = uuid_.ToString();
 #endif

@@ -60,9 +60,9 @@ template("compat_target") {
       not_needed([ "configs" ])
     }
   } else {
-    crashpad_static_library(target_name) {
+    static_library(target_name) {
       forward_variables_from(invoker, "*", [ "configs" ])
-      if (!defined(configs)) {
+      if (!(defined(configs))) {
         configs = []
       }
       if (defined(invoker.configs)) {
@@ -116,6 +116,8 @@ compat_target("compat") {
 
   if (crashpad_is_android) {
     sources += [
+      "android/android/api-level.cc",
+      "android/android/api-level.h",
       "android/dlfcn_internal.cc",
       "android/dlfcn_internal.h",
       "android/elf.h",
@@ -164,11 +166,7 @@ compat_target("compat") {
     "..:crashpad_config",
   ]
 
-  if (!crashpad_is_win) {
-    public_deps = [ "../third_party/mini_chromium:base" ]
-  }
-
-  deps = [ "../util:no_cfi_icall" ]
+  deps = []
 
   if (!crashpad_is_mac) {
     deps += [ "../third_party/xnu" ]
@@ -180,5 +178,9 @@ compat_target("compat") {
 
   if (!crashpad_is_linux && !crashpad_is_android && !crashpad_is_fuchsia) {
     deps += [ "../third_party/glibc" ]
+  }
+
+  if (crashpad_is_in_fuchsia) {
+    configs = [ "//build/config:Wno-conversion" ]
   }
 }

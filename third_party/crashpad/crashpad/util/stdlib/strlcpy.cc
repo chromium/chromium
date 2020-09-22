@@ -28,11 +28,9 @@ namespace crashpad {
 size_t c16lcpy(base::char16* destination,
                const base::char16* source,
                size_t length) {
-  const wchar_t* wsource = reinterpret_cast<const wchar_t*>(source);
-  HRESULT result =
-      StringCchCopyW(reinterpret_cast<wchar_t*>(destination), length, wsource);
+  HRESULT result = StringCchCopyW(destination, length, source);
   CHECK(result == S_OK || result == STRSAFE_E_INSUFFICIENT_BUFFER);
-  return wcslen(wsource);
+  return wcslen(source);
 }
 
 #elif defined(WCHAR_T_IS_UTF32)
