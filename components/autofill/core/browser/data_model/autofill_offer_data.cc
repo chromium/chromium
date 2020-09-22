@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 
+#include <algorithm>
+
 namespace autofill {
 
 AutofillOfferData::AutofillOfferData() = default;
