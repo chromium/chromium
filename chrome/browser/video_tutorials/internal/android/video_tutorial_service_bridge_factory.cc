@@ -6,6 +6,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/ui/webui/video_tutorials/video_player_source.h"
 #include "chrome/browser/video_tutorials/internal/android/video_tutorial_service_bridge.h"
 #include "chrome/browser/video_tutorials/internal/jni_headers/VideoTutorialServiceFactory_jni.h"
 #include "chrome/browser/video_tutorials/video_tutorial_service_factory.h"
@@ -17,6 +18,10 @@ JNI_VideoTutorialServiceFactory_GetForProfile(
     const base::android::JavaParamRef<jobject>& j_profile) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   ProfileKey* profile_key = profile->GetProfileKey();
+
+  // TODO(shaktisahu): Move this to VideoTutorialServiceFactory.
+  content::WebUIDataSource::Add(
+      profile, video_tutorials::CreateVideoPlayerUntrustedDataSource());
 
   // Return null if there is no reasonable context for the provided Java
   // profile.

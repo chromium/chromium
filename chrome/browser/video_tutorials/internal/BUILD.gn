@@ -32,6 +32,7 @@ source_set("internal") {
     "//chrome/browser/video_tutorials:public",
     "//chrome/browser/video_tutorials/proto",
     "//components/leveldb_proto",
+    "//content/public/browser",
   ]
 
   if (is_android) {

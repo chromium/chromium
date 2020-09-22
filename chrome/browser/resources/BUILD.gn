@@ -88,6 +88,7 @@ if (enable_js_type_check) {
         "internals/query_tiles:closure_compile",
         "offline_pages:closure_compile",
         "snippets_internals:closure_compile",
+        "video_tutorials:closure_compile",
         "webapks:closure_compile",
       ]
     }
