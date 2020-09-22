@@ -2651,7 +2651,7 @@ TEST_P(QuicNetworkTransactionTest,
   int packet_num = 1;
   quic_data.AddWrite(SYNCHRONOUS,
                      client_maker_->MakeDummyCHLOPacket(packet_num++));  // CHLO
-  // Retranmit the handshake messages.
+  // Retransmit the handshake messages.
   quic_data.AddWrite(SYNCHRONOUS,
                      client_maker_->MakeDummyCHLOPacket(packet_num++));
   quic_data.AddWrite(SYNCHRONOUS,
@@ -2762,7 +2762,7 @@ TEST_P(QuicNetworkTransactionTest,
   int packet_num = 1;
   quic_data.AddWrite(SYNCHRONOUS,
                      client_maker_->MakeDummyCHLOPacket(packet_num++));  // CHLO
-  // Retranmit the handshake messages.
+  // Retransmit the handshake messages.
   quic_data.AddWrite(SYNCHRONOUS,
                      client_maker_->MakeDummyCHLOPacket(packet_num++));
   quic_data.AddWrite(SYNCHRONOUS,
@@ -2902,7 +2902,7 @@ TEST_P(
   int packet_num = 1;
   quic_data.AddWrite(SYNCHRONOUS,
                      client_maker_->MakeDummyCHLOPacket(packet_num++));  // CHLO
-  // Retranmit the handshake messages.
+  // Retransmit the handshake messages.
   quic_data.AddWrite(SYNCHRONOUS,
                      client_maker_->MakeDummyCHLOPacket(packet_num++));
   quic_data.AddWrite(SYNCHRONOUS,
@@ -3032,7 +3032,7 @@ TEST_P(QuicNetworkTransactionTest,
   int packet_num = 1;
   quic_data.AddWrite(SYNCHRONOUS,
                      client_maker_->MakeDummyCHLOPacket(packet_num++));  // CHLO
-  // Retranmit the handshake messages.
+  // Retransmit the handshake messages.
   quic_data.AddWrite(SYNCHRONOUS,
                      client_maker_->MakeDummyCHLOPacket(packet_num++));
   quic_data.AddWrite(SYNCHRONOUS,
@@ -9910,6 +9910,78 @@ TEST_P(QuicNetworkTransactionTest, AllowHTTP1UploadFailH1AndResumeQuic) {
   socket_data->Resume();
   base::RunLoop().RunUntilIdle();
   CheckResponseData(&trans, "hello!");
+}
+
+TEST_P(QuicNetworkTransactionTest, IncorrectHttp3GoAway) {
+  if (!version_.HasIetfQuicFrames()) {
+    return;
+  }
+
+  context_.params()->retry_without_alt_svc_on_quic_errors = false;
+
+  MockQuicData mock_quic_data(version_);
+  int write_packet_number = 1;
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS, ConstructInitialSettingsPacket(write_packet_number++));
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructClientRequestHeadersPacket(
+          write_packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
+          true, true, GetRequestHeaders("GET", "https", "/")));
+
+  int read_packet_number = 1;
+  mock_quic_data.AddRead(
+      ASYNC, server_maker_.MakeInitialSettingsPacket(read_packet_number++));
+  // The GOAWAY frame sent by the server MUST have a stream ID corresponding to
+  // a client-initiated bidirectional stream.  Any other kind of stream ID
+  // should cause the client to close the connection.
+  quic::GoAwayFrame goaway{3};
+  std::unique_ptr<char[]> goaway_buffer;
+  auto goaway_length =
+      quic::HttpEncoder::SerializeGoAwayFrame(goaway, &goaway_buffer);
+  const quic::QuicStreamId control_stream_id =
+      quic::QuicUtils::GetFirstUnidirectionalStreamId(
+          version_.transport_version, quic::Perspective::IS_SERVER);
+  mock_quic_data.AddRead(
+      ASYNC,
+      ConstructServerDataPacket(
+          read_packet_number++, control_stream_id, false, false,
+          quiche::QuicheStringPiece(goaway_buffer.get(), goaway_length)));
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructClientAckAndConnectionClosePacket(
+          write_packet_number++, 2, 4, quic::QUIC_HTTP_GOAWAY_INVALID_STREAM_ID,
+          "GOAWAY with invalid stream ID", 0));
+  mock_quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  // In order for a new QUIC session to be established via alternate-protocol
+  // without racing an HTTP connection, we need the host resolution to happen
+  // synchronously.  Of course, even though QUIC *could* perform a 0-RTT
+  // connection to the the server, in this test we require confirmation
+  // before encrypting so the HTTP job will still start.
+  host_resolver_.set_synchronous_mode(true);
+  host_resolver_.rules()->AddIPLiteralRule("mail.example.org", "192.168.0.1",
+                                           "");
+
+  CreateSession();
+  AddQuicAlternateProtocolMapping(MockCryptoClientStream::CONFIRM_HANDSHAKE);
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session_.get());
+  TestCompletionCallback callback;
+  int rv = trans.Start(&request_, callback.callback(), net_log_.bound());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  crypto_client_stream_factory_.last_stream()
+      ->NotifySessionOneRttKeyAvailable();
+  EXPECT_THAT(callback.WaitForResult(), IsError(ERR_QUIC_PROTOCOL_ERROR));
+
+  EXPECT_TRUE(mock_quic_data.AllWriteDataConsumed());
+  EXPECT_TRUE(mock_quic_data.AllReadDataConsumed());
+
+  NetErrorDetails details;
+  trans.PopulateNetErrorDetails(&details);
+  EXPECT_THAT(details.quic_connection_error,
+              quic::test::IsError(quic::QUIC_HTTP_GOAWAY_INVALID_STREAM_ID));
 }
 
 // TODO(yoichio):  Add the TCP job reuse case. See crrev.com/c/2174099.

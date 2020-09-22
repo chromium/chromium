@@ -72,6 +72,10 @@ class MockCryptoClientStream : public quic::QuicCryptoClientStream,
   quic::CryptoMessageParser* crypto_message_parser() override;
   void OnOneRttPacketAcknowledged() override;
   bool EarlyDataAccepted() const override;
+  // Override QuicCryptoClientStream::SetServerApplicationStateForResumption()
+  // to avoid tripping over the DCHECK on handshaker state.
+  void SetServerApplicationStateForResumption(
+      std::unique_ptr<quic::ApplicationState> application_state) override {}
 
   // Notify session that 1-RTT key is available.
   void NotifySessionOneRttKeyAvailable();
