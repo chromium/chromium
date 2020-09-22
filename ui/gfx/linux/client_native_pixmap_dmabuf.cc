@@ -104,7 +104,7 @@ bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
 #endif
 
   bool disable_yuv_biplanar = true;
-#if defined(OS_CHROMEOS)
+#if defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMECAST)
   // IsConfigurationSupported(SCANOUT_CPU_READ_WRITE) is used by the renderer
   // to tell whether the platform supports sampling a given format. Zero-copy
   // video capture and encoding requires gfx::BufferFormat::YUV_420_BIPLANAR to
