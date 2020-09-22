@@ -20,6 +20,19 @@ struct NormalizedKeywordSearchTermVisit {
   NormalizedKeywordSearchTermVisit() = default;
   ~NormalizedKeywordSearchTermVisit();
 
+  // Returns the frecency score of the visit based on the following formula:
+  //            (frequency ^ frequency_exponent) * recency_decay_unit_in_seconds
+  // frecency = ————————————————————————————————————————————————————————————————
+  //                   recency_in_seconds + recency_decay_unit_in_seconds
+  // This score combines frequency and recency of the visit favoring ones that
+  // are more frequent and more recent (see go/local-zps-frecency-ranking).
+  // |recency_decay_unit_sec| is the number of seconds until the recency
+  // component of the score decays to half. |frequency_exponent| is factor by
+  // which the frequency of the visit is exponentiated.
+  double GetFrecency(base::Time now,
+                     int recency_decay_unit_sec,
+                     double frequency_exponent) const;
+
   base::string16 normalized_term;     // The search term, in lower case and with
                                       // extra whitespaces collapsed.
   int visits{0};                      // The visit count.
