@@ -20,20 +20,20 @@ HoldingSpaceItemScreenshotView::HoldingSpaceItemScreenshotView(
     : HoldingSpaceItemView(item) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  image_ =
-      AddChildView(std::make_unique<tray::RoundedImageView>(kTrayItemSize / 2));
+  image_ = AddChildView(
+      std::make_unique<tray::RoundedImageView>(kHoldingSpaceCornerRadius));
 
   // Subscribe to be notified of changes to `item_`'s image.
-  image_subscription_ =
-      item->image().AddImageSkiaChangedCallback(base::BindRepeating(
-          &HoldingSpaceItemScreenshotView::Update, base::Unretained(this)));
+  image_subscription_ = item->image().AddImageSkiaChangedCallback(
+      base::BindRepeating(&HoldingSpaceItemScreenshotView::UpdateImage,
+                          base::Unretained(this)));
 
-  Update();
+  UpdateImage();
 }
 
 HoldingSpaceItemScreenshotView::~HoldingSpaceItemScreenshotView() = default;
 
-void HoldingSpaceItemScreenshotView::Update() {
+void HoldingSpaceItemScreenshotView::UpdateImage() {
   image_->SetImage(item()->image().image_skia(), kHoldingSpaceScreenshotSize);
 }
 

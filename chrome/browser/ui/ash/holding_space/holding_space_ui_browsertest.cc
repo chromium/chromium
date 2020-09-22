@@ -203,6 +203,11 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, OpenItem) {
   std::vector<base::OnceCallback<void(const views::View*)>> user_interactions;
   user_interactions.push_back(base::BindOnce(&DoubleClick));
   user_interactions.push_back(base::BindOnce(&GestureTap));
+  user_interactions.push_back(base::BindOnce([](const views::View* view) {
+    while (!view->HasFocus())
+      PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  }));
 
   for (auto& user_interaction : user_interactions) {
     // Show holding space UI and verify a holding space item view exists.

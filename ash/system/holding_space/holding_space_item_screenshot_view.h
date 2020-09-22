@@ -30,7 +30,7 @@ class ASH_EXPORT HoldingSpaceItemScreenshotView : public HoldingSpaceItemView {
   ~HoldingSpaceItemScreenshotView() override;
 
  private:
-  void Update();
+  void UpdateImage();
 
   tray::RoundedImageView* image_ = nullptr;
 

@@ -16,6 +16,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 namespace ash {
@@ -42,7 +44,14 @@ HoldingSpaceItemView::HoldingSpaceItemView(const HoldingSpaceItem* item)
   layer()->SetFillsBoundsOpaquely(false);
 
   GetViewAccessibility().OverrideName(item->text());
+
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  views::FocusRing* focus_ring = views::FocusRing::Install(this);
+  focus_ring->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
+
+  // Focus ring and ink drop layers should match the corner radius of this view.
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                kHoldingSpaceCornerRadius);
 }
 
 HoldingSpaceItemView::~HoldingSpaceItemView() = default;
@@ -58,6 +67,14 @@ SkColor HoldingSpaceItemView::GetInkDropBaseColor() const {
 void HoldingSpaceItemView::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() == ui::ET_GESTURE_TAP)
     OpenItem(*item());
+}
+
+bool HoldingSpaceItemView::OnKeyPressed(const ui::KeyEvent& event) {
+  if (event.key_code() == ui::KeyboardCode::VKEY_RETURN) {
+    OpenItem(*item());
+    return true;
+  }
+  return false;
 }
 
 bool HoldingSpaceItemView::OnMousePressed(const ui::MouseEvent& event) {

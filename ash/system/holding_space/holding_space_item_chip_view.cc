@@ -23,7 +23,6 @@
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
@@ -39,8 +38,8 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(const HoldingSpaceItem* item)
 
   SetPreferredSize(gfx::Size(kHoldingSpaceChipWidth, kHoldingSpaceChipHeight));
 
-  image_ =
-      AddChildView(std::make_unique<tray::RoundedImageView>(kTrayItemSize / 2));
+  image_ = AddChildView(
+      std::make_unique<tray::RoundedImageView>(kHoldingSpaceChipIconSize / 2));
 
   label_ = AddChildView(std::make_unique<views::Label>(item->text()));
   label_->SetElideBehavior(gfx::ELIDE_MIDDLE);
@@ -54,16 +53,12 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(const HoldingSpaceItem* item)
   SetBackground(views::CreateRoundedRectBackground(
       AshColorProvider::Get()->GetControlsLayerColor(
           AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive),
-      kHoldingSpaceChipCornerRadius));
+      kHoldingSpaceCornerRadius));
 
   SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
   SetInkDropVisibleOpacity(
       ShelfConfig::Get()->GetInkDropRippleAttributes().inkdrop_opacity);
   SetNotifyEnterExitOnChild(true);
-
-  // Ink drop layers should be clipped to match the corner radius of this view.
-  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                kHoldingSpaceChipCornerRadius);
 
   // Subscribe to be notified of changes to `item_`'s image.
   image_subscription_ =
