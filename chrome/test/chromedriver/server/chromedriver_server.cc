@@ -325,7 +325,7 @@ int main(int argc, char *argv[]) {
         "readable-timestamp",
             "add readable timestamps to log",
         "enable-chrome-logs",
-            "show logs from the browser (overrides other logging options)"
+            "show logs from the browser (overrides other logging options)",
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
         "disable-dev-shm-usage",
             "do not use /dev/shm "
