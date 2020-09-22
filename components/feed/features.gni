@@ -6,5 +6,5 @@ import("//chrome/android/channel.gni")
 
 declare_args() {
   enable_feed_in_chrome = is_android
-  enable_feed_v2 = false
+  enable_feed_v2 = is_android && android_channel != "stable"
 }
