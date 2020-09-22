@@ -14,7 +14,8 @@
  * Type alias for the SystemDataProviderInterface.
  * TODO(zentaro): Replace with a real mojo type when implemented.
  * @typedef {{
- *   getSystemInfo: !function(): !Promise<!SystemInfo>
+ *   getBatteryInfo: !function(): !Promise<!BatteryInfo>,
+ *   getSystemInfo: !function(): !Promise<!SystemInfo>,
  * }}
  */
 export let SystemDataProviderInterface;
@@ -47,3 +48,12 @@ export let VersionInfo;
  * }}
  */
 export let SystemInfo;
+
+/**
+ * Type alias for BatteryInfo.
+ * @typedef {{
+ *   charge_full_design_milliamp_hours: number,
+ *   manufacturer: string,
+ * }}
+ */
+export let BatteryInfo;

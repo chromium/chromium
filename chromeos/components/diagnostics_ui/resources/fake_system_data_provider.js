@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SystemInfo} from './diagnostics_types.js';
+import {BatteryInfo, SystemInfo} from './diagnostics_types.js';
 import {FakeMethodResolver} from './fake_method_resolver.js';
 
 /**
@@ -17,6 +17,7 @@ export class FakeSystemDataProvider {
 
     // Setup method resolvers.
     this.methods_.register('getSystemInfo');
+    this.methods_.register('getBatteryInfo');
   }
 
   /**
@@ -32,5 +33,21 @@ export class FakeSystemDataProvider {
    */
   setFakeSystemInfo(systemInfo) {
     this.methods_.setResult('getSystemInfo', systemInfo);
+  }
+
+  /**
+   * Implements SystemDataProviderInterface.GetBatteryInfo.
+   * @return {!Promise<!BatteryInfo>}
+   */
+  getBatteryInfo() {
+    return this.methods_.resolveMethod('getBatteryInfo');
+  }
+
+  /**
+   * Sets the value that will be returned when calling getBatteryInfo().
+   * @param {!BatteryInfo} batteryInfo
+   */
+  setFakeBatteryInfo(batteryInfo) {
+    this.methods_.setResult('getBatteryInfo', batteryInfo);
   }
 }

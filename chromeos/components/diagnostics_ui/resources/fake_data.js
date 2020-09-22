@@ -4,6 +4,12 @@
 
 import {SystemInfo} from './diagnostics_types.js'
 
+/* @type {!BatteryInfo} */
+export const fakeBatteryInfo = {
+  charge_full_design_milliamp_hours: 6000,
+  manufacturer: 'BatterCorp USA',
+};
+
 /* @type {!SystemInfo} */
 export const fakeSystemInfo = {
   board_name: 'CrOS Board',

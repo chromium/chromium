@@ -7,7 +7,7 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://diagnostics/diagnostics_app.js';
 
 import {SystemDataProviderInterface} from 'chrome://diagnostics/diagnostics_types.js';
-import {fakeSystemInfo} from 'chrome://diagnostics/fake_data.js';
+import {fakeBatteryInfo, fakeSystemInfo} from 'chrome://diagnostics/fake_data.js';
 import {FakeMethodResolver} from 'chrome://diagnostics/fake_method_resolver.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
@@ -115,8 +115,15 @@ suite('BatteryStatusCardTest', () => {
     provider = null;
   });
 
-  function initializeBatteryStatusCard() {
+  /**
+   * @param {!BatteryInfo} batteryInfo
+   * @return {!Promise}
+   */
+  function initializeBatteryStatusCard(batteryInfo) {
     assertFalse(!!batteryStatusElement);
+
+    // Initialize the fake data.
+    provider.setFakeBatteryInfo(batteryInfo);
 
     // Add the battery status card to the DOM.
     batteryStatusElement = document.createElement('battery-status-card');
@@ -126,11 +133,14 @@ suite('BatteryStatusCardTest', () => {
     return flushTasks();
   }
 
-  test('BatterStatusCardPopulated', () => {
-    return initializeBatteryStatusCard().then(() => {
+  test('BatteryStatusCardPopulated', () => {
+    return initializeBatteryStatusCard(fakeBatteryInfo).then(() => {
       // TODO(zentaro): Update when strings are finalized.
       assertEquals(
           'Battery Status', batteryStatusElement.$$('#cardTitle').textContent);
+      assertEquals(
+          fakeBatteryInfo.manufacturer,
+          batteryStatusElement.$$('#manufacturer').textContent);
     });
   });
 });
@@ -322,6 +332,13 @@ suite('FakeSystemDataProviderTest', () => {
     provider.setFakeSystemInfo(expected);
     return provider.getSystemInfo().then((systemInfo) => {
       assertDeepEquals(expected, systemInfo);
+    });
+  });
+
+  test('GetBatteryInfo', () => {
+    provider.setFakeBatteryInfo(fakeBatteryInfo);
+    return provider.getBatteryInfo().then((batteryInfo) => {
+      assertDeepEquals(fakeBatteryInfo, batteryInfo);
     });
   });
 });

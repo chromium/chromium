@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {SystemDataProviderInterface, SystemInfo} from './diagnostics_types.js'
-import {fakeSystemInfo} from './fake_data.js'
+import {fakeBatteryInfo, fakeSystemInfo} from './fake_data.js'
 import {FakeSystemDataProvider} from './fake_system_data_provider.js'
 
 /**
@@ -21,7 +21,8 @@ function setupFakeSystemDataProvider_() {
   // Create provider.
   let provider = new FakeSystemDataProvider();
 
-  // Setup SystemInfo
+  // Setup fake method data.
+  provider.setFakeBatteryInfo(fakeBatteryInfo);
   provider.setFakeSystemInfo(fakeSystemInfo);
 
   // Set the fake provider.
