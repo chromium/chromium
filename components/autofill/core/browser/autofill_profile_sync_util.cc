@@ -99,7 +99,7 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   specifics->set_is_client_validity_states_updated(
       entry.is_client_validity_states_updated());
 
-  // Set repeated fields.
+  // Set name-related values.
   specifics->add_name_honorific(
       TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(NAME_HONORIFIC_PREFIX))));
   specifics->add_name_first(
@@ -117,6 +117,7 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   specifics->add_name_full(
       TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(NAME_FULL))));
 
+  // Set address-related statuses.
   specifics->add_name_honorific_status(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(NAME_HONORIFIC_PREFIX)));
@@ -138,14 +139,15 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   specifics->add_name_full_status(ConvertProfileToSpecificsVerificationStatus(
       entry.GetVerificationStatus(NAME_FULL)));
 
+  // Set email, phone and company values.
   specifics->add_email_address(
       TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(EMAIL_ADDRESS))));
   specifics->add_phone_home_whole_number(
       TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(PHONE_HOME_WHOLE_NUMBER))));
-
-  // Set simple single-valued fields.
   specifics->set_company_name(
       TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(COMPANY_NAME))));
+
+  // Set address-related values.
   specifics->set_address_home_city(
       TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_CITY))));
   specifics->set_address_home_state(
@@ -164,8 +166,6 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
       TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_LINE1))));
   specifics->set_address_home_line2(
       TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_LINE2))));
-
-  // The following entries are only popluated by Sync.
   specifics->set_address_home_thoroughfare_name(
       UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_STREET_NAME)));
   specifics->set_address_home_dependent_thoroughfare_name(
@@ -176,6 +176,44 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
       UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_PREMISE_NAME)));
   specifics->set_address_home_thoroughfare_number(
       UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER)));
+
+  // Set address-related statuses.
+  specifics->set_address_home_city_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(ADDRESS_HOME_CITY)));
+  specifics->set_address_home_state_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(ADDRESS_HOME_STATE)));
+  specifics->set_address_home_zip_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(ADDRESS_HOME_ZIP)));
+  specifics->set_address_home_sorting_code_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(ADDRESS_HOME_SORTING_CODE)));
+  specifics->set_address_home_dependent_locality_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(ADDRESS_HOME_DEPENDENT_LOCALITY)));
+  specifics->set_address_home_country_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(ADDRESS_HOME_COUNTRY)));
+  specifics->set_address_home_street_address_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(ADDRESS_HOME_STREET_ADDRESS)));
+  specifics->set_address_home_thoroughfare_name_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(ADDRESS_HOME_STREET_NAME)));
+  specifics->set_address_home_dependent_thoroughfare_name_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(ADDRESS_HOME_DEPENDENT_STREET_NAME)));
+  specifics->set_address_home_subpremise_name_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(ADDRESS_HOME_SUBPREMISE)));
+  specifics->set_address_home_premise_name_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(ADDRESS_HOME_PREMISE_NAME)));
+  specifics->set_address_home_thoroughfare_number_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER)));
 
   return entity_data;
 }
@@ -293,16 +331,33 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
 
   // Set simple single-valued fields.
   profile->SetRawInfo(COMPANY_NAME, UTF8ToUTF16(specifics.company_name()));
-  profile->SetRawInfo(ADDRESS_HOME_CITY,
-                      UTF8ToUTF16(specifics.address_home_city()));
-  profile->SetRawInfo(ADDRESS_HOME_STATE,
-                      UTF8ToUTF16(specifics.address_home_state()));
-  profile->SetRawInfo(ADDRESS_HOME_ZIP,
-                      UTF8ToUTF16(specifics.address_home_zip()));
-  profile->SetRawInfo(ADDRESS_HOME_SORTING_CODE,
-                      UTF8ToUTF16(specifics.address_home_sorting_code()));
-  profile->SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY,
-                      UTF8ToUTF16(specifics.address_home_dependent_locality()));
+
+  profile->SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_CITY, UTF8ToUTF16(specifics.address_home_city()),
+      ConvertSpecificsToProfileVerificationStatus(
+          specifics.address_home_city_status()));
+
+  profile->SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STATE, UTF8ToUTF16(specifics.address_home_state()),
+      ConvertSpecificsToProfileVerificationStatus(
+          specifics.address_home_state_status()));
+
+  profile->SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_ZIP, UTF8ToUTF16(specifics.address_home_zip()),
+      ConvertSpecificsToProfileVerificationStatus(
+          specifics.address_home_zip_status()));
+
+  profile->SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_SORTING_CODE,
+      UTF8ToUTF16(specifics.address_home_sorting_code()),
+      ConvertSpecificsToProfileVerificationStatus(
+          specifics.address_home_sorting_code_status()));
+
+  profile->SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_DEPENDENT_LOCALITY,
+      UTF8ToUTF16(specifics.address_home_dependent_locality()),
+      ConvertSpecificsToProfileVerificationStatus(
+          specifics.address_home_dependent_locality_status()));
 
   // Update the country field, which can contain either a country code (if set
   // by a newer version of Chrome), or a country name (if set by an older
@@ -312,14 +367,21 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
       base::ASCIIToUTF16(specifics.address_home_country());
   std::string country_code =
       CountryNames::GetInstance()->GetCountryCode(country_name_or_code);
-  profile->SetRawInfo(ADDRESS_HOME_COUNTRY, UTF8ToUTF16(country_code));
+
+  profile->SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_COUNTRY, UTF8ToUTF16(country_code),
+      ConvertSpecificsToProfileVerificationStatus(
+          specifics.address_home_country_status()));
 
   // Set either the deprecated subparts (line1 & line2) or the full address
   // (street_address) if it is present. This is needed because all the address
   // fields are backed by the same storage.
   if (specifics.has_address_home_street_address()) {
-    profile->SetRawInfo(ADDRESS_HOME_STREET_ADDRESS,
-                        UTF8ToUTF16(specifics.address_home_street_address()));
+    profile->SetRawInfoWithVerificationStatus(
+        ADDRESS_HOME_STREET_ADDRESS,
+        UTF8ToUTF16(specifics.address_home_street_address()),
+        ConvertSpecificsToProfileVerificationStatus(
+            specifics.address_home_street_address_status()));
   } else {
     profile->SetRawInfo(ADDRESS_HOME_LINE1,
                         UTF8ToUTF16(specifics.address_home_line1()));

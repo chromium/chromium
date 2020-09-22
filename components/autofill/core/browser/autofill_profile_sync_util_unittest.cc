@@ -42,6 +42,7 @@ AutofillProfile ConstructCompleteProfile() {
   profile.set_use_count(7);
   profile.set_use_date(base::Time::FromTimeT(1423182152));
 
+  // Set testing values and statuses for the name.
   profile.SetRawInfoWithVerificationStatus(
       NAME_HONORIFIC_PREFIX, ASCIIToUTF16(""), VerificationStatus::kNoStatus);
   profile.SetRawInfoWithVerificationStatus(NAME_FULL,
@@ -60,30 +61,60 @@ AutofillProfile ConstructCompleteProfile() {
   profile.SetRawInfoWithVerificationStatus(
       NAME_LAST_CONJUNCTION, ASCIIToUTF16("o"), VerificationStatus::kParsed);
 
+  // Set email, phone and company testing values.
   profile.SetRawInfo(EMAIL_ADDRESS, ASCIIToUTF16("user@example.com"));
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, ASCIIToUTF16("1.800.555.1234"));
+  profile.SetRawInfo(COMPANY_NAME, ASCIIToUTF16("Google, Inc."));
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
+                                           ASCIIToUTF16("123 Fake St.\n"
+                                                        "Apt. 42"),
+                                           VerificationStatus::kObserved);
 
-  profile.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, ASCIIToUTF16("123 Fake St.\n"
-                                                               "Apt. 42"));
+  // Set testing values and statuses for the address.
   EXPECT_EQ(ASCIIToUTF16("123 Fake St."),
             profile.GetRawInfo(ADDRESS_HOME_LINE1));
   EXPECT_EQ(ASCIIToUTF16("Apt. 42"), profile.GetRawInfo(ADDRESS_HOME_LINE2));
 
-  profile.SetRawInfo(COMPANY_NAME, ASCIIToUTF16("Google, Inc."));
-  profile.SetRawInfo(ADDRESS_HOME_CITY, ASCIIToUTF16("Mountain View"));
-  profile.SetRawInfo(ADDRESS_HOME_STATE, ASCIIToUTF16("California"));
-  profile.SetRawInfo(ADDRESS_HOME_ZIP, ASCIIToUTF16("94043"));
-  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, ASCIIToUTF16("US"));
-  profile.SetRawInfo(ADDRESS_HOME_SORTING_CODE, ASCIIToUTF16("CEDEX"));
-  profile.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY,
-                     ASCIIToUTF16("Santa Clara"));
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_CITY,
+                                           ASCIIToUTF16("Mountain View"),
+                                           VerificationStatus::kObserved);
 
-  profile.SetRawInfo(ADDRESS_HOME_STREET_NAME, ASCIIToUTF16("Street Name"));
-  profile.SetRawInfo(ADDRESS_HOME_DEPENDENT_STREET_NAME,
-                     ASCIIToUTF16("Dependent Street Name"));
-  profile.SetRawInfo(ADDRESS_HOME_HOUSE_NUMBER, ASCIIToUTF16("House Number"));
-  profile.SetRawInfo(ADDRESS_HOME_SUBPREMISE, ASCIIToUTF16("Subpremise"));
-  profile.SetRawInfo(ADDRESS_HOME_PREMISE_NAME, ASCIIToUTF16("Premise"));
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STATE,
+                                           ASCIIToUTF16("California"),
+                                           VerificationStatus::kObserved);
+
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_ZIP, ASCIIToUTF16("94043"), VerificationStatus::kObserved);
+
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_COUNTRY, ASCIIToUTF16("US"), VerificationStatus::kObserved);
+
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_SORTING_CODE,
+                                           ASCIIToUTF16("CEDEX"),
+                                           VerificationStatus::kObserved);
+
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_DEPENDENT_LOCALITY,
+                                           ASCIIToUTF16("Santa Clara"),
+                                           VerificationStatus::kObserved);
+
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_NAME,
+                                           ASCIIToUTF16("Street Name"),
+                                           VerificationStatus::kFormatted);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_DEPENDENT_STREET_NAME, ASCIIToUTF16("Dependent Street Name"),
+      VerificationStatus::kFormatted);
+
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER,
+                                           ASCIIToUTF16("House Number"),
+                                           VerificationStatus::kFormatted);
+
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_SUBPREMISE,
+                                           ASCIIToUTF16("Subpremise"),
+                                           VerificationStatus::kFormatted);
+
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_PREMISE_NAME,
+                                           ASCIIToUTF16("Premise"),
+                                           VerificationStatus::kFormatted);
   profile.set_language_code("en");
   profile.SetClientValidityFromBitfieldValue(1984);
   profile.set_is_client_validity_states_updated(true);
@@ -101,63 +132,109 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   specifics.set_use_count(7);
   specifics.set_use_date(1423182152);
 
+  // Set values and statuses for the names.
   specifics.add_name_honorific("");
-  specifics.add_name_first("John");
-  specifics.add_name_middle("K.");
-  specifics.add_name_last("Doe");
-  specifics.add_name_last_first("D");
-  specifics.add_name_last_second("e");
-  specifics.add_name_last_conjunction("o");
-  specifics.add_name_full("John K. Doe");
-
   specifics.add_name_honorific_status(
       AutofillProfileSpecifics::VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+
+  specifics.add_name_first("John");
   specifics.add_name_first_status(
       AutofillProfileSpecifics::VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
+  specifics.add_name_middle("K.");
   specifics.add_name_middle_status(
       AutofillProfileSpecifics::VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
+  specifics.add_name_last("Doe");
   specifics.add_name_last_status(
       AutofillProfileSpecifics::VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_FORMATTED);
+
+  specifics.add_name_last_first("D");
   specifics.add_name_last_first_status(
       AutofillProfileSpecifics::VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.add_name_last_second("e");
   specifics.add_name_last_second_status(
       AutofillProfileSpecifics::VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.add_name_last_conjunction("o");
   specifics.add_name_last_conjunction_status(
       AutofillProfileSpecifics::VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.add_name_full("John K. Doe");
   specifics.add_name_full_status(
       AutofillProfileSpecifics::VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_USER_VERIFIED);
 
+  // Set testing values for email, phone and company.
   specifics.add_email_address("user@example.com");
-
   specifics.add_phone_home_whole_number("1.800.555.1234");
+  specifics.set_company_name("Google, Inc.");
 
+  // Set values and statuses for the address.
+  // Address lines are derived from the home street address and do not have an
+  // independent status.
   specifics.set_address_home_line1("123 Fake St.");
   specifics.set_address_home_line2("Apt. 42");
   specifics.set_address_home_street_address(
       "123 Fake St.\n"
       "Apt. 42");
+  specifics.set_address_home_street_address_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus::
+          AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
   specifics.set_address_home_thoroughfare_name("Street Name");
+  specifics.set_address_home_thoroughfare_name_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
+
   specifics.set_address_home_dependent_thoroughfare_name(
       "Dependent Street Name");
-  specifics.set_address_home_thoroughfare_number("House Number");
-  specifics.set_address_home_subpremise_name("Subpremise");
-  specifics.set_address_home_premise_name("Premise");
+  specifics.set_address_home_dependent_thoroughfare_name_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
 
-  specifics.set_company_name("Google, Inc.");
+  specifics.set_address_home_thoroughfare_number("House Number");
+  specifics.set_address_home_thoroughfare_number_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
+
+  specifics.set_address_home_subpremise_name("Subpremise");
+  specifics.set_address_home_subpremise_name_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
+
+  specifics.set_address_home_premise_name("Premise");
+  specifics.set_address_home_premise_name_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
+
   specifics.set_address_home_city("Mountain View");
+  specifics.set_address_home_city_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
   specifics.set_address_home_state("California");
+  specifics.set_address_home_state_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
   specifics.set_address_home_zip("94043");
+  specifics.set_address_home_zip_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
   specifics.set_address_home_country("US");
+  specifics.set_address_home_country_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
   specifics.set_address_home_sorting_code("CEDEX");
+  specifics.set_address_home_sorting_code_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
   specifics.set_address_home_dependent_locality("Santa Clara");
+  specifics.set_address_home_dependent_locality_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
   specifics.set_address_home_language_code("en");
   specifics.set_validity_state_bitfield(1984);
   specifics.set_is_client_validity_states_updated(true);
@@ -181,8 +258,15 @@ class AutofillProfileSyncUtilTest : public testing::Test {
 // the server.
 TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile) {
   base::test::ScopedFeatureList structured_names_feature;
-  structured_names_feature.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInNames);
+  // With those two features enabled, the AutofillProfile supports all tokens
+  // and statuses assignable in the specifics. If one of those features is
+  // disabled, for some tokens
+  // AutofillProfile::GetRawInfo(AutofillProfile::SetRawInfo()) is not the
+  // identify function. The same is true for the verification status.
+  structured_names_feature.InitWithFeatures(
+      {features::kAutofillEnableSupportForMoreStructureInAddresses,
+       features::kAutofillEnableSupportForMoreStructureInNames},
+      {});
 
   AutofillProfile profile = ConstructCompleteProfile();
   AutofillProfileSpecifics specifics = ConstructCompleteSpecifics();
@@ -199,8 +283,15 @@ TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile) {
 // Test that fields not set for the input are empty in the output.
 TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile_Empty) {
   base::test::ScopedFeatureList structured_names_feature;
-  structured_names_feature.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInNames);
+  // With those two features enabled, the AutofillProfile supports all tokens
+  // and statuses assignable in the specifics. If one of those features is
+  // disabled, for some tokens
+  // AutofillProfile::GetRawInfo(AutofillProfile::SetRawInfo()) is not the
+  // identify function. The same is true for the verification status.
+  structured_names_feature.InitWithFeatures(
+      {features::kAutofillEnableSupportForMoreStructureInAddresses,
+       features::kAutofillEnableSupportForMoreStructureInNames},
+      {});
 
   AutofillProfile profile(kGuid, std::string());
   ASSERT_FALSE(profile.HasRawInfo(NAME_FULL));
