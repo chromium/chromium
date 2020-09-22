@@ -53,8 +53,8 @@ class WebExternalWidgetImpl : public WebExternalWidget,
   void SetCursor(const ui::Cursor& cursor) override;
   bool HandlingInputEvent() override;
   void SetHandlingInputEvent(bool handling) override;
-  void ProcessInputEventSynchronously(const WebCoalescedInputEvent&,
-                                      HandledEventCallback) override;
+  void ProcessInputEventSynchronouslyForTesting(const WebCoalescedInputEvent&,
+                                                HandledEventCallback) override;
   void DidOverscrollForTesting(
       const gfx::Vector2dF& overscroll_delta,
       const gfx::Vector2dF& accumulated_overscroll,

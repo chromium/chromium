@@ -160,7 +160,7 @@ class InteractiveRenderWidget : public RenderWidget {
 
   void SendInputEvent(const blink::WebInputEvent& event,
                       blink::WebWidget::HandledEventCallback callback) {
-    GetWebWidget()->ProcessInputEventSynchronously(
+    GetWebWidget()->ProcessInputEventSynchronouslyForTesting(
         blink::WebCoalescedInputEvent(event.Clone(), {}, {}, ui::LatencyInfo()),
         std::move(callback));
   }

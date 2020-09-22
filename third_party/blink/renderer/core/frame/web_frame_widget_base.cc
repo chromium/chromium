@@ -1143,7 +1143,7 @@ void WebFrameWidgetBase::SetHandlingInputEvent(bool handling) {
   widget_base_->input_handler().set_handling_input_event(handling);
 }
 
-void WebFrameWidgetBase::ProcessInputEventSynchronously(
+void WebFrameWidgetBase::ProcessInputEventSynchronouslyForTesting(
     const WebCoalescedInputEvent& event,
     HandledEventCallback callback) {
   widget_base_->input_handler().HandleInputEvent(event, std::move(callback));

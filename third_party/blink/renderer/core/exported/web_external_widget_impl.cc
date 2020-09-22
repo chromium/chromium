@@ -112,7 +112,7 @@ void WebExternalWidgetImpl::SetHandlingInputEvent(bool handling) {
   widget_base_->input_handler().set_handling_input_event(handling);
 }
 
-void WebExternalWidgetImpl::ProcessInputEventSynchronously(
+void WebExternalWidgetImpl::ProcessInputEventSynchronouslyForTesting(
     const WebCoalescedInputEvent& event,
     HandledEventCallback callback) {
   widget_base_->input_handler().HandleInputEvent(event, std::move(callback));

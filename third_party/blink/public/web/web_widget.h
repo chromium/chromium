@@ -210,8 +210,9 @@ class WebWidget {
 
   // Process the input event, invoking the callback when complete. This
   // method will call the callback synchronously.
-  virtual void ProcessInputEventSynchronously(const WebCoalescedInputEvent&,
-                                              HandledEventCallback) = 0;
+  virtual void ProcessInputEventSynchronouslyForTesting(
+      const WebCoalescedInputEvent&,
+      HandledEventCallback) = 0;
 
   virtual void DidOverscrollForTesting(
       const gfx::Vector2dF& overscroll_delta,
