@@ -143,6 +143,10 @@ void UnifiedMediaControlsController::MediaControllerImageChanged(
   media_controls_->SetArtwork(session_artwork);
 }
 
+void UnifiedMediaControlsController::OnMediaControlsViewClicked() {
+  delegate_->OnMediaControlsViewClicked();
+}
+
 void UnifiedMediaControlsController::PerformAction(
     media_session::mojom::MediaSessionAction action) {
   media_session::PerformMediaSessionAction(action, media_controller_remote_);

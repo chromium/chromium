@@ -11,7 +11,6 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/view.h"
 
 namespace gfx {
 class ImageSkia;
@@ -27,7 +26,7 @@ namespace ash {
 class UnifiedMediaControlsController;
 
 // Media controls view displayed in quick settings.
-class ASH_EXPORT UnifiedMediaControlsView : public views::View,
+class ASH_EXPORT UnifiedMediaControlsView : public views::Button,
                                             public views::ButtonListener {
  public:
   explicit UnifiedMediaControlsView(UnifiedMediaControlsController* controller);

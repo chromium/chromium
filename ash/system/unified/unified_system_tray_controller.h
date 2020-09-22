@@ -93,6 +93,8 @@ class ASH_EXPORT UnifiedSystemTrayController
   void ShowDarkModeDetailedView();
   // Show the detailed view of notifier settings. Called from the view.
   void ShowNotifierSettingsView();
+  // Show the detailed view of media controls. Called from the view.
+  void ShowMediaControlsDetailedView();
 
   // If you want to add a new detailed view, add here.
 
@@ -133,6 +135,7 @@ class ASH_EXPORT UnifiedSystemTrayController
   // UnifedMediaControlsController::Delegate;
   void ShowMediaControls() override;
   void HideMediaControls() override;
+  void OnMediaControlsViewClicked() override;
 
   UnifiedSystemTrayModel* model() { return model_; }
 

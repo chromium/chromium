@@ -31,6 +31,7 @@ class ASH_EXPORT UnifiedMediaControlsController
     virtual ~Delegate() = default;
     virtual void ShowMediaControls() = 0;
     virtual void HideMediaControls() = 0;
+    virtual void OnMediaControlsViewClicked() = 0;
   };
 
   explicit UnifiedMediaControlsController(Delegate* deleate);
@@ -55,6 +56,8 @@ class ASH_EXPORT UnifiedMediaControlsController
       const SkBitmap& bitmap) override;
 
   views::View* CreateView();
+
+  void OnMediaControlsViewClicked();
 
   // Called from view when media buttons are pressed.
   void PerformAction(media_session::mojom::MediaSessionAction action);

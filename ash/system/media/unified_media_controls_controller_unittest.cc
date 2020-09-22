@@ -11,6 +11,7 @@
 #include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/test/test_media_controller.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -35,6 +36,7 @@ class MockMediaControlsDelegate
 
   void ShowMediaControls() override { visible_ = true; }
   void HideMediaControls() override { visible_ = false; }
+  MOCK_METHOD0(OnMediaControlsViewClicked, void());
 
   bool IsControlsVisible() { return visible_; }
 
@@ -142,6 +144,10 @@ class UnifiedMediaControlsControllerTest : public AshTestBase {
   MockMediaControlsDelegate* delegate() { return mock_delegate_.get(); }
 
   TestMediaController* media_controller() { return media_controller_.get(); }
+
+  UnifiedMediaControlsView* media_controls_view() {
+    return media_controls_.get();
+  }
 
  private:
   void NotifyActionsChanged() {
@@ -302,6 +308,17 @@ TEST_F(UnifiedMediaControlsControllerTest,
   task_environment()->FastForwardBy(
       base::TimeDelta::FromMilliseconds(kHideControlsDelay));
   EXPECT_FALSE(delegate()->IsControlsVisible());
+}
+
+TEST_F(UnifiedMediaControlsControllerTest,
+       NotifyDelegateWhenMediaControlsViewClicked) {
+  CreateWidget();
+
+  EXPECT_CALL(*delegate(), OnMediaControlsViewClicked);
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(
+      media_controls_view()->GetBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
 }
 
 }  // namespace ash

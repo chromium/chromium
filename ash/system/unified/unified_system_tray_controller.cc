@@ -28,6 +28,7 @@
 #include "ash/system/locale/locale_feature_pod_controller.h"
 #include "ash/system/locale/unified_locale_detailed_view_controller.h"
 #include "ash/system/media/unified_media_controls_controller.h"
+#include "ash/system/media/unified_media_controls_detailed_view_controller.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_feature_pod_controller.h"
@@ -363,6 +364,11 @@ void UnifiedSystemTrayController::ShowNotifierSettingsView() {
   ShowDetailedView(std::make_unique<UnifiedNotifierSettingsController>(this));
 }
 
+void UnifiedSystemTrayController::ShowMediaControlsDetailedView() {
+  ShowDetailedView(
+      std::make_unique<UnifiedMediaControlsDetailedViewController>(this));
+}
+
 void UnifiedSystemTrayController::TransitionToMainView(bool restore_focus) {
   detailed_view_controller_.reset();
   unified_view_->ResetDetailedView();
@@ -422,6 +428,10 @@ void UnifiedSystemTrayController::ShowMediaControls() {
 
 void UnifiedSystemTrayController::HideMediaControls() {
   unified_view_->HideMediaControls();
+}
+
+void UnifiedSystemTrayController::OnMediaControlsViewClicked() {
+  ShowMediaControlsDetailedView();
 }
 
 void UnifiedSystemTrayController::InitFeaturePods() {

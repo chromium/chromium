@@ -234,6 +234,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_VPN_SETTINGS_ACCESSIBLE_DESCRIPTION" desc="The accessible description for VPN settings accessed through the VPN feature pod.">
         VPN Settings
       </message>
+      <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_MEDIA_CONTROLS_ACCESSIBLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="The accessible description for global media controls accessed through the media controls pod.">
+        Media Controls
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_BRAILLE_DISPLAY_CONNECTED" desc="The message shown on a notification when a braille display is connected">
         Braille display connected.
       </message>

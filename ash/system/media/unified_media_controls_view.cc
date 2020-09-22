@@ -115,7 +115,7 @@ void UnifiedMediaControlsView::MediaActionButton::SetAction(
 
 UnifiedMediaControlsView::UnifiedMediaControlsView(
     UnifiedMediaControlsController* controller)
-    : controller_(controller) {
+    : views::Button(this), controller_(controller) {
   SetBackground(views::CreateRoundedRectBackground(
       AshColorProvider::Get()->GetControlsLayerColor(
           AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive),
@@ -179,6 +179,11 @@ UnifiedMediaControlsView::UnifiedMediaControlsView(
 
 void UnifiedMediaControlsView::ButtonPressed(views::Button* sender,
                                              const ui::Event& event) {
+  if (sender == this) {
+    controller_->OnMediaControlsViewClicked();
+    return;
+  }
+
   controller_->PerformAction(
       media_message_center::GetActionFromButtonTag(*sender));
 }
