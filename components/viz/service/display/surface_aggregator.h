@@ -118,19 +118,14 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
 
   void EmitSurfaceContent(Surface* surface,
                           float parent_device_scale_factor,
-                          const SharedQuadState* source_sqs,
-                          const gfx::Rect& rect,
-                          const gfx::Rect& source_visible_rect,
+                          const SurfaceDrawQuad* surface_quad,
                           const gfx::Transform& target_transform,
                           const ClipData& clip_rect,
-                          bool stretch_content_to_fill_bounds,
                           AggregatedRenderPass* dest_pass,
                           bool ignore_undamaged,
                           gfx::Rect* damage_rect_in_quad_space,
                           bool* damage_rect_in_quad_space_valid,
-                          const RoundedCornerInfo& rounded_corner_info,
-                          bool is_reflection,
-                          bool allow_merge);
+                          const RoundedCornerInfo& rounded_corner_info);
 
   void EmitDefaultBackgroundColorQuad(
       const SurfaceDrawQuad* surface_quad,

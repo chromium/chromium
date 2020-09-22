@@ -386,7 +386,7 @@ void SurfaceAggregator::UnrefResources(
 bool SurfaceAggregator::CanPotentiallyMergePass(
     const SurfaceDrawQuad& surface_quad) {
   const SharedQuadState* sqs = surface_quad.shared_quad_state;
-  return surface_quad.allow_merge && !surface_quad.is_reflection &&
+  return surface_quad.allow_merge &&
          base::IsApproximatelyEqual(sqs->opacity, 1.f, kOpacityEpsilon) &&
          sqs->de_jelly_delta_y == 0;
 }
@@ -433,31 +433,23 @@ void SurfaceAggregator::HandleSurfaceQuad(
                                dest_pass, rounded_corner_info);
   }
 
-  EmitSurfaceContent(latest_surface, parent_device_scale_factor,
-                     surface_quad->shared_quad_state, surface_quad->rect,
-                     surface_quad->visible_rect, target_transform, clip_rect,
-                     surface_quad->stretch_content_to_fill_bounds, dest_pass,
-                     ignore_undamaged, damage_rect_in_quad_space,
-                     damage_rect_in_quad_space_valid, rounded_corner_info,
-                     surface_quad->is_reflection, surface_quad->allow_merge);
+  EmitSurfaceContent(latest_surface, parent_device_scale_factor, surface_quad,
+                     target_transform, clip_rect, dest_pass, ignore_undamaged,
+                     damage_rect_in_quad_space, damage_rect_in_quad_space_valid,
+                     rounded_corner_info);
 }
 
 void SurfaceAggregator::EmitSurfaceContent(
     Surface* surface,
     float parent_device_scale_factor,
-    const SharedQuadState* source_sqs,
-    const gfx::Rect& source_rect,
-    const gfx::Rect& source_visible_rect,
+    const SurfaceDrawQuad* surface_quad,
     const gfx::Transform& target_transform,
     const ClipData& clip_rect,
-    bool stretch_content_to_fill_bounds,
     AggregatedRenderPass* dest_pass,
     bool ignore_undamaged,
     gfx::Rect* damage_rect_in_quad_space,
     bool* damage_rect_in_quad_space_valid,
-    const RoundedCornerInfo& rounded_corner_info,
-    bool is_reflection,
-    bool allow_merge) {
+    const RoundedCornerInfo& rounded_corner_info) {
   // If this surface's id is already in our referenced set then it creates
   // a cycle in the graph and should be dropped.
   SurfaceId surface_id = surface->surface_id();
@@ -468,7 +460,8 @@ void SurfaceAggregator::EmitSurfaceContent(
   // scale factor mismatches between content and SurfaceDrawQuad, we appply an
   // additional scale.
   float extra_content_scale_x, extra_content_scale_y;
-  if (stretch_content_to_fill_bounds) {
+  if (surface_quad->stretch_content_to_fill_bounds) {
+    const gfx::Rect& source_rect = surface_quad->rect;
     // Stretches the surface contents to exactly fill the layer bounds,
     // regardless of scale or aspect ratio differences.
     extra_content_scale_x =
@@ -485,6 +478,7 @@ void SurfaceAggregator::EmitSurfaceContent(
   float inverse_extra_content_scale_x = SK_Scalar1 / extra_content_scale_x;
   float inverse_extra_content_scale_y = SK_Scalar1 / extra_content_scale_y;
 
+  const SharedQuadState* source_sqs = surface_quad->shared_quad_state;
   gfx::Transform scaled_quad_to_target_transform(
       source_sqs->quad_to_target_transform);
   scaled_quad_to_target_transform.Scale(extra_content_scale_x,
@@ -497,6 +491,7 @@ void SurfaceAggregator::EmitSurfaceContent(
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "step",
       "SurfaceAggregation", "display_trace", display_trace_id_);
 
+  const gfx::Rect& source_visible_rect = surface_quad->visible_rect;
   if (ignore_undamaged) {
     gfx::Transform quad_to_target_transform(
         target_transform, source_sqs->quad_to_target_transform);
@@ -535,17 +530,15 @@ void SurfaceAggregator::EmitSurfaceContent(
   // surface to be drawn with AA enabled for smooth scaling and preserves the
   // original reflector scaling behaviour which scaled a TextureLayer.
   bool reflected_and_scaled =
-      is_reflection &&
+      surface_quad->is_reflection &&
       !scaled_quad_to_target_transform.IsIdentityOrTranslation();
 
   // We cannot merge passes if de-jelly is being applied, as we must have a
   // renderpass to skew.
   bool merge_pass =
-      allow_merge && !reflected_and_scaled &&
-      base::IsApproximatelyEqual(source_sqs->opacity, 1.f, kOpacityEpsilon) &&
+      CanPotentiallyMergePass(*surface_quad) && !reflected_and_scaled &&
       copy_requests.empty() && combined_transform.Preserves2dAxisAlignment() &&
-      CanMergeRoundedCorner(rounded_corner_info, *render_pass_list.back()) &&
-      source_sqs->de_jelly_delta_y == 0;
+      CanMergeRoundedCorner(rounded_corner_info, *render_pass_list.back());
 
   if (frame.metadata.delegated_ink_metadata) {
     // The metadata must be taken off of the surface, rather than a copy being
