@@ -2470,6 +2470,9 @@ extern const char kSchedulerConfigurationDescription[];
 extern const char kSchedulerConfigurationConservative[];
 extern const char kSchedulerConfigurationPerformance[];
 
+extern const char kSeparatePointingStickSettingsName[];
+extern const char kSeparatePointingStickSettingsDescription[];
+
 extern const char kSharesheetName[];
 extern const char kSharesheetDescription[];
 

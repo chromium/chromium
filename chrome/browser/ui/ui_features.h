@@ -73,6 +73,7 @@ extern const base::Feature kSyncSetupFriendlySettings;
 
 #if defined(OS_CHROMEOS)
 extern const base::Feature kHiddenNetworkWarning;
+extern const base::Feature kSeparatePointingStickSettings;
 #endif  // defined(OS_CHROMEOS)
 }  // namespace features
 

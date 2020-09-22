@@ -40837,6 +40837,7 @@ from previous Chrome versions.
       label="enable-experimental-accessibility-switch-access"/>
   <int value="-1953145846" label="TargetEmbeddingLookalikes:disabled"/>
   <int value="-1953121360" label="EphemeralTab:disabled"/>
+  <int value="-1950469963" label="SeparatePointingStickSettings:enabled"/>
   <int value="-1948540128" label="disable-webrtc-hw-encoding (deprecated)"/>
   <int value="-1946595906" label="enable-push-api-background-mode"/>
   <int value="-1946522787" label="VrCustomTabBrowsing:disabled"/>
@@ -44115,6 +44116,7 @@ from previous Chrome versions.
   <int value="1387356699" label="PolicyAtomicGroup:enabled"/>
   <int value="1389729816" label="data-reduction-proxy-lo-fi"/>
   <int value="1392935139" label="KidsManagementUrlClassification:enabled"/>
+  <int value="1393413889" label="SeparatePointingStickSettings:disabled"/>
   <int value="1393500952" label="EnableVirtualKeyboardUkm:disabled"/>
   <int value="1393722373" label="SaveEditedPDFForm:disabled"/>
   <int value="1394896630" label="PrinterStatusDialog:enabled"/>

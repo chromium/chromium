@@ -6414,6 +6414,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxRichEntitiesInLauncherName,
      flag_descriptions::kOmniboxRichEntitiesInLauncherDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(app_list_features::kEnableOmniboxRichEntities)},
+
+    {"separate-pointing-stick-settings",
+     flag_descriptions::kSeparatePointingStickSettingsName,
+     flag_descriptions::kSeparatePointingStickSettingsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kSeparatePointingStickSettings)},
 #endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

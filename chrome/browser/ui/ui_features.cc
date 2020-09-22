@@ -131,5 +131,10 @@ const base::Feature kSyncSetupFriendlySettings{
 // https://crbug.com/903908
 const base::Feature kHiddenNetworkWarning{"HiddenNetworkWarning",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables a separate group of settings (speed, button swap, and acceleration)
+// for pointing sticks (such as TrackPoints).
+const base::Feature kSeparatePointingStickSettings{
+    "SeparatePointingStickSettings", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_CHROMEOS)
 }  // namespace features

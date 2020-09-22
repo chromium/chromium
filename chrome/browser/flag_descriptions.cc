@@ -4240,6 +4240,12 @@ const char kSchedulerConfigurationConservative[] =
 const char kSchedulerConfigurationPerformance[] =
     "Enables Hyper-Threading on relevant CPUs.";
 
+const char kSeparatePointingStickSettingsName[] =
+    "Separate pointing stick settings";
+const char kSeparatePointingStickSettingsDescription[] =
+    "Enables a separate group of settings (speed, button swap, and "
+    "acceleration) for pointing sticks (such as TrackPoints).";
+
 const char kSharesheetName[] = "Sharesheet";
 const char kSharesheetDescription[] = "Chrome OS sharesheet.";
 
