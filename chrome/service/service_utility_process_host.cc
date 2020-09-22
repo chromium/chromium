@@ -92,7 +92,7 @@ class ServiceSandboxedProcessLauncherDelegate
   }
 
   sandbox::policy::SandboxType GetSandboxType() override {
-    return sandbox::policy::SandboxType::kUtility;
+    return sandbox::policy::SandboxType::kPdfConversion;
   }
 
  private:
@@ -340,7 +340,12 @@ bool ServiceUtilityProcessHost::Launch(base::CommandLine* cmd_line,
     base::HandlesToInheritVector handles;
     channel.PrepareToPassRemoteEndpoint(&handles, cmd_line);
 
+    // Need to call SetCommandLineFlagsForSandboxType() here, as this process
+    // launch path bypasses content::UtilityProcessHost::StartProcess().
     ServiceSandboxedProcessLauncherDelegate delegate;
+    sandbox::policy::SetCommandLineFlagsForSandboxType(
+        cmd_line, delegate.GetSandboxType());
+
     base::Process process;
     sandbox::ResultCode result = content::StartSandboxedProcess(
         &delegate, cmd_line, handles, &process);
