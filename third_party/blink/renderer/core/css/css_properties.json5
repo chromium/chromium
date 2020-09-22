@@ -2516,6 +2516,16 @@
       keywords: ["luminance", "alpha"],
       typedom_types: ["Keyword"]
     },
+    {
+      name: "math-shift",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      field_template: "keyword",
+      inherited: true,
+      keywords: ["normal", "compact"],
+      typedom_types: ["Keyword"],
+      default_value: "normal",
+      runtime_flag: "CSSMathShift"
+    },
     // TODO(rbuis): should be moved to high priority later.
     {
       name: "math-style",
@@ -2526,16 +2536,6 @@
       typedom_types: ["Keyword"],
       default_value: "normal",
       runtime_flag: "CSSMathStyle"
-    },
-    {
-      name: "math-superscript-shift-style",
-      property_methods: ["CSSValueFromComputedStyleInternal"],
-      field_template: "keyword",
-      inherited: true,
-      keywords: ["inline", "display"],
-      typedom_types: ["Keyword"],
-      default_value: "display",
-      runtime_flag: "CSSMathSuperscriptShiftStyle"
     },
     {
       name: "max-height",

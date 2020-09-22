@@ -640,15 +640,13 @@
     "wavy",
     "-webkit-nowrap",
 
-    //
-    // math-style
-    //
+    // math-shift
     // normal
     "compact",
 
-    // math-shift
-    // inline
-    "display",
+    // math-style
+    // normal
+    // compact
 
     // CSS3 Values
     // box-align

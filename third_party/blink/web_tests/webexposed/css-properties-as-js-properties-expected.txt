@@ -240,8 +240,8 @@ markerMid
 markerStart
 mask
 maskType
+mathShift
 mathStyle
-mathSuperscriptShiftStyle
 maxBlockSize
 maxHeight
 maxInlineSize

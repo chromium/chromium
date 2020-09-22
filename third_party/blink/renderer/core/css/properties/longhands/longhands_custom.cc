@@ -4083,20 +4083,20 @@ const CSSValue* MaskType::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(svg_style.MaskType());
 }
 
+const CSSValue* MathShift::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const SVGComputedStyle&,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return CSSIdentifierValue::Create(style.MathShift());
+}
+
 const CSSValue* MathStyle::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
   return CSSIdentifierValue::Create(style.MathStyle());
-}
-
-const CSSValue* MathSuperscriptShiftStyle::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const SVGComputedStyle&,
-    const LayoutObject*,
-    bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(style.MathSuperscriptShiftStyle());
 }
 
 const CSSValue* MaxBlockSize::ParseSingleValue(

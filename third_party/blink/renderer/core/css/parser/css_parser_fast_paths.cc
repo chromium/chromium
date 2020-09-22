@@ -668,14 +668,14 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kMaskType:
       return value_id == CSSValueID::kLuminance ||
              value_id == CSSValueID::kAlpha;
+    case CSSPropertyID::kMathShift:
+      DCHECK(RuntimeEnabledFeatures::CSSMathShiftEnabled());
+      return value_id == CSSValueID::kNormal ||
+             value_id == CSSValueID::kCompact;
     case CSSPropertyID::kMathStyle:
       DCHECK(RuntimeEnabledFeatures::CSSMathStyleEnabled());
       return value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kCompact;
-    case CSSPropertyID::kMathSuperscriptShiftStyle:
-      DCHECK(RuntimeEnabledFeatures::CSSMathSuperscriptShiftStyleEnabled());
-      return value_id == CSSValueID::kInline ||
-             value_id == CSSValueID::kDisplay;
     case CSSPropertyID::kObjectFit:
       return value_id == CSSValueID::kFill ||
              value_id == CSSValueID::kContain ||
@@ -1045,8 +1045,8 @@ bool CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID property_id) {
     case CSSPropertyID::kListStylePosition:
     case CSSPropertyID::kListStyleType:
     case CSSPropertyID::kMaskType:
+    case CSSPropertyID::kMathShift:
     case CSSPropertyID::kMathStyle:
-    case CSSPropertyID::kMathSuperscriptShiftStyle:
     case CSSPropertyID::kObjectFit:
     case CSSPropertyID::kOutlineStyle:
     case CSSPropertyID::kOverflowAnchor:

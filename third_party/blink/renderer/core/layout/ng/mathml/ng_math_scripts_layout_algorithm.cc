@@ -197,8 +197,7 @@ NGMathScriptsLayoutAlgorithm::GetVerticalMetrics(
   if (type == MathScriptType::kSuper || type == MathScriptType::kSubSup ||
       type == MathScriptType::kMultiscripts || type == MathScriptType::kOver ||
       type == MathScriptType::kMultiscripts) {
-    if (Style().MathSuperscriptShiftStyle() ==
-        EMathSuperscriptShiftStyle::kInline)
+    if (Style().MathShift() == EMathShift::kCompact)
       shift_up = parameters.superscript_shift_up_cramped;
     metrics.sup_shift =
         std::max(shift_up, base_metrics.ascent -

@@ -35,7 +35,7 @@
 /* By default, we only display the MathML formulas without any formatting other than the one specified by the display attribute. */
 math {
     display: inline-math;
-    math-superscript-shift-style: display;
+    math-shift: normal;
     math-style: compact;
 }
 
@@ -83,16 +83,16 @@ mfrac > * {
 }
 
 mfrac > :nth-child(2) {
-  math-superscript-shift-style: inline;
+  math-shift: compact;
 }
 
-/* Other rules for scriptlevel, displaystyle and math-superscript-shift-style */
+/* Other rules for scriptlevel, displaystyle and math-shift */
 mroot > :not(:first-child) {
     font-size: scriptlevel(add(2));
     math-style: compact;
 }
 mroot, msqrt {
-    math-superscript-shift-style: inline;
+    math-shift: compact;
 }
 msub > :not(:first-child),
 msup > :not(:first-child),
@@ -116,6 +116,6 @@ munder > :nth-child(2),
 munderover > :nth-child(2),
 mover[accent="true" i] > :first-child,
 munderover[accent="true" i] > :first-child {
-  math-superscript-shift-style: inline;
+  math-shift: compact;
 }
 

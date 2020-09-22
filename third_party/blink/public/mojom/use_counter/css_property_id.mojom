@@ -702,7 +702,7 @@ enum CSSSampleId {
     kMathStyle = 656,
     kAspectRatio = 657,
     kAppearance = 658,
-    kMathSuperscriptShiftStyle = 659,
+    // kMathSuperscriptShiftStyle = 659,
     kRubyPosition = 660,
     kTextUnderlineOffset = 661,
     kContentVisibility = 662,
@@ -719,6 +719,7 @@ enum CSSSampleId {
     kDescentOverride = 673,
     kAdvanceOverride = 674,
     kLineGapOverride = 675,
+    kMathShift = 676,
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).
     // 2. Run the src/tools/metrics/histograms/update_use_counter_css.py script

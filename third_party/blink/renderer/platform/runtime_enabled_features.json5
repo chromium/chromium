@@ -514,12 +514,12 @@
       name: "CSSMatchedPropertiesCacheDependencies",
     },
     {
-      name: "CSSMathStyle",
+      name: "CSSMathShift",
       status: "experimental",
       implied_by: ["MathMLCore"],
     },
     {
-      name: "CSSMathSuperscriptShiftStyle",
+      name: "CSSMathStyle",
       status: "experimental",
       implied_by: ["MathMLCore"],
     },
