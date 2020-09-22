@@ -360,9 +360,10 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
     public void onSignOutClicked(boolean forceWipeUserData) {
         // In case the user reached this fragment without being signed in, we guard the sign out so
         // we do not hit a native crash.
-        if (!IdentityServicesProvider.get()
+        if (IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .hasPrimaryAccount()) {
+                        .getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED)
+                == null) {
             return;
         }
         final DialogFragment clearDataProgressDialog = new ClearDataProgressDialog();
