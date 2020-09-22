@@ -42,6 +42,10 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   WindowCycleList& operator=(const WindowCycleList&) = delete;
   ~WindowCycleList() override;
 
+  // Removes the existing windows and replaces them with |windows|. If
+  // |windows| is empty, cancels cycling.
+  void ReplaceWindows(const WindowList& windows);
+
   // Cycles to the next or previous window based on |direction| and re-layouts
   // the window cycle list, scrolling the list.
   void Step(WindowCycleController::Direction direction);
@@ -79,6 +83,10 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
+
+  // Removes all windows from the window list. Also removes the windows from
+  // |cycle_view_| if |cycle_view_| exists.
+  void RemoveAllWindows();
 
   // Initializes and shows |cycle_view_|.
   void InitWindowCycleView();

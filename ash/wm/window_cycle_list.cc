@@ -296,6 +296,24 @@ class WindowCycleView : public views::WidgetDelegateView,
   WindowCycleView& operator=(const WindowCycleView&) = delete;
   ~WindowCycleView() override = default;
 
+  void UpdateWindows(const WindowCycleList::WindowList& windows) {
+    for (auto* window : windows) {
+      auto* view = mirror_container_->AddChildView(
+          std::make_unique<WindowCycleItemView>(window));
+      window_view_map_[window] = view;
+
+      no_previews_set_.insert(view);
+    }
+
+    // Resize the widget.
+    aura::Window* root_window = Shell::GetRootWindowForNewWindows();
+    gfx::Rect widget_rect = root_window->GetBoundsInScreen();
+    widget_rect.ClampToCenteredSize(GetPreferredSize());
+    GetWidget()->SetBounds(widget_rect);
+
+    SetTargetWindow(windows[0], /*should_layout=*/true);
+  }
+
   void FadeInLayer() {
     DCHECK(GetWidget());
 
@@ -514,6 +532,20 @@ WindowCycleList::~WindowCycleList() {
   Shell::Get()->frame_throttling_controller()->EndThrottling();
 }
 
+void WindowCycleList::ReplaceWindows(const WindowList& windows) {
+  if (windows.empty())
+    return;
+
+  RemoveAllWindows();
+  windows_ = windows;
+
+  for (auto* new_window : windows_)
+    new_window->AddObserver(this);
+
+  if (ShouldShowUi() && cycle_view_)
+    cycle_view_->UpdateWindows(windows_);
+}
+
 void WindowCycleList::Step(WindowCycleController::Direction direction) {
   Step(direction == WindowCycleController::FORWARD ? 1 : -1,
        /*should_layout=*/true);
@@ -567,6 +599,7 @@ void WindowCycleList::OnWindowDestroying(aura::Window* window) {
     auto* new_target_window =
         windows_.empty() ? nullptr : windows_[current_index_];
     cycle_view_->HandleWindowDestruction(window, new_target_window);
+
     if (windows_.empty()) {
       // This deletes us.
       Shell::Get()->window_cycle_controller()->CancelCycling();
@@ -587,6 +620,18 @@ void WindowCycleList::OnDisplayMetricsChanged(const display::Display& display,
     // |this| is deleted.
     return;
   }
+}
+
+void WindowCycleList::RemoveAllWindows() {
+  for (auto* window : windows_) {
+    window->RemoveObserver(this);
+
+    if (cycle_view_)
+      cycle_view_->HandleWindowDestruction(window, nullptr);
+  }
+
+  windows_.clear();
+  current_index_ = 0;
 }
 
 void WindowCycleList::InitWindowCycleView() {
