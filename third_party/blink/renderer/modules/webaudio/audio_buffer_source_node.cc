@@ -422,13 +422,15 @@ unsigned AudioBufferSourceHandler::ComputeOutput(
       if (read0[k] == read1[k] && read0[k] >= 1) {
         // We're at the end of the buffer, so just linearly extrapolate from
         // the last two samples.
-        DCHECK_LT(read0[k], buffer_length);
+        // TODO(crbug.com/1116104). Remove this CHECK once the problem is
+        // solved.
+        CHECK_LT(read0[k], buffer_length);
         float sample1 = source[read0[k] - 1];
         float sample2 = source[read0[k]];
         sample = sample2 + (sample2 - sample1) * interp_factor[k];
       } else {
-        DCHECK_LT(read0[k], buffer_length);
-        DCHECK_LT(read1[k], buffer_length);
+        CHECK_LT(read0[k], buffer_length);
+        CHECK_LT(read1[k], buffer_length);
         // TODO(crbug.com/1116104).  If read1[k] is out-of-bounds, just return
         // 0.  Remove this when the underlying problem is fixed.
         if (read1[k] >= buffer_length) {
