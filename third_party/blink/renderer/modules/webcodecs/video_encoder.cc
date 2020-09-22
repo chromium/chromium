@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_init.h"
@@ -170,6 +171,7 @@ std::unique_ptr<VideoEncoder::ParsedConfig> VideoEncoder::ParseConfig(
   parsed->profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
   parsed->color_space = media::VideoColorSpace::REC709();
   parsed->level = 0;
+  parsed->codec_string = config->codec();
 
   bool parse_succeeded = media::ParseVideoCodecString(
       "", config->codec().Utf8(), &is_codec_ambiguous, &parsed->codec,
@@ -260,7 +262,7 @@ void VideoEncoder::configure(const VideoEncoderConfig* config,
 
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kConfigure;
-  request->config = std::move(parsed_config);
+  active_config_ = std::move(parsed_config);
   EnqueueRequest(request);
 }
 
@@ -286,8 +288,10 @@ void VideoEncoder::encode(VideoFrame* frame,
     return;
   }
 
-  if (internal_frame->cropWidth() != uint32_t{frame_size_.width()} ||
-      internal_frame->cropHeight() != uint32_t{frame_size_.height()}) {
+  DCHECK(active_config_);
+  if (internal_frame->cropWidth() != uint32_t{active_config_->options.width} ||
+      internal_frame->cropHeight() !=
+          uint32_t{active_config_->options.height}) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kOperationError,
         "Frame size doesn't match initial encoder parameters.");
@@ -361,14 +365,6 @@ void VideoEncoder::ClearRequests() {
       pending_req->resolver.Release()->Reject(ex);
     }
   }
-}
-
-void VideoEncoder::CallOutputCallback(EncodedVideoChunk* chunk) {
-  if (!script_state_->ContextIsValid() || !output_callback_ ||
-      state_.AsEnum() != V8CodecState::Enum::kConfigured)
-    return;
-  ScriptState::Scope scope(script_state_);
-  output_callback_->InvokeAndReportException(nullptr, chunk);
 }
 
 void VideoEncoder::HandleError(DOMException* ex) {
@@ -462,13 +458,11 @@ void VideoEncoder::ProcessEncode(Request* request) {
 
 void VideoEncoder::ProcessConfigure(Request* request) {
   DCHECK_NE(state_.AsEnum(), V8CodecState::Enum::kClosed);
-  DCHECK(request->config);
   DCHECK_EQ(request->type, Request::Type::kConfigure);
+  DCHECK(active_config_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto config = std::move(request->config);
-
-  switch (config->codec) {
+  switch (active_config_->codec) {
     case media::kCodecVP8:
     case media::kCodecVP9:
       media_encoder_ = CreateVpxVideoEncoder();
@@ -491,9 +485,7 @@ void VideoEncoder::ProcessConfigure(Request* request) {
     return;
   }
 
-  frame_size_ = gfx::Size(config->options.width, config->options.height);
-
-  auto output_cb = WTF::BindRepeating(&VideoEncoder::MediaEncoderOutputCallback,
+  auto output_cb = WTF::BindRepeating(&VideoEncoder::CallOutputCallback,
                                       WrapWeakPersistent(this));
 
   auto done_callback = [](VideoEncoder* self, Request* req,
@@ -501,16 +493,20 @@ void VideoEncoder::ProcessConfigure(Request* request) {
     if (!self)
       return;
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+    DCHECK(self->active_config_);
+
     if (!status.is_ok()) {
       std::string msg = "Encoder initialization error: " + status.message();
       self->HandleError(DOMExceptionCode::kOperationError, msg.c_str());
     }
+
     self->stall_request_processing_ = false;
     self->ProcessRequests();
   };
 
   stall_request_processing_ = true;
-  media_encoder_->Initialize(config->profile, config->options, output_cb,
+  media_encoder_->Initialize(active_config_->profile, active_config_->options,
+                             std::move(output_cb),
                              WTF::Bind(done_callback, WrapWeakPersistent(this),
                                        WrapPersistent(request)));
 }
@@ -545,8 +541,13 @@ void VideoEncoder::ProcessFlush(Request* request) {
                                   WrapPersistentIfNeeded(request)));
 }
 
-void VideoEncoder::MediaEncoderOutputCallback(
-    media::VideoEncoderOutput output) {
+void VideoEncoder::CallOutputCallback(
+    media::VideoEncoderOutput output,
+    base::Optional<media::VideoEncoder::CodecDescription> codec_desc) {
+  if (!script_state_->ContextIsValid() || !output_callback_ ||
+      state_.AsEnum() != V8CodecState::Enum::kConfigured)
+    return;
+
   EncodedVideoMetadata metadata;
   metadata.timestamp = output.timestamp;
   metadata.key_frame = output.key_frame;
@@ -556,7 +557,21 @@ void VideoEncoder::MediaEncoderOutputCallback(
   ArrayBufferContents data(output.data.release(), output.size, deleter);
   auto* dom_array = MakeGarbageCollected<DOMArrayBuffer>(std::move(data));
   auto* chunk = MakeGarbageCollected<EncodedVideoChunk>(metadata, dom_array);
-  CallOutputCallback(chunk);
+
+  DCHECK(active_config_);
+  VideoDecoderConfig* decoder_config =
+      MakeGarbageCollected<VideoDecoderConfig>();
+  decoder_config->setCodec(active_config_->codec_string);
+  decoder_config->setCodedHeight(active_config_->options.height);
+  decoder_config->setCodedWidth(active_config_->options.width);
+  if (codec_desc.has_value()) {
+    auto* desc_array_buf = DOMArrayBuffer::Create(codec_desc.value().data(),
+                                                  codec_desc.value().size());
+    decoder_config->setDescription(
+        ArrayBufferOrArrayBufferView::FromArrayBuffer(desc_array_buf));
+  }
+  ScriptState::Scope scope(script_state_);
+  output_callback_->InvokeAndReportException(nullptr, chunk, decoder_config);
 }
 
 void VideoEncoder::Trace(Visitor* visitor) const {

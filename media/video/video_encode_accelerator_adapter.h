@@ -19,6 +19,7 @@
 
 namespace media {
 class GpuVideoAcceleratorFactories;
+class H264AnnexBToAvcBitstreamConverter;
 
 // This class is a somewhat complex adapter from VideoEncodeAccelerator
 // to VideoEncoder, it takes cares of such things as
@@ -94,6 +95,10 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   scoped_refptr<SharedMemoryPool> input_pool_;
   std::unique_ptr<VideoEncodeAccelerator> accelerator_;
   media::GpuVideoAcceleratorFactories* gpu_factories_;
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  std::unique_ptr<H264AnnexBToAvcBitstreamConverter> h264_converter_;
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
   base::circular_deque<std::unique_ptr<PendingOp>> pending_encodes_;
   std::unique_ptr<PendingOp> pending_flush_;

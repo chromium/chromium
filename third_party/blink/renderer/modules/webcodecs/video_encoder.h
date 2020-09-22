@@ -69,8 +69,6 @@ class MODULES_EXPORT VideoEncoder final : public ScriptWrappable {
 
   // TODO(ezemtsov): Replace this with a {Audio|Video}EncoderConfig.
   struct ParsedConfig final {
-    void Trace(Visitor*) const;
-
     media::VideoCodec codec;
     media::VideoCodecProfile profile;
     uint8_t level;
@@ -79,6 +77,7 @@ class MODULES_EXPORT VideoEncoder final : public ScriptWrappable {
     AccelerationPreference acc_pref;
 
     media::VideoEncoder::Options options;
+    String codec_string;
   };
 
   struct Request final : public GarbageCollected<Request> {
@@ -91,13 +90,14 @@ class MODULES_EXPORT VideoEncoder final : public ScriptWrappable {
     void Trace(Visitor*) const;
 
     Type type;
-    std::unique_ptr<ParsedConfig> config;                // used by kConfigure
     Member<VideoFrame> frame;                            // used by kEncode
     Member<const VideoEncoderEncodeOptions> encodeOpts;  // used by kEncode
     Member<ScriptPromiseResolver> resolver;              // used by kFlush
   };
 
-  void CallOutputCallback(EncodedVideoChunk* chunk);
+  void CallOutputCallback(
+      media::VideoEncoderOutput output,
+      base::Optional<media::VideoEncoder::CodecDescription> codec_desc);
   void HandleError(DOMException* ex);
   void HandleError(DOMExceptionCode code, const String& message);
   void EnqueueRequest(Request* request);
@@ -108,13 +108,11 @@ class MODULES_EXPORT VideoEncoder final : public ScriptWrappable {
 
   void ClearRequests();
 
-  void MediaEncoderOutputCallback(media::VideoEncoderOutput output);
-
   std::unique_ptr<ParsedConfig> ParseConfig(const VideoEncoderConfig*,
                                             ExceptionState&);
   bool VerifyCodecSupport(ParsedConfig*, ExceptionState&);
 
-  gfx::Size frame_size_;
+  std::unique_ptr<ParsedConfig> active_config_;
   std::unique_ptr<media::VideoEncoder> media_encoder_;
 
   V8CodecState state_;

@@ -5,4 +5,5 @@
 // https://github.com/WICG/web-codecs
 
 // Handles a new encoded video chunk on the consumer side of the video encoder.
-callback VideoEncoderOutputCallback = void (EncodedVideoChunk chunk);
+callback VideoEncoderOutputCallback =
+  void (EncodedVideoChunk chunk, VideoDecoderConfig decoder_config);

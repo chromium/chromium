@@ -101,8 +101,15 @@ source_set("formats") {
       "mpeg/adts_stream_parser.cc",
       "mpeg/adts_stream_parser.h",
     ]
-  }
 
+    # We need this to make h264_annex_b_to_avc_bitstream_converter.h accessible
+    # from video_encode_accelerator_adapter.cc, unfortunately we can't move
+    # h264_annex_b_to_avc_bitstream_converter.h since it depends on
+    # box_definitions.h
+    # TODO(eugene): consider moving media/video/h264_parser.(h|cc) to
+    # media/formats. It might help to break this dependency cycle.
+    allow_circular_includes_from = [ "//media/video" ]
+  }
   if (proprietary_codecs && enable_platform_hevc) {
     sources += [
       "mp4/hevc.cc",

@@ -371,7 +371,7 @@ void VpxVideoEncoder::DrainOutputs() {
       result.size = pkt->data.frame.sz;
       result.data.reset(new uint8_t[result.size]);
       memcpy(result.data.get(), pkt->data.frame.buf, result.size);
-      output_cb_.Run(std::move(result));
+      output_cb_.Run(std::move(result), {});
     }
   }
 }

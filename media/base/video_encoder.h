@@ -47,9 +47,16 @@ class MEDIA_EXPORT VideoEncoder {
     base::Optional<int> keyframe_interval = 10000;
   };
 
+  // A sequence of codec specific bytes, commonly known as extradata.
+  // If available, it should be given to the decoder as part of the
+  // decoder config.
+  using CodecDescription = std::vector<uint8_t>;
+
   // Callback for VideoEncoder to report an encoded video frame whenever it
   // becomes available.
-  using OutputCB = base::RepeatingCallback<void(VideoEncoderOutput output)>;
+  using OutputCB =
+      base::RepeatingCallback<void(VideoEncoderOutput output,
+                                   base::Optional<CodecDescription>)>;
 
   // Callback to report success and errors in encoder calls.
   using StatusCB = base::OnceCallback<void(Status error)>;
