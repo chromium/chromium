@@ -16,6 +16,13 @@ import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 
+# This file depends on the legacy global sources assignment filter. It should
+# be converted to check target platform before assigning source files to the
+# sources variable. Remove this import and set_sources_assignment_filter call
+# when the file has been converted. See https://crbug.com/1018739 for details.
+import("//build/config/deprecated_default_sources_assignment_filter.gni")
+set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
+
 # For code inside the build component "headless".
 config("inside_headless_component") {
   defines = [ "HEADLESS_IMPLEMENTATION" ]
@@ -244,8 +251,8 @@ inspector_protocol_generate("protocol_sources") {
 # |headless_non_renderer| components.
 source_set("headless_shared_sources") {
   visibility = [
-    "//headless:headless_non_renderer",
     "//headless:headless",
+    "//headless:headless_non_renderer",
   ]
 
   sources = [
