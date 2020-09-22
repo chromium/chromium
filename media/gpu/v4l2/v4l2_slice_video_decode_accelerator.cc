@@ -1300,7 +1300,8 @@ void V4L2SliceVideoDecodeAccelerator::AssignPictureBuffersTask(
              pic_size_expected_from_client != pic_size_received_from_client) {
     // If a client allocates a different frame size, S_FMT should be called with
     // the size.
-    v4l2_format format = {};
+    v4l2_format format;
+    memset(&format, 0, sizeof(format));
     format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
     format.fmt.pix_mp.width = pic_size_received_from_client.width();
     format.fmt.pix_mp.height = pic_size_received_from_client.height();
@@ -2343,8 +2344,10 @@ bool V4L2SliceVideoDecodeAccelerator::OnMemoryDump(
     // Call QUERY_BUF here because the length of buffers on VIDIOC_CATURE queue
     // are not recorded nowhere in V4L2VideoDecodeAccelerator.
     for (uint32_t index = 0; index < output_buffer_map_.size(); ++index) {
-      struct v4l2_buffer v4l2_buffer = {};
+      struct v4l2_buffer v4l2_buffer;
+      memset(&v4l2_buffer, 0, sizeof(v4l2_buffer));
       struct v4l2_plane v4l2_planes[VIDEO_MAX_PLANES];
+      memset(v4l2_planes, 0, sizeof(v4l2_planes));
       DCHECK_LT(output_planes_count_, base::size(v4l2_planes));
       v4l2_buffer.m.planes = v4l2_planes;
       v4l2_buffer.length =

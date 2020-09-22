@@ -112,11 +112,11 @@ class V4L2Buffer {
   std::vector<void*> plane_mappings_;
 
   // V4L2 data as queried by QUERYBUF.
-  struct v4l2_buffer v4l2_buffer_ = {};
+  struct v4l2_buffer v4l2_buffer_;
   // WARNING: do not change this to a vector or something smaller than
   // VIDEO_MAX_PLANES, otherwise the Tegra libv4l2 will write data beyond
   // the number of allocated planes, resulting in memory corruption.
-  struct v4l2_plane v4l2_planes_[VIDEO_MAX_PLANES] = {{}};
+  struct v4l2_plane v4l2_planes_[VIDEO_MAX_PLANES];
 
   struct v4l2_format format_;
   scoped_refptr<VideoFrame> video_frame_;
@@ -147,6 +147,9 @@ V4L2Buffer::V4L2Buffer(scoped_refptr<V4L2Device> device,
     : device_(device), format_(format) {
   DCHECK(V4L2_TYPE_IS_MULTIPLANAR(type));
   DCHECK_LE(format.fmt.pix_mp.num_planes, base::size(v4l2_planes_));
+
+  memset(&v4l2_buffer_, 0, sizeof(v4l2_buffer_));
+  memset(v4l2_planes_, 0, sizeof(v4l2_planes_));
   v4l2_buffer_.m.planes = v4l2_planes_;
   // Just in case we got more planes than we want.
   v4l2_buffer_.length =
@@ -995,7 +998,8 @@ base::Optional<gfx::Rect> V4L2Queue::GetVisibleRect() {
       break;
   }
 
-  struct v4l2_selection selection = {};
+  struct v4l2_selection selection;
+  memset(&selection, 0, sizeof(selection));
   selection.type = compose_type;
   selection.target = V4L2_SEL_TGT_COMPOSE;
   if (device_->Ioctl(VIDIOC_G_SELECTION, &selection) == 0) {
@@ -1006,7 +1010,8 @@ base::Optional<gfx::Rect> V4L2Queue::GetVisibleRect() {
   // TODO(acourbot) using VIDIOC_G_CROP is considered legacy and can be
   // removed once no active devices use it anymore.
   DVQLOGF(3) << "Fallback to VIDIOC_G_CROP";
-  struct v4l2_crop crop = {};
+  struct v4l2_crop crop;
+  memset(&crop, 0, sizeof(crop));
   crop.type = type_;
   if (device_->Ioctl(VIDIOC_G_CROP, &crop) == 0) {
     return V4L2RectToGfxRect(crop.c);
@@ -1049,7 +1054,8 @@ size_t V4L2Queue::AllocateBuffers(size_t count, enum v4l2_memory memory) {
   planes_count_ = format->fmt.pix_mp.num_planes;
   DCHECK_LE(planes_count_, static_cast<size_t>(VIDEO_MAX_PLANES));
 
-  struct v4l2_requestbuffers reqbufs = {};
+  struct v4l2_requestbuffers reqbufs;
+  memset(&reqbufs, 0, sizeof(reqbufs));
   reqbufs.count = count;
   reqbufs.type = type_;
   reqbufs.memory = memory;
@@ -1103,7 +1109,8 @@ bool V4L2Queue::DeallocateBuffers() {
   free_buffers_ = nullptr;
 
   // Free all buffers.
-  struct v4l2_requestbuffers reqbufs = {};
+  struct v4l2_requestbuffers reqbufs;
+  memset(&reqbufs, 0, sizeof(reqbufs));
   reqbufs.count = 0;
   reqbufs.type = type_;
   reqbufs.memory = memory_;
@@ -1180,11 +1187,13 @@ std::pair<bool, V4L2ReadableBufferRef> V4L2Queue::DequeueBuffer() {
     return std::make_pair(true, nullptr);
   }
 
-  struct v4l2_buffer v4l2_buffer = {};
+  struct v4l2_buffer v4l2_buffer;
+  memset(&v4l2_buffer, 0, sizeof(v4l2_buffer));
   // WARNING: do not change this to a vector or something smaller than
   // VIDEO_MAX_PLANES, otherwise the Tegra libv4l2 will write data beyond
   // the number of allocated planes, resulting in memory corruption.
-  struct v4l2_plane planes[VIDEO_MAX_PLANES] = {{}};
+  struct v4l2_plane planes[VIDEO_MAX_PLANES];
+  memset(planes, 0, sizeof(planes));
   v4l2_buffer.type = type_;
   v4l2_buffer.memory = memory_;
   v4l2_buffer.m.planes = planes;
@@ -1482,12 +1491,14 @@ std::vector<VideoCodecProfile> V4L2Device::V4L2PixFmtToVideoCodecProfiles(
         return false;
     }
 
-    v4l2_queryctrl query_ctrl = {};
+    v4l2_queryctrl query_ctrl;
+    memset(&query_ctrl, 0, sizeof(query_ctrl));
     query_ctrl.id = query_id;
     if (Ioctl(VIDIOC_QUERYCTRL, &query_ctrl) != 0) {
       return false;
     }
-    v4l2_querymenu query_menu = {};
+    v4l2_querymenu query_menu;
+    memset(&query_menu, 0, sizeof(query_menu));
     query_menu.id = query_ctrl.id;
     for (query_menu.index = query_ctrl.minimum;
          static_cast<int>(query_menu.index) <= query_ctrl.maximum;
@@ -2092,7 +2103,8 @@ void V4L2Device::SchedulePoll() {
 
 base::Optional<struct v4l2_event> V4L2Device::DequeueEvent() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
-  struct v4l2_event event = {};
+  struct v4l2_event event;
+  memset(&event, 0, sizeof(event));
 
   if (Ioctl(VIDIOC_DQEVENT, &event) != 0) {
     VPLOGF(3) << "Failed to dequeue event";
@@ -2126,7 +2138,8 @@ V4L2RequestsQueue* V4L2Device::GetRequestsQueue() {
 bool V4L2Device::IsCtrlExposed(uint32_t ctrl_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
-  struct v4l2_queryctrl query_ctrl {};
+  struct v4l2_queryctrl query_ctrl;
+  memset(&query_ctrl, 0, sizeof(query_ctrl));
   query_ctrl.id = ctrl_id;
 
   return Ioctl(VIDIOC_QUERYCTRL, &query_ctrl) == 0;
@@ -2139,7 +2152,8 @@ bool V4L2Device::SetExtCtrls(uint32_t ctrl_class,
   if (ctrls.empty())
     return true;
 
-  struct v4l2_ext_controls ext_ctrls {};
+  struct v4l2_ext_controls ext_ctrls;
+  memset(&ext_ctrls, 0, sizeof(ext_ctrls));
   ext_ctrls.ctrl_class = ctrl_class;
   ext_ctrls.count = ctrls.size();
   ext_ctrls.controls = &ctrls[0].ctrl;
@@ -2148,8 +2162,10 @@ bool V4L2Device::SetExtCtrls(uint32_t ctrl_class,
 
 base::Optional<struct v4l2_ext_control> V4L2Device::GetCtrl(uint32_t ctrl_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
-  struct v4l2_ext_control ctrl = {};
-  struct v4l2_ext_controls ext_ctrls = {};
+  struct v4l2_ext_control ctrl;
+  memset(&ctrl, 0, sizeof(ctrl));
+  struct v4l2_ext_controls ext_ctrls;
+  memset(&ext_ctrls, 0, sizeof(ext_ctrls));
 
   ctrl.id = ctrl_id;
   ext_ctrls.controls = &ctrl;
