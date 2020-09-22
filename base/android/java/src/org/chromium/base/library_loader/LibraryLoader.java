@@ -27,10 +27,10 @@ import org.chromium.base.NativeLibraryLoadedStatus;
 import org.chromium.base.NativeLibraryLoadedStatus.NativeLibraryLoadedStatusProvider;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.annotations.CheckDiscard;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.annotations.RemovableInRelease;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
@@ -235,7 +235,7 @@ public class LibraryLoader {
         return mUseModernLinker;
     }
 
-    @CheckDiscard("Can't use @RemovableInRelease because Release build with DCHECK_IS_ON needs it")
+    @RemovableInRelease
     public void enableJniChecks() {
         if (!BuildConfig.DCHECK_IS_ON) return;
 

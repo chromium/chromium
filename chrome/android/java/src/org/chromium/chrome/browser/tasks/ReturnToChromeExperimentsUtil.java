@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -210,11 +211,17 @@ public final class ReturnToChromeExperimentsUtil {
         return chromeActivity;
     }
 
-    public static boolean isCanonicalizedNTPUrl(String url) {
-        // Avoid loading native library due to GURL usage since
-        // #shouldShowStartSurfaceAsTheHomePage() is in the critical path in Instant Start.
-        return url.equals("chrome://newtab/") || url.equals("chrome-native://newtab/")
-                || url.equals("about:newtab");
+    /**
+     * TODO(crbug/1041865): avoid using GURL since {@link #shouldShowStartSurfaceAsTheHomePage()}
+     *  is in the critical path in Instant Start.
+     */
+    private static boolean isNTPUrl(String url) {
+        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)) {
+            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                return NewTabPage.isNTPUrl(url);
+            }
+        }
+        return NewTabPage.isNTPUrl(url);
     }
 
     /**
@@ -263,7 +270,7 @@ public final class ReturnToChromeExperimentsUtil {
         // accessibility is not enabled and not on tablet.
         String homePageUrl = HomepageManager.getHomepageUri();
         return StartSurfaceConfiguration.isStartSurfaceSinglePaneEnabled()
-                && (TextUtils.isEmpty(homePageUrl) || isCanonicalizedNTPUrl(homePageUrl))
+                && (TextUtils.isEmpty(homePageUrl) || isNTPUrl(homePageUrl))
                 && !ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
                         ContextUtils.getApplicationContext());
