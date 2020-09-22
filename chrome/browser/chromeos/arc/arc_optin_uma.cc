@@ -163,7 +163,7 @@ void UpdateAuthTiming(const char* histogram_name,
 
 void UpdateAuthCheckinAttempts(int32_t num_attempts, const Profile* profile) {
   base::UmaHistogramSparse(
-      GetHistogramNameByUserType("ArcAuth.CheckinAttempts", profile),
+      GetHistogramNameByUserType("Arc.Auth.Checkin.Attempts", profile),
       num_attempts);
 }
 
@@ -171,7 +171,7 @@ void UpdateAuthAccountCheckStatus(mojom::AccountCheckStatus status,
                                   const Profile* profile) {
   DCHECK_LE(status, mojom::AccountCheckStatus::CHECK_FAILED);
   UMA_HISTOGRAM_ENUMERATION(
-      GetHistogramNameByUserType("ArcAuth.AccountCheckStatus", profile),
+      GetHistogramNameByUserType("Arc.Auth.AccountCheck.Status", profile),
       static_cast<int>(status),
       static_cast<int>(mojom::AccountCheckStatus::CHECK_FAILED) + 1);
 }
@@ -181,7 +181,7 @@ void UpdateMainAccountResolutionStatus(
     mojom::MainAccountResolutionStatus status) {
   DCHECK(mojom::IsKnownEnumValue(status));
   base::UmaHistogramEnumeration(
-      GetHistogramNameByUserType("ArcAuth.MainAccountResolutionStatus",
+      GetHistogramNameByUserType("Arc.Auth.MainAccountResolution.Status",
                                  profile),
       status);
 }

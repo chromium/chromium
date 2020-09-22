@@ -405,22 +405,22 @@ void ArcAuthService::ReportMetrics(mojom::MetricsType metrics_type,
                                    int32_t value) {
   switch (metrics_type) {
     case mojom::MetricsType::NETWORK_WAITING_TIME_MILLISECONDS:
-      UpdateAuthTiming("ArcAuth.NetworkWaitTime",
+      UpdateAuthTiming("Arc.Auth.NetworkWait.TimeDelta",
                        base::TimeDelta::FromMilliseconds(value), profile_);
       break;
     case mojom::MetricsType::CHECKIN_ATTEMPTS:
       UpdateAuthCheckinAttempts(value, profile_);
       break;
     case mojom::MetricsType::CHECKIN_TIME_MILLISECONDS:
-      UpdateAuthTiming("ArcAuth.CheckinTime",
+      UpdateAuthTiming("Arc.Auth.Checkin.TimeDelta",
                        base::TimeDelta::FromMilliseconds(value), profile_);
       break;
     case mojom::MetricsType::SIGNIN_TIME_MILLISECONDS:
-      UpdateAuthTiming("ArcAuth.SignInTime",
+      UpdateAuthTiming("Arc.Auth.SignIn.TimeDelta",
                        base::TimeDelta::FromMilliseconds(value), profile_);
       break;
     case mojom::MetricsType::ACCOUNT_CHECK_MILLISECONDS:
-      UpdateAuthTiming("ArcAuth.AccountCheckTime",
+      UpdateAuthTiming("Arc.Auth.AccountCheck.TimeDelta",
                        base::TimeDelta::FromMilliseconds(value), profile_);
       break;
   }

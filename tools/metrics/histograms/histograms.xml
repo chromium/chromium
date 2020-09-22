@@ -8895,6 +8895,80 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram base="true" name="Arc.Auth.AccountCheck.Status"
+    enum="ArcAuthAccountCheckStatus" expires_after="2021-08-19">
+<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
+
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>The status of account check before GMS Sign-in.</summary>
+</histogram>
+
+<histogram base="true" name="Arc.Auth.AccountCheck.TimeDelta" units="ms"
+    expires_after="2021-08-19">
+<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
+
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Elapsed time waiting for the account status check to be completed. This is
+    not recorded in case of account status check failure.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Arc.Auth.Checkin.Attempts" units="attempts"
+    expires_after="2021-09-15">
+<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
+
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Number of attempts done while waiting for the check-in task to be completed.
+    0 means that device was already checked-in. This is recorded in case
+    check-in task is completed successfully.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Arc.Auth.Checkin.TimeDelta" units="ms"
+    expires_after="2021-09-15">
+<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
+
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Elapsed time waiting for the check-in task to be completed. This is recorded
+    in case check-in task is completed successfully.
+  </summary>
+</histogram>
+
+<histogram name="Arc.Auth.MainAccountResolution.Status"
+    enum="ArcAuthMainAccountResolutionStatus" expires_after="2021-08-11">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>Contains the status of main account resolution.</summary>
+</histogram>
+
+<histogram base="true" name="Arc.Auth.NetworkWait.TimeDelta" units="ms"
+    expires_after="2021-09-15">
+<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
+
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Elapsed time waiting for network connection before starting other
+    authorization operations.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Arc.Auth.SignIn.TimeDelta" units="ms"
+    expires_after="2021-09-15">
+<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
+
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>Elapsed time waiting for GMS sign-in to complete.</summary>
+</histogram>
+
 <histogram name="Arc.boot_progress" units="ms" expires_after="M81">
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>
@@ -9830,43 +9904,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="ArcAuth.AccountCheckStatus"
-    enum="ArcAuthAccountCheckStatus" expires_after="2021-08-19">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
-  <owner>mhasank@google.com</owner>
-  <owner>arc-core@google.com</owner>
-  <summary>The status of account check before GMS Sign-in.</summary>
-</histogram>
-
-<histogram base="true" name="ArcAuth.AccountCheckTime" units="ms"
-    expires_after="2021-08-19">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
-  <owner>mhasank@google.com</owner>
-  <owner>arc-core@google.com</owner>
-  <summary>
-    Elapsed time waiting for the account status check to be completed. This is
-    not recorded in case of account status check failure.
-  </summary>
-</histogram>
-
-<histogram base="true" name="ArcAuth.CheckinAttempts" units="attempts"
-    expires_after="2021-09-15">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
-  <owner>mhasank@google.com</owner>
-  <owner>arc-core@google.com</owner>
-  <summary>
-    Number of attempts done while waiting for the check-in task to be completed.
-    0 means that device was already checked-in. This is recorded in case
-    check-in task is completed successfully.
-  </summary>
-</histogram>
-
-<histogram base="true" name="ArcAuth.CheckinTime" units="ms"
-    expires_after="2021-09-15">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
+<histogram name="ArcAuth.CheckinTime" units="ms" expires_after="M87">
+<!-- Deprecated, used to access legacy data -->
 
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
@@ -9876,28 +9915,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="ArcAuth.MainAccountResolutionStatus"
-    enum="ArcAuthMainAccountResolutionStatus" expires_after="2021-08-11">
-  <owner>mhasank@google.com</owner>
-  <owner>arc-core@google.com</owner>
-  <summary>Contains the status of main account resolution.</summary>
-</histogram>
-
-<histogram base="true" name="ArcAuth.NetworkWaitTime" units="ms"
-    expires_after="2021-09-15">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
-  <owner>mhasank@google.com</owner>
-  <owner>arc-core@google.com</owner>
-  <summary>
-    Elapsed time waiting for network connection before starting other
-    authorization operations.
-  </summary>
-</histogram>
-
-<histogram base="true" name="ArcAuth.SignInTime" units="ms"
-    expires_after="2021-09-15">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
+<histogram name="ArcAuth.SignInTime" units="ms" expires_after="M87">
+<!-- Deprecated, used to access legacy data -->
 
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
@@ -198480,6 +198499,13 @@ regressions. -->
   <suffix name="RobotAccount"
       label="Managed devices with a robot account (Public Session or Kiosk)"/>
   <suffix name="Unmanaged" label="User with optional Play Store feature"/>
+  <affected-histogram name="Arc.Auth.AccountCheck.Status"/>
+  <affected-histogram name="Arc.Auth.AccountCheck.TimeDelta"/>
+  <affected-histogram name="Arc.Auth.Checkin.Attempts"/>
+  <affected-histogram name="Arc.Auth.Checkin.TimeDelta"/>
+  <affected-histogram name="Arc.Auth.MainAccountResolution.Status"/>
+  <affected-histogram name="Arc.Auth.NetworkWait.TimeDelta"/>
+  <affected-histogram name="Arc.Auth.SignIn.TimeDelta"/>
   <affected-histogram name="Arc.PlayAutoInstallRequest.State"/>
   <affected-histogram name="Arc.PlayAutoInstallRequest.TimeDelta"/>
   <affected-histogram name="Arc.PlayStoreShown.TimeDelta"/>
@@ -198494,13 +198520,6 @@ regressions. -->
   <affected-histogram name="Arc.UiAvailable.AlreadyProvisioned.TimeDelta"/>
   <affected-histogram name="Arc.UiAvailable.InSessionProvisioning.TimeDelta"/>
   <affected-histogram name="Arc.UiAvailable.OobeProvisioning.TimeDelta"/>
-  <affected-histogram name="ArcAuth.AccountCheckStatus"/>
-  <affected-histogram name="ArcAuth.AccountCheckTime"/>
-  <affected-histogram name="ArcAuth.CheckinAttempts"/>
-  <affected-histogram name="ArcAuth.CheckinTime"/>
-  <affected-histogram name="ArcAuth.MainAccountResolutionStatus"/>
-  <affected-histogram name="ArcAuth.NetworkWaitTime"/>
-  <affected-histogram name="ArcAuth.SignInTime"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="AshAssistantAnimationSmoothness" separator=".">
