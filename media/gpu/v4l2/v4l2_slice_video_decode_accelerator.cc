@@ -295,28 +295,28 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
 
   if (video_profile_ >= H264PROFILE_MIN && video_profile_ <= H264PROFILE_MAX) {
     if (supports_requests_) {
-      decoder_.reset(new H264Decoder(
+      decoder_ = std::make_unique<H264Decoder>(
           std::make_unique<V4L2H264Accelerator>(this, device_.get()),
-          video_profile_));
+          video_profile_);
     } else {
-      decoder_.reset(new H264Decoder(
+      decoder_ = std::make_unique<H264Decoder>(
           std::make_unique<V4L2LegacyH264Accelerator>(this, device_.get()),
-          video_profile_));
+          video_profile_);
     }
   } else if (video_profile_ >= VP8PROFILE_MIN &&
              video_profile_ <= VP8PROFILE_MAX) {
     if (supports_requests_) {
-      decoder_.reset(new VP8Decoder(
-          std::make_unique<V4L2VP8Accelerator>(this, device_.get())));
+      decoder_ = std::make_unique<VP8Decoder>(
+          std::make_unique<V4L2VP8Accelerator>(this, device_.get()));
     } else {
-      decoder_.reset(new VP8Decoder(
-          std::make_unique<V4L2LegacyVP8Accelerator>(this, device_.get())));
+      decoder_ = std::make_unique<VP8Decoder>(
+          std::make_unique<V4L2LegacyVP8Accelerator>(this, device_.get()));
     }
   } else if (video_profile_ >= VP9PROFILE_MIN &&
              video_profile_ <= VP9PROFILE_MAX) {
-    decoder_.reset(new VP9Decoder(
+    decoder_ = std::make_unique<VP9Decoder>(
         std::make_unique<V4L2VP9Accelerator>(this, device_.get()),
-        video_profile_));
+        video_profile_);
   } else {
     NOTREACHED() << "Unsupported profile " << GetProfileName(video_profile_);
     return false;
