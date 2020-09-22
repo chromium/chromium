@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/sharesheet_bubble_view.h"
+#include "chrome/browser/ui/views/sharesheet/sharesheet_bubble_view.h"
 
 #include <memory>
 #include <utility>
@@ -11,6 +11,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service_delegate.h"
+#include "chrome/browser/ui/views/sharesheet/sharesheet_expand_button.h"
+#include "chrome/browser/ui/views/sharesheet/sharesheet_target_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -27,7 +29,6 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
@@ -36,113 +37,47 @@
 
 namespace {
 
-// Sizes are in px.
-// kButtonWidth = 76px width + 2*8px for padding on left and right
-constexpr int kButtonWidth = 92;
-// kButtonHeight = 88px height + 2*8px for padding on top and bottom.
-constexpr int kButtonHeight = 104;
-// kButtonTextMaxWidth is button max width without padding.
-constexpr int kButtonTextMaxWidth = 76;
-constexpr int kButtonLineHeight = 20;
-constexpr int kButtonMaxLines = 2;
-constexpr int kButtonPadding = 8;
+// TODO(crbug.com/1097623) Many of below values are sums of each other and
+// can be removed.
 
+// Sizes are in px.
+constexpr int kButtonPadding = 8;
+constexpr int kButtonWidth = 92;
 constexpr int kBubbleTopPaddingFromWindow = 36;
 constexpr int kCornerRadius = 12;
 constexpr int kMaxTargetsPerRow = 4;
 // TargetViewHeight is 2*kButtonHeight + kButtonPadding
 constexpr int kTargetViewHeight = 216;
+constexpr int kTargetViewExpandedHeight = 382;
 constexpr int kDefaultBubbleWidth = 416;
-constexpr int kDefaultBubbleHeight = 328;
+
+constexpr int kMaxRowsForDefaultView = 2;
+constexpr int kExpandViewTitleLabelHeight = 22;
+constexpr int kExpandViewPadding = 16;
+
+constexpr int kDefaultBubbleHeight = 380;
+constexpr int kExpandedBubbleHeight = 522;
 constexpr int kShortSpacing = 20;
 constexpr int kSpacing = 24;
 constexpr int kTitleLineHeight = 24;
 
 constexpr char kTitleFont[] = "GoogleSans, Medium, 16px";
-constexpr char kButtonLabelFont[] = "Roboto, Medium, 14px";
-constexpr char kButtonSecondaryLabelFont[] = "Roboto, Regular, 13px";
+constexpr char kExpandViewTitleFont[] = "Roboto, Medium, 15px";
 
 constexpr SkColor kShareTitleColor = gfx::kGoogleGrey900;
 constexpr SkColor kShareTargetTitleColor = gfx::kGoogleGrey700;
-constexpr SkColor kShareTargetSecondaryTitleColor = gfx::kGoogleGrey600;
 
 enum { COLUMN_SET_ID_TITLE, COLUMN_SET_ID_TARGETS };
 
+void SetUpTargetColumnSet(views::GridLayout* layout) {
+  views::ColumnSet* cs = layout->AddColumnSet(COLUMN_SET_ID_TARGETS);
+  for (int i = 0; i < kMaxTargetsPerRow; i++) {
+    cs->AddColumn(views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
+                  views::GridLayout::ColumnSize::kFixed, kButtonWidth, 0);
+  }
+}
+
 }  // namespace
-
-// ShareSheetTargetButton
-
-// A button that represents a candidate share target.
-class ShareSheetTargetButton : public views::Button {
- public:
-  ShareSheetTargetButton(views::ButtonListener* listener,
-                         const base::string16& display_name,
-                         const base::string16& secondary_display_name,
-                         const gfx::ImageSkia* icon)
-      : Button(listener) {
-    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical, gfx::Insets(kButtonPadding),
-        kButtonPadding, true));
-    layout->set_main_axis_alignment(
-        views::BoxLayout::MainAxisAlignment::kStart);
-    layout->set_cross_axis_alignment(
-        views::BoxLayout::CrossAxisAlignment::kCenter);
-
-    auto* image = AddChildView(std::make_unique<views::ImageView>());
-    image->set_can_process_events_within_subtree(false);
-
-    if (!icon->isNull()) {
-      image->SetImage(icon);
-    }
-
-    auto label_view = std::make_unique<views::View>();
-    label_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0, true));
-
-    auto* label =
-        label_view->AddChildView(std::make_unique<views::Label>(display_name));
-    label->SetFontList(gfx::FontList(kButtonLabelFont));
-    label->SetEnabledColor(kShareTargetTitleColor);
-    SetLabelProperties(label);
-
-    if (secondary_display_name != base::string16() &&
-        secondary_display_name != display_name) {
-      auto* secondary_label = label_view->AddChildView(
-          std::make_unique<views::Label>(secondary_display_name));
-      secondary_label->SetFontList(gfx::FontList(kButtonSecondaryLabelFont));
-      secondary_label->SetEnabledColor(kShareTargetSecondaryTitleColor);
-      SetLabelProperties(secondary_label);
-    } else {
-      // If there is no secondary label, let the initial label stretch across
-      // multiple lines.
-      label->SetMultiLine(true);
-      label->SetMaxLines(kButtonMaxLines);
-    }
-
-    AddChildView(std::move(label_view));
-
-    SetFocusForPlatform();
-  }
-
-  ShareSheetTargetButton(const ShareSheetTargetButton&) = delete;
-  ShareSheetTargetButton& operator=(const ShareSheetTargetButton&) = delete;
-
-  void SetLabelProperties(views::Label* label) {
-    label->SetLineHeight(kButtonLineHeight);
-    label->SetMaximumWidth(kButtonTextMaxWidth);
-    label->SetBackgroundColor(SK_ColorTRANSPARENT);
-    label->SetHandlesTooltips(true);
-    label->SetTooltipText(label->GetText());
-    label->SetMultiLine(false);
-    label->SetAutoColorReadabilityEnabled(false);
-    label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  }
-
-  // Button is 76px width x 88px height + 8px padding along all sides.
-  gfx::Size CalculatePreferredSize() const override {
-    return gfx::Size(kButtonWidth, kButtonHeight);
-  }
-};
 
 SharesheetBubbleView::SharesheetBubbleView(
     views::View* anchor_view,
@@ -200,46 +135,19 @@ void SharesheetBubbleView::ShowBubble(std::vector<TargetInfo> targets,
   title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   main_layout->AddPaddingRow(views::GridLayout::kFixedSize, kSpacing);
 
-  // Add Targets
-  auto scrollable_view = std::make_unique<views::View>();
-  auto* scroll_layout =
-      scrollable_view->SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* cs_buttons =
-      scroll_layout->AddColumnSet(COLUMN_SET_ID_TARGETS);
-  for (int i = 0; i < kMaxTargetsPerRow; i++) {
-    cs_buttons->AddColumn(views::GridLayout::CENTER, views::GridLayout::CENTER,
-                          0, views::GridLayout::ColumnSize::kFixed,
-                          kButtonWidth, 0);
-  }
-
-  size_t i = 0;
-  for (const auto& target : targets_) {
-    if (i % kMaxTargetsPerRow == 0) {
-      if (i != 0) {
-        scroll_layout->AddPaddingRow(views::GridLayout::kFixedSize,
-                                     kButtonPadding);
-      }
-      scroll_layout->StartRow(views::GridLayout::kFixedSize,
-                              COLUMN_SET_ID_TARGETS);
-    }
-
-    auto secondary_display_name = base::string16();
-    if (target.secondary_display_name.has_value() &&
-        !target.secondary_display_name.value().empty()) {
-      secondary_display_name = target.secondary_display_name.value();
-    }
-    auto target_view = std::make_unique<ShareSheetTargetButton>(
-        this, target.display_name, secondary_display_name, &target.icon);
-    target_view->set_tag(i++);
-    scroll_layout->AddView(std::move(target_view));
-  }
-
   auto scroll_view = std::make_unique<views::ScrollView>();
-  scroll_view->SetContents(std::move(scrollable_view));
-  scroll_view->ClipHeightTo(kTargetViewHeight, kTargetViewHeight);
+  scroll_view->SetContents(MakeScrollableTargetView());
+  scroll_view->ClipHeightTo(kTargetViewHeight, kTargetViewExpandedHeight);
 
+  // TODO(crbug.com/1097623) Update grey border lines.
   main_layout->StartRow(views::GridLayout::kFixedSize, COLUMN_SET_ID_TITLE);
   main_layout->AddView(std::move(scroll_view));
+  main_layout->AddPaddingRow(views::GridLayout::kFixedSize, kShortSpacing);
+
+  main_layout->StartRow(views::GridLayout::kFixedSize, COLUMN_SET_ID_TITLE,
+                        kShortSpacing);
+  expand_button_ =
+      main_layout->AddView(std::make_unique<SharesheetExpandButton>(this));
   main_layout->AddPaddingRow(views::GridLayout::kFixedSize, kShortSpacing);
 
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
@@ -248,6 +156,97 @@ void SharesheetBubbleView::ShowBubble(std::vector<TargetInfo> targets,
 
   SetToDefaultBubbleSizing();
   UpdateAnchorPosition();
+}
+
+std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView() {
+  // Set up default and expanded views.
+  auto default_view = std::make_unique<views::View>();
+  auto* default_layout =
+      default_view->SetLayoutManager(std::make_unique<views::GridLayout>());
+  SetUpTargetColumnSet(default_layout);
+
+  // TODO(crbug.com/1097623) When there are 8 or less apps don't show
+  // expanded_view.
+
+  auto expanded_view = std::make_unique<views::View>();
+  auto* expanded_layout =
+      expanded_view->SetLayoutManager(std::make_unique<views::GridLayout>());
+  SetUpTargetColumnSet(expanded_layout);
+  views::ColumnSet* cs_expanded_view =
+      expanded_layout->AddColumnSet(COLUMN_SET_ID_TITLE);
+  cs_expanded_view->AddColumn(/* h_align */ views::GridLayout::FILL,
+                              /* v_align */ views::GridLayout::CENTER,
+                              /* resize_percent */ 1.0,
+                              views::GridLayout::ColumnSize::kUsePreferred,
+                              /* fixed_width */ 0, /*min_width*/ 0);
+
+  // Add Extended View Title
+  expanded_layout->AddPaddingRow(views::GridLayout::kFixedSize,
+                                 kExpandViewPadding);
+  expanded_layout->StartRow(views::GridLayout::kFixedSize, COLUMN_SET_ID_TITLE,
+                            kExpandViewTitleLabelHeight);
+  // TODO(crbug.com/1130409) Add translation for this string.
+  auto* app_list_label =
+      expanded_layout->AddView(std::make_unique<views::Label>(
+          base::UTF8ToUTF16(base::StringPiece("Apps list"))));
+  app_list_label->SetFontList(gfx::FontList(kExpandViewTitleFont));
+  app_list_label->SetLineHeight(kExpandViewTitleLabelHeight);
+  app_list_label->SetEnabledColor(kShareTargetTitleColor);
+  app_list_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  expanded_layout->AddPaddingRow(views::GridLayout::kFixedSize,
+                                 kExpandViewPadding);
+
+  PopulateLayoutsWithTargets(default_layout, expanded_layout);
+  default_layout->AddPaddingRow(views::GridLayout::kFixedSize, kShortSpacing);
+
+  auto scrollable_view = std::make_unique<views::View>();
+  auto* layout =
+      scrollable_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical));
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  scrollable_view->AddChildView(std::move(default_view));
+  expanded_view_ = scrollable_view->AddChildView(std::move(expanded_view));
+
+  // Expanded view is not visible by default.
+  expanded_view_->SetVisible(false);
+
+  return scrollable_view;
+}
+
+void SharesheetBubbleView::PopulateLayoutsWithTargets(
+    views::GridLayout* default_layout,
+    views::GridLayout* expanded_layout) {
+  // Add first kMaxRowsForDefaultView*kMaxTargetsPerRow targets to
+  // |default_view| and subsequent targets to |expanded_view|.
+  size_t target_counter = 0;
+  size_t row_count = 0;
+  auto* layout_for_target = default_layout;
+  for (const auto& target : targets_) {
+    if (target_counter % kMaxTargetsPerRow == 0) {
+      // When we've reached kMaxRowsForDefaultView switch to populating
+      // |expanded_layout|.
+      if (row_count == kMaxRowsForDefaultView) {
+        layout_for_target = expanded_layout;
+        // Do not add a padding row if we are at the first row of
+        // |default_layout| or |expanded_layout|.
+      } else if (row_count != 0) {
+        layout_for_target->AddPaddingRow(views::GridLayout::kFixedSize,
+                                         kButtonPadding);
+      }
+      ++row_count;
+      layout_for_target->StartRow(views::GridLayout::kFixedSize,
+                                  COLUMN_SET_ID_TARGETS);
+    }
+
+    base::string16 secondary_display_name =
+        target.secondary_display_name.value_or(base::string16());
+
+    auto target_view = std::make_unique<SharesheetTargetButton>(
+        this, target.display_name, secondary_display_name, &target.icon);
+    target_view->set_tag(++target_counter);
+
+    layout_for_target->AddView(std::move(target_view));
+  }
 }
 
 void SharesheetBubbleView::ShowActionView() {
@@ -273,16 +272,29 @@ void SharesheetBubbleView::CloseBubble() {
 
 void SharesheetBubbleView::ButtonPressed(views::Button* sender,
                                          const ui::Event& event) {
-  auto type = targets_[sender->tag()].type;
-  if (type == sharesheet::TargetType::kAction) {
-    active_target_ = targets_[sender->tag()].launch_name;
+  if (sender == expand_button_) {
+    if (show_expanded_view_) {
+      expand_button_->SetDefaultView();
+      expanded_view_->SetVisible(false);
+      ResizeBubble(kDefaultBubbleWidth, kDefaultBubbleHeight);
+    } else {
+      expand_button_->SetExpandedView();
+      expanded_view_->SetVisible(true);
+      ResizeBubble(kDefaultBubbleWidth, kExpandedBubbleHeight);
+    }
+    show_expanded_view_ = !show_expanded_view_;
   } else {
-    intent_->activity_name = targets_[sender->tag()].activity_name;
+    auto type = targets_[sender->tag()].type;
+    if (type == sharesheet::TargetType::kAction) {
+      active_target_ = targets_[sender->tag()].launch_name;
+    } else {
+      intent_->activity_name = targets_[sender->tag()].activity_name;
+    }
+    delegate_->OnTargetSelected(targets_[sender->tag()].launch_name, type,
+                                std::move(intent_), share_action_view_);
+    intent_.reset();
+    user_cancelled_ = false;
   }
-  delegate_->OnTargetSelected(targets_[sender->tag()].launch_name, type,
-                              std::move(intent_), share_action_view_);
-  intent_.reset();
-  user_cancelled = false;
 }
 
 std::unique_ptr<views::NonClientFrameView>
@@ -300,7 +312,7 @@ SharesheetBubbleView::CreateNonClientFrameView(views::Widget* widget) {
 void SharesheetBubbleView::OnWidgetDestroyed(views::Widget* widget) {
   // If there is no active_target_ value, the user cancelled without making a
   // selection and we will record this.
-  if (user_cancelled) {
+  if (user_cancelled_) {
     sharesheet::SharesheetMetrics::RecordSharesheetActionMetrics(
         sharesheet::SharesheetMetrics::UserAction::kCancelled);
   }
@@ -318,8 +330,11 @@ void SharesheetBubbleView::CreateBubble() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
+  // Margins must be set to 0 or share_action_view will have undesired margins.
   set_margins(gfx::Insets());
 
+  // TODO(crbug.com/1097623) Remove root_view which is only used to set up
+  // margins for |main_view_|.
   auto root_view = std::make_unique<views::View>();
   root_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,

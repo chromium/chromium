@@ -2083,8 +2083,12 @@ static_library("ui") {
       "views/profiles/profile_indicator_icon.h",
       "views/relaunch_notification/relaunch_notification_controller_platform_impl_chromeos.cc",
       "views/relaunch_notification/relaunch_notification_controller_platform_impl_chromeos.h",
-      "views/sharesheet_bubble_view.cc",
-      "views/sharesheet_bubble_view.h",
+      "views/sharesheet/sharesheet_bubble_view.cc",
+      "views/sharesheet/sharesheet_bubble_view.h",
+      "views/sharesheet/sharesheet_expand_button.cc",
+      "views/sharesheet/sharesheet_expand_button.h",
+      "views/sharesheet/sharesheet_target_button.cc",
+      "views/sharesheet/sharesheet_target_button.h",
 
       # On chromeos, file manager extension handles the file open/save dialog.
       "views/select_file_dialog_extension.cc",

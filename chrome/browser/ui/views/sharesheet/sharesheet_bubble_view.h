@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SHARESHEET_BUBBLE_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_SHARESHEET_BUBBLE_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_SHARESHEET_SHARESHEET_BUBBLE_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_SHARESHEET_SHARESHEET_BUBBLE_VIEW_H_
 
 #include <vector>
 
@@ -12,6 +12,10 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 
+namespace views {
+class GridLayout;
+}
+
 namespace sharesheet {
 class SharesheetServiceDelegate;
 }
@@ -19,6 +23,8 @@ class SharesheetServiceDelegate;
 namespace content {
 class WebContents;
 }
+
+class SharesheetExpandButton;
 
 class SharesheetBubbleView : public views::BubbleDialogDelegateView,
                              public views::ButtonListener {
@@ -52,6 +58,9 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   void OnWidgetDestroyed(views::Widget* widget) override;
 
   void CreateBubble();
+  std::unique_ptr<views::View> MakeScrollableTargetView();
+  void PopulateLayoutsWithTargets(views::GridLayout* default_layout,
+                                  views::GridLayout* expanded_layout);
   void OnDialogClosed();
   void UpdateAnchorPosition();
   void SetToDefaultBubbleSizing();
@@ -61,14 +70,18 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   std::vector<TargetInfo> targets_;
   base::string16 active_target_;
   apps::mojom::IntentPtr intent_;
+
   int width_ = 0;
   int height_ = 0;
-  bool user_cancelled = true;
+  bool user_cancelled_ = true;
+  bool show_expanded_view_ = false;
 
   views::View* root_view_ = nullptr;
   views::View* main_view_ = nullptr;
+  views::View* expanded_view_ = nullptr;
   views::View* share_action_view_ = nullptr;
   views::View* parent_view_ = nullptr;
+  SharesheetExpandButton* expand_button_ = nullptr;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SHARESHEET_BUBBLE_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_SHARESHEET_SHARESHEET_BUBBLE_VIEW_H_
