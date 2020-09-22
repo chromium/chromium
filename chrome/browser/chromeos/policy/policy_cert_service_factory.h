@@ -43,11 +43,11 @@ class PolicyCertServiceFactory : public BrowserContextKeyedServiceFactory {
 
   static PolicyCertServiceFactory* GetInstance();
 
-  // Used to mark or clear |user_id| as having used certificates pushed by
+  // Used to mark or clear |user_email| as having used certificates pushed by
   // policy before.
-  static void SetUsedPolicyCertificates(const std::string& user_id);
-  static void ClearUsedPolicyCertificates(const std::string& user_id);
-  static bool UsedPolicyCertificates(const std::string& user_id);
+  static void SetUsedPolicyCertificates(const std::string& user_email);
+  static void ClearUsedPolicyCertificates(const std::string& user_email);
+  static bool UsedPolicyCertificates(const std::string& user_email);
 
   static void RegisterPrefs(PrefRegistrySimple* local_state);
 

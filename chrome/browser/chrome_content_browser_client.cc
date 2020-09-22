@@ -2775,7 +2775,7 @@ void ChromeContentBrowserClient::OnTrustAnchorUsed(
             Profile::FromBrowserContext(browser_context));
     if (user && !user->username_hash().empty()) {
       policy::PolicyCertServiceFactory::SetUsedPolicyCertificates(
-          user->username_hash());
+          user->GetAccountId().GetUserEmail());
     }
   }
 }

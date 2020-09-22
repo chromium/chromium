@@ -61,26 +61,26 @@ PolicyCertServiceFactory* PolicyCertServiceFactory::GetInstance() {
 
 // static
 void PolicyCertServiceFactory::SetUsedPolicyCertificates(
-    const std::string& user_id) {
-  if (UsedPolicyCertificates(user_id))
+    const std::string& user_email) {
+  if (UsedPolicyCertificates(user_email))
     return;
   ListPrefUpdate update(g_browser_process->local_state(),
                         prefs::kUsedPolicyCertificates);
-  update->AppendString(user_id);
+  update->AppendString(user_email);
 }
 
 // static
 void PolicyCertServiceFactory::ClearUsedPolicyCertificates(
-    const std::string& user_id) {
+    const std::string& user_email) {
   ListPrefUpdate update(g_browser_process->local_state(),
                         prefs::kUsedPolicyCertificates);
-  update->Remove(base::Value(user_id), nullptr);
+  update->Remove(base::Value(user_email), nullptr);
 }
 
 // static
 bool PolicyCertServiceFactory::UsedPolicyCertificates(
-    const std::string& user_id) {
-  base::Value value(user_id);
+    const std::string& user_email) {
+  base::Value value(user_email);
   const base::ListValue* list =
       g_browser_process->local_state()->GetList(prefs::kUsedPolicyCertificates);
   if (!list) {
