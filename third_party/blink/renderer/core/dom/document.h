@@ -996,7 +996,8 @@ class CORE_EXPORT Document : public ContainerNode,
   void WillChangeFrameOwnerProperties(int margin_width,
                                       int margin_height,
                                       mojom::blink::ScrollbarMode,
-                                      bool is_display_none);
+                                      bool is_display_none,
+                                      ColorScheme color_scheme);
 
   String title() const { return title_; }
   void setTitle(const String&);

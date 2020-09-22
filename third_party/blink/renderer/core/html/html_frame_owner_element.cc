@@ -374,6 +374,7 @@ void HTMLFrameOwnerElement::FrameOwnerPropertiesChanged() {
   properties->allow_fullscreen = AllowFullscreen();
   properties->allow_payment_request = AllowPaymentRequest();
   properties->is_display_none = IsDisplayNone();
+  properties->color_scheme = GetColorScheme();
   properties->required_csp =
       RequiredCsp().IsNull() ? WTF::g_empty_string : RequiredCsp();
 
@@ -442,8 +443,9 @@ void HTMLFrameOwnerElement::SetEmbeddedContentView(
   if (doc && doc->GetFrame()) {
     bool will_be_display_none = !embedded_content_view;
     if (IsDisplayNone() != will_be_display_none) {
-      doc->WillChangeFrameOwnerProperties(
-          MarginWidth(), MarginHeight(), ScrollbarMode(), will_be_display_none);
+      doc->WillChangeFrameOwnerProperties(MarginWidth(), MarginHeight(),
+                                          ScrollbarMode(), will_be_display_none,
+                                          GetColorScheme());
     }
   }
 
@@ -666,6 +668,22 @@ bool HTMLFrameOwnerElement::IsAdRelated() const {
     return false;
 
   return content_frame_->IsAdSubframe();
+}
+
+ColorScheme HTMLFrameOwnerElement::GetColorScheme() const {
+  if (const auto* style = GetComputedStyle())
+    return style->UsedColorSchemeForInitialColors();
+  return ColorScheme::kLight;
+}
+
+void HTMLFrameOwnerElement::SetColorScheme(ColorScheme color_scheme) {
+  Document* doc = contentDocument();
+  if (doc && doc->GetFrame()) {
+    doc->WillChangeFrameOwnerProperties(MarginWidth(), MarginHeight(),
+                                        ScrollbarMode(), IsDisplayNone(),
+                                        color_scheme);
+  }
+  FrameOwnerPropertiesChanged();
 }
 
 void HTMLFrameOwnerElement::Trace(Visitor* visitor) const {

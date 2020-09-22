@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
@@ -42,10 +43,13 @@
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_request.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
 
@@ -3215,6 +3219,45 @@ TEST_P(ParameterizedStyleEngineTest,
 
   // Shouldn't crash.
   UpdateAllLifecyclePhases();
+}
+
+class StyleEngineSimTest : public SimTest {};
+
+TEST_F(StyleEngineSimTest, OwnerColorScheme) {
+  SimRequest main_resource("https://example.com", "text/html");
+  SimRequest frame_resource("https://example.com/frame.html", "text/html");
+
+  LoadURL("https://example.com");
+
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <style>
+      iframe { color-scheme: dark }
+    </style>
+    <iframe id="frame" src="https://example.com/frame.html"></iframe>
+  )HTML");
+
+  frame_resource.Complete(R"HTML(
+    <!doctype html>
+    <p>Frame</p>
+  )HTML");
+
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+
+  auto* frame_element =
+      To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
+  auto* frame_document = frame_element->contentDocument();
+  ASSERT_TRUE(frame_document);
+  EXPECT_EQ(ColorScheme::kDark,
+            frame_document->GetStyleEngine().GetOwnerColorScheme());
+
+  frame_element->SetInlineStyleProperty(CSSPropertyID::kColorScheme, "light");
+
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+  EXPECT_EQ(ColorScheme::kLight,
+            frame_document->GetStyleEngine().GetOwnerColorScheme());
 }
 
 }  // namespace blink

@@ -84,6 +84,10 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
 
   bool CanBeSelectionLeafInternal() const final { return true; }
 
+  HTMLFrameOwnerElement* GetFrameOwnerElement() const {
+    return To<HTMLFrameOwnerElement>(GetNode());
+  }
+
  private:
   bool CanHaveAdditionalCompositingReasons() const override { return true; }
   CompositingReasons AdditionalCompositingReasons() const override;
@@ -96,10 +100,6 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
       const HitTestLocation&,
       const PhysicalOffset& accumulated_offset,
       HitTestAction);
-
-  HTMLFrameOwnerElement* GetFrameOwnerElement() const {
-    return To<HTMLFrameOwnerElement>(GetNode());
-  }
 
   int ref_count_;
 };

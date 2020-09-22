@@ -119,6 +119,8 @@ StyleEngine::StyleEngine(Document& document)
     font_selector_ = CreateCSSFontSelectorFor(document);
     font_selector_->RegisterForInvalidationCallbacks(this);
     resolver_ = MakeGarbageCollected<StyleResolver>(document);
+    if (const auto* owner = document.GetFrame()->Owner())
+      owner_color_scheme_ = owner->GetColorScheme();
   }
   if (document.IsInMainFrame())
     viewport_resolver_ = MakeGarbageCollected<ViewportStyleResolver>(document);
@@ -2217,6 +2219,13 @@ void StyleEngine::UpdateColorSchemeBackground(bool color_scheme_changed) {
   use_color_adjust_background |= use_dark_background_;
   view->SetUseColorAdjustBackground(use_color_adjust_background,
                                     color_scheme_changed);
+}
+
+void StyleEngine::SetOwnerColorScheme(ColorScheme color_scheme) {
+  DCHECK(!GetDocument().IsInMainFrame());
+  if (owner_color_scheme_ == color_scheme)
+    return;
+  owner_color_scheme_ = color_scheme;
 }
 
 void StyleEngine::UpdateForcedBackgroundColor() {

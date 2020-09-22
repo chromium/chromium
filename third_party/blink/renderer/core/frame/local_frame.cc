@@ -2636,7 +2636,8 @@ void LocalFrame::SetFrameOwnerProperties(
     mojom::blink::FrameOwnerPropertiesPtr properties) {
   GetDocument()->WillChangeFrameOwnerProperties(
       properties->margin_width, properties->margin_height,
-      properties->scrollbar_mode, properties->is_display_none);
+      properties->scrollbar_mode, properties->is_display_none,
+      properties->color_scheme);
 
   Frame::ApplyFrameOwnerProperties(std::move(properties));
 }

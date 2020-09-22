@@ -56,6 +56,7 @@ class CORE_EXPORT RemoteFrameOwner final
   bool AllowFullscreen() const override { return allow_fullscreen_; }
   bool AllowPaymentRequest() const override { return allow_payment_request_; }
   bool IsDisplayNone() const override { return is_display_none_; }
+  ColorScheme GetColorScheme() const override { return color_scheme_; }
   AtomicString RequiredCsp() const override { return required_csp_; }
   bool ShouldLazyLoadChildren() const final;
 
@@ -76,6 +77,9 @@ class CORE_EXPORT RemoteFrameOwner final
   }
   void SetIsDisplayNone(bool is_display_none) {
     is_display_none_ = is_display_none;
+  }
+  void SetColorScheme(ColorScheme color_scheme) {
+    color_scheme_ = color_scheme;
   }
   void SetRequiredCsp(const WebString& required_csp) {
     required_csp_ = required_csp;
@@ -98,6 +102,7 @@ class CORE_EXPORT RemoteFrameOwner final
   bool allow_fullscreen_;
   bool allow_payment_request_;
   bool is_display_none_;
+  ColorScheme color_scheme_;
   bool needs_occlusion_tracking_;
   WebString required_csp_;
   const mojom::blink::FrameOwnerElementType frame_owner_element_type_;

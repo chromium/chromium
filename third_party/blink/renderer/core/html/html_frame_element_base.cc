@@ -264,7 +264,8 @@ void HTMLFrameElementBase::SetScrollbarMode(
 
   if (contentDocument()) {
     contentDocument()->WillChangeFrameOwnerProperties(
-        margin_width_, margin_height_, scrollbar_mode, IsDisplayNone());
+        margin_width_, margin_height_, scrollbar_mode, IsDisplayNone(),
+        GetColorScheme());
   }
   scrollbar_mode_ = scrollbar_mode;
   FrameOwnerPropertiesChanged();
@@ -276,7 +277,8 @@ void HTMLFrameElementBase::SetMarginWidth(int margin_width) {
 
   if (contentDocument()) {
     contentDocument()->WillChangeFrameOwnerProperties(
-        margin_width, margin_height_, scrollbar_mode_, IsDisplayNone());
+        margin_width, margin_height_, scrollbar_mode_, IsDisplayNone(),
+        GetColorScheme());
   }
   margin_width_ = margin_width;
   FrameOwnerPropertiesChanged();
@@ -288,7 +290,8 @@ void HTMLFrameElementBase::SetMarginHeight(int margin_height) {
 
   if (contentDocument()) {
     contentDocument()->WillChangeFrameOwnerProperties(
-        margin_width_, margin_height, scrollbar_mode_, IsDisplayNone());
+        margin_width_, margin_height, scrollbar_mode_, IsDisplayNone(),
+        GetColorScheme());
   }
   margin_height_ = margin_height;
   FrameOwnerPropertiesChanged();

@@ -5753,13 +5753,13 @@ void Document::WillChangeFrameOwnerProperties(
     int margin_width,
     int margin_height,
     mojom::blink::ScrollbarMode scrollbar_mode,
-    bool is_display_none) {
+    bool is_display_none,
+    ColorScheme color_scheme) {
   DCHECK(GetFrame() && GetFrame()->Owner());
   FrameOwner* owner = GetFrame()->Owner();
 
   if (is_display_none != owner->IsDisplayNone())
     DisplayNoneChangedForFrame();
-
   // body() may become null as a result of modification event listeners, so we
   // check before each call.
   if (margin_width != owner->MarginWidth()) {
@@ -5779,6 +5779,7 @@ void Document::WillChangeFrameOwnerProperties(
                                  mojom::blink::ScrollbarMode::kAlwaysOff);
     View()->SetNeedsLayout();
   }
+  GetStyleEngine().SetOwnerColorScheme(color_scheme);
 }
 
 String Document::cookie(ExceptionState& exception_state) const {

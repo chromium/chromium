@@ -30,6 +30,7 @@ RemoteFrameOwner::RemoteFrameOwner(
       allow_fullscreen_(frame_owner_properties.allow_fullscreen),
       allow_payment_request_(frame_owner_properties.allow_payment_request),
       is_display_none_(frame_owner_properties.is_display_none),
+      color_scheme_(frame_owner_properties.color_scheme),
       needs_occlusion_tracking_(false),
       required_csp_(frame_owner_properties.required_csp),
       frame_owner_element_type_(frame_owner_element_type) {}

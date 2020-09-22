@@ -393,6 +393,17 @@ mojom("mojom_platform") {
       traits_headers = [ "//third_party/blink/public/common/loader/url_loader_factory_bundle_mojom_traits.h" ]
       traits_public_deps = [ "//url/mojom:mojom_traits" ]
     },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.ColorScheme"
+          cpp = "::blink::ColorScheme"
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/frame/frame_owner_properties_mojom_traits.h" ]
+      traits_public_deps = [ "//third_party/blink/public/common:headers" ]
+    },
   ]
   cpp_typemaps = [
     {
