@@ -9919,6 +9919,7 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'deprecated': True,
       'example_value': True,
       'id': 463,
       'caption': '''Allow managed session on device''',
