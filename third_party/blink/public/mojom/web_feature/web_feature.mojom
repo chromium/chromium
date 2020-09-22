@@ -2868,7 +2868,7 @@ enum WebFeature {
   kIdentifiabilityStudyReserved3538 = 3538,
   kIdentifiabilityStudyReserved3539 = 3539,
   kIdentifiabilityStudyReserved3540 = 3540,
-  kIdentifiabilityStudyReserved3541 = 3541,
+  kV8WheelEvent_DeltaMode_AttributeGetter = 3541,
   kIdentifiabilityStudyReserved3542 = 3542,
   kIdentifiabilityStudyReserved3543 = 3543,
   kIdentifiabilityStudyReserved3544 = 3544,
