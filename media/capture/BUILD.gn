@@ -221,19 +221,15 @@ component("capture_lib") {
       "video/win/video_capture_device_utils_win.h",
       "video/win/video_capture_device_win.cc",
       "video/win/video_capture_device_win.h",
-      "video/win/video_capture_dxgi_device_manager.cc",
-      "video/win/video_capture_dxgi_device_manager.h",
     ]
     deps += [ "//media/base/win:media_foundation_util" ]
     libs = [
-      "d3d11.lib",
       "mf.lib",
       "mfplat.lib",
       "mfreadwrite.lib",
       "mfuuid.lib",
     ]
     ldflags = [
-      "/DELAYLOAD:d3d11.dll",
       "/DELAYLOAD:mf.dll",
       "/DELAYLOAD:mfplat.dll",
       "/DELAYLOAD:mfreadwrite.dll",

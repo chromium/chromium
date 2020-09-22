@@ -348,7 +348,7 @@ std::unique_ptr<VideoCaptureDevice> VideoCaptureDeviceFactoryWin::CreateDevice(
         break;
       }
       auto device = std::make_unique<VideoCaptureDeviceMFWin>(
-          device_descriptor, std::move(source), dxgi_device_manager_);
+          device_descriptor, std::move(source));
       DVLOG(1) << " MediaFoundation Device: "
                << device_descriptor.display_name();
       if (device->Init())
@@ -496,16 +496,10 @@ bool VideoCaptureDeviceFactoryWin::CreateDeviceSourceMediaFoundation(
 
 bool VideoCaptureDeviceFactoryWin::CreateDeviceSourceMediaFoundation(
     ComPtr<IMFAttributes> attributes,
-    IMFMediaSource** source_out) {
-  ComPtr<IMFMediaSource> source;
-  HRESULT hr = MFCreateDeviceSource(attributes.Get(), &source);
+    IMFMediaSource** source) {
+  HRESULT hr = MFCreateDeviceSource(attributes.Get(), source);
   DLOG_IF(ERROR, FAILED(hr)) << "MFCreateDeviceSource failed: "
                              << logging::SystemErrorCodeToString(hr);
-  if (SUCCEEDED(hr) && use_d3d11_with_media_foundation_ &&
-      dxgi_device_manager_) {
-    dxgi_device_manager_->RegisterWithMediaSource(source);
-  }
-  *source_out = source.Detach();
   return SUCCEEDED(hr);
 }
 
@@ -703,10 +697,6 @@ DevicesInfo VideoCaptureDeviceFactoryWin::GetDevicesInfoMediaFoundation() {
   DVLOG(1) << " GetDevicesInfoMediaFoundation";
 
   DevicesInfo devices_info;
-
-  if (use_d3d11_with_media_foundation_ && !dxgi_device_manager_) {
-    dxgi_device_manager_ = VideoCaptureDXGIDeviceManager::Create();
-  }
 
   // Recent non-RGB (depth, IR) cameras could be marked as sensor cameras in
   // driver inf file and MFEnumDeviceSources enumerates them only if attribute

@@ -713,17 +713,12 @@ HRESULT VideoCaptureDeviceMFWin::FillCapabilities(
 
 VideoCaptureDeviceMFWin::VideoCaptureDeviceMFWin(
     const VideoCaptureDeviceDescriptor& device_descriptor,
-    ComPtr<IMFMediaSource> source,
-    scoped_refptr<VideoCaptureDXGIDeviceManager> dxgi_device_manager)
-    : VideoCaptureDeviceMFWin(device_descriptor,
-                              source,
-                              std::move(dxgi_device_manager),
-                              nullptr) {}
+    ComPtr<IMFMediaSource> source)
+    : VideoCaptureDeviceMFWin(device_descriptor, source, nullptr) {}
 
 VideoCaptureDeviceMFWin::VideoCaptureDeviceMFWin(
     const VideoCaptureDeviceDescriptor& device_descriptor,
     ComPtr<IMFMediaSource> source,
-    scoped_refptr<VideoCaptureDXGIDeviceManager> dxgi_device_manager,
     ComPtr<IMFCaptureEngine> engine)
     : facing_mode_(device_descriptor.facing),
       create_mf_photo_callback_(base::BindRepeating(&CreateMFPhotoCallback)),
@@ -741,8 +736,7 @@ VideoCaptureDeviceMFWin::VideoCaptureDeviceMFWin(
                           base::WaitableEvent::InitialState::NOT_SIGNALED),
       // We never want to reset |capture_error_|.
       capture_error_(base::WaitableEvent::ResetPolicy::MANUAL,
-                     base::WaitableEvent::InitialState::NOT_SIGNALED),
-      dxgi_device_manager_(std::move(dxgi_device_manager)) {
+                     base::WaitableEvent::InitialState::NOT_SIGNALED) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -793,10 +787,6 @@ bool VideoCaptureDeviceMFWin::Init() {
   if (FAILED(hr)) {
     LogError(FROM_HERE, hr);
     return false;
-  }
-
-  if (dxgi_device_manager_) {
-    dxgi_device_manager_->RegisterInCaptureEngineAttributes(attributes.Get());
   }
 
   video_callback_ = new MFVideoCallback(this);

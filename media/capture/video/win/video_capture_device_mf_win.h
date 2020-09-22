@@ -25,7 +25,6 @@
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/win/capability_list_win.h"
 #include "media/capture/video/win/metrics.h"
-#include "media/capture/video/win/video_capture_dxgi_device_manager.h"
 
 interface IMFSourceReader;
 
@@ -46,12 +45,10 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
 
   explicit VideoCaptureDeviceMFWin(
       const VideoCaptureDeviceDescriptor& device_descriptor,
-      Microsoft::WRL::ComPtr<IMFMediaSource> source,
-      scoped_refptr<VideoCaptureDXGIDeviceManager> dxgi_device_manager);
+      Microsoft::WRL::ComPtr<IMFMediaSource> source);
   explicit VideoCaptureDeviceMFWin(
       const VideoCaptureDeviceDescriptor& device_descriptor,
       Microsoft::WRL::ComPtr<IMFMediaSource> source,
-      scoped_refptr<VideoCaptureDXGIDeviceManager> dxgi_device_manager,
       Microsoft::WRL::ComPtr<IMFCaptureEngine> engine);
 
   ~VideoCaptureDeviceMFWin() override;
@@ -96,11 +93,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
 
   void set_retry_delay_in_ms_for_testing(int retry_delay_in_ms) {
     retry_delay_in_ms_ = retry_delay_in_ms;
-  }
-
-  void set_dxgi_device_manager_for_testing(
-      scoped_refptr<VideoCaptureDXGIDeviceManager> dxgi_device_manager) {
-    dxgi_device_manager_ = std::move(dxgi_device_manager);
   }
 
  private:
@@ -158,7 +150,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   base::queue<TakePhotoCallback> video_stream_take_photo_callbacks_;
   base::WaitableEvent capture_initialize_;
   base::WaitableEvent capture_error_;
-  scoped_refptr<VideoCaptureDXGIDeviceManager> dxgi_device_manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
