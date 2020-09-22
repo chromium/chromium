@@ -1238,7 +1238,7 @@
     'easwa_browser_tests' : {
       'easwa_browser_tests': {
         'args': [
-          '--gtest-filter=*HelpApp*:*MediaApp*'
+          '--gtest_filter=*HelpApp*:*MediaApp*'
         ],
         'swarming': {
           'shards': 1,

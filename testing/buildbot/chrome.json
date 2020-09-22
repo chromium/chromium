@@ -2879,7 +2879,7 @@
     "gtest_tests": [
       {
         "args": [
-          "--gtest-filter=*HelpApp*:*MediaApp*"
+          "--gtest_filter=*HelpApp*:*MediaApp*"
         ],
         "merge": {
           "args": [],
