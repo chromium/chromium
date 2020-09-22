@@ -1,0 +1,13 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("soda") {
+  sources = [
+    "soda_async_impl.h",
+    "soda_client.cc",
+    "soda_client.h",
+  ]
+
+  deps = [ "//base" ]
+}
