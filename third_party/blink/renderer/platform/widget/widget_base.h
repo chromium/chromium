@@ -141,10 +141,6 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void EndUpdateLayers() override;
   void UpdateVisualState() override;
   void WillBeginMainFrame() override;
-  void SubmitThroughputData(ukm::SourceId source_id,
-                            int aggregated_percent,
-                            int impl_percent,
-                            base::Optional<int> main_percent) override;
 
   cc::AnimationHost* AnimationHost() const;
   cc::LayerTreeHost* LayerTreeHost() const;

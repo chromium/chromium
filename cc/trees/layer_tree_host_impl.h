@@ -175,13 +175,6 @@ class LayerTreeHostImplClient {
 
   virtual void NotifyThroughputTrackerResults(CustomTrackerResults results) = 0;
 
-  // Send the throughput data to the main thread's LayerTreeHostClient, which
-  // then send the data to the browser process and eventually report to UKM.
-  virtual void SubmitThroughputData(ukm::SourceId source_id,
-                                    int aggregated_percent,
-                                    int impl_percent,
-                                    base::Optional<int> main_percent) = 0;
-
   virtual void DidObserveFirstScrollDelay(
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) = 0;

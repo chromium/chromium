@@ -274,12 +274,6 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle* handle);
 
-  // Submit throughput data to the browser process. Only called for local roots.
-  virtual void OnThroughputDataAvailable(ukm::SourceId source_id,
-                                         int aggregated_percent,
-                                         int impl_percent,
-                                         base::Optional<int> main_percent) {}
-
   // IPC::Listener implementation.
   bool OnMessageReceived(const IPC::Message& message) override;
 

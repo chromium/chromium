@@ -420,11 +420,6 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
     test_hooks_->NotifyThroughputTrackerResults(std::move(results));
   }
 
-  void SubmitThroughputData(ukm::SourceId source_id,
-                            int aggregated_percent,
-                            int impl_percent,
-                            base::Optional<int> main_percent) override {}
-
   void UpdateLayerTreeHost() override { test_hooks_->UpdateLayerTreeHost(); }
 
   void ApplyViewportChanges(const ApplyViewportChangesArgs& args) override {

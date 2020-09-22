@@ -723,10 +723,6 @@ class CONTENT_EXPORT RenderFrameImpl
       override;
   void DraggableRegionsChanged() override;
   blink::BrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker() override;
-  void SubmitThroughputData(ukm::SourceId source_id,
-                            int aggregated_percent,
-                            int impl_percent,
-                            base::Optional<int> main_percent) override;
   // Dispatches the current state of selection on the webpage to the browser if
   // it has changed.
   // TODO(varunjain): delete this method once we figure out how to keep

@@ -783,14 +783,6 @@ void PageLoadTracker::UpdateFeaturesUsage(
   }
 }
 
-void PageLoadTracker::UpdateThroughput(
-    mojom::ThroughputUkmDataPtr throughput_data) {
-  if (!throughput_data)
-    return;
-  for (const auto& observer : observers_)
-    observer->OnThroughputUpdate(throughput_data);
-}
-
 void PageLoadTracker::UpdateResourceDataUse(
     content::RenderFrameHost* rfh,
     const std::vector<mojom::ResourceDataUpdatePtr>& resources) {

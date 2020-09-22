@@ -99,12 +99,6 @@ std::unique_ptr<base::trace_event::TracedValue> CumulativeShiftScoreTraceData(
   return data;
 }
 
-bool ValidatePercent(int8_t percent) {
-  if (percent >= 0 && percent <= 100)
-    return true;
-  return false;
-}
-
 }  // namespace
 
 // static
@@ -998,31 +992,6 @@ void UkmPageLoadMetricsObserver::OnTimingUpdate(
                              .GetExperimentalLargestContentfulPaintHandler()
                              .MainFrameTreeNodeId());
   }
-}
-
-void UkmPageLoadMetricsObserver::OnThroughputUpdate(
-    const page_load_metrics::mojom::ThroughputUkmDataPtr& throughput_data) {
-  ukm::SourceId source_id = throughput_data->source_id;
-  DCHECK_NE(source_id, ukm::kInvalidSourceId);
-
-  int8_t aggregated_throughput_percent =
-      throughput_data->aggregated_throughput_percent;
-  int8_t impl_throughput_percent = throughput_data->impl_throughput_percent;
-  page_load_metrics::mojom::PercentOptionalPtr main_throughput_percent =
-      std::move(throughput_data->main_throughput_percent);
-
-  throughput_source_id_ = source_id;
-  if (!ValidatePercent(aggregated_throughput_percent) ||
-      !ValidatePercent(impl_throughput_percent) ||
-      (main_throughput_percent &&
-       !ValidatePercent(main_throughput_percent->percent))) {
-    mojo::ReportBadMessage("Invalid percentage value in ThroughputUkmData.");
-    return;
-  }
-  ++aggregated_throughput_data_[aggregated_throughput_percent];
-  ++impl_throughput_data_[impl_throughput_percent];
-  if (main_throughput_percent)
-    ++main_throughput_data_[main_throughput_percent->percent];
 }
 
 void UkmPageLoadMetricsObserver::OnCpuTimingUpdate(

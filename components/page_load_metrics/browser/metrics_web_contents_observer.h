@@ -189,11 +189,6 @@ class MetricsWebContentsObserver
                     mojom::DeferredResourceCountsPtr new_deferred_resource_data,
                     mojom::InputTimingPtr input_timing) override;
 
-  // Update the throughput samples on the browser side, and report it to UKM at
-  // page shuts down / nagivates away, report it to UKM.
-  void SubmitThroughputData(
-      mojom::ThroughputUkmDataPtr throughput_data) override;
-
   // Common part for UpdateThroughput and OnTimingUpdated.
   bool DoesTimingUpdateHaveError();
 

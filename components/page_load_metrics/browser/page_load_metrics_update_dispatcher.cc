@@ -507,18 +507,6 @@ void PageLoadMetricsUpdateDispatcher::UpdateFeatures(
   client_->UpdateFeaturesUsage(render_frame_host, new_features);
 }
 
-void PageLoadMetricsUpdateDispatcher::UpdateThroughput(
-    content::RenderFrameHost* render_frame_host,
-    mojom::ThroughputUkmDataPtr throughput_data) {
-  if (embedder_interface_->IsExtensionUrl(
-          render_frame_host->GetLastCommittedURL())) {
-    // Extensions can inject child frames into a page. We don't want to track
-    // these as they could skew metrics. See http://crbug.com/761037
-    return;
-  }
-  client_->UpdateThroughput(std::move(throughput_data));
-}
-
 void PageLoadMetricsUpdateDispatcher::DidFinishSubFrameNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->HasCommitted())

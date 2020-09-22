@@ -855,17 +855,6 @@ void MetricsWebContentsObserver::UpdateTiming(
                   std::move(input_timing_delta));
 }
 
-void MetricsWebContentsObserver::SubmitThroughputData(
-    mojom::ThroughputUkmDataPtr throughput_data) {
-  if (DoesTimingUpdateHaveError())
-    return;
-
-  content::RenderFrameHost* render_frame_host =
-      page_load_metrics_receiver_.GetCurrentTargetFrame();
-  committed_load_->metrics_update_dispatcher()->UpdateThroughput(
-      render_frame_host, std::move(throughput_data));
-}
-
 bool MetricsWebContentsObserver::ShouldTrackMainFrameNavigation(
     content::NavigationHandle* navigation_handle) const {
   DCHECK(navigation_handle->IsInMainFrame());

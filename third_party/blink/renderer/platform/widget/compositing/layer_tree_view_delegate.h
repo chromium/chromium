@@ -115,14 +115,6 @@ class LayerTreeViewDelegate {
   // perform actual painting work.
   virtual void WillBeginMainFrame() = 0;
 
-  // Submit throughput data to the browser process to store it in case the
-  // renderer process is destroyed via fast shutdown or crashes, at which point
-  // the data can still be submitted to UKM.
-  virtual void SubmitThroughputData(ukm::SourceId source_id,
-                                    int aggregated_percent,
-                                    int impl_percent,
-                                    base::Optional<int> main_percent) = 0;
-
  protected:
   virtual ~LayerTreeViewDelegate() {}
 };

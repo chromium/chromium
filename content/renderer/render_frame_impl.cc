@@ -2315,16 +2315,6 @@ void RenderFrameImpl::OnAssociatedInterfaceRequest(
   }
 }
 
-void RenderFrameImpl::SubmitThroughputData(ukm::SourceId source_id,
-                                           int aggregated_percent,
-                                           int impl_percent,
-                                           base::Optional<int> main_percent) {
-  for (auto& observer : observers_) {
-    observer.OnThroughputDataAvailable(source_id, aggregated_percent,
-                                       impl_percent, main_percent);
-  }
-}
-
 void RenderFrameImpl::BindFullscreen(
     mojo::PendingAssociatedReceiver<mojom::FullscreenVideoElementHandler>
         receiver) {

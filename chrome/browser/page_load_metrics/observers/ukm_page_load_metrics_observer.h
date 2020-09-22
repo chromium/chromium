@@ -96,9 +96,6 @@ class UkmPageLoadMetricsObserver
       content::RenderFrameHost* subframe_rfh,
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
-  void OnThroughputUpdate(const page_load_metrics::mojom::ThroughputUkmDataPtr&
-                              throughput_data) override;
-
   void OnCpuTimingUpdate(
       content::RenderFrameHost* subframe_rfh,
       const page_load_metrics::mojom::CpuTiming& timing) override;
@@ -264,15 +261,6 @@ class UkmPageLoadMetricsObserver
 
   // The connection info for the committed URL.
   base::Optional<net::HttpResponseInfo::ConnectionInfo> connection_info_;
-
-  // The ukm source id for throughput, sent from the renderer.
-  ukm::SourceId throughput_source_id_ = ukm::kInvalidSourceId;
-  // Record the throughput. The key is in the range of [0, 100], which is all
-  // the possible values of throughput (percent). The value is how many times
-  // this throughput value has been reported so far.
-  base::flat_map<int8_t, int> aggregated_throughput_data_;
-  base::flat_map<int8_t, int> impl_throughput_data_;
-  base::flat_map<int8_t, int> main_throughput_data_;
 
   DISALLOW_COPY_AND_ASSIGN(UkmPageLoadMetricsObserver);
 };

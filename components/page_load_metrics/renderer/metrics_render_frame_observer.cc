@@ -65,20 +65,6 @@ class MojoPageTimingSender : public PageTimingSender {
         std::move(new_deferred_resource_data), std::move(input_timing_delta));
   }
 
-  void SubmitThroughputData(ukm::SourceId source_id,
-                            int aggregated_percent,
-                            int impl_percent,
-                            base::Optional<int> main_percent) {
-    DCHECK(page_load_metrics_);
-    mojom::PercentOptionalPtr main_ptr =
-        main_percent.has_value()
-            ? mojom::PercentOptional::New(main_percent.value())
-            : nullptr;
-    mojom::ThroughputUkmDataPtr throughput_data = mojom::ThroughputUkmData::New(
-        source_id, aggregated_percent, impl_percent, std::move(main_ptr));
-    page_load_metrics_->SubmitThroughputData(std::move(throughput_data));
-  }
-
  private:
   // Indicates that this sender should not send timing updates or frame render
   // data updates.
@@ -357,18 +343,6 @@ void MetricsRenderFrameObserver::OnMainFrameIntersectionChanged(
   if (page_timing_metrics_sender_)
     page_timing_metrics_sender_->OnMainFrameIntersectionChanged(
         main_frame_intersection);
-}
-
-void MetricsRenderFrameObserver::OnThroughputDataAvailable(
-    ukm::SourceId source_id,
-    int aggregated_percent,
-    int impl_percent,
-    base::Optional<int> main_percent) {
-  std::unique_ptr<MojoPageTimingSender> sender =
-      std::make_unique<MojoPageTimingSender>(render_frame(),
-                                             false /* limited_sending_mode */);
-  sender->SubmitThroughputData(source_id, aggregated_percent, impl_percent,
-                               main_percent);
 }
 
 void MetricsRenderFrameObserver::MaybeSetCompletedBeforeFCP(int request_id) {
