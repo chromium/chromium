@@ -211,7 +211,7 @@ std::string MakeThumbnailDataUrlOnThreadPool(
   return base::StrCat({"data:image/png;base64,", base::Base64Encode(png_data)});
 }
 
-// Converts bitmap to a PNG image and encodes it as a data string.
+// Converts bitmap to a PNG image and encodes it as a dataURL.
 std::string ConvertAndEncode(const SkBitmap& bitmap) {
   if (bitmap.isNull()) {
     DLOG(WARNING) << "Got an invalid bitmap";
@@ -223,12 +223,12 @@ std::string ConvertAndEncode(const SkBitmap& bitmap) {
     DLOG(WARNING) << "Thumbnail encoding error";
     return std::string();
   }
-  return MakeThumbnailDataUrlOnThreadPool(base::make_span(
-      reinterpret_cast<const uint8_t*>(png_data->data()), png_data->size()));
+  return MakeThumbnailDataUrlOnThreadPool(
+      base::make_span(png_data->bytes(), png_data->size()));
 }
 
 // The maximum size of the input PDF file for which thumbnails are generated.
-constexpr uint32_t kMaxPdfSize = 1024u * 1024u;
+constexpr uint32_t kMaxPdfSizeInBytes = 1024u * 1024u;
 
 // A function that performs IO operations to read and render PDF thumbnail
 // Must be run by a blocking task runner.
@@ -238,7 +238,7 @@ std::string ReadLocalPdf(const base::FilePath& pdf_file_path) {
     DLOG(ERROR) << "Failed to get file size of " << pdf_file_path;
     return std::string();
   }
-  if (file_size > kMaxPdfSize) {
+  if (file_size > kMaxPdfSizeInBytes) {
     DLOG(ERROR) << "File " << pdf_file_path << " is too large " << file_size;
     return std::string();
   }
@@ -1208,7 +1208,7 @@ FileManagerPrivateInternalGetThumbnailFunction::GetLocalThumbnail(
   }
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-      base::BindOnce(&ReadLocalPdf, path),
+      base::BindOnce(&ReadLocalPdf, std::move(path)),
       base::BindOnce(
           &FileManagerPrivateInternalGetThumbnailFunction::FetchPdfThumbnail,
           this, crop_to_square));
@@ -1217,12 +1217,18 @@ FileManagerPrivateInternalGetThumbnailFunction::GetLocalThumbnail(
 
 void FileManagerPrivateInternalGetThumbnailFunction::FetchPdfThumbnail(
     bool crop_to_square,
-    const std::string& contents) {
+    const std::string& content) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (contents.empty()) {
+  if (content.empty()) {
     Respond(Error("Failed to read PDF file"));
     return;
   }
+  auto pdf_region = base::ReadOnlySharedMemoryRegion::Create(content.size());
+  if (!pdf_region.IsValid()) {
+    Respond(Error("Failed allocate memory for PDF file"));
+    return;
+  }
+  memcpy(pdf_region.mapping.memory(), content.data(), content.size());
   if (!pdf_thumbnailer_.is_bound()) {
     GetPrintingService()->BindPdfThumbnailer(
         pdf_thumbnailer_.BindNewPipeAndPassReceiver());
@@ -1231,8 +1237,6 @@ void FileManagerPrivateInternalGetThumbnailFunction::FetchPdfThumbnail(
                            PdfThumbnailDisconected,
                        base::Unretained(this)));
   }
-  auto pdf_region = base::ReadOnlySharedMemoryRegion::Create(contents.size());
-  memcpy(pdf_region.mapping.memory(), contents.data(), contents.size());
   gfx::Size thumb_size =
       crop_to_square
           ? gfx::Size(FileManagerPrivateInternalGetThumbnailFunction::kSize,
