@@ -208,6 +208,7 @@ group("closure_compile") {
     "multidevice_page:closure_compile",
     "nearby_share_page:closure_compile",
     "os_a11y_page:closure_compile",
+    "os_about_page:closure_compile",
     "os_apps_page:closure_compile",
     "os_files_page:closure_compile",
     "os_languages_page:closure_compile",
