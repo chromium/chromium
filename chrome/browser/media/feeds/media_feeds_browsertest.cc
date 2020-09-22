@@ -11,6 +11,7 @@
 #include "base/task/post_task.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/feeds/media_feeds_contents_observer.h"
 #include "chrome/browser/media/feeds/media_feeds_service.h"
 #include "chrome/browser/media/feeds/media_feeds_store.mojom-forward.h"
@@ -866,9 +867,8 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest, ResetMediaFeed_OnNavigation) {
   }
 }
 
-// Flaky failures: crbug.com/1124983
 IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest,
-                       DISABLED_ResetMediaFeed_OnNavigation_NeverFetched) {
+                       ResetMediaFeed_OnNavigation_NeverFetched) {
   DiscoverFeed(kMediaFeedsTestURL);
 
   ui_test_utils::NavigateToURL(
@@ -919,8 +919,16 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest,
   }
 }
 
+// Flaky on lacros: crbug.com/1124983
+#if BUILDFLAG(IS_LACROS)
+#define MAYBE_ResetMediaFeed_WebContentsDestroyed \
+  DISABLED_ResetMediaFeed_WebContentsDestroyed
+#else
+#define MAYBE_ResetMediaFeed_WebContentsDestroyed \
+  ResetMediaFeed_WebContentsDestroyed
+#endif
 IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest,
-                       ResetMediaFeed_WebContentsDestroyed) {
+                       MAYBE_ResetMediaFeed_WebContentsDestroyed) {
   DiscoverFeed(kMediaFeedsTestURL);
 
   {
