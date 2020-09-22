@@ -1133,7 +1133,7 @@ Panel = class {
       if (!$('i-tutorial')) {
         const curriculum = Panel.sessionState ===
                 chrome.loginState.SessionState.IN_OOBE_SCREEN ?
-            'oobe' :
+            'quick_orientation' :
             null;
         Panel.createITutorial(curriculum);
       }

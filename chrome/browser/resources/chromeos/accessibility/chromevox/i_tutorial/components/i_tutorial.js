@@ -10,10 +10,12 @@ import {TutorialLesson} from './tutorial_lesson.js';
 /** @enum {string} */
 const Curriculum = {
   NONE: 'none',
-  OOBE: 'oobe',
-  NEW_USER: 'new_user',
-  EXPERIENCED_USER: 'experienced_user',
-  DEVELOPER: 'developer'
+  QUICK_ORIENTATION: 'quick_orientation',
+  ESSENTIAL_KEYS: 'essential_keys',
+  NAVIGATION: 'navigation',
+  COMMAND_REFERENCES: 'command_references',
+  SOUNDS_AND_SETTINGS: 'sounds_and_settings',
+  RESOURCES: 'resources',
 };
 
 /**
@@ -83,7 +85,7 @@ Polymer({
 
     numLessons: {type: Number, value: 0},
 
-    activeScreen: {type: String},
+    activeScreen: {type: String, observer: 'onActiveScreenChanged'},
 
     interactiveMode: {type: Boolean, value: false},
 
@@ -105,16 +107,21 @@ Polymer({
       type: String,
       value: 'Choose your tutorial experience',
     },
+    quickOrientation: {type: String, value: 'Quick orientation'},
 
-    newUser: {type: String, value: 'New user'},
+    essentialKeys: {type: String, value: 'Essential keys'},
 
-    experiencedUser: {type: String, value: 'Experienced user'},
+    navigation: {type: String, value: 'Navigation'},
 
-    developer: {type: String, value: 'Developer'},
+    commandReferences: {type: String, value: 'Command references'},
+
+    soundsAndSettings: {type: String, value: 'Sounds and settings'},
+
+    resources: {type: String, value: 'Resources'},
 
     continue: {type: String, value: 'Continue where I left off'},
 
-    restartBasicOrientation: {type: String, value: 'Restart basic orientation'},
+    restartQuickOrientation: {type: String, value: 'Restart quick orientation'},
 
     previousLesson: {type: String, value: 'Previous lesson'},
 
@@ -130,13 +137,14 @@ Polymer({
       type: Array,
       value: [
         {
+          title: 'Welcome to ChromeVox!',
           content: [`Welcome to the ChromeVox tutorial. To exit this tutorial
             at any time, press the Escape key on the top left corner
             of the keyboard. To turn off ChromeVox, hold Control and Alt, and
             press Z. When you're ready, use the spacebar to move to the next
             lesson.`],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [Curriculum.OOBE],
+          curriculums: [Curriculum.QUICK_ORIENTATION],
           actions: [
             {type: 'key_sequence', value: {keys: {keyCode: [32 /* Space */]}}}
           ],
@@ -144,12 +152,13 @@ Polymer({
         },
 
         {
+          title: 'Essential Keys: Control',
           content: [`Let's start with a few keys you'll use regularly: Control,
             Shift, Search, and the Arrow keys. Find the Control key on the
             bottom left corner of your keyboard. To continue, press the Control
             key.`],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [Curriculum.OOBE],
+          curriculums: [Curriculum.QUICK_ORIENTATION],
           actions: [
             {type: 'key_sequence', value: {keys: {keyCode: [17 /* Ctrl */]}}}
           ],
@@ -157,12 +166,13 @@ Polymer({
         },
 
         {
+          title: 'Essential Keys: Shift',
           content: [`The Control key can be used at any time to temporarily stop
             ChromeVox from speaking. Now, find the left Shift key, which is
             directly above the Control key. To continue, press the left Shift
             key.`],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [Curriculum.OOBE],
+          curriculums: [Curriculum.QUICK_ORIENTATION],
           actions: [
             {type: 'key_sequence', value: {keys: {keyCode: [16 /* Shift */]}}}
           ],
@@ -170,6 +180,7 @@ Polymer({
         },
 
         {
+          title: 'Essential Keys: Search',
           content:
               [`We'll talk more about the Shift key in later lessons, as it is
             used in many ChromeVox commands. Next, you’ll learn about the
@@ -177,7 +188,7 @@ Polymer({
             for ChromeVox commands. The Search key is immediately above the
             left Shift key. To continue, press the Search key.`],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [Curriculum.OOBE],
+          curriculums: [Curriculum.QUICK_ORIENTATION],
           actions: [{
             type: 'key_sequence',
             value: {skipStripping: false, keys: {keyCode: [91 /* Search */]}},
@@ -187,6 +198,7 @@ Polymer({
         },
 
         {
+          title: 'Basic navigation',
           content: [
             `Now you’ll learn some basic navigation. You can hold Search and
               press the arrow keys to move around the screen. To continue,
@@ -195,7 +207,7 @@ Polymer({
               Try it now to continue.`,
           ],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [Curriculum.OOBE],
+          curriculums: [Curriculum.QUICK_ORIENTATION],
           actions: [
             {
               type: 'key_sequence',
@@ -212,13 +224,14 @@ Polymer({
         },
 
         {
+          title: 'Tab Navigation',
           content: [
             `You can also use the Tab key to move to the next interactive item
             on the screen. Find the Tab key, which is directly above the Search
             key. To continue, press the Tab key.`
           ],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [Curriculum.OOBE],
+          curriculums: [Curriculum.QUICK_ORIENTATION],
           actions: [{
             type: 'key_sequence',
             value: {keys: {keyCode: [9 /* Tab */]}},
@@ -228,12 +241,13 @@ Polymer({
         },
 
         {
+          title: 'Tab Navigation Continued',
           content: [
             `You can use Shift + Tab to move to the previous interactive item.
             To continue, press Shift + Tab. `
           ],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [Curriculum.OOBE],
+          curriculums: [Curriculum.QUICK_ORIENTATION],
           actions: [{
             type: 'key_sequence',
             value: {keys: {keyCode: [9 /* Tab */], shiftKey: [true]}},
@@ -242,11 +256,12 @@ Polymer({
         },
 
         {
+          title: 'Enter',
           content: [`You can also press Enter to activate items. For example,
             Enter can be used to submit text in a form. To continue, press
             Enter.`],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [Curriculum.OOBE],
+          curriculums: [Curriculum.QUICK_ORIENTATION],
           actions: [
             {type: 'key_sequence', value: {keys: {keyCode: [13 /* Enter */]}}}
           ],
@@ -254,6 +269,7 @@ Polymer({
         },
 
         {
+          title: 'Drop-Down Lists',
           content: [
             `There will be times when you need to select an item from a
               drop-down list. To do so, first expand the list by pressing Enter
@@ -265,7 +281,7 @@ Polymer({
               + Space or Enter to activate.`
           ],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [Curriculum.OOBE],
+          curriculums: [Curriculum.QUICK_ORIENTATION],
           practiceTitle: 'Practice area: Drop-down lists',
           practiceInstructions:
               `Try selecting your favorite season from the list.`,
@@ -276,7 +292,7 @@ Polymer({
         },
 
         {
-          title: 'Basic orientation complete!',
+          title: 'Quick orientation complete!',
           content: [
             `Well done! You’ve learned the ChromeVox basics. You can go through
               the tutorial again or exit this tutorial by finding and clicking
@@ -285,7 +301,7 @@ Polymer({
               and view more lessons by pressing Search + O, then T.`,
           ],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [Curriculum.OOBE],
+          curriculums: [Curriculum.QUICK_ORIENTATION],
         },
 
         {
@@ -296,7 +312,7 @@ Polymer({
             'To turn ChromeVox on or off, use Control+Alt+Z.',
           ],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [Curriculum.NEW_USER],
+          curriculums: [Curriculum.ESSENTIAL_KEYS],
         },
 
         {
@@ -309,7 +325,7 @@ Polymer({
                 'left Shift key.',
           ],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [Curriculum.NEW_USER],
+          curriculums: [Curriculum.ESSENTIAL_KEYS],
         },
 
         {
@@ -322,7 +338,7 @@ Polymer({
             'If you reach an item you want to click, press Search + Space.',
           ],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [Curriculum.NEW_USER],
+          curriculums: [Curriculum.NAVIGATION],
           practiceTitle: 'Basic Navigation Practice',
           practiceInstructions:
               'Try using basic navigation to navigate through the items ' +
@@ -352,7 +368,7 @@ Polymer({
                 'jump backward, press Search + Shift + L'
           ],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [Curriculum.NEW_USER],
+          curriculums: [Curriculum.NAVIGATION],
           practiceTitle: 'Jump Commands Practice',
           practiceInstructions:
               'Try using what you have learned to navigate by element type. ' +
@@ -388,7 +404,7 @@ Polymer({
                 'pressing Search+o then t.',
           ],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [Curriculum.NEW_USER]
+          curriculums: [Curriculum.COMMAND_REFERENCES]
         },
 
         {
@@ -410,7 +426,7 @@ Polymer({
                 'Control + Alt + /'
           ],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [Curriculum.NEW_USER]
+          curriculums: [Curriculum.COMMAND_REFERENCES]
         },
 
         {
@@ -424,14 +440,14 @@ Polymer({
                 'page. Here is a complete list of sounds and what they mean',
           ],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [Curriculum.NEW_USER]
+          curriculums: [Curriculum.SOUNDS_AND_SETTINGS]
         },
 
         {
           title: 'Text fields',
           content: ['Text content for text fields lesson'],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [Curriculum.EXPERIENCED_USER],
+          curriculums: [Curriculum.NONE],
           practiceTitle: 'Edit fields practice',
           practiceInstructions:
               'Try using what you have learned about text fields and edit ' +
@@ -449,7 +465,7 @@ Polymer({
         },
 
         {
-          title: 'Congratulations',
+          title: 'Resources',
           content: [
             'You’ve learned the essentials to use ChromeVox successfully.  ' +
                 'Remember that you can open the ChromeVox command menu at ' +
@@ -459,10 +475,7 @@ Polymer({
                 'to the Quit button and click it.'
           ],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [
-            Curriculum.NEW_USER, Curriculum.DEVELOPER,
-            Curriculum.EXPERIENCED_USER
-          ],
+          curriculums: [Curriculum.RESOURCES],
         }
       ]
     }
@@ -489,7 +502,7 @@ Polymer({
 
   /** Shows the tutorial */
   show() {
-    if (this.curriculum === Curriculum.OOBE) {
+    if (this.curriculum === Curriculum.QUICK_ORIENTATION) {
       // If opening the tutorial from the OOBE, automatically show the first
       // lesson.
       this.updateIncludedLessons();
@@ -506,12 +519,18 @@ Polymer({
    */
   chooseCurriculum(evt) {
     const id = evt.target.id;
-    if (id === 'newUserButton') {
-      this.curriculum = Curriculum.NEW_USER;
-    } else if (id === 'experiencedUserButton') {
-      this.curriculum = Curriculum.EXPERIENCED_USER;
-    } else if (id === 'developerButton') {
-      this.curriculum = Curriculum.DEVELOPER;
+    if (id === 'quickOrientationButton') {
+      this.curriculum = Curriculum.QUICK_ORIENTATION;
+    } else if (id === 'essentialKeysButton') {
+      this.curriculum = Curriculum.ESSENTIAL_KEYS;
+    } else if (id === 'navigationButton') {
+      this.curriculum = Curriculum.NAVIGATION;
+    } else if (id === 'commandReferencesButton') {
+      this.curriculum = Curriculum.COMMAND_REFERENCES;
+    } else if (id === 'soundsAndSettingsButton') {
+      this.curriculum = Curriculum.SOUNDS_AND_SETTINGS;
+    } else if (id === 'resourcesButton') {
+      this.curriculum = Curriculum.RESOURCES;
     } else {
       throw new Error('Invalid target for chooseCurriculum: ' + evt.target.id);
     }
@@ -538,11 +557,12 @@ Polymer({
    */
   showLesson(index) {
     this.showLessonContainer();
+    if (this.interactiveMode) {
+      this.stopInteractiveMode();
+    }
     if (index < 0 || index >= this.numLessons) {
       return;
     }
-
-    this.interactiveMode = false;
 
     this.activeLessonIndex = index;
 
@@ -553,8 +573,6 @@ Polymer({
     const lesson = this.includedLessons[this.activeLessonIndex];
     if (lesson.autoInteractive) {
       this.startInteractiveMode(lesson.actions);
-    } else {
-      this.stopInteractiveMode();
     }
   },
 
@@ -606,6 +624,13 @@ Polymer({
   },
 
   /** @private */
+  onActiveScreenChanged() {
+    if (this.interactiveMode) {
+      this.stopInteractiveMode();
+    }
+  },
+
+  /** @private */
   createLessonShortcuts() {
     // Clear previous lesson shortcuts, as the user may have chosen a new
     // curriculum or medium for the tutorial.
@@ -652,8 +677,7 @@ Polymer({
    * @private
    */
   shouldHideLessonMenuButton(activeScreen) {
-    return !this.curriculum || this.curriculum === Curriculum.OOBE ||
-        this.curriculum === Curriculum.NONE ||
+    return !this.curriculum || this.curriculum === Curriculum.NONE ||
         activeScreen === Screen.MAIN_MENU ||
         activeScreen === Screen.LESSON_MENU;
   },
@@ -664,8 +688,7 @@ Polymer({
    * @private
    */
   shouldHideMainMenuButton(activeScreen) {
-    return this.curriculum === Curriculum.OOBE ||
-        activeScreen === Screen.MAIN_MENU;
+    return activeScreen === Screen.MAIN_MENU;
   },
 
   /**
@@ -673,11 +696,12 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  shouldHideRestartBasicOrientationButton(activeLessonIndex) {
-    // Only show when the user has completed the basic orientation.
+  shouldHideRestartQuickOrientationButton(activeLessonIndex, activeScreen) {
+    // Only show when the user is on the last screen of the basic orientation.
     return !(
-        this.curriculum === Curriculum.OOBE &&
-        activeLessonIndex === this.numLessons - 1);
+        this.curriculum === Curriculum.QUICK_ORIENTATION &&
+        activeLessonIndex === this.numLessons - 1 &&
+        this.activeScreen === Screen.LESSON);
   },
 
   /**
@@ -754,6 +778,7 @@ Polymer({
 
   /** @private */
   stopInteractiveMode() {
+    this.interactiveMode = false;
     this.dispatchEvent(
         new CustomEvent('stopinteractivemode', {composed: true}));
   },

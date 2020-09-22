@@ -92,14 +92,23 @@ h1 {
     hidden$="[[ shouldHideMainMenu(activeScreen) ]]">
   <h1 id="mainMenuHeader" tabindex="-1">[[ chooseYourExperience ]]</h1>
   <div id="mainMenuButtons">
-    <cr-button id="newUserButton" on-click="chooseCurriculum">
-      [[ newUser ]]
+    <cr-button id="quickOrientationButton" on-click="chooseCurriculum">
+      [[ quickOrientation ]]
     </cr-button>
-    <cr-button id="experiencedUserButton" on-click="chooseCurriculum">
-      [[ experiencedUser ]]
+    <cr-button id="essentialKeysButton" on-click="chooseCurriculum">
+      [[ essentialKeys ]]
     </cr-button>
-    <cr-button id="developerButton" on-click="chooseCurriculum">
-      [[ developer ]]
+    <cr-button id="navigationButton" on-click="chooseCurriculum">
+      [[ navigation ]]
+    </cr-button>
+    <cr-button id="commandReferencesButton" on-click="chooseCurriculum">
+      [[ commandReferences ]]
+    </cr-button>
+    <cr-button id="soundsAndSettingsButton" on-click="chooseCurriculum">
+      [[ soundsAndSettings ]]
+    </cr-button>
+    <cr-button id="resourcesButton" on-click="chooseCurriculum">
+      [[ resources ]]
     </cr-button>
   </div>
 </div>
@@ -158,8 +167,9 @@ h1 {
     </cr-button>
     <cr-button on-click="showFirstLesson"
         hidden$="[[
-      shouldHideRestartBasicOrientationButton(activeLessonIndex) ]]">
-      [[ restartBasicOrientation ]]
+      shouldHideRestartQuickOrientationButton(activeLessonIndex, activeScreen)
+        ]]">
+      [[ restartQuickOrientation ]]
     </cr-button>
     <cr-button on-click="exit">[[ exitTutorial ]]</cr-button>
   </div>

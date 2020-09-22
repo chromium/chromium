@@ -82,11 +82,20 @@ export const TutorialLesson = Polymer({
   /** @private */
   show() {
     this.$.container.hidden = false;
-    // Shorthand for Polymer.dom(this.root).querySelector(...).
-    const focus = this.$$('[tabindex]');
+    let focus;
+    if (this.autoInteractive) {
+      // Auto interactive lessons immediately initialize the UserActionMonitor,
+      // which will block ChromeVox execution until a desired key sequence is
+      // pressed. To ensure users hear instructions for these lessons, place
+      // focus on the first piece of text content.
+      // Shorthand for Polymer.dom(this.root).querySelector(...).
+      focus = this.$$('p');
+    } else {
+      // Otherwise, we can place focus on the lesson title.
+      focus = this.$$('h1');
+    }
     if (!focus) {
-      throw new Error(
-          'A lesson must have an element which specifies tabindex.');
+      throw new Error('A lesson must have an element to focus.');
     }
     focus.focus();
     if (!focus.isEqualNode(this.shadowRoot.activeElement)) {

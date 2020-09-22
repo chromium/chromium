@@ -103,11 +103,17 @@ TEST_F('ChromeVoxTutorialTest', 'BasicTest', function() {
     await this.launchAndWaitForTutorial();
     mockFeedback.expectSpeech('Choose your tutorial experience')
         .call(doCmd('nextObject'))
-        .expectSpeech('New user', 'Button')
+        .expectSpeech('Quick orientation', 'Button')
         .call(doCmd('nextObject'))
-        .expectSpeech('Experienced user', 'Button')
+        .expectSpeech('Essential keys', 'Button')
         .call(doCmd('nextObject'))
-        .expectSpeech('Developer', 'Button')
+        .expectSpeech('Navigation', 'Button')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Command references', 'Button')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Sounds and settings', 'Button')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Resources', 'Button')
         .call(doCmd('nextObject'))
         .expectSpeech('Exit tutorial', 'Button')
         .replay();
@@ -123,11 +129,11 @@ TEST_F('ChromeVoxTutorialTest', 'LessonSetTest', function() {
     const tutorial = this.getPanel().iTutorial;
     mockFeedback.expectSpeech('Choose your tutorial experience')
         .call(doCmd('nextObject'))
-        .expectSpeech('New user', 'Button')
+        .expectSpeech('Quick orientation', 'Button')
         .call(doCmd('forceClickOnCurrentItem'))
-        .expectSpeech(/New User Tutorial, [0-9]+ Lessons/)
+        .expectSpeech(/Quick Orientation Tutorial, [0-9]+ Lessons/)
         .call(doCmd('nextObject'))
-        .expectSpeech('On, Off, and Stop')
+        .expectSpeech('Welcome to ChromeVox!')
         .call(() => {
           // Call from the tutorial directly, instead of navigating to and
           // clicking on the main menu button.
@@ -135,13 +141,13 @@ TEST_F('ChromeVoxTutorialTest', 'LessonSetTest', function() {
         })
         .expectSpeech('Choose your tutorial experience')
         .call(doCmd('nextObject'))
-        .expectSpeech('New user', 'Button')
+        .expectSpeech('Quick orientation', 'Button')
         .call(doCmd('nextObject'))
-        .expectSpeech('Experienced user', 'Button')
+        .expectSpeech('Essential keys', 'Button')
         .call(doCmd('forceClickOnCurrentItem'))
-        .expectSpeech(/Experienced User Tutorial, [0-9]+ Lessons/)
+        .expectSpeech(/Essential Keys Tutorial, [0-9]+ Lessons/)
         .call(doCmd('nextObject'))
-        .expectSpeech('Text fields')
+        .expectSpeech('On, Off, and Stop')
         .replay();
   });
 });
@@ -154,9 +160,11 @@ TEST_F('ChromeVoxTutorialTest', 'NoPracticeAreaTest', function() {
     const tutorial = this.getPanel().iTutorial;
     mockFeedback.expectSpeech('Choose your tutorial experience')
         .call(doCmd('nextObject'))
-        .expectSpeech('New user', 'Button')
+        .expectSpeech('Quick orientation', 'Button')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Essential keys', 'Button')
         .call(doCmd('forceClickOnCurrentItem'))
-        .expectSpeech(/New User Tutorial, [0-9]+ Lessons/)
+        .expectSpeech(/Essential Keys Tutorial, [0-9]+ Lessons/)
         .call(() => {
           tutorial.showLesson(0);
         })
@@ -175,11 +183,15 @@ TEST_F('ChromeVoxTutorialTest', 'HasPracticeAreaTest', function() {
     const tutorial = this.getPanel().iTutorial;
     mockFeedback.expectSpeech('Choose your tutorial experience')
         .call(doCmd('nextObject'))
-        .expectSpeech('New user', 'Button')
+        .expectSpeech('Quick orientation', 'Button')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Essential keys', 'Button')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Navigation', 'Button')
         .call(doCmd('forceClickOnCurrentItem'))
-        .expectSpeech(/New User Tutorial, [0-9]+ Lessons/)
+        .expectSpeech(/Navigation Tutorial, [0-9]+ Lessons/)
         .call(() => {
-          tutorial.showLesson(2);
+          tutorial.showLesson(0);
         })
         .expectSpeech('Basic Navigation', 'Heading 1')
         .call(doCmd('nextButton'))
@@ -230,11 +242,15 @@ TEST_F('ChromeVoxTutorialTest', 'PracticeAreaNudgesTest', function() {
     };
     mockFeedback.expectSpeech('Choose your tutorial experience')
         .call(doCmd('nextObject'))
-        .expectSpeech('New user', 'Button')
+        .expectSpeech('Quick orientation', 'Button')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Essential keys', 'Button')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Navigation', 'Button')
         .call(doCmd('forceClickOnCurrentItem'))
-        .expectSpeech(/New User Tutorial, [0-9]+ Lessons/)
+        .expectSpeech(/Navigation Tutorial, [0-9]+ Lessons/)
         .call(() => {
-          tutorial.showLesson(2);
+          tutorial.showLesson(0);
         })
         .expectSpeech('Basic Navigation', 'Heading 1')
         .call(doCmd('nextButton'))
