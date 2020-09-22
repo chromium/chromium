@@ -839,6 +839,81 @@ void InspectorAccessibilityAgent::AddChildren(
   }
 }
 
+namespace {
+
+void setNameAndRole(const AXObject& ax_object, std::unique_ptr<AXNode>& node) {
+  ax::mojom::blink::Role role = ax_object.RoleValue();
+  node->setRole(CreateRoleNameValue(role));
+  AXObject::NameSources name_sources;
+  String computed_name = ax_object.GetName(&name_sources);
+  std::unique_ptr<AXValue> name =
+      CreateValue(computed_name, AXValueTypeEnum::ComputedString);
+  node->setName(std::move(name));
+}
+
+}  // namespace
+
+Response InspectorAccessibilityAgent::queryAXTree(
+    Maybe<int> dom_node_id,
+    Maybe<int> backend_node_id,
+    Maybe<String> object_id,
+    Maybe<String> accessible_name,
+    Maybe<String> role,
+    std::unique_ptr<protocol::Array<AXNode>>* nodes) {
+  Node* root_dom_node = nullptr;
+  Response response = dom_agent_->AssertNode(dom_node_id, backend_node_id,
+                                             object_id, root_dom_node);
+  if (!response.IsSuccess())
+    return response;
+  Document& document = root_dom_node->GetDocument();
+
+  document.UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
+  DocumentLifecycle::DisallowTransitionScope disallow_transition(
+      document.Lifecycle());
+  AXContext ax_context(document);
+
+  *nodes = std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
+  auto& cache = To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
+  AXObject* root_ax_node = cache.GetOrCreate(root_dom_node);
+
+  auto sought_role = ax::mojom::blink::Role::kUnknown;
+  if (role.isJust())
+    sought_role = AXObject::AriaRoleToWebCoreRole(role.fromJust());
+  const String sought_name = accessible_name.fromMaybe("");
+
+  HeapVector<Member<AXObject>> reachable;
+  reachable.push_back(root_ax_node);
+
+  while (!reachable.IsEmpty()) {
+    AXObject* ax_object = reachable.back();
+    reachable.pop_back();
+    const AXObject::AXObjectVector& children =
+        ax_object->ChildrenIncludingIgnored();
+    reachable.AppendRange(children.rbegin(), children.rend());
+
+    // if querying by name: skip if name of current object does not match.
+    if (accessible_name.isJust() && sought_name != ax_object->ComputedName())
+      continue;
+    // if querying by role: skip if role of current object does not match.
+    if (role.isJust() && sought_role != ax_object->RoleValue())
+      continue;
+    // both name and role are OK, so we can add current object to the result.
+
+    if (ax_object->AccessibilityIsIgnored()) {
+      Node* dom_node = ax_object->GetNode();
+      std::unique_ptr<AXNode> protocol_node =
+          BuildObjectForIgnoredNode(dom_node, ax_object, false, *nodes, cache);
+      setNameAndRole(*ax_object, protocol_node);
+      (*nodes)->push_back(std::move(protocol_node));
+    } else {
+      (*nodes)->push_back(
+          BuildProtocolAXObject(*ax_object, nullptr, false, *nodes, cache));
+    }
+  }
+
+  return Response::Success();
+}
+
 void InspectorAccessibilityAgent::EnableAndReset() {
   enabled_.Set(true);
   LocalFrame* frame = inspected_frames_->Root();

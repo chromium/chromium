@@ -1,0 +1,223 @@
+Test finding DOM nodes by accessible name
+
+Running test: dumpAXNodes
+dump both an ignored and an unignored axnode
+{
+    backendDOMNodeId : <number>
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                type : contents
+                value : {
+                    type : computedString
+                    value : title
+                }
+            }
+            [3] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : title
+    }
+    nodeId : <string>
+    properties : [
+        [0] : {
+            name : level
+            value : {
+                type : integer
+                value : 2
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : heading
+    }
+}
+{
+    backendDOMNodeId : <number>
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                type : contents
+                value : {
+                    type : computedString
+                    value : title
+                }
+            }
+        ]
+        type : computedString
+        value : title
+    }
+    nodeId : <string>
+    properties : [
+    ]
+    role : {
+        type : role
+        value : text
+    }
+}
+{
+    backendDOMNodeId : <number>
+    ignored : false
+    nodeId : <string>
+    properties : [
+    ]
+    role : {
+        type : internalRole
+        value : InlineTextBox
+    }
+}
+{
+    backendDOMNodeId : <number>
+    ignored : true
+    ignoredReasons : [
+        [0] : {
+            name : ariaHiddenElement
+            value : {
+                type : boolean
+                value : true
+            }
+        }
+    ]
+    name : {
+        type : computedString
+        value : title
+    }
+    nodeId : <string>
+    role : {
+        type : role
+        value : heading
+    }
+}
+{
+    backendDOMNodeId : <number>
+    ignored : true
+    ignoredReasons : [
+        [0] : {
+            name : ariaHiddenSubtree
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        backendDOMNodeId : <number>
+                        idref : hidden
+                    }
+                ]
+                type : idref
+            }
+        }
+    ]
+    name : {
+        type : computedString
+        value : title
+    }
+    nodeId : <string>
+    role : {
+        type : role
+        value : text
+    }
+}
+{
+    backendDOMNodeId : <number>
+    ignored : true
+    ignoredReasons : [
+        [0] : {
+            name : notRendered
+            value : {
+                type : boolean
+                value : true
+            }
+        }
+    ]
+    name : {
+        type : computedString
+        value : title
+    }
+    nodeId : <string>
+    role : {
+        type : role
+        value : heading
+    }
+}
+
+Running test: testGetNodesForSubtreeByAccessibleName
+find all elements with accessible name "foo"
+node3
+node5
+node6
+node7
+find all elements with accessible name "foo" inside container
+node5
+node6
+node7
+find all elements with accessible name "bar"
+node1
+node2
+node8
+find all elements with accessible name "text content"
+node10
+node11
+node13
+find all elements with accessible name "Accessible Name"
+node20
+node21
+node23
+node24
+find all elements with accessible name "item1 item2 item3"
+node30
+
+Running test: testGetNodesForSubtreeByRole
+find all elements with role "button"
+node5
+node6
+node7
+node8
+node10
+node21
+find all elements with role "heading"
+shown
+hidden
+unrendered
+node11
+node13
+find all elements with role "treeitem"
+node30
+node31
+node32
+node33
+node34
+find all ignored nodes with role "presentation"
+node12
+
+Running test: testGetNodesForSubtreeByAccessibleNameAndRole
+find all elements with accessible name "foo" and role "button"
+node5
+node6
+node7
+find all elements with accessible name "foo" and role "button" inside container
+node5
+node6
+node7
+find all elements with accessible name "text content" and role "heading"
+node11
+node13
+find all elements with accessible name "text content" and role "button"
+node10
+find all elements with accessible name "Accessible Name" and role "textbox"
+node23
+find all elements with accessible name "Accessible Name" and role "button"
+node21
+

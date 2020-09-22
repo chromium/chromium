@@ -47,6 +47,14 @@ class MODULES_EXPORT InspectorAccessibilityAgent
   protocol::Response getFullAXTree(
       std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*)
       override;
+  protocol::Response queryAXTree(
+      protocol::Maybe<int> dom_node_id,
+      protocol::Maybe<int> backend_node_id,
+      protocol::Maybe<String> object_id,
+      protocol::Maybe<String> accessibleName,
+      protocol::Maybe<String> role,
+      std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*)
+      override;
 
  private:
   // Unconditionally enables the agent, even if |enabled_.Get()==true|.
