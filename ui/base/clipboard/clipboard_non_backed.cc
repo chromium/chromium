@@ -251,6 +251,10 @@ class ClipboardInternal {
     return dlp_controller_->IsDataReadAllowed(GetData()->source(), data_dst);
   }
 
+  const ClipboardDlpController* dlp_controller() const {
+    return dlp_controller_.get();
+  }
+
  private:
   // True if the ClipboardData has format |format|.
   bool HasFormat(ClipboardInternalFormat format) const {
@@ -401,6 +405,12 @@ void ClipboardNonBacked::OnPreShutdown() {}
 void ClipboardNonBacked::SetClipboardDlpController(
     std::unique_ptr<ClipboardDlpController> dlp_controller) {
   clipboard_internal_->SetDlpController(std::move(dlp_controller));
+}
+
+const ClipboardDlpController* ClipboardNonBacked::GetClipboardDlpController()
+    const {
+  DCHECK(CalledOnValidThread());
+  return clipboard_internal_->dlp_controller();
 }
 
 uint64_t ClipboardNonBacked::GetSequenceNumber(ClipboardBuffer buffer) const {

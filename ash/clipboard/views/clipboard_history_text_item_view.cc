@@ -83,6 +83,8 @@ ClipboardHistoryTextItemView::CreateContentsView() {
   label->SetFontList(views::MenuConfig::instance().font_list);
   label->SetMultiLine(false);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label->SetEnabledColor(
+      SkColorSetA(SK_ColorBLACK, 0xFF * GetContentsOpacity()));
   layout->SetFlexForView(label, /*flex_weights=*/1);
 
   contents_view->InstallDeleteButton();

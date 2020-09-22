@@ -501,6 +501,12 @@ void ClipboardX11::SetClipboardDlpController(
   NOTIMPLEMENTED();
 }
 
+const ui::ClipboardDlpController* ClipboardX11::GetClipboardDlpController()
+    const {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 bool ClipboardX11::IsFormatAvailable(

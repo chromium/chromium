@@ -8,6 +8,7 @@
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_item_view.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -16,7 +17,6 @@
 #include "ui/views/controls/menu/submenu_view.h"
 
 namespace ash {
-
 // static
 std::unique_ptr<ClipboardHistoryMenuModelAdapter>
 ClipboardHistoryMenuModelAdapter::Create(
@@ -39,6 +39,17 @@ void ClipboardHistoryMenuModelAdapter::Run(const gfx::Rect& anchor_rect) {
   int command_id = ClipboardHistoryUtil::kFirstItemCommandId;
   for (const auto& item : clipboard_history_->GetItems()) {
     model_->AddItem(command_id, base::string16());
+
+    // Enable or disable the command depending on whether its corresponding
+    // clipboard history item is allowed to read or not.
+    const auto* dlp_controller =
+        ui::Clipboard::GetForCurrentThread()->GetClipboardDlpController();
+    model_->SetEnabledAt(model_->GetIndexOfCommandId(command_id),
+                         dlp_controller
+                             ? dlp_controller->IsDataReadAllowed(
+                                   item.data().source(), /*data_dst=*/nullptr)
+                             : true);
+
     item_snapshots_.emplace(command_id, item);
     ++command_id;
   }
@@ -101,6 +112,12 @@ gfx::Rect ClipboardHistoryMenuModelAdapter::GetMenuBoundsInScreenForTest()
     const {
   DCHECK(root_view_);
   return root_view_->GetSubmenu()->GetBoundsInScreen();
+}
+
+const views::MenuItemView*
+ClipboardHistoryMenuModelAdapter::GetMenuItemViewAtForTest(int index) const {
+  DCHECK(root_view_);
+  return root_view_->GetSubmenu()->GetMenuItemAt(index);
 }
 
 ClipboardHistoryMenuModelAdapter::ClipboardHistoryMenuModelAdapter(

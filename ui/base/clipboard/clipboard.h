@@ -113,6 +113,10 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void SetClipboardDlpController(
       std::unique_ptr<ClipboardDlpController> dlp_controller) = 0;
 
+  // Returns the data leak prevention controller. This function will be used
+  // only on Chrome OS.
+  virtual const ClipboardDlpController* GetClipboardDlpController() const = 0;
+
   // Tests whether the clipboard contains a certain format.
   // TODO(crbug.com/1103614): Update |data_dst| in all references to its
   // appropriate ClipboardDataEndpoint for web-originates uses.

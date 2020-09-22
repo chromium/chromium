@@ -75,6 +75,12 @@ void ClipboardMac::SetClipboardDlpController(
   NOTIMPLEMENTED();
 }
 
+const ui::ClipboardDlpController* ClipboardMac::GetClipboardDlpController()
+    const {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 bool ClipboardMac::IsFormatAvailable(

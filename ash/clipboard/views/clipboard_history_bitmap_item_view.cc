@@ -13,6 +13,7 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -49,14 +50,14 @@ class FadeImageView : public views::ImageView,
                       public ClipboardHistoryResourceManager::Observer {
  public:
   FadeImageView(const ClipboardHistoryItem& clipboard_history_item,
-                const ClipboardHistoryResourceManager* resource_manager)
+                const ClipboardHistoryResourceManager* resource_manager,
+                float opacity)
       : views::ImageView(),
         resource_manager_(resource_manager),
-        clipboard_history_item_(clipboard_history_item) {
+        clipboard_history_item_(clipboard_history_item),
+        opacity_(opacity) {
     resource_manager_->AddObserver(this);
-    SetImage(*(resource_manager_->GetImageModel(clipboard_history_item_)
-                   .GetImage()
-                   .ToImageSkia()));
+    SetImageFromModel();
   }
 
   FadeImageView(const FadeImageView& rhs) = delete;
@@ -94,9 +95,7 @@ class FadeImageView : public views::ImageView,
       case FadeAnimationState::kFadeOut:
         DCHECK_EQ(0.0f, layer()->opacity());
         animation_state_ = FadeAnimationState::kFadeIn;
-        SetImage(*(resource_manager_->GetImageModel(clipboard_history_item_)
-                       .GetImage()
-                       .ToImageSkia()));
+        SetImageFromModel();
         {
           ui::ScopedLayerAnimationSettings settings(layer()->GetAnimator());
           settings.AddObserver(this);
@@ -108,6 +107,19 @@ class FadeImageView : public views::ImageView,
         DestroyLayer();
         animation_state_ = FadeAnimationState::kNoFadeAnimation;
         return;
+    }
+  }
+
+  void SetImageFromModel() {
+    const gfx::ImageSkia& image =
+        *(resource_manager_->GetImageModel(clipboard_history_item_)
+              .GetImage()
+              .ToImageSkia());
+    if (opacity_ != 1.f) {
+      SetImage(
+          gfx::ImageSkiaOperations::CreateTransparentImage(image, opacity_));
+    } else {
+      SetImage(image);
     }
   }
 
@@ -127,6 +139,9 @@ class FadeImageView : public views::ImageView,
 
   // The ClipboardHistoryItem represented by this class.
   const ClipboardHistoryItem clipboard_history_item_;
+
+  // The opacity of the image content.
+  const float opacity_;
 };
 
 }  // namespace
@@ -205,12 +220,17 @@ ClipboardHistoryBitmapItemView::BuildImageView() {
       ClipboardHistoryUtil::CalculateMainFormat(clipboard_history_item_.data())
           .value()) {
     case ui::ClipboardInternalFormat::kHtml:
-      return std::make_unique<FadeImageView>(clipboard_history_item_,
-                                             resource_manager_);
+      return std::make_unique<FadeImageView>(
+          clipboard_history_item_, resource_manager_, GetContentsOpacity());
     case ui::ClipboardInternalFormat::kBitmap: {
       auto image_view = std::make_unique<views::ImageView>();
-      image_view->SetImage(gfx::ImageSkia::CreateFrom1xBitmap(
-          clipboard_history_item_.data().bitmap()));
+      gfx::ImageSkia bitmap_image = gfx::ImageSkia::CreateFrom1xBitmap(
+          clipboard_history_item_.data().bitmap());
+      if (GetContentsOpacity() != 1.f) {
+        bitmap_image = gfx::ImageSkiaOperations::CreateTransparentImage(
+            bitmap_image, GetContentsOpacity());
+      }
+      image_view->SetImage(bitmap_image);
       return image_view;
     }
     default:

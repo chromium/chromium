@@ -353,6 +353,12 @@ void ClipboardOzone::SetClipboardDlpController(
   NOTIMPLEMENTED();
 }
 
+const ui::ClipboardDlpController* ClipboardOzone::GetClipboardDlpController()
+    const {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 // TODO(crbug.com/1103194): |data_dst| should be supported.
 bool ClipboardOzone::IsFormatAvailable(
     const ClipboardFormatType& format,

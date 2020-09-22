@@ -69,6 +69,8 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   // Returns menu bounds in screen coordinates.
   gfx::Rect GetMenuBoundsInScreenForTest() const;
 
+  const views::MenuItemView* GetMenuItemViewAtForTest(int index) const;
+
  private:
   ClipboardHistoryMenuModelAdapter(
       std::unique_ptr<ui::SimpleMenuModel> model,

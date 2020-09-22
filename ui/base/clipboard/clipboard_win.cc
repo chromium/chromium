@@ -251,6 +251,12 @@ void ClipboardWin::SetClipboardDlpController(
   NOTIMPLEMENTED();
 }
 
+const ui::ClipboardDlpController* ClipboardWin::GetClipboardDlpController()
+    const {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 bool ClipboardWin::IsFormatAvailable(

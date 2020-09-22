@@ -24,9 +24,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/base/clipboard/clipboard_data_endpoint.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/menu/menu_config.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
 
@@ -247,134 +249,6 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   EXPECT_EQ(mouse_location.y(), menu_origin.y());
 }
 
-IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
-                       ShouldPasteHistoryViaKeyboard) {
-  LoginUser(account_id1_);
-  CloseAllBrowsers();
-
-  // Create a widget containing a single, focusable textfield.
-  auto widget = CreateTestWidget();
-  auto* textfield =
-      widget->SetContentsView(std::make_unique<views::Textfield>());
-  textfield->SetAccessibleName(base::UTF8ToUTF16("Textfield"));
-  textfield->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-
-  // Show the widget.
-  widget->SetBounds(gfx::Rect(0, 0, 100, 100));
-  widget->Show();
-  EXPECT_TRUE(widget->IsActive());
-
-  // Focus the textfield and confirm initial state.
-  textfield->RequestFocus();
-  EXPECT_TRUE(textfield->HasFocus());
-  EXPECT_TRUE(textfield->GetText().empty());
-
-  // Write some things to the clipboard.
-  SetClipboardText("A");
-  SetClipboardText("B");
-  SetClipboardText("C");
-
-  // Verify we can paste the first history item via the ENTER key.
-  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
-  PressAndRelease(ui::KeyboardCode::VKEY_RETURN);
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  EXPECT_EQ("C", base::UTF16ToUTF8(textfield->GetText()));
-
-  textfield->SetText(base::string16());
-  EXPECT_TRUE(textfield->GetText().empty());
-
-  // Verify we can paste the first history item via the COMMAND+V shortcut.
-  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
-  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  EXPECT_EQ("C", base::UTF16ToUTF8(textfield->GetText()));
-
-  textfield->SetText(base::string16());
-  EXPECT_TRUE(textfield->GetText().empty());
-
-  // Verify we can paste the last history item via the ENTER key.
-  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
-  PressAndRelease(ui::KeyboardCode::VKEY_RETURN);
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  EXPECT_EQ("A", base::UTF16ToUTF8(textfield->GetText()));
-
-  textfield->SetText(base::string16());
-  EXPECT_TRUE(textfield->GetText().empty());
-
-  // Verify we can paste the last history item via the COMMAND+V shortcut.
-  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
-  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  EXPECT_EQ("A", base::UTF16ToUTF8(textfield->GetText()));
-}
-
-IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
-                       ShouldPasteHistoryWhileHoldingDownCommandKey) {
-  LoginUser(account_id1_);
-  CloseAllBrowsers();
-
-  // Create a widget containing a single, focusable textfield.
-  auto widget = CreateTestWidget();
-  auto* textfield =
-      widget->SetContentsView(std::make_unique<views::Textfield>());
-  textfield->SetAccessibleName(base::UTF8ToUTF16("Textfield"));
-  textfield->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-
-  // Show the widget.
-  widget->SetBounds(gfx::Rect(0, 0, 100, 100));
-  widget->Show();
-  EXPECT_TRUE(widget->IsActive());
-
-  // Focus the textfield and confirm initial state.
-  textfield->RequestFocus();
-  EXPECT_TRUE(textfield->HasFocus());
-  EXPECT_TRUE(textfield->GetText().empty());
-
-  // Write some things to the clipboard.
-  SetClipboardText("A");
-  SetClipboardText("B");
-  SetClipboardText("C");
-
-  // Verify we can traverse clipboard history and paste the first history item
-  // while holding down the COMMAND key.
-  Press(ui::KeyboardCode::VKEY_COMMAND);
-  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_COMMAND_DOWN);
-  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  EXPECT_EQ("C", base::UTF16ToUTF8(textfield->GetText()));
-  Release(ui::KeyboardCode::VKEY_COMMAND);
-
-  textfield->SetText(base::string16());
-  EXPECT_TRUE(textfield->GetText().empty());
-
-  // Verify we can traverse clipboard history and paste the last history item
-  // while holding down the COMMAND key.
-  Press(ui::KeyboardCode::VKEY_COMMAND);
-  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_COMMAND_DOWN);
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_COMMAND_DOWN);
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_COMMAND_DOWN);
-  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  EXPECT_EQ("A", base::UTF16ToUTF8(textfield->GetText()));
-  Release(ui::KeyboardCode::VKEY_COMMAND);
-}
-
 // Verifies that the selected item should be deleted by the backspace key.
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
                        DeleteItemViaBackspaceKey) {
@@ -523,4 +397,259 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   last_paste = GetLastPaste();
   ASSERT_EQ(last_paste.GetList().size(), 1u);
   EXPECT_EQ(last_paste.GetList()[0].GetString(), "text/plain: A");
+}
+
+// The browser test which creates a widget with a textfield during setting-up
+// to help verify the multipaste menu item's response to the gesture tap and
+// the mouse click.
+class ClipboardHistoryTextfieldBrowserTest
+    : public ClipboardHistoryWithMultiProfileBrowserTest {
+ public:
+  ClipboardHistoryTextfieldBrowserTest() = default;
+  ~ClipboardHistoryTextfieldBrowserTest() override = default;
+
+ protected:
+  // ClipboardHistoryWithMultiProfileBrowserTest:
+  void SetUpOnMainThread() override {
+    ClipboardHistoryWithMultiProfileBrowserTest::SetUpOnMainThread();
+
+    LoginUser(account_id1_);
+    CloseAllBrowsers();
+
+    // Create a widget containing a single, focusable textfield.
+    widget_ = CreateTestWidget();
+    textfield_ = widget_->SetContentsView(std::make_unique<views::Textfield>());
+    textfield_->SetAccessibleName(base::UTF8ToUTF16("Textfield"));
+    textfield_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+
+    // Show the widget.
+    widget_->SetBounds(gfx::Rect(0, 0, 100, 100));
+    widget_->Show();
+    ASSERT_TRUE(widget_->IsActive());
+
+    // Focus the textfield and confirm initial state.
+    textfield_->RequestFocus();
+    ASSERT_TRUE(textfield_->HasFocus());
+    ASSERT_TRUE(textfield_->GetText().empty());
+  }
+
+  std::unique_ptr<views::Widget> widget_;
+  views::Textfield* textfield_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
+                       ShouldPasteHistoryViaKeyboard) {
+  // Write some things to the clipboard.
+  SetClipboardText("A");
+  SetClipboardText("B");
+  SetClipboardText("C");
+
+  // Verify we can paste the first history item via the ENTER key.
+  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
+  PressAndRelease(ui::KeyboardCode::VKEY_RETURN);
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  EXPECT_EQ("C", base::UTF16ToUTF8(textfield_->GetText()));
+
+  textfield_->SetText(base::string16());
+  EXPECT_TRUE(textfield_->GetText().empty());
+
+  // Verify we can paste the first history item via the COMMAND+V shortcut.
+  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
+  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  EXPECT_EQ("C", base::UTF16ToUTF8(textfield_->GetText()));
+
+  textfield_->SetText(base::string16());
+  EXPECT_TRUE(textfield_->GetText().empty());
+
+  // Verify we can paste the last history item via the ENTER key.
+  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
+  PressAndRelease(ui::KeyboardCode::VKEY_RETURN);
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  EXPECT_EQ("A", base::UTF16ToUTF8(textfield_->GetText()));
+
+  textfield_->SetText(base::string16());
+  EXPECT_TRUE(textfield_->GetText().empty());
+
+  // Verify we can paste the last history item via the COMMAND+V shortcut.
+  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
+  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  EXPECT_EQ("A", base::UTF16ToUTF8(textfield_->GetText()));
+}
+
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
+                       ShouldPasteHistoryWhileHoldingDownCommandKey) {
+  // Write some things to the clipboard.
+  SetClipboardText("A");
+  SetClipboardText("B");
+  SetClipboardText("C");
+
+  // Verify we can traverse clipboard history and paste the first history item
+  // while holding down the COMMAND key.
+  Press(ui::KeyboardCode::VKEY_COMMAND);
+  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_COMMAND_DOWN);
+  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  EXPECT_EQ("C", base::UTF16ToUTF8(textfield_->GetText()));
+  Release(ui::KeyboardCode::VKEY_COMMAND);
+
+  textfield_->SetText(base::string16());
+  EXPECT_TRUE(textfield_->GetText().empty());
+
+  // Verify we can traverse clipboard history and paste the last history item
+  // while holding down the COMMAND key.
+  Press(ui::KeyboardCode::VKEY_COMMAND);
+  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_COMMAND_DOWN);
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_COMMAND_DOWN);
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_COMMAND_DOWN);
+  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  EXPECT_EQ("A", base::UTF16ToUTF8(textfield_->GetText()));
+  Release(ui::KeyboardCode::VKEY_COMMAND);
+}
+
+class FakeDlpController : public ui::ClipboardDlpController {
+ public:
+  FakeDlpController()
+      : allowed_origin_(url::Origin::Create(GURL("www.example.com"))) {}
+  ~FakeDlpController() override = default;
+
+  // ui::ClipboardDlpController:
+  bool IsDataReadAllowed(
+      const ui::ClipboardDataEndpoint* const data_src,
+      const ui::ClipboardDataEndpoint* const data_dst) const override {
+    // The multipaste menu should have access to any clipboard data.
+    if (data_dst && data_dst->type() == ui::EndpointType::kClipboardHistory)
+      return true;
+
+    // For other data destinations, only the data from `allowed_origin_`
+    // should be accessible.
+    return data_src && data_src->IsUrlType() &&
+           (*data_src->origin() == allowed_origin_);
+  }
+
+  const url::Origin& allowed_origin() const { return allowed_origin_; }
+
+ private:
+  const url::Origin allowed_origin_;
+};
+
+// The browser test equipped with the custom DLP controller.
+class ClipboardHistoryWithMockDLPBrowserTest
+    : public ClipboardHistoryTextfieldBrowserTest {
+ public:
+  ClipboardHistoryWithMockDLPBrowserTest() = default;
+  ~ClipboardHistoryWithMockDLPBrowserTest() override = default;
+
+  // ClipboardHistoryTextfieldBrowserTest:
+  void SetUpOnMainThread() override {
+    ClipboardHistoryTextfieldBrowserTest::SetUpOnMainThread();
+
+    // The DLP controller used for the login screen is destroyed after logging
+    // in. So the original DLP controller should be replaced with the custom
+    // one after logging in.
+    auto dlp_controller = std::make_unique<FakeDlpController>();
+    dlp_controller_ = dlp_controller.get();
+    ui::Clipboard::GetForCurrentThread()->SetClipboardDlpController(
+        std::move(dlp_controller));
+  }
+
+  // Write text into the clipboard buffer and it should be inaccessible from
+  // the multipaste menu, meaning that the clipboard data item created from
+  // the written text cannot be pasted through the multipaste menu.
+  void SetClipboardTextWithInaccessibleSrc(const std::string& text) {
+    SetClipboardText(text);
+  }
+
+  // Write text into the clipboard buffer and it should be accessible from
+  // the multipaste menu.
+  void SetClipboardTextWithAccessibleSrc(const std::string& text) {
+    ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste,
+                              std::make_unique<ui::ClipboardDataEndpoint>(
+                                  dlp_controller_->allowed_origin()))
+        .WriteText(base::UTF8ToUTF16(text));
+
+    // ClipboardHistory will post a task to process clipboard data in order to
+    // debounce multiple clipboard writes occurring in sequence. Here we give
+    // ClipboardHistory the chance to run its posted tasks before proceeding.
+    FlushMessageLoop();
+  }
+
+ private:
+  const FakeDlpController* dlp_controller_ = nullptr;
+};
+
+// Verifies the basic features related to the inaccessible menu item, the one
+// whose clipboard data should not be leaked through the multipaste menu.
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMockDLPBrowserTest, Basics) {
+  SetClipboardTextWithAccessibleSrc("A");
+  SetClipboardTextWithInaccessibleSrc("B");
+  EXPECT_TRUE(VerifyClipboardTextData({"B", "A"}));
+
+  ShowContextMenuViaAccelerator();
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Verify that the text is pasted into `textfield_` after the mouse click at
+  // `accessible_menu_item_view`.
+  const views::MenuItemView* accessible_menu_item_view =
+      GetContextMenu()->GetMenuItemViewAtForTest(/*index=*/1);
+  GetEventGenerator()->MoveMouseTo(
+      accessible_menu_item_view->GetBoundsInScreen().CenterPoint());
+  ASSERT_TRUE(accessible_menu_item_view->IsSelected());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_EQ("A", base::UTF16ToUTF8(textfield_->GetText()));
+
+  // Clear `textfield_`'s contents.
+  textfield_->SetText(base::string16());
+  ASSERT_TRUE(textfield_->GetText().empty());
+
+  // Re-show the multipaste menu since the menu is closed after the previous
+  // mouse click.
+  ASSERT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  ShowContextMenuViaAccelerator();
+
+  // Move mouse to `inaccessible_menu_item_view` then click the left button.
+  const views::MenuItemView* inaccessible_menu_item_view =
+      GetContextMenu()->GetMenuItemViewAtForTest(/*index=*/0);
+  GetEventGenerator()->MoveMouseTo(
+      inaccessible_menu_item_view->GetBoundsInScreen().CenterPoint());
+
+  // Verify that `inaccessible_menu_item_view` cannot be selected by mouse
+  // hovering. It does not respond to mouse click either.
+  EXPECT_FALSE(inaccessible_menu_item_view->IsSelected());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_EQ("", base::UTF16ToUTF8(textfield_->GetText()));
+
+  // Move the selection through the arrow key. Then delete the item by the
+  // backspace key. After deletion, `inaccessible_menu_item_view` is left.
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
+  PressAndRelease(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
+  EXPECT_TRUE(VerifyClipboardTextData({"B"}));
+  EXPECT_EQ(1, GetContextMenu()->GetMenuItemsCount());
+
+  // Move the selection through the arrow key again. Verify that
+  // `inaccessible_menu_item_view` cannot be selected. Pressing the backspace
+  // key does not delete the item.
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
+  PressAndRelease(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
+  EXPECT_FALSE(inaccessible_menu_item_view->IsSelected());
+  EXPECT_TRUE(VerifyClipboardTextData({"B"}));
+  EXPECT_EQ(1, GetContextMenu()->GetMenuItemsCount());
 }

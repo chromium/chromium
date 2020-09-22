@@ -375,6 +375,12 @@ void ClipboardAndroid::SetClipboardDlpController(
   NOTIMPLEMENTED();
 }
 
+const ui::ClipboardDlpController* ClipboardAndroid::GetClipboardDlpController()
+    const {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 bool ClipboardAndroid::IsFormatAvailable(

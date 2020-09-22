@@ -47,6 +47,11 @@ void TestClipboard::SetClipboardDlpController(
   dlp_controller_ = std::move(dlp_controller);
 }
 
+const ui::ClipboardDlpController* TestClipboard::GetClipboardDlpController()
+    const {
+  return dlp_controller_.get();
+}
+
 bool TestClipboard::IsFormatAvailable(
     const ClipboardFormatType& format,
     ClipboardBuffer buffer,

@@ -26,6 +26,9 @@
 
 namespace {
 
+// The opacity of the disabled item view.
+constexpr float kDisabledAlpha = 0.38f;
+
 // The insets within the contents view.
 constexpr gfx::Insets kContentsInsets(/*vertical=*/4, /*horizontal=*/16);
 
@@ -182,6 +185,10 @@ void ClipboardHistoryItemView::OnSelectionChanged() {
   main_button_->SchedulePaint();
 }
 
+float ClipboardHistoryItemView::GetContentsOpacity() const {
+  return container_->GetEnabled() ? 1.f : kDisabledAlpha;
+}
+
 gfx::Size ClipboardHistoryItemView::CalculatePreferredSize() const {
   const int preferred_width =
       views::MenuConfig::instance().touchable_menu_width;
@@ -194,7 +201,9 @@ void ClipboardHistoryItemView::ButtonPressed(views::Button* sender,
   const int command_id = sender == contents_view_->delete_button()
                              ? ClipboardHistoryUtil::kDeleteCommandId
                              : container_->GetCommand();
-  container_->GetDelegate()->ExecuteCommand(command_id, event.flags());
+  views::MenuDelegate* delegate = container_->GetDelegate();
+  DCHECK(delegate->IsCommandEnabled(command_id));
+  delegate->ExecuteCommand(command_id, event.flags());
 }
 
 }  // namespace ash

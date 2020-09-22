@@ -90,6 +90,10 @@ class ClipboardHistoryItemView : public views::View,
   // Creates the contents view.
   virtual std::unique_ptr<ContentsView> CreateContentsView() = 0;
 
+  // Returns the opacity of the menu item view's contents depending on the
+  // enabled state.
+  float GetContentsOpacity() const;
+
  private:
   // views::View:
   gfx::Size CalculatePreferredSize() const override;

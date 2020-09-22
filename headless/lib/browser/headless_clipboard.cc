@@ -29,6 +29,12 @@ void HeadlessClipboard::SetClipboardDlpController(
   NOTIMPLEMENTED();
 }
 
+const ui::ClipboardDlpController* HeadlessClipboard::GetClipboardDlpController()
+    const {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 bool HeadlessClipboard::IsFormatAvailable(
