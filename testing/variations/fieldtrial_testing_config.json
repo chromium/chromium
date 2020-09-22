@@ -4527,6 +4527,21 @@
             ]
         }
     ],
+    "NativeContextMenusStudy": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableNativeContextMenus"
+                    ]
+                }
+            ]
+        }
+    ],
     "NativeNotifications": [
         {
             "platforms": [
