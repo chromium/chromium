@@ -5,6 +5,7 @@
 #include "ash/wm/gestures/wm_gesture_handler.h"
 
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -18,8 +19,10 @@
 #include "ash/wm/window_cycle_list.h"
 #include "ash/wm/window_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/message_center/message_center.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -29,12 +32,46 @@ namespace {
 constexpr int kNumFingersForHighlight = 3;
 constexpr int kNumFingersForDesksSwitch = 4;
 
+constexpr char kOverviewGestureNotificationId[] =
+    "ash.wm.reverse_overview_gesture";
+
 bool InOverviewSession() {
   return Shell::Get()->overview_controller()->InOverviewSession();
 }
 
 const aura::Window* GetHighlightedWindow() {
   return InOverviewSession() ? GetOverviewHighlightedWindow() : nullptr;
+}
+
+bool IsNaturalScrollOn() {
+  PrefService* pref =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  return pref->GetBoolean(prefs::kTouchpadEnabled) &&
+         pref->GetBoolean(prefs::kNaturalScroll);
+}
+
+bool IsOverviewReverseGestureNotificationShown() {
+  return message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      kOverviewGestureNotificationId);
+}
+
+void CloseOverviewReverseGestureNotification() {
+  if (IsOverviewReverseGestureNotificationShown()) {
+    message_center::MessageCenter::Get()->RemoveNotification(
+        kOverviewGestureNotificationId, true);
+  }
+}
+
+const Desk* GetActiveDesk() {
+  return DesksController::Get()->active_desk();
+}
+
+const Desk* GetNextDesk() {
+  return DesksController::Get()->GetNextDesk();
+}
+
+void AddDesk() {
+  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
 }
 
 }  // namespace
@@ -46,8 +83,8 @@ class WmGestureHandlerTest : public AshTestBase {
 
   void Scroll(float x_offset, float y_offset, int fingers) {
     GetEventGenerator()->ScrollSequence(
-        gfx::Point(), base::TimeDelta::FromMilliseconds(5), x_offset, y_offset,
-        /*steps=*/100, fingers);
+        gfx::Point(), base::TimeDelta::FromMilliseconds(5), x_offset,
+        IsNaturalScrollOn() ? -y_offset : y_offset, /*steps=*/100, fingers);
   }
 
   void ScrollToSwitchDesks(bool scroll_left) {
@@ -359,6 +396,82 @@ TEST_F(InteractiveWindowCycleListGestureHandlerTest, VerticalScroll) {
   Scroll(horizontal_scroll, vertical_scroll, 3);
   EXPECT_FALSE(window_cycle_controller->IsCycling());
   EXPECT_TRUE(InOverviewSession());
+}
+
+class ReverseGestureHandlerTest : public WmGestureHandlerTest {
+ public:
+  ReverseGestureHandlerTest() = default;
+  ReverseGestureHandlerTest(const ReverseGestureHandlerTest&) = delete;
+  ReverseGestureHandlerTest& operator=(const ReverseGestureHandlerTest&) =
+      delete;
+  ~ReverseGestureHandlerTest() override = default;
+
+  // AshTestBase:
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    // Set natural scroll on.
+    PrefService* pref =
+        Shell::Get()->session_controller()->GetActivePrefService();
+    pref->SetBoolean(prefs::kTouchpadEnabled, true);
+    pref->SetBoolean(prefs::kNaturalScroll, true);
+  }
+};
+
+TEST_F(ReverseGestureHandlerTest, Overview) {
+  const float long_scroll = 2 * WmGestureHandler::kVerticalThresholdDp;
+
+  // Swipe down with three fingers.
+  Scroll(0, -long_scroll, 3);
+  // When keep old overview gesture is on, the old gesture also works.
+  EXPECT_TRUE(InOverviewSession());
+  // Show notification for the first time.
+  EXPECT_TRUE(IsOverviewReverseGestureNotificationShown());
+  // Close the Notification.
+  CloseOverviewReverseGestureNotification();
+
+  // Swipe up with three fingers.
+  Scroll(0, long_scroll, 3);
+  EXPECT_FALSE(InOverviewSession());
+  // Show notification for the second time.
+  EXPECT_TRUE(IsOverviewReverseGestureNotificationShown());
+  // Close the Notification.
+  CloseOverviewReverseGestureNotification();
+
+  // Swipe down with three fingers.
+  Scroll(0, -long_scroll, 3);
+  EXPECT_TRUE(InOverviewSession());
+  // Show notification for the third time.
+  EXPECT_TRUE(IsOverviewReverseGestureNotificationShown());
+  // Close the Notification.
+  CloseOverviewReverseGestureNotification();
+
+  // Swipe up with three fingers.
+  Scroll(0, long_scroll, 3);
+  EXPECT_FALSE(InOverviewSession());
+  // The notification won't show anymore.
+  EXPECT_FALSE(IsOverviewReverseGestureNotificationShown());
+
+  // Use the new gestures.
+  // Swipe up with three fingers.
+  Scroll(0, long_scroll, 3);
+  EXPECT_TRUE(InOverviewSession());
+  Scroll(0, -long_scroll, 3);
+  EXPECT_FALSE(InOverviewSession());
+}
+
+TEST_F(ReverseGestureHandlerTest, SwitchDesk) {
+  // Add a new desk2.
+  AddDesk();
+  const Desk* desk1 = GetActiveDesk();
+  const Desk* desk2 = GetNextDesk();
+
+  // Scroll right to get next desk.
+  ScrollToSwitchDesks(/*scroll_left=*/false);
+  EXPECT_EQ(desk2, GetActiveDesk());
+  // Scroll left to get previous desk.
+  ScrollToSwitchDesks(/*scroll_right=*/true);
+  EXPECT_EQ(desk1, GetActiveDesk());
 }
 
 }  // namespace ash
