@@ -132,8 +132,7 @@ class GearMenuController {
         currentVolumeInfo.volumeType ==
             VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER ||
         currentVolumeInfo.volumeType ==
-            VolumeManagerCommon.VolumeType.ARCHIVE ||
-        currentVolumeInfo.volumeType == VolumeManagerCommon.VolumeType.SMB) {
+            VolumeManagerCommon.VolumeType.ARCHIVE) {
       this.gearMenu_.setSpaceInfo(null, false);
       return;
     }

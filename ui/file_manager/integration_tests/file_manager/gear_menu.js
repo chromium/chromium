@@ -478,3 +478,86 @@ testcase.enableDisableStorageSettingsLink = async () => {
   // Check: volume space info should be disabled for external volume.
   await remoteCall.waitForElement(appId, '#volume-space-info[disabled]');
 };
+
+/**
+ * Tests that the "xGB available" message appears in the gear menu for
+ * the "My Files" volume.
+ */
+testcase.showAvailableStorageMyFiles = async () => {
+  // Open Files app on Downloads containing ENTRIES.photos.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+
+  // Wait for the gear menu button to appear and click it.
+  await remoteCall.waitAndClickElement(appId, '#gear-button');
+
+  // Wait for the gear menu to appear.
+  await remoteCall.waitForElement(appId, '#gear-menu:not([hidden])');
+
+  // Check #volume-storage is shown and it's enabled.
+  await remoteCall.waitForElement(
+      appId,
+      '#gear-menu:not([hidden]) cr-menu-item' +
+          '[command=\'#volume-storage\']' +
+          ':not([disabled]):not([hidden])');
+};
+
+/**
+ * Tests that the "xGB available message appears in the gear menu for
+ * the "Google Drive" volume.
+ */
+testcase.showAvailableStorageDrive = async () => {
+  // Open Files app on Drive containing ENTRIES.hello.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+
+  // Wait for the gear menu button to appear and click it.
+  await remoteCall.waitAndClickElement(appId, '#gear-button');
+
+  // Wait for the gear menu to appear.
+  await remoteCall.waitForElement(appId, '#gear-menu:not([hidden])');
+
+  // Check #volume-storage is shown and disabled (can't manage Drive
+  // storage).
+  await remoteCall.waitForElement(
+      appId,
+      '#gear-menu:not([hidden]) cr-menu-item' +
+          '[command=\'#volume-storage\']' +
+          ':not([hidden])');
+};
+
+/**
+ * Tests that the "xGB available message appears in the gear menu for
+ * an SMB volume.
+ */
+testcase.showAvailableStorageSmbfs = async () => {
+  // Populate Smbfs with some files.
+  await addEntries(['smbfs'], BASIC_LOCAL_ENTRY_SET);
+
+  // Mount Smbfs volume.
+  await sendTestMessage({name: 'mountSmbfs'});
+
+  // Open Files app on Downloads containing ENTRIES.photos.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+
+  await navigateWithDirectoryTree(appId, '/SMB Share');
+
+  // Wait for the volume's file list to appear.
+  const files = TestEntryInfo.getExpectedRows(BASIC_LOCAL_ENTRY_SET);
+  await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
+
+  // Wait for the gear menu button to appear and click it.
+  await remoteCall.waitAndClickElement(appId, '#gear-button');
+
+  // Wait for the gear menu to appear.
+  await remoteCall.waitForElement(appId, '#gear-menu:not([hidden])');
+
+  // Check #volume-storage is shown and disabled (can't manage SMB
+  // storage).
+  await remoteCall.waitForElement(
+      appId,
+      '#gear-menu:not([hidden]) cr-menu-item' +
+          '[command=\'#volume-storage\']' +
+          ':not([hidden])');
+};

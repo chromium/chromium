@@ -887,7 +887,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("hideCurrentDirectoryByTogglingHiddenAndroidFolders"),
         TestCase("newFolderInDownloads"),
         TestCase("showSendFeedbackAction"),
-        TestCase("enableDisableStorageSettingsLink")));
+        TestCase("enableDisableStorageSettingsLink"),
+        TestCase("showAvailableStorageMyFiles"),
+        TestCase("showAvailableStorageDrive"),
+        TestCase("showAvailableStorageSmbfs").EnableSmbfs()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesTooltip, /* files_tooltip.js */
