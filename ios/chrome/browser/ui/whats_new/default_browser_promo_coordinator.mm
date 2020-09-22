@@ -29,7 +29,9 @@ enum IOSDefaultBrowserFullscreenPromoAction {
 
 }  // namespace
 
-@interface DefaultBrowserPromoCoordinator () <ConfirmationAlertActionHandler>
+@interface DefaultBrowserPromoCoordinator () <
+    ConfirmationAlertActionHandler,
+    UIAdaptivePresentationControllerDelegate>
 
 // The fullscreen confirmation modal promo view controller this coordiantor
 // manages.
@@ -52,6 +54,7 @@ enum IOSDefaultBrowserFullscreenPromoAction {
   self.defaultBrowerPromoViewController.actionHandler = self;
   self.defaultBrowerPromoViewController.modalPresentationStyle =
       UIModalPresentationFormSheet;
+  self.defaultBrowerPromoViewController.presentationController.delegate = self;
   [self.baseViewController
       presentViewController:self.defaultBrowerPromoViewController
                    animated:YES
@@ -59,11 +62,22 @@ enum IOSDefaultBrowserFullscreenPromoAction {
 }
 
 - (void)stop {
+  // Ensure that presentationControllerDidDismiss: is not called in response to
+  // a stop.
+  self.defaultBrowerPromoViewController.presentationController.delegate = nil;
   [self.defaultBrowerPromoViewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
   self.defaultBrowerPromoViewController = nil;
   [super stop];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  // This ensures that a modal swipe dismss will also be logged.
+  LogUserInteractionWithFullscreenPromo();
 }
 
 #pragma mark - ConfirmationAlertActionHandler

@@ -462,6 +462,9 @@
 
   [self.infobarModalOverlayContainerCoordinator stop];
   self.infobarModalOverlayContainerCoordinator = nil;
+
+  [self.defaultBrowserPromoCoordinator stop];
+  self.defaultBrowserPromoCoordinator = nil;
 }
 
 #pragma mark - ActivityServiceCommands
@@ -568,6 +571,7 @@
 
 - (void)hidePromo {
   [self.defaultBrowserPromoCoordinator stop];
+  self.defaultBrowserPromoCoordinator = nil;
 }
 
 #pragma mark - FindInPageCommands
