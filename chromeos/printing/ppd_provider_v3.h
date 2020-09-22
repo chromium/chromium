@@ -19,7 +19,6 @@ namespace chromeos {
 // TODO(crbug.com/888189): fold this into ppd_provider.h,
 // deprecating the existing static Create() method.
 CHROMEOS_EXPORT scoped_refptr<PpdProvider> CreateV3Provider(
-    base::StringPiece browser_locale,
     const base::Version& current_version,
     scoped_refptr<PpdCache> cache,
     std::unique_ptr<PpdMetadataManager> metadata_manager,

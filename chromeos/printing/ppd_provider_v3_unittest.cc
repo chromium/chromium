@@ -174,8 +174,7 @@ class PpdProviderTest : public ::testing::Test {
     auto config_cache = std::make_unique<FakePrinterConfigCache>();
     provider_backdoor_.config_cache = config_cache.get();
 
-    return CreateV3Provider(options.browser_locale,
-                            base::Version("40.8.6753.09"), ppd_cache_,
+    return CreateV3Provider(base::Version("40.8.6753.09"), ppd_cache_,
                             std::move(manager), std::move(config_cache));
   }
 

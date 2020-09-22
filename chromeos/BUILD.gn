@@ -21,7 +21,7 @@ declare_args() {
   # PpdProvider class.
   # TODO(crbug.com/1025995): remove this and all related scaffolding
   # once we're ready to cut over.
-  is_printing_ppd_provider_v3 = false
+  is_printing_ppd_provider_v3 = true
 }
 
 component("chromeos") {

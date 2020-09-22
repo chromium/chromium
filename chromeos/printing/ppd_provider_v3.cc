@@ -145,21 +145,18 @@ struct MethodDeferralContext {
 // (https://crbug.com/888189).
 class PpdProviderImpl : public PpdProvider {
  public:
-  PpdProviderImpl(base::StringPiece browser_locale,
-                  const base::Version& current_version,
+  PpdProviderImpl(const base::Version& current_version,
                   scoped_refptr<PpdCache> cache,
                   std::unique_ptr<PpdMetadataManager> metadata_manager,
                   std::unique_ptr<PrinterConfigCache> config_cache)
-      : browser_locale_(std::string(browser_locale)),
-        version_(current_version),
+      : version_(current_version),
         ppd_cache_(cache),
         deferral_context_(std::make_unique<MethodDeferralContext>()),
         metadata_manager_(std::move(metadata_manager)),
         config_cache_(std::move(config_cache)),
         file_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
             {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
-             base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
-  }
+             base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
 
   void ResolveManufacturers(ResolveManufacturersCallback cb) override {
     // Do we need
@@ -938,10 +935,6 @@ class PpdProviderImpl : public PpdProvider {
                                   index_leaf->license));
   }
 
-  // Locale of the browser, as returned by
-  // BrowserContext::GetApplicationLocale();
-  const std::string browser_locale_;
-
   // Current version used to filter restricted ppds
   const base::Version version_;
 
@@ -1011,14 +1004,13 @@ scoped_refptr<PpdProvider> PpdProvider::Create(
 
 // free function; _not_ static
 scoped_refptr<PpdProvider> CreateV3Provider(
-    base::StringPiece browser_locale,
     const base::Version& current_version,
     scoped_refptr<PpdCache> cache,
     std::unique_ptr<PpdMetadataManager> metadata_manager,
     std::unique_ptr<PrinterConfigCache> config_cache) {
-  return base::MakeRefCounted<PpdProviderImpl>(
-      browser_locale, current_version, cache, std::move(metadata_manager),
-      std::move(config_cache));
+  return base::MakeRefCounted<PpdProviderImpl>(current_version, cache,
+                                               std::move(metadata_manager),
+                                               std::move(config_cache));
 }
 
 }  // namespace chromeos
