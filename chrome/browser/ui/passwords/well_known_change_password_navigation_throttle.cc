@@ -109,6 +109,7 @@ WellKnownChangePasswordNavigationThrottle::MaybeCreateThrottleFor(
 WellKnownChangePasswordNavigationThrottle::
     WellKnownChangePasswordNavigationThrottle(NavigationHandle* handle)
     : NavigationThrottle(handle),
+      request_url_(handle->GetURL()),
       source_id_(
           ukm::GetSourceIdForWebContentsDocument(handle->GetWebContents())) {
   if (base::FeatureList::IsEnabled(
@@ -117,7 +118,7 @@ WellKnownChangePasswordNavigationThrottle::
         AffiliationServiceFactory::GetForProfile(Profile::FromBrowserContext(
             handle->GetWebContents()->GetBrowserContext()));
     well_known_change_password_state_.PrefetchChangePasswordURLs(
-        affiliation_service_, {navigation_handle()->GetURL()});
+        affiliation_service_, {request_url_});
   } else {
     change_password_url_service_ =
         ChangePasswordUrlServiceFactory::GetForBrowserContext(
@@ -146,7 +147,7 @@ WellKnownChangePasswordNavigationThrottle::WillStartRequest() {
       net::IsolationInfo::RedirectMode::kUpdateNothing,
       navigation_handle()->GetIsolationInfo().network_isolation_key());
   well_known_change_password_state_.FetchNonExistingResource(
-      url_loader_factory.get(), navigation_handle()->GetURL(),
+      url_loader_factory.get(), request_url_,
       navigation_handle()->GetInitiatorOrigin(), std::move(trusted_params));
   return NavigationThrottle::PROCEED;
 }
@@ -183,20 +184,20 @@ void WellKnownChangePasswordNavigationThrottle::OnProcessingFinished(
     Resume();
     return;
   }
-  GURL url = navigation_handle()->GetURL();
   GURL redirect_url;
   if (base::FeatureList::IsEnabled(
           password_manager::features::kChangePasswordAffiliationInfo)) {
-    redirect_url = affiliation_service_->GetChangePasswordURL(url);
+    redirect_url = affiliation_service_->GetChangePasswordURL(request_url_);
   } else {
-    redirect_url = change_password_url_service_->GetChangePasswordUrl(url);
+    redirect_url =
+        change_password_url_service_->GetChangePasswordUrl(request_url_);
   }
   if (redirect_url.is_valid()) {
     RecordMetric(WellKnownChangePasswordResult::kFallbackToOverrideUrl);
     Redirect(redirect_url);
   } else {
     RecordMetric(WellKnownChangePasswordResult::kFallbackToOriginUrl);
-    Redirect(url.GetOrigin());
+    Redirect(request_url_.GetOrigin());
   }
   CancelDeferredNavigation(NavigationThrottle::CANCEL);
 }
