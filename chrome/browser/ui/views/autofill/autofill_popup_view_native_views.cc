@@ -108,66 +108,97 @@ void BuildColumnSet(views::GridLayout* layout) {
                         views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
 }
 
-gfx::ImageSkia GetIconImageByName(const std::string& icon_str) {
+// An image view that shows a vector icon and tracks changes in the theme.
+class VectorIconView : public views::ImageView {
+ public:
+  explicit VectorIconView(const gfx::VectorIcon& icon) : icon_(icon) {}
+
+  // views::ImageView
+  void OnThemeChanged() override {
+    ImageView::OnThemeChanged();
+    const SkColor color = GetNativeTheme()->GetSystemColor(
+        ui::NativeTheme::kColorId_DefaultIconColor);
+    SetImage(gfx::CreateVectorIcon(icon_, gfx::kFaviconSize, color));
+  }
+
+ private:
+  const gfx::VectorIcon& icon_;
+};
+
+std::unique_ptr<views::ImageView> ImageViewFromImageSkia(
+    const gfx::ImageSkia& image_skia) {
+  if (image_skia.isNull())
+    return nullptr;
+  auto image_view = std::make_unique<views::ImageView>();
+  image_view->SetImage(image_skia);
+  return image_view;
+}
+
+std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(
+    const gfx::VectorIcon& vector_icon) {
+  return std::make_unique<VectorIconView>(vector_icon);
+}
+
+std::unique_ptr<views::ImageView> GetIconImageViewByName(
+    const std::string& icon_str) {
   if (icon_str.empty())
-    return gfx::ImageSkia();
+    return nullptr;
 
   // For http warning message, get icon images from VectorIcon, which is the
   // same as security indicator icons in location bar.
-  if (icon_str == "httpWarning") {
-    return gfx::CreateVectorIcon(omnibox::kHttpIcon, gfx::kFaviconSize,
-                                 gfx::kChromeIconGrey);
-  }
+  if (icon_str == "httpWarning")
+    return ImageViewFromVectorIcon(omnibox::kHttpIcon);
+
   if (icon_str == "httpsInvalid") {
-    return gfx::CreateVectorIcon(omnibox::kNotSecureWarningIcon,
-                                 gfx::kFaviconSize, gfx::kGoogleRed700);
+    return ImageViewFromImageSkia(gfx::CreateVectorIcon(
+        omnibox::kNotSecureWarningIcon, gfx::kFaviconSize, gfx::kGoogleRed700));
   }
-  if (icon_str == "keyIcon") {
-    return gfx::CreateVectorIcon(kKeyIcon, gfx::kFaviconSize,
-                                 gfx::kChromeIconGrey);
-  }
-  if (icon_str == "globeIcon") {
-    return gfx::CreateVectorIcon(kGlobeIcon, gfx::kFaviconSize,
-                                 gfx::kChromeIconGrey);
-  }
-  if (icon_str == "settingsIcon") {
-    return gfx::CreateVectorIcon(vector_icons::kSettingsIcon, gfx::kFaviconSize,
-                                 gfx::kChromeIconGrey);
-  }
-  if (icon_str == "empty") {
-    return gfx::CreateVectorIcon(omnibox::kHttpIcon, gfx::kFaviconSize,
-                                 gfx::kChromeIconGrey);
-  }
+
+  if (icon_str == "keyIcon")
+    return ImageViewFromVectorIcon(kKeyIcon);
+
+  if (icon_str == "globeIcon")
+    return ImageViewFromVectorIcon(kGlobeIcon);
+
+  if (icon_str == "settingsIcon")
+    return ImageViewFromVectorIcon(vector_icons::kSettingsIcon);
+
+  if (icon_str == "empty")
+    return ImageViewFromVectorIcon(omnibox::kHttpIcon);
+
   if (icon_str == "google") {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    return gfx::CreateVectorIcon(kGoogleGLogoIcon, gfx::kFaviconSize,
-                                 gfx::kPlaceholderColor);
+    return ImageViewFromImageSkia(gfx::CreateVectorIcon(
+        kGoogleGLogoIcon, gfx::kFaviconSize, gfx::kPlaceholderColor));
 #else
-    return gfx::ImageSkia();
+    return nullptr;
 #endif
   }
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (icon_str == "googlePay" || icon_str == "googlePayDark") {
-    return gfx::ImageSkia();
+    return nullptr;
   }
 #endif
   // For other suggestion entries, get icon from PNG files.
   int icon_id = autofill::GetIconResourceID(icon_str);
   DCHECK_NE(icon_id, 0);
-  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(icon_id);
+  return ImageViewFromImageSkia(
+      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(icon_id));
 }
 
-gfx::ImageSkia GetIconImage(const autofill::Suggestion& suggestion) {
-  if (!suggestion.custom_icon.IsEmpty())
-    return suggestion.custom_icon.AsImageSkia();
-
-  return GetIconImageByName(suggestion.icon);
-}
-
-gfx::ImageSkia GetStoreIndicatorIconImage(
+std::unique_ptr<views::ImageView> GetIconImageView(
     const autofill::Suggestion& suggestion) {
-  return GetIconImageByName(suggestion.store_indicator_icon);
+  if (!suggestion.custom_icon.IsEmpty()) {
+    return ImageViewFromImageSkia(suggestion.custom_icon.AsImageSkia());
+  }
+
+  return GetIconImageViewByName(suggestion.icon);
+}
+
+std::unique_ptr<views::ImageView> GetStoreIndicatorIconImageView(
+    const autofill::Suggestion& suggestion) {
+  return GetIconImageViewByName(suggestion.store_indicator_icon);
 }
 
 }  // namespace
@@ -259,7 +290,6 @@ class AutofillPopupItemView : public AutofillPopupRowView {
   // Returns the font weight to be applied to primary info.
   virtual gfx::Font::Weight GetPrimaryTextWeight() const = 0;
 
-  void AddIcon(gfx::ImageSkia icon);
   void AddSpacerWithSize(int spacer_width,
                          bool resize,
                          views::BoxLayout* layout);
@@ -503,10 +533,11 @@ void AutofillPopupItemView::CreateContent() {
 
   std::vector<Suggestion> suggestions = controller->GetSuggestions();
 
-  const gfx::ImageSkia icon = GetIconImage(suggestions[line_number()]);
+  std::unique_ptr<views::ImageView> icon =
+      GetIconImageView(suggestions[line_number()]);
 
-  if (!icon.isNull()) {
-    AddIcon(icon);
+  if (icon) {
+    AddChildView(std::move(icon));
     AddSpacerWithSize(GetHorizontalMargin(),
                       /*resize=*/false, layout_manager);
   }
@@ -543,12 +574,12 @@ void AutofillPopupItemView::CreateContent() {
   }
 
   AddChildView(std::move(all_labels));
-  const gfx::ImageSkia store_indicator_icon =
-      GetStoreIndicatorIconImage(suggestions[line_number()]);
-  if (!store_indicator_icon.isNull()) {
+  std::unique_ptr<views::ImageView> store_indicator_icon =
+      GetStoreIndicatorIconImageView(suggestions[line_number()]);
+  if (store_indicator_icon) {
     AddSpacerWithSize(GetHorizontalMargin(),
                       /*resize=*/true, layout_manager);
-    AddIcon(store_indicator_icon);
+    AddChildView(std::move(icon));
   }
 }
 
@@ -634,12 +665,6 @@ AutofillPopupItemView::CreateLabelWithStyleAndContext(
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   return label;
-}
-
-void AutofillPopupItemView::AddIcon(gfx::ImageSkia icon) {
-  auto image_view = std::make_unique<views::ImageView>();
-  image_view->SetImage(icon);
-  AddChildView(std::move(image_view));
 }
 
 void AutofillPopupItemView::AddSpacerWithSize(int spacer_width,
@@ -781,7 +806,7 @@ void AutofillPopupFooterView::CreateContent() {
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   const Suggestion suggestion = controller->GetSuggestions()[line_number()];
-  const gfx::ImageSkia icon = GetIconImage(suggestion);
+  std::unique_ptr<views::ImageView> icon = GetIconImageView(suggestion);
 
   const bool use_leading_icon =
       base::Contains(kItemTypesUsingLeadingIcons, frontend_id());
@@ -790,8 +815,8 @@ void AutofillPopupFooterView::CreateContent() {
     SetEnabled(false);
     AddChildView(std::make_unique<views::Throbber>())->Start();
     AddSpacerWithSize(GetHorizontalMargin(), /*resize=*/false, layout_manager);
-  } else if (!icon.isNull() && use_leading_icon) {
-    AddIcon(icon);
+  } else if (icon && use_leading_icon) {
+    AddChildView(std::move(icon));
     AddSpacerWithSize(GetHorizontalMargin(), /*resize=*/false, layout_manager);
   }
 
@@ -810,9 +835,9 @@ void AutofillPopupFooterView::CreateContent() {
           DISTANCE_BETWEEN_PRIMARY_AND_SECONDARY_LABELS_HORIZONTAL),
       /*resize=*/true, layout_manager);
 
-  if (!icon.isNull() && !use_leading_icon) {
+  if (icon && !use_leading_icon) {
     AddSpacerWithSize(GetHorizontalMargin(), /*resize=*/false, layout_manager);
-    AddIcon(icon);
+    AddChildView(std::move(icon));
   }
 }
 
