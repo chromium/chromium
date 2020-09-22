@@ -198,7 +198,7 @@ void* V4L2Buffer::GetPlaneMapping(const size_t plane) {
     return nullptr;
   }
 
-  p = device_->Mmap(NULL, v4l2_buffer_.m.planes[plane].length,
+  p = device_->Mmap(nullptr, v4l2_buffer_.m.planes[plane].length,
                     PROT_READ | PROT_WRITE, MAP_SHARED,
                     v4l2_buffer_.m.planes[plane].m.mem_offset);
   if (p == MAP_FAILED) {
@@ -1335,7 +1335,7 @@ V4L2Device::V4L2Device() {
   DETACH_FROM_SEQUENCE(client_sequence_checker_);
 }
 
-V4L2Device::~V4L2Device() {}
+V4L2Device::~V4L2Device() = default;
 
 scoped_refptr<V4L2Queue> V4L2Device::GetQueue(enum v4l2_buf_type type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
