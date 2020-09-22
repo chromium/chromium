@@ -4610,7 +4610,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="6644512095122093795">Ponuda za čuvanje lozinki</translation>
 <translation id="6644513150317163574">Nevažeći format URL-a. Kada se koristi SSO autentifikacija, kao naziv host računara mora se navesti server.</translation>
 <translation id="6644846457769259194">Ažuriranje vašeg uređaja (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="6645437135153136856">Odabrani uređaj za Google Cloud Print nije više podržan. <ph name="BR" /> Pokušajte postaviti štampač u postavkama sistema računara.</translation>
+<translation id="6645437135153136856">Odabrani uređaj za Google Cloud Print više nije podržan. <ph name="BR" /> Pokušajte postaviti štampač u postavkama sistema računara.</translation>
 <translation id="6647228709620733774">URL za opoziv Organa za izdavanje Netscape potvrda</translation>
 <translation id="6647838571840953560">Trenutni kanal: <ph name="CHANNEL_NAME" /></translation>
 <translation id="6648911618876616409">Važno ažuriranje je spremno za instaliranje. Prijavite se za pokretanje.</translation>
@@ -5002,7 +5002,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="7121362699166175603">Briše historiju i automatsko dovršavanje na traci za adresu. Vaš Google račun može imati druge oblike historije pregledanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Način rada za programere</translation>
 <translation id="7121728544325372695">Pametne crtice</translation>
-<translation id="7123360114020465152">Nije više podržan</translation>
+<translation id="7123360114020465152">Više nije podržan</translation>
 <translation id="7125148293026877011">Izbrišite Crostini</translation>
 <translation id="7127980134843952133">Historija preuzimanja</translation>
 <translation id="7128151990937044829">Prikazuj pokazatelj na traci za adresu kada je obavještenje blokirano</translation>
