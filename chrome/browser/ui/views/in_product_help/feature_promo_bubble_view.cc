@@ -16,9 +16,9 @@
 #include "chrome/browser/ui/views/in_product_help/feature_promo_bubble_timeout.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/variations/variations_associated_data.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/theme_provider.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -47,7 +47,18 @@ constexpr base::TimeDelta kDelayShort = base::TimeDelta::FromSeconds(3);
 // The insets from the bubble border to the text inside.
 constexpr gfx::Insets kBubbleContentsInsets(12, 16);
 
+// The insets from the button border to the text inside.
 constexpr gfx::Insets kBubbleButtonPadding(8, 10);
+
+// The text color of the button.
+constexpr SkColor kBubbleButtonTextColor = SK_ColorWHITE;
+
+// The focus ring color of the button.
+constexpr SkColor kBubbleButtonFocusRingColor = SK_ColorWHITE;
+
+// The background color of the button when focused.
+constexpr SkColor kBubbleButtonFocusedBackgroundColor =
+    gfx::kGoogleBlue600;
 }  // namespace
 
 namespace views {
@@ -65,6 +76,9 @@ class MdIPHBubbleButton : public MdTextButton {
     SetProminent(true);
     // Button color is the same as IPH bubble's color.
     SetBgColorOverride(SK_ColorTRANSPARENT);
+    // Do not grey out button text on blur.
+    SetTextColor(ButtonState::STATE_DISABLED, kBubbleButtonTextColor);
+    focus_ring()->SetColor(kBubbleButtonFocusRingColor);
   }
 
   void UpdateBackgroundColor() override {
@@ -73,7 +87,8 @@ class MdIPHBubbleButton : public MdTextButton {
     // Adapted from MdTextButton::UpdateBackgroundColor()
     ui::NativeTheme* theme = GetNativeTheme();
 
-    SkColor bg_color = SK_ColorTRANSPARENT;
+    SkColor bg_color =
+        HasFocus() ? kBubbleButtonFocusedBackgroundColor : SK_ColorTRANSPARENT;
     if (GetState() == STATE_PRESSED)
       theme->GetSystemButtonPressedColor(bg_color);
 
