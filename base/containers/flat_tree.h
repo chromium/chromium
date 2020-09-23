@@ -36,8 +36,8 @@ struct IsTransparentCompare<T, void_t<typename T::is_transparent>>
 
 // Implementation -------------------------------------------------------------
 
-// Implementation of a sorted vector for backing flat_set and flat_map. Do not
-// use directly.
+// Implementation for the sorted associative flat_set and flat_map using a
+// sorted vector as the backing store. Do not use directly.
 //
 // The use of "value" in this is like std::map uses, meaning it's the thing
 // contained (in the case of map it's a <Kay, Mapped> pair). The Key is how
@@ -156,6 +156,9 @@ class flat_tree {
 
   // --------------------------------------------------------------------------
   // Iterators.
+  //
+  // Iterators follow the ordering defined by the key comparator used in
+  // construction of the flat_tree.
 
   iterator begin();
   const_iterator begin() const;
