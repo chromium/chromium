@@ -16,13 +16,13 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.suggestions.tile.TileWithTextView;
+import org.chromium.chrome.browser.suggestions.tile.TileView;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 
 /**
  * View for a category name and site tiles.
  */
-public class ExploreSitesTileView extends TileWithTextView {
+public class ExploreSitesTileView extends TileView {
     private static final int TITLE_LINES = 2;
     private final int mIconCornerRadius;
 
