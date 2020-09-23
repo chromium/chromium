@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/app_list/search/drive_quick_access_chip_result.h"
 #include "chrome/browser/ui/app_list/search/drive_quick_access_result.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -27,10 +28,12 @@ namespace app_list {
 
 DriveZeroStateProvider::DriveZeroStateProvider(
     Profile* profile,
-    SearchController* search_controller)
+    SearchController* search_controller,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : profile_(profile),
       drive_service_(
           drive::DriveIntegrationServiceFactory::GetForProfile(profile)),
+      item_suggest_cache_(profile, std::move(url_loader_factory)),
       suggested_files_enabled_(app_list_features::IsSuggestedFilesEnabled()) {
   DCHECK(profile_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -66,7 +69,7 @@ void DriveZeroStateProvider::Start(const base::string16& query) {
 
 void DriveZeroStateProvider::AppListShown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+  item_suggest_cache_.UpdateCache();
   // TODO(crbug.com/1034842): Query ItemSuggest, consider rate-limiting.
 }
 

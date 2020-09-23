@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/file_manager/file_tasks_notifier.h"
+#include "chrome/browser/ui/app_list/search/files/item_suggest_cache.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 
 class Profile;
@@ -26,7 +27,10 @@ class SearchController;
 class DriveZeroStateProvider : public SearchProvider,
                                public drive::DriveIntegrationServiceObserver {
  public:
-  DriveZeroStateProvider(Profile* profile, SearchController* search_controller);
+  DriveZeroStateProvider(
+      Profile* profile,
+      SearchController* search_controller,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~DriveZeroStateProvider() override;
 
   DriveZeroStateProvider(const DriveZeroStateProvider&) = delete;
@@ -44,6 +48,8 @@ class DriveZeroStateProvider : public SearchProvider,
   Profile* const profile_;
   drive::DriveIntegrationService* const drive_service_;
 
+  ItemSuggestCache item_suggest_cache_;
+
   // Whether the suggested files experiment is enabled.
   const bool suggested_files_enabled_;
 
@@ -54,13 +60,7 @@ class DriveZeroStateProvider : public SearchProvider,
   SEQUENCE_CHECKER(sequence_checker_);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  // Factory for general use.
-  base::WeakPtrFactory<DriveZeroStateProvider> weak_ptr_factory_{this};
-  // Factory only for weak pointers for ItemSuggest API calls. Using two
-  // factories allows in-flight API calls to be cancelled independently of other
-  // tasks by invalidating only this factory's weak pointers.
-  base::WeakPtrFactory<DriveZeroStateProvider> item_suggest_weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<DriveZeroStateProvider> weak_factory_{this};
 };
 
 }  // namespace app_list

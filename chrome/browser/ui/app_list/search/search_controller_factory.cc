@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/app_list/search/assistant_search_provider.h"
 #include "chrome/browser/ui/app_list/search/assistant_text_search_provider.h"
 #include "chrome/browser/ui/app_list/search/drive_quick_access_provider.h"
+#include "chrome/browser/ui/app_list/search/files/drive_zero_state_provider.h"
 #include "chrome/browser/ui/app_list/search/launcher_search/launcher_search_provider.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
 #include "chrome/browser/ui/app_list/search/omnibox_provider.h"
@@ -36,6 +37,8 @@
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "components/arc/arc_util.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
 
 namespace app_list {
 
@@ -82,6 +85,13 @@ constexpr size_t kMaxAssistantTextResults = 1;
 
 // TODO(wutao): Need UX spec.
 constexpr size_t kMaxSettingsShortcutResults = 6;
+
+// A flag to easily replace the old Drive zero-state provider with the new one
+// during development.
+//
+// TODO(crbug.com/1034842): Once implementation is finished, remove this flag
+// and always use the new provider.
+constexpr bool kUseNewDriveProvider = false;
 
 }  // namespace
 
@@ -195,9 +205,19 @@ std::unique_ptr<SearchController> CreateSearchController(
                             std::make_unique<ZeroStateFileProvider>(profile));
     size_t drive_quick_access_group_id =
         controller->AddGroup(kMaxDriveQuickAccessResults);
-    controller->AddProvider(
-        drive_quick_access_group_id,
-        std::make_unique<DriveQuickAccessProvider>(profile, controller.get()));
+
+    if (kUseNewDriveProvider) {
+      controller->AddProvider(
+          drive_quick_access_group_id,
+          std::make_unique<DriveZeroStateProvider>(
+              profile, controller.get(),
+              content::BrowserContext::GetDefaultStoragePartition(profile)
+                  ->GetURLLoaderFactoryForBrowserProcess()));
+    } else {
+      controller->AddProvider(drive_quick_access_group_id,
+                              std::make_unique<DriveQuickAccessProvider>(
+                                  profile, controller.get()));
+    }
   }
 
   if (app_list_features::IsLauncherSettingsSearchEnabled()) {
