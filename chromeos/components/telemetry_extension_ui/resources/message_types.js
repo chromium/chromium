@@ -128,7 +128,7 @@ dpsl_internal.DiagnosticsRunFPAccuracyRoutineRequest;
 
 /**
  * Request message sent by the unprivileged context to the privileged
- * context to run NVME wear level routine.
+ * context to run NVMe wear level routine.
  * @typedef {{ wearLevelThreshold: !number }}
  */
 dpsl_internal.DiagnosticsRunNvmeWearLevelRoutineRequest;
