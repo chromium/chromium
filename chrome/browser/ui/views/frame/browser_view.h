@@ -66,6 +66,7 @@ class FullscreenControlHost;
 class InfoBarContainerView;
 class LocationBarView;
 class StatusBubbleViews;
+class TabSearchButton;
 class TabStrip;
 class TabStripRegionView;
 class ToolbarButtonProvider;
@@ -218,6 +219,9 @@ class BrowserView : public BrowserWindow,
 
   // Accessor for the contents WebView.
   views::WebView* contents_web_view() { return contents_web_view_; }
+
+  // Accessor for the BrowserView's TabSearchButton instance.
+  TabSearchButton* GetTabSearchButton();
 
   // Returns true if various window components are visible.
   bool IsTabStripVisible() const;
