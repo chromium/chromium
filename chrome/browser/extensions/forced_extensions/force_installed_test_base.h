@@ -5,12 +5,11 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_FORCED_EXTENSIONS_FORCE_INSTALLED_TEST_BASE_H_
 #define CHROME_BROWSER_EXTENSIONS_FORCED_EXTENSIONS_FORCE_INSTALLED_TEST_BASE_H_
 
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-class TestingProfile;
 
 namespace sync_preferences {
 class TestingPrefServiceSyncable;
@@ -44,6 +43,20 @@ class ForceInstalledTestBase : public testing::Test {
   // kInstallForceList preference.
   void SetupEmptyForceList();
 
+  Profile* profile() const { return profile_; }
+
+  sync_preferences::TestingPrefServiceSyncable* prefs() const { return prefs_; }
+
+  ExtensionRegistry* registry() const { return registry_; }
+
+  InstallStageTracker* install_stage_tracker() const {
+    return install_stage_tracker_;
+  }
+
+  ForceInstalledTracker* force_installed_tracker() const {
+    return force_installed_tracker_.get();
+  }
+
   static const char kExtensionId1[];
   static const char kExtensionId2[];
   static const char kExtensionName1[];
@@ -52,13 +65,15 @@ class ForceInstalledTestBase : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+ private:
   policy::MockConfigurationPolicyProvider policy_provider_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   TestingProfile* profile_;
   sync_preferences::TestingPrefServiceSyncable* prefs_;
   ExtensionRegistry* registry_;
   InstallStageTracker* install_stage_tracker_;
-  std::unique_ptr<ForceInstalledTracker> tracker_;
+  std::unique_ptr<ForceInstalledTracker> force_installed_tracker_;
 };
 
 }  // namespace extensions

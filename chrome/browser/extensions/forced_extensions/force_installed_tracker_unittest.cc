@@ -24,7 +24,7 @@ class ForceInstalledTrackerTest : public ForceInstalledTestBase,
 
   void SetUp() override {
     ForceInstalledTestBase::SetUp();
-    scoped_observer_.Add(tracker_.get());
+    scoped_observer_.Add(force_installed_tracker());
   }
 
   // ForceInstalledTracker::Observer overrides:
@@ -60,21 +60,21 @@ TEST_F(ForceInstalledTrackerTest, AllExtensionsInstalled) {
   auto ext2 = ExtensionBuilder(kExtensionName2).SetID(kExtensionId2).Build();
   EXPECT_FALSE(loaded_called_);
   EXPECT_FALSE(ready_called_);
-  EXPECT_FALSE(tracker_->IsDoneLoading());
+  EXPECT_FALSE(force_installed_tracker()->IsDoneLoading());
 
-  tracker_->OnExtensionLoaded(profile_, ext1.get());
-  tracker_->OnExtensionLoaded(profile_, ext2.get());
+  force_installed_tracker()->OnExtensionLoaded(profile(), ext1.get());
+  force_installed_tracker()->OnExtensionLoaded(profile(), ext2.get());
   EXPECT_TRUE(loaded_called_);
   EXPECT_FALSE(ready_called_);
-  EXPECT_TRUE(tracker_->IsDoneLoading());
-  EXPECT_FALSE(tracker_->IsReady());
+  EXPECT_TRUE(force_installed_tracker()->IsDoneLoading());
+  EXPECT_FALSE(force_installed_tracker()->IsReady());
 
-  tracker_->OnExtensionReady(profile_, ext1.get());
-  tracker_->OnExtensionReady(profile_, ext2.get());
+  force_installed_tracker()->OnExtensionReady(profile(), ext1.get());
+  force_installed_tracker()->OnExtensionReady(profile(), ext2.get());
   EXPECT_TRUE(loaded_called_);
   EXPECT_TRUE(ready_called_);
-  EXPECT_TRUE(tracker_->IsDoneLoading());
-  EXPECT_TRUE(tracker_->IsReady());
+  EXPECT_TRUE(force_installed_tracker()->IsDoneLoading());
+  EXPECT_TRUE(force_installed_tracker()->IsReady());
 }
 
 // This test verifies that OnForceInstalledExtensionsLoaded() is not called till
@@ -82,15 +82,15 @@ TEST_F(ForceInstalledTrackerTest, AllExtensionsInstalled) {
 TEST_F(ForceInstalledTrackerTest, ExtensionPendingInstall) {
   SetupForceList();
   auto ext1 = ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
-  tracker_->OnExtensionLoaded(profile_, ext1.get());
+  force_installed_tracker()->OnExtensionLoaded(profile(), ext1.get());
   EXPECT_FALSE(loaded_called_);
   EXPECT_FALSE(ready_called_);
-  EXPECT_FALSE(tracker_->IsDoneLoading());
+  EXPECT_FALSE(force_installed_tracker()->IsDoneLoading());
 
-  tracker_->OnExtensionReady(profile_, ext1.get());
+  force_installed_tracker()->OnExtensionReady(profile(), ext1.get());
   EXPECT_FALSE(loaded_called_);
   EXPECT_FALSE(ready_called_);
-  EXPECT_FALSE(tracker_->IsDoneLoading());
+  EXPECT_FALSE(force_installed_tracker()->IsDoneLoading());
 }
 
 // This test verifies that applying a new policy value for force installed
@@ -102,12 +102,12 @@ TEST_F(ForceInstalledTrackerTest, ObserversOnlyCalledOnce) {
   SetupForceList();
   auto ext1 = ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
   auto ext2 = ExtensionBuilder(kExtensionName2).SetID(kExtensionId2).Build();
-  tracker_->OnExtensionLoaded(profile_, ext1.get());
-  tracker_->OnExtensionLoaded(profile_, ext2.get());
+  force_installed_tracker()->OnExtensionLoaded(profile(), ext1.get());
+  force_installed_tracker()->OnExtensionLoaded(profile(), ext2.get());
   EXPECT_TRUE(loaded_called_);
 
-  tracker_->OnExtensionReady(profile_, ext1.get());
-  tracker_->OnExtensionReady(profile_, ext2.get());
+  force_installed_tracker()->OnExtensionReady(profile(), ext1.get());
+  force_installed_tracker()->OnExtensionReady(profile(), ext2.get());
   EXPECT_TRUE(ready_called_);
 
   SetupEmptyForceList();
@@ -120,12 +120,12 @@ TEST_F(ForceInstalledTrackerTest, ObserversOnlyCalledOnce) {
 TEST_F(ForceInstalledTrackerTest, ExtensionsInstallationFailed) {
   SetupForceList();
   auto ext1 = ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
-  tracker_->OnExtensionLoaded(profile_, ext1.get());
-  tracker_->OnExtensionInstallationFailed(
+  force_installed_tracker()->OnExtensionLoaded(profile(), ext1.get());
+  force_installed_tracker()->OnExtensionInstallationFailed(
       kExtensionId2, InstallStageTracker::FailureReason::INVALID_ID);
   EXPECT_TRUE(loaded_called_);
   EXPECT_FALSE(ready_called_);
-  EXPECT_TRUE(tracker_->IsDoneLoading());
+  EXPECT_TRUE(force_installed_tracker()->IsDoneLoading());
 }
 
 // This test tracks the status of the force installed extensions in
@@ -133,22 +133,22 @@ TEST_F(ForceInstalledTrackerTest, ExtensionsInstallationFailed) {
 // failed.
 TEST_F(ForceInstalledTrackerTest, ExtensionsStatus) {
   SetupForceList();
-  EXPECT_EQ(tracker_->extensions().at(kExtensionId1).status,
+  EXPECT_EQ(force_installed_tracker()->extensions().at(kExtensionId1).status,
             ForceInstalledTracker::ExtensionStatus::PENDING);
-  EXPECT_EQ(tracker_->extensions().at(kExtensionId2).status,
+  EXPECT_EQ(force_installed_tracker()->extensions().at(kExtensionId2).status,
             ForceInstalledTracker::ExtensionStatus::PENDING);
 
   auto ext1 = ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
-  tracker_->OnExtensionLoaded(profile_, ext1.get());
-  tracker_->OnExtensionInstallationFailed(
+  force_installed_tracker()->OnExtensionLoaded(profile(), ext1.get());
+  force_installed_tracker()->OnExtensionInstallationFailed(
       kExtensionId2, InstallStageTracker::FailureReason::INVALID_ID);
-  EXPECT_EQ(tracker_->extensions().at(kExtensionId1).status,
+  EXPECT_EQ(force_installed_tracker()->extensions().at(kExtensionId1).status,
             ForceInstalledTracker::ExtensionStatus::LOADED);
-  EXPECT_EQ(tracker_->extensions().at(kExtensionId2).status,
+  EXPECT_EQ(force_installed_tracker()->extensions().at(kExtensionId2).status,
             ForceInstalledTracker::ExtensionStatus::FAILED);
 
-  tracker_->OnExtensionReady(profile_, ext1.get());
-  EXPECT_EQ(tracker_->extensions().at(kExtensionId1).status,
+  force_installed_tracker()->OnExtensionReady(profile(), ext1.get());
+  EXPECT_EQ(force_installed_tracker()->extensions().at(kExtensionId1).status,
             ForceInstalledTracker::ExtensionStatus::READY);
 }
 

@@ -11,7 +11,6 @@
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/policy_service_impl.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -54,7 +53,8 @@ void ForceInstalledTestBase::SetUp() {
   prefs_ = profile_->GetTestingPrefService();
   registry_ = ExtensionRegistry::Get(profile_);
   install_stage_tracker_ = InstallStageTracker::Get(profile_);
-  tracker_ = std::make_unique<ForceInstalledTracker>(registry_, profile_);
+  force_installed_tracker_ =
+      std::make_unique<ForceInstalledTracker>(registry_, profile_);
 }
 
 void ForceInstalledTestBase::SetupForceList() {
