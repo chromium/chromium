@@ -2,13 +2,27 @@
   <style>
     :host {
       --diagnostics-default-font-family: "Google Sans", Roboto, sans-serif;
-      --diagnostics-default-font-size: 22px;
-      --diagnostics-default-font-weight: 500; /* medium */
+      --diagnostics-header-font-family: Roboto, sans-serif;
+
+      --diagnostics-default-font-size: 14px;
+      --diagnostics-header-font-size: 22px;
+
+      --diagnostics-default-font-weight: 500;
+      --diagnostics-header-font-weight: 600;
+
       --diagnostics-default-text-color: var(--google-grey-900);
+      --diagnostics-header-text-color: var(--google-grey-900);
+
       --diagnostics-default-font: {
           font-family: var(--diagnostics-default-font-family);
           font-size: var(--diagnostics-default-font-size);
           font-weight: var(--diagnostics-default-font-weight);
+      };
+
+      --diagnostics-header-font: {
+          font-family: var(--diagnostics-header-font-family);
+          font-size: var(--diagnostics-header-font-size);
+          font-weight: var(--diagnostics-header-font-weight);
       };
     }
   </style>

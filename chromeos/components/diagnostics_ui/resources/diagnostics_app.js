@@ -4,6 +4,7 @@
 
 import './battery_status_card.js';
 import './cpu_card.js';
+import './diagnostics_fonts_css.js';
 import './diagnostics_shared_css.js';
 import './memory_card.js';
 import './overview_card.js';

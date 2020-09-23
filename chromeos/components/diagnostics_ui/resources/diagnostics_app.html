@@ -1,13 +1,14 @@
+<style include="cr-shared-style diagnostics-shared diagnostics-fonts">
+  #header {
+   @apply --diagnostics-header-font;
+    margin-bottom: 10px;
+  }
+</style>
 <div class="main-container">
-    <!-- TODO(zentaro) Localize once strings are confirmed -->
-    <div id="header">Diagnostics</div>
-    <hr>
-    <overview-card id="overviewCard"></overview-card>
-    <hr>
-    <memory-card id="memoryCard"></memory-card>
-    <hr>
-    <cpu-card id="cpuCard"></cpu-card>
-    <hr>
-    <battery-status-card id="batteryStatusCard"></battery-status-card>
-    <hr>
+  <!-- TODO(zentaro) Localize once strings are confirmed -->
+  <div id="header">Diagnostics</div>
+  <overview-card id="overviewCard"></overview-card>
+  <memory-card id="memoryCard"></memory-card>
+  <cpu-card id="cpuCard"></cpu-card>
+  <battery-status-card id="batteryStatusCard"></battery-status-card>
 </div>
