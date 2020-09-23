@@ -23,6 +23,16 @@ class CONTENT_EXPORT PaymentAppProviderUtil {
                                            const GURL& sw_js_url,
                                            const GURL& sw_scope,
                                            std::string* error_message);
+
+  // Create blank struct for response to "can make payment".
+  static payments::mojom::CanMakePaymentResponsePtr
+  CreateBlankCanMakePaymentResponse(
+      payments::mojom::CanMakePaymentEventResponseType response_type);
+
+  // Create blank struct for receipt payment app response from render side.
+  static payments::mojom::PaymentHandlerResponsePtr
+  CreateBlankPaymentHandlerResponse(
+      payments::mojom::PaymentEventResponseType response_type);
 };
 
 }  // namespace content

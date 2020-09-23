@@ -47,4 +47,25 @@ bool PaymentAppProviderUtil::IsValidInstallablePaymentApp(
   return true;
 }
 
+// static
+payments::mojom::CanMakePaymentResponsePtr
+PaymentAppProviderUtil::CreateBlankCanMakePaymentResponse(
+    payments::mojom::CanMakePaymentEventResponseType response_type) {
+  return payments::mojom::CanMakePaymentResponse::New(
+      response_type, /*can_make_payment=*/false,
+      /*ready_for_minimal_ui=*/false,
+      /*account_balance=*/base::nullopt);
+}
+
+// static
+payments::mojom::PaymentHandlerResponsePtr
+PaymentAppProviderUtil::CreateBlankPaymentHandlerResponse(
+    payments::mojom::PaymentEventResponseType response_type) {
+  return payments::mojom::PaymentHandlerResponse::New(
+      /*method_name=*/"", /*stringified_details=*/"", response_type,
+      /*payer_name=*/base::nullopt, /*payer_email=*/base::nullopt,
+      /*payer_phone=*/base::nullopt, /*shipping_address=*/nullptr,
+      /*shipping_option=*/base::nullopt);
+}
+
 }  // namespace content

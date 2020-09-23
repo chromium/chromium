@@ -5,19 +5,14 @@
 #ifndef CONTENT_BROWSER_PAYMENTS_PAYMENT_APP_PROVIDER_IMPL_H_
 #define CONTENT_BROWSER_PAYMENTS_PAYMENT_APP_PROVIDER_IMPL_H_
 
-#include "content/browser/devtools/devtools_background_services_context_impl.h"
 #include "content/browser/payments/payment_app_context_impl.h"
+#include "content/browser/payments/service_worker_core_thread_event_dispatcher.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/payment_app_provider.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
-
-using payments::mojom::PaymentRequestEventDataPtr;
-using ServiceWorkerStartCallback =
-    base::OnceCallback<void(scoped_refptr<ServiceWorkerVersion>,
-                            blink::ServiceWorkerStatusCode)>;
 
 class CONTENT_EXPORT PaymentAppProviderImpl
     : public PaymentAppProvider,
@@ -77,13 +72,16 @@ class CONTENT_EXPORT PaymentAppProviderImpl
 
   scoped_refptr<DevToolsBackgroundServicesContextImpl> GetDevTools(
       const url::Origin& sw_origin);
-  void StartServiceWorkerForDispatch(int64_t registration_id,
-                                     ServiceWorkerStartCallback callback);
-  void OnInstallPaymentApp(const url::Origin& sw_origin,
-                           PaymentRequestEventDataPtr event_data,
-                           RegistrationIdCallback registration_id_callback,
-                           InvokePaymentAppCallback callback,
-                           int64_t registration_id);
+  void StartServiceWorkerForDispatch(
+      int64_t registration_id,
+      ServiceWorkerCoreThreadEventDispatcher::ServiceWorkerStartCallback
+          callback);
+  void OnInstallPaymentApp(
+      const url::Origin& sw_origin,
+      payments::mojom::PaymentRequestEventDataPtr event_data,
+      RegistrationIdCallback registration_id_callback,
+      InvokePaymentAppCallback callback,
+      int64_t registration_id);
 
   // Note that constructor of WebContentsObserver is protected.
   class PaymentHandlerWindowObserver : public WebContentsObserver {
@@ -96,6 +94,9 @@ class CONTENT_EXPORT PaymentAppProviderImpl
 
   // Owns this object.
   WebContents* web_contents_;
+
+  // It should be accessed only on the service worker core thread.
+  std::unique_ptr<ServiceWorkerCoreThreadEventDispatcher> event_dispatcher_;
 
   base::WeakPtrFactory<PaymentAppProviderImpl> weak_ptr_factory_{this};
 };
