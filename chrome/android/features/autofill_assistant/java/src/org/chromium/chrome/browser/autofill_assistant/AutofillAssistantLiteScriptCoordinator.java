@@ -84,6 +84,15 @@ class AutofillAssistantLiteScriptCoordinator {
             case LiteScriptFinishedState.LITE_SCRIPT_PROMPT_FAILED_CONDITION_NO_LONGER_TRUE:
             case LiteScriptFinishedState.LITE_SCRIPT_PROMPT_FAILED_OTHER:
             case LiteScriptFinishedState.LITE_SCRIPT_PROMPT_SUCCEEDED:
+            case LiteScriptFinishedState.LITE_SCRIPT_BROWSE_FAILED_NAVIGATE:
+            case LiteScriptFinishedState.LITE_SCRIPT_BROWSE_FAILED_OTHER:
+            case LiteScriptFinishedState.LITE_SCRIPT_GET_ACTIONS_FAILED:
+            case LiteScriptFinishedState.LITE_SCRIPT_GET_ACTIONS_PARSE_ERROR:
+            case LiteScriptFinishedState.LITE_SCRIPT_INVALID_SCRIPT:
+            case LiteScriptFinishedState.LITE_SCRIPT_PATH_MISMATCH:
+            case LiteScriptFinishedState.LITE_SCRIPT_SERVICE_DELETED:
+            case LiteScriptFinishedState.LITE_SCRIPT_UNKNOWN_FAILURE:
+            case LiteScriptFinishedState.LITE_SCRIPT_UNSAFE_ACTIONS:
                 break;
         }
 
