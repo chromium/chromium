@@ -53761,7 +53761,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.CorruptExtensionDisabledReason"
-    enum="CorruptExtensionDisabledReason" expires_after="M85">
+    enum="CorruptExtensionDisabledReason" expires_after="2021-09-21">
   <owner>lazyboy@chromium.org</owner>
   <owner>rockot@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
