@@ -39,6 +39,9 @@ const char kCloudManagementEnrollmentMandatory[] =
 // machine policy.
 const char kCloudPolicyOverridesPlatformPolicy[] = "policy.cloud_override";
 
+// A list of Data leak prevention rules.
+const char kDlpRulesList[] = "policy.dlp_rules_list";
+
 // A boolean value that can be used to disable native window occlusion
 // calculation, even if the Finch feature is enabled.
 const char kNativeWindowOcclusionEnabled[] =

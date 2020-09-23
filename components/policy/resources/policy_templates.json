@@ -23244,6 +23244,182 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       Setting this policy to True will hide the deprecation warnings.
       Setting this policy to False or leaving it unset will show the deprecation warnings.''',
     },
+    {
+      'name': 'DataLeakPreventionRulesList',
+      'owners': ['file://chrome/browser/chromeos/policy/dlp/OWNERS'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': {
+          'type': 'object',
+          'properties': {
+            'name': {
+              'type': 'string'
+            },
+            'description': {
+              'type': 'string'
+            },
+            'sources': {
+              'type': 'object',
+              'properties': {
+                'urls': {
+                  'type': 'array',
+                  'items': {'type': 'string'}
+                }
+              }
+            },
+            'destinations': {
+              'type': 'object',
+              'properties': {
+                'urls': {
+                  'type': 'array',
+                  'items': {
+                    'type': 'string'
+                  }
+                },
+                'components': {
+                  'type': 'array',
+                  'items': {
+                    'type': 'string',
+                    'enum': [
+                      'ARC',
+                      'CROSTINI',
+                      'PLUGIN_VM'
+                    ]
+                  }
+                }
+              },
+            },
+            'restrictions': {
+              'type': 'array',
+              'items': {
+                'type': 'object',
+                'properties': {
+                  'class': {
+                    'type': 'string',
+                    'enum': [
+                      'CLIPBOARD',
+                      'SCREENSHOT',
+                      'PRINTING',
+                      'PRIVACY_SCREEN'
+                    ]
+                  },
+                  'level': {
+                    'type': 'string',
+                    'enum': [
+                      'BLOCK',
+                      'ALLOW'
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      'future_on': ['chrome_os'],
+      'features': {
+        'can_be_recommended': False,
+        'dynamic_refresh': False,
+        'per_profile': False,
+      },
+      'example_value': [
+        {
+          'name': 'Support agent work flows',
+          'description': 'Allow copy and paste for work purposes but block screenshots and printing',
+          'sources': {
+            'urls': [
+              'salesforce.com',
+              'gmail.com',
+              'docs.google.com',
+              'drive.google.com',
+              '*.company.com'
+            ]
+          },
+          'destinations': {
+            'urls': [
+              'salesforce.com',
+              'gmail.com',
+              'docs.google.com',
+              'drive.google.com',
+              '*.company.com'
+            ]
+          },
+          'restrictions': [
+            {
+              'class': 'CLIPBOARD',
+              'level': 'ALLOW'
+            },
+            {
+              'class': 'SCREENSHOT',
+              'level': 'BLOCK'
+            },
+            {
+              'class': 'PRINTING',
+              'level': 'BLOCK'
+            },
+            {
+              'class': 'PRIVACY_SCREEN',
+              'level': 'BLOCK'
+            }
+          ]
+        },
+        {
+          'name': 'Non agent work flows',
+          'description': 'Block copy and paste from work flows to other sites and external drives',
+          'sources': {
+            'urls': [
+              'salesforce.com',
+              'gmail.com',
+              'docs.google.com',
+              '*.company.com'
+            ]
+          },
+          'destinations': {
+            'urls': ["*"],
+            'components': [
+              'ARC',
+              'CROSTINI',
+              'PLUGIN_VM'
+            ]
+          },
+          'restrictions': [
+            {
+              'class': 'CLIPBOARD',
+              'level': 'BLOCK'
+            }
+          ]
+        }
+      ],
+      'id': 786,
+      'caption': '''Sets a list of data leak prevention rules.''',
+      'tags': [],
+      'desc': '''Configures a list of rules to prevent data leak on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.
+      Data leak can happen by copying and pasting data, transferring files, printing, screensharing, or taking screenshots ...etc.
+
+      Each rule consists of the following:
+      - A list of sources defined as URLs. Any data in the sources will be considered confidential data, to which the restrictions will be applied.
+      - A list of destinations defined as URLs or components, to which the confidential data is either allowed or disallowed to be shared.
+      - A list of restrictions to be applied on the data of the sources.
+
+      Rules can be added to:
+      - Control the clipboard data shared between the sources and the destinations.
+      - Control taking screenshots of any of the sources.
+      - Control printing of any of the sources.
+      - Control the privacy screen when any of the sources is visible.
+
+      The restriction level can be set to BLOCK, ALLOW.
+      - If the restriction is set to BLOCK, the action won't be allowed.
+      - If the resriction is set to ALLOW, the action will be allowed.
+
+      Notes:
+      - PRIVACY_SCREEN restriction doesn't block the ability to turn on privacy screen, but enforces it when the restriction class is set to BLOCK.
+      - Destinations cannot be empty in case one of the restrictions is CLIPBOARD, but they don't make any difference for the remaining restrictions.
+      - The CLIPBOARD restriction cannot differentiate between CROSTINI and PLUGIN_VM. If any of them is selected to block/allow data sharing, the rule applies for both.
+      - Format the URL patterns according to this format ( https://www.chromium.org/administrators/url-blacklist-filter-format ).
+
+      If the policy is left not set, no restrictions will be applied.''',
+    }
   ],
 
   'messages': {
@@ -24168,6 +24344,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   ],
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 412, 476, 544, 546, 562, 569, 578],
-  'highest_id_currently_used': 785,
+  'highest_id_currently_used': 786,
   'highest_atomic_group_id_currently_used': 40
 }

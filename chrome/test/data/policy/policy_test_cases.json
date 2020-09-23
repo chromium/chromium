@@ -8146,5 +8146,58 @@
         "note": "TODO(mek): Add indicator tests. TODO(bartfab): Flag this with can_be_recommended when http://crbug.com/106682 is fixed."
       }
     ]
+  },
+  "DataLeakPreventionRulesList": {
+    "os": ["chromeos"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": {
+          "DataLeakPreventionRulesList": [
+            {
+              "name": "Support agent work flows",
+              "description": "Allow copy and paste for work purposes but block screenshots and printing",
+              "sources": {
+                "urls": [
+                  "salesforce.com",
+                  "gmail.com",
+                  "docs.google.com",
+                  "drive.google.com",
+                  "*.company.com"
+                    ]
+                  },
+              "destinations": {
+                "urls": [
+                  "salesforce.com",
+                  "gmail.com",
+                  "docs.google.com",
+                  "drive.google.com",
+                  "*.company.com"
+                    ],
+                "components": []
+              },
+              "restrictions": [
+                {
+                  "class": "CLIPBOARD",
+                  "level": "ALLOW"
+                },
+                {
+                  "class": "SCREENSHOT",
+                  "level": "BLOCK"
+                },
+                {
+                  "class": "PRINTING",
+                  "level": "BLOCK"
+                },
+                {
+                  "class": "PRIVACY_SCREEN",
+                  "level": "BLOCK"
+                }
+              ]
+            }
+          ]
+        },
+        "prefs": { "policy.dlp_rules_list": { "local_state": true } }
+      }
+    ]
   }
 }

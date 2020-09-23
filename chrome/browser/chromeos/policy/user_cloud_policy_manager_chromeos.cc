@@ -26,6 +26,7 @@
 #include "chrome/browser/chromeos/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/chromeos/policy/arc_app_install_event_log_uploader.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/extension_install_event_log_uploader.h"
 #include "chrome/browser/chromeos/policy/policy_oauth2_token_fetcher.h"
 #include "chrome/browser/chromeos/policy/remote_commands/user_commands_factory_chromeos.h"
@@ -271,6 +272,10 @@ void UserCloudPolicyManagerChromeOS::Connect(
       std::make_unique<ArcAppInstallEventLogUploader>(client(), profile_);
   extension_install_event_log_uploader_ =
       std::make_unique<ExtensionInstallEventLogUploader>(client(), profile_);
+
+  // Initializes an instance of DlpRulesManager to be responsible for the rules
+  // of the data leak prevention policy.
+  policy::DlpRulesManager::Init();
 }
 
 void UserCloudPolicyManagerChromeOS::OnAccessTokenAvailable(

@@ -1138,6 +1138,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kRequiredClientCertificateForDevice,
     prefs::kRequiredClientCertificateForDevice,
     base::Value::Type::LIST },
+  { key::kDataLeakPreventionRulesList,
+    policy_prefs::kDlpRulesList,
+    base::Value::Type::LIST },
 
 #else  // defined(OS_CHROMEOS)
   { key::kMetricsReportingEnabled,

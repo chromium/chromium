@@ -21816,6 +21816,7 @@ Called by update_document_policy_enum.py.-->
   <int value="783" label="PrintingAPIExtensionsAllowlist"/>
   <int value="784" label="QuickUnlockModeAllowlist"/>
   <int value="785" label="AttestationExtensionAllowlist"/>
+  <int value="786" label="DataLeakPreventionRulesList"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
