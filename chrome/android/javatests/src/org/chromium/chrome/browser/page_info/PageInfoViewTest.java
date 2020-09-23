@@ -8,11 +8,17 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 
 import android.os.Build;
@@ -45,6 +51,7 @@ import org.chromium.components.location.LocationUtils;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoFeatureList;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServerRule;
@@ -53,6 +60,7 @@ import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Tests for PageInfoView. Uses pixel tests to ensure the UI handles different
@@ -62,6 +70,12 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
 public class PageInfoViewTest {
+    private static final String sSimpleHtml = "/chrome/test/data/android/simple.html";
+    private static final String sSiteDataHtml = "/content/test/data/browsing_data/site_data.html";
+
+    private static String[] sCookieDataTypes = {"Cookie", "LocalStorage", "ServiceWorker",
+            "CacheStorage", "IndexedDb", "FileSystem", "WebSql"};
+
     @Rule
     public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
             new ChromeActivityTestRule<>(ChromeActivity.class);
@@ -85,8 +99,6 @@ public class PageInfoViewTest {
     @ClassRule
     public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
 
-    private final String mPath = "/chrome/test/data/android/simple.html";
-
     private void loadUrlAndOpenPageInfo(String url) {
         mActivityTestRule.loadUrl(url);
         onView(withId(R.id.location_bar_status_icon)).perform(click());
@@ -105,6 +117,23 @@ public class PageInfoViewTest {
             UserPrefs.get(Profile.getLastUsedRegularProfile())
                     .setInteger(COOKIE_CONTROLS_MODE, value);
         });
+    }
+
+    private String runJavascriptAsync(String type) throws TimeoutException {
+        return JavaScriptUtils.runJavascriptWithAsyncResult(
+                mActivityTestRule.getWebContents(), type);
+    }
+
+    private void expectHasCookies(boolean hasData) throws TimeoutException {
+        for (String type : sCookieDataTypes) {
+            assertEquals(hasData ? "true" : "false", runJavascriptAsync("has" + type + "()"));
+        }
+    }
+
+    private void createCookies() throws TimeoutException {
+        for (String type : sCookieDataTypes) {
+            runJavascriptAsync("set" + type + "()");
+        }
     }
 
     private void addSomePermissions(String url) {
@@ -158,7 +187,7 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     public void testShowOnInsecureHttpWebsite() throws IOException {
         mTestServerRule.setServerUsesHttps(false);
-        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(mPath));
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_HttpWebsite");
     }
 
@@ -169,7 +198,7 @@ public class PageInfoViewTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testShowOnSecureWebsite() throws IOException {
-        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(mPath));
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_SecureWebsite");
     }
 
@@ -181,7 +210,7 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     public void testShowOnExpiredCertificateWebsite() throws IOException {
         mTestServerRule.setCertificateType(ServerCertificate.CERT_EXPIRED);
-        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(mPath));
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_ExpiredCertWebsite");
     }
 
@@ -206,7 +235,7 @@ public class PageInfoViewTest {
     public void testShowWithPermissions() throws IOException {
         mIsSystemLocationSettingEnabled = false;
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
-        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(mPath));
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_Permissions");
     }
 
@@ -218,7 +247,7 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     public void testShowWithCookieBlocking() throws IOException {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
-        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(mPath));
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_CookieBlocking");
     }
 
@@ -231,7 +260,7 @@ public class PageInfoViewTest {
     public void testShowWithPermissionsAndCookieBlocking() throws IOException {
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
-        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(mPath));
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_PermissionsAndCookieBlocking");
     }
 
@@ -243,7 +272,7 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     public void testShowWithDefaultSettingPermissions() throws IOException {
         addDefaultSettingPermissions(mTestServerRule.getServer().getURL("/"));
-        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(mPath));
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_DefaultSettingPermissions");
     }
 
@@ -255,7 +284,7 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowOnSecureWebsiteV2() throws IOException {
-        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(mPath));
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_SecureWebsiteV2");
     }
 
@@ -267,7 +296,7 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowConnectionInfoSubpage() throws IOException {
-        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(mPath));
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_connection_row)).perform(click());
         mRenderTestRule.render(getPageInfoView(), "PageInfo_ConnectionInfoSubpage");
     }
@@ -280,7 +309,7 @@ public class PageInfoViewTest {
     @MediumTest
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testNoPermissionsSubpage() throws IOException {
-        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(mPath));
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         View dialog = (View) getPageInfoView().getParent();
         onView(withId(R.id.page_info_permissions_row))
                 .check(matches(withEffectiveVisibility(GONE)));
@@ -295,7 +324,7 @@ public class PageInfoViewTest {
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowPermissionsSubpage() throws IOException {
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
-        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(mPath));
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_permissions_row)).perform(click());
         mRenderTestRule.render(getPageInfoView(), "PageInfo_PermissionsSubpage");
     }
@@ -309,9 +338,33 @@ public class PageInfoViewTest {
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowCookiesSubpage() throws IOException {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
-        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(mPath));
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_cookies_row)).perform(click());
         mRenderTestRule.render(getPageInfoView(), "PageInfo_CookiesSubpage");
+    }
+
+    /**
+     * Tests clearing cookies on the cookies page of the new PageInfo UI.
+     */
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    public void testClearCookiesOnSubpage() throws Exception {
+        mActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
+        // Create cookies.
+        expectHasCookies(false);
+        createCookies();
+        expectHasCookies(true);
+        // Go to cookies subpage.
+        onView(withId(R.id.location_bar_status_icon)).perform(click());
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        // Check that cookies usage is displayed.
+        onViewWaiting(allOf(withText(containsString("stored data")), isDisplayed()));
+        // Clear cookies in page info.
+        onView(withText("Clear cookies")).perform(click());
+        // Wait until the UI navigates back and check cookies are deleted.
+        onViewWaiting(allOf(withId(R.id.page_info_cookies_row), isDisplayed()));
+        expectHasCookies(false);
     }
 
     // TODO(1071762): Add tests for preview pages, offline pages, offline state and other states.

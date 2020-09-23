@@ -9,14 +9,19 @@ import android.view.ViewGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteDataCleaner;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
+import org.chromium.components.browser_ui.site_settings.WebsitePermissionsFetcher;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.embedder_support.util.Origin;
+
+import java.util.Collection;
 
 /**
  * Class for controlling the page info cookies section.
@@ -35,6 +40,7 @@ public class PageInfoCookiesController
     private int mBlockedCookies;
     private int mStatus;
     private boolean mIsEnforced;
+    private Website mWebsite;
 
     public PageInfoCookiesController(PageInfoMainController mainController, PageInfoRowView rowView,
             PageInfoControllerDelegate delegate, String fullUrl) {
@@ -80,7 +86,21 @@ public class PageInfoCookiesController
         mSubPage.setCookiesCount(mAllowedCookies, mBlockedCookies);
         mSubPage.setCookieBlockingStatus(mStatus, mIsEnforced);
 
+        SiteSettingsCategory storageCategory = SiteSettingsCategory.createFromType(
+                mMainController.getBrowserContext(), SiteSettingsCategory.Type.USE_STORAGE);
+        new WebsitePermissionsFetcher(mMainController.getBrowserContext())
+                .fetchPreferencesForCategory(storageCategory, this::onStorageFetched);
+
         return mSubPage.requireView();
+    }
+
+    private void onStorageFetched(Collection<Website> result) {
+        String origin = Origin.createOrThrow(mFullUrl).toString();
+        WebsiteAddress address = WebsiteAddress.create(origin);
+
+        mWebsite = SingleWebsiteSettings.mergePermissionAndStorageInfoForTopLevelOrigin(
+                address, result);
+        mSubPage.setStorageUsage(mWebsite.getTotalUsage());
     }
 
     private void onCheckedChangedCallback(boolean state) {
@@ -88,10 +108,9 @@ public class PageInfoCookiesController
     }
 
     private void clearData() {
-        String origin = Origin.createOrThrow(mFullUrl).toString();
-        WebsiteAddress address = WebsiteAddress.create(origin);
-        new SiteDataCleaner().clearData(mMainController.getBrowserContext(),
-                new Website(address, address), mMainController::exitSubpage);
+        if (mWebsite == null) return;
+        new SiteDataCleaner().clearData(
+                mMainController.getBrowserContext(), mWebsite, mMainController::exitSubpage);
     }
 
     @Override

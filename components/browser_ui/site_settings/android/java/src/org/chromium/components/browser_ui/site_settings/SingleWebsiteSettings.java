@@ -277,7 +277,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
      * @param websites The websites to search in.
      * @return The merged website.
      */
-    private static Website mergePermissionAndStorageInfoForTopLevelOrigin(
+    public static Website mergePermissionAndStorageInfoForTopLevelOrigin(
             WebsiteAddress address, Collection<Website> websites) {
         String origin = address.getOrigin();
         String host = Uri.parse(origin).getHost();

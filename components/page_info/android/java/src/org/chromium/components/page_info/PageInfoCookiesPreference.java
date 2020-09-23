@@ -4,6 +4,7 @@
 package org.chromium.components.page_info;
 
 import android.os.Bundle;
+import android.text.format.Formatter;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -93,5 +94,13 @@ public class PageInfoCookiesPreference extends PreferenceFragmentCompat {
                                    : null);
         mCookieInUse.setTitle(getContext().getResources().getQuantityString(
                 R.plurals.page_info_cookies_in_use, allowedCookies, allowedCookies));
+    }
+
+    public void setStorageUsage(long storageUsage) {
+        mCookieInUse.setSummary(
+                storageUsage > 0 ? String.format(
+                        getContext().getString(R.string.origin_settings_storage_usage_brief),
+                        Formatter.formatShortFileSize(getContext(), storageUsage))
+                                 : null);
     }
 }
