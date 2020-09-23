@@ -113,13 +113,6 @@ using chrome_test_util::SettingsDoneButton;
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/pony.html")];
 
   // Bookmark page
-  if ([ChromeEarlGrey isIPadIdiom] &&
-      ![ChromeEarlGrey isChangeTabSwitcherPositionEnabled]) {
-    id<GREYMatcher> bookmarkMatcher =
-        chrome_test_util::ButtonWithAccessibilityLabelId(IDS_TOOLTIP_STAR);
-    [[EarlGrey selectElementWithMatcher:bookmarkMatcher]
-        performAction:grey_tap()];
-  } else {
     [ChromeEarlGreyUI openToolsMenu];
     [[[EarlGrey
         selectElementWithMatcher:grey_allOf(grey_accessibilityID(
@@ -129,19 +122,18 @@ using chrome_test_util::SettingsDoneButton;
         onElementWithMatcher:grey_accessibilityID(
                                  kPopupMenuToolsMenuTableViewId)]
         performAction:grey_tap()];
-  }
 
-  // Tap on the HUD.
-  id<GREYMatcher> edit = chrome_test_util::ButtonWithAccessibilityLabelId(
-      IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON);
-  [[EarlGrey selectElementWithMatcher:edit] performAction:grey_tap()];
+    // Tap on the HUD.
+    id<GREYMatcher> edit = chrome_test_util::ButtonWithAccessibilityLabelId(
+        IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON);
+    [[EarlGrey selectElementWithMatcher:edit] performAction:grey_tap()];
 
-  [self waitForSingleBookmarkEditorToDisplay];
+    [self waitForSingleBookmarkEditorToDisplay];
 
-  [self verifyNoKeyboardCommandsAreRegistered];
+    [self verifyNoKeyboardCommandsAreRegistered];
 
-  id<GREYMatcher> cancel = grey_accessibilityID(@"Cancel");
-  [[EarlGrey selectElementWithMatcher:cancel] performAction:grey_tap()];
+    id<GREYMatcher> cancel = grey_accessibilityID(@"Cancel");
+    [[EarlGrey selectElementWithMatcher:cancel] performAction:grey_tap()];
 }
 
 // Tests that keyboard commands are not registered when the Bookmarks UI is

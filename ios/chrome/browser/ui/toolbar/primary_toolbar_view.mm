@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tools_menu_button.h"
-#import "ios/chrome/browser/ui/toolbar/public/features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_progress_bar.h"
@@ -259,15 +258,8 @@
   self.tabGridButton = [self.buttonFactory tabGridButton];
   self.toolsMenuButton = [self.buttonFactory toolsMenuButton];
 
-  if (base::FeatureList::IsEnabled(kChangeTabSwitcherPosition)) {
-    self.trailingStackViewButtons =
-        @[ self.shareButton, self.tabGridButton, self.toolsMenuButton ];
-  } else {
-    self.trailingStackViewButtons = @[
-      self.bookmarkButton, self.shareButton, self.tabGridButton,
-      self.toolsMenuButton
-    ];
-  }
+  self.trailingStackViewButtons =
+      @[ self.shareButton, self.tabGridButton, self.toolsMenuButton ];
 
   self.trailingStackView = [[UIStackView alloc]
       initWithArrangedSubviews:self.trailingStackViewButtons];

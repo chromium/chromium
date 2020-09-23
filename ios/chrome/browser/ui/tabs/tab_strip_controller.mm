@@ -44,7 +44,6 @@
 #import "ios/chrome/browser/ui/tabs/tab_strip_view.h"
 #import "ios/chrome/browser/ui/tabs/tab_view.h"
 #include "ios/chrome/browser/ui/tabs/target_frame_cache.h"
-#import "ios/chrome/browser/ui/toolbar/public/features.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
@@ -88,10 +87,6 @@ const CGFloat kTabOverlapUnstacked = 30.0;
 const CGFloat kNewTabOverlap = 13.0;
 const CGFloat kMaxTabWidthStacked = 265.0;
 const CGFloat kMaxTabWidthUnstacked = 225.0;
-
-// Tab Switcher button dimensions.
-const CGFloat kTabSwitcherButtonWidth = 46.0;
-const CGFloat kTabSwitcherButtonBackgroundWidth = 62.0;
 
 const CGFloat kMinTabWidthStacked = 200.0;
 const CGFloat kMinTabWidthUnstacked = 160.0;
@@ -186,11 +181,6 @@ UIColor* BackgroundColor() {
   TabStripContainerView* _view;
   TabStripView* _tabStripView;
   UIButton* _buttonNewTab;
-  UIButton* _tabSwitcherButton;
-
-  // Background view of the tab switcher button. Only visible while in unstacked
-  // layout.
-  UIImageView* _tabSwitcherButtonBackgroundView;
 
   TabStripStyle _style;
 
@@ -412,9 +402,6 @@ UIColor* BackgroundColor() {
 // toggle buttons states depending on the current layout mode.
 - (void)updateScrollViewFrameForTabSwitcherButton;
 
-// Updates the tab switcher button with the current tab count.
-- (void)updateTabCount;
-
 // Returns the existing tab view for |webState| or nil if there is no TabView
 // for it.
 - (TabView*)tabViewForWebState:(web::WebState*)webState;
@@ -519,9 +506,6 @@ UIColor* BackgroundColor() {
 
     [_tabStripView addSubview:_buttonNewTab];
 
-    if (!base::FeatureList::IsEnabled(kChangeTabSwitcherPosition))
-      [self installTabSwitcherButton];
-
     // Add tab buttons to tab strip.
     [self initializeTabArray];
 
@@ -573,7 +557,6 @@ UIColor* BackgroundColor() {
 
 - (void)hideTabStrip:(BOOL)hidden {
   self.view.hidden = hidden;
-  [self updateTabSwitcherGuide];
 }
 
 - (void)tabStripSizeDidChange {
@@ -710,8 +693,6 @@ UIColor* BackgroundColor() {
 - (void)recordUserMetrics:(id)sender {
   if (sender == _buttonNewTab)
     base::RecordAction(UserMetricsAction("MobileTabStripNewTab"));
-  else if (sender == _tabSwitcherButton)
-    base::RecordAction(UserMetricsAction("MobileTabSwitcherOpen"));
   else
     LOG(WARNING) << "Trying to record metrics for unknown sender "
                  << base::SysNSStringToUTF8([sender description]);
@@ -790,24 +771,6 @@ UIColor* BackgroundColor() {
 
 - (int)webStateListIndexForTabView:(TabView*)view {
   return [self webStateListIndexForIndex:[_tabArray indexOfObject:view]];
-}
-
-// The |tabSwitcherGuide| cannot use constrainedView in the tab strip because
-// here views use CGAffineTransformMakeScale to support RTL, and NamedGuide
-// doesn't honor transforms. Instead we set the tabSwitcherGuide as necessary.
-- (void)updateTabSwitcherGuide {
-  if (base::FeatureList::IsEnabled(kChangeTabSwitcherPosition))
-    return;
-
-  NamedGuide* tabSwitcherGuide =
-      [NamedGuide guideWithName:kTabStripTabSwitcherGuide view:self.view];
-  if (self.view.hidden) {
-    tabSwitcherGuide.constrainedFrame = CGRectZero;
-  } else {
-    tabSwitcherGuide.constrainedFrame =
-        [_tabSwitcherButton.superview convertRect:_tabSwitcherButton.frame
-                                           toView:tabSwitcherGuide.owningView];
-  }
 }
 
 // Updates the title and the favicon of the |view| with data from |webState|.
@@ -1210,8 +1173,6 @@ UIColor* BackgroundColor() {
       }];
 
   [self setNeedsLayoutWithAnimation];
-
-  [self updateTabCount];
 }
 
 // Observer method. |webState| inserted on |webStateList|.
@@ -1227,8 +1188,6 @@ UIColor* BackgroundColor() {
   [self updateContentSizeAndRepositionViews];
   [self setNeedsLayoutWithAnimation];
   [self updateContentOffsetForWebStateIndex:index isNewWebState:YES];
-
-  [self updateTabCount];
 }
 
 // Observer method, WebState replaced in |webStateList|.
@@ -1283,82 +1242,6 @@ UIColor* BackgroundColor() {
                            CGRectGetWidth([_buttonNewTab frame]) +
                            kNewTabOverlap;
   return availableSpace;
-}
-
-- (void)installTabSwitcherButton {
-  DCHECK(!base::FeatureList::IsEnabled(kChangeTabSwitcherPosition));
-  DCHECK(!_tabSwitcherButton);
-  UIImage* tabSwitcherButtonIcon;
-  UIImage* tabSwitcherButtonIconPressed;
-  tabSwitcherButtonIcon =
-      [UIImage imageNamed:@"tabstrip_tab_switcher_count_button"];
-  tabSwitcherButtonIconPressed =
-      [UIImage imageNamed:@"tabstrip_tab_switcher_count_button_pressed"];
-
-  int tabSwitcherButtonIdsAccessibilityLabel =
-      IDS_IOS_TAB_STRIP_ENTER_TAB_SWITCHER;
-  NSString* tabSwitcherButtonEnglishUiAutomationName = @"Enter Tab Switcher";
-  const CGFloat tabStripHeight = _view.frame.size.height;
-  CGRect buttonFrame =
-      CGRectMake(CGRectGetMaxX(_view.frame) - kTabSwitcherButtonWidth, 0,
-                 kTabSwitcherButtonWidth, tabStripHeight);
-  _tabSwitcherButton =
-      [TabStripCenteredButton buttonWithType:UIButtonTypeCustom];
-  if (UseRTLLayout())
-    [_tabSwitcherButton setTransform:CGAffineTransformMakeScale(-1, 1)];
-  [self addTabSwitcherLongPressGesture];
-
-  [_tabSwitcherButton setTintColor:[UIColor whiteColor]];
-  [_tabSwitcherButton setFrame:buttonFrame];
-  [_tabSwitcherButton setContentMode:UIViewContentModeCenter];
-  [_tabSwitcherButton setAutoresizingMask:UIViewAutoresizingFlexibleLeftMargin];
-  [_tabSwitcherButton setBackgroundColor:[UIColor clearColor]];
-  [_tabSwitcherButton setExclusiveTouch:YES];
-  [_tabSwitcherButton setImage:tabSwitcherButtonIcon
-                      forState:UIControlStateNormal];
-  [_tabSwitcherButton setImage:tabSwitcherButtonIconPressed
-                      forState:UIControlStateHighlighted];
-  [_tabSwitcherButton addTarget:[self applicationCommandsHandler]
-                         action:@selector(prepareTabSwitcher)
-               forControlEvents:UIControlEventTouchDown];
-  [_tabSwitcherButton addTarget:[self applicationCommandsHandler]
-                         action:@selector(displayTabSwitcher)
-               forControlEvents:UIControlEventTouchUpInside];
-  [_tabSwitcherButton addTarget:self
-                         action:@selector(recordUserMetrics:)
-               forControlEvents:UIControlEventTouchUpInside];
-  [self updateTabCount];
-
-  SetA11yLabelAndUiAutomationName(_tabSwitcherButton,
-                                  tabSwitcherButtonIdsAccessibilityLabel,
-                                  tabSwitcherButtonEnglishUiAutomationName);
-  [_view addSubview:_tabSwitcherButton];
-  // Shrink the scroll view.
-  [self updateScrollViewFrameForTabSwitcherButton];
-}
-
-// Adds a LongPressGesture to the |_tabSwitcherButton|, with target on
-// -|handleTabSwitcherLongPress:|.
-- (void)addTabSwitcherLongPressGesture {
-  UILongPressGestureRecognizer* longPress =
-      [[UILongPressGestureRecognizer alloc]
-          initWithTarget:self
-                  action:@selector(handleTabSwitcherLongPress:)];
-  [_tabSwitcherButton addGestureRecognizer:longPress];
-}
-
-// Handles the long press on the |_tabSwitcherButton|.
-- (void)handleTabSwitcherLongPress:(UILongPressGestureRecognizer*)gesture {
-  if (gesture.state == UIGestureRecognizerStateBegan) {
-    [[self popupMenuCommandsHandler] showTabStripTabGridButtonPopup];
-    TriggerHapticFeedbackForImpact(UIImpactFeedbackStyleMedium);
-  } else if (gesture.state == UIGestureRecognizerStateEnded) {
-    [self.longPressDelegate
-        longPressEndedAtPoint:[gesture locationOfTouch:0 inView:nil]];
-  } else if (gesture.state == UIGestureRecognizerStateChanged) {
-    [self.longPressDelegate
-        longPressFocusPointChangedTo:[gesture locationOfTouch:0 inView:nil]];
-  }
 }
 
 - (void)shiftTabStripSubviews:(CGPoint)oldContentOffset {
@@ -1529,41 +1412,7 @@ UIColor* BackgroundColor() {
 - (void)updateScrollViewFrameForTabSwitcherButton {
   CGRect tabFrame = _tabStripView.frame;
   tabFrame.size.width = _view.bounds.size.width;
-  if (!base::FeatureList::IsEnabled(kChangeTabSwitcherPosition)) {
-    if (self.useTabStacking) {
-      tabFrame.size.width -= kTabSwitcherButtonWidth;
-      _tabStripView.contentInset = UIEdgeInsetsZero;
-      [_tabSwitcherButtonBackgroundView setHidden:YES];
-    } else {
-      if (!_tabSwitcherButtonBackgroundView) {
-        _tabSwitcherButtonBackgroundView = [[UIImageView alloc] init];
-        const CGFloat tabStripHeight = _view.frame.size.height;
-        const CGRect backgroundViewFrame = CGRectMake(
-            CGRectGetMaxX(_view.frame) - kTabSwitcherButtonBackgroundWidth, 0.0,
-            kTabSwitcherButtonBackgroundWidth, tabStripHeight);
-        [_tabSwitcherButtonBackgroundView setFrame:backgroundViewFrame];
-        [_tabSwitcherButtonBackgroundView
-            setAutoresizingMask:UIViewAutoresizingFlexibleLeftMargin];
-        UIImage* backgroundTabSwitcherImage =
-            [UIImage imageNamed:@"tabstrip_toggle_button_gradient"];
-        [_tabSwitcherButtonBackgroundView setImage:backgroundTabSwitcherImage];
-        [_view addSubview:_tabSwitcherButtonBackgroundView];
-      }
-      [_tabSwitcherButtonBackgroundView setHidden:NO];
-      _tabStripView.contentInset =
-          UIEdgeInsetsMake(0, 0, 0, kTabSwitcherButtonWidth);
-      [_view bringSubviewToFront:_tabSwitcherButton];
-    }
-  }
   [_tabStripView setFrame:tabFrame];
-}
-
-- (void)updateTabCount {
-  [_tabSwitcherButton setTitle:TextForTabCount(_webStateList->count())
-                      forState:UIControlStateNormal];
-  [_tabSwitcherButton
-      setAccessibilityValue:[NSString stringWithFormat:@"%d",
-                                                       _webStateList->count()]];
 }
 
 #pragma mark - TabStripViewLayoutDelegate
@@ -1571,7 +1420,6 @@ UIColor* BackgroundColor() {
 // Creates TabViews for each Tab in the WebStateList and positions them in the
 // correct location onscreen.
 - (void)layoutTabStripSubviews {
-  [self updateTabSwitcherGuide];
   const int tabCount =
       static_cast<int>([_tabArray count] - [_closingTabs count]);
   if (!tabCount)

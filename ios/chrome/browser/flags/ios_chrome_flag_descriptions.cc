@@ -149,12 +149,6 @@ const char kBreakpadNoDelayInitialUploadDescription[] =
     "disabled, initial upload is delayed until deferred initialization. This "
     "does not affect recovery mode.";
 
-extern const char kChangeTabSwitcherPositionName[] =
-    "Change tab switcher button position";
-extern const char kChangeTabSwitcherPositionDescription[] =
-    "When enable, the tab switcher button position changes from tab strip to "
-    "toolbar and bookmark button is removed.";
-
 const char kCollectionsCardPresentationStyleName[] =
     "Card style presentation for Collections.";
 const char kCollectionsCardPresentationStyleDescription[] =

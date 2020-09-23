@@ -13,7 +13,6 @@ source_set("public") {
     "toolbar_utils.mm",
   ]
   deps = [
-    ":feature_flags",
     "//base",
     "//ios/chrome/browser/ui/activity_services/requirements",
     "//ios/chrome/browser/ui/bubble",
@@ -32,13 +31,4 @@ source_set("constants") {
     "toolbar_constants.h",
     "toolbar_constants.mm",
   ]
-}
-
-source_set("feature_flags") {
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  deps = [ "//base" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

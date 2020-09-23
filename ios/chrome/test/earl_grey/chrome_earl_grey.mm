@@ -924,10 +924,6 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   return [ChromeEarlGreyAppInterface isAutofillCompanyNameEnabled];
 }
 
-- (BOOL)isChangeTabSwitcherPositionEnabled {
-  return [ChromeEarlGreyAppInterface isChangeTabSwitcherPositionEnabled];
-}
-
 - (BOOL)isDemographicMetricsReportingEnabled {
   return [ChromeEarlGreyAppInterface isDemographicMetricsReportingEnabled];
 }

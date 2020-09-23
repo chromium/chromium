@@ -102,7 +102,6 @@ source_set("toolbar_ui") {
     "//ios/chrome/browser/ui/thumb_strip:feature_flags",
     "//ios/chrome/browser/ui/toolbar/buttons",
     "//ios/chrome/browser/ui/toolbar/public",
-    "//ios/chrome/browser/ui/toolbar/public:feature_flags",
     "//ios/chrome/browser/ui/toolbar_container:toolbar_collapsing",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/util",

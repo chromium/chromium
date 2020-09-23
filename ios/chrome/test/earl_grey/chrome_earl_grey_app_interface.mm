@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/settings/autofill/features.h"
 #import "ios/chrome/browser/ui/table_view/feature_flags.h"
-#import "ios/chrome/browser/ui/toolbar/public/features.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/menu_util.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
@@ -736,10 +735,6 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
 + (BOOL)isAutofillCompanyNameEnabled {
   return base::FeatureList::IsEnabled(
       autofill::features::kAutofillEnableCompanyName);
-}
-
-+ (BOOL)isChangeTabSwitcherPositionEnabled {
-  return base::FeatureList::IsEnabled(kChangeTabSwitcherPosition);
 }
 
 + (BOOL)isDemographicMetricsReportingEnabled {

@@ -21,7 +21,6 @@ GuideName* const kBackButtonGuide = @"kBackButtonGuide";
 GuideName* const kForwardButtonGuide = @"kForwardButtonGuide";
 GuideName* const kNewTabButtonGuide = @"kNewTabButtonGuide";
 GuideName* const kTabSwitcherGuide = @"kTabSwitcherGuide";
-GuideName* const kTabStripTabSwitcherGuide = @"kTabStripTabSwitcherGuide";
 GuideName* const kToolsMenuGuide = @"kToolsMenuGuide";
 GuideName* const kTranslateInfobarOptionsGuide =
     @"kTranslateInfobarOptionsGuide";

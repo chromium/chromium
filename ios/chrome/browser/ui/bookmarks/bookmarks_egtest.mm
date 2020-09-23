@@ -80,34 +80,16 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Verify the bookmark is set.
   [BookmarkEarlGrey verifyBookmarksWithTitle:bookmarkTitle expectedCount:1];
 
-  // Verify the star is lit.
-  if (![ChromeEarlGrey isCompactWidth] &&
-      ![ChromeEarlGrey isChangeTabSwitcherPositionEnabled]) {
-    [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityLabel(
-                                     l10n_util::GetNSString(IDS_TOOLTIP_STAR))]
-        assertWithMatcher:grey_notNil()];
-  }
-
   // Open the BookmarkEditor.
 
-  if ([ChromeEarlGrey isCompactWidth] ||
-      [ChromeEarlGrey isChangeTabSwitcherPositionEnabled]) {
-    [ChromeEarlGreyUI openToolsMenu];
-    [[[EarlGrey
-        selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                                kToolsMenuEditBookmark),
-                                            grey_sufficientlyVisible(), nil)]
-           usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-        onElementWithMatcher:grey_accessibilityID(
-                                 kPopupMenuToolsMenuTableViewId)]
-        performAction:grey_tap()];
-  } else {
-    [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityLabel(
-                                     l10n_util::GetNSString(IDS_TOOLTIP_STAR))]
-        performAction:grey_tap()];
-  }
+  [ChromeEarlGreyUI openToolsMenu];
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(kToolsMenuEditBookmark),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
+      performAction:grey_tap()];
 
   // Delete the Bookmark.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -119,25 +101,17 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Verify the the page is no longer bookmarked.
 
-  if ([ChromeEarlGrey isCompactWidth] ||
-      [ChromeEarlGrey isChangeTabSwitcherPositionEnabled]) {
-    [ChromeEarlGreyUI openToolsMenu];
-    [[[EarlGrey
-        selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                                kToolsMenuAddToBookmarks),
-                                            grey_sufficientlyVisible(), nil)]
-           usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-        onElementWithMatcher:grey_accessibilityID(
-                                 kPopupMenuToolsMenuTableViewId)]
-        assertWithMatcher:grey_notNil()];
-    // After veryfing, close the ToolsMenu by tapping on its button.
-    [ChromeEarlGreyUI openToolsMenu];
-  } else {
-    [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityLabel(
-                                     l10n_util::GetNSString(IDS_TOOLTIP_STAR))]
-        assertWithMatcher:grey_notNil()];
-  }
+  [ChromeEarlGreyUI openToolsMenu];
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kToolsMenuAddToBookmarks),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
+      assertWithMatcher:grey_notNil()];
+  // After veryfing, close the ToolsMenu by tapping on its button.
+  [ChromeEarlGreyUI openToolsMenu];
+
   // Close the opened tab.
   [ChromeEarlGrey closeCurrentTab];
 }
@@ -228,21 +202,15 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Second URL")]
       performAction:grey_tap()];
 
-  // Edit the bookmark.
-  if (![ChromeEarlGrey isCompactWidth] &&
-      ![ChromeEarlGrey isChangeTabSwitcherPositionEnabled]) {
-    [[EarlGrey selectElementWithMatcher:StarButton()] performAction:grey_tap()];
-  } else {
-    [ChromeEarlGreyUI openToolsMenu];
-    [[[EarlGrey
-        selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                                kToolsMenuEditBookmark),
-                                            grey_sufficientlyVisible(), nil)]
-           usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-        onElementWithMatcher:grey_accessibilityID(
-                                 kPopupMenuToolsMenuTableViewId)]
-        performAction:grey_tap()];
-  }
+  [ChromeEarlGreyUI openToolsMenu];
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(kToolsMenuEditBookmark),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
+      performAction:grey_tap()];
+
   GREYAssertTrue([ChromeEarlGrey registeredKeyCommandCount] == 0,
                  @"No keyboard commands are registered.");
 }

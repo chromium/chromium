@@ -9,7 +9,4 @@
 
 #include "base/feature_list.h"
 
-// Feature to change tab switcher position and remove bookmark button.
-extern const base::Feature kChangeTabSwitcherPosition;
-
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_PUBLIC_FEATURES_H_

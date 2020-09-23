@@ -72,7 +72,6 @@
 #include "ios/chrome/browser/ui/settings/autofill/features.h"
 #import "ios/chrome/browser/ui/tab_grid/features.h"
 #import "ios/chrome/browser/ui/table_view/feature_flags.h"
-#import "ios/chrome/browser/ui/toolbar/public/features.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/web/features.h"
@@ -521,10 +520,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSSLCommittedInterstitialsName,
      flag_descriptions::kSSLCommittedInterstitialsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kSSLCommittedInterstitials)},
-    {"change-tab-switcher-position",
-     flag_descriptions::kChangeTabSwitcherPositionName,
-     flag_descriptions::kChangeTabSwitcherPositionDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kChangeTabSwitcherPosition)},
     {"fullscreen-controller-browser-scoped",
      flag_descriptions::kFullscreenControllerBrowserScopedName,
      flag_descriptions::kFullscreenControllerBrowserScopedDescription,

@@ -117,10 +117,6 @@ extern const char kSyntheticCrashReportsForUteDescription[];
 extern const char kBreakpadNoDelayInitialUploadName[];
 extern const char kBreakpadNoDelayInitialUploadDescription[];
 
-// Title and description for the flag that controls the tab switcher position.
-extern const char kChangeTabSwitcherPositionName[];
-extern const char kChangeTabSwitcherPositionDescription[];
-
 // Title and description for the flag that controls whether Collections are
 // presented using the new iOS13 Card style or the custom legacy one.
 extern const char kCollectionsCardPresentationStyleName[];

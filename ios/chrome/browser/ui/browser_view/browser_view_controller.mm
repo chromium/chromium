@@ -1969,9 +1969,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       self.legacyTabStripCoordinator.longPressDelegate =
           self.popupMenuCoordinator;
 
-      UILayoutGuide* guide =
-          [[NamedGuide alloc] initWithName:kTabStripTabSwitcherGuide];
-      [self.view addLayoutGuide:guide];
       [self.legacyTabStripCoordinator start];
     }
   }

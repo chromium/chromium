@@ -467,11 +467,6 @@
     "expiry_milestone": 91
   },
   {
-    "name": "change-tab-switcher-position",
-    "owners": [ "ewannpv", "gambard", "bling-flags" ],
-    "expiry_milestone": 87
-  },
-  {
     "name": "chrome-share-highlights-android",
     "owners": [ "gayane" ],
     "expiry_milestone": 88

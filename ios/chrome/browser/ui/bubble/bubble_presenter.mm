@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/ui/commands/toolbar_commands.h"
-#import "ios/chrome/browser/ui/toolbar/public/features.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/named_guide_util.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
@@ -178,13 +177,8 @@ const CGFloat kBubblePresentationDelay = 1;
       IsSplitToolbarMode() ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;
   NSString* text =
       l10n_util::GetNSString(IDS_IOS_LONG_PRESS_TOOLBAR_IPH_PROMOTION_TEXT);
-  CGPoint tabGridButtonAnchor =
-      IsRegularXRegularSizeClass() &&
-              !base::FeatureList::IsEnabled(kChangeTabSwitcherPosition)
-          ? [self anchorPointToGuide:kTabStripTabSwitcherGuide
-                           direction:arrowDirection]
-          : [self anchorPointToGuide:kTabSwitcherGuide
-                           direction:arrowDirection];
+  CGPoint tabGridButtonAnchor = [self anchorPointToGuide:kTabSwitcherGuide
+                                               direction:arrowDirection];
 
   // If the feature engagement tracker does not consider it valid to display
   // the tip, then end early to prevent the potential reassignment of the
@@ -316,15 +310,8 @@ presentBubbleForFeature:(const base::Feature&)feature
       IsSplitToolbarMode() ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;
   NSString* text =
       l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_TAB_IPH_PROMOTION_TEXT);
-  CGPoint tabSwitcherAnchor;
-  if (IsRegularXRegularSizeClass() &&
-      !base::FeatureList::IsEnabled(kChangeTabSwitcherPosition)) {
-    tabSwitcherAnchor = [self anchorPointToGuide:kTabStripTabSwitcherGuide
-                                       direction:arrowDirection];
-  } else {
-    tabSwitcherAnchor =
-        [self anchorPointToGuide:kTabSwitcherGuide direction:arrowDirection];
-  }
+  CGPoint tabSwitcherAnchor = [self anchorPointToGuide:kTabSwitcherGuide
+                                             direction:arrowDirection];
 
   // If the feature engagement tracker does not consider it valid to display
   // the new tab tip, then end early to prevent the potential reassignment

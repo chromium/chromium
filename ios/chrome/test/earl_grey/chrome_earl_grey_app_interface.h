@@ -413,9 +413,6 @@
 // Returns YES if AutofillEnableCompanyName feature is enabled.
 + (BOOL)isAutofillCompanyNameEnabled WARN_UNUSED_RESULT;
 
-// Returns YES if kChangeTabSwitcherPosition feature is enabled.
-+ (BOOL)isChangeTabSwitcherPositionEnabled WARN_UNUSED_RESULT;
-
 // Returns YES if DemographicMetricsReporting feature is enabled.
 + (BOOL)isDemographicMetricsReportingEnabled WARN_UNUSED_RESULT;
 

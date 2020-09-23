@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_presenter_delegate.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
-#import "ios/chrome/browser/ui/toolbar/public/features.h"
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -128,13 +127,6 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
   base::RecordAction(base::UserMetricsAction("MobileToolbarShowNewTabMenu"));
   [self presentPopupOfType:PopupMenuTypeNewTab
             fromNamedGuide:kNewTabButtonGuide];
-}
-
-- (void)showTabStripTabGridButtonPopup {
-  DCHECK(!base::FeatureList::IsEnabled(kChangeTabSwitcherPosition));
-  base::RecordAction(base::UserMetricsAction("MobileTabStripShowTabGridMenu"));
-  [self presentPopupOfType:PopupMenuTypeTabStripTabGrid
-            fromNamedGuide:kTabStripTabSwitcherGuide];
 }
 
 - (void)dismissPopupMenuAnimated:(BOOL)animated {
