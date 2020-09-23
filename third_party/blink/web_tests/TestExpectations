@@ -276,6 +276,9 @@ crbug.com/1007229 external/wpt/intersection-observer/same-origin-grand-child-ifr
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/abspos-013.tentative.html [ Failure ]
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-013.tentative.html [ Failure ]
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-014.tentative.html [ Failure ]
+crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-024.tentative.html [ Failure ]
+crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/replaced-element-016.tentative.html [ Failure ]
+crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/replaced-element-021.tentative.html [ Failure ]
 
 crbug.com/936084 external/wpt/css/css-sizing/max-content-input-001.html [ Failure ]
 
@@ -799,6 +802,8 @@ crbug.com/470421 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftest
 crbug.com/470421 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-flex-basis-content-002b.html [ Failure ]
 crbug.com/470421 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-flex-basis-content-003a.html [ Failure ]
 crbug.com/470421 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-flex-basis-content-004a.html [ Failure ]
+crbug.com/470421 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-021.tentative.html [ Failure ]
+crbug.com/470421 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-022.tentative.html [ Failure ]
 
 # Untriaged flex failures
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-align-content-wmvert-001.xhtml [ Failure ]
@@ -2673,9 +2678,6 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-024.tentative.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-021.tentative.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-022.tentative.html [ Failure ]
 crbug.com/626703 [ Fuchsia ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-pause-immediately.https.html [ Failure ]
 crbug.com/626703 [ Mac11.0 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-pause-immediately.https.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/web-locks/query-ordering.tentative.https.html [ Pass Failure ]
@@ -2689,8 +2691,6 @@ crbug.com/626703 [ Mac10.14 ] virtual/off-main-thread-css-paint/external/wpt/css
 crbug.com/626703 external/wpt/web-share/share-url-invalid.https.html [ Crash ]
 crbug.com/626703 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/pageshow-event.window.html [ Timeout ]
 crbug.com/626703 [ Win7 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Timeout ]
-crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/replaced-element-016.tentative.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/replaced-element-021.tentative.html [ Failure ]
 crbug.com/626703 external/wpt/content-security-policy/frame-src/frame-src-same-document.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-backspace.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-forwarddelete.tentative.html [ Timeout ]
