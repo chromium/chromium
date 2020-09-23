@@ -30,7 +30,6 @@ void FrameConnectorDelegate::SendIntrinsicSizingInfoToParent(
     blink::mojom::IntrinsicSizingInfoPtr) {}
 
 void FrameConnectorDelegate::SynchronizeVisualProperties(
-    const viz::FrameSinkId& frame_sink_id,
     const blink::FrameVisualProperties& visual_properties) {
   screen_info_ = visual_properties.screen_info;
   local_surface_id_allocation_ = visual_properties.local_surface_id_allocation;

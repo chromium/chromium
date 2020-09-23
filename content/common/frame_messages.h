@@ -604,8 +604,7 @@ IPC_MESSAGE_CONTROL3(FrameHostMsg_PluginInstanceThrottleStateChange,
 IPC_MESSAGE_ROUTED0(FrameHostMsg_Unload_ACK)
 
 // Tells the browser that a child's visual properties have changed.
-IPC_MESSAGE_ROUTED2(FrameHostMsg_SynchronizeVisualProperties,
-                    viz::FrameSinkId /* frame_sink_id */,
+IPC_MESSAGE_ROUTED1(FrameHostMsg_SynchronizeVisualProperties,
                     blink::FrameVisualProperties)
 
 // Sent by a parent frame to notify its child about the state of the child's

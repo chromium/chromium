@@ -80,7 +80,6 @@ class CONTENT_EXPORT FrameConnectorDelegate {
 
   // Sends new resize parameters to the sub-frame's renderer.
   void SynchronizeVisualProperties(
-      const viz::FrameSinkId& frame_sink_id,
       const blink::FrameVisualProperties& visual_properties);
 
   // Return the size of the CompositorFrame to use in the child renderer.

@@ -1773,11 +1773,6 @@ class SynchronizeVisualPropertiesMessageFilter
   void WaitForRect();
   void ResetRectRunLoop();
 
-  // Returns the new viz::FrameSinkId immediately if the IPC has been received.
-  // Otherwise this will block the UI thread until it has been received, then it
-  // will return the new viz::FrameSinkId.
-  viz::FrameSinkId GetOrWaitForId();
-
   // Waits for the next viz::LocalSurfaceId be received and returns it.
   viz::LocalSurfaceId WaitForSurfaceId();
 
@@ -1791,10 +1786,8 @@ class SynchronizeVisualPropertiesMessageFilter
 
  private:
   void OnSynchronizeFrameHostVisualProperties(
-      const viz::FrameSinkId& frame_sink_id,
       const blink::FrameVisualProperties& visual_properties);
   void OnSynchronizeVisualProperties(
-      const viz::FrameSinkId& frame_sink_id,
       const blink::FrameVisualProperties& visual_properties);
   // |rect| is in DIPs.
   void OnUpdatedFrameRectOnUI(const gfx::Rect& rect);
@@ -1803,8 +1796,7 @@ class SynchronizeVisualPropertiesMessageFilter
 
   bool OnMessageReceived(const IPC::Message& message) override;
 
-  viz::FrameSinkId frame_sink_id_;
-  base::RunLoop frame_sink_id_run_loop_;
+  base::RunLoop run_loop_;
 
   std::unique_ptr<base::RunLoop> screen_space_rect_run_loop_;
   bool screen_space_rect_received_;

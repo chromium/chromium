@@ -3443,12 +3443,6 @@ void SynchronizeVisualPropertiesMessageFilter::ResetRectRunLoop() {
   screen_space_rect_received_ = false;
 }
 
-viz::FrameSinkId SynchronizeVisualPropertiesMessageFilter::GetOrWaitForId() {
-  // No-op if already quit.
-  frame_sink_id_run_loop_.Run();
-  return frame_sink_id_;
-}
-
 viz::LocalSurfaceId
 SynchronizeVisualPropertiesMessageFilter::WaitForSurfaceId() {
   surface_id_run_loop_ = std::make_unique<base::RunLoop>();
@@ -3461,13 +3455,11 @@ SynchronizeVisualPropertiesMessageFilter::
 
 void SynchronizeVisualPropertiesMessageFilter::
     OnSynchronizeFrameHostVisualProperties(
-        const viz::FrameSinkId& frame_sink_id,
         const blink::FrameVisualProperties& visual_properties) {
-  OnSynchronizeVisualProperties(frame_sink_id, visual_properties);
+  OnSynchronizeVisualProperties(visual_properties);
 }
 
 void SynchronizeVisualPropertiesMessageFilter::OnSynchronizeVisualProperties(
-    const viz::FrameSinkId& frame_sink_id,
     const blink::FrameVisualProperties& visual_properties) {
   // Monitor |is_pinch_gesture_active| to determine when pinch gestures begin
   // and end.
@@ -3508,16 +3500,6 @@ void SynchronizeVisualPropertiesMessageFilter::OnSynchronizeVisualProperties(
           this,
           visual_properties.local_surface_id_allocation.local_surface_id()));
 
-  // Record the received value. We cannot check the current state of the child
-  // frame, as it can only be processed on the UI thread, and we cannot block
-  // here.
-  frame_sink_id_ = frame_sink_id;
-
-  // There can be several updates before a valid viz::FrameSinkId is ready. Do
-  // not quit |run_loop_| until after we receive a valid one.
-  if (!frame_sink_id_.is_valid())
-    return;
-
   // We can't nest on the IO thread. So tests will wait on the UI thread, so
   // post there to exit the nesting.
   GetUIThreadTaskRunner({})->PostTask(
@@ -3539,7 +3521,7 @@ void SynchronizeVisualPropertiesMessageFilter::OnUpdatedFrameRectOnUI(
 }
 
 void SynchronizeVisualPropertiesMessageFilter::OnUpdatedFrameSinkIdOnUI() {
-  frame_sink_id_run_loop_.Quit();
+  run_loop_.Quit();
 }
 
 void SynchronizeVisualPropertiesMessageFilter::OnUpdatedSurfaceIdOnUI(

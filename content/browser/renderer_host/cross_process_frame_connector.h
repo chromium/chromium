@@ -189,7 +189,6 @@ class CONTENT_EXPORT CrossProcessFrameConnector
 
   // Handlers for messages received from the parent frame.
   void OnSynchronizeVisualProperties(
-      const viz::FrameSinkId& frame_sink_id,
       const blink::FrameVisualProperties& visual_properties);
   void OnUpdateViewportIntersection(
       const blink::ViewportIntersectionState& viewport_intersection);

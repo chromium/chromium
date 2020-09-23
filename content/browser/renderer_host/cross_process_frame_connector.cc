@@ -290,7 +290,6 @@ void CrossProcessFrameConnector::UnlockMouse() {
 }
 
 void CrossProcessFrameConnector::OnSynchronizeVisualProperties(
-    const viz::FrameSinkId& frame_sink_id,
     const blink::FrameVisualProperties& visual_properties) {
   TRACE_EVENT_WITH_FLOW2(
       TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
@@ -319,7 +318,7 @@ void CrossProcessFrameConnector::OnSynchronizeVisualProperties(
 
   last_received_zoom_level_ = visual_properties.zoom_level;
   last_received_local_frame_size_ = visual_properties.local_frame_size;
-  SynchronizeVisualProperties(frame_sink_id, visual_properties);
+  SynchronizeVisualProperties(visual_properties);
 }
 
 void CrossProcessFrameConnector::OnUpdateViewportIntersection(

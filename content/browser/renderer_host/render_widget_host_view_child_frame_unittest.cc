@@ -293,7 +293,6 @@ TEST_F(RenderWidgetHostViewChildFrameTest,
   allocator.GenerateId();
   viz::LocalSurfaceIdAllocation local_surface_id_allocation =
       allocator.GetCurrentLocalSurfaceIdAllocation();
-  constexpr viz::FrameSinkId frame_sink_id(1, 1);
 
   blink::FrameVisualProperties visual_properties;
   visual_properties.screen_space_rect = screen_space_rect;
@@ -305,8 +304,7 @@ TEST_F(RenderWidgetHostViewChildFrameTest,
 
   base::RunLoop().RunUntilIdle();
   widget_.ClearVisualProperties();
-  test_frame_connector_->SynchronizeVisualProperties(frame_sink_id,
-                                                     visual_properties);
+  test_frame_connector_->SynchronizeVisualProperties(visual_properties);
 
   // Update to the renderer.
   base::RunLoop().RunUntilIdle();
