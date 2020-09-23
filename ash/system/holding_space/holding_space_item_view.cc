@@ -14,11 +14,13 @@
 #include "base/bind_helpers.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -45,11 +47,19 @@ HoldingSpaceItemView::HoldingSpaceItemView(const HoldingSpaceItem* item)
 
   GetViewAccessibility().OverrideName(item->text());
 
+  // Install the selection ring before installing the focus ring so that the
+  // selection ring will paint beneath the focus ring.
+  views::FocusRing* selection_ring = views::FocusRing::Install(this);
+  selection_ring->SetColor(gfx::kPlaceholderColor);
+  selection_ring->SetHasFocusPredicate(
+      [this](views::View* selection_ring) { return this->selected(); });
+
   SetFocusBehavior(FocusBehavior::ALWAYS);
   views::FocusRing* focus_ring = views::FocusRing::Install(this);
   focus_ring->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
 
-  // Focus ring and ink drop layers should match the corner radius of this view.
+  // The selection ring, focus ring, and ink drop layers should match the corner
+  // radius of this view. Installation of a highlight path generator does this.
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 kHoldingSpaceCornerRadius);
 }
@@ -89,5 +99,16 @@ void HoldingSpaceItemView::WriteDragData(const gfx::Point& point,
                                          ui::OSExchangeData* data) {
   data->SetFilename(item_->file_path());
 }
+
+void HoldingSpaceItemView::SetSelected(bool selected) {
+  if (selected_ == selected)
+    return;
+
+  selected_ = selected;
+  InvalidateLayout();
+}
+
+BEGIN_METADATA(HoldingSpaceItemView, views::InkDropHostView)
+END_METADATA
 
 }  // namespace ash

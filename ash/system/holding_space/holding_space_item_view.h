@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/views/animation/ink_drop_host_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -19,6 +20,8 @@ class HoldingSpaceItemContextMenu;
 // Base class for HoldingSpaceItemChipView and HoldingSpaceItemScreenshotView.
 class ASH_EXPORT HoldingSpaceItemView : public views::InkDropHostView {
  public:
+  METADATA_HEADER(HoldingSpaceItemView);
+
   explicit HoldingSpaceItemView(const HoldingSpaceItem* item);
   HoldingSpaceItemView(const HoldingSpaceItemView&) = delete;
   HoldingSpaceItemView& operator=(const HoldingSpaceItemView&) = delete;
@@ -34,9 +37,15 @@ class ASH_EXPORT HoldingSpaceItemView : public views::InkDropHostView {
 
   const HoldingSpaceItem* item() const { return item_; }
 
+  void SetSelected(bool selected);
+  bool selected() const { return selected_; }
+
  private:
   const HoldingSpaceItem* const item_;
   std::unique_ptr<HoldingSpaceItemContextMenu> const context_menu_;
+
+  // Whether or not this view is selected.
+  bool selected_ = false;
 };
 
 }  // namespace ash
