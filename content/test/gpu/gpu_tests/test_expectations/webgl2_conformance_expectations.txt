@@ -319,6 +319,16 @@ crbug.com/1085222 [ win10 intel-0x5912 ] deqp/functional/gles3/shaderoperator/bi
 crbug.com/1085222 [ win10 intel-0x5912 ] deqp/functional/gles3/shaderoperator/unary_operator_01.html [ Skip ]
 crbug.com/1085222 [ win10 intel-0x5912 ] deqp/functional/gles3/shaderoperator/unary_operator_02.html [ Skip ]
 
+# Flaky timeouts on Linux Intel HD 630/UHD 630 GPUs
+crbug.com/1085222 [ linux intel-0x3e92 ] deqp/functional/gles3/shaderoperator/binary_operator_* [ RetryOnFailure ]
+crbug.com/1085222 [ linux intel-0x3e92 ] deqp/functional/gles3/shadermatrix/sub_* [ RetryOnFailure ]
+crbug.com/1085222 [ linux intel-0x3e92 ] deqp/functional/gles3/shadermatrix/mul_* [ RetryOnFailure ]
+crbug.com/1085222 [ linux intel-0x3e92 ] deqp/functional/gles3/shadermatrix/add_* [ RetryOnFailure ]
+crbug.com/1085222 [ linux intel-0x5912 ] deqp/functional/gles3/shaderoperator/binary_operator_* [ RetryOnFailure ]
+crbug.com/1085222 [ linux intel-0x5912 ] deqp/functional/gles3/shadermatrix/sub_* [ RetryOnFailure ]
+crbug.com/1085222 [ linux intel-0x5912 ] deqp/functional/gles3/shadermatrix/mul_* [ RetryOnFailure ]
+crbug.com/1085222 [ linux intel-0x5912 ] deqp/functional/gles3/shadermatrix/add_* [ RetryOnFailure ]
+
 # Flaky direct composition failure on Windows 10 1909 Intel UHD 630 GPUs w/ 26.20.100.8141
 crbug.com/1087993 [ win10 intel-0x5912 d3d11 ] conformance2/textures/image_data/tex-2d-rgb8ui-rgb_integer-unsigned_byte.html [ RetryOnFailure ]
 crbug.com/1087993 [ win10 intel-0x5912 d3d11 ] conformance2/textures/image_data/tex-2d-srgb8_alpha8-rgba-unsigned_byte.html [ RetryOnFailure ]
