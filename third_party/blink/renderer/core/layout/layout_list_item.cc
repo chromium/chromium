@@ -47,6 +47,7 @@ LayoutListItem::LayoutListItem(Element* element)
 
 void LayoutListItem::StyleDidChange(StyleDifference diff,
                                     const ComputedStyle* old_style) {
+  CheckIsNotDestroyed();
   LayoutBlockFlow::StyleDidChange(diff, old_style);
 
   StyleImage* current_image = StyleRef().ListStyleImage();
@@ -80,18 +81,21 @@ void LayoutListItem::StyleDidChange(StyleDifference diff,
 }
 
 void LayoutListItem::InsertedIntoTree() {
+  CheckIsNotDestroyed();
   LayoutBlockFlow::InsertedIntoTree();
 
   ListItemOrdinal::ItemInsertedOrRemoved(this);
 }
 
 void LayoutListItem::WillBeRemovedFromTree() {
+  CheckIsNotDestroyed();
   LayoutBlockFlow::WillBeRemovedFromTree();
 
   ListItemOrdinal::ItemInsertedOrRemoved(this);
 }
 
 void LayoutListItem::SubtreeDidChange() {
+  CheckIsNotDestroyed();
   LayoutObject* marker = Marker();
   if (!marker)
     return;
@@ -113,15 +117,18 @@ void LayoutListItem::SubtreeDidChange() {
 }
 
 int LayoutListItem::Value() const {
+  CheckIsNotDestroyed();
   DCHECK(GetNode());
   return ordinal_.Value(*GetNode());
 }
 
 bool LayoutListItem::IsEmpty() const {
+  CheckIsNotDestroyed();
   return LastChild() == Marker();
 }
 
 void LayoutListItem::UpdateMarkerTextIfNeeded() {
+  CheckIsNotDestroyed();
   LayoutObject* marker = Marker();
   if (ListMarker* list_marker = ListMarker::Get(marker))
     list_marker->UpdateMarkerTextIfNeeded(*marker);
@@ -201,6 +208,7 @@ void ForceLogicalHeight(LayoutObject& layout_object, const Length& height) {
 // marker_container to 0px; else restore it to LogicalHeight of <li>.
 bool LayoutListItem::PrepareForBlockDirectionAlign(
     const LayoutObject* line_box_parent) {
+  CheckIsNotDestroyed();
   LayoutObject* marker = Marker();
   LayoutObject* marker_parent = marker->Parent();
   bool is_inside = marker->IsInsideListMarker();
@@ -264,6 +272,7 @@ static bool IsFirstLeafChild(LayoutObject* container, LayoutObject* child) {
 }
 
 bool LayoutListItem::UpdateMarkerLocation() {
+  CheckIsNotDestroyed();
   DCHECK(Marker());
 
   LayoutObject* marker = Marker();
@@ -327,11 +336,13 @@ bool LayoutListItem::UpdateMarkerLocation() {
 }
 
 void LayoutListItem::RecalcVisualOverflow() {
+  CheckIsNotDestroyed();
   RecalcChildVisualOverflow();
   RecalcSelfVisualOverflow();
 }
 
 void LayoutListItem::ComputeVisualOverflow(bool recompute_floats) {
+  CheckIsNotDestroyed();
   LayoutRect previous_visual_overflow_rect = VisualOverflowRect();
   ClearVisualOverflow();
 
@@ -350,6 +361,7 @@ void LayoutListItem::ComputeVisualOverflow(bool recompute_floats) {
 }
 
 void LayoutListItem::AddLayoutOverflowFromChildren() {
+  CheckIsNotDestroyed();
   LayoutBlockFlow::AddLayoutOverflowFromChildren();
   UpdateOverflow();
 }
@@ -357,6 +369,7 @@ void LayoutListItem::AddLayoutOverflowFromChildren() {
 // Align marker_inline_box in block direction according to line_box_root's
 // baseline.
 void LayoutListItem::AlignMarkerInBlockDirection() {
+  CheckIsNotDestroyed();
   // Specify wether need to restore to the original baseline which is the
   // baseline of marker parent. Because we might adjust the position at the last
   // layout pass. So if there's no line box in line_box_parent make sure it
@@ -433,6 +446,7 @@ void LayoutListItem::AlignMarkerInBlockDirection() {
 }
 
 void LayoutListItem::UpdateOverflow() {
+  CheckIsNotDestroyed();
   LayoutObject* marker_object = Marker();
   if (!marker_object || !marker_object->Parent() ||
       !marker_object->Parent()->IsBox() || marker_object->IsInsideListMarker())
@@ -597,10 +611,12 @@ void LayoutListItem::UpdateOverflow() {
 }
 
 void LayoutListItem::Paint(const PaintInfo& paint_info) const {
+  CheckIsNotDestroyed();
   ListItemPainter(*this).Paint(paint_info);
 }
 
 void LayoutListItem::OrdinalValueChanged() {
+  CheckIsNotDestroyed();
   LayoutObject* marker = Marker();
   if (ListMarker* list_marker = ListMarker::Get(marker)) {
     list_marker->OrdinalValueChanged(*marker);
@@ -612,6 +628,7 @@ void LayoutListItem::OrdinalValueChanged() {
 }
 
 void LayoutListItem::UpdateLayout() {
+  CheckIsNotDestroyed();
   LayoutObject* marker = Marker();
   if (ListMarker* list_marker = ListMarker::Get(marker))
     list_marker->UpdateMarkerTextIfNeeded(*marker);

@@ -38,6 +38,7 @@ class CORE_EXPORT LayoutFileUploadControl final : public LayoutBlockFlow {
   ~LayoutFileUploadControl() override;
 
   bool IsOfType(LayoutObjectType type) const override {
+    CheckIsNotDestroyed();
     return type == kLayoutObjectFileUploadControl ||
            LayoutBlockFlow::IsOfType(type);
   }
@@ -51,7 +52,10 @@ class CORE_EXPORT LayoutFileUploadControl final : public LayoutBlockFlow {
 
   static const int kAfterButtonSpacing = 4;
 
-  const char* GetName() const override { return "LayoutFileUploadControl"; }
+  const char* GetName() const override {
+    CheckIsNotDestroyed();
+    return "LayoutFileUploadControl";
+  }
 
  private:
   bool IsChildAllowed(LayoutObject* child,

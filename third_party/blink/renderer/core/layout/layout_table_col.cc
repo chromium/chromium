@@ -41,6 +41,7 @@ LayoutTableCol::LayoutTableCol(Element* element)
 
 void LayoutTableCol::StyleDidChange(StyleDifference diff,
                                     const ComputedStyle* old_style) {
+  CheckIsNotDestroyed();
   DCHECK(StyleRef().Display() == EDisplay::kTableColumn ||
          StyleRef().Display() == EDisplay::kTableColumnGroup);
 
@@ -71,6 +72,7 @@ void LayoutTableCol::StyleDidChange(StyleDifference diff,
 }
 
 void LayoutTableCol::UpdateFromElement() {
+  CheckIsNotDestroyed();
   unsigned old_span = span_;
 
   if (auto* tc = DynamicTo<HTMLTableColElement>(GetNode())) {
@@ -85,28 +87,33 @@ void LayoutTableCol::UpdateFromElement() {
 }
 
 void LayoutTableCol::InsertedIntoTree() {
+  CheckIsNotDestroyed();
   LayoutTableBoxComponent::InsertedIntoTree();
   Table()->AddColumn(this);
 }
 
 void LayoutTableCol::WillBeRemovedFromTree() {
+  CheckIsNotDestroyed();
   LayoutTableBoxComponent::WillBeRemovedFromTree();
   Table()->RemoveColumn(this);
 }
 
 bool LayoutTableCol::IsChildAllowed(LayoutObject* child,
                                     const ComputedStyle& style) const {
+  CheckIsNotDestroyed();
   // We cannot use isTableColumn here as style() may return 0.
   return child->IsLayoutTableCol() && style.Display() == EDisplay::kTableColumn;
 }
 
 bool LayoutTableCol::CanHaveChildren() const {
+  CheckIsNotDestroyed();
   // Cols cannot have children. This is actually necessary to fix a bug
   // with libraries.uc.edu, which makes a <p> be a table-column.
   return IsTableColumnGroup();
 }
 
 void LayoutTableCol::ClearIntrinsicLogicalWidthsDirtyBits() {
+  CheckIsNotDestroyed();
   ClearIntrinsicLogicalWidthsDirty();
 
   for (LayoutObject* child = FirstChild(); child; child = child->NextSibling())
@@ -114,6 +121,7 @@ void LayoutTableCol::ClearIntrinsicLogicalWidthsDirtyBits() {
 }
 
 LayoutTable* LayoutTableCol::Table() const {
+  CheckIsNotDestroyed();
   LayoutObject* table = Parent();
   if (table && !table->IsTable())
     table = table->Parent();
@@ -121,6 +129,7 @@ LayoutTable* LayoutTableCol::Table() const {
 }
 
 LayoutTableCol* LayoutTableCol::EnclosingColumnGroup() const {
+  CheckIsNotDestroyed();
   if (!Parent()->IsLayoutTableCol())
     return nullptr;
 
@@ -131,6 +140,7 @@ LayoutTableCol* LayoutTableCol::EnclosingColumnGroup() const {
 }
 
 LayoutTableCol* LayoutTableCol::NextColumn() const {
+  CheckIsNotDestroyed();
   // If |this| is a column-group, the next column is the colgroup's first child
   // column.
   if (LayoutObject* first_child = FirstChild())

@@ -71,13 +71,17 @@ class LayoutCounter final : public LayoutText {
 
   void UpdateCounter();
 
-  const char* GetName() const override { return "LayoutCounter"; }
+  const char* GetName() const override {
+    CheckIsNotDestroyed();
+    return "LayoutCounter";
+  }
 
  protected:
   void WillBeDestroyed() override;
 
  private:
   bool IsOfType(LayoutObjectType type) const override {
+    CheckIsNotDestroyed();
     return type == kLayoutObjectCounter || LayoutText::IsOfType(type);
   }
   scoped_refptr<StringImpl> OriginalText() const override;

@@ -59,13 +59,25 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
   base::Optional<unsigned> CaretOffsetForPosition(
       const Position&) const override;
 
-  unsigned Start() const { return start_; }
-  unsigned FragmentLength() const { return fragment_length_; }
+  unsigned Start() const {
+    CheckIsNotDestroyed();
+    return start_;
+  }
+  unsigned FragmentLength() const {
+    CheckIsNotDestroyed();
+    return fragment_length_;
+  }
 
-  unsigned TextStartOffset() const override { return Start(); }
+  unsigned TextStartOffset() const override {
+    CheckIsNotDestroyed();
+    return Start();
+  }
 
   void SetContentString(StringImpl*);
-  StringImpl* ContentString() const { return content_string_.get(); }
+  StringImpl* ContentString() const {
+    CheckIsNotDestroyed();
+    return content_string_.get();
+  }
   // The complete text is all of the text in the associated DOM text node.
   scoped_refptr<StringImpl> CompleteText() const;
   // The fragment text is the text which will be used by this
@@ -80,19 +92,26 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
 
   void TransformText() override;
 
-  const char* GetName() const override { return "LayoutTextFragment"; }
+  const char* GetName() const override {
+    CheckIsNotDestroyed();
+    return "LayoutTextFragment";
+  }
 
   void SetFirstLetterPseudoElement(FirstLetterPseudoElement* element) {
+    CheckIsNotDestroyed();
     first_letter_pseudo_element_ = element;
   }
   FirstLetterPseudoElement* GetFirstLetterPseudoElement() const {
+    CheckIsNotDestroyed();
     return first_letter_pseudo_element_;
   }
 
   void SetIsRemainingTextLayoutObject(bool is_remaining_text) {
+    CheckIsNotDestroyed();
     is_remaining_text_layout_object_ = is_remaining_text;
   }
   bool IsRemainingTextLayoutObject() const {
+    CheckIsNotDestroyed();
     return is_remaining_text_layout_object_;
   }
 

@@ -16,13 +16,23 @@ class CORE_EXPORT LayoutNGInsideListMarker final : public LayoutInline {
  public:
   explicit LayoutNGInsideListMarker(Element*);
 
-  const char* GetName() const override { return "LayoutNGInsideListMarker"; }
+  const char* GetName() const override {
+    CheckIsNotDestroyed();
+    return "LayoutNGInsideListMarker";
+  }
 
-  const ListMarker& Marker() const { return list_marker_; }
-  ListMarker& Marker() { return list_marker_; }
+  const ListMarker& Marker() const {
+    CheckIsNotDestroyed();
+    return list_marker_;
+  }
+  ListMarker& Marker() {
+    CheckIsNotDestroyed();
+    return list_marker_;
+  }
 
 #if DCHECK_IS_ON()
   void AddChild(LayoutObject* new_child, LayoutObject* before_child) override {
+    CheckIsNotDestroyed();
     // List markers with 'content: normal' should have at most one child.
     DCHECK(!StyleRef().ContentBehavesAsNormal() || !FirstChild());
     LayoutInline::AddChild(new_child, before_child);

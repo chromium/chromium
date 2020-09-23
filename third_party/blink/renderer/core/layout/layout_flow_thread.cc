@@ -96,6 +96,7 @@ LayoutFlowThread* LayoutFlowThread::LocateFlowThreadContainingBlockOf(
 
 void LayoutFlowThread::RemoveColumnSetFromThread(
     LayoutMultiColumnSet* column_set) {
+  CheckIsNotDestroyed();
   DCHECK(column_set);
   multi_column_set_list_.erase(column_set);
   InvalidateColumnSets();
@@ -109,6 +110,7 @@ void LayoutFlowThread::RemoveColumnSetFromThread(
 }
 
 void LayoutFlowThread::ValidateColumnSets() {
+  CheckIsNotDestroyed();
   column_sets_invalidated_ = false;
   // Called to get the maximum logical width for the columnSet.
   UpdateLogicalWidth();
@@ -119,6 +121,7 @@ bool LayoutFlowThread::MapToVisualRectInAncestorSpaceInternal(
     const LayoutBoxModelObject* ancestor,
     TransformState& transform_state,
     VisualRectFlags visual_rect_flags) const {
+  CheckIsNotDestroyed();
   // A flow thread should never be an invalidation container.
   DCHECK_NE(ancestor, this);
   transform_state.Flatten();
@@ -130,12 +133,14 @@ bool LayoutFlowThread::MapToVisualRectInAncestorSpaceInternal(
 }
 
 void LayoutFlowThread::UpdateLayout() {
+  CheckIsNotDestroyed();
   page_logical_size_changed_ = column_sets_invalidated_ && EverHadLayout();
   LayoutBlockFlow::UpdateLayout();
   page_logical_size_changed_ = false;
 }
 
 PaintLayerType LayoutFlowThread::LayerTypeRequired() const {
+  CheckIsNotDestroyed();
   if (!needs_paint_layer_)
     return kNoPaintLayer;
   // Always create a Layer for the LayoutFlowThread so that we can easily avoid
@@ -148,6 +153,7 @@ void LayoutFlowThread::ComputeLogicalHeight(
     LayoutUnit,
     LayoutUnit logical_top,
     LogicalExtentComputedValues& computed_values) const {
+  CheckIsNotDestroyed();
   computed_values.position_ = logical_top;
   computed_values.extent_ = LayoutUnit();
 
@@ -162,6 +168,7 @@ void LayoutFlowThread::ComputeLogicalHeight(
 void LayoutFlowThread::AbsoluteQuadsForDescendant(const LayoutBox& descendant,
                                                   Vector<FloatQuad>& quads,
                                                   MapCoordinatesFlags mode) {
+  CheckIsNotDestroyed();
   LayoutPoint offset_from_flow_thread;
   for (const LayoutObject* object = &descendant; object != this;) {
     const LayoutObject* container = object->Container();
@@ -191,6 +198,7 @@ void LayoutFlowThread::AddOutlineRects(
     Vector<PhysicalRect>& rects,
     const PhysicalOffset& additional_offset,
     NGOutlineType include_block_overflows) const {
+  CheckIsNotDestroyed();
   Vector<PhysicalRect> rects_in_flowthread;
   LayoutBlockFlow::AddOutlineRects(rects_in_flowthread, additional_offset,
                                    include_block_overflows);
@@ -211,6 +219,7 @@ bool LayoutFlowThread::NodeAtPoint(HitTestResult& result,
                                    const HitTestLocation& hit_test_location,
                                    const PhysicalOffset& accumulated_offset,
                                    HitTestAction hit_test_action) {
+  CheckIsNotDestroyed();
   if (hit_test_action == kHitTestBlockBackground)
     return false;
   return LayoutBlockFlow::NodeAtPoint(result, hit_test_location,
@@ -219,6 +228,7 @@ bool LayoutFlowThread::NodeAtPoint(HitTestResult& result,
 
 LayoutUnit LayoutFlowThread::PageLogicalHeightForOffset(
     LayoutUnit offset) const {
+  CheckIsNotDestroyed();
   DCHECK(IsPageLogicalHeightKnown());
   LayoutMultiColumnSet* column_set =
       ColumnSetAtBlockOffset(offset, kAssociateWithLatterPage);
@@ -231,6 +241,7 @@ LayoutUnit LayoutFlowThread::PageLogicalHeightForOffset(
 LayoutUnit LayoutFlowThread::PageRemainingLogicalHeightForOffset(
     LayoutUnit offset,
     PageBoundaryRule page_boundary_rule) const {
+  CheckIsNotDestroyed();
   DCHECK(IsPageLogicalHeightKnown());
   LayoutMultiColumnSet* column_set =
       ColumnSetAtBlockOffset(offset, page_boundary_rule);
@@ -242,6 +253,7 @@ LayoutUnit LayoutFlowThread::PageRemainingLogicalHeightForOffset(
 }
 
 void LayoutFlowThread::GenerateColumnSetIntervalTree() {
+  CheckIsNotDestroyed();
   // FIXME: Optimize not to clear the interval all the time. This implies
   // manually managing the tree nodes lifecycle.
   multi_column_set_interval_tree_.Clear();
@@ -256,6 +268,7 @@ void LayoutFlowThread::GenerateColumnSetIntervalTree() {
 LayoutUnit LayoutFlowThread::NextLogicalTopForUnbreakableContent(
     LayoutUnit flow_thread_offset,
     LayoutUnit content_logical_height) const {
+  CheckIsNotDestroyed();
   LayoutMultiColumnSet* column_set =
       ColumnSetAtBlockOffset(flow_thread_offset, kAssociateWithLatterPage);
   if (!column_set)
@@ -266,6 +279,7 @@ LayoutUnit LayoutFlowThread::NextLogicalTopForUnbreakableContent(
 
 LayoutRect LayoutFlowThread::FragmentsBoundingBox(
     const LayoutRect& layer_bounding_box) const {
+  CheckIsNotDestroyed();
   DCHECK(!column_sets_invalidated_);
 
   LayoutRect result;
@@ -278,6 +292,7 @@ LayoutRect LayoutFlowThread::FragmentsBoundingBox(
 void LayoutFlowThread::FlowThreadToContainingCoordinateSpace(
     LayoutUnit& block_position,
     LayoutUnit& inline_position) const {
+  CheckIsNotDestroyed();
   LayoutPoint position(inline_position, block_position);
   // First we have to make |position| physical, because that's what offsetLeft()
   // expects and returns.

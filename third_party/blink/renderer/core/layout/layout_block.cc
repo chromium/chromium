@@ -132,6 +132,7 @@ LayoutBlock::LayoutBlock(ContainerNode* node)
 }
 
 void LayoutBlock::RemoveFromGlobalMaps() {
+  CheckIsNotDestroyed();
   if (HasPositionedObjects()) {
     std::unique_ptr<TrackedLayoutBoxListHashSet> descendants =
         GetPositionedDescendantsMap().Take(this);
@@ -157,6 +158,7 @@ LayoutBlock::~LayoutBlock() {
 }
 
 void LayoutBlock::WillBeDestroyed() {
+  CheckIsNotDestroyed();
   if (!DocumentBeingDestroyed() && Parent())
     Parent()->DirtyLinesFromChangedChild(this);
 
@@ -173,6 +175,7 @@ void LayoutBlock::WillBeDestroyed() {
 
 void LayoutBlock::StyleWillChange(StyleDifference diff,
                                   const ComputedStyle& new_style) {
+  CheckIsNotDestroyed();
   SetIsAtomicInlineLevel(new_style.IsDisplayInlineType());
   LayoutBox::StyleWillChange(diff, new_style);
 }
@@ -198,6 +201,7 @@ static bool BorderOrPaddingLogicalDimensionChanged(
 
 void LayoutBlock::StyleDidChange(StyleDifference diff,
                                  const ComputedStyle* old_style) {
+  CheckIsNotDestroyed();
   LayoutBox::StyleDidChange(diff, old_style);
 
   const ComputedStyle& new_style = StyleRef();
@@ -242,6 +246,7 @@ void LayoutBlock::StyleDidChange(StyleDifference diff,
 }
 
 void LayoutBlock::UpdateFromStyle() {
+  CheckIsNotDestroyed();
   LayoutBox::UpdateFromStyle();
 
   bool should_clip_overflow = !StyleRef().IsOverflowVisibleAlongBothAxes() &&
@@ -259,12 +264,14 @@ void LayoutBlock::UpdateFromStyle() {
 }
 
 bool LayoutBlock::AllowsNonVisibleOverflow() const {
+  CheckIsNotDestroyed();
   // If overflow has been propagated to the viewport, it has no effect here.
   return GetNode() != GetDocument().ViewportDefiningElement();
 }
 
 void LayoutBlock::AddChildBeforeDescendant(LayoutObject* new_child,
                                            LayoutObject* before_descendant) {
+  CheckIsNotDestroyed();
   DCHECK_NE(before_descendant->Parent(), this);
   LayoutObject* before_descendant_container = before_descendant->Parent();
   while (before_descendant_container->Parent() != this)
@@ -315,6 +322,7 @@ void LayoutBlock::AddChildBeforeDescendant(LayoutObject* new_child,
 
 void LayoutBlock::AddChild(LayoutObject* new_child,
                            LayoutObject* before_child) {
+  CheckIsNotDestroyed();
   if (before_child && before_child->Parent() != this) {
     AddChildBeforeDescendant(new_child, before_child);
     return;
@@ -353,6 +361,7 @@ void LayoutBlock::AddChild(LayoutObject* new_child,
 }
 
 void LayoutBlock::RemoveLeftoverAnonymousBlock(LayoutBlock* child) {
+  CheckIsNotDestroyed();
   DCHECK(child->IsAnonymousBlock());
   DCHECK(!child->ChildrenInline());
   DCHECK_EQ(child->Parent(), this);
@@ -384,12 +393,14 @@ void LayoutBlock::RemoveLeftoverAnonymousBlock(LayoutBlock* child) {
 }
 
 void LayoutBlock::UpdateAfterLayout() {
+  CheckIsNotDestroyed();
   InvalidateStickyConstraints();
 
   LayoutBox::UpdateAfterLayout();
 }
 
 void LayoutBlock::UpdateLayout() {
+  CheckIsNotDestroyed();
   DCHECK(!GetScrollableArea() || GetScrollableArea()->GetScrollAnchor());
 
   LayoutAnalyzer::Scope analyzer(*this);
@@ -415,6 +426,7 @@ void LayoutBlock::UpdateLayout() {
 }
 
 bool LayoutBlock::WidthAvailableToChildrenHasChanged() {
+  CheckIsNotDestroyed();
   // TODO(robhogan): Does m_widthAvailableToChildrenChanged always get reset
   // when it needs to?
   bool width_available_to_children_has_changed =
@@ -437,17 +449,20 @@ bool LayoutBlock::WidthAvailableToChildrenHasChanged() {
 
 DISABLE_CFI_PERF
 bool LayoutBlock::UpdateLogicalWidthAndColumnWidth() {
+  CheckIsNotDestroyed();
   LayoutUnit old_width = LogicalWidth();
   UpdateLogicalWidth();
   return old_width != LogicalWidth() || WidthAvailableToChildrenHasChanged();
 }
 
 void LayoutBlock::UpdateBlockLayout(bool) {
+  CheckIsNotDestroyed();
   NOTREACHED();
   ClearNeedsLayout();
 }
 
 void LayoutBlock::AddVisualOverflowFromChildren() {
+  CheckIsNotDestroyed();
   // It is an error to call this function on a LayoutBlock that it itself inside
   // a display-locked subtree.
   DCHECK(!DisplayLockUtilities::LockedAncestorPreventingPrePaint(*this));
@@ -463,6 +478,7 @@ void LayoutBlock::AddVisualOverflowFromChildren() {
 }
 
 void LayoutBlock::AddLayoutOverflowFromChildren() {
+  CheckIsNotDestroyed();
   if (ChildLayoutBlockedByDisplayLock())
     return;
 
@@ -473,6 +489,7 @@ void LayoutBlock::AddLayoutOverflowFromChildren() {
 }
 
 void LayoutBlock::ComputeVisualOverflow(bool) {
+  CheckIsNotDestroyed();
   DCHECK(!SelfNeedsLayout());
 
   LayoutRect previous_visual_overflow_rect = VisualOverflowRect();
@@ -490,6 +507,7 @@ void LayoutBlock::ComputeVisualOverflow(bool) {
 DISABLE_CFI_PERF
 void LayoutBlock::ComputeLayoutOverflow(LayoutUnit old_client_after_edge,
                                         bool) {
+  CheckIsNotDestroyed();
   ClearSelfNeedsLayoutOverflowRecalc();
   ClearLayoutOverflow();
   AddLayoutOverflowFromChildren();
@@ -529,6 +547,7 @@ void LayoutBlock::ComputeLayoutOverflow(LayoutUnit old_client_after_edge,
 }
 
 void LayoutBlock::AddVisualOverflowFromBlockChildren() {
+  CheckIsNotDestroyed();
   for (LayoutBox* child = FirstChildBox(); child;
        child = child->NextSiblingBox()) {
     if ((!IsLayoutNGContainingBlock(this) && child->IsFloating()) ||
@@ -549,6 +568,7 @@ void LayoutBlock::AddVisualOverflowFromBlockChildren() {
 }
 
 void LayoutBlock::AddLayoutOverflowFromBlockChildren() {
+  CheckIsNotDestroyed();
   for (LayoutBox* child = FirstChildBox(); child;
        child = child->NextSiblingBox()) {
     if ((!IsLayoutNGContainingBlock(this) && child->IsFloating()) ||
@@ -570,6 +590,7 @@ void LayoutBlock::AddLayoutOverflowFromBlockChildren() {
 }
 
 void LayoutBlock::AddLayoutOverflowFromPositionedObjects() {
+  CheckIsNotDestroyed();
   if (IsLayoutNGBlockFlow())
     return;
 
@@ -603,6 +624,7 @@ static inline bool ChangeInAvailableLogicalHeightAffectsChild(
 
 void LayoutBlock::UpdateBlockChildDirtyBitsBeforeLayout(bool relayout_children,
                                                         LayoutBox& child) {
+  CheckIsNotDestroyed();
   if (child.IsOutOfFlowPositioned()) {
     // It's rather useless to mark out-of-flow children at this point. We may
     // not be their containing block (and if we are, it's just pure luck), so
@@ -633,6 +655,7 @@ void LayoutBlock::UpdateBlockChildDirtyBitsBeforeLayout(bool relayout_children,
 }
 
 void LayoutBlock::SimplifiedNormalFlowLayout() {
+  CheckIsNotDestroyed();
   if (ChildrenInline()) {
     SECURITY_DCHECK(IsLayoutBlockFlow());
     auto* block_flow = To<LayoutBlockFlow>(this);
@@ -650,6 +673,7 @@ void LayoutBlock::SimplifiedNormalFlowLayout() {
 }
 
 bool LayoutBlock::SimplifiedLayout() {
+  CheckIsNotDestroyed();
   // Check if we need to do a full layout.
   if (NormalChildNeedsLayout() || SelfNeedsLayout())
     return false;
@@ -735,6 +759,7 @@ bool LayoutBlock::SimplifiedLayout() {
 void LayoutBlock::MarkFixedPositionObjectForLayoutIfNeeded(
     LayoutObject* child,
     SubtreeLayoutScope& layout_scope) {
+  CheckIsNotDestroyed();
   if (child->StyleRef().GetPosition() != EPosition::kFixed)
     return;
 
@@ -775,6 +800,7 @@ void LayoutBlock::MarkFixedPositionObjectForLayoutIfNeeded(
 
 LayoutUnit LayoutBlock::MarginIntrinsicLogicalWidthForChild(
     const LayoutBox& child) const {
+  CheckIsNotDestroyed();
   // A margin has three types: fixed, percentage, and auto (variable).
   // Auto and percentage margins become 0 when computing min/max width.
   // Fixed margins can be added in as is.
@@ -817,6 +843,7 @@ static bool NeedsLayoutDueToStaticPosition(LayoutBox* child) {
 
 void LayoutBlock::LayoutPositionedObjects(bool relayout_children,
                                           PositionedLayoutBehavior info) {
+  CheckIsNotDestroyed();
   if (ChildLayoutBlockedByDisplayLock())
     return;
 
@@ -832,6 +859,7 @@ void LayoutBlock::LayoutPositionedObjects(bool relayout_children,
 void LayoutBlock::LayoutPositionedObject(LayoutBox* positioned_object,
                                          bool relayout_children,
                                          PositionedLayoutBehavior info) {
+  CheckIsNotDestroyed();
   positioned_object->SetShouldCheckForPaintInvalidation();
 
   SubtreeLayoutScope layout_scope(*positioned_object);
@@ -940,6 +968,7 @@ void LayoutBlock::LayoutPositionedObject(LayoutBox* positioned_object,
 }
 
 void LayoutBlock::MarkPositionedObjectsForLayout() {
+  CheckIsNotDestroyed();
   if (TrackedLayoutBoxListHashSet* positioned_descendants =
           PositionedObjects()) {
     for (auto* descendant : *positioned_descendants)
@@ -948,24 +977,29 @@ void LayoutBlock::MarkPositionedObjectsForLayout() {
 }
 
 void LayoutBlock::Paint(const PaintInfo& paint_info) const {
+  CheckIsNotDestroyed();
   BlockPainter(*this).Paint(paint_info);
 }
 
 void LayoutBlock::PaintChildren(const PaintInfo& paint_info,
                                 const PhysicalOffset&) const {
+  CheckIsNotDestroyed();
   BlockPainter(*this).PaintChildren(paint_info);
 }
 
 void LayoutBlock::PaintObject(const PaintInfo& paint_info,
                               const PhysicalOffset& paint_offset) const {
+  CheckIsNotDestroyed();
   BlockPainter(*this).PaintObject(paint_info, paint_offset);
 }
 
 TrackedLayoutBoxListHashSet* LayoutBlock::PositionedObjectsInternal() const {
+  CheckIsNotDestroyed();
   return GetPositionedDescendantsMap().at(this);
 }
 
 void LayoutBlock::InsertPositionedObject(LayoutBox* o) {
+  CheckIsNotDestroyed();
   DCHECK(!IsAnonymousBlock());
   DCHECK_EQ(o->ContainingBlock(), this);
 
@@ -1011,6 +1045,7 @@ void LayoutBlock::RemovePositionedObject(LayoutBox* o) {
 }
 
 bool LayoutBlock::IsAnonymousNGFieldsetContentWrapper() const {
+  CheckIsNotDestroyed();
   if (!RuntimeEnabledFeatures::LayoutNGFieldsetEnabled() || !Parent())
     return false;
   return Parent()->IsLayoutNGFieldset();
@@ -1018,11 +1053,13 @@ bool LayoutBlock::IsAnonymousNGFieldsetContentWrapper() const {
 
 void LayoutBlock::InvalidatePaint(
     const PaintInvalidatorContext& context) const {
+  CheckIsNotDestroyed();
   BlockPaintInvalidator(*this).InvalidatePaint(context);
 }
 
 void LayoutBlock::ImageChanged(WrappedImagePtr image,
                                CanDeferInvalidation defer) {
+  CheckIsNotDestroyed();
   LayoutBox::ImageChanged(image, defer);
 
   if (!StyleRef().HasPseudoElementStyle(kPseudoIdFirstLine))
@@ -1046,6 +1083,7 @@ void LayoutBlock::ImageChanged(WrappedImagePtr image,
 void LayoutBlock::RemovePositionedObjects(
     LayoutObject* o,
     ContainingBlockState containing_block_state) {
+  CheckIsNotDestroyed();
   TrackedLayoutBoxListHashSet* positioned_descendants = PositionedObjects();
   if (!positioned_descendants)
     return;
@@ -1100,6 +1138,7 @@ void LayoutBlock::RemovePositionedObjects(
 }
 
 void LayoutBlock::AddPercentHeightDescendant(LayoutBox* descendant) {
+  CheckIsNotDestroyed();
   // A replaced object is incapable of properly acting as a containing block for
   // its children. This is an issue with VIDEO elements, for instance, which
   // insert some percentage height flexbox children. It is also very easily
@@ -1141,6 +1180,7 @@ void LayoutBlock::AddPercentHeightDescendant(LayoutBox* descendant) {
 }
 
 void LayoutBlock::RemovePercentHeightDescendant(LayoutBox* descendant) {
+  CheckIsNotDestroyed();
   if (TrackedLayoutBoxListHashSet* descendants = PercentHeightDescendants()) {
     descendants->erase(descendant);
     descendant->SetPercentHeightContainer(nullptr);
@@ -1153,11 +1193,13 @@ void LayoutBlock::RemovePercentHeightDescendant(LayoutBox* descendant) {
 
 TrackedLayoutBoxListHashSet* LayoutBlock::PercentHeightDescendantsInternal()
     const {
+  CheckIsNotDestroyed();
   return GetPercentHeightDescendantsMap().at(this);
 }
 
 void LayoutBlock::DirtyForLayoutFromPercentageHeightDescendants(
     SubtreeLayoutScope& layout_scope) {
+  CheckIsNotDestroyed();
   TrackedLayoutBoxListHashSet* descendants = PercentHeightDescendants();
   if (!descendants)
     return;
@@ -1177,6 +1219,7 @@ void LayoutBlock::DirtyForLayoutFromPercentageHeightDescendants(
 }
 
 LayoutUnit LayoutBlock::TextIndentOffset() const {
+  CheckIsNotDestroyed();
   LayoutUnit cw;
   if (StyleRef().TextIndent().IsPercentOrCalc())
     cw = ContentLogicalWidth();
@@ -1187,6 +1230,7 @@ bool LayoutBlock::IsPointInOverflowControl(
     HitTestResult& result,
     const PhysicalOffset& hit_test_location,
     const PhysicalOffset& accumulated_offset) const {
+  CheckIsNotDestroyed();
   if (!ScrollsOverflow())
     return false;
 
@@ -1198,6 +1242,7 @@ bool LayoutBlock::HitTestOverflowControl(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& adjusted_location) const {
+  CheckIsNotDestroyed();
   if (VisibleToHitTestRequest(result.GetHitTestRequest()) &&
       IsPointInOverflowControl(result, hit_test_location.Point(),
                                adjusted_location)) {
@@ -1214,6 +1259,7 @@ bool LayoutBlock::HitTestChildren(HitTestResult& result,
                                   const HitTestLocation& hit_test_location,
                                   const PhysicalOffset& accumulated_offset,
                                   HitTestAction hit_test_action) {
+  CheckIsNotDestroyed();
   // We may use legacy code to hit-test the anonymous fieldset content wrapper
   // child. The layout object for the rendered legend will be a child of that
   // one, and has to be skipped here, since its fragment is actually laid out on
@@ -1258,6 +1304,7 @@ bool LayoutBlock::HitTestChildren(HitTestResult& result,
 }
 
 Position LayoutBlock::PositionForBox(InlineBox* box, bool start) const {
+  CheckIsNotDestroyed();
   if (!box)
     return Position();
 
@@ -1294,6 +1341,7 @@ static inline bool IsEditingBoundary(const LayoutObject* ancestor,
 PositionWithAffinity LayoutBlock::PositionForPointRespectingEditingBoundaries(
     LineLayoutBox child,
     const PhysicalOffset& point_in_parent_coordinates) const {
+  CheckIsNotDestroyed();
   PhysicalOffset child_location = child.PhysicalLocation();
   if (child.IsInFlowPositioned())
     child_location += child.OffsetForInFlowPosition();
@@ -1332,6 +1380,7 @@ PositionWithAffinity LayoutBlock::PositionForPointRespectingEditingBoundaries(
 
 PositionWithAffinity LayoutBlock::PositionForPointIfOutsideAtomicInlineLevel(
     const PhysicalOffset& point) const {
+  CheckIsNotDestroyed();
   DCHECK(IsAtomicInlineLevel());
   LogicalOffset logical_offset =
       point.ConvertToLogical(StyleRef().GetWritingMode(), ResolvedDirection(),
@@ -1355,6 +1404,7 @@ static inline bool IsChildHitTestCandidate(LayoutBox* box) {
 
 PositionWithAffinity LayoutBlock::PositionForPoint(
     const PhysicalOffset& point) const {
+  CheckIsNotDestroyed();
   if (IsTable())
     return LayoutBox::PositionForPoint(point);
 
@@ -1409,6 +1459,7 @@ PositionWithAffinity LayoutBlock::PositionForPoint(
 }
 
 void LayoutBlock::OffsetForContents(PhysicalOffset& offset) const {
+  CheckIsNotDestroyed();
   if (IsScrollContainer())
     offset += PhysicalOffset(PixelSnappedScrolledContentOffset());
 }
@@ -1416,11 +1467,13 @@ void LayoutBlock::OffsetForContents(PhysicalOffset& offset) const {
 void LayoutBlock::ScrollbarsChanged(bool horizontal_scrollbar_changed,
                                     bool vertical_scrollbar_changed,
                                     ScrollbarChangeContext context) {
+  CheckIsNotDestroyed();
   width_available_to_children_changed_ |= vertical_scrollbar_changed;
   height_available_to_children_changed_ |= horizontal_scrollbar_changed;
 }
 
 MinMaxSizes LayoutBlock::ComputeIntrinsicLogicalWidths() const {
+  CheckIsNotDestroyed();
   MinMaxSizes sizes;
   sizes +=
       BorderAndPaddingLogicalWidth() + ComputeLogicalScrollbars().InlineSum();
@@ -1480,6 +1533,7 @@ MinMaxSizes LayoutBlock::ComputeIntrinsicLogicalWidths() const {
 
 DISABLE_CFI_PERF
 MinMaxSizes LayoutBlock::PreferredLogicalWidths() const {
+  CheckIsNotDestroyed();
   MinMaxSizes sizes;
 
   // FIXME: The isFixed() calls here should probably be checking for isSpecified
@@ -1520,6 +1574,7 @@ MinMaxSizes LayoutBlock::PreferredLogicalWidths() const {
 void LayoutBlock::ComputeBlockPreferredLogicalWidths(
     LayoutUnit& min_logical_width,
     LayoutUnit& max_logical_width) const {
+  CheckIsNotDestroyed();
   const ComputedStyle& style_to_use = StyleRef();
   bool nowrap = style_to_use.WhiteSpace() == EWhiteSpace::kNowrap;
 
@@ -1644,6 +1699,7 @@ void LayoutBlock::ComputeChildPreferredLogicalWidths(
     LayoutObject& child,
     LayoutUnit& min_preferred_logical_width,
     LayoutUnit& max_preferred_logical_width) const {
+  CheckIsNotDestroyed();
   if (child.IsBox() &&
       child.IsHorizontalWritingMode() != IsHorizontalWritingMode()) {
     // If the child is an orthogonal flow, child's height determines the width,
@@ -1677,6 +1733,7 @@ void LayoutBlock::ComputeChildPreferredLogicalWidths(
 }
 
 bool LayoutBlock::HasLineIfEmpty() const {
+  CheckIsNotDestroyed();
   if (GetNode()) {
     if (IsRootEditableElement(*GetNode()))
       return true;
@@ -1686,6 +1743,7 @@ bool LayoutBlock::HasLineIfEmpty() const {
 
 LayoutUnit LayoutBlock::EmptyLineBaseline(
     LineDirectionMode line_direction) const {
+  CheckIsNotDestroyed();
   if (!HasLineIfEmpty())
     return LayoutUnit(-1);
   const auto baseline_offset = BaselineForEmptyLine(line_direction);
@@ -1694,6 +1752,7 @@ LayoutUnit LayoutBlock::EmptyLineBaseline(
 
 base::Optional<LayoutUnit> LayoutBlock::BaselineForEmptyLine(
     LineDirectionMode line_direction) const {
+  CheckIsNotDestroyed();
   const SimpleFontData* font_data = FirstLineStyle()->GetFont().PrimaryFont();
   if (!font_data)
     return base::nullopt;
@@ -1711,6 +1770,7 @@ base::Optional<LayoutUnit> LayoutBlock::BaselineForEmptyLine(
 LayoutUnit LayoutBlock::LineHeight(bool first_line,
                                    LineDirectionMode direction,
                                    LinePositionMode line_position_mode) const {
+  CheckIsNotDestroyed();
   // Inline blocks are replaced elements. Otherwise, just pass off to
   // the base class.  If we're being queried as though we're the root line
   // box, then the fact that we're an inline-block is irrelevant, and we behave
@@ -1725,6 +1785,7 @@ LayoutUnit LayoutBlock::LineHeight(bool first_line,
 
 LayoutUnit LayoutBlock::BeforeMarginInLineDirection(
     LineDirectionMode direction) const {
+  CheckIsNotDestroyed();
   // InlineFlowBox::placeBoxesInBlockDirection will flip lines in
   // case of verticalLR mode, so we can assume verticalRL for now.
   return direction == kHorizontalLine ? MarginTop() : MarginRight();
@@ -1735,6 +1796,7 @@ LayoutUnit LayoutBlock::BaselinePosition(
     bool first_line,
     LineDirectionMode direction,
     LinePositionMode line_position_mode) const {
+  CheckIsNotDestroyed();
   // Inline blocks are replaced elements. Otherwise, just pass off to
   // the base class.  If we're being queried as though we're the root line
   // box, then the fact that we're an inline-block is irrelevant, and we behave
@@ -1796,6 +1858,7 @@ LayoutUnit LayoutBlock::BaselinePosition(
 LayoutUnit LayoutBlock::MinLineHeightForReplacedObject(
     bool is_first_line,
     LayoutUnit replaced_height) const {
+  CheckIsNotDestroyed();
   if (!GetDocument().InNoQuirksMode() && replaced_height)
     return replaced_height;
 
@@ -1813,6 +1876,7 @@ LayoutUnit LayoutBlock::MinLineHeightForReplacedObject(
 // those two layout modes, though.
 
 LayoutUnit LayoutBlock::FirstLineBoxBaseline() const {
+  CheckIsNotDestroyed();
   DCHECK(!ChildrenInline());
   if (ShouldApplyLayoutContainment())
     return LayoutUnit(-1);
@@ -1833,6 +1897,7 @@ LayoutUnit LayoutBlock::FirstLineBoxBaseline() const {
 }
 
 bool LayoutBlock::UseLogicalBottomMarginEdgeForInlineBlockBaseline() const {
+  CheckIsNotDestroyed();
   // CSS2.1 states that the baseline of an 'inline-block' is:
   // the baseline of the last line box in the normal flow, unless it has
   // either no in-flow line boxes or if its 'overflow' property has a computed
@@ -1848,6 +1913,7 @@ bool LayoutBlock::UseLogicalBottomMarginEdgeForInlineBlockBaseline() const {
 
 LayoutUnit LayoutBlock::InlineBlockBaseline(
     LineDirectionMode line_direction) const {
+  CheckIsNotDestroyed();
   DCHECK(!ChildrenInline());
   if (UseLogicalBottomMarginEdgeForInlineBlockBaseline()) {
     // We are not calling LayoutBox::baselinePosition here because the caller
@@ -1877,6 +1943,7 @@ LayoutUnit LayoutBlock::InlineBlockBaseline(
 }
 
 const LayoutBlock* LayoutBlock::EnclosingFirstLineStyleBlock() const {
+  CheckIsNotDestroyed();
   const LayoutBlock* first_line_block = this;
   bool has_pseudo = false;
   while (true) {
@@ -1902,6 +1969,7 @@ const LayoutBlock* LayoutBlock::EnclosingFirstLineStyleBlock() const {
 }
 
 LayoutBlockFlow* LayoutBlock::NearestInnerBlockWithFirstLine() {
+  CheckIsNotDestroyed();
   if (ChildrenInline())
     return To<LayoutBlockFlow>(this);
   for (LayoutObject* child = FirstChild();
@@ -1917,15 +1985,18 @@ LayoutBlockFlow* LayoutBlock::NearestInnerBlockWithFirstLine() {
 // An inline-block uses its inlineBox as the inlineBoxWrapper,
 // so the firstChild() is nullptr if the only child is an empty inline-block.
 inline bool LayoutBlock::IsInlineBoxWrapperActuallyChild() const {
+  CheckIsNotDestroyed();
   return IsInlineBlockOrInlineTable() && !Size().IsEmpty() && GetNode() &&
          EditingIgnoresContent(*GetNode());
 }
 
 bool LayoutBlock::ShouldPaintCursorCaret() const {
+  CheckIsNotDestroyed();
   return GetFrame()->Selection().ShouldPaintCaret(*this);
 }
 
 bool LayoutBlock::ShouldPaintDragCaret() const {
+  CheckIsNotDestroyed();
   return GetFrame()->GetPage()->GetDragCaret().ShouldPaintCaret(*this);
 }
 
@@ -1933,6 +2004,7 @@ LayoutRect LayoutBlock::LocalCaretRect(
     const InlineBox* inline_box,
     int caret_offset,
     LayoutUnit* extra_width_to_end_of_line) const {
+  CheckIsNotDestroyed();
   // Do the normal calculation in most cases.
   if ((FirstChild() && !FirstChild()->IsPseudoElement()) ||
       IsInlineBoxWrapperActuallyChild())
@@ -1951,6 +2023,7 @@ LayoutRect LayoutBlock::LocalCaretRect(
 void LayoutBlock::AddOutlineRects(Vector<PhysicalRect>& rects,
                                   const PhysicalOffset& additional_offset,
                                   NGOutlineType include_block_overflows) const {
+  CheckIsNotDestroyed();
 #if DCHECK_IS_ON()
   // TODO(crbug.com/987836): enable this DCHECK universally.
   Page* page = GetDocument().GetPage();
@@ -1977,11 +2050,13 @@ void LayoutBlock::AddOutlineRects(Vector<PhysicalRect>& rects,
 
 LayoutBox* LayoutBlock::CreateAnonymousBoxWithSameTypeAs(
     const LayoutObject* parent) const {
+  CheckIsNotDestroyed();
   return CreateAnonymousWithParentAndDisplay(parent, StyleRef().Display());
 }
 
 void LayoutBlock::PaginatedContentWasLaidOut(
     LayoutUnit logical_bottom_offset_after_pagination) {
+  CheckIsNotDestroyed();
   if (LayoutFlowThread* flow_thread = FlowThreadContainingBlock())
     flow_thread->ContentWasLaidOut(OffsetFromLogicalTopOfFirstPage() +
                                    logical_bottom_offset_after_pagination);
@@ -1989,6 +2064,7 @@ void LayoutBlock::PaginatedContentWasLaidOut(
 
 LayoutUnit LayoutBlock::CollapsedMarginBeforeForChild(
     const LayoutBox& child) const {
+  CheckIsNotDestroyed();
   // If the child has the same directionality as we do, then we can just return
   // its collapsed margin.
   if (!child.IsWritingModeRoot())
@@ -2008,6 +2084,7 @@ LayoutUnit LayoutBlock::CollapsedMarginBeforeForChild(
 
 LayoutUnit LayoutBlock::CollapsedMarginAfterForChild(
     const LayoutBox& child) const {
+  CheckIsNotDestroyed();
   // If the child has the same directionality as we do, then we can just return
   // its collapsed margin.
   if (!child.IsWritingModeRoot())
@@ -2026,6 +2103,7 @@ LayoutUnit LayoutBlock::CollapsedMarginAfterForChild(
 }
 
 bool LayoutBlock::HasMarginBeforeQuirk(const LayoutBox* child) const {
+  CheckIsNotDestroyed();
   // If the child has the same directionality as we do, then we can just return
   // its margin quirk.
   auto* child_layout_block = DynamicTo<LayoutBlock>(child);
@@ -2048,6 +2126,7 @@ bool LayoutBlock::HasMarginBeforeQuirk(const LayoutBox* child) const {
 }
 
 bool LayoutBlock::HasMarginAfterQuirk(const LayoutBox* child) const {
+  CheckIsNotDestroyed();
   // If the child has the same directionality as we do, then we can just return
   // its margin quirk.
   auto* child_layout_block = DynamicTo<LayoutBlock>(child);
@@ -2070,6 +2149,7 @@ bool LayoutBlock::HasMarginAfterQuirk(const LayoutBox* child) const {
 }
 
 const char* LayoutBlock::GetName() const {
+  CheckIsNotDestroyed();
   NOTREACHED();
   return "LayoutBlock";
 }
@@ -2124,12 +2204,14 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
 
 bool LayoutBlock::RecalcNormalFlowChildLayoutOverflowIfNeeded(
     LayoutObject* layout_object) {
+  CheckIsNotDestroyed();
   if (layout_object->IsOutOfFlowPositioned())
     return false;
   return layout_object->RecalcLayoutOverflow();
 }
 
 bool LayoutBlock::RecalcChildLayoutOverflow() {
+  CheckIsNotDestroyed();
   DCHECK(!IsTable());
   DCHECK(ChildNeedsLayoutOverflowRecalc());
   ClearChildNeedsLayoutOverflowRecalc();
@@ -2152,6 +2234,7 @@ bool LayoutBlock::RecalcChildLayoutOverflow() {
 }
 
 void LayoutBlock::RecalcChildVisualOverflow() {
+  CheckIsNotDestroyed();
   DCHECK(!IsTable());
   // It is an error to call this function on a LayoutBlock that it itself inside
   // a display-locked subtree.
@@ -2172,6 +2255,7 @@ void LayoutBlock::RecalcChildVisualOverflow() {
 }
 
 bool LayoutBlock::RecalcPositionedDescendantsLayoutOverflow() {
+  CheckIsNotDestroyed();
   bool children_layout_overflow_changed = false;
 
   TrackedLayoutBoxListHashSet* positioned_descendants = PositionedObjects();
@@ -2186,6 +2270,7 @@ bool LayoutBlock::RecalcPositionedDescendantsLayoutOverflow() {
 }
 
 void LayoutBlock::RecalcPositionedDescendantsVisualOverflow() {
+  CheckIsNotDestroyed();
   TrackedLayoutBoxListHashSet* positioned_descendants = PositionedObjects();
   if (!positioned_descendants)
     return;
@@ -2198,6 +2283,7 @@ void LayoutBlock::RecalcPositionedDescendantsVisualOverflow() {
 }
 
 bool LayoutBlock::RecalcLayoutOverflow() {
+  CheckIsNotDestroyed();
   bool children_layout_overflow_changed = false;
   if (ChildNeedsLayoutOverflowRecalc())
     children_layout_overflow_changed = RecalcChildLayoutOverflow();
@@ -2210,11 +2296,13 @@ bool LayoutBlock::RecalcLayoutOverflow() {
 }
 
 void LayoutBlock::RecalcVisualOverflow() {
+  CheckIsNotDestroyed();
   RecalcChildVisualOverflow();
   RecalcSelfVisualOverflow();
 }
 
 bool LayoutBlock::RecalcSelfLayoutOverflow() {
+  CheckIsNotDestroyed();
   bool self_needs_layout_overflow_recalc = SelfNeedsLayoutOverflowRecalc();
   // If the current block needs layout, overflow will be recalculated during
   // layout time anyway. We can safely exit here.
@@ -2230,6 +2318,7 @@ bool LayoutBlock::RecalcSelfLayoutOverflow() {
 }
 
 void LayoutBlock::RecalcSelfVisualOverflow() {
+  CheckIsNotDestroyed();
   ComputeVisualOverflow(true);
 }
 
@@ -2237,6 +2326,7 @@ void LayoutBlock::RecalcSelfVisualOverflow() {
 // A simplified layout is attempted that just updates the object's position.
 // If the size does change, the object remains dirty.
 bool LayoutBlock::TryLayoutDoingPositionedMovementOnly() {
+  CheckIsNotDestroyed();
   LayoutUnit old_width = LogicalWidth();
   LogicalExtentComputedValues computed_values;
   LogicalExtentAfterUpdatingLogicalWidth(LogicalTop(), computed_values);
@@ -2272,6 +2362,7 @@ bool LayoutBlock::TryLayoutDoingPositionedMovementOnly() {
 
 #if DCHECK_IS_ON()
 void LayoutBlock::CheckPositionedObjectsNeedLayout() {
+  CheckIsNotDestroyed();
   if (ChildLayoutBlockedByDisplayLock())
     return;
 
@@ -2293,6 +2384,7 @@ void LayoutBlock::CheckPositionedObjectsNeedLayout() {
 #endif
 
 LayoutUnit LayoutBlock::AvailableLogicalHeightForPercentageComputation() const {
+  CheckIsNotDestroyed();
   LayoutUnit available_height(-1);
 
   // For anonymous blocks that are skipped during percentage height calculation,
@@ -2371,10 +2463,12 @@ LayoutUnit LayoutBlock::AvailableLogicalHeightForPercentageComputation() const {
 }
 
 bool LayoutBlock::HasDefiniteLogicalHeight() const {
+  CheckIsNotDestroyed();
   return AvailableLogicalHeightForPercentageComputation() != LayoutUnit(-1);
 }
 
 bool LayoutBlock::NeedsPreferredWidthsRecalculation() const {
+  CheckIsNotDestroyed();
   return (HasRelativeLogicalHeight() && StyleRef().LogicalWidth().IsAuto()) ||
          LayoutBox::NeedsPreferredWidthsRecalculation();
 }

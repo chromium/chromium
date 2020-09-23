@@ -495,6 +495,7 @@ LayoutCounter::LayoutCounter(PseudoElement& pseudo,
 LayoutCounter::~LayoutCounter() = default;
 
 void LayoutCounter::WillBeDestroyed() {
+  CheckIsNotDestroyed();
   if (counter_node_) {
     counter_node_->RemoveLayoutObject(this);
     DCHECK(!counter_node_);
@@ -505,6 +506,7 @@ void LayoutCounter::WillBeDestroyed() {
 }
 
 scoped_refptr<StringImpl> LayoutCounter::OriginalText() const {
+  CheckIsNotDestroyed();
   // Child will be the base of our text that we report. First, we need to find
   // an appropriate child.
   CounterNode* child = nullptr;
@@ -605,10 +607,12 @@ scoped_refptr<StringImpl> LayoutCounter::OriginalText() const {
 }
 
 void LayoutCounter::UpdateCounter() {
+  CheckIsNotDestroyed();
   SetTextIfNeeded(OriginalText());
 }
 
 void LayoutCounter::Invalidate() {
+  CheckIsNotDestroyed();
   counter_node_->RemoveLayoutObject(this);
   DCHECK(!counter_node_);
   if (DocumentBeingDestroyed())

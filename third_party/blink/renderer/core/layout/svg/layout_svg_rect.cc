@@ -39,6 +39,7 @@ LayoutSVGRect::LayoutSVGRect(SVGRectElement* node)
 LayoutSVGRect::~LayoutSVGRect() = default;
 
 void LayoutSVGRect::UpdateShapeFromElement() {
+  CheckIsNotDestroyed();
   // Before creating a new object we need to clear the cached bounding box
   // to avoid using garbage.
   fill_bounding_box_ = FloatRect();
@@ -86,6 +87,7 @@ void LayoutSVGRect::UpdateShapeFromElement() {
 
 bool LayoutSVGRect::ShapeDependentStrokeContains(
     const HitTestLocation& location) {
+  CheckIsNotDestroyed();
   // The optimized code below does not support the cases that we set
   // use_path_fallback_ in UpdateShapeFromElement().
   if (use_path_fallback_)
@@ -112,6 +114,7 @@ bool LayoutSVGRect::ShapeDependentStrokeContains(
 
 bool LayoutSVGRect::ShapeDependentFillContains(const HitTestLocation& location,
                                                const WindRule fill_rule) const {
+  CheckIsNotDestroyed();
   if (use_path_fallback_)
     return LayoutSVGShape::ShapeDependentFillContains(location, fill_rule);
   const FloatPoint& point = location.TransformedPoint();
@@ -120,6 +123,7 @@ bool LayoutSVGRect::ShapeDependentFillContains(const HitTestLocation& location,
 
 // Returns true if the stroke is continuous and definitely uses miter joins.
 bool LayoutSVGRect::DefinitelyHasSimpleStroke() const {
+  CheckIsNotDestroyed();
   const SVGComputedStyle& svg_style = StyleRef().SvgStyle();
 
   // The four angles of a rect are 90 degrees. Using the formula at:

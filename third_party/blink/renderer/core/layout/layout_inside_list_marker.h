@@ -18,13 +18,23 @@ class CORE_EXPORT LayoutInsideListMarker final : public LayoutInline {
   explicit LayoutInsideListMarker(Element*);
   ~LayoutInsideListMarker() override;
 
-  const char* GetName() const override { return "LayoutInsideListMarker"; }
+  const char* GetName() const override {
+    CheckIsNotDestroyed();
+    return "LayoutInsideListMarker";
+  }
 
-  const ListMarker& Marker() const { return list_marker_; }
-  ListMarker& Marker() { return list_marker_; }
+  const ListMarker& Marker() const {
+    CheckIsNotDestroyed();
+    return list_marker_;
+  }
+  ListMarker& Marker() {
+    CheckIsNotDestroyed();
+    return list_marker_;
+  }
 
  private:
   bool IsOfType(LayoutObjectType type) const override {
+    CheckIsNotDestroyed();
     return type == kLayoutObjectInsideListMarker ||
            LayoutInline::IsOfType(type);
   }

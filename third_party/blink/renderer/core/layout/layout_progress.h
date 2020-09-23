@@ -33,7 +33,10 @@ class CORE_EXPORT LayoutProgress : public LayoutBlockFlow {
   explicit LayoutProgress(Element* element);
   ~LayoutProgress() override;
 
-  double GetPosition() const { return position_; }
+  double GetPosition() const {
+    CheckIsNotDestroyed();
+    return position_;
+  }
   double AnimationProgress() const;
 
   bool IsDeterminate() const;
@@ -41,11 +44,15 @@ class CORE_EXPORT LayoutProgress : public LayoutBlockFlow {
 
   HTMLProgressElement* ProgressElement() const;
 
-  const char* GetName() const override { return "LayoutProgress"; }
+  const char* GetName() const override {
+    CheckIsNotDestroyed();
+    return "LayoutProgress";
+  }
 
  protected:
   void WillBeDestroyed() override;
   bool IsOfType(LayoutObjectType type) const override {
+    CheckIsNotDestroyed();
     return type == kLayoutObjectProgress || LayoutBlockFlow::IsOfType(type);
   }
 

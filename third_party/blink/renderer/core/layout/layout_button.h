@@ -36,8 +36,12 @@ class LayoutButton final : public LayoutFlexibleBox {
   explicit LayoutButton(Element*);
   ~LayoutButton() override;
 
-  const char* GetName() const override { return "LayoutButton"; }
+  const char* GetName() const override {
+    CheckIsNotDestroyed();
+    return "LayoutButton";
+  }
   bool IsOfType(LayoutObjectType type) const override {
+    CheckIsNotDestroyed();
     return type == kLayoutObjectLayoutButton ||
            LayoutFlexibleBox::IsOfType(type);
   }
@@ -45,8 +49,13 @@ class LayoutButton final : public LayoutFlexibleBox {
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
   void RemoveChild(LayoutObject*) override;
-  void RemoveLeftoverAnonymousBlock(LayoutBlock*) override {}
-  bool CreatesAnonymousWrapper() const override { return true; }
+  void RemoveLeftoverAnonymousBlock(LayoutBlock*) override {
+    CheckIsNotDestroyed();
+  }
+  bool CreatesAnonymousWrapper() const override {
+    CheckIsNotDestroyed();
+    return true;
+  }
 
   LayoutUnit BaselinePosition(FontBaseline,
                               bool first_line,

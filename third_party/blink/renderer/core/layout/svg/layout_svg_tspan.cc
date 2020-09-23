@@ -30,6 +30,7 @@ LayoutSVGTSpan::LayoutSVGTSpan(Element* element) : LayoutSVGInline(element) {}
 
 bool LayoutSVGTSpan::IsChildAllowed(LayoutObject* child,
                                     const ComputedStyle&) const {
+  CheckIsNotDestroyed();
   // Always allow text (except empty textnodes and <br>).
   if (child->IsText())
     return SVGLayoutSupport::IsLayoutableTextNode(child);

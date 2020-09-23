@@ -34,20 +34,31 @@ class SVGSVGElement;
 class LayoutSVGViewportContainer final : public LayoutSVGContainer {
  public:
   explicit LayoutSVGViewportContainer(SVGSVGElement*);
-  FloatRect Viewport() const { return viewport_; }
+  FloatRect Viewport() const {
+    CheckIsNotDestroyed();
+    return viewport_;
+  }
 
-  bool IsLayoutSizeChanged() const { return is_layout_size_changed_; }
+  bool IsLayoutSizeChanged() const {
+    CheckIsNotDestroyed();
+    return is_layout_size_changed_;
+  }
 
   void SetNeedsTransformUpdate() override;
 
-  const char* GetName() const override { return "LayoutSVGViewportContainer"; }
+  const char* GetName() const override {
+    CheckIsNotDestroyed();
+    return "LayoutSVGViewportContainer";
+  }
 
   AffineTransform LocalToSVGParentTransform() const override {
+    CheckIsNotDestroyed();
     return local_to_parent_transform_;
   }
 
  private:
   bool IsOfType(LayoutObjectType type) const override {
+    CheckIsNotDestroyed();
     return type == kLayoutObjectSVGViewportContainer ||
            LayoutSVGContainer::IsOfType(type);
   }

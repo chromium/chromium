@@ -68,10 +68,17 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
   explicit LayoutFlowThread(bool needs_paint_layer);
   ~LayoutFlowThread() override = default;
 
-  bool IsLayoutFlowThread() const final { return true; }
-  virtual bool IsLayoutMultiColumnFlowThread() const { return false; }
+  bool IsLayoutFlowThread() const final {
+    CheckIsNotDestroyed();
+    return true;
+  }
+  virtual bool IsLayoutMultiColumnFlowThread() const {
+    CheckIsNotDestroyed();
+    return false;
+  }
 
   bool CreatesNewFormattingContext() const final {
+    CheckIsNotDestroyed();
     // The spec requires multicol containers to establish new formatting
     // contexts. Blink uses an anonymous flow thread child of the multicol
     // container to actually perform layout inside. Therefore we need to
@@ -103,18 +110,29 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
 
   PaintLayerType LayerTypeRequired() const final;
 
-  bool NeedsPreferredWidthsRecalculation() const final { return true; }
+  bool NeedsPreferredWidthsRecalculation() const final {
+    CheckIsNotDestroyed();
+    return true;
+  }
 
-  virtual void FlowThreadDescendantWasInserted(LayoutObject*) {}
-  virtual void FlowThreadDescendantWillBeRemoved(LayoutObject*) {}
+  virtual void FlowThreadDescendantWasInserted(LayoutObject*) {
+    CheckIsNotDestroyed();
+  }
+  virtual void FlowThreadDescendantWillBeRemoved(LayoutObject*) {
+    CheckIsNotDestroyed();
+  }
   virtual void FlowThreadDescendantStyleWillChange(
       LayoutBox*,
       StyleDifference,
-      const ComputedStyle& new_style) {}
+      const ComputedStyle& new_style) {
+    CheckIsNotDestroyed();
+  }
   virtual void FlowThreadDescendantStyleDidChange(
       LayoutBox*,
       StyleDifference,
-      const ComputedStyle& old_style) {}
+      const ComputedStyle& old_style) {
+    CheckIsNotDestroyed();
+  }
 
   void AbsoluteQuadsForDescendant(const LayoutBox& descendant,
                                   Vector<FloatQuad>&,
@@ -136,11 +154,18 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
                             LayoutUnit logical_top,
                             LogicalExtentComputedValues&) const override;
 
-  bool HasColumnSets() const { return multi_column_set_list_.size(); }
+  bool HasColumnSets() const {
+    CheckIsNotDestroyed();
+    return multi_column_set_list_.size();
+  }
 
   void ValidateColumnSets();
-  void InvalidateColumnSets() { column_sets_invalidated_ = true; }
+  void InvalidateColumnSets() {
+    CheckIsNotDestroyed();
+    column_sets_invalidated_ = true;
+  }
   bool HasValidColumnSetInfo() const {
+    CheckIsNotDestroyed();
     return !column_sets_invalidated_ && !multi_column_set_list_.IsEmpty();
   }
 
@@ -171,9 +196,15 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
       LayoutUnit flow_thread_offset,
       LayoutUnit content_logical_height) const;
 
-  virtual bool IsPageLogicalHeightKnown() const { return true; }
+  virtual bool IsPageLogicalHeightKnown() const {
+    CheckIsNotDestroyed();
+    return true;
+  }
   virtual bool MayHaveNonUniformPageLogicalHeight() const = 0;
-  bool PageLogicalSizeChanged() const { return page_logical_size_changed_; }
+  bool PageLogicalSizeChanged() const {
+    CheckIsNotDestroyed();
+    return page_logical_size_changed_;
+  }
 
   // Return the visual bounding box based on the supplied flow-thread bounding
   // box. Both rectangles are completely physical in terms of writing mode.

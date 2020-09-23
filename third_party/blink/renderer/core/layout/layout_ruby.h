@@ -64,16 +64,23 @@ class LayoutRubyAsInline final : public LayoutInline {
                 LayoutObject* before_child = nullptr) override;
   void RemoveChild(LayoutObject* child) override;
 
-  const char* GetName() const override { return "LayoutRuby (inline)"; }
+  const char* GetName() const override {
+    CheckIsNotDestroyed();
+    return "LayoutRuby (inline)";
+  }
 
  protected:
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
  private:
   bool IsOfType(LayoutObjectType type) const override {
+    CheckIsNotDestroyed();
     return type == kLayoutObjectRuby || LayoutInline::IsOfType(type);
   }
-  bool CreatesAnonymousWrapper() const override { return true; }
+  bool CreatesAnonymousWrapper() const override {
+    CheckIsNotDestroyed();
+    return true;
+  }
 };
 
 // <ruby> when used as 'display:block' or 'display:inline-block'
@@ -86,17 +93,27 @@ class LayoutRubyAsBlock : public LayoutBlockFlow {
                 LayoutObject* before_child = nullptr) override;
   void RemoveChild(LayoutObject* child) override;
 
-  const char* GetName() const override { return "LayoutRuby (block)"; }
+  const char* GetName() const override {
+    CheckIsNotDestroyed();
+    return "LayoutRuby (block)";
+  }
 
  protected:
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   bool IsOfType(LayoutObjectType type) const override {
+    CheckIsNotDestroyed();
     return type == kLayoutObjectRuby || LayoutBlockFlow::IsOfType(type);
   }
 
  private:
-  bool CreatesAnonymousWrapper() const override { return true; }
-  void RemoveLeftoverAnonymousBlock(LayoutBlock*) override { NOTREACHED(); }
+  bool CreatesAnonymousWrapper() const override {
+    CheckIsNotDestroyed();
+    return true;
+  }
+  void RemoveLeftoverAnonymousBlock(LayoutBlock*) override {
+    CheckIsNotDestroyed();
+    NOTREACHED();
+  }
 };
 
 }  // namespace blink

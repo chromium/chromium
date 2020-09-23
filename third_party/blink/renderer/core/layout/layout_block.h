@@ -110,10 +110,12 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
  public:
   LayoutObject* FirstChild() const {
+    CheckIsNotDestroyed();
     DCHECK_EQ(Children(), VirtualChildren());
     return Children()->FirstChild();
   }
   LayoutObject* LastChild() const {
+    CheckIsNotDestroyed();
     DCHECK_EQ(Children(), VirtualChildren());
     return Children()->LastChild();
   }
@@ -122,8 +124,14 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void SlowFirstChild() const = delete;
   void SlowLastChild() const = delete;
 
-  const LayoutObjectChildList* Children() const { return &children_; }
-  LayoutObjectChildList* Children() { return &children_; }
+  const LayoutObjectChildList* Children() const {
+    CheckIsNotDestroyed();
+    return &children_;
+  }
+  LayoutObjectChildList* Children() {
+    CheckIsNotDestroyed();
+    return &children_;
+  }
 
   // These two functions are overridden for inline-block.
   LayoutUnit LineHeight(
@@ -143,6 +151,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   const char* GetName() const override;
 
   virtual const NGPhysicalBoxFragment* CurrentFragment() const {
+    CheckIsNotDestroyed();
     return nullptr;
   }
 
@@ -167,10 +176,12 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
                                ContainingBlockState = kSameContainingBlock);
 
   TrackedLayoutBoxListHashSet* PositionedObjects() const {
+    CheckIsNotDestroyed();
     return UNLIKELY(HasPositionedObjects()) ? PositionedObjectsInternal()
                                             : nullptr;
   }
   bool HasPositionedObjects() const {
+    CheckIsNotDestroyed();
     DCHECK(has_positioned_objects_ ? (PositionedObjectsInternal() &&
                                       !PositionedObjectsInternal()->IsEmpty())
                                    : !PositionedObjectsInternal());
@@ -180,15 +191,18 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void AddPercentHeightDescendant(LayoutBox*);
   void RemovePercentHeightDescendant(LayoutBox*);
   bool HasPercentHeightDescendant(LayoutBox* o) const {
+    CheckIsNotDestroyed();
     return HasPercentHeightDescendants() &&
            PercentHeightDescendantsInternal()->Contains(o);
   }
 
   TrackedLayoutBoxListHashSet* PercentHeightDescendants() const {
+    CheckIsNotDestroyed();
     return HasPercentHeightDescendants() ? PercentHeightDescendantsInternal()
                                          : nullptr;
   }
   bool HasPercentHeightDescendants() const {
+    CheckIsNotDestroyed();
     DCHECK(has_percent_height_descendants_
                ? (PercentHeightDescendantsInternal() &&
                   !PercentHeightDescendantsInternal()->IsEmpty())
@@ -197,6 +211,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   }
 
   void NotifyScrollbarThicknessChanged() {
+    CheckIsNotDestroyed();
     width_available_to_children_changed_ = true;
   }
 
@@ -206,14 +221,32 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   // itself for the legend is still a child of this object.
   bool IsAnonymousNGFieldsetContentWrapper() const;
 
-  void SetHasMarkupTruncation(bool b) { has_markup_truncation_ = b; }
-  bool HasMarkupTruncation() const { return has_markup_truncation_; }
+  void SetHasMarkupTruncation(bool b) {
+    CheckIsNotDestroyed();
+    has_markup_truncation_ = b;
+  }
+  bool HasMarkupTruncation() const {
+    CheckIsNotDestroyed();
+    return has_markup_truncation_;
+  }
 
-  void SetHasMarginBeforeQuirk(bool b) { has_margin_before_quirk_ = b; }
-  void SetHasMarginAfterQuirk(bool b) { has_margin_after_quirk_ = b; }
+  void SetHasMarginBeforeQuirk(bool b) {
+    CheckIsNotDestroyed();
+    has_margin_before_quirk_ = b;
+  }
+  void SetHasMarginAfterQuirk(bool b) {
+    CheckIsNotDestroyed();
+    has_margin_after_quirk_ = b;
+  }
 
-  bool HasMarginBeforeQuirk() const { return has_margin_before_quirk_; }
-  bool HasMarginAfterQuirk() const { return has_margin_after_quirk_; }
+  bool HasMarginBeforeQuirk() const {
+    CheckIsNotDestroyed();
+    return has_margin_before_quirk_;
+  }
+  bool HasMarginAfterQuirk() const {
+    CheckIsNotDestroyed();
+    return has_margin_after_quirk_;
+  }
 
   bool HasMarginBeforeQuirk(const LayoutBox* child) const;
   bool HasMarginAfterQuirk(const LayoutBox* child) const;
@@ -228,6 +261,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
       const LayoutObject*,
       EDisplay = EDisplay::kBlock);
   LayoutBlock* CreateAnonymousBlock(EDisplay display = EDisplay::kBlock) const {
+    CheckIsNotDestroyed();
     return CreateAnonymousWithParentAndDisplay(this, display);
   }
 
@@ -237,48 +271,61 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   // Accessors for logical width/height and margins in the containing block's
   // block-flow direction.
   LayoutUnit LogicalWidthForChild(const LayoutBox& child) const {
+    CheckIsNotDestroyed();
     return LogicalWidthForChildSize(child.Size());
   }
   LayoutUnit LogicalWidthForChildSize(LayoutSize child_size) const {
+    CheckIsNotDestroyed();
     return IsHorizontalWritingMode() ? child_size.Width() : child_size.Height();
   }
   LayoutUnit LogicalHeightForChild(const LayoutBox& child) const {
+    CheckIsNotDestroyed();
     return IsHorizontalWritingMode() ? child.Size().Height()
                                      : child.Size().Width();
   }
   LayoutSize LogicalSizeForChild(const LayoutBox& child) const {
+    CheckIsNotDestroyed();
     return IsHorizontalWritingMode() ? child.Size()
                                      : child.Size().TransposedSize();
   }
   LayoutUnit LogicalTopForChild(const LayoutBox& child) const {
+    CheckIsNotDestroyed();
     return IsHorizontalWritingMode() ? child.Location().Y()
                                      : child.Location().X();
   }
   DISABLE_CFI_PERF LayoutUnit
   MarginBeforeForChild(const LayoutBoxModelObject& child) const {
+    CheckIsNotDestroyed();
     return child.MarginBefore(Style());
   }
   DISABLE_CFI_PERF LayoutUnit
   MarginAfterForChild(const LayoutBoxModelObject& child) const {
+    CheckIsNotDestroyed();
     return child.MarginAfter(Style());
   }
   DISABLE_CFI_PERF LayoutUnit
   MarginStartForChild(const LayoutBoxModelObject& child) const {
+    CheckIsNotDestroyed();
     return child.MarginStart(Style());
   }
   LayoutUnit MarginEndForChild(const LayoutBoxModelObject& child) const {
+    CheckIsNotDestroyed();
     return child.MarginEnd(Style());
   }
   void SetMarginStartForChild(LayoutBox& child, LayoutUnit value) const {
+    CheckIsNotDestroyed();
     child.SetMarginStart(value, Style());
   }
   void SetMarginEndForChild(LayoutBox& child, LayoutUnit value) const {
+    CheckIsNotDestroyed();
     child.SetMarginEnd(value, Style());
   }
   void SetMarginBeforeForChild(LayoutBox& child, LayoutUnit value) const {
+    CheckIsNotDestroyed();
     child.SetMarginBefore(value, Style());
   }
   void SetMarginAfterForChild(LayoutBox& child, LayoutUnit value) const {
+    CheckIsNotDestroyed();
     child.SetMarginAfter(value, Style());
   }
   LayoutUnit CollapsedMarginBeforeForChild(const LayoutBox& child) const;
@@ -290,21 +337,26 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
                                  ScrollbarChangeContext = kLayout);
 
   LayoutUnit AvailableLogicalWidthForContent() const {
+    CheckIsNotDestroyed();
     return (LogicalRightOffsetForContent() - LogicalLeftOffsetForContent())
         .ClampNegativeToZero();
   }
   DISABLE_CFI_PERF LayoutUnit LogicalLeftOffsetForContent() const {
+    CheckIsNotDestroyed();
     return IsHorizontalWritingMode() ? ContentLeft() : ContentTop();
   }
   LayoutUnit LogicalRightOffsetForContent() const {
+    CheckIsNotDestroyed();
     return LogicalLeftOffsetForContent() + AvailableLogicalWidth();
   }
   LayoutUnit StartOffsetForContent() const {
+    CheckIsNotDestroyed();
     return StyleRef().IsLeftToRightDirection()
                ? LogicalLeftOffsetForContent()
                : LogicalWidth() - LogicalRightOffsetForContent();
   }
   LayoutUnit EndOffsetForContent() const {
+    CheckIsNotDestroyed();
     return !StyleRef().IsLeftToRightDirection()
                ? LogicalLeftOffsetForContent()
                : LogicalWidth() - LogicalRightOffsetForContent();
@@ -380,10 +432,12 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
  public:
   bool IsLegacyInitiatedOutOfFlowLayout() const {
+    CheckIsNotDestroyed();
     return is_legacy_initiated_out_of_flow_layout_;
   }
 
   void SetIsLegacyInitiatedOutOfFlowLayout(bool b) {
+    CheckIsNotDestroyed();
     is_legacy_initiated_out_of_flow_layout_ = b;
   }
 
@@ -411,7 +465,9 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   virtual void AdjustInlineDirectionLineBounds(
       unsigned /* expansionOpportunityCount */,
       LayoutUnit& /* logicalLeft */,
-      LayoutUnit& /* logicalWidth */) const {}
+      LayoutUnit& /* logicalWidth */) const {
+    CheckIsNotDestroyed();
+  }
 
   MinMaxSizes ComputeIntrinsicLogicalWidths() const override;
   void ComputeChildPreferredLogicalWidths(
@@ -470,12 +526,14 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   // Alternatively it should be removed as we clarify the meaning of
   // isAtomicInlineLevel to imply isInline.
   bool IsInlineBlockOrInlineTable() const final {
+    CheckIsNotDestroyed();
     return IsInline() && IsAtomicInlineLevel();
   }
 
   bool NeedsPreferredWidthsRecalculation() const override;
 
   bool IsInSelfHitTestingPhase(HitTestAction hit_test_action) const final {
+    CheckIsNotDestroyed();
     return hit_test_action == kHitTestBlockBackground ||
            hit_test_action == kHitTestChildBlockBackground;
   }
@@ -486,12 +544,19 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   LayoutUnit EmptyLineBaseline(LineDirectionMode line_direction) const;
 
  private:
-  LayoutObjectChildList* VirtualChildren() final { return Children(); }
+  LayoutObjectChildList* VirtualChildren() final {
+    CheckIsNotDestroyed();
+    return Children();
+  }
   const LayoutObjectChildList* VirtualChildren() const final {
+    CheckIsNotDestroyed();
     return Children();
   }
 
-  bool IsLayoutBlock() const final { return true; }
+  bool IsLayoutBlock() const final {
+    CheckIsNotDestroyed();
+    return true;
+  }
 
   virtual void RemoveLeftoverAnonymousBlock(LayoutBlock* child);
 
@@ -512,6 +577,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   bool ShouldPaintCursorCaret() const;
   bool ShouldPaintDragCaret() const;
   bool ShouldPaintCarets() const {
+    CheckIsNotDestroyed();
     return ShouldPaintCursorCaret() || ShouldPaintDragCaret();
   }
 

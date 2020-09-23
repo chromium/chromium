@@ -55,7 +55,10 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
   explicit LayoutSVGForeignObject(SVGForeignObjectElement*);
   ~LayoutSVGForeignObject() override;
 
-  const char* GetName() const override { return "LayoutSVGForeignObject"; }
+  const char* GetName() const override {
+    CheckIsNotDestroyed();
+    return "LayoutSVGForeignObject";
+  }
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
@@ -63,12 +66,22 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
 
   void UpdateLayout() override;
 
-  FloatRect ObjectBoundingBox() const override { return viewport_; }
-  FloatRect StrokeBoundingBox() const override { return ObjectBoundingBox(); }
+  FloatRect ObjectBoundingBox() const override {
+    CheckIsNotDestroyed();
+    return viewport_;
+  }
+  FloatRect StrokeBoundingBox() const override {
+    CheckIsNotDestroyed();
+    return ObjectBoundingBox();
+  }
   FloatRect VisualRectInLocalSVGCoordinates() const override {
+    CheckIsNotDestroyed();
     return FloatRect(FrameRect());
   }
-  bool IsObjectBoundingBoxValid() const { return !viewport_.IsEmpty(); }
+  bool IsObjectBoundingBoxValid() const {
+    CheckIsNotDestroyed();
+    return !viewport_.IsEmpty();
+  }
 
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
@@ -85,6 +98,7 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
                           HitTestAction);
 
   bool IsOfType(LayoutObjectType type) const override {
+    CheckIsNotDestroyed();
     return type == kLayoutObjectSVGForeignObject ||
            LayoutSVGBlock::IsOfType(type);
   }
@@ -92,6 +106,7 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
   PaintLayerType LayerTypeRequired() const override;
 
   bool CreatesNewFormattingContext() const final {
+    CheckIsNotDestroyed();
     // This is the root of a foreign object. Don't let anything inside it escape
     // to our ancestors.
     return true;

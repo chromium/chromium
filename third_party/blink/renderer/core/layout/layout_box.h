@@ -228,7 +228,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const PhysicalRect& local_rect) const override;
   bool TextIsKnownToBeOnOpaqueBackground() const override;
 
-  virtual bool BackgroundShouldAlwaysBeClipped() const { return false; }
+  virtual bool BackgroundShouldAlwaysBeClipped() const {
+    CheckIsNotDestroyed();
+    return false;
+  }
 
   // Returns whether this object needs a scroll paint property tree node. These
   // are a requirement for composited scrolling but are also created for
@@ -241,28 +244,38 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutBox* LastChildBox() const;
 
   // TODO(crbug.com/962299): This is incorrect in some cases.
-  int PixelSnappedWidth() const { return frame_rect_.PixelSnappedWidth(); }
-  int PixelSnappedHeight() const { return frame_rect_.PixelSnappedHeight(); }
+  int PixelSnappedWidth() const {
+    CheckIsNotDestroyed();
+    return frame_rect_.PixelSnappedWidth();
+  }
+  int PixelSnappedHeight() const {
+    CheckIsNotDestroyed();
+    return frame_rect_.PixelSnappedHeight();
+  }
 
   void SetX(LayoutUnit x) {
+    CheckIsNotDestroyed();
     if (x == frame_rect_.X())
       return;
     frame_rect_.SetX(x);
     LocationChanged();
   }
   void SetY(LayoutUnit y) {
+    CheckIsNotDestroyed();
     if (y == frame_rect_.Y())
       return;
     frame_rect_.SetY(y);
     LocationChanged();
   }
   void SetWidth(LayoutUnit width) {
+    CheckIsNotDestroyed();
     if (width == frame_rect_.Width())
       return;
     frame_rect_.SetWidth(width);
     SizeChanged();
   }
   void SetHeight(LayoutUnit height) {
+    CheckIsNotDestroyed();
     if (height == frame_rect_.Height())
       return;
     frame_rect_.SetHeight(height);
@@ -270,20 +283,30 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
 
   LayoutUnit LogicalLeft() const {
+    CheckIsNotDestroyed();
     return StyleRef().IsHorizontalWritingMode() ? frame_rect_.X()
                                                 : frame_rect_.Y();
   }
-  LayoutUnit LogicalRight() const { return LogicalLeft() + LogicalWidth(); }
+  LayoutUnit LogicalRight() const {
+    CheckIsNotDestroyed();
+    return LogicalLeft() + LogicalWidth();
+  }
   LayoutUnit LogicalTop() const {
+    CheckIsNotDestroyed();
     return StyleRef().IsHorizontalWritingMode() ? frame_rect_.Y()
                                                 : frame_rect_.X();
   }
-  LayoutUnit LogicalBottom() const { return LogicalTop() + LogicalHeight(); }
+  LayoutUnit LogicalBottom() const {
+    CheckIsNotDestroyed();
+    return LogicalTop() + LogicalHeight();
+  }
   LayoutUnit LogicalWidth() const {
+    CheckIsNotDestroyed();
     return StyleRef().IsHorizontalWritingMode() ? frame_rect_.Width()
                                                 : frame_rect_.Height();
   }
   LayoutUnit LogicalHeight() const {
+    CheckIsNotDestroyed();
     return StyleRef().IsHorizontalWritingMode() ? frame_rect_.Height()
                                                 : frame_rect_.Width();
   }
@@ -304,49 +327,58 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // TODO(crbug.com/962299): This is incorrect in some cases.
   int PixelSnappedLogicalHeight() const {
+    CheckIsNotDestroyed();
     return StyleRef().IsHorizontalWritingMode() ? PixelSnappedHeight()
                                                 : PixelSnappedWidth();
   }
   int PixelSnappedLogicalWidth() const {
+    CheckIsNotDestroyed();
     return StyleRef().IsHorizontalWritingMode() ? PixelSnappedWidth()
                                                 : PixelSnappedHeight();
   }
 
   LayoutUnit MinimumLogicalHeightForEmptyLine() const {
+    CheckIsNotDestroyed();
     return BorderAndPaddingLogicalHeight() +
            ComputeLogicalScrollbars().BlockSum() + LogicalHeightForEmptyLine();
   }
   LayoutUnit LogicalHeightForEmptyLine() const {
+    CheckIsNotDestroyed();
     return LineHeight(
         true, IsHorizontalWritingMode() ? kHorizontalLine : kVerticalLine,
         kPositionOfInteriorLineBoxes);
   }
 
   void SetLogicalLeft(LayoutUnit left) {
+    CheckIsNotDestroyed();
     if (StyleRef().IsHorizontalWritingMode())
       SetX(left);
     else
       SetY(left);
   }
   void SetLogicalTop(LayoutUnit top) {
+    CheckIsNotDestroyed();
     if (StyleRef().IsHorizontalWritingMode())
       SetY(top);
     else
       SetX(top);
   }
   void SetLogicalLocation(const LayoutPoint& location) {
+    CheckIsNotDestroyed();
     if (StyleRef().IsHorizontalWritingMode())
       SetLocation(location);
     else
       SetLocation(location.TransposedPoint());
   }
   void SetLogicalWidth(LayoutUnit size) {
+    CheckIsNotDestroyed();
     if (StyleRef().IsHorizontalWritingMode())
       SetWidth(size);
     else
       SetHeight(size);
   }
   void SetLogicalHeight(LayoutUnit size) {
+    CheckIsNotDestroyed();
     if (StyleRef().IsHorizontalWritingMode())
       SetHeight(size);
     else
@@ -354,15 +386,26 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
 
   // See frame_rect_.
-  LayoutPoint Location() const { return frame_rect_.Location(); }
+  LayoutPoint Location() const {
+    CheckIsNotDestroyed();
+    return frame_rect_.Location();
+  }
   LayoutSize LocationOffset() const {
+    CheckIsNotDestroyed();
     return LayoutSize(frame_rect_.X(), frame_rect_.Y());
   }
-  LayoutSize Size() const { return frame_rect_.Size(); }
+  LayoutSize Size() const {
+    CheckIsNotDestroyed();
+    return frame_rect_.Size();
+  }
   // TODO(crbug.com/962299): This is incorrect in some cases.
-  IntSize PixelSnappedSize() const { return frame_rect_.PixelSnappedSize(); }
+  IntSize PixelSnappedSize() const {
+    CheckIsNotDestroyed();
+    return frame_rect_.PixelSnappedSize();
+  }
 
   void SetLocation(const LayoutPoint& location) {
+    CheckIsNotDestroyed();
     if (location == frame_rect_.Location())
       return;
     frame_rect_.SetLocation(location);
@@ -381,12 +424,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void SetLocationAndUpdateOverflowControlsIfNeeded(const LayoutPoint&);
 
   void SetSize(const LayoutSize& size) {
+    CheckIsNotDestroyed();
     if (size == frame_rect_.Size())
       return;
     frame_rect_.SetSize(size);
     SizeChanged();
   }
   void Move(LayoutUnit dx, LayoutUnit dy) {
+    CheckIsNotDestroyed();
     if (!dx && !dy)
       return;
     frame_rect_.Move(dx, dy);
@@ -394,8 +439,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
 
   // See frame_rect_.
-  LayoutRect FrameRect() const { return frame_rect_; }
+  LayoutRect FrameRect() const {
+    CheckIsNotDestroyed();
+    return frame_rect_;
+  }
   void SetFrameRect(const LayoutRect& rect) {
+    CheckIsNotDestroyed();
     SetLocation(rect.Location());
     SetSize(rect.Size());
   }
@@ -405,8 +454,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // coordinate space, it can be treated as in either physical coordinates
   // or "physical coordinates in flipped block-flow direction", and
   // FlipForWritingMode() will do nothing on it.
-  LayoutRect BorderBoxRect() const { return LayoutRect(LayoutPoint(), Size()); }
+  LayoutRect BorderBoxRect() const {
+    CheckIsNotDestroyed();
+    return LayoutRect(LayoutPoint(), Size());
+  }
   PhysicalRect PhysicalBorderBoxRect() const {
+    CheckIsNotDestroyed();
     // This doesn't need flipping because the result would be the same.
     DCHECK_EQ(PhysicalRect(BorderBoxRect()),
               FlipForWritingMode(BorderBoxRect()));
@@ -417,6 +470,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // TODO(crbug.com/877518): Some callers of this method may actually want
   // "physical coordinates in flipped block-flow direction".
   DISABLE_CFI_PERF PhysicalRect PhysicalPaddingBoxRect() const {
+    CheckIsNotDestroyed();
     return PhysicalRect(ClientLeft(), ClientTop(), ClientWidth(),
                         ClientHeight());
   }
@@ -425,15 +479,18 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Location() is not the correct paint offset. It's also incorrect in flipped
   // blocks writing mode.
   IntRect PixelSnappedBorderBoxRect() const {
+    CheckIsNotDestroyed();
     return IntRect(IntPoint(),
                    PixelSnappedBorderBoxSize(PhysicalOffset(Location())));
   }
   // TODO(crbug.com/962299): This method is only correct when |offset| is the
   // correct paint offset.
   IntSize PixelSnappedBorderBoxSize(const PhysicalOffset& offset) const {
+    CheckIsNotDestroyed();
     return PixelSnappedIntSize(Size(), offset.ToLayoutPoint());
   }
   IntRect BorderBoundingBox() const final {
+    CheckIsNotDestroyed();
     return PixelSnappedBorderBoxRect();
   }
 
@@ -442,12 +499,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // TODO(crbug.com/877518): Some callers of this method may actually want
   // "physical coordinates in flipped block-flow direction".
   DISABLE_CFI_PERF PhysicalRect PhysicalContentBoxRect() const {
+    CheckIsNotDestroyed();
     return PhysicalRect(ContentLeft(), ContentTop(), ContentWidth(),
                         ContentHeight());
   }
   // TODO(crbug.com/877518): Some callers of this method may actually want
   // "physical coordinates in flipped block-flow direction".
   PhysicalOffset PhysicalContentBoxOffset() const {
+    CheckIsNotDestroyed();
     return PhysicalOffset(ContentLeft(), ContentTop());
   }
   // The content box converted to absolute coords (taking transforms into
@@ -464,6 +523,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // does include the intrinsic padding in the content box as this is what some
   // callers expect (like getComputedStyle).
   LayoutRect ComputedCSSContentBoxRect() const {
+    CheckIsNotDestroyed();
     return LayoutRect(
         BorderLeft() + ComputedCSSPaddingLeft(),
         BorderTop() + ComputedCSSPaddingTop(),
@@ -499,6 +559,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool ShouldComputeLogicalWidthFromAspectRatio(
       LayoutUnit* logical_height = nullptr) const;
   bool ShouldComputeLogicalHeightFromAspectRatio() const {
+    CheckIsNotDestroyed();
     Length h = StyleRef().LogicalHeight();
     return StyleRef().AspectRatio() &&
            (h.IsAuto() ||
@@ -513,48 +574,59 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // in the "physical coordinates in flipped block-flow direction" of the box.
   LayoutRect NoOverflowRect() const;
   LayoutRect LayoutOverflowRect() const {
+    CheckIsNotDestroyed();
     return LayoutOverflowIsSet()
                ? overflow_->layout_overflow->LayoutOverflowRect()
                : NoOverflowRect();
   }
   PhysicalRect PhysicalLayoutOverflowRect() const {
+    CheckIsNotDestroyed();
     return FlipForWritingMode(LayoutOverflowRect());
   }
   // TODO(crbug.com/962299): This is incorrect in some cases.
   IntRect PixelSnappedLayoutOverflowRect() const {
+    CheckIsNotDestroyed();
     return PixelSnappedIntRect(LayoutOverflowRect());
   }
   LayoutSize MaxLayoutOverflow() const {
+    CheckIsNotDestroyed();
     return LayoutSize(LayoutOverflowRect().MaxX(), LayoutOverflowRect().MaxY());
   }
 
   LayoutRect VisualOverflowRect() const;
   PhysicalRect PhysicalVisualOverflowRect() const final {
+    CheckIsNotDestroyed();
     return FlipForWritingMode(VisualOverflowRect());
   }
   LayoutUnit LogicalLeftVisualOverflow() const {
+    CheckIsNotDestroyed();
     return StyleRef().IsHorizontalWritingMode() ? VisualOverflowRect().X()
                                                 : VisualOverflowRect().Y();
   }
   LayoutUnit LogicalRightVisualOverflow() const {
+    CheckIsNotDestroyed();
     return StyleRef().IsHorizontalWritingMode() ? VisualOverflowRect().MaxX()
                                                 : VisualOverflowRect().MaxY();
   }
 
   LayoutRect SelfVisualOverflowRect() const {
+    CheckIsNotDestroyed();
     return VisualOverflowIsSet()
                ? overflow_->visual_overflow->SelfVisualOverflowRect()
                : BorderBoxRect();
   }
   PhysicalRect PhysicalSelfVisualOverflowRect() const {
+    CheckIsNotDestroyed();
     return FlipForWritingMode(SelfVisualOverflowRect());
   }
   LayoutRect ContentsVisualOverflowRect() const {
+    CheckIsNotDestroyed();
     return VisualOverflowIsSet()
                ? overflow_->visual_overflow->ContentsVisualOverflowRect()
                : LayoutRect();
   }
   PhysicalRect PhysicalContentsVisualOverflowRect() const {
+    CheckIsNotDestroyed();
     return FlipForWritingMode(ContentsVisualOverflowRect());
   }
 
@@ -572,10 +644,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   void AddLayoutOverflow(const LayoutRect&);
   void AddSelfVisualOverflow(const PhysicalRect& r) {
+    CheckIsNotDestroyed();
     AddSelfVisualOverflow(FlipForWritingMode(r));
   }
   void AddSelfVisualOverflow(const LayoutRect&);
   void AddContentsVisualOverflow(const PhysicalRect& r) {
+    CheckIsNotDestroyed();
     AddContentsVisualOverflow(FlipForWritingMode(r));
   }
   void AddContentsVisualOverflow(const LayoutRect&);
@@ -583,9 +657,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void AddVisualEffectOverflow();
   LayoutRectOutsets ComputeVisualEffectOverflowOutsets();
   void AddVisualOverflowFromChild(const LayoutBox& child) {
+    CheckIsNotDestroyed();
     AddVisualOverflowFromChild(child, child.LocationOffset());
   }
   void AddLayoutOverflowFromChild(const LayoutBox& child) {
+    CheckIsNotDestroyed();
     AddLayoutOverflowFromChild(child, child.LocationOffset());
   }
   void AddVisualOverflowFromChild(const LayoutBox& child,
@@ -601,12 +677,15 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   virtual void UpdateAfterLayout();
 
   DISABLE_CFI_PERF LayoutUnit ContentLeft() const {
+    CheckIsNotDestroyed();
     return ClientLeft() + PaddingLeft();
   }
   DISABLE_CFI_PERF LayoutUnit ContentTop() const {
+    CheckIsNotDestroyed();
     return ClientTop() + PaddingTop();
   }
   DISABLE_CFI_PERF LayoutUnit ContentWidth() const {
+    CheckIsNotDestroyed();
     // We're dealing with LayoutUnit and saturated arithmetic here, so we need
     // to guard against negative results. The value returned from clientWidth()
     // may in itself be a victim of saturated arithmetic; e.g. if both border
@@ -617,6 +696,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
         .ClampNegativeToZero();
   }
   DISABLE_CFI_PERF LayoutUnit ContentHeight() const {
+    CheckIsNotDestroyed();
     // We're dealing with LayoutUnit and saturated arithmetic here, so we need
     // to guard against negative results. The value returned from clientHeight()
     // may in itself be a victim of saturated arithmetic; e.g. if both border
@@ -627,13 +707,16 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
         .ClampNegativeToZero();
   }
   LayoutSize ContentSize() const {
+    CheckIsNotDestroyed();
     return LayoutSize(ContentWidth(), ContentHeight());
   }
   LayoutUnit ContentLogicalWidth() const {
+    CheckIsNotDestroyed();
     return StyleRef().IsHorizontalWritingMode() ? ContentWidth()
                                                 : ContentHeight();
   }
   LayoutUnit ContentLogicalHeight() const {
+    CheckIsNotDestroyed();
     return StyleRef().IsHorizontalWritingMode() ? ContentHeight()
                                                 : ContentWidth();
   }
@@ -647,21 +730,25 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutUnit OverrideIntrinsicContentHeight() const;
   // Logical:
   bool HasOverrideIntrinsicContentLogicalWidth() const {
+    CheckIsNotDestroyed();
     return StyleRef().IsHorizontalWritingMode()
                ? HasOverrideIntrinsicContentWidth()
                : HasOverrideIntrinsicContentHeight();
   }
   bool HasOverrideIntrinsicContentLogicalHeight() const {
+    CheckIsNotDestroyed();
     return StyleRef().IsHorizontalWritingMode()
                ? HasOverrideIntrinsicContentHeight()
                : HasOverrideIntrinsicContentWidth();
   }
   LayoutUnit OverrideIntrinsicContentLogicalWidth() const {
+    CheckIsNotDestroyed();
     return StyleRef().IsHorizontalWritingMode()
                ? OverrideIntrinsicContentWidth()
                : OverrideIntrinsicContentHeight();
   }
   LayoutUnit OverrideIntrinsicContentLogicalHeight() const {
+    CheckIsNotDestroyed();
     return StyleRef().IsHorizontalWritingMode()
                ? OverrideIntrinsicContentHeight()
                : OverrideIntrinsicContentWidth();
@@ -675,14 +762,21 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // IE extensions. Used to calculate offsetWidth/Height. Overridden by inlines
   // (LayoutFlow) to return the remaining width on a given line (and the height
   // of a single line).
-  LayoutUnit OffsetWidth() const final { return frame_rect_.Width(); }
-  LayoutUnit OffsetHeight() const final { return frame_rect_.Height(); }
+  LayoutUnit OffsetWidth() const final {
+    CheckIsNotDestroyed();
+    return frame_rect_.Width();
+  }
+  LayoutUnit OffsetHeight() const final {
+    CheckIsNotDestroyed();
+    return frame_rect_.Height();
+  }
 
   // TODO(crbug.com/962299): This is incorrect in some cases.
   int PixelSnappedOffsetWidth(const Element*) const final;
   int PixelSnappedOffsetHeight(const Element*) const final;
 
   bool UsesOverlayScrollbars() const {
+    CheckIsNotDestroyed();
     if (StyleRef().HasPseudoElementStyle(kPseudoIdScrollbar))
       return false;
     if (GetFrame()->GetPage()->GetScrollbarTheme().UsesOverlayScrollbars())
@@ -692,6 +786,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // Clamps the left scrollbar size so it is not wider than the content box.
   DISABLE_CFI_PERF LayoutUnit LogicalLeftScrollbarWidth() const {
+    CheckIsNotDestroyed();
     if (CanSkipComputeScrollbars())
       return LayoutUnit();
     else if (StyleRef().IsHorizontalWritingMode())
@@ -700,6 +795,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       return ComputeScrollbarsInternal(kClampToContentBox).top;
   }
   DISABLE_CFI_PERF LayoutUnit LogicalTopScrollbarHeight() const {
+    CheckIsNotDestroyed();
     if (CanSkipComputeScrollbars())
       return LayoutUnit();
     else if (HasFlippedBlocksWritingMode())
@@ -713,12 +809,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // interior of an object excluding borders and scrollbars.
   // Clamps the left scrollbar size so it is not wider than the content box.
   DISABLE_CFI_PERF LayoutUnit ClientLeft() const {
+    CheckIsNotDestroyed();
     if (CanSkipComputeScrollbars())
       return BorderLeft();
     else
       return BorderLeft() + ComputeScrollbarsInternal(kClampToContentBox).left;
   }
   DISABLE_CFI_PERF LayoutUnit ClientTop() const {
+    CheckIsNotDestroyed();
     if (CanSkipComputeScrollbars())
       return BorderTop();
     else
@@ -727,12 +825,15 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutUnit ClientWidth() const;
   LayoutUnit ClientHeight() const;
   DISABLE_CFI_PERF LayoutUnit ClientLogicalWidth() const {
+    CheckIsNotDestroyed();
     return IsHorizontalWritingMode() ? ClientWidth() : ClientHeight();
   }
   DISABLE_CFI_PERF LayoutUnit ClientLogicalHeight() const {
+    CheckIsNotDestroyed();
     return IsHorizontalWritingMode() ? ClientHeight() : ClientWidth();
   }
   DISABLE_CFI_PERF LayoutUnit ClientLogicalBottom() const {
+    CheckIsNotDestroyed();
     return BorderBefore() + LogicalTopScrollbarHeight() + ClientLogicalHeight();
   }
 
@@ -764,39 +865,62 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const PhysicalRect&,
       mojom::blink::ScrollIntoViewParamsPtr);
 
-  LayoutRectOutsets MarginBoxOutsets() const { return margin_box_outsets_; }
-  LayoutUnit MarginTop() const override { return margin_box_outsets_.Top(); }
+  LayoutRectOutsets MarginBoxOutsets() const {
+    CheckIsNotDestroyed();
+    return margin_box_outsets_;
+  }
+  LayoutUnit MarginTop() const override {
+    CheckIsNotDestroyed();
+    return margin_box_outsets_.Top();
+  }
   LayoutUnit MarginBottom() const override {
+    CheckIsNotDestroyed();
     return margin_box_outsets_.Bottom();
   }
-  LayoutUnit MarginLeft() const override { return margin_box_outsets_.Left(); }
+  LayoutUnit MarginLeft() const override {
+    CheckIsNotDestroyed();
+    return margin_box_outsets_.Left();
+  }
   LayoutUnit MarginRight() const override {
+    CheckIsNotDestroyed();
     return margin_box_outsets_.Right();
   }
   void SetMargin(const NGPhysicalBoxStrut&);
-  void SetMarginTop(LayoutUnit margin) { margin_box_outsets_.SetTop(margin); }
+  void SetMarginTop(LayoutUnit margin) {
+    CheckIsNotDestroyed();
+    margin_box_outsets_.SetTop(margin);
+  }
   void SetMarginBottom(LayoutUnit margin) {
+    CheckIsNotDestroyed();
     margin_box_outsets_.SetBottom(margin);
   }
-  void SetMarginLeft(LayoutUnit margin) { margin_box_outsets_.SetLeft(margin); }
+  void SetMarginLeft(LayoutUnit margin) {
+    CheckIsNotDestroyed();
+    margin_box_outsets_.SetLeft(margin);
+  }
   void SetMarginRight(LayoutUnit margin) {
+    CheckIsNotDestroyed();
     margin_box_outsets_.SetRight(margin);
   }
 
   void SetMarginBefore(LayoutUnit value,
                        const ComputedStyle* override_style = nullptr) {
+    CheckIsNotDestroyed();
     LogicalMarginToPhysicalSetter(override_style).SetBefore(value);
   }
   void SetMarginAfter(LayoutUnit value,
                       const ComputedStyle* override_style = nullptr) {
+    CheckIsNotDestroyed();
     LogicalMarginToPhysicalSetter(override_style).SetAfter(value);
   }
   void SetMarginStart(LayoutUnit value,
                       const ComputedStyle* override_style = nullptr) {
+    CheckIsNotDestroyed();
     LogicalMarginToPhysicalSetter(override_style).SetStart(value);
   }
   void SetMarginEnd(LayoutUnit value,
                     const ComputedStyle* override_style = nullptr) {
+    CheckIsNotDestroyed();
     LogicalMarginToPhysicalSetter(override_style).SetEnd(value);
   }
 
@@ -806,10 +930,20 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // For a non-collapsing box, such as a leaf element, this formula will simply
   // return the margin of the element.  Blocks override the maxMarginBefore and
   // maxMarginAfter methods.
-  virtual bool IsSelfCollapsingBlock() const { return false; }
-  virtual LayoutUnit CollapsedMarginBefore() const { return MarginBefore(); }
-  virtual LayoutUnit CollapsedMarginAfter() const { return MarginAfter(); }
+  virtual bool IsSelfCollapsingBlock() const {
+    CheckIsNotDestroyed();
+    return false;
+  }
+  virtual LayoutUnit CollapsedMarginBefore() const {
+    CheckIsNotDestroyed();
+    return MarginBefore();
+  }
+  virtual LayoutUnit CollapsedMarginAfter() const {
+    CheckIsNotDestroyed();
+    return MarginAfter();
+  }
   LayoutRectOutsets CollapsedMarginBoxLogicalOutsets() const {
+    CheckIsNotDestroyed();
     return LayoutRectOutsets(CollapsedMarginBefore(), LayoutUnit(),
                              CollapsedMarginAfter(), LayoutUnit());
   }
@@ -819,9 +953,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   FloatRect LocalBoundingBoxRectForAccessibility() const final;
 
   void SetBoxLayoutExtraInput(const BoxLayoutExtraInput* input) {
+    CheckIsNotDestroyed();
     extra_input_ = input;
   }
   const BoxLayoutExtraInput* GetBoxLayoutExtraInput() const {
+    CheckIsNotDestroyed();
     return extra_input_;
   }
 
@@ -831,6 +967,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void Paint(const PaintInfo&) const override;
 
   virtual bool IsInSelfHitTestingPhase(HitTestAction hit_test_action) const {
+    CheckIsNotDestroyed();
     return hit_test_action == kHitTestForeground;
   }
 
@@ -887,7 +1024,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // available inline size, rather than deducing it from the containing block
   // (and then subtract space taken up by adjacent floats).
   LayoutUnit OverrideAvailableInlineSize() const;
-  bool HasOverrideAvailableInlineSize() const { return extra_input_; }
+  bool HasOverrideAvailableInlineSize() const {
+    CheckIsNotDestroyed();
+    return extra_input_;
+  }
 
   LayoutUnit AdjustBorderBoxLogicalWidthForBoxSizing(float width) const;
   LayoutUnit AdjustBorderBoxLogicalHeightForBoxSizing(float height) const;
@@ -959,6 +1099,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // first fragmentainer it lives in. If it only lives in one fragmentainer, 0
   // is returned.
   LayoutUnit OffsetToNextPage() const {
+    CheckIsNotDestroyed();
     return rare_data_ ? rare_data_->offset_to_next_page_ : LayoutUnit();
   }
   void SetOffsetToNextPage(LayoutUnit);
@@ -1084,16 +1225,21 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   };
 
   NGPhysicalFragmentList PhysicalFragments() const {
+    CheckIsNotDestroyed();
     return NGPhysicalFragmentList(layout_results_);
   }
   const NGPhysicalBoxFragment* GetPhysicalFragment(wtf_size_t i) const;
   const FragmentData* FragmentDataFromPhysicalFragment(
       const NGPhysicalBoxFragment&) const;
-  wtf_size_t PhysicalFragmentCount() const { return layout_results_.size(); }
+  wtf_size_t PhysicalFragmentCount() const {
+    CheckIsNotDestroyed();
+    return layout_results_.size();
+  }
 
   void SetSpannerPlaceholder(LayoutMultiColumnSpannerPlaceholder&);
   void ClearSpannerPlaceholder();
   LayoutMultiColumnSpannerPlaceholder* SpannerPlaceholder() const final {
+    CheckIsNotDestroyed();
     return rare_data_ ? rare_data_->spanner_placeholder_ : nullptr;
   }
 
@@ -1108,10 +1254,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Pagination struts are either set in front of a block-level box (here) or
   // before a line (RootInlineBox::paginationStrut()).
   LayoutUnit PaginationStrut() const {
+    CheckIsNotDestroyed();
     return rare_data_ ? rare_data_->pagination_strut_ : LayoutUnit();
   }
   void SetPaginationStrut(LayoutUnit);
   void ResetPaginationStrut() {
+    CheckIsNotDestroyed();
     if (rare_data_)
       rare_data_->pagination_strut_ = LayoutUnit();
   }
@@ -1179,19 +1327,26 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void ComputeLogicalWidth(LogicalExtentComputedValues&) const;
 
   bool StretchesToViewport() const {
+    CheckIsNotDestroyed();
     return GetDocument().InQuirksMode() && StretchesToViewportInQuirksMode();
   }
 
-  virtual LayoutSize IntrinsicSize() const { return LayoutSize(); }
+  virtual LayoutSize IntrinsicSize() const {
+    CheckIsNotDestroyed();
+    return LayoutSize();
+  }
   LayoutUnit IntrinsicLogicalWidth() const {
+    CheckIsNotDestroyed();
     return StyleRef().IsHorizontalWritingMode() ? IntrinsicSize().Width()
                                                 : IntrinsicSize().Height();
   }
   LayoutUnit IntrinsicLogicalHeight() const {
+    CheckIsNotDestroyed();
     return StyleRef().IsHorizontalWritingMode() ? IntrinsicSize().Height()
                                                 : IntrinsicSize().Width();
   }
   virtual LayoutUnit IntrinsicContentLogicalHeight() const {
+    CheckIsNotDestroyed();
     return HasOverrideIntrinsicContentLogicalHeight()
                ? OverrideIntrinsicContentLogicalHeight()
                : intrinsic_content_logical_height_;
@@ -1240,6 +1395,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       LayoutUnit estimated_used_width = LayoutUnit()) const;
 
   virtual bool ShouldComputeSizeAsReplaced() const {
+    CheckIsNotDestroyed();
     return IsAtomicInlineLevel() && !IsInlineBlockOrInlineTable();
   }
 
@@ -1258,7 +1414,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // Block flows subclass availableWidth/Height to handle multi column layout
   // (shrinking the width/height available to children when laying out.)
-  LayoutUnit AvailableLogicalWidth() const { return ContentLogicalWidth(); }
+  LayoutUnit AvailableLogicalWidth() const {
+    CheckIsNotDestroyed();
+    return ContentLogicalWidth();
+  }
   LayoutUnit AvailableLogicalHeight(AvailableLogicalHeightType) const;
   LayoutUnit AvailableLogicalHeightUsing(const Length&,
                                          AvailableLogicalHeightType) const;
@@ -1267,11 +1426,13 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // physical width and available physical height. Relative positioning is one
   // of those cases, since left/top offsets are physical.
   LayoutUnit AvailableWidth() const {
+    CheckIsNotDestroyed();
     return StyleRef().IsHorizontalWritingMode()
                ? AvailableLogicalWidth()
                : AvailableLogicalHeight(kIncludeMarginBorderPadding);
   }
   LayoutUnit AvailableHeight() const {
+    CheckIsNotDestroyed();
     return StyleRef().IsHorizontalWritingMode()
                ? AvailableLogicalHeight(kIncludeMarginBorderPadding)
                : AvailableLogicalWidth();
@@ -1279,12 +1440,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // Return both scrollbars and scrollbar gutters (defined by scrollbar-gutter).
   inline NGPhysicalBoxStrut ComputeScrollbars() const {
+    CheckIsNotDestroyed();
     if (CanSkipComputeScrollbars())
       return NGPhysicalBoxStrut();
     else
       return ComputeScrollbarsInternal();
   }
   inline NGBoxStrut ComputeLogicalScrollbars() const {
+    CheckIsNotDestroyed();
     if (CanSkipComputeScrollbars()) {
       return NGBoxStrut();
     } else {
@@ -1303,12 +1466,15 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                                        bool is_middle_click_autoscroll);
 
   DISABLE_CFI_PERF bool HasAutoVerticalScrollbar() const {
+    CheckIsNotDestroyed();
     return HasNonVisibleOverflow() && StyleRef().HasAutoVerticalScroll();
   }
   DISABLE_CFI_PERF bool HasAutoHorizontalScrollbar() const {
+    CheckIsNotDestroyed();
     return HasNonVisibleOverflow() && StyleRef().HasAutoHorizontalScroll();
   }
   DISABLE_CFI_PERF bool ScrollsOverflow() const {
+    CheckIsNotDestroyed();
     return HasNonVisibleOverflow() && StyleRef().ScrollsOverflow();
   }
   // We place block-direction scrollbar on the left only if the writing-mode
@@ -1317,24 +1483,30 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // used in different contexts, e.g. the former for physical coordinate
   // contexts, and the later for logical coordinate contexts.
   bool ShouldPlaceVerticalScrollbarOnLeft() const {
+    CheckIsNotDestroyed();
     return ShouldPlaceBlockDirectionScrollbarOnLogicalLeft();
   }
   virtual bool ShouldPlaceBlockDirectionScrollbarOnLogicalLeft() const {
+    CheckIsNotDestroyed();
     return StyleRef().ShouldPlaceBlockDirectionScrollbarOnLogicalLeft();
   }
 
   bool HasScrollableOverflowX() const {
+    CheckIsNotDestroyed();
     return ScrollsOverflowX() &&
            PixelSnappedScrollWidth() != PixelSnappedClientWidth();
   }
   bool HasScrollableOverflowY() const {
+    CheckIsNotDestroyed();
     return ScrollsOverflowY() &&
            PixelSnappedScrollHeight() != PixelSnappedClientHeight();
   }
   virtual bool ScrollsOverflowX() const {
+    CheckIsNotDestroyed();
     return HasNonVisibleOverflow() && StyleRef().ScrollsOverflowX();
   }
   virtual bool ScrollsOverflowY() const {
+    CheckIsNotDestroyed();
     return HasNonVisibleOverflow() && StyleRef().ScrollsOverflowY();
   }
 
@@ -1342,6 +1514,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // scrollable outside the context of the CSS overflow style
   virtual bool IsIntrinsicallyScrollable(
       ScrollbarOrientation orientation) const {
+    CheckIsNotDestroyed();
     return false;
   }
 
@@ -1369,9 +1542,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   virtual PaginationBreakability GetPaginationBreakability(
       FragmentationEngine) const;
   PaginationBreakability GetLegacyPaginationBreakability() const {
+    CheckIsNotDestroyed();
     return GetPaginationBreakability(kLegacyFragmentationEngine);
   }
   PaginationBreakability GetNGPaginationBreakability() const {
+    CheckIsNotDestroyed();
     return GetPaginationBreakability(kNGFragmentationEngine);
   }
 
@@ -1391,6 +1566,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutRect OverflowClipRect(const LayoutPoint& location,
                               OverlayScrollbarClipBehavior behavior =
                                   kIgnoreOverlayScrollbarSize) const {
+    CheckIsNotDestroyed();
     return OverflowClipRect(PhysicalOffset(location), behavior).ToLayoutRect();
   }
 
@@ -1417,14 +1593,21 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   const LayoutBlock& EnclosingScrollportBox() const;
 
-  virtual LayoutUnit FirstLineBoxBaseline() const { return LayoutUnit(-1); }
+  virtual LayoutUnit FirstLineBoxBaseline() const {
+    CheckIsNotDestroyed();
+    return LayoutUnit(-1);
+  }
   virtual LayoutUnit InlineBlockBaseline(LineDirectionMode) const {
+    CheckIsNotDestroyed();
     return LayoutUnit(-1);
   }  // Returns -1 if we should skip this box when computing the baseline of an
      // inline-block.
 
   bool ShrinkToAvoidFloats() const;
-  virtual bool CreatesNewFormattingContext() const { return true; }
+  virtual bool CreatesNewFormattingContext() const {
+    CheckIsNotDestroyed();
+    return true;
+  }
   bool ShouldBeConsideredAsReplaced() const;
 
   void UpdateFragmentationInfoForChild(LayoutBox&);
@@ -1432,10 +1615,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void MarkChildForPaginationRelayoutIfNeeded(LayoutBox&, SubtreeLayoutScope&);
 
   bool IsWritingModeRoot() const {
+    CheckIsNotDestroyed();
     return !Parent() ||
            Parent()->StyleRef().GetWritingMode() != StyleRef().GetWritingMode();
   }
   bool IsOrthogonalWritingModeRoot() const {
+    CheckIsNotDestroyed();
     return Parent() &&
            Parent()->IsHorizontalWritingMode() != IsHorizontalWritingMode();
   }
@@ -1446,6 +1631,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool IsCustomItemShrinkToFit() const;
 
   bool IsFlexItemIncludingDeprecatedAndNG() const {
+    CheckIsNotDestroyed();
     return IsFlexItemCommon() &&
            Parent()->IsFlexibleBoxIncludingDeprecatedAndNG();
   }
@@ -1454,22 +1640,32 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // IsFlexItemIncludingNG when all the callsites can handle an item with an NG
   // parent.
   bool IsFlexItem() const {
+    CheckIsNotDestroyed();
     return IsFlexItemCommon() && Parent()->IsFlexibleBox();
   }
   bool IsFlexItemIncludingNG() const {
+    CheckIsNotDestroyed();
     return IsFlexItemCommon() && Parent()->IsFlexibleBoxIncludingNG();
   }
   bool IsFlexItemCommon() const {
+    CheckIsNotDestroyed();
     return !IsInline() && !IsOutOfFlowPositioned() && Parent();
   }
 
   bool IsGridItemIncludingNG() const {
+    CheckIsNotDestroyed();
     return IsGridItem() || (Parent() && Parent()->IsLayoutNGGrid());
   }
 
-  bool IsGridItem() const { return Parent() && Parent()->IsLayoutGrid(); }
+  bool IsGridItem() const {
+    CheckIsNotDestroyed();
+    return Parent() && Parent()->IsLayoutGrid();
+  }
 
-  bool IsMathItem() const { return Parent() && Parent()->IsMathML(); }
+  bool IsMathItem() const {
+    CheckIsNotDestroyed();
+    return Parent() && Parent()->IsMathML();
+  }
 
   LayoutUnit LineHeight(
       bool first_line,
@@ -1488,6 +1684,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   WARN_UNUSED_RESULT LayoutUnit
   FlipForWritingMode(LayoutUnit position,
                      LayoutUnit width = LayoutUnit()) const {
+    CheckIsNotDestroyed();
     // The offset is in the block direction (y for horizontal writing modes, x
     // for vertical writing modes).
     if (LIKELY(!HasFlippedBlocksWritingMode()))
@@ -1500,9 +1697,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   WARN_UNUSED_RESULT LayoutPoint
   DeprecatedFlipForWritingMode(const LayoutPoint& position) const {
+    CheckIsNotDestroyed();
     return LayoutPoint(FlipForWritingMode(position.X()), position.Y());
   }
   void DeprecatedFlipForWritingMode(LayoutRect& rect) const {
+    CheckIsNotDestroyed();
     if (LIKELY(!HasFlippedBlocksWritingMode()))
       return;
     rect = FlipForWritingMode(rect).ToLayoutRect();
@@ -1512,6 +1711,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // that container, or LocationContainer() otherwise.
   PhysicalOffset PhysicalLocation(
       const LayoutBox* flipped_blocks_container = nullptr) const {
+    CheckIsNotDestroyed();
     return PhysicalLocationInternal(flipped_blocks_container
                                         ? flipped_blocks_container
                                         : LocationContainer());
@@ -1523,6 +1723,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   LayoutRect LogicalVisualOverflowRectForPropagation() const;
   LayoutRect VisualOverflowRectForPropagation() const {
+    CheckIsNotDestroyed();
     return RectForOverflowPropagation(VisualOverflowRect());
   }
   LayoutRect LogicalLayoutOverflowRectForPropagation(
@@ -1530,13 +1731,20 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutRect LayoutOverflowRectForPropagation(LayoutObject* container) const;
 
   bool HasSelfVisualOverflow() const {
+    CheckIsNotDestroyed();
     return VisualOverflowIsSet() &&
            !BorderBoxRect().Contains(
                overflow_->visual_overflow->SelfVisualOverflowRect());
   }
 
-  bool HasVisualOverflow() const { return VisualOverflowIsSet(); }
-  bool HasLayoutOverflow() const { return LayoutOverflowIsSet(); }
+  bool HasVisualOverflow() const {
+    CheckIsNotDestroyed();
+    return VisualOverflowIsSet();
+  }
+  bool HasLayoutOverflow() const {
+    CheckIsNotDestroyed();
+    return LayoutOverflowIsSet();
+  }
 
   // Return true if re-laying out the containing block of this object means that
   // we need to recalculate the preferred min/max logical widths of this object.
@@ -1600,23 +1808,27 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   virtual LayoutBox* CreateAnonymousBoxWithSameTypeAs(
       const LayoutObject*) const {
+    CheckIsNotDestroyed();
     NOTREACHED();
     return nullptr;
   }
 
   bool HasSameDirectionAs(const LayoutBox* object) const {
+    CheckIsNotDestroyed();
     return StyleRef().Direction() == object->StyleRef().Direction();
   }
 
   ShapeOutsideInfo* GetShapeOutsideInfo() const;
 
   void MarkShapeOutsideDependentsForLayout() {
+    CheckIsNotDestroyed();
     if (IsFloating())
       RemoveFloatingOrPositionedChildFromBlockLists();
   }
 
   void SetIntrinsicContentLogicalHeight(
       LayoutUnit intrinsic_content_logical_height) const {
+    CheckIsNotDestroyed();
     intrinsic_content_logical_height_ = intrinsic_content_logical_height;
   }
 
@@ -1630,6 +1842,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                           MapCoordinatesFlags) const override;
 
   LayoutBlock* PercentHeightContainer() const {
+    CheckIsNotDestroyed();
     return rare_data_ ? rare_data_->percent_height_container_ : nullptr;
   }
   void SetPercentHeightContainer(LayoutBlock*);
@@ -1658,6 +1871,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   virtual bool HitTestOverflowControl(HitTestResult&,
                                       const HitTestLocation&,
                                       const PhysicalOffset&) const {
+    CheckIsNotDestroyed();
     return false;
   }
 
@@ -1710,27 +1924,35 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   };
 
   MutableForPainting GetMutableForPainting() const {
+    CheckIsNotDestroyed();
     return MutableForPainting(*this);
   }
 
-  LayoutSize PreviousSize() const { return previous_size_; }
+  LayoutSize PreviousSize() const {
+    CheckIsNotDestroyed();
+    return previous_size_;
+  }
   PhysicalRect PreviousPhysicalContentBoxRect() const {
+    CheckIsNotDestroyed();
     return rare_data_ && rare_data_->has_previous_content_box_rect_
                ? rare_data_->previous_physical_content_box_rect_
                : PhysicalRect(PhysicalOffset(), PreviousSize());
   }
   bool PreviouslyHadNonVisibleOverflow() const {
+    CheckIsNotDestroyed();
     return overflow_ && overflow_->previous_overflow_data &&
            overflow_->previous_overflow_data
                ->previously_had_non_visible_overflow;
   }
   PhysicalRect PreviousPhysicalLayoutOverflowRect() const {
+    CheckIsNotDestroyed();
     return overflow_ && overflow_->previous_overflow_data
                ? overflow_->previous_overflow_data
                      ->previous_physical_layout_overflow_rect
                : PhysicalRect(PhysicalOffset(), PreviousSize());
   }
   PhysicalRect PreviousPhysicalSelfVisualOverflowRect() const {
+    CheckIsNotDestroyed();
     return overflow_ && overflow_->previous_overflow_data
                ? overflow_->previous_overflow_data
                      ->previous_physical_self_visual_overflow_rect
@@ -1769,6 +1991,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       bool depends_on_percentage_block_size,
       bool child_depends_on_percentage_block_size,
       const MinMaxSizes* sizes) {
+    CheckIsNotDestroyed();
     intrinsic_logical_widths_percentage_resolution_block_size_ =
         intrinsic_logical_widths_percentage_resolution_block_size;
     SetIntrinsicLogicalWidthsDependsOnPercentageBlockSize(
@@ -1786,6 +2009,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // For non-LayoutNG code this is always LayoutUnit::Min(), and should not be
   // used for caching purposes.
   LayoutUnit IntrinsicLogicalWidthsPercentageResolutionBlockSize() const {
+    CheckIsNotDestroyed();
     return intrinsic_logical_widths_percentage_resolution_block_size_;
   }
 
@@ -1797,6 +2021,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // a small region of a canvas changes.
   void InvalidatePaintRectangle(const PhysicalRect&);
   bool HasPartialInvalidationRect() const {
+    CheckIsNotDestroyed();
     return rare_data_ && !rare_data_->partial_invalidation_rect_.IsEmpty();
   }
 
@@ -1819,6 +2044,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   virtual ItemPosition SelfAlignmentNormalBehavior(
       const LayoutBox* child = nullptr) const {
+    CheckIsNotDestroyed();
     DCHECK(!child);
     return ItemPosition::kStretch;
   }
@@ -1907,13 +2133,16 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
  private:
   bool HasFragmentItems() const {
+    CheckIsNotDestroyed();
     return ChildrenInline() && PhysicalFragments().HasFragmentItems();
   }
 
   inline bool LayoutOverflowIsSet() const {
+    CheckIsNotDestroyed();
     return overflow_ && overflow_->layout_overflow;
   }
   inline bool VisualOverflowIsSet() const {
+    CheckIsNotDestroyed();
     return overflow_ && overflow_->visual_overflow;
   }
 
@@ -1962,6 +2191,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                                   LayoutUnit& margin_end) const;
 
   LayoutBoxRareData& EnsureRareData() {
+    CheckIsNotDestroyed();
     if (!rare_data_)
       rare_data_ = MakeGarbageCollected<LayoutBoxRareData>();
     return *rare_data_.Get();
@@ -1998,6 +2228,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   RasterEffectOutset VisualRectOutsetForRasterEffects() const override;
 
   inline bool CanSkipComputeScrollbars() const {
+    CheckIsNotDestroyed();
     return (StyleRef().IsOverflowVisibleAlongBothAxes() ||
             !HasNonVisibleOverflow() ||
             (GetScrollableArea() &&
@@ -2015,12 +2246,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       LayoutUnit position,
       LayoutUnit width,
       const LayoutBox* box_for_flipping) const final {
+    CheckIsNotDestroyed();
     DCHECK(!box_for_flipping || box_for_flipping == this);
     return FlipForWritingMode(position, width);
   }
 
   PhysicalOffset PhysicalLocationInternal(
       const LayoutBox* container_box) const {
+    CheckIsNotDestroyed();
     DCHECK_EQ(container_box, LocationContainer());
     if (LIKELY(!container_box || !container_box->HasFlippedBlocksWritingMode()))
       return PhysicalOffset(Location());
@@ -2064,6 +2297,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
  private:
   LogicalToPhysicalSetter<LayoutUnit, LayoutBox> LogicalMarginToPhysicalSetter(
       const ComputedStyle* override_style) {
+    CheckIsNotDestroyed();
     const auto& style = override_style ? *override_style : StyleRef();
     return LogicalToPhysicalSetter<LayoutUnit, LayoutBox>(
         style.GetWritingMode(), style.Direction(), *this,

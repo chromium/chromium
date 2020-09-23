@@ -34,20 +34,24 @@ LayoutIFrame::LayoutIFrame(HTMLFrameOwnerElement* element)
     : LayoutEmbeddedContent(element) {}
 
 bool LayoutIFrame::ShouldComputeSizeAsReplaced() const {
+  CheckIsNotDestroyed();
   return true;
 }
 
 bool LayoutIFrame::IsInlineBlockOrInlineTable() const {
+  CheckIsNotDestroyed();
   return IsInline();
 }
 
 PaintLayerType LayoutIFrame::LayerTypeRequired() const {
+  CheckIsNotDestroyed();
   if (StyleRef().HasResize())
     return kNormalPaintLayer;
   return LayoutEmbeddedContent::LayerTypeRequired();
 }
 
 void LayoutIFrame::UpdateLayout() {
+  CheckIsNotDestroyed();
   DCHECK(NeedsLayout());
   LayoutAnalyzer::Scope analyzer(*this);
 
@@ -63,6 +67,7 @@ void LayoutIFrame::UpdateLayout() {
 
 void LayoutIFrame::StyleWillChange(StyleDifference diff,
                                    const ComputedStyle& new_style) {
+  CheckIsNotDestroyed();
   if (Style() && StyleRef().UsedColorSchemeForInitialColors() !=
                      new_style.UsedColorSchemeForInitialColors()) {
     GetFrameOwnerElement()->SetColorScheme(

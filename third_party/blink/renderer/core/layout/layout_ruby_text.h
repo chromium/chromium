@@ -40,9 +40,13 @@ class LayoutRubyText : public LayoutBlockFlow {
   LayoutRubyText(Element*);
   ~LayoutRubyText() override;
 
-  const char* GetName() const override { return "LayoutRubyText"; }
+  const char* GetName() const override {
+    CheckIsNotDestroyed();
+    return "LayoutRubyText";
+  }
 
   bool IsOfType(LayoutObjectType type) const override {
+    CheckIsNotDestroyed();
     return type == kLayoutObjectRubyText || LayoutBlockFlow::IsOfType(type);
   }
 
@@ -52,6 +56,7 @@ class LayoutRubyText : public LayoutBlockFlow {
                       const ComputedStyle* old_style) override;
 
   bool CreatesNewFormattingContext() const final {
+    CheckIsNotDestroyed();
     // Ruby text objects are pushed around after layout, to become flush with
     // the associated ruby base. As such, we cannot let floats leak out from
     // ruby text objects.

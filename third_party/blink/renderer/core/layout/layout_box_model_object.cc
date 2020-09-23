@@ -86,6 +86,7 @@ static ContinuationMap& GetContinuationMap() {
 }
 
 void LayoutBoxModelObject::ContentChanged(ContentChangeType change_type) {
+  CheckIsNotDestroyed();
   if (!HasLayer())
     return;
 
@@ -96,6 +97,7 @@ LayoutBoxModelObject::LayoutBoxModelObject(ContainerNode* node)
     : LayoutObject(node) {}
 
 bool LayoutBoxModelObject::UsesCompositedScrolling() const {
+  CheckIsNotDestroyed();
   return IsScrollContainer() && HasLayer() &&
          Layer()->GetScrollableArea()->UsesCompositedScrolling();
 }
@@ -112,6 +114,7 @@ static bool HasInsetBoxShadow(const ComputedStyle& style) {
 
 BackgroundPaintLocation
 LayoutBoxModelObject::ComputeBackgroundPaintLocationIfComposited() const {
+  CheckIsNotDestroyed();
   bool may_have_scrolling_layers_without_scrolling = IsA<LayoutView>(this);
   const auto* scrollable_area = GetScrollableArea();
   bool scrolls_overflow = scrollable_area && scrollable_area->ScrollsOverflow();
@@ -204,6 +207,7 @@ LayoutBoxModelObject::~LayoutBoxModelObject() {
 }
 
 void LayoutBoxModelObject::WillBeDestroyed() {
+  CheckIsNotDestroyed();
   // A continuation of this LayoutObject should be destroyed at subclasses.
   DCHECK(!Continuation());
 
@@ -231,6 +235,7 @@ void LayoutBoxModelObject::WillBeDestroyed() {
 
 void LayoutBoxModelObject::StyleWillChange(StyleDifference diff,
                                            const ComputedStyle& new_style) {
+  CheckIsNotDestroyed();
   // SPv1:
   // This object's layer may begin or cease to be stacked or stacking context,
   // in which case the paint invalidation container of this object and
@@ -267,6 +272,7 @@ void LayoutBoxModelObject::StyleWillChange(StyleDifference diff,
 DISABLE_CFI_PERF
 void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
                                           const ComputedStyle* old_style) {
+  CheckIsNotDestroyed();
   bool had_transform_related_property = HasTransformRelatedProperty();
   bool had_filter_inducing_property = HasFilterInducingProperty();
   bool had_non_initial_backdrop_filter = HasNonInitialBackdropFilter();
@@ -515,6 +521,7 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
 }
 
 void LayoutBoxModelObject::InvalidateStickyConstraints() {
+  CheckIsNotDestroyed();
   PaintLayer* enclosing = EnclosingLayer();
 
   if (PaintLayerScrollableArea* scrollable_area =
@@ -539,6 +546,7 @@ void LayoutBoxModelObject::InvalidateStickyConstraints() {
 }
 
 void LayoutBoxModelObject::CreateLayerAfterStyleChange() {
+  CheckIsNotDestroyed();
   DCHECK(!HasLayer() && !Layer());
   GetMutableForPainting().FirstFragment().SetLayer(
       std::make_unique<PaintLayer>(*this));
@@ -552,6 +560,7 @@ void LayoutBoxModelObject::CreateLayerAfterStyleChange() {
 }
 
 void LayoutBoxModelObject::DestroyLayer() {
+  CheckIsNotDestroyed();
   DCHECK(HasLayer() && Layer());
   SetHasLayer(false);
   GetMutableForPainting().FirstFragment().SetLayer(nullptr);
@@ -562,10 +571,12 @@ void LayoutBoxModelObject::DestroyLayer() {
 }
 
 bool LayoutBoxModelObject::HasSelfPaintingLayer() const {
+  CheckIsNotDestroyed();
   return Layer() && Layer()->IsSelfPaintingLayer();
 }
 
 PaintLayerScrollableArea* LayoutBoxModelObject::GetScrollableArea() const {
+  CheckIsNotDestroyed();
   return Layer() ? Layer()->GetScrollableArea() : nullptr;
 }
 
@@ -573,6 +584,7 @@ void LayoutBoxModelObject::AddOutlineRectsForNormalChildren(
     Vector<PhysicalRect>& rects,
     const PhysicalOffset& additional_offset,
     NGOutlineType include_block_overflows) const {
+  CheckIsNotDestroyed();
   for (LayoutObject* child = SlowFirstChild(); child;
        child = child->NextSibling()) {
     // Outlines of out-of-flow positioned descendants are handled in
@@ -598,6 +610,7 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
     Vector<PhysicalRect>& rects,
     const PhysicalOffset& additional_offset,
     NGOutlineType include_block_overflows) const {
+  CheckIsNotDestroyed();
   if (descendant.IsText() || descendant.IsListMarkerForNormalContent())
     return;
 
@@ -637,11 +650,13 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
 void LayoutBoxModelObject::AbsoluteQuadsForSelf(
     Vector<FloatQuad>& quads,
     MapCoordinatesFlags mode) const {
+  CheckIsNotDestroyed();
   NOTREACHED();
 }
 
 void LayoutBoxModelObject::AbsoluteQuads(Vector<FloatQuad>& quads,
                                          MapCoordinatesFlags mode) const {
+  CheckIsNotDestroyed();
   AbsoluteQuadsForSelf(quads, mode);
 
   // Iterate over continuations, avoiding recursion in case there are
@@ -659,6 +674,7 @@ void LayoutBoxModelObject::AbsoluteQuads(Vector<FloatQuad>& quads,
 }
 
 void LayoutBoxModelObject::UpdateFromStyle() {
+  CheckIsNotDestroyed();
   const ComputedStyle& style_to_use = StyleRef();
   SetHasBoxDecorationBackground(style_to_use.HasBoxDecorationBackground());
   SetInline(style_to_use.IsDisplayInlineType());
@@ -669,6 +685,7 @@ void LayoutBoxModelObject::UpdateFromStyle() {
 
 LayoutBlock* LayoutBoxModelObject::ContainingBlockForAutoHeightDetection(
     const Length& logical_height) const {
+  CheckIsNotDestroyed();
   // For percentage heights: The percentage is calculated with respect to the
   // height of the generated box's containing block. If the height of the
   // containing block is not specified explicitly (i.e., it depends on content
@@ -703,6 +720,7 @@ LayoutBlock* LayoutBoxModelObject::ContainingBlockForAutoHeightDetection(
 
 bool LayoutBoxModelObject::HasAutoHeightOrContainingBlockWithAutoHeight(
     RegisterPercentageDescendant register_percentage_descendant) const {
+  CheckIsNotDestroyed();
   // TODO(rego): Check if we can somehow reuse LayoutBlock::
   // availableLogicalHeightForPercentageComputation() (see crbug.com/635655).
   const LayoutBox* this_box = IsBox() ? ToLayoutBox(this) : nullptr;
@@ -769,6 +787,7 @@ bool LayoutBoxModelObject::HasAutoHeightOrContainingBlockWithAutoHeight(
 }
 
 PhysicalOffset LayoutBoxModelObject::RelativePositionOffset() const {
+  CheckIsNotDestroyed();
   DCHECK(IsRelPositioned());
   LayoutBlock* containing_block = ContainingBlock();
 
@@ -898,6 +917,7 @@ PhysicalOffset LayoutBoxModelObject::RelativePositionOffset() const {
 }
 
 void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
+  CheckIsNotDestroyed();
   DCHECK(StyleRef().HasStickyConstrainedPosition());
 
   const PhysicalSize constraining_size = ComputeStickyConstrainingRect().size;
@@ -1076,6 +1096,7 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
 }
 
 bool LayoutBoxModelObject::IsSlowRepaintConstrainedObject() const {
+  CheckIsNotDestroyed();
   if (!HasLayer() || (StyleRef().GetPosition() != EPosition::kFixed &&
                       StyleRef().GetPosition() != EPosition::kSticky)) {
     return false;
@@ -1101,6 +1122,7 @@ bool LayoutBoxModelObject::IsSlowRepaintConstrainedObject() const {
 }
 
 PhysicalRect LayoutBoxModelObject::ComputeStickyConstrainingRect() const {
+  CheckIsNotDestroyed();
   LayoutBox* enclosing_clipping_box =
       Layer()->AncestorOverflowLayer()->GetLayoutBox();
   DCHECK(enclosing_clipping_box);
@@ -1122,6 +1144,7 @@ PhysicalRect LayoutBoxModelObject::ComputeStickyConstrainingRect() const {
 }
 
 PhysicalOffset LayoutBoxModelObject::StickyPositionOffset() const {
+  CheckIsNotDestroyed();
   // TODO(chrishtr): StickyPositionOffset depends on compositing at present,
   // but there are callsites within Layout for it.
 
@@ -1150,6 +1173,7 @@ PhysicalOffset LayoutBoxModelObject::StickyPositionOffset() const {
 PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
     const PhysicalOffset& start_point,
     const Element* offset_parent) const {
+  CheckIsNotDestroyed();
   // If the element is the HTML body element or doesn't have a parent
   // return 0 and stop this algorithm.
   if (IsBody() || !Parent())
@@ -1216,6 +1240,7 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
 }
 
 PhysicalOffset LayoutBoxModelObject::OffsetForInFlowPosition() const {
+  CheckIsNotDestroyed();
   if (IsRelPositioned())
     return RelativePositionOffset();
 
@@ -1226,28 +1251,33 @@ PhysicalOffset LayoutBoxModelObject::OffsetForInFlowPosition() const {
 }
 
 LayoutUnit LayoutBoxModelObject::OffsetLeft(const Element* parent) const {
+  CheckIsNotDestroyed();
   // Note that LayoutInline and LayoutBox override this to pass a different
   // startPoint to adjustedPositionRelativeTo.
   return AdjustedPositionRelativeTo(PhysicalOffset(), parent).left;
 }
 
 LayoutUnit LayoutBoxModelObject::OffsetTop(const Element* parent) const {
+  CheckIsNotDestroyed();
   // Note that LayoutInline and LayoutBox override this to pass a different
   // startPoint to adjustedPositionRelativeTo.
   return AdjustedPositionRelativeTo(PhysicalOffset(), parent).top;
 }
 
 int LayoutBoxModelObject::PixelSnappedOffsetWidth(const Element* parent) const {
+  CheckIsNotDestroyed();
   return SnapSizeToPixel(OffsetWidth(), OffsetLeft(parent));
 }
 
 int LayoutBoxModelObject::PixelSnappedOffsetHeight(
     const Element* parent) const {
+  CheckIsNotDestroyed();
   return SnapSizeToPixel(OffsetHeight(), OffsetTop(parent));
 }
 
 LayoutUnit LayoutBoxModelObject::ComputedCSSPadding(
     const Length& padding) const {
+  CheckIsNotDestroyed();
   LayoutUnit w;
   if (padding.IsPercentOrCalc())
     w = ContainingBlockLogicalWidthForContent();
@@ -1255,14 +1285,17 @@ LayoutUnit LayoutBoxModelObject::ComputedCSSPadding(
 }
 
 LayoutUnit LayoutBoxModelObject::ContainingBlockLogicalWidthForContent() const {
+  CheckIsNotDestroyed();
   return ContainingBlock()->AvailableLogicalWidth();
 }
 
 LayoutBoxModelObject* LayoutBoxModelObject::Continuation() const {
+  CheckIsNotDestroyed();
   return GetContinuationMap().at(this);
 }
 
 void LayoutBoxModelObject::SetContinuation(LayoutBoxModelObject* continuation) {
+  CheckIsNotDestroyed();
   if (continuation) {
     DCHECK(continuation->IsLayoutInline() || continuation->IsLayoutBlockFlow());
     GetContinuationMap().Set(this, continuation);
@@ -1274,6 +1307,7 @@ void LayoutBoxModelObject::SetContinuation(LayoutBoxModelObject* continuation) {
 LayoutRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
     LayoutUnit width,
     LayoutUnit text_indent_offset) const {
+  CheckIsNotDestroyed();
   DCHECK(!SlowFirstChild() || SlowFirstChild()->IsPseudoElement());
 
   // FIXME: This does not take into account either :first-line or :first-letter
@@ -1355,6 +1389,7 @@ LayoutRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
 const LayoutObject* LayoutBoxModelObject::PushMappingToContainer(
     const LayoutBoxModelObject* ancestor_to_stop_at,
     LayoutGeometryMap& geometry_map) const {
+  CheckIsNotDestroyed();
   DCHECK_NE(ancestor_to_stop_at, this);
 
   AncestorSkipInfo skip_info(ancestor_to_stop_at);
@@ -1426,6 +1461,7 @@ void LayoutBoxModelObject::MoveChildTo(
     LayoutObject* child,
     LayoutObject* before_child,
     bool full_remove_insert) {
+  CheckIsNotDestroyed();
   // We assume that callers have cleared their positioned objects list for child
   // moves (!fullRemoveInsert) so the positioned layoutObject maps don't become
   // stale. It would be too slow to do the map lookup on each call.
@@ -1471,6 +1507,7 @@ void LayoutBoxModelObject::MoveChildrenTo(
     LayoutObject* end_child,
     LayoutObject* before_child,
     bool full_remove_insert) {
+  CheckIsNotDestroyed();
   // This condition is rarely hit since this function is usually called on
   // anonymous blocks which can no longer carry positioned objects (see r120761)
   // or when fullRemoveInsert is false.
@@ -1494,6 +1531,7 @@ void LayoutBoxModelObject::MoveChildrenTo(
 
 bool LayoutBoxModelObject::BackgroundTransfersToView(
     const ComputedStyle* document_element_style) const {
+  CheckIsNotDestroyed();
   // In our painter implementation, ViewPainter instead of the painter of the
   // layout object of the document element paints the view background.
   if (IsDocumentElement())

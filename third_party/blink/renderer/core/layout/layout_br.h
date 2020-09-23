@@ -32,7 +32,10 @@ class LayoutBR final : public LayoutText {
   explicit LayoutBR(Node*);
   ~LayoutBR() override;
 
-  const char* GetName() const override { return "LayoutBR"; }
+  const char* GetName() const override {
+    CheckIsNotDestroyed();
+    return "LayoutBR";
+  }
 
   // Although line breaks contain no actual text, if we're selected we need
   // to return a rect that includes space to illustrate a newline.
@@ -46,6 +49,7 @@ class LayoutBR final : public LayoutText {
               HashSet<const SimpleFontData*>* = nullptr /* fallbackFonts */,
               FloatRect* /* glyphBounds */ = nullptr,
               float /* expansion */ = false) const override {
+    CheckIsNotDestroyed();
     return 0;
   }
   float Width(unsigned /* from */,
@@ -56,12 +60,14 @@ class LayoutBR final : public LayoutText {
               HashSet<const SimpleFontData*>* = nullptr /* fallbackFonts */,
               FloatRect* /* glyphBounds */ = nullptr,
               float /* expansion */ = false) const override {
+    CheckIsNotDestroyed();
     return 0;
   }
 
   int LineHeight(bool first_line) const;
 
   bool IsOfType(LayoutObjectType type) const override {
+    CheckIsNotDestroyed();
     return type == kLayoutObjectBr || LayoutText::IsOfType(type);
   }
 

@@ -36,6 +36,7 @@ LayoutSVGViewportContainer::LayoutSVGViewportContainer(SVGSVGElement* node)
       needs_transform_update_(true) {}
 
 void LayoutSVGViewportContainer::UpdateLayout() {
+  CheckIsNotDestroyed();
   DCHECK(NeedsLayout());
 
   const auto* svg = To<SVGSVGElement>(GetElement());
@@ -59,6 +60,7 @@ void LayoutSVGViewportContainer::UpdateLayout() {
 }
 
 void LayoutSVGViewportContainer::SetNeedsTransformUpdate() {
+  CheckIsNotDestroyed();
   // The transform paint property relies on the SVG transform being up-to-date
   // (see: PaintPropertyTreeBuilder::updateTransformForNonRootSVG).
   SetNeedsPaintPropertyUpdate();
@@ -67,6 +69,7 @@ void LayoutSVGViewportContainer::SetNeedsTransformUpdate() {
 
 SVGTransformChange LayoutSVGViewportContainer::CalculateLocalTransform(
     bool bounds_changed) {
+  CheckIsNotDestroyed();
   if (!needs_transform_update_)
     return SVGTransformChange::kNone;
 
@@ -84,6 +87,7 @@ bool LayoutSVGViewportContainer::NodeAtPoint(
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
     HitTestAction action) {
+  CheckIsNotDestroyed();
   // Respect the viewport clip which is in parent coordinates.
   if (SVGLayoutSupport::IsOverflowHidden(*this)) {
     if (!hit_test_location.Intersects(viewport_))
@@ -96,6 +100,7 @@ bool LayoutSVGViewportContainer::NodeAtPoint(
 void LayoutSVGViewportContainer::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style) {
+  CheckIsNotDestroyed();
   LayoutSVGContainer::StyleDidChange(diff, old_style);
 
   if (old_style && (SVGLayoutSupport::IsOverflowHidden(*old_style) !=

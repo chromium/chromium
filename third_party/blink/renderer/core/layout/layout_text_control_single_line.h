@@ -44,6 +44,7 @@ class LayoutTextControlSingleLine : public LayoutTextControl {
 
   void CapsLockStateMayHaveChanged();
   bool ShouldDrawCapsLockIndicator() const {
+    CheckIsNotDestroyed();
     return should_draw_caps_lock_indicator_;
   }
 
@@ -54,6 +55,7 @@ class LayoutTextControlSingleLine : public LayoutTextControl {
 
  private:
   bool IsOfType(LayoutObjectType type) const override {
+    CheckIsNotDestroyed();
     return type == kLayoutObjectTextField || LayoutTextControl::IsOfType(type);
   }
 
@@ -80,9 +82,12 @@ class LayoutTextControlSingleLine : public LayoutTextControl {
   // If the INPUT content height is smaller than the font height, the
   // inner-editor element overflows the INPUT box intentionally, however it
   // shouldn't affect outside of the INPUT box.  So we ignore child overflow.
-  void AddLayoutOverflowFromChildren() final {}
+  void AddLayoutOverflowFromChildren() final { CheckIsNotDestroyed(); }
 
-  bool AllowsNonVisibleOverflow() const override { return false; }
+  bool AllowsNonVisibleOverflow() const override {
+    CheckIsNotDestroyed();
+    return false;
+  }
 
   HTMLElement* InnerSpinButtonElement() const;
 
@@ -100,15 +105,24 @@ struct DowncastTraits<LayoutTextControlSingleLine> {
 
 class LayoutTextControlInnerEditor : public LayoutBlockFlow {
  public:
-  LayoutTextControlInnerEditor(Element* element) : LayoutBlockFlow(element) {}
+  LayoutTextControlInnerEditor(Element* element) : LayoutBlockFlow(element) {
+    CheckIsNotDestroyed();
+  }
 
  private:
   bool IsIntrinsicallyScrollable(
       ScrollbarOrientation orientation) const override {
+    CheckIsNotDestroyed();
     return orientation == kHorizontalScrollbar;
   }
-  bool ScrollsOverflowX() const override { return IsScrollContainer(); }
-  bool ScrollsOverflowY() const override { return false; }
+  bool ScrollsOverflowX() const override {
+    CheckIsNotDestroyed();
+    return IsScrollContainer();
+  }
+  bool ScrollsOverflowY() const override {
+    CheckIsNotDestroyed();
+    return false;
+  }
 };
 
 }  // namespace blink

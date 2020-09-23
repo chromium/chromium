@@ -47,10 +47,14 @@ class LayoutSVGResourceContainer : public LayoutSVGHiddenContainer {
   virtual void RemoveAllClientsFromCache() = 0;
 
   // Remove any cached data for the |client|, and return true if so.
-  virtual bool RemoveClientFromCache(SVGResourceClient&) { return false; }
+  virtual bool RemoveClientFromCache(SVGResourceClient&) {
+    CheckIsNotDestroyed();
+    return false;
+  }
 
   void UpdateLayout() override;
   bool IsOfType(LayoutObjectType type) const override {
+    CheckIsNotDestroyed();
     return type == kLayoutObjectSVGResourceContainer ||
            LayoutSVGHiddenContainer::IsOfType(type);
   }
@@ -58,6 +62,7 @@ class LayoutSVGResourceContainer : public LayoutSVGHiddenContainer {
   virtual LayoutSVGResourceType ResourceType() const = 0;
 
   bool IsSVGPaintServer() const {
+    CheckIsNotDestroyed();
     LayoutSVGResourceType resource_type = ResourceType();
     return resource_type == kPatternResourceType ||
            resource_type == kLinearGradientResourceType ||
@@ -75,7 +80,10 @@ class LayoutSVGResourceContainer : public LayoutSVGHiddenContainer {
       bool needs_layout = true);
   static void MarkClientForInvalidation(LayoutObject&, InvalidationModeMask);
 
-  void ClearInvalidationMask() { completed_invalidations_mask_ = 0; }
+  void ClearInvalidationMask() {
+    CheckIsNotDestroyed();
+    completed_invalidations_mask_ = 0;
+  }
 
  protected:
   // Used from RemoveAllClientsFromCache methods.

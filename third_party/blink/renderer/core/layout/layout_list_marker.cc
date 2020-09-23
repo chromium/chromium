@@ -44,12 +44,14 @@ LayoutListMarker::LayoutListMarker(Element* element) : LayoutBox(element) {
 LayoutListMarker::~LayoutListMarker() = default;
 
 void LayoutListMarker::WillBeDestroyed() {
+  CheckIsNotDestroyed();
   if (image_)
     image_->RemoveClient(this);
   LayoutBox::WillBeDestroyed();
 }
 
 const LayoutListItem* LayoutListMarker::ListItem() const {
+  CheckIsNotDestroyed();
   LayoutObject* list_item = GetNode()->parentNode()->GetLayoutObject();
   DCHECK(list_item);
   DCHECK(list_item->IsListItem());
@@ -57,6 +59,7 @@ const LayoutListItem* LayoutListMarker::ListItem() const {
 }
 
 LayoutSize LayoutListMarker::ImageBulletSize() const {
+  CheckIsNotDestroyed();
   DCHECK(IsImage());
   const SimpleFontData* font_data = StyleRef().GetFont().PrimaryFont();
   DCHECK(font_data);
@@ -75,6 +78,7 @@ LayoutSize LayoutListMarker::ImageBulletSize() const {
 }
 
 void LayoutListMarker::ListStyleTypeChanged() {
+  CheckIsNotDestroyed();
   if (IsImage())
     return;
   SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
@@ -82,6 +86,7 @@ void LayoutListMarker::ListStyleTypeChanged() {
 }
 
 void LayoutListMarker::UpdateMarkerImageIfNeeded(StyleImage* image) {
+  CheckIsNotDestroyed();
   if (image_ != image) {
     if (image_)
       image_->RemoveClient(this);
@@ -92,20 +97,24 @@ void LayoutListMarker::UpdateMarkerImageIfNeeded(StyleImage* image) {
 }
 
 InlineBox* LayoutListMarker::CreateInlineBox() {
+  CheckIsNotDestroyed();
   InlineBox* result = LayoutBox::CreateInlineBox();
   result->SetIsText(IsText());
   return result;
 }
 
 bool LayoutListMarker::IsImage() const {
+  CheckIsNotDestroyed();
   return image_ && !image_->ErrorOccurred();
 }
 
 void LayoutListMarker::Paint(const PaintInfo& paint_info) const {
+  CheckIsNotDestroyed();
   ListMarkerPainter(*this).Paint(paint_info);
 }
 
 void LayoutListMarker::UpdateLayout() {
+  CheckIsNotDestroyed();
   DCHECK(NeedsLayout());
   LayoutAnalyzer::Scope analyzer(*this);
 
@@ -138,6 +147,7 @@ void LayoutListMarker::UpdateLayout() {
 }
 
 void LayoutListMarker::ImageChanged(WrappedImagePtr o, CanDeferInvalidation) {
+  CheckIsNotDestroyed();
   // A list marker can't have a background or border image, so no need to call
   // the base class method.
   if (!image_ || o != image_->Data())
@@ -153,6 +163,7 @@ void LayoutListMarker::ImageChanged(WrappedImagePtr o, CanDeferInvalidation) {
 }
 
 void LayoutListMarker::UpdateContent() {
+  CheckIsNotDestroyed();
   DCHECK(IntrinsicLogicalWidthsDirty());
 
   text_ = "";
@@ -178,6 +189,7 @@ void LayoutListMarker::UpdateContent() {
 }
 
 String LayoutListMarker::TextAlternative() const {
+  CheckIsNotDestroyed();
   if (GetListStyleCategory() == ListMarker::ListStyleCategory::kStaticString)
     return text_;
   UChar suffix =
@@ -188,6 +200,7 @@ String LayoutListMarker::TextAlternative() const {
 
 LayoutUnit LayoutListMarker::GetWidthOfText(
     ListMarker::ListStyleCategory category) const {
+  CheckIsNotDestroyed();
   // TODO(crbug.com/1012289): this code doesn't support bidi algorithm.
   if (text_.IsEmpty())
     return LayoutUnit();
@@ -209,6 +222,7 @@ LayoutUnit LayoutListMarker::GetWidthOfText(
 }
 
 MinMaxSizes LayoutListMarker::ComputeIntrinsicLogicalWidths() const {
+  CheckIsNotDestroyed();
   DCHECK(IntrinsicLogicalWidthsDirty());
   const_cast<LayoutListMarker*>(this)->UpdateContent();
 
@@ -237,10 +251,12 @@ MinMaxSizes LayoutListMarker::ComputeIntrinsicLogicalWidths() const {
 }
 
 MinMaxSizes LayoutListMarker::PreferredLogicalWidths() const {
+  CheckIsNotDestroyed();
   return IntrinsicLogicalWidths();
 }
 
 void LayoutListMarker::UpdateMargins(LayoutUnit marker_inline_size) {
+  CheckIsNotDestroyed();
   LayoutUnit margin_start;
   LayoutUnit margin_end;
   const ComputedStyle& style = StyleRef();
@@ -258,6 +274,7 @@ void LayoutListMarker::UpdateMargins(LayoutUnit marker_inline_size) {
 }
 
 void LayoutListMarker::UpdateMargins() {
+  CheckIsNotDestroyed();
   UpdateMargins(PreferredLogicalWidths().min_size);
 }
 
@@ -265,6 +282,7 @@ LayoutUnit LayoutListMarker::LineHeight(
     bool first_line,
     LineDirectionMode direction,
     LinePositionMode line_position_mode) const {
+  CheckIsNotDestroyed();
   if (!IsImage())
     return ListItem()->LineHeight(first_line, direction,
                                   kPositionOfInteriorLineBoxes);
@@ -276,6 +294,7 @@ LayoutUnit LayoutListMarker::BaselinePosition(
     bool first_line,
     LineDirectionMode direction,
     LinePositionMode line_position_mode) const {
+  CheckIsNotDestroyed();
   DCHECK_EQ(line_position_mode, kPositionOnContainingLine);
   if (!IsImage())
     return ListItem()->BaselinePosition(baseline_type, first_line, direction,
@@ -285,10 +304,12 @@ LayoutUnit LayoutListMarker::BaselinePosition(
 }
 
 ListMarker::ListStyleCategory LayoutListMarker::GetListStyleCategory() const {
+  CheckIsNotDestroyed();
   return ListMarker::GetListStyleCategory(StyleRef().ListStyleType());
 }
 
 bool LayoutListMarker::IsInside() const {
+  CheckIsNotDestroyed();
   const LayoutListItem* list_item = ListItem();
   const ComputedStyle& parent_style = list_item->StyleRef();
   return parent_style.ListStylePosition() == EListStylePosition::kInside ||
@@ -297,6 +318,7 @@ bool LayoutListMarker::IsInside() const {
 }
 
 LayoutRect LayoutListMarker::GetRelativeMarkerRect() const {
+  CheckIsNotDestroyed();
   if (IsImage())
     return LayoutRect(LayoutPoint(), ImageBulletSize());
 

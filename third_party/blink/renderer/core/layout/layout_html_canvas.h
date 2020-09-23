@@ -37,6 +37,7 @@ class CORE_EXPORT LayoutHTMLCanvas final : public LayoutReplaced {
   explicit LayoutHTMLCanvas(HTMLCanvasElement*);
 
   bool IsOfType(LayoutObjectType type) const override {
+    CheckIsNotDestroyed();
     return type == kLayoutObjectCanvas || LayoutReplaced::IsOfType(type);
   }
   PaintLayerType LayerTypeRequired() const override;
@@ -47,16 +48,25 @@ class CORE_EXPORT LayoutHTMLCanvas final : public LayoutReplaced {
 
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
-  const char* GetName() const override { return "LayoutHTMLCanvas"; }
+  const char* GetName() const override {
+    CheckIsNotDestroyed();
+    return "LayoutHTMLCanvas";
+  }
 
   void WillBeDestroyed() override;
 
  private:
   void PaintReplaced(const PaintInfo&,
                      const PhysicalOffset& paint_offset) const override;
-  void IntrinsicSizeChanged() override { CanvasSizeChanged(); }
+  void IntrinsicSizeChanged() override {
+    CheckIsNotDestroyed();
+    CanvasSizeChanged();
+  }
 
-  bool CanHaveAdditionalCompositingReasons() const override { return true; }
+  bool CanHaveAdditionalCompositingReasons() const override {
+    CheckIsNotDestroyed();
+    return true;
+  }
   CompositingReasons AdditionalCompositingReasons() const override;
 };
 

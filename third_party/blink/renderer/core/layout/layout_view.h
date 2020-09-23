@@ -76,18 +76,29 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
                                 HitTestResult&);
 
   // Returns the total count of calls to HitTest, for testing.
-  unsigned HitTestCount() const { return hit_test_count_; }
-  unsigned HitTestCacheHits() const { return hit_test_cache_hits_; }
+  unsigned HitTestCount() const {
+    CheckIsNotDestroyed();
+    return hit_test_count_;
+  }
+  unsigned HitTestCacheHits() const {
+    CheckIsNotDestroyed();
+    return hit_test_cache_hits_;
+  }
 
   void ClearHitTestCache();
 
-  const char* GetName() const override { return "LayoutView"; }
+  const char* GetName() const override {
+    CheckIsNotDestroyed();
+    return "LayoutView";
+  }
 
   bool IsOfType(LayoutObjectType type) const override {
+    CheckIsNotDestroyed();
     return type == kLayoutObjectLayoutView || LayoutBlockFlow::IsOfType(type);
   }
 
   PaintLayerType LayerTypeRequired() const override {
+    CheckIsNotDestroyed();
     return kNormalPaintLayer;
   }
 
@@ -107,10 +118,12 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
 
   int ViewHeight(
       IncludeScrollbarsInRect scrollbar_inclusion = kExcludeScrollbars) const {
+    CheckIsNotDestroyed();
     return GetLayoutSize(scrollbar_inclusion).Height();
   }
   int ViewWidth(
       IncludeScrollbarsInRect scrollbar_inclusion = kExcludeScrollbars) const {
+    CheckIsNotDestroyed();
     return GetLayoutSize(scrollbar_inclusion).Width();
   }
 
@@ -121,7 +134,10 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
 
   float ZoomFactor() const;
 
-  LocalFrameView* GetFrameView() const { return frame_view_; }
+  LocalFrameView* GetFrameView() const {
+    CheckIsNotDestroyed();
+    return frame_view_;
+  }
   const LayoutBox& RootBox() const;
 
   void UpdateAfterLayout() override;
@@ -169,33 +185,47 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
   void SetAutosizeScrollbarModes(mojom::blink::ScrollbarMode h_mode,
                                  mojom::blink::ScrollbarMode v_mode);
   mojom::blink::ScrollbarMode AutosizeHorizontalScrollbarMode() const {
+    CheckIsNotDestroyed();
     return autosize_h_scrollbar_mode_;
   }
   mojom::blink::ScrollbarMode AutosizeVerticalScrollbarMode() const {
+    CheckIsNotDestroyed();
     return autosize_v_scrollbar_mode_;
   }
 
   void CalculateScrollbarModes(mojom::blink::ScrollbarMode& h_mode,
                                mojom::blink::ScrollbarMode& v_mode) const;
 
-  LayoutState* GetLayoutState() const { return layout_state_; }
+  LayoutState* GetLayoutState() const {
+    CheckIsNotDestroyed();
+    return layout_state_;
+  }
 
-  bool CanHaveAdditionalCompositingReasons() const override { return true; }
+  bool CanHaveAdditionalCompositingReasons() const override {
+    CheckIsNotDestroyed();
+    return true;
+  }
   CompositingReasons AdditionalCompositingReasons() const override;
 
   void UpdateHitTestResult(HitTestResult&,
                            const PhysicalOffset&) const override;
 
   ViewFragmentationContext* FragmentationContext() const {
+    CheckIsNotDestroyed();
     return fragmentation_context_.get();
   }
 
-  LayoutUnit PageLogicalHeight() const { return page_logical_height_; }
+  LayoutUnit PageLogicalHeight() const {
+    CheckIsNotDestroyed();
+    return page_logical_height_;
+  }
   void SetPageLogicalHeight(LayoutUnit height) {
+    CheckIsNotDestroyed();
     page_logical_height_ = height;
   }
 
   NamedPagesMapper* GetNamedPagesMapper() const {
+    CheckIsNotDestroyed();
     return named_pages_mapper_.get();
   }
 
@@ -206,23 +236,37 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
 
   IntervalArena* GetIntervalArena();
 
-  void SetLayoutQuoteHead(LayoutQuote* head) { layout_quote_head_ = head; }
-  LayoutQuote* LayoutQuoteHead() const { return layout_quote_head_; }
+  void SetLayoutQuoteHead(LayoutQuote* head) {
+    CheckIsNotDestroyed();
+    layout_quote_head_ = head;
+  }
+  LayoutQuote* LayoutQuoteHead() const {
+    CheckIsNotDestroyed();
+    return layout_quote_head_;
+  }
 
   // FIXME: This is a work around because the current implementation of counters
   // requires walking the entire tree repeatedly and most pages don't actually
   // use either feature so we shouldn't take the performance hit when not
   // needed. Long term we should rewrite the counter and quotes code.
   void AddLayoutCounter() {
+    CheckIsNotDestroyed();
     layout_counter_count_++;
     SetNeedsCounterUpdate();
   }
   void RemoveLayoutCounter() {
+    CheckIsNotDestroyed();
     DCHECK_GT(layout_counter_count_, 0u);
     layout_counter_count_--;
   }
-  bool HasLayoutCounters() { return layout_counter_count_; }
-  void SetNeedsCounterUpdate() { needs_counter_update_ = true; }
+  bool HasLayoutCounters() {
+    CheckIsNotDestroyed();
+    return layout_counter_count_;
+  }
+  void SetNeedsCounterUpdate() {
+    CheckIsNotDestroyed();
+    needs_counter_update_ = true;
+  }
   void UpdateCounters();
 
   bool BackgroundIsKnownToBeOpaqueInRect(
@@ -233,9 +277,11 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
   FloatSize ViewportSizeForViewportUnits() const;
 
   void PushLayoutState(LayoutState& layout_state) {
+    CheckIsNotDestroyed();
     layout_state_ = &layout_state;
   }
   void PopLayoutState() {
+    CheckIsNotDestroyed();
     DCHECK(layout_state_);
     layout_state_ = layout_state_->Next();
   }
@@ -270,16 +316,19 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
   // will be painted in this rect. It's also the positioning area of fixed-
   // attachment backgrounds.
   PhysicalRect BackgroundRect() const {
+    CheckIsNotDestroyed();
     return OverflowClipRect(PhysicalOffset());
   }
 
   // The previous BackgroundRect after the previous paint invalidation.
   PhysicalRect PreviousBackgroundRect() const {
+    CheckIsNotDestroyed();
     DCHECK_EQ(GetDocument().Lifecycle().GetState(),
               DocumentLifecycle::kInPrePaint);
     return previous_background_rect_;
   }
   void SetPreviousBackgroundRect(const PhysicalRect& r) const {
+    CheckIsNotDestroyed();
     DCHECK_EQ(GetDocument().Lifecycle().GetState(),
               DocumentLifecycle::kInPrePaint);
     previous_background_rect_ = r;
@@ -310,9 +359,11 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
   void UpdateFromStyle() override;
 
   int ViewLogicalWidthForBoxSizing() const {
+    CheckIsNotDestroyed();
     return ViewLogicalWidth(kIncludeScrollbars);
   }
   int ViewLogicalHeightForBoxSizing() const {
+    CheckIsNotDestroyed();
     return ViewLogicalHeight(kIncludeScrollbars);
   }
 

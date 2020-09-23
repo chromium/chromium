@@ -37,11 +37,13 @@ LayoutFrame::LayoutFrame(HTMLFrameElement* frame)
 }
 
 FrameEdgeInfo LayoutFrame::EdgeInfo() const {
+  CheckIsNotDestroyed();
   auto* element = To<HTMLFrameElement>(GetNode());
   return FrameEdgeInfo(element->NoResize(), element->HasFrameBorder());
 }
 
 void LayoutFrame::ImageChanged(WrappedImagePtr image, CanDeferInvalidation) {
+  CheckIsNotDestroyed();
   if (const CursorList* cursors = StyleRef().Cursors()) {
     for (const CursorData& cursor : *cursors) {
       if (cursor.GetImage() && cursor.GetImage()->CachedImage() == image) {
@@ -58,6 +60,7 @@ void LayoutFrame::ImageChanged(WrappedImagePtr image, CanDeferInvalidation) {
 }
 
 void LayoutFrame::UpdateFromElement() {
+  CheckIsNotDestroyed();
   if (Parent() && Parent()->IsFrameSet())
     ToLayoutFrameSet(Parent())->NotifyFrameEdgeInfoChanged();
 }

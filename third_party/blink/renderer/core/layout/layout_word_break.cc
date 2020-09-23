@@ -35,10 +35,12 @@ LayoutWordBreak::LayoutWordBreak(HTMLElement* element)
     : LayoutText(element, StringImpl::empty_) {}
 
 bool LayoutWordBreak::IsWordBreak() const {
+  CheckIsNotDestroyed();
   return true;
 }
 
 Position LayoutWordBreak::PositionForCaretOffset(unsigned offset) const {
+  CheckIsNotDestroyed();
   if (!GetNode())
     return Position();
   // The only allowed caret offset is 0, since LayoutWordBreak always has
@@ -49,6 +51,7 @@ Position LayoutWordBreak::PositionForCaretOffset(unsigned offset) const {
 
 base::Optional<unsigned> LayoutWordBreak::CaretOffsetForPosition(
     const Position& position) const {
+  CheckIsNotDestroyed();
   if (position.IsNull() || position.AnchorNode() != GetNode())
     return base::nullopt;
   DCHECK(position.IsBeforeAnchor() || position.IsAfterAnchor());

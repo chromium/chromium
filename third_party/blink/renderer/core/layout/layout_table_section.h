@@ -127,7 +127,10 @@ class CORE_EXPORT LayoutTableSection final
 
   void MarkAllCellsWidthsDirtyAndOrNeedsLayout(LayoutTable::WhatToMarkAllCells);
 
-  LayoutTable* Table() const final { return To<LayoutTable>(Parent()); }
+  LayoutTable* Table() const final {
+    CheckIsNotDestroyed();
+    return To<LayoutTable>(Parent());
+  }
 
   typedef Vector<LayoutTableCell*, 2> SpanningLayoutTableCells;
 
@@ -148,15 +151,18 @@ class CORE_EXPORT LayoutTableSection final
   };
 
   TableGridCell& GridCellAt(unsigned row, unsigned effective_column) {
+    CheckIsNotDestroyed();
     SECURITY_DCHECK(!needs_cell_recalc_);
     return grid_[row].grid_cells[effective_column];
   }
   const TableGridCell& GridCellAt(unsigned row,
                                   unsigned effective_column) const {
+    CheckIsNotDestroyed();
     SECURITY_DCHECK(!needs_cell_recalc_);
     return grid_[row].grid_cells[effective_column];
   }
   LayoutTableCell* PrimaryCellAt(unsigned row, unsigned effective_column) {
+    CheckIsNotDestroyed();
     SECURITY_DCHECK(!needs_cell_recalc_);
     auto& grid_cells = grid_[row].grid_cells;
     if (effective_column >= grid_cells.size())
@@ -165,6 +171,7 @@ class CORE_EXPORT LayoutTableSection final
   }
   const LayoutTableCell* PrimaryCellAt(unsigned row,
                                        unsigned effective_column) const {
+    CheckIsNotDestroyed();
     return const_cast<LayoutTableSection*>(this)->PrimaryCellAt(
         row, effective_column);
   }
@@ -174,11 +181,13 @@ class CORE_EXPORT LayoutTableSection final
   LayoutTableCell* OriginatingCellAt(unsigned row, unsigned effective_column);
   const LayoutTableCell* OriginatingCellAt(unsigned row,
                                            unsigned effective_column) const {
+    CheckIsNotDestroyed();
     return const_cast<LayoutTableSection*>(this)->OriginatingCellAt(
         row, effective_column);
   }
 
   unsigned NumCols(unsigned row) const final {
+    CheckIsNotDestroyed();
     DCHECK(!NeedsCellRecalc());
     return grid_[row].grid_cells.size();
   }
@@ -186,10 +195,12 @@ class CORE_EXPORT LayoutTableSection final
   // Returns null for cells with a rowspan that exceed the last row. Possibly
   // others.
   LayoutTableRow* RowLayoutObjectAt(unsigned row) {
+    CheckIsNotDestroyed();
     SECURITY_DCHECK(!needs_cell_recalc_);
     return grid_[row].row;
   }
   const LayoutTableRow* RowLayoutObjectAt(unsigned row) const {
+    CheckIsNotDestroyed();
     SECURITY_DCHECK(!needs_cell_recalc_);
     return grid_[row].row;
   }
@@ -198,6 +209,7 @@ class CORE_EXPORT LayoutTableSection final
   void SplitEffectiveColumn(unsigned pos, unsigned first);
 
   unsigned NumRows() const final {
+    CheckIsNotDestroyed();
     DCHECK(!NeedsCellRecalc());
     return grid_.size();
   }
@@ -214,14 +226,21 @@ class CORE_EXPORT LayoutTableSection final
   // m_needsCellRecalc before accessing m_grid.
   void RecalcCells();
   void RecalcCellsIfNeeded() {
+    CheckIsNotDestroyed();
     if (needs_cell_recalc_)
       RecalcCells();
   }
 
-  bool NeedsCellRecalc() const { return needs_cell_recalc_; }
+  bool NeedsCellRecalc() const {
+    CheckIsNotDestroyed();
+    return needs_cell_recalc_;
+  }
   void SetNeedsCellRecalc() final;
 
-  LayoutUnit RowBaseline(unsigned row) { return grid_[row].baseline; }
+  LayoutUnit RowBaseline(unsigned row) {
+    CheckIsNotDestroyed();
+    return grid_[row].baseline;
+  }
 
   void RowLogicalHeightChanged(LayoutTableRow*);
 
@@ -247,23 +266,33 @@ class CORE_EXPORT LayoutTableSection final
                                       CellSpan& columns) const;
 
   const HashSet<const LayoutTableCell*>& VisuallyOverflowingCells() const {
+    CheckIsNotDestroyed();
     return visually_overflowing_cells_;
   }
   bool HasVisuallyOverflowingCell() const {
+    CheckIsNotDestroyed();
     return visually_overflowing_cells_.size() || force_full_paint_;
   }
-  bool HasMultipleCellLevels() const { return has_multiple_cell_levels_; }
+  bool HasMultipleCellLevels() const {
+    CheckIsNotDestroyed();
+    return has_multiple_cell_levels_;
+  }
 
-  const char* GetName() const override { return "LayoutTableSection"; }
+  const char* GetName() const override {
+    CheckIsNotDestroyed();
+    return "LayoutTableSection";
+  }
 
   // Whether a section has opaque background depends on many factors, e.g.
   // border spacing, border collapsing, missing cells, etc. For simplicity,
   // just conservatively assume all table sections are not opaque.
   bool ForegroundIsKnownToBeOpaqueInRect(const PhysicalRect&,
                                          unsigned) const override {
+    CheckIsNotDestroyed();
     return false;
   }
   bool BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const override {
+    CheckIsNotDestroyed();
     return false;
   }
 
@@ -275,20 +304,27 @@ class CORE_EXPORT LayoutTableSection final
       VisualRectFlags = kDefaultVisualRectFlags) const override;
 
   bool IsRepeatingHeaderGroup() const final {
+    CheckIsNotDestroyed();
     return is_repeating_header_group_;
   }
   bool IsRepeatingFooterGroup() const final {
+    CheckIsNotDestroyed();
     return is_repeating_footer_group_;
   }
 
   void UpdateLayout() override;
 
-  CellSpan FullSectionRowSpan() const { return CellSpan(0, grid_.size()); }
+  CellSpan FullSectionRowSpan() const {
+    CheckIsNotDestroyed();
+    return CellSpan(0, grid_.size());
+  }
   CellSpan FullTableEffectiveColumnSpan() const {
+    CheckIsNotDestroyed();
     return CellSpan(0, Table()->NumEffectiveColumns());
   }
 
   void DetermineIfHeaderGroupShouldRepeat() {
+    CheckIsNotDestroyed();
     is_repeating_header_group_ = HeaderGroupShouldRepeat();
   }
 
@@ -296,6 +332,7 @@ class CORE_EXPORT LayoutTableSection final
   bool RowHasVisibilityCollapse(unsigned row) const;
 
   void DetermineIfFooterGroupShouldRepeat() {
+    CheckIsNotDestroyed();
     is_repeating_footer_group_ = FooterGroupShouldRepeat();
   }
 
@@ -310,13 +347,26 @@ class CORE_EXPORT LayoutTableSection final
 
   const LayoutNGTableSectionInterface* ToLayoutNGTableSectionInterface()
       const final {
+    CheckIsNotDestroyed();
     return this;
   }
-  const LayoutTableSection* ToLayoutTableSection() const final { return this; }
-  const LayoutObject* ToLayoutObject() const final { return this; }
-  LayoutObject* ToMutableLayoutObject() final { return this; }
+  const LayoutTableSection* ToLayoutTableSection() const final {
+    CheckIsNotDestroyed();
+    return this;
+  }
+  const LayoutObject* ToLayoutObject() const final {
+    CheckIsNotDestroyed();
+    return this;
+  }
+  LayoutObject* ToMutableLayoutObject() final {
+    CheckIsNotDestroyed();
+    return this;
+  }
 
-  LayoutNGTableInterface* TableInterface() const final { return Table(); }
+  LayoutNGTableInterface* TableInterface() const final {
+    CheckIsNotDestroyed();
+    return Table();
+  }
   LayoutNGTableRowInterface* FirstRowInterface() const final;
   LayoutNGTableRowInterface* LastRowInterface() const final;
   const LayoutNGTableCellInterface* PrimaryCellInterfaceAt(
@@ -333,6 +383,7 @@ class CORE_EXPORT LayoutTableSection final
 
  private:
   MinMaxSizes ComputeIntrinsicLogicalWidths() const final {
+    CheckIsNotDestroyed();
     NOTREACHED();
     return MinMaxSizes();
   }
@@ -340,21 +391,25 @@ class CORE_EXPORT LayoutTableSection final
   void ComputeVisualOverflowFromDescendants();
 
   bool IsOfType(LayoutObjectType type) const override {
+    CheckIsNotDestroyed();
     return type == kLayoutObjectTableSection || LayoutBox::IsOfType(type);
   }
 
   void WillBeRemovedFromTree() override;
 
   int BorderSpacingForRow(unsigned row) const {
+    CheckIsNotDestroyed();
     return grid_[row].row ? Table()->VBorderSpacing() : 0;
   }
 
   void EnsureRows(unsigned num_rows) {
+    CheckIsNotDestroyed();
     if (num_rows > grid_.size())
       grid_.Grow(num_rows);
   }
 
   void EnsureCols(unsigned row_index, unsigned num_cols) {
+    CheckIsNotDestroyed();
     if (num_cols > NumCols(row_index))
       grid_[row_index].grid_cells.Grow(num_cols);
   }
@@ -423,10 +478,12 @@ class CORE_EXPORT LayoutTableSection final
   int OffsetForRepeatedHeader() const;
 
   bool HeaderGroupShouldRepeat() const {
+    CheckIsNotDestroyed();
     return Table()->Header() == this && GroupShouldRepeat();
   }
 
   bool FooterGroupShouldRepeat() const {
+    CheckIsNotDestroyed();
     return Table()->Footer() == this && GroupShouldRepeat();
   }
 

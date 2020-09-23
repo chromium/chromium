@@ -61,12 +61,14 @@ LayoutSVGImage::~LayoutSVGImage() = default;
 
 void LayoutSVGImage::StyleDidChange(StyleDifference diff,
                                     const ComputedStyle* old_style) {
+  CheckIsNotDestroyed();
   transform_uses_reference_box_ =
       TransformHelper::DependsOnReferenceBox(StyleRef());
   LayoutSVGModelObject::StyleDidChange(diff, old_style);
 }
 
 void LayoutSVGImage::WillBeDestroyed() {
+  CheckIsNotDestroyed();
   image_resource_->Shutdown();
 
   LayoutSVGModelObject::WillBeDestroyed();
@@ -83,6 +85,7 @@ static float ResolveHeightForRatio(float width,
 }
 
 bool LayoutSVGImage::HasOverriddenIntrinsicSize() const {
+  CheckIsNotDestroyed();
   if (!RuntimeEnabledFeatures::ExperimentalProductivityFeaturesEnabled())
     return false;
   auto* svg_image_element = DynamicTo<SVGImageElement>(GetElement());
@@ -90,6 +93,7 @@ bool LayoutSVGImage::HasOverriddenIntrinsicSize() const {
 }
 
 FloatSize LayoutSVGImage::CalculateObjectSize() const {
+  CheckIsNotDestroyed();
   FloatSize intrinsic_size;
   ImageResourceContent* cached_image = image_resource_->CachedImage();
   bool has_intrinsic_ratio = true;
@@ -134,6 +138,7 @@ FloatSize LayoutSVGImage::CalculateObjectSize() const {
 }
 
 bool LayoutSVGImage::UpdateBoundingBox() {
+  CheckIsNotDestroyed();
   FloatRect old_object_bounding_box = object_bounding_box_;
 
   SVGLengthContext length_context(GetElement());
@@ -155,6 +160,7 @@ bool LayoutSVGImage::UpdateBoundingBox() {
 }
 
 void LayoutSVGImage::UpdateLayout() {
+  CheckIsNotDestroyed();
   DCHECK(NeedsLayout());
   LayoutAnalyzer::Scope analyzer(*this);
 
@@ -202,6 +208,7 @@ void LayoutSVGImage::UpdateLayout() {
 }
 
 void LayoutSVGImage::Paint(const PaintInfo& paint_info) const {
+  CheckIsNotDestroyed();
   SVGImagePainter(*this).Paint(paint_info);
 }
 
@@ -209,6 +216,7 @@ bool LayoutSVGImage::NodeAtPoint(HitTestResult& result,
                                  const HitTestLocation& hit_test_location,
                                  const PhysicalOffset& accumulated_offset,
                                  HitTestAction hit_test_action) {
+  CheckIsNotDestroyed();
   DCHECK_EQ(accumulated_offset, PhysicalOffset());
   // We only draw in the forground phase, so we only hit-test then.
   if (hit_test_action != kHitTestForeground)
@@ -242,6 +250,7 @@ bool LayoutSVGImage::NodeAtPoint(HitTestResult& result,
 }
 
 void LayoutSVGImage::ImageChanged(WrappedImagePtr, CanDeferInvalidation defer) {
+  CheckIsNotDestroyed();
   // Notify parent resources that we've changed. This also invalidates
   // references from resources (filters) that may have a cached
   // representation of this image/layout object.

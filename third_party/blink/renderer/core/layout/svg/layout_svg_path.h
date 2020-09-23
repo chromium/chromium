@@ -36,10 +36,14 @@ class LayoutSVGPath final : public LayoutSVGShape {
   ~LayoutSVGPath() override;
 
   const Vector<MarkerPosition>* MarkerPositions() const override {
+    CheckIsNotDestroyed();
     return &marker_positions_;
   }
 
-  const char* GetName() const override { return "LayoutSVGPath"; }
+  const char* GetName() const override {
+    CheckIsNotDestroyed();
+    return "LayoutSVGPath";
+  }
 
  private:
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;

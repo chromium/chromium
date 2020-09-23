@@ -38,6 +38,7 @@ LayoutMultiColumnSpannerPlaceholder::LayoutMultiColumnSpannerPlaceholder(
 
 void LayoutMultiColumnSpannerPlaceholder::
     LayoutObjectInFlowThreadStyleDidChange(const ComputedStyle* old_style) {
+  CheckIsNotDestroyed();
   LayoutBox* object_in_flow_thread = layout_object_in_flow_thread_;
   if (FlowThread()->RemoveSpannerPlaceholderIfNoLongerValid(
           object_in_flow_thread)) {
@@ -61,6 +62,7 @@ void LayoutMultiColumnSpannerPlaceholder::
 
 void LayoutMultiColumnSpannerPlaceholder::UpdateProperties(
     const ComputedStyle& parent_style) {
+  CheckIsNotDestroyed();
   scoped_refptr<ComputedStyle> new_style =
       ComputedStyle::CreateAnonymousStyleWithDisplay(parent_style,
                                                      EDisplay::kBlock);
@@ -69,6 +71,7 @@ void LayoutMultiColumnSpannerPlaceholder::UpdateProperties(
 }
 
 void LayoutMultiColumnSpannerPlaceholder::InsertedIntoTree() {
+  CheckIsNotDestroyed();
   LayoutBox::InsertedIntoTree();
   // The object may previously have been laid out as a non-spanner, but since
   // it's a spanner now, it needs to be relaid out.
@@ -77,6 +80,7 @@ void LayoutMultiColumnSpannerPlaceholder::InsertedIntoTree() {
 }
 
 void LayoutMultiColumnSpannerPlaceholder::WillBeRemovedFromTree() {
+  CheckIsNotDestroyed();
   if (layout_object_in_flow_thread_) {
     LayoutBox* ex_spanner = layout_object_in_flow_thread_;
     layout_object_in_flow_thread_->ClearSpannerPlaceholder();
@@ -91,10 +95,12 @@ void LayoutMultiColumnSpannerPlaceholder::WillBeRemovedFromTree() {
 
 bool LayoutMultiColumnSpannerPlaceholder::NeedsPreferredWidthsRecalculation()
     const {
+  CheckIsNotDestroyed();
   return layout_object_in_flow_thread_->NeedsPreferredWidthsRecalculation();
 }
 
 void LayoutMultiColumnSpannerPlaceholder::RecalcVisualOverflow() {
+  CheckIsNotDestroyed();
   LayoutBox::RecalcVisualOverflow();
   ClearVisualOverflow();
   AddContentsVisualOverflow(
@@ -103,6 +109,7 @@ void LayoutMultiColumnSpannerPlaceholder::RecalcVisualOverflow() {
 
 MinMaxSizes LayoutMultiColumnSpannerPlaceholder::PreferredLogicalWidths()
     const {
+  CheckIsNotDestroyed();
   // There should be no contribution from a spanner if the multicol container is
   // size-contained. Normally we'd stop at the object that has contain:size
   // applied, but for multicol, we descend into the children, in order to get
@@ -116,6 +123,7 @@ MinMaxSizes LayoutMultiColumnSpannerPlaceholder::PreferredLogicalWidths()
 }
 
 void LayoutMultiColumnSpannerPlaceholder::UpdateLayout() {
+  CheckIsNotDestroyed();
   DCHECK(NeedsLayout());
 
   // The placeholder, like any other block level object, has its logical top
@@ -148,6 +156,7 @@ void LayoutMultiColumnSpannerPlaceholder::ComputeLogicalHeight(
     LayoutUnit,
     LayoutUnit logical_top,
     LogicalExtentComputedValues& computed_values) const {
+  CheckIsNotDestroyed();
   computed_values.extent_ = layout_object_in_flow_thread_->LogicalHeight();
   computed_values.position_ = logical_top;
   computed_values.margins_.before_ = MarginBefore();
@@ -156,6 +165,7 @@ void LayoutMultiColumnSpannerPlaceholder::ComputeLogicalHeight(
 
 void LayoutMultiColumnSpannerPlaceholder::Paint(
     const PaintInfo& paint_info) const {
+  CheckIsNotDestroyed();
   if (!layout_object_in_flow_thread_->HasSelfPaintingLayer())
     layout_object_in_flow_thread_->Paint(paint_info);
 }
@@ -165,6 +175,7 @@ bool LayoutMultiColumnSpannerPlaceholder::NodeAtPoint(
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
     HitTestAction action) {
+  CheckIsNotDestroyed();
   return !layout_object_in_flow_thread_->HasSelfPaintingLayer() &&
          layout_object_in_flow_thread_->NodeAtPoint(result, hit_test_location,
                                                     accumulated_offset, action);

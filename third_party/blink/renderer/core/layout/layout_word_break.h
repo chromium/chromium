@@ -40,7 +40,10 @@ class LayoutWordBreak final : public LayoutText {
   Position PositionForCaretOffset(unsigned offset) const final;
   base::Optional<unsigned> CaretOffsetForPosition(const Position&) const final;
 
-  const char* GetName() const override { return "LayoutWordBreak"; }
+  const char* GetName() const override {
+    CheckIsNotDestroyed();
+    return "LayoutWordBreak";
+  }
   bool IsWordBreak() const override;
 };
 

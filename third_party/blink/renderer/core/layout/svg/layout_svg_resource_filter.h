@@ -38,7 +38,10 @@ class LayoutSVGResourceFilter final : public LayoutSVGResourceContainer {
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
-  const char* GetName() const override { return "LayoutSVGResourceFilter"; }
+  const char* GetName() const override {
+    CheckIsNotDestroyed();
+    return "LayoutSVGResourceFilter";
+  }
 
   void RemoveAllClientsFromCache() override;
 
@@ -48,7 +51,10 @@ class LayoutSVGResourceFilter final : public LayoutSVGResourceContainer {
   SVGUnitTypes::SVGUnitType PrimitiveUnits() const;
 
   static const LayoutSVGResourceType kResourceType = kFilterResourceType;
-  LayoutSVGResourceType ResourceType() const override { return kResourceType; }
+  LayoutSVGResourceType ResourceType() const override {
+    CheckIsNotDestroyed();
+    return kResourceType;
+  }
 
  private:
   bool FindCycleFromSelf(SVGResourcesCycleSolver&) const override;

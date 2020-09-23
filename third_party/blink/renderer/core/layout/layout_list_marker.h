@@ -42,7 +42,10 @@ class CORE_EXPORT LayoutListMarker final : public LayoutBox {
   ~LayoutListMarker() override;
 
   // Marker text without suffix, e.g. "1".
-  const String& GetText() const { return text_; }
+  const String& GetText() const {
+    CheckIsNotDestroyed();
+    return text_;
+  }
 
   // Marker text with suffix, e.g. "1. ", for use in accessibility.
   String TextAlternative() const;
@@ -54,13 +57,20 @@ class CORE_EXPORT LayoutListMarker final : public LayoutBox {
   LayoutRect GetRelativeMarkerRect() const;
 
   bool IsImage() const override;
-  const StyleImage* GetImage() const { return image_.Get(); }
+  const StyleImage* GetImage() const {
+    CheckIsNotDestroyed();
+    return image_.Get();
+  }
   const LayoutListItem* ListItem() const;
   LayoutSize ImageBulletSize() const;
 
-  const char* GetName() const override { return "LayoutListMarker"; }
+  const char* GetName() const override {
+    CheckIsNotDestroyed();
+    return "LayoutListMarker";
+  }
 
   LayoutUnit ListItemInlineStartOffset() const {
+    CheckIsNotDestroyed();
     return list_item_inline_start_offset_;
   }
 
@@ -72,6 +82,7 @@ class CORE_EXPORT LayoutListMarker final : public LayoutBox {
   MinMaxSizes PreferredLogicalWidths() const override;
 
   bool IsOfType(LayoutObjectType type) const override {
+    CheckIsNotDestroyed();
     return type == kLayoutObjectListMarker || LayoutBox::IsOfType(type);
   }
 
@@ -93,7 +104,10 @@ class CORE_EXPORT LayoutListMarker final : public LayoutBox {
       LineDirectionMode,
       LinePositionMode = kPositionOnContainingLine) const override;
 
-  bool IsText() const { return !IsImage(); }
+  bool IsText() const {
+    CheckIsNotDestroyed();
+    return !IsImage();
+  }
 
   LayoutUnit GetWidthOfText(ListMarker::ListStyleCategory) const;
   void UpdateMargins(LayoutUnit marker_inline_size);

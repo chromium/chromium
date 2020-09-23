@@ -77,9 +77,11 @@ class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent,
   LayoutTableRow* NextRow() const;
 
   LayoutTableSection* Section() const {
+    CheckIsNotDestroyed();
     return To<LayoutTableSection>(Parent());
   }
   LayoutTable* Table() const final {
+    CheckIsNotDestroyed();
     return To<LayoutTable>(Parent()->Parent());
   }
 
@@ -88,12 +90,17 @@ class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent,
       const LayoutObject* parent) const override;
 
   void SetRowIndex(unsigned row_index) {
+    CheckIsNotDestroyed();
     CHECK_LE(row_index, kMaxRowIndex);
     row_index_ = row_index;
   }
 
-  bool RowIndexWasSet() const { return row_index_ != kUnsetRowIndex; }
+  bool RowIndexWasSet() const {
+    CheckIsNotDestroyed();
+    return row_index_ != kUnsetRowIndex;
+  }
   unsigned RowIndex() const final {
+    CheckIsNotDestroyed();
     DCHECK(RowIndexWasSet());
     DCHECK(
         !Section() ||
@@ -114,16 +121,21 @@ class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent,
 
   void RecalcVisualOverflow() override;
 
-  const char* GetName() const override { return "LayoutTableRow"; }
+  const char* GetName() const override {
+    CheckIsNotDestroyed();
+    return "LayoutTableRow";
+  }
 
   // Whether a row has opaque background depends on many factors, e.g. border
   // spacing, border collapsing, missing cells, etc.
   // For simplicity, just conservatively assume all table rows are not opaque.
   bool ForegroundIsKnownToBeOpaqueInRect(const PhysicalRect&,
                                          unsigned) const override {
+    CheckIsNotDestroyed();
     return false;
   }
   bool BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const override {
+    CheckIsNotDestroyed();
     return false;
   }
 
@@ -132,18 +144,31 @@ class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent,
   // LayoutNGTableRowInterface methods start.
 
   const LayoutNGTableRowInterface* ToLayoutNGTableRowInterface() const final {
+    CheckIsNotDestroyed();
     return this;
   }
-  const LayoutObject* ToLayoutObject() const final { return this; }
-  const LayoutTableRow* ToLayoutTableRow() const final { return this; }
-  LayoutNGTableInterface* TableInterface() const final { return Table(); }
+  const LayoutObject* ToLayoutObject() const final {
+    CheckIsNotDestroyed();
+    return this;
+  }
+  const LayoutTableRow* ToLayoutTableRow() const final {
+    CheckIsNotDestroyed();
+    return this;
+  }
+  LayoutNGTableInterface* TableInterface() const final {
+    CheckIsNotDestroyed();
+    return Table();
+  }
   LayoutNGTableSectionInterface* SectionInterface() const final {
+    CheckIsNotDestroyed();
     return Section();
   }
   LayoutNGTableRowInterface* NextRowInterface() const final {
+    CheckIsNotDestroyed();
     return NextRow();
   }
   LayoutNGTableRowInterface* PreviousRowInterface() const final {
+    CheckIsNotDestroyed();
     return PreviousRow();
   }
   LayoutNGTableCellInterface* FirstCellInterface() const final;
@@ -153,6 +178,7 @@ class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent,
 
  private:
   MinMaxSizes ComputeIntrinsicLogicalWidths() const final {
+    CheckIsNotDestroyed();
     NOTREACHED();
     return MinMaxSizes();
   }
@@ -162,6 +188,7 @@ class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent,
   void AddVisualOverflowFromCell(const LayoutTableCell*);
 
   bool IsOfType(LayoutObjectType type) const override {
+    CheckIsNotDestroyed();
     return type == kLayoutObjectTableRow ||
            LayoutTableBoxComponent::IsOfType(type);
   }
@@ -173,6 +200,7 @@ class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent,
   void UpdateLayout() override;
 
   PaintLayerType LayerTypeRequired() const override {
+    CheckIsNotDestroyed();
     if (HasTransformRelatedProperty() || HasHiddenBackface() ||
         CreatesGroup() || StyleRef().ShouldCompositeForCurrentAnimations() ||
         IsStickyPositioned())
