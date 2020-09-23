@@ -424,7 +424,9 @@ SharedImageBackingFactoryGLTexture::CreateSharedImageInternal(
   const bool use_buffer = usage & SHARED_IMAGE_USAGE_SCANOUT;
 #endif
   if (use_buffer && !format_info.allow_scanout) {
-    LOG(ERROR) << "CreateSharedImage: SCANOUT shared images unavailable";
+    LOG(ERROR) << "CreateSharedImage: SCANOUT shared images unavailable. "
+                  "Buffer format= "
+               << gfx::BufferFormatToString(format_info.buffer_format);
     return nullptr;
   }
 
