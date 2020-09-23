@@ -4033,6 +4033,12 @@ const char kExperimentalAccessibilityCursorColorsDescription[] =
     "Enable experimental feature which allows setting cursor color in "
     "Accessibility settings.";
 
+const char kExperimentalAccessibilityMagnifierNewFocusFollowingName[] =
+    "Enable new focus following in Magnifier";
+const char kExperimentalAccessibilityMagnifierNewFocusFollowingDescription[] =
+    "Enable experimental feature which allows more comprehensive focus "
+    "following in Magnifier.";
+
 const char kFilesAppCopyImageName[] = "Enable Copy Images from Files App";
 const char kFilesAppCopyImageDescription[] =
     "Enables the Files App to copy images selected to the system clipboard";

@@ -24,6 +24,8 @@ AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilityChromeVoxAnnotations[];
 AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilityChromeVoxTutorial[];
+AX_BASE_EXPORT extern const char
+    kEnableExperimentalAccessibilityMagnifierNewFocusFollowing[];
 AX_BASE_EXPORT extern const char kEnableSwitchAccessPointScanning[];
 
 // Returns true if experimental accessibility language detection is enabled.

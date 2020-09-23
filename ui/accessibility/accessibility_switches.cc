@@ -40,6 +40,11 @@ const char kEnableExperimentalAccessibilityChromeVoxAnnotations[] =
 const char kEnableExperimentalAccessibilityChromeVoxTutorial[] =
     "enable-experimental-accessibility-chromevox-tutorial";
 
+// Enables new magnifier focus following feature, which provides richer focus
+// following experience.
+const char kEnableExperimentalAccessibilityMagnifierNewFocusFollowing[] =
+    "enable-experimental-accessibility-magnifier-new-focus-following";
+
 // Enables Switch Access point scanning. This feature hasn't launched yet.
 const char kEnableSwitchAccessPointScanning[] =
     "enable-switch-access-point-scanning";

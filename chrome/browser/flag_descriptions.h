@@ -2335,6 +2335,10 @@ extern const char kExperimentalAccessibilitySwitchAccessTextDescription[];
 extern const char kExperimentalAccessibilityCursorColorsName[];
 extern const char kExperimentalAccessibilityCursorColorsDescription[];
 
+extern const char kExperimentalAccessibilityMagnifierNewFocusFollowingName[];
+extern const char
+    kExperimentalAccessibilityMagnifierNewFocusFollowingDescription[];
+
 extern const char kFilesAppCopyImageName[];
 extern const char kFilesAppCopyImageDescription[];
 
