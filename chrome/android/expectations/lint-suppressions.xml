@@ -18,14 +18,6 @@ Still reading?
     <ignore regexp="chrome/android/java/res_base/xml/network_security_config.xml"/>
     <ignore regexp="android_webview/tools/system_webview_shell/apk/res/xml/network_security_config.xml"/>
   </issue>
-  <issue id="ContentDescription">
-    <!--TODO(crbug.com/1044658): This suppression was added blindly, and needs investigated.-->
-    <ignore regexp="components/browser_ui/contacts_picker/android/java/res/layout/contacts_list_item_view.xml"/>
-    <!--TODO(crbug.com/1044658): This suppression was added blindly, and needs investigated.-->
-    <ignore regexp="components/browser_ui/photo_picker/android/java/res/layout/photo_picker_dialog.xml"/>
-    <!--TODO(crbug.com/1044658): This suppression was added blindly, and needs investigated.-->
-    <ignore regexp="components/browser_ui/photo_picker/android/java/res/layout/video_player.xml"/>
-  </issue>
   <issue id="CustomViewStyleable">
     <!-- TODO(crbug.com/1077861): Old code, good to fix. -->
     <ignore regexp="components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/BoundedLinearLayout.java"/>
@@ -37,11 +29,6 @@ Still reading?
     <ignore regexp="chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceMediator.java"/>
     <!-- TODO(crbug.com/1082222): Fix -->
     <ignore regexp="chrome/android/java/src/org/chromium/chrome/browser/omnibox/suggestions/header/HeaderProcessor.java"/>
-  </issue>
-  <issue id="DuplicateIds" severity="Fatal">
-    <!--TODO(crbug.com/1044658): This suppression was added blindly, and needs investigated.-->
-    <ignore regexp="chrome/android/java/res/menu/main_menu.xml"/>
-    <ignore regexp="chrome/android/java/res/menu/main_menu_regroup.xml"/>
   </issue>
   <issue id="DrawAllocation">
     <ignore regexp="content/public/android/java/src/org/chromium/content/browser/ContentViewRenderView.java"/>
@@ -109,10 +96,6 @@ Still reading?
     <ignore regexp="components/browser_ui/strings/android/browser_ui_strings_grd"/>
     <ignore regexp="clank/third_party/chime/chime_systemtray_strings_grd.resources.zip"/>
   </issue>
-  <issue id="IncludeLayoutParam">
-    <!--TODO(crbug.com/1044658): This suppression was added blindly, and needs investigated.-->
-    <ignore regexp="chrome/android/java/res/layout/start_top_toolbar.xml"/>
-  </issue>
   <issue id="InsecureBaseConfiguration">
     <!-- See https://crbug.com/827265 and comment in the file for context. -->
     <ignore regexp="chrome/android/java/res_base/xml/network_security_config.xml"/>
@@ -147,8 +130,6 @@ Still reading?
     <ignore regexp="toolbar_background.9.png"/>
     <!-- Only used by FirstRunFlowSequencer guarded by tablet form-factor. -->
     <ignore regexp="window_background.xml"/>
-    <!--TODO(crbug.com/1044658): This suppression was added blindly, and needs investigated.-->
-    <ignore regexp="chrome/android/java/res/layout-sw360dp/preference_spinner_single_line.xml"/>
   </issue>
   <issue id="MissingPermission" severity="ignore"/>
   <issue id="MissingQuantity" severity="ignore"/>
@@ -196,11 +177,6 @@ Still reading?
   <issue id="ResourceAsColor" severity="ignore"/>
   <issue id="RtlCompat" severity="ignore"/>
   <issue id="RtlEnabled" severity="ignore"/>
-  <issue id="RtlHardcoded">
-    <!--TODO(crbug.com/1044658): This suppression was added blindly, and needs
-        investigated.-->
-    <ignore regexp="chrome/android/java/res/layout/sheet_tab_toolbar.xml"/>
-  </issue>
   <issue id="RtlSymmetry" severity="ignore"/>
   <issue id="SetJavaScriptEnabled" severity="ignore"/>
   <issue id="SignatureOrSystemPermissions" severity="ignore"/>
@@ -225,6 +201,7 @@ Still reading?
        translated. This avoids blocking translation updates. -->
   <issue id="Typos" severity="ignore"/>
   <issue id="TypographyDashes">
+    <!-- The double dash in the following file is a command line flag. -->
     <ignore regexp="chrome/app/policy/android/values-v21/restriction_values.xml"/>
   </issue>
   <issue id="UnusedIds" severity="ignore"/>
@@ -343,16 +320,6 @@ Still reading?
     <ignore regexp="The resource `R.drawable.*_expand_.*` appears to be unused"/>
     <!-- 1 string used by Android's policies system, pulled from app directly -->
     <ignore regexp="restriction_values.xml"/>
-    <!--TODO(crbug.com/1044658): This suppression was added blindly, and needs investigated.-->
-    <ignore regexp="../obj/components/strings/components_strings_grd.resources.zip/values/components_strings.xml"/>
-    <!--TODO(crbug.com/1044658): This suppression was added blindly, and needs investigated.-->
-    <ignore regexp="chrome/android/java/res/values/dimens.xml"/>
-    <!--TODO(crbug.com/1044658): This suppression was added blindly, and needs investigated.-->
-    <ignore regexp="chrome/android/java/res/layout-sw360dp/preference_spinner_single_line.xml"/>
-    <!--TODO(crbug.com/1044658): This suppression was added blindly, and needs investigated.-->
-    <ignore regexp="chrome/android/java/res/values/styles.xml"/>
-    <!--TODO(crbug.com/1044658): This suppression was added blindly, and needs investigated.-->
-    <ignore regexp="chrome/android/java/res/layout/tab_switcher_action_menu_layout.xml"/>
     <!--TODO(crbug.com/1052375): Remove this suppression once ConnectionInfoPopAndroid moves to components.-->
     <ignore regexp="components/page_info/android/java/res/drawable-hdpi/pageinfo_*"/>
     <!--TODO(crbug.com/1052375): Remove this suppression once PermissionParamsListBuilder moves to components.-->

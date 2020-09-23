@@ -4,7 +4,8 @@
      found in the LICENSE file. -->
 
 <merge
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/icon_view"
@@ -105,5 +106,6 @@
         android:layout_height="32dp"
         android:layout_marginEnd="10dp"
         android:src="@drawable/btn_star_filled"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:ignore="ContentDescription"/>
 </merge>

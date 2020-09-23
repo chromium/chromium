@@ -109,7 +109,7 @@
                 android:layout_toStartOf="@id/open_in_new_tab"
                 android:layout_toEndOf="@id/security_icon"
                 android:layout_below="@id/title"
-                android:layout_marginLeft="4dp"
+                android:layout_marginStart="4dp"
                 android:textAlignment="viewStart"
                 android:ellipsize="start"
                 android:singleLine="true"

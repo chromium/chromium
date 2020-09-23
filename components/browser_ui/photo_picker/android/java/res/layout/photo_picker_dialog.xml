@@ -6,6 +6,7 @@
 <org.chromium.ui.widget.OptimizedFrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/default_bg_color_elev_0" >
@@ -26,7 +27,8 @@
         android:layout_centerHorizontal="true"
         android:background="@drawable/navigation_bubble_shadow"
         app:srcCompat="@drawable/zoom_in"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:ignore="ContentDescription"/>
 
     <org.chromium.components.browser_ui.photo_picker.PickerVideoPlayer
         android:layout_width="match_parent"

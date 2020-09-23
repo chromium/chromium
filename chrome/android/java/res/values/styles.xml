@@ -364,10 +364,6 @@
         parent="TextAppearance.TextLarge.Primary">
         <item name="android:textStyle">bold</item>
     </style>
-    <style name="TextAppearance.PaymentRequestErrorText">
-        <item name="android:textColor">@color/default_text_color_error</item>
-        <item name="android:textSize">@dimen/text_size_large</item>
-    </style>
 
     <!-- Autofill Card -->
     <style name="TextAppearance.AutofillCardErrorMessage">
@@ -505,11 +501,6 @@
         <item name="android:textColor">?android:attr/textColorPrimary</item>
     </style>
 
-    <!-- New Tab Page -->
-    <style name="NewTabPageRecyclerView">
-        <item name="android:colorEdgeEffect" tools:targetApi="21">@color/modern_grey_300</item>
-    </style>
-
     <!-- Use style="..." for the following search box style as textColorHint
          can not use android:textAppearance="...".  textColorHint is defined
          in a parent theme therefore can not be overridden by appearance.
@@ -603,12 +594,6 @@
     </style>
 
     <!-- Omnibox suggestions -->
-    <!-- TODO(mdjones): Use unified styles for omnibox suggestions: crbug.com/915785 -->
-    <style name="TextAppearance.OmniboxSuggestionSecondLine">
-        <item name="android:textSize">@dimen/omnibox_suggestion_second_line_text_size</item>
-        <item name="android:textColor">@color/suggestion_url_dark_modern</item>
-    </style>
-
     <style name="TextAppearance.OmniboxAnswerDescriptionNegativeSmall">
         <item name="android:textSize">@dimen/text_size_small</item>
         <item name="android:textColor">@color/answers_description_text_negative</item>
@@ -617,13 +602,6 @@
     <style name="TextAppearance.OmniboxAnswerDescriptionPositiveSmall">
         <item name="android:textSize">@dimen/text_size_small</item>
         <item name="android:textColor">@color/answers_description_text_positive</item>
-    </style>
-
-    <style name="OmniboxSuggestionIconButton">
-        <item name="android:background">?attr/selectableItemBackground</item>
-        <item name="android:layout_width">@dimen/min_touch_target_size</item>
-        <item name="android:layout_height">@dimen/omnibox_suggestion_comfortable_height</item>
-        <item name="tint">@color/default_icon_color</item>
     </style>
 
     <style name="OmniboxIcon" parent="LocationBarButton">
