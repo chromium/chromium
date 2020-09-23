@@ -16,6 +16,10 @@ namespace blink {
 // study, such as complex digest calculation on canvas operations; for UKM
 // reporting, filtering should happen automatically.
 //
+// DEPRECATED: Please use IdentifiabilityStudySettings::Get()->IsActive()
+// instead. Better yet see //docs/privacy_budget_instrumentation.md#gating for
+// details on more granular conditions for gating sample collection.
+//
 // TODO(asanka): Migrate callers to IdentifiabilityStudySettings.
 bool BLINK_COMMON_EXPORT IsUserInIdentifiabilityStudy();
 

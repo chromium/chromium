@@ -20,6 +20,11 @@ namespace blink {
 // synchronization.
 //
 // See documentation on individual methods for notes on thread safety.
+//
+// Guidelines for when and how to use it can be found in:
+//
+//     //docs/privacy_budget_instrumentation.md#gating
+//
 class BLINK_COMMON_EXPORT IdentifiabilityStudySettings {
  public:
   // Constructs a default IdentifiabilityStudySettings instance. By default the
