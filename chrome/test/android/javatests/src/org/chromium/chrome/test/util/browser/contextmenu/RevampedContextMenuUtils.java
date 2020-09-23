@@ -116,6 +116,28 @@ public class RevampedContextMenuUtils {
     }
 
     /**
+     * Selects the context menu chip asserting that an intent will be sent with a
+     * specific package name.  Note that this method does not open the context menu.
+     * @param instrumentation       Instrumentation module used for executing test behavior.
+     * @param expectedActivity      The activity to assert for gaining focus after click or null.
+     * @param menuCoordinator       The menu coordinator which manages the context menu.
+     * @param openerDOMNodeId       The DOM node to long press to open the context menu for.
+     * @param itemId                The context menu item ID to select.
+     * @param expectedIntentPackage If firing an external intent the expected package name of the
+     *         target.
+     * @throws TimeoutException
+     */
+    public static void selectAlreadyOpenedContextMenuChipWithExpectedIntent(
+            Instrumentation instrumentation, Activity expectedActivity,
+            RevampedContextMenuCoordinator menuCoordinator, String openerDOMNodeId,
+            final int itemId, String expectedIntentPackage) throws TimeoutException {
+        Assert.assertNotNull("Menu coordinator was not provided.", menuCoordinator);
+
+        selectAlreadyOpenedContextMenuChip(
+                instrumentation, expectedActivity, menuCoordinator, itemId, expectedIntentPackage);
+    }
+
+    /**
      * Long presses to open and selects an item from a context menu.
      * @param instrumentation       Instrumentation module used for executing test behavior.
      * @param expectedActivity      The activity to assert for gaining focus after click or null.
@@ -171,6 +193,27 @@ public class RevampedContextMenuUtils {
         }
 
         instrumentation.runOnMainSync(() -> menuCoordinator.clickListItemForTesting(itemId));
+
+        if (expectedActivity != null) {
+            CriteriaHelper.pollInstrumentationThread(expectedActivity::hasWindowFocus);
+        }
+
+        if (expectedIntentPackage != null) {
+            // This line must only execute after all test behavior has completed
+            // or it will intefere with the expected behavior.
+            intended(IntentMatchers.hasPackage(expectedIntentPackage));
+            Intents.release();
+        }
+    }
+
+    private static void selectAlreadyOpenedContextMenuChip(Instrumentation instrumentation,
+            final Activity expectedActivity, final RevampedContextMenuCoordinator menuCoordinator,
+            final int itemId, final String expectedIntentPackage) {
+        if (expectedIntentPackage != null) {
+            Intents.init();
+        }
+
+        instrumentation.runOnMainSync(() -> menuCoordinator.clickChipForTesting());
 
         if (expectedActivity != null) {
             CriteriaHelper.pollInstrumentationThread(expectedActivity::hasWindowFocus);

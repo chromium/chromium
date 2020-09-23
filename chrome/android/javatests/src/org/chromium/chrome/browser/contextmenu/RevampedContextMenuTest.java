@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuCoordin
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.os.Looper;
 import android.support.test.InstrumentationRegistry;
 import android.view.KeyEvent;
 
@@ -401,6 +402,66 @@ public class RevampedContextMenuTest implements DownloadTestRule.CustomMainActiv
         }, "Context menu did not have window focus");
 
         InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
+        CriteriaHelper.pollUiThread(() -> {
+            return mDownloadTestRule.getActivity().hasWindowFocus();
+        }, "Activity did not regain focus.");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP})
+    public void testSelectLensChip() throws Throwable {
+        // Required to avoid runtime error.
+        Looper.prepare();
+
+        Tab tab = mDownloadTestRule.getActivity().getActivityTab();
+        ShareHelper.setIgnoreActivityNotFoundExceptionForTesting(true);
+        hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
+
+        RevampedContextMenuCoordinator menuCoordinator =
+                RevampedContextMenuUtils.openContextMenu(tab, "testImage");
+        // Needs to run on UI thread so creation happens on same thread as dismissal.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> menuCoordinator.simulateShoppyImageClassificationForTesting());
+
+        Assert.assertTrue("Chip popoup not showing.",
+                menuCoordinator.getCurrentPopupWindowForTesting().isShowing());
+
+        RevampedContextMenuUtils.selectAlreadyOpenedContextMenuChipWithExpectedIntent(
+                InstrumentationRegistry.getInstrumentation(), mDownloadTestRule.getActivity(),
+                menuCoordinator, "testImage", R.id.contextmenu_shop_image_with_google_lens,
+                "com.google.android.googlequicksearchbox");
+        Assert.assertEquals("Selection histogram pings not equal to one", 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "ContextMenu.SelectedOptionAndroid.Image"));
+        Assert.assertFalse("Chip popoup still showing.",
+                menuCoordinator.getCurrentPopupWindowForTesting().isShowing());
+    }
+
+    // Assert that focus is unchanged and that the chip popup does not block the dismissal of the
+    // context menu.
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP})
+    public void testDismissContextMenuOnClickLensChipEnabled() throws TimeoutException {
+        // Required to avoid runtime error.
+        Looper.prepare();
+
+        Tab tab = mDownloadTestRule.getActivity().getActivityTab();
+        RevampedContextMenuCoordinator menuCoordinator =
+                RevampedContextMenuUtils.openContextMenu(tab, "testImage");
+        // Needs to run on UI thread so creation happens on same thread as dismissal.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> menuCoordinator.simulateShoppyImageClassificationForTesting());
+        Assert.assertNotNull("Context menu was not properly created", menuCoordinator);
+        CriteriaHelper.pollUiThread(() -> {
+            return !mDownloadTestRule.getActivity().hasWindowFocus();
+        }, "Context menu did not have window focus");
+
+        TestTouchUtils.singleClickView(InstrumentationRegistry.getInstrumentation(), tab.getView(),
+                tab.getView().getWidth() - 5, tab.getView().getHeight() - 5);
+
         CriteriaHelper.pollUiThread(() -> {
             return mDownloadTestRule.getActivity().hasWindowFocus();
         }, "Activity did not regain focus.");

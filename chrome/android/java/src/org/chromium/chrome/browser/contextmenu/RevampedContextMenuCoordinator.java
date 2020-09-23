@@ -36,6 +36,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.AnchoredPopupWindow;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -297,6 +298,25 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
             Activity activity, ContextMenuParams params, Profile profile) {
         mHeaderCoordinator = new RevampedContextMenuHeaderCoordinator(
                 activity, PerformanceClass.PERFORMANCE_UNKNOWN, params, profile);
+    }
+
+    @VisibleForTesting
+    void simulateShoppyImageClassificationForTesting() {
+        // Don't need to initialize controller because that should be triggered by
+        // forcing feature flags.
+        mChipController.handleImageClassification(true);
+    }
+
+    // Public only to allow references from RevampedContextMenuUtils.java
+    public void clickChipForTesting() {
+        mChipController.clickChipForTesting(); // IN-TEST
+    }
+
+    // Public only to allow references from RevampedContextMenuUtils.java
+    public AnchoredPopupWindow getCurrentPopupWindowForTesting() {
+        // Don't need to initialize controller because that should be triggered by
+        // forcing feature flags.
+        return mChipController.getCurrentPopupWindowForTesting(); // IN-TEST
     }
 
     public void clickListItemForTesting(int id) {

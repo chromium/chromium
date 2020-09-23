@@ -127,8 +127,17 @@ class RevampedContextMenuChipController implements View.OnClickListener {
         mPopupWindow.show();
     }
 
-    @VisibleForTesting
+    // This method should only be used in test files.  It is not marked
+    // @VisibleForTesting to allow the Coordinator to reference it in its
+    // own testing methods.
     AnchoredPopupWindow getCurrentPopupWindowForTesting() {
         return mPopupWindow;
+    }
+
+    // This method should only be used in test files.  It is not marked
+    // @VisibleForTesting to allow the Coordinator to reference it in its
+    // own testing methods.
+    void clickChipForTesting() {
+        onClick(mChipView);
     }
 }
