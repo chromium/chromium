@@ -29,8 +29,7 @@ TEST_DATA_DIRS = [
     os.path.join(path_util.GetChromiumSrcDir(), 'media/test/data'),
 ]
 
-SKIA_GOLD_INSTANCE = 'chrome-gpu'
-SKIA_GOLD_CORPUS = SKIA_GOLD_INSTANCE
+SKIA_GOLD_CORPUS = 'chrome-gpu'
 
 
 class _ImageParameters(object):
@@ -344,25 +343,13 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
 
     gpu_keys = self.GetGoldJsonKeys(page)
     gold_session = self.GetSkiaGoldSessionManager().GetSkiaGoldSession(
-        gpu_keys, corpus=SKIA_GOLD_CORPUS, instance='chrome')
+        gpu_keys, corpus=SKIA_GOLD_CORPUS)
     gold_properties = self.GetSkiaGoldProperties()
     use_luci = not (gold_properties.local_pixel_tests
                     or gold_properties.no_luci_auth)
 
     inexact_matching_args = page.matching_algorithm.GetCmdline()
 
-    # TODO(crbug.com/1113308): Switch the FYI session to the only session once
-    # all the data is migrated to the Chrome Gold instance.
-    status, error = gold_session.RunComparison(
-        name=image_name,
-        png_file=png_temp_file,
-        inexact_matching_args=inexact_matching_args,
-        use_luci=use_luci)
-    if status:
-      logging.warning('FYI Gold comparison failed with status %s and error %s',
-                      status, error)
-
-    gold_session = self.GetSkiaGoldSessionManager().GetSkiaGoldSession(gpu_keys)
     status, error = gold_session.RunComparison(
         name=image_name,
         png_file=png_temp_file,

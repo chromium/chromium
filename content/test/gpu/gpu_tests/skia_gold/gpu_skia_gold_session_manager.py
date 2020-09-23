@@ -13,7 +13,7 @@ from skia_gold_common import skia_gold_session_manager as sgsm
 class GpuSkiaGoldSessionManager(sgsm.SkiaGoldSessionManager):
   @staticmethod
   def _GetDefaultInstance():
-    return 'chrome-gpu'
+    return 'chrome'
 
   @staticmethod
   def _GetSessionClass():
