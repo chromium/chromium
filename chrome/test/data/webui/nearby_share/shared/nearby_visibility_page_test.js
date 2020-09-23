@@ -7,6 +7,7 @@
 // #import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.m.js';
 // #import {FakeNearbyShareSettings} from './fake_nearby_share_settings.m.js';
 // #import {assertEquals, assertTrue, assertFalse} from '../../chai_assert.js';
+// #import {waitAfterNextRender, isChildVisible} from '../../test_util.m.js';
 // clang-format on
 
 suite('nearby-visibility-page', function() {
@@ -30,8 +31,10 @@ suite('nearby-visibility-page', function() {
 
   test('Renders visibility page', async function() {
     assertFalse(visibility_page.settings.enabled);
-    // Next button sets settings.enabled to true
-    visibility_page.$$('#next-button').click();
+    await test_util.waitAfterNextRender(visibility_page);
+    // Action button on the page template sets settings.enabled to true.
+    const page_template = visibility_page.$$('nearby-page-template');
+    page_template.$$('#actionButton').click();
     assertTrue(visibility_page.settings.enabled);
   });
 });

@@ -1081,6 +1081,7 @@ var OSSettingsNearbyShareReceiveDialogTest =
   /** @override */
   get extraLibraries() {
     return super.extraLibraries.concat([
+      '../../nearby_share/shared/fake_nearby_contact_manager.js',
       '../../test_util.js',
       '../../test_browser_proxy.js',
       'fake_receive_manager.js',

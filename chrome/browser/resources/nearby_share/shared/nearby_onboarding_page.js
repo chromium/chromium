@@ -19,12 +19,15 @@ Polymer({
     }
   },
 
-  onNextTap_() {
-    this.set('settings.deviceName', this.$.deviceName.value);
-    this.fire('change-page', {page: 'visibility'});
+  listeners: {
+    'next': 'onNext_',
   },
 
-  onCloseTap_() {
-    this.fire('close');
+  /**
+   * @private
+   */
+  onNext_() {
+    this.set('settings.deviceName', this.$.deviceName.value);
+    this.fire('change-page', {page: 'visibility'});
   },
 });

@@ -49,6 +49,7 @@ js_library("nearby_page_template") {
 
 js_library("nearby_onboarding_page") {
   deps = [
+    ":nearby_page_template",
     ":nearby_share_settings_behavior",
     "//third_party/polymer/v1_0/components-chromium/iron-icon:iron-icon-extracted",
     "//ui/webui/resources/cr_elements/cr_input:cr_input",
@@ -74,6 +75,7 @@ js_library("nearby_share_settings_behavior") {
 js_library("nearby_visibility_page") {
   deps = [
     ":nearby_contact_visibility",
+    ":nearby_page_template",
     ":nearby_share_settings_behavior",
     "//ui/webui/resources/js:i18n_behavior",
   ]
@@ -137,6 +139,7 @@ js_library("nearby_contact_visibility.m") {
 js_library("nearby_onboarding_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_onboarding_page.m.js" ]
   deps = [
+    ":nearby_page_template.m",
     ":nearby_share_settings_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row.m",
@@ -173,6 +176,7 @@ js_library("nearby_visibility_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_visibility_page.m.js" ]
   deps = [
     ":nearby_contact_visibility.m",
+    ":nearby_page_template.m",
     ":nearby_share_settings_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
