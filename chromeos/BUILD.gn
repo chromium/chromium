@@ -322,6 +322,10 @@ if (is_chromeos_device) {
       # crbug.com/1131496
       "apps.LaunchHelpApp.clamshell_oobe_stable",
       "apps.LaunchHelpApp.tablet_oobe_stable",
+
+      # crbug.com/1131304
+      "printer.PinPrintLexmark.no_pin",
+      "printer.PinPrintLexmark.pin",
     ]
   }
 
