@@ -17,6 +17,7 @@ public class SystemWideCrashDirectories {
     private static final String WEBVIEW_CRASH_LOG_DIR = "crash_logs";
     private static final String WEBVIEW_CRASH_DIR = "WebView_Crashes";
     private static final String WEBVIEW_TMP_CRASH_DIR = "WebView_Crashes_Tmp";
+    private static final String WEBVIEW_CRASH_LOG_SUFFIX = "_log.json";
 
     /**
      * Create the directory in which WebView will log crashes info.
@@ -59,6 +60,14 @@ public class SystemWideCrashDirectories {
      */
     public static File getWebViewTmpCrashDir() {
         return new File(ContextUtils.getApplicationContext().getCacheDir(), WEBVIEW_TMP_CRASH_DIR);
+    }
+
+    /**
+     * Create Crash json log file in the crash log directory.
+     * @return a File pointing to the created crash json log file.
+     */
+    public static File createCrashJsonLogFile(String logFileName) {
+        return new File(getOrCreateWebViewCrashLogDir(), logFileName + WEBVIEW_CRASH_LOG_SUFFIX);
     }
 
     private static File getOrCreateDir(File dir) {

@@ -230,6 +230,6 @@ public class WebViewCrashInfoCollectorTest {
         WebViewCrashInfoCollector.updateCrashLogFileWithNewCrashInfo(newCrashInfo);
 
         CrashInfo resultCrashInfo = getCrashFromJsonLogFile("xyz123");
-        Assert.assertThat(resultCrashInfo, equalsTo(null));
+        Assert.assertThat(resultCrashInfo, equalsTo(newCrashInfo));
     }
 }

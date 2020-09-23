@@ -268,9 +268,36 @@ public class CrashesListFragmentTest {
      */
     private static DataInteraction checkUnknownPackageCrashItemHeader(
             DataInteraction headerDataInteraction, CrashInfo crashInfo) {
+        return checkPackageCrashItemHeader(headerDataInteraction, crashInfo, FAKE_APP_PACKAGE_NAME);
+    }
+
+    /**
+     * Check that the given crash item header shows the "unknown app" package name, capture date and
+     * icon for the given {@code crashInfo}.
+     *
+     * @param {@link DataInteraction} represents the crash item header.
+     * @param {@link CrashInfo} to match.
+     * @return the same {@code headerDataInteraction} passed for the convenience of chaining.
+     */
+    private static DataInteraction checkMissingPackageInfoCrashItemHeader(
+            DataInteraction headerDataInteraction, CrashInfo crashInfo) {
+        return checkPackageCrashItemHeader(headerDataInteraction, crashInfo, "unknown app");
+    }
+
+    /**
+     * Check that the given crash item header shows the given package name, capture date and
+     * icon for the given {@code crashInfo}.
+     *
+     * @param {@link DataInteraction} represents the crash item header.
+     * @param {@link CrashInfo} to match.
+     * @param packageName to match.
+     * @return the same {@code headerDataInteraction} passed for the convenience of chaining.
+     */
+    private static DataInteraction checkPackageCrashItemHeader(
+            DataInteraction headerDataInteraction, CrashInfo crashInfo, String packageName) {
         String captureDate = new Date(crashInfo.captureTime).toString();
         headerDataInteraction.onChildView(withId(android.R.id.text1))
-                .check(matches(withText(FAKE_APP_PACKAGE_NAME)));
+                .check(matches(withText(packageName)));
         headerDataInteraction.onChildView(withId(android.R.id.text2))
                 .check(matches(withText(captureDate)));
         // There should not be an app with FAKE_APP_PACKAGE_NAME so system default icon should be
@@ -279,6 +306,19 @@ public class CrashesListFragmentTest {
                 .check(matches(withDrawable(android.R.drawable.sym_def_app_icon)));
 
         return headerDataInteraction;
+    }
+
+    /**
+     * Perform click on hide crash button by checking the required conditions for the button.
+     *
+     * @param {@link DataInteraction} represents the crash item body.
+     */
+    private static void clickHideCrashButton(DataInteraction bodyDataInteraction) {
+        bodyDataInteraction.onChildView(withId(R.id.crash_hide_button))
+                .check(matches(isDisplayed()))
+                .check(matches(isEnabled()))
+                .check(matches(withDrawable(R.drawable.ic_delete)))
+                .perform(click());
     }
 
     /**
@@ -701,11 +741,44 @@ public class CrashesListFragmentTest {
 
         onView(withId(R.id.crashes_list)).check(matches(withCount(1)));
 
-        DataInteraction headerDataInteraction = onData(anything()).atPosition(0);
-        headerDataInteraction.onChildView(withId(android.R.id.text1))
-                .check(matches(withText("unknown app")));
-        headerDataInteraction.onChildView(withId(R.id.crash_package_icon))
-                .check(matches(withDrawable(android.R.drawable.sym_def_app_icon)));
+        checkMissingPackageInfoCrashItemHeader(onData(anything()).atPosition(0), crashInfo);
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    // Test when crash is missing json, but has upload log file and minidump.
+    public void testShowingSingleCrashReport_uploaded_missingJson() throws Throwable {
+        CrashInfo crashInfo = createCrashInfo("123456", -1, null, 1000, null, UploadState.UPLOADED);
+
+        assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
+        assertThat("upload log file should exist", appendUploadedEntryToLog(crashInfo).exists());
+
+        CallbackHelper helper = getCrashListLoadedListener();
+        int crashListLoadInitCount = helper.getCallCount();
+        launchCrashesFragment();
+        helper.waitForCallback(crashListLoadInitCount, 1);
+
+        onView(withId(R.id.crashes_list)).check(matches(withCount(1)));
+
+        checkMissingPackageInfoCrashItemHeader(onData(anything()).atPosition(0), crashInfo);
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    // Test when crash is missing json, but has upload log file and minidump.
+    public void testShowingSingleCrashReport_pending_missingJson() throws Throwable {
+        CrashInfo crashInfo = createCrashInfo("123456", -1, null, 1000, null, UploadState.PENDING);
+
+        assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
+
+        CallbackHelper helper = getCrashListLoadedListener();
+        int crashListLoadInitCount = helper.getCallCount();
+        launchCrashesFragment();
+        helper.waitForCallback(crashListLoadInitCount, 1);
+
+        onView(withId(R.id.crashes_list)).check(matches(withCount(1)));
+
+        checkMissingPackageInfoCrashItemHeader(onData(anything()).atPosition(0), crashInfo);
     }
 
     @Test
@@ -766,13 +839,7 @@ public class CrashesListFragmentTest {
         DataInteraction bodyDataInteraction = onData(anything()).atPosition(1);
 
         crashListLoadInitCount = helper.getCallCount();
-
-        bodyDataInteraction.onChildView(withId(R.id.crash_hide_button))
-                .check(matches(isDisplayed()))
-                .check(matches(isEnabled()))
-                .check(matches(withDrawable(R.drawable.ic_delete)))
-                .perform(click());
-
+        clickHideCrashButton(bodyDataInteraction);
         helper.waitForCallback(crashListLoadInitCount, 1);
 
         onView(withId(R.id.crashes_list)).check(matches(withCount(0)));
@@ -803,13 +870,64 @@ public class CrashesListFragmentTest {
         DataInteraction bodyDataInteraction = onData(anything()).atPosition(1);
 
         crashListLoadInitCount = helper.getCallCount();
+        clickHideCrashButton(bodyDataInteraction);
+        helper.waitForCallback(crashListLoadInitCount, 1);
 
-        bodyDataInteraction.onChildView(withId(R.id.crash_hide_button))
-                .check(matches(isDisplayed()))
-                .check(matches(isEnabled()))
-                .check(matches(withDrawable(R.drawable.ic_delete)))
-                .perform(click());
+        onView(withId(R.id.crashes_list)).check(matches(withCount(0)));
+    }
 
+    @Test
+    @Feature({"AndroidWebView"})
+    public void testHideCrashButton_uploaded_missingJson() throws Throwable {
+        CrashInfo crashInfo = createCrashInfo("123456", -1, null, 1000, null, UploadState.UPLOADED);
+
+        assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
+        assertThat("upload log file should exist", appendUploadedEntryToLog(crashInfo).exists());
+
+        CallbackHelper helper = getCrashListLoadedListener();
+        int crashListLoadInitCount = helper.getCallCount();
+        launchCrashesFragment();
+        helper.waitForCallback(crashListLoadInitCount, 1);
+
+        onView(withId(R.id.crashes_list)).check(matches(withCount(1)));
+
+        // Check crash item header
+        checkMissingPackageInfoCrashItemHeader(onData(anything()).atPosition(0), crashInfo)
+                .perform(click()); // click to expand it
+        // The body is considered item#2 in the list view after expansion
+        onView(withId(R.id.crashes_list)).check(matches(withCount(2)));
+        DataInteraction bodyDataInteraction = onData(anything()).atPosition(1);
+
+        crashListLoadInitCount = helper.getCallCount();
+        clickHideCrashButton(bodyDataInteraction);
+        helper.waitForCallback(crashListLoadInitCount, 1);
+
+        onView(withId(R.id.crashes_list)).check(matches(withCount(0)));
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    public void testHideCrashButton_pending_missingJson() throws Throwable {
+        CrashInfo crashInfo = createCrashInfo("123456", -1, null, -1, null, UploadState.PENDING);
+
+        assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
+
+        CallbackHelper helper = getCrashListLoadedListener();
+        int crashListLoadInitCount = helper.getCallCount();
+        launchCrashesFragment();
+        helper.waitForCallback(crashListLoadInitCount, 1);
+
+        onView(withId(R.id.crashes_list)).check(matches(withCount(1)));
+
+        // Check crash item header
+        checkMissingPackageInfoCrashItemHeader(onData(anything()).atPosition(0), crashInfo)
+                .perform(click()); // click to expand it
+        // The body is considered item#2 in the list view after expansion
+        onView(withId(R.id.crashes_list)).check(matches(withCount(2)));
+        DataInteraction bodyDataInteraction = onData(anything()).atPosition(1);
+
+        crashListLoadInitCount = helper.getCallCount();
+        clickHideCrashButton(bodyDataInteraction);
         helper.waitForCallback(crashListLoadInitCount, 1);
 
         onView(withId(R.id.crashes_list)).check(matches(withCount(0)));

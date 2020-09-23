@@ -30,7 +30,6 @@ import java.util.Map;
  */
 public class CrashReceiverService extends Service {
     private static final String TAG = "CrashReceiverService";
-    private static final String WEBVIEW_CRASH_LOG_SUFFIX = "_log.json";
 
     private final Object mCopyingLock = new Object();
     private boolean mIsCopying;
@@ -123,9 +122,8 @@ public class CrashReceiverService extends Service {
                         copiedAnything = true;
                         if (crashesInfo != null) {
                             Map<String, String> crashInfo = crashesInfo.get(i);
-                            File logFile = new File(
-                                    SystemWideCrashDirectories.getOrCreateWebViewCrashLogDir(),
-                                    copiedFile.getName() + WEBVIEW_CRASH_LOG_SUFFIX);
+                            File logFile = SystemWideCrashDirectories.createCrashJsonLogFile(
+                                    copiedFile.getName());
                             writeCrashInfoToLogFile(logFile, copiedFile, crashInfo);
                         }
                     }

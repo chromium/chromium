@@ -146,28 +146,31 @@ public class WebViewCrashInfoCollector {
      * Modify WebView crash JSON log file with the new crash info if the JSON file exists
      */
     public static void updateCrashLogFileWithNewCrashInfo(CrashInfo crashInfo) {
-        File logDir = SystemWideCrashDirectories.getWebViewCrashLogDir();
+        File logDir = SystemWideCrashDirectories.getOrCreateWebViewCrashLogDir();
         File[] logFiles = logDir.listFiles();
-        if (logFiles == null) {
-            return;
-        }
         for (File logFile : logFiles) {
             // Ignore non-json files.
             if (!logFile.isFile() || !logFile.getName().endsWith(".json")) continue;
             // Ignore unrelated json files
             if (!logFile.getName().contains(crashInfo.localId)) continue;
-            try {
-                FileWriter writer = new FileWriter(logFile);
-                try {
-                    writer.write(crashInfo.serializeToJson());
-                } finally {
-                    writer.close();
-                }
-            } catch (IOException e) {
-                Log.e(TAG, "failed to modify JSON log entry for crash", e);
-            }
+            tryWritingCrashInfoToLogFile(crashInfo, logFile);
             return;
         }
-        // logfile does not exist
+        // logfile does not exist, so creates and writes to a new logfile
+        File newLogFile = SystemWideCrashDirectories.createCrashJsonLogFile(crashInfo.localId);
+        tryWritingCrashInfoToLogFile(crashInfo, newLogFile);
+    }
+
+    private static void tryWritingCrashInfoToLogFile(CrashInfo crashInfo, File logFile) {
+        try {
+            FileWriter writer = new FileWriter(logFile);
+            try {
+                writer.write(crashInfo.serializeToJson());
+            } finally {
+                writer.close();
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "failed to modify JSON log entry for crash", e);
+        }
     }
 }
