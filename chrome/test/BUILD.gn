@@ -4457,6 +4457,7 @@ test("unit_tests") {
       "../browser/ui/tabs/test_tab_strip_model_delegate.h",
       "../browser/ui/thumbnails/thumbnail_capture_driver_unittest.cc",
       "../browser/ui/thumbnails/thumbnail_image_unittest.cc",
+      "../browser/ui/thumbnails/thumbnail_scheduler_impl_unittest.cc",
       "../browser/ui/toolbar/app_menu_model_unittest.cc",
       "../browser/ui/toolbar/back_forward_menu_model_unittest.cc",
       "../browser/ui/toolbar/location_bar_model_unittest.cc",

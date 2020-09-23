@@ -7,8 +7,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_readiness_tracker.h"
+#include "chrome/browser/ui/thumbnails/thumbnail_scheduler.h"
 
-class ThumbnailCaptureDriver {
+class ThumbnailCaptureDriver : public ThumbnailScheduler::TabCapturer {
  public:
   class Client {
    public:
@@ -31,8 +32,9 @@ class ThumbnailCaptureDriver {
 
   using PageReadiness = ThumbnailReadinessTracker::Readiness;
 
-  explicit ThumbnailCaptureDriver(Client* client);
-  ~ThumbnailCaptureDriver();
+  explicit ThumbnailCaptureDriver(Client* client,
+                                  ThumbnailScheduler* scheduler);
+  ~ThumbnailCaptureDriver() override;
 
   // Update the capture state machine with new data.
   void UpdatePageReadiness(PageReadiness page_readiness);
@@ -48,6 +50,9 @@ class ThumbnailCaptureDriver {
 
   // Notify scheduler a frame was received during capture.
   void GotFrame();
+
+  // ThumbnailScheduler:
+  void SetCapturePermittedByScheduler(bool scheduled) override;
 
   // Determines how long to wait for final capture, and how many times
   // to retry if one is not received. Exposed for testing.
@@ -70,16 +75,19 @@ class ThumbnailCaptureDriver {
     kHaveFinalCapture,
   };
 
+  void UpdateSchedulingPriority();
   void UpdateCaptureState();
   void StartCooldown();
   void OnCooldownEnded();
 
   Client* const client_;
+  ThumbnailScheduler* const scheduler_;
 
   PageReadiness page_readiness_ = PageReadiness::kNotReady;
   bool page_visible_ = false;
   bool thumbnail_visible_ = false;
   bool can_capture_ = false;
+  bool scheduled_ = false;
 
   CaptureState capture_state_ = CaptureState::kNoCapture;
 

@@ -12,24 +12,30 @@ constexpr base::TimeDelta ThumbnailCaptureDriver::kCooldownDelay;
 // static
 constexpr size_t ThumbnailCaptureDriver::kMaxCooldownRetries;
 
-ThumbnailCaptureDriver::ThumbnailCaptureDriver(Client* client)
-    : client_(client) {}
+ThumbnailCaptureDriver::ThumbnailCaptureDriver(Client* client,
+                                               ThumbnailScheduler* scheduler)
+    : client_(client), scheduler_(scheduler) {
+  scheduler_->AddTab(this);
+}
 
-ThumbnailCaptureDriver::~ThumbnailCaptureDriver() = default;
+ThumbnailCaptureDriver::~ThumbnailCaptureDriver() {
+  scheduler_->RemoveTab(this);
+}
 
 void ThumbnailCaptureDriver::UpdatePageReadiness(PageReadiness page_readiness) {
   page_readiness_ = page_readiness;
+  UpdateSchedulingPriority();
   UpdateCaptureState();
 }
 
 void ThumbnailCaptureDriver::UpdatePageVisibility(bool page_visible) {
   page_visible_ = page_visible;
-  UpdateCaptureState();
+  UpdateSchedulingPriority();
 }
 
 void ThumbnailCaptureDriver::UpdateThumbnailVisibility(bool thumbnail_visible) {
   thumbnail_visible_ = thumbnail_visible;
-  UpdateCaptureState();
+  UpdateSchedulingPriority();
 }
 
 void ThumbnailCaptureDriver::SetCanCapture(bool can_capture) {
@@ -42,58 +48,23 @@ void ThumbnailCaptureDriver::GotFrame() {
     captured_cooldown_frame_ = true;
 }
 
+void ThumbnailCaptureDriver::SetCapturePermittedByScheduler(bool scheduled) {
+  scheduled_ = scheduled;
+  UpdateCaptureState();
+}
+
 void ThumbnailCaptureDriver::UpdateCaptureState() {
-  // Stop any existing capture and return if the page is not ready.
-  if (page_readiness_ == PageReadiness::kNotReady) {
+  if (!scheduled_) {
     client_->StopCapture();
     capture_state_ = CaptureState::kNoCapture;
     return;
   }
 
-  // Capturing is not allowed when a page is visible. Otherwise it
-  // prevents the tab from properly entering fullscreen. See
-  // https://crbug.com/1112607
-  if (page_visible_) {
-    client_->StopCapture();
-    if (capture_state_ < CaptureState::kHaveFinalCapture)
-      capture_state_ = CaptureState::kNoCapture;
-    return;
-  }
-
-  // For now don't force-load background pages. This is not ideal. We would
-  // like to grab frames from background pages to make hover cards and the
-  // "Mohnstrudel" touch/tablet tabstrip more responsive by pre-loading
-  // thumbnails from those pages. However, this currently results in a number
-  // of test failures and a possible violation of an assumption made by the
-  // renderer. TODO(crbug.com/1073141): Figure out how to force-render
-  // background tabs. This bug has detailed descriptions of steps we might
-  // take to make capture more flexible in this area.
-  if (!thumbnail_visible_) {
-    client_->StopCapture();
-    if (capture_state_ < CaptureState::kHaveFinalCapture)
-      capture_state_ = CaptureState::kNoCapture;
-    return;
-  }
-
-  // Now we know the page is ready for capture and the thumbnail is
-  // visible.
-
-  // If the page is in its final state and we already have a good
-  // thumbnail, don't need to anything.
-  if (page_readiness_ == PageReadiness::kReadyForFinalCapture &&
-      capture_state_ == CaptureState::kHaveFinalCapture) {
-    return;
-  }
-
-  // Now we know the page is a candidate for capture.
-
   // Request to capture if we haven't done so.
   if (capture_state_ < CaptureState::kCaptureRequested) {
-    capture_state_ = CaptureState::kCaptureRequested;
     client_->RequestCapture();
+    capture_state_ = CaptureState::kCaptureRequested;
   }
-
-  // Now, our |capture_state_| is at least |CaptureState::kCaptureRequested|.
 
   // Wait until our client is able to capture.
   if (!can_capture_) {
@@ -133,6 +104,56 @@ void ThumbnailCaptureDriver::UpdateCaptureState() {
       << "page_readiness_ = " << static_cast<int>(page_readiness_);
 }
 
+void ThumbnailCaptureDriver::UpdateSchedulingPriority() {
+  if (page_readiness_ == PageReadiness::kNotReady) {
+    scheduler_->SetTabCapturePriority(
+        this, ThumbnailScheduler::TabCapturePriority::kNone);
+    return;
+  }
+
+  // Capturing is not allowed when a page is visible. Otherwise it
+  // prevents the tab from properly entering fullscreen. See
+  // https://crbug.com/1112607
+  if (page_visible_) {
+    scheduler_->SetTabCapturePriority(
+        this, ThumbnailScheduler::TabCapturePriority::kNone);
+    return;
+  }
+
+  // For now don't force-load background pages. This is not ideal. We would
+  // like to grab frames from background pages to make hover cards and the
+  // "Mohnstrudel" touch/tablet tabstrip more responsive by pre-loading
+  // thumbnails from those pages. However, this currently results in a number
+  // of test failures and a possible violation of an assumption made by the
+  // renderer. TODO(crbug.com/1073141): Figure out how to force-render
+  // background tabs. This bug has detailed descriptions of steps we might
+  // take to make capture more flexible in this area.
+  if (!thumbnail_visible_) {
+    scheduler_->SetTabCapturePriority(
+        this, ThumbnailScheduler::TabCapturePriority::kNone);
+    return;
+  }
+
+  // If the page is in its final state and we already have a good
+  // thumbnail, don't need to anything.
+  if (page_readiness_ == PageReadiness::kReadyForFinalCapture &&
+      capture_state_ == CaptureState::kHaveFinalCapture) {
+    scheduler_->SetTabCapturePriority(
+        this, ThumbnailScheduler::TabCapturePriority::kNone);
+    return;
+  }
+
+  if (page_readiness_ == PageReadiness::kReadyForInitialCapture) {
+    scheduler_->SetTabCapturePriority(
+        this, ThumbnailScheduler::TabCapturePriority::kLow);
+    return;
+  }
+
+  DCHECK_EQ(page_readiness_, PageReadiness::kReadyForFinalCapture);
+  scheduler_->SetTabCapturePriority(
+      this, ThumbnailScheduler::TabCapturePriority::kHigh);
+}
+
 void ThumbnailCaptureDriver::StartCooldown() {
   DCHECK_EQ(page_readiness_, PageReadiness::kReadyForFinalCapture);
   DCHECK_EQ(capture_state_, CaptureState::kCapturing);
@@ -164,4 +185,6 @@ void ThumbnailCaptureDriver::OnCooldownEnded() {
 
   capture_state_ = CaptureState::kHaveFinalCapture;
   client_->StopCapture();
+  scheduler_->SetTabCapturePriority(
+      this, ThumbnailScheduler::TabCapturePriority::kNone);
 }
