@@ -75,6 +75,7 @@ class CONTENT_EXPORT NetworkContextClientBase
 #if defined(OS_CHROMEOS)
   void OnTrustAnchorUsed() override;
 #endif
+  void OnSCTReportReady(const std::string& cache_key) override;
 };
 
 }  // namespace content

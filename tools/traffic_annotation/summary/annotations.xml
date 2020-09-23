@@ -298,7 +298,6 @@ Refer to README.md for content description and update process.
  <item id="safety_check_update_connectivity" added_in_milestone="84" hash_code="137724067" type="0" content_hash_code="30977369" os_list="linux,windows" file_path="components/safety_check/update_check_helper.cc"/>
  <item id="sanitized_image_source" added_in_milestone="86" hash_code="36944304" type="0" content_hash_code="39770427" os_list="linux,windows" file_path="chrome/browser/ui/webui/sanitized_image_source.cc"/>
  <item id="save_file_manager" added_in_milestone="62" hash_code="56275203" type="0" content_hash_code="56692339" os_list="linux,windows" file_path="content/browser/download/save_file_manager.cc"/>
- <item id="sct_auditing" added_in_milestone="87" hash_code="48603483" type="0" content_hash_code="43567503" os_list="linux,windows" file_path="chrome/browser/ssl/sct_reporting_service.cc"/>
  <item id="sdch_dictionary_fetch" added_in_milestone="62" hash_code="47152935" type="0" deprecated="2017-09-16" content_hash_code="16764294" file_path=""/>
  <item id="search_suggest_service" added_in_milestone="73" hash_code="57785193" type="0" content_hash_code="132247652" os_list="linux,windows" file_path="chrome/browser/search/search_suggest/search_suggest_loader_impl.cc"/>
  <item id="security_key_socket" added_in_milestone="66" hash_code="31074955" type="0" content_hash_code="13741232" os_list="linux,windows" file_path="remoting/host/security_key/security_key_socket.cc"/>

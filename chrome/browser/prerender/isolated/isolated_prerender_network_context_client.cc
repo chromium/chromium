@@ -97,3 +97,6 @@ void IsolatedPrerenderNetworkContextClient::OnGenerateHttpNegotiateAuthToken(
 #if defined(OS_CHROMEOS)
 void IsolatedPrerenderNetworkContextClient::OnTrustAnchorUsed() {}
 #endif
+
+void IsolatedPrerenderNetworkContextClient::OnSCTReportReady(
+    const std::string& cache_key) {}

@@ -2781,6 +2781,17 @@ void ChromeContentBrowserClient::OnTrustAnchorUsed(
 }
 #endif
 
+void ChromeContentBrowserClient::OnSCTReportReady(
+    content::BrowserContext* browser_context,
+    const std::string& cache_key) {
+  auto* sct_reporting_service =
+      SCTReportingServiceFactory::GetInstance()->GetForBrowserContext(
+          browser_context);
+  if (sct_reporting_service) {
+    sct_reporting_service->OnSCTReportReady(cache_key);
+  }
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 ChromeContentBrowserClient::GetSystemSharedURLLoaderFactory() {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||

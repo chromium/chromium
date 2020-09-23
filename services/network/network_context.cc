@@ -433,7 +433,6 @@ NetworkContext::NetworkContext(
 #if BUILDFLAG(IS_CT_SUPPORTED)
   if (params_->ct_policy)
     SetCTPolicy(std::move(params_->ct_policy));
-  SetSCTAuditingEnabled(params_->enable_sct_auditing);
 #endif
 
 #if defined(OS_ANDROID)

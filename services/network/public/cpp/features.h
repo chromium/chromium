@@ -94,6 +94,11 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kWebSocketReassembleShortMessages;
 
 COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kSCTAuditing;
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::FeatureParam<double> kSCTAuditingSamplingRate;
+
+COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kFirstPartySets;
 
 }  // namespace features

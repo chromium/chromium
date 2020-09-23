@@ -167,4 +167,6 @@ void NetworkContextClientBase::OnGenerateHttpNegotiateAuthToken(
 void NetworkContextClientBase::OnTrustAnchorUsed() {}
 #endif
 
+void NetworkContextClientBase::OnSCTReportReady(const std::string& cache_key) {}
+
 }  // namespace content

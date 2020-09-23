@@ -72,6 +72,7 @@ class IsolatedPrerenderNetworkContextClient
 #if defined(OS_CHROMEOS)
   void OnTrustAnchorUsed() override;
 #endif
+  void OnSCTReportReady(const std::string& cache_key) override;
 };
 
 #endif  // CHROME_BROWSER_PRERENDER_ISOLATED_ISOLATED_PRERENDER_NETWORK_CONTEXT_CLIENT_H_
