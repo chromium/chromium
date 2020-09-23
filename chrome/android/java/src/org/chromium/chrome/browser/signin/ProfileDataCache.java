@@ -197,8 +197,8 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
         ThreadUtils.assertOnUiThread();
         if (mObservers.isEmpty()) {
             if (mProfileDataSource != null) {
-                updateCacheFromProfileDataSource();
                 mProfileDataSource.addObserver(this);
+                updateCacheFromProfileDataSource();
             } else {
                 ProfileDownloader.addObserver(this);
             }
