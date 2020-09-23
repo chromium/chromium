@@ -204,6 +204,12 @@ export class PasswordManagerProxy {
   getCompromisedCredentials() {}
 
   /**
+   * Requests the latest information about weak credentials.
+   * @return {!Promise<(PasswordManagerProxy.InsecureCredentials)>}
+   */
+  getWeakCredentials() {}
+
+  /**
    * Returns the current status of the check via |callback|.
    * @return {!Promise<(PasswordManagerProxy.PasswordCheckStatus)>}
    */
@@ -228,6 +234,20 @@ export class PasswordManagerProxy {
    *     listener
    */
   removeCompromisedCredentialsListener(listener) {}
+
+  /**
+   * Add an observer to the weak passwords change.
+   * @param {function(!PasswordManagerProxy.InsecureCredentials):void}
+   *      listener
+   */
+  addWeakCredentialsListener(listener) {}
+
+  /**
+   * Remove an observer to the weak passwords change.
+   * @param {function(!PasswordManagerProxy.InsecureCredentials):void}
+   *     listener
+   */
+  removeWeakCredentialsListener(listener) {}
 
   /**
    * Add an observer to the passwords check status change.
@@ -529,6 +549,13 @@ export class PasswordManagerImpl {
   }
 
   /** @override */
+  getWeakCredentials() {
+    return new Promise(resolve => {
+      chrome.passwordsPrivate.getWeakCredentials(resolve);
+    });
+  }
+
+  /** @override */
   removeInsecureCredential(insecureCredential) {
     chrome.passwordsPrivate.removeInsecureCredential(insecureCredential);
   }
@@ -543,6 +570,16 @@ export class PasswordManagerImpl {
   removeCompromisedCredentialsListener(listener) {
     chrome.passwordsPrivate.onCompromisedCredentialsChanged.removeListener(
         listener);
+  }
+
+  /** @override */
+  addWeakCredentialsListener(listener) {
+    chrome.passwordsPrivate.onWeakCredentialsChanged.addListener(listener);
+  }
+
+  /** @override */
+  removeWeakCredentialsListener(listener) {
+    chrome.passwordsPrivate.onWeakCredentialsChanged.removeListener(listener);
   }
 
   /** @override */

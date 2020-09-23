@@ -244,6 +244,26 @@ export function createCreditCardEntry() {
 }
 
 /**
+ * Creates a new insecure credential.
+ * @param {string} url
+ * @param {string} username
+ * @param {number=} id
+ * @return {chrome.passwordsPrivate.InsecureCredential}
+ * @private
+ */
+export function makeInsecureCredential(url, username, id) {
+  return {
+    id: id || 0,
+    formattedOrigin: url,
+    changePasswordUrl: `http://${url}/`,
+    username: username,
+    detailedOrigin: '',
+    isAndroidCredential: false,
+    signonRealm: '',
+  };
+}
+
+/**
  * Creates a new compromised credential.
  * @param {string} url
  * @param {string} username
@@ -255,20 +275,13 @@ export function createCreditCardEntry() {
  */
 export function makeCompromisedCredential(
     url, username, type, id, elapsedMinSinceCompromise) {
-  return {
-    id: id || 0,
-    formattedOrigin: url,
-    changePasswordUrl: `http://${url}/`,
-    username: username,
-    compromisedInfo: {
-      compromiseTime: Date.now() - (elapsedMinSinceCompromise * 60000),
-      elapsedTimeSinceCompromise: `${elapsedMinSinceCompromise} minutes ago`,
-      compromiseType: type,
-    },
-    detailedOrigin: '',
-    isAndroidCredential: false,
-    signonRealm: '',
+  const credential = makeInsecureCredential(url, username, id);
+  credential.compromisedInfo = {
+    compromiseTime: Date.now() - (elapsedMinSinceCompromise * 60000),
+    elapsedTimeSinceCompromise: `${elapsedMinSinceCompromise} minutes ago`,
+    compromiseType: type,
   };
+  return credential;
 }
 
 /**

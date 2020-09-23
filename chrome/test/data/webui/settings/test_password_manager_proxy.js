@@ -47,6 +47,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
       'startBulkPasswordCheck',
       'stopBulkPasswordCheck',
       'getCompromisedCredentials',
+      'getWeakCredentials',
       'getPasswordCheckStatus',
       'getPlaintextInsecurePassword',
       'changeInsecureCredential',
@@ -70,6 +71,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
       passwords: [],
       exceptions: [],
       leakedCredentials: [],
+      weakCredentials: [],
       checkStatus: makePasswordCheckStatus(),
     };
 
@@ -80,6 +82,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
       addExceptionListChangedListener: null,
       requestPlaintextPassword: null,
       addCompromisedCredentialsListener: null,
+      addWeakCredentialsListener: null,
       addAccountStorageOptInStateListener: null,
     };
 
@@ -242,6 +245,12 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
   }
 
   /** @override */
+  getWeakCredentials() {
+    this.methodCalled('getWeakCredentials');
+    return Promise.resolve(this.data.weakCredentials);
+  }
+
+  /** @override */
   getPasswordCheckStatus() {
     this.methodCalled('getPasswordCheckStatus');
     return Promise.resolve(this.data.checkStatus);
@@ -254,6 +263,14 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
 
   /** @override */
   removeCompromisedCredentialsListener(listener) {}
+
+  /** @override */
+  addWeakCredentialsListener(listener) {
+    this.lastCallback.addWeakCredentialsListener = listener;
+  }
+
+  /** @override */
+  removeWeakCredentialsListener(listener) {}
 
   /** @override */
   addPasswordCheckStatusListener(listener) {

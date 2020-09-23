@@ -352,6 +352,12 @@
       =1 {{COUNT} compromised password}
       other {{COUNT} compromised passwords}}
   </message>
+  <message name="IDS_SETTINGS_INSECURE_PASSWORDS_COUNT" desc="Number of insecure passwords present in the database">
+    {COUNT, plural,
+      =0 {No security issues found}
+      =1 {Found {COUNT} security issue}
+      other {Found {COUNT} security issues}}
+  </message>
   <message name="IDS_SETTINGS_CHECK_PASSWORDS_AGAIN" desc="Button to start bulk password check manually in passwords check section.">
     Check again
   </message>

@@ -275,6 +275,24 @@ Polymer({
   },
 
   /**
+   * Returns true if there are any weak credentials.
+   * @return {boolean}
+   * @private
+   */
+  hasWeakCredentials_() {
+    return !!this.weakPasswords.length;
+  },
+
+  /**
+   * Returns true if there are any insecure credentials.
+   * @return {boolean}
+   * @private
+   */
+  hasInsecureCredentials_() {
+    return !!this.leakedPasswords.length || !!this.weakPasswords.length;
+  },
+
+  /**
    * @param {!CustomEvent<{moreActionsButton: !HTMLElement}>} event
    * @private
    */
@@ -374,10 +392,10 @@ Polymer({
    * @private
    */
   getStatusIcon_() {
-    if (!this.hasLeaksOrErrors_()) {
+    if (!this.hasInsecureCredentialsOrErrors_()) {
       return 'settings:check-circle';
     }
-    if (this.hasLeakedCredentials_()) {
+    if (this.hasInsecureCredentials_()) {
       return 'cr:warning';
     }
     return 'cr:info';
@@ -389,11 +407,11 @@ Polymer({
    * @private
    */
   getStatusIconClass_() {
-    if (!this.hasLeaksOrErrors_()) {
-      return this.waitsForFirstCheck_() ? 'hidden' : 'no-leaks';
+    if (!this.hasInsecureCredentialsOrErrors_()) {
+      return this.waitsForFirstCheck_() ? 'hidden' : 'no-security-issues';
     }
-    if (this.hasLeakedCredentials_()) {
-      return 'has-leaks';
+    if (this.hasInsecureCredentials_()) {
+      return 'has-security-issues';
     }
     return '';
   },
@@ -537,21 +555,21 @@ Polymer({
    * @private
    */
   shouldShowBanner_() {
-    if (this.hasLeakedCredentials_()) {
+    if (this.hasInsecureCredentials_()) {
       return false;
     }
     return this.status.state === CheckState.CANCELED ||
-        !this.hasLeaksOrErrors_();
+        !this.hasInsecureCredentialsOrErrors_();
   },
 
   /**
-   * Returns true if there are leaked credentials or the status is unexpected
+   * Returns true if there are insecure credentials or the status is unexpected
    * for a regular password check.
    * @return {boolean}
    * @private
    */
-  hasLeaksOrErrors_() {
-    if (this.hasLeakedCredentials_()) {
+  hasInsecureCredentialsOrErrors_() {
+    if (this.hasInsecureCredentials_()) {
       return true;
     }
     switch (this.status.state) {
@@ -571,13 +589,13 @@ Polymer({
   },
 
   /**
-   * Returns true if there are leaked credentials or the status is unexpected
+   * Returns true if there are insecure credentials or the status is unexpected
    * for a regular password check.
    * @return {boolean}
    * @private
    */
   showsPasswordsCount_() {
-    if (this.hasLeakedCredentials_()) {
+    if (this.hasInsecureCredentials_()) {
       return true;
     }
     switch (this.status.state) {
@@ -595,6 +613,20 @@ Polymer({
     assertNotReached(
         'Not specified whether to show passwords for state: ' +
         this.status.state);
+  },
+
+  /**
+   * Returns count of insecure credentials, if |passwordsWeaknessCheckEnabled|
+   * is true, otherwise, returns count of compromised credentials.
+   * @return {string}
+   * @private
+   */
+  getPasswordsCount_() {
+    if (this.passwordsWeaknessCheckEnabled) {
+      return this.insecurePasswordsCount;
+    } else {
+      return this.compromisedPasswordsCount;
+    }
   },
 
   /**

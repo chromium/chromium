@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
@@ -24,10 +25,24 @@ export const PasswordCheckBehavior = {
     compromisedPasswordsCount: String,
 
     /**
+     * The number of insecure passwords as a formatted string.
+     */
+    insecurePasswordsCount: String,
+
+    /**
      * An array of leaked passwords to display.
      * @type {!Array<!PasswordManagerProxy.InsecureCredential>}
      */
     leakedPasswords: {
+      type: Array,
+      value: () => [],
+    },
+
+    /**
+     * An array of weak passwords to display.
+     * @type {!Array<!PasswordManagerProxy.InsecureCredential>}
+     */
+    weakPasswords: {
       type: Array,
       value: () => [],
     },
@@ -49,12 +64,28 @@ export const PasswordCheckBehavior = {
       type: Boolean,
       value: true,
     },
+
+    /**
+     * Returns true if passwords weakness check is enabled.
+     * @type {boolean}
+     */
+    passwordsWeaknessCheckEnabled: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('passwordsWeaknessCheck');
+      }
+    },
   },
 
   /**
    * @private {?function(!PasswordManagerProxy.InsecureCredentials):void}
    */
   leakedCredentialsListener_: null,
+
+  /**
+   * @private {?function(!PasswordManagerProxy.InsecureCredentials):void}
+   */
+  weakCredentialsListener_: null,
 
   /**
    * @private {?function(!PasswordManagerProxy.PasswordCheckStatus):void}
@@ -78,6 +109,25 @@ export const PasswordCheckBehavior = {
           .then(count => {
             this.compromisedPasswordsCount = count;
           });
+      PluralStringProxyImpl.getInstance()
+          .getPluralString(
+              'insecurePasswords',
+              this.leakedPasswords.length + this.weakPasswords.length)
+          .then(count => {
+            this.insecurePasswordsCount = count;
+          });
+    };
+
+    this.weakCredentialsListener_ = weakCredentials => {
+      this.weakPasswords = weakCredentials;
+
+      PluralStringProxyImpl.getInstance()
+          .getPluralString(
+              'insecurePasswords',
+              this.leakedPasswords.length + this.weakPasswords.length)
+          .then(count => {
+            this.insecurePasswordsCount = count;
+          });
     };
 
     this.passwordManager = PasswordManagerImpl.getInstance();
@@ -85,11 +135,15 @@ export const PasswordCheckBehavior = {
         this.statusChangedListener_);
     this.passwordManager.getCompromisedCredentials().then(
         this.leakedCredentialsListener_);
+    this.passwordManager.getWeakCredentials().then(
+        this.weakCredentialsListener_);
 
     this.passwordManager.addPasswordCheckStatusListener(
         this.statusChangedListener_);
     this.passwordManager.addCompromisedCredentialsListener(
         this.leakedCredentialsListener_);
+    this.passwordManager.addWeakCredentialsListener(
+        this.weakCredentialsListener_);
   },
 
   /** @override */
@@ -100,6 +154,9 @@ export const PasswordCheckBehavior = {
     this.passwordManager.removeCompromisedCredentialsListener(
         assert(this.leakedCredentialsListener_));
     this.leakedCredentialsListener_ = null;
+    this.passwordManager.removeWeakCredentialsListener(
+        assert(this.weakCredentialsListener_));
+    this.weakCredentialsListener_ = null;
   },
 
   /**

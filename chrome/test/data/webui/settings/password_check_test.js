@@ -10,9 +10,10 @@ import 'chrome://settings/lazy_load.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerProxy, Router, routes} from 'chrome://settings/settings.js';
-import {makeCompromisedCredential,  makePasswordCheckStatus} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
+import {makeCompromisedCredential, makeInsecureCredential, makePasswordCheckStatus} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
 import {getSyncAllPrefs,simulateSyncStatus} from 'chrome://test/settings/sync_test_util.m.js';
 import {TestOpenWindowProxy} from 'chrome://test/settings/test_open_window_proxy.js';
 import {TestPasswordManagerProxy} from 'chrome://test/settings/test_password_manager_proxy.js';
@@ -493,8 +494,8 @@ suite('PasswordsCheckSection', function() {
     const spinner = checkPasswordSection.$$('paper-spinner-lite');
     expectFalse(isElementVisible(spinner));
     assertTrue(isElementVisible(icon));
-    expectFalse(icon.classList.contains('has-leaks'));
-    expectTrue(icon.classList.contains('no-leaks'));
+    expectFalse(icon.classList.contains('has-security-issues'));
+    expectTrue(icon.classList.contains('no-security-issues'));
   });
 
   // Tests that there is neither spinner nor icon if the check hasn't run yet.
@@ -527,8 +528,8 @@ suite('PasswordsCheckSection', function() {
     const spinner = checkPasswordSection.$$('paper-spinner-lite');
     expectFalse(isElementVisible(spinner));
     assertTrue(isElementVisible(icon));
-    expectTrue(icon.classList.contains('has-leaks'));
-    expectFalse(icon.classList.contains('no-leaks'));
+    expectTrue(icon.classList.contains('has-security-issues'));
+    expectFalse(icon.classList.contains('no-security-issues'));
   });
 
   // Tests that the spinner is replaced with a warning on errors.
@@ -545,8 +546,8 @@ suite('PasswordsCheckSection', function() {
     const spinner = checkPasswordSection.$$('paper-spinner-lite');
     expectFalse(isElementVisible(spinner));
     assertTrue(isElementVisible(icon));
-    expectFalse(icon.classList.contains('has-leaks'));
-    expectFalse(icon.classList.contains('no-leaks'));
+    expectFalse(icon.classList.contains('has-security-issues'));
+    expectFalse(icon.classList.contains('no-security-issues'));
   });
 
   // Tests that the spinner replaces any icon while the check is running.
@@ -617,6 +618,54 @@ suite('PasswordsCheckSection', function() {
     assertTrue(isElementVisible(title));
     assertTrue(isElementVisible(subtitle));
     expectEquals(section.i18n('checkPasswordsProgress', 2, 5), title.innerText);
+  });
+
+  // If passwords weakness check is enabled, shows count of insecure
+  // credentials.
+  test('showInsecurePasswordsCount', async function() {
+    loadTimeData.overrideValues({passwordsWeaknessCheck: true});
+    const data = passwordManager.data;
+    data.leakedCredentials = [
+      makeCompromisedCredential('one.com', 'test4', 'LEAKED'),
+    ];
+    data.weakCredentials = [
+      makeInsecureCredential('one.com', 'test4'),
+    ];
+
+    const section = createCheckPasswordSection();
+    await passwordManager.whenCalled('getPasswordCheckStatus');
+    flush();
+    const subtitle = section.$.subtitle;
+    assertTrue(isElementVisible(subtitle));
+
+    return PluralStringProxyImpl.getInstance()
+        .getPluralString('insecurePasswords', 2)
+        .then(count => {
+          expectEquals(count, subtitle.textContent.trim());
+        });
+  });
+
+  // If passwords weakness check is disabled, shows count of compromised
+  // credentials.
+  test('showCompromisedPasswordsCount', async function() {
+    loadTimeData.overrideValues({passwordsWeaknessCheck: false});
+    const data = passwordManager.data;
+    data.leakedCredentials = [
+      makeCompromisedCredential('one.com', 'test4', 'LEAKED'),
+    ];
+
+    const section = createCheckPasswordSection();
+    await passwordManager.whenCalled('getPasswordCheckStatus');
+    flush();
+
+    const subtitle = section.$.subtitle;
+    assertTrue(isElementVisible(subtitle));
+
+    return PluralStringProxyImpl.getInstance()
+        .getPluralString('compromisedPasswords', 1)
+        .then(count => {
+          expectEquals(count, subtitle.textContent.trim());
+        });
   });
 
   // When canceled, show string explaining that and already found leak
