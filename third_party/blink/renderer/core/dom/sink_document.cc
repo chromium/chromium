@@ -42,7 +42,7 @@ class SinkDocumentParser : public RawDataDocumentParser {
 
 SinkDocument::SinkDocument(const DocumentInit& initializer)
     : HTMLDocument(initializer) {
-  SetCompatibilityMode(kQuirksMode);
+  SetCompatibilityMode(kNoQuirksMode);
   LockCompatibilityMode();
 }
 

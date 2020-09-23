@@ -186,7 +186,7 @@ PluginDocument::PluginDocument(const DocumentInit& initializer)
       background_color_(
           GetFrame()->GetPluginData()->PluginBackgroundColorForMimeType(
               initializer.GetMimeType())) {
-  SetCompatibilityMode(kQuirksMode);
+  SetCompatibilityMode(kNoQuirksMode);
   LockCompatibilityMode();
   GetExecutionContext()->GetScheduler()->RegisterStickyFeature(
       SchedulingPolicy::Feature::kContainsPlugins,
