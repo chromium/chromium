@@ -265,7 +265,7 @@ bool V4L2VP9Accelerator::SubmitDecode(scoped_refptr<VP9Picture> pic,
   memset(&ctrl, 0, sizeof(ctrl));
   ctrl.id = V4L2_CID_MPEG_VIDEO_VP9_FRAME_HDR;
   ctrl.size = sizeof(v4l2_frame_hdr);
-  ctrl.p_vp9_frame_hdr = &v4l2_frame_hdr;
+  ctrl.ptr = &v4l2_frame_hdr;
   ctrls.push_back(ctrl);
 
   struct v4l2_ctrl_vp9_decode_param v4l2_decode_param;
@@ -318,7 +318,7 @@ bool V4L2VP9Accelerator::SubmitDecode(scoped_refptr<VP9Picture> pic,
   memset(&ctrl, 0, sizeof(ctrl));
   ctrl.id = V4L2_CID_MPEG_VIDEO_VP9_DECODE_PARAM;
   ctrl.size = sizeof(v4l2_decode_param);
-  ctrl.p_vp9_decode_param = &v4l2_decode_param;
+  ctrl.ptr = &v4l2_decode_param;
   ctrls.push_back(ctrl);
 
   // Defined outside of the if() clause below as it must remain valid until
@@ -336,7 +336,7 @@ bool V4L2VP9Accelerator::SubmitDecode(scoped_refptr<VP9Picture> pic,
     memset(&ctrl, 0, sizeof(ctrl));
     ctrl.id = V4L2_CID_MPEG_VIDEO_VP9_ENTROPY;
     ctrl.size = sizeof(v4l2_entropy);
-    ctrl.p_vp9_entropy = &v4l2_entropy;
+    ctrl.ptr = &v4l2_entropy;
     ctrls.push_back(ctrl);
   }
 
@@ -382,7 +382,7 @@ bool V4L2VP9Accelerator::GetFrameContext(scoped_refptr<VP9Picture> pic,
   memset(&ctrl, 0, sizeof(ctrl));
   ctrl.id = V4L2_CID_MPEG_VIDEO_VP9_ENTROPY;
   ctrl.size = sizeof(v4l2_entropy);
-  ctrl.p_vp9_entropy = &v4l2_entropy;
+  ctrl.ptr = &v4l2_entropy;
 
   scoped_refptr<V4L2DecodeSurface> dec_surface =
       VP9PictureToV4L2DecodeSurface(pic.get());
