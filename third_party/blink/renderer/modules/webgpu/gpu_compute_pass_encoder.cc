@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_compute_pipeline.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_query_set.h"
 
 namespace blink {
 
@@ -79,6 +80,12 @@ void GPUComputePassEncoder::dispatchIndirect(GPUBuffer* indirectBuffer,
                                              uint64_t indirectOffset) {
   GetProcs().computePassEncoderDispatchIndirect(
       GetHandle(), indirectBuffer->GetHandle(), indirectOffset);
+}
+
+void GPUComputePassEncoder::writeTimestamp(GPUQuerySet* querySet,
+                                           uint32_t queryIndex) {
+  GetProcs().computePassEncoderWriteTimestamp(
+      GetHandle(), querySet->GetHandle(), queryIndex);
 }
 
 void GPUComputePassEncoder::endPass() {

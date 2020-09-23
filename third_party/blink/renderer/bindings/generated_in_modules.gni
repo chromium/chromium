@@ -1433,6 +1433,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_out_of_memory_error.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_pipeline_layout.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_pipeline_layout.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_query_set.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_query_set.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_queue.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_queue.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_bundle.cc",

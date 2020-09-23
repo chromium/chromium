@@ -16,6 +16,7 @@ class GPUBuffer;
 class DoubleSequenceOrGPUColorDict;
 class GPURenderBundle;
 class GPURenderPipeline;
+class GPUQuerySet;
 
 class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
                              public GPUProgrammablePassEncoder {
@@ -73,6 +74,7 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
   void drawIndirect(GPUBuffer* indirectBuffer, uint64_t indirectOffset);
   void drawIndexedIndirect(GPUBuffer* indirectBuffer, uint64_t indirectOffset);
   void executeBundles(const HeapVector<Member<GPURenderBundle>>& bundles);
+  void writeTimestamp(GPUQuerySet* querySet, uint32_t queryIndex);
   void endPass();
 
  private:

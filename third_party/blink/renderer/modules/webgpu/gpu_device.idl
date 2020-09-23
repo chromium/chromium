@@ -28,6 +28,8 @@
     GPUCommandEncoder createCommandEncoder(optional GPUCommandEncoderDescriptor descriptor = {});
     GPURenderBundleEncoder createRenderBundleEncoder(GPURenderBundleEncoderDescriptor descriptor);
 
+    GPUQuerySet createQuerySet(GPUQuerySetDescriptor descriptor);
+
     void pushErrorScope(GPUErrorFilter filter);
     [CallWith=ScriptState] Promise<GPUError?> popErrorScope();
 

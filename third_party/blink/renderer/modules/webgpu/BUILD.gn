@@ -48,6 +48,8 @@ blink_modules_sources("webgpu") {
     "gpu_pipeline_layout.h",
     "gpu_programmable_pass_encoder.cc",
     "gpu_programmable_pass_encoder.h",
+    "gpu_query_set.cc",
+    "gpu_query_set.h",
     "gpu_queue.cc",
     "gpu_queue.h",
     "gpu_render_bundle.cc",

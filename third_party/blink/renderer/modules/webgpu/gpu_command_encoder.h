@@ -18,6 +18,7 @@ class GPUCommandBufferDescriptor;
 class GPUCommandEncoderDescriptor;
 class GPUComputePassDescriptor;
 class GPUComputePassEncoder;
+class GPUQuerySet;
 class GPURenderPassDescriptor;
 class GPURenderPassEncoder;
 class GPUTextureCopyView;
@@ -63,6 +64,12 @@ class GPUCommandEncoder : public DawnObject<WGPUCommandEncoder> {
   void pushDebugGroup(String groupLabel);
   void popDebugGroup();
   void insertDebugMarker(String markerLabel);
+  void resolveQuerySet(GPUQuerySet* querySet,
+                       uint32_t firstQuery,
+                       uint32_t queryCount,
+                       GPUBuffer* destination,
+                       uint64_t destinationOffset);
+  void writeTimestamp(GPUQuerySet* querySet, uint32_t queryIndex);
   GPUCommandBuffer* finish(const GPUCommandBufferDescriptor* descriptor);
 
  private:

@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_compute_pipeline.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device_lost_info.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_pipeline_layout.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_query_set.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_queue.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_bundle_encoder.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_pipeline.h"
@@ -218,6 +219,11 @@ GPUCommandEncoder* GPUDevice::createCommandEncoder(
 GPURenderBundleEncoder* GPUDevice::createRenderBundleEncoder(
     const GPURenderBundleEncoderDescriptor* descriptor) {
   return GPURenderBundleEncoder::Create(this, descriptor);
+}
+
+GPUQuerySet* GPUDevice::createQuerySet(
+    const GPUQuerySetDescriptor* descriptor) {
+  return GPUQuerySet::Create(this, descriptor);
 }
 
 void GPUDevice::pushErrorScope(const WTF::String& filter) {

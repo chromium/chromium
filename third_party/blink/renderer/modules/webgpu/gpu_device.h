@@ -33,6 +33,8 @@ class GPUDeviceDescriptor;
 class GPUDeviceLostInfo;
 class GPUPipelineLayout;
 class GPUPipelineLayoutDescriptor;
+class GPUQuerySet;
+class GPUQuerySetDescriptor;
 class GPUQueue;
 class GPURenderBundleEncoder;
 class GPURenderBundleEncoderDescriptor;
@@ -95,6 +97,8 @@ class GPUDevice final : public EventTargetWithInlineData,
       const GPUCommandEncoderDescriptor* descriptor);
   GPURenderBundleEncoder* createRenderBundleEncoder(
       const GPURenderBundleEncoderDescriptor* descriptor);
+
+  GPUQuerySet* createQuerySet(const GPUQuerySetDescriptor* descriptor);
 
   void pushErrorScope(const WTF::String& filter);
   ScriptPromise popErrorScope(ScriptState* script_state);

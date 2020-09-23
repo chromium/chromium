@@ -36,5 +36,14 @@
     void popDebugGroup();
     void insertDebugMarker(USVString markerLabel);
 
+    void resolveQuerySet(
+        GPUQuerySet querySet,
+        GPUSize32 firstQuery,
+        GPUSize32 queryCount,
+        GPUBuffer destination,
+        GPUSize64 destinationOffset);
+
+    void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
+
     GPUCommandBuffer finish(optional GPUCommandBufferDescriptor descriptor = {});
 };

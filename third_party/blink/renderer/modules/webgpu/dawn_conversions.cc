@@ -97,6 +97,43 @@ WGPUCompareFunction AsDawnEnum<WGPUCompareFunction>(
 }
 
 template <>
+WGPUQueryType AsDawnEnum<WGPUQueryType>(const WTF::String& webgpu_enum) {
+  if (webgpu_enum == "occlusion") {
+    return WGPUQueryType_Occlusion;
+  }
+  if (webgpu_enum == "pipeline-statistics") {
+    return WGPUQueryType_PipelineStatistics;
+  }
+  if (webgpu_enum == "timestamp") {
+    return WGPUQueryType_Timestamp;
+  }
+  NOTREACHED();
+  return WGPUQueryType_Force32;
+}
+
+template <>
+WGPUPipelineStatisticName AsDawnEnum<WGPUPipelineStatisticName>(
+    const WTF::String& webgpu_enum) {
+  if (webgpu_enum == "vertex-shader-invocations") {
+    return WGPUPipelineStatisticName_VertexShaderInvocations;
+  }
+  if (webgpu_enum == "clipper-invocations") {
+    return WGPUPipelineStatisticName_ClipperInvocations;
+  }
+  if (webgpu_enum == "clipper-primitives-out") {
+    return WGPUPipelineStatisticName_ClipperPrimitivesOut;
+  }
+  if (webgpu_enum == "fragment-shader-invocations") {
+    return WGPUPipelineStatisticName_FragmentShaderInvocations;
+  }
+  if (webgpu_enum == "compute-shader-invocations") {
+    return WGPUPipelineStatisticName_ComputeShaderInvocations;
+  }
+  NOTREACHED();
+  return WGPUPipelineStatisticName_Force32;
+}
+
+template <>
 WGPUTextureFormat AsDawnEnum<WGPUTextureFormat>(
     const WTF::String& webgpu_enum) {
   if (webgpu_enum.IsNull()) {

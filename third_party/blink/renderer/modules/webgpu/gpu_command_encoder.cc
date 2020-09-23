@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_command_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_compute_pass_encoder.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_query_set.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_pass_encoder.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture_view.h"
@@ -321,6 +322,22 @@ void GPUCommandEncoder::popDebugGroup() {
 void GPUCommandEncoder::insertDebugMarker(String markerLabel) {
   std::string label = markerLabel.Utf8();
   GetProcs().commandEncoderInsertDebugMarker(GetHandle(), label.c_str());
+}
+
+void GPUCommandEncoder::resolveQuerySet(GPUQuerySet* querySet,
+                                        uint32_t firstQuery,
+                                        uint32_t queryCount,
+                                        GPUBuffer* destination,
+                                        uint64_t destinationOffset) {
+  GetProcs().commandEncoderResolveQuerySet(
+      GetHandle(), querySet->GetHandle(), firstQuery, queryCount,
+      destination->GetHandle(), destinationOffset);
+}
+
+void GPUCommandEncoder::writeTimestamp(GPUQuerySet* querySet,
+                                       uint32_t queryIndex) {
+  GetProcs().commandEncoderWriteTimestamp(GetHandle(), querySet->GetHandle(),
+                                          queryIndex);
 }
 
 GPUCommandBuffer* GPUCommandEncoder::finish(

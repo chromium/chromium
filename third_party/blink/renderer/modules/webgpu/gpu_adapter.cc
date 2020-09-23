@@ -30,6 +30,8 @@ WGPUDeviceProperties AsDawnType(const GPUDeviceDescriptor* descriptor) {
       extension_set.Contains("textureCompressionBC");
   requested_device_properties.shaderFloat16 =
       extension_set.Contains("shader-float16");
+  requested_device_properties.timestampQuery =
+      extension_set.Contains("timestamp-query");
 
   return requested_device_properties;
 }
@@ -80,6 +82,9 @@ void GPUAdapter::InitializeExtensionNameList() {
   }
   if (adapter_properties_.shaderFloat16) {
     extension_name_list_.emplace_back("shader-float16");
+  }
+  if (adapter_properties_.timestampQuery) {
+    extension_name_list_.emplace_back("timestamp-query");
   }
 }
 

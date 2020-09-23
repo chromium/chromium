@@ -14,6 +14,7 @@ namespace blink {
 class GPUBindGroup;
 class GPUBuffer;
 class GPUComputePipeline;
+class GPUQuerySet;
 
 class GPUComputePassEncoder : public DawnObject<WGPUComputePassEncoder>,
                               public GPUProgrammablePassEncoder {
@@ -40,6 +41,7 @@ class GPUComputePassEncoder : public DawnObject<WGPUComputePassEncoder>,
   void setPipeline(GPUComputePipeline* pipeline);
   void dispatch(uint32_t x, uint32_t y, uint32_t z);
   void dispatchIndirect(GPUBuffer* indirectBuffer, uint64_t indirectOffset);
+  void writeTimestamp(GPUQuerySet* querySet, uint32_t queryIndex);
   void endPass();
 
  private:

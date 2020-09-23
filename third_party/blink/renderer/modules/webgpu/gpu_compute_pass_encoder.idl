@@ -13,7 +13,7 @@
                   optional GPUSize32 z = 1);
     void dispatchIndirect(GPUBuffer indirectBuffer,
                           GPUSize64 indirectOffset);
-
+    void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
     void endPass();
 };
 GPUComputePassEncoder includes GPUProgrammablePassEncoder;

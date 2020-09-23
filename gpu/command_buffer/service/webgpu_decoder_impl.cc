@@ -652,6 +652,10 @@ error::Error WebGPUDecoderImpl::InitDawnDeviceAndSetWireServer(
     device_descriptor.requiredExtensions.push_back("shader_float16");
   }
 
+  if (request_device_properties.timestampQuery) {
+    device_descriptor.requiredExtensions.push_back("timestamp_query");
+  }
+
   WGPUDevice wgpu_device =
       dawn_adapters_[requested_adapter_index].CreateDevice(&device_descriptor);
   if (wgpu_device == nullptr) {

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_bind_group.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_query_set.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_bundle.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_pipeline.h"
 
@@ -176,6 +177,12 @@ void GPURenderPassEncoder::executeBundles(
 
   GetProcs().renderPassEncoderExecuteBundles(GetHandle(), bundles.size(),
                                              dawn_bundles.get());
+}
+
+void GPURenderPassEncoder::writeTimestamp(GPUQuerySet* querySet,
+                                          uint32_t queryIndex) {
+  GetProcs().renderPassEncoderWriteTimestamp(GetHandle(), querySet->GetHandle(),
+                                             queryIndex);
 }
 
 void GPURenderPassEncoder::endPass() {
