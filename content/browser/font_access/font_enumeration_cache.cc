@@ -93,4 +93,20 @@ bool FontEnumerationCache::IsFontEnumerationCacheValid() const {
          enumeration_cache_memory_.mapping.size();
 }
 
+void FontEnumerationCache::BuildEnumerationCache(
+    std::unique_ptr<blink::FontEnumerationTable> table) {
+  DCHECK(!enumeration_cache_built_.IsSet());
+
+  enumeration_cache_memory_ =
+      base::ReadOnlySharedMemoryRegion::Create(table->ByteSizeLong());
+
+  if (!IsFontEnumerationCacheValid() ||
+      !table->SerializeToArray(enumeration_cache_memory_.mapping.memory(),
+                               enumeration_cache_memory_.mapping.size())) {
+    enumeration_cache_memory_ = base::MappedReadOnlyRegion();
+  }
+
+  enumeration_cache_built_.Set();
+}
+
 }  // namespace content

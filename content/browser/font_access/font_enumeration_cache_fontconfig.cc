@@ -144,17 +144,7 @@ void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
       "Fonts.AccessAPI.EnumerationCache.Fontconfig.DuplicateFontCount",
       dupe_count);
 
-  enumeration_cache_memory_ = base::ReadOnlySharedMemoryRegion::Create(
-      font_enumeration_table->ByteSizeLong());
-
-  if (!IsFontEnumerationCacheValid() ||
-      !font_enumeration_table->SerializeToArray(
-          enumeration_cache_memory_.mapping.memory(),
-          enumeration_cache_memory_.mapping.size())) {
-    enumeration_cache_memory_ = base::MappedReadOnlyRegion();
-  }
-
-  enumeration_cache_built_.Set();
+  BuildEnumerationCache(std::move(font_enumeration_table));
 
   UMA_HISTOGRAM_MEDIUM_TIMES("Fonts.AccessAPI.EnumerationTime",
                              start_timer.Elapsed());

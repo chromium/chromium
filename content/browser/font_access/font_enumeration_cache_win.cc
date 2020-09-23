@@ -314,17 +314,7 @@ void FontEnumerationCacheWin::FinalizeEnumerationCache() {
   // out of scope.
   std::unique_ptr<blink::FontEnumerationTable> enumeration_table(
       std::move(font_enumeration_table_));
-  enumeration_cache_memory_ = base::ReadOnlySharedMemoryRegion::Create(
-      enumeration_table->ByteSizeLong());
-
-  if (!IsFontEnumerationCacheValid() ||
-      !enumeration_table->SerializeToArray(
-          enumeration_cache_memory_.mapping.memory(),
-          enumeration_cache_memory_.mapping.size())) {
-    enumeration_cache_memory_ = base::MappedReadOnlyRegion();
-  }
-
-  enumeration_cache_built_.Set();
+  BuildEnumerationCache(std::move(enumeration_table));
 
   UMA_HISTOGRAM_MEDIUM_TIMES("Fonts.AccessAPI.EnumerationTime",
                              enumeration_timer_->Elapsed());

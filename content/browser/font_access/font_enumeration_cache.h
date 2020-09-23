@@ -74,6 +74,10 @@ class CONTENT_EXPORT FontEnumerationCache {
 
   bool IsFontEnumerationCacheValid() const;
 
+  // Build the cache given a properly formed enumeration cache table.
+  void BuildEnumerationCache(
+      std::unique_ptr<blink::FontEnumerationTable> table);
+
   base::MappedReadOnlyRegion enumeration_cache_memory_;
   base::AtomicFlag enumeration_cache_built_;
   base::AtomicFlag enumeration_cache_build_started_;
