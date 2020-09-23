@@ -29,16 +29,6 @@ const CGFloat kPortraitWidth[INTERFACE_IDIOM_COUNT] = {
     768   // IPAD_IDIOM
 };
 
-bool IsPortrait() {
-  UIInterfaceOrientation orient = GetInterfaceOrientation();
-  return UIInterfaceOrientationIsPortrait(orient) ||
-         orient == UIInterfaceOrientationUnknown;
-}
-
-bool IsLandscape() {
-  return UIInterfaceOrientationIsLandscape(GetInterfaceOrientation());
-}
-
 CGFloat CurrentScreenHeight() {
   return [UIScreen mainScreen].bounds.size.height;
 }

@@ -448,7 +448,7 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 - (void)layoutActionButton {
   CGRect containerBounds = self.containerBounds;
   BOOL isIPadIdiom = IsIPadIdiom();
-  BOOL isPortrait = IsPortrait();
+  BOOL isPortrait = IsPortrait(self.window);
   BOOL shouldAddActionButtonToContainer = isIPadIdiom || !isPortrait;
   LayoutRect actionButtonLayout = LayoutRectZero;
   actionButtonLayout.size =
@@ -491,7 +491,7 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
     // Center the containerView on iPads.
     containerOriginY =
         (CGRectGetHeight(self.bounds) - containerSize.height) / 2.0f;
-  } else if (IsPortrait()) {
+  } else if (IsPortrait(self.window)) {
     // Align containerView to a quarter of the view height on portrait iPhones.
     containerOriginY =
         (CGRectGetHeight(self.bounds) - containerSize.height) / 4.0f;

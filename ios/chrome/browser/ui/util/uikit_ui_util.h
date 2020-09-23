@@ -179,8 +179,8 @@ UIView* GetFirstResponderSubview(UIView* view);
 // Returns a cropped image using |cropRect| on |image|.
 UIImage* CropImage(UIImage* image, const CGRect& cropRect);
 
-// Returns the interface orientation of the app.
-UIInterfaceOrientation GetInterfaceOrientation();
+// Returns the interface orientation of the given window in the app.
+UIInterfaceOrientation GetInterfaceOrientation(UIWindow* window);
 
 // Returns the height of the keyboard in the current orientation.
 CGFloat CurrentKeyboardHeight(NSValue* keyboardFrameValue);
@@ -198,6 +198,13 @@ UIImage* CircularImageFromImage(UIImage* image, CGFloat width);
 UIColor* InterpolateFromColorToColor(UIColor* firstColor,
                                      UIColor* secondColor,
                                      CGFloat fraction);
+
+// Returns true if the window is in portrait orientation or if orientation is
+// unknown.
+bool IsPortrait(UIWindow* window);
+
+// Returns true if the window is in landscape orientation.
+bool IsLandscape(UIWindow* window);
 
 // Whether the |environment| has a compact horizontal size class.
 bool IsCompactWidth(id<UITraitEnvironment> environment);

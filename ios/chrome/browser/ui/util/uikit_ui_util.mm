@@ -513,8 +513,12 @@ UIImage* CropImage(UIImage* image, const CGRect& cropRect) {
   return result;
 }
 
-UIInterfaceOrientation GetInterfaceOrientation() {
+UIInterfaceOrientation GetInterfaceOrientation(UIWindow* window) {
+#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
   return [[UIApplication sharedApplication] statusBarOrientation];
+#else
+  return window.windowScene.interfaceOrientation;
+#endif
 }
 
 CGFloat CurrentKeyboardHeight(NSValue* keyboardFrameValue) {
@@ -569,6 +573,16 @@ UIColor* InterpolateFromColorToColor(UIColor* firstColor,
                          green:Lerp(g1, g2, fraction)
                           blue:Lerp(b1, b2, fraction)
                          alpha:Lerp(a1, a2, fraction)];
+}
+
+bool IsPortrait(UIWindow* window) {
+  UIInterfaceOrientation orient = GetInterfaceOrientation(window);
+  return UIInterfaceOrientationIsPortrait(orient) ||
+         orient == UIInterfaceOrientationUnknown;
+}
+
+bool IsLandscape(UIWindow* window) {
+  return UIInterfaceOrientationIsLandscape(GetInterfaceOrientation(window));
 }
 
 bool IsCompactWidth(id<UITraitEnvironment> environment) {

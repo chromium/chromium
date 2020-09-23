@@ -134,7 +134,7 @@ const CGFloat kFeedCardIPhoneWidth = 375;
     // TODO(b/167703449): Once the card width and padding is exposed we should
     // stop hardcoding this for some iPhones (the ones with a portrait width of
     // kFeedCardIPhoneWidth) and use those values instead.
-    BOOL shouldFixWidth = IsPortrait()
+    BOOL shouldFixWidth = IsPortrait(self.window)
                               ? (CurrentScreenWidth() == kFeedCardIPhoneWidth)
                               : (CurrentScreenHeight() == kFeedCardIPhoneWidth);
     if (shouldFixWidth) {

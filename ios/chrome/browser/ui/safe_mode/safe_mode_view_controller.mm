@@ -149,7 +149,7 @@ const NSTimeInterval kUploadTotalTime = 5;
   // bounds will still be landscape at this point. Swap the height and width
   // here so that the dimensions will be correct once the app rotates to
   // portrait.
-  if (IsLandscape()) {
+  if (IsLandscape(self.view.window)) {
     mainBounds.size = CGSizeMake(mainBounds.size.height, mainBounds.size.width);
   }
   UIScrollView* scrollView = [[UIScrollView alloc] initWithFrame:mainBounds];

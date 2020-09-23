@@ -20,13 +20,6 @@ enum InterfaceIdiom { IPHONE_IDIOM, IPAD_IDIOM, INTERFACE_IDIOM_COUNT };
 // Array of widths for device idioms in portrait orientation.
 extern const CGFloat kPortraitWidth[INTERFACE_IDIOM_COUNT];
 
-// Returns true if the device is in portrait orientation or if interface
-// orientation is unknown.
-bool IsPortrait();
-
-// Returns true if the device is in landscape orientation.
-bool IsLandscape();
-
 // Returns the height of the screen in the current orientation.
 CGFloat CurrentScreenHeight();
 
