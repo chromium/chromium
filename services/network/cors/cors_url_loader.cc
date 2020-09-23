@@ -19,6 +19,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/request_mode.h"
+#include "services/network/trust_tokens/trust_token_operation_metrics_recorder.h"
 #include "services/network/url_loader.h"
 #include "url/url_util.h"
 
@@ -538,6 +539,12 @@ void CorsURLLoader::StartNetworkRequest(
 }
 
 void CorsURLLoader::HandleComplete(const URLLoaderCompletionStatus& status) {
+  if (request_.trust_token_params) {
+    HistogramTrustTokenOperationNetError(request_.trust_token_params->type,
+                                         status.trust_token_operation_status,
+                                         status.error_code);
+  }
+
   forwarding_client_->OnComplete(status);
   std::move(delete_callback_).Run(this);
   // |this| is deleted here.

@@ -54,6 +54,15 @@ class TrustTokenOperationMetricsRecorder final {
   base::TimeTicks finalize_start_;
 };
 
+// HistogramTrustTokenOperationNetError logs a //net error code corresponding to
+// a Trust Tokens operation. This is a temporary measure for helping understand
+// why "Failed to fetch" errors occur quite often in live testing: see
+// https://crbug.com/1128174.
+void HistogramTrustTokenOperationNetError(
+    network::mojom::TrustTokenOperationType type,
+    network::mojom::TrustTokenOperationStatus status,
+    int net_error);
+
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_OPERATION_METRICS_RECORDER_H_

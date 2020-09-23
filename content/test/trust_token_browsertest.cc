@@ -34,6 +34,8 @@
 #include "services/network/trust_tokens/test/trust_token_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 #include "url/url_canon_stdstring.h"
 
 namespace content {
@@ -363,7 +365,73 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsTimers) {
         "Net.TrustTokens.OperationServerTime.Success." + op, 1);
     histograms.ExpectTotalCount(
         "Net.TrustTokens.OperationFinalizeTime.Success." + op, 1);
+    histograms.ExpectUniqueSample(
+        "Net.TrustTokens.NetErrorForTrustTokenOperation.Success." + op, net::OK,
+        1);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsNetErrorCodes) {
+  // Verify that the Net.TrustTokens.NetErrorForTrustTokenOperation.* metrics
+  // record successfully by testing two "success" cases where there's an
+  // unrelated net stack error and one case where the Trust Tokens operation
+  // itself fails.
+  base::HistogramTester histograms;
+
+  ProvideRequestHandlerKeyCommitmentsToNetworkService(
+      {"no-cert-for-this.domain"});
+
+  GURL start_url = server_.GetURL("a.test", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+
+  EXPECT_THAT(
+      EvalJs(shell(), JsReplace(
+                          R"(fetch($1, {trustToken: {type: 'token-request'}})
+                   .then(() => "Unexpected success!")
+                   .catch(err => err.message);)",
+                          IssuanceOriginFromHost("no-cert-for-this.domain")))
+          .ExtractString(),
+      HasSubstr("Failed to fetch"));
+
+  EXPECT_THAT(
+      EvalJs(shell(), JsReplace(
+                          R"(fetch($1, {trustToken: {type: 'send-srr',
+                 issuers: ['https://nonexistent-issuer.example']}})
+                   .then(() => "Unexpected success!")
+                   .catch(err => err.message);)",
+                          IssuanceOriginFromHost("no-cert-for-this.domain")))
+          .ExtractString(),
+      HasSubstr("Failed to fetch"));
+
+  content::FetchHistogramsFromChildProcesses();
+
+  // "Success" since we executed the outbound half of the Trust Tokens
+  // operation without issue:
+  histograms.ExpectUniqueSample(
+      "Net.TrustTokens.NetErrorForTrustTokenOperation.Success.Issuance",
+      net::ERR_CERT_COMMON_NAME_INVALID, 1);
+
+  // "Success" since signing can't fail:
+  histograms.ExpectUniqueSample(
+      "Net.TrustTokens.NetErrorForTrustTokenOperation.Success.Signing",
+      net::ERR_CERT_COMMON_NAME_INVALID, 1);
+
+  // Attempt a redemption against 'a.test'; we don't have a token for this
+  // domain, so it should fail.
+  EXPECT_EQ(
+      "InvalidStateError",
+      EvalJs(shell(),
+             JsReplace(
+                 R"(fetch($1, {trustToken: {type: 'srr-token-redemption'}})
+                   .then(() => "Unexpected success!")
+                   .catch(err => err.name);)",
+                 IssuanceOriginFromHost("a.test"))));
+
+  content::FetchHistogramsFromChildProcesses();
+
+  histograms.ExpectUniqueSample(
+      "Net.TrustTokens.NetErrorForTrustTokenOperation.Failure.Redemption",
+      net::ERR_TRUST_TOKEN_OPERATION_FAILED, 1);
 }
 
 // Trust Tokens should require that their executing contexts be secure.

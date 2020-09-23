@@ -100,4 +100,15 @@ void TrustTokenOperationMetricsRecorder::FinishFinalize(
       finalize_end - finalize_start_);
 }
 
+void HistogramTrustTokenOperationNetError(
+    network::mojom::TrustTokenOperationType type,
+    network::mojom::TrustTokenOperationStatus status,
+    int net_error) {
+  base::UmaHistogramSparse(
+      base::JoinString({"Net.TrustTokens.NetErrorForTrustTokenOperation",
+                        StatusToSuccessOrFailure(status), TypeToString(type)},
+                       kHistogramPartsSeparator),
+      net_error);
+}
+
 }  // namespace  network

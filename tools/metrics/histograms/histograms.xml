@@ -104139,6 +104139,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram base="true" name="Net.TrustTokens.NetErrorForTrustTokenOperation"
+    enum="NetErrorCodes" expires_after="2021-03-30">
+<!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
+
+  <owner>davidvc@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The //net status codes for resource requests that had started Trust Tokens
+    operations. This captures the reasons why requests with Trust Tokens
+    operations fail and might help debug a surfeit of &quot;TypeError: failed to
+    fetch&quot; observed in live testing.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Net.TrustTokens.OperationBeginTime" units="ms"
     expires_after="2021-03-30">
 <!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
@@ -216806,6 +216820,8 @@ regressions. -->
              means that the subsequent Finalize part failed; for TotalTime,
              it means that the operation failed during Finalize."/>
   <suffix name="Success" label="The operation or partial operation succeeded."/>
+  <affected-histogram name="Net.TrustTokens.NetErrorForTrustTokenOperation"/>
+  <affected-histogram name="Net.TrustTokens.NetErrorForTrustTokenOperation"/>
   <affected-histogram name="Net.TrustTokens.OperationBeginTime"/>
   <affected-histogram name="Net.TrustTokens.OperationFinalizeTime"/>
   <affected-histogram name="Net.TrustTokens.OperationServerTime"/>
@@ -216816,6 +216832,10 @@ regressions. -->
   <suffix name="Issuance" label="Trust token issuance"/>
   <suffix name="Redemption" label="Trust token redemption"/>
   <suffix name="Signing" label="SRR attachment and outgoing request signing"/>
+  <affected-histogram
+      name="Net.TrustTokens.NetErrorForTrustTokenOperation.Failure"/>
+  <affected-histogram
+      name="Net.TrustTokens.NetErrorForTrustTokenOperation.Success"/>
   <affected-histogram name="Net.TrustTokens.OperationBeginTime.Failure"/>
   <affected-histogram name="Net.TrustTokens.OperationBeginTime.Success"/>
   <affected-histogram name="Net.TrustTokens.OperationFinalizeTime.Failure"/>
