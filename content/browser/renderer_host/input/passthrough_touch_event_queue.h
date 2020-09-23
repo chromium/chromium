@@ -102,7 +102,6 @@ class CONTENT_EXPORT PassthroughTouchEventQueue {
                        const ui::LatencyInfo& latency_info,
                        const uint32_t unique_touch_event_id,
                        bool should_stop_timeout_monitor);
-  void OnGestureScrollEvent(const GestureEventWithLatencyInfo& gesture_event);
 
   void OnGestureEventAck(const GestureEventWithLatencyInfo& event,
                          blink::mojom::InputEventResultState ack_result);

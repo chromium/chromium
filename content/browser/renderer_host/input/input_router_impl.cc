@@ -201,7 +201,6 @@ void InputRouterImpl::SendGestureEventWithoutQueueing(
       touch_scroll_started_sent_ = true;
       touch_event_queue_.PrependTouchScrollNotification();
     }
-    touch_event_queue_.OnGestureScrollEvent(gesture_event);
   }
 
   if (gesture_event.event.IsTouchpadZoomEvent() &&

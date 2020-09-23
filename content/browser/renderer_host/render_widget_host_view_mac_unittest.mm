@@ -1147,7 +1147,7 @@ TEST_F(RenderWidgetHostViewMacTest, PointerEventWithPenTypeSendAsTouch) {
   [rwhv_mac_->GetInProcessNSView() mouseEvent:event];
   base::RunLoop().RunUntilIdle();
   events = host_->GetAndResetDispatchedMessages();
-  ASSERT_EQ("TouchEnd GestureScrollEnd", GetMessageNames(events));
+  ASSERT_EQ("TouchEnd", GetMessageNames(events));
   EXPECT_EQ(blink::WebPointerProperties::PointerType::kPen,
             static_cast<const blink::WebTouchEvent&>(
                 events[0]->ToEvent()->Event()->Event())
@@ -1157,6 +1157,7 @@ TEST_F(RenderWidgetHostViewMacTest, PointerEventWithPenTypeSendAsTouch) {
   events.clear();
   base::RunLoop().RunUntilIdle();
   events = host_->GetAndResetDispatchedMessages();
+  ASSERT_EQ("GestureScrollEnd", GetMessageNames(events));
 
   event =
       MockMouseEventWithParams(kCGEventLeftMouseDown, {6, 9},

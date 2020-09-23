@@ -86,12 +86,6 @@ class PassthroughTouchEventQueueTest : public testing::Test,
           std::move(followup_touch_event_);
       SendTouchEvent(*followup_touch_event);
     }
-    if (followup_gesture_event_) {
-      std::unique_ptr<WebGestureEvent> followup_gesture_event =
-          std::move(followup_gesture_event_);
-      queue_->OnGestureScrollEvent(GestureEventWithLatencyInfo(
-          *followup_gesture_event, ui::LatencyInfo()));
-    }
     last_acked_event_ = event.event;
     last_acked_event_state_ = ack_result;
   }
@@ -146,13 +140,6 @@ class PassthroughTouchEventQueueTest : public testing::Test,
     queue_->QueueEvent(TouchEventWithLatencyInfo(event, ui::LatencyInfo()));
   }
 
-  void SendGestureEvent(WebInputEvent::Type type) {
-    WebGestureEvent event(type, WebInputEvent::kNoModifiers,
-                          ui::EventTimeForNow());
-    queue_->OnGestureScrollEvent(
-        GestureEventWithLatencyInfo(event, ui::LatencyInfo()));
-  }
-
   void SendTouchEventAck(blink::mojom::InputEventResultState ack_result) {
     DCHECK(!sent_events_ids_.empty());
     queue_->ProcessTouchAck(
@@ -186,10 +173,6 @@ class PassthroughTouchEventQueueTest : public testing::Test,
 
   void SetFollowupEvent(const WebTouchEvent& event) {
     followup_touch_event_.reset(new WebTouchEvent(event));
-  }
-
-  void SetFollowupEvent(const WebGestureEvent& event) {
-    followup_gesture_event_.reset(new WebGestureEvent(event));
   }
 
   void SetSyncAckResult(blink::mojom::InputEventResultState sync_ack_result) {
@@ -355,7 +338,6 @@ class PassthroughTouchEventQueueTest : public testing::Test,
   blink::mojom::InputEventResultState last_acked_event_state_;
   SyntheticWebTouchEvent touch_event_;
   std::unique_ptr<WebTouchEvent> followup_touch_event_;
-  std::unique_ptr<WebGestureEvent> followup_gesture_event_;
   std::unique_ptr<blink::mojom::InputEventResultState> sync_ack_result_;
   double slop_length_dips_;
   gfx::PointF anchor_;
@@ -1161,11 +1143,8 @@ TEST_F(PassthroughTouchEventQueueTest, TouchTimeoutWithFollowupGesture) {
   EXPECT_TRUE(IsTimeoutRunning());
   EXPECT_EQ(1U, GetAndResetSentEventCount());
 
-  // The cancelled sequence may turn into a scroll gesture.
-  WebGestureEvent followup_scroll(WebInputEvent::Type::kGestureScrollBegin,
-                                  WebInputEvent::kNoModifiers,
-                                  ui::EventTimeForNow());
-  SetFollowupEvent(followup_scroll);
+  // The cancelled sequence may turn into a scroll gesture, but this code but
+  // these GestureScrollBegin events are generated elsewhere.
 
   // Delay the ack.
   RunTasksAndWait(DefaultTouchTimeoutDelay() * 2);
@@ -1198,8 +1177,7 @@ TEST_F(PassthroughTouchEventQueueTest, TouchTimeoutWithFollowupGesture) {
   EXPECT_EQ(1U, GetAndResetSentEventCount());
   EXPECT_EQ(1U, GetAndResetAckedEventCount());
 
-  // Now end the scroll sequence.
-  SendGestureEvent(blink::WebInputEvent::Type::kGestureScrollEnd);
+  // Now end the scroll sequence (A GestureScrollEnd).
   PressTouchPoint(0, 1);
   EXPECT_TRUE(IsTimeoutRunning());
   EXPECT_EQ(1U, GetAndResetSentEventCount());
@@ -1218,11 +1196,8 @@ TEST_F(PassthroughTouchEventQueueTest,
   EXPECT_TRUE(IsTimeoutRunning());
   EXPECT_EQ(1U, GetAndResetSentEventCount());
 
-  // The cancelled sequence may turn into a scroll gesture.
-  WebGestureEvent followup_scroll(WebInputEvent::Type::kGestureScrollBegin,
-                                  WebInputEvent::kNoModifiers,
-                                  ui::EventTimeForNow());
-  SetFollowupEvent(followup_scroll);
+  // The cancelled sequence may turn into a scroll gesture, but this code but
+  // these GestureScrollBegin events are generated elsewhere.
 
   // Delay the ack.
   RunTasksAndWait(DefaultTouchTimeoutDelay() * 2);
@@ -1243,7 +1218,6 @@ TEST_F(PassthroughTouchEventQueueTest,
 
   // Now end the scroll sequence.  Events will not be forwarded until the two
   // outstanding touch acks are received.
-  SendGestureEvent(blink::WebInputEvent::Type::kGestureScrollEnd);
   MoveTouchPoint(0, 2, 2);
   ReleaseTouchPoint(0);
   EXPECT_FALSE(IsTimeoutRunning());
@@ -1425,10 +1399,6 @@ TEST_F(PassthroughTouchEventQueueTest,
   ASSERT_EQ(1U, GetAndResetSentEventCount());
   ASSERT_EQ(1U, GetAndResetAckedEventCount());
 
-  WebGestureEvent followup_scroll(WebInputEvent::Type::kGestureScrollBegin,
-                                  WebInputEvent::kNoModifiers,
-                                  WebInputEvent::GetStaticTimeStampForTests());
-  SetFollowupEvent(followup_scroll);
   MoveTouchPoint(0, 20, 5);
   EXPECT_EQ(0U, GetAndResetSentEventCount());
   EXPECT_EQ(1U, GetAndResetAckedEventCount());
@@ -1457,7 +1427,6 @@ TEST_F(PassthroughTouchEventQueueTest, TouchAbsorptionWithConsumedFirstMove) {
   EXPECT_EQ(1U, GetAndResetAckedEventCount());
 
   MoveTouchPoint(0, 20, 5);
-  SendGestureEvent(blink::WebInputEvent::Type::kGestureScrollBegin);
   SendTouchEventAck(blink::mojom::InputEventResultState::kConsumed);
   EXPECT_EQ(0U, queued_event_count());
   EXPECT_EQ(2U, GetAndResetSentEventCount());
@@ -1471,10 +1440,8 @@ TEST_F(PassthroughTouchEventQueueTest, TouchAbsorptionWithConsumedFirstMove) {
   EXPECT_EQ(1U, GetAndResetSentEventCount());
 
   MoveTouchPoint(0, 20, 5);
-  WebGestureEvent followup_scroll(WebInputEvent::Type::kGestureScrollUpdate,
-                                  WebInputEvent::kNoModifiers,
-                                  WebInputEvent::GetStaticTimeStampForTests());
-  SetFollowupEvent(followup_scroll);
+  // A GestureScrollUpdate would be sent here so simulate the ACK of the
+  // TouchMove AND the GestureScrollUpdate
   SendTouchEventAck(blink::mojom::InputEventResultState::kNotConsumed);
   SendGestureEventAck(WebInputEvent::Type::kGestureScrollUpdate,
                       blink::mojom::InputEventResultState::kConsumed);
@@ -1498,9 +1465,10 @@ TEST_F(PassthroughTouchEventQueueTest, TouchStartCancelableDuringScroll) {
 
   MoveTouchPoint(0, 20, 5);
   EXPECT_EQ(WebInputEvent::DispatchType::kBlocking, sent_event().dispatch_type);
-  SendGestureEvent(blink::WebInputEvent::Type::kGestureScrollBegin);
-  SendGestureEvent(blink::WebInputEvent::Type::kGestureScrollUpdate);
   SendTouchEventAck(blink::mojom::InputEventResultState::kNotConsumed);
+  // Consume the GestureScrollUpdate to move TouchMoves to async behaviour.
+  SendGestureEventAck(WebInputEvent::Type::kGestureScrollUpdate,
+                      blink::mojom::InputEventResultState::kConsumed);
   EXPECT_EQ(WebInputEvent::DispatchType::kBlocking, sent_event().dispatch_type);
   ASSERT_EQ(1U, GetAndResetSentEventCount());
 
@@ -1529,15 +1497,19 @@ TEST_F(PassthroughTouchEventQueueTest, TouchStartCancelableDuringScroll) {
   ASSERT_EQ(1U, GetAndResetSentEventCount());
 
   // If subsequent touchmoves aren't consumed, the generated scroll events
-  // will restore async touch dispatch.
+  // will restore async touch dispatch if the GestureScrollUpdate's are
+  // consumed.
   MoveTouchPoint(0, 25, 5);
   SendTouchEventAck(blink::mojom::InputEventResultState::kNotConsumed);
-  SendGestureEvent(blink::WebInputEvent::Type::kGestureScrollUpdate);
+  SendGestureEventAck(WebInputEvent::Type::kGestureScrollUpdate,
+                      blink::mojom::InputEventResultState::kConsumed);
   EXPECT_EQ(WebInputEvent::DispatchType::kBlocking, sent_event().dispatch_type);
   ASSERT_EQ(1U, GetAndResetSentEventCount());
   AdvanceTouchTime(kMinSecondsBetweenThrottledTouchmoves + 0.1);
   MoveTouchPoint(0, 30, 5);
   SendTouchEventAck(blink::mojom::InputEventResultState::kNotConsumed);
+  SendGestureEventAck(WebInputEvent::Type::kGestureScrollUpdate,
+                      blink::mojom::InputEventResultState::kConsumed);
   EXPECT_NE(WebInputEvent::DispatchType::kBlocking, sent_event().dispatch_type);
   ASSERT_EQ(1U, GetAndResetSentEventCount());
 
