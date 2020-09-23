@@ -9,11 +9,13 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/os_crypt/os_crypt.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/protocol/local_trusted_vault.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,7 +68,10 @@ class StandaloneTrustedVaultClientTest : public testing::Test {
   StandaloneTrustedVaultClientTest()
       : file_path_(CreateUniqueTempDir(&temp_dir_)
                        .Append(base::FilePath(FILE_PATH_LITERAL("some_file")))),
-        client_(file_path_, identity_env_.identity_manager()) {}
+        client_(file_path_, identity_env_.identity_manager()) {
+    override_features_.InitAndEnableFeature(
+        switches::kSyncSupportTrustedVaultPassphrase);
+  }
 
   ~StandaloneTrustedVaultClientTest() override = default;
 
@@ -97,6 +102,7 @@ class StandaloneTrustedVaultClientTest : public testing::Test {
     return fetched_primary_account;
   }
 
+  base::test::ScopedFeatureList override_features_;
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   const base::FilePath file_path_;
@@ -105,16 +111,9 @@ class StandaloneTrustedVaultClientTest : public testing::Test {
   StandaloneTrustedVaultClient client_;
 };
 
-TEST_F(StandaloneTrustedVaultClientTest, ShouldNotAutoTriggerInitialization) {
-  EXPECT_FALSE(client_.IsInitializationTriggeredForTesting());
-}
-
 TEST_F(StandaloneTrustedVaultClientTest, ShouldFetchEmptyKeys) {
   const std::string kGaiaId = "user1";
-
-  ASSERT_FALSE(client_.IsInitializationTriggeredForTesting());
   EXPECT_THAT(FetchKeysAndWait(kGaiaId), IsEmpty());
-  EXPECT_TRUE(client_.IsInitializationTriggeredForTesting());
 }
 
 TEST_F(StandaloneTrustedVaultClientTest, ShouldFetchNonEmptyKeys) {
@@ -139,9 +138,12 @@ TEST_F(StandaloneTrustedVaultClientTest, ShouldFetchNonEmptyKeys) {
   ASSERT_NE(-1, base::WriteFile(file_path_, encrypted_data.c_str(),
                                 encrypted_data.size()));
 
-  ASSERT_FALSE(client_.IsInitializationTriggeredForTesting());
-  EXPECT_THAT(FetchKeysAndWait(kGaiaId1), ElementsAre(kKey1));
-  EXPECT_THAT(FetchKeysAndWait(kGaiaId2), ElementsAre(kKey2, kKey3));
+  // Initialize new client to read the data from the file.
+  StandaloneTrustedVaultClient client(file_path_,
+                                      identity_env_.identity_manager());
+  EXPECT_THAT(FetchKeysAndWaitForClient(kGaiaId1, &client), ElementsAre(kKey1));
+  EXPECT_THAT(FetchKeysAndWaitForClient(kGaiaId2, &client),
+              ElementsAre(kKey2, kKey3));
 }
 
 TEST_F(StandaloneTrustedVaultClientTest, ShouldStoreKeys) {
@@ -224,15 +226,9 @@ TEST_F(StandaloneTrustedVaultClientTest, ShouldRemoveAllStoredKeys) {
 // ChromeOS doesn't support sign-out.
 #if !defined(OS_CHROMEOS)
 TEST_F(StandaloneTrustedVaultClientTest, ShouldPopulatePrimaryAccountChanges) {
-  ASSERT_FALSE(client_.IsInitializationTriggeredForTesting());
-
   // Set initial primary account before backend initialization.
   const std::string email1 = "user1@gmail.com";
   identity_env_.SetPrimaryAccount(email1);
-
-  // Trigger backend initialization.
-  ASSERT_THAT(FetchKeysAndWait("user1"), IsEmpty());
-  ASSERT_TRUE(client_.IsInitializationTriggeredForTesting());
 
   // Verify that current primary account corresponds to |email1|.
   base::Optional<CoreAccountInfo> current_primary_account =

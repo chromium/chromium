@@ -60,32 +60,24 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
   void FetchBackendPrimaryAccountForTesting(
       base::OnceCallback<void(const base::Optional<CoreAccountInfo>&)> callback)
       const;
-  bool IsInitializationTriggeredForTesting() const;
   void SetRecoverabilityDegradedForTesting();
 
  private:
-  void TriggerLazyInitializationIfNeeded();
-
-  // Never null and must outlive this object.
-  signin::IdentityManager* identity_manager_;
-
-  const base::FilePath file_path_;
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
   CallbackList observer_list_;
 
-  // |backend_| constructed lazily in the UI thread, used in
-  // |backend_task_runner_| and destroyed (refcounted) on any thread.
-  scoped_refptr<StandaloneTrustedVaultBackend> backend_;
-
-  // Observes changes of primary account and populates them into |backend_|.
-  // Created lazily together with |backend_| and holds reference to it and
-  // |backend_task_runner_|.
-  std::unique_ptr<signin::IdentityManager::Observer> primary_account_observer_;
-
   // Allows access token fetching for primary account on the ui thread. Passed
   // as WeakPtr to TrustedVaultAccessTokenFetcherImpl.
   TrustedVaultAccessTokenFetcherFrontend access_token_fetcher_frontend_;
+
+  // |backend_| constructed in the UI thread, used in |backend_task_runner_|
+  // and destroyed (refcounted) on any thread.
+  scoped_refptr<StandaloneTrustedVaultBackend> backend_;
+
+  // Observes changes of primary account and populates them into |backend_|.
+  // Holds references to |backend_| and |backend_task_runner_|.
+  std::unique_ptr<signin::IdentityManager::Observer> primary_account_observer_;
 
   bool is_recoverability_degraded_for_testing_ = false;
 };
