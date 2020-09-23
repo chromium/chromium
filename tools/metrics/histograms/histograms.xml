@@ -147049,8 +147049,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.AdvancedProtection.APTokenFetchStatus"
-    enum="GoogleServiceAuthError" expires_after="M85">
-  <owner>vakh@chromium.org</owner>
+    enum="GoogleServiceAuthError" expires_after="M90">
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     For users known to be already enrolled in Advanced Proection, records the
@@ -147062,8 +147062,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.AdvancedProtection.TokenFetchStatus"
-    enum="GoogleServiceAuthError" expires_after="M85">
-  <owner>vakh@chromium.org</owner>
+    enum="GoogleServiceAuthError" expires_after="M90">
+  <owner>drubey@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records the service error of refreshing OAuth2 access token during fetching
@@ -149358,7 +149358,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsingBinaryUploadRequest.DlpResult"
-    enum="BooleanSuccess" expires_after="M85">
+    enum="BooleanSuccess" expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -149369,7 +149369,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsingBinaryUploadRequest.Duration" units="ms"
-    expires_after="M85">
+    expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -149380,7 +149380,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsingBinaryUploadRequest.MalwareResult"
-    enum="BooleanSuccess" expires_after="M85">
+    enum="BooleanSuccess" expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -149403,7 +149403,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsingBinaryUploadRequest.Result"
-    enum="SafeBrowsingBinaryUploadResult" expires_after="M85">
+    enum="SafeBrowsingBinaryUploadResult" expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -149424,7 +149424,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsingBinaryUploadRequest.TimeToGetToken" units="ms"
-    expires_after="M85">
+    expires_after="M90">
   <obsolete>
     Removed 06/2020 as SafeBrowsingBinaryUploadRequest.TimeToGetFCMToken
     provides the same information with a better range of durations.
@@ -149438,7 +149438,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsingFCMService.IncomingMessageHasKey" enum="Boolean"
-    expires_after="M85">
+    expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -149448,7 +149448,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsingFCMService.IncomingMessageHasValidToken"
-    enum="Boolean" expires_after="M85">
+    enum="Boolean" expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -149459,7 +149459,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsingFCMService.IncomingMessageParsedBase64"
-    enum="BooleanSuccess" expires_after="M85">
+    enum="BooleanSuccess" expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -149470,7 +149470,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsingFCMService.IncomingMessageParsedProto"
-    enum="BooleanSuccess" expires_after="M85">
+    enum="BooleanSuccess" expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -152665,7 +152665,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SBMultipartUploader.FailedUploadDuration" units="s"
-    expires_after="M85">
+    expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -152676,7 +152676,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SBMultipartUploader.NetworkRequestResponseCodeOrError"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M85">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -152688,7 +152688,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SBMultipartUploader.RetriesNeeded" units="retries"
-    expires_after="M85">
+    expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -152698,7 +152698,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SBMultipartUploader.SuccessfulUploadDuration" units="s"
-    expires_after="M85">
+    expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -152708,7 +152708,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SBMultipartUploader.UploadSize" units="bytes"
-    expires_after="M85">
+    expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -152719,7 +152719,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SBMultipartUploader.UploadSuccess" enum="BooleanSuccess"
-    expires_after="M85">
+    expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
