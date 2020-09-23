@@ -21,7 +21,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.help.HelpAndFeedback;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -37,7 +37,7 @@ public class IncognitoInterstitialDelegateTest {
     private static final String sCurrentUrlPage = "dummy_url_string.com";
 
     @Mock
-    private HelpAndFeedback mHelpAndFeedbackMock;
+    private HelpAndFeedbackLauncherImpl mHelpAndFeedbackLauncherImplMock;
 
     @Mock
     private Profile mProfileMock;
@@ -65,7 +65,7 @@ public class IncognitoInterstitialDelegateTest {
 
         Profile.setLastUsedProfileForTesting(mProfileMock);
         mIncognitoInterstitialDelegate = new IncognitoInterstitialDelegate(mActivityMock,
-                mRegularTabModelMock, mIncognitoTabCreatorMock, mHelpAndFeedbackMock);
+                mRegularTabModelMock, mIncognitoTabCreatorMock, mHelpAndFeedbackLauncherImplMock);
     }
 
     @After
@@ -79,7 +79,7 @@ public class IncognitoInterstitialDelegateTest {
     @MediumTest
     public void testOpenLearnMorePage() {
         mIncognitoInterstitialDelegate.openLearnMorePage();
-        verify(mHelpAndFeedbackMock)
+        verify(mHelpAndFeedbackLauncherImplMock)
                 .show(mActivityMock, sIncognitoLearnMoreText, mProfileMock.getPrimaryOTRProfile(),
                         null);
     }

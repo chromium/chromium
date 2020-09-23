@@ -20,7 +20,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.datareduction.DataReductionPromoUtils;
 import org.chromium.chrome.browser.datareduction.DataReductionProxyUma;
-import org.chromium.chrome.browser.help.HelpAndFeedback;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.infobar.PreviewsLitePageInfoBar;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings.ContentLengths;
@@ -128,7 +128,7 @@ public class DataReductionPreferenceFragment extends PreferenceFragmentCompat {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
-            HelpAndFeedback.getInstance().show(getActivity(),
+            HelpAndFeedbackLauncherImpl.getInstance().show(getActivity(),
                     getString(R.string.help_context_data_reduction),
                     Profile.getLastUsedRegularProfile(), null);
             return true;
@@ -162,7 +162,7 @@ public class DataReductionPreferenceFragment extends PreferenceFragmentCompat {
             // Configure "Learn more" link.
             Preference learnMorePreference = findPreference(PREF_LEARN_MORE_KEY);
             learnMorePreference.setOnPreferenceClickListener(preference -> {
-                HelpAndFeedback.getInstance().show(getActivity(),
+                HelpAndFeedbackLauncherImpl.getInstance().show(getActivity(),
                         getString(R.string.help_context_data_reduction),
                         Profile.getLastUsedRegularProfile(), null);
                 return true;

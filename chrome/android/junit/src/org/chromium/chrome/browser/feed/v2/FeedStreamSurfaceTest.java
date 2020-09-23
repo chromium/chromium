@@ -56,7 +56,7 @@ import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.AppHooksImpl;
 import org.chromium.chrome.browser.feed.shared.stream.Stream.ContentChangedListener;
-import org.chromium.chrome.browser.help.HelpAndFeedback;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -114,7 +114,7 @@ public class FeedStreamSurfaceTest {
     @Mock
     private NativePageNavigationDelegate mPageNavigationDelegate;
     @Mock
-    private HelpAndFeedback mHelpAndFeedback;
+    private HelpAndFeedbackLauncherImpl mHelpAndFeedbackLauncherImpl;
     @Mock
     Profile mProfileMock;
     @Mock
@@ -155,7 +155,7 @@ public class FeedStreamSurfaceTest {
 
         Profile.setLastUsedProfileForTesting(mProfileMock);
         mFeedStreamSurface = Mockito.spy(new FeedStreamSurface(mActivity, false, mSnackbarManager,
-                mPageNavigationDelegate, mBottomSheetController, mHelpAndFeedback));
+                mPageNavigationDelegate, mBottomSheetController, mHelpAndFeedbackLauncherImpl));
         mContentManager = mFeedStreamSurface.getFeedListContentManagerForTesting();
         mFeedStreamSurface.mRootView = Mockito.spy(mFeedStreamSurface.mRootView);
         mRecyclerView = mFeedStreamSurface.mRootView;
@@ -522,7 +522,7 @@ public class FeedStreamSurfaceTest {
         mFeedStreamSurface.sendFeedback(productSpecificDataMap);
 
         // Assert.
-        verify(mHelpAndFeedback)
+        verify(mHelpAndFeedbackLauncherImpl)
                 .showFeedback(any(), any(), eq(testUrl), eq(FeedStreamSurface.FEEDBACK_REPORT_TYPE),
                         mMapCaptor.capture(), eq(FeedStreamSurface.FEEDBACK_CONTEXT));
 

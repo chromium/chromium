@@ -91,6 +91,7 @@ import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorNotificationBridgeUiFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.firstrun.ForcedSigninProcessor;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -101,7 +102,6 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.gsa.ContextReporter;
 import org.chromium.chrome.browser.gsa.GSAAccountChangeListener;
 import org.chromium.chrome.browser.gsa.GSAState;
-import org.chromium.chrome.browser.help.HelpAndFeedback;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.incognito.IncognitoNotificationPresenceController;
 import org.chromium.chrome.browser.incognito.IncognitoProfileDestroyer;
@@ -2049,7 +2049,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     /**
-     * Shows HelpAndFeedback and records the user action as well.
+     * Shows Help and Feedback and records the user action as well.
      * @param url The URL of the tab the user is currently on.
      * @param recordAction The user action to record.
      * @param profile The current {@link Profile}.
@@ -2057,9 +2057,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     public void startHelpAndFeedback(String url, String recordAction, Profile profile) {
         // Since reading back the compositor is asynchronous, we need to do the readback
         // before starting the GoogleHelp.
-        String helpContextId = HelpAndFeedback.getHelpContextIdFromUrl(
+        String helpContextId = HelpAndFeedbackLauncherImpl.getHelpContextIdFromUrl(
                 this, url, getCurrentTabModel().isIncognito());
-        HelpAndFeedback.getInstance().show(this, helpContextId, profile, url);
+        HelpAndFeedbackLauncherImpl.getInstance().show(this, helpContextId, profile, url);
         RecordUserAction.record(recordAction);
     }
 

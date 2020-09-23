@@ -10,7 +10,7 @@ import androidx.annotation.MainThread;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.help.HelpAndFeedback;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.account_picker.AccountConsistencyPromoAction;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerDelegate;
@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 public class IncognitoInterstitialDelegate {
     private final Activity mActivity;
     private final TabCreator mIncognitoTabCreator;
-    private final HelpAndFeedback mHelpAndFeedback;
+    private final HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     private final TabModel mRegularTabModel;
 
     /**
@@ -38,14 +38,15 @@ public class IncognitoInterstitialDelegate {
      * @param incognitoTabCreator An incognito {@link TabCreator} instance which would be used to
      *         create incognito tab after the user clicks on "Continue" in the incognito
      *         interstitial.
-     * @param helpAndFeedback A {@link HelpAndFeedback} instance through which we will load the
+     * @param helpAndFeedbackLauncher A {@link HelpAndFeedbackLauncher} instance through which we
+     *         will load the
      */
     public IncognitoInterstitialDelegate(Activity activity, TabModel regularTabModel,
-            TabCreator incognitoTabCreator, HelpAndFeedback helpAndFeedback) {
+            TabCreator incognitoTabCreator, HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
         mActivity = activity;
         mRegularTabModel = regularTabModel;
         mIncognitoTabCreator = incognitoTabCreator;
-        mHelpAndFeedback = helpAndFeedback;
+        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
     }
 
     /**
@@ -54,7 +55,7 @@ public class IncognitoInterstitialDelegate {
     @MainThread
     void openLearnMorePage() {
         ThreadUtils.assertOnUiThread();
-        mHelpAndFeedback.show(mActivity,
+        mHelpAndFeedbackLauncher.show(mActivity,
                 mActivity.getString(R.string.help_context_incognito_learn_more),
                 Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(), null);
     }

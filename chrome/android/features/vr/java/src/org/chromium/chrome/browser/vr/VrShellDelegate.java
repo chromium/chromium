@@ -50,8 +50,8 @@ import org.chromium.chrome.browser.ApplicationLifetime;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.help.HelpAndFeedback;
 import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -728,7 +728,7 @@ public class VrShellDelegate
     private static void startFeedback(Tab tab) {
         // TODO(ymalik): This call will connect to the Google Services api which can be slow. Can we
         // connect to it beforehand when we know that we'll be prompting for feedback?
-        HelpAndFeedback.getInstance().showFeedback(TabUtils.getActivity(tab),
+        HelpAndFeedbackLauncherImpl.getInstance().showFeedback(TabUtils.getActivity(tab),
                 Profile.fromWebContents(tab.getWebContents()), tab.getUrlString(),
                 ContextUtils.getApplicationContext().getPackageName() + "." + FEEDBACK_REPORT_TYPE);
     }

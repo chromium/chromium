@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.feedback;
 
 /**
  * Interface for injecting HelpAndFeedbackLauncher to a fragment. It is useful for modularized
- * fragments that need access to HelpAndFeedback.
+ * fragments that need access to HelpAndFeedbackLauncherImpl.
  */
 public interface FragmentHelpAndFeedbackLauncher {
     /**

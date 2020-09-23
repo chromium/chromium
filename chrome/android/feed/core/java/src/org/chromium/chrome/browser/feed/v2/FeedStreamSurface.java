@@ -31,8 +31,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.feed.shared.ScrollTracker;
 import org.chromium.chrome.browser.feed.shared.stream.Stream.ContentChangedListener;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.help.HelpAndFeedback;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -107,7 +107,7 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
     @Nullable
     private FeedSliceViewTracker mSliceViewTracker;
     private final NativePageNavigationDelegate mPageNavigationDelegate;
-    private final HelpAndFeedback mHelpAndFeedback;
+    private final HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     private final ScrollReporter mScrollReporter = new ScrollReporter();
     private final ObserverList<ContentChangedListener> mContentChangedListeners =
             new ObserverList<ContentChangedListener>();
@@ -374,11 +374,12 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
      */
     public FeedStreamSurface(Activity activity, boolean isBackgroundDark,
             SnackbarManager snackbarManager, NativePageNavigationDelegate pageNavigationDelegate,
-            BottomSheetController bottomSheetController, HelpAndFeedback helpAndFeedback) {
+            BottomSheetController bottomSheetController,
+            HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
         mNativeFeedStreamSurface = FeedStreamSurfaceJni.get().init(FeedStreamSurface.this);
         mSnackbarManager = snackbarManager;
         mActivity = activity;
-        mHelpAndFeedback = helpAndFeedback;
+        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
 
         mPageNavigationDelegate = pageNavigationDelegate;
         mBottomSheetController = bottomSheetController;
@@ -808,7 +809,7 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         // FEEDBACK_REPORT_TYPE: Reports for Chrome mobile must have a contextTag of the form
         // com.chrome.feed.USER_INITIATED_FEEDBACK_REPORT, or they will be discarded for not
         // matching an allow list rule.
-        mHelpAndFeedback.showFeedback(
+        mHelpAndFeedbackLauncher.showFeedback(
                 mActivity, profile, url, FEEDBACK_REPORT_TYPE, feedContext, FEEDBACK_CONTEXT);
     }
 

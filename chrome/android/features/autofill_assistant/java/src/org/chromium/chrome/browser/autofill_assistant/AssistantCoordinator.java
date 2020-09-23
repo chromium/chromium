@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
-import org.chromium.chrome.browser.help.HelpAndFeedback;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -87,7 +87,7 @@ class AssistantCoordinator {
         Profile profile =
                 Profile.fromWebContents(mActivity.getActivityTabProvider().get().getWebContents());
 
-        HelpAndFeedback.getInstance().showFeedback(mActivity, profile,
+        HelpAndFeedbackLauncherImpl.getInstance().showFeedback(mActivity, profile,
                 mActivity.getActivityTab().getUrlString(), FEEDBACK_CATEGORY_TAG,
                 null /* feed context */,
                 FeedbackContext.buildContextString(mActivity, debugContext, 4));

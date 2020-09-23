@@ -17,6 +17,7 @@ include_rules = [
   "+chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/Tab.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/ui/TabObscuringHandler.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/webapps/WebDisplayMode.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/feedback/HelpAndFeedbackLauncherImpl.java",
   "+chrome/browser/flags",
   "+chrome/browser/android/lifecycle",
   "+chrome/browser/preferences",

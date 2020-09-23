@@ -43,7 +43,7 @@ import androidx.core.view.MarginLayoutParamsCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.settings.CreditCardNumberFormattingTextWatcher;
-import org.chromium.chrome.browser.help.HelpAndFeedback;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.widget.AlwaysDismissedDialog;
@@ -177,7 +177,7 @@ public class EditorDialog
 
     /** Launches the Autofill help page on top of the current Context and current Profile. */
     public static void launchAutofillHelpPage(Context context, Profile profile) {
-        HelpAndFeedback.getInstance().show((Activity) context,
+        HelpAndFeedbackLauncherImpl.getInstance().show((Activity) context,
                 context.getString(R.string.help_context_autofill), profile, null);
     }
 

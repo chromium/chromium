@@ -18,14 +18,14 @@ public interface SiteSettingsHelpClient {
     /**
      * Launches a support page relevant to settings UI pages.
      *
-     * @see org.chromium.chrome.browser.help.HelpAndFeedback#show
+     * @see org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher#show
      */
     void launchSettingsHelpAndFeedbackActivity(Activity currentActivity);
 
     /**
      * Launches a support page related to protected content.
      *
-     * @see org.chromium.chrome.browser.help.HelpAndFeedback#show
+     * @see org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher#show
      */
     void launchProtectedContentHelpAndFeedbackActivity(Activity currentActivity);
 }

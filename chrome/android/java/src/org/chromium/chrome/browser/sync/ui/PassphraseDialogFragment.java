@@ -36,7 +36,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
-import org.chromium.chrome.browser.help.HelpAndFeedback;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.components.sync.PassphraseType;
@@ -174,7 +174,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
                 new SpanInfo("<learnmore>", "</learnmore>", new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
-                        HelpAndFeedback.getInstance().show(getActivity(), helpContext,
+                        HelpAndFeedbackLauncherImpl.getInstance().show(getActivity(), helpContext,
                                 Profile.getLastUsedRegularProfile(), null);
                     }
                 }));

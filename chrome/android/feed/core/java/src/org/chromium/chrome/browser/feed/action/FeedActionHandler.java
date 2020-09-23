@@ -12,8 +12,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.feed.FeedLoggingBridge;
 import org.chromium.chrome.browser.feed.library.api.client.knowncontent.ContentMetadata;
 import org.chromium.chrome.browser.feed.library.api.host.action.ActionApi;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.help.HelpAndFeedback;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -170,8 +170,8 @@ public class FeedActionHandler implements ActionApi {
         // for not matching an allow list rule.
         String contextTag = FEEDBACK_REPORT_TYPE;
 
-        HelpAndFeedback.getInstance().showFeedback(mActivity, mProfile, contentMetadata.getUrl(),
-                contextTag, feedContext, feedbackContext);
+        HelpAndFeedbackLauncherImpl.getInstance().showFeedback(mActivity, mProfile,
+                contentMetadata.getUrl(), contextTag, feedContext, feedbackContext);
         mLoggingBridge.reportFeedInteraction();
         return;
     }

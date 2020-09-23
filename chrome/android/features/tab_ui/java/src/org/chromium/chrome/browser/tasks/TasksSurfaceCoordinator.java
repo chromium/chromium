@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.help.HelpAndFeedback;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -69,7 +69,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
         }
 
         View.OnClickListener incognitoLearnMoreClickListener = v -> {
-            HelpAndFeedback.getInstance().show(activity,
+            HelpAndFeedbackLauncherImpl.getInstance().show(activity,
                     activity.getString(R.string.help_context_incognito_learn_more),
                     Profile.getLastUsedRegularProfile().getOffTheRecordProfile(), null);
         };

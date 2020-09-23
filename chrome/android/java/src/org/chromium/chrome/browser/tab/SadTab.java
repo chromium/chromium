@@ -21,7 +21,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.help.HelpAndFeedback;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.ui_metrics.SadTabEvent;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -89,7 +89,7 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
             public void run() {
                 Activity activity = mTab.getWindowAndroid().getActivity().get();
                 assert activity != null;
-                HelpAndFeedback.getInstance().show(activity,
+                HelpAndFeedbackLauncherImpl.getInstance().show(activity,
                         activity.getString(R.string.help_context_sad_tab),
                         Profile.fromWebContents(mTab.getWebContents()), null);
             }

@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.site_settings;
 import android.app.Activity;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.help.HelpAndFeedback;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsHelpClient;
 
@@ -22,14 +22,14 @@ public class ChromeSiteSettingsHelpClient implements SiteSettingsHelpClient {
 
     @Override
     public void launchSettingsHelpAndFeedbackActivity(Activity currentActivity) {
-        HelpAndFeedback.getInstance().show(currentActivity,
+        HelpAndFeedbackLauncherImpl.getInstance().show(currentActivity,
                 currentActivity.getString(R.string.help_context_settings),
                 Profile.getLastUsedRegularProfile(), null);
     }
 
     @Override
     public void launchProtectedContentHelpAndFeedbackActivity(Activity currentActivity) {
-        HelpAndFeedback.getInstance().show(currentActivity,
+        HelpAndFeedbackLauncherImpl.getInstance().show(currentActivity,
                 currentActivity.getString(R.string.help_context_protected_content),
                 Profile.getLastUsedRegularProfile(), null);
     }

@@ -58,6 +58,7 @@ android_library("internal_java") {
     "//base:jni_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android:chrome_java",
+    "//chrome/browser/feedback/android:java",
     "//chrome/browser/password_check/android:password_check_java_enums",
     "//chrome/browser/password_check/android:public_ui_java",
     "//chrome/browser/password_manager/android:java",
