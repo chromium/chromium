@@ -164,6 +164,10 @@ void WebUIDataSourceImpl::AddInteger(base::StringPiece name, int32_t value) {
   localized_strings_.SetInteger(name, value);
 }
 
+void WebUIDataSourceImpl::AddDouble(base::StringPiece name, double value) {
+  localized_strings_.SetDouble(name, value);
+}
+
 void WebUIDataSourceImpl::UseStringsJs() {
   use_strings_js_ = true;
 }

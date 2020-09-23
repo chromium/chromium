@@ -37,6 +37,7 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
       const base::DictionaryValue& localized_strings) override;
   void AddBoolean(base::StringPiece name, bool value) override;
   void AddInteger(base::StringPiece name, int32_t value) override;
+  void AddDouble(base::StringPiece name, double value) override;
   void UseStringsJs() override;
   void AddResourcePath(base::StringPiece path, int resource_id) override;
   void SetDefaultResource(int resource_id) override;
