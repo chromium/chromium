@@ -12,22 +12,6 @@ namespace chromecast {
 namespace media {
 
 // static
-const char* GetAudioContentTypeName(const AudioContentType type) {
-  switch (type) {
-    case AudioContentType::kMedia:
-      return "kMedia";
-    case AudioContentType::kAlarm:
-      return "kAlarm";
-    case AudioContentType::kCommunication:
-      return "kCommunication";
-    case AudioContentType::kOther:
-      return "kOther";
-    default:
-      return "Unknown";
-  }
-}
-
-// static
 bool AudioSinkAndroid::GetSessionIds(SinkType sink_type,
                                      int* media_id,
                                      int* communication_id) {

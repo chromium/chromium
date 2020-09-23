@@ -70,7 +70,6 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
   bool primary() const override;
   std::string device_id() const override;
   AudioContentType content_type() const override;
-  const char* GetContentTypeName() const override;
 
   // Prevents any further calls to the delegate (ie, called when the delegate
   // is being destroyed).

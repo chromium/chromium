@@ -100,7 +100,7 @@ AudioSinkAndroidAudioTrackImpl::AudioSinkAndroidAudioTrackImpl(
             << " num_channels_=" << num_channels_
             << " input_samples_per_second_=" << input_samples_per_second_
             << " primary_=" << primary_ << " device_id_=" << device_id_
-            << " content_type__=" << GetContentTypeName();
+            << " content_type_=" << content_type_;
   DCHECK(delegate_);
   DCHECK_GT(num_channels_, 0);
 
@@ -147,10 +147,6 @@ std::string AudioSinkAndroidAudioTrackImpl::device_id() const {
 
 AudioContentType AudioSinkAndroidAudioTrackImpl::content_type() const {
   return content_type_;
-}
-
-const char* AudioSinkAndroidAudioTrackImpl::GetContentTypeName() const {
-  return GetAudioContentTypeName(content_type_);
 }
 
 void AudioSinkAndroidAudioTrackImpl::FinalizeOnFeederThread() {

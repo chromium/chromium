@@ -51,7 +51,7 @@ void AudioSinkManager::Add(AudioSinkAndroid* sink) {
 
   LOG(INFO) << __func__ << " sink(" << sink << "): id=" << sink->device_id()
             << " primary=" << sink->primary()
-            << " type=" << sink->GetContentTypeName();
+            << " type=" << sink->content_type();
 
   base::AutoLock lock(lock_);
   UpdateLimiterMultiplier(sink);
@@ -62,7 +62,7 @@ void AudioSinkManager::Remove(AudioSinkAndroid* sink) {
   DCHECK(sink);
 
   LOG(INFO) << __func__ << " sink(" << sink << "): id=" << sink->device_id()
-            << " type=" << sink->GetContentTypeName();
+            << " type=" << sink->content_type();
 
   base::AutoLock lock(lock_);
 
@@ -75,8 +75,7 @@ void AudioSinkManager::Remove(AudioSinkAndroid* sink) {
 }
 
 void AudioSinkManager::SetTypeVolumeDb(AudioContentType type, float level_db) {
-  LOG(INFO) << __func__ << ": level_db=" << level_db
-            << " type=" << GetAudioContentTypeName(type);
+  LOG(INFO) << __func__ << ": level_db=" << level_db << " type=" << type;
   base::AutoLock lock(lock_);
   volume_info_[type].volume_db = level_db;
   // Since the type volume changed we need to reflect that in the limiter
@@ -85,8 +84,7 @@ void AudioSinkManager::SetTypeVolumeDb(AudioContentType type, float level_db) {
 }
 
 void AudioSinkManager::SetOutputLimitDb(AudioContentType type, float limit_db) {
-  LOG(INFO) << __func__ << ": limit_db=" << limit_db
-            << " type=" << GetAudioContentTypeName(type);
+  LOG(INFO) << __func__ << ": limit_db=" << limit_db << " type=" << type;
   base::AutoLock lock(lock_);
   volume_info_[type].limit_db = limit_db;
   UpdateAllLimiterMultipliers(type);

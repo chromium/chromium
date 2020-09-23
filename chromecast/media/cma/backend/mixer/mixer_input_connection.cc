@@ -51,17 +51,6 @@ constexpr int kAudioMessageHeaderSize =
 
 constexpr int kRateShifterOutputFrames = 4096;
 
-std::string AudioContentTypeToString(media::AudioContentType type) {
-  switch (type) {
-    case media::AudioContentType::kAlarm:
-      return "alarm";
-    case media::AudioContentType::kCommunication:
-      return "communication";
-    default:
-      return "media";
-  }
-}
-
 int64_t SamplesToMicroseconds(double samples, int sample_rate) {
   return std::round(samples * 1000000 / sample_rate);
 }
@@ -206,9 +195,8 @@ MixerInputConnection::MixerInputConnection(
   weak_this_ = weak_factory_.GetWeakPtr();
 
   LOG(INFO) << "Create " << this << " (" << device_id_
-            << "), content type: " << AudioContentTypeToString(content_type_)
-            << ", focus type: " << AudioContentTypeToString(focus_type_)
-            << ", fill size: " << fill_size_
+            << "), content type: " << content_type_
+            << ", focus type: " << focus_type_ << ", fill size: " << fill_size_
             << ", algorithm fill size: " << algorithm_fill_size_
             << ", channel count: " << num_channels_
             << ", input sample rate: " << input_samples_per_second_
