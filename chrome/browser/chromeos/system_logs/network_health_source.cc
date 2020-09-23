@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/chromeos/net/network_health/network_health_service.h"
 #include "chromeos/network/network_event_log.h"
 #include "content/public/browser/browser_thread.h"
@@ -34,6 +35,11 @@ std::string GetFormattedString(
 
     output << "Type: " << net->type << "\n";
     output << "State: " << net->state << "\n";
+    output << "Signal Strength: "
+           << (net->signal_strength
+                   ? base::NumberToString(net->signal_strength->value)
+                   : "N/A")
+           << "\n";
     output << "MAC Address: " << net->mac_address.value_or("N/A") << "\n";
     output << "\n";
   }

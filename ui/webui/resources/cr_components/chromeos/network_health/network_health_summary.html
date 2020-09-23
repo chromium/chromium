@@ -31,6 +31,7 @@
         <td>[[i18n('OncName')]]</td>
         <td>[[i18n('OncType')]]</td>
         <td>[[i18n('NetworkHealthState')]]</td>
+        <td>[[i18n('OncWiFi-SignalStrength')]]</td>
         <td>[[i18n('OncMacAddress')]]</td>
       </tr>
       <hr>
@@ -40,6 +41,7 @@
           <td>[[network.name]]</td>
           <td>[[getNetworkTypeString_(network.type)]]</td>
           <td>[[getNetworkStateString_(network.state)]]</td>
+          <td>[[getSignalStrengthString_(network.signalStrength)]]</td>
           <td>[[network.macAddress]]</td>
         </tr>
       </template>

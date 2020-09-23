@@ -9,6 +9,7 @@
 
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/services/network_config/in_process_instance.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 
@@ -69,6 +70,11 @@ mojom::NetworkPtr CreateNetwork(
     net->state = ConnectionStateToNetworkState(net_prop->connection_state);
     net->name = net_prop->name;
     net->guid = net_prop->guid;
+    if (chromeos::network_config::NetworkTypeMatchesType(
+            net_prop->type, network_config::mojom::NetworkType::kWireless)) {
+      net->signal_strength = network_health::mojom::UInt32Value::New(
+          network_config::GetWirelessSignalStrength(net_prop.get()));
+    }
   } else {
     net->state = DeviceStateToNetworkState(device_prop->device_state);
   }

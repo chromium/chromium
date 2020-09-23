@@ -91,4 +91,14 @@ Polymer({
   getNetworkTypeString_(type) {
     return this.i18n('OncType' + OncMojo.getNetworkTypeString(type));
   },
+
+  /**
+   * Returns a string for the given signal strength.
+   * @private
+   * @param {?chromeos.networkHealth.mojom.UInt32Value} signalStrength
+   * @return {string}
+   */
+  getSignalStrengthString_(signalStrength) {
+    return signalStrength ? signalStrength.value.toString() : '';
+  },
 });

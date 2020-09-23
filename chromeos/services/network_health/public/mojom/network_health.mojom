@@ -31,6 +31,13 @@ enum NetworkState {
   kOnline,
 };
 
+// Wrapper for optional uint32. // TODO(https://crbug.com/657632): Remove this
+// once Mojo properly supports this.
+struct UInt32Value {
+  // The value of the uint64.
+  uint32 value;
+};
+
 // Contains information for a single network connection and underlying
 // network technology e.g WiFi.
 struct Network {
@@ -42,6 +49,11 @@ struct Network {
   string? name;
   // Optional string for the network's mac_address.
   string? mac_address;
+  // Signal strength of the network provided only for wireless networks. Values
+  // are normalized between 0 to 100 inclusive. Values less than 30 are
+  // considered potentially problematic for the connection. See
+  // src/platform2/shill/doc/service-api.txt for more details.
+  UInt32Value? signal_strength;
 };
 
 // Aggregate structure for all of the network health state.
