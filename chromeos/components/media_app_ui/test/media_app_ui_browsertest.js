@@ -251,6 +251,7 @@ TEST_F('MediaAppUIBrowserTest', 'ReportsErrorsFromTrustedContext', async () => {
 // MediaApp i.e. doesn't call `launchWithDirectory`, then the rest of the files
 // in the current directory are loaded in.
 TEST_F('MediaAppUIBrowserTest', 'NonLaunchableIpcAfterFastLoad', async () => {
+  sortOrder = SortOrder.A_FIRST;
   const files =
       await createMultipleImageFiles(['file1', 'file2', 'file3', 'file4']);
   const directory = await createMockTestDirectory(files);
@@ -287,6 +288,7 @@ TEST_F('MediaAppUIBrowserTest', 'NonLaunchableIpcAfterFastLoad', async () => {
 // Tests that we can launch the MediaApp with the selected (first) file,
 // and re-launch it before all files from the first launch are loaded in.
 TEST_F('MediaAppUIBrowserTest', 'ReLaunchableAfterFastLoad', async () => {
+  sortOrder = SortOrder.A_FIRST;
   const files =
       await createMultipleImageFiles(['file1', 'file2', 'file3', 'file4']);
   const directory = await createMockTestDirectory(files);
@@ -310,7 +312,7 @@ TEST_F('MediaAppUIBrowserTest', 'ReLaunchableAfterFastLoad', async () => {
 
   // Second launch loads other files into `currentFiles`.
   await assertFilesLoaded(
-      directory, ['changed.png', 'file3.png', 'file4.png', 'file1.png'],
+      directory, ['changed.png', 'file1.png', 'file3.png', 'file4.png'],
       'fast files: check files after relaunching');
   const currentFilesAfterSecondLaunch = [...currentFiles];
   const loadedFilesSecondLaunch = await getLoadedFiles();
@@ -413,6 +415,7 @@ TEST_F('MediaAppUIBrowserTest', 'LaunchWithUnopenableSibling', async () => {
 // Tests that a file that becomes inaccessible after the initial app launch is
 // ignored on navigation, and shows an error when navigated to itself.
 TEST_F('MediaAppUIBrowserTest', 'NavigateWithUnopenableSibling', async () => {
+  sortOrder = SortOrder.A_FIRST;
   const handles = [
     fileToFileHandle(await createTestImageFile(111 /* width */, 10, '1.png')),
     fileToFileHandle(await createTestImageFile(222 /* width */, 10, '2.png')),
@@ -673,6 +676,7 @@ TEST_F('MediaAppUIBrowserTest', 'DeleteOriginalIPC', async () => {
 // Tests when a file is deleted, the app tries to open the next available file
 // and reloads with those files.
 TEST_F('MediaAppUIBrowserTest', 'DeletionOpensNextFile', async () => {
+  sortOrder = SortOrder.A_FIRST;
   const testFiles = [
     await createTestImageFile(1, 1, 'test_file_1.png'),
     await createTestImageFile(1, 1, 'test_file_2.png'),
@@ -1020,37 +1024,38 @@ TEST_F('MediaAppUIBrowserTest', 'OpenFileIPC', async () => {
 });
 
 TEST_F('MediaAppUIBrowserTest', 'RelatedFiles', async () => {
-  const testFiles = [
-    {name: 'matroska.mkv'},
-    {name: 'jaypeg.jpg', type: 'image/jpeg'},
-    {name: 'text.txt', type: 'text/plain'},
-    {name: 'jiff.gif', type: 'image/gif'},
-    {name: 'world.webm', type: 'video/webm'},
-    {name: 'other.txt', type: 'text/plain'},
-    {name: 'noext', type: ''},
-    {name: 'html', type: 'text/html'},
-    {name: 'matroska.emkv'},
-  ];
-  const directory = await createMockTestDirectory(testFiles);
-  const [mkv, jpg, txt, gif, webm, other, ext, html] = directory.getFilesSync();
-  const imageAndVideoFiles = [mkv, jpg, gif, webm];
+  sortOrder = SortOrder.A_FIRST;
   // These files all have a last modified time of 0 so the order they end up in
-  // is the order they are added i.e. `matroska.mkv, jaypeg.jpg, jiff.gif,
+  // is their lexicographical order i.e. `jaypeg.jpg, jiff.gif, matroska.mkv,
   // world.webm`. When a file is loaded it becomes the "focus file" and files
   // get rotated around like such that we get `currentFiles = [focus file,
-  // ...larger files, ...smaller files]`.
+  // ...lexicographically larger files, ...lexicographically smaller files]`.
+  const testFiles = [
+    {name: 'html', type: 'text/html'},
+    {name: 'jaypeg.jpg', type: 'image/jpeg'},
+    {name: 'jiff.gif', type: 'image/gif'},
+    {name: 'matroska.emkv'},
+    {name: 'matroska.mkv'},
+    {name: 'noext', type: ''},
+    {name: 'other.txt', type: 'text/plain'},
+    {name: 'text.txt', type: 'text/plain'},
+    {name: 'world.webm', type: 'video/webm'},
+  ];
+  const directory = await createMockTestDirectory(testFiles);
+  const [html, jpg, gif, emkv, mkv, ext, other, txt, webm] =
+      directory.getFilesSync();
 
   await loadFilesWithoutSendingToGuest(directory, mkv);
-  assertFilesToBe(imageAndVideoFiles, 'mkv');
+  assertFilesToBe([mkv, webm, jpg, gif], 'mkv');
 
   await loadFilesWithoutSendingToGuest(directory, jpg);
-  assertFilenamesToBe('jaypeg.jpg,jiff.gif,world.webm,matroska.mkv', 'jpg');
+  assertFilesToBe([jpg, gif, mkv, webm], 'jpg');
 
   await loadFilesWithoutSendingToGuest(directory, gif);
-  assertFilenamesToBe('jiff.gif,world.webm,matroska.mkv,jaypeg.jpg', 'gif');
+  assertFilesToBe([gif, mkv, webm, jpg], 'gif');
 
   await loadFilesWithoutSendingToGuest(directory, webm);
-  assertFilenamesToBe('world.webm,matroska.mkv,jaypeg.jpg,jiff.gif', 'webm');
+  assertFilesToBe([webm, jpg, gif, mkv], 'webm');
 
   await loadFilesWithoutSendingToGuest(directory, txt);
   assertFilesToBe([txt, other], 'txt');
@@ -1064,10 +1069,19 @@ TEST_F('MediaAppUIBrowserTest', 'RelatedFiles', async () => {
   testDone();
 });
 
-TEST_F('MediaAppUIBrowserTest', 'SortedFiles', async () => {
-  // We want the more recent (i.e. higher timestamp) files first.
-  const filesInModifiedOrder = await Promise.all(
-      [6, 5, 4, 3, 2, 1, 0].map(n => createTestImageFile(1, 1, `${n}.png`, n)));
+TEST_F('MediaAppUIBrowserTest', 'SortedFilesByTime', async () => {
+  sortOrder = SortOrder.NEWEST_FIRST;
+  // We want the more recent (i.e. higher timestamp) files first. In the case of
+  // equal timestamp, it should sort lexicographically by filename.
+  const filesInModifiedOrder = await Promise.all([
+    createTestImageFile(1, 1, '6.png', 6),
+    createTestImageFile(1, 1, '5.png', 5),
+    createTestImageFile(1, 1, '4.png', 4),
+    createTestImageFile(1, 1, '2a.png', 2),
+    createTestImageFile(1, 1, '2b.png', 2),
+    createTestImageFile(1, 1, '1.png', 1),
+    createTestImageFile(1, 1, '0.png', 0),
+  ]);
   const files = [...filesInModifiedOrder];
   // Mix up files so that we can check they get sorted correctly.
   [files[4], files[2], files[3]] = [files[2], files[3], files[4]];
@@ -1075,6 +1089,32 @@ TEST_F('MediaAppUIBrowserTest', 'SortedFiles', async () => {
   await launchWithFiles(files);
 
   assertFilesToBe(filesInModifiedOrder);
+
+  testDone();
+});
+
+TEST_F('MediaAppUIBrowserTest', 'SortedFilesByName', async () => {
+  // Z_FIRST should be the default.
+  assertEquals(sortOrder, SortOrder.Z_FIRST);
+  // Establish some sample files that match the naming style from the Camera app
+  // in m86, except one file with lowercase prefix is included, to verify that
+  // the collation ignores case (to match the Files app). Note we want
+  // "pressing right" to go to the previously taken photo/video, which means
+  // reverse lexicographic.
+  const filesInReverseLexicographicOrder = await Promise.all([
+    createTestImageFile(1, 1, 'VID_20200921_104848.jpg', 8),  // Video from day.
+    createTestImageFile(1, 1, 'IMG_20200922_104816.jpg', 9),  // Later date.
+    createTestImageFile(1, 1, 'img_20200921_104910.jpg', 6),  // Newest on day.
+    createTestImageFile(1, 1, 'IMG_20200921_104816.jpg', 7),  // Modified.
+    createTestImageFile(1, 1, 'IMG_20200921_104750.jpg', 5),  // Oldest.
+  ]);
+  const files = [...filesInReverseLexicographicOrder];
+  // Mix up files so that we can check they get sorted correctly.
+  [files[4], files[2], files[3]] = [files[2], files[3], files[4]];
+
+  await launchWithFiles(files);
+
+  assertFilesToBe(filesInReverseLexicographicOrder);
 
   testDone();
 });

@@ -3,6 +3,25 @@
 // found in the LICENSE file.
 
 /**
+ * Sort order for files in the navigation ring.
+ * @enum
+ */
+const SortOrder = {
+  /**
+   * Lexicographic (with natural number ordering): advancing goes "down" the
+   * alphabet.
+   */
+  A_FIRST: 1,
+  /**
+   * Reverse lexicographic (with natural number ordering): advancing goes "up"
+   * the alphabet.
+   */
+  Z_FIRST: 2,
+  /** By modified time: pressing "right" goes to older files. */
+  NEWEST_FIRST: 3,
+};
+
+/**
  * Wrapper around a file handle that allows the privileged context to arbitrate
  * read and write access as well as file navigation. `token` uniquely identifies
  * the file, `file` temporarily holds the object passed over postMessage, and
@@ -24,6 +43,15 @@ let FileDescriptor;
  * @type {!Array<!FileDescriptor>}
  */
 const currentFiles = [];
+
+/**
+ * The current sort order.
+ * TODO(crbug/414789): Match the file manager order when launched that way.
+ * Note currently this is reassigned in tests.
+ * @type {!SortOrder}
+ */
+// eslint-disable-next-line prefer-const
+let sortOrder = SortOrder.Z_FIRST;
 
 /**
  * Index into `currentFiles` of the current file.
@@ -669,7 +697,19 @@ async function processOtherFilesInDirectory(
     } else if (!a.file) {
       return 1;
     }
-    return b.file.lastModified - a.file.lastModified;
+    if (sortOrder === SortOrder.NEWEST_FIRST) {
+      if (a.file.lastModified === b.file.lastModified) {
+        return a.file.name.localeCompare(b.file.name);
+      }
+      return b.file.lastModified - a.file.lastModified;
+    }
+    // Match the Intl.Collator params used for sorting in the files app in
+    // file_manager/common/js/util.js.
+    const direction = sortOrder === SortOrder.A_FIRST ? 1 : -1;
+    return direction *
+        a.file.name.localeCompare(
+            b.file.name, [],
+            {usage: 'sort', numeric: true, sensitivity: 'base'});
   });
 
   const name = focusFile.name;
