@@ -289,11 +289,8 @@ bool Controller::SetProgressActiveStepIdentifier(
     return false;
   }
 
-  SetProgressActiveStep(
-      std::distance(
-          step_progress_bar_configuration_->annotated_step_icons().cbegin(),
-          it) +
-      1);
+  SetProgressActiveStep(std::distance(
+      step_progress_bar_configuration_->annotated_step_icons().cbegin(), it));
   return true;
 }
 

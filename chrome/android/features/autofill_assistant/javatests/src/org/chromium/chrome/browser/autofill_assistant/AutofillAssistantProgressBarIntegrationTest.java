@@ -189,20 +189,20 @@ public class AutofillAssistantProgressBarIntegrationTest {
                                             .addChoices(Choice.newBuilder().setChip(
                                                     ChipProto.newBuilder().setText("Next"))))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setShowProgressBar(ShowProgressBarProto.newBuilder().setActiveStep(1))
-                         .build());
+        list.add(
+                (ActionProto) ActionProto.newBuilder()
+                        .setShowProgressBar(
+                                ShowProgressBarProto.newBuilder().setActiveStepIdentifier("icon_2"))
+                        .build());
         list.add((ActionProto) ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Next Step")
                                             .addChoices(Choice.newBuilder().setChip(
                                                     ChipProto.newBuilder().setText("Next"))))
                          .build());
-        list.add(
-                (ActionProto) ActionProto.newBuilder()
-                        .setShowProgressBar(
-                                ShowProgressBarProto.newBuilder().setActiveStepIdentifier("icon_4"))
-                        .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setShowProgressBar(ShowProgressBarProto.newBuilder().setActiveStep(4))
+                         .build());
         list.add((ActionProto) ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Final Step")

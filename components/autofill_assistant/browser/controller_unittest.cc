@@ -745,7 +745,7 @@ TEST_F(ControllerTest, ProgressStepClampsOverflowToMax) {
   EXPECT_EQ(3, *controller_->GetProgressActiveStep());
 }
 
-TEST_F(ControllerTest, SetProgressStepFromIdentifierFails) {
+TEST_F(ControllerTest, SetProgressStepFromIdentifier) {
   Start();
 
   ShowProgressBarProto::StepProgressBarConfiguration config;
@@ -754,9 +754,9 @@ TEST_F(ControllerTest, SetProgressStepFromIdentifierFails) {
   config.add_annotated_step_icons()->set_identifier("icon2");
   controller_->SetStepProgressBarConfiguration(config);
 
-  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(2)).Times(1);
+  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(1)).Times(1);
   EXPECT_TRUE(controller_->SetProgressActiveStepIdentifier("icon2"));
-  EXPECT_EQ(2, *controller_->GetProgressActiveStep());
+  EXPECT_EQ(1, *controller_->GetProgressActiveStep());
 }
 
 TEST_F(ControllerTest, SetProgressStepFromUnknownIdentifier) {
