@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryInfo, SystemInfo} from './diagnostics_types.js';
+import {BatteryInfo, CpuUsage, CpuUsageObserver, SystemInfo} from './diagnostics_types.js';
 import {FakeMethodResolver} from './fake_method_resolver.js';
+import {FakeObservables} from './fake_observables.js';
 
 /**
  * @fileoverview
@@ -15,9 +16,15 @@ export class FakeSystemDataProvider {
     /** @private {!FakeMethodResolver} */
     this.methods_ = new FakeMethodResolver();
 
+    /** @private {!FakeObservables} */
+    this.observables_ = new FakeObservables();
+
     // Setup method resolvers.
     this.methods_.register('getSystemInfo');
     this.methods_.register('getBatteryInfo');
+
+    // Setup observables.
+    this.observables_.register('CpuUsageObserver_onCpuUsageUpdated');
   }
 
   /**
@@ -49,5 +56,32 @@ export class FakeSystemDataProvider {
    */
   setFakeBatteryInfo(batteryInfo) {
     this.methods_.setResult('getBatteryInfo', batteryInfo);
+  }
+
+  /*
+   * Implements SystemDataProviderInterface.ObserveCpuUsage.
+   * @param {!CpuUsageObserver} remote
+   * @return {!Promise}
+   */
+  observeCpuUsage(remote) {
+    return new Promise((resolve) => {
+      this.observables_.observe(
+          'CpuUsageObserver_onCpuUsageUpdated', (cpuUsage) => {
+            remote.onCpuUsageUpdated(
+                /** @type {!CpuUsage} */ (cpuUsage));
+          });
+
+      this.observables_.trigger('CpuUsageObserver_onCpuUsageUpdated');
+      resolve();
+    });
+  }
+
+  /**
+   * Sets the values that will observed from observeCpuUsage.
+   * @param {!Array<!CpuUsage>} cpuUsageList
+   */
+  setFakeCpuUsage(cpuUsageList) {
+    this.observables_.setObservableData(
+        'CpuUsageObserver_onCpuUsageUpdated', cpuUsageList);
   }
 }

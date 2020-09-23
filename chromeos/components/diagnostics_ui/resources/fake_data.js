@@ -2,13 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SystemInfo} from './diagnostics_types.js'
+import {CpuUsage, SystemInfo} from './diagnostics_types.js'
 
 /* @type {!BatteryInfo} */
 export const fakeBatteryInfo = {
   charge_full_design_milliamp_hours: 6000,
   manufacturer: 'BatterCorp USA',
 };
+
+/* @type {!Array<!CpuUsage>} */
+export const fakeCpuUsage = [{
+  cpu_temp_degrees_celcius: 107,
+  percent_usage_system: 15,
+  percent_usage_user: 20,
+}];
 
 /* @type {!SystemInfo} */
 export const fakeSystemInfo = {
