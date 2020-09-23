@@ -168,10 +168,13 @@ Browser* LaunchSystemWebApp(Profile* profile,
 
   content::WebContents* web_contents = nullptr;
 
+  // TODO(crbug.com/1129340): Remove these lines and make CCA resizeable after
+  // CCA supports responsive UI.
+  bool can_resize = app_type != SystemAppType::CAMERA;
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions)) {
     if (!browser)
       browser = CreateWebApplicationWindow(profile, params->app_id,
-                                           params->disposition);
+                                           params->disposition, can_resize);
 
     // Navigate application window to application's |url| if necessary.
     // Help app always navigates because its url might not match the url inside
@@ -184,7 +187,7 @@ Browser* LaunchSystemWebApp(Profile* profile,
     }
   } else {
     if (!browser)
-      browser = CreateApplicationWindow(profile, *params, url);
+      browser = CreateApplicationWindow(profile, *params, url, can_resize);
 
     // Navigate application window to application's |url| if necessary.
     // Help app always navigates because its url might not match the url inside

@@ -76,7 +76,8 @@ void SetTabHelperAppId(content::WebContents* web_contents,
 
 Browser* CreateWebApplicationWindow(Profile* profile,
                                     const std::string& app_id,
-                                    WindowOpenDisposition disposition) {
+                                    WindowOpenDisposition disposition,
+                                    bool can_resize) {
   std::string app_name = GenerateApplicationNameFromAppId(app_id);
   gfx::Rect initial_bounds;
   Browser::CreateParams browser_params =
@@ -88,6 +89,7 @@ Browser* CreateWebApplicationWindow(Profile* profile,
                 app_name, /*trusted_source=*/true, initial_bounds, profile,
                 /*user_gesture=*/true);
   browser_params.initial_show_state = DetermineWindowShowState();
+  browser_params.can_resize = can_resize;
   return new Browser(browser_params);
 }
 

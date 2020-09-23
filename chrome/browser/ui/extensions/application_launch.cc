@@ -403,7 +403,8 @@ WebContents* OpenApplication(Profile* profile,
 
 Browser* CreateApplicationWindow(Profile* profile,
                                  const apps::AppLaunchParams& params,
-                                 const GURL& url) {
+                                 const GURL& url,
+                                 bool can_resize) {
   const Extension* const extension = GetExtension(profile, params);
 
   std::string app_name;
@@ -442,6 +443,7 @@ Browser* CreateApplicationWindow(Profile* profile,
 
   browser_params.initial_show_state =
       DetermineWindowShowState(profile, params.container, extension);
+  browser_params.can_resize = can_resize;
 
   return new Browser(browser_params);
 }

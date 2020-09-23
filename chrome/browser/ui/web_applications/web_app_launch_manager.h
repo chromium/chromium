@@ -66,7 +66,8 @@ class WebAppLaunchManager {
 
 Browser* CreateWebApplicationWindow(Profile* profile,
                                     const std::string& app_id,
-                                    WindowOpenDisposition disposition);
+                                    WindowOpenDisposition disposition,
+                                    bool can_resize = true);
 
 content::WebContents* NavigateWebApplicationWindow(
     Browser* browser,
