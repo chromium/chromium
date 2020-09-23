@@ -16,6 +16,7 @@
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="os_permissions_warning_extra" />
     <Preference
+        android:selectable="false"
         android:key="os_permissions_warning_divider"
         android:layout="@layout/divider_preference" />
     <org.chromium.components.browser_ui.settings.TextMessagePreference
@@ -24,6 +25,7 @@
         android:icon="@drawable/btn_info"
         app:iconTint="@color/default_icon_color" />
     <Preference
+        android:selectable="false"
         android:key="intrusive_ads_info_divider"
         android:layout="@layout/divider_preference" />
     <PreferenceCategory

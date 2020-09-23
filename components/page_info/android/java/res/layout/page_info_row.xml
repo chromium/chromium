@@ -5,44 +5,41 @@
    Use of this source code is governed by a BSD-style license that can be
    found in the LICENSE file.
 -->
-<merge
+
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
-    <RelativeLayout
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:paddingHorizontal="@dimen/page_info_popup_padding_sides"
+    android:paddingVertical="12dp">
+
+    <ImageView
+        android:id="@+id/page_info_row_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="32dp"
+        app:tint="@color/default_icon_color"
+        tools:ignore="ContentDescription" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/page_info_row_title"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
-        android:paddingEnd="@dimen/page_info_popup_padding_sides"
-        android:paddingStart="@dimen/page_info_popup_padding_sides" >
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_toEndOf="@id/page_info_row_icon"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 
-        <ImageView
-            android:id="@+id/page_info_row_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:ignore="ContentDescription"
-            android:layout_marginEnd="32dp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentStart="true"
-            app:tint="@color/default_icon_color" />
-
-        <org.chromium.ui.widget.TextViewWithLeading
-            android:id="@+id/page_info_row_title"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-            android:layout_toEndOf="@id/page_info_row_icon"
-            android:layout_marginBottom="4dp"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent" />
-
-        <org.chromium.ui.widget.TextViewWithLeading
-            android:id="@+id/page_info_row_subtitle"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-            android:layout_toEndOf="@id/page_info_row_icon"
-            android:layout_below="@id/page_info_row_title"
-            app:leading="@dimen/text_size_medium_leading"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent" />
-
-    </RelativeLayout>
-</merge>
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/page_info_row_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/page_info_row_title"
+        android:layout_toEndOf="@id/page_info_row_icon"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        app:leading="@dimen/text_size_medium_leading" />
+</RelativeLayout>

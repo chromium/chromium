@@ -7,10 +7,8 @@ package org.chromium.components.page_info;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
@@ -20,7 +18,7 @@ import androidx.annotation.Nullable;
 /**
  * View showing an icon, title and subtitle for a page info row.
  */
-public class PageInfoRowView extends RelativeLayout implements OnClickListener {
+public class PageInfoRowView extends FrameLayout {
     /**  Parameters to configure the row view. */
     public static class ViewParams {
         public boolean visible;
@@ -33,7 +31,6 @@ public class PageInfoRowView extends RelativeLayout implements OnClickListener {
     private final ImageView mIcon;
     private final TextView mTitle;
     private final TextView mSubtitle;
-    private Runnable mClickCallback;
 
     public PageInfoRowView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -44,24 +41,20 @@ public class PageInfoRowView extends RelativeLayout implements OnClickListener {
     }
 
     public void setParams(ViewParams params) {
-        setVisibility(params.visible ? View.VISIBLE : View.GONE);
+        setVisibility(params.visible ? VISIBLE : GONE);
         mIcon.setImageResource(params.iconResId);
         mTitle.setText(params.title);
-        mTitle.setVisibility(params.title != null ? View.VISIBLE : View.GONE);
+        mTitle.setVisibility(params.title != null ? VISIBLE : GONE);
         updateSubtitle(params.subtitle);
-        mClickCallback = params.clickCallback;
-        setOnClickListener(this);
+        if (params.clickCallback != null) {
+            setClickable(true);
+            setFocusable(true);
+            getChildAt(0).setOnClickListener((v) -> params.clickCallback.run());
+        }
     }
 
     public void updateSubtitle(String subtitle) {
         mSubtitle.setText(subtitle);
-        mSubtitle.setVisibility(subtitle != null ? View.VISIBLE : View.GONE);
-    }
-
-    @Override
-    public void onClick(View view) {
-        if (mClickCallback != null) {
-            mClickCallback.run();
-        }
+        mSubtitle.setVisibility(subtitle != null ? VISIBLE : GONE);
     }
 }
