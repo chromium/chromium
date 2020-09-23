@@ -6,7 +6,7 @@ import './diagnostics_card.js';
 import './diagnostics_shared_css.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {BatteryInfo, SystemDataProviderInterface} from './diagnostics_types.js'
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, SystemDataProviderInterface} from './diagnostics_types.js'
 import {getSystemDataProvider} from './mojo_interface_provider.js';
 
 /**
@@ -24,6 +24,16 @@ Polymer({
   systemDataProvider_: null,
 
   properties: {
+    /** @private {!BatteryChargeStatus} */
+    batteryChargeStatus_: {
+      type: Object,
+    },
+
+    /** @private {!BatteryHealth} */
+    batteryHealth_: {
+      type: Object,
+    },
+
     /** @private {!BatteryInfo} */
     batteryInfo_: {
       type: Object,
@@ -34,6 +44,8 @@ Polymer({
   created() {
     this.systemDataProvider_ = getSystemDataProvider();
     this.fetchBatteryInfo_();
+    this.observeBatteryChargeStatus_();
+    this.observeBatteryHealth_();
   },
 
   /** @private */
@@ -48,6 +60,32 @@ Polymer({
    */
   onBatteryInfoReceived_(batteryInfo) {
     this.batteryInfo_ = batteryInfo;
+  },
+
+  /** @private */
+  observeBatteryChargeStatus_() {
+    this.systemDataProvider_.observeBatteryChargeStatus(this);
+  },
+
+  /**
+   * Implements BatteryChargeStatusObserver.onBatteryChargeStatusUpdated()
+   * @param {!BatteryChargeStatus} batteryChargeStatus
+   */
+  onBatteryChargeStatusUpdated(batteryChargeStatus) {
+    this.batteryChargeStatus_ = batteryChargeStatus;
+  },
+
+  /** @private */
+  observeBatteryHealth_() {
+    this.systemDataProvider_.observeBatteryHealth(this);
+  },
+
+  /**
+   * Implements BatteryHealthObserver.onBatteryHealthUpdated()
+   * @param {!BatteryHealth} batteryHealth
+   */
+  onBatteryHealthUpdated(batteryHealth) {
+    this.batteryHealth_ = batteryHealth;
   },
 
 });

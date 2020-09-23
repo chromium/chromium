@@ -119,12 +119,17 @@ suite('BatteryStatusCardTest', () => {
 
   /**
    * @param {!BatteryInfo} batteryInfo
+   * @param {!BatteryChargeStatus} batteryChargeStatus
+   * @param {!BatteryHealth} batteryHealth
    * @return {!Promise}
    */
-  function initializeBatteryStatusCard(batteryInfo) {
+  function initializeBatteryStatusCard(
+      batteryInfo, batteryChargeStatus, batteryHealth) {
     assertFalse(!!batteryStatusElement);
 
     // Initialize the fake data.
+    provider.setFakeBatteryChargeStatus(batteryChargeStatus);
+    provider.setFakeBatteryHealth(batteryHealth);
     provider.setFakeBatteryInfo(batteryInfo);
 
     // Add the battery status card to the DOM.
@@ -136,14 +141,33 @@ suite('BatteryStatusCardTest', () => {
   }
 
   test('BatteryStatusCardPopulated', () => {
-    return initializeBatteryStatusCard(fakeBatteryInfo).then(() => {
-      // TODO(zentaro): Update when strings are finalized.
-      assertEquals(
-          'Battery Status', batteryStatusElement.$$('#cardTitle').textContent);
-      assertEquals(
-          fakeBatteryInfo.manufacturer,
-          batteryStatusElement.$$('#manufacturer').textContent);
-    });
+    return initializeBatteryStatusCard(
+               fakeBatteryInfo, fakeBatteryChargeStatus, fakeBatteryHealth)
+        .then(() => {
+          // TODO(zentaro): Update when strings are finalized.
+          assertEquals(
+              'Battery Status',
+              batteryStatusElement.$$('#cardTitle').textContent);
+          assertEquals(
+              fakeBatteryInfo.manufacturer,
+              batteryStatusElement.$$('#manufacturer').textContent);
+          assertEquals(
+              fakeBatteryHealth[0].charge_full_design_milliamp_hours.toString(),
+              batteryStatusElement.$$('#chargeFullDesign').textContent);
+          assertEquals(
+              fakeBatteryChargeStatus[0]
+                  .charge_full_now_milliamp_hours.toString(),
+              batteryStatusElement.$$('#chargeFullNow').textContent);
+          assertEquals(
+              fakeBatteryChargeStatus[0].charge_now_milliamp_hours.toString(),
+              batteryStatusElement.$$('#chargeNow').textContent);
+          assertEquals(
+              fakeBatteryChargeStatus[0].power_time,
+              batteryStatusElement.$$('#powerTime').textContent);
+          assertEquals(
+              fakeBatteryChargeStatus[0].power_adapter_status.toString(),
+              batteryStatusElement.$$('#adapterStatus').textContent);
+        });
   });
 });
 
