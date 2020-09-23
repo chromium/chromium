@@ -64,10 +64,6 @@ namespace {
 // will have a newer version than it.
 constexpr char kManualConfigComponentVersion[] = "0.0.0";
 
-// Delay between retries on failed fetch and store of hints from the remote
-// Optimization Guide Service.
-constexpr base::TimeDelta kFetchRetryDelay = base::TimeDelta::FromMinutes(15);
-
 // Delay until successfully fetched hints should be updated by requesting from
 // the remote Optimization Guide Service.
 constexpr base::TimeDelta kUpdateFetchedHintsDelay =
@@ -620,28 +616,18 @@ void OptimizationGuideHintsManager::ScheduleTopHostsHintsFetch() {
 
   const base::TimeDelta time_until_update_time =
       hint_cache_->GetFetchedHintsUpdateTime() - clock_->Now();
-  const base::TimeDelta time_until_retry =
-      GetLastHintsFetchAttemptTime() + kFetchRetryDelay - clock_->Now();
   base::TimeDelta fetcher_delay;
-  if (time_until_update_time <= base::TimeDelta() &&
-      time_until_retry <= base::TimeDelta()) {
+  if (time_until_update_time <= base::TimeDelta()) {
     // Fetched hints in the store should be updated and an attempt has not
-    // been made in last |kFetchRetryDelay|.
+    // been made in last |kUpdateFetchedHintsDelay|.
     SetLastHintsFetchAttemptTime(clock_->Now());
     top_hosts_hints_fetch_timer_.Start(
         FROM_HERE, RandomFetchDelay(), this,
         &OptimizationGuideHintsManager::FetchTopHostsHints);
   } else {
-    if (time_until_update_time >= base::TimeDelta()) {
-      // If the fetched hints in the store are still up-to-date, set a timer
-      // for when the hints need to be updated.
-      fetcher_delay = time_until_update_time;
-    } else {
-      // Otherwise, hints need to be updated but an attempt was made in last
-      // |kFetchRetryDelay|. Schedule the timer for after the retry
-      // delay.
-      fetcher_delay = time_until_retry;
-    }
+    // If the fetched hints in the store are still up-to-date, set a timer
+    // for when the hints need to be updated.
+    fetcher_delay = time_until_update_time;
     top_hosts_hints_fetch_timer_.Start(
         FROM_HERE, fetcher_delay, this,
         &OptimizationGuideHintsManager::ScheduleTopHostsHintsFetch);
@@ -676,23 +662,16 @@ void OptimizationGuideHintsManager::OnTopHostsHintsFetched(
     const base::flat_set<std::string>& hosts_fetched,
     base::Optional<std::unique_ptr<optimization_guide::proto::GetHintsResponse>>
         get_hints_response) {
-  if (get_hints_response) {
-    hint_cache_->UpdateFetchedHints(
-        std::move(*get_hints_response),
-        clock_->Now() + kUpdateFetchedHintsDelay, hosts_fetched,
-        /*urls_fetched=*/{},
-        base::BindOnce(
-            &OptimizationGuideHintsManager::OnFetchedTopHostsHintsStored,
-            ui_weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    // The fetch did not succeed so we will schedule to retry the fetch in
-    // after delaying for |kFetchRetryDelay|
-    // TODO(mcrouse): When the store is refactored from closures, the timer will
-    // be scheduled on failure of the store instead.
-    top_hosts_hints_fetch_timer_.Start(
-        FROM_HERE, kFetchRetryDelay, this,
-        &OptimizationGuideHintsManager::ScheduleTopHostsHintsFetch);
-  }
+  if (!get_hints_response)
+    return;
+
+  hint_cache_->UpdateFetchedHints(
+      std::move(*get_hints_response), clock_->Now() + kUpdateFetchedHintsDelay,
+      hosts_fetched,
+      /*urls_fetched=*/{},
+      base::BindOnce(
+          &OptimizationGuideHintsManager::OnFetchedTopHostsHintsStored,
+          ui_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void OptimizationGuideHintsManager::OnPageNavigationHintsFetched(

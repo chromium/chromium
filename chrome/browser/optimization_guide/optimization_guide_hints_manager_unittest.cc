@@ -2177,8 +2177,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
   EXPECT_EQ(1, top_host_provider->get_num_top_hosts_called());
   EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
 
-  // Check that hints should not be fetched again after the delay for a failed
-  // hints fetch attempt.
+  // Check that hints should not be fetched again after the delay for a hints
+  // fetch attempt with no hints.
   MoveClockForwardBy(base::TimeDelta::FromSeconds(kTestFetchRetryDelaySecs));
   // This should be called exactly once, confirming that hints are not fetched
   // again after |kTestFetchRetryDelaySecs|.
@@ -2196,9 +2196,7 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest, HintsFetcherTimerRetryDelay) {
   CreateServiceAndHintsManager({optimization_guide::proto::DEFER_ALL_SCRIPT},
                                top_host_provider.get());
   hints_manager()->SetHintsFetcherFactoryForTesting(
-      BuildTestHintsFetcherFactory(
-          {HintsFetcherEndState::kFetchFailed,
-           HintsFetcherEndState::kFetchSuccessWithHostHints}));
+      BuildTestHintsFetcherFactory({HintsFetcherEndState::kFetchFailed}));
   InitializeWithDefaultConfig("1.0.0");
 
   // Force timer to expire and schedule a hints fetch - first time.
@@ -2206,11 +2204,10 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest, HintsFetcherTimerRetryDelay) {
   EXPECT_EQ(1, top_host_provider->get_num_top_hosts_called());
   EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
 
-  // Force speculative timer to expire after fetch fails first time, update
-  // hints fetcher so it succeeds this time.
+  // Force speculative timer to expire after fetch fails.
   MoveClockForwardBy(base::TimeDelta::FromSeconds(kTestFetchRetryDelaySecs));
-  EXPECT_EQ(2, top_host_provider->get_num_top_hosts_called());
-  EXPECT_EQ(2, batch_update_hints_fetcher()->num_fetches_requested());
+  EXPECT_EQ(1, top_host_provider->get_num_top_hosts_called());
+  EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
 }
 
 TEST_F(OptimizationGuideHintsManagerFetchingTest,
