@@ -25,6 +25,7 @@
 #include "chrome/browser/component_updater/tls_deprecation_config_component_installer.h"
 #include "chrome/browser/net/chrome_mojo_proxy_resolver_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/ssl/sct_reporting_service.h"
 #include "chrome/browser/ssl/ssl_config_service_manager.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
@@ -520,6 +521,9 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   // Asynchronously reapply the most recently received TLS deprecation config.
   component_updater::TLSDeprecationConfigComponentInstallerPolicy::
       ReconfigureAfterNetworkRestart();
+
+  // Configure SCT Auditing in the NetworkService.
+  SCTReportingService::ReconfigureAfterNetworkRestart();
 }
 
 void SystemNetworkContextManager::DisableQuic() {

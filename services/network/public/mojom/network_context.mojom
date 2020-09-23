@@ -371,6 +371,14 @@ struct NetworkContextParams {
   [EnableIf=is_ct_supported]
   bool enable_expect_ct_reporting = false;
 
+  // Enables SCT auditing, which sends reports for SCTs found in connections
+  // made by this network context. Can also be dynamically configured via
+  // NetworkContext::SetSCTAuditingEnabled(). This must be set to true and
+  // auditing must be enabled and configured globally via
+  // NetworkService::ConfigureSCTAuditing().
+  [EnableIf=is_ct_supported]
+  bool enable_sct_auditing = false;
+
   // The Certificate Transparency logs that are known to the client. SCTs from
   // these logs will be extracted and verified; other SCTs will be treated as
   // unrecognized.
@@ -860,10 +868,6 @@ interface NetworkContextClient {
   // Notification that a trust anchor was used for the given user.
   [EnableIf=is_chromeos]
   OnTrustAnchorUsed();
-
-  // Notification that a report was enqueued in the SCT auditing cache.
-  [EnableIf=is_ct_supported]
-  OnSCTReportReady(string cache_key);
 };
 
 // Represents a distinct context for making network requests, with its own

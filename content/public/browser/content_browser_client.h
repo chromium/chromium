@@ -746,11 +746,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void OnTrustAnchorUsed(BrowserContext* browser_context) {}
 #endif
 
-  // Notification that a signed certificate timestamp (SCT) report was enqueued.
-  // Allows an embedder to implement their own behavior for auditing SCTs.
-  virtual void OnSCTReportReady(BrowserContext* browser_context,
-                                const std::string& cache_key) {}
-
   // Allows the embedder to override the LocationProvider implementation.
   // Return nullptr to indicate the default one for the platform should be
   // created. This is used by Qt, see
