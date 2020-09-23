@@ -241,9 +241,6 @@ const base::Feature kAutofillRichMetadataQueries{
 const base::Feature kAutofillSaveAndFillVPA{"AutofillSaveAndFillVPA",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kAutofillSaveOnProbablySubmitted{
-    "AutofillSaveOnProbablySubmitted", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables creating a new form section when an unstructured name input 
 // containing a |NAME_LAST| field is encountered after a structured name input.
 const base::Feature kAutofillSectionUponRedundantNameInfo{

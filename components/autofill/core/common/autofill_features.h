@@ -64,7 +64,6 @@ extern const base::Feature kAutofillProfileServerValidation;
 extern const base::Feature kAutofillRestrictUnownedFieldsToFormlessCheckout;
 extern const base::Feature kAutofillRichMetadataQueries;
 extern const base::Feature kAutofillSaveAndFillVPA;
-extern const base::Feature kAutofillSaveOnProbablySubmitted;
 extern const base::Feature kAutofillSectionUponRedundantNameInfo;
 extern const base::Feature kAutofillServerCommunication;
 extern const base::Feature kAutofillShowAllSuggestionsOnPrefilledForms;

@@ -679,13 +679,6 @@ void AutofillManager::OnFormSubmittedImpl(const FormData& form,
                         << Br{} << form;
   }
 
-  // TODO(crbug.com/801698): handle PROBABLY_FORM_SUBMITTED.
-  if (source == SubmissionSource::PROBABLY_FORM_SUBMITTED &&
-      !base::FeatureList::IsEnabled(
-          features::kAutofillSaveOnProbablySubmitted)) {
-    return;
-  }
-
   // Always upload page language metrics.
   LogLanguageMetrics(client_->GetLanguageState());
 
