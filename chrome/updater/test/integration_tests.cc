@@ -59,7 +59,8 @@ TEST_F(IntegrationTest, InstallUninstall) {
 }
 
 #if defined(OS_MAC)
-TEST_F(IntegrationTest, RegisterTestApp) {
+// Flaky: https://crbug.com/1131654
+TEST_F(IntegrationTest, DISABLED_RegisterTestApp) {
   RegisterTestApp();
   ExpectInstalled();
   ExpectActiveVersion(UPDATER_VERSION_STRING);
