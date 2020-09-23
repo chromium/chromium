@@ -219,7 +219,9 @@ class TranslateLanguageBrowserTest : public InProcessBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(TranslateLanguageBrowserTest);
 };
 
-IN_PROC_BROWSER_TEST_F(TranslateLanguageBrowserTest, LanguageModelLogSucceed) {
+// Flaky failures & timeouts: https://crbug.com/1131622
+IN_PROC_BROWSER_TEST_F(TranslateLanguageBrowserTest,
+                       DISABLED_LanguageModelLogSucceed) {
   InitInIncognitoMode(false);
 
   for (int i = 0; i < 10; ++i) {
