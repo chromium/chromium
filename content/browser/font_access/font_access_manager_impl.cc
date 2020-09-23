@@ -5,6 +5,7 @@
 #include "content/browser/font_access/font_access_manager_impl.h"
 
 #include "base/bind.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/task/post_task.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/browser/permissions/permission_controller_impl.h"
@@ -43,7 +44,13 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
 
 #if defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
   const BindingContext& context = receivers_.current_context();
+
   RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(context.frame_id);
+  if (rfh == nullptr) {
+    std::move(callback).Run(
+        blink::mojom::FontEnumerationStatus::kUnexpectedError,
+        base::ReadOnlySharedMemoryRegion());
+  }
 
   // Sticky User Activation is required for the API to function at all.
   if (!rfh->frame_tree_node()->HasStickyUserActivation()) {
