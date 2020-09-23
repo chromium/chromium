@@ -66,17 +66,4 @@ mojom::NativeWidgetNSWindow* GetWindowMojoInterface(
   return nullptr;
 }
 
-NSWindow* CreateInProcessTransparentClone(gfx::NativeWindow remote_window) {
-  DCHECK(IsWindowRemote(remote_window));
-  NSWindow* window = [[NSWindow alloc]
-      initWithContentRect:[remote_window.GetNativeNSWindow() frame]
-                styleMask:NSWindowStyleMaskBorderless
-                  backing:NSBackingStoreBuffered
-                    defer:NO];
-  [window setAlphaValue:0];
-  [window makeKeyAndOrderFront:nil];
-  [window setLevel:NSModalPanelWindowLevel];
-  return window;
-}
-
 }  // namespace remote_cocoa

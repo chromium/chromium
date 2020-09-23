@@ -19,6 +19,7 @@
 #include "base/strings/sys_string_conversions.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/browser_native_widget_window_mac.h"
+#import "components/remote_cocoa/app_shim/certificate_viewer.h"
 #import "components/remote_cocoa/app_shim/mouse_capture.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_frameless_nswindow.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
@@ -388,6 +389,11 @@ void NativeWidgetNSWindowBridge::CreateSelectFileDialog(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<remote_cocoa::SelectFileDialogBridge>(window_),
       std::move(receiver));
+}
+
+void NativeWidgetNSWindowBridge::ShowCertificateViewer(
+    const scoped_refptr<net::X509Certificate>& certificate) {
+  ShowCertificateViewerForWindow(window_, certificate.get());
 }
 
 void NativeWidgetNSWindowBridge::StackAbove(uint64_t sibling_id) {

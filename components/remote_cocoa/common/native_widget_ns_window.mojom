@@ -6,6 +6,7 @@ module remote_cocoa.mojom;
 
 import "components/remote_cocoa/common/select_file_dialog.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "services/network/public/mojom/network_param.mojom";
 import "ui/base/mojom/ui_base_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/ca_layer_params.mojom";
@@ -90,6 +91,9 @@ interface NativeWidgetNSWindow {
 
   // Open a panel for file selection or creation.
   CreateSelectFileDialog(pending_receiver<SelectFileDialog> dialog);
+
+  // Open a panel to display the specified certificate.
+  ShowCertificateViewer(network.mojom.X509Certificate certificate);
 
   // Places this NativeWidgetNSWindow in front of the NativeWidgetNSWindow
   // indicated by |sibling_id| in z-order.

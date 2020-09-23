@@ -26,6 +26,8 @@ component("app_shim") {
     "bridged_content_view_touch_bar.mm",
     "browser_native_widget_window_mac.h",
     "browser_native_widget_window_mac.mm",
+    "certificate_viewer.h",
+    "certificate_viewer.mm",
     "color_panel_bridge.h",
     "color_panel_bridge.mm",
     "drag_drop_client.h",
@@ -59,6 +61,7 @@ component("app_shim") {
     "//components/crash/core/common",
     "//components/remote_cocoa/common:mojo",
     "//mojo/public/cpp/bindings",
+    "//net",
     "//ui/accelerated_widget_mac",
     "//ui/base",
     "//ui/base/ime:ime",
@@ -69,5 +72,6 @@ component("app_shim") {
   frameworks = [
     "Cocoa.framework",
     "QuartzCore.framework",
+    "SecurityInterface.framework",
   ]
 }

@@ -55,12 +55,6 @@ GetWindowMojoInterface(gfx::NativeWindow window);
 // being viewed in a remote process.
 bool REMOTE_COCOA_BROWSER_EXPORT IsWindowRemote(gfx::NativeWindow window);
 
-// Create a transparent NSWindow that is in the same position as |window|,
-// but is at the ModalPanel window level, so that it will appear over all
-// other window.
-NSWindow* REMOTE_COCOA_BROWSER_EXPORT
-CreateInProcessTransparentClone(gfx::NativeWindow window);
-
 }  // namespace remote_cocoa
 
 #endif  // COMPONENTS_REMOTE_COCOA_BROWSER_WINDOW_H_

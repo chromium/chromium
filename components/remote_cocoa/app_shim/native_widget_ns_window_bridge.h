@@ -201,6 +201,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   void SetParent(uint64_t parent_id) override;
   void CreateSelectFileDialog(
       mojo::PendingReceiver<mojom::SelectFileDialog> receiver) override;
+  void ShowCertificateViewer(
+      const scoped_refptr<net::X509Certificate>& certificate) override;
   void StackAbove(uint64_t sibling_id) override;
   void StackAtTop() override;
   void ShowEmojiPanel() override;
