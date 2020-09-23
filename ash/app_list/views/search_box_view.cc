@@ -336,6 +336,8 @@ void SearchBoxView::UpdateBackground(double progress,
       progress, GetBackgroundColorForState(current_state),
       GetBackgroundColorForState(target_state));
   UpdateBackgroundColor(color);
+  search_box()->SetTextColor(
+      AppListColorProvider::Get()->GetSearchBoxTextColor());
 }
 
 void SearchBoxView::UpdateLayout(double progress,
