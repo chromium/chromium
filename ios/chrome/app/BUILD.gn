@@ -118,6 +118,22 @@ compile_entitlements("entitlements") {
   output_name = "$target_gen_dir/$chromium_short_name.entitlements"
 }
 
+source_set("content_suggestions_scheduler_app_state_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "content_suggestions_scheduler_app_state_agent.h",
+    "content_suggestions_scheduler_app_state_agent.mm",
+  ]
+  deps = [
+    "//components/ntp_snippets",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/metrics",
+    "//ios/chrome/browser/metrics:previous_session_info",
+    "//ios/chrome/browser/ntp_snippets",
+    "//ios/chrome/browser/ui/main:scene_state_header",
+  ]
+}
+
 source_set("app_internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -139,6 +155,7 @@ source_set("app_internal") {
   deps = [
     ":app",
     ":blocking_scene_commands",
+    ":content_suggestions_scheduler_app_state_agent",
     ":mode",
     ":tests_hook",
     "//base",
@@ -159,7 +176,6 @@ source_set("app_internal") {
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/metrics",
-    "//components/ntp_snippets",
     "//components/password_manager/core/common",
     "//components/prefs",
     "//components/prefs/ios",
@@ -201,7 +217,6 @@ source_set("app_internal") {
     "//ios/chrome/browser/metrics:previous_session_info",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/ntp:features",
-    "//ios/chrome/browser/ntp_snippets",
     "//ios/chrome/browser/omaha",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/reading_list",

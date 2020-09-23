@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/app/application_delegate/app_state_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_observer.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_manager.h"
 
@@ -26,6 +27,10 @@ class ChromeBrowserState;
 @protocol AppStateObserver <NSObject>
 
 @optional
+
+// Called when a scene is connected.
+// On iOS 12, called when the mainSceneState is set.
+- (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState;
 
 // Called when the first scene becomes active.
 - (void)appState:(AppState*)appState
@@ -57,6 +62,9 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
 // The ChromeBrowserState associated with the main (non-OTR) browsing mode.
 @property(nonatomic, assign) ChromeBrowserState* mainBrowserState;
+
+// Container for startup information.
+@property(nonatomic, weak) id<StartupInformation> startupInformation;
 
 // YES if the user has ever interacted with the application. May be NO if the
 // application has been woken up by the system for background work.
@@ -145,6 +153,10 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // Removes the observer. It's safe to call this at any time, including from
 // AppStateObserver callbacks.
 - (void)removeObserver:(id<AppStateObserver>)observer;
+
+// Adds a new agent. Agents are owned by the app state.
+// This automatically sets the app state on the |agent|.
+- (void)addAgent:(id<AppStateAgent>)agent;
 
 @end
 

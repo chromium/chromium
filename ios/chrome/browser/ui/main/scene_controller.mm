@@ -40,7 +40,6 @@
 #import "ios/chrome/browser/main/browser_util.h"
 #import "ios/chrome/browser/metrics/previous_session_info.h"
 #include "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/ntp_snippets/content_suggestions_scheduler_notifications.h"
 #include "ios/chrome/browser/screenshot/screenshot_delegate.h"
 #include "ios/chrome/browser/signin/constants.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -310,13 +309,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   if (level == SceneActivationLevelForegroundActive) {
     if (![self presentSigninUpgradePromoIfPossible]) {
       [self presentSignInAccountsViewControllerIfNecessary];
-    }
-    // Mitigation for crbug.com/1092326, where a nil browser state is passed
-    // (presumably because mainInterface is nil as well).
-    // TODO(crbug.com/1094916): Handle this more cleanly.
-    if (self.mainInterface.browserState) {
-      [ContentSuggestionsSchedulerNotifications
-          notifyForeground:self.mainInterface.browserState];
     }
 
     [self handleExternalIntents];

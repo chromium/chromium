@@ -78,7 +78,6 @@
                                        startupInformation:_startupInformation
                                       applicationDelegate:self];
     [_mainController setAppState:_appState];
-    [_appState addObserver:_mainController];
 
     if (!IsSceneStartupSupported()) {
       // When the UIScene APU is not supported, this object holds a "scene"

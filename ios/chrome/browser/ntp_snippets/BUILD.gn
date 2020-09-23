@@ -5,8 +5,6 @@
 source_set("ntp_snippets") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "content_suggestions_scheduler_notifications.h",
-    "content_suggestions_scheduler_notifications.mm",
     "ios_chrome_content_suggestions_service_factory.cc",
     "ios_chrome_content_suggestions_service_factory.h",
     "ios_chrome_content_suggestions_service_factory_util.cc",

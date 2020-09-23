@@ -18,7 +18,6 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
-#include "components/ntp_snippets/content_suggestions_service.h"
 #include "components/password_manager/core/common/passwords_directory_util_ios.h"
 #include "components/prefs/ios/pref_observer_bridge.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -26,6 +25,7 @@
 #include "components/web_resource/web_resource_pref_names.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/blocking_scene_commands.h"
+#import "ios/chrome/app/content_suggestions_scheduler_app_state_agent.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/memory_monitor.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
@@ -68,8 +68,6 @@
 #include "ios/chrome/browser/metrics/first_user_action_recorder.h"
 #import "ios/chrome/browser/metrics/previous_session_info.h"
 #import "ios/chrome/browser/net/cookie_util.h"
-#import "ios/chrome/browser/ntp_snippets/content_suggestions_scheduler_notifications.h"
-#include "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory.h"
 #import "ios/chrome/browser/omaha/omaha_service.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/screenshot/screenshot_metrics_recorder.h"
@@ -520,12 +518,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
         self.appState.mainBrowserState);
   }
 
-  if ([PreviousSessionInfo sharedInstance].isFirstSessionAfterLanguageChange) {
-    IOSChromeContentSuggestionsServiceFactory::GetForBrowserState(
-        chromeBrowserState)
-        ->ClearAllCachedSuggestions();
-  }
-
   return needRestoration;
 }
 
@@ -546,12 +538,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [MetricsMediator
       logLaunchMetricsWithStartupInformation:self
                              connectedScenes:self.appState.connectedScenes];
-  if (self.isColdStart) {
-    [ContentSuggestionsSchedulerNotifications
-        notifyColdStart:self.appState.mainBrowserState];
-    [ContentSuggestionsSchedulerNotifications
-        notifyForeground:self.appState.mainBrowserState];
-  }
 
   ios::GetChromeBrowserProvider()->GetOverridesProvider()->InstallOverrides();
 
@@ -629,6 +615,15 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 #pragma mark - Property implementation.
+
+- (void)setAppState:(AppState*)appState {
+  DCHECK(!_appState);
+  _appState = appState;
+  [appState addObserver:self];
+
+  // Create app state agents.
+  [appState addAgent:[[ContentSuggestionsSchedulerAppAgent alloc] init]];
+}
 
 - (id<BrowserInterfaceProvider>)interfaceProvider {
   if (self.appState.foregroundActiveScene) {
