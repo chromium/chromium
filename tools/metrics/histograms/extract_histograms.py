@@ -567,8 +567,9 @@ def _ExtractHistogramsFromXmlTree(tree, enums):
       reason = _GetTextFromChildNodes(obsolete_nodes[0])
       histogram_entry['obsolete'] = reason
 
-    # Non-obsolete histograms should provide a <summary>.
-    if not obsolete_nodes and not summary_nodes:
+    # Non-obsolete histograms should provide a non-empty <summary>.
+    if not obsolete_nodes and (not summary_nodes or
+                               not histogram_entry['summary']):
       logging.error('histogram %s should provide a <summary>', name)
       have_errors = True
 

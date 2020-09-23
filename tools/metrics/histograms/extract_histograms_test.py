@@ -459,6 +459,21 @@ class ExtractHistogramsTest(unittest.TestCase):
         histogram_without_summary, {})
     self.assertTrue(have_errors)
 
+  def testNewHistogramWithEmptySummary(self):
+    histogram_with_empty_summary = xml.dom.minidom.parseString("""
+<histogram-configuration>
+<histograms>
+ <histogram name="Test.Histogram" units="things" expires_after="2019-01-01">
+   <owner>person@chromium.org</owner>
+   <summary/>
+ </histogram>
+</histograms>
+</histogram-configuration>
+""")
+    _, have_errors = extract_histograms._ExtractHistogramsFromXmlTree(
+        histogram_with_empty_summary, {})
+    self.assertTrue(have_errors)
+
   def testNewHistogramWithoutEnumOrUnit(self):
     histogram_without_enum_or_unit = xml.dom.minidom.parseString("""
 <histogram-configuration>
