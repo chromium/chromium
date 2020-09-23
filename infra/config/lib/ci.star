@@ -899,20 +899,6 @@ def memory_builder(
         **kwargs
     )
 
-def mojo_builder(
-        *,
-        name,
-        execution_timeout = 10 * time.hour,
-        goma_backend = builders.goma.backend.RBE_PROD,
-        **kwargs):
-    return ci.builder(
-        name = name,
-        builder_group = "chromium.mojo",
-        execution_timeout = execution_timeout,
-        goma_backend = goma_backend,
-        **kwargs
-    )
-
 def swangle_builder(*, name, builderless = True, pinned = True, **kwargs):
     builder_args = dict(kwargs)
     builder_args.update(
@@ -1026,7 +1012,6 @@ ci = struct(
     mac_builder = mac_builder,
     mac_ios_builder = mac_ios_builder,
     memory_builder = memory_builder,
-    mojo_builder = mojo_builder,
     swangle_linux_builder = swangle_linux_builder,
     swangle_mac_builder = swangle_mac_builder,
     swangle_windows_builder = swangle_windows_builder,
