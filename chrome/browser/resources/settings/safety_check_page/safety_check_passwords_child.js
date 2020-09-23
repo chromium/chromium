@@ -150,9 +150,12 @@ Polymer({
   /** @private */
   onRowClick_: function() {
     if (this.isRowClickable_()) {
-      // TODO(crbug.com/1103015): Log action and histogram:
-      // SafetyCheckInteractions.SAFETY_CHECK_PASSWORDS_NAVIGATE
-      // Settings.SafetyCheck.NavigateToPasswords
+      // Log click both in action and histogram.
+      this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
+          SafetyCheckInteractions
+              .SAFETY_CHECK_PASSWORDS_MANAGE_THROUGH_CARET_NAVIGATION);
+      this.metricsBrowserProxy_.recordAction(
+          'Settings.SafetyCheck.ManagePasswordsThroughCaretNavigation');
       this.openPasswordCheckPage_();
     }
   },

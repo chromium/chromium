@@ -102,7 +102,11 @@ class SafetyCheckMediator implements PasswordCheck.Observer, SafetyCheckCommonOb
             SafetyCheckInteractions.PASSWORDS_MANAGE, SafetyCheckInteractions.SAFE_BROWSING_MANAGE,
             SafetyCheckInteractions.EXTENSIONS_REVIEW,
             SafetyCheckInteractions.CHROME_CLEANER_REBOOT,
-            SafetyCheckInteractions.CHROME_CLEANER_REVIEW, SafetyCheckInteractions.MAX_VALUE})
+            SafetyCheckInteractions.CHROME_CLEANER_REVIEW,
+            SafetyCheckInteractions.PASSWORDS_MANAGE_THROUGH_CARET_NAVIGATION,
+            SafetyCheckInteractions.SAFE_BROWSING_MANAGE_THROUGH_CARET_NAVIGATION,
+            SafetyCheckInteractions.EXTENSIONS_REVIEW_THROUGH_CARET_NAVIGATION,
+            SafetyCheckInteractions.MAX_VALUE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface SafetyCheckInteractions {
         int STARTED = 0;
@@ -112,8 +116,11 @@ class SafetyCheckMediator implements PasswordCheck.Observer, SafetyCheckCommonOb
         int EXTENSIONS_REVIEW = 4;
         int CHROME_CLEANER_REBOOT = 5;
         int CHROME_CLEANER_REVIEW = 6;
+        int PASSWORDS_MANAGE_THROUGH_CARET_NAVIGATION = 7;
+        int SAFE_BROWSING_MANAGE_THROUGH_CARET_NAVIGATION = 8;
+        int EXTENSIONS_REVIEW_THROUGH_CARET_NAVIGATION = 9;
         // New elements go above.
-        int MAX_VALUE = CHROME_CLEANER_REVIEW;
+        int MAX_VALUE = EXTENSIONS_REVIEW_THROUGH_CARET_NAVIGATION;
     }
 
     private final SharedPreferencesManager mPreferenceManager;

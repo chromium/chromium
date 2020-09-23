@@ -65095,6 +65095,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="Safety check, review extensions"/>
   <int value="5" label="Safety check, reboot via Chrome cleaner"/>
   <int value="6" label="Safety check, review Chrome cleaner infected state"/>
+  <int value="7"
+      label="Safety check, manage passwords through caret navigation"/>
+  <int value="8"
+      label="Safety check, manage safe browsing through caret navigation"/>
+  <int value="9"
+      label="Safety check, review extensions through caret navigation"/>
 </enum>
 
 <enum name="SettingsSections">

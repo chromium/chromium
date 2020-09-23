@@ -160,9 +160,12 @@ Polymer({
   /** @private */
   onRowClick_: function() {
     if (this.isRowClickable_()) {
-      // TODO(crbug.com/1103015): Log action and histogram:
-      // SafetyCheckInteractions.SAFETY_CHECK_EXTENSIONS_NAVIGATE
-      // Settings.SafetyCheck.NavigateToExtensions
+      // Log click both in action and histogram.
+      this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
+          SafetyCheckInteractions
+              .SAFETY_CHECK_EXTENSIONS_REVIEW_THROUGH_CARET_NAVIGATION);
+      this.metricsBrowserProxy_.recordAction(
+          'Settings.SafetyCheck.ReviewExtensionsThroughCaretNavigation');
       this.openExtensionsPage_();
     }
   },

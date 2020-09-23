@@ -557,7 +557,7 @@ suite('SafetyCheckPasswordsChildUiTests', function() {
     });
   });
 
-  test('passwordSafeUiTest', function() {
+  test('passwordSafeUiTest', async function() {
     fireSafetyCheckPasswordsEvent(SafetyCheckPasswordsStatus.SAFE);
     flush();
     assertSafetyCheckChild({
@@ -569,6 +569,15 @@ suite('SafetyCheckPasswordsChildUiTests', function() {
 
     // User clicks the row.
     page.$$('#safetyCheckChild').click();
+    // Ensure UMA is logged.
+    assertEquals(
+        SafetyCheckInteractions
+            .SAFETY_CHECK_PASSWORDS_MANAGE_THROUGH_CARET_NAVIGATION,
+        await metricsBrowserProxy.whenCalled(
+            'recordSafetyCheckInteractionHistogram'));
+    assertEquals(
+        'Settings.SafetyCheck.ManagePasswordsThroughCaretNavigation',
+        await metricsBrowserProxy.whenCalled('recordAction'));
     // Ensure the correct Settings page is shown.
     assertEquals(
         routes.CHECK_PASSWORDS, Router.getInstance().getCurrentRoute());
@@ -678,7 +687,7 @@ suite('SafetyCheckSafeBrowsingChildUiTests', function() {
     });
   });
 
-  test('safeBrowsingEnabledStandardUiTest', function() {
+  test('safeBrowsingEnabledStandardUiTest', async function() {
     fireSafetyCheckSafeBrowsingEvent(
         SafetyCheckSafeBrowsingStatus.ENABLED_STANDARD);
     flush();
@@ -691,6 +700,15 @@ suite('SafetyCheckSafeBrowsingChildUiTests', function() {
 
     // User clicks the row.
     page.$$('#safetyCheckChild').click();
+    // Ensure UMA is logged.
+    assertEquals(
+        SafetyCheckInteractions
+            .SAFETY_CHECK_SAFE_BROWSING_MANAGE_THROUGH_CARET_NAVIGATION,
+        await metricsBrowserProxy.whenCalled(
+            'recordSafetyCheckInteractionHistogram'));
+    assertEquals(
+        'Settings.SafetyCheck.ManageSafeBrowsingThroughCaretNavigation',
+        await metricsBrowserProxy.whenCalled('recordAction'));
     // Ensure the correct Settings page is shown.
     assertEquals(routes.SECURITY, Router.getInstance().getCurrentRoute());
   });
@@ -848,6 +866,15 @@ suite('SafetyCheckExtensionsChildUiTests', function() {
 
     // User clicks the row.
     page.$$('#safetyCheckChild').click();
+    // Ensure UMA is logged.
+    assertEquals(
+        SafetyCheckInteractions
+            .SAFETY_CHECK_EXTENSIONS_REVIEW_THROUGH_CARET_NAVIGATION,
+        await metricsBrowserProxy.whenCalled(
+            'recordSafetyCheckInteractionHistogram'));
+    assertEquals(
+        'Settings.SafetyCheck.ReviewExtensionsThroughCaretNavigation',
+        await metricsBrowserProxy.whenCalled('recordAction'));
     // Ensure the browser proxy call is done.
     const url = await openWindowProxy.whenCalled('openURL');
     assertEquals('chrome://extensions', url);

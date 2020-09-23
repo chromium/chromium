@@ -20700,6 +20700,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.SafetyCheck.ManagePasswordsThroughCaretNavigation">
+  <owner>rainhard@chromium.org</owner>
+  <owner>andzaytsev@google.com</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>User clicks the passwords row in safety check.</description>
+</action>
+
 <action name="Settings.SafetyCheck.ManageSafeBrowsing">
   <owner>rainhard@chromium.org</owner>
   <owner>andzaytsev@google.com</owner>
@@ -20707,6 +20714,13 @@ should be able to be added at any place in this file.
   <description>
     User clicks the manage safe browsing button in safety check.
   </description>
+</action>
+
+<action name="Settings.SafetyCheck.ManageSafeBrowsingThroughCaretNavigation">
+  <owner>rainhard@chromium.org</owner>
+  <owner>andzaytsev@google.com</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>User clicks the safe browsing row in safety check.</description>
 </action>
 
 <action name="Settings.SafetyCheck.RelaunchAfterUpdates">
@@ -20725,6 +20739,13 @@ should be able to be added at any place in this file.
   <description>
     User clicks the review extensions button in safety check.
   </description>
+</action>
+
+<action name="Settings.SafetyCheck.ReviewExtensionsThroughCaretNavigation">
+  <owner>rainhard@chromium.org</owner>
+  <owner>andzaytsev@google.com</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>User clicks the extensions row in safety check.</description>
 </action>
 
 <action name="Settings.SafetyCheck.Start">
