@@ -126,7 +126,6 @@ function run_generic_sensor_iframe_tests(sensorName) {
     await sensorWatcher.wait_for('reading');
     assert_greater_than(sensor.timestamp, cachedTimeStamp);
     sensor.stop();
-    await send_message_to_iframe(iframe, {command: 'reset_sensor_backend'});
   }, `${sensorName}: sensor is not suspended when focus traverses from\
  to same-origin frame`);
 

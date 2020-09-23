@@ -7,52 +7,33 @@
   let sensor = null;
   let sensorType = null;
 
-  function postReply(event, reply) {
-    event.source.postMessage({ command: event.data.command, result: reply }, '*');
-  }
-
-  window.onmessage = async (e) => {
+  async function messageHandler(e) {
     if (e.data.command === 'create_sensor') {
-      if (sensor) {
-        postReply(e, 'success');
-        return;
-      }
-
-      try {
+      if (!sensor) {
         mockBackend = await initialize_generic_sensor_tests();
         sensor = new self[e.data.type]();
         sensorType = e.data.type;
-
-        postReply(e, 'success');
-      } catch (error) {
-        postReply(e, error);
       }
+
+      return Promise.resolve('success');
     } else if (e.data.command === 'start_sensor') {
       if (!sensor) {
-        postReply(e, '"create_sensor" must be called first');
-        return;
+        return Promise.reject('"create_sensor" must be called first');
       }
 
-      try {
+      return new Promise(resolve => {
         sensor.addEventListener('reading', () => {
-          postReply(e, 'success');
+          resolve('success');
         }, { once: true });
         sensor.start();
-      } catch (error) {
-        postReply(e, error);
-      }
+      });
     } else if (e.data.command === 'is_sensor_suspended') {
       if (!mockBackend) {
-        postReply(e, '"create_sensor" must be called first');
-        return;
+        return Promise.reject('"create_sensor" must be called first');
       }
 
-      try {
-        const mockPlatformSensor = await mockBackend.getSensorProvider().getCreatedSensor(sensorType);
-        postReply(e, !mockPlatformSensor.isReadingData());
-      } catch (error) {
-        postReply(e, error);
-      }
+      const mockPlatformSensor = await mockBackend.getSensorProvider().getCreatedSensor(sensorType);
+      return Promise.resolve(!mockPlatformSensor.isReadingData());
     } else if (e.data.command === 'reset_sensor_backend') {
       if (sensor) {
         sensor.stop();
@@ -61,8 +42,19 @@
         sensor = null;
         mockBackend = null;
       }
-
-      postReply(e, 'success');
+      return Promise.resolve('success');
+    } else {
+      return Promise.reject(`unknown command "${e.data.command}"`);
     }
+  }
+
+  window.onmessage = async (e) => {
+    let reply;
+    try {
+      reply = await messageHandler(e);
+    } catch (error) {
+      reply = error;
+    }
+    e.source.postMessage({ command: e.data.command, result: reply }, '*');
   }
 </script>
