@@ -330,6 +330,8 @@ Still reading?
     <ignore regexp="The resource `R.string.languages_settings_target` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_split_downloading` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_split_ready` appears to be unused"/>
+    <ignore regexp="The resource `R.string.translate_dont_offer_site` appears to be unused"/>
+    <ignore regexp="The resource `R.string.translate_dont_offer_lang` appears to be unused"/>
 
     <!-- Old-style and new-style WebAPKs use same resources for simplicity. Old-style WebAPKs do
          not use R.style.SplashTheme but new-style WebAPKs do.
