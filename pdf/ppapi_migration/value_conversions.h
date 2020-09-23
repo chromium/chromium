@@ -16,6 +16,7 @@ class Var;
 namespace chrome_pdf {
 
 pp::Var VarFromValue(const base::Value& value);
+base::Value ValueFromVar(const pp::Var& var);
 
 }  // namespace chrome_pdf
 

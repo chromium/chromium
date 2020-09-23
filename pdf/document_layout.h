@@ -18,10 +18,6 @@ namespace base {
 class Value;
 }
 
-namespace pp {
-class Var;
-}  // namespace pp
-
 namespace chrome_pdf {
 
 // Layout of pages within a PDF document. Pages are placed as rectangles
@@ -55,8 +51,8 @@ class DocumentLayout final {
     // Serializes layout options to a base::Value.
     base::Value ToValue() const;
 
-    // Deserializes layout options from a pp::Var.
-    void FromVar(const pp::Var& var);
+    // Deserializes layout options from a base::Value.
+    void FromValue(const base::Value& value);
 
     PageOrientation default_page_orientation() const {
       return default_page_orientation_;

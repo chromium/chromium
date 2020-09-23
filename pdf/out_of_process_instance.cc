@@ -1833,7 +1833,7 @@ void OutOfProcessInstance::HandleViewportMessage(
   pp::Var layout_options_var = dict.Get(kJSLayoutOptions);
   if (!layout_options_var.is_undefined()) {
     DocumentLayout::Options layout_options;
-    layout_options.FromVar(layout_options_var);
+    layout_options.FromValue(ValueFromVar(layout_options_var));
     // TODO(crbug.com/1013800): Eliminate need to get document size from here.
     document_size_ =
         PPSizeFromSize(engine()->ApplyDocumentLayout(layout_options));

@@ -8,8 +8,6 @@
 
 #include "base/check_op.h"
 #include "base/values.h"
-#include "ppapi/cpp/var.h"
-#include "ppapi/cpp/var_dictionary.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -59,11 +57,11 @@ base::Value DocumentLayout::Options::ToValue() const {
   return dictionary;
 }
 
-void DocumentLayout::Options::FromVar(const pp::Var& var) {
-  pp::VarDictionary dictionary(var);
+void DocumentLayout::Options::FromValue(const base::Value& value) {
+  DCHECK(value.is_dict());
 
   int32_t default_page_orientation =
-      dictionary.Get(kDefaultPageOrientation).AsInt();
+      value.FindKey(kDefaultPageOrientation)->GetInt();
   DCHECK_GE(default_page_orientation,
             static_cast<int32_t>(PageOrientation::kOriginal));
   DCHECK_LE(default_page_orientation,
@@ -71,7 +69,7 @@ void DocumentLayout::Options::FromVar(const pp::Var& var) {
   default_page_orientation_ =
       static_cast<PageOrientation>(default_page_orientation);
 
-  two_up_view_enabled_ = dictionary.Get(kTwoUpViewEnabled).AsBool();
+  two_up_view_enabled_ = value.FindKey(kTwoUpViewEnabled)->GetBool();
 }
 
 void DocumentLayout::Options::RotatePagesClockwise() {
