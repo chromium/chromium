@@ -182343,7 +182343,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Translate.ExplicitLanguageAsk.Event"
-    enum="TranslateExplicitAskPromptEventType" expires_after="M85">
+    enum="TranslateExplicitAskPromptEventType" expires_after="2021-01-31">
   <owner>yyushkina@google.com</owner>
   <owner>anthonyvd@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -182354,7 +182354,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Translate.ExplicitLanguageAsk.LanguageAdded"
-    enum="CLD3LanguageCode" expires_after="M85">
+    enum="CLD3LanguageCode" expires_after="2021-01-31">
   <owner>yyushkina@google.com</owner>
   <owner>anthonyvd@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -182365,7 +182365,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Translate.ExplicitLanguageAsk.LanguageRemoved"
-    enum="CLD3LanguageCode" expires_after="M85">
+    enum="CLD3LanguageCode" expires_after="2021-01-31">
   <owner>yyushkina@google.com</owner>
   <owner>anthonyvd@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -182535,7 +182535,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Translate.LocalesOnDisabledByPrefs" enum="LanguageCode"
-    expires_after="M85">
+    expires_after="2021-01-31">
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -182707,7 +182707,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Translate.ReportLanguageDetectionError" units="units"
-    expires_after="2020-12-01">
+    expires_after="2021-01-31">
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -182752,9 +182752,9 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Translate.ShowErrorInfobar" enum="TranslateError"
-    expires_after="2020-12-01">
+    expires_after="2020-09-18">
   <obsolete>
-    Removed 6/2020. Duplicate of Translate.ShowErrorUI
+    Removed 06/2020. Duplicate of Translate.ShowErrorUI
   </obsolete>
   <owner>chrome-language@google.com</owner>
   <owner>kenjibaheux@google.com</owner>
