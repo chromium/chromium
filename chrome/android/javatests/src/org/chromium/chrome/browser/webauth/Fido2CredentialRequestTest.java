@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.ConditionVariable;
 import android.os.SystemClock;
-import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
 
@@ -18,6 +17,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +31,7 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
@@ -45,13 +46,13 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.test.mock.MockRenderFrameHost;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -71,10 +72,14 @@ import java.util.List;
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
         "enable-experimental-web-platform-features", "enable-features=WebAuthentication",
         "ignore-certificate-errors"})
+@Batch(Batch.PER_CLASS)
 public class Fido2CredentialRequestTest {
+    @ClassRule
+    public static final ChromeActivityTestRule<ChromeActivity> sActivityTestRule =
+            new ChromeActivityTestRule(ChromeActivity.class);
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public final BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
     @Rule
     public JniMocker mocker = new JniMocker();
 
@@ -373,14 +378,11 @@ public class Fido2CredentialRequestTest {
     @Before
     public void setUp() throws Exception {
         Assume.assumeTrue(gmsVersionSupported());
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                InstrumentationRegistry.getInstrumentation().getContext(),
-                ServerCertificate.CERT_OK);
+        mTestServer = sActivityTestRule.getTestServer();
         mCallback = new AuthenticatorCallback();
         mUrl = mTestServer.getURLWithHostName(
                 "subdomain.example.test", "/content/test/data/android/authenticator.html");
-        mActivityTestRule.loadUrl(mUrl);
+        sActivityTestRule.loadUrl(mUrl);
         mFrameHost = new MockAuthenticatorRenderFrameHost();
         mFrameHost.setLastCommittedURL(mUrl);
         mOrigin = mFrameHost.getLastCommittedOrigin();
@@ -398,7 +400,7 @@ public class Fido2CredentialRequestTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mWindowAndroid =
-                                   new MockActivityWindowAndroid(mActivityTestRule.getActivity()));
+                                   new MockActivityWindowAndroid(sActivityTestRule.getActivity()));
         mStartTimeMs = SystemClock.elapsedRealtime();
     }
 
