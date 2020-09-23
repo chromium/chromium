@@ -1280,12 +1280,16 @@ static bool HasReferenceFilterOnly(const ComputedStyle& style) {
 }
 
 static bool IsClipPathDescendant(const LayoutObject& object) {
+  // If the object itself is a resource container (root of a resource subtree)
+  // it is not considered a clipPath descendant since it is independent of its
+  // ancestors.
+  if (object.IsSVGResourceContainer())
+    return false;
   const LayoutObject* parent = object.Parent();
   while (parent) {
     if (parent->IsSVGResourceContainer()) {
       auto* container = ToLayoutSVGResourceContainer(parent);
-      if (container->ResourceType() == kClipperResourceType)
-        return true;
+      return container->ResourceType() == kClipperResourceType;
     }
     parent = parent->Parent();
   }
