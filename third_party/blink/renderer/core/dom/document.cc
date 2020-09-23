@@ -622,7 +622,6 @@ class Document::NetworkStateObserver final
     : public GarbageCollected<Document::NetworkStateObserver>,
       public NetworkStateNotifier::NetworkStateObserver,
       public ExecutionContextLifecycleObserver {
-
  public:
   explicit NetworkStateObserver(ExecutionContext* context)
       : ExecutionContextLifecycleObserver(context) {
@@ -5916,6 +5915,16 @@ void Document::setDomain(const String& raw_domain,
       network::cors::OriginAccessEntry::kMatchesOriginButIsPublicSuffix) {
     exception_state.ThrowSecurityError("'" + new_domain +
                                        "' is a top-level domain.");
+    return;
+  }
+
+  if (RuntimeEnabledFeatures::OriginIsolationHeaderEnabled(dom_window_) &&
+      dom_window_->GetAgent()->IsOriginIsolated()) {
+    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "document.domain mutation is ignored because the surrounding agent "
+        "cluster is origin-isolated."));
     return;
   }
 
