@@ -1128,6 +1128,23 @@ void SetX11ErrorHandlers(XErrorHandler error_handler,
                                       : DefaultX11IOErrorHandler);
 }
 
+bool IsVulkanSurfaceSupported() {
+  static const char* extensions[] = {
+      "DRI3",         // open source driver.
+      "ATIFGLRXDRI",  // AMD proprietary driver.
+      "NV-CONTROL",   // NVidia proprietary driver.
+  };
+  auto* display = gfx::GetXDisplay();
+  int ext_code, first_event, first_error;
+  for (const auto* extension : extensions) {
+    if (XQueryExtension(display, extension, &ext_code, &first_event,
+                        &first_error)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // static
 XVisualManager* XVisualManager::GetInstance() {
   return base::Singleton<XVisualManager>::get();
@@ -1263,6 +1280,20 @@ x11::ColorMap XVisualManager::XVisualData::GetColormap() {
                                  connection_->default_root(), info->visual_id});
   }
   return colormap_;
+}
+
+ScopedUnsetDisplay::ScopedUnsetDisplay() {
+  const char* display = getenv("DISPLAY");
+  if (display) {
+    display_.emplace(display);
+    unsetenv("DISPLAY");
+  }
+}
+
+ScopedUnsetDisplay::~ScopedUnsetDisplay() {
+  if (display_) {
+    setenv("DISPLAY", display_->c_str(), 1);
+  }
 }
 
 }  // namespace ui

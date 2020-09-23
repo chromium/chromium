@@ -555,12 +555,8 @@ COMPONENT_EXPORT(UI_BASE_X)
 void SetX11ErrorHandlers(XErrorHandler error_handler,
                          XIOErrorHandler io_error_handler);
 
-// NOTE: This function should not be called directly from the
-// X11 Error handler because it queries the server to decode the
-// error message, which may trigger other errors. A suitable workaround
-// is to post a task in the error handler to call this function.
-COMPONENT_EXPORT(UI_BASE_X)
-void LogErrorEventDescription(Display* dpy, const XErrorEvent& error_event);
+// Return true if VulkanSurface is supported.
+COMPONENT_EXPORT(UI_BASE_X) bool IsVulkanSurfaceSupported();
 
 // --------------------------------------------------------------------------
 // Selects a visual with a preference for alpha support on compositing window
@@ -638,6 +634,16 @@ class COMPONENT_EXPORT(UI_BASE_X) XVisualManager {
   bool have_gpu_argb_visual_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(XVisualManager);
+};
+
+class COMPONENT_EXPORT(UI_BASE_X) ScopedUnsetDisplay {
+ public:
+  ScopedUnsetDisplay();
+  ~ScopedUnsetDisplay();
+
+ private:
+  base::Optional<std::string> display_;
+  DISALLOW_COPY_AND_ASSIGN(ScopedUnsetDisplay);
 };
 
 }  // namespace ui

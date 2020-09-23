@@ -52,6 +52,10 @@
 #define EGL_OPENGL_ES3_BIT 0x00000040
 #endif
 
+#if defined(USE_X11)
+#include "ui/base/x/x11_util.h"
+#endif
+
 // Not present egl/eglext.h yet.
 
 #ifndef EGL_EXT_gl_colorspace_display_p3
@@ -347,6 +351,7 @@ EGLDisplay GetPlatformANGLEDisplay(
   // TODO(dbehr) Add an attrib to Angle to pass EGL platform.
 
   display_attribs.push_back(EGL_NONE);
+
   // This is an EGL 1.5 function that we know ANGLE supports. It's used to pass
   // EGLAttribs (pointers) instead of EGLints into the display
   return eglGetPlatformDisplay(
@@ -1288,6 +1293,14 @@ EGLDisplay GLSurfaceEGL::InitializeDisplay(EGLDisplayPlatform native_display) {
       SetANGLEImplementation(
           GetANGLEImplementationFromDisplayType(display_type));
     }
+
+#if defined(USE_X11)
+    // Unset DISPLAY env, so the vulkan can be initialized successfully, if the
+    // X server doesn't support Vulkan surface.
+    base::Optional<ui::ScopedUnsetDisplay> unset_display;
+    if (display_type == ANGLE_VULKAN && !ui::IsVulkanSurfaceSupported())
+      unset_display.emplace();
+#endif  // defined(USE_X11)
 
     if (!eglInitialize(display, nullptr, nullptr)) {
       bool is_last = disp_index == init_displays.size() - 1;
