@@ -24,7 +24,7 @@ void FakeNearbyConnectionsManager::StartAdvertising(
   advertising_listener_ = listener;
   advertising_data_usage_ = data_usage;
   advertising_power_level_ = power_level;
-  adverting_endpoint_info_ = std::move(endpoint_info);
+  advertising_endpoint_info_ = std::move(endpoint_info);
   std::move(callback).Run(
       NearbyConnectionsManager::ConnectionsStatus::kSuccess);
 }
@@ -35,7 +35,7 @@ void FakeNearbyConnectionsManager::StopAdvertising() {
   advertising_listener_ = nullptr;
   advertising_data_usage_ = DataUsage::kUnknown;
   advertising_power_level_ = PowerLevel::kUnknown;
-  adverting_endpoint_info_.reset();
+  advertising_endpoint_info_.reset();
 }
 
 void FakeNearbyConnectionsManager::StartDiscovery(

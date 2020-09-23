@@ -817,6 +817,16 @@ class NearbySharingServiceImplTest : public testing::Test {
     success_run_loop.Run();
   }
 
+  std::unique_ptr<sharing::Advertisement> GetCurrentAdvertisement() {
+    auto endpoint_info =
+        fake_nearby_connections_manager_->advertising_endpoint_info();
+    if (!endpoint_info)
+      return nullptr;
+
+    return sharing::AdvertisementDecoder::FromEndpointInfo(base::make_span(
+        *fake_nearby_connections_manager_->advertising_endpoint_info()));
+  }
+
  protected:
   FakeNearbyShareLocalDeviceDataManager* local_device_data_manager() {
     EXPECT_EQ(1u, local_device_data_manager_factory_.instances().size());
@@ -1493,10 +1503,8 @@ TEST_F(NearbySharingServiceImplTest,
   EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
   EXPECT_EQ(PowerLevel::kHighPower,
             fake_nearby_connections_manager_->advertising_power_level());
-  ASSERT_TRUE(fake_nearby_connections_manager_->adverting_endpoint_info());
-  auto advertisement =
-      sharing::AdvertisementDecoder::FromEndpointInfo(base::make_span(
-          *fake_nearby_connections_manager_->adverting_endpoint_info()));
+  ASSERT_TRUE(fake_nearby_connections_manager_->advertising_endpoint_info());
+  auto advertisement = GetCurrentAdvertisement();
   ASSERT_TRUE(advertisement);
   EXPECT_EQ(kDeviceName, advertisement->device_name());
   EXPECT_EQ(nearby_share::mojom::ShareTargetType::kLaptop,
@@ -1519,10 +1527,8 @@ TEST_F(NearbySharingServiceImplTest,
   EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
   EXPECT_EQ(PowerLevel::kHighPower,
             fake_nearby_connections_manager_->advertising_power_level());
-  ASSERT_TRUE(fake_nearby_connections_manager_->adverting_endpoint_info());
-  auto advertisement =
-      sharing::AdvertisementDecoder::FromEndpointInfo(base::make_span(
-          *fake_nearby_connections_manager_->adverting_endpoint_info()));
+  ASSERT_TRUE(fake_nearby_connections_manager_->advertising_endpoint_info());
+  auto advertisement = GetCurrentAdvertisement();
   ASSERT_TRUE(advertisement);
   EXPECT_EQ(kDeviceName, advertisement->device_name());
   EXPECT_EQ(nearby_share::mojom::ShareTargetType::kLaptop,
@@ -1548,10 +1554,8 @@ TEST_F(NearbySharingServiceImplTest,
   EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
   EXPECT_EQ(PowerLevel::kLowPower,
             fake_nearby_connections_manager_->advertising_power_level());
-  ASSERT_TRUE(fake_nearby_connections_manager_->adverting_endpoint_info());
-  auto advertisement =
-      sharing::AdvertisementDecoder::FromEndpointInfo(base::make_span(
-          *fake_nearby_connections_manager_->adverting_endpoint_info()));
+  ASSERT_TRUE(fake_nearby_connections_manager_->advertising_endpoint_info());
+  auto advertisement = GetCurrentAdvertisement();
   ASSERT_TRUE(advertisement);
   EXPECT_FALSE(advertisement->device_name());
   EXPECT_EQ(nearby_share::mojom::ShareTargetType::kLaptop,
@@ -3497,4 +3501,24 @@ TEST_F(NearbySharingServiceImplTest, ShutdownCallsObservers) {
 
   // Prevent a double shutdown.
   service_.reset();
+}
+
+TEST_F(NearbySharingServiceImplTest,
+       PeriodicallyRotateBackgroundAdvertisement) {
+  certificate_manager()->set_next_salt({0x00, 0x01});
+  SetVisibility(nearby_share::mojom::Visibility::kAllContacts);
+  NiceMock<MockTransferUpdateCallback> callback;
+  NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
+      &callback, NearbySharingService::ReceiveSurfaceState::kBackground);
+  EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
+  auto endpoint_info_initial =
+      fake_nearby_connections_manager_->advertising_endpoint_info();
+
+  certificate_manager()->set_next_salt({0x00, 0x02});
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(15));
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
+  auto endpoint_info_rotated =
+      fake_nearby_connections_manager_->advertising_endpoint_info();
+  EXPECT_NE(endpoint_info_initial, endpoint_info_rotated);
 }

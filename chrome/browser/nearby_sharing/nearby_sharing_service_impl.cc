@@ -12,6 +12,7 @@
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
+#include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
@@ -47,6 +48,11 @@
 #include "url/gurl.h"
 
 namespace {
+
+constexpr base::TimeDelta kBackgroundAdvertisementRotationDelayMin =
+    base::TimeDelta::FromMinutes(12);
+constexpr base::TimeDelta kBackgroundAdvertisementRotationDelayMax =
+    base::TimeDelta::FromMinutes(15);
 
 // Used to hash a token into a 4 digit string.
 constexpr int kHashModulo = 9973;
@@ -1438,7 +1444,8 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
                   << " visibility: " << settings_.GetVisibility()
                   << " data usage: " << data_usage << " device name: "
                   << device_name.value_or("** no device name **");
-  return;
+
+  ScheduleRotateBackgroundAdvertisementTimer();
 }
 
 void NearbySharingServiceImpl::StopAdvertising() {
@@ -1509,6 +1516,32 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::StopScanning() {
 
   NS_LOG(VERBOSE) << __func__ << ": Scanning has stopped.";
   return StatusCodes::kOk;
+}
+
+void NearbySharingServiceImpl::ScheduleRotateBackgroundAdvertisementTimer() {
+  uint64_t delayRangeMilliseconds = base::checked_cast<uint64_t>(
+      kBackgroundAdvertisementRotationDelayMax.InMilliseconds() -
+      kBackgroundAdvertisementRotationDelayMin.InMilliseconds());
+  uint64_t delayMilliseconds =
+      base::RandGenerator(delayRangeMilliseconds) +
+      base::checked_cast<uint64_t>(
+          kBackgroundAdvertisementRotationDelayMin.InMilliseconds());
+  rotate_background_advertisement_timer_.Start(
+      FROM_HERE,
+      base::TimeDelta::FromMilliseconds(
+          base::checked_cast<uint64_t>(delayMilliseconds)),
+      base::BindOnce(
+          &NearbySharingServiceImpl::OnRotateBackgroundAdvertisementTimerFired,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void NearbySharingServiceImpl::OnRotateBackgroundAdvertisementTimerFired() {
+  if (foreground_receive_callbacks_.might_have_observers()) {
+    ScheduleRotateBackgroundAdvertisementTimer();
+  } else {
+    StopAdvertising();
+    InvalidateSurfaceState();
+  }
 }
 
 void NearbySharingServiceImpl::OnTransferComplete() {

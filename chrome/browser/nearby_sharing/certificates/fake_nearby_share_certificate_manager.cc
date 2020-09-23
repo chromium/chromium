@@ -44,8 +44,8 @@ FakeNearbyShareCertificateManager::GetDecryptedPublicCertificateCall::operator=(
 FakeNearbyShareCertificateManager::GetDecryptedPublicCertificateCall::
     ~GetDecryptedPublicCertificateCall() = default;
 
-FakeNearbyShareCertificateManager::FakeNearbyShareCertificateManager() =
-    default;
+FakeNearbyShareCertificateManager::FakeNearbyShareCertificateManager()
+    : next_salt_(GetNearbyShareTestSalt()) {}
 
 FakeNearbyShareCertificateManager::~FakeNearbyShareCertificateManager() =
     default;
@@ -75,7 +75,10 @@ void FakeNearbyShareCertificateManager::OnStop() {}
 base::Optional<NearbySharePrivateCertificate>
 FakeNearbyShareCertificateManager::GetValidPrivateCertificate(
     nearby_share::mojom::Visibility visibility) const {
-  return GetNearbyShareTestPrivateCertificate(visibility);
+  auto cert = GetNearbyShareTestPrivateCertificate(visibility);
+  cert.next_salts_for_testing() = base::queue<std::vector<uint8_t>>();
+  cert.next_salts_for_testing().push(next_salt_);
+  return cert;
 }
 
 void FakeNearbyShareCertificateManager::UpdatePrivateCertificateInStorage(

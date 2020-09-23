@@ -19,6 +19,7 @@
 #include "base/scoped_observer.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/nearby_sharing/attachment_info.h"
@@ -181,6 +182,8 @@ class NearbySharingServiceImpl
   void StopAdvertising();
   void StartScanning();
   StatusCodes StopScanning();
+  void ScheduleRotateBackgroundAdvertisementTimer();
+  void OnRotateBackgroundAdvertisementTimerFired();
 
   void OnTransferComplete();
   void OnTransferStarted(bool is_incoming);
@@ -328,6 +331,7 @@ class NearbySharingServiceImpl
   NearbyShareSettings settings_;
   NearbyFileHandler file_handler_;
   bool is_screen_locked_ = false;
+  base::OneShotTimer rotate_background_advertisement_timer_;
 
   // A list of service observers.
   base::ObserverList<NearbySharingService::Observer> observers_;

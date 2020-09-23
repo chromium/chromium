@@ -84,6 +84,8 @@ class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
   using NearbyShareCertificateManager::NotifyPrivateCertificatesChanged;
   using NearbyShareCertificateManager::NotifyPublicCertificatesDownloaded;
 
+  void set_next_salt(const std::vector<uint8_t>& salt) { next_salt_ = salt; }
+
   size_t num_get_private_certificates_as_public_certificates_calls() {
     return num_get_private_certificates_as_public_certificates_calls_;
   }
@@ -110,6 +112,7 @@ class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
   size_t num_download_public_certificates_calls_ = 0;
   std::vector<GetDecryptedPublicCertificateCall>
       get_decrypted_public_certificate_calls_;
+  std::vector<uint8_t> next_salt_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_CERTIFICATES_FAKE_NEARBY_SHARE_CERTIFICATE_MANAGER_H_
