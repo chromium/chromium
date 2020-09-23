@@ -14,6 +14,7 @@ class Point;
 class PointF;
 class Rect;
 class Size;
+class SizeF;
 
 // This file contains helper functions to move between DIPs (device-independent
 // pixels) and physical pixels, by multiplying or dividing by device scale
@@ -41,11 +42,14 @@ GEOMETRY_EXPORT gfx::PointF ConvertPointToPixels(
     const gfx::PointF& point_in_dips,
     float device_scale_factor);
 
+GEOMETRY_EXPORT gfx::SizeF ConvertSizeToDips(const gfx::Size& size_in_pixels,
+                                             float device_scale_factor);
+GEOMETRY_EXPORT gfx::SizeF ConvertSizeToDips(const gfx::SizeF& size_in_pixels,
+                                             float device_scale_factor);
+
 GEOMETRY_EXPORT gfx::Insets ConvertInsetsToDIP(
     float scale_factor,
     const gfx::Insets& insets_in_pixel);
-GEOMETRY_EXPORT gfx::Size ConvertSizeToDIP(float scale_factor,
-                                           const gfx::Size& size_in_pixel);
 GEOMETRY_EXPORT gfx::Rect ConvertRectToDIP(float scale_factor,
                                            const gfx::Rect& rect_in_pixel);
 

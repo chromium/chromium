@@ -23,6 +23,7 @@
 #include "ui/base/layout.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace content {
@@ -84,8 +85,9 @@ class WebContentsVideoCaptureDevice::FrameTracker
     // that has a different device scale factor while being captured.
     gfx::Size preferred_size;
     if (auto* view = GetCurrentView()) {
-      preferred_size =
-          gfx::ConvertSizeToDIP(view->GetDeviceScaleFactor(), capture_size);
+      // TODO(danakj): Should this be rounded?
+      preferred_size = gfx::ToFlooredSize(
+          gfx::ConvertSizeToDips(capture_size, view->GetDeviceScaleFactor()));
     }
     if (preferred_size.IsEmpty()) {
       preferred_size = capture_size;

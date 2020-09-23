@@ -25,6 +25,7 @@
 #include "ui/compositor/recyclable_compositor_mac.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 namespace content {
 
@@ -158,8 +159,9 @@ void BrowserCompositorMac::UpdateSurfaceFromChild(
           child_local_surface_id_allocation)) {
     if (auto_resize_enabled) {
       dfh_display_.set_device_scale_factor(new_device_scale_factor);
-      dfh_size_dip_ = gfx::ConvertSizeToDIP(dfh_display_.device_scale_factor(),
-                                            new_size_in_pixels);
+      // TODO(danakj): We should avoid lossy conversions to integer DIPs.
+      dfh_size_dip_ = gfx::ToFlooredSize(gfx::ConvertSizeToDips(
+          new_size_in_pixels, dfh_display_.device_scale_factor()));
       dfh_size_pixels_ = new_size_in_pixels;
       root_layer_->SetBounds(gfx::Rect(dfh_size_dip_));
       if (recyclable_compositor_) {

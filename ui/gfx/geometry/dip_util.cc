@@ -34,17 +34,20 @@ PointF ConvertPointToPixels(const PointF& point_in_dips,
   return ScalePoint(point_in_dips, device_scale_factor);
 }
 
+SizeF ConvertSizeToDips(const Size& size_in_pixels, float device_scale_factor) {
+  return ScaleSize(SizeF(size_in_pixels), 1.f / device_scale_factor);
+}
+
+SizeF ConvertSizeToDips(const SizeF& size_in_pixels,
+                        float device_scale_factor) {
+  return ScaleSize(size_in_pixels, 1.f / device_scale_factor);
+}
+
 Insets ConvertInsetsToDIP(float scale_factor,
                           const gfx::Insets& insets_in_pixel) {
   if (scale_factor == 1.f)
     return insets_in_pixel;
   return insets_in_pixel.Scale(1.f / scale_factor);
-}
-
-Size ConvertSizeToDIP(float scale_factor, const Size& size_in_pixel) {
-  if (scale_factor == 1.f)
-    return size_in_pixel;
-  return ScaleToFlooredSize(size_in_pixel, 1.f / scale_factor);
 }
 
 Rect ConvertRectToDIP(float scale_factor, const Rect& rect_in_pixel) {

@@ -18,9 +18,6 @@ class Layer;
 
 // Utility functions that convert point/size/rect between
 // DIP and pixel coordinates system.
-COMPOSITOR_EXPORT gfx::Size ConvertSizeToDIP(
-    const Layer* layer,
-    const gfx::Size& size_in_pixel);
 COMPOSITOR_EXPORT gfx::Rect ConvertRectToDIP(
     const Layer* layer,
     const gfx::Rect& rect_in_pixel);

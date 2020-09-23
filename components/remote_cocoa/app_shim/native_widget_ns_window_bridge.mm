@@ -40,6 +40,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/cocoa/cocoa_event_utils.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 #import "ui/gfx/mac/nswindow_frame_controls.h"
 
@@ -1226,8 +1227,9 @@ void NativeWidgetNSWindowBridge::SetCALayerParams(
     const gfx::CALayerParams& ca_layer_params) {
   // Ignore frames arriving "late" for an old size. A frame at the new size
   // should arrive soon.
-  gfx::Size frame_dip_size = gfx::ConvertSizeToDIP(ca_layer_params.scale_factor,
-                                                   ca_layer_params.pixel_size);
+  // TODO(danakj): We should avoid lossy conversions to integer DIPs.
+  gfx::Size frame_dip_size = gfx::ToFlooredSize(gfx::ConvertSizeToDips(
+      ca_layer_params.pixel_size, ca_layer_params.scale_factor));
   if (content_dip_size_ != frame_dip_size)
     return;
   compositor_frame_dip_size_ = frame_dip_size;
