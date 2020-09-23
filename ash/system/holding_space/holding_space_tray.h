@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/system/holding_space/holding_space_item_view_delegate.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "base/memory/weak_ptr.h"
 
@@ -59,6 +60,10 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView {
   void HideBubble(const TrayBubbleView* bubble_view) override;
 
   std::unique_ptr<TrayBubbleWrapper> bubble_;
+
+  // The singleton delegate for `HoldingSpaceItemView`s that implements support
+  // for context menu, drag-and-drop, and multiple selection.
+  HoldingSpaceItemViewDelegate delegate_;
 
   PinnedFilesContainer* pinned_files_container_ = nullptr;
   RecentFilesContainer* recent_files_container_ = nullptr;

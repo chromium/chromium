@@ -13,6 +13,7 @@
 namespace ash {
 
 class HoldingSpaceItem;
+class HoldingSpaceItemViewDelegate;
 
 namespace tray {
 class RoundedImageView;
@@ -22,7 +23,8 @@ class ASH_EXPORT HoldingSpaceItemScreenshotView : public HoldingSpaceItemView {
  public:
   METADATA_HEADER(HoldingSpaceItemScreenshotView);
 
-  explicit HoldingSpaceItemScreenshotView(const HoldingSpaceItem* item);
+  HoldingSpaceItemScreenshotView(HoldingSpaceItemViewDelegate* delegate,
+                                 const HoldingSpaceItem* item);
   HoldingSpaceItemScreenshotView(const HoldingSpaceItemScreenshotView&) =
       delete;
   HoldingSpaceItemScreenshotView& operator=(

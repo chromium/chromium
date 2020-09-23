@@ -22,7 +22,9 @@
 
 namespace ash {
 
-RecentFilesContainer::RecentFilesContainer() {
+RecentFilesContainer::RecentFilesContainer(
+    HoldingSpaceItemViewDelegate* delegate)
+    : delegate_(delegate) {
   SetID(kHoldingSpaceRecentFilesContainerId);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -66,10 +68,12 @@ void RecentFilesContainer::AddHoldingSpaceItemView(
   DCHECK(!base::Contains(views_by_item_id_, item->id()));
   if (item->type() == HoldingSpaceItem::Type::kScreenshot) {
     views_by_item_id_[item->id()] = screenshots_container_->AddChildViewAt(
-        std::make_unique<HoldingSpaceItemScreenshotView>(item), 0 /*index*/);
+        std::make_unique<HoldingSpaceItemScreenshotView>(delegate_, item),
+        /*index=*/0);
   } else if (item->type() == HoldingSpaceItem::Type::kDownload) {
     views_by_item_id_[item->id()] = recent_downloads_container_->AddChildViewAt(
-        std::make_unique<HoldingSpaceItemChipView>(item), 0 /*index*/);
+        std::make_unique<HoldingSpaceItemChipView>(delegate_, item),
+        /*index=*/0);
   }
 }
 
@@ -84,13 +88,13 @@ void RecentFilesContainer::RemoveHoldingSpaceItemView(
   auto it = views_by_item_id_.find(item->id());
   if (it == views_by_item_id_.end())
     return;
-  views::View* view = it->second;
 
   if (item->type() == HoldingSpaceItem::Type::kScreenshot) {
-    screenshots_container_->RemoveChildViewT(view);
+    screenshots_container_->RemoveChildViewT(it->second);
   } else if (item->type() == HoldingSpaceItem::Type::kDownload) {
-    recent_downloads_container_->RemoveChildViewT(view);
+    recent_downloads_container_->RemoveChildViewT(it->second);
   }
+
   views_by_item_id_.erase(it);
 }
 

@@ -5,9 +5,6 @@
 #include "ash/system/holding_space/holding_space_item_chips_container.h"
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
-#include "ash/public/cpp/holding_space/holding_space_item.h"
-#include "ash/system/holding_space/holding_space_item_chip_view.h"
-#include "base/debug/stack_trace.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/proposed_layout.h"
 
