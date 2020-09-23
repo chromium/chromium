@@ -579,7 +579,7 @@ void AutofillPopupItemView::CreateContent() {
   if (store_indicator_icon) {
     AddSpacerWithSize(GetHorizontalMargin(),
                       /*resize=*/true, layout_manager);
-    AddChildView(std::move(icon));
+    AddChildView(std::move(store_indicator_icon));
   }
 }
 
