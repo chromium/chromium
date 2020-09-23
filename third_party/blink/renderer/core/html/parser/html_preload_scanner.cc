@@ -287,7 +287,7 @@ class TokenPreloadScanner::StartTagScanner {
     if ((Match(tag_impl_, html_names::kScriptTag) &&
          type_attribute_value_ == "module") ||
         IsLinkRelModulePreload()) {
-      request->SetScriptType(mojom::ScriptType::kModule);
+      request->SetScriptType(mojom::blink::ScriptType::kModule);
     }
 
     request->SetCrossOrigin(cross_origin_);
@@ -665,7 +665,7 @@ class TokenPreloadScanner::StartTagScanner {
     if (Match(tag_impl_, html_names::kInputTag) && !input_is_image_)
       return false;
     if (Match(tag_impl_, html_names::kScriptTag)) {
-      mojom::ScriptType script_type = mojom::ScriptType::kClassic;
+      mojom::blink::ScriptType script_type = mojom::blink::ScriptType::kClassic;
       bool is_import_map = false;
       if (!ScriptLoader::IsValidScriptTypeAndLanguage(
               type_attribute_value_, language_attribute_value_,

@@ -356,7 +356,7 @@ ServiceWorkerGlobalScope::GetInstalledScriptsManager() {
 
 void ServiceWorkerGlobalScope::CountWorkerScript(size_t script_size,
                                                  size_t cached_metadata_size) {
-  DCHECK_EQ(GetScriptType(), mojom::ScriptType::kClassic);
+  DCHECK_EQ(GetScriptType(), mojom::blink::ScriptType::kClassic);
   base::UmaHistogramCustomCounts(
       "ServiceWorker.ScriptSize",
       base::saturated_cast<base::Histogram::Sample>(script_size), 1000, 5000000,
@@ -375,7 +375,7 @@ void ServiceWorkerGlobalScope::CountWorkerScript(size_t script_size,
 void ServiceWorkerGlobalScope::CountImportedScript(
     size_t script_size,
     size_t cached_metadata_size) {
-  DCHECK_EQ(GetScriptType(), mojom::ScriptType::kClassic);
+  DCHECK_EQ(GetScriptType(), mojom::blink::ScriptType::kClassic);
   CountScriptInternal(script_size, cached_metadata_size);
 }
 
@@ -388,7 +388,7 @@ void ServiceWorkerGlobalScope::DidEvaluateScript() {
   // Skip recording UMAs for module scripts because there're no ways to get the
   // number of static-imported scripts and the total size of the imported
   // scripts.
-  if (GetScriptType() == mojom::ScriptType::kModule) {
+  if (GetScriptType() == mojom::blink::ScriptType::kModule) {
     return;
   }
 

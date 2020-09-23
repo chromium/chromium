@@ -342,7 +342,7 @@ ScriptPromise ServiceWorkerContainer::registerServiceWorker(
 
   mojom::ServiceWorkerUpdateViaCache update_via_cache =
       ParseUpdateViaCache(options->updateViaCache());
-  base::Optional<mojom::ScriptType> script_type =
+  base::Optional<mojom::blink::ScriptType> script_type =
       Script::ParseScriptType(options->type());
   DCHECK(script_type);
 

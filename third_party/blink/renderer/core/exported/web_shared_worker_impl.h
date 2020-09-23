@@ -98,7 +98,7 @@ class CORE_EXPORT WebSharedWorkerImpl final : public WebSharedWorker {
 
   void StartWorkerContext(
       const WebURL&,
-      mojom::ScriptType,
+      mojom::blink::ScriptType,
       network::mojom::CredentialsMode,
       const WebString& name,
       WebSecurityOrigin constructor_origin,

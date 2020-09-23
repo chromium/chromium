@@ -240,7 +240,7 @@ class CORE_EXPORT WorkerGlobalScope
 
   void InitializeURL(const KURL& url);
 
-  mojom::ScriptType GetScriptType() const { return script_type_; }
+  mojom::blink::ScriptType GetScriptType() const { return script_type_; }
 
   // Sets the parameters for the worker main module script loaded by the browser
   // process.
@@ -261,7 +261,7 @@ class CORE_EXPORT WorkerGlobalScope
   EventTarget* ErrorEventTarget() final { return this; }
 
   KURL url_;
-  const mojom::ScriptType script_type_;
+  const mojom::blink::ScriptType script_type_;
   const String user_agent_;
   const UserAgentMetadata ua_metadata_;
   std::unique_ptr<WorkerSettings> worker_settings_;

@@ -161,7 +161,7 @@ class NotReachedWebServiceWorkerProvider : public WebServiceWorkerProvider {
   void RegisterServiceWorker(
       const WebURL& scope,
       const WebURL& script_url,
-      blink::mojom::ScriptType script_type,
+      blink::mojom::blink::ScriptType script_type,
       mojom::ServiceWorkerUpdateViaCache update_via_cache,
       const WebFetchClientSettingsObject& fetch_client_settings_object,
       std::unique_ptr<WebServiceWorkerRegistrationCallbacks> callbacks)
@@ -276,7 +276,7 @@ class StubWebServiceWorkerProvider {
   StubWebServiceWorkerProvider()
       : register_call_count_(0),
         get_registration_call_count_(0),
-        script_type_(mojom::ScriptType::kClassic),
+        script_type_(mojom::blink::ScriptType::kClassic),
         update_via_cache_(mojom::ServiceWorkerUpdateViaCache::kImports) {}
 
   // Creates a WebServiceWorkerProvider. This can outlive the
@@ -292,7 +292,7 @@ class StubWebServiceWorkerProvider {
   const WebURL& RegisterScriptURL() { return register_script_url_; }
   size_t GetRegistrationCallCount() { return get_registration_call_count_; }
   const WebURL& GetRegistrationURL() { return get_registration_url_; }
-  mojom::ScriptType ScriptType() const { return script_type_; }
+  mojom::blink::ScriptType ScriptType() const { return script_type_; }
   mojom::ServiceWorkerUpdateViaCache UpdateViaCache() const {
     return update_via_cache_;
   }
@@ -308,7 +308,7 @@ class StubWebServiceWorkerProvider {
     void RegisterServiceWorker(
         const WebURL& scope,
         const WebURL& script_url,
-        blink::mojom::ScriptType script_type,
+        blink::mojom::blink::ScriptType script_type,
         mojom::ServiceWorkerUpdateViaCache update_via_cache,
         const WebFetchClientSettingsObject& fetch_client_settings_object,
         std::unique_ptr<WebServiceWorkerRegistrationCallbacks> callbacks)
@@ -350,7 +350,7 @@ class StubWebServiceWorkerProvider {
   WebURL register_script_url_;
   size_t get_registration_call_count_;
   WebURL get_registration_url_;
-  mojom::ScriptType script_type_;
+  mojom::blink::ScriptType script_type_;
   mojom::ServiceWorkerUpdateViaCache update_via_cache_;
 };
 
@@ -375,7 +375,7 @@ TEST_F(ServiceWorkerContainerTest,
               stub_provider.RegisterScope());
     EXPECT_EQ(WebURL(KURL("http://localhost/x/y/worker.js")),
               stub_provider.RegisterScriptURL());
-    EXPECT_EQ(mojom::ScriptType::kClassic, stub_provider.ScriptType());
+    EXPECT_EQ(mojom::blink::ScriptType::kClassic, stub_provider.ScriptType());
     EXPECT_EQ(mojom::ServiceWorkerUpdateViaCache::kImports,
               stub_provider.UpdateViaCache());
   }
@@ -395,7 +395,7 @@ TEST_F(ServiceWorkerContainerTest,
     EXPECT_EQ(1ul, stub_provider.GetRegistrationCallCount());
     EXPECT_EQ(WebURL(KURL("http://localhost/x/index.html")),
               stub_provider.GetRegistrationURL());
-    EXPECT_EQ(mojom::ScriptType::kClassic, stub_provider.ScriptType());
+    EXPECT_EQ(mojom::blink::ScriptType::kClassic, stub_provider.ScriptType());
     EXPECT_EQ(mojom::ServiceWorkerUpdateViaCache::kImports,
               stub_provider.UpdateViaCache());
   }
@@ -422,7 +422,7 @@ TEST_F(ServiceWorkerContainerTest,
               stub_provider.RegisterScope());
     EXPECT_EQ(WebURL(KURL(KURL(), "http://localhost/x/y/worker.js")),
               stub_provider.RegisterScriptURL());
-    EXPECT_EQ(mojom::ScriptType::kClassic, stub_provider.ScriptType());
+    EXPECT_EQ(mojom::blink::ScriptType::kClassic, stub_provider.ScriptType());
     EXPECT_EQ(mojom::ServiceWorkerUpdateViaCache::kNone,
               stub_provider.UpdateViaCache());
   }
@@ -448,7 +448,7 @@ TEST_F(ServiceWorkerContainerTest, Register_TypeOptionDelegatesToProvider) {
               stub_provider.RegisterScope());
     EXPECT_EQ(WebURL(KURL(KURL(), "http://localhost/x/y/worker.js")),
               stub_provider.RegisterScriptURL());
-    EXPECT_EQ(mojom::ScriptType::kModule, stub_provider.ScriptType());
+    EXPECT_EQ(mojom::blink::ScriptType::kModule, stub_provider.ScriptType());
     EXPECT_EQ(mojom::ServiceWorkerUpdateViaCache::kImports,
               stub_provider.UpdateViaCache());
   }

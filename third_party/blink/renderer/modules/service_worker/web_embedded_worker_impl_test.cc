@@ -270,7 +270,7 @@ class WebEmbeddedWorkerImplTest : public testing::Test {
         std::move(outside_settings_object));
     start_data->script_url = script_url_;
     start_data->user_agent = WebString("dummy user agent");
-    start_data->script_type = mojom::ScriptType::kClassic;
+    start_data->script_type = mojom::blink::ScriptType::kClassic;
     start_data->wait_for_debugger_mode =
         WebEmbeddedWorkerStartData::kDontWaitForDebugger;
     return start_data;

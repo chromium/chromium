@@ -246,7 +246,7 @@ void PendingScript::ExecuteScriptBlockInternal(
     // <spec step="4.B.1">Assert: The script element's node document's
     // currentScript attribute is null.</spec>
     ScriptElementBase* current_script = nullptr;
-    if (script->GetScriptType() == mojom::ScriptType::kClassic)
+    if (script->GetScriptType() == mojom::blink::ScriptType::kClassic)
       current_script = element;
     context_document->PushCurrentScript(current_script);
 

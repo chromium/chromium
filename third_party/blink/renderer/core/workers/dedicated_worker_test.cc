@@ -130,8 +130,8 @@ class DedicatedWorkerMessagingProxyForTest
     auto worker_settings = std::make_unique<WorkerSettings>(
         To<LocalDOMWindow>(GetExecutionContext())->GetFrame()->GetSettings());
     auto params = std::make_unique<GlobalScopeCreationParams>(
-        script_url, mojom::ScriptType::kClassic, "fake global scope name",
-        "fake user agent", UserAgentMetadata(),
+        script_url, mojom::blink::ScriptType::kClassic,
+        "fake global scope name", "fake user agent", UserAgentMetadata(),
         nullptr /* web_worker_fetch_context */, headers,
         network::mojom::ReferrerPolicy::kDefault, security_origin_.get(),
         false /* starter_secure_context */,

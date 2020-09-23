@@ -15,7 +15,7 @@ namespace blink {
 
 GlobalScopeCreationParams::GlobalScopeCreationParams(
     const KURL& script_url,
-    mojom::ScriptType script_type,
+    mojom::blink::ScriptType script_type,
     const String& global_scope_name,
     const String& user_agent,
     const base::Optional<UserAgentMetadata>& ua_metadata,

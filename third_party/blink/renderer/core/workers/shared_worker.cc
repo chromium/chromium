@@ -122,7 +122,7 @@ SharedWorker* SharedWorker::Create(ExecutionContext* context,
       return nullptr;
     }
     options->name = worker_options->name();
-    base::Optional<mojom::ScriptType> type_result =
+    base::Optional<mojom::blink::ScriptType> type_result =
         Script::ParseScriptType(worker_options->type());
     DCHECK(type_result);
     options->type = type_result.value();

@@ -41,7 +41,7 @@ class MockPendingScript : public PendingScript {
   }
   ~MockPendingScript() override {}
 
-  MOCK_CONST_METHOD0(GetScriptType, mojom::ScriptType());
+  MOCK_CONST_METHOD0(GetScriptType, mojom::blink::ScriptType());
   MOCK_CONST_METHOD1(CheckMIMETypeBeforeRunScript, bool(Document*));
   MOCK_CONST_METHOD1(GetSource, Script*(const KURL&));
   MOCK_CONST_METHOD0(IsExternal, bool());

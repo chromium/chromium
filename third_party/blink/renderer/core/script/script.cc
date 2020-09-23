@@ -8,12 +8,12 @@
 
 namespace blink {
 
-base::Optional<mojom::ScriptType> Script::ParseScriptType(
+base::Optional<mojom::blink::ScriptType> Script::ParseScriptType(
     const String& script_type) {
   if (script_type == "classic")
-    return mojom::ScriptType::kClassic;
+    return mojom::blink::ScriptType::kClassic;
   if (script_type == "module")
-    return mojom::ScriptType::kModule;
+    return mojom::blink::ScriptType::kModule;
   return base::nullopt;
 }
 

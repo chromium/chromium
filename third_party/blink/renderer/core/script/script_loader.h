@@ -62,18 +62,18 @@ class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
   };
 
   // |out_is_import_map| is set separately from |out_script_type| in order
-  // to avoid adding import maps as a mojom::ScriptType enum, because import
-  // maps are processed quite differently from classic/module scripts.
+  // to avoid adding import maps as a mojom::blink::ScriptType enum, because
+  // import maps are processed quite differently from classic/module scripts.
   //
   // TODO(hiroshige, kouhei): Make the method signature simpler.
   static bool IsValidScriptTypeAndLanguage(
       const String& type_attribute_value,
       const String& language_attribute_value,
       LegacyTypeSupport support_legacy_types,
-      mojom::ScriptType* out_script_type = nullptr,
+      mojom::blink::ScriptType* out_script_type = nullptr,
       bool* out_is_import_map = nullptr);
 
-  static bool BlockForNoModule(mojom::ScriptType, bool nomodule);
+  static bool BlockForNoModule(mojom::blink::ScriptType, bool nomodule);
 
   static network::mojom::CredentialsMode ModuleScriptCredentialsMode(
       CrossOriginAttributeValue);
@@ -97,7 +97,7 @@ class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
   bool IsParserInserted() const { return parser_inserted_; }
   bool AlreadyStarted() const { return already_started_; }
   bool IsNonBlocking() const { return non_blocking_; }
-  mojom::ScriptType GetScriptType() const { return script_type_; }
+  mojom::blink::ScriptType GetScriptType() const { return script_type_; }
 
   // Helper functions used by our parent classes.
   void DidNotifySubtreeInsertionsToDocument();
@@ -178,7 +178,7 @@ class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
 
   // <spec href="https://html.spec.whatwg.org/C/#concept-script-type">... It is
   // determined when the script is prepared, ...</spec>
-  mojom::ScriptType script_type_ = mojom::ScriptType::kClassic;
+  mojom::blink::ScriptType script_type_ = mojom::blink::ScriptType::kClassic;
 
   // <spec href="https://html.spec.whatwg.org/C/#concept-script-external">
   // ... It is determined when the script is prepared, ...</spec>

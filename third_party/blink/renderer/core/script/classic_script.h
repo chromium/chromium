@@ -62,8 +62,8 @@ class CORE_EXPORT ClassicScript final : public Script {
                                                               int32_t world_id);
 
  private:
-  mojom::ScriptType GetScriptType() const override {
-    return mojom::ScriptType::kClassic;
+  mojom::blink::ScriptType GetScriptType() const override {
+    return mojom::blink::ScriptType::kClassic;
   }
 
   std::pair<size_t, size_t> GetClassicScriptSizes() const override;

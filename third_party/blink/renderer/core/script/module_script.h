@@ -64,8 +64,8 @@ class CORE_EXPORT ModuleScript : public Script {
   Modulator* SettingsObject() const { return settings_object_; }
 
  private:
-  mojom::ScriptType GetScriptType() const override {
-    return mojom::ScriptType::kModule;
+  mojom::blink::ScriptType GetScriptType() const override {
+    return mojom::blink::ScriptType::kModule;
   }
   void RunScript(LocalFrame*) override;
   bool RunScriptOnWorkerOrWorklet(WorkerOrWorkletGlobalScope&) override;

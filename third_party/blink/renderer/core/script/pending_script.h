@@ -83,7 +83,7 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
 
   ScriptElementBase* GetElement() const;
 
-  virtual mojom::ScriptType GetScriptType() const = 0;
+  virtual mojom::blink::ScriptType GetScriptType() const = 0;
 
   virtual void Trace(Visitor*) const;
   const char* NameInHeapSnapshot() const override { return "PendingScript"; }
@@ -104,7 +104,7 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
 
   // Used for DCHECK()s.
   bool IsExternalOrModule() const {
-    return IsExternal() || GetScriptType() == mojom::ScriptType::kModule;
+    return IsExternal() || GetScriptType() == mojom::blink::ScriptType::kModule;
   }
 
   void Dispose();

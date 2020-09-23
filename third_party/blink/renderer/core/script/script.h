@@ -25,8 +25,8 @@ class CORE_EXPORT Script : public GarbageCollected<Script> {
 
   virtual ~Script() {}
 
-  virtual mojom::ScriptType GetScriptType() const = 0;
-  static base::Optional<mojom::ScriptType> ParseScriptType(
+  virtual mojom::blink::ScriptType GetScriptType() const = 0;
+  static base::Optional<mojom::blink::ScriptType> ParseScriptType(
       const String& script_type);
 
   // https://html.spec.whatwg.org/C/#run-a-classic-script

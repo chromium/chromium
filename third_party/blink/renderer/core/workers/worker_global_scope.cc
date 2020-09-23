@@ -248,7 +248,7 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls) {
 
   // Step 1: "If worker global scope's type is "module", throw a TypeError
   // exception."
-  if (script_type_ == mojom::ScriptType::kModule) {
+  if (script_type_ == mojom::blink::ScriptType::kModule) {
     V8ThrowException::ThrowTypeError(
         isolate, ExceptionMessages::FailedToExecute(
                      property_name, interface_name,

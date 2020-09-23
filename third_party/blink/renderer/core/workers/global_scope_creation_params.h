@@ -42,7 +42,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
  public:
   GlobalScopeCreationParams(
       const KURL& script_url,
-      mojom::ScriptType script_type,
+      mojom::blink::ScriptType script_type,
       const String& global_scope_name,
       const String& user_agent,
       const base::Optional<UserAgentMetadata>& ua_metadata,
@@ -84,7 +84,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // workers.
   KURL script_url;
 
-  mojom::ScriptType script_type;
+  mojom::blink::ScriptType script_type;
 
   String global_scope_name;
   String user_agent;

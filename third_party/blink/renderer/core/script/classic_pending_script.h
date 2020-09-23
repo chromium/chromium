@@ -58,8 +58,8 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
 
   void Trace(Visitor*) const override;
 
-  mojom::ScriptType GetScriptType() const override {
-    return mojom::ScriptType::kClassic;
+  mojom::blink::ScriptType GetScriptType() const override {
+    return mojom::blink::ScriptType::kClassic;
   }
 
   ClassicScript* GetSource(const KURL& document_url) const override;

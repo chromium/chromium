@@ -96,7 +96,7 @@ Resource* PreloadRequest::Start(Document* document) {
     params.SetCrossOriginAccessControl(origin, kCrossOriginAttributeAnonymous);
   }
 
-  if (script_type_ == mojom::ScriptType::kModule) {
+  if (script_type_ == mojom::blink::ScriptType::kModule) {
     DCHECK_EQ(resource_type_, ResourceType::kScript);
     params.SetCrossOriginAccessControl(
         origin, ScriptLoader::ModuleScriptCredentialsMode(cross_origin_));
@@ -114,7 +114,7 @@ Resource* PreloadRequest::Start(Document* document) {
   if (request_type_ == kRequestTypeLinkRelPreload)
     params.SetLinkPreload(true);
 
-  if (script_type_ == mojom::ScriptType::kModule) {
+  if (script_type_ == mojom::blink::ScriptType::kModule) {
     DCHECK_EQ(resource_type_, ResourceType::kScript);
     params.SetDecoderOptions(TextResourceDecoderOptions::CreateUTF8Decode());
   } else if (resource_type_ == ResourceType::kScript ||

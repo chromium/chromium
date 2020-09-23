@@ -429,9 +429,9 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
     settings = WorkerSettings::Copy(worker_global_scope->GetWorkerSettings());
   }
 
-  mojom::ScriptType script_type = (options_->type() == "classic")
-                                      ? mojom::ScriptType::kClassic
-                                      : mojom::ScriptType::kModule;
+  mojom::blink::ScriptType script_type =
+      (options_->type() == "classic") ? mojom::blink::ScriptType::kClassic
+                                      : mojom::blink::ScriptType::kModule;
 
   return std::make_unique<GlobalScopeCreationParams>(
       script_url, script_type, options_->name(),

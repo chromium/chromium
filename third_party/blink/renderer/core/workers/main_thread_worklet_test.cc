@@ -60,7 +60,7 @@ class MainThreadWorkletTest : public PageTestBase {
     reporting_proxy_ =
         std::make_unique<MainThreadWorkletReportingProxyForTest>(window);
     auto creation_params = std::make_unique<GlobalScopeCreationParams>(
-        window->Url(), mojom::ScriptType::kModule, "MainThreadWorklet",
+        window->Url(), mojom::blink::ScriptType::kModule, "MainThreadWorklet",
         window->UserAgent(), window->GetFrame()->Loader().UserAgentMetadata(),
         nullptr /* web_worker_fetch_context */,
         window->GetContentSecurityPolicy()->Headers(),
