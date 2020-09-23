@@ -163,7 +163,8 @@ SiteInstanceImpl::SiteInstanceImpl(BrowsingInstance* browsing_instance)
       has_site_(false),
       process_reuse_policy_(ProcessReusePolicy::DEFAULT),
       is_for_service_worker_(false),
-      is_guest_(false) {
+      is_guest_(false),
+      process_assignment_(SiteInstanceProcessAssignment::UNKNOWN) {
   DCHECK(browsing_instance);
 }
 
@@ -498,8 +499,8 @@ void SiteInstanceImpl::PreventAssociationWithSpareProcess() {
 void SiteInstanceImpl::SetSite(const GURL& url) {
   // TODO(creis): Consider calling ShouldAssignSiteForURL internally, rather
   // than before multiple call sites.  See https://crbug.com/949220.
-  TRACE_EVENT2("navigation", "SiteInstanceImpl::SetSite",
-               "site id", id_, "url", url.possibly_invalid_spec());
+  TRACE_EVENT2("navigation", "SiteInstanceImpl::SetSite", "site id", id_, "url",
+               url.possibly_invalid_spec());
   // A SiteInstance's site should not change.
   // TODO(creis): When following links or script navigations, we can currently
   // render pages from other sites in this SiteInstance.  This will eventually
@@ -580,6 +581,11 @@ void SiteInstanceImpl::ConvertToDefaultOrSetSite(const GURL& url) {
   SetSite(url);
 }
 
+SiteInstanceProcessAssignment
+SiteInstanceImpl::GetLastProcessAssignmentOutcome() {
+  return process_assignment_;
+}
+
 const GURL& SiteInstanceImpl::GetSiteURL() {
   return site_info_.site_url();
 }
@@ -607,8 +613,9 @@ scoped_refptr<SiteInstance> SiteInstanceImpl::GetRelatedSiteInstance(
 }
 
 bool SiteInstanceImpl::IsRelatedSiteInstance(const SiteInstance* instance) {
-  return browsing_instance_.get() == static_cast<const SiteInstanceImpl*>(
-                                         instance)->browsing_instance_.get();
+  return browsing_instance_.get() ==
+         static_cast<const SiteInstanceImpl*>(instance)
+             ->browsing_instance_.get();
 }
 
 size_t SiteInstanceImpl::GetRelatedActiveContentsCount() {
