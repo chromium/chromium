@@ -34,6 +34,9 @@ class ASH_PUBLIC_EXPORT TabletMode {
     DISALLOW_COPY_AND_ASSIGN(Waiter);
   };
 
+  // Returns true if the device's board is tablet mode capable.
+  static bool IsBoardTypeMarkedAsTabletCapable();
+
   // Returns the singleton instance.
   static TabletMode* Get();
 

@@ -269,26 +269,27 @@
         sub-label="$i18n{mouseSettingsDescription}"
         role-description="$i18n{subpageArrowRoleDescription}" embedded>
     </cr-link-row>
-    <!-- If shelf navigation buttons are implicitly enabled by other a11y
-        settings (e.g. by spoken feedback), the toggle control should be
-        disabled, and toggled regardless of the actual backing pref value. To
-        handle effective pref value changes, wrap the backing pref in a private
-        property, which changes to a stub pref object when the setting is
-        implicitly enabled. -->
-    <settings-toggle-button
-        id="shelfNavigationButtonsEnabledControl"
-        class="hr"
-        hidden$="[[!showShelfNavigationButtonsSettings_]]"
-        disabled="[[shelfNavigationButtonsImplicitlyEnabled_]]"
-        pref="[[shelfNavigationButtonsPref_]]"
-        no-set-pref
-        on-settings-boolean-control-change=
-            "updateShelfNavigationButtonsEnabledPref_"
-        label="$i18n{tabletModeShelfNavigationButtonsSettingLabel}"
-        sub-label="$i18n{tabletModeShelfNavigationButtonsSettingDescription}"
-        learn-more-url="$i18n{tabletModeShelfNavigationButtonsLearnMoreUrl}"
-        on-learn-more-clicked="onShelfNavigationButtonsLearnMoreClicked_">
-    </settings-toggle-button>
+    <template is="dom-if" if="[[showShelfNavigationButtonsSettings_]]" restamp>
+      <!-- If shelf navigation buttons are implicitly enabled by other a11y
+          settings (e.g. by spoken feedback), the toggle control should be
+          disabled, and toggled regardless of the actual backing pref value. To
+          handle effective pref value changes, wrap the backing pref in a
+          private property, which changes to a stub pref object when the setting
+          is implicitly enabled. -->
+      <settings-toggle-button
+          id="shelfNavigationButtonsEnabledControl"
+          class="hr"
+          disabled="[[shelfNavigationButtonsImplicitlyEnabled_]]"
+          pref="[[shelfNavigationButtonsPref_]]"
+          no-set-pref
+          on-settings-boolean-control-change=
+              "updateShelfNavigationButtonsEnabledPref_"
+          label="$i18n{tabletModeShelfNavigationButtonsSettingLabel}"
+          sub-label="$i18n{tabletModeShelfNavigationButtonsSettingDescription}"
+          learn-more-url="$i18n{tabletModeShelfNavigationButtonsLearnMoreUrl}"
+          on-learn-more-clicked="onShelfNavigationButtonsLearnMoreClicked_">
+      </settings-toggle-button>
+    </template>
 
     <h2>$i18n{audioAndCaptionsHeading}</h2>
     <template is="dom-if" if="[[!isKioskModeActive_]]">

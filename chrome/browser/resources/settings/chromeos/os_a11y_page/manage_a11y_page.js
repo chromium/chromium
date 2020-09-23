@@ -195,7 +195,8 @@ Polymer({
      */
     showShelfNavigationButtonsSettings_: {
       type: Boolean,
-      value: false,
+      computed:
+          'computeShowShelfNavigationButtonsSettings_(isKioskModeActive_)',
     },
 
     /** @private */
@@ -273,9 +274,6 @@ Polymer({
     this.addWebUIListener(
         'initial-data-ready', this.onManageAllyPageReady_.bind(this));
     chrome.send('manageA11yPageReady');
-
-    this.addWebUIListener(
-        'tablet-mode-changed', this.onTabletModeChanged_.bind(this));
 
     const r = settings.routes;
     this.addFocusConfig_(r.MANAGE_TTS_SETTINGS, '#ttsSubpageButton');
@@ -387,6 +385,15 @@ Polymer({
   },
 
   /**
+   * @return {boolean}
+   * @private
+   */
+  computeShowShelfNavigationButtonsSettings_() {
+    return !this.isKioskModeActive_ &&
+        loadTimeData.getBoolean('showTabletModeShelfNavigationButtonsSettings');
+  },
+
+  /**
    * @return {boolean} Whether shelf navigation buttons should implicitly be
    *     enabled in tablet mode (due to accessibility settings different than
    *     shelf_navigation_buttons_enabled_in_tablet_mode).
@@ -482,29 +489,13 @@ Polymer({
   },
 
   /**
-   * Called when tablet mode is changed. Handles updating the visibility of the
-   * shelf navigation buttons setting.
-   * @param {boolean} tabletModeEnabled Whether tablet mode is enabled.
-   * @private
-   */
-  onTabletModeChanged_(tabletModeEnabled) {
-    this.showShelfNavigationButtonsSettings_ = tabletModeEnabled &&
-        loadTimeData.getBoolean('showTabletModeShelfNavigationButtonsSettings');
-  },
-
-  /**
    * Handles updating the visibility of the shelf navigation buttons setting
    * and updating whether startupSoundEnabled is checked.
    * @param {boolean} startup_sound_enabled Whether startup sound is enabled.
-   * @param {boolean} tabletModeEnabled Whether tablet mode is enabled.
    * @private
    */
-  onManageAllyPageReady_(startup_sound_enabled, tabletModeEnabled) {
+  onManageAllyPageReady_(startup_sound_enabled) {
     this.$.startupSoundEnabled.checked = startup_sound_enabled;
-    this.showShelfNavigationButtonsSettings_ = tabletModeEnabled &&
-        loadTimeData.getBoolean(
-            'showTabletModeShelfNavigationButtonsSettings') &&
-        !this.isKioskModeActive_;
   },
   /*
    * Whether additional features link should be shown.

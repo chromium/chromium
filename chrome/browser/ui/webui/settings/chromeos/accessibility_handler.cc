@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/accessibility_handler.h"
 
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -27,10 +26,6 @@ void RecordShowShelfNavigationButtonsValueChange(bool enabled) {
       "Accessibility.CrosShelfNavigationButtonsInTabletModeChanged."
       "OsSettings",
       enabled);
-}
-
-bool IsTabletModeEnabled() {
-  return ash::TabletMode::Get() && ash::TabletMode::Get()->InTabletMode();
 }
 
 }  // namespace
@@ -71,16 +66,6 @@ void AccessibilityHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void AccessibilityHandler::OnJavascriptAllowed() {
-  if (ash::TabletMode::Get()) {
-    tablet_mode_observer_.Add(ash::TabletMode::Get());
-  }
-}
-
-void AccessibilityHandler::OnJavascriptDisallowed() {
-  tablet_mode_observer_.RemoveAll();
-}
-
 void AccessibilityHandler::HandleShowChromeVoxSettings(
     const base::ListValue* args) {
   OpenExtensionOptionsPage(extension_misc::kChromeVoxExtensionId);
@@ -116,16 +101,7 @@ void AccessibilityHandler::HandleManageA11yPageReady(
 
   FireWebUIListener(
       "initial-data-ready",
-      base::Value(AccessibilityManager::Get()->GetStartupSoundEnabled()),
-      base::Value(IsTabletModeEnabled()));
-}
-
-void AccessibilityHandler::OnTabletModeStarted() {
-  FireWebUIListener("tablet-mode-changed", base::Value(IsTabletModeEnabled()));
-}
-
-void AccessibilityHandler::OnTabletModeEnded() {
-  FireWebUIListener("tablet-mode-changed", base::Value(IsTabletModeEnabled()));
+      base::Value(AccessibilityManager::Get()->GetStartupSoundEnabled()));
 }
 
 void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {

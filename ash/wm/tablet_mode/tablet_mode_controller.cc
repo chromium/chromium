@@ -129,12 +129,6 @@ bool IsAngleBetweenAccelerometerReadingsStable(
          kNoisyMagnitudeDeviation;
 }
 
-// Returns true if the device's board is tablet mode capable.
-bool IsBoardTypeMarkedAsTabletCapable() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kAshEnableTabletMode);
-}
-
 // Returns the UiMode given by the force-table-mode command line.
 TabletModeController::UiMode GetUiMode() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

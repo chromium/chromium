@@ -4,12 +4,20 @@
 
 #include "ash/public/cpp/tablet_mode.h"
 
+#include "ash/public/cpp/ash_switches.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 
 namespace ash {
 
 namespace {
 TabletMode* g_instance = nullptr;
+}
+
+// static
+bool TabletMode::IsBoardTypeMarkedAsTabletCapable() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kAshEnableTabletMode);
 }
 
 TabletMode* TabletMode::Get() {

@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -74,12 +75,6 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kChromeVox},
        {IDS_OS_SETTINGS_TAG_A11y_CHROMEVOX_ALT1, SearchConcept::kAltTagEnd}},
-      {IDS_OS_SETTINGS_TAG_A11Y_TABLET_NAVIGATION_BUTTONS,
-       mojom::kManageAccessibilitySubpagePath,
-       mojom::SearchResultIcon::kA11y,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kTabletNavigationButtons}},
       {IDS_OS_SETTINGS_TAG_A11Y_MONO_AUDIO,
        mojom::kManageAccessibilitySubpagePath,
        mojom::SearchResultIcon::kA11y,
@@ -217,6 +212,19 @@ const std::vector<SearchConcept>& GetA11ySwitchAccessSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>&
+GetA11yTabletNavigationButtonSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_A11Y_TABLET_NAVIGATION_BUTTONS,
+       mojom::kManageAccessibilitySubpagePath,
+       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kTabletNavigationButtons}},
+  });
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetA11ySwitchAccessOnSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_A11Y_SWITCH_ACCESS_ASSIGNMENT,
@@ -312,6 +320,11 @@ bool IsSwitchAccessTextAllowed() {
       ::switches::kEnableExperimentalAccessibilitySwitchAccessText);
 }
 
+bool AreTabletNavigationButtonsAllowed() {
+  return ash::features::IsHideShelfControlsInTabletModeEnabled() &&
+         ash::TabletMode::IsBoardTypeMarkedAsTabletCapable();
+}
+
 }  // namespace
 
 AccessibilitySection::AccessibilitySection(
@@ -322,6 +335,9 @@ AccessibilitySection::AccessibilitySection(
       pref_service_(pref_service) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetA11ySearchConcepts());
+
+  if (AreTabletNavigationButtonsAllowed())
+    updater.AddSearchTags(GetA11yTabletNavigationButtonSearchConcepts());
 
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
@@ -541,9 +557,8 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("showExperimentalA11yLabels",
                           AreExperimentalA11yLabelsAllowed());
 
-  html_source->AddBoolean(
-      "showTabletModeShelfNavigationButtonsSettings",
-      ash::features::IsHideShelfControlsInTabletModeEnabled());
+  html_source->AddBoolean("showTabletModeShelfNavigationButtonsSettings",
+                          AreTabletNavigationButtonsAllowed());
 
   html_source->AddString("tabletModeShelfNavigationButtonsLearnMoreUrl",
                          chrome::kTabletModeGesturesLearnMoreURL);
