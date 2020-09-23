@@ -485,6 +485,12 @@ void FuchsiaAudioRenderer::OnDemuxerStreamReadDone(
 
   is_demuxer_read_pending_ = false;
 
+  if (drop_next_demuxer_read_result_) {
+    drop_next_demuxer_read_result_ = false;
+    ScheduleReadDemuxerStream();
+    return;
+  }
+
   if (read_status != DemuxerStream::kOk) {
     if (read_status == DemuxerStream::kError) {
       OnError(PIPELINE_ERROR_READ);
@@ -586,6 +592,10 @@ void FuchsiaAudioRenderer::FlushInternal() {
   SetBufferState(BUFFERING_HAVE_NOTHING);
   last_packet_timestamp_ = base::TimeDelta::Min();
   read_timer_.Stop();
+
+  if (is_demuxer_read_pending_) {
+    drop_next_demuxer_read_result_ = true;
+  }
 }
 
 void FuchsiaAudioRenderer::OnEndOfStream() {

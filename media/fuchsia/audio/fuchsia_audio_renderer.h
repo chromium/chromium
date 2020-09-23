@@ -131,6 +131,7 @@ class FuchsiaAudioRenderer : public AudioRenderer, public TimeSource {
 
   DemuxerStream* demuxer_stream_ = nullptr;
   bool is_demuxer_read_pending_ = false;
+  bool drop_next_demuxer_read_result_ = false;
 
   RendererClient* client_ = nullptr;
 
