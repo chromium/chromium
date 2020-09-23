@@ -84,11 +84,20 @@ gfx::RectF FloatPageRectToPixelRect(FPDF_PAGE page, const gfx::RectF& input) {
   if (max_y < min_y)
     std::swap(min_y, max_y);
 
+  // Make sure small but non-zero dimensions for |input| does not get rounded
+  // down to 0.
+  int width = max_x - min_x;
+  int height = max_y - min_y;
+  if (width == 0 && input.width())
+    width = 1;
+  if (height == 0 && input.height())
+    height = 1;
+
   gfx::RectF output_rect(
       ConvertUnitDouble(min_x, kPointsPerInch, kPixelsPerInch),
       ConvertUnitDouble(min_y, kPointsPerInch, kPixelsPerInch),
-      ConvertUnitDouble(max_x - min_x, kPointsPerInch, kPixelsPerInch),
-      ConvertUnitDouble(max_y - min_y, kPointsPerInch, kPixelsPerInch));
+      ConvertUnitDouble(width, kPointsPerInch, kPixelsPerInch),
+      ConvertUnitDouble(height, kPointsPerInch, kPixelsPerInch));
   return output_rect;
 }
 

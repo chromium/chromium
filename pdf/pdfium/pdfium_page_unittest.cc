@@ -440,7 +440,7 @@ TEST_F(PDFiumPageTextTest, TestHighlightTextRunInfo) {
        PP_PrivateDirection::PP_PRIVATEDIRECTION_LTR, kExpectedStyle},
       {7, gfx::RectF(106.66666f, 198.66667f, 73.333336f, 18.666672f),
        PP_PrivateDirection::PP_PRIVATEDIRECTION_LTR, kExpectedStyle},
-      {2, gfx::RectF(181.33333f, 192.0f, 16.0f, 25.333344f),
+      {2, gfx::RectF(181.33333f, 202.66667f, 16.0f, 14.66667f),
        PP_PrivateDirection::PP_PRIVATEDIRECTION_NONE, kExpectedStyle},
       {2, gfx::RectF(198.66667f, 202.66667f, 21.333328f, 10.666672f),
        PP_PrivateDirection::PP_PRIVATEDIRECTION_LTR, kExpectedStyle}};
