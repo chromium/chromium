@@ -3179,10 +3179,18 @@ void NearbySharingServiceImpl::UnregisterShareTarget(
                   << share_target.device_name;
 
   if (share_target.is_incoming) {
+    if (last_incoming_metadata_ &&
+        last_incoming_metadata_->first.id == share_target.id) {
+      last_incoming_metadata_.reset();
+    }
     incoming_share_target_info_map_.erase(share_target.id);
     // Clear legacy incoming payloads to release resource
     nearby_connections_manager_->ClearIncomingPayloads();
   } else {
+    if (last_outgoing_metadata_ &&
+        last_outgoing_metadata_->first.id == share_target.id) {
+      last_outgoing_metadata_.reset();
+    }
     // Find the endpoint id that matches the given share target.
     base::Optional<std::string> endpoint_id;
     auto it = outgoing_share_target_info_map_.find(share_target.id);
