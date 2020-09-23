@@ -263,11 +263,7 @@ void Sensor::Activate() {
   DCHECK_EQ(state_, SensorState::kActivating);
 
   InitSensorProxyIfNeeded();
-  if (!sensor_proxy_) {
-    HandleError(DOMExceptionCode::kInvalidStateError,
-                "The Sensor is no longer associated to a frame.");
-    return;
-  }
+  DCHECK(sensor_proxy_);
 
   if (sensor_proxy_->IsInitialized())
     RequestAddConfiguration();
