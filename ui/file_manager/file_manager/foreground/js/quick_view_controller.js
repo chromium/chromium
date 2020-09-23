@@ -603,16 +603,40 @@ class QuickViewController {
               } else {
                 break;
               }
+            case 'text':
+              if (typeInfo.subtype === 'TXT') {
+                return file
+                    .text()  // Convert file content to utf-8.
+                    .then(text => {
+                      return new Blob(
+                          [text], {type: 'text/plain;charset=utf-8'});
+                    })
+                    .then(blob => {
+                      params.contentUrl = URL.createObjectURL(blob);
+                      params.browsable = true;
+                      return params;
+                    })
+                    .catch(e => {
+                      console.error(e);
+                      return params;
+                    });
+              } else {
+                break;
+              }
           }
-          const browsable = tasks.some(task => {
-            return ['view-in-browser', 'view-pdf'].includes(
-                task.taskId.split('|')[2]);
+
+          params.browsable = tasks.some(task => {
+            const verb = task.taskId.split('|')[2];
+            return ['view-in-browser', 'view-pdf'].includes(verb);
           });
-          params.browsable = browsable;
-          params.contentUrl = browsable ? URL.createObjectURL(file) : '';
-          if (params.subtype == 'PDF') {
-            params.contentUrl += '#view=FitH';
+
+          if (params.browsable) {
+            params.contentUrl = URL.createObjectURL(file);
+            if (params.subtype === 'PDF') {
+              params.contentUrl += '#view=FitH';
+            }
           }
+
           return params;
         })
         .catch(e => {
