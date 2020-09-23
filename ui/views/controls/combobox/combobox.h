@@ -44,9 +44,6 @@ class VIEWS_EXPORT Combobox : public View,
  public:
   METADATA_HEADER(Combobox);
 
-  using PerformActionCallback =
-      base::RepeatingCallback<void(Combobox* combobox)>;
-
   static constexpr int kDefaultComboboxTextContext = style::CONTEXT_BUTTON;
   static constexpr int kDefaultComboboxTextStyle = style::STYLE_PRIMARY;
 
@@ -67,16 +64,8 @@ class VIEWS_EXPORT Combobox : public View,
   const gfx::FontList& GetFontList() const;
 
   // Sets the callback which will be called when a selection has been made.
-  void set_callback(PerformActionCallback callback) {
+  void set_callback(base::RepeatingClosure callback) {
     callback_ = std::move(callback);
-  }
-
-  // Version of set_callback() that takes a RepeatingClosure by discarding the
-  // argument.
-  void set_closure(base::RepeatingClosure closure) {
-    set_callback(base::BindRepeating(
-        [](base::RepeatingClosure closure, Combobox*) { closure.Run(); },
-        std::move(closure)));
   }
 
   // Gets/Sets the selected index.
@@ -184,7 +173,7 @@ class VIEWS_EXPORT Combobox : public View,
   const int text_style_;
 
   // Callback notified when the selected index changes.
-  PerformActionCallback callback_ = base::DoNothing();
+  base::RepeatingClosure callback_;
 
   // The current selected index; -1 and means no selection.
   int selected_index_ = -1;

@@ -121,8 +121,8 @@ PermissionCombobox::PermissionCombobox(ComboboxModelAdapter* model,
                                        bool enabled,
                                        bool use_default)
     : views::Combobox(model), model_(model) {
-  set_closure(base::BindRepeating(&PermissionCombobox::PermissionChanged,
-                                  base::Unretained(this)));
+  set_callback(base::BindRepeating(&PermissionCombobox::PermissionChanged,
+                                   base::Unretained(this)));
   SetEnabled(enabled);
   UpdateSelectedIndex(use_default);
   SetSizeToLargestLabel(false);

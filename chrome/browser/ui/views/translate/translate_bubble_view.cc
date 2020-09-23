@@ -823,7 +823,7 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedSource() {
     advanced_always_translate_checkbox->SetID(BUTTON_ID_ALWAYS_TRANSLATE);
   }
 
-  source_language_combobox->set_closure(base::BindRepeating(
+  source_language_combobox->set_callback(base::BindRepeating(
       &TranslateBubbleView::SourceLanguageChanged, base::Unretained(this)));
   source_language_combobox_ = source_language_combobox.get();
 
@@ -855,7 +855,7 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedTarget() {
   auto target_language_combobox =
       std::make_unique<views::Combobox>(target_language_combobox_model_.get());
 
-  target_language_combobox->set_closure(base::BindRepeating(
+  target_language_combobox->set_callback(base::BindRepeating(
       &TranslateBubbleView::TargetLanguageChanged, base::Unretained(this)));
   target_language_combobox_ = target_language_combobox.get();
 

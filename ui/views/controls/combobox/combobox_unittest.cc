@@ -150,8 +150,8 @@ class VectorComboboxModel : public ui::ComboboxModel {
 class EvilListener {
  public:
   EvilListener() {
-    combobox_->set_closure(base::BindRepeating(&EvilListener::OnPerformAction,
-                                               base::Unretained(this)));
+    combobox_->set_callback(base::BindRepeating(&EvilListener::OnPerformAction,
+                                                base::Unretained(this)));
   }
   ~EvilListener() = default;
 
@@ -546,7 +546,7 @@ TEST_F(ComboboxTest, Click) {
   InitCombobox(nullptr);
 
   TestComboboxListener listener(combobox_);
-  combobox_->set_closure(base::BindRepeating(
+  combobox_->set_callback(base::BindRepeating(
       &TestComboboxListener::OnPerformAction, base::Unretained(&listener)));
   combobox_->Layout();
 
@@ -562,7 +562,7 @@ TEST_F(ComboboxTest, ClickButDisabled) {
   InitCombobox(nullptr);
 
   TestComboboxListener listener(combobox_);
-  combobox_->set_closure(base::BindRepeating(
+  combobox_->set_callback(base::BindRepeating(
       &TestComboboxListener::OnPerformAction, base::Unretained(&listener)));
 
   combobox_->Layout();
@@ -579,7 +579,7 @@ TEST_F(ComboboxTest, NotifyOnClickWithReturnKey) {
   InitCombobox(nullptr);
 
   TestComboboxListener listener(combobox_);
-  combobox_->set_closure(base::BindRepeating(
+  combobox_->set_callback(base::BindRepeating(
       &TestComboboxListener::OnPerformAction, base::Unretained(&listener)));
 
   // The click event is ignored. Instead the menu is shown.
@@ -593,7 +593,7 @@ TEST_F(ComboboxTest, NotifyOnClickWithSpaceKey) {
   InitCombobox(nullptr);
 
   TestComboboxListener listener(combobox_);
-  combobox_->set_closure(base::BindRepeating(
+  combobox_->set_callback(base::BindRepeating(
       &TestComboboxListener::OnPerformAction, base::Unretained(&listener)));
 
   // The click event is ignored. Instead the menu is shwon.
@@ -640,7 +640,7 @@ TEST_F(ComboboxTest, NotifyOnClickWithMouse) {
   InitCombobox(nullptr);
 
   TestComboboxListener listener(combobox_);
-  combobox_->set_closure(base::BindRepeating(
+  combobox_->set_callback(base::BindRepeating(
       &TestComboboxListener::OnPerformAction, base::Unretained(&listener)));
 
   combobox_->Layout();
@@ -760,7 +760,7 @@ TEST_F(ComboboxTest, TypingPrefixNotifiesListener) {
   InitCombobox(nullptr);
 
   TestComboboxListener listener(combobox_);
-  combobox_->set_closure(base::BindRepeating(
+  combobox_->set_callback(base::BindRepeating(
       &TestComboboxListener::OnPerformAction, base::Unretained(&listener)));
   ui::TextInputClient* input_client =
       widget_->GetInputMethod()->GetTextInputClient();

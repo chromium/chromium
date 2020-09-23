@@ -121,7 +121,7 @@ Combobox* TextExample::AddCombobox(GridLayout* layout,
       std::make_unique<Combobox>(
           std::make_unique<ExampleComboboxModel>(strings, count)),
       kNumColumns - 1, 1);
-  combobox->set_closure(
+  combobox->set_callback(
       base::BindRepeating(combobox_callback, base::Unretained(this)));
   return combobox;
 }

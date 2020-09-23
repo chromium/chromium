@@ -153,8 +153,8 @@ void DialogExample::CreateExampleView(View* container) {
 
   StartRowWithLabel(layout, "Modal Type");
   mode_ = layout->AddView(std::make_unique<Combobox>(&mode_model_));
-  mode_->set_closure(base::BindRepeating(&DialogExample::OnPerformAction,
-                                         base::Unretained(this)));
+  mode_->set_callback(base::BindRepeating(&DialogExample::OnPerformAction,
+                                          base::Unretained(this)));
   mode_->SetSelectedIndex(ui::MODAL_TYPE_CHILD);
 
   StartRowWithLabel(layout, "Bubble");

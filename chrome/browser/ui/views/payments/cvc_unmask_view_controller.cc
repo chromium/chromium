@@ -189,7 +189,7 @@ void CvcUnmaskViewController::FillContentView(views::View* content_view) {
   layout->StartRow(views::GridLayout::kFixedSize, 1);
   if (requesting_expiration) {
     auto month = std::make_unique<views::Combobox>(&month_combobox_model_);
-    month->set_closure(base::BindRepeating(
+    month->set_callback(base::BindRepeating(
         &CvcUnmaskViewController::OnPerformAction, base::Unretained(this)));
     month->SetID(static_cast<int>(DialogViewID::CVC_MONTH));
     month->SelectValue(credit_card_.Expiration2DigitMonthAsString());
@@ -197,7 +197,7 @@ void CvcUnmaskViewController::FillContentView(views::View* content_view) {
     layout->AddView(std::move(month));
 
     auto year = std::make_unique<views::Combobox>(&year_combobox_model_);
-    year->set_closure(base::BindRepeating(
+    year->set_callback(base::BindRepeating(
         &CvcUnmaskViewController::OnPerformAction, base::Unretained(this)));
     year->SetID(static_cast<int>(DialogViewID::CVC_YEAR));
     year->SelectValue(credit_card_.Expiration4DigitYearAsString());

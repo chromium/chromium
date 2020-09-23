@@ -376,7 +376,7 @@ PasswordSaveUpdateWithAccountStoreView::PasswordSaveUpdateWithAccountStoreView(
         controller_.GetPrimaryAccountEmail(),
         controller_.GetPrimaryAccountAvatar(ComboboxIconSize()),
         controller_.IsUsingAccountStore());
-    destination_dropdown->set_closure(base::BindRepeating(
+    destination_dropdown->set_callback(base::BindRepeating(
         &PasswordSaveUpdateWithAccountStoreView::DestinationChanged,
         base::Unretained(this)));
     destination_dropdown_ = destination_dropdown.get();

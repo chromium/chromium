@@ -200,7 +200,7 @@ void AppInfoSummaryPanel::AddLaunchOptionControl(views::View* vertical_stack) {
       std::make_unique<views::Combobox>(launch_options_combobox_model_.get());
   launch_options_combobox->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_APPLICATION_INFO_LAUNCH_OPTIONS_ACCNAME));
-  launch_options_combobox->set_closure(base::BindRepeating(
+  launch_options_combobox->set_callback(base::BindRepeating(
       &AppInfoSummaryPanel::LaunchOptionsChanged, base::Unretained(this)));
   launch_options_combobox->SetSelectedIndex(
       launch_options_combobox_model_->GetIndexForLaunchType(GetLaunchType()));

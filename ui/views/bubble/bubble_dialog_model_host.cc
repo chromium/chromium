@@ -353,7 +353,7 @@ View* BubbleDialogModelHost::AddOrUpdateCombobox(
   combobox->SetAccessibleName(model->accessible_name(GetPassKey()).empty()
                                   ? model->label(GetPassKey())
                                   : model->accessible_name(GetPassKey()));
-  combobox->set_closure(base::BindRepeating(
+  combobox->set_callback(base::BindRepeating(
       [](ui::DialogModelCombobox* model,
          util::PassKey<DialogModelHost> pass_key, Combobox* combobox) {
         // TODO(pbos): This should be a subscription through the Combobox

@@ -90,7 +90,7 @@ class MediaComboboxModel : public ui::ComboboxModel {
 // and/or camera).
 class MediaMenuBlock : public views::View {
  public:
-  MediaMenuBlock(views::Combobox::PerformActionCallback callback,
+  MediaMenuBlock(base::RepeatingCallback<void(views::Combobox*)> callback,
                  ContentSettingBubbleModel::MediaMenuMap media) {
     const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
@@ -138,7 +138,7 @@ class MediaMenuBlock : public views::View {
       auto combobox =
           std::make_unique<views::Combobox>(std::move(combobox_model));
       combobox->SetEnabled(combobox_enabled);
-      combobox->set_closure(base::BindRepeating(callback, combobox.get()));
+      combobox->set_callback(base::BindRepeating(callback, combobox.get()));
       combobox->SetSelectedIndex(combobox_selected_index);
       layout->AddView(std::move(combobox));
     }

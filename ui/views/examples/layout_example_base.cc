@@ -189,7 +189,7 @@ Combobox* LayoutExampleBase::CreateAndAddCombobox(
   row->AddChildView(std::make_unique<Label>(label_text));
   auto* const combobox = row->AddChildView(std::make_unique<Combobox>(
       std::make_unique<ExampleComboboxModel>(items, count)));
-  combobox->set_closure(std::move(combobox_callback));
+  combobox->set_callback(std::move(combobox_callback));
   return combobox;
 }
 

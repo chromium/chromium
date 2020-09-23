@@ -46,13 +46,13 @@ void ComboboxExample::CreateExampleView(View* container) {
 
   combobox_ = container->AddChildView(
       std::make_unique<Combobox>(std::make_unique<ComboboxModelExample>()));
-  combobox_->set_closure(base::BindRepeating(&ComboboxExample::ValueChanged,
-                                             base::Unretained(this)));
+  combobox_->set_callback(base::BindRepeating(&ComboboxExample::ValueChanged,
+                                              base::Unretained(this)));
   combobox_->SetSelectedIndex(3);
 
   auto* disabled_combobox = container->AddChildView(
       std::make_unique<Combobox>(std::make_unique<ComboboxModelExample>()));
-  disabled_combobox->set_closure(base::BindRepeating(
+  disabled_combobox->set_callback(base::BindRepeating(
       &ComboboxExample::ValueChanged, base::Unretained(this)));
   disabled_combobox->SetSelectedIndex(4);
   disabled_combobox->SetEnabled(false);
