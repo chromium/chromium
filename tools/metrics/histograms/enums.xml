@@ -29245,7 +29245,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3478" label="IdentifiabilityStudyReserved3478"/>
   <int value="3479" label="IdentifiabilityStudyReserved3479"/>
   <int value="3480" label="IdentifiabilityStudyReserved3480"/>
-  <int value="3481" label="IdentifiabilityStudyReserved3481"/>
+  <int value="3481" label="V8Navigator_JavaEnabled_Method"/>
   <int value="3482" label="IdentifiabilityStudyReserved3482"/>
   <int value="3483" label="IdentifiabilityStudyReserved3483"/>
   <int value="3484" label="IdentifiabilityStudyReserved3484"/>

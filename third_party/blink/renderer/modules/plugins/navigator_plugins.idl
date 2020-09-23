@@ -8,5 +8,5 @@
 ] partial interface Navigator {
     [HighEntropy, MeasureAs=NavigatorPlugins] readonly attribute PluginArray plugins;
     [HighEntropy, MeasureAs=NavigatorMimeTypes] readonly attribute MimeTypeArray mimeTypes;
-    boolean javaEnabled();
+    [HighEntropy=Direct, Measure] boolean javaEnabled();
 };

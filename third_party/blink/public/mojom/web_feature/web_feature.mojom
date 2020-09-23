@@ -2808,7 +2808,7 @@ enum WebFeature {
   kIdentifiabilityStudyReserved3478 = 3478,
   kIdentifiabilityStudyReserved3479 = 3479,
   kIdentifiabilityStudyReserved3480 = 3480,
-  kIdentifiabilityStudyReserved3481 = 3481,
+  kV8Navigator_JavaEnabled_Method = 3481,
   kIdentifiabilityStudyReserved3482 = 3482,
   kIdentifiabilityStudyReserved3483 = 3483,
   kIdentifiabilityStudyReserved3484 = 3484,
