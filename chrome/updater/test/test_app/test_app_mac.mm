@@ -63,9 +63,7 @@ int InstallUpdater() {
   }
 
   base::CommandLine command(updater_executable_path);
-  command.AppendSwitch(kRegisterSwitch);
-  command.AppendSwitchASCII(kAppIdSwitch, TEST_APP_FULLNAME_STRING);
-  command.AppendSwitchASCII(kAppVersionSwitch, TEST_APP_VERSION_STRING);
+  command.AppendSwitch(kInstallSwitch);
   command.AppendSwitchASCII("--vmodule", "*/updater/*=2");
 
   std::string output;

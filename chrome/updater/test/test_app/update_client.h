@@ -35,10 +35,11 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
 
   UpdateClient();
 
-  void Register(base::RepeatingCallback<void(int)> callback);
+  void Register(base::OnceCallback<void(int)> callback);
   void CheckForUpdate(StatusCallback callback);
   void HandleStatusUpdate(UpdateService::UpdateState update_state);
-  void RegistrationCompleted(UpdateService::Result result);
+  void RegistrationCompleted(base::OnceCallback<void(int)> callback,
+                             UpdateService::Result result);
   void UpdateCompleted(UpdateService::Result result);
 
  protected:
@@ -60,7 +61,6 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
   virtual bool CanDialIPC() = 0;
 
   StatusCallback callback_;
-  base::RepeatingCallback<void(int)> registration_callback_;
 
   scoped_refptr<base::SequencedTaskRunner> callback_task_runner_;
 };

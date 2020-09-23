@@ -5,8 +5,12 @@
 #include "chrome/updater/test/integration_tests.h"
 
 #include "base/test/task_environment.h"
+#include "base/version.h"
 #include "build/build_config.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
+#include "chrome/updater/test/test_app/constants.h"
+#include "chrome/updater/test/test_app/test_app_version.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "testing/gtest/include/gtest/gtest.h"

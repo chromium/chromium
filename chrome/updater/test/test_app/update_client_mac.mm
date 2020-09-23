@@ -20,6 +20,7 @@
 #import "chrome/updater/app/server/mac/service_protocol.h"
 #import "chrome/updater/app/server/mac/update_service_wrappers.h"
 #import "chrome/updater/mac/xpc_service_names.h"
+#include "chrome/updater/test/test_app/constants.h"
 #include "chrome/updater/test/test_app/test_app_version.h"
 
 @interface CRUUpdateClientOnDemandImpl : NSObject <CRUUpdateChecking> {
@@ -132,8 +133,7 @@ void UpdateClientMac::BeginRegister(const std::string& brand_code,
                                   static_cast<UpdateService::Result>(error)));
   };
 
-  [client_.get() registerForUpdatesWithAppId:base::SysUTF8ToNSString(
-                                                 base::mac::BaseBundleID())
+  [client_.get() registerForUpdatesWithAppId:base::SysUTF8ToNSString(kTestAppId)
                                    brandCode:base::SysUTF8ToNSString(brand_code)
                                          tag:base::SysUTF8ToNSString(tag)
                                      version:base::SysUTF8ToNSString(version)

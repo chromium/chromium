@@ -279,7 +279,7 @@ if (is_win || is_mac) {
       "//base/test:test_support",
       "//chrome/common:constants",
       "//chrome/updater/device_management:unittest",
-      "//chrome/updater/test/test_app",
+      "//chrome/updater/test/test_app:constants",
       "//chrome/updater/test/test_app:version_header",
       "//chrome/updater/tools:unittest",
       "//components/prefs:test_support",
@@ -313,8 +313,6 @@ if (is_win || is_mac) {
         "mac/scoped_xpc_service_mock.mm",
         "mac/update_service_out_of_process_test.mm",
         "test/integration_tests_mac.mm",
-        "test/test_app/constants.cc",
-        "test/test_app/constants.h",
       ]
 
       deps += [
@@ -331,7 +329,7 @@ if (is_win || is_mac) {
 
       data_deps = [
         "//chrome/updater/mac:updater_bundle",
-        "//chrome/updater/test/test_app:test_app",
+        "//chrome/updater/test/test_app",
       ]
     }
   }

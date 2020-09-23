@@ -43,8 +43,6 @@ class TestApp : public App {
                        const std::string& version,
                        int64_t size,
                        const base::string16& message);
-
-  scoped_refptr<UpdateClient> update_client;
 };
 
 void TestApp::SetUpdateStatus(UpdateStatus status,
@@ -83,19 +81,17 @@ void TestApp::SetUpdateStatus(UpdateStatus status,
 }
 
 void TestApp::Register() {
-  update_client->Register(base::BindRepeating(&TestApp::Shutdown, this));
+  UpdateClient::Create()->Register(base::BindOnce(&TestApp::Shutdown, this));
 }
 
 void TestApp::DoForegroundUpdate() {
-  update_client->CheckForUpdate(
+  UpdateClient::Create()->CheckForUpdate(
       base::BindRepeating(&TestApp::SetUpdateStatus, this));
 }
 
 void TestApp::ParseCommandLine() {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
-  update_client = UpdateClient::Create();
-
   if (command_line->HasSwitch(kInstallUpdaterSwitch)) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()}, base::BindOnce(&InstallUpdater),
@@ -107,7 +103,17 @@ void TestApp::ParseCommandLine() {
   } else if (command_line->HasSwitch(kRegisterUpdaterSwitch)) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()}, base::BindOnce(&InstallUpdater),
-        base::BindOnce(&TestApp::Shutdown, this));
+        base::BindOnce(
+            [](base::OnceClosure register_func,
+               base::OnceCallback<void(int)> shutdown_func, int error) {
+              if (error) {
+                std::move(shutdown_func).Run(error);
+                return;
+              }
+              std::move(register_func).Run();
+            },
+            base::BindOnce(&TestApp::Register, this),
+            base::BindOnce(&TestApp::Shutdown, this)));
   } else {
     Shutdown(0);
   }

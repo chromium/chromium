@@ -45,12 +45,17 @@ process_version("version_header") {
   output = "$target_gen_dir/test_app_version.h"
 }
 
+source_set("constants") {
+  sources = [
+    "constants.cc",
+    "constants.h",
+  ]
+}
+
 source_set("app_sources") {
   sources = [
     "//chrome/updater/app/app.cc",
     "//chrome/updater/app/app.h",
-    "constants.cc",
-    "constants.h",
     "test_app.cc",
     "test_app.h",
     "test_app_mac.mm",
@@ -64,6 +69,7 @@ source_set("app_sources") {
   ]
 
   deps = [
+    ":constants",
     ":version_header",
     "//base",
     "//chrome/updater:base",
