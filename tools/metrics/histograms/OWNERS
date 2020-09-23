@@ -11,6 +11,7 @@ per-file histograms.xml=file://base/metrics/OWNERS
 # buckets.
 per-file enums.xml=*
 
+# Prefer chromium-metrics-reviews@google.com instead.
 # Use the following owners only if:
 #  - You work in the same area as them.
 #  - They are already a good reviewer for the non-metrics part of the CL.
