@@ -173,6 +173,8 @@ class CORE_EXPORT DisplayLockUtilities {
                                const EphemeralRangeInFlatTree& new_selection);
   static void SelectionRemovedFromDocument(Document& document);
 
+  static bool PrePaintBlockedInParentFrame(LayoutView* layout_view);
+
  private:
   static bool UpdateStyleAndLayoutForRangeIfNeeded(
       const EphemeralRangeInFlatTree& range,

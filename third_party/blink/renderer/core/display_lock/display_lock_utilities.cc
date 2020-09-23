@@ -596,4 +596,19 @@ bool DisplayLockUtilities::UpdateStyleAndLayoutForRangeIfNeeded(
   return !forced_context_list_.IsEmpty();
 }
 
+bool DisplayLockUtilities::PrePaintBlockedInParentFrame(LayoutView* view) {
+  auto* owner = view->GetFrameView()->GetFrame().OwnerLayoutObject();
+  if (!owner)
+    return false;
+
+  auto* element = NearestLockedInclusiveAncestor(*owner);
+  while (element) {
+    if (!element->GetDisplayLockContext()->ShouldPrePaint(
+            DisplayLockLifecycleTarget::kChildren))
+      return true;
+    element = NearestLockedExclusiveAncestor(*element);
+  }
+  return false;
+}
+
 }  // namespace blink
