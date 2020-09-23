@@ -43,6 +43,11 @@ const char* const kReportingFlags[] = {
 // Strings used to generate the serial number part of the version string.
 const char kSerialNumberPrefix[] = "SN:";
 
+// Strings used to generate the ZTE info string. The mark after "ZTE" indicates
+// that the device is ready for zero-touch enrollment as far as it can tell.
+const char kZteReady[] = "ZTE\xF0\x9F\x97\xB9";
+const char kAttestedDeviceIdPrefix[] = "ADID:";
+
 // Strings used to generate the bluetooth device name.
 const char kBluetoothDeviceNamePrefix[] = "Bluetooth device name: ";
 
@@ -126,13 +131,11 @@ void VersionInfoUpdater::UpdateVersionLabel() {
   if (version_text_.empty())
     return;
 
-  UpdateSerialNumberInfo();
-
   std::string label_text = l10n_util::GetStringFUTF8(
       IDS_LOGIN_VERSION_LABEL_FORMAT,
       l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
       base::UTF8ToUTF16(version_info::GetVersionNumber()),
-      base::UTF8ToUTF16(version_text_), base::UTF8ToUTF16(serial_number_text_));
+      base::UTF8ToUTF16(version_text_), base::UTF8ToUTF16(GetDeviceIdsLabel()));
 
   if (delegate_)
     delegate_->OnOSVersionLabelTextUpdated(label_text);
@@ -158,15 +161,35 @@ void VersionInfoUpdater::SetEnterpriseInfo(
   }
 }
 
-void VersionInfoUpdater::UpdateSerialNumberInfo() {
-  std::string serial =
-      system::StatisticsProvider::GetInstance()->GetEnterpriseMachineID();
-  if (!serial.empty()) {
-    serial_number_text_ = kSerialNumberPrefix;
-    serial_number_text_.append(serial);
-  }
-}
+std::string VersionInfoUpdater::GetDeviceIdsLabel() {
+  std::string device_ids_text;
 
+  // Get the attested device ID and add the ZTE indication and the ID if needed.
+  std::string attested_device_id;
+  system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+      chromeos::system::kAttestedDeviceIdKey, &attested_device_id);
+  // Start with the ZTE indication and the attested device ID if it exists.
+  if (!attested_device_id.empty()) {
+    device_ids_text.append(kZteReady);
+    // Always append the attested device ID.
+    device_ids_text.append(" ");
+    device_ids_text.append(kAttestedDeviceIdPrefix);
+    device_ids_text.append(attested_device_id);
+  }
+
+  // Get the serial number and add it.
+  std::string serial_number =
+      system::StatisticsProvider::GetInstance()->GetEnterpriseMachineID();
+  if (!serial_number.empty()) {
+    if (!device_ids_text.empty())
+      device_ids_text.append(" ");
+    // Append the serial number.
+    device_ids_text.append(kSerialNumberPrefix);
+    device_ids_text.append(serial_number);
+  }
+
+  return device_ids_text;
+}
 void VersionInfoUpdater::OnVersion(const std::string& version) {
   version_text_ = version;
   UpdateVersionLabel();
