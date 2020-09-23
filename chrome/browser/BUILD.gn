@@ -3822,6 +3822,7 @@ static_library("browser") {
       "//base/util/memory_pressure",
       "//base/util/timer",
       "//chrome/app/vector_icons",
+      "//chrome/browser/media/kaleidoscope:kaleidoscope_resources",
       "//chrome/browser/media/kaleidoscope/mojom",
       "//chrome/browser/nearby_sharing:share_target",
       "//chrome/browser/nearby_sharing/certificates",
