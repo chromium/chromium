@@ -1,8 +1,0 @@
-specific_include_rules = {
-  "root_window_desk_switch_animator_test_api.cc": [
-    # These tests create a fake viz::CopyOutputTextureResult to avoid the async
-    # way of waiting for a layer output request. So this needs to explicity
-    # depend on gpu/command_buffer/common.
-    "+gpu/command_buffer/common",
-  ],
-}
