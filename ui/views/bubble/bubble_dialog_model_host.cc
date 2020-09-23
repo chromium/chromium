@@ -149,6 +149,12 @@ BubbleDialogModelHost::~BubbleDialogModelHost() {
 }
 
 View* BubbleDialogModelHost::GetInitiallyFocusedView() {
+  // TODO(pbos): Try to prevent uses of GetInitiallyFocusedView() after Close()
+  // and turn this in to a DCHECK for |model_| existence. This should fix
+  // https://crbug.com/1130181 for now.
+  if (!model_)
+    return BubbleDialogDelegateView::GetInitiallyFocusedView();
+
   base::Optional<int> unique_id = model_->initially_focused_field(GetPassKey());
 
   if (!unique_id)
