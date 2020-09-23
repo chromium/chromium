@@ -2,16 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(crbug.com.1052397): Remove this and |chromeos_is_browser_only| usage once
-# |is_chromeos| is true in a LaCrOS build.
-import("//build/config/chromeos/ui_mode.gni")
-
 # This file contains common system config stuff for the Android build.
 
 # NOTE: Because Chrome OS builds may depend on targets built with the Android
 # toolchain, this GNI file may be read and processed from within Chrome OS
 # toolchains. Checking |is_android| here would therefore be too restrictive.
-if (is_android || is_chromeos || (is_linux && chromeos_is_browser_only)) {
+if (is_android || is_chromeos) {
   import("//build/config/chromecast_build.gni")
   import("//build_overrides/build.gni")
   import("abi.gni")

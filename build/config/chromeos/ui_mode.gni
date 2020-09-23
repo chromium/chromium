@@ -9,10 +9,4 @@ declare_args() {
   # TODO(crbug.com/1052397): After the clean up, this should be
   # replaced with 'target_os = "chromeos" && ui_mode == "browser"'.
   chromeos_is_browser_only = false
-
-  # Setting this to true when building LaCrOS-chrome will cause it to
-  # *also* build ash-chrome in a subdirectory using an alternate toolchain.
-  # Don't set this unless you're sure you want it, because it'll double
-  # your build time.
-  also_build_ash_chrome = false
 }
