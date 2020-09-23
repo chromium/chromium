@@ -27,8 +27,8 @@ namespace blink {
 namespace {
 gpu::SyncToken GenTestSyncToken(GLbyte id) {
   gpu::SyncToken token;
-  // Store id in the first byte
-  reinterpret_cast<GLbyte*>(&token)[0] = id;
+  token.Set(gpu::CommandBufferNamespace::GPU_IO,
+            gpu::CommandBufferId::FromUnsafeValue(64), id);
   return token;
 }
 

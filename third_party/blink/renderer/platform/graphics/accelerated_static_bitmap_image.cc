@@ -46,7 +46,7 @@ AcceleratedStaticBitmapImage::MailboxRef::MailboxRef(
       context_thread_ref_(context_thread_ref),
       context_task_runner_(std::move(context_task_runner)),
       release_callback_(std::move(release_callback)) {
-  DCHECK(!is_cross_thread() || sync_token_.verified_flush());
+  DCHECK(sync_token.HasData());
 }
 
 AcceleratedStaticBitmapImage::MailboxRef::~MailboxRef() {
@@ -57,20 +57,6 @@ AcceleratedStaticBitmapImage::MailboxRef::~MailboxRef() {
         FROM_HERE, base::BindOnce(&ReleaseCallbackOnContextThread,
                                   std::move(release_callback_), sync_token_));
   }
-}
-
-const gpu::SyncToken&
-AcceleratedStaticBitmapImage::MailboxRef::GetOrCreateSyncToken(
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-        context_provider_wrapper) {
-  if (!sync_token_.HasData()) {
-    DCHECK(!is_cross_thread());
-    DCHECK(context_provider_wrapper);
-    context_provider_wrapper->ContextProvider()
-        ->InterfaceBase()
-        ->GenUnverifiedSyncTokenCHROMIUM(sync_token_.GetData());
-  }
-  return sync_token_;
 }
 
 // static
@@ -174,9 +160,7 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
   DCHECK(mailbox_.IsSharedImage());
 
   // Get a texture id that |destProvider| knows about and copy from it.
-  dest_gl->WaitSyncTokenCHROMIUM(
-      mailbox_ref_->GetOrCreateSyncToken(ContextProviderWrapper())
-          .GetConstData());
+  dest_gl->WaitSyncTokenCHROMIUM(mailbox_ref_->sync_token().GetConstData());
   GLuint source_texture_id =
       dest_gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox_.name);
   dest_gl->BeginSharedImageAccessDirectCHROMIUM(
@@ -279,14 +263,12 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
 
   gpu::raster::RasterInterface* shared_ri =
       context_provider_wrapper->ContextProvider()->RasterInterface();
+  shared_ri->WaitSyncTokenCHROMIUM(mailbox_ref_->sync_token().GetConstData());
 
   if (context_provider_wrapper->ContextProvider()
           ->GetCapabilities()
           .supports_oop_raster) {
     DCHECK_EQ(shared_image_texture_id, 0u);
-    shared_ri->WaitSyncTokenCHROMIUM(
-        mailbox_ref_->GetOrCreateSyncToken(context_provider_wrapper)
-            .GetConstData());
     skia_context_provider_wrapper_ = context_provider_wrapper;
     texture_backing_ = sk_make_sp<MailboxTextureBacking>(
         mailbox_, sk_image_info_, std::move(context_provider_wrapper));
@@ -305,9 +287,6 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
     shared_context_texture_id = shared_image_texture_id;
     should_delete_texture_on_release = false;
   } else {
-    shared_ri->WaitSyncTokenCHROMIUM(
-        mailbox_ref_->GetOrCreateSyncToken(context_provider_wrapper)
-            .GetConstData());
     shared_context_texture_id =
         shared_ri->CreateAndConsumeForGpuRaster(mailbox_);
     shared_ri->BeginSharedImageAccessDirectCHROMIUM(
@@ -351,18 +330,16 @@ void AcceleratedStaticBitmapImage::EnsureSyncTokenVerified() {
   if (mailbox_ref_->verified_flush())
     return;
 
-  if (mailbox_ref_->is_cross_thread()) {
-    // Was originally created on another thread. Should already have a sync
-    // token from the original source context, already verified if needed.
-    NOTREACHED() << "Cross-thread SyncToken should already be verified.";
+  // If the original context was created on a different thread, we need to
+  // fallback to using the shared GPU context.
+  auto context_provider_wrapper =
+      mailbox_ref_->is_cross_thread()
+          ? SharedGpuContext::ContextProviderWrapper()
+          : ContextProviderWrapper();
+  if (!context_provider_wrapper)
     return;
-  }
 
-  if (!ContextProviderWrapper())
-    return;
-
-  auto sync_token =
-      mailbox_ref_->GetOrCreateSyncToken(ContextProviderWrapper());
+  auto sync_token = mailbox_ref_->sync_token();
   int8_t* token_data = sync_token.GetData();
   ContextProvider()->InterfaceBase()->VerifySyncTokensCHROMIUM(&token_data, 1);
   sync_token.SetVerifyFlush();
@@ -373,14 +350,12 @@ gpu::MailboxHolder AcceleratedStaticBitmapImage::GetMailboxHolder() const {
   if (!IsValid())
     return gpu::MailboxHolder();
 
-  return gpu::MailboxHolder(
-      mailbox_, mailbox_ref_->GetOrCreateSyncToken(ContextProviderWrapper()),
-      texture_target_);
+  return gpu::MailboxHolder(mailbox_, mailbox_ref_->sync_token(),
+                            texture_target_);
 }
 
 void AcceleratedStaticBitmapImage::Transfer() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  EnsureSyncTokenVerified();
 
   // SkImage is bound to the current thread so is no longer valid to use
   // cross-thread.

@@ -42,8 +42,8 @@ GLbyte SyncTokenMatcher(const gpu::SyncToken& token) {
 
 gpu::SyncToken GenTestSyncToken(GLbyte id) {
   gpu::SyncToken token;
-  // Store id in the first byte
-  reinterpret_cast<GLbyte*>(&token)[0] = id;
+  token.Set(gpu::CommandBufferNamespace::GPU_IO,
+            gpu::CommandBufferId::FromUnsafeValue(64), id);
   return token;
 }
 
@@ -51,6 +51,7 @@ scoped_refptr<StaticBitmapImage> CreateBitmap() {
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
   auto release_callback = viz::SingleReleaseCallback::Create(
       base::BindOnce([](const gpu::SyncToken&, bool) {}));
+
   return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
       mailbox, GenTestSyncToken(100), 0, SkImageInfo::MakeN32Premul(100, 100),
       GL_TEXTURE_2D, true, SharedGpuContext::ContextProviderWrapper(),
