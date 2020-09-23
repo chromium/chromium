@@ -101,7 +101,7 @@ DevToolsAgentHostImpl::~DevToolsAgentHostImpl() {
 }
 
 // static
-scoped_refptr<DevToolsAgentHost> DevToolsAgentHost::GetForId(
+scoped_refptr<DevToolsAgentHostImpl> DevToolsAgentHostImpl::GetForId(
     const std::string& id) {
   if (!g_devtools_instances.IsCreated())
     return nullptr;
@@ -109,6 +109,12 @@ scoped_refptr<DevToolsAgentHost> DevToolsAgentHost::GetForId(
   if (it == g_devtools_instances.Get().end())
     return nullptr;
   return it->second;
+}
+
+// static
+scoped_refptr<DevToolsAgentHost> DevToolsAgentHost::GetForId(
+    const std::string& id) {
+  return DevToolsAgentHostImpl::GetForId(id);
 }
 
 // static

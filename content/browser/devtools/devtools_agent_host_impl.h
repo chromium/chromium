@@ -28,6 +28,9 @@ class BrowserContext;
 // Describes interface for managing devtools agents from the browser process.
 class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
  public:
+  // Returns DevToolsAgentHost with a given |id| or nullptr of it doesn't exist.
+  static scoped_refptr<DevToolsAgentHostImpl> GetForId(const std::string& id);
+
   // DevToolsAgentHost implementation.
   bool AttachClient(DevToolsAgentHostClient* client) override;
   bool AttachClientWithoutWakeLock(DevToolsAgentHostClient* client) override;
