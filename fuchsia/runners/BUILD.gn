@@ -76,13 +76,17 @@ source_set("cast_runner_core") {
     "//base",
     "//components/cast/named_message_port_connector:named_message_port_connector",
     "//fuchsia/base",
-    "//fuchsia/base:message_port",
     "//fuchsia/base:modular",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//url",
   ]
+
+  # TODO(crbug.com/1131102): Remove dep when MessagePortProxy lands, and add assertions to ensure
+  # that Blink indirect deps don't creep back in.
+  deps += [ "//fuchsia/base:message_port" ]
+
   public_deps = [
     ":common",
     "//fuchsia:cast_fidl",
@@ -100,8 +104,10 @@ executable("cast_runner_exe") {
     ":common",
     "//base",
     "//fuchsia/base",
-    "//mojo/core/embedder",  # TODO(crbug.com/1126571): Remove when MPP lands.
+    "//mojo/core/embedder",  # TODO(crbug.com/1126571): Remove when
+                             # MessagePortProxy lands.
   ]
+
   data_deps = [ ":cast_runner_core" ]
   visibility = [ ":*" ]
 }
@@ -110,6 +116,18 @@ cr_fuchsia_package("cast_runner_pkg") {
   binary = ":cast_runner_exe"
   package_name_override = "cast_runner"
   manifest = "cast/cast_runner.cmx"
+
+  # TODO(crbug.com/1131102): Remove these exclusions when MessagePortProxy lands.
+  excluded_files = [
+    "lib/libEGL.so",
+    "lib/libfuchsia_egl.so",
+    "lib/libGLESv2.so",
+    "lib/libswiftshader_libEGL.so",
+    "lib/libswiftshader_libGLESv2.so",
+    "lib/libtrace-engine.so",
+    "lib/libvulkan.so",
+    "lib/VkLayer_image_pipe_swapchain.so",
+  ]
 }
 
 fuchsia_package_runner("cast_runner") {
@@ -166,7 +184,8 @@ test("cast_runner_integration_tests") {
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//fuchsia/base:test_support",
-    "//mojo/core/embedder",  # TODO(crbug.com/1126571): Remove when MPP lands.
+    "//mojo/core/embedder",  # TODO(crbug.com/1126571): Remove when
+                             # MessagePortProxy lands.
     "//net:test_support",
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",
