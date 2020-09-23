@@ -399,10 +399,11 @@ class ProcessCpuTimeTaskObserver : public base::TaskObserver {
 
           if (time_delta > base::TimeDelta()) {
             // Scale the process's cpu time by each cluster/frequency pair's
-            // relative proportion of execution time.
-            uint64_t delta_us = (process_cpu_time_delta.InMicroseconds() *
-                                 time_delta.InMicroseconds()) /
-                                total_delta.InMicroseconds();
+            // relative proportion of execution time. We scale by a double value
+            // to avoid integer overflow in the presence of large time_delta values.
+            uint64_t delta_us = process_cpu_time_delta.InMicroseconds() *
+                                (time_delta.InMicroseconds() /
+                                 static_cast<double>(total_delta.InMicroseconds()));
             reporter->AddMicroseconds(frequency_mhz, delta_us);
           }
         }
