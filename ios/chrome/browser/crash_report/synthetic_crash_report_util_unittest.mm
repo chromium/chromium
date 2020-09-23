@@ -92,7 +92,7 @@ TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
       config_content, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   // Verify config file content. Config file has the following format:
-  // Key1\nValue1Length\nValue1\n...KeyN\nValueNLength\nValueN
+  // <Key1>\n<Value1Length>\n<Value1>\n...<KeyN>\n<ValueNLength>\n<ValueN>
   ASSERT_EQ(33U, config_lines.size())
       << "<content>" << config_content << "</content>";
 
