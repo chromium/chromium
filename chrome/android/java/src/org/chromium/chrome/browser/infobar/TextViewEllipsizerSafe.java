@@ -52,7 +52,7 @@ public class TextViewEllipsizerSafe extends TextView {
             try {
                 // Attempt to set and measure the altered text.  In rare cases this may crash.
                 setText(result);
-                onMeasure(measureSpec, measureSpec);
+                measure(measureSpec, measureSpec);
                 return;
 
             } catch (Exception e) {

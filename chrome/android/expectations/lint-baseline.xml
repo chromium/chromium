@@ -41,7 +41,7 @@
         errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/appmenu/internal/java/src/org/chromium/chrome/browser/ui/appmenu/AppMenu.java"
-            line="377"
+            line="354"
             column="22"/>
     </issue>
 
@@ -118,7 +118,7 @@
         errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteMediator.java"
-            line="489"
+            line="477"
             column="30"/>
     </issue>
 
@@ -173,7 +173,7 @@
         errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
-            line="2774"
+            line="2780"
             column="22"/>
     </issue>
 
@@ -400,28 +400,6 @@
     <issue
         id="VisibleForTests"
         message="This method should only be accessed from tests or within private scope"
-        errorLine1="            mBottomSheet.showContent(null);"
-        errorLine2="                         ~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/android/bottomsheet/internal/java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetControllerImpl.java"
-            line="460"
-            column="26"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        mBottomSheet.showContent(nextContent);"
-        errorLine2="                     ~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/android/bottomsheet/internal/java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetControllerImpl.java"
-            line="465"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
         errorLine1="                        &amp;&amp; mOverlayPanelManager.get().getActivePanel() != null) {"
         errorLine2="                                                      ~~~~~~~~~~~~~~">
         <location
@@ -448,7 +426,7 @@
         errorLine2="                                                        ~~~~~~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/BrowserImpl.java"
-            line="262"
+            line="285"
             column="57"/>
     </issue>
 
@@ -459,7 +437,7 @@
         errorLine2="                                                                            ~~~~~~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/BrowserImpl.java"
-            line="386"
+            line="409"
             column="77"/>
     </issue>
 
@@ -470,7 +448,7 @@
         errorLine2="                                                                                   ~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="356"
+            line="362"
             column="84"/>
     </issue>
 
@@ -481,7 +459,7 @@
         errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="725"
+            line="731"
             column="23"/>
     </issue>
 
@@ -503,7 +481,7 @@
         errorLine2="                                                                  ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="779"
+            line="770"
             column="67"/>
     </issue>
 
@@ -525,7 +503,7 @@
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabDelegateFactory.java"
-            line="258"
+            line="259"
             column="36"/>
     </issue>
 
@@ -690,7 +668,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChromePhone.java"
-            line="140"
+            line="141"
             column="20"/>
     </issue>
 
@@ -734,7 +712,7 @@
         errorLine2="                                  ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPage.java"
-            line="331"
+            line="328"
             column="35"/>
     </issue>
 
@@ -932,7 +910,7 @@
         errorLine2="                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/cards/SignInPromo.java"
-            line="111"
+            line="109"
             column="48"/>
     </issue>
 
@@ -943,7 +921,7 @@
         errorLine2="                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/cards/SignInPromo.java"
-            line="125"
+            line="123"
             column="40"/>
     </issue>
 
@@ -954,7 +932,7 @@
         errorLine2="                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/cards/SignInPromo.java"
-            line="132"
+            line="130"
             column="48"/>
     </issue>
 
@@ -1075,7 +1053,7 @@
         errorLine2="                                                                         ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="1584"
+            line="1568"
             column="74"/>
     </issue>
 
@@ -1086,7 +1064,7 @@
         errorLine2="                              ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarCoordinator.java"
-            line="605"
+            line="604"
             column="31"/>
     </issue>
 
@@ -1152,7 +1130,7 @@
         errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java"
-            line="153"
+            line="164"
             column="18"/>
     </issue>
 
@@ -1163,7 +1141,7 @@
         errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java"
-            line="178"
+            line="188"
             column="30"/>
     </issue>
 
@@ -1174,8 +1152,41 @@
         errorLine2="                 ^">
         <location
             file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java"
-            line="233"
+            line="243"
             column="18"/>
+    </issue>
+
+    <issue
+        id="UseCompoundDrawables"
+        message="This tag and its children can be replaced by one `&lt;TextView/>` and a compound drawable"
+        errorLine1="        &lt;LinearLayout"
+        errorLine2="         ~~~~~~~~~~~~">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/layout/photo_picker_bitmap_view.xml"
+            line="37"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="UseCompoundDrawables"
+        message="This tag and its children can be replaced by one `&lt;TextView/>` and a compound drawable"
+        errorLine1="    &lt;LinearLayout"
+        errorLine2="     ~~~~~~~~~~~~">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/layout/photo_picker_bitmap_view.xml"
+            line="94"
+            column="6"/>
+    </issue>
+
+    <issue
+        id="UseCompoundDrawables"
+        message="This tag and its children can be replaced by one `&lt;TextView/>` and a compound drawable"
+        errorLine1="  &lt;LinearLayout"
+        errorLine2="   ~~~~~~~~~~~~">
+        <location
+            file="../../chrome/browser/share/android/java/res/layout/qrcode_camera_error_layout.xml"
+            line="11"
+            column="4"/>
     </issue>
 
     <issue
@@ -1295,18 +1306,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/android/bottomsheet/internal/java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheet.java"
-            line="258"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="ClickableViewAccessibility"
-        message="Custom view `BrowsingModeBottomToolbarLinearLayout` overrides `onTouchEvent` but not `performClick`"
-        errorLine1="    public boolean onTouchEvent(MotionEvent event) {"
-        errorLine2="                   ~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/bottom/BrowsingModeBottomToolbarLinearLayout.java"
-            line="48"
+            line="275"
             column="20"/>
     </issue>
 
@@ -1361,7 +1361,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/CompositorViewHolder.java"
-            line="638"
+            line="639"
             column="20"/>
     </issue>
 
@@ -1383,7 +1383,7 @@
         errorLine2="                       ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/top/CustomTabToolbar.java"
-            line="119"
+            line="126"
             column="24"/>
     </issue>
 
@@ -1504,7 +1504,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButton.java"
-            line="78"
+            line="76"
             column="9"/>
     </issue>
 
@@ -1613,19 +1613,8 @@
         errorLine1="        mMenuButton.getImageButton().setOnTouchListener(appMenuButtonHelper);"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/top/StartSurfaceToolbarView.java"
-            line="96"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="ClickableViewAccessibility"
-        message="Custom view ``ImageButton`` has `setOnTouchListener` called on it but does not override `performClick`"
-        errorLine1="        mMenuButton.getImageButton().setOnTouchListener(appMenuButtonHelper);"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/top/TabSwitcherModeTTPhone.java"
-            line="190"
+            line="188"
             column="9"/>
     </issue>
 
@@ -1636,7 +1625,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../clank/browser/image_editor/internal/java/src/org/chromium/chrome/browser/image_editor/text/TextEditorHandleView.java"
-            line="142"
+            line="151"
             column="20"/>
     </issue>
 
@@ -1658,7 +1647,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="518"
+            line="505"
             column="20"/>
     </issue>
 
@@ -1692,28 +1681,6 @@
         <location
             file="../../chrome/android/features/autofill_assistant/java/res/layout/autofill_assistant_bottom_sheet_content.xml"
             line="8"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;"
-        errorLine1="    android:clickable=&quot;true&quot;"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/res/layout/bottom_toolbar_menu_button.xml"
-            line="12"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;"
-        errorLine1="    android:clickable=&quot;true&quot; >"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/res/layout/bottom_toolbar_tab_switcher.xml"
-            line="15"
             column="5"/>
     </issue>
 

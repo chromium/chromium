@@ -36,6 +36,7 @@ public final class WebViewPackageHelper {
      */
     // This method is copied from androidx.webkit.WebViewCompat.
     // TODO(crbug.com/1020024) use androidx.webkit.WebViewCompat#getCurrentWebViewPackage instead.
+    @SuppressWarnings("WebViewApiAvailability")
     public static PackageInfo getCurrentWebViewPackage(Context context) {
         if (sWebViewCurrentPackage != null) {
             return sWebViewCurrentPackage;

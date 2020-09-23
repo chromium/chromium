@@ -43,6 +43,7 @@ import java.nio.ByteBuffer;
  * download takes place in another thread used by ImageReader.
  **/
 @JNINamespace("media")
+@SuppressWarnings("ValidFragment") // This fragment is created by native.
 public class ScreenCapture extends Fragment {
     private static final String TAG = "ScreenCapture";
 

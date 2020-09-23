@@ -364,37 +364,9 @@ Still reading?
     <ignore regexp="chrome/android/java/src/org/chromium/chrome/browser/offlinepages/OfflinePageUtils.java"/>
     <ignore regexp="chrome/android/java/src/org/chromium/chrome/browser/download/home/storage/StorageSummaryProvider.java"/>
   </issue>
-  <issue id="UseCompoundDrawables">
-    <!-- Upscaling 24dp to 48dp doesn't work as expected with a TextView compound drawable. -->
-    <ignore regexp="components/browser_ui/photo_picker/android/java/res/layout/photo_picker_bitmap_view.xml"/>
-    <!-- Cannot add image to textview as the image is supplied through @style/TabBarShadow. -->
-    <ignore regexp="chrome/browser/share/android/java/res/layout/qrcode_camera_error_layout.xml"/>
-  </issue>
-  <issue id="UselessParent">
-    <ignore regexp="android_webview/tools/system_webview_shell/apk/res/layout/activity_webview_browser.xml"/>
-    <ignore regexp="chrome/android/java/res/layout/data_usage_breakdown.xml"/>
-    <ignore regexp="tools/android/kerberos/SpnegoAuthenticator/res/layout/activity_account_authenticator.xml"/>
-  </issue>
-  <issue id="UsesMinSdkAttributes" severity="ignore"/>
-  <issue id="ValidFragment">
-    <ignore regexp="chrome/android/java/src/org/chromium/chrome/browser/media/router/BaseMediaRouteDialogManager.java"/>
-    <ignore regexp="chrome/android/java/src/org/chromium/chrome/browser/media/router/MediaRouteChooserDialogManager.java"/>
-    <ignore regexp="chrome/android/java/src/org/chromium/chrome/browser/media/router/MediaRouteControllerDialogManager.java"/>
-    <ignore regexp="chrome/android/java/src/org/chromium/chrome/browser/settings/privacy/OtherFormsOfHistoryDialogFragment.java"/>
-    <ignore regexp="media/capture/content/android/java/src/org/chromium/media/ScreenCapture.java"/>
-  </issue>
   <issue id="VectorPath" severity="ignore"/>
+  <!-- These constructors are useful for layout editors which we currently do not support. -->
   <issue id="ViewConstructor" severity="ignore"/>
-  <issue id="VisibleForTests">
-    <!-- TODO(crbug.com/757124): Remove all these specific Feedback files after underlying issue is resolved -->
-    <!-- Underlying issue is that Android FeedbackOptions.Builder using @VisibleForTesting without 'otherwise='. -->
-    <ignore regexp="clank/java/src/com/google/android/apps/chrome/feedback/FeedbackUtil.java"/>
-    <ignore regexp="clank/java/src/com/google/android/apps/chrome/feedback/PlayServicesFeedbackReporter.java"/>
-    <ignore regexp="clank/java/src/com/google/android/apps/chrome/help/FeedbackCategoryChooserActivity.java"/>
-    <ignore regexp="clank/java/src/com/google/android/apps/chrome/help/HelpAndFeedbackInternal.java"/>
-  </issue>
-  <issue id="WebViewApiAvailability" severity="ignore"/>
-  <issue id="WrongCall" severity="ignore"/>
   <issue id="WrongConstant">
     <!-- Discussed in crbug.com/1069204, ignoring this class of errors since these are Q+ constants. -->
     <ignore regexp="Must be one of: LineBreaker.BREAK_STRATEGY_SIMPLE, LineBreaker.BREAK_STRATEGY_HIGH_QUALITY, LineBreaker.BREAK_STRATEGY_BALANCED"/>

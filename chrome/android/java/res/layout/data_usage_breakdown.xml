@@ -5,6 +5,7 @@
 
 <org.chromium.chrome.browser.datareduction.settings.DataReductionSiteBreakdownView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/breakdown"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
@@ -33,7 +34,8 @@
         <TableRow
             android:id="@+id/data_reduction_proxy_breakdown_table_labels"
             android:layout_height="wrap_content"
-            android:layout_width="match_parent">
+            android:layout_width="match_parent"
+            tools:ignore="UselessParent">
 
             <TextView
                 android:id="@+id/data_reduction_breakdown_site_title"
