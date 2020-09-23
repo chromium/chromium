@@ -69,7 +69,6 @@ struct ImeTextSpan;
 namespace blink {
 class WebDragData;
 class WebMouseEvent;
-class WebGestureEvent;
 struct WebFloatRect;
 class WebWidget;
 class WebLocalFrame;
@@ -201,20 +200,6 @@ class WebWidgetClient {
   // Record the time it took for the first paint after the widget transitioned
   // from background inactive to active.
   virtual void RecordTimeToFirstActivePaint(base::TimeDelta duration) {}
-
-  // Returns whether we handled a GestureScrollEvent.
-  virtual void DidHandleGestureScrollEvent(
-      const WebGestureEvent& gesture_event,
-      const gfx::Vector2dF& unused_delta,
-      const cc::OverscrollBehavior& overscroll_behavior,
-      bool event_processed) {}
-
-  // Called before gesture events are processed and allows the
-  // client to handle the event itself. Return true if event was handled
-  // and further processing should stop.
-  virtual bool WillHandleGestureEvent(const WebGestureEvent& event) {
-    return false;
-  }
 
   // Called before mouse events are processed and allows the
   // client to handle the event itself. Return true if event was handled

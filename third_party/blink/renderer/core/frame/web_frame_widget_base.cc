@@ -1050,7 +1050,7 @@ bool WebFrameWidgetBase::WillHandleGestureEvent(const WebGestureEvent& event) {
   possible_drag_event_info_.source = ui::mojom::blink::DragEventSource::kTouch;
   possible_drag_event_info_.location =
       gfx::ToFlooredPoint(event.PositionInScreen());
-  return Client()->WillHandleGestureEvent(event);
+  return false;
 }
 
 bool WebFrameWidgetBase::WillHandleMouseEvent(const WebMouseEvent& event) {

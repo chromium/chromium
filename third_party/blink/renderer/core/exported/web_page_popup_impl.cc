@@ -662,7 +662,7 @@ void WebPagePopupImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
 }
 
 bool WebPagePopupImpl::WillHandleGestureEvent(const WebGestureEvent& event) {
-  return WidgetClient()->WillHandleGestureEvent(event);
+  return false;
 }
 
 bool WebPagePopupImpl::WillHandleMouseEvent(const WebMouseEvent& event) {
@@ -674,8 +674,6 @@ void WebPagePopupImpl::ObserveGestureEventAndResult(
     const gfx::Vector2dF& unused_delta,
     const cc::OverscrollBehavior& overscroll_behavior,
     bool event_processed) {
-  WidgetClient()->DidHandleGestureScrollEvent(
-      gesture_event, unused_delta, overscroll_behavior, event_processed);
 }
 
 WebInputEventResult WebPagePopupImpl::HandleCharEvent(
