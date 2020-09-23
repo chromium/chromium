@@ -17,7 +17,6 @@ const char kComServiceSwitch[] = "com-service";
 const char kCrashMeSwitch[] = "crash-me";
 const char kCrashHandlerSwitch[] = "crash-handler";
 const char kUpdateSwitch[] = "update";
-const char kRegisterSwitch[] = "register";
 const char kInstallSwitch[] = "install";
 const char kUninstallSwitch[] = "uninstall";
 const char kSystemSwitch[] = "system";

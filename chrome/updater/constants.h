@@ -63,9 +63,6 @@ extern const char kCrashHandlerSwitch[];
 // Updates the updater.
 extern const char kUpdateSwitch[];
 
-// Registers an app with the updater. Installs the bundled updater if needed.
-extern const char kRegisterSwitch[];
-
 // Installs the updater.
 extern const char kInstallSwitch[];
 

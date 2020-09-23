@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/app/app_install.h"
-#include "chrome/updater/app/app_register.h"
 #include "chrome/updater/app/app_uninstall.h"
 #include "chrome/updater/app/app_update.h"
 #include "chrome/updater/app/app_wake.h"
@@ -103,10 +102,6 @@ int HandleUpdaterCommands(const base::CommandLine* command_line) {
 
   if (command_line->HasSwitch(kUpdateSwitch))
     return MakeAppUpdate()->Run();
-
-  if (command_line->HasSwitch(kRegisterSwitch) &&
-      command_line->HasSwitch(kAppIdSwitch))
-    return MakeAppRegister()->Run();
 
 #if defined(OS_WIN)
   if (command_line->HasSwitch(kComServiceSwitch))

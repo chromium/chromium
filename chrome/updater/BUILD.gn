@@ -86,8 +86,6 @@ if (is_win || is_mac) {
       "app/app.h",
       "app/app_install.cc",
       "app/app_install.h",
-      "app/app_register.cc",
-      "app/app_register.h",
       "app/app_server.cc",
       "app/app_server.h",
       "app/app_uninstall.cc",
