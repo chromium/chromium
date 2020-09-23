@@ -148,7 +148,6 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       inline_autocompletion(match.inline_autocompletion),
       prefix_autocompletion(match.prefix_autocompletion),
       allowed_to_be_default_match(match.allowed_to_be_default_match),
-      is_navigational_title_match(match.is_navigational_title_match),
       destination_url(match.destination_url),
       stripped_destination_url(match.stripped_destination_url),
       image_dominant_color(match.image_dominant_color),
@@ -207,7 +206,6 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   inline_autocompletion = match.inline_autocompletion;
   prefix_autocompletion = match.prefix_autocompletion;
   allowed_to_be_default_match = match.allowed_to_be_default_match;
-  is_navigational_title_match = match.is_navigational_title_match;
   destination_url = match.destination_url;
   stripped_destination_url = match.stripped_destination_url;
   image_dominant_color = match.image_dominant_color;
@@ -1133,7 +1131,6 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
     if (inline_autocompletion.empty() && prefix_autocompletion.empty()) {
       inline_autocompletion = duplicate_match.inline_autocompletion;
       prefix_autocompletion = duplicate_match.prefix_autocompletion;
-      is_navigational_title_match = duplicate_match.is_navigational_title_match;
     }
   }
 
@@ -1158,36 +1155,6 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
     pedal = duplicate_match.pedal;
     duplicate_match.pedal = nullptr;
   }
-}
-
-void AutocompleteMatch::TryAutocompleteWithTitle(
-    const base::string16& title,
-    const AutocompleteInput& input) {
-  if (!base::FeatureList::IsEnabled(omnibox::kAutocompleteTitles))
-    return;
-
-  const base::string16 lower_text{base::i18n::ToLower(title)};
-  const base::string16 lower_input_text{base::i18n::ToLower(input.text())};
-
-  if (!base::StartsWith(lower_text, lower_input_text,
-                        base::CompareCase::SENSITIVE)) {
-    return;
-  }
-
-  // For exact matches, promote the relevance to out-score verbatim
-  // search-what-you-typed matches.
-  if (lower_text == lower_input_text) {
-    relevance =
-        std::max(relevance, SearchProvider::kNonURLVerbatimRelevance + 10);
-    RecordAdditionalInfo("title match", "full");
-  } else
-    RecordAdditionalInfo("title match", "prefix");
-
-  fill_into_edit = title;
-  inline_autocompletion = fill_into_edit.substr(lower_input_text.length());
-  allowed_to_be_default_match =
-      inline_autocompletion.empty() || !input.prevent_inline_autocomplete();
-  is_navigational_title_match = true;
 }
 
 bool AutocompleteMatch::TryRichAutocompletion(

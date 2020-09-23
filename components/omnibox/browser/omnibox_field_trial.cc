@@ -707,7 +707,6 @@ OmniboxFieldTrial::GetEmphasizeTitlesConditionForInput(
 bool OmniboxFieldTrial::IsShortBookmarkSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(
              omnibox::kOmniboxShortBookmarkSuggestions) ||
-         base::FeatureList::IsEnabled(omnibox::kAutocompleteTitles) ||
          base::FeatureList::IsEnabled(omnibox::kRichAutocompletion);
 }
 

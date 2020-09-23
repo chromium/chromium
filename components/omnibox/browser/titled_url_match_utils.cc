@@ -92,9 +92,6 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
     match.inline_autocompletion =
         match.fill_into_edit.substr(inline_autocomplete_offset);
     match.SetAllowedToBeDefault(input);
-  } else {
-    auto title = match.description + base::UTF8ToUTF16(" - ") + match.contents;
-    match.TryAutocompleteWithTitle(title, input);
   }
 
   return match;

@@ -1501,11 +1501,6 @@ const char kOmniboxAssistantVoiceSearchDescription[] =
     "When enabled, use Assistant for omnibox voice query recognition instead of"
     " Android's built-in voice recognition service. Only works on Android.";
 
-const char kOmniboxAutocompleteTitlesName[] = "Omnibox Autocomplete Titles";
-const char kOmniboxAutocompleteTitlesDescription[] =
-    "Allows autocompleting bookmark, history, and document suggestions when the"
-    " user input is a prefix of their titles, as opposed to their URLs.";
-
 const char kOmniboxClobberTriggersContextualWebZeroSuggestName[] =
     "Omnibox Clobber Triggers Contextual Web ZeroSuggest";
 const char kOmniboxClobberTriggersContextualWebZeroSuggestDescription[] =

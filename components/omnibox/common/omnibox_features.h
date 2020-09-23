@@ -23,7 +23,6 @@ extern const base::Feature kDisplayTitleForCurrentUrl;
 extern const base::Feature kUIExperimentSwapTitleAndUrl;
 extern const base::Feature kSpeculativeServiceWorkerStartOnQueryInput;
 extern const base::Feature kDocumentProvider;
-extern const base::Feature kAutocompleteTitles;
 extern const base::Feature kOmniboxDisableInstantExtendedLimit;
 extern const base::Feature kOmniboxSearchEngineLogo;
 extern const base::Feature kOmniboxRemoveSuggestionsFromClipboard;

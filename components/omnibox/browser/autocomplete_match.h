@@ -430,12 +430,6 @@ struct AutocompleteMatch {
   // relevance score, this match's own relevance score will be upgraded.
   void UpgradeMatchWithPropertiesFrom(AutocompleteMatch& duplicate_match);
 
-  // Called for navigation suggestions whose URLs cannot be inline autocompleted
-  // (e.g. because the input is not a prefix of the URL), to check if |title|
-  // can be inline autocompleted instead.
-  void TryAutocompleteWithTitle(const base::string16& title,
-                                const AutocompleteInput& input);
-
   // Tries, in order, to:
   // - Prefix autocomplete |primary_text|,
   // - Prefix autocomplete |secondary_text|,
@@ -509,15 +503,6 @@ struct AutocompleteMatch {
   // and a navigation to "foo/" (an intranet host) or search for "foo"
   // should set this flag.
   bool allowed_to_be_default_match = false;
-
-  // Set by |TryAutocompleteWithTitle|. If |type| is navigational, then this
-  // field indicates |fill_into_edit| is not the URL but instead looks like
-  // search terms (e.g. `title - URL`). If |type| is non-navigational, then this
-  // is true regardless; i.e., |fill_into_edit| is not a URL. This allows
-  // callees of AutocompleteClassifier::Classify, such as
-  // OmniboxEditModel::AdjustTextForCopy, to treat such navigational matches
-  // differently than typical navigational matches with URL text.
-  bool is_navigational_title_match = false;
 
   // The URL to actually load when the autocomplete item is selected. This URL
   // should be canonical so we can compare URLs with strcmp to avoid dupes.

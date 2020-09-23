@@ -395,8 +395,7 @@ void OmniboxEditModel::AdjustTextForCopy(int sel_min,
   client_->GetAutocompleteClassifier()->Classify(*text, is_keyword_selected(),
                                                  true, GetPageClassification(),
                                                  &match_from_text, nullptr);
-  if (AutocompleteMatch::IsSearchType(match_from_text.type) ||
-      match_from_text.is_navigational_title_match)
+  if (AutocompleteMatch::IsSearchType(match_from_text.type))
     return;
 
   // Make our best GURL interpretation of |text|.

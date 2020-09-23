@@ -277,9 +277,6 @@ AutocompleteMatch HistoryQuickProvider::QuickMatchToACMatch(
     match.inline_autocompletion =
         match.fill_into_edit.substr(inline_autocomplete_offset);
     match.SetAllowedToBeDefault(autocomplete_input_);
-  } else {
-    auto title = match.description + base::UTF8ToUTF16(" - ") + match.contents;
-    match.TryAutocompleteWithTitle(title, autocomplete_input_);
   }
 
   match.RecordAdditionalInfo("typed count", info.typed_count());
