@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Generated sources for production
+
 generated_dictionary_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_add_event_listener_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_add_event_listener_options.h",
@@ -1207,8 +1209,6 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_svg_view_element.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_task_attribution_timing.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_task_attribution_timing.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_visibility_state_entry.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_visibility_state_entry.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_test_report_body.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_test_report_body.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_text.cc",
@@ -1275,6 +1275,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_video_track.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_video_track_list.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_video_track_list.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_visibility_state_entry.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_visibility_state_entry.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_visual_viewport.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_visual_viewport.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_vtt_cue.cc",

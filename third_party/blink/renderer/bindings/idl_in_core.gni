@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Statically-defined (not runtime-generated) IDL files in 'core' component.
+# Statically-defined (not runtime-generated) IDL files in 'core' component
+# for production.
 #
 # CAUTION: static_idl_files_in_core is used only by a new V8 bindings generator,
 # which is under development.  You have to update core/core_idl_files.gni in

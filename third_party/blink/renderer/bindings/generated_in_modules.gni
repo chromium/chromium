@@ -4,6 +4,8 @@
 
 import("//third_party/blink/renderer/config.gni")
 
+# Generated sources for production
+
 generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_address_errors.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_address_errors.h",
@@ -790,10 +792,10 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_client_lifecycle_state_query.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_client_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_client_type.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_color_gamut.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_color_gamut.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_codec_state.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_codec_state.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_color_gamut.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_color_gamut.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_connection_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_connection_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_contact_property.cc",
@@ -816,10 +818,10 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_end_of_stream_error.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_end_of_stream_error.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_fill_light_mode.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_fill_light_mode.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_permission_mode.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_permission_mode.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_fill_light_mode.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_fill_light_mode.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gamepad_haptic_actuator_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gamepad_haptic_actuator_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gamepad_haptic_effect_type.cc",

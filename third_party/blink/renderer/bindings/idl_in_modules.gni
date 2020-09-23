@@ -4,7 +4,8 @@
 
 import("//third_party/blink/renderer/config.gni")
 
-# Statically-defined (not runtime-generated) IDL files in 'modules' component.
+# Statically-defined (not runtime-generated) IDL files in 'modules' component
+# for production.
 #
 # CAUTION: static_idl_files_in_modules is used only by a new V8 bindings
 # generator, which is under development.  You have to update
@@ -171,6 +172,8 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/device_orientation/device_orientation_event_init.idl",
           "//third_party/blink/renderer/modules/device_orientation/window_device_motion.idl",
           "//third_party/blink/renderer/modules/device_orientation/window_device_orientation.idl",
+          "//third_party/blink/renderer/modules/direct_sockets/navigator_socket.idl",
+          "//third_party/blink/renderer/modules/direct_sockets/socket_options.idl",
           "//third_party/blink/renderer/modules/donottrack/navigator_do_not_track.idl",
           "//third_party/blink/renderer/modules/encoding/text_decode_options.idl",
           "//third_party/blink/renderer/modules/encoding/text_decoder.idl",
@@ -381,8 +384,8 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/native_file_system/file_system_writable_file_stream.idl",
           "//third_party/blink/renderer/modules/native_file_system/native_file_system_directory_iterator.idl",
           "//third_party/blink/renderer/modules/native_file_system/open_file_picker_options.idl",
-          "//third_party/blink/renderer/modules/native_file_system/storage_manager_native_file_system.idl",
           "//third_party/blink/renderer/modules/native_file_system/save_file_picker_options.idl",
+          "//third_party/blink/renderer/modules/native_file_system/storage_manager_native_file_system.idl",
           "//third_party/blink/renderer/modules/native_file_system/window_native_file_system.idl",
           "//third_party/blink/renderer/modules/native_file_system/write_params.idl",
           "//third_party/blink/renderer/modules/native_io/native_io_file.idl",
@@ -418,7 +421,6 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/payments/address_init.idl",
           "//third_party/blink/renderer/modules/payments/android_pay_method_data.idl",
           "//third_party/blink/renderer/modules/payments/basic_card_request.idl",
-          "//third_party/blink/renderer/modules/payments/secure_payment_confirmation_request.idl",
           "//third_party/blink/renderer/modules/payments/can_make_payment_event.idl",
           "//third_party/blink/renderer/modules/payments/can_make_payment_event_init.idl",
           "//third_party/blink/renderer/modules/payments/can_make_payment_response.idl",
@@ -456,6 +458,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/payments/payment_response.idl",
           "//third_party/blink/renderer/modules/payments/payment_shipping_option.idl",
           "//third_party/blink/renderer/modules/payments/payment_validation_errors.idl",
+          "//third_party/blink/renderer/modules/payments/secure_payment_confirmation_request.idl",
           "//third_party/blink/renderer/modules/peerconnection/rtc_answer_options.idl",
           "//third_party/blink/renderer/modules/peerconnection/rtc_certificate.idl",
           "//third_party/blink/renderer/modules/peerconnection/rtc_configuration.idl",
@@ -579,8 +582,6 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/quota/storage_usage_details.idl",
           "//third_party/blink/renderer/modules/quota/window_quota.idl",
           "//third_party/blink/renderer/modules/quota/worker_navigator_storage_quota.idl",
-          "//third_party/blink/renderer/modules/direct_sockets/navigator_socket.idl",
-          "//third_party/blink/renderer/modules/direct_sockets/socket_options.idl",
           "//third_party/blink/renderer/modules/remoteplayback/html_media_element_remote_playback.idl",
           "//third_party/blink/renderer/modules/remoteplayback/remote_playback.idl",
           "//third_party/blink/renderer/modules/sanitizer_api/sanitizer.idl",
