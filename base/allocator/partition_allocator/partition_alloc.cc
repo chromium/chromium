@@ -845,6 +845,15 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
 
   stats.total_resident_bytes += direct_mapped_allocations_total_size;
   stats.total_active_bytes += direct_mapped_allocations_total_size;
+
+  stats.has_thread_cache = !is_light_dump && with_thread_cache;
+  if (stats.has_thread_cache) {
+    internal::ThreadCacheRegistry::Instance().DumpStats(
+        true, &stats.current_thread_cache_stats);
+    internal::ThreadCacheRegistry::Instance().DumpStats(
+        false, &stats.all_thread_caches_stats);
+  }
+
   dumper->PartitionDumpTotals(partition_name, &stats);
 }
 

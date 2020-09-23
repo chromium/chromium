@@ -240,6 +240,10 @@ struct PartitionMemoryStats {
   size_t total_active_bytes;     // Total active bytes in the partition.
   size_t total_decommittable_bytes;  // Total bytes that could be decommitted.
   size_t total_discardable_bytes;    // Total bytes that could be discarded.
+
+  bool has_thread_cache;
+  internal::ThreadCacheStats current_thread_cache_stats;
+  internal::ThreadCacheStats all_thread_caches_stats;
 };
 
 // Struct used to retrieve memory statistics about a partition bucket. Used by

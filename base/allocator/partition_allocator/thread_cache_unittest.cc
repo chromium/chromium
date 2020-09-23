@@ -42,6 +42,18 @@ class LambdaThreadDelegate : public PlatformThread::Delegate {
   OnceClosure f_;
 };
 
+class DeltaCounter {
+ public:
+  explicit DeltaCounter(uint64_t& value)
+      : current_value_(value), initial_value_(value) {}
+  void Reset() { initial_value_ = current_value_; }
+  uint64_t Delta() const { return current_value_ - initial_value_; }
+
+ private:
+  uint64_t& current_value_;
+  uint64_t initial_value_;
+};
+
 // Need to be a global object without a destructor, because the cache is a
 // global object with a destructor (to handle thread destruction), and the
 // PartitionRoot has to outlive it.
@@ -68,9 +80,13 @@ size_t FillThreadCacheAndReturnIndex(size_t size, size_t count = 1) {
 class ThreadCacheTest : public ::testing::Test {
  protected:
   void SetUp() override {
+    // Make sure there is a thread cache.
+    void* data = g_root->Alloc(1, "");
+    g_root->Free(data);
+
     auto* tcache = g_root->thread_cache_for_testing();
-    if (tcache)
-      tcache->Purge();
+    ASSERT_TRUE(tcache);
+    tcache->Purge();
   }
   void TearDown() override {}
 };
@@ -154,16 +170,27 @@ TEST_F(ThreadCacheTest, NoCrossPartitionCache) {
   EXPECT_EQ(1u, tcache->bucket_count_for_testing(bucket_index));
 }
 
-#if ENABLE_THREAD_CACHE_STATISTICS  // Required to record hits and misses.
+#if defined(PA_ENABLE_THREAD_CACHE_STATISTICS)  // Required to record hits and
+                                                // misses.
 TEST_F(ThreadCacheTest, LargeAllocationsAreNotCached) {
   auto* tcache = g_root->thread_cache_for_testing();
-  size_t hits_before = tcache ? tcache->hits_ : 0;
+  DeltaCounter alloc_miss_counter{tcache->stats_.alloc_misses};
+  DeltaCounter alloc_miss_too_large_counter{
+      tcache->stats_.alloc_miss_too_large};
+  DeltaCounter cache_fill_counter{tcache->stats_.cache_fill_count};
+  DeltaCounter cache_fill_misses_counter{tcache->stats_.cache_fill_misses};
+  DeltaCounter cache_fill_too_large_counter{
+      tcache->stats_.cache_fill_too_large};
 
   FillThreadCacheAndReturnIndex(100 * 1024);
   tcache = g_root->thread_cache_for_testing();
-  EXPECT_EQ(hits_before, tcache->hits_);
+  EXPECT_EQ(1u, alloc_miss_counter.Delta());
+  EXPECT_EQ(1u, alloc_miss_too_large_counter.Delta());
+  EXPECT_EQ(1u, cache_fill_counter.Delta());
+  EXPECT_EQ(1u, cache_fill_misses_counter.Delta());
+  EXPECT_EQ(1u, cache_fill_too_large_counter.Delta());
 }
-#endif
+#endif  // defined(PA_ENABLE_THREAD_CACHE_STATISTICS)
 
 TEST_F(ThreadCacheTest, DirectMappedAllocationsAreNotCached) {
   FillThreadCacheAndReturnIndex(1024 * 1024);
@@ -216,6 +243,106 @@ TEST_F(ThreadCacheTest, ThreadCacheReclaimedWhenThreadExits) {
   g_root->Free(other_thread_ptr);
   g_root->Free(tmp);
 }
+
+TEST_F(ThreadCacheTest, ThreadCacheRegistry) {
+  const size_t kTestSize = 100;
+  auto* parent_thread_tcache = g_root->thread_cache_for_testing();
+  ASSERT_TRUE(parent_thread_tcache);
+
+  LambdaThreadDelegate delegate{BindLambdaForTesting([&]() {
+    EXPECT_FALSE(g_root->thread_cache_for_testing());  // No allocations yet.
+    FillThreadCacheAndReturnIndex(kTestSize);
+    auto* tcache = g_root->thread_cache_for_testing();
+    EXPECT_TRUE(tcache);
+
+    AutoLock lock(ThreadCacheRegistry::GetLock());
+    EXPECT_EQ(tcache->prev_, nullptr);
+    EXPECT_EQ(tcache->next_, parent_thread_tcache);
+  })};
+
+  PlatformThreadHandle thread_handle;
+  PlatformThread::Create(0, &delegate, &thread_handle);
+  PlatformThread::Join(thread_handle);
+
+  AutoLock lock(ThreadCacheRegistry::GetLock());
+  EXPECT_EQ(parent_thread_tcache->prev_, nullptr);
+  EXPECT_EQ(parent_thread_tcache->next_, nullptr);
+}
+
+#if defined(PA_ENABLE_THREAD_CACHE_STATISTICS)
+TEST_F(ThreadCacheTest, RecordStats) {
+  const size_t kTestSize = 100;
+  auto* tcache = g_root->thread_cache_for_testing();
+  DeltaCounter alloc_counter{tcache->stats_.alloc_count};
+  DeltaCounter alloc_hits_counter{tcache->stats_.alloc_hits};
+  DeltaCounter alloc_miss_counter{tcache->stats_.alloc_misses};
+
+  DeltaCounter alloc_miss_empty_counter{tcache->stats_.alloc_miss_empty};
+
+  DeltaCounter cache_fill_counter{tcache->stats_.cache_fill_count};
+  DeltaCounter cache_fill_hits_counter{tcache->stats_.cache_fill_hits};
+  DeltaCounter cache_fill_misses_counter{tcache->stats_.cache_fill_misses};
+  DeltaCounter cache_fill_bucket_full_counter{
+      tcache->stats_.cache_fill_bucket_full};
+
+  // Cache has been purged, first allocation is a miss.
+  void* data = g_root->Alloc(kTestSize, "");
+  EXPECT_EQ(1u, alloc_counter.Delta());
+  EXPECT_EQ(1u, alloc_miss_counter.Delta());
+  EXPECT_EQ(0u, alloc_hits_counter.Delta());
+
+  // Cache fill worked.
+  g_root->Free(data);
+  EXPECT_EQ(1u, cache_fill_counter.Delta());
+  EXPECT_EQ(1u, cache_fill_hits_counter.Delta());
+  EXPECT_EQ(0u, cache_fill_misses_counter.Delta());
+
+  tcache->Purge();
+  cache_fill_counter.Reset();
+  // Bucket full accounting.
+  size_t bucket_index = FillThreadCacheAndReturnIndex(
+      kTestSize, ThreadCache::kMaxCountPerBucket + 10);
+  EXPECT_EQ(ThreadCache::kMaxCountPerBucket + 10, cache_fill_counter.Delta());
+  EXPECT_EQ(10u, cache_fill_bucket_full_counter.Delta());
+  EXPECT_EQ(10u, cache_fill_misses_counter.Delta());
+
+  // Memory footprint.
+  size_t allocated_size = g_root->buckets[bucket_index].slot_size;
+  ThreadCacheStats stats;
+  ThreadCacheRegistry::Instance().DumpStats(true, &stats);
+  EXPECT_EQ(allocated_size * ThreadCache::kMaxCountPerBucket,
+            stats.bucket_total_memory);
+  EXPECT_EQ(sizeof(ThreadCache), stats.metadata_overhead);
+}
+
+TEST_F(ThreadCacheTest, MultipleThreadCachesAccounting) {
+  const size_t kTestSize = 100;
+  void* data = g_root->Alloc(kTestSize, "");
+  g_root->Free(data);
+  uint64_t alloc_count = g_root->thread_cache_for_testing()->stats_.alloc_count;
+
+  LambdaThreadDelegate delegate{BindLambdaForTesting([&]() {
+    EXPECT_FALSE(g_root->thread_cache_for_testing());  // No allocations yet.
+    size_t bucket_index = FillThreadCacheAndReturnIndex(kTestSize);
+
+    ThreadCacheStats stats;
+    ThreadCacheRegistry::Instance().DumpStats(false, &stats);
+    size_t allocated_size = g_root->buckets[bucket_index].slot_size;
+    // 2* for this thread and the parent one.
+    EXPECT_EQ(2 * allocated_size, stats.bucket_total_memory);
+    EXPECT_EQ(2 * sizeof(ThreadCache), stats.metadata_overhead);
+
+    uint64_t this_thread_alloc_count =
+        g_root->thread_cache_for_testing()->stats_.alloc_count;
+    EXPECT_EQ(alloc_count + this_thread_alloc_count, stats.alloc_count);
+  })};
+
+  PlatformThreadHandle thread_handle;
+  PlatformThread::Create(0, &delegate, &thread_handle);
+  PlatformThread::Join(thread_handle);
+}
+
+#endif  // defined(PA_ENABLE_THREAD_CACHE_STATISTICS)
 
 }  // namespace internal
 }  // namespace base

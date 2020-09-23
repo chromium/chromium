@@ -23,6 +23,33 @@ std::string GetPartitionDumpName(const char* partition_name) {
                             kPartitionsDumpName, partition_name);
 }
 
+void ThreadCacheDump(base::trace_event::MemoryAllocatorDump* thread_cache_dump,
+                     const base::internal::ThreadCacheStats& stats) {
+  thread_cache_dump->AddScalar("alloc_count", "scalar", stats.alloc_count);
+  thread_cache_dump->AddScalar("alloc_hits", "scalar", stats.alloc_hits);
+  thread_cache_dump->AddScalar("alloc_misses", "scalar", stats.alloc_misses);
+
+  thread_cache_dump->AddScalar("alloc_miss_empty", "scalar",
+                               stats.alloc_miss_empty);
+  thread_cache_dump->AddScalar("alloc_miss_too_large", "scalar",
+                               stats.alloc_miss_too_large);
+
+  thread_cache_dump->AddScalar("cache_fill_count", "scalar",
+                               stats.cache_fill_count);
+  thread_cache_dump->AddScalar("cache_fill_hits", "scalar",
+                               stats.cache_fill_hits);
+  thread_cache_dump->AddScalar("cache_fill_misses", "scalar",
+                               stats.cache_fill_misses);
+  thread_cache_dump->AddScalar("cache_fill_bucket_full", "scalar",
+                               stats.cache_fill_bucket_full);
+  thread_cache_dump->AddScalar("cache_fill_too_large", "scalar",
+                               stats.cache_fill_too_large);
+
+  thread_cache_dump->AddScalar("size", "bytes", stats.bucket_total_memory);
+  thread_cache_dump->AddScalar("metadata_overhead", "bytes",
+                               stats.metadata_overhead);
+}
+
 // This class is used to invert the dependency of PartitionAlloc on the
 // PartitionAllocMemoryDumpProvider. This implements an interface that will
 // be called with memory statistics for each bucket in the allocator.
@@ -71,6 +98,17 @@ void PartitionStatsDumperImpl::PartitionDumpTotals(
                             memory_stats->total_decommittable_bytes);
   allocator_dump->AddScalar("discardable_size", "bytes",
                             memory_stats->total_discardable_bytes);
+  if (memory_stats->has_thread_cache) {
+    const auto& thread_cache_stats = memory_stats->current_thread_cache_stats;
+    auto* thread_cache_dump = memory_dump_->CreateAllocatorDump(
+        dump_name + "/thread_cache/main_thread");
+    ThreadCacheDump(thread_cache_dump, thread_cache_stats);
+
+    const auto& all_thread_caches_stats = memory_stats->all_thread_caches_stats;
+    auto* all_thread_caches_dump = memory_dump_->CreateAllocatorDump(
+        dump_name + "/thread_cache/all_threads");
+    ThreadCacheDump(all_thread_caches_dump, all_thread_caches_stats);
+  }
 }
 
 void PartitionStatsDumperImpl::PartitionsDumpBucketStats(
@@ -79,10 +117,10 @@ void PartitionStatsDumperImpl::PartitionsDumpBucketStats(
   DCHECK(memory_stats->is_valid);
   std::string dump_name = GetPartitionDumpName(partition_name);
   if (memory_stats->is_direct_map) {
-    dump_name.append(base::StringPrintf("/directMap_%" PRIu64, ++uid_));
+    dump_name.append(base::StringPrintf("/buckets/directMap_%" PRIu64, ++uid_));
   } else {
-    dump_name.append(
-        base::StringPrintf("/bucket_%" PRIu32, memory_stats->bucket_slot_size));
+    dump_name.append(base::StringPrintf("/buckets/bucket_%" PRIu32,
+                                        memory_stats->bucket_slot_size));
   }
 
   base::trace_event::MemoryAllocatorDump* allocator_dump =

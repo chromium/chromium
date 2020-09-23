@@ -29,6 +29,59 @@ static std::atomic<bool> g_has_instance;
 }  // namespace
 
 // static
+ThreadCacheRegistry& ThreadCacheRegistry::Instance() {
+  static NoDestructor<ThreadCacheRegistry> instance;
+  return *instance.get();
+}
+
+ThreadCacheRegistry::ThreadCacheRegistry() = default;
+
+void ThreadCacheRegistry::RegisterThreadCache(ThreadCache* cache) {
+  AutoLock scoped_locker(GetLock());
+  cache->next_ = nullptr;
+  cache->prev_ = nullptr;
+
+  ThreadCache* previous_head = list_head_;
+  list_head_ = cache;
+  cache->next_ = previous_head;
+  if (previous_head)
+    previous_head->prev_ = cache;
+}
+
+void ThreadCacheRegistry::UnregisterThreadCache(ThreadCache* cache) {
+  AutoLock scoped_locker(GetLock());
+  if (cache->prev_)
+    cache->prev_->next_ = cache->next_;
+  if (cache->next_)
+    cache->next_->prev_ = cache->prev_;
+  if (cache == list_head_)
+    list_head_ = cache->next_;
+}
+
+void ThreadCacheRegistry::DumpStats(bool my_thread_only,
+                                    ThreadCacheStats* stats) {
+  memset(reinterpret_cast<void*>(stats), 0, sizeof(ThreadCacheStats));
+
+  AutoLock scoped_locker(GetLock());
+  if (my_thread_only) {
+    auto* tcache = ThreadCache::Get();
+    if (!tcache)
+      return;
+    tcache->AccumulateStats(stats);
+  } else {
+    ThreadCache* tcache = list_head_;
+    while (tcache) {
+      // Racy, as other threads are still allocating. This is not an issue,
+      // since we are only interested in statistics. However, this means that
+      // count is not necessarily equal to hits + misses for the various types
+      // of events.
+      tcache->AccumulateStats(stats);
+      tcache = tcache->next_;
+    }
+  }
+}
+
+// static
 void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
   bool ok = PartitionTlsCreate(&g_thread_cache_key, DeleteThreadCache);
   PA_CHECK(ok);
@@ -62,7 +115,7 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
   void* buffer =
       root->RawAlloc(bucket, PartitionAllocZeroFill, sizeof(ThreadCache),
                      &allocated_size, &already_zeroed);
-  ThreadCache* tcache = new (buffer) ThreadCache();
+  ThreadCache* tcache = new (buffer) ThreadCache(root);
 
   // This may allocate.
   PartitionTlsSet(g_thread_cache_key, tcache);
@@ -70,8 +123,35 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
   return tcache;
 }
 
+ThreadCache::ThreadCache(PartitionRoot<ThreadSafe>* root)
+    : buckets_(), stats_(), root_(root), next_(nullptr), prev_(nullptr) {
+  ThreadCacheRegistry::Instance().RegisterThreadCache(this);
+}
+
 ThreadCache::~ThreadCache() {
+  ThreadCacheRegistry::Instance().UnregisterThreadCache(this);
   Purge();
+}
+
+void ThreadCache::AccumulateStats(ThreadCacheStats* stats) const {
+  stats->alloc_count += stats_.alloc_count;
+  stats->alloc_hits += stats_.alloc_hits;
+  stats->alloc_misses += stats_.alloc_misses;
+
+  stats->alloc_miss_empty += stats_.alloc_miss_empty;
+  stats->alloc_miss_too_large += stats_.alloc_miss_too_large;
+
+  stats->cache_fill_count += stats_.cache_fill_count;
+  stats->cache_fill_hits += stats_.cache_fill_hits;
+  stats->cache_fill_misses += stats_.cache_fill_misses;
+  stats->cache_fill_bucket_full += stats_.cache_fill_bucket_full;
+  stats->cache_fill_too_large += stats_.cache_fill_too_large;
+
+  for (size_t i = 0; i < kBucketCount; i++) {
+    stats->bucket_total_memory +=
+        buckets_[i].count * root_->buckets[i].slot_size;
+  }
+  stats->metadata_overhead += sizeof(*this);
 }
 
 void ThreadCache::Purge() {
