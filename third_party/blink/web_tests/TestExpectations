@@ -1176,7 +1176,6 @@ crbug.com/829028 virtual/layout_ng_block_frag/fragmentation/float-after-forced-b
 crbug.com/829028 virtual/layout_ng_block_frag/fragmentation/overflow-crossing-boundary.html [ Failure ]
 crbug.com/1079031 virtual/layout_ng_block_frag/fragmentation/relayout-abspos.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fragmentation/remove-unbreakable-block-in-line-float.html [ Failure ]
-crbug.com/829028 virtual/layout_ng_block_frag/fragmentation/scrolling-contents-scroll.html [ Failure ]
 
 ### With LayoutNGFragmentTraversal (and LayoutNGFragmentItem) enabled:
 

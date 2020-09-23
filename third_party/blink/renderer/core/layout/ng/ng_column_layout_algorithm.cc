@@ -38,7 +38,10 @@ LayoutUnit CalculateColumnContentBlockSize(
       offset = child.Offset().left;
       size = child->Size().width;
     }
-    if (child->IsContainer()) {
+    // TODO(mstensho): Need to detect whether we're actually clipping in the
+    // block direction. The combination of overflow-x:clip and
+    // overflow-y:visible should enter children here.
+    if (child->IsContainer() && !child->HasNonVisibleOverflow()) {
       LayoutUnit children_size = CalculateColumnContentBlockSize(
           To<NGPhysicalContainerFragment>(*child),
           multicol_is_horizontal_writing_mode);
