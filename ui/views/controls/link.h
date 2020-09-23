@@ -39,8 +39,8 @@ class VIEWS_EXPORT Link : public Label {
                 int text_style = style::STYLE_LINK);
   ~Link() override;
 
-  // Allow providing callbacks that expect either zero or two args, since many
-  // callers don't care about the arguments and can avoid adapter functions this
+  // Allow providing callbacks that expect either zero or one args, since many
+  // callers don't care about the argument and can avoid adapter functions this
   // way.
   void set_callback(base::RepeatingClosure callback) {
     // Adapt this closure to a ClickedCallback by discarding the extra arg.
