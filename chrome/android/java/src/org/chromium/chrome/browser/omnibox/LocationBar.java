@@ -11,6 +11,7 @@ import android.view.Window;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.WindowDelegate;
@@ -82,17 +83,6 @@ public interface LocationBar extends UrlBarDelegate, FakeboxDelegate {
      * Triggered when the current tab has changed to a {@link NewTabPage}.
      */
     void onTabLoadingNTP(NewTabPage ntp);
-
-    /**
-     * Called to set the autocomplete profile to a new profile.
-     */
-    void setAutocompleteProfile(Profile profile);
-
-    /**
-     * Specify whether location bar should present icons when focused.
-     * @param showIcon True if we should show the icons when the url is focused.
-     */
-    void setShowIconsWhenUrlFocused(boolean showIcon);
 
     /**
      * Call to force the UI to update the state of various buttons based on whether or not the
@@ -225,4 +215,11 @@ public interface LocationBar extends UrlBarDelegate, FakeboxDelegate {
      */
     void updateSearchEngineStatusIcon(boolean shouldShowSearchEngineLogo,
             boolean isSearchEngineGoogle, String searchEngineUrl);
+
+    /**
+     * Sets the (observable) supplier of the active profile. This supplier will notify observers of
+     * changes to the active profile, e.g. when selecting an incognito tab model.
+     * @param profileSupplier The supplier of the active profile.
+     */
+    void setProfileSupplier(ObservableSupplier<Profile> profileSupplier);
 }

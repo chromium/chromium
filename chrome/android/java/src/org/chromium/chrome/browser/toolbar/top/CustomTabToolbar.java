@@ -41,6 +41,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
@@ -817,10 +818,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         public void onTabLoadingNTP(NewTabPage ntp) {}
 
         @Override
-        public void setAutocompleteProfile(Profile profile) {}
-
-        @Override
-        public void setShowIconsWhenUrlFocused(boolean showIcon) {}
+        public void setProfileSupplier(ObservableSupplier<Profile> profileSupplier) {}
 
         @Override
         public void setUnfocusedWidth(int unfocusedWidth) {}

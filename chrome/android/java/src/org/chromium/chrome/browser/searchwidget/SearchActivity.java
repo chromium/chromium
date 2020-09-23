@@ -22,6 +22,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WebContentsFactory;
@@ -32,6 +33,7 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.init.SingleWindowKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
@@ -112,6 +114,7 @@ public class SearchActivity extends AsyncInitializationActivity
     private SnackbarManager mSnackbarManager;
     private SearchBoxDataProvider mSearchBoxDataProvider;
     private Tab mTab;
+    private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
 
     @Override
     protected boolean isStartedUpCorrectly(Intent intent) {
@@ -164,6 +167,7 @@ public class SearchActivity extends AsyncInitializationActivity
         mSearchBox.setToolbarDataProvider(mSearchBoxDataProvider);
         mSearchBox.initializeControls(
                 new WindowDelegate(getWindow()), getWindowAndroid(), null, null, null, null);
+        mSearchBox.setProfileSupplier(mProfileSupplier);
 
         // Kick off everything needed for the user to type into the box.
         beginQuery();
@@ -237,16 +241,19 @@ public class SearchActivity extends AsyncInitializationActivity
                 return null;
             }
         };
+
+        WebContents webContents = WebContentsFactory.createWebContents(false, false);
         mTab = new TabBuilder()
                        .setWindow(getWindowAndroid())
                        .setLaunchType(TabLaunchType.FROM_EXTERNAL_APP)
-                       .setWebContents(WebContentsFactory.createWebContents(false, false))
+                       .setWebContents(webContents)
                        .setDelegateFactory(factory)
                        .build();
         mTab.loadUrl(new LoadUrlParams(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
 
         mSearchBoxDataProvider.onNativeLibraryReady(mTab);
         mSearchBox.onNativeLibraryReady();
+        mProfileSupplier.set(Profile.fromWebContents(webContents));
 
         // Force the user to choose a search engine if they have to.
         final Callback<Boolean> onSearchEngineFinalizedCallback = new Callback<Boolean>() {

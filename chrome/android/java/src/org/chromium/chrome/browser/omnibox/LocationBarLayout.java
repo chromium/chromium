@@ -30,10 +30,13 @@ import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -136,6 +139,9 @@ public class LocationBarLayout extends FrameLayout
     private Runnable mKeyboardResizeModeTask;
     private Runnable mKeyboardHideTask;
     private boolean mKeyboardShouldShow;
+    private ObservableSupplier<Profile> mProfileSupplier;
+    private Callback<Profile> mProfileSupplierObserver;
+    private CallbackController mCallbackController = new CallbackController();
 
     /**
      * Class to handle input from a hardware keyboard when the focus is on the URL bar. In
@@ -241,6 +247,17 @@ public class LocationBarLayout extends FrameLayout
         if (mAssistantVoiceSearchService != null) {
             mAssistantVoiceSearchService.destroy();
             mAssistantVoiceSearchService = null;
+        }
+
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
+        }
+
+        if (mProfileSupplier != null) {
+            mProfileSupplier.removeObserver(mProfileSupplierObserver);
+            mProfileSupplier = null;
+            mProfileSupplierObserver = null;
         }
     }
 
@@ -362,6 +379,7 @@ public class LocationBarLayout extends FrameLayout
                         TemplateUrlServiceFactory.get(), GSAState.getInstance(getContext()), this);
         mVoiceRecognitionHandler.setAssistantVoiceSearchService(mAssistantVoiceSearchService);
         onAssistantVoiceSearchServiceChanged();
+        setProfile(mProfileSupplier.get());
     }
 
     /**
@@ -382,22 +400,28 @@ public class LocationBarLayout extends FrameLayout
         mStatusCoordinator.setShouldAnimateIconChanges(shouldAnimate);
     }
 
-    /**
-     * Updates the profile used for generating autocomplete suggestions.
-     * @param profile The profile to be used.
-     */
     @Override
-    public void setAutocompleteProfile(Profile profile) {
-        // This will only be called once at least one tab exists, and the tab model is told to
-        // update its state. During Chrome initialization the tab model update happens after the
-        // call to onNativeLibraryReady, so this assert will not fire.
-        assert mNativeInitialized : "Setting Autocomplete Profile before native side initialized";
-        mAutocompleteCoordinator.setAutocompleteProfile(profile);
-        mOmniboxPrerender.initializeForProfile(profile);
+    public void setProfileSupplier(ObservableSupplier<Profile> profileSupplier) {
+        assert profileSupplier != null;
+        assert mProfileSupplier == null;
+        mProfileSupplier = profileSupplier;
+        mProfileSupplierObserver = mCallbackController.makeCancelable(this::setProfile);
+        mProfileSupplier.addObserver(mProfileSupplierObserver);
     }
 
-    @Override
-    public void setShowIconsWhenUrlFocused(boolean showIcon) {}
+    /**
+     * Updates the profile used by this LocationBar, for, e.g. determining incognito status or
+     * generating autocomplete suggestions..
+     * @param profile The profile to be used.
+     */
+    private void setProfile(Profile profile) {
+        if (profile == null || !mNativeInitialized) return;
+        mAutocompleteCoordinator.setAutocompleteProfile(profile);
+        mOmniboxPrerender.initializeForProfile(profile);
+
+        setShowIconsWhenUrlFocused(
+                SearchEngineLogoUtils.shouldShowSearchEngineLogo(profile.isOffTheRecord()));
+    }
 
     /** Focuses the current page. */
     private void focusCurrentTab() {
@@ -440,6 +464,12 @@ public class LocationBarLayout extends FrameLayout
     public boolean isUrlFocusChangeInProgress() {
         return mUrlFocusChangeInProgress;
     }
+
+    /**
+     * Specify whether location bar should present icons when focused.
+     * @param showIcon True if we should show the icons when the url is focused.
+     */
+    protected void setShowIconsWhenUrlFocused(boolean showIcon) {}
 
     /**
      * @param inProgress Whether a URL focus change is taking place.

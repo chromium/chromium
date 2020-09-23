@@ -130,9 +130,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private final ActivityTabProvider mActivityTabProvider;
     private final LocationBarModel mLocationBarModel;
     private ObservableSupplier<BookmarkBridge> mBookmarkBridgeSupplier;
-    private ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<BookmarkBridge> mBookmarkBridgeSupplierObserver;
-    private final Callback<Profile> mProfileSupplierObserver;
     private TemplateUrlServiceObserver mTemplateUrlObserver;
     private LocationBar mLocationBar;
     private FindToolbarManager mFindToolbarManager;
@@ -250,9 +248,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         // reference the same object.
         mBookmarkBridgeSupplierObserver = this::setBookmarkBridge;
         mBookmarkBridgeSupplier.addObserver(mBookmarkBridgeSupplierObserver);
-        mProfileSupplier = profileSupplier;
-        mProfileSupplierObserver = this::setCurrentProfile;
-        mProfileSupplier.addObserver(mProfileSupplierObserver);
 
         mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
         mOverviewModeBehaviorSupplier.onAvailable(
@@ -286,7 +281,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mToolbarTabController = new ToolbarTabControllerImpl(mLocationBarModel::getTab,
                 // clang-format off
                 () -> mShowStartSurfaceSupplier != null && mShowStartSurfaceSupplier.get(),
-                mProfileSupplier, () -> mBottomControlsCoordinator, this::updateButtonStatus);
+                profileSupplier, () -> mBottomControlsCoordinator, this::updateButtonStatus);
         // clang-format on
 
         BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate =
@@ -327,6 +322,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mToolbar.setPaintInvalidator(invalidator);
         mActionModeController.setTabStripHeight(mToolbar.getTabStripHeight());
         mLocationBar = mToolbar.getLocationBar();
+        mLocationBar.setProfileSupplier(profileSupplier);
         mLocationBar.setToolbarDataProvider(mLocationBarModel);
         mLocationBar.addUrlFocusChangeListener(this);
         mLocationBar.setDefaultTextEditActionModeCallback(
@@ -760,7 +756,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mControlContainer.setReadyForBitmapCapture(true);
         }
 
-        setCurrentProfile(mProfileSupplier.get());
         TraceEvent.end("ToolbarManager.initializeWithNative");
     }
 
@@ -893,11 +888,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         if (mFindToolbarManager != null) {
             mFindToolbarManager.removeObserver(mFindToolbarObserver);
             mFindToolbarManager = null;
-        }
-
-        if (mProfileSupplier != null) {
-            mProfileSupplier.removeObserver(mProfileSupplierObserver);
-            mProfileSupplier = null;
         }
 
         if (mMenuButtonCoordinator != null) {
@@ -1234,17 +1224,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         }
 
         updateButtonStatus();
-    }
-
-    // TODO(https://crbug.com/865801): Inject a profile supplier directly to mLocationBar and remove
-    // setCurrentProfile.
-    private void setCurrentProfile(Profile profile) {
-        if (profile != null && mInitializedWithNative) {
-            mLocationBar.setAutocompleteProfile(profile);
-            mLocationBar.setShowIconsWhenUrlFocused(
-                    SearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                            mLocationBarModel.isIncognito()));
-        }
     }
 
     private void setBookmarkBridge(BookmarkBridge bookmarkBridge) {
