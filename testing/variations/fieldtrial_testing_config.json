@@ -1734,7 +1734,7 @@
             ]
         }
     ],
-    "ContentCapture": [
+    "ContentCaptureExperiment": [
         {
             "platforms": [
                 "android",
@@ -1743,14 +1743,9 @@
             ],
             "experiments": [
                 {
-                    "name": "ContentCaptureUseTextHolder",
-                    "params": {
-                        "task_long_delay_in_milliseconds": "5000",
-                        "task_short_delay_in_milliseconds": "500",
-                        "use_node_id": "false"
-                    },
+                    "name": "EnableExperiment",
                     "enable_features": [
-                        "ContentCapture"
+                        "ContentCaptureTriggeringForExperiment"
                     ]
                 }
             ]
