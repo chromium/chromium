@@ -4,6 +4,7 @@
 
 import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_type_check("closure_compile") {
   deps = [
@@ -185,7 +186,7 @@ js_type_check("closure_compile_module") {
 #    ":internet_detail_page.m",
     ":internet_known_networks_page.m",
 #    ":internet_page.m",
-#    ":internet_page_browser_proxy.m",
+    ":internet_page_browser_proxy.m",
     ":internet_shared_css.m",
 #    ":internet_subpage.m",
 #    ":network_proxy_section.m",
@@ -402,8 +403,7 @@ polymer_modulizer("cellular_setup_dialog") {
   html_type = "dom-module"
 }
 
-import("//ui/webui/resources/tools/js_modulizer.gni")
-
 js_modulizer("modulize") {
   input_files = [ "internet_page_browser_proxy.js" ]
+  namespace_rewrites = os_settings_namespace_rewrites
 }

@@ -45,6 +45,11 @@
            use_base_dir="false"
            compress="false"
            type="BINDATA" />
+  <include name="IDR_OS_SETTINGS_INTERNET_PAGE_BROWSER_PROXY_M_JS"
+           file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/internet_page/internet_page_browser_proxy.m.js"
+           use_base_dir="false"
+           compress="false"
+           type="BINDATA" />
   <include name="IDR_OS_SETTINGS_INTERNET_SHARED_CSS_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/internet_page/internet_shared_css.m.js"
            use_base_dir="false"

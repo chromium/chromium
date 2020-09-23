@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {addSingletonGetter, addWebUIListener} from 'chrome://resources/js/cr.m.js';
+// clang-format on
+
 /** @fileoverview A helper object used for Internet page. */
 cr.define('settings', function() {
   /** @interface */
-  class InternetPageBrowserProxy {
+  /* #export */ class InternetPageBrowserProxy {
     /**
      * Shows the Cellular activation UI.
      * @param {string} guid
@@ -47,7 +51,7 @@ cr.define('settings', function() {
   /**
    * @implements {settings.InternetPageBrowserProxy}
    */
-  class InternetPageBrowserProxyImpl {
+  /* #export */ class InternetPageBrowserProxyImpl {
     /** @override */
     showCellularSetupUI(guid) {
       chrome.send('showCellularSetupUI', [guid]);

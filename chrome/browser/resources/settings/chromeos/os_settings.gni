@@ -32,6 +32,7 @@ os_settings_namespace_rewrites = settings_namespace_rewrites +
                                    "settings.FingerprintResultType|FingerprintResultType",
                                    "settings.FingerprintScan|FingerprintScan",
                                    "settings.FingerprintSetupStep|FingerprintSetupStep",
+                                   "settings.InternetPageBrowserProxy|InternetPageBrowserProxy",
                                    "settings.input_method_util.generateOptions|generateOptions",
                                    "settings.input_method_util.getFirstPartyInputMethodEngineId|getFirstPartyInputMethodEngineId",
                                    "settings.input_method_util.getOptionLabelName|getOptionLabelName",
