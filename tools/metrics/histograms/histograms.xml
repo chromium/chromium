@@ -173981,7 +173981,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Sync.BookmarksWithoutFullTitle.OnInitialMerge"
-    units="bookmarks" expires_after="M87">
+    units="bookmarks" expires_after="M89">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromiumg.org</owner>
   <summary>
@@ -173991,7 +173991,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Sync.BookmarksWithoutFullTitle.OnRemoteUpdate"
-    units="bookmarks" expires_after="M87">
+    units="bookmarks" expires_after="M89">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromiumg.org</owner>
   <summary>
