@@ -1255,15 +1255,17 @@ bool WidgetBase::ComputePreferCompositingToLCDText() {
 gfx::PointF WidgetBase::DIPsToBlinkSpace(const gfx::PointF& point) {
   if (!use_zoom_for_dsf_)
     return point;
-  return gfx::ConvertPointToPixel(
-      client_->GetOriginalScreenInfo().device_scale_factor, point);
+  // TODO(danakj): Should this be GetScreenInfo() so it changes under emulation?
+  return gfx::ScalePoint(point,
+                         client_->GetOriginalScreenInfo().device_scale_factor);
 }
 
 gfx::PointF WidgetBase::BlinkSpaceToDIPs(const gfx::PointF& point) {
   if (!use_zoom_for_dsf_)
     return point;
-  return gfx::ConvertPointToDIP(
-      client_->GetOriginalScreenInfo().device_scale_factor, point);
+  // TODO(danakj): Should this be GetScreenInfo() so it changes under emulation?
+  return gfx::ScalePoint(
+      point, 1.f / client_->GetOriginalScreenInfo().device_scale_factor);
 }
 
 gfx::Size WidgetBase::DIPsToBlinkSpace(const gfx::Size& size) {

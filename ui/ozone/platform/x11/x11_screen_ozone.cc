@@ -10,6 +10,7 @@
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/platform_window/x11/x11_topmost_window_finder.h"
 #include "ui/platform_window/x11/x11_window.h"
@@ -27,10 +28,6 @@ float GetDeviceScaleFactor() {
   if (display::Display::HasForceDeviceScaleFactor())
     device_scale_factor = display::Display::GetForcedDeviceScaleFactor();
   return device_scale_factor;
-}
-
-gfx::Point PixelToDIPPoint(const gfx::Point& pixel_point) {
-  return gfx::ConvertPointToDIP(GetDeviceScaleFactor(), pixel_point);
 }
 
 }  // namespace
@@ -74,14 +71,20 @@ display::Display X11ScreenOzone::GetDisplayForAcceleratedWidget(
 }
 
 gfx::Point X11ScreenOzone::GetCursorScreenPoint() const {
+  base::Optional<gfx::Point> point_in_pixels;
   if (ui::X11EventSource::HasInstance()) {
-    base::Optional<gfx::Point> point =
-        ui::X11EventSource::GetInstance()
-            ->GetRootCursorLocationFromCurrentEvent();
-    if (point)
-      return PixelToDIPPoint(point.value());
+    point_in_pixels = ui::X11EventSource::GetInstance()
+                          ->GetRootCursorLocationFromCurrentEvent();
   }
-  return PixelToDIPPoint(GetCursorLocation());
+  if (!point_in_pixels) {
+    // This call is expensive so we explicitly only call it when
+    // |point_in_pixels| is not set. We note that base::Optional::value_or()
+    // would cause it to be called regardless.
+    point_in_pixels = GetCursorLocation();
+  }
+  // TODO(danakj): Should this be rounded? Or kept as a floating point?
+  return gfx::ToFlooredPoint(
+      gfx::ConvertPointToDips(*point_in_pixels, GetDeviceScaleFactor()));
 }
 
 gfx::AcceleratedWidget X11ScreenOzone::GetAcceleratedWidgetAtScreenPoint(

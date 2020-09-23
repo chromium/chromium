@@ -802,12 +802,14 @@ bool RenderWidgetHostViewBase::TransformPointToTargetCoordSpace(
                               &transform_root_to_original);
   if (!transform_root_to_original.TransformPointReverse(&point_in_pixels))
     return false;
+  gfx::PointF transformed_point_in_physical_pixels;
   if (!query->TransformLocationForTarget(
-          target_ancestors, point_in_pixels.AsPointF(), transformed_point)) {
+          target_ancestors, point_in_pixels.AsPointF(),
+          &transformed_point_in_physical_pixels)) {
     return false;
   }
-  *transformed_point =
-      gfx::ConvertPointToDIP(device_scale_factor, *transformed_point);
+  *transformed_point = gfx::ConvertPointToDips(
+      transformed_point_in_physical_pixels, device_scale_factor);
   return true;
 }
 

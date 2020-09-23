@@ -562,7 +562,7 @@ RenderWidgetTargetResult RenderWidgetHostInputEventRouter::FindViewAtLocation(
   frame_sink_id = target.frame_sink_id;
   if (frame_sink_id.is_valid()) {
     *transformed_point =
-        gfx::ConvertPointToDIP(device_scale_factor, target.location_in_target);
+        gfx::ConvertPointToDips(target.location_in_target, device_scale_factor);
   } else {
     *transformed_point = point;
   }

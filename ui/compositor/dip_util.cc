@@ -23,16 +23,6 @@
 
 namespace ui {
 
-gfx::Point ConvertPointToDIP(const Layer* layer,
-                             const gfx::Point& point_in_pixel) {
-  return gfx::ConvertPointToDIP(layer->device_scale_factor(), point_in_pixel);
-}
-
-gfx::PointF ConvertPointToDIP(const Layer* layer,
-                              const gfx::PointF& point_in_pixel) {
-  return gfx::ConvertPointToDIP(layer->device_scale_factor(), point_in_pixel);
-}
-
 gfx::Size ConvertSizeToDIP(const Layer* layer,
                            const gfx::Size& size_in_pixel) {
   return gfx::ConvertSizeToDIP(layer->device_scale_factor(), size_in_pixel);

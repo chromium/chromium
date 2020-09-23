@@ -35,6 +35,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/widget/widget.h"
@@ -321,16 +322,17 @@ void CursorWindowController::UpdateCursorImage() {
       ui::GetScaleForScaleFactor(ui::GetSupportedScaleFactor(original_scale));
 
   gfx::ImageSkia image;
+  gfx::Point hot_point_in_physical_pixels;
   if (cursor_.type() == ui::mojom::CursorType::kCustom) {
     const SkBitmap& bitmap = cursor_.custom_bitmap();
     if (bitmap.isNull())
       return;
     image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-    hot_point_ = cursor_.custom_hotspot();
+    hot_point_in_physical_pixels = cursor_.custom_hotspot();
   } else {
     int resource_id;
     if (!ui::GetCursorDataFor(cursor_size_, cursor_.type(), cursor_scale,
-                              &resource_id, &hot_point_)) {
+                              &resource_id, &hot_point_in_physical_pixels)) {
       return;
     }
     image =
@@ -350,14 +352,17 @@ void CursorWindowController::UpdateCursorImage() {
     resized = gfx::ImageSkiaOperations::CreateResizedImage(
         image, skia::ImageOperations::ResizeMethod::RESIZE_GOOD,
         gfx::ScaleToCeiledSize(image.size(), rescale));
-    hot_point_ = gfx::ScaleToCeiledPoint(hot_point_, rescale);
+    hot_point_in_physical_pixels =
+        gfx::ScaleToCeiledPoint(hot_point_in_physical_pixels, rescale);
   }
 
   const gfx::ImageSkiaRep& image_rep = resized.GetRepresentation(cursor_scale);
   delegate_->SetCursorImage(resized.size(),
                             gfx::ImageSkia(gfx::ImageSkiaRep(
                                 GetAdjustedBitmap(image_rep), cursor_scale)));
-  hot_point_ = gfx::ConvertPointToDIP(cursor_scale, hot_point_);
+  // TODO(danakj): Should this be rounded? Or kept as a floating point?
+  hot_point_ = gfx::ToFlooredPoint(
+      gfx::ConvertPointToDips(hot_point_in_physical_pixels, cursor_scale));
 
   if (cursor_view_widget_) {
     static_cast<cursor::CursorView*>(cursor_view_widget_->GetContentsView())

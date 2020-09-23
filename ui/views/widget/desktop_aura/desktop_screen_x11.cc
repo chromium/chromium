@@ -21,6 +21,7 @@
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/switches.h"
 #include "ui/platform_window/x11/x11_topmost_window_finder.h"
@@ -48,14 +49,18 @@ void DesktopScreenX11::Init() {
 gfx::Point DesktopScreenX11::GetCursorScreenPoint() {
   TRACE_EVENT0("views", "DesktopScreenX11::GetCursorScreenPoint()");
 
-  base::Optional<gfx::Point> point;
+  base::Optional<gfx::Point> point_in_pixels;
   if (const auto* const event_source = ui::X11EventSource::GetInstance())
-    point = event_source->GetRootCursorLocationFromCurrentEvent();
-  return gfx::ConvertPointToDIP(
-      GetXDisplayScaleFactor(),
-      // NB: Do NOT call value_or() here, since that would defeat the purpose of
-      // caching |point|.
-      point ? point.value() : x11_display_manager_->GetCursorLocation());
+    point_in_pixels = event_source->GetRootCursorLocationFromCurrentEvent();
+  if (!point_in_pixels) {
+    // This call is expensive so we explicitly only call it when
+    // |point_in_pixels| is not set. We note that base::Optional::value_or()
+    // would cause it to be called regardless.
+    point_in_pixels = x11_display_manager_->GetCursorLocation();
+  }
+  // TODO(danakj): Should this be rounded? Or kept as a floating point?
+  return gfx::ToFlooredPoint(
+      gfx::ConvertPointToDips(*point_in_pixels, GetXDisplayScaleFactor()));
 }
 
 bool DesktopScreenX11::IsWindowUnderCursor(gfx::NativeWindow window) {
