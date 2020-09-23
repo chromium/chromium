@@ -29,6 +29,7 @@ source_set("lib") {
   deps = [
     ":buildflags",
     "//base",
+    "//chrome/services/speech/soda",
     "//components/speech",
     "//content/public/browser:proto",
     "//mojo/public/cpp/bindings",
@@ -36,10 +37,6 @@ source_set("lib") {
     "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
-
-  if (enable_soda) {
-    deps += [ "//chrome/services/soda/internal" ]
-  }
 }
 
 source_set("unit_tests") {

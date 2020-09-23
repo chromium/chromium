@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/services/speech/buildflags.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
 #include "components/soda/constants.h"
@@ -136,25 +135,25 @@ void RegisterSodaJaJpComponent(ComponentUpdateService* cus,
                                PrefService* prefs,
                                base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if BUILDFLAG(ENABLE_SODA)
-  if (!prefs->GetBoolean(prefs::kLiveCaptionEnabled) ||
-      !base::FeatureList::IsEnabled(media::kLiveCaption)) {
-    return;
-  }
+  if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
+    if (!prefs->GetBoolean(prefs::kLiveCaptionEnabled) ||
+        !base::FeatureList::IsEnabled(media::kLiveCaption)) {
+      return;
+    }
 
-  auto installer = base::MakeRefCounted<ComponentInstaller>(
-      std::make_unique<SodaJaJpComponentInstallerPolicy>(base::BindRepeating(
-          [](ComponentUpdateService* cus, PrefService* prefs,
-             const base::FilePath& install_dir) {
+    auto installer = base::MakeRefCounted<ComponentInstaller>(
+        std::make_unique<SodaJaJpComponentInstallerPolicy>(base::BindRepeating(
+            [](ComponentUpdateService* cus, PrefService* prefs,
+               const base::FilePath& install_dir) {
               content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
                   ->PostTask(FROM_HERE,
                              base::BindOnce(&UpdateSodaJaJpInstallDirPref,
                                             prefs, install_dir));
-          },
-          cus, prefs)));
+            },
+            cus, prefs)));
 
-  installer->Register(cus, std::move(callback));
-#endif
+    installer->Register(cus, std::move(callback));
+  }
 }
 
 bool UninstallSodaJaJpComponent(ComponentUpdateService* cus,

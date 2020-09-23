@@ -22,9 +22,9 @@ constexpr base::TimeDelta kIdleProcessTimeout = base::TimeDelta::FromSeconds(5);
 
 SpeechRecognitionService::SpeechRecognitionService(
     content::BrowserContext* context)
-    : context_(context)
-{
-}
+    : context_(context),
+      enable_soda_(
+          base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {}
 
 SpeechRecognitionService::~SpeechRecognitionService() = default;
 
@@ -35,24 +35,26 @@ void SpeechRecognitionService::Create(
 }
 
 void SpeechRecognitionService::OnNetworkServiceDisconnect() {
-#if !BUILDFLAG(ENABLE_SODA)
-  // If the Speech On-Device API is not enabled, pass the URL loader factory to
-  // the speech recognition service to allow network requests to the Open Speech
-  // API.
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
-  network::mojom::URLLoaderFactoryParamsPtr params =
-      network::mojom::URLLoaderFactoryParams::New();
-  params->process_id = network::mojom::kBrowserProcessId;
-  params->is_trusted = false;
-  params->automatically_assign_isolation_info = true;
-  network::mojom::NetworkContext* network_context =
-      content::BrowserContext::GetDefaultStoragePartition(context_)
-          ->GetNetworkContext();
-  network_context->CreateURLLoaderFactory(
-      url_loader_factory.InitWithNewPipeAndPassReceiver(), std::move(params));
-  speech_recognition_service_->SetUrlLoaderFactory(
-      std::move(url_loader_factory));
-#endif  // !BUILDFLAG(ENABLE_SODA)
+  if (!enable_soda_) {
+    // If the Speech On-Device API
+    // is not enabled, pass the URL
+    // loader factory to
+    // the speech recognition service to allow network requests to the Open
+    // Speech API.
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
+    network::mojom::URLLoaderFactoryParamsPtr params =
+        network::mojom::URLLoaderFactoryParams::New();
+    params->process_id = network::mojom::kBrowserProcessId;
+    params->is_trusted = false;
+    params->automatically_assign_isolation_info = true;
+    network::mojom::NetworkContext* network_context =
+        content::BrowserContext::GetDefaultStoragePartition(context_)
+            ->GetNetworkContext();
+    network_context->CreateURLLoaderFactory(
+        url_loader_factory.InitWithNewPipeAndPassReceiver(), std::move(params));
+    speech_recognition_service_->SetUrlLoaderFactory(
+        std::move(url_loader_factory));
+  }
 }
 
 void SpeechRecognitionService::LaunchIfNotRunning() {
@@ -61,20 +63,22 @@ void SpeechRecognitionService::LaunchIfNotRunning() {
 
   PrefService* prefs = user_prefs::UserPrefs::Get(context_);
   DCHECK(prefs);
-#if BUILDFLAG(ENABLE_SODA)
-  auto binary_path = prefs->GetFilePath(prefs::kSodaBinaryPath);
-  auto config_path = SpeechRecognitionService::GetSodaConfigPath(prefs);
-  if (binary_path.empty() || config_path.empty()) {
-    LOG(ERROR) << "Unable to find SODA files on the device.";
-    return;
-  }
-#endif
 
-  content::ServiceProcessHost::Launch(
-      speech_recognition_service_.BindNewPipeAndPassReceiver(),
-      content::ServiceProcessHost::Options()
-          .WithDisplayName(IDS_UTILITY_PROCESS_SPEECH_RECOGNITION_SERVICE_NAME)
-          .Pass());
+  if (enable_soda_) {
+    content::ServiceProcessHost::Launch(
+        speech_recognition_service_.BindNewPipeAndPassReceiver(),
+        content::ServiceProcessHost::Options()
+            .WithDisplayName(
+                IDS_UTILITY_PROCESS_SPEECH_RECOGNITION_SERVICE_NAME)
+            .Pass());
+  } else {
+    content::ServiceProcessHost::Launch(
+        speech_recognition_service_.BindNewPipeAndPassReceiver(),
+        content::ServiceProcessHost::Options()
+            .WithDisplayName(
+                IDS_UTILITY_PROCESS_SPEECH_RECOGNITION_SERVICE_NAME)
+            .Pass());
+  }
 
   // Ensure that if the interface is ever disconnected (e.g. the service
   // process crashes) or goes idle for a short period of time -- meaning there
@@ -85,9 +89,17 @@ void SpeechRecognitionService::LaunchIfNotRunning() {
   speech_recognition_service_.reset_on_idle_timeout(kIdleProcessTimeout);
 
   speech_recognition_service_client_.reset();
-#if BUILDFLAG(ENABLE_SODA)
-  speech_recognition_service_->SetSodaPath(binary_path, config_path);
-#endif
+
+  if (enable_soda_) {
+    auto binary_path = prefs->GetFilePath(prefs::kSodaBinaryPath);
+    auto config_path = SpeechRecognitionService::GetSodaConfigPath(prefs);
+    if (binary_path.empty() || config_path.empty()) {
+      LOG(ERROR) << "Unable to find SODA files on the device.";
+      return;
+    }
+    speech_recognition_service_->SetSodaPath(binary_path, config_path);
+  }
+
   speech_recognition_service_->BindSpeechRecognitionServiceClient(
       speech_recognition_service_client_.BindNewPipeAndPassRemote());
   OnNetworkServiceDisconnect();

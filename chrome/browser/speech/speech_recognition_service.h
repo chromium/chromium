@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SPEECH_SPEECH_RECOGNITION_SERVICE_H_
 #define CHROME_BROWSER_SPEECH_SPEECH_RECOGNITION_SERVICE_H_
 
-#include "chrome/services/speech/buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -45,6 +44,10 @@ class SpeechRecognitionService
 
   // The browser context associated with the keyed service.
   content::BrowserContext* const context_;
+
+  // A flag indicating whether to use the Speech On-Device API (SODA) for speech
+  // recognition.
+  bool enable_soda_ = false;
 
   // The remote to the speech recognition service. The browser will not launch a
   // new speech recognition service process if this remote is already bound.

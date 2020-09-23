@@ -3953,7 +3953,6 @@ static_library("browser") {
       "//chrome/services/sharing/public/cpp",
       "//chrome/services/sharing/public/mojom",
       "//chrome/services/sharing/public/proto",
-      "//chrome/services/speech:buildflags",
       "//components/download/quarantine",
       "//components/feedback",
       "//components/image_fetcher/core",

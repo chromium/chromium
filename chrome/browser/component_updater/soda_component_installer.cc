@@ -11,7 +11,6 @@
 #include "chrome/browser/component_updater/soda_en_us_component_installer.h"
 #include "chrome/browser/component_updater/soda_ja_jp_component_installer.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/services/speech/buildflags.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
 #include "components/soda/constants.h"
@@ -137,64 +136,65 @@ void RegisterSODAComponent(ComponentUpdateService* cus,
   if (!base::FeatureList::IsEnabled(media::kLiveCaption))
     return;
 
-#if BUILDFLAG(ENABLE_SODA)
-  auto installer = base::MakeRefCounted<ComponentInstaller>(
-      std::make_unique<SODAComponentInstallerPolicy>(base::BindRepeating(
-          [](ComponentUpdateService* cus, PrefService* prefs,
-             const base::FilePath& install_dir) {
+  if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
+    auto installer = base::MakeRefCounted<ComponentInstaller>(
+        std::make_unique<SODAComponentInstallerPolicy>(base::BindRepeating(
+            [](ComponentUpdateService* cus, PrefService* prefs,
+               const base::FilePath& install_dir) {
               content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
                   ->PostTask(FROM_HERE,
                              base::BindOnce(&UpdateSODAInstallDirPref, prefs,
                                             install_dir));
-          },
-          cus, prefs)));
+            },
+            cus, prefs)));
 
-  if (prefs->GetBoolean(prefs::kLiveCaptionEnabled)) {
-    installer->Register(cus, std::move(callback));
-  } else {
-    // Register and uninstall the SODA component to delete the previously
-    // installed SODA files.
-    if (!prefs->GetFilePath(prefs::kSodaBinaryPath).empty()) {
-      installer->Register(
-          cus,
-          base::BindOnce(
-              [](ComponentUpdateService* cus, PrefService* prefs) {
-                if (component_updater::UninstallSODAComponent(cus, prefs)) {
-                  prefs->SetFilePath(prefs::kSodaBinaryPath, base::FilePath());
-                  prefs->SetFilePath(prefs::kSodaEnUsConfigPath,
-                                     base::FilePath());
-                }
-              },
-              cus, prefs));
+    if (prefs->GetBoolean(prefs::kLiveCaptionEnabled)) {
+      installer->Register(cus, std::move(callback));
+    } else {
+      // Register and uninstall the SODA component to delete the previously
+      // installed SODA files.
+      if (!prefs->GetFilePath(prefs::kSodaBinaryPath).empty()) {
+        installer->Register(
+            cus,
+            base::BindOnce(
+                [](ComponentUpdateService* cus, PrefService* prefs) {
+                  if (component_updater::UninstallSODAComponent(cus, prefs)) {
+                    prefs->SetFilePath(prefs::kSodaBinaryPath,
+                                       base::FilePath());
+                    prefs->SetFilePath(prefs::kSodaEnUsConfigPath,
+                                       base::FilePath());
+                  }
+                },
+                cus, prefs));
+      }
     }
   }
-#endif
 }
 
 void RegisterSodaLanguageComponent(ComponentUpdateService* cus,
                                    PrefService* prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if BUILDFLAG(ENABLE_SODA)
-  speech::LanguageCode language = speech::GetLanguageCode(
-      prefs->GetString(prefs::kLiveCaptionLanguageCode));
-  switch (language) {
-    case speech::LanguageCode::kNone:
-      // Do nothing.
-      break;
-    case speech::LanguageCode::kEnUs:
-      RegisterSodaEnUsComponent(
-          cus, prefs,
-          base::BindOnce(&SodaEnUsComponentInstallerPolicy::
-                             UpdateSodaEnUsComponentOnDemand));
-      break;
-    case speech::LanguageCode::kJaJp:
-      RegisterSodaJaJpComponent(
-          cus, prefs,
-          base::BindOnce(&SodaJaJpComponentInstallerPolicy::
-                             UpdateSodaJaJpComponentOnDemand));
-      break;
+  if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
+    speech::LanguageCode language = speech::GetLanguageCode(
+        prefs->GetString(prefs::kLiveCaptionLanguageCode));
+    switch (language) {
+      case speech::LanguageCode::kNone:
+        // Do nothing.
+        break;
+      case speech::LanguageCode::kEnUs:
+        RegisterSodaEnUsComponent(
+            cus, prefs,
+            base::BindOnce(&SodaEnUsComponentInstallerPolicy::
+                               UpdateSodaEnUsComponentOnDemand));
+        break;
+      case speech::LanguageCode::kJaJp:
+        RegisterSodaJaJpComponent(
+            cus, prefs,
+            base::BindOnce(&SodaJaJpComponentInstallerPolicy::
+                               UpdateSodaJaJpComponentOnDemand));
+        break;
+    }
   }
-#endif
 }
 
 bool UninstallSODAComponent(ComponentUpdateService* cus, PrefService* prefs) {

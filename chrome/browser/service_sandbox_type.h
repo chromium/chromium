@@ -7,11 +7,8 @@
 
 #include "build/build_config.h"
 #include "content/public/browser/service_process_host.h"
+#include "media/base/media_switches.h"
 #include "sandbox/policy/sandbox_type.h"
-
-#if !defined(OS_ANDROID)
-#include "chrome/services/speech/buildflags.h"
-#endif  // !defined(OS_ANDROID)
 
 // This file maps service classes to sandbox types.  Services which
 // require a non-utility sandbox can be added here.  See
@@ -79,7 +76,6 @@ content::GetServiceSandboxType<chrome::mojom::ProfileImport>() {
 
 // media::mojom::SpeechRecognitionService
 #if !defined(OS_ANDROID)
-#if BUILDFLAG(ENABLE_SODA)
 namespace media {
 namespace mojom {
 class SpeechRecognitionService;
@@ -89,9 +85,12 @@ class SpeechRecognitionService;
 template <>
 inline sandbox::policy::SandboxType
 content::GetServiceSandboxType<media::mojom::SpeechRecognitionService>() {
-  return sandbox::policy::SandboxType::kSpeechRecognition;
+  if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
+    return sandbox::policy::SandboxType::kSpeechRecognition;
+  } else {
+    return sandbox::policy::SandboxType::kUtility;
+  }
 }
-#endif  // BUILDFLAG(ENABLE_SODA)
 #endif  // !defined(OS_ANDROID)
 
 // printing::mojom::PrintingService

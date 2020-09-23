@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/services/speech/buildflags.h"
 #include "chrome/services/speech/cloud_speech_recognition_client.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -66,9 +65,8 @@ class SpeechRecognitionRecognizerImpl
   // the speech recognition service back to the renderer.
   mojo::Remote<media::mojom::SpeechRecognitionRecognizerClient> client_remote_;
 
-#if BUILDFLAG(ENABLE_SODA)
+  bool enable_soda_ = false;
   std::unique_ptr<soda::SodaClient> soda_client_;
-#endif  // BUILDFLAG(ENABLE_SODA)
 
   std::unique_ptr<CloudSpeechRecognitionClient> cloud_client_;
 

@@ -33,7 +33,6 @@ include_rules = [
   "+chrome/services/printing/public",
   "+chrome/services/sharing/public",
   "+chrome/services/removable_storage_writer/public",
-  "+chrome/services/speech/buildflags.h",
   "+chrome/services/util_win/public",
   "+chromeos",
   "+components/about_ui",

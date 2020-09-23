@@ -1,5 +1,4 @@
 include_rules = [
-  "+chrome/services/soda/internal",
   "+chrome/services/speech",
   "+components/speech",
   "+content/browser/speech",
