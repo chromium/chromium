@@ -591,6 +591,9 @@ LockContentsView::UserState::UserState(const LoginUserInfo& user_info)
   if (user_info.auth_type == proximity_auth::mojom::AuthType::ONLINE_SIGN_IN)
     force_online_sign_in = true;
   show_pin_pad_for_password = user_info.show_pin_pad_for_password;
+  disable_auth = !user_info.is_multiprofile_allowed &&
+                 Shell::Get()->session_controller()->GetSessionState() ==
+                     session_manager::SessionState::LOGIN_SECONDARY;
 }
 
 LockContentsView::UserState::UserState(UserState&&) = default;

@@ -25,6 +25,7 @@
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/login_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/clock_model.h"
@@ -122,7 +123,8 @@ constexpr int kDistanceBetweenPwdFieldAndChallengeResponseViewDp = 0;
 constexpr int kDisabledAuthMessageVerticalBorderDp = 16;
 constexpr int kDisabledAuthMessageHorizontalBorderDp = 16;
 constexpr int kDisabledAuthMessageChildrenSpacingDp = 4;
-constexpr int kDisabledAuthMessageWidthDp = 204;
+constexpr int kDisabledAuthMessageTimeWidthDp = 204;
+constexpr int kDisabledAuthMessageMultiprofileWidthDp = 304;
 constexpr int kDisabledAuthMessageHeightDp = 98;
 constexpr int kDisabledAuthMessageIconSizeDp = 24;
 constexpr int kDisabledAuthMessageTitleFontSizeDeltaDp = 3;
@@ -681,7 +683,14 @@ class LoginAuthUserView::DisabledAuthMessageView : public views::View {
     DisabledAuthMessageView* const view_;
   };
 
-  DisabledAuthMessageView() {
+  // If the reason of disabled auth is multiprofile policy, then we can already
+  // set the text and message. Otherwise, in case of disabled auth because of
+  // time limit exceeded on child account, we wait for SetAuthDisabledMessage to
+  // be called.
+  DisabledAuthMessageView(bool shown_because_of_multiprofile_policy,
+                          MultiProfileUserBehavior multiprofile_policy)
+      : shown_because_of_multiprofile_policy_(
+            shown_because_of_multiprofile_policy) {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical,
         gfx::Insets(kDisabledAuthMessageVerticalBorderDp,
@@ -689,16 +698,20 @@ class LoginAuthUserView::DisabledAuthMessageView : public views::View {
         kDisabledAuthMessageChildrenSpacingDp));
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
-    SetPreferredSize(
-        gfx::Size(kDisabledAuthMessageWidthDp, kDisabledAuthMessageHeightDp));
+    SetPreferredSize(gfx::Size(shown_because_of_multiprofile_policy
+                                   ? kDisabledAuthMessageMultiprofileWidthDp
+                                   : kDisabledAuthMessageTimeWidthDp,
+                               kDisabledAuthMessageHeightDp));
     SetFocusBehavior(FocusBehavior::ALWAYS);
-    message_icon_ = new views::ImageView();
-    message_icon_->SetPreferredSize(gfx::Size(kDisabledAuthMessageIconSizeDp,
-                                              kDisabledAuthMessageIconSizeDp));
-    message_icon_->SetImage(
-        gfx::CreateVectorIcon(kLockScreenTimeLimitMoonIcon,
-                              kDisabledAuthMessageIconSizeDp, SK_ColorWHITE));
-    AddChildView(message_icon_);
+    if (!shown_because_of_multiprofile_policy) {
+      message_icon_ = new views::ImageView();
+      message_icon_->SetPreferredSize(gfx::Size(
+          kDisabledAuthMessageIconSizeDp, kDisabledAuthMessageIconSizeDp));
+      message_icon_->SetImage(
+          gfx::CreateVectorIcon(kLockScreenTimeLimitMoonIcon,
+                                kDisabledAuthMessageIconSizeDp, SK_ColorWHITE));
+      AddChildView(message_icon_);
+    }
 
     auto decorate_label = [](views::Label* label) {
       label->SetSubpixelRenderingEnabled(false);
@@ -724,6 +737,27 @@ class LoginAuthUserView::DisabledAuthMessageView : public views::View {
     decorate_label(message_contents_);
     message_contents_->SetMultiLine(true);
     AddChildView(message_contents_);
+
+    if (shown_because_of_multiprofile_policy) {
+      message_title_->SetText(l10n_util::GetStringUTF16(
+          IDS_ASH_LOGIN_MULTI_PROFILES_RESTRICTED_POLICY_TITLE));
+      switch (multiprofile_policy) {
+        case MultiProfileUserBehavior::PRIMARY_ONLY:
+          message_contents_->SetText(l10n_util::GetStringUTF16(
+              IDS_ASH_LOGIN_MULTI_PROFILES_PRIMARY_ONLY_POLICY_MSG));
+          break;
+        case MultiProfileUserBehavior::NOT_ALLOWED:
+          message_contents_->SetText(l10n_util::GetStringUTF16(
+              IDS_ASH_LOGIN_MULTI_PROFILES_NOT_ALLOWED_POLICY_MSG));
+          break;
+        case MultiProfileUserBehavior::OWNER_PRIMARY_ONLY:
+          message_contents_->SetText(l10n_util::GetStringUTF16(
+              IDS_ASH_LOGIN_MULTI_PROFILES_OWNER_PRIMARY_ONLY_MSG));
+          break;
+        default:
+          NOTREACHED();
+      }
+    }
   }
 
   ~DisabledAuthMessageView() override = default;
@@ -731,6 +765,9 @@ class LoginAuthUserView::DisabledAuthMessageView : public views::View {
   // Set the parameters needed to render the message.
   void SetAuthDisabledMessage(const AuthDisabledData& auth_disabled_data,
                               bool use_24hour_clock) {
+    // Do not do anything if message is already shown.
+    if (shown_because_of_multiprofile_policy_)
+      return;
     LockScreenMessage message = GetLockScreenMessage(
         auth_disabled_data.reason, auth_disabled_data.auth_reenabled_time,
         auth_disabled_data.device_used_time, use_24hour_clock);
@@ -758,6 +795,10 @@ class LoginAuthUserView::DisabledAuthMessageView : public views::View {
   views::Label* message_title_;
   views::Label* message_contents_;
   views::ImageView* message_icon_;
+  // Used in case a child account has triggered the disabled auth message
+  // because of time limit exceeded while it also has disabled auth by
+  // multiprofile policy.
+  bool shown_because_of_multiprofile_policy_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(DisabledAuthMessageView);
 };
@@ -1025,7 +1066,12 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       /*multiline*/ false);
   online_sign_in_message_ = online_sign_in_message.get();
 
-  auto disabled_auth_message = std::make_unique<DisabledAuthMessageView>();
+  bool shown_because_of_multiprofile_policy =
+      !user.is_multiprofile_allowed &&
+      Shell::Get()->session_controller()->GetSessionState() ==
+          session_manager::SessionState::LOGIN_SECONDARY;
+  auto disabled_auth_message = std::make_unique<DisabledAuthMessageView>(
+      shown_because_of_multiprofile_policy, user.multiprofile_policy);
   disabled_auth_message_ = disabled_auth_message.get();
 
   auto locked_tpm_message_view = std::make_unique<LockedTpmMessageView>();

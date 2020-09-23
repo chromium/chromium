@@ -2271,6 +2271,18 @@ This file contains the strings for ash.
       <message name="IDS_ASH_LOGIN_MANUAL_LOCK_MESSAGE" desc="Message shown to user indicating that their parent locked the device.">
         Your parent locked this device
       </message>
+      <message name="IDS_ASH_LOGIN_MULTI_PROFILES_RESTRICTED_POLICY_TITLE" desc="Text that is shown on the title of the bubble shown for user pod which is not allowed in multi-profiles session.">
+        Can't set up multiple sign-in
+      </message>
+      <message name="IDS_ASH_LOGIN_MULTI_PROFILES_NOT_ALLOWED_POLICY_MSG" desc="Text that is shown on the bubble shown for user pod which is not allowed in multi-profiles session because of not-allowed policy or because of usage policy-pushed certificates.">
+        The administrator for this account has disallowed multiple sign-in.
+      </message>
+      <message name="IDS_ASH_LOGIN_MULTI_PROFILES_PRIMARY_ONLY_POLICY_MSG" desc="Text that is shown on the bubble shown for user pod which is not allowed in multi-profiles session because of primary-only policy.">
+        The administrator for this account requires this account to be the first signed-in account in a multiple sign-in session.
+      </message>
+      <message name="IDS_ASH_LOGIN_MULTI_PROFILES_OWNER_PRIMARY_ONLY_MSG" desc="Text that is shown on the bubble shown for owner user pod which is not allowed in multi-profiles session because it has to be primary user in the session.">
+        This owner account has to be the first signed-in account in a multiple sign-in session.
+      </message>
       <message name="IDS_ASH_LOGIN_PUBLIC_ACCOUNT_MONITORING_INFO" desc="Text shown in the warning dialog after user clicks on the learn more link, notifying the user of potential security and privacy implications of using the device">
         The admin of this device has the ability to:
       </message>

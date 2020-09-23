@@ -7235,7 +7235,7 @@
     },
     {
       'name': 'ChromeOsMultiProfileUserBehavior',
-      'owners': ['xiyuan@chromium.org', 'sinhak@chromium.org'],
+      'owners': ['xiyuan@chromium.org', 'sinhak@chromium.org', 'tellier@google.com', 'rsorokin@chromium.org', 'cros-oac@google.com'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',

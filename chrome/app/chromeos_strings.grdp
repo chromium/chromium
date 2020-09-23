@@ -1349,6 +1349,7 @@
   <message name="IDS_WILCO_NOTIFICATION_LEARN_MORE" desc="Label on button in various Wilco notification.">
     Learn More
   </message>
+  <!-- Multi-profiles related strings, should be synced with corresponding Ash strings until they get removed. -->
   <message name="IDS_MULTI_PROFILES_RESTRICTED_POLICY_TITLE" desc="Text that is shown on the title of the bubble shown for user pod which is not allowed in multi-profiles session.">
     Can't set up multiple sign-in
   </message>
