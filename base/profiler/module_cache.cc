@@ -39,8 +39,11 @@ const ModuleCache::Module* ModuleCache::GetModuleForAddress(uintptr_t address) {
   std::unique_ptr<const Module> new_module = CreateModuleForAddress(address);
   if (!new_module)
     return nullptr;
-  const auto loc = native_modules_.insert(std::move(new_module));
-  return loc.first->get();
+  const auto result = native_modules_.insert(std::move(new_module));
+  // Ensure that the new module was inserted an isn't equivalent to an existing
+  // module.
+  DCHECK(result.second);
+  return result.first->get();
 }
 
 std::vector<const ModuleCache::Module*> ModuleCache::GetModules() const {
@@ -87,12 +90,27 @@ void ModuleCache::UpdateNonNativeModules(
   // Insert the modules to be added. This operation is O((m + a) + a*log(a))
   // where m is the number of current modules and a is the number of modules to
   // be added.
+  const size_t prior_non_native_modules_size = non_native_modules_.size();
   non_native_modules_.insert(std::make_move_iterator(new_modules.begin()),
                              std::make_move_iterator(new_modules.end()));
+  // Every module in |new_modules| should have been moved into
+  // |non_native_modules_|. This guards against use-after-frees if |new_modules|
+  // were to contain any modules equivalent to what's already in
+  // |non_native_modules_|, in which case the module would remain in
+  // |new_modules| and be deleted on return from the function. While this
+  // scenario would be a violation of the API contract, it would present a
+  // difficult-to-track-down crash scenario.
+  CHECK_EQ(prior_non_native_modules_size + new_modules.size(),
+           non_native_modules_.size());
 }
 
 void ModuleCache::AddCustomNativeModule(std::unique_ptr<const Module> module) {
-  native_modules_.insert(std::move(module));
+  const bool was_inserted = native_modules_.insert(std::move(module)).second;
+  // |module| should have been inserted into |native_modules_|, indicating that
+  // there was no equivalent module already present. While this scenario would
+  // be a violation of the API contract, it would present a
+  // difficult-to-track-down crash scenario.
+  CHECK(was_inserted);
 }
 
 const ModuleCache::Module* ModuleCache::GetExistingModuleForAddress(

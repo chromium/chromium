@@ -88,7 +88,10 @@ class BASE_EXPORT ModuleCache {
   // specifically they no longer participate in the GetModuleForAddress()
   // lookup. They continue to exist for the lifetime of the ModuleCache,
   // however, so that existing references to them remain valid. Modules in
-  // |new_modules| are added to the set of active non-native modules.
+  // |new_modules| are added to the set of active non-native modules. Modules in
+  // |new_modules| may not overlap with any non-native Modules already present
+  // in ModuleCache, unless those modules are provided in |defunct_modules| in
+  // the same call.
   void UpdateNonNativeModules(
       const std::vector<const Module*>& defunct_modules,
       std::vector<std::unique_ptr<const Module>> new_modules);
@@ -96,6 +99,8 @@ class BASE_EXPORT ModuleCache {
   // Adds a custom native module to the cache. This is intended to support
   // native modules that require custom handling. In general, native modules
   // will be found and added automatically when invoking GetModuleForAddress().
+  // |module| may not overlap with any native Modules already present in
+  // ModuleCache.
   void AddCustomNativeModule(std::unique_ptr<const Module> module);
 
   // Gets the module containing |address| if one already exists, or nullptr
