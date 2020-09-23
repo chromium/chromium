@@ -237,13 +237,15 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
     EARL_GREY_TEST_DISABLED(@"Disabled for iPad due to device rotation bug.");
   }
   [ChromeEarlGreyUI waitForAppToIdle];
-  UIEdgeInsets safeArea =
-      [ContentSuggestionsAppInterface collectionView].safeAreaInsets;
-  CGFloat collectionWidth = CGRectGetWidth(UIEdgeInsetsInsetRect(
-      [ContentSuggestionsAppInterface collectionView].bounds, safeArea));
+  UICollectionView* collectionView =
+      [ContentSuggestionsAppInterface collectionView];
+  UIEdgeInsets safeArea = collectionView.safeAreaInsets;
+  CGFloat collectionWidth =
+      CGRectGetWidth(UIEdgeInsetsInsetRect(collectionView.bounds, safeArea));
   GREYAssertTrue(collectionWidth > 0, @"The collection width is nil.");
   CGFloat fakeOmniboxWidth = [ContentSuggestionsAppInterface
-      searchFieldWidthForCollectionWidth:collectionWidth];
+      searchFieldWidthForCollectionWidth:collectionWidth
+                         traitCollection:collectionView.traitCollection];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:OmniboxWidth(fakeOmniboxWidth)];
@@ -257,13 +259,15 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
   [ChromeEarlGreyUI waitForAppToIdle];
 
-  safeArea = [ContentSuggestionsAppInterface collectionView].safeAreaInsets;
-  CGFloat collectionWidthAfterRotation = CGRectGetWidth(UIEdgeInsetsInsetRect(
-      [ContentSuggestionsAppInterface collectionView].bounds, safeArea));
+  collectionView = [ContentSuggestionsAppInterface collectionView];
+  safeArea = collectionView.safeAreaInsets;
+  CGFloat collectionWidthAfterRotation =
+      CGRectGetWidth(UIEdgeInsetsInsetRect(collectionView.bounds, safeArea));
   GREYAssertNotEqual(collectionWidth, collectionWidthAfterRotation,
                      @"The collection width has not changed.");
   fakeOmniboxWidth = [ContentSuggestionsAppInterface
-      searchFieldWidthForCollectionWidth:collectionWidthAfterRotation];
+      searchFieldWidthForCollectionWidth:collectionWidthAfterRotation
+                         traitCollection:collectionView.traitCollection];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:OmniboxWidth(fakeOmniboxWidth)];
@@ -278,13 +282,15 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
     EARL_GREY_TEST_DISABLED(@"Disabled for iPad due to device rotation bug.");
   }
   [ChromeEarlGreyUI waitForAppToIdle];
-  UIEdgeInsets safeArea =
-      [ContentSuggestionsAppInterface collectionView].safeAreaInsets;
-  CGFloat collectionWidth = CGRectGetWidth(UIEdgeInsetsInsetRect(
-      [ContentSuggestionsAppInterface collectionView].bounds, safeArea));
+  UICollectionView* collectionView =
+      [ContentSuggestionsAppInterface collectionView];
+  UIEdgeInsets safeArea = collectionView.safeAreaInsets;
+  CGFloat collectionWidth =
+      CGRectGetWidth(UIEdgeInsetsInsetRect(collectionView.bounds, safeArea));
   GREYAssertTrue(collectionWidth > 0, @"The collection width is nil.");
   CGFloat fakeOmniboxWidth = [ContentSuggestionsAppInterface
-      searchFieldWidthForCollectionWidth:collectionWidth];
+      searchFieldWidthForCollectionWidth:collectionWidth
+                         traitCollection:collectionView.traitCollection];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:OmniboxWidth(fakeOmniboxWidth)];
@@ -303,13 +309,15 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
 
-  safeArea = [ContentSuggestionsAppInterface collectionView].safeAreaInsets;
-  CGFloat collectionWidthAfterRotation = CGRectGetWidth(UIEdgeInsetsInsetRect(
-      [ContentSuggestionsAppInterface collectionView].bounds, safeArea));
+  collectionView = [ContentSuggestionsAppInterface collectionView];
+  safeArea = collectionView.safeAreaInsets;
+  CGFloat collectionWidthAfterRotation =
+      CGRectGetWidth(UIEdgeInsetsInsetRect(collectionView.bounds, safeArea));
   GREYAssertNotEqual(collectionWidth, collectionWidthAfterRotation,
                      @"The collection width has not changed.");
   fakeOmniboxWidth = [ContentSuggestionsAppInterface
-      searchFieldWidthForCollectionWidth:collectionWidthAfterRotation];
+      searchFieldWidthForCollectionWidth:collectionWidthAfterRotation
+                         traitCollection:collectionView.traitCollection];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:OmniboxWidth(fakeOmniboxWidth)];

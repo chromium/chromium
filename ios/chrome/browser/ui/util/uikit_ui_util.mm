@@ -572,8 +572,11 @@ UIColor* InterpolateFromColorToColor(UIColor* firstColor,
 }
 
 bool IsCompactWidth(id<UITraitEnvironment> environment) {
-  return environment.traitCollection.horizontalSizeClass ==
-         UIUserInterfaceSizeClassCompact;
+  return IsCompactWidth(environment.traitCollection);
+}
+
+bool IsCompactWidth(UITraitCollection* traitCollection) {
+  return traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact;
 }
 
 bool IsCompactWidth() {
@@ -594,8 +597,11 @@ bool IsCompactHeight() {
 }
 
 bool IsCompactHeight(id<UITraitEnvironment> environment) {
-  return environment.traitCollection.verticalSizeClass ==
-         UIUserInterfaceSizeClassCompact;
+  return IsCompactHeight(environment.traitCollection);
+}
+
+bool IsCompactHeight(UITraitCollection* traitCollection) {
+  return traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
 }
 
 bool IsRegularXRegularSizeClass() {
@@ -621,11 +627,16 @@ bool ShouldShowCompactToolbar() {
 }
 
 bool IsSplitToolbarMode() {
-  return IsCompactWidth() && !IsCompactHeight();
+  return IsSplitToolbarMode(
+      [UIApplication sharedApplication].keyWindow.traitCollection);
 }
 
 bool IsSplitToolbarMode(id<UITraitEnvironment> environment) {
-  return IsCompactWidth(environment) && !IsCompactHeight(environment);
+  return IsSplitToolbarMode(environment.traitCollection);
+}
+
+bool IsSplitToolbarMode(UITraitCollection* traitCollection) {
+  return IsCompactWidth(traitCollection) && !IsCompactHeight(traitCollection);
 }
 
 UIView* GetFirstResponderSubview(UIView* view) {

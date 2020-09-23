@@ -591,8 +591,8 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
     parentInset.right = margin;
   } else if (self.styler.cellStyle == MDCCollectionViewCellStyleCard) {
     CGFloat collectionWidth = collectionView.bounds.size.width;
-    CGFloat maxCardWidth =
-        content_suggestions::searchFieldWidth(collectionWidth);
+    CGFloat maxCardWidth = content_suggestions::searchFieldWidth(
+        collectionWidth, self.traitCollection);
     CGFloat margin =
         MAX(0, (collectionView.frame.size.width - maxCardWidth) / 2);
     parentInset.left = margin;

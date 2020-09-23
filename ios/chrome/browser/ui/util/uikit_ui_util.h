@@ -202,6 +202,9 @@ UIColor* InterpolateFromColorToColor(UIColor* firstColor,
 // Whether the |environment| has a compact horizontal size class.
 bool IsCompactWidth(id<UITraitEnvironment> environment);
 
+// Whether the |traitCollection| has a compact horizontal size class.
+bool IsCompactWidth(UITraitCollection* traitCollection);
+
 // Whether the main application window's rootViewController has a compact
 // horizontal size class.
 bool IsCompactWidth();
@@ -219,6 +222,9 @@ bool IsCompactHeight();
 
 // Whether the |environment| has a compact vertical size class.
 bool IsCompactHeight(id<UITraitEnvironment> environment);
+
+// Whether the |traitCollection| has a compact vertical size class.
+bool IsCompactHeight(UITraitCollection* traitCollection);
 
 // Whether toolbar should be shown in compact mode.
 bool ShouldShowCompactToolbar();
@@ -242,6 +248,10 @@ bool IsSplitToolbarMode();
 // Returns whether the |environment|'s toolbar is split between top and bottom
 // toolbar or if it is displayed as only one toolbar.
 bool IsSplitToolbarMode(id<UITraitEnvironment> environment);
+
+// Returns whether the |traitCollection|'s toolbar is split between top and
+// bottom toolbar or if it is displayed as only one toolbar.
+bool IsSplitToolbarMode(UITraitCollection* traitCollection);
 
 // Returns the current first responder for keyWindow.
 UIResponder* GetFirstResponder();

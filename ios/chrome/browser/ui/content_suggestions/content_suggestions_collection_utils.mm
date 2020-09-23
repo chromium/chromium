@@ -58,17 +58,19 @@ namespace content_suggestions {
 const int kSearchFieldBackgroundColor = 0xF1F3F4;
 const CGFloat kHintTextScale = 0.15;
 
-CGFloat doodleHeight(BOOL logoIsShowing) {
-  if (!IsRegularXRegularSizeClass() && !logoIsShowing)
+CGFloat doodleHeight(BOOL logoIsShowing, UITraitCollection* traitCollection) {
+  if (!IsRegularXRegularSizeClass(traitCollection) && !logoIsShowing)
     return kNonGoogleSearchDoodleHeight;
 
   return kGoogleSearchDoodleHeight;
 }
 
-CGFloat doodleTopMargin(BOOL toolbarPresent, CGFloat topInset) {
-  if (!IsCompactWidth() && !IsCompactHeight())
+CGFloat doodleTopMargin(BOOL toolbarPresent,
+                        CGFloat topInset,
+                        UITraitCollection* traitCollection) {
+  if (IsRegularXRegularSizeClass(traitCollection))
     return kDoodleTopMarginRegularXRegular;
-  if (IsCompactHeight())
+  if (IsCompactHeight(traitCollection))
     return topInset;
   return topInset + kDoodleTopMarginOther +
          AlignValueToPixel(kDoodleScaledTopMarginOther *
@@ -79,8 +81,9 @@ CGFloat searchFieldTopMargin() {
   return kSearchFieldTopMargin;
 }
 
-CGFloat searchFieldWidth(CGFloat superviewWidth) {
-  if (!IsCompactWidth() && !IsCompactHeight())
+CGFloat searchFieldWidth(CGFloat superviewWidth,
+                         UITraitCollection* traitCollection) {
+  if (!IsCompactWidth(traitCollection) && !IsCompactHeight(traitCollection))
     return kSearchFieldLarge;
 
   // Special case for narrow sizes.
@@ -90,14 +93,15 @@ CGFloat searchFieldWidth(CGFloat superviewWidth) {
 CGFloat heightForLogoHeader(BOOL logoIsShowing,
                             BOOL promoCanShow,
                             BOOL toolbarPresent,
-                            CGFloat topInset) {
+                            CGFloat topInset,
+                            UITraitCollection* traitCollection) {
   CGFloat headerHeight =
-      doodleTopMargin(toolbarPresent, topInset) + doodleHeight(logoIsShowing) +
-      searchFieldTopMargin() +
+      doodleTopMargin(toolbarPresent, topInset, traitCollection) +
+      doodleHeight(logoIsShowing, traitCollection) + searchFieldTopMargin() +
       ToolbarExpandedHeight(
           [UIApplication sharedApplication].preferredContentSizeCategory) +
       kNTPSearchFieldBottomPadding;
-  if (!IsRegularXRegularSizeClass()) {
+  if (!IsRegularXRegularSizeClass(traitCollection)) {
     return headerHeight;
   }
   if (!logoIsShowing) {

@@ -133,7 +133,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   void (^transition)(id<UIViewControllerTransitionCoordinatorContext>) =
       ^(id<UIViewControllerTransitionCoordinatorContext> context) {
         // Ensure omnibox is reset when not a regular tablet.
-        if (IsSplitToolbarMode()) {
+        if (IsSplitToolbarMode(newCollection)) {
           [self.toolbarDelegate setScrollProgressForTabletOmnibox:1];
         }
         // Fake Tap button only needs to work in portrait. Disable the button
@@ -161,7 +161,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
                                              safeAreaInsets:safeAreaInsets]
             // RxR with no logo hides the fakebox, so always show the omnibox.
             : 1;
-    if (!IsSplitToolbarMode()) {
+    if (!IsSplitToolbarMode(self)) {
       [self.toolbarDelegate setScrollProgressForTabletOmnibox:progress];
     } else {
       // Ensure omnibox is reset when not a regular tablet.
@@ -182,7 +182,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
 - (void)updateFakeOmniboxForWidth:(CGFloat)width {
   self.fakeOmniboxWidthConstraint.constant =
-      content_suggestions::searchFieldWidth(width);
+      content_suggestions::searchFieldWidth(width, self.traitCollection);
 }
 
 - (void)unfocusOmnibox {
@@ -200,13 +200,15 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 // Update the doodle top margin to the new -doodleTopMargin value.
 - (void)updateConstraints {
   self.doodleTopMarginConstraint.constant =
-      content_suggestions::doodleTopMargin(YES, [self topInset]);
+      content_suggestions::doodleTopMargin(YES, [self topInset],
+                                           self.traitCollection);
   [self.headerView updateForTopSafeAreaInset:[self topInset]];
 }
 
 - (CGFloat)pinnedOffsetY {
   CGFloat headerHeight = content_suggestions::heightForLogoHeader(
-      self.logoIsShowing, self.promoCanShow, YES, [self topInset]);
+      self.logoIsShowing, self.promoCanShow, YES, [self topInset],
+      self.traitCollection);
 
   CGFloat offsetY =
       headerHeight - ntp_header::kScrolledToTopOmniboxBottomMargin;
@@ -231,7 +233,8 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
 - (CGFloat)headerHeight {
   return content_suggestions::heightForLogoHeader(
-      self.logoIsShowing, self.promoCanShow, YES, [self topInset]);
+      self.logoIsShowing, self.promoCanShow, YES, [self topInset],
+      self.traitCollection);
 }
 
 #pragma mark - ContentSuggestionsHeaderProvider
@@ -271,7 +274,8 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
         0, width - safeAreaInsets.left - safeAreaInsets.right);
 
     self.fakeOmniboxWidthConstraint = [self.fakeOmnibox.widthAnchor
-        constraintEqualToConstant:content_suggestions::searchFieldWidth(width)];
+        constraintEqualToConstant:content_suggestions::searchFieldWidth(
+                                      width, self.traitCollection)];
     [self addConstraintsForLogoView:self.logoVendor.view
                         fakeOmnibox:self.fakeOmnibox
                       andHeaderView:self.headerView];
@@ -461,7 +465,8 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 // shows fakebox if the logo is visible and hides otherwise
 - (void)updateFakeboxDisplay {
   [self.doodleHeightConstraint
-      setConstant:content_suggestions::doodleHeight(self.logoIsShowing)];
+      setConstant:content_suggestions::doodleHeight(self.logoIsShowing,
+                                                    self.traitCollection)];
   self.fakeOmnibox.hidden =
       IsRegularXRegularSizeClass(self) && !self.logoIsShowing;
   [self.collectionSynchronizer invalidateLayout];
@@ -493,10 +498,10 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   self.doodleTopMarginConstraint = [logoView.topAnchor
       constraintEqualToAnchor:headerView.topAnchor
                      constant:content_suggestions::doodleTopMargin(
-                                  YES, [self topInset])];
+                                  YES, [self topInset], self.traitCollection)];
   self.doodleHeightConstraint = [logoView.heightAnchor
       constraintEqualToConstant:content_suggestions::doodleHeight(
-                                    self.logoIsShowing)];
+                                    self.logoIsShowing, self.traitCollection)];
   self.fakeOmniboxHeightConstraint = [fakeOmnibox.heightAnchor
       constraintEqualToConstant:ToolbarExpandedHeight(
                                     self.traitCollection

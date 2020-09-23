@@ -46,8 +46,11 @@
 + (void)resetWhatsNewPromo;
 
 // Returns the width the search field is supposed to have when the collection
-// has |collectionWidth|.
-+ (CGFloat)searchFieldWidthForCollectionWidth:(CGFloat)collectionWidth;
+// has |collectionWidth|. |traitCollection| is the trait collection of the view
+// displaying the omnibox, its Size Class is used in the computation.
++ (CGFloat)searchFieldWidthForCollectionWidth:(CGFloat)collectionWidth
+                              traitCollection:
+                                  (UITraitCollection*)traitCollection;
 
 // Returns the collection view.
 + (UICollectionView*)collectionView;

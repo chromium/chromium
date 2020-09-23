@@ -178,8 +178,11 @@ ContentSuggestion CreateSuggestion(Category category,
   ios::NotificationPromo::MigrateUserPrefs(local_state);
 }
 
-+ (CGFloat)searchFieldWidthForCollectionWidth:(CGFloat)collectionWidth {
-  return content_suggestions::searchFieldWidth(collectionWidth);
++ (CGFloat)searchFieldWidthForCollectionWidth:(CGFloat)collectionWidth
+                              traitCollection:
+                                  (UITraitCollection*)traitCollection {
+  return content_suggestions::searchFieldWidth(collectionWidth,
+                                               traitCollection);
 }
 
 + (UICollectionView*)collectionView {
