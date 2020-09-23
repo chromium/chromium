@@ -22,6 +22,7 @@ loadScript('mojo/public/mojom/base/time.mojom');
 loadScript('mojo/public/mojom/base/unguessable_token.mojom');
 loadScript('net/interfaces/ip_address.mojom');
 loadScript('net/interfaces/ip_endpoint.mojom');
+loadScript('third_party/blink/public/mojom/presentation/presentation.mojom');
 loadScript('url/mojom/origin.mojom');
 loadScript('url/mojom/url.mojom');
 
@@ -473,11 +474,11 @@ function messageToMojo_(message) {
 /**
  * Converts presentation connection state to Mojo enum value.
  * @param {!string} state
- * @return {!mediaRouter.mojom.MediaRouter.PresentationConnectionState}
+ * @return {!blink.mojom.PresentationConnectionState}
  */
 function presentationConnectionStateToMojo_(state) {
   var PresentationConnectionState =
-      mediaRouter.mojom.MediaRouter.PresentationConnectionState;
+      blink.mojom.PresentationConnectionState;
   switch (state) {
     case 'connecting':
       return PresentationConnectionState.CONNECTING;
@@ -496,11 +497,11 @@ function presentationConnectionStateToMojo_(state) {
 /**
  * Converts presentation connection close reason to Mojo enum value.
  * @param {!string} reason
- * @return {!mediaRouter.mojom.MediaRouter.PresentationConnectionCloseReason}
+ * @return {!blink.mojom.PresentationConnectionCloseReason}
  */
 function presentationConnectionCloseReasonToMojo_(reason) {
   var PresentationConnectionCloseReason =
-      mediaRouter.mojom.MediaRouter.PresentationConnectionCloseReason;
+      blink.mojom.PresentationConnectionCloseReason;
   switch (reason) {
     case 'error':
       return PresentationConnectionCloseReason.CONNECTION_ERROR;

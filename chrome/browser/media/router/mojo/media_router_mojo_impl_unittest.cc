@@ -46,6 +46,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using blink::mojom::PresentationConnectionCloseReason;
 using blink::mojom::PresentationConnectionState;
 using media_router::mojom::RouteMessagePtr;
 using testing::_;
@@ -407,14 +408,14 @@ TEST_F(MediaRouterMojoImplTest, JoinRouteTimedOutFails) {
                   kSource, kPresentationId, url::Origin::Create(GURL(kOrigin)),
                   kInvalidTabId,
                   base::TimeDelta::FromMilliseconds(kTimeoutMillis), _, _))
-      .WillOnce(Invoke(
-          [](const std::string& source, const std::string& presentation_id,
-             const url::Origin& origin, int tab_id, base::TimeDelta timeout,
-             bool off_the_record,
-             mojom::MediaRouteProvider::JoinRouteCallback& cb) {
-            std::move(cb).Run(base::nullopt, nullptr, std::string(kError),
-                              RouteRequestResult::TIMED_OUT);
-          }));
+      .WillOnce(Invoke([](const std::string& source,
+                          const std::string& presentation_id,
+                          const url::Origin& origin, int tab_id,
+                          base::TimeDelta timeout, bool off_the_record,
+                          mojom::MediaRouteProvider::JoinRouteCallback& cb) {
+        std::move(cb).Run(base::nullopt, nullptr, std::string(kError),
+                          RouteRequestResult::TIMED_OUT);
+      }));
 
   RouteResponseCallbackHandler handler;
   base::RunLoop run_loop;
@@ -1033,16 +1034,13 @@ TEST_F(MediaRouterMojoImplTest, PresentationConnectionStateChangedCallback) {
     base::RunLoop run_loop;
     content::PresentationConnectionStateChangeInfo closed_info(
         PresentationConnectionState::CLOSED);
-    closed_info.close_reason =
-        blink::mojom::PresentationConnectionCloseReason::WENT_AWAY;
+    closed_info.close_reason = PresentationConnectionCloseReason::WENT_AWAY;
     closed_info.message = "Foo";
 
     EXPECT_CALL(callback, Run(StateChangeInfoEquals(closed_info)))
         .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
     router()->OnPresentationConnectionClosed(
-        route_id,
-        mojom::MediaRouter::PresentationConnectionCloseReason::WENT_AWAY,
-        "Foo");
+        route_id, PresentationConnectionCloseReason::WENT_AWAY, "Foo");
     run_loop.Run();
     EXPECT_TRUE(Mock::VerifyAndClearExpectations(&callback));
   }
@@ -1054,7 +1052,7 @@ TEST_F(MediaRouterMojoImplTest, PresentationConnectionStateChangedCallback) {
     EXPECT_CALL(callback, Run(StateChangeInfoEquals(terminated_info)))
         .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
     router()->OnPresentationConnectionStateChanged(
-        route_id, mojom::MediaRouter::PresentationConnectionState::TERMINATED);
+        route_id, PresentationConnectionState::TERMINATED);
     run_loop.Run();
 
     EXPECT_TRUE(Mock::VerifyAndClearExpectations(&callback));
@@ -1076,7 +1074,7 @@ TEST_F(MediaRouterMojoImplTest,
 
   EXPECT_CALL(callback, Run(_)).Times(0);
   router()->OnPresentationConnectionStateChanged(
-      route_id, mojom::MediaRouter::PresentationConnectionState::TERMINATED);
+      route_id, PresentationConnectionState::TERMINATED);
   base::RunLoop().RunUntilIdle();
 }
 

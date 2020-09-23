@@ -335,8 +335,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
     EXPECT_CALL(
         mock_router_,
         OnPresentationConnectionStateChanged(
-            route_id,
-            mojom::MediaRouter::PresentationConnectionState::TERMINATED));
+            route_id, blink::mojom::PresentationConnectionState::TERMINATED));
     EXPECT_CALL(mock_router_, OnRoutesUpdated(_, IsEmpty(), _, IsEmpty()));
     base::RunLoop().RunUntilIdle();
 

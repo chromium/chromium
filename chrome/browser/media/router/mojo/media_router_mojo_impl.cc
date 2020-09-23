@@ -47,42 +47,6 @@
 namespace media_router {
 namespace {
 
-// TODO(crbug.com/831416): Delete temporary code once we can use
-// presentation.mojom types here.
-blink::mojom::PresentationConnectionCloseReason
-PresentationConnectionCloseReasonToBlink(
-    mojom::MediaRouter::PresentationConnectionCloseReason reason) {
-  switch (reason) {
-    case mojom::MediaRouter::PresentationConnectionCloseReason::
-        CONNECTION_ERROR:
-      return blink::mojom::PresentationConnectionCloseReason::CONNECTION_ERROR;
-    case mojom::MediaRouter::PresentationConnectionCloseReason::CLOSED:
-      return blink::mojom::PresentationConnectionCloseReason::CLOSED;
-    case mojom::MediaRouter::PresentationConnectionCloseReason::WENT_AWAY:
-      return blink::mojom::PresentationConnectionCloseReason::WENT_AWAY;
-  }
-  NOTREACHED() << "Unknown PresentationConnectionCloseReason " << reason;
-  return blink::mojom::PresentationConnectionCloseReason::CONNECTION_ERROR;
-}
-
-// TODO(crbug.com/831416): Delete temporary code once we can use
-// presentation.mojom types here.
-blink::mojom::PresentationConnectionState PresentationConnectionStateToBlink(
-    mojom::MediaRouter::PresentationConnectionState state) {
-  switch (state) {
-    case mojom::MediaRouter::PresentationConnectionState::CONNECTING:
-      return blink::mojom::PresentationConnectionState::CONNECTING;
-    case mojom::MediaRouter::PresentationConnectionState::CONNECTED:
-      return blink::mojom::PresentationConnectionState::CONNECTED;
-    case mojom::MediaRouter::PresentationConnectionState::CLOSED:
-      return blink::mojom::PresentationConnectionState::CLOSED;
-    case mojom::MediaRouter::PresentationConnectionState::TERMINATED:
-      return blink::mojom::PresentationConnectionState::TERMINATED;
-  }
-  NOTREACHED() << "Unknown PresentationConnectionState " << state;
-  return blink::mojom::PresentationConnectionState::CONNECTING;
-}
-
 // Get the WebContents associated with the given tab id. Returns nullptr if the
 // tab id is invalid, or if the searching fails.
 // TODO(xjz): Move this to SessionTabHelper to allow it being used by
@@ -875,17 +839,15 @@ void MediaRouterMojoImpl::OnSinkAvailabilityUpdated(
 
 void MediaRouterMojoImpl::OnPresentationConnectionStateChanged(
     const std::string& route_id,
-    media_router::mojom::MediaRouter::PresentationConnectionState state) {
-  NotifyPresentationConnectionStateChange(
-      route_id, PresentationConnectionStateToBlink(state));
+    blink::mojom::PresentationConnectionState state) {
+  NotifyPresentationConnectionStateChange(route_id, state);
 }
 
 void MediaRouterMojoImpl::OnPresentationConnectionClosed(
     const std::string& route_id,
-    media_router::mojom::MediaRouter::PresentationConnectionCloseReason reason,
+    blink::mojom::PresentationConnectionCloseReason reason,
     const std::string& message) {
-  NotifyPresentationConnectionClose(
-      route_id, PresentationConnectionCloseReasonToBlink(reason), message);
+  NotifyPresentationConnectionClose(route_id, reason, message);
 }
 
 void MediaRouterMojoImpl::OnTerminateRouteResult(

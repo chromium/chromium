@@ -426,7 +426,7 @@ void WiredDisplayMediaRouteProvider::RemovePresentationById(
     return;
   media_router_->OnPresentationConnectionStateChanged(
       entry->second.route().media_route_id(),
-      mojom::MediaRouter::PresentationConnectionState::TERMINATED);
+      blink::mojom::PresentationConnectionState::TERMINATED);
   presentations_.erase(entry);
   NotifyRouteObservers();
 }

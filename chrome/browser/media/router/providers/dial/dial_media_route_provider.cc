@@ -345,7 +345,7 @@ void DialMediaRouteProvider::HandleStopAppResult(
     RouteRequestResult::ResultCode result_code) {
   if (result_code == RouteRequestResult::OK) {
     media_router_->OnPresentationConnectionStateChanged(
-        route_id, mojom::MediaRouter::PresentationConnectionState::TERMINATED);
+        route_id, blink::mojom::PresentationConnectionState::TERMINATED);
     NotifyAllOnRoutesUpdated();
     DialMediaRouteProviderMetrics::RecordTerminateRouteResult(
         DialTerminateRouteResult::kSuccess);

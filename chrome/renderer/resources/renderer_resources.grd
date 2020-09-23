@@ -89,6 +89,7 @@
         <include name="IDR_ORIGIN_MOJOM_JS" file="${mojom_root}\url\mojom\origin.mojom.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_MOJO_URL_MOJOM_JS" file="${mojom_root}\url\mojom\url.mojom.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_REMOTING_COMMON_JS" file="${mojom_root}\media\mojo\mojom\remoting_common.mojom.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_PRESENTATION_JS" file="${mojom_root}\third_party\blink\public\mojom\presentation\presentation.mojom.js" use_base_dir="false" type="BINDATA" />
       </if>
     </includes>
   </release>

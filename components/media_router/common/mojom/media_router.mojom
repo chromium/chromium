@@ -520,21 +520,6 @@ interface MediaRouter {
     AVAILABLE
   };
 
-  // TODO(crbug.com/831416): Remove and use presentation.mojom type instead.
-  enum PresentationConnectionState {
-    CONNECTING,
-    CONNECTED,
-    CLOSED,
-    TERMINATED
-  };
-
-  // TODO(crbug.com/831416): Remove and use presentation.mojom type instead.
-  enum PresentationConnectionCloseReason {
-    CONNECTION_ERROR,
-    CLOSED,
-    WENT_AWAY
-  };
-
   // Registers a MediaRouteProvider with the MediaRouter.
   // Returns a string that uniquely identifies the Media Router browser
   // process.
@@ -569,11 +554,11 @@ interface MediaRouter {
   // Called when the state of presentation connected to route |route_id| has
   // changed to |state|.
   OnPresentationConnectionStateChanged(
-      string route_id, PresentationConnectionState state);
+      string route_id, blink.mojom.PresentationConnectionState state);
 
   // Called when the presentation connected to route |route_id| has closed.
   OnPresentationConnectionClosed(
-      string route_id, PresentationConnectionCloseReason reason,
+      string route_id, blink.mojom.PresentationConnectionCloseReason reason,
       string message);
 
   // Called when the a batch of messages arrives from the media sink for the

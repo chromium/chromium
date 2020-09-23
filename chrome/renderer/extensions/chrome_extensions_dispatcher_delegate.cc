@@ -235,6 +235,9 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
   source_map->RegisterSource(
       "components/mirroring/mojom/session_parameters.mojom",
       IDR_MIRRORING_SESSION_PARAMETERS_JS);
+  source_map->RegisterSource(
+      "third_party/blink/public/mojom/presentation/presentation.mojom",
+      IDR_PRESENTATION_JS);
 }
 
 void ChromeExtensionsDispatcherDelegate::RequireWebViewModules(

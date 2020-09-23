@@ -326,12 +326,10 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
                                  SinkAvailability availability) override;
   void OnPresentationConnectionStateChanged(
       const std::string& route_id,
-      media_router::mojom::MediaRouter::PresentationConnectionState state)
-      override;
+      blink::mojom::PresentationConnectionState state) override;
   void OnPresentationConnectionClosed(
       const std::string& route_id,
-      media_router::mojom::MediaRouter::PresentationConnectionCloseReason
-          reason,
+      blink::mojom::PresentationConnectionCloseReason reason,
       const std::string& message) override;
   void OnRouteMessagesReceived(
       const std::string& route_id,
