@@ -58,6 +58,10 @@ constexpr char kMediaAppId[] = "jhdjimmaggjajfjphpljagpgkidjilnj";
 // web_app::GenerateAppIdFromURL(GURL("https://music.youtube.com/?source=pwa")).
 constexpr char kYoutubeMusicAppId[] = "cinhimbnkkaeohfgghhklpknlkffjgod";
 
+// Generated as
+// web_app::GenerateAppIdFromURL(GURL("https://stadia.google.com/?lfhs=2")).
+constexpr char kStadiaAppId[] = "pnkcfpnngfokcnnijgkllghjlhkailce";
+
 }  // namespace default_web_apps
 }  // namespace chromeos
 

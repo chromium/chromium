@@ -56,10 +56,11 @@ enum class DefaultAppName {
   kYouTubeMusic = 38,
   // This is our test SWA. It's only installed in tests.
   kMockSystemApp = 39,
+  kStadia = 40,
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kMockSystemApp,
+  kMaxValue = kStadia,
 };
 
 void RecordDefaultAppLaunch(DefaultAppName default_app_name,
@@ -249,6 +250,8 @@ void RecordAppLaunch(const std::string& app_id,
 #endif  // OS_CHROMEOS
   else if (app_id == chromeos::default_web_apps::kYoutubeMusicAppId)
     RecordDefaultAppLaunch(DefaultAppName::kYouTubeMusic, launch_source);
+  else if (app_id == chromeos::default_web_apps::kStadiaAppId)
+    RecordDefaultAppLaunch(DefaultAppName::kStadia, launch_source);
 
   // Above are default apps; below are built-in apps.
 
