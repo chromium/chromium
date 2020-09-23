@@ -124,6 +124,8 @@ const char* GetNameForConnectionTypeInternal(
       return "3G";
     case NetworkChangeNotifier::CONNECTION_4G:
       return "4G";
+    case NetworkChangeNotifier::CONNECTION_5G:
+      return "5G";
     case NetworkChangeNotifier::CONNECTION_NONE:
       return "None";
     case NetworkChangeNotifier::CONNECTION_BLUETOOTH:

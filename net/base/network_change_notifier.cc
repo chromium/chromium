@@ -405,14 +405,9 @@ NetworkChangeNotifier::GetSystemDnsConfigNotifier() {
 const char* NetworkChangeNotifier::ConnectionTypeToString(
     ConnectionType type) {
   static const char* const kConnectionTypeNames[] = {
-    "CONNECTION_UNKNOWN",
-    "CONNECTION_ETHERNET",
-    "CONNECTION_WIFI",
-    "CONNECTION_2G",
-    "CONNECTION_3G",
-    "CONNECTION_4G",
-    "CONNECTION_NONE",
-    "CONNECTION_BLUETOOTH"
+      "CONNECTION_UNKNOWN", "CONNECTION_ETHERNET",  "CONNECTION_WIFI",
+      "CONNECTION_2G",      "CONNECTION_3G",        "CONNECTION_4G",
+      "CONNECTION_NONE",    "CONNECTION_BLUETOOTH", "CONNECTION_5G",
   };
   static_assert(base::size(kConnectionTypeNames) ==
                     NetworkChangeNotifier::CONNECTION_LAST + 1,
@@ -445,6 +440,7 @@ bool NetworkChangeNotifier::IsConnectionCellular(ConnectionType type) {
     case CONNECTION_2G:
     case CONNECTION_3G:
     case CONNECTION_4G:
+    case CONNECTION_5G:
       is_cellular =  true;
       break;
     case CONNECTION_UNKNOWN:

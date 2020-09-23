@@ -24,6 +24,9 @@ NetworkStatus ToNetworkStatus(network::mojom::ConnectionType type) {
     case network::mojom::ConnectionType::CONNECTION_2G:
     case network::mojom::ConnectionType::CONNECTION_3G:
     case network::mojom::ConnectionType::CONNECTION_4G:
+    case network::mojom::ConnectionType::CONNECTION_5G:
+      // TODO(crbug.com/1127134): 5G networks may be unmetered. Find a way to
+      // detect this and make DeviceStatusListener aware of it.
       return NetworkStatus::METERED;
     case network::mojom::ConnectionType::CONNECTION_UNKNOWN:
     case network::mojom::ConnectionType::CONNECTION_NONE:

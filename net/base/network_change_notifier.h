@@ -52,9 +52,10 @@ class NET_EXPORT NetworkChangeNotifier {
     CONNECTION_2G = 3,
     CONNECTION_3G = 4,
     CONNECTION_4G = 5,
-    CONNECTION_NONE = 6,     // No connection.
+    CONNECTION_NONE = 6,  // No connection.
     CONNECTION_BLUETOOTH = 7,
-    CONNECTION_LAST = CONNECTION_BLUETOOTH
+    CONNECTION_5G = 8,
+    CONNECTION_LAST = CONNECTION_5G
   };
 
   // This is the NetInfo v3 set of connection technologies as seen in
@@ -65,6 +66,9 @@ class NET_EXPORT NetworkChangeNotifier {
   //
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.net
+  //
+  // TODO(crbug.com/1127134): Introduce subtypes for 5G networks once they can
+  // be detected.
   enum ConnectionSubtype {
     SUBTYPE_UNKNOWN = 0,
     SUBTYPE_NONE,

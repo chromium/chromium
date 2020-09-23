@@ -29,6 +29,7 @@ NetworkChangeNotifier::ConnectionType ConvertConnectionType(
     case NetworkChangeNotifier::CONNECTION_2G:
     case NetworkChangeNotifier::CONNECTION_3G:
     case NetworkChangeNotifier::CONNECTION_4G:
+    case NetworkChangeNotifier::CONNECTION_5G:
     case NetworkChangeNotifier::CONNECTION_NONE:
     case NetworkChangeNotifier::CONNECTION_BLUETOOTH:
       break;

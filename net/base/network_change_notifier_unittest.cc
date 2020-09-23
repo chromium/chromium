@@ -54,6 +54,11 @@ TEST(NetworkChangeNotifierTest, NetMaxBandwidthRange) {
       EXPECT_GE(100.0, max_bandwidth);
       EXPECT_LE(100.0, max_bandwidth);
       break;
+    case NetworkChangeNotifier::CONNECTION_5G:
+      // TODO(crbug.com/1127134): Expect proper bounds once we have introduced
+      // subtypes for 5G connections.
+      EXPECT_EQ(std::numeric_limits<double>::infinity(), max_bandwidth);
+      break;
     case NetworkChangeNotifier::CONNECTION_NONE:
       EXPECT_EQ(0.0, max_bandwidth);
       break;

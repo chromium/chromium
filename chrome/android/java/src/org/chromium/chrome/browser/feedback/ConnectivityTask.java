@@ -124,6 +124,8 @@ public class ConnectivityTask {
                 return "3G";
             case ConnectionType.CONNECTION_4G:
                 return "4G";
+            case ConnectionType.CONNECTION_5G:
+                return "5G";
             case ConnectionType.CONNECTION_NONE:
                 return "NONE";
             case ConnectionType.CONNECTION_BLUETOOTH:

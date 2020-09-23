@@ -86,6 +86,8 @@ net::NetworkChangeNotifier::ConnectionType getConnectionType(int number) {
       return net::NetworkChangeNotifier::CONNECTION_NONE;
     case 7:
       return net::NetworkChangeNotifier::CONNECTION_BLUETOOTH;
+    case 8:
+      return net::NetworkChangeNotifier::CONNECTION_5G;
     default:
       return net::NetworkChangeNotifier::CONNECTION_UNKNOWN;
   }
@@ -93,9 +95,16 @@ net::NetworkChangeNotifier::ConnectionType getConnectionType(int number) {
 
 // Gives the differents expected value based on scenario number.
 int getExpectedValue(int number) {
-  if (number > 2 && number < 6)
-    return 0;
-  return 1;
+  // Cellular network types are expected to return 0.
+  switch (getConnectionType(number)) {
+    case net::NetworkChangeNotifier::CONNECTION_2G:
+    case net::NetworkChangeNotifier::CONNECTION_3G:
+    case net::NetworkChangeNotifier::CONNECTION_4G:
+    case net::NetworkChangeNotifier::CONNECTION_5G:
+      return 0;
+    default:
+      return 1;
+  }
 }
 
 using MetricsMediatorTest = PlatformTest;
@@ -107,7 +116,7 @@ TEST_F(MetricsMediatorTest, connectionTypeChanged) {
   MetricsMediatorMock* mock_metrics_helper = [[MetricsMediatorMock alloc] init];
 
   // Checks all different scenarios.
-  for (int i = 0; i < 8; ++i) {
+  for (int i = 0; i < 9; ++i) {
     [mock_metrics_helper reset];
     [mock_metrics_helper connectionTypeChanged:getConnectionType(i)];
     EXPECT_EQ(getExpectedValue(i), [mock_metrics_helper reportingValue]);
@@ -115,7 +124,7 @@ TEST_F(MetricsMediatorTest, connectionTypeChanged) {
   }
 
   // Checks that no new ConnectionType has been added.
-  EXPECT_EQ(net::NetworkChangeNotifier::CONNECTION_BLUETOOTH,
+  EXPECT_EQ(net::NetworkChangeNotifier::CONNECTION_5G,
             net::NetworkChangeNotifier::CONNECTION_LAST);
 }
 

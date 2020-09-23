@@ -368,6 +368,7 @@ void DialRegistry::OnConnectionChanged(network::mojom::ConnectionType type) {
     case network::mojom::ConnectionType::CONNECTION_2G:
     case network::mojom::ConnectionType::CONNECTION_3G:
     case network::mojom::ConnectionType::CONNECTION_4G:
+    case network::mojom::ConnectionType::CONNECTION_5G:
     case network::mojom::ConnectionType::CONNECTION_ETHERNET:
     case network::mojom::ConnectionType::CONNECTION_WIFI:
     case network::mojom::ConnectionType::CONNECTION_UNKNOWN:

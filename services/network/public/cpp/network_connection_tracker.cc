@@ -103,6 +103,7 @@ bool NetworkConnectionTracker::IsConnectionCellular(
     case network::mojom::ConnectionType::CONNECTION_2G:
     case network::mojom::ConnectionType::CONNECTION_3G:
     case network::mojom::ConnectionType::CONNECTION_4G:
+    case network::mojom::ConnectionType::CONNECTION_5G:
       is_cellular = true;
       break;
     case network::mojom::ConnectionType::CONNECTION_UNKNOWN:

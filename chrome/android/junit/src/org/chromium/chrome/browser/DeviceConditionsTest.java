@@ -294,11 +294,11 @@ public class DeviceConditionsTest {
     @Test
     public void testNcnConnectionType() {
         @ConnectionType
-        int[] connectionTypes =
-                new int[] {ConnectionType.CONNECTION_UNKNOWN, ConnectionType.CONNECTION_ETHERNET,
-                        ConnectionType.CONNECTION_WIFI, ConnectionType.CONNECTION_2G,
-                        ConnectionType.CONNECTION_3G, ConnectionType.CONNECTION_4G,
-                        ConnectionType.CONNECTION_NONE, ConnectionType.CONNECTION_BLUETOOTH};
+        int[] connectionTypes = new int[] {ConnectionType.CONNECTION_UNKNOWN,
+                ConnectionType.CONNECTION_ETHERNET, ConnectionType.CONNECTION_WIFI,
+                ConnectionType.CONNECTION_2G, ConnectionType.CONNECTION_3G,
+                ConnectionType.CONNECTION_4G, ConnectionType.CONNECTION_NONE,
+                ConnectionType.CONNECTION_BLUETOOTH, ConnectionType.CONNECTION_5G};
         assertEquals(ConnectionType.CONNECTION_LAST + 1, connectionTypes.length);
 
         for (@ConnectionType int connectionType : connectionTypes) {

@@ -65,6 +65,8 @@ const char* ConnectionTypeToString(
       return "CONNECTION_3G";
     case net::NetworkChangeNotifier::CONNECTION_4G:
       return "CONNECTION_4G";
+    case net::NetworkChangeNotifier::CONNECTION_5G:
+      return "CONNECTION_5G";
     case net::NetworkChangeNotifier::CONNECTION_NONE:
       return "CONNECTION_NONE";
     case net::NetworkChangeNotifier::CONNECTION_BLUETOOTH:

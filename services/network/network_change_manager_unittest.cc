@@ -207,6 +207,9 @@ TEST(NetworkChangeConnectionTypeTest, ConnectionTypeEnumMatch) {
         break;
       case net::NetworkChangeNotifier::CONNECTION_BLUETOOTH:
         EXPECT_EQ(mojom::ConnectionType::CONNECTION_BLUETOOTH, mojoType);
+        break;
+      case net::NetworkChangeNotifier::CONNECTION_5G:
+        EXPECT_EQ(mojom::ConnectionType::CONNECTION_5G, mojoType);
         EXPECT_EQ(mojom::ConnectionType::CONNECTION_LAST, mojoType);
         break;
     }

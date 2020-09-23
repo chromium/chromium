@@ -35,6 +35,7 @@ rtc::AdapterType ConvertConnectionTypeToAdapterType(
     case net::NetworkChangeNotifier::CONNECTION_2G:
     case net::NetworkChangeNotifier::CONNECTION_3G:
     case net::NetworkChangeNotifier::CONNECTION_4G:
+    case net::NetworkChangeNotifier::CONNECTION_5G:
       return rtc::ADAPTER_TYPE_CELLULAR;
     default:
       return rtc::ADAPTER_TYPE_UNKNOWN;

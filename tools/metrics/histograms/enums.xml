@@ -62320,6 +62320,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="CONNECTION_4G"/>
   <int value="6" label="CONNECTION_NONE"/>
   <int value="7" label="CONNECTION_BLUETOOTH"/>
+  <int value="8" label="CONNECTION_5G"/>
 </enum>
 
 <enum name="ResourcePrefetchPredictorRedirectStatus">

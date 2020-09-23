@@ -251,6 +251,8 @@ NetworkMetricsProvider::GetConnectionType() const {
       return SystemProfileProto::Network::CONNECTION_3G;
     case network::mojom::ConnectionType::CONNECTION_4G:
       return SystemProfileProto::Network::CONNECTION_4G;
+    case network::mojom::ConnectionType::CONNECTION_5G:
+      return SystemProfileProto::Network::CONNECTION_5G;
     case network::mojom::ConnectionType::CONNECTION_BLUETOOTH:
       return SystemProfileProto::Network::CONNECTION_BLUETOOTH;
   }

@@ -93,6 +93,8 @@ std::string GetNetworkTypeString() {
       return "3G";
     case net::NetworkChangeNotifier::CONNECTION_4G:
       return "4G";
+    case net::NetworkChangeNotifier::CONNECTION_5G:
+      return "5G";
     case net::NetworkChangeNotifier::CONNECTION_NONE:
       return "None";
     case net::NetworkChangeNotifier::CONNECTION_BLUETOOTH:
