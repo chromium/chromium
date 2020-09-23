@@ -6734,7 +6734,6 @@ crbug.com/1126709 [ Win ] virtual/threaded/external/wpt/animation-worklet/workle
 # Sheriff 2020-09-17
 crbug.com/1129347 [ Mac10.13 Debug ] http/tests/devtools/persistence/persistence-external-change-breakpoints.js [ Pass Failure ]
 ### virtual/scroll-unification/fast/scrolling/scrollbars/
-virtual/scroll-unification/fast/scrolling/scrollbars/mouse-autoscrolling-on-scrollbar.html [ Failure ]
 virtual/scroll-unification/fast/scrolling/scrollbars/mouse-scrolling-on-div-scrollbar.html [ Failure ]
 virtual/scroll-unification/fast/scrolling/scrollbars/scrollbar-occluded-by-div.html [ Failure ]
 virtual/scroll-unification/fast/scrolling/scrollbars/scrollbar-rtl-manipulation.html [ Failure ]
@@ -6751,3 +6750,6 @@ crbug.com/1130533 [ Mac ] external/wpt/xhr/xhr-timeout-longtask.any.worker.html 
 
 # Sheriff 2020-09-23
 crbug.com/1131551 compositing/transitions/transform-on-large-layer.html [ Pass Failure Timeout ]
+crbug.com/1057060 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/scrollbars/mouse-autoscrolling-on-scrollbar.html [ Pass Failure Timeout ]
+crbug.com/1057060 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-autoscrolling-on-scrollbar.html [ Pass Failure Timeout ]
+crbug.com/1057060 virtual/scroll-unification/fast/scrolling/scrollbars/mouse-autoscrolling-on-scrollbar.html [ Pass Failure Timeout ]
