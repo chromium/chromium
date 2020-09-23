@@ -65,7 +65,6 @@ extern const base::Feature kAutofillRichMetadataQueries;
 extern const base::Feature kAutofillSaveAndFillVPA;
 extern const base::Feature kAutofillSectionUponRedundantNameInfo;
 extern const base::Feature kAutofillServerCommunication;
-extern const base::Feature kAutofillShowAllSuggestionsOnPrefilledForms;
 extern const base::Feature kAutofillShowAutocompleteConsoleWarnings;
 extern const base::Feature kAutofillShowTypePredictions;
 extern const base::Feature kAutofillSkipComparingInferredLabels;

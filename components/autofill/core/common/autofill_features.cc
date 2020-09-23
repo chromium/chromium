@@ -252,12 +252,6 @@ const base::Feature kAutofillSectionUponRedundantNameInfo{
 const base::Feature kAutofillServerCommunication{
     "AutofillServerCommunication", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether autofill suggestions are filtered by field values previously
-// filled by website.
-const base::Feature kAutofillShowAllSuggestionsOnPrefilledForms{
-    "AutofillShowAllSuggestionsOnPrefilledForms",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls whether we show warnings in the Dev console for misused autocomplete
 // types.
 const base::Feature kAutofillShowAutocompleteConsoleWarnings{
