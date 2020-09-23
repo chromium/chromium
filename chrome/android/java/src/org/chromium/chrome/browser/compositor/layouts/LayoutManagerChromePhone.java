@@ -8,7 +8,6 @@ import android.content.Context;
 import android.view.ViewGroup;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayout;
@@ -42,10 +41,8 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
      */
     public LayoutManagerChromePhone(LayoutManagerHost host, ViewGroup contentContainer,
             StartSurface startSurface,
-            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier) {
-        super(host, contentContainer, true, startSurface, tabContentManagerSupplier,
-                overviewModeBehaviorSupplier);
+            ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
+        super(host, contentContainer, true, startSurface, tabContentManagerSupplier);
     }
 
     @Override

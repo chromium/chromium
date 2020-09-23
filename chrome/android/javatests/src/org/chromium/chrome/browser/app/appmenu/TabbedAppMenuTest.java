@@ -237,8 +237,7 @@ public class TabbedAppMenuTest {
                 () -> mActivityTestRule.getActivity().getLayoutManager().hideOverview(false));
         Assert.assertFalse("Overview shouldn't be showing.",
                 mActivityTestRule.getActivity().getOverviewModeBehavior().overviewVisible());
-        CriteriaHelper.pollUiThread(
-                () -> !mAppMenuHandler.isAppMenuShowing(), "App menu shouldn't be showing.");
+        Assert.assertFalse("App menu shouldn't be showing.", mAppMenuHandler.isAppMenuShowing());
     }
 
     @Test
