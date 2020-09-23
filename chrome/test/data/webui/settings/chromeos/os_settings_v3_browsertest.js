@@ -96,6 +96,7 @@ TEST_F('OSSettingsNearbyShareSubPageV3Test', 'All', () => mocha.run());
  ['CellularSetupDialog', 'cellular_setup_dialog_test.m.js'],
  ['DateTimePage', 'date_time_page_tests.m.js'],
  ['InputMethodOptionPage', 'input_method_options_page_test.m.js'],
+ ['InternetConfig', 'internet_config_test.m.js'],
  ['InternetKnownNetworksPage', 'internet_known_networks_page_tests.m.js'],
  ['LocalizedLink', 'localized_link_test.m.js'],
  ['MultideviceFeatureItem', 'multidevice_feature_item_tests.m.js'],

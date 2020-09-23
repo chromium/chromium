@@ -121,7 +121,7 @@ Polymer({
 
   /** @private */
   onSaveTap_() {
-    this.$.networkConfig.save();
+    /** @type {!NetworkConfigElement} */ (this.$.networkConfig).save();
     settings.recordSettingChange();
   },
 

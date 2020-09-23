@@ -19,8 +19,6 @@ const VPNConfigType = {
   OPEN_VPN: 'OpenVPN',
 };
 
-(function() {
-
 // Note: This pattern does not work for elements that are stamped on initial
 // load because chromeos.networkConfig is not defined yet. <network-config>
 // however is always embedded in a <cr-dialog> so it is not stamped immediately.
@@ -1740,4 +1738,3 @@ Polymer({
     return undefined;
   },
 });
-})();

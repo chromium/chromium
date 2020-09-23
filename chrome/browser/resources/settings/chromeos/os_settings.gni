@@ -130,6 +130,7 @@ os_settings_auto_imports = settings_auto_imports +
                              "ui/webui/resources/html/cr.html|sendWithPromise,removeWebUIListener,addWebUIListener,WebUIListener",
                              "ui/webui/resources/html/icon.html|getImage",
                              "ui/webui/resources/html/polymer.html|afterNextRender,Polymer,html,flush",
+                             "ui/webui/resources/html/util.html|HTMLEscape",
                              "chrome/browser/resources/settings/chromeos/os_printing_page/cups_printers_browser_proxy.html|CupsPrintersBrowserProxy,CupsPrintersBrowserProxyImpl,CupsPrinterInfo,PrinterSetupResult,CupsPrintersList,PrinterPpdMakeModel,ManufacturersInfo,ModelsInfo,PrintServerResult,PrinterMakeModel",
                              "chrome/browser/resources/settings/chromeos/os_printing_page/cups_printers_entry_list_behavior.html|CupsPrintersEntryListBehavior",
                              "chrome/browser/resources/settings/chromeos/os_printing_page/cups_printers_entry_manager.html|CupsPrintersEntryManager",
