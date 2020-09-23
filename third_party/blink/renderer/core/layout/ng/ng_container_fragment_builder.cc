@@ -78,15 +78,16 @@ void NGContainerFragmentBuilder::PropagateChildData(
             descendant.containing_block_offset, PhysicalSize());
         if (!child.IsFragmentainerBox())
           containing_block_offset.block_offset += child_offset.block_offset;
+        if (IsBlockFragmentationContextRoot()) {
+          containing_block_offset.block_offset +=
+              fragmentainer_consumed_block_size_;
+        }
 
         NGLogicalStaticPosition static_position =
             descendant.static_position.ConvertToLogical(empty_outer_size);
         oof_positioned_fragmentainer_descendants_.emplace_back(
             descendant.node, static_position, descendant.inline_container,
             /* needs_block_offset_adjustment */ false,
-            IsBlockFragmentationContextRoot()
-                ? fragmentainer_consumed_block_size_
-                : LayoutUnit(),
             containing_block_offset, containing_block_fragment);
       }
     }

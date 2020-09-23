@@ -87,9 +87,6 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     // Offset of the container's padding-box.
     LogicalOffset container_offset;
 
-    // The block size consumed by all previous fragmentainers.
-    LayoutUnit fragmentainer_consumed_block_size;
-
     LogicalSize ContentSize(EPosition position) const {
       return position == EPosition::kAbsolute ? content_size_for_absolute
                                               : content_size_for_fixed;

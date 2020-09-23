@@ -245,6 +245,15 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   bool DidBreakSelf() const { return did_break_self_; }
   void SetDidBreakSelf() { did_break_self_ = true; }
 
+  // Store the previous break token, if one exists.
+  void SetPreviousBreakToken(
+      scoped_refptr<const NGBlockBreakToken> break_token) {
+    previous_break_token_ = std::move(break_token);
+  }
+  const NGBlockBreakToken* PreviousBreakToken() const {
+    return previous_break_token_.get();
+  }
+
   // Return true if we need to break before or inside any child, doesn't matter
   // if it's in-flow or not. As long as there are only breaks in parallel flows,
   // we may continue layout, but when we're done, we'll need to create a break
@@ -586,6 +595,8 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   base::Optional<int> lines_until_clamp_;
 
   std::unique_ptr<NGMathMLPaintInfo> mathml_paint_info_;
+
+  scoped_refptr<const NGBlockBreakToken> previous_break_token_;
 
 #if DCHECK_IS_ON()
   // Describes what size_.block_size represents; either the size of a single

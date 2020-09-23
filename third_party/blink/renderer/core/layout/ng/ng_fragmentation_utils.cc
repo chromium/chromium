@@ -195,6 +195,7 @@ void SetupFragmentBuilderForFragmentation(
     const NGBlockBreakToken* previous_break_token,
     NGBoxFragmentBuilder* builder) {
   builder->SetHasBlockFragmentation();
+  builder->SetPreviousBreakToken(previous_break_token);
 
   // The whereabouts of our container's so far best breakpoint is none of our
   // business, but we store its appeal, so that we don't look for breakpoints

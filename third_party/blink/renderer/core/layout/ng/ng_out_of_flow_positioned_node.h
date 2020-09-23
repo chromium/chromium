@@ -28,9 +28,8 @@ namespace blink {
 // This needs its static position [1] to be placed correctly in its containing
 // block. And in the case of fragmentation, this also needs the containing block
 // fragment to be placed correctly within the fragmentation context root. In
-// addition, the block size consumed by previous fragmentainers and the
-// containing block offset are needed to compute the start offset and the
-// initial fragmentainer of an out-of-flow positioned-node.
+// addition, the containing block offset is needed to compute the start offset
+// and the initial fragmentainer of an out-of-flow positioned-node.
 //
 // This is struct is allowed to be stored/persisted.
 //
@@ -40,7 +39,6 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
   NGPhysicalStaticPosition static_position;
   // Continuation root of the optional inline container.
   const LayoutInline* inline_container;
-  const LayoutUnit fragmentainer_consumed_block_size;
   PhysicalOffset containing_block_offset;
   scoped_refptr<const NGPhysicalContainerFragment> containing_block_fragment;
 
@@ -48,14 +46,12 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
       NGBlockNode node,
       NGPhysicalStaticPosition static_position,
       const LayoutInline* inline_container = nullptr,
-      LayoutUnit fragmentainer_consumed_block_size = LayoutUnit(),
       PhysicalOffset containing_block_offset = PhysicalOffset(),
       scoped_refptr<const NGPhysicalContainerFragment>
           containing_block_fragment = nullptr)
       : node(node),
         static_position(static_position),
         inline_container(inline_container),
-        fragmentainer_consumed_block_size(fragmentainer_consumed_block_size),
         containing_block_offset(containing_block_offset),
         containing_block_fragment(std::move(containing_block_fragment)) {
     DCHECK(!inline_container ||
@@ -74,7 +70,6 @@ struct NGLogicalOutOfFlowPositionedNode {
   NGLogicalStaticPosition static_position;
   // Continuation root of the optional inline container.
   const LayoutInline* inline_container;
-  const LayoutUnit fragmentainer_consumed_block_size;
   bool needs_block_offset_adjustment;
   LogicalOffset containing_block_offset;
   scoped_refptr<const NGPhysicalContainerFragment> containing_block_fragment;
@@ -84,14 +79,12 @@ struct NGLogicalOutOfFlowPositionedNode {
       NGLogicalStaticPosition static_position,
       const LayoutInline* inline_container = nullptr,
       bool needs_block_offset_adjustment = false,
-      LayoutUnit fragmentainer_consumed_block_size = LayoutUnit(),
       LogicalOffset containing_block_offset = LogicalOffset(),
       scoped_refptr<const NGPhysicalContainerFragment>
           containing_block_fragment = nullptr)
       : node(node),
         static_position(static_position),
         inline_container(inline_container),
-        fragmentainer_consumed_block_size(fragmentainer_consumed_block_size),
         needs_block_offset_adjustment(needs_block_offset_adjustment),
         containing_block_offset(containing_block_offset),
         containing_block_fragment(std::move(containing_block_fragment)) {

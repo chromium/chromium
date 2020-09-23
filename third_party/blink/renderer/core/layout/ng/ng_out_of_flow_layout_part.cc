@@ -321,9 +321,8 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
         LogicalOffset(border.inline_start, border.block_start);
     container_offset += candidate.containing_block_offset;
 
-    ContainingBlockInfo containing_block_info{
-        style.Direction(), content_size, content_size, container_offset,
-        candidate.fragmentainer_consumed_block_size};
+    ContainingBlockInfo containing_block_info{style.Direction(), content_size,
+                                              content_size, container_offset};
 
     return containing_blocks_map_
         .insert(containing_block, containing_block_info)
@@ -488,6 +487,19 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
       if (IsContainingBlockForCandidate(candidate) &&
           (!only_layout || layout_box == only_layout)) {
         if (container_space_.HasBlockFragmentation()) {
+          // If the containing block is fragmented, adjust the offset to be from
+          // the first containing block fragment to the fragmentation context
+          // root. Also, adjust the static position to be relative to the
+          // adjusted containing block offset.
+          if (const auto* previous_break_token =
+                  container_builder_->PreviousBreakToken()) {
+            LayoutUnit previous_consumed_block_size =
+                previous_break_token->ConsumedBlockSize();
+            candidate.containing_block_offset.block_offset -=
+                previous_consumed_block_size;
+            candidate.static_position.offset.block_offset +=
+                previous_consumed_block_size;
+          }
           container_builder_->AddOutOfFlowFragmentainerDescendant(candidate);
           continue;
         }
@@ -1210,9 +1222,6 @@ void NGOutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
     WritingMode default_writing_mode,
     wtf_size_t* start_index,
     LogicalOffset* offset) const {
-  LayoutUnit block_offset_from_root =
-      offset->block_offset + container_info.fragmentainer_consumed_block_size;
-
   wtf_size_t child_index = 0;
   // The sum of all previous fragmentainers' block size.
   LayoutUnit used_block_size;
@@ -1229,9 +1238,9 @@ void NGOutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
                                      .block_size;
       current_max_block_size += fragmentainer_block_size;
 
-      if (block_offset_from_root < current_max_block_size) {
+      if (offset->block_offset < current_max_block_size) {
         *start_index = child_index;
-        offset->block_offset = block_offset_from_root - used_block_size;
+        offset->block_offset -= used_block_size;
         return;
       }
       used_block_size = current_max_block_size;
@@ -1240,7 +1249,7 @@ void NGOutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
   }
   // If the right fragmentainer hasn't been found yet, the OOF element will
   // start its layout in a proxy fragment.
-  LayoutUnit remaining_block_offset = block_offset_from_root - used_block_size;
+  LayoutUnit remaining_block_offset = offset->block_offset - used_block_size;
 
   // If we are a new fragment and are separated from other columns by a
   // spanner, compute the correct fragmentainer_block_size.

@@ -727,8 +727,6 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationAndColumnSpanners) {
       )HTML");
   String dump = DumpFragmentTree(GetElementById("container"));
 
-  // TODO(almaher): The height of fragmentainer `offset:0,30 size:492x10` might
-  // need to be updated in your CL about column spanners.
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x40
     offset:0,0 size:1000x40
@@ -964,14 +962,13 @@ TEST_F(NGOutOfFlowLayoutPartTest,
       )HTML");
   String dump = DumpFragmentTree(GetElementById("container"));
 
-  // TODO(1079031): With top set to 0px, the abspos should start in the first
-  // column with an offset of (0,0).
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x40
     offset:0,0 size:1000x40
       offset:0,0 size:492x10
         offset:0,0 size:30x10
           offset:0,0 size:30x10
+        offset:0,0 size:5x10
       offset:508,0 size:492x10
         offset:0,0 size:30x10
           offset:0,0 size:30x10
@@ -986,7 +983,7 @@ TEST_F(NGOutOfFlowLayoutPartTest,
       offset:1016,10 size:492x30
         offset:0,0 size:5x30
       offset:1524,10 size:492x30
-        offset:0,0 size:5x20
+        offset:0,0 size:5x10
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }
@@ -1022,8 +1019,6 @@ TEST_F(NGOutOfFlowLayoutPartTest,
       )HTML");
   String dump = DumpFragmentTree(GetElementById("container"));
 
-  // TODO(1079031): With top set to 25px, the abspos should start in the third
-  // column with an offset of (0,5).
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x40
     offset:0,0 size:1000x40
@@ -1035,11 +1030,9 @@ TEST_F(NGOutOfFlowLayoutPartTest,
           offset:0,0 size:30x10
       offset:0,10 size:1000x0
       offset:0,10 size:492x30
-        offset:0,15 size:5x15
+        offset:0,5 size:5x25
       offset:508,10 size:492x30
-        offset:0,0 size:5x30
-      offset:1016,10 size:492x30
-        offset:0,0 size:5x5
+        offset:0,0 size:5x25
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }
