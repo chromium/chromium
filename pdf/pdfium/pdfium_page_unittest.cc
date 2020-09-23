@@ -20,7 +20,6 @@
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/ppapi_migration/geometry_conversions.h"
 #include "pdf/test/test_client.h"
-#include "pdf/test/test_utils.h"
 #include "pdf/thumbnail.h"
 #include "ppapi/c/private/ppb_pdf.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,11 +49,27 @@ TEST(PDFiumPageHelperDeathTest, ToPDFiumRotation) {
 #endif
 }
 
+// Clone of pp::PDF::PrivateAccessibilityTextRunInfo.
+struct ExpectedAccessibilityTextRunInfo {
+  uint32_t len;
+  gfx::RectF bounds;
+  PP_PrivateDirection direction;
+  pp::PDF::PrivateAccessibilityTextStyleInfo style;
+};
+
 void CompareTextRuns(
-    const pp::PDF::PrivateAccessibilityTextRunInfo& expected_text_run,
-    const pp::PDF::PrivateAccessibilityTextRunInfo actual_text_run) {
+    const ExpectedAccessibilityTextRunInfo& expected_text_run,
+    const pp::PDF::PrivateAccessibilityTextRunInfo& actual_text_run) {
   EXPECT_EQ(expected_text_run.len, actual_text_run.len);
-  CompareRect(expected_text_run.bounds, actual_text_run.bounds);
+
+  // Use EXPECT_FLOAT_EQ() here instead of direct gfx::RectF comparisons to
+  // avoid having to deal with float rounding errors.
+  gfx::RectF actual_bounds = RectFFromPPFloatRect(actual_text_run.bounds);
+  EXPECT_FLOAT_EQ(expected_text_run.bounds.x(), actual_bounds.x());
+  EXPECT_FLOAT_EQ(expected_text_run.bounds.y(), actual_bounds.y());
+  EXPECT_FLOAT_EQ(expected_text_run.bounds.width(), actual_bounds.width());
+  EXPECT_FLOAT_EQ(expected_text_run.bounds.height(), actual_bounds.height());
+
   EXPECT_EQ(expected_text_run.direction, actual_text_run.direction);
 
   const pp::PDF::PrivateAccessibilityTextStyleInfo& expected_style =
@@ -358,37 +373,31 @@ TEST_F(PDFiumPageTextTest, GetTextRunInfo) {
   // The links span from [7, 22], [52, 66] and [92, 108] with 16, 15 and 17
   // text run lengths respectively. There are text runs preceding and
   // succeeding them.
-  pp::PDF::PrivateAccessibilityTextRunInfo expected_text_runs[] = {
-      {7,
-       PP_MakeFloatRectFromXYWH(26.666666f, 189.333333f, 38.666672f,
-                                13.333344f),
+  ExpectedAccessibilityTextRunInfo expected_text_runs[] = {
+      {7, gfx::RectF(26.666666f, 189.333333f, 38.666672f, 13.333344f),
        PP_PrivateDirection::PP_PRIVATEDIRECTION_LTR, expected_style_1},
-      {16,
-       PP_MakeFloatRectFromXYWH(70.666664f, 189.333333f, 108.0f, 14.666672f),
+      {16, gfx::RectF(70.666664f, 189.333333f, 108.0f, 14.666672f),
        PP_PrivateDirection::PP_PRIVATEDIRECTION_LTR, expected_style_1},
-      {20,
-       PP_MakeFloatRectFromXYWH(181.333333f, 189.333333f, 117.333333f,
-                                14.666672f),
+      {20, gfx::RectF(181.333333f, 189.333333f, 117.333333f, 14.666672f),
        PP_PrivateDirection::PP_PRIVATEDIRECTION_LTR, expected_style_1},
-      {9, PP_MakeFloatRectFromXYWH(28.0f, 117.33334f, 89.333328f, 20.0f),
+      {9, gfx::RectF(28.0f, 117.33334f, 89.333328f, 20.0f),
        PP_PrivateDirection::PP_PRIVATEDIRECTION_LTR, expected_style_2},
-      {15, PP_MakeFloatRectFromXYWH(126.66666f, 117.33334f, 137.33334f, 20.0f),
+      {15, gfx::RectF(126.66666f, 117.33334f, 137.33334f, 20.0f),
        PP_PrivateDirection::PP_PRIVATEDIRECTION_LTR, expected_style_2},
-      {20,
-       PP_MakeFloatRectFromXYWH(266.66666f, 118.66666f, 169.33334f, 18.666664f),
+      {20, gfx::RectF(266.66666f, 118.66666f, 169.33334f, 18.666664f),
        PP_PrivateDirection::PP_PRIVATEDIRECTION_LTR, expected_style_2},
-      {5, PP_MakeFloatRectFromXYWH(28.0f, 65.333336f, 40.0f, 18.666664f),
+      {5, gfx::RectF(28.0f, 65.333336f, 40.0f, 18.666664f),
        PP_PrivateDirection::PP_PRIVATEDIRECTION_LTR, expected_style_2},
-      {17, PP_MakeFloatRectFromXYWH(77.333336f, 64.0f, 160.0f, 20.0f),
+      {17, gfx::RectF(77.333336f, 64.0f, 160.0f, 20.0f),
        PP_PrivateDirection::PP_PRIVATEDIRECTION_LTR, expected_style_2}};
 
   if (IsRunningOnChromeOS()) {
     expected_text_runs[4].bounds =
-        PP_MakeFloatRectFromXYWH(126.66666f, 117.33334f, 137.33334f, 21.33334f);
+        gfx::RectF(126.66666f, 117.33334f, 137.33334f, 21.33334f);
     expected_text_runs[5].bounds =
-        PP_MakeFloatRectFromXYWH(266.66666f, 118.66666f, 170.66666f, 20.0f);
+        gfx::RectF(266.66666f, 118.66666f, 170.66666f, 20.0f);
     expected_text_runs[7].bounds =
-        PP_MakeFloatRectFromXYWH(77.333336f, 64.0f, 160.0f, 21.33333f);
+        gfx::RectF(77.333336f, 64.0f, 160.0f, 21.33333f);
   }
 
   // Test negative char index returns nullopt
@@ -424,27 +433,23 @@ TEST_F(PDFiumPageTextTest, TestHighlightTextRunInfo) {
   static const pp::PDF::PrivateAccessibilityTextStyleInfo kExpectedStyle = {
       "Helvetica", 0,    PP_TEXTRENDERINGMODE_FILL, 16, 0xff000000, 0xff000000,
       false,       false};
-  pp::PDF::PrivateAccessibilityTextRunInfo expected_text_runs[] = {
-      {5,
-       PP_MakeFloatRectFromXYWH(1.3333334f, 198.66667f, 46.666668f, 14.666672f),
+  ExpectedAccessibilityTextRunInfo expected_text_runs[] = {
+      {5, gfx::RectF(1.3333334f, 198.66667f, 46.666668f, 14.666672f),
        PP_PrivateDirection::PP_PRIVATEDIRECTION_LTR, kExpectedStyle},
-      {7,
-       PP_MakeFloatRectFromXYWH(50.666668f, 198.66667f, 47.999996f, 17.333328f),
+      {7, gfx::RectF(50.666668f, 198.66667f, 47.999996f, 17.333328f),
        PP_PrivateDirection::PP_PRIVATEDIRECTION_LTR, kExpectedStyle},
-      {7,
-       PP_MakeFloatRectFromXYWH(106.66666f, 198.66667f, 73.333336f, 18.666672f),
+      {7, gfx::RectF(106.66666f, 198.66667f, 73.333336f, 18.666672f),
        PP_PrivateDirection::PP_PRIVATEDIRECTION_LTR, kExpectedStyle},
-      {2, PP_MakeFloatRectFromXYWH(181.33333f, 192.0f, 16.0f, 25.333344f),
+      {2, gfx::RectF(181.33333f, 192.0f, 16.0f, 25.333344f),
        PP_PrivateDirection::PP_PRIVATEDIRECTION_NONE, kExpectedStyle},
-      {2,
-       PP_MakeFloatRectFromXYWH(198.66667f, 202.66667f, 21.333328f, 10.666672f),
+      {2, gfx::RectF(198.66667f, 202.66667f, 21.333328f, 10.666672f),
        PP_PrivateDirection::PP_PRIVATEDIRECTION_LTR, kExpectedStyle}};
 
   if (IsRunningOnChromeOS()) {
-    expected_text_runs[2].bounds = PP_MakeFloatRectFromXYWH(
-        106.66666f, 198.66667f, 73.333336f, 19.999985f);
-    expected_text_runs[4].bounds = PP_MakeFloatRectFromXYWH(
-        198.66667f, 201.33333f, 21.333328f, 12.000015f);
+    expected_text_runs[2].bounds =
+        gfx::RectF(106.66666f, 198.66667f, 73.333336f, 19.999985f);
+    expected_text_runs[4].bounds =
+        gfx::RectF(198.66667f, 201.33333f, 21.333328f, 12.000015f);
   }
 
   int current_char_index = 0;
