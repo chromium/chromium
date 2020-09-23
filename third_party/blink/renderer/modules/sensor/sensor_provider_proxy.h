@@ -48,15 +48,13 @@ class MODULES_EXPORT SensorProviderProxy final
     return sensor_provider_.get();
   }
   void RemoveSensorProxy(SensorProxy* proxy);
-  using SensorsSet = HeapHashSet<WeakMember<SensorProxy>>;
-  const SensorsSet& sensor_proxies() const { return sensor_proxies_; }
 
   // For SensorProviderProxy personal use.
   void InitializeIfNeeded();
   bool IsInitialized() const { return sensor_provider_.is_bound(); }
   void OnSensorProviderConnectionError();
-  SensorsSet sensor_proxies_;
 
+  HeapHashSet<WeakMember<SensorProxy>> sensor_proxies_;
   HeapMojoRemote<device::mojom::blink::SensorProvider,
                  HeapMojoWrapperMode::kWithoutContextObserver>
       sensor_provider_;
