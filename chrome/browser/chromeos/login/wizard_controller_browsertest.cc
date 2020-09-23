@@ -76,7 +76,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/audio/cras_audio_handler.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
@@ -1917,19 +1916,13 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
 
 class WizardControllerScreenPriorityOOBETest : public OobeBaseTest {
  protected:
-  WizardControllerScreenPriorityOOBETest() {
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kOobeScreensPriority);
-  }
+  WizardControllerScreenPriorityOOBETest() = default;
   ~WizardControllerScreenPriorityOOBETest() override = default;
 
   void CheckCurrentScreen(OobeScreenId screen) {
     EXPECT_EQ(WizardController::default_controller()->GetScreen(screen),
               WizardController::default_controller()->current_screen());
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerScreenPriorityOOBETest,
@@ -1960,8 +1953,6 @@ class WizardControllerScreenPriorityTest : public LoginManagerTest,
  protected:
   WizardControllerScreenPriorityTest() {
     login_manager_mixin_.AppendRegularUsers(1);
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kOobeScreensPriority);
   }
   ~WizardControllerScreenPriorityTest() override = default;
 
@@ -1978,7 +1969,6 @@ class WizardControllerScreenPriorityTest : public LoginManagerTest,
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };

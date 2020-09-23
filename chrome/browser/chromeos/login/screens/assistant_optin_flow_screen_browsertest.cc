@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/public/cpp/assistant_settings.h"
@@ -300,11 +299,7 @@ class ScopedAssistantSettings : public chromeos::assistant::AssistantSettings {
 
 class AssistantOptInFlowTest : public OobeBaseTest {
  public:
-  AssistantOptInFlowTest() {
-    // To reuse existing wizard controller in the flow.
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kOobeScreensPriority);
-  }
+  AssistantOptInFlowTest() = default;
   ~AssistantOptInFlowTest() override = default;
 
   void RegisterAdditionalRequestHandlers() override {
@@ -433,8 +428,6 @@ class AssistantOptInFlowTest : public OobeBaseTest {
   bool screen_exited_ = false;
   base::OnceClosure screen_exit_callback_;
   AssistantOptInFlowScreen::ScreenExitCallback original_callback_;
-
-  base::test::ScopedFeatureList feature_list_;
 
   LoginManagerMixin login_manager_{&mixin_host_};
 };

@@ -366,12 +366,6 @@ const base::Feature kMinimumChromeVersion{"MinimumChromeVersion",
 // ChromeOS Media App. https://crbug.com/996088.
 const base::Feature kMediaApp{"MediaApp", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether to use screen priorities to decide if transition from one
-// Oobe screen to another is allowed.
-// TODO(https://crbug.com/1064271): Remove this flag once the feature is stable.
-const base::Feature kOobeScreensPriority{"OobeScreensPriority",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables a unique URL for each path in CrOS settings.
 // This allows deep linking to individual settings, i.e. in settings search.
 const base::Feature kOsSettingsDeepLinking{"OsSettingsDeepLinking",
@@ -642,10 +636,6 @@ bool IsMinimumChromeVersionEnabled() {
 
 bool IsClipboardHistoryEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistory);
-}
-
-bool IsOobeScreensPriorityEnabled() {
-  return base::FeatureList::IsEnabled(kOobeScreensPriority);
 }
 
 bool IsParentalControlsSettingsEnabled() {

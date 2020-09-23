@@ -77,7 +77,6 @@
 #include "chrome/grit/browser_resources.h"
 #include "chromeos/audio/chromeos_sounds.h"
 #include "chromeos/constants/chromeos_constants.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -586,7 +585,7 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
   SetOobeProgressBarVisible(oobe_progress_bar_visible_);
 
   // Create and show the wizard.
-  if (features::IsOobeScreensPriorityEnabled() && wizard_controller_) {
+  if (wizard_controller_) {
     wizard_controller_->AdvanceToScreen(first_screen);
   } else {
     wizard_controller_ = std::make_unique<WizardController>();

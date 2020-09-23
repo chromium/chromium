@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -35,11 +34,7 @@ namespace chromeos {
 
 class AppDownloadingScreenTest : public OobeBaseTest {
  public:
-  AppDownloadingScreenTest() {
-    // To reuse existing wizard controller in the flow.
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kOobeScreensPriority);
-  }
+  AppDownloadingScreenTest() = default;
   ~AppDownloadingScreenTest() override = default;
 
   // OobeBaseTest:
@@ -82,8 +77,6 @@ class AppDownloadingScreenTest : public OobeBaseTest {
   }
 
   base::OnceClosure screen_exit_callback_;
-
-  base::test::ScopedFeatureList feature_list_;
 
   LoginManagerMixin login_manager_{&mixin_host_};
 };

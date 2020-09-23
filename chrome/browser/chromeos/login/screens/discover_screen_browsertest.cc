@@ -19,7 +19,6 @@
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/discover_screen_handler.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/login/auth/stub_authenticator_builder.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
@@ -31,10 +30,6 @@ class DiscoverScreenTest
       public testing::WithParamInterface<user_manager::UserType> {
  public:
   DiscoverScreenTest() {
-    // To reuse existing wizard controller in the flow.
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kOobeScreensPriority);
-
     if (GetParam() == user_manager::USER_TYPE_CHILD) {
       fake_gaia_ =
           std::make_unique<FakeGaiaMixin>(&mixin_host_, embedded_test_server());
@@ -116,7 +111,6 @@ class DiscoverScreenTest
       std::move(screen_exit_callback_).Run();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   DiscoverScreen::ScreenExitCallback original_callback_;
   bool screen_exited_ = false;
   base::RepeatingClosure screen_exit_callback_;

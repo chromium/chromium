@@ -128,11 +128,7 @@ class SyncConsentTest : public OobeBaseTest {
  public:
   SyncConsentTest()
       : force_branded_build_(
-            SyncConsentScreen::ForceBrandedBuildForTesting(true)) {
-    // To reuse existing wizard controller in the flow.
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kOobeScreensPriority);
-  }
+            SyncConsentScreen::ForceBrandedBuildForTesting(true)) {}
   ~SyncConsentTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -251,7 +247,6 @@ class SyncConsentTest : public OobeBaseTest {
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
 
   std::unique_ptr<base::AutoReset<bool>> force_branded_build_;
-  base::test::ScopedFeatureList feature_list_;
   DISALLOW_COPY_AND_ASSIGN(SyncConsentTest);
 };
 

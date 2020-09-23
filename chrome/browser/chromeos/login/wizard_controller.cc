@@ -151,7 +151,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/constants/chromeos_constants.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -1641,7 +1640,7 @@ bool WizardController::CanNavigateTo(OobeScreenId screen_id) {
 }
 
 void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
-  if (features::IsOobeScreensPriorityEnabled() && !CanNavigateTo(screen_id)) {
+  if (!CanNavigateTo(screen_id)) {
     LOG(WARNING) << "Cannot advance to screen : " << screen_id
                  << " as it's priority is less than the current screen : "
                  << current_screen_->screen_id();

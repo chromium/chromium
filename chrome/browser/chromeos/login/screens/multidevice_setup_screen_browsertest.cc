@@ -17,7 +17,6 @@
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/multidevice_setup_screen_handler.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "content/public/test/browser_test.h"
 
@@ -25,11 +24,7 @@ namespace chromeos {
 
 class MultiDeviceSetupScreenTest : public OobeBaseTest {
  public:
-  MultiDeviceSetupScreenTest() {
-    // To reuse existing wizard controller in the flow.
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kOobeScreensPriority);
-  }
+  MultiDeviceSetupScreenTest() = default;
   ~MultiDeviceSetupScreenTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -118,8 +113,6 @@ class MultiDeviceSetupScreenTest : public OobeBaseTest {
 
   bool screen_exited_ = false;
   base::RepeatingClosure screen_exit_callback_;
-
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
 

@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/recommend_apps_screen_handler.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -112,11 +111,7 @@ class StubRecommendAppsFetcher : public RecommendAppsFetcher {
 
 class RecommendAppsScreenTest : public OobeBaseTest {
  public:
-  RecommendAppsScreenTest() {
-    // To reuse existing wizard controller in the flow.
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kOobeScreensPriority);
-  }
+  RecommendAppsScreenTest() = default;
   ~RecommendAppsScreenTest() override = default;
 
   // OobeBaseTest:
@@ -254,8 +249,6 @@ class RecommendAppsScreenTest : public OobeBaseTest {
       recommend_apps_fetcher_factory_;
 
   base::OnceClosure screen_exit_callback_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, BasicSelection) {

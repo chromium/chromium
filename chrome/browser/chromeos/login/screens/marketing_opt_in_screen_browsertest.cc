@@ -163,10 +163,8 @@ class MarketingOptInScreenTestWithRequest : public MarketingOptInScreenTest {
 };
 
 MarketingOptInScreenTest::MarketingOptInScreenTest() {
-  // To reuse existing wizard controller in the flow.
   feature_list_.InitWithFeatures(
-      {chromeos::features::kOobeScreensPriority,
-       ::features::kOobeMarketingDoubleOptInCountriesSupported,
+      {::features::kOobeMarketingDoubleOptInCountriesSupported,
        ::features::kOobeMarketingAdditionalCountriesSupported},
       {});
 }
@@ -430,9 +428,8 @@ class MarketingDisabledExtraCountries : public MarketingOptInScreenTest,
   MarketingDisabledExtraCountries() {
     feature_list_.Reset();
     feature_list_.InitWithFeatures(
-        {chromeos::features::kOobeScreensPriority},
-        {::features::kOobeMarketingDoubleOptInCountriesSupported,
-         ::features::kOobeMarketingAdditionalCountriesSupported});
+        {}, {::features::kOobeMarketingDoubleOptInCountriesSupported,
+             ::features::kOobeMarketingAdditionalCountriesSupported});
   }
 
   ~MarketingDisabledExtraCountries() = default;
@@ -477,10 +474,8 @@ class MarketingOptInScreenTestDisabled : public MarketingOptInScreenTest {
  public:
   MarketingOptInScreenTestDisabled() {
     feature_list_.Reset();
-    // Enable |kOobeScreensPriority| to reuse existing wizard controller in
-    // the flow and disable kOobeMarketingScreen to disable marketing screen.
-    feature_list_.InitWithFeatures({chromeos::features::kOobeScreensPriority},
-                                   {::features::kOobeMarketingScreen});
+    // Disable kOobeMarketingScreen to disable marketing screen.
+    feature_list_.InitWithFeatures({}, {::features::kOobeMarketingScreen});
   }
 
   ~MarketingOptInScreenTestDisabled() override = default;

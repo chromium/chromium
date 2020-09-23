@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/arc/arc_prefs.h"
@@ -165,11 +164,7 @@ class WebViewLoadWaiter {
 
 class ArcTermsOfServiceScreenTest : public OobeBaseTest {
  public:
-  ArcTermsOfServiceScreenTest() {
-    // To reuse existing wizard controller in the flow.
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kOobeScreensPriority);
-  }
+  ArcTermsOfServiceScreenTest() = default;
   ~ArcTermsOfServiceScreenTest() override = default;
 
   void RegisterAdditionalRequestHandlers() override {
@@ -326,7 +321,6 @@ class ArcTermsOfServiceScreenTest : public OobeBaseTest {
 
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
 
-  base::test::ScopedFeatureList feature_list_;
   DISALLOW_COPY_AND_ASSIGN(ArcTermsOfServiceScreenTest);
 };
 
