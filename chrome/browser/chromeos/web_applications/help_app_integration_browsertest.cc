@@ -27,6 +27,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/components/help_app_ui/url_constants.h"
 #include "chromeos/components/web_applications/test/sandboxed_web_ui_test_base.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -56,6 +57,10 @@ class HelpAppIntegrationTest : public SystemWebAppIntegrationTest {
 
 using HelpAppAllProfilesIntegrationTest = HelpAppIntegrationTest;
 
+content::WebContents* GetActiveWebContents() {
+  return chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
+}
+
 // Waits for and expects that the correct url is opened.
 void WaitForAppToOpen(const GURL& expected_url) {
   // Start with a number of browsers (may include an incognito browser).
@@ -68,10 +73,7 @@ void WaitForAppToOpen(const GURL& expected_url) {
   // There should be another browser window for the newly opened app.
   EXPECT_EQ(num_browsers + 1, chrome::GetTotalBrowserCount());
   // Help app should have opened at the expected page.
-  EXPECT_EQ(expected_url, chrome::FindLastActive()
-                              ->tab_strip_model()
-                              ->GetActiveWebContents()
-                              ->GetVisibleURL());
+  EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
 }
 
 // Test that the Help App installs and launches correctly. Runs some spot
@@ -163,10 +165,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppV2ShowHelp) {
 #else
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(GURL(chrome::kChromeHelpViaKeyboardURL),
-            chrome::FindLastActive()
-                ->tab_strip_model()
-                ->GetActiveWebContents()
-                ->GetVisibleURL());
+            GetActiveWebContents()->GetVisibleURL());
 #endif
 }
 
@@ -194,13 +193,10 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest,
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
   // The opened window should be showing the url with attached WebUI.
-  content::WebContents* web_contents =
-      chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
-
   // The inner frame should be the pathname for the release notes pathname.
   EXPECT_EQ("chrome-untrusted://help-app/updates",
             SandboxedWebUiAppTestBase::EvalJsInAppFrame(
-                web_contents, "window.location.href"));
+                GetActiveWebContents(), "window.location.href"));
 #else
   // Nothing should happen on non-branded builds.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
@@ -328,10 +324,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ShowParentalControls) {
 
   // Settings should be active in a new window.
   EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(expected_url, chrome::FindLastActive()
-                              ->tab_strip_model()
-                              ->GetActiveWebContents()
-                              ->GetVisibleURL());
+  EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
 }
 
 // Test that the Help App opens when Gesture help requested.
@@ -362,10 +355,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppOpenKeyboardShortcut) {
 #if defined(OS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Default browser tab and Help app are open.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
-  EXPECT_EQ("chrome://help-app/", chrome::FindLastActive()
-                                      ->tab_strip_model()
-                                      ->GetActiveWebContents()
-                                      ->GetVisibleURL());
+  EXPECT_EQ("chrome://help-app/", GetActiveWebContents()->GetVisibleURL());
   // The HELP app is 18, see DefaultAppName in
   // src/chrome/browser/apps/app_service/app_service_metrics.cc
   histogram_tester.ExpectUniqueSample("Apps.DefaultAppLaunch.FromKeyboard", 18,
@@ -374,15 +364,31 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppOpenKeyboardShortcut) {
   // We just have the one browser. Navigates chrome.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(GURL(chrome::kChromeHelpViaKeyboardURL),
-            chrome::FindLastActive()
-                ->tab_strip_model()
-                ->GetActiveWebContents()
-                ->GetVisibleURL());
+            GetActiveWebContents()->GetVisibleURL());
   // The HELP app is 18, see DefaultAppName in
   // src/chrome/browser/apps/app_service/app_service_metrics.cc
   histogram_tester.ExpectUniqueSample("Apps.DefaultAppLaunch.FromKeyboard", 18,
                                       0);
 #endif
+}
+
+// Test that the Help App opens in a new window if try to navigate there in a
+// browser.
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
+                       HelpAppCapturesBrowserNavigation) {
+  WaitForTestSystemAppInstall();
+  content::TestNavigationObserver navigation_observer(
+      GURL("chrome://help-app"));
+  navigation_observer.StartWatchingNewWebContents();
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
+
+  // Try to navigate to the help app in the browser.
+  ui_test_utils::SendToOmniboxAndSubmit(browser(), "chrome://help-app");
+  navigation_observer.Wait();
+
+  // We now have two browsers, one for the chrome window, one for the Help app.
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(GURL("chrome://help-app"), GetActiveWebContents()->GetVisibleURL());
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_MANIFEST_INSTALL_P(

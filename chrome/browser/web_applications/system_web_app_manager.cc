@@ -157,6 +157,7 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps() {
     infos.at(SystemAppType::HELP).additional_search_terms = {
         IDS_GENIUS_APP_NAME, IDS_HELP_APP_PERKS, IDS_HELP_APP_OFFERS};
     infos.at(SystemAppType::HELP).minimum_window_size = {600, 320};
+    infos.at(SystemAppType::HELP).capture_navigations = true;
   }
 
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::MEDIA)) {
