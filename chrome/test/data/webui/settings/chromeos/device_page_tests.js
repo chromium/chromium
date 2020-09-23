@@ -494,6 +494,25 @@ cr.define('device_page_tests', function() {
             height: 2000,
             refreshRate: 75,
           },
+          // Include 3 copies of 3000x2000 mode to emulate duplicated modes
+          // reported by some monitors.  Only one is marked 'isNative'.
+          {
+            deviceScaleFactor: 1.0,
+            widthInNativePixels: 3000,
+            heightInNativePixels: 2000,
+            width: 3000,
+            height: 2000,
+            refreshRate: 100,
+          },
+          {
+            isNative: true,
+            deviceScaleFactor: 1.0,
+            widthInNativePixels: 3000,
+            heightInNativePixels: 2000,
+            width: 3000,
+            height: 2000,
+            refreshRate: 100,
+          },
           {
             deviceScaleFactor: 1.0,
             widthInNativePixels: 3000,
@@ -917,12 +936,14 @@ cr.define('device_page_tests', function() {
             // Verify the display modes are parsed correctly.
 
             // 5 total modes, 2 parent modes.
-            expectEquals(5, displayPage.modeToParentModeMap_.size);
+            expectEquals(7, displayPage.modeToParentModeMap_.size);
             expectEquals(0, displayPage.modeToParentModeMap_.get(0));
             expectEquals(0, displayPage.modeToParentModeMap_.get(1));
-            expectEquals(2, displayPage.modeToParentModeMap_.get(2));
-            expectEquals(2, displayPage.modeToParentModeMap_.get(3));
-            expectEquals(2, displayPage.modeToParentModeMap_.get(4));
+            expectEquals(5, displayPage.modeToParentModeMap_.get(2));
+            expectEquals(5, displayPage.modeToParentModeMap_.get(3));
+            expectEquals(5, displayPage.modeToParentModeMap_.get(4));
+            expectEquals(5, displayPage.modeToParentModeMap_.get(5));
+            expectEquals(5, displayPage.modeToParentModeMap_.get(6));
 
             // Two resolution options, one for each parent mode.
             expectEquals(2, displayPage.refreshRateList_.length);
@@ -932,7 +953,7 @@ cr.define('device_page_tests', function() {
             expectEquals(
                 2, displayPage.parentModeToRefreshRateMap_.get(0).length);
             expectEquals(
-                3, displayPage.parentModeToRefreshRateMap_.get(2).length);
+                3, displayPage.parentModeToRefreshRateMap_.get(5).length);
 
             // Ambient EQ never shown on non-internal display regardless of
             // whether it is enabled.
