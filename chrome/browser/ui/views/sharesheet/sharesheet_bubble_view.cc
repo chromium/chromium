@@ -247,7 +247,7 @@ void SharesheetBubbleView::PopulateLayoutsWithTargets(
 
     auto target_view = std::make_unique<SharesheetTargetButton>(
         this, target.display_name, secondary_display_name, &target.icon);
-    target_view->set_tag(++target_counter);
+    target_view->set_tag(target_counter++);
 
     layout_for_target->AddView(std::move(target_view));
   }
