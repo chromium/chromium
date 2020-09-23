@@ -33,6 +33,7 @@ js_modulizer("modulize") {
   input_files = [
     "ambient_mode_page_test.js",
     "bluetooth_page_tests.js",
+    "cellular_setup_dialog_test.js",
     "date_time_page_tests.js",
     "fake_bluetooth.js",
     "fake_bluetooth_private.js",

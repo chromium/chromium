@@ -32,6 +32,7 @@ var OSSettingsV3BrowserTest = class extends PolymerTest {
     return {
       enabled: [
         'chromeos::features::kOsSettingsPolymer3',
+        'chromeos::features::kUpdatedCellularActivationUi',
       ],
     };
   }
@@ -92,6 +93,7 @@ TEST_F('OSSettingsNearbyShareSubPageV3Test', 'All', () => mocha.run());
 
 [['AmbientModePage', 'ambient_mode_page_test.m.js'],
  ['BluetoothPage', 'bluetooth_page_tests.m.js'],
+ ['CellularSetupDialog', 'cellular_setup_dialog_test.m.js'],
  ['DateTimePage', 'date_time_page_tests.m.js'],
  ['InputMethodOptionPage', 'input_method_options_page_test.m.js'],
  ['InternetKnownNetworksPage', 'internet_known_networks_page_tests.m.js'],
