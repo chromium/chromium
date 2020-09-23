@@ -65,40 +65,29 @@ std::string GetKeyFromQuery<LegacyEnv>(const LegacyEnv::Query& query_request);
 template <>
 std::string GetKeyFromQuery<ApiEnv>(const ApiEnv::Query& query_request);
 
-template <typename Env>
 bool GetResponseForQuery(const ServerCache& cache,
-                         const typename Env::Query& query,
+                         const AutofillPageQueryRequest& query,
                          std::string* http_text);
-template <>
-bool GetResponseForQuery<LegacyEnv>(const ServerCache& cache,
-                                    const typename LegacyEnv::Query& query,
-                                    std::string* http_text);
-template <>
-bool GetResponseForQuery<ApiEnv>(const ServerCache& cache,
-                                 const typename ApiEnv::Query& query,
-                                 std::string* http_text);
 
 // Conversion between different versions of queries.
-template <typename ReadEnv, typename WriteEnv>
-typename WriteEnv::Query ConvertQuery(const typename ReadEnv::Query& in);
+template <typename ReadEnv>
+AutofillPageQueryRequest ConvertQuery(const typename ReadEnv::Query& in);
 template <>
-typename ApiEnv::Query ConvertQuery<LegacyEnv, ApiEnv>(
+AutofillPageQueryRequest ConvertQuery<LegacyEnv>(
     const typename LegacyEnv::Query& in);
 template <>
-typename LegacyEnv::Query ConvertQuery<ApiEnv, LegacyEnv>(
-    const typename ApiEnv::Query& in);
+AutofillPageQueryRequest ConvertQuery<ApiEnv>(const typename ApiEnv::Query& in);
 
 // Conversion between different versions of responses.
-template <typename ReadEnv, typename WriteEnv>
-typename WriteEnv::Response ConvertResponse(
-    const typename ReadEnv::Response& in,
-    const typename ReadEnv::Query& query);
+template <typename ReadEnv>
+AutofillQueryResponse ConvertResponse(const typename ReadEnv::Response& in,
+                                      const typename ReadEnv::Query& query);
 template <>
-typename ApiEnv::Response ConvertResponse<LegacyEnv, ApiEnv>(
+AutofillQueryResponse ConvertResponse<LegacyEnv>(
     const typename LegacyEnv::Response& in,
     const typename LegacyEnv::Query& query);
 template <>
-typename LegacyEnv::Response ConvertResponse<ApiEnv, LegacyEnv>(
+AutofillQueryResponse ConvertResponse<ApiEnv>(
     const typename ApiEnv::Response& in,
     const typename ApiEnv::Query& query);
 
@@ -114,8 +103,6 @@ enum class AutofillServerBehaviorType {
 };
 // Check for command line flags to determine Autofill Server Behavior type.
 AutofillServerBehaviorType ParseAutofillServerBehaviorType();
-// The type of server that shall be emulated.
-enum class AutofillServerType { kLegacy, kApi };
 
 // Replayer for Autofill Server cache. Can be used in concurrency.
 class ServerCacheReplayer {
@@ -149,10 +136,7 @@ class ServerCacheReplayer {
   // }
   // You can set the replayer's behavior by setting |options| with a mix of
   // Options. Will crash if there is a failure when loading the cache.
-  ServerCacheReplayer(
-      const base::FilePath& json_file_path,
-      int options,
-      AutofillServerType server_type = AutofillServerType::kLegacy);
+  ServerCacheReplayer(const base::FilePath& json_file_path, int options);
   // Constructs the replayer from an already populated cache.
   explicit ServerCacheReplayer(ServerCache server_cache,
                                bool split_requests_by_form = false);
@@ -162,8 +146,6 @@ class ServerCacheReplayer {
   // key. Returns false if there was no match or the response could no be
   // decompressed. Nothing will be assigned to |http_text| on error. Leaves a
   // log when there is an error. Can be used in concurrency.
-  bool GetLegacyServerResponseForQuery(const AutofillQueryContents& query,
-                                       std::string* http_text) const;
   bool GetApiServerResponseForQuery(const AutofillPageQueryRequest& query,
                                     std::string* http_text) const;
 

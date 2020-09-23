@@ -233,7 +233,7 @@ const base::Feature kAutofillRichMetadataQueries{
 const base::Feature kAutofillSaveAndFillVPA{"AutofillSaveAndFillVPA",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables creating a new form section when an unstructured name input 
+// Enables creating a new form section when an unstructured name input
 // containing a |NAME_LAST| field is encountered after a structured name input.
 const base::Feature kAutofillSectionUponRedundantNameInfo{
     "AutofillSectionUponRedundantNameInfo", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -281,10 +281,6 @@ const base::Feature kAutofillTouchToFill = {"TouchToFillAndroid",
 // Autofill upload throttling is used for testing.
 const base::Feature kAutofillUploadThrottling{"AutofillUploadThrottling",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Controls whether to use the API or use the legacy server.
-const base::Feature kAutofillUseApi{"AutofillUseApi",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether suggestions' labels use the improved label disambiguation
 // format.

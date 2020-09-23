@@ -93,6 +93,8 @@ class FormStructure {
 
   // Parses response as AutofillQueryResponseContents proto and calls
   // ProcessQueryResponse.
+  // TODO(crbug.com/1114655): This method isn't used in production code anymore,
+  // remove it and update all test calling sites.
   static void ParseQueryResponse(
       std::string response,
       const std::vector<FormStructure*>& forms,

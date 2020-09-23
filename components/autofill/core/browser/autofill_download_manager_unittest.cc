@@ -523,14 +523,6 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
 }
 
 TEST_F(AutofillDownloadManagerTest, QueryAPITest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      // Enabled
-      // We want to query the API rather than the legacy server.
-      {features::kAutofillUseApi},
-      // Disabled
-      {});
-
   // Build the form structures that we want to query.
   FormData form;
   FormFieldData field;
@@ -629,14 +621,6 @@ TEST_F(AutofillDownloadManagerTest, QueryAPITest) {
 }
 
 TEST_F(AutofillDownloadManagerTest, QueryAPITestWhenTooLongUrl) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      // Enabled
-      // We want to query the API rather than the legacy server.
-      {features::kAutofillUseApi},
-      // Disabled
-      {});
-
   // Build the form structures that we want to query.
   FormData form;
   FormFieldData field;
@@ -740,8 +724,7 @@ TEST_F(AutofillDownloadManagerTest, UploadToAPITest) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       // Enabled
-      // We want to query the API rather than the legacy server.
-      {features::kAutofillUseApi},
+      {},
       // Disabled
       // We don't want upload throttling for testing purpose.
       {features::kAutofillUploadThrottling});
