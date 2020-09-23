@@ -29,6 +29,12 @@ export let ObserveBatteryHealthFunction;
 export let ObserveCpuUsageFunction;
 
 /**
+ * Type of SystemDataProviderInterface.ObserveMemoryUsage function.
+ * @typedef {!function(!MemoryUsageObserver): !Promise}
+ */
+export let ObserveMemoryUsageFunction;
+
+/**
  * Type alias for the SystemDataProviderInterface.
  * TODO(zentaro): Replace with a real mojo type when implemented.
  * @typedef {{
@@ -37,6 +43,7 @@ export let ObserveCpuUsageFunction;
  *   observeBatteryChargeStatus: !ObserveBatteryChargeStatusFunction,
  *   observeBatteryHealth: !ObserveBatteryHealthFunction,
  *   observeCpuUsage: !ObserveCpuUsageFunction,
+ *   observeMemoryUsage: !ObserveMemoryUsageFunction,
  * }}
  */
 export let SystemDataProviderInterface;
@@ -145,3 +152,21 @@ export let BatteryHealthObserver;
  * }}
  */
 export let BatteryHealth;
+
+/**
+ * Type alias for MemoryUsageObserver.
+ * @typedef {{
+ *   onMemoryUsageUpdated: !function(!MemoryUsage)
+ * }}
+ */
+export let MemoryUsageObserver;
+
+/**
+ * Type alias for MemoryUsage.
+ * @typedef {{
+ *   available_memory_kib: number,
+ *   free_memory_kib: number,
+ *   total_memory_kib: number,
+ * }}
+ */
+export let MemoryUsage;

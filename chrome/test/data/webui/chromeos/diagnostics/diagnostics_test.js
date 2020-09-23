@@ -7,7 +7,7 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://diagnostics/diagnostics_app.js';
 
 import {SystemDataProviderInterface} from 'chrome://diagnostics/diagnostics_types.js';
-import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage, fakeSystemInfo} from 'chrome://diagnostics/fake_data.js';
+import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage, fakeSystemInfo} from 'chrome://diagnostics/fake_data.js';
 import {FakeMethodResolver} from 'chrome://diagnostics/fake_method_resolver.js';
 import {FakeObservables} from 'chrome://diagnostics/fake_observables.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
@@ -429,5 +429,18 @@ suite('FakeSystemDataProviderTest', () => {
     };
 
     return provider.observeCpuUsage(cpuObserverRemote);
+  });
+
+  test('ObserveMemoryUsage', () => {
+    provider.setFakeMemoryUsage(fakeMemoryUsage);
+
+    /** @type {!MemoryUsageObserver} */
+    const memoryUsageObserverRemote = {
+      onMemoryUsageUpdated: (memoryUsage) => {
+        assertDeepEquals(fakeMemoryUsage[0], memoryUsage);
+      }
+    };
+
+    return provider.observeMemoryUsage(memoryUsageObserverRemote);
   });
 });

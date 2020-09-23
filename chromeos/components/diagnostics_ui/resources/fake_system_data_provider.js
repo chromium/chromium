@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, CpuUsageObserver, ExternalPowerSource, SystemInfo} from './diagnostics_types.js';
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, CpuUsageObserver, ExternalPowerSource, MemoryUsage, MemoryUsageObserver, SystemInfo} from './diagnostics_types.js';
 import {FakeMethodResolver} from './fake_method_resolver.js';
 import {FakeObservables} from './fake_observables.js';
 
@@ -28,6 +28,7 @@ export class FakeSystemDataProvider {
         'BatteryChargeStatusObserver_onBatteryChargeStatusUpdated');
     this.observables_.register('BatteryHealthObserver_onBatteryHealthUpdated');
     this.observables_.register('CpuUsageObserver_onCpuUsageUpdated');
+    this.observables_.register('MemoryUsageObserver_onMemoryUsageUpdated');
   }
 
   /**
@@ -143,5 +144,32 @@ export class FakeSystemDataProvider {
   setFakeCpuUsage(cpuUsageList) {
     this.observables_.setObservableData(
         'CpuUsageObserver_onCpuUsageUpdated', cpuUsageList);
+  }
+
+  /*
+   * Implements SystemDataProviderInterface.ObserveMemoryUsage.
+   * @param {!MemoryUsageObserver} remote
+   * @return {!Promise}
+   */
+  observeMemoryUsage(remote) {
+    return new Promise((resolve) => {
+      this.observables_.observe(
+          'MemoryUsageObserver_onMemoryUsageUpdated', (memoryUsage) => {
+            remote.onMemoryUsageUpdated(
+                /** @type {!MemoryUsage} */ (memoryUsage));
+          });
+
+      this.observables_.trigger('MemoryUsageObserver_onMemoryUsageUpdated');
+      resolve();
+    });
+  }
+
+  /**
+   * Sets the values that will observed from ObserveCpuUsage.
+   * @param {!Array<!MemoryUsage>} memoryUsageList
+   */
+  setFakeMemoryUsage(memoryUsageList) {
+    this.observables_.setObservableData(
+        'MemoryUsageObserver_onMemoryUsageUpdated', memoryUsageList);
   }
 }
