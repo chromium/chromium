@@ -10,7 +10,8 @@
 
 namespace ash {
 
-// A container view which arranges item chips into a 2 column grid.
+// A container view which automatically arranges item chips into a 2 column
+// grid.
 class HoldingSpaceItemChipsContainer : public views::View {
  public:
   HoldingSpaceItemChipsContainer();

@@ -30,10 +30,8 @@
 
 namespace ash {
 
-HoldingSpaceItemChipView::HoldingSpaceItemChipView(
-    HoldingSpaceItemViewDelegate* delegate,
-    const HoldingSpaceItem* item)
-    : HoldingSpaceItemView(delegate, item) {
+HoldingSpaceItemChipView::HoldingSpaceItemChipView(const HoldingSpaceItem* item)
+    : HoldingSpaceItemView(item) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets(kHoldingSpaceChipPadding), kHoldingSpaceChipChildSpacing));

@@ -149,8 +149,8 @@ void HoldingSpaceTray::ShowBubble(bool show_by_click) {
   bubble_view->set_margins(GetSecondaryBubbleInsets());
 
   // Add pinned files container.
-  pinned_files_container_ = bubble_view->AddChildView(
-      std::make_unique<PinnedFilesContainer>(&delegate_));
+  pinned_files_container_ =
+      bubble_view->AddChildView(std::make_unique<PinnedFilesContainer>());
   SetupChildLayer(pinned_files_container_);
 
   // Separator between the two containers, gives illusion of 2 separate bubbles.
@@ -159,8 +159,8 @@ void HoldingSpaceTray::ShowBubble(bool show_by_click) {
   separator->SetBorder(views::CreateEmptyBorder(
       gfx::Insets(kHoldingSpaceContainerSpacing, 0, 0, 0)));
 
-  recent_files_container_ = bubble_view->AddChildView(
-      std::make_unique<RecentFilesContainer>(&delegate_));
+  recent_files_container_ =
+      bubble_view->AddChildView(std::make_unique<RecentFilesContainer>());
   SetupChildLayer(recent_files_container_);
 
   // Show the bubble.

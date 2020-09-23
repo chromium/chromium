@@ -4,36 +4,41 @@
 
 #include "ash/system/holding_space/holding_space_item_view.h"
 
+#include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/shelf_config.h"
-#include "ash/system/holding_space/holding_space_item_view_delegate.h"
-#include "ui/base/class_property.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/system/holding_space/holding_space_item_context_menu.h"
+#include "base/bind_helpers.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/menu/menu_runner.h"
 
 namespace ash {
 
 namespace {
 
-// A UI class property used to identify if a view is an instance of
-// `HoldingSpaceItemView`. Class name is not an adequate identifier as it may be
-// overridden by subclasses.
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsHoldingSpaceItemViewProperty, false)
+// Helpers ---------------------------------------------------------------------
+
+// Attempts to open the specified holding space `item`.
+void OpenItem(const HoldingSpaceItem& item) {
+  HoldingSpaceController::Get()->client()->OpenItem(item, base::DoNothing());
+}
 
 }  // namespace
 
 // HoldingSpaceItemView --------------------------------------------------------
 
-HoldingSpaceItemView::HoldingSpaceItemView(
-    HoldingSpaceItemViewDelegate* delegate,
-    const HoldingSpaceItem* item)
-    : delegate_(delegate), item_(item) {
-  SetProperty(kIsHoldingSpaceItemViewProperty, true);
-
-  set_context_menu_controller(delegate_);
-  set_drag_controller(delegate_);
+HoldingSpaceItemView::HoldingSpaceItemView(const HoldingSpaceItem* item)
+    : item_(item),
+      context_menu_(std::make_unique<HoldingSpaceItemContextMenu>(item_)) {
+  set_context_menu_controller(context_menu_.get());
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -49,14 +54,10 @@ HoldingSpaceItemView::HoldingSpaceItemView(
                                                 kHoldingSpaceCornerRadius);
 }
 
-HoldingSpaceItemView::~HoldingSpaceItemView() {
-  delegate_->OnHoldingSpaceItemViewDestroyed(this);
-}
+HoldingSpaceItemView::~HoldingSpaceItemView() = default;
 
-// static
-HoldingSpaceItemView* HoldingSpaceItemView::Cast(views::View* view) {
-  DCHECK(view->GetProperty(kIsHoldingSpaceItemViewProperty));
-  return static_cast<HoldingSpaceItemView*>(view);
+int HoldingSpaceItemView::GetDragOperations(const gfx::Point& point) {
+  return ui::DragDropTypes::DRAG_COPY;
 }
 
 SkColor HoldingSpaceItemView::GetInkDropBaseColor() const {
@@ -64,15 +65,29 @@ SkColor HoldingSpaceItemView::GetInkDropBaseColor() const {
 }
 
 void HoldingSpaceItemView::OnGestureEvent(ui::GestureEvent* event) {
-  delegate_->OnHoldingSpaceItemViewGestureEvent(this, *event);
+  if (event->type() == ui::ET_GESTURE_TAP)
+    OpenItem(*item());
 }
 
 bool HoldingSpaceItemView::OnKeyPressed(const ui::KeyEvent& event) {
-  return delegate_->OnHoldingSpaceItemViewKeyPressed(this, event);
+  if (event.key_code() == ui::KeyboardCode::VKEY_RETURN) {
+    OpenItem(*item());
+    return true;
+  }
+  return false;
 }
 
 bool HoldingSpaceItemView::OnMousePressed(const ui::MouseEvent& event) {
-  return delegate_->OnHoldingSpaceItemViewMousePressed(this, event);
+  if (event.flags() & ui::EF_IS_DOUBLE_CLICK) {
+    OpenItem(*item());
+    return true;
+  }
+  return false;
+}
+
+void HoldingSpaceItemView::WriteDragData(const gfx::Point& point,
+                                         ui::OSExchangeData* data) {
+  data->SetFilename(item_->file_path());
 }
 
 }  // namespace ash

@@ -12,12 +12,11 @@
 namespace ash {
 
 class HoldingSpaceItemChipsContainer;
-class HoldingSpaceItemViewDelegate;
 
 // Container for pinned files that the user adds to the holding space bubble.
 class PinnedFilesContainer : public HoldingSpaceItemViewsContainer {
  public:
-  explicit PinnedFilesContainer(HoldingSpaceItemViewDelegate* delegate);
+  PinnedFilesContainer();
   PinnedFilesContainer(const PinnedFilesContainer& other) = delete;
   PinnedFilesContainer& operator=(const PinnedFilesContainer& other) = delete;
   ~PinnedFilesContainer() override;
@@ -28,7 +27,6 @@ class PinnedFilesContainer : public HoldingSpaceItemViewsContainer {
   void RemoveHoldingSpaceItemView(const HoldingSpaceItem* item) override;
 
  private:
-  HoldingSpaceItemViewDelegate* const delegate_;
   HoldingSpaceItemChipsContainer* item_chips_container_ = nullptr;
 
   std::map<std::string, views::View*> views_by_item_id_;

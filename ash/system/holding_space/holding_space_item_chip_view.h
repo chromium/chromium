@@ -21,7 +21,6 @@ class ToggleImageButton;
 namespace ash {
 
 class HoldingSpaceItem;
-class HoldingSpaceItemViewDelegate;
 
 namespace tray {
 class RoundedImageView;
@@ -34,8 +33,7 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView,
  public:
   METADATA_HEADER(HoldingSpaceItemChipView);
 
-  HoldingSpaceItemChipView(HoldingSpaceItemViewDelegate* delegate,
-                           const HoldingSpaceItem* item);
+  explicit HoldingSpaceItemChipView(const HoldingSpaceItem* item);
   HoldingSpaceItemChipView(const HoldingSpaceItemChipView&) = delete;
   HoldingSpaceItemChipView& operator=(const HoldingSpaceItemChipView&) = delete;
   ~HoldingSpaceItemChipView() override;

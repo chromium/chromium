@@ -12,12 +12,11 @@
 namespace ash {
 
 class HoldingSpaceItemChipsContainer;
-class HoldingSpaceItemViewDelegate;
 
 // Container for the recent files (Screenshots, downloads etc).
 class RecentFilesContainer : public HoldingSpaceItemViewsContainer {
  public:
-  explicit RecentFilesContainer(HoldingSpaceItemViewDelegate* delegate);
+  RecentFilesContainer();
   RecentFilesContainer(const RecentFilesContainer& other) = delete;
   RecentFilesContainer& operator=(const RecentFilesContainer& other) = delete;
   ~RecentFilesContainer() override;
@@ -28,7 +27,6 @@ class RecentFilesContainer : public HoldingSpaceItemViewsContainer {
   void RemoveHoldingSpaceItemView(const HoldingSpaceItem* item) override;
 
  private:
-  HoldingSpaceItemViewDelegate* const delegate_;
   views::View* screenshots_container_ = nullptr;
   HoldingSpaceItemChipsContainer* recent_downloads_container_ = nullptr;
 
