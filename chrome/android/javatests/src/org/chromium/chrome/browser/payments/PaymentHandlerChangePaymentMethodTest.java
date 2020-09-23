@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -179,6 +180,7 @@ public class PaymentHandlerChangePaymentMethodTest {
      */
     @Test
     @Feature({"Payments"})
+    @DisabledTest(message = "crbug.com/1131674")
     public void testDetailsBasicCard() throws Throwable {
         mRule.clickNode("basicCardMethodName");
         installPaymentHandler();
