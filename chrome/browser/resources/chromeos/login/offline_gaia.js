@@ -183,7 +183,7 @@
         return;
       var msg = {
         'useOffline': true,
-        'email': this.email_,
+        'email': this.fullEmail_,
         'password': this.password_,
       };
       this.password_ = '';
