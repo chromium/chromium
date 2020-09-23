@@ -134,8 +134,11 @@ int PresenterImageGL::present_count() const {
 
 gl::GLImage* PresenterImageGL::GetGLImage(
     std::unique_ptr<gfx::GpuFence>* fence) {
-  if (scoped_overlay_read_access_)
+  if (scoped_overlay_read_access_) {
+    if (fence)
+      *fence = scoped_overlay_read_access_->TakeFence();
     return scoped_overlay_read_access_->gl_image();
+  }
 
   DCHECK(scoped_gl_read_access_);
 
@@ -314,7 +317,8 @@ void OutputPresenterGL::SchedulePrimaryPlane(
   std::unique_ptr<gfx::GpuFence> fence;
   // If the submitted_image() is being scheduled, we don't new a new fence.
   auto* gl_image = reinterpret_cast<PresenterImageGL*>(image)->GetGLImage(
-      is_submitted ? nullptr : &fence);
+      (is_submitted || !gl_surface_->SupportsPlaneGpuFences()) ? nullptr
+                                                               : &fence);
 
   // Output surface is also z-order 0.
   constexpr int kPlaneZOrder = 0;
@@ -356,7 +360,7 @@ void OutputPresenterGL::ScheduleOverlays(
       gl_surface_->ScheduleOverlayPlane(
           overlay.plane_z_order, overlay.transform, gl_image,
           ToNearestRect(overlay.display_rect), overlay.uv_rect,
-          !overlay.is_opaque, nullptr /* gpu_fence */);
+          !overlay.is_opaque, accesses[i]->TakeFence());
     }
 #elif defined(OS_APPLE)
     gl_surface_->ScheduleCALayer(ui::CARendererLayerParams(

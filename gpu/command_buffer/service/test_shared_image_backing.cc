@@ -118,6 +118,7 @@ class TestSharedImageRepresentationOverlay
   bool BeginReadAccess() override { return true; }
   void EndReadAccess() override {}
   gl::GLImage* GetGLImage() override { return nullptr; }
+  std::unique_ptr<gfx::GpuFence> GetReadFence() override { return nullptr; }
 
 #if defined(OS_ANDROID)
   void NotifyOverlayPromotion(bool promotion,

@@ -433,6 +433,8 @@ class SharedImageRepresentationOverlayVideo
     return stream_image_.get();
   }
 
+  std::unique_ptr<gfx::GpuFence> GetReadFence() override { return nullptr; }
+
   void NotifyOverlayPromotion(bool promotion,
                               const gfx::Rect& bounds) override {
     stream_image_->NotifyOverlayPromotion(promotion, bounds);

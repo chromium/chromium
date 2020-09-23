@@ -392,20 +392,22 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
                                    MemoryTypeTracker* tracker)
       : SharedImageRepresentation(manager, backing, tracker) {}
 
-  class ScopedReadAccess
+  class GPU_GLES2_EXPORT ScopedReadAccess
       : public ScopedAccessBase<SharedImageRepresentationOverlay> {
    public:
     ScopedReadAccess(util::PassKey<SharedImageRepresentationOverlay> pass_key,
                      SharedImageRepresentationOverlay* representation,
-                     gl::GLImage* gl_image);
-    ~ScopedReadAccess() { representation()->EndReadAccess(); }
+                     gl::GLImage* gl_image,
+                     std::unique_ptr<gfx::GpuFence> fence);
+    ~ScopedReadAccess();
 
-    gl::GLImage* gl_image() const {
-      return gl_image_;
-    }
+    gl::GLImage* gl_image() const { return gl_image_; }
+
+    std::unique_ptr<gfx::GpuFence> TakeFence() { return std::move(fence_); }
 
    private:
     gl::GLImage* gl_image_;
+    std::unique_ptr<gfx::GpuFence> fence_;
   };
 
 #if defined(OS_ANDROID)
@@ -426,6 +428,9 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
   // TODO(penghuang): Refactor it to not depend on GL.
   // Get the backing as GLImage for GLSurface::ScheduleOverlayPlane.
   virtual gl::GLImage* GetGLImage() = 0;
+  // Optionally returns a fence to synchronize writes on the SharedImage with
+  // overlay presentation.
+  virtual std::unique_ptr<gfx::GpuFence> GetReadFence() = 0;
 };
 
 // An interface that allows a SharedImageBacking to hold a reference to VA-API

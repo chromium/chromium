@@ -81,6 +81,7 @@ class SharedImageRepresentationOverlayD3D
   void EndReadAccess() override;
 
   gl::GLImage* GetGLImage() override;
+  std::unique_ptr<gfx::GpuFence> GetReadFence() override;
 };
 
 }  // namespace gpu

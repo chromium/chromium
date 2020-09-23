@@ -8,6 +8,7 @@
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "ui/gl/gl_fence.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
@@ -227,8 +228,15 @@ sk_sp<SkPromiseImageTexture> SharedImageRepresentationSkia::BeginReadAccess(
 SharedImageRepresentationOverlay::ScopedReadAccess::ScopedReadAccess(
     util::PassKey<SharedImageRepresentationOverlay> pass_key,
     SharedImageRepresentationOverlay* representation,
-    gl::GLImage* gl_image)
-    : ScopedAccessBase(representation), gl_image_(gl_image) {}
+    gl::GLImage* gl_image,
+    std::unique_ptr<gfx::GpuFence> fence)
+    : ScopedAccessBase(representation),
+      gl_image_(gl_image),
+      fence_(std::move(fence)) {}
+
+SharedImageRepresentationOverlay::ScopedReadAccess::~ScopedReadAccess() {
+  representation()->EndReadAccess();
+}
 
 std::unique_ptr<SharedImageRepresentationOverlay::ScopedReadAccess>
 SharedImageRepresentationOverlay::BeginScopedReadAccess(bool needs_gl_image) {
@@ -244,7 +252,7 @@ SharedImageRepresentationOverlay::BeginScopedReadAccess(bool needs_gl_image) {
 
   return std::make_unique<ScopedReadAccess>(
       util::PassKey<SharedImageRepresentationOverlay>(), this,
-      needs_gl_image ? GetGLImage() : nullptr);
+      needs_gl_image ? GetGLImage() : nullptr, GetReadFence());
 }
 
 SharedImageRepresentationDawn::ScopedAccess::ScopedAccess(

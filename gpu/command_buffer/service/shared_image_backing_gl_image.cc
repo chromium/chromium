@@ -73,14 +73,20 @@ gles2::Texture* SharedImageRepresentationGLTextureImpl::GetTexture() {
 }
 
 bool SharedImageRepresentationGLTextureImpl::BeginAccess(GLenum mode) {
+  DCHECK(mode_ == 0);
+  mode_ = mode;
   if (client_ && mode != GL_SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM)
     return client_->SharedImageRepresentationGLTextureBeginAccess();
   return true;
 }
 
 void SharedImageRepresentationGLTextureImpl::EndAccess() {
+  DCHECK(mode_ != 0);
+  GLenum current_mode = mode_;
+  mode_ = 0;
   if (client_)
-    return client_->SharedImageRepresentationGLTextureEndAccess();
+    return client_->SharedImageRepresentationGLTextureEndAccess(
+        current_mode != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -111,14 +117,20 @@ SharedImageRepresentationGLTexturePassthroughImpl::GetTexturePassthrough() {
 
 bool SharedImageRepresentationGLTexturePassthroughImpl::BeginAccess(
     GLenum mode) {
+  DCHECK(mode_ == 0);
+  mode_ = mode;
   if (client_ && mode != GL_SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM)
     return client_->SharedImageRepresentationGLTextureBeginAccess();
   return true;
 }
 
 void SharedImageRepresentationGLTexturePassthroughImpl::EndAccess() {
+  DCHECK(mode_ != 0);
+  GLenum current_mode = mode_;
+  mode_ = 0;
   if (client_)
-    return client_->SharedImageRepresentationGLTextureEndAccess();
+    return client_->SharedImageRepresentationGLTextureEndAccess(
+        current_mode != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -191,7 +203,7 @@ void SharedImageRepresentationSkiaImpl::EndWriteAccess(
   write_surface_ = nullptr;
 
   if (client_)
-    client_->SharedImageRepresentationGLTextureEndAccess();
+    client_->SharedImageRepresentationGLTextureEndAccess(false /* readonly */);
 }
 
 sk_sp<SkPromiseImageTexture> SharedImageRepresentationSkiaImpl::BeginReadAccess(
@@ -208,7 +220,7 @@ sk_sp<SkPromiseImageTexture> SharedImageRepresentationSkiaImpl::BeginReadAccess(
 
 void SharedImageRepresentationSkiaImpl::EndReadAccess() {
   if (client_)
-    client_->SharedImageRepresentationGLTextureEndAccess();
+    client_->SharedImageRepresentationGLTextureEndAccess(true /* readonly */);
 }
 
 bool SharedImageRepresentationSkiaImpl::SupportsMultipleConcurrentReadAccess() {
@@ -244,6 +256,12 @@ void SharedImageRepresentationOverlayImpl::EndReadAccess() {}
 
 gl::GLImage* SharedImageRepresentationOverlayImpl::GetGLImage() {
   return gl_image_.get();
+}
+
+std::unique_ptr<gfx::GpuFence>
+SharedImageRepresentationOverlayImpl::GetReadFence() {
+  auto* gl_backing = static_cast<SharedImageBackingGLImage*>(backing());
+  return gl_backing->GetLastWriteGpuFence();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -357,6 +375,11 @@ GLuint SharedImageBackingGLImage::GetGLServiceId() const {
   if (passthrough_texture_)
     return passthrough_texture_->service_id();
   return 0;
+}
+
+std::unique_ptr<gfx::GpuFence>
+SharedImageBackingGLImage::GetLastWriteGpuFence() {
+  return last_write_gl_fence_ ? last_write_gl_fence_->GetGpuFence() : nullptr;
 }
 
 scoped_refptr<gfx::NativePixmap> SharedImageBackingGLImage::GetNativePixmap() {
@@ -563,7 +586,8 @@ bool SharedImageBackingGLImage::
   return BindOrCopyImageIfNeeded();
 }
 
-void SharedImageBackingGLImage::SharedImageRepresentationGLTextureEndAccess() {
+void SharedImageBackingGLImage::SharedImageRepresentationGLTextureEndAccess(
+    bool readonly) {
 #if defined(OS_MAC)
   // If this image could potentially be shared with Metal via WebGPU, then flush
   // the GL context to ensure Metal will see it.
@@ -586,6 +610,14 @@ void SharedImageBackingGLImage::SharedImageRepresentationGLTextureEndAccess() {
       image_->ReleaseTexImage(target);
       image_bind_or_copy_needed_ = true;
     }
+  }
+#else
+  // If the image will be used for an overlay, we insert a fence that can be
+  // used by OutputPresenter to synchronize image writes with presentation.
+  if (!readonly && usage() & SHARED_IMAGE_USAGE_SCANOUT &&
+      gl::GLFence::IsGpuFenceSupported()) {
+    last_write_gl_fence_ = gl::GLFence::CreateForGpuFence();
+    DCHECK(last_write_gl_fence_);
   }
 #endif
 }

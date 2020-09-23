@@ -150,4 +150,9 @@ gl::GLImage* SharedImageRepresentationOverlayD3D::GetGLImage() {
   return static_cast<SharedImageBackingD3D*>(backing())->GetGLImage();
 }
 
+std::unique_ptr<gfx::GpuFence>
+SharedImageRepresentationOverlayD3D::GetReadFence() {
+  return nullptr;
+}
+
 }  // namespace gpu

@@ -240,6 +240,7 @@ class SharedImageRepresentationOverlayAHB
   }
 
   gl::GLImage* GetGLImage() override { return gl_image_; }
+  std::unique_ptr<gfx::GpuFence> GetReadFence() override { return nullptr; }
 
   gl::GLImage* gl_image_ = nullptr;
 };
