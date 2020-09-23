@@ -9,6 +9,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Environment;
 import android.text.TextUtils;
 
@@ -90,6 +93,7 @@ public class DownloadManagerBridge {
             String filePath, long fileSizeBytes, String originalUrl, String referer,
             String downloadGuid) {
         assert !ThreadUtils.runningOnUiThread();
+        assert VERSION.SDK_INT < VERSION_CODES.Q : "Deprecated in Q, may cause crash.";
         long downloadId = getDownloadIdForDownloadGuid(downloadGuid);
         if (downloadId != DownloadConstants.INVALID_DOWNLOAD_ID) return downloadId;
 
@@ -267,10 +271,13 @@ public class DownloadManagerBridge {
         AsyncTask<Long> task = new AsyncTask<Long>() {
             @Override
             protected Long doInBackground() {
-                long downloadId = ContentUriUtils.isContentUri(filePath)
-                        ? DownloadConstants.INVALID_DOWNLOAD_ID
-                        : addCompletedDownload(fileName, description, mimeType, filePath,
-                                fileSizeBytes, originalUrl, referrer, downloadGuid);
+                long downloadId = DownloadConstants.INVALID_DOWNLOAD_ID;
+                // On Android Q-, add the completed download to Android download manager.
+                if (!ContentUriUtils.isContentUri(filePath)
+                        && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                    downloadId = addCompletedDownload(fileName, description, mimeType, filePath,
+                            fileSizeBytes, originalUrl, referrer, downloadGuid);
+                }
                 return downloadId;
             }
 
