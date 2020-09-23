@@ -286,8 +286,15 @@ suite('MemoryCardTest', () => {
     provider = null;
   });
 
-  function initializeMemoryCard() {
+  /**
+   * @param {!MemoryUsage} memoryUsage
+   * @return {!Promise}
+   */
+  function initializeMemoryCard(memoryUsage) {
     assertFalse(!!memoryElement);
+
+    // Initialize the fake data.
+    provider.setFakeMemoryUsage(memoryUsage);
 
     // Add the memory card to the DOM.
     memoryElement = document.createElement('memory-card');
@@ -298,9 +305,19 @@ suite('MemoryCardTest', () => {
   }
 
   test('MemoryCardPopulated', () => {
-    return initializeMemoryCard().then(() => {
+    return initializeMemoryCard(fakeMemoryUsage).then(() => {
       // TODO(zentaro): Update when strings are finalized.
       assertEquals('Memory', memoryElement.$$('#cardTitle').textContent);
+
+      assertEquals(
+          fakeMemoryUsage[0].total_memory_kib.toString(),
+          memoryElement.$$('#memoryTotal').textContent);
+      assertEquals(
+          fakeMemoryUsage[0].available_memory_kib.toString(),
+          memoryElement.$$('#memoryAvailable').textContent);
+      assertEquals(
+          fakeMemoryUsage[0].free_memory_kib.toString(),
+          memoryElement.$$('#memoryFree').textContent);
     });
   });
 });
