@@ -56,8 +56,9 @@ class BASE_EXPORT SpinningFutex {
   static constexpr int kLockedUncontended = 1;
   static constexpr int kLockedContended = 2;
 
-  // Same as SpinLock, not scientifically calibrated.
-  static constexpr int kSpinCount = 10;
+  // Same as SpinLock, not scientifically calibrated. Consider lowering later,
+  // as the slow path has better characteristics than SpinLocks's.
+  static constexpr int kSpinCount = 1000;
 
   std::atomic<int32_t> state_{kUnlocked};
 };
@@ -78,7 +79,8 @@ ALWAYS_INLINE void SpinningFutex::Acquire() {
 
 ALWAYS_INLINE bool SpinningFutex::Try() {
   int expected = kUnlocked;
-  return state_.compare_exchange_strong(expected, kLockedUncontended,
+  return (state_.load(std::memory_order_relaxed) == expected) &&
+         state_.compare_exchange_strong(expected, kLockedUncontended,
                                         std::memory_order_acquire,
                                         std::memory_order_relaxed);
 }
