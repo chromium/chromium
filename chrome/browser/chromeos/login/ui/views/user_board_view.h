@@ -54,6 +54,10 @@ class UserBoardView {
   virtual void SetAuthType(const AccountId& account_id,
                            proximity_auth::mojom::AuthType auth_type,
                            const base::string16& initial_value) = 0;
+
+  virtual void SetTpmLockedState(const AccountId& account_id,
+                                 bool is_locked,
+                                 base::TimeDelta time_left) = 0;
 };
 
 }  // namespace chromeos

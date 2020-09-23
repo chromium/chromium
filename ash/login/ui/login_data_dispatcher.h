@@ -15,6 +15,7 @@
 #include "ash/public/mojom/tray_action.mojom.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 
 namespace ash {
 
@@ -75,6 +76,11 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
     virtual void OnAuthDisabledForUser(
         const AccountId& user,
         const AuthDisabledData& auth_disabled_data);
+
+    // Called when TPM is locked.
+    virtual void OnSetTpmLockedState(const AccountId& user,
+                                     bool is_locked,
+                                     base::TimeDelta time_left);
 
     // Called when the given user can click their pod to unlock.
     virtual void OnTapToUnlockEnabledForUserChanged(const AccountId& user,
@@ -167,6 +173,9 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
   void EnableAuthForUser(const AccountId& account_id) override;
   void DisableAuthForUser(const AccountId& account_id,
                           const AuthDisabledData& auth_disabled_data) override;
+  void SetTpmLockedState(const AccountId& user,
+                         bool is_locked,
+                         base::TimeDelta time_left) override;
   void SetTapToUnlockEnabledForUser(const AccountId& user,
                                     bool enabled) override;
   void ForceOnlineSignInForUser(const AccountId& user) override;

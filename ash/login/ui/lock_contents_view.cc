@@ -1049,6 +1049,17 @@ void LockContentsView::OnAuthDisabledForUser(
   }
 }
 
+void LockContentsView::OnSetTpmLockedState(const AccountId& user,
+                                           bool is_locked,
+                                           base::TimeDelta time_left) {
+  LoginBigUserView* big_user =
+      TryToFindBigUser(user, false /*require_auth_active*/);
+  if (big_user && big_user->auth_user()) {
+    LayoutAuth(big_user, nullptr /*opt_to_hide*/, true /*animate*/);
+    big_user->auth_user()->SetTpmLockedState(is_locked, time_left);
+  }
+}
+
 void LockContentsView::OnTapToUnlockEnabledForUserChanged(const AccountId& user,
                                                           bool enabled) {
   LockContentsView::UserState* state = FindStateForUser(user);

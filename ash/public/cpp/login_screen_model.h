@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/strings/string16.h"
+#include "base/time/time.h"
 
 class AccountId;
 
@@ -76,6 +77,10 @@ class ASH_PUBLIC_EXPORT LoginScreenModel {
   virtual void DisableAuthForUser(
       const AccountId& account_id,
       const AuthDisabledData& auth_disabled_data) = 0;
+
+  virtual void SetTpmLockedState(const AccountId& user,
+                                 bool is_locked,
+                                 base::TimeDelta time_left) = 0;
 
   // Enables or disables the authentication type to tap-to-unlock for the user.
   virtual void SetTapToUnlockEnabledForUser(const AccountId& account_id,
