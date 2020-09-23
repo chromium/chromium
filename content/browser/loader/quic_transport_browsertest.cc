@@ -422,5 +422,76 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, CertificateFingerprint) {
   ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("PASS"), {ASCIIToUTF16("FAIL")}));
 }
 
+IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, ReceiveBidirectionalStream) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
+
+  ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("Title Of Awesomeness")));
+
+  ASSERT_TRUE(ExecuteScript(
+      shell(), base::StringPrintf(R"JS(
+    async function run() {
+      const transport = new QuicTransport(
+        'quic-transport://localhost:%d/receive-bidirectional');
+
+      await transport.ready;
+
+      // Trigger the server to create a bidirectional stream.
+      const sendStream = await transport.createSendStream();
+      // Need to actually write some data to inform the server.
+      sendStream.writable.getWriter().write(new Uint8Array([1]));
+
+      const streams = transport.receiveBidirectionalStreams();
+      const reader = streams.getReader();
+      const {value, done} = await reader.read();
+      if (done) {
+        throw new Error('bidirectional streams should not be closed');
+      }
+      await testBidiStream(value);
+    }
+
+    async function testBidiStream(bidiStream) {
+      // Consume the initial "hello" that is sent by the server.
+      const reader = bidiStream.readable.getReader();
+      const {value: valueAsBinary, done: done0} = await reader.read();
+      if (done0) {
+        throw new Error('at least one read should happen');
+      }
+      const valueAsString = new TextDecoder().decode(valueAsBinary);
+      if (valueAsString !== 'hello') {
+        throw new Error(`expected 'hello', got '${valueAsString}'`);
+      }
+
+      const data = [65, 66, 67];
+
+      const writer = bidiStream.writable.getWriter();
+      await writer.write(new Uint8Array(data));
+
+      const {value, done: done1} = await reader.read();
+      if (done1) {
+        throw new Error('reading should not be done');
+      }
+      const actual = Array.from(value);
+      if (JSON.stringify(actual) !== JSON.stringify(data)) {
+        throw new Error('arrays do not match');
+      }
+
+      await writer.close();
+
+      const {done: done2} = await reader.read();
+      if (!done2) {
+        throw new Error('receiveStream should be done');
+      }
+    }
+
+    run().then(() => { document.title = 'PASS'; },
+               (e) => { console.log(e); document.title = 'FAIL'; });
+)JS",
+                                  server_.server_address().port())));
+
+  ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("PASS"), {ASCIIToUTF16("FAIL")}));
+}
+
 }  // namespace
 }  // namespace content
