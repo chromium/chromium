@@ -80,6 +80,8 @@ bool CopyBytesFromImageBitmapForWebGPU(
   DCHECK_GT(dst.size(), static_cast<size_t>(0));
   DCHECK(image->width() - rect.X() >= rect.Width());
   DCHECK(image->height() - rect.Y() >= rect.Height());
+  DCHECK(rect.Width());
+  DCHECK(rect.Height());
 
   WebGPUImageUploadSizeInfo wgpu_info =
       ComputeImageBitmapWebGPUUploadSizeInfo(rect, destination_format);
