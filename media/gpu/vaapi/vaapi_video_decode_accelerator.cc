@@ -1066,7 +1066,8 @@ void VaapiVideoDecodeAccelerator::Cleanup() {
 
   // Notify |decoder_delegate_| of an imminent VAContextID destruction, so it
   // can destroy any internal structures making use of it. At this point
-  // |decoder_thread_| is stopped so we can access these from |task_runner_|.
+  // |decoder_thread_| is stopped so we can access |decoder_delegate_| from
+  // |task_runner_|.
   decoder_delegate_->OnVAContextDestructionSoon();
   vaapi_wrapper_->DestroyContext();
 

@@ -174,12 +174,13 @@ class ScopedID {
   ReleaseCB release_cb_;
 };
 
-// Adapts |frame_header| to the Vaapi data types, prepping it for consumption by
-// |vaapi_wrapper|
-bool FillVP8DataStructures(VaapiWrapper* vaapi_wrapper,
-                           VASurfaceID va_surface_id,
-                           const Vp8FrameHeader& frame_header,
-                           const Vp8ReferenceFrameVector& reference_frames);
+// Adapts |frame_header| to the Vaapi data types.
+void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
+                           const Vp8ReferenceFrameVector& reference_frames,
+                           VAIQMatrixBufferVP8* iq_matrix_buf,
+                           VAProbabilityDataBufferVP8* prob_buf,
+                           VAPictureParameterBufferVP8* pic_param,
+                           VASliceParameterBufferVP8* slice_param);
 }  // namespace media
 
 #endif  // MEDIA_GPU_VAAPI_VAAPI_UTILS_H_

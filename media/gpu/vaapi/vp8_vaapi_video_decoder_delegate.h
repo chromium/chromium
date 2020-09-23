@@ -13,6 +13,7 @@
 
 namespace media {
 
+class ScopedVABuffer;
 class VP8Picture;
 
 class VP8VaapiVideoDecoderDelegate : public VP8Decoder::VP8Accelerator,
@@ -28,6 +29,15 @@ class VP8VaapiVideoDecoderDelegate : public VP8Decoder::VP8Accelerator,
   bool SubmitDecode(scoped_refptr<VP8Picture> picture,
                     const Vp8ReferenceFrameVector& reference_frames) override;
   bool OutputPicture(scoped_refptr<VP8Picture> pic) override;
+
+  // VaapiVideoDecoderDelegate impl.
+  void OnVAContextDestructionSoon() override;
+
+ private:
+  std::unique_ptr<ScopedVABuffer> iq_matrix_;
+  std::unique_ptr<ScopedVABuffer> prob_buffer_;
+  std::unique_ptr<ScopedVABuffer> picture_params_;
+  std::unique_ptr<ScopedVABuffer> slice_params_;
 
   DISALLOW_COPY_AND_ASSIGN(VP8VaapiVideoDecoderDelegate);
 };
