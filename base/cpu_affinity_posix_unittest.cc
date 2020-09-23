@@ -6,6 +6,8 @@
 
 #include <sched.h>
 
+#include <string>
+
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/threading/platform_thread.h"
@@ -24,6 +26,8 @@ class TestThread : public PlatformThread::Delegate {
                            WaitableEvent::InitialState::NOT_SIGNALED),
         terminate_thread_(WaitableEvent::ResetPolicy::MANUAL,
                           WaitableEvent::InitialState::NOT_SIGNALED) {}
+  TestThread(const TestThread&) = delete;
+  TestThread& operator=(const TestThread&) = delete;
   ~TestThread() override {
     EXPECT_TRUE(terminate_thread_.IsSignaled())
         << "Need to mark thread for termination and join the underlying thread "
@@ -66,8 +70,6 @@ class TestThread : public PlatformThread::Delegate {
   mutable WaitableEvent termination_ready_;
   WaitableEvent terminate_thread_;
   bool done_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestThread);
 };
 
 }  // namespace

@@ -10,6 +10,7 @@
 #ifndef BASE_CALLBACK_HELPERS_H_
 #define BASE_CALLBACK_HELPERS_H_
 
+#include <memory>
 #include <type_traits>
 #include <utility>
 
@@ -17,7 +18,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 
 namespace base {
@@ -72,6 +72,10 @@ class AdaptCallbackForRepeatingHelper final {
       : callback_(std::move(callback)) {
     DCHECK(callback_);
   }
+  AdaptCallbackForRepeatingHelper(const AdaptCallbackForRepeatingHelper&) =
+      delete;
+  AdaptCallbackForRepeatingHelper& operator=(
+      const AdaptCallbackForRepeatingHelper&) = delete;
 
   void Run(Args... args) {
     if (subtle::NoBarrier_AtomicExchange(&has_run_, 1))
@@ -83,8 +87,6 @@ class AdaptCallbackForRepeatingHelper final {
  private:
   volatile subtle::Atomic32 has_run_ = 0;
   base::OnceCallback<void(Args...)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AdaptCallbackForRepeatingHelper);
 };
 
 }  // namespace internal
@@ -112,6 +114,8 @@ class BASE_EXPORT ScopedClosureRunner {
  public:
   ScopedClosureRunner();
   explicit ScopedClosureRunner(OnceClosure closure);
+  ScopedClosureRunner(const ScopedClosureRunner&) = delete;
+  ScopedClosureRunner& operator=(const ScopedClosureRunner&) = delete;
   ~ScopedClosureRunner();
 
   ScopedClosureRunner(ScopedClosureRunner&& other);
@@ -131,8 +135,6 @@ class BASE_EXPORT ScopedClosureRunner {
 
  private:
   OnceClosure closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedClosureRunner);
 };
 
 }  // namespace base

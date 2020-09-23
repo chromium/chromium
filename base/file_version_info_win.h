@@ -15,7 +15,6 @@
 
 #include "base/base_export.h"
 #include "base/file_version_info.h"
-#include "base/macros.h"
 #include "base/version.h"
 
 struct tagVS_FIXEDFILEINFO;
@@ -23,6 +22,8 @@ typedef tagVS_FIXEDFILEINFO VS_FIXEDFILEINFO;
 
 class BASE_EXPORT FileVersionInfoWin : public FileVersionInfo {
  public:
+  FileVersionInfoWin(const FileVersionInfoWin&) = delete;
+  FileVersionInfoWin& operator=(const FileVersionInfoWin&) = delete;
   ~FileVersionInfoWin() override;
 
   // Accessors to the different version properties.
@@ -70,8 +71,6 @@ class BASE_EXPORT FileVersionInfoWin : public FileVersionInfo {
 
   // This is a reference for a portion of |data_|.
   const VS_FIXEDFILEINFO& fixed_file_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileVersionInfoWin);
 };
 
 #endif  // BASE_FILE_VERSION_INFO_WIN_H_

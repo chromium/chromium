@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
 #include "base/test/native_library_test_utils.h"
@@ -88,7 +87,8 @@ class TestLibrary {
         exe_path.AppendASCII(kTestLibraryName), options, nullptr);
     CHECK(library_);
   }
-
+  TestLibrary(const TestLibrary&) = delete;
+  TestLibrary& operator=(const TestLibrary&) = delete;
   ~TestLibrary() {
     UnloadNativeLibrary(library_);
   }
@@ -101,8 +101,6 @@ class TestLibrary {
 
  private:
   NativeLibrary library_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLibrary);
 };
 
 // NativeLibraaryTest.LoadLibrary is failing on M tablets only.

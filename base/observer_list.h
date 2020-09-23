@@ -15,7 +15,6 @@
 
 #include "base/check_op.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/observer_list_internal.h"
 #include "base/sequence_checker.h"
@@ -247,7 +246,8 @@ class ObserverList {
     // Sequence checks only apply when iterators are live.
     DETACH_FROM_SEQUENCE(iteration_sequence_checker_);
   }
-
+  ObserverList(const ObserverList&) = delete;
+  ObserverList& operator=(const ObserverList&) = delete;
   ~ObserverList() {
     // If there are live iterators, ensure destruction is thread-safe.
     if (!live_iterators_.empty())
@@ -337,8 +337,6 @@ class ObserverList {
   const ObserverListPolicy policy_;
 
   SEQUENCE_CHECKER(iteration_sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ObserverList);
 };
 
 template <class ObserverType, bool check_empty = false>

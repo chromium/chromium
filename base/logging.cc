@@ -18,6 +18,8 @@
 #include <limits.h>
 #include <stdint.h>
 
+#include <vector>
+
 #include "base/pending_task.h"
 #include "base/stl_util.h"
 #include "base/task/common/task_annotator.h"
@@ -635,26 +637,28 @@ LogMessage::~LogMessage() {
        public:
         explicit ASLClient(const std::string& facility)
             : client_(asl_open(nullptr, facility.c_str(), ASL_OPT_NO_DELAY)) {}
+        ASLClient(const ASLClient&) = delete;
+        ASLClient& operator=(const ASLClient&) = delete;
         ~ASLClient() { asl_close(client_); }
 
         aslclient get() const { return client_; }
 
        private:
         aslclient client_;
-        DISALLOW_COPY_AND_ASSIGN(ASLClient);
       } asl_client(main_bundle_id.empty() ? main_bundle_id
                                           : "com.apple.console");
 
       const class ASLMessage {
        public:
         ASLMessage() : message_(asl_new(ASL_TYPE_MSG)) {}
+        ASLMessage(const ASLMessage&) = delete;
+        ASLMessage& operator=(const ASLMessage&) = delete;
         ~ASLMessage() { asl_free(message_); }
 
         aslmsg get() const { return message_; }
 
        private:
         aslmsg message_;
-        DISALLOW_COPY_AND_ASSIGN(ASLMessage);
       } asl_message;
 
       // By default, messages are only readable by the admin group. Explicitly
@@ -697,6 +701,8 @@ LogMessage::~LogMessage() {
         explicit OSLog(const char* subsystem)
             : os_log_(subsystem ? os_log_create(subsystem, "chromium_logging")
                                 : OS_LOG_DEFAULT) {}
+        OSLog(const OSLog&) = delete;
+        OSLog& operator=(const OSLog&) = delete;
         ~OSLog() {
           if (os_log_ != OS_LOG_DEFAULT) {
             os_release(os_log_);
@@ -706,7 +712,6 @@ LogMessage::~LogMessage() {
 
        private:
         os_log_t os_log_;
-        DISALLOW_COPY_AND_ASSIGN(OSLog);
       } log(main_bundle_id.empty() ? nullptr : main_bundle_id.c_str());
       const os_log_type_t os_log_type = [](LogSeverity severity) {
         switch (severity) {

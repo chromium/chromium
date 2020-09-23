@@ -7,8 +7,6 @@
 
 #include <atomic>
 
-#include "base/macros.h"
-
 namespace base {
 
 // AtomicSequenceNumber is a thread safe increasing sequence number generator.
@@ -17,6 +15,8 @@ namespace base {
 class AtomicSequenceNumber {
  public:
   constexpr AtomicSequenceNumber() = default;
+  AtomicSequenceNumber(const AtomicSequenceNumber&) = delete;
+  AtomicSequenceNumber& operator=(const AtomicSequenceNumber&) = delete;
 
   // Returns an increasing sequence number starts from 0 for each call.
   // This function can be called from any thread without data race.
@@ -24,8 +24,6 @@ class AtomicSequenceNumber {
 
  private:
   std::atomic_int seq_{0};
-
-  DISALLOW_COPY_AND_ASSIGN(AtomicSequenceNumber);
 };
 
 }  // namespace base

@@ -9,11 +9,11 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/base_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/strings/string_piece.h"
@@ -99,6 +99,8 @@ extern BASE_EXPORT const Feature kDCheckIsFatalFeature;
 class BASE_EXPORT FeatureList {
  public:
   FeatureList();
+  FeatureList(const FeatureList&) = delete;
+  FeatureList& operator=(const FeatureList&) = delete;
   ~FeatureList();
 
   // Used by common test fixture classes to prevent abuse of ScopedFeatureList
@@ -106,14 +108,14 @@ class BASE_EXPORT FeatureList {
   class BASE_EXPORT ScopedDisallowOverrides {
    public:
     explicit ScopedDisallowOverrides(const char* reason);
+    ScopedDisallowOverrides(const ScopedDisallowOverrides&) = delete;
+    ScopedDisallowOverrides& operator=(const ScopedDisallowOverrides&) = delete;
     ~ScopedDisallowOverrides();
 
    private:
 #if DCHECK_IS_ON()
     const char* const previous_reason_;
 #endif
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedDisallowOverrides);
   };
 
   // Specifies whether a feature override enables or disables the feature.
@@ -370,8 +372,6 @@ class BASE_EXPORT FeatureList {
 
   // Whether this object has been initialized from command line.
   bool initialized_from_command_line_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FeatureList);
 };
 
 }  // namespace base

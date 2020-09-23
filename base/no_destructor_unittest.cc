@@ -4,8 +4,10 @@
 
 #include "base/no_destructor.h"
 
+#include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/atomicops.h"
 #include "base/barrier_closure.h"
@@ -93,7 +95,8 @@ class BlockingConstructor {
       PlatformThread::YieldCurrentThread();
     done_construction_ = true;
   }
-
+  BlockingConstructor(const BlockingConstructor&) = delete;
+  BlockingConstructor& operator=(const BlockingConstructor&) = delete;
   ~BlockingConstructor() = delete;
 
   // Returns true if BlockingConstructor() was entered.
@@ -106,7 +109,7 @@ class BlockingConstructor {
     subtle::NoBarrier_Store(&complete_construction_, 1);
   }
 
-  bool done_construction() { return done_construction_; }
+  bool done_construction() const { return done_construction_; }
 
  private:
   // Use Atomic32 instead of AtomicFlag for them to be trivially initialized.
@@ -114,8 +117,6 @@ class BlockingConstructor {
   static subtle::Atomic32 complete_construction_;
 
   bool done_construction_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingConstructor);
 };
 
 // static
@@ -132,6 +133,9 @@ class BlockingConstructorThread : public SimpleThread {
                             OnceClosure before_get)
       : SimpleThread("BlockingConstructorThread", Options(thread_priority)),
         before_get_(std::move(before_get)) {}
+  BlockingConstructorThread(const BlockingConstructorThread&) = delete;
+  BlockingConstructorThread& operator=(const BlockingConstructorThread&) =
+      delete;
 
   void Run() override {
     if (before_get_)
@@ -143,8 +147,6 @@ class BlockingConstructorThread : public SimpleThread {
 
  private:
   OnceClosure before_get_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingConstructorThread);
 };
 
 }  // namespace

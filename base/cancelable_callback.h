@@ -53,7 +53,6 @@
 #include "base/callback_internal.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace base {
@@ -62,7 +61,9 @@ namespace internal {
 template <typename CallbackType>
 class CancelableCallbackImpl {
  public:
-  CancelableCallbackImpl() {}
+  CancelableCallbackImpl() = default;
+  CancelableCallbackImpl(const CancelableCallbackImpl&) = delete;
+  CancelableCallbackImpl& operator=(const CancelableCallbackImpl&) = delete;
 
   // |callback| must not be null.
   explicit CancelableCallbackImpl(CallbackType callback)
@@ -130,8 +131,6 @@ class CancelableCallbackImpl {
   // The stored closure that may be cancelled.
   CallbackType callback_;
   mutable base::WeakPtrFactory<CancelableCallbackImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CancelableCallbackImpl);
 };
 
 }  // namespace internal

@@ -10,13 +10,14 @@
 
 #include "base/file_version_info.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 
 @class NSBundle;
 
 class FileVersionInfoMac : public FileVersionInfo {
  public:
   explicit FileVersionInfoMac(NSBundle *bundle);
+  FileVersionInfoMac(const FileVersionInfoMac&) = delete;
+  FileVersionInfoMac& operator=(const FileVersionInfoMac&) = delete;
   ~FileVersionInfoMac() override;
 
   // Accessors to the different version properties.
@@ -38,8 +39,6 @@ class FileVersionInfoMac : public FileVersionInfo {
   base::string16 GetString16Value(CFStringRef name);
 
   base::scoped_nsobject<NSBundle> bundle_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileVersionInfoMac);
 };
 
 #endif  // BASE_FILE_VERSION_INFO_MAC_H_

@@ -12,7 +12,6 @@
 
 #include "base/file_version_info.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_util.h"
@@ -35,6 +34,8 @@ FilePath GetTestDataPath() {
 class FileVersionInfoFactory {
  public:
   explicit FileVersionInfoFactory(const FilePath& path) : path_(path) {}
+  FileVersionInfoFactory(const FileVersionInfoFactory&) = delete;
+  FileVersionInfoFactory& operator=(const FileVersionInfoFactory&) = delete;
 
   std::unique_ptr<FileVersionInfo> Create() const {
     return FileVersionInfo::CreateFileVersionInfo(path_);
@@ -42,8 +43,6 @@ class FileVersionInfoFactory {
 
  private:
   const FilePath path_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileVersionInfoFactory);
 };
 
 class FileVersionInfoForModuleFactory {
@@ -56,6 +55,10 @@ class FileVersionInfoForModuleFactory {
                                  LOAD_LIBRARY_AS_IMAGE_RESOURCE)) {
     EXPECT_TRUE(library_.is_valid());
   }
+  FileVersionInfoForModuleFactory(const FileVersionInfoForModuleFactory&) =
+      delete;
+  FileVersionInfoForModuleFactory& operator=(
+      const FileVersionInfoForModuleFactory&) = delete;
 
   std::unique_ptr<FileVersionInfo> Create() const {
     return FileVersionInfo::CreateFileVersionInfoForModule(library_.get());
@@ -63,8 +66,6 @@ class FileVersionInfoForModuleFactory {
 
  private:
   const base::ScopedNativeLibrary library_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileVersionInfoForModuleFactory);
 };
 
 template <typename T>

@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
-#include "base/macros.h"
 
 namespace base {
 
@@ -24,14 +23,13 @@ class Foo {
 
 class FooListener {
  public:
-  FooListener() {}
+  FooListener() = default;
+  FooListener(const FooListener&) = delete;
+  FooListener& operator=(const FooListener&) = delete;
 
   void GotAScopedFoo(std::unique_ptr<Foo> f) { foo_ = std::move(f); }
 
   std::unique_ptr<Foo> foo_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FooListener);
 };
 
 

@@ -10,7 +10,6 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
@@ -33,6 +32,9 @@ class BASE_EXPORT DeferredSequencedTaskRunner : public SequencedTaskRunner {
   // Use this constructor when you don't have the target SequencedTaskRunner.
   // When using this call StartWithTaskRunner().
   DeferredSequencedTaskRunner();
+  DeferredSequencedTaskRunner(const DeferredSequencedTaskRunner&) = delete;
+  DeferredSequencedTaskRunner& operator=(const DeferredSequencedTaskRunner&) =
+      delete;
 
   // TaskRunner implementation
   bool PostDelayedTask(const Location& from_here,
@@ -87,8 +89,6 @@ class BASE_EXPORT DeferredSequencedTaskRunner : public SequencedTaskRunner {
   bool started_ GUARDED_BY(lock_) = false;
   scoped_refptr<SequencedTaskRunner> target_task_runner_ GUARDED_BY(lock_);
   std::vector<DeferredTask> deferred_tasks_queue_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(DeferredSequencedTaskRunner);
 };
 
 }  // namespace base

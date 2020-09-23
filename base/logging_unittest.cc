@@ -10,7 +10,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/sanitizer_buildflags.h"
@@ -719,6 +718,8 @@ class TestLogListenerSafe
     : public fuchsia::logger::testing::LogListenerSafe_TestBase {
  public:
   TestLogListenerSafe() = default;
+  TestLogListenerSafe(const TestLogListenerSafe&) = delete;
+  TestLogListenerSafe& operator=(const TestLogListenerSafe&) = delete;
   ~TestLogListenerSafe() override = default;
 
   void set_on_dump_logs_done(base::OnceClosure on_dump_logs_done) {
@@ -755,8 +756,6 @@ class TestLogListenerSafe
   fuchsia::logger::LogListenerSafePtr log_listener_;
   std::vector<fuchsia::logger::LogMessage> log_messages_;
   base::OnceClosure on_dump_logs_done_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLogListenerSafe);
 };
 
 // Verifies that calling the log macro goes to the Fuchsia system logs.

@@ -10,7 +10,6 @@
 
 #include "base/base_export.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace base {
@@ -61,6 +60,9 @@ class BASE_EXPORT BindStateBase
 
   using InvokeFuncStorage = void(*)();
 
+  BindStateBase(const BindStateBase&) = delete;
+  BindStateBase& operator=(const BindStateBase&) = delete;
+
  private:
   BindStateBase(InvokeFuncStorage polymorphic_invoke,
                 void (*destructor)(const BindStateBase*));
@@ -100,8 +102,6 @@ class BASE_EXPORT BindStateBase
   void (*destructor_)(const BindStateBase*);
   bool (*query_cancellation_traits_)(const BindStateBase*,
                                      CancellationQueryMode mode);
-
-  DISALLOW_COPY_AND_ASSIGN(BindStateBase);
 };
 
 // Holds the Callback methods that don't require specialization to reduce

@@ -32,12 +32,12 @@ class ConstructAndDestructLogger {
   ConstructAndDestructLogger() {
     constructed_seq_.GetNext();
   }
+  ConstructAndDestructLogger(const ConstructAndDestructLogger&) = delete;
+  ConstructAndDestructLogger& operator=(const ConstructAndDestructLogger&) =
+      delete;
   ~ConstructAndDestructLogger() {
     destructed_seq_.GetNext();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConstructAndDestructLogger);
 };
 
 class SlowConstructor {
@@ -48,13 +48,13 @@ class SlowConstructor {
     ++constructed;
     some_int_ = 12;
   }
+  SlowConstructor(const SlowConstructor&) = delete;
+  SlowConstructor& operator=(const SlowConstructor&) = delete;
   int some_int() const { return some_int_; }
 
   static int constructed;
  private:
   int some_int_;
-
-  DISALLOW_COPY_AND_ASSIGN(SlowConstructor);
 };
 
 // static
@@ -65,6 +65,8 @@ class SlowDelegate : public base::DelegateSimpleThread::Delegate {
   explicit SlowDelegate(
       base::LazyInstance<SlowConstructor>::DestructorAtExit* lazy)
       : lazy_(lazy) {}
+  SlowDelegate(const SlowDelegate&) = delete;
+  SlowDelegate& operator=(const SlowDelegate&) = delete;
 
   void Run() override {
     EXPECT_EQ(12, lazy_->Get().some_int());
@@ -73,8 +75,6 @@ class SlowDelegate : public base::DelegateSimpleThread::Delegate {
 
  private:
   base::LazyInstance<SlowConstructor>::DestructorAtExit* lazy_;
-
-  DISALLOW_COPY_AND_ASSIGN(SlowDelegate);
 };
 
 }  // namespace
@@ -212,7 +212,8 @@ class BlockingConstructor {
       base::PlatformThread::YieldCurrentThread();
     done_construction_ = true;
   }
-
+  BlockingConstructor(const BlockingConstructor&) = delete;
+  BlockingConstructor& operator=(const BlockingConstructor&) = delete;
   ~BlockingConstructor() {
     // Restore static state for the next test.
     base::subtle::NoBarrier_Store(&constructor_called_, 0);
@@ -229,7 +230,7 @@ class BlockingConstructor {
     base::subtle::NoBarrier_Store(&complete_construction_, 1);
   }
 
-  bool done_construction() { return done_construction_; }
+  bool done_construction() const { return done_construction_; }
 
  private:
   // Use Atomic32 instead of AtomicFlag for them to be trivially initialized.
@@ -237,8 +238,6 @@ class BlockingConstructor {
   static base::subtle::Atomic32 complete_construction_;
 
   bool done_construction_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingConstructor);
 };
 
 // A SimpleThread running at |thread_priority| which invokes |before_get|
@@ -252,6 +251,9 @@ class BlockingConstructorThread : public base::SimpleThread {
       : SimpleThread("BlockingConstructorThread", Options(thread_priority)),
         lazy_(lazy),
         before_get_(std::move(before_get)) {}
+  BlockingConstructorThread(const BlockingConstructorThread&) = delete;
+  BlockingConstructorThread& operator=(const BlockingConstructorThread&) =
+      delete;
 
   void Run() override {
     if (before_get_)
@@ -262,8 +264,6 @@ class BlockingConstructorThread : public base::SimpleThread {
  private:
   base::LazyInstance<BlockingConstructor>::DestructorAtExit* lazy_;
   base::OnceClosure before_get_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingConstructorThread);
 };
 
 // static

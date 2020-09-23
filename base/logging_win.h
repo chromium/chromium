@@ -11,7 +11,6 @@
 
 #include "base/base_export.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/win/event_trace_provider.h"
 
 namespace base {
@@ -55,6 +54,8 @@ enum LogMessageTypes {
 // with Event Tracing for Windows.
 class BASE_EXPORT LogEventProvider : public base::win::EtwTraceProvider {
  public:
+  LogEventProvider(const LogEventProvider&) = delete;
+  LogEventProvider& operator=(const LogEventProvider&) = delete;
   static LogEventProvider* GetInstance();
 
   static bool LogMessage(logging::LogSeverity severity, const char* file,
@@ -76,7 +77,6 @@ class BASE_EXPORT LogEventProvider : public base::win::EtwTraceProvider {
   logging::LogSeverity old_log_level_;
 
   friend struct base::StaticMemorySingletonTraits<LogEventProvider>;
-  DISALLOW_COPY_AND_ASSIGN(LogEventProvider);
 };
 
 }  // namespace logging

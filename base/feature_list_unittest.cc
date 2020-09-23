@@ -51,12 +51,12 @@ class FeatureListTest : public testing::Test {
     // Provide an empty FeatureList to each test by default.
     scoped_feature_list_.InitWithFeatureList(std::make_unique<FeatureList>());
   }
+  FeatureListTest(const FeatureListTest&) = delete;
+  FeatureListTest& operator=(const FeatureListTest&) = delete;
   ~FeatureListTest() override = default;
 
  private:
   test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeatureListTest);
 };
 
 TEST_F(FeatureListTest, DefaultStates) {

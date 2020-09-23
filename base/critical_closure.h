@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
@@ -31,14 +30,14 @@ bool IsMultiTaskingSupported();
 class CriticalClosure {
  public:
   explicit CriticalClosure(StringPiece task_name, OnceClosure closure);
+  CriticalClosure(const CriticalClosure&) = delete;
+  CriticalClosure& operator=(const CriticalClosure&) = delete;
   ~CriticalClosure();
   void Run();
 
  private:
   ios::ScopedCriticalAction critical_action_;
   OnceClosure closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(CriticalClosure);
 };
 #endif  // defined(OS_IOS)
 

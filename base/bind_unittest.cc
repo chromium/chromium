@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -35,6 +34,9 @@ class IncompleteType;
 class NoRef {
  public:
   NoRef() = default;
+  NoRef(const NoRef&) = delete;
+  // Particularly important in this test to ensure no copies are made.
+  NoRef& operator=(const NoRef&) = delete;
 
   MOCK_METHOD0(VoidMethod0, void());
   MOCK_CONST_METHOD0(VoidConstMethod0, void());
@@ -45,22 +47,18 @@ class NoRef {
   MOCK_METHOD1(VoidMethodWithIntArg, void(int));
   MOCK_METHOD0(UniquePtrMethod0, std::unique_ptr<int>());
 
- private:
-  // Particularly important in this test to ensure no copies are made.
-  DISALLOW_COPY_AND_ASSIGN(NoRef);
 };
 
 class HasRef : public NoRef {
  public:
   HasRef() = default;
+  HasRef(const HasRef&) = delete;
+  // Particularly important in this test to ensure no copies are made.
+  HasRef& operator=(const HasRef&) = delete;
 
   MOCK_CONST_METHOD0(AddRef, void());
   MOCK_CONST_METHOD0(Release, bool());
   MOCK_CONST_METHOD0(HasAtLeastOneRef, bool());
-
- private:
-  // Particularly important in this test to ensure no copies are made.
-  DISALLOW_COPY_AND_ASSIGN(HasRef);
 };
 
 class HasRefPrivateDtor : public HasRef {
@@ -326,7 +324,8 @@ class BindTest : public ::testing::Test {
     const_no_ref_ptr_ = &no_ref_;
     static_func_mock_ptr = &static_func_mock_;
   }
-
+  BindTest(const BindTest&) = delete;
+  BindTest& operator=(const BindTest&) = delete;
   ~BindTest() override = default;
 
   static void VoidFunc0() {
@@ -346,9 +345,6 @@ class BindTest : public ::testing::Test {
 
   // Used by the static functions to perform expectations.
   static StrictMock<NoRef>* static_func_mock_ptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BindTest);
 };
 
 StrictMock<NoRef>* BindTest::static_func_mock_ptr;
