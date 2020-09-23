@@ -436,8 +436,9 @@ bool AUAudioInputStream::OpenAUHAL() {
   AudioStreamBasicDescription input_device_format = {0};
   GetInputDeviceStreamFormat(audio_unit_, &input_device_format);
   if (input_device_format.mSampleRate != format_.mSampleRate) {
-    LOG(ERROR)
-        << "Input device's sample rate does not match the client's sample rate";
+    LOG(ERROR) << "Input device's sample rate does not match the client's "
+                  "sample rate; input_device_format="
+               << input_device_format;
     result = kAudioUnitErr_FormatNotSupported;
     HandleError(result);
     return false;
