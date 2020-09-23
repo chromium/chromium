@@ -592,6 +592,50 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsReady) {
   histogram_tester_.ExpectTotalCount(kTimedOutNotInstalledStats, 0);
 }
 
+// Verifies that the installation stage is not overwritten by a previous stage.
+TEST_F(ForceInstalledMetricsTest,
+       ExtensionsPreviousInstallationStageReportedAgain) {
+  SetupForceList();
+  auto extension =
+      ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
+  tracker_->OnExtensionLoaded(profile_, extension.get());
+  install_stage_tracker_->ReportInstallationStage(
+      kExtensionId2, InstallStageTracker::Stage::CREATED);
+  install_stage_tracker_->ReportInstallationStage(
+      kExtensionId2, InstallStageTracker::Stage::PENDING);
+  install_stage_tracker_->ReportInstallationStage(
+      kExtensionId2, InstallStageTracker::Stage::CREATED);
+  EXPECT_TRUE(fake_timer_->IsRunning());
+  fake_timer_->Fire();
+  histogram_tester_.ExpectUniqueSample(
+      kFailureReasonsCWS, InstallStageTracker::FailureReason::IN_PROGRESS, 1);
+  histogram_tester_.ExpectBucketCount(kInstallationStages,
+                                      InstallStageTracker::Stage::PENDING, 1);
+}
+
+// Verifies that the installation stage is overwritten if DOWNLOADING stage is
+// reported again after INSTALLING stage.
+TEST_F(ForceInstalledMetricsTest, ExtensionsDownloadingStageReportedAgain) {
+  SetupForceList();
+  auto extension =
+      ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
+  tracker_->OnExtensionLoaded(profile_, extension.get());
+  install_stage_tracker_->ReportInstallationStage(
+      kExtensionId2, InstallStageTracker::Stage::DOWNLOADING);
+  install_stage_tracker_->ReportInstallationStage(
+      kExtensionId2, InstallStageTracker::Stage::INSTALLING);
+  install_stage_tracker_->ReportInstallationStage(
+      kExtensionId2, InstallStageTracker::Stage::DOWNLOADING);
+  install_stage_tracker_->ReportDownloadingStage(
+      kExtensionId2, ExtensionDownloaderDelegate::Stage::PENDING);
+  EXPECT_TRUE(fake_timer_->IsRunning());
+  fake_timer_->Fire();
+  histogram_tester_.ExpectUniqueSample(
+      kFailureReasonsCWS, InstallStageTracker::FailureReason::IN_PROGRESS, 1);
+  histogram_tester_.ExpectBucketCount(
+      kInstallationStages, InstallStageTracker::Stage::DOWNLOADING, 1);
+}
+
 TEST_F(ForceInstalledMetricsTest, ExtensionsStuck) {
   SetupForceList();
   install_stage_tracker()->ReportInstallationStage(

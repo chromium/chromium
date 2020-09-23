@@ -38,10 +38,13 @@ class InstallStageTracker : public KeyedService {
  public:
   // Stage of extension installing process. Typically forced extensions from
   // policies should go through all stages in this order, other extensions skip
-  // CREATED stage.
-  // Note: enum used for UMA. Do NOT reorder or remove entries. Don't forget to
-  // update enums.xml (name: ExtensionInstallationStage) when adding new
-  // entries. Don't forget to update device_management_backend.proto (name:
+  // CREATED stage. The stages are recorded in the increasing order of their
+  // values, therefore always verify that values are in increasing order and
+  // items are in order in which they appear. Exceptions are handled in
+  // ShouldOverrideCurrentStage method. Note: enum used for UMA. Do NOT reorder
+  // or remove entries. Don't forget to update enums.xml (name:
+  // ExtensionInstallationStage) when adding new entries. Don't forget to update
+  // device_management_backend.proto (name:
   // ExtensionInstallReportLogEvent::InstallationStage) when adding new entries.
   // Don't forget to update ConvertInstallationStageToProto method in
   // ExtensionInstallEventLogCollector.
