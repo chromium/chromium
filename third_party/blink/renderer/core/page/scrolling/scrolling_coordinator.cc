@@ -167,11 +167,9 @@ static void UpdateLayerNonFastScrollableRegions(GraphicsLayer& layer) {
 
   auto offset = layer.GetOffsetFromTransformNode();
   gfx::Vector2dF layer_offset = gfx::Vector2dF(offset.X(), offset.Y());
-  PaintChunkSubset paint_chunks =
-      PaintChunkSubset(layer.GetPaintController().PaintChunks());
   PaintArtifactCompositor::UpdateNonFastScrollableRegions(
       layer.CcLayer(), layer_offset, layer.GetPropertyTreeState().Unalias(),
-      paint_chunks);
+      layer.GetPaintController().PaintChunks());
 }
 
 // Compute the regions of the page where we can't handle scroll gestures on
@@ -198,11 +196,9 @@ static void UpdateLayerTouchActionRects(GraphicsLayer& layer) {
 
   auto offset = layer.GetOffsetFromTransformNode();
   gfx::Vector2dF layer_offset = gfx::Vector2dF(offset.X(), offset.Y());
-  PaintChunkSubset paint_chunks =
-      PaintChunkSubset(layer.GetPaintController().PaintChunks());
   PaintArtifactCompositor::UpdateTouchActionRects(
       layer.CcLayer(), layer_offset, layer.GetPropertyTreeState().Unalias(),
-      paint_chunks);
+      layer.GetPaintController().PaintChunks());
 }
 
 void ScrollingCoordinator::WillDestroyScrollableArea(

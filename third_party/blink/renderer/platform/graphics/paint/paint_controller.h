@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunker.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -214,9 +215,7 @@ class PLATFORM_EXPORT PaintController {
   const DisplayItemList& GetDisplayItemList() const {
     return GetPaintArtifact().GetDisplayItemList();
   }
-  const Vector<PaintChunk>& PaintChunks() const {
-    return GetPaintArtifact().PaintChunks();
-  }
+  PaintChunkSubset PaintChunks() const { return GetPaintArtifact().Chunks(); }
 
   // For micro benchmarks of record time.
   static void SetSubsequenceCachingDisabledForBenchmark();
@@ -274,13 +273,9 @@ class PLATFORM_EXPORT PaintController {
   void InvalidateAllInternal();
 
   void EnsureNewDisplayItemListInitialCapacity() {
-    if (new_display_item_list_.IsEmpty()) {
-      // TODO(wangxianzhu): Consider revisiting this heuristic.
-      new_display_item_list_ = DisplayItemList(
-          current_paint_artifact_->GetDisplayItemList().IsEmpty()
-              ? kInitialDisplayItemListCapacityBytes
-              : current_paint_artifact_->GetDisplayItemList()
-                    .UsedCapacityInBytes());
+    if (new_display_item_list_.CapacityInBytes() == 0) {
+      new_display_item_list_ =
+          DisplayItemList(kInitialDisplayItemListCapacityBytes);
     }
   }
 

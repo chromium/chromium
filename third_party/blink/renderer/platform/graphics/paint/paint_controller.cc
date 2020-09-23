@@ -10,13 +10,22 @@
 #include "third_party/blink/renderer/platform/graphics/logging_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
 
+// This is just for initializing current_paint_artifact_ to avoid allocation of
+// a PaintArtifacts that might not be used.
+static scoped_refptr<PaintArtifact> EmptyPaintArtifact() {
+  DEFINE_STATIC_REF(PaintArtifact, empty, base::AdoptRef(new PaintArtifact()));
+  DCHECK(empty->IsEmpty());
+  return empty;
+}
+
 PaintController::PaintController(Usage usage)
     : usage_(usage),
-      current_paint_artifact_(PaintArtifact::Empty()),
+      current_paint_artifact_(EmptyPaintArtifact()),
       new_display_item_list_(0) {
   // frame_first_paints_ should have one null frame since the beginning, so
   // that PaintController is robust even if it paints outside of BeginFrame
@@ -155,12 +164,9 @@ bool PaintController::UseCachedSubsequenceIfPossible(
     return false;
   }
 
-  wtf_size_t start_item_index =
-      current_paint_artifact_->PaintChunks()[markers->start_chunk_index]
-          .begin_index;
-  wtf_size_t end_item_index =
-      current_paint_artifact_->PaintChunks()[markers->end_chunk_index - 1]
-          .end_index;
+  const auto& chunks = current_paint_artifact_->DeprecatedChunks();
+  wtf_size_t start_item_index = chunks[markers->start_chunk_index].begin_index;
+  wtf_size_t end_item_index = chunks[markers->end_chunk_index - 1].end_index;
   if (end_item_index > start_item_index &&
       current_paint_artifact_->GetDisplayItemList()[start_item_index]
           .IsTombstone()) {
@@ -243,7 +249,7 @@ void PaintController::EndSubsequence(const DisplayItemClient& client,
            new_chunk_index < end_chunk_index;
            ++new_chunk_index, ++old_chunk_index) {
         const auto& old_chunk =
-            current_paint_artifact_->PaintChunks()[old_chunk_index];
+            current_paint_artifact_->DeprecatedChunks()[old_chunk_index];
         const auto& new_chunk =
             new_paint_chunks_.PaintChunks()[new_chunk_index];
         if (!old_chunk.EqualsForUnderInvalidationChecking(new_chunk)) {
@@ -345,7 +351,7 @@ void PaintController::InvalidateAllInternal() {
   // TODO(wangxianzhu): Rename this to InvalidateAllForTesting() for CAP.
   // Can only be called during layout/paintInvalidation, not during painting.
   DCHECK(new_display_item_list_.IsEmpty());
-  current_paint_artifact_ = PaintArtifact::Empty();
+  current_paint_artifact_ = EmptyPaintArtifact();
   current_cached_subsequences_.clear();
   cache_is_all_invalid_ = true;
 }
@@ -410,6 +416,9 @@ void PaintController::AddToIdIndexMap(const DisplayItem::Id& id,
 
 wtf_size_t PaintController::FindCachedItem(const DisplayItem::Id& id) {
   DCHECK(ClientCacheIsValid(id.client));
+
+  if (current_paint_artifact_->IsEmpty())
+    return kNotFound;
 
   if (next_item_to_match_ <
       current_paint_artifact_->GetDisplayItemList().size()) {
@@ -495,15 +504,15 @@ void PaintController::CopyCachedSubsequence(wtf_size_t start_chunk_index,
 
   for (auto chunk_index = start_chunk_index; chunk_index < end_chunk_index;
        ++chunk_index) {
-    auto& cached_chunk = current_paint_artifact_->PaintChunks()[chunk_index];
+    auto& cached_chunk =
+        current_paint_artifact_->DeprecatedChunks()[chunk_index];
     auto cached_item_index = cached_chunk.begin_index;
     for (auto& cached_item :
-         current_paint_artifact_->GetDisplayItemList().ItemsInPaintChunk(
-             cached_chunk)) {
+         current_paint_artifact_->GetDisplayItemList().ItemsInRange(
+             cached_chunk.begin_index, cached_chunk.end_index)) {
       SECURITY_CHECK(!cached_item.IsTombstone());
-#if DCHECK_IS_ON()
-      DCHECK(cached_item.Client().IsAlive());
-#endif
+      DCHECK(!cached_item.IsCacheable() ||
+             ClientCacheIsValid(cached_item.Client()));
       auto& item = MoveItemFromCurrentListToNewList(cached_item_index++);
       item.SetMovedFromCachedSubsequence(true);
       DidAppendItem(item);
@@ -531,7 +540,9 @@ DISABLE_CFI_PERF
 void PaintController::CommitNewDisplayItems() {
   TRACE_EVENT2("blink,benchmark", "PaintController::commitNewDisplayItems",
                "current_display_list_size",
-               (int)current_paint_artifact_->GetDisplayItemList().size(),
+               current_paint_artifact_->IsEmpty()
+                   ? 0
+                   : (int)current_paint_artifact_->GetDisplayItemList().size(),
                "num_non_cached_new_items",
                (int)new_display_item_list_.size() - num_cached_new_items_);
 
@@ -554,9 +565,14 @@ void PaintController::CommitNewDisplayItems() {
   // The new list will not be appended to again so we can release unused memory.
   new_display_item_list_.ShrinkToFit();
 
-  current_paint_artifact_ =
-      PaintArtifact::Create(std::move(new_display_item_list_),
-                            new_paint_chunks_.ReleasePaintChunks());
+  current_paint_artifact_ = base::AdoptRef(new PaintArtifact());
+  if (new_paint_chunks_.size()) {
+    current_paint_artifact_->AddSegment(new_paint_chunks_.ReleasePaintChunks(),
+                                        std::move(new_display_item_list_));
+  } else {
+    new_paint_chunks_.ReleasePaintChunks();
+    DCHECK(new_display_item_list_.IsEmpty());
+  }
 
   ResetCurrentListIndices();
   out_of_order_item_id_index_map_.clear();
@@ -588,33 +604,29 @@ void PaintController::FinishCycle() {
     if (item.key->IsCacheable())
       item.key->Validate();
   }
-  for (const auto& item : current_paint_artifact_->GetDisplayItemList()) {
-    const auto& client = item.Client();
-    if (item.IsMovedFromCachedSubsequence()) {
-      // We don't need to validate the clients of a display item that is
-      // copied from a cached subsequence, because it should be already
-      // valid. See http://crbug.com/1050090 for more details.
-#if DCHECK_IS_ON()
-      DCHECK(client.IsAlive());
-      DCHECK(client.IsValid() || !client.IsCacheable());
-#endif
-      continue;
-    }
-    client.ClearPartialInvalidationVisualRect();
-    if (client.IsCacheable())
-      client.Validate();
-  }
-  for (const auto& chunk : current_paint_artifact_->PaintChunks()) {
+  auto chunks = current_paint_artifact_->Chunks();
+  for (auto it = chunks.begin(); it != chunks.end(); ++it) {
+    auto& chunk = *it;
     const auto& client = chunk.id.client;
     if (chunk.is_moved_from_cached_subsequence) {
-#if DCHECK_IS_ON()
-      DCHECK(client.IsAlive());
-      DCHECK(client.IsValid() || !client.IsCacheable());
-#endif
+      DCHECK(!chunk.is_cacheable || ClientCacheIsValid(client));
       continue;
     }
     if (client.IsCacheable())
       client.Validate();
+
+    for (const auto& item : it.DisplayItems()) {
+      if (item.IsMovedFromCachedSubsequence()) {
+        // We don't need to validate the clients of a display item that is
+        // copied from a cached subsequence, because it should be already
+        // valid. See http://crbug.com/1050090 for more details.
+        DCHECK(!item.IsCacheable() || ClientCacheIsValid(item.Client()));
+        continue;
+      }
+      item.Client().ClearPartialInvalidationVisualRect();
+      if (item.Client().IsCacheable())
+        item.Client().Validate();
+    }
   }
 
   current_paint_artifact_->FinishCycle();
@@ -636,7 +648,7 @@ void PaintController::ClearPropertyTreeChangedStateTo(
     const PropertyTreeStateOrAlias& to) {
   // Calling |ClearChangedTo| for every chunk is O(|property nodes|^2) and
   // could be optimized by caching which nodes that have already been cleared.
-  for (const auto& chunk : current_paint_artifact_->PaintChunks()) {
+  for (const auto& chunk : PaintChunks()) {
     chunk.properties.Transform().ClearChangedTo(&to.Transform());
     chunk.properties.Clip().ClearChangedTo(&to.Clip());
     chunk.properties.Effect().ClearChangedTo(&to.Effect());
@@ -822,7 +834,8 @@ void PaintController::UpdateUMACounts() {
 
 void PaintController::UpdateUMACountsOnFullyCached() {
   DCHECK_EQ(usage_, kMultiplePaints);
-  int num_items = GetDisplayItemList().size();
+  int num_items =
+      GetPaintArtifact().IsEmpty() ? 0 : GetDisplayItemList().size();
   sum_num_items_ += num_items;
   sum_num_cached_items_ += num_items;
 

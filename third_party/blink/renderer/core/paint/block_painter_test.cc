@@ -497,12 +497,12 @@ TEST_F(BlockPainterTouchActionTest, ScrolledHitTestChunkProperties) {
               scroller->FirstFragment().ContentsProperties(),
               &scrolled_hit_test_data, IntRect(0, 0, 200, 50))));
 
-  const auto& scroller_paint_chunk = paint_chunks[1];
+  const auto& scroller_paint_chunk = paint_chunks[{0, 1}];
   // The hit test rect for the scroller itself should not be scrolled.
   EXPECT_FALSE(
       ToUnaliased(scroller_paint_chunk.properties.Transform()).ScrollNode());
 
-  const auto& scrolled_paint_chunk = paint_chunks[3];
+  const auto& scrolled_paint_chunk = paint_chunks[{0, 3}];
   // The hit test rect for the scrolled contents should be scrolled.
   EXPECT_TRUE(
       ToUnaliased(scrolled_paint_chunk.properties.Transform()).ScrollNode());
