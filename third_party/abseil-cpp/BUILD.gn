@@ -25,7 +25,7 @@ component("absl") {
   if (is_component_build) {
     public_configs = [ ":absl_component_build" ]
 
-    if (is_win) {
+    if (is_win && is_clang) {
       if (current_cpu == "x64") {
         if (is_debug) {
           sources = [ "symbols_x64_dbg.def" ]
