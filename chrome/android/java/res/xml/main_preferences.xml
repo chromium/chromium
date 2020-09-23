@@ -34,11 +34,13 @@
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="manage_sync"
         android:order="5"
+        android:layout="@layout/account_management_account_row"
         android:title="@string/sync_category_title"
         app:isPreferenceVisible="false"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="google_services"
         android:order="6"
+        android:layout="@layout/account_management_account_row"
         android:title="@string/prefs_google_services"
         android:icon="@drawable/ic_google_services_48dp"
         android:fragment="org.chromium.chrome.browser.sync.settings.GoogleServicesSettings"
