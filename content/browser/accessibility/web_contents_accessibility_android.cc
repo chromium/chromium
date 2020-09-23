@@ -770,7 +770,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       node->IsTextField(), node->IsEnabled(), node->IsFocusable(),
       node->IsFocused(), node->IsCollapsed(), node->IsExpanded(),
       node->HasNonEmptyValue(), !node->GetInnerText().empty(),
-      node->IsRangeType(), node->IsFormDescendant());
+      node->IsSeekControl(), node->IsFormDescendant());
 
   Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoBaseAttributes(
       env, obj, info, is_root,

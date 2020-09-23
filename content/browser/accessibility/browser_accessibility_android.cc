@@ -269,6 +269,11 @@ bool BrowserAccessibilityAndroid::IsScrollable() const {
   return GetBoolAttribute(ax::mojom::BoolAttribute::kScrollable);
 }
 
+bool BrowserAccessibilityAndroid::IsSeekControl() const {
+  // Range types should have seek control options, except progress bars.
+  return IsRangeType() && (GetRole() != ax::mojom::Role::kProgressIndicator);
+}
+
 bool BrowserAccessibilityAndroid::IsSelected() const {
   return GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
 }
@@ -319,6 +324,11 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
 
   // If it's not focusable but has a control role, then it's interesting.
   if (ui::IsControl(GetRole()))
+    return true;
+
+  // Mark progress indicators as interesting, since they are not focusable and
+  // not a control, but users should be able to swipe/navigate to them.
+  if (GetRole() == ax::mojom::Role::kProgressIndicator)
     return true;
 
   // If we are the direct descendant of a link and have no siblings/children,
