@@ -538,13 +538,37 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
   def testStartStop(self):
     pass
 
-  def testGetComputedLabel(self):
-    self._driver.Load(self.GetHttpUrlForFile(
-        '/chromedriver/accessibility.html'))
-    element = self._driver.FindElement('css selector', '#first-header')
-    # print >> sys.stdout, "element.GetText: ", element.GetText()
-    computedLabel = element.GetComputedLabel()
-    self.assertEquals(computedLabel, 'header content')
+  def testGetComputedAttributes(self):
+    self._driver.Load(
+      self.GetHttpUrlForFile('/chromedriver/accessibility.html'))
+
+    firstHeaderElement = self._driver.FindElement(
+      'css selector', '#first-header')
+
+    self.assertEquals(firstHeaderElement.GetComputedLabel(), 'header content')
+    self.assertEquals(firstHeaderElement.GetComputedRole(), 'heading')
+
+  def testGetComputedAttributesForIgnoredNode(self):
+    self._driver.Load(
+      self.GetHttpUrlForFile('/chromedriver/accessibility.html'))
+
+    ignoredHeaderElement = self._driver.FindElement(
+      'css selector', '#ignored-header')
+
+    # GetComputedLabel for ignored node should return empty string.
+    self.assertEquals(ignoredHeaderElement.GetComputedLabel(), '')
+    self.assertEquals(ignoredHeaderElement.GetComputedRole(), 'Ignored')
+
+  def testGetComputedAttributesForUnrenderedNode(self):
+    self._driver.Load(
+      self.GetHttpUrlForFile('/chromedriver/accessibility.html'))
+
+    unrenderedHeaderElement = self._driver.FindElement(
+      'css selector', '#unrendered-header')
+
+    # GetComputedLabel for unrendered node should return empty string.
+    self.assertEquals(unrenderedHeaderElement.GetComputedLabel(), '')
+    self.assertEquals(unrenderedHeaderElement.GetComputedRole(), 'Ignored')
 
   def testLoadUrl(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))

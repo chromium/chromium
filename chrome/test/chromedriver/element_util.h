@@ -164,4 +164,9 @@ Status GetElementLocationInViewCenter(Session* session,
                                       const std::string& element_id,
                                       WebPoint* location);
 
+Status GetAXNodeByElementId(Session* session,
+                            WebView* web_view,
+                            const std::string& element_id,
+                            std::unique_ptr<base::Value>* axNode);
+
 #endif  // CHROME_TEST_CHROMEDRIVER_ELEMENT_UTIL_H_

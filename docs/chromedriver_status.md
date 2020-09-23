@@ -41,6 +41,7 @@ Below is a list of all WebDriver commands and their current support in ChromeDri
 | GET    | /session/{session id}/element/{element id}/rect                | Get Element Rect           | Complete           |
 | GET    | /session/{session id}/element/{element id}/enabled             | Is Element Enabled         | Complete           |
 | GET    | /session/{session id}/element/{element id}/computedlabel       | Get Computed Label         | Complete           |
+| GET    | /session/{session id}/element/{element id}/computedrole        | Get Computed Role          | Complete           |
 | POST   | /session/{session id}/element/{element id}/click               | Element Click              | Partially Complete | [1996](https://bugs.chromium.org/p/chromedriver/issues/detail?id=1996)
 | POST   | /session/{session id}/element/{element id}/clear               | Element Clear              | Complete           |
 | POST   | /session/{session id}/element/{element id}/value               | Element Send Keys          | Partially Complete | [1999](https://bugs.chromium.org/p/chromedriver/issues/detail?id=1999)

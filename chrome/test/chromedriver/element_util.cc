@@ -906,3 +906,45 @@ Status GetElementLocationInViewCenter(Session* session,
   *location = center_location;
   return Status(kOk);
 }
+
+Status GetAXNodeByElementId(Session* session,
+                            WebView* web_view,
+                            const std::string& element_id,
+                            std::unique_ptr<base::Value>* axNode) {
+  Status status = CheckElement(element_id);
+  if (status.IsError())
+    return status;
+
+  int node_id;
+  std::unique_ptr<base::DictionaryValue> element(CreateElement(element_id));
+  status = web_view->GetNodeIdByElement(session->GetCurrentFrameId(), *element,
+                                        &node_id);
+
+  if (status.IsError())
+    return status;
+
+  base::DictionaryValue body;
+  body.SetInteger("nodeId", node_id);
+  body.SetBoolean("fetchRelatives", false);
+
+  std::unique_ptr<base::Value> result;
+
+  status = web_view->SendCommandAndGetResult("Accessibility.getPartialAXTree",
+                                             body, &result);
+  if (status.IsError())
+    return status;
+
+  base::Optional<base::Value> nodes = result->ExtractKey("nodes");
+  if (!nodes)
+    return Status(kUnknownError, "No `nodes` found in CDP response");
+
+  base::Value::ListView nodesList = nodes->GetList();
+  if (nodesList.size() < 1)
+    return Status(kUnknownError, "Empty nodes list in CDP response");
+
+  if (nodesList.size() > 1)
+    return Status(kUnknownError, "Non-unique node in CDP response");
+
+  *axNode = std::make_unique<base::Value>(std::move(nodesList[0]));
+  return Status(kOk);
+}

@@ -744,52 +744,52 @@ Status ExecuteGetComputedLabel(Session* session,
                                const std::string& element_id,
                                const base::DictionaryValue& params,
                                std::unique_ptr<base::Value>* value) {
-  Status status = CheckElement(element_id);
+  std::unique_ptr<base::Value> axNode;
+  Status status = GetAXNodeByElementId(session, web_view, element_id, &axNode);
   if (status.IsError())
     return status;
 
-  int node_id;
-  std::unique_ptr<base::DictionaryValue> element(CreateElement(element_id));
-  status = web_view->GetNodeIdByElement(session->GetCurrentFrameId(), *element,
-                                        &node_id);
-
-  if (status.IsError())
-    return status;
-
-  base::DictionaryValue body;
-  body.SetInteger("nodeId", node_id);
-  body.SetBoolean("fetchRelatives", false);
-
-  std::unique_ptr<base::Value> result;
-
-  status = web_view->SendCommandAndGetResult("Accessibility.getPartialAXTree",
-                                             body, &result);
-  if (status.IsError())
-    return status;
-
-  base::Optional<base::Value> nodes = result->ExtractKey("nodes");
-  if (!nodes)
-    return Status(kUnknownError, "No `nodes` found in CDP response");
-
-  base::Value::ListView nodesList = nodes->GetList();
-  if (nodesList.size() != 1)
-    return Status(kUnknownError, "`nodes` in CDP response is not a list");
-
-  base::Value* node = &nodesList[0];
   // Computed label stores as `name` in the AXTree.
-  base::Optional<base::Value> name = node->ExtractKey("name");
-  if (!name) {
+  base::Optional<base::Value> nameNode = axNode->ExtractKey("name");
+  if (!nameNode) {
     // No computed label found. Return empty string.
     *value = std::make_unique<base::Value>("");
     return Status(kOk);
   }
 
-  base::Optional<base::Value> nameVal = name->ExtractKey("value");
+  base::Optional<base::Value> nameVal = nameNode->ExtractKey("value");
   if (!nameVal)
     return Status(kUnknownError,
                   "No name value found in the node in CDP response");
 
   *value = std::make_unique<base::Value>(std::move(*nameVal));
+
+  return Status(kOk);
+}
+
+Status ExecuteGetComputedRole(Session* session,
+                              WebView* web_view,
+                              const std::string& element_id,
+                              const base::DictionaryValue& params,
+                              std::unique_ptr<base::Value>* value) {
+  std::unique_ptr<base::Value> axNode;
+  Status status = GetAXNodeByElementId(session, web_view, element_id, &axNode);
+  if (status.IsError())
+    return status;
+
+  base::Optional<base::Value> roleNode = axNode->ExtractKey("role");
+  if (!roleNode) {
+    // No computed role found. Return empty string.
+    *value = std::make_unique<base::Value>("");
+    return Status(kOk);
+  }
+
+  base::Optional<base::Value> roleVal = roleNode->ExtractKey("value");
+  if (!roleVal)
+    return Status(kUnknownError,
+                  "No role value found in the node in CDP response");
+
+  *value = std::make_unique<base::Value>(std::move(*roleVal));
 
   return Status(kOk);
 }

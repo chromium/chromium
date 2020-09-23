@@ -154,6 +154,12 @@ Status ExecuteGetComputedLabel(Session* session,
                                const base::DictionaryValue& params,
                                std::unique_ptr<base::Value>* value);
 
+Status ExecuteGetComputedRole(Session* session,
+                              WebView* web_view,
+                              const std::string& element_id,
+                              const base::DictionaryValue& params,
+                              std::unique_ptr<base::Value>* value);
+
 Status ExecuteIsElementDisplayed(Session* session,
                                  WebView* web_view,
                                  const std::string& element_id,

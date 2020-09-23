@@ -37,6 +37,9 @@ class WebElement(object):
   def GetComputedLabel(self):
     return self._Execute(Command.GET_ELEMENT_COMPUTED_LABEL)
 
+  def GetComputedRole(self):
+    return self._Execute(Command.GET_ELEMENT_COMPUTED_ROLE)
+
   def Click(self):
     self._Execute(Command.CLICK_ELEMENT)
 
