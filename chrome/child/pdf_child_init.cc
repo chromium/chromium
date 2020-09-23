@@ -51,21 +51,16 @@ DWORD WINAPI GetFontDataPatch(HDC hdc,
 
 void MaybeInitializeGDI() {
 #if defined(OS_WIN)
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  const std::string process_type =
-      command_line.GetSwitchValueASCII(switches::kProcessType);
-
-  // Patch utility processes which explicitly need GDI. Anything else, just
-  // return.
+  // Only patch utility processes which explicitly need GDI.
   sandbox::policy::SandboxType service_sandbox_type =
-      sandbox::policy::SandboxTypeFromCommandLine(command_line);
-  if (!(service_sandbox_type == sandbox::policy::SandboxType::kPpapi ||
-        service_sandbox_type ==
-            sandbox::policy::SandboxType::kPrintCompositor ||
-        service_sandbox_type == sandbox::policy::SandboxType::kPdfConversion)) {
+      sandbox::policy::SandboxTypeFromCommandLine(
+          *base::CommandLine::ForCurrentProcess());
+  bool need_gdi =
+      service_sandbox_type == sandbox::policy::SandboxType::kPpapi ||
+      service_sandbox_type == sandbox::policy::SandboxType::kPrintCompositor ||
+      service_sandbox_type == sandbox::policy::SandboxType::kPdfConversion;
+  if (!need_gdi)
     return;
-  }
 
 #if defined(COMPONENT_BUILD)
   HMODULE module = ::GetModuleHandleA("pdfium.dll");
