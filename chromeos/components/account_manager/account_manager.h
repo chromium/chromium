@@ -157,6 +157,12 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManager {
   void InitializeInEphemeralMode(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
+  // Same as above, except it allows clients to provide a callback which will be
+  // called after initialization.
+  void InitializeInEphemeralMode(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      base::OnceClosure initialization_callback);
+
   // Returns |true| if |AccountManager| has been fully initialized.
   bool IsInitialized() const;
 

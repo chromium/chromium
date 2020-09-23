@@ -171,6 +171,10 @@ class AccountManagerTest : public testing::Test {
     return account_manager_.get();
   }
 
+  scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory() {
+    return test_url_loader_factory_.GetSafeWeakWrapper();
+  }
+
  private:
   void InitializeAccountManager(AccountManager* account_manager,
                                 const base::FilePath& home_dir,
@@ -383,6 +387,14 @@ TEST_F(AccountManagerTest, TestEphemeralMode) {
   std::vector<AccountManager::Account> accounts =
       GetAccountsBlocking(&account_manager);
   EXPECT_EQ(0UL, accounts.size());
+}
+
+TEST_F(AccountManagerTest, TestEphemeralModeInitializationCallback) {
+  base::RunLoop run_loop;
+  AccountManager account_manager;
+  account_manager.InitializeInEphemeralMode(test_url_loader_factory(),
+                                            run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 TEST_F(AccountManagerTest, TestAccountEmailPersistence) {

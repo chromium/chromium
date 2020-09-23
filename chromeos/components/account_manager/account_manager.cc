@@ -171,12 +171,19 @@ void AccountManager::SetPrefService(PrefService* pref_service) {
 
 void AccountManager::InitializeInEphemeralMode(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  InitializeInEphemeralMode(url_loader_factory,
+                            /* initialization_callback= */
+                            base::DoNothing());
+}
+
+void AccountManager::InitializeInEphemeralMode(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    base::OnceClosure initialization_callback) {
   Initialize(/* home_dir= */ base::FilePath(), url_loader_factory,
              /* delay_network_call_runner= */
              base::BindRepeating(
                  [](base::OnceClosure closure) { std::move(closure).Run(); }),
-             /* task_runner= */ nullptr, /* initialization_callback= */
-             base::DoNothing());
+             /* task_runner= */ nullptr, std::move(initialization_callback));
 }
 
 void AccountManager::Initialize(
