@@ -10682,7 +10682,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Exit Incognito
     </message>
     <message name="IDS_INCOGNITO_PROFILE_MENU_CLOSE_BUTTON_NEW" desc="The text of the button offering to close all incognito windows.">
-      Close incognito
+      Close Incognito
     </message>
 
    <!-- Guest Profile Menu bubble. -->
@@ -10692,10 +10692,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
         other {# open windows}
       }
     </message>
-    <message name="IDS_GUEST_PROFILE_MENU_CLOSE_BUTTON" desc="The text of the button offering to close all guest windows.">
+    <message name="IDS_GUEST_PROFILE_MENU_CLOSE_BUTTON" desc="The text of the button offering to close all guest windows. The number in ICU syntax represents the number of open guest windows, but it is not used in the English text and can be used to choose singular/plural in translation to other languages, if needed.[ICU Syntax]">
       {0, plural,
-        =1 {Close guest}
-        other {Close guest}
+        =1 {Close Guest}
+        other {Close Guest}
       }
     </message>
 
