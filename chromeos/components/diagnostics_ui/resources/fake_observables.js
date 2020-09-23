@@ -37,9 +37,6 @@ class FakeObservableState {
 
   /** @param {!Array<!T>} observations */
   setObservableData(observations) {
-    // TODO(zentaro): Fully support multiple observations.
-    assert(observations.length == 1);
-
     this.observations_ = observations;
     this.index_ = 0;
   }
