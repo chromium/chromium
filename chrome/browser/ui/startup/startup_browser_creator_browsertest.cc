@@ -1929,7 +1929,8 @@ class StartupBrowserCreatorPickerTest : public InProcessBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(StartupBrowserCreatorPickerTest);
 };
 
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerTest, OpensPicker) {
+// Flaky: https://crbug.com/1126886
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerTest, DISABLED_OpensPicker) {
   ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   StartWithTwoProfiles(command_line);
