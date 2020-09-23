@@ -238,7 +238,7 @@ bool WebUILoginView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   if (entry == accel_map_.end())
     return false;
   if (controller_)
-    controller_->HandleAccelerator(entry->second);
+    return controller_->HandleAccelerator(entry->second);
   return false;
 }
 
