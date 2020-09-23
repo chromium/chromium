@@ -33,7 +33,6 @@
 #include "chromeos/services/secure_channel/fake_secure_channel_disconnector.h"
 #include "chromeos/services/secure_channel/fake_timer_factory.h"
 #include "chromeos/services/secure_channel/secure_channel.h"
-#include "chromeos/services/secure_channel/secure_channel_disconnector_impl.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -92,27 +91,6 @@ class FakeBleAdvertiserFactory : public BleAdvertiserImpl::Factory {
   FakeTimerFactory* expected_fake_timer_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeBleAdvertiserFactory);
-};
-
-class FakeSecureChannelDisconnectorFactory
-    : public SecureChannelDisconnectorImpl::Factory {
- public:
-  FakeSecureChannelDisconnectorFactory() = default;
-  ~FakeSecureChannelDisconnectorFactory() override = default;
-
-  FakeSecureChannelDisconnector* instance() { return instance_; }
-
- private:
-  // SecureChannelDisconnectorImpl::Factory:
-  std::unique_ptr<SecureChannelDisconnector> CreateInstance() override {
-    auto instance = std::make_unique<FakeSecureChannelDisconnector>();
-    instance_ = instance.get();
-    return instance;
-  }
-
-  FakeSecureChannelDisconnector* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSecureChannelDisconnectorFactory);
 };
 
 class FakeWeaveClientConnectionFactory
@@ -260,6 +238,8 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
     fake_bluetooth_helper_ = std::make_unique<FakeBluetoothHelper>();
     fake_ble_synchronizer_ = std::make_unique<FakeBleSynchronizer>();
     fake_ble_scanner_ = std::make_unique<FakeBleScanner>();
+    fake_secure_channel_disconnector_ =
+        std::make_unique<FakeSecureChannelDisconnector>();
 
     fake_timer_factory_ = std::make_unique<FakeTimerFactory>();
 
@@ -271,11 +251,6 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
         fake_timer_factory_.get());
     BleAdvertiserImpl::Factory::SetFactoryForTesting(
         fake_ble_advertiser_factory_.get());
-
-    fake_secure_channel_disconnector_factory_ =
-        std::make_unique<FakeSecureChannelDisconnectorFactory>();
-    SecureChannelDisconnectorImpl::Factory::SetFactoryForTesting(
-        fake_secure_channel_disconnector_factory_.get());
 
     fake_weave_client_connection_factory_ =
         std::make_unique<FakeWeaveClientConnectionFactory>(mock_adapter_);
@@ -295,12 +270,12 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
     manager_ = BleConnectionManagerImpl::Factory::Create(
         mock_adapter_, fake_bluetooth_helper_.get(),
         fake_ble_synchronizer_.get(), fake_ble_scanner_.get(),
-        fake_timer_factory_.get(), test_clock_.get());
+        fake_secure_channel_disconnector_.get(), fake_timer_factory_.get(),
+        test_clock_.get());
   }
 
   void TearDown() override {
     BleAdvertiserImpl::Factory::SetFactoryForTesting(nullptr);
-    SecureChannelDisconnectorImpl::Factory::SetFactoryForTesting(nullptr);
     weave::BluetoothLowEnergyWeaveClientConnection::Factory::
         SetFactoryForTesting(nullptr);
     SecureChannel::Factory::SetFactoryForTesting(nullptr);
@@ -625,7 +600,7 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
 
   bool WasChannelHandledByDisconnector(
       FakeSecureChannelConnection* fake_secure_channel) {
-    return fake_secure_channel_disconnector()->WasChannelHandled(
+    return fake_secure_channel_disconnector_->WasChannelHandled(
         fake_secure_channel);
   }
 
@@ -761,10 +736,6 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
     return fake_ble_advertiser_factory_->instance();
   }
 
-  FakeSecureChannelDisconnector* fake_secure_channel_disconnector() {
-    return fake_secure_channel_disconnector_factory_->instance();
-  }
-
   const multidevice::RemoteDeviceRefList test_devices_;
 
   base::HistogramTester histogram_tester_;
@@ -783,8 +754,6 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
       ble_listener_failures_;
 
   std::unique_ptr<FakeBleAdvertiserFactory> fake_ble_advertiser_factory_;
-  std::unique_ptr<FakeSecureChannelDisconnectorFactory>
-      fake_secure_channel_disconnector_factory_;
   std::unique_ptr<FakeWeaveClientConnectionFactory>
       fake_weave_client_connection_factory_;
   std::unique_ptr<FakeSecureChannelFactory> fake_secure_channel_factory_;
@@ -795,6 +764,8 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
   std::unique_ptr<FakeBluetoothHelper> fake_bluetooth_helper_;
   std::unique_ptr<FakeBleSynchronizer> fake_ble_synchronizer_;
   std::unique_ptr<FakeBleScanner> fake_ble_scanner_;
+  std::unique_ptr<FakeSecureChannelDisconnector>
+      fake_secure_channel_disconnector_;
   std::unique_ptr<FakeTimerFactory> fake_timer_factory_;
   std::unique_ptr<base::SimpleTestClock> test_clock_;
 

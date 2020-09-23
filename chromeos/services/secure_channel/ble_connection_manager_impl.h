@@ -19,7 +19,6 @@
 #include "chromeos/services/secure_channel/device_id_pair.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/services/secure_channel/secure_channel.h"
-#include "chromeos/services/secure_channel/secure_channel_disconnector.h"
 
 namespace device {
 class BluetoothAdapter;
@@ -51,6 +50,7 @@ class BleConnectionManagerImpl : public BleConnectionManager,
         BluetoothHelper* bluetooth_helper,
         BleSynchronizerBase* ble_synchronizer,
         BleScanner* ble_scanner,
+        SecureChannelDisconnector* secure_channel_disconnector,
         TimerFactory* timer_factory,
         base::Clock* clock = base::DefaultClock::GetInstance());
     static void SetFactoryForTesting(Factory* test_factory);
@@ -62,6 +62,7 @@ class BleConnectionManagerImpl : public BleConnectionManager,
         BluetoothHelper* bluetooth_helper,
         BleSynchronizerBase* ble_synchronizer,
         BleScanner* ble_scanner,
+        SecureChannelDisconnector* secure_channel_disconnector,
         TimerFactory* timer_factory,
         base::Clock* clock = base::DefaultClock::GetInstance()) = 0;
 
@@ -109,6 +110,7 @@ class BleConnectionManagerImpl : public BleConnectionManager,
       BluetoothHelper* bluetooth_helper,
       BleSynchronizerBase* ble_synchronizer,
       BleScanner* ble_scanner,
+      SecureChannelDisconnector* secure_channel_disconnector,
       TimerFactory* timer_factory,
       base::Clock* clock);
 
@@ -205,9 +207,9 @@ class BleConnectionManagerImpl : public BleConnectionManager,
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   base::Clock* clock_;
   BleScanner* ble_scanner_;
+  SecureChannelDisconnector* secure_channel_disconnector_;
 
   std::unique_ptr<BleAdvertiser> ble_advertiser_;
-  std::unique_ptr<SecureChannelDisconnector> secure_channel_disconnector_;
 
   using SecureChannelWithRole =
       std::pair<std::unique_ptr<SecureChannel>, ConnectionRole>;
