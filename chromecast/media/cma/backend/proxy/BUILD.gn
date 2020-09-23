@@ -6,8 +6,11 @@ import("//chromecast/chromecast.gni")
 
 cast_source_set("proxy") {
   sources = [
-    "multizone_audio_decoder_proxy.cc",
+    "cma_backend_proxy.cc",
+    "cma_backend_proxy.h",
     "multizone_audio_decoder_proxy.h",
+    "multizone_audio_decoder_proxy_impl.cc",
+    "multizone_audio_decoder_proxy_impl.h",
   ]
 
   deps = [

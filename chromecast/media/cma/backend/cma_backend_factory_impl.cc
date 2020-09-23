@@ -4,8 +4,12 @@
 
 #include "chromecast/media/cma/backend/cma_backend_factory_impl.h"
 
+#include "chromecast/chromecast_buildflags.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/cma/backend/media_pipeline_backend_manager.h"
+#if BUILDFLAG(ENABLE_CHROMIUM_RUNTIME_CAST_RENDERER)
+#include "chromecast/media/cma/backend/proxy/cma_backend_proxy.h"  // nogncheck
+#endif  // BUILDFLAG(ENABLE_CHROMIUM_RUNTIME_CAST_RENDERER)
 #include "chromecast/public/media/media_pipeline_device_params.h"
 
 namespace chromecast {
@@ -21,7 +25,14 @@ CmaBackendFactoryImpl::~CmaBackendFactoryImpl() = default;
 
 std::unique_ptr<CmaBackend> CmaBackendFactoryImpl::CreateBackend(
     const MediaPipelineDeviceParams& params) {
-  return media_pipeline_backend_manager_->CreateBackend(params);
+  std::unique_ptr<CmaBackend> backend =
+      media_pipeline_backend_manager_->CreateBackend(params);
+
+#if BUILDFLAG(ENABLE_CHROMIUM_RUNTIME_CAST_RENDERER)
+  backend = std::make_unique<CmaBackendProxy>(std::move(backend));
+#endif  // BUILDFLAG(ENABLE_CHROMIUM_RUNTIME_CAST_RENDERER)
+
+  return backend;
 }
 
 }  // namespace media

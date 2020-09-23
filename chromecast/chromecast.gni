@@ -141,6 +141,9 @@ declare_args() {
   # Set to true to forward crashes to the system's crash handler instead of
   # handling them internally.  This disables the built-in crash handler.
   use_system_crash_handler = false
+
+  # True to use the Chromium runtime for cast rendering.
+  enable_chromium_runtime_cast_renderer = false
 }
 
 declare_args() {

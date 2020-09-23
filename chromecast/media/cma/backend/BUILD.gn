@@ -44,6 +44,10 @@ cast_source_set("backend") {
     "//chromecast/media/cma/decoder",
   ]
 
+  if (enable_chromium_runtime_cast_renderer) {
+    deps += [ "//chromecast/media/cma/backend/proxy" ]
+  }
+
   if (have_full_mixer) {
     sources += [ "media_pipeline_backend_manager_mixer.cc" ]
     deps += [ "//chromecast/media/audio/mixer_service:control_connection" ]
