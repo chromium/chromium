@@ -33,7 +33,11 @@ if (optimize_webui) {
       ":unpak",
       "../../../../ui/webui/resources:preprocess",
     ]
-    excludes = [ "chrome://resources/js/cr.m.js" ]
+    excludes = [
+      "chrome://resources/js/cr.m.js",
+      "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
+      "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-lite.js",
+    ]
   }
 
   unpak("unpak") {

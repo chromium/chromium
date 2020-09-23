@@ -120,6 +120,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/read_later/read_later.mojom.h"
 #include "chrome/browser/ui/webui/read_later/read_later_ui.h"
+#include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/common/caption.mojom.h"
@@ -609,7 +610,7 @@ void PopulateChromeWebUIFrameBinders(
       customize_themes::mojom::CustomizeThemesHandlerFactory, NewTabPageUI
 #if !defined(OS_CHROMEOS)
       ,
-      ProfilePickerUI
+      ProfilePickerUI, settings::SettingsUI
 #endif  // !defined(OS_CHROMEOS)
       >(map);
 

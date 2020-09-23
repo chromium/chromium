@@ -3,7 +3,7 @@
         --cr-input-error-display: none;
       }
 
-      #selector {
+      #avatarSelector {
         margin: 16px 48px;
       }
     </style>
@@ -27,6 +27,10 @@
         </cr-toggle>
       </div>
     </template>
-    <cr-profile-avatar-selector id="selector" avatars="[[availableIcons]]"
+    <template is="dom-if" if="[[isCustomizeThemesVisible_]]">
+      <cr-customize-themes id="themeSelector" auto-confirm-theme-changes>
+      </cr-customize-themes>
+    </template>
+    <cr-profile-avatar-selector id="avatarSelector" avatars="[[availableIcons]]"
         selected-avatar="{{profileAvatar_}}" ignore-modified-key-events>
     </cr-profile-avatar-selector>

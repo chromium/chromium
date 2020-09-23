@@ -42,6 +42,11 @@ const base::Feature kNewTabstripAnimation{"NewTabstripAnimation",
 const base::Feature kPermissionChip{"PermissionChip",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the theme selector in the manage profile settings.
+// https://crbug.com/1129186
+const base::Feature kProfileThemeSelectorInSettings{
+    "ProfileThemeSelectorInSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables a more prominent active tab title in dark mode to aid with
 // accessibility.
 const base::Feature kProminentDarkModeActiveTabTitle{

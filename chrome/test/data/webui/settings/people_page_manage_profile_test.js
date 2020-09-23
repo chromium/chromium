@@ -81,17 +81,23 @@ suite('ManageProfileTests', function() {
     browserProxy = new TestManageProfileBrowserProxy();
     ManageProfileBrowserProxyImpl.instance_ = browserProxy;
     PolymerTest.clearBody();
-    manageProfile = document.createElement('settings-manage-profile');
-    manageProfile.profileIconUrl = 'fake-icon-1.png';
-    manageProfile.profileName = 'Initial Fake Name';
-    manageProfile.syncStatus = {supervisedUser: false, childUser: false};
-    document.body.appendChild(manageProfile);
+    manageProfile = createManageProfileElement();
     Router.getInstance().navigateTo(routes.MANAGE_PROFILE);
   });
 
   teardown(function() {
     manageProfile.remove();
   });
+
+  function createManageProfileElement() {
+    const manageProfileElement =
+        document.createElement('settings-manage-profile');
+    manageProfileElement.profileIconUrl = 'fake-icon-1.png';
+    manageProfileElement.profileName = 'Initial Fake Name';
+    manageProfileElement.syncStatus = {supervisedUser: false, childUser: false};
+    document.body.appendChild(manageProfileElement);
+    return manageProfileElement;
+  }
 
   // Tests that the manage profile subpage
   //  - gets and receives all the available icons
@@ -101,8 +107,9 @@ suite('ManageProfileTests', function() {
     return browserProxy.whenCalled('getAvailableIcons')
         .then(function() {
           flush();
-          items = manageProfile.$.selector.$['avatar-grid'].querySelectorAll(
-              '.avatar');
+          items =
+              manageProfile.$.avatarSelector.$['avatar-grid'].querySelectorAll(
+                  '.avatar');
 
           assertFalse(!!manageProfile.profileAvatar);
           assertEquals(3, items.length);
@@ -166,6 +173,27 @@ suite('ManageProfileTests', function() {
   test('ManageProfileShortcutToggleHidden', function() {
     const hasShortcutToggle = manageProfile.$$('#hasShortcutToggle');
     assertFalse(!!hasShortcutToggle);
+  });
+
+
+  // Tests that the theme selector is hidden if profile colors feature is
+  // disabled.
+  test('ProfileThemeSelectorHidden', function() {
+    assertFalse(!!manageProfile.$$('#themeSelector'));
+  });
+
+  // Tests that the theme selector is visible if profile colors feature is
+  // enabled.
+  test('ProfileThemeSelectorVisible', function() {
+    // Recreate a manage profile element with overridden loadTimeData.
+    PolymerTest.clearBody();
+    loadTimeData.overrideValues({
+      profileThemeSelectorEnabled: true,
+    });
+    manageProfile = createManageProfileElement();
+    flush();
+
+    assertTrue(!!manageProfile.$$('#themeSelector'));
   });
 });
 

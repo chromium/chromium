@@ -118,6 +118,7 @@
 #include "ui/base/ui_base_features.h"
 #else  // !defined(OS_CHROMEOS)
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
+#include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_default_browser_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_manage_profile_handler.h"
 #include "chrome/browser/ui/webui/settings/system_handler.h"
@@ -155,7 +156,13 @@ web_app::AppRegistrar& GetRegistrarForProfile(Profile* profile) {
 }
 
 SettingsUI::SettingsUI(content::WebUI* web_ui)
-    : content::WebUIController(web_ui),
+    :
+#if !defined(OS_CHROMEOS)
+      ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
+      customize_themes_factory_receiver_(this),
+#else  // !defined(OS_CHROMEOS)
+      content::WebUIController(web_ui),
+#endif
       webui_load_timer_(web_ui->GetWebContents(),
                         "Settings.LoadDocumentTime.MD",
                         "Settings.LoadCompletedTime.MD") {
@@ -311,7 +318,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   // This is the browser settings page.
   html_source->AddBoolean("isOSSettings", false);
-#endif
+#else   // defined(OS_CHROMEOS)
+  html_source->AddBoolean(
+      "profileThemeSelectorEnabled",
+      base::FeatureList::IsEnabled(features::kProfileThemeSelectorInSettings));
+#endif  // !defined(OS_CHROMEOS)
 
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));
@@ -430,7 +441,16 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
   web_ui()->AddMessageHandler(
       std::make_unique<chromeos::settings::AndroidAppsHandler>(profile));
 }
-#endif  // defined(OS_CHROMEOS)
+#else   // defined(OS_CHROMEOS)
+void SettingsUI::BindInterface(
+    mojo::PendingReceiver<
+        customize_themes::mojom::CustomizeThemesHandlerFactory>
+        pending_receiver) {
+  if (customize_themes_factory_receiver_.is_bound())
+    customize_themes_factory_receiver_.reset();
+  customize_themes_factory_receiver_.Bind(std::move(pending_receiver));
+}
+#endif  // !defined(OS_CHROMEOS)
 
 void SettingsUI::AddSettingsPageUIHandler(
     std::unique_ptr<content::WebUIMessageHandler> handler) {
@@ -447,5 +467,19 @@ void SettingsUI::TryShowHatsSurveyWithTimeout() {
         kHatsSurveyTriggerSettings, web_ui()->GetWebContents(), 20000);
   }
 }
+
+#if !defined(OS_CHROMEOS)
+void SettingsUI::CreateCustomizeThemesHandler(
+    mojo::PendingRemote<customize_themes::mojom::CustomizeThemesClient>
+        pending_client,
+    mojo::PendingReceiver<customize_themes::mojom::CustomizeThemesHandler>
+        pending_handler) {
+  customize_themes_handler_ = std::make_unique<ChromeCustomizeThemesHandler>(
+      std::move(pending_client), std::move(pending_handler),
+      web_ui()->GetWebContents(), Profile::FromWebUI(web_ui()));
+}
+#endif  // !defined(OS_CHROMEOS)
+
+WEB_UI_CONTROLLER_TYPE_IMPL(SettingsUI)
 
 }  // namespace settings
